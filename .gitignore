@@ -30,3 +30,8 @@
 *.exe
 *.out
 *.app
+
+# Visual Studio
+x64
+.vs
+src/x64
