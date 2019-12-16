@@ -142,32 +142,41 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GLUtils.cpp" />
+    <ClCompile Include="ImageLoader.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VertexArray.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexBufferLayout.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment.glsl" />
-    <None Include="mesh_vertex.glsl" />
-    <None Include="vertex.glsl" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="IBindable.h" />
     <ClInclude Include="GLUtils.h" />
+    <ClInclude Include="ImageLoader.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="VertexArray.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="VertexBufferLayout.h" />
     <ClInclude Include="Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\res\crate.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\res\shaders\cube_fragment.glsl" />
+    <None Include="..\res\shaders\fragment.glsl" />
+    <None Include="..\res\shaders\line_vertex.glsl" />
+    <None Include="..\res\shaders\mesh_vertex.glsl" />
+    <None Include="..\res\shaders\cube_vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

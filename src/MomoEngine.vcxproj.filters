@@ -47,6 +47,12 @@
     <Filter Include="Resources\Shaders">
       <UniqueIdentifier>{4fe7a20e-691b-4139-8b50-ee7c28d03eea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\OpenGL\Texture">
+      <UniqueIdentifier>{3dc3a02c-cbd8-4c0d-b8c0-d1c60bea192c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\ImageLoader">
+      <UniqueIdentifier>{0909f2b1-0551-49dc-9bbd-e50c87880610}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer.cpp">
@@ -77,17 +83,12 @@
       <Filter>Core\OpenGL\VertexArray</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="vertex.glsl">
-      <Filter>Resources\Shaders</Filter>
-    </None>
-    <None Include="fragment.glsl">
-      <Filter>Resources\Shaders</Filter>
-    </None>
-    <None Include="mesh_vertex.glsl">
-      <Filter>Resources\Shaders</Filter>
-    </None>
+    <ClCompile Include="ImageLoader.cpp">
+      <Filter>Utilities\ImageLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Core\OpenGL\Texture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h">
@@ -120,5 +121,33 @@
     <ClInclude Include="VertexArray.h">
       <Filter>Core\OpenGL\VertexArray</Filter>
     </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Core\OpenGL\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageLoader.h">
+      <Filter>Utilities\ImageLoader</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\res\crate.jpg">
+      <Filter>Resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\res\shaders\fragment.glsl">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="..\res\shaders\line_vertex.glsl">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="..\res\shaders\mesh_vertex.glsl">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="..\res\shaders\cube_vertex.glsl">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="..\res\shaders\cube_fragment.glsl">
+      <Filter>Resources\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

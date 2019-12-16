@@ -4,18 +4,22 @@
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 
-class VertexArray : IBindable
+namespace MomoEngine
 {
-	int attributeIndex = 0;
-public:
-	VertexArray();
-	~VertexArray();
-	VertexArray(const VertexArray&) = delete;
-	VertexArray(VertexArray&&) = delete;
+	class VertexArray : IBindable
+	{
+		int attributeIndex = 0;
+	public:
+		VertexArray();
+		~VertexArray();
+		VertexArray(const VertexArray&) = delete;
+		VertexArray(VertexArray&&) = delete;
 
-	void Bind() const override;
-	void Unbind() const override;
+		// Inherited via IBindable
+		void Bind() const override;
+		void Unbind() const override;
 
-	void AddBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout);
-	void AddInstancedBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout);
-};
+		void AddBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout);
+		void AddInstancedBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout);
+	};
+}

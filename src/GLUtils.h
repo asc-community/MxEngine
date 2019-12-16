@@ -4,6 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+namespace MomoEngine
+{
 #define ASSERT(x) if(!(x)) __debugbreak(); 
 
 #ifdef _DEBUG
@@ -12,13 +14,17 @@
 #define GLCALL(x) x
 #endif
 
-void GlClearErrors();
+	void GlClearErrors();
 
-bool GlLogCall(const char* function, const char* file, int line);
+	bool GlLogCall(const char* function, const char* file, int line);
 
-unsigned int GetGLTypeSize(unsigned int type);
+	unsigned int GetGLTypeSize(unsigned int type);
 
-template<typename T>
-unsigned int GetGLType();
+	template<typename T>
+	std::string TypeToString();
 
-std::string ReadFile(const std::string& filename);
+	template<typename T>
+	unsigned int GetGLType();
+
+	std::string ReadFile(const std::string& filename);
+}

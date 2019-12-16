@@ -9,9 +9,12 @@
 #include <sstream>
 #include <chrono>
 #include <algorithm>
+#include <iomanip>
 
 #include "Renderer.h"
 #include "Window.h"
+
+using namespace MomoEngine;
 
 int main()
 {
@@ -22,6 +25,7 @@ int main()
 		.UseSampling(4)
 		.UseDoubleBuffering(false)
 		.UseTitle("OpenGL Project")
+		.UsePosition(600, 300)
 		.Create();
 
 	auto renderer = Renderer()
@@ -30,92 +34,162 @@ int main()
 		.UseSampling()
 		.UseClearColor(0.0f, 0.0f, 0.0f);
 
-	std::vector<GLfloat> bufferData =
+	std::vector<GLfloat> cubeBufferData =
 	{
-		-1.0f, -1.0f,  1.0f,	1.0f, 0.0f, 0.0f,
-		 1.0f, -1.0f,  1.0f,	1.0f, 0.0f, 0.0f,
-		 1.0f,  1.0f,  1.0f,	1.0f, 0.0f, 0.0f,
-		-1.0f,  1.0f,  1.0f,	1.0f, 0.0f, 0.0f,
-		-1.0f, -1.0f, -1.0f,	1.0f, 1.0f, 0.0f,
-		 1.0f, -1.0f, -1.0f,	1.0f, 1.0f, 0.0f,
-		 1.0f,  1.0f, -1.0f,	1.0f, 1.0f, 0.0f,
-		-1.0f,  1.0f, -1.0f,	1.0f, 1.0f, 0.0f,
-	};
-
-	std::vector<GLuint> indicies =
-	{
-		// front
-		0, 1, 2,
-		2, 3, 0,
-		// right
-		1, 5, 6,
-		6, 2, 1,
 		// back
-		7, 6, 5,
-		5, 4, 7,
+		0.0f, 0.0f, 1.0f,	 0.0, 0.0,
+		1.0f, 0.0f, 1.0f,	 1.0, 0.0,
+		1.0f, 1.0f, 1.0f,	 1.0, 1.0,
+		0.0f, 1.0f, 1.0f,	 0.0, 1.0,
+		// front  
+		1.0f, 0.0f, 0.0f,	 1.0, 0.0,
+		0.0f, 0.0f, 0.0f,	 0.0, 0.0,
+		0.0f, 1.0f, 0.0f,	 0.0, 1.0,
+		1.0f, 1.0f, 0.0f,	 1.0, 1.0,
+		// right
+		1.0f, 0.0f, 0.0f,	 0.0, 0.0,
+		1.0f, 1.0f, 0.0f,	 0.0, 1.0,
+		1.0f, 1.0f, 1.0f,	 1.0, 1.0,
+		1.0f, 0.0f, 1.0f,	 1.0, 0.0,
 		// left
-		4, 0, 3,
-		3, 7, 4,
+		0.0f, 1.0f, 0.0f,	 0.0, 0.0,
+		0.0f, 0.0f, 0.0f,	 0.0, 1.0,
+		0.0f, 0.0f, 1.0f,	 1.0, 1.0,
+		0.0f, 1.0f, 1.0f,	 1.0, 0.0,
 		// bottom
-		4, 5, 1,
-		1, 0, 4,
+		0.0f, 0.0f, 0.0f,	 0.0, 0.0,
+		1.0f, 0.0f, 0.0f,	 1.0, 0.0,
+		1.0f, 0.0f, 1.0f,	 1.0, 1.0,
+		0.0f, 0.0f, 1.0f,	 0.0, 1.0,
 		// top
-		3, 2, 6,
-		6, 7, 3
+		1.0f, 1.0f, 0.0f,	 0.0, 0.0,
+		0.0f, 1.0f, 0.0f,	 1.0, 0.0,
+		0.0f, 1.0f, 1.0f,	 1.0, 1.0,
+		1.0f, 1.0f, 1.0f,	 0.0, 1.0,
 	};
 
-	int blockCount = 1000;
-	std::vector<GLfloat> instancedBuffer;
-	for (int i = 0; i < blockCount; i++)
+	std::vector<GLuint> cubeIndicies =
 	{
-		instancedBuffer.push_back(10.0f * sin(0.2f * i));
-		instancedBuffer.push_back(0.5f * i);
-		instancedBuffer.push_back(10.0f * cos(0.2f * i));
+		0, 1, 2, 
+		2, 3, 0,
+		
+		4, 5, 6,
+		6, 7, 4,
+
+		8,  9,  10,
+		10, 11, 8,
+
+		12, 13, 14,
+		14, 15, 12,
+
+		16, 17, 18,
+		18, 19, 16,
+
+		20, 21, 22, 
+		22, 23, 20,
+	};
+
+	Texture cubeTexture("../res/textures/crate.jpg");
+
+	int cubeCount = 1000 ;
+	std::vector<GLfloat> cubeInstancedBuffer;
+	for (int i = 0; i < cubeCount; i++)
+	{
+		cubeInstancedBuffer.push_back(5.0f * sin(0.2f * i));
+		cubeInstancedBuffer.push_back(0.5f * i);
+		cubeInstancedBuffer.push_back(5.0f * cos(0.2f * i));
 	}
 
-	VertexBuffer VBO(bufferData.data(), bufferData.size() * sizeof(GLfloat));
-	VertexBuffer InstancedVBO(instancedBuffer.data(), instancedBuffer.size() * sizeof(GLfloat));
+	int lineCount = 1000;
+	std::vector<GLfloat> lineBuffer;
+	for (int i = 0; i < lineCount; i++)
+	{
+		auto lineWidth = lineCount - 1;
+		lineBuffer.push_back(lineWidth / 2 - i);
+		lineBuffer.push_back(0.0f);
+		lineBuffer.push_back(-(lineWidth - 1) / 2);
 
-	VertexArray VAO;
+		lineBuffer.push_back(lineWidth / 2 - i);
+		lineBuffer.push_back(0.0f);
+		lineBuffer.push_back((lineWidth - 1) / 2);
 
-	VertexBufferLayout VBL;
-	VBL.Push<float>(3);
-	VBL.Push<float>(3);
-	VAO.AddBuffer(VBO, VBL);
+		lineBuffer.push_back(-(lineWidth - 1) / 2);
+		lineBuffer.push_back(0.0f);
+		lineBuffer.push_back(lineWidth / 2 - i);
 
-	VertexBufferLayout InstancedVBL;
-	InstancedVBL.Push<float>(3);
-	VAO.AddInstancedBuffer(InstancedVBO, InstancedVBL);
+		lineBuffer.push_back((lineWidth - 1) / 2);
+		lineBuffer.push_back(0.0f);
+		lineBuffer.push_back(lineWidth / 2 - i);
+	}
+	std::vector<GLuint> lineIndicies;
+	for (int i = 0; i < 4 * (lineCount - 1); i++)
+	{
+		lineIndicies.push_back(i);
+	}
 
-	IndexBuffer IBO(indicies.data(), indicies.size() * sizeof(GLuint));
+	VertexBuffer CubeVBO(cubeBufferData);
+	VertexBuffer CubeInstancedVBO(cubeInstancedBuffer);
+	VertexBuffer LineVBO(lineBuffer);
 
-	Shader shader("vertex.glsl", "fragment.glsl");
-	shader.Bind();
+	VertexArray CubeVAO;
+
+	VertexBufferLayout CubeVBL;
+	CubeVBL.Push<float>(3);
+	CubeVBL.Push<float>(2);
+	CubeVAO.AddBuffer(CubeVBO, CubeVBL);
+
+	VertexBufferLayout CubeInstancedVBL;
+	CubeInstancedVBL.Push<float>(3);
+	CubeVAO.AddInstancedBuffer(CubeInstancedVBO, CubeInstancedVBL);
+
+	VertexArray lineVAO;
+	VertexBufferLayout lineVBL;
+	lineVBL.Push<float>(3);
+	lineVAO.AddBuffer(LineVBO, lineVBL);
+
+	IndexBuffer IBO(cubeIndicies);
+
+	IndexBuffer lineIBO(lineIndicies);
+
+	Shader cubeShader("../res/shaders/cube_vertex.glsl", "../res/shaders/cube_fragment.glsl");
 
 	std::string title;
 	float start = window.GetTime();
+	float lastUdpateTime = start;
 	float end = start;
 	
-	glm::vec3 position = glm::vec3(0, 0.5f, 3.0f);
-	float horizontalAngle = glm::pi<float>();
-	float verticalAngle = glm::half_pi<float>();
-	float initialFoV = 60.0f;
+	glm::vec3 position = glm::vec3(0, 1.0f, 3.0f);
+	float horizontalAngle = 0.0f;
+	float verticalAngle = 0.0f;
+	float initialFoV = 65.0f;
 	float speed = 5.0;
 	float mouseSpeed = 0.75f;
-	Window::CursorPos pos { 0.0f, 0.0f };
+	Window::Position pos { 0.0f, 0.0f };
 
-	Shader meshShader("mesh_vertex.glsl", "fragment.glsl");
+	//Shader meshShader("mesh_vertex.glsl", "fragment.glsl");
+	Shader lineShader("../res/shaders/line_vertex.glsl", "../res/shaders/fragment.glsl");
 
 	float deltaRot = 0.0f;
 
 	/* Loop until the user closes the window */
+	long long counterFPS = 0;
 	while (window.IsOpen())
 	{
+		counterFPS++;
+		if (end - lastUdpateTime >= 1.0f)
+		{
+			title = "OpenGL Project " + std::to_string(counterFPS) + " fps";
+			window.UseTitle(title);
+			counterFPS = 0;
+			lastUdpateTime = end;
+
+			std::cout << std::setw(10) << std::to_string(position.x) << ' '
+					  << std::setw(10) << std::to_string(position.y) << ' '
+				      << std::setw(10) << std::to_string(position.z) << std::endl;
+		}
 		start = end;
 		end = window.GetTime();
 		float dt = end - start;
-		title = "OpenGL Project " + std::to_string(int(1.0f / dt)) + " fps";
-		window.UseTitle(title);
 
 		renderer.Clear();
 		
@@ -124,8 +198,8 @@ int main()
 
 		horizontalAngle -= mouseSpeed * dt * (pos.x - oldPos.x);
 		verticalAngle   -= mouseSpeed * dt * (pos.y - oldPos.y);
-		verticalAngle = std::max(-glm::half_pi<float>(), verticalAngle);
-		verticalAngle = std::min( glm::half_pi<float>(), verticalAngle);
+		verticalAngle = std::max(-glm::half_pi<float>() + 0.01f, verticalAngle);
+		verticalAngle = std::min( glm::half_pi<float>() - 0.01f, verticalAngle);
 
 		glm::vec3 direction(
 			cos(verticalAngle) * sin(horizontalAngle),
@@ -133,35 +207,41 @@ int main()
 			cos(verticalAngle) * cos(horizontalAngle)
 		);
 
+		glm::vec3 forward(
+			sin(horizontalAngle),
+			0.0f,
+			cos(horizontalAngle)
+		);
+
 		glm::vec3 right = glm::vec3(
 			sin(horizontalAngle - glm::half_pi<float>()),
-			0,
+			0.0f,
 			cos(horizontalAngle - glm::half_pi<float>())
 		);
 
-		glm::vec3 up = glm::cross(right, direction);
+		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-		if (window.IsKeyPressed(KeyCode::W))
+		if (window.IsKeyHolded(KeyCode::W))
 		{
-			position += direction * dt * speed;
+			position += forward * dt * speed;
 		}
-		if (window.IsKeyPressed(KeyCode::S))
+		if (window.IsKeyHolded(KeyCode::S))
 		{
-			position -= direction * dt * speed;
+			position -= forward * dt * speed;
 		}
-		if (window.IsKeyPressed(KeyCode::D))
+		if (window.IsKeyHolded(KeyCode::D))
 		{
 			position += right * dt * speed;
 		}
-		if (window.IsKeyPressed(KeyCode::A))
+		if (window.IsKeyHolded(KeyCode::A))
 		{
 			position -= right * dt * speed;
 		}
-		if (window.IsKeyPressed(KeyCode::SPACE))
+		if (window.IsKeyHolded(KeyCode::SPACE))
 		{
 			position += up * dt * speed;
 		}
-		if (window.IsKeyPressed(KeyCode::LEFT_SHIFT))
+		if (window.IsKeyHolded(KeyCode::LEFT_SHIFT))
 		{
 			position -= up * dt * speed;
 		}
@@ -169,8 +249,20 @@ int main()
 		{
 			return 0;
 		}
+		if (window.IsKeyHolded(KeyCode::UP))
+		{
+			speed *= 1.001f;
+		}
+		if (window.IsKeyHolded(KeyCode::DOWN))
+		{
+			speed *= 1 / 1.001f;
+		}
+		if (window.IsKeyPressed(KeyCode::C))
+		{
+			initialFoV = 90 - initialFoV;
+		}
 		auto ModelMatrix = glm::mat4(1.0f);
-		auto ProjectionMatrix = glm::perspective(glm::radians(initialFoV), float(window.GetWidth()) / float(window.GetHeight()), 0.1f, 250.0f);
+		auto ProjectionMatrix = glm::perspective(glm::radians(initialFoV), float(window.GetWidth()) / float(window.GetHeight()), 0.1f, 2000.0f);
 		auto ViewMatrix = glm::lookAt(
 			position,
 			position + direction,
@@ -181,14 +273,16 @@ int main()
 		if (deltaRot > glm::two_pi<float>()) deltaRot -= glm::two_pi<float>();
 		auto RotationMatrix = glm::rotate(ModelMatrix, deltaRot, glm::vec3(0.0f, 1.0f, 0.0f));
 
-		auto MVP = ProjectionMatrix * ViewMatrix * ModelMatrix * RotationMatrix;
+		auto MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
-		shader.Bind();
-		shader.SetUniformMat4("MVP", MVP);
-		renderer.DrawTrianglesInstanced(VAO, IBO, shader, blockCount);
-		//meshShader.Bind();
-		//meshShader.SetUniformMat4("MVP", MVP);
-		//renderer.DrawLines(VAO, IBO, meshShader);
+		cubeShader.Bind();
+		cubeShader.SetUniformMat4("MVP", MVP);
+		cubeTexture.Bind();
+		renderer.DrawTrianglesInstanced(CubeVAO, IBO, cubeShader, cubeCount);
+		
+		lineShader.Bind();
+		lineShader.SetUniformMat4("MVP", MVP);
+		renderer.DrawLines(lineVAO, lineIBO, lineShader);
 
 		renderer.Flush();
 		window.PullEvents();

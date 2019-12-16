@@ -1,63 +1,90 @@
 #include "GLutils.h"
+#include "Logger.h"
 
 #include <fstream>
 
-void GlClearErrors()
+namespace MomoEngine
 {
-	while (glGetError() != GL_NO_ERROR);
-}
-
-bool GlLogCall(const char* function, const char* file, int line)
-{
-	bool success = true;
-	while (GLenum error = glGetError())
+	void GlClearErrors()
 	{
-		success = false;
-		const GLubyte* errMsg = gluErrorString(error);
-		setlocale(LC_ALL, "ru");
-		std::cerr << "[OpenGL error]: " << errMsg << std::endl;
-		std::cerr << function << " in file: " << file << ", line: " << line << std::endl;
+		while (glGetError() != GL_NO_ERROR);
 	}
-	return success;
-}
 
-unsigned int GetGLTypeSize(unsigned int type)
-{
-	switch (type)
+	bool GlLogCall(const char* function, const char* file, int line)
 	{
-	case GL_FLOAT:
-		return sizeof(GLfloat);
-	case GL_UNSIGNED_INT:
-		return sizeof(GLuint);
-	case GL_UNSIGNED_BYTE:
-		return sizeof(GLubyte);
-	default:
-		return 0;
+		bool success = true;
+		while (GLenum error = glGetError())
+		{
+			success = false;
+			const GLubyte* errMsg = gluErrorString(error);
+			setlocale(LC_ALL, "ru");
+			std::cerr << "[OpenGL error]: " << errMsg << std::endl;
+			std::cerr << function << " in file: " << file << ", line: " << line << std::endl;
+		}
+		return success;
 	}
-}
 
-std::string ReadFile(const std::string& filename)
-{
-	std::ifstream file(filename);
-	std::string content;
-	content.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
-	return content;
-}
+	unsigned int GetGLTypeSize(unsigned int type)
+	{
+		switch (type)
+		{
+		case GL_FLOAT:
+			return sizeof(GLfloat);
+		case GL_UNSIGNED_INT:
+			return sizeof(GLuint);
+		case GL_UNSIGNED_BYTE:
+			return sizeof(GLubyte);
+		default:
+			return 0;
+		}
+	}
 
-template<>
-unsigned int GetGLType<float>()
-{
-	return GL_FLOAT;
-}
+	std::string ReadFile(const std::string& filename)
+	{
+		std::ifstream file(filename);
+		if (file.bad())
+		{
+			Logger::Get().Error("file", "file with name '" + filename + "' was not found");
+			return "";
+		}
+		std::string content;
+		content.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+		return content;
+	}
 
-template<>
-unsigned int GetGLType<unsigned int>()
-{
-	return GL_UNSIGNED_INT;
-}
+	template<>
+	std::string TypeToString<unsigned char>()
+	{
+		return "ubyte";
+	}
 
-template<>
-unsigned int GetGLType<unsigned char>()
-{
-	return GL_UNSIGNED_BYTE;
+	template<>
+	std::string TypeToString<unsigned int>()
+	{
+		return "uint";
+	}
+
+	template<>
+	std::string TypeToString<float>()
+	{
+		return "float";
+	}
+
+	template<>
+	unsigned int GetGLType<float>()
+	{
+		return GL_FLOAT;
+	}
+
+	template<>
+	unsigned int GetGLType<unsigned int>()
+	{
+		return GL_UNSIGNED_INT;
+	}
+
+	template<>
+	unsigned int GetGLType<unsigned char>()
+	{
+		return GL_UNSIGNED_BYTE;
+	}
 }

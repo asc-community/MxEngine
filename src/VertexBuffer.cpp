@@ -1,23 +1,19 @@
 #include "VertexBuffer.h"
 
-VertexBuffer::VertexBuffer(void* data, size_t sizeBytes)
+namespace MomoEngine
 {
-	GLCALL(glGenBuffers(1, &id));
-	GLCALL(glBindBuffer(GL_ARRAY_BUFFER, id));
-	GLCALL(glBufferData(GL_ARRAY_BUFFER, sizeBytes, data, GL_STATIC_DRAW));
-}
+	VertexBuffer::~VertexBuffer()
+	{
+		GLCALL(glDeleteBuffers(1, &id));
+	}
 
-VertexBuffer::~VertexBuffer()
-{
-	GLCALL(glDeleteBuffers(1, &id));
-}
+	void VertexBuffer::Bind() const
+	{
+		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, id));
+	}
 
-void VertexBuffer::Bind() const
-{
-	GLCALL(glBindBuffer(GL_ARRAY_BUFFER, id));
-}
-
-void VertexBuffer::Unbind() const
-{
-	GLCALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	void VertexBuffer::Unbind() const
+	{
+		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	}
 }

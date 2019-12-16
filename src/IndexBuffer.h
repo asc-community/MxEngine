@@ -2,22 +2,29 @@
 
 #include "GLUtils.h"
 #include "IBindable.h"
+#include <vector>
 
-class IndexBuffer : IBindable
+namespace MomoEngine
 {
-	size_t count;
-#ifdef _DEBUG
-	unsigned int* indicies = nullptr;
-#endif
-public:
-	IndexBuffer(unsigned int* data, size_t count);
-	IndexBuffer(const IndexBuffer&) = delete;
-	IndexBuffer(IndexBuffer&&) = delete;
-	~IndexBuffer();
-	unsigned int GetCount() const;
-	unsigned int GetIndexType() const;
+	class IndexBuffer : IBindable
+	{
+	public:
+		using IndexType = GLuint;
+	private:
+		size_t count;
+		#ifdef _DEBUG
+		const IndexType* indicies = nullptr;
+		#endif
+	public:
+		IndexBuffer(const std::vector<IndexType>& data);
+		IndexBuffer(const IndexBuffer&) = delete;
+		IndexBuffer(IndexBuffer&&) = delete;
+		~IndexBuffer();
+		size_t GetCount() const;
+		size_t GetIndexType() const;
 
-	// Унаследовано через Bindable
-	virtual void Bind() const override;
-	virtual void Unbind() const override;
-};
+		// Inherited via IBindables
+		virtual void Bind() const override;
+		virtual void Unbind() const override;
+	};
+}

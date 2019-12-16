@@ -2,15 +2,29 @@
 
 #include "GLUtils.h"
 #include "IBindable.h"
+#include <vector>
 
-class VertexBuffer : IBindable
+namespace MomoEngine
 {
-public:
-	VertexBuffer(void* data, size_t sizeBytes);
-	~VertexBuffer();
-	VertexBuffer(const VertexBuffer&) = delete;
-	VertexBuffer(VertexBuffer&&) = delete;
+	class VertexBuffer : IBindable
+	{
+	public:
+		template<typename T>
+		VertexBuffer(const std::vector<T>& data);
+		~VertexBuffer();
+		VertexBuffer(const VertexBuffer&) = delete;
+		VertexBuffer(VertexBuffer&&) = delete;
 
-	void Bind() const override;
-	void Unbind() const override;
-};
+		// Inherited via IBindable
+		void Bind() const override;
+		void Unbind() const override;
+	};
+
+	template<typename T>
+	inline VertexBuffer::VertexBuffer(const std::vector<T>& data)
+	{
+		GLCALL(glGenBuffers(1, &id));
+		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, id));
+		GLCALL(glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(T), data.data(), GL_STATIC_DRAW));
+	}
+}
