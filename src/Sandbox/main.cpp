@@ -11,8 +11,8 @@
 #include <algorithm>
 #include <iomanip>
 
-#include "Renderer.h"
-#include "Window.h"
+#include "../Core/Renderer/Renderer.h"
+#include "../Core/Window/Window.h"
 
 using namespace MomoEngine;
 
@@ -32,66 +32,13 @@ int main()
 		.UseDepthBuffer()
 		.UseCulling()
 		.UseSampling()
+		.UseTextureMagFilter(MagFilter::NEAREST)
+		.UseTextureMinFilter(MinFilter::LINEAR_MIPMAP_LINEAR)
 		.UseClearColor(0.0f, 0.0f, 0.0f);
 
-	std::vector<GLfloat> cubeBufferData =
-	{
-		// back
-		0.0f, 0.0f, 1.0f,	 0.0, 0.0,
-		1.0f, 0.0f, 1.0f,	 1.0, 0.0,
-		1.0f, 1.0f, 1.0f,	 1.0, 1.0,
-		0.0f, 1.0f, 1.0f,	 0.0, 1.0,
-		// front  
-		1.0f, 0.0f, 0.0f,	 1.0, 0.0,
-		0.0f, 0.0f, 0.0f,	 0.0, 0.0,
-		0.0f, 1.0f, 0.0f,	 0.0, 1.0,
-		1.0f, 1.0f, 0.0f,	 1.0, 1.0,
-		// right
-		1.0f, 0.0f, 0.0f,	 0.0, 0.0,
-		1.0f, 1.0f, 0.0f,	 0.0, 1.0,
-		1.0f, 1.0f, 1.0f,	 1.0, 1.0,
-		1.0f, 0.0f, 1.0f,	 1.0, 0.0,
-		// left
-		0.0f, 1.0f, 0.0f,	 0.0, 0.0,
-		0.0f, 0.0f, 0.0f,	 0.0, 1.0,
-		0.0f, 0.0f, 1.0f,	 1.0, 1.0,
-		0.0f, 1.0f, 1.0f,	 1.0, 0.0,
-		// bottom
-		0.0f, 0.0f, 0.0f,	 0.0, 0.0,
-		1.0f, 0.0f, 0.0f,	 1.0, 0.0,
-		1.0f, 0.0f, 1.0f,	 1.0, 1.0,
-		0.0f, 0.0f, 1.0f,	 0.0, 1.0,
-		// top
-		1.0f, 1.0f, 0.0f,	 0.0, 0.0,
-		0.0f, 1.0f, 0.0f,	 1.0, 0.0,
-		0.0f, 1.0f, 1.0f,	 1.0, 1.0,
-		1.0f, 1.0f, 1.0f,	 0.0, 1.0,
-	};
+	const std::string ResourcePath = "../src/Resources/";
 
-	std::vector<GLuint> cubeIndicies =
-	{
-		0, 1, 2, 
-		2, 3, 0,
-		
-		4, 5, 6,
-		6, 7, 4,
-
-		8,  9,  10,
-		10, 11, 8,
-
-		12, 13, 14,
-		14, 15, 12,
-
-		16, 17, 18,
-		18, 19, 16,
-
-		20, 21, 22, 
-		22, 23, 20,
-	};
-
-	Texture cubeTexture("../res/textures/crate.jpg");
-
-	int cubeCount = 1000 ;
+	int cubeCount = 50;
 	std::vector<GLfloat> cubeInstancedBuffer;
 	for (int i = 0; i < cubeCount; i++)
 	{
@@ -126,32 +73,35 @@ int main()
 	{
 		lineIndicies.push_back(i);
 	}
-
-	VertexBuffer CubeVBO(cubeBufferData);
-	VertexBuffer CubeInstancedVBO(cubeInstancedBuffer);
-	VertexBuffer LineVBO(lineBuffer);
-
+	GLObject Cube(ResourcePath + "objects/crate.obj");
+	Texture CubeTexture(ResourcePath + "textures/crate.jpg");
 	VertexArray CubeVAO;
-
 	VertexBufferLayout CubeVBL;
 	CubeVBL.Push<float>(3);
 	CubeVBL.Push<float>(2);
-	CubeVAO.AddBuffer(CubeVBO, CubeVBL);
-
+	CubeVAO.AddBuffer(Cube.GetBuffer(), CubeVBL);
+	VertexBuffer CubeInstancedVBO(cubeInstancedBuffer);
 	VertexBufferLayout CubeInstancedVBL;
 	CubeInstancedVBL.Push<float>(3);
 	CubeVAO.AddInstancedBuffer(CubeInstancedVBO, CubeInstancedVBL);
+	IndexBuffer CubeMeshIBO(Cube.GeneratePolygonIndicies());
 
+	GLObject ArcObject(ResourcePath + "objects/arc170.obj");
+	Texture ArcTexture(ResourcePath + "textures/arc170.jpg");
+	VertexArray ArcVAO;
+	VertexBufferLayout ArcVBL;
+	ArcVBL.Push<float>(3);
+	ArcVBL.Push<float>(2);
+	ArcVBL.Push<float>(3);
+	ArcVAO.AddBuffer(ArcObject.GetBuffer(), ArcVBL);
+	IndexBuffer ArcMeshIBO(ArcObject.GeneratePolygonIndicies());
+
+	VertexBuffer LineVBO(lineBuffer);
 	VertexArray lineVAO;
 	VertexBufferLayout lineVBL;
 	lineVBL.Push<float>(3);
 	lineVAO.AddBuffer(LineVBO, lineVBL);
-
-	IndexBuffer IBO(cubeIndicies);
-
 	IndexBuffer lineIBO(lineIndicies);
-
-	Shader cubeShader("../res/shaders/cube_vertex.glsl", "../res/shaders/cube_fragment.glsl");
 
 	std::string title;
 	float start = window.GetTime();
@@ -166,9 +116,12 @@ int main()
 	float mouseSpeed = 0.75f;
 	Window::Position pos { 0.0f, 0.0f };
 
-	//Shader meshShader("mesh_vertex.glsl", "fragment.glsl");
-	Shader lineShader("../res/shaders/line_vertex.glsl", "../res/shaders/fragment.glsl");
+	Shader cubeShader  (ResourcePath + "shaders/cube_vertex.glsl",   ResourcePath + "shaders/cube_fragment.glsl");
+	Shader lineShader  (ResourcePath + "shaders/line_vertex.glsl",   ResourcePath + "shaders/fragment.glsl");
+	Shader meshShader  (ResourcePath + "shaders/mesh_vertex.glsl",   ResourcePath + "shaders/fragment.glsl");
+	Shader objectShader(ResourcePath + "shaders/object_vertex.glsl", ResourcePath + "shaders/object_fragment.glsl");
 
+	bool drawMesh = false;
 	float deltaRot = 0.0f;
 
 	/* Loop until the user closes the window */
@@ -189,7 +142,7 @@ int main()
 		}
 		start = end;
 		end = window.GetTime();
-		float dt = end - start;
+		float dt = end - start; 
 
 		renderer.Clear();
 		
@@ -261,6 +214,10 @@ int main()
 		{
 			initialFoV = 90 - initialFoV;
 		}
+		if (window.IsKeyPressed(KeyCode::M))
+		{
+			drawMesh = !drawMesh;
+		}
 		auto ModelMatrix = glm::mat4(1.0f);
 		auto ProjectionMatrix = glm::perspective(glm::radians(initialFoV), float(window.GetWidth()) / float(window.GetHeight()), 0.1f, 2000.0f);
 		auto ViewMatrix = glm::lookAt(
@@ -272,17 +229,28 @@ int main()
 		deltaRot += dt * 0.1f;
 		if (deltaRot > glm::two_pi<float>()) deltaRot -= glm::two_pi<float>();
 		auto RotationMatrix = glm::rotate(ModelMatrix, deltaRot, glm::vec3(0.0f, 1.0f, 0.0f));
+		auto ScaleMatrix = glm::scale(ModelMatrix, glm::vec3(0.005f));
 
 		auto MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
-		cubeShader.Bind();
 		cubeShader.SetUniformMat4("MVP", MVP);
-		cubeTexture.Bind();
-		renderer.DrawTrianglesInstanced(CubeVAO, IBO, cubeShader, cubeCount);
+		CubeTexture.Bind();
+		renderer.DrawTrianglesInstanced(CubeVAO, Cube.GetVertexCount(), cubeShader, cubeCount);
+
+		objectShader.SetUniformMat4("MVP", MVP * ScaleMatrix * RotationMatrix);
+		ArcTexture.Bind();
+		renderer.DrawTriangles(ArcVAO, ArcObject.GetVertexCount(), objectShader);
 		
-		lineShader.Bind();
 		lineShader.SetUniformMat4("MVP", MVP);
 		renderer.DrawLines(lineVAO, lineIBO, lineShader);
+
+		if (drawMesh)
+		{
+			meshShader.SetUniformMat4("MVP", MVP);
+			renderer.DrawLinesInstanced(CubeVAO, CubeMeshIBO, meshShader, cubeCount);
+			meshShader.SetUniformMat4("MVP", MVP * ScaleMatrix * RotationMatrix);
+			renderer.DrawLines(ArcVAO, ArcMeshIBO, meshShader);
+		}
 
 		renderer.Flush();
 		window.PullEvents();

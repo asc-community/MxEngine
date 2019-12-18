@@ -18,6 +18,67 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Core\Interfaces\IBindable.h" />
+    <ClInclude Include="Core\OpenGL\GLObject\GLObject.h" />
+    <ClInclude Include="Core\OpenGL\GLUtils\GLUtils.h" />
+    <ClInclude Include="Core\OpenGL\IndexBuffer\IndexBuffer.h" />
+    <ClInclude Include="Core\OpenGL\Shader\Shader.h" />
+    <ClInclude Include="Core\OpenGL\Texture\Texture.h" />
+    <ClInclude Include="Core\OpenGL\VertexArray\VertexArray.h" />
+    <ClInclude Include="Core\OpenGL\VertexBufferLayout\VertexBufferLayout.h" />
+    <ClInclude Include="Core\OpenGL\VertexBuffer\VertexBuffer.h" />
+    <ClInclude Include="Core\Renderer\Renderer.h" />
+    <ClInclude Include="Core\Window\Window.h" />
+    <ClInclude Include="Utilities\ImageLoader\ImageLoader.h" />
+    <ClInclude Include="Utilities\Logger\Logger.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Core\OpenGL\GLObject\GLObject.cpp" />
+    <ClCompile Include="Core\OpenGL\GLUtils\GLUtils.cpp" />
+    <ClCompile Include="Core\OpenGL\IndexBuffer\IndexBuffer.cpp" />
+    <ClCompile Include="Core\OpenGL\Shader\Shader.cpp" />
+    <ClCompile Include="Core\OpenGL\Texture\Texture.cpp" />
+    <ClCompile Include="Core\OpenGL\VertexArray\VertexArray.cpp" />
+    <ClCompile Include="Core\OpenGL\VertexBufferLayout\VertexBufferLayout.cpp" />
+    <ClCompile Include="Core\OpenGL\VertexBuffer\VertexBuffer.cpp" />
+    <ClCompile Include="Core\Renderer\Renderer.cpp" />
+    <ClCompile Include="Core\Window\Window.cpp" />
+    <ClCompile Include="Sandbox\main.cpp" />
+    <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
+    <ClCompile Include="Utilities\Logger\Logger.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\shaders\object_fragment.glsl" />
+    <None Include="Resources\shaders\object_vertex.glsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\shaders\cube_fragment.glsl" />
+    <None Include="Resources\shaders\cube_vertex.glsl" />
+    <None Include="Resources\shaders\fragment.glsl" />
+    <None Include="Resources\shaders\line_vertex.glsl" />
+    <None Include="Resources\shaders\mesh_vertex.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Resources\objects\arc170.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="Resources\objects\crate.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\textures\arc170.jpg" />
+    <Image Include="Resources\textures\crate.jpg" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{24ACBC28-FA4F-49D7-9D69-31F578294414}</ProjectGuid>
@@ -140,44 +201,6 @@
       <AdditionalDependencies>Glu32.lib;glew32s.lib;opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="GLUtils.cpp" />
-    <ClCompile Include="ImageLoader.cpp" />
-    <ClCompile Include="IndexBuffer.cpp" />
-    <ClCompile Include="Logger.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="VertexArray.cpp" />
-    <ClCompile Include="VertexBuffer.cpp" />
-    <ClCompile Include="VertexBufferLayout.cpp" />
-    <ClCompile Include="Window.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="IBindable.h" />
-    <ClInclude Include="GLUtils.h" />
-    <ClInclude Include="ImageLoader.h" />
-    <ClInclude Include="IndexBuffer.h" />
-    <ClInclude Include="Logger.h" />
-    <ClInclude Include="Renderer.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="VertexArray.h" />
-    <ClInclude Include="VertexBuffer.h" />
-    <ClInclude Include="VertexBufferLayout.h" />
-    <ClInclude Include="Window.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\res\crate.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\res\shaders\cube_fragment.glsl" />
-    <None Include="..\res\shaders\fragment.glsl" />
-    <None Include="..\res\shaders\line_vertex.glsl" />
-    <None Include="..\res\shaders\mesh_vertex.glsl" />
-    <None Include="..\res\shaders\cube_vertex.glsl" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

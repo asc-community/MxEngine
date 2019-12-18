@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GLUtils.h"
-#include "IBindable.h"
+#include "../Core/Interfaces/IBindable.h"
+#include "../Core/OpenGL/GLUtils/GLUtils.h"
 #include <unordered_map>
 #include <glm/glm.hpp>
 

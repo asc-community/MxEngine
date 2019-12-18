@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GLUtils.h"
-#include "IBindable.h"
+#include "../Core/OpenGL/GLUtils/GLUtils.h"
+#include "../Core/Interfaces/IBindable.h"
 #include <vector>
 
 namespace MomoEngine
@@ -10,7 +10,7 @@ namespace MomoEngine
 	{
 	public:
 		template<typename T>
-		VertexBuffer(const std::vector<T>& data);
+		explicit VertexBuffer(const std::vector<T>& data);
 		~VertexBuffer();
 		VertexBuffer(const VertexBuffer&) = delete;
 		VertexBuffer(VertexBuffer&&) = delete;

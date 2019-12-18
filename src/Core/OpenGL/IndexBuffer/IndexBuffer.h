@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GLUtils.h"
-#include "IBindable.h"
+#include "../Core/OpenGL/GLUtils/GLUtils.h"
+#include "../Core/Interfaces/IBindable.h"
 #include <vector>
 
 namespace MomoEngine
@@ -16,7 +16,7 @@ namespace MomoEngine
 		const IndexType* indicies = nullptr;
 		#endif
 	public:
-		IndexBuffer(const std::vector<IndexType>& data);
+		explicit IndexBuffer(const std::vector<IndexType>& data);
 		IndexBuffer(const IndexBuffer&) = delete;
 		IndexBuffer(IndexBuffer&&) = delete;
 		~IndexBuffer();

@@ -1,7 +1,8 @@
 #include "GLutils.h"
-#include "Logger.h"
+#include "../Utilities/Logger/Logger.h"
 
 #include <fstream>
+#include <string>
 
 namespace MomoEngine
 {
@@ -16,10 +17,12 @@ namespace MomoEngine
 		while (GLenum error = glGetError())
 		{
 			success = false;
-			const GLubyte* errMsg = gluErrorString(error);
+			const char* message = (const char*)gluErrorString(error);
 			setlocale(LC_ALL, "ru");
-			std::cerr << "[OpenGL error]: " << errMsg << std::endl;
-			std::cerr << function << " in file: " << file << ", line: " << line << std::endl;
+			Logger::Get().Error("opengl", 
+				std::string(message) + "\n    " + function +
+				" in file: " + file + ", line: " + std::to_string(line)
+			);
 		}
 		return success;
 	}

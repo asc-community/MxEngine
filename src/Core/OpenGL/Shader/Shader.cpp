@@ -1,5 +1,5 @@
 #include "Shader.h"
-#include "Logger.h"
+#include "../Utilities/Logger/Logger.h"
 
 namespace MomoEngine
 {
@@ -46,18 +46,25 @@ namespace MomoEngine
 	void Shader::SetUniformVec4(const std::string& name, float f1, float f2, float f3, float f4) const
 	{
 		int location = GetUniformLocation(name);
+		if (location == -1) return;
+		Bind();
 		GLCALL(glUniform4f(location, f1, f2, f3, f4));
 	}
 
 	void Shader::SetUniformMat4(const std::string& name, const glm::mat4x4& matrix) const
 	{
 		int location = GetUniformLocation(name);
+		if (location == -1) return;
+		Bind();
 		GLCALL(glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]));
 	}
 
 	void Shader::SetUniformInt(const std::string& name, int i) const
 	{
+		Bind();
 		int location = GetUniformLocation(name);
+		if (location == -1) return;
+		Bind();
 		GLCALL(glUniform1i(location, i));
 	}
 
@@ -76,8 +83,9 @@ namespace MomoEngine
 			GLCALL(glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &length));
 			char* msg = (char*)malloc(length * sizeof(char));
 			GLCALL(glGetShaderInfoLog(shaderId, length, &length, msg));
-			std::cout << "[OpenGL error]: failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader" << std::endl;
-			std::cout << msg << std::endl;
+			Logger::Get().Error("shader", (std::string)"failed to compile " +
+				(type == GL_VERTEX_SHADER ? "vertex" : "fragment") + " shader");
+			Logger::Get().Error("opengl", msg);
 			free(msg);
 		}
 
@@ -106,9 +114,8 @@ namespace MomoEngine
 
 		GLCALL(int location = glGetUniformLocation(id, uniformName.c_str()));
 		if (location == -1)
-			std::cerr << "[OpenGL warning]: uniform " << uniformName << " was not found" << std::endl;
-		else
-			uniformCache[uniformName] = location;
+			Logger::Get().Warning("shader", "uniform was not found: " + uniformName);
+		uniformCache[uniformName] = location;
 		return location;
 	}
 }

@@ -1,7 +1,7 @@
 #include "Texture.h"
-#include "GLUtils.h"
-#include "ImageLoader.h"
-#include "Logger.h"
+#include "../Core/OpenGL/GLUtils/GLUtils.h"
+#include "../Utilities/ImageLoader/ImageLoader.h"
+#include "../Utilities/Logger/Logger.h"
 
 MomoEngine::Texture::Texture(const std::string& filepath, bool genMipmaps, bool flipImage)
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IBindable.h"
+#include "../Core/Interfaces/IBindable.h"
 #include <string>
 
 namespace MomoEngine

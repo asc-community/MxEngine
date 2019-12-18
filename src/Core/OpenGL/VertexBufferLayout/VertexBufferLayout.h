@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GLUtils.h"
+#include "../Core/OpenGL/GLUtils/GLUtils.h"
 #include <vector>
 #include <string>
 

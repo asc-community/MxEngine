@@ -1,153 +1,50 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Core">
-      <UniqueIdentifier>{50871f04-220f-497b-b495-5386032064d4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Renderer">
-      <UniqueIdentifier>{b8b20ebd-06b6-4392-94fb-6e2af91764ea}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Window">
-      <UniqueIdentifier>{dbae9076-a587-46a3-8349-2a42111f6a6a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\OpenGL">
-      <UniqueIdentifier>{6fde5481-465d-4ce0-b9b6-5c9e1dd8f5a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\OpenGL\GLUtils">
-      <UniqueIdentifier>{36bbdba2-7144-4cf2-bf68-8e8eab1dcea1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\OpenGL\IndexBuffer">
-      <UniqueIdentifier>{27fdca0d-6772-43fa-8a35-9395fdba8dda}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\OpenGL\VertexBuffer">
-      <UniqueIdentifier>{4eef37cb-1f8c-4d03-be8e-fdb1f68b2557}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\OpenGL\VertexBuffer\Layout">
-      <UniqueIdentifier>{f76ce5d7-6c4d-4ee2-9c87-2a89b7d124b5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\OpenGL\Interfaces">
-      <UniqueIdentifier>{44faed0e-7460-4d18-ab88-d89a3ace6893}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\OpenGL\Shader">
-      <UniqueIdentifier>{7033de87-409c-4857-9f86-21d3cc466416}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\OpenGL\VertexArray">
-      <UniqueIdentifier>{f5f291b3-d06c-43b4-b831-8bd4bdec0f93}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resources">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Utilities">
-      <UniqueIdentifier>{908de71a-7945-4c2f-b262-4018ab1b785a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Utilities\Logger">
-      <UniqueIdentifier>{8506d189-cea8-4885-8026-1fbb9858dd2b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resources\Shaders">
-      <UniqueIdentifier>{4fe7a20e-691b-4139-8b50-ee7c28d03eea}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\OpenGL\Texture">
-      <UniqueIdentifier>{3dc3a02c-cbd8-4c0d-b8c0-d1c60bea192c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Utilities\ImageLoader">
-      <UniqueIdentifier>{0909f2b1-0551-49dc-9bbd-e50c87880610}</UniqueIdentifier>
-    </Filter>
+    <ClInclude Include="Core\Interfaces\IBindable.h" />
+    <ClInclude Include="Core\OpenGL\GLObject\GLObject.h" />
+    <ClInclude Include="Core\OpenGL\GLUtils\GLUtils.h" />
+    <ClInclude Include="Core\OpenGL\IndexBuffer\IndexBuffer.h" />
+    <ClInclude Include="Core\OpenGL\Shader\Shader.h" />
+    <ClInclude Include="Core\OpenGL\Texture\Texture.h" />
+    <ClInclude Include="Core\OpenGL\VertexArray\VertexArray.h" />
+    <ClInclude Include="Core\OpenGL\VertexBuffer\VertexBuffer.h" />
+    <ClInclude Include="Core\OpenGL\VertexBufferLayout\VertexBufferLayout.h" />
+    <ClInclude Include="Core\Renderer\Renderer.h" />
+    <ClInclude Include="Core\Window\Window.h" />
+    <ClInclude Include="Utilities\ImageLoader\ImageLoader.h" />
+    <ClInclude Include="Utilities\Logger\Logger.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Core\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Core\Window</Filter>
-    </ClCompile>
-    <ClCompile Include="Logger.cpp">
-      <Filter>Utilities\Logger</Filter>
-    </ClCompile>
-    <ClCompile Include="GLUtils.cpp">
-      <Filter>Core\OpenGL\GLUtils</Filter>
-    </ClCompile>
-    <ClCompile Include="IndexBuffer.cpp">
-      <Filter>Core\OpenGL\IndexBuffer</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexBuffer.cpp">
-      <Filter>Core\OpenGL\VertexBuffer</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexBufferLayout.cpp">
-      <Filter>Core\OpenGL\VertexBuffer\Layout</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Core\OpenGL\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexArray.cpp">
-      <Filter>Core\OpenGL\VertexArray</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="ImageLoader.cpp">
-      <Filter>Utilities\ImageLoader</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Core\OpenGL\Texture</Filter>
-    </ClCompile>
+    <ClCompile Include="Core\OpenGL\GLObject\GLObject.cpp" />
+    <ClCompile Include="Core\OpenGL\GLUtils\GLUtils.cpp" />
+    <ClCompile Include="Core\OpenGL\IndexBuffer\IndexBuffer.cpp" />
+    <ClCompile Include="Core\OpenGL\Shader\Shader.cpp" />
+    <ClCompile Include="Core\OpenGL\Texture\Texture.cpp" />
+    <ClCompile Include="Core\OpenGL\VertexArray\VertexArray.cpp" />
+    <ClCompile Include="Core\OpenGL\VertexBuffer\VertexBuffer.cpp" />
+    <ClCompile Include="Core\OpenGL\VertexBufferLayout\VertexBufferLayout.cpp" />
+    <ClCompile Include="Core\Renderer\Renderer.cpp" />
+    <ClCompile Include="Core\Window\Window.cpp" />
+    <ClCompile Include="Sandbox\main.cpp" />
+    <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
+    <ClCompile Include="Utilities\Logger\Logger.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Renderer.h">
-      <Filter>Core\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Core\Window</Filter>
-    </ClInclude>
-    <ClInclude Include="Logger.h">
-      <Filter>Utilities\Logger</Filter>
-    </ClInclude>
-    <ClInclude Include="GLUtils.h">
-      <Filter>Core\OpenGL\GLUtils</Filter>
-    </ClInclude>
-    <ClInclude Include="IndexBuffer.h">
-      <Filter>Core\OpenGL\IndexBuffer</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexBufferLayout.h">
-      <Filter>Core\OpenGL\VertexBuffer\Layout</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexBuffer.h">
-      <Filter>Core\OpenGL\VertexBuffer</Filter>
-    </ClInclude>
-    <ClInclude Include="IBindable.h">
-      <Filter>Core\OpenGL\Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Core\OpenGL\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexArray.h">
-      <Filter>Core\OpenGL\VertexArray</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Core\OpenGL\Texture</Filter>
-    </ClInclude>
-    <ClInclude Include="ImageLoader.h">
-      <Filter>Utilities\ImageLoader</Filter>
-    </ClInclude>
+    <None Include="Resources\shaders\cube_fragment.glsl" />
+    <None Include="Resources\shaders\cube_vertex.glsl" />
+    <None Include="Resources\shaders\fragment.glsl" />
+    <None Include="Resources\shaders\line_vertex.glsl" />
+    <None Include="Resources\shaders\mesh_vertex.glsl" />
+    <None Include="Resources\shaders\object_vertex.glsl" />
+    <None Include="Resources\shaders\object_fragment.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\res\crate.jpg">
-      <Filter>Resources</Filter>
-    </Image>
+    <Object Include="Resources\objects\crate.obj" />
+    <Object Include="Resources\objects\arc170.obj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\res\shaders\fragment.glsl">
-      <Filter>Resources\Shaders</Filter>
-    </None>
-    <None Include="..\res\shaders\line_vertex.glsl">
-      <Filter>Resources\Shaders</Filter>
-    </None>
-    <None Include="..\res\shaders\mesh_vertex.glsl">
-      <Filter>Resources\Shaders</Filter>
-    </None>
-    <None Include="..\res\shaders\cube_vertex.glsl">
-      <Filter>Resources\Shaders</Filter>
-    </None>
-    <None Include="..\res\shaders\cube_fragment.glsl">
-      <Filter>Resources\Shaders</Filter>
-    </None>
+    <Image Include="Resources\textures\crate.jpg" />
+    <Image Include="Resources\textures\arc170.jpg" />
   </ItemGroup>
 </Project>

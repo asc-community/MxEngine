@@ -1,5 +1,5 @@
 #include "Window.h"
-#include "Logger.h"
+#include "../Utilities/Logger/Logger.h"
 #include <GLFW/glfw3.h>
 
 namespace MomoEngine
