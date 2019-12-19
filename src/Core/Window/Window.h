@@ -160,9 +160,9 @@ namespace MomoEngine
 	public:
 		Window(int width, int height);
 		Window(const Window&) = delete;
+		Window(Window&&) = delete;
+		Window& operator=(Window&&) = delete;
 		Window& operator=(const Window&) = delete;
-		Window(Window&&) = default;
-		Window& operator=(Window&&) = default;
 		~Window();
 
 		int GetHeight() const;

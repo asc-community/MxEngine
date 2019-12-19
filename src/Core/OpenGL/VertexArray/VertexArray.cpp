@@ -9,7 +9,17 @@ namespace MomoEngine
 
 	VertexArray::~VertexArray()
 	{
-		GLCALL(glDeleteVertexArrays(1, &id));
+		if (id != 0)
+		{
+			GLCALL(glDeleteVertexArrays(1, &id));
+		}
+	}
+
+	VertexArray::VertexArray(VertexArray&& array) noexcept
+		: attributeIndex(array.attributeIndex)
+	{
+		this->id = array.id;
+		array.id = 0;
 	}
 
 	void VertexArray::Bind() const

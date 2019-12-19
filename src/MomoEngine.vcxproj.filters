@@ -14,6 +14,12 @@
     <ClInclude Include="Core\Window\Window.h" />
     <ClInclude Include="Utilities\ImageLoader\ImageLoader.h" />
     <ClInclude Include="Utilities\Logger\Logger.h" />
+    <ClInclude Include="Utilities\SingletonHolder\SingletonHolder.h" />
+    <ClInclude Include="Utilities\SingletonHolder\CreationPolicy.h" />
+    <ClInclude Include="Utilities\Threading\ThreadingModel.h" />
+    <ClInclude Include="Utilities\SingletonHolder\LifetimePolicy.h" />
+    <ClInclude Include="Core\OpenGL\GLInitializer\GLInitializer.h" />
+    <ClInclude Include="Core\Interfaces\IApplication.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\OpenGL\GLObject\GLObject.cpp" />
@@ -29,6 +35,7 @@
     <ClCompile Include="Sandbox\main.cpp" />
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
     <ClCompile Include="Utilities\Logger\Logger.cpp" />
+    <ClCompile Include="Core\OpenGL\GLInitializer\GLInitializer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\cube_fragment.glsl" />

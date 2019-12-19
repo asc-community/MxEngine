@@ -13,6 +13,7 @@
 
 #include "../Core/Renderer/Renderer.h"
 #include "../Core/Window/Window.h"
+#include "../Core/Interfaces/IApplication.h"
 
 using namespace MomoEngine;
 
@@ -24,7 +25,7 @@ int main()
 		.UseCursorMode(CursorMode::DISABLED)
 		.UseSampling(4)
 		.UseDoubleBuffering(false)
-		.UseTitle("OpenGL Project")
+		.UseTitle("MomoEngine Project")
 		.UsePosition(600, 300)
 		.Create();
 
@@ -48,60 +49,39 @@ int main()
 	}
 
 	int lineCount = 1000;
-	std::vector<GLfloat> lineBuffer;
+	std::vector<GLfloat> gridBuffer;
 	for (int i = 0; i < lineCount; i++)
 	{
 		auto lineWidth = lineCount - 1;
-		lineBuffer.push_back(lineWidth / 2 - i);
-		lineBuffer.push_back(0.0f);
-		lineBuffer.push_back(-(lineWidth - 1) / 2);
+		gridBuffer.push_back(lineWidth / 2 - i);
+		gridBuffer.push_back(0.0f);
+		gridBuffer.push_back(-(lineWidth - 1) / 2);
 
-		lineBuffer.push_back(lineWidth / 2 - i);
-		lineBuffer.push_back(0.0f);
-		lineBuffer.push_back((lineWidth - 1) / 2);
+		gridBuffer.push_back(lineWidth / 2 - i);
+		gridBuffer.push_back(0.0f);
+		gridBuffer.push_back((lineWidth - 1) / 2);
 
-		lineBuffer.push_back(-(lineWidth - 1) / 2);
-		lineBuffer.push_back(0.0f);
-		lineBuffer.push_back(lineWidth / 2 - i);
+		gridBuffer.push_back(-(lineWidth - 1) / 2);
+		gridBuffer.push_back(0.0f);
+		gridBuffer.push_back(lineWidth / 2 - i);
 
-		lineBuffer.push_back((lineWidth - 1) / 2);
-		lineBuffer.push_back(0.0f);
-		lineBuffer.push_back(lineWidth / 2 - i);
+		gridBuffer.push_back((lineWidth - 1) / 2);
+		gridBuffer.push_back(0.0f);
+		gridBuffer.push_back(lineWidth / 2 - i);
 	}
-	std::vector<GLuint> lineIndicies;
-	for (int i = 0; i < 4 * (lineCount - 1); i++)
-	{
-		lineIndicies.push_back(i);
-	}
-	GLObject Cube(ResourcePath + "objects/crate.obj");
+	GLObject CubeObject(ResourcePath + "objects/crate.obj");
 	Texture CubeTexture(ResourcePath + "textures/crate.jpg");
-	VertexArray CubeVAO;
-	VertexBufferLayout CubeVBL;
-	CubeVBL.Push<float>(3);
-	CubeVBL.Push<float>(2);
-	CubeVAO.AddBuffer(Cube.GetBuffer(), CubeVBL);
 	VertexBuffer CubeInstancedVBO(cubeInstancedBuffer);
 	VertexBufferLayout CubeInstancedVBL;
 	CubeInstancedVBL.Push<float>(3);
-	CubeVAO.AddInstancedBuffer(CubeInstancedVBO, CubeInstancedVBL);
-	IndexBuffer CubeMeshIBO(Cube.GeneratePolygonIndicies());
+	CubeObject.GetVertexData().AddInstancedBuffer(CubeInstancedVBO, CubeInstancedVBL);
+	IndexBuffer CubeMeshIBO(CubeObject.GeneratePolygonIndicies());
 
 	GLObject ArcObject(ResourcePath + "objects/arc170.obj");
 	Texture ArcTexture(ResourcePath + "textures/arc170.jpg");
-	VertexArray ArcVAO;
-	VertexBufferLayout ArcVBL;
-	ArcVBL.Push<float>(3);
-	ArcVBL.Push<float>(2);
-	ArcVBL.Push<float>(3);
-	ArcVAO.AddBuffer(ArcObject.GetBuffer(), ArcVBL);
 	IndexBuffer ArcMeshIBO(ArcObject.GeneratePolygonIndicies());
 
-	VertexBuffer LineVBO(lineBuffer);
-	VertexArray lineVAO;
-	VertexBufferLayout lineVBL;
-	lineVBL.Push<float>(3);
-	lineVAO.AddBuffer(LineVBO, lineVBL);
-	IndexBuffer lineIBO(lineIndicies);
+	GLObject GridObject(gridBuffer, lineCount * 4);
 
 	std::string title;
 	float start = window.GetTime();
@@ -117,7 +97,7 @@ int main()
 	Window::Position pos { 0.0f, 0.0f };
 
 	Shader cubeShader  (ResourcePath + "shaders/cube_vertex.glsl",   ResourcePath + "shaders/cube_fragment.glsl");
-	Shader lineShader  (ResourcePath + "shaders/line_vertex.glsl",   ResourcePath + "shaders/fragment.glsl");
+	Shader GridShader  (ResourcePath + "shaders/line_vertex.glsl",   ResourcePath + "shaders/fragment.glsl");
 	Shader meshShader  (ResourcePath + "shaders/mesh_vertex.glsl",   ResourcePath + "shaders/fragment.glsl");
 	Shader objectShader(ResourcePath + "shaders/object_vertex.glsl", ResourcePath + "shaders/object_fragment.glsl");
 
@@ -131,7 +111,7 @@ int main()
 		counterFPS++;
 		if (end - lastUdpateTime >= 1.0f)
 		{
-			title = "OpenGL Project " + std::to_string(counterFPS) + " fps";
+			title = "MomoEngine Project " + std::to_string(counterFPS) + " fps";
 			window.UseTitle(title);
 			counterFPS = 0;
 			lastUdpateTime = end;
@@ -235,24 +215,23 @@ int main()
 
 		cubeShader.SetUniformMat4("MVP", MVP);
 		CubeTexture.Bind();
-		renderer.DrawTrianglesInstanced(CubeVAO, Cube.GetVertexCount(), cubeShader, cubeCount);
+		renderer.DrawTrianglesInstanced(CubeObject.GetVertexData(), CubeObject.GetVertexCount(), cubeShader, cubeCount);
 
 		objectShader.SetUniformMat4("MVP", MVP * ScaleMatrix * RotationMatrix);
 		ArcTexture.Bind();
-		renderer.DrawTriangles(ArcVAO, ArcObject.GetVertexCount(), objectShader);
+		renderer.DrawTriangles(ArcObject.GetVertexData(), ArcObject.GetVertexCount(), objectShader);
 		
-		lineShader.SetUniformMat4("MVP", MVP);
-		renderer.DrawLines(lineVAO, lineIBO, lineShader);
+		GridShader.SetUniformMat4("MVP", MVP);
+		renderer.DrawLines(GridObject.GetVertexData(), GridObject.GetVertexCount(), GridShader);
 
 		if (drawMesh)
 		{
 			meshShader.SetUniformMat4("MVP", MVP);
-			renderer.DrawLinesInstanced(CubeVAO, CubeMeshIBO, meshShader, cubeCount);
+			renderer.DrawLinesInstanced(CubeObject.GetVertexData(), CubeMeshIBO, meshShader, cubeCount);
 			meshShader.SetUniformMat4("MVP", MVP * ScaleMatrix * RotationMatrix);
-			renderer.DrawLines(ArcVAO, ArcMeshIBO, meshShader);
+			renderer.DrawLines(ArcObject.GetVertexData(), ArcMeshIBO, meshShader);
 		}
-
-		renderer.Flush();
+		renderer.Finish();
 		window.PullEvents();
 	}
 	return 0;

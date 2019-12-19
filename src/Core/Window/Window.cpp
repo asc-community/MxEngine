@@ -1,17 +1,15 @@
 #include "Window.h"
 #include "../Utilities/Logger/Logger.h"
+#include "../Core/OpenGL/GLInitializer/GLInitializer.h"
 #include <GLFW/glfw3.h>
 
 namespace MomoEngine
 {
 	Window::Window(int width, int height)
-		: width(width), height(height), window(nullptr), cursorMode(CursorMode::NORMAL)
+		: width(width), height(height), window(nullptr), cursorMode(CursorMode::NORMAL), xpos(0), ypos(0)
 	{
-		if (!glfwInit())
-		{
-			Logger::Get().Error("glfw", "glfw init failed");
-			return;
-		}
+		GLInitilizer::Instance().OnWindowCreate();
+		Logger::Instance().Debug("window", "window object created");
 	}
 
 	int Window::GetWidth() const
@@ -21,6 +19,10 @@ namespace MomoEngine
 
 	bool Window::IsOpen() const
 	{
+		#ifdef _DEBUG
+		if (this->window == nullptr)
+			Logger::Instance().Error("window", "Window::Create() was not called");
+		#endif
 		return !glfwWindowShouldClose(window);
 	}
 
@@ -77,14 +79,17 @@ namespace MomoEngine
 		this->window = glfwCreateWindow(width, height, "", nullptr, nullptr);
 		if (this->window == nullptr)
 		{
-			Logger::Get().Error("glfw", "glfw window was not created");
-			glfwTerminate();
+			Logger::Instance().Error("glfw", "glfw window was not created");
+			return *this;
 		}
 		glfwMakeContextCurrent(window);
+
+		GLInitilizer::Instance().IntializeWindow();
+
 		UseTitle(this->title);
 		UseCursorMode(this->cursorMode);
 		UsePosition(this->xpos, this->ypos);
-
+		Logger::Instance().Debug("window", "window initilized");
 		return *this;
 	}
 
@@ -135,7 +140,12 @@ namespace MomoEngine
 
 	Window::~Window()
 	{
-		glfwTerminate();
+		Logger::Instance().Debug("window", "window destroyed");
+		if (this->window != nullptr)
+		{
+			glfwSetWindowShouldClose(this->window, true);
+			glfwDestroyWindow(this->window);
+		}
 	}
 
 	int Window::GetHeight() const

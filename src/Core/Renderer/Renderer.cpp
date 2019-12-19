@@ -3,19 +3,6 @@
 
 namespace MomoEngine
 {
-	Renderer::Renderer()
-	{
-		GLenum err = glewInit();
-		if (err != GLEW_OK)
-		{
-			Logger::Get().Error("glew", "glew init failed");
-		}
-		else
-		{
-			Logger::Get().Debug("glew", "OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
-		}
-	}
-
 	void Renderer::DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const
 	{
 		vao.Bind();
@@ -28,7 +15,7 @@ namespace MomoEngine
 	{
 		vao.Bind();
 		shader.Bind();
-		GLCALL(glDrawArrays(GL_TRIANGLES, 0, vertexCount));
+		GLCALL(glDrawArrays(GL_TRIANGLES, 0, (GLsizei)vertexCount));
 	}
 
 	void Renderer::DrawLines(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const
@@ -47,6 +34,13 @@ namespace MomoEngine
 		GLCALL(glDrawElementsInstanced(GL_LINES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexType(), nullptr, (GLsizei)count));
 	}
 
+	void Renderer::DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const
+	{
+		vao.Bind();
+		shader.Bind();
+		GLCALL(glDrawArraysInstanced(GL_LINES, 0, vertexCount, (GLsizei)count));
+	}
+
 	void Renderer::DrawTrianglesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const
 	{
 		vao.Bind();
@@ -62,6 +56,13 @@ namespace MomoEngine
 		GLCALL(glDrawArraysInstanced(GL_TRIANGLES, 0, vertexCount, (GLsizei)count));
 	}
 
+	void Renderer::DrawLines(const VertexArray& vao, size_t vertexCount, const Shader& shader) const
+	{
+		vao.Bind();
+		shader.Bind();
+		GLCALL(glDrawArrays(GL_LINES, 0, vertexCount));
+	}
+
 	void Renderer::Clear() const
 	{
 		GLCALL(glClear(clearMask));
@@ -70,6 +71,11 @@ namespace MomoEngine
 	void Renderer::Flush() const
 	{
 		GLCALL(glFlush());
+	}
+
+	void Renderer::Finish() const
+	{
+		GLCALL(glFinish());
 	}
 
 	Renderer& Renderer::UseSampling(bool value)

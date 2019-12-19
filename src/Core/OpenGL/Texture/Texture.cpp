@@ -11,18 +11,12 @@ MomoEngine::Texture::Texture(const std::string& filepath, bool genMipmaps, bool 
 
 	if (image.data == nullptr)
 	{
-		Logger::Get().Error("texture", "file with name '" + filepath + "' was not found");
+		Logger::Instance().Error("texture", "file with name '" + filepath + "' was not found");
 		return;
 	}
 	this->width = image.width;
 	this->height = image.height;
 	this->channels = image.channels;
-
-	#ifdef _DEBUG
-	this->texture = image.data;
-	#else
-	ImageLoader::FreeImage(image);
-	#endif
 
 	GLCALL(glBindTexture(GL_TEXTURE_2D, id));
 	GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data));
@@ -30,6 +24,12 @@ MomoEngine::Texture::Texture(const std::string& filepath, bool genMipmaps, bool 
 	{
 		GLCALL(glGenerateMipmap(GL_TEXTURE_2D));
 	}
+
+	#ifdef _DEBUG
+	this->texture = image.data;
+	#else
+	ImageLoader::FreeImage(image);
+	#endif
 }
 
 MomoEngine::Texture::~Texture()

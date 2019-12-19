@@ -14,7 +14,7 @@ namespace MomoEngine
 		VertexArray();
 		~VertexArray();
 		VertexArray(const VertexArray&) = delete;
-		VertexArray(VertexArray&&) = delete;
+		VertexArray(VertexArray&& array) noexcept;
 
 		// Inherited via IBindable
 		void Bind() const override;

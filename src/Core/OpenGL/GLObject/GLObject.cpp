@@ -1,22 +1,25 @@
 #include "GLObject.h"
 #include "../Utilities/Logger/Logger.h"
 #include <fstream>
+#include <sstream>
 
 namespace MomoEngine
 {
-	std::vector<GLObject::GLfloat> GLObject::LoadFromFile(const std::string& filepath)
+	VertexArray GLObject::LoadFromFile(const std::string& filepath)
 	{
 		std::vector<GLfloat> buffer;
-		std::ifstream file(filepath);
-		if (file.bad())
+		std::ifstream fs(filepath);
+		if (fs.bad())
 		{
-			Logger::Get().Warning("glObject", "object file was not found: " + filepath);
-			return buffer;
+			Logger::Instance().Warning("glObject", "object file was not found: " + filepath);
+			return VertexArray();
 		}
 		std::vector<glm::vec3> verteces;
 		std::vector<glm::vec3> normals;
 		std::vector<glm::vec2> texCoords;
 		std::string type;
+		std::stringstream file; 
+		file << fs.rdbuf();
 		while (file >> type)
 		{
 			if(type == "v")
@@ -39,11 +42,11 @@ namespace MomoEngine
 			}
 			else if (type == "vp")
 			{
-				Logger::Get().Error("globject",
+				Logger::Instance().Error("globject",
 					"parameter space vertices are not supported by now");
 				vertexCount = 0;
 				buffer.clear();
-				return buffer;
+				return VertexArray();
 			}
 			else if (type == "f")
 			{
@@ -57,48 +60,99 @@ namespace MomoEngine
 					size_t vertexIndex = std::stoul(v) - 1;
 					if (vertexIndex >= verteces.size())
 					{
-						Logger::Get().Error("globject",
+						Logger::Instance().Error("globject",
 							"error while loading object file: vertex index too big: " + v);
 						vertexCount = 0;
 						buffer.clear();
-						return buffer;
+						return VertexArray();
 					}
 					buffer.push_back(verteces[vertexIndex].x);
 					buffer.push_back(verteces[vertexIndex].y);
 					buffer.push_back(verteces[vertexIndex].z);
 					face.erase(0, v.size() + 1);
-					if (face.empty()) continue;
-
+					if (face.empty())
+					{
+						if (this->useTexture)
+						{
+							Logger::Instance().Error("globject",
+								"error while loading object file: texture index undefined"
+							);
+							vertexCount = 0;
+							buffer.clear();
+							return VertexArray();
+						}
+						else
+							continue;
+					}
 					// texture data
 					auto vt = face.substr(0, face.find('/'));
-					size_t textureIndex = std::stoul(vt) - 1;
-					if (textureIndex >= texCoords.size())
+					if (!vt.empty())
 					{
-						Logger::Get().Error("globject",
-							"error while loading object file: texture too big: " + vt);
+						this->useTexture = true;
+						size_t textureIndex = std::stoul(vt) - 1;
+						if (textureIndex >= texCoords.size())
+						{
+							Logger::Instance().Error("globject",
+								"error while loading object file: texture index too big: " + vt);
+							vertexCount = 0;
+							buffer.clear();
+							return VertexArray();
+						}
+						buffer.push_back(texCoords[textureIndex].x);
+						buffer.push_back(texCoords[textureIndex].y);
+					}
+					else if (this->useTexture)
+					{
+						Logger::Instance().Error("globject",
+							"error while loading object file: texture index undefined"
+						);
 						vertexCount = 0;
 						buffer.clear();
-						return buffer;
+						return VertexArray();
 					}
-					buffer.push_back(texCoords[textureIndex].x);
-					buffer.push_back(texCoords[textureIndex].y);
 					face.erase(0, vt.size() + 1);
-					if (face.empty()) continue;
+					if (face.empty())
+					{
+						if (this->useNormal)
+						{
+							Logger::Instance().Error("globject",
+								"error while loading object file: normal index undefined"
+							);
+							vertexCount = 0;
+							buffer.clear();
+							return VertexArray();
+						}
+						else
+							continue;
+					}
 
 					// normal data
 					auto vn = face;
-					size_t normalIndex = std::stoul(vn) - 1;
-					if (normalIndex >= normals.size())
+					if (!vn.empty())
 					{
-						Logger::Get().Error("globject",
-							"error while loading object file: normal too big: " + vn);
+						this->useNormal = true;
+						size_t normalIndex = std::stoul(vn) - 1;
+						if (normalIndex >= normals.size())
+						{
+							Logger::Instance().Error("globject",
+								"error while loading object file: normal index too big: " + vn);
+							vertexCount = 0;
+							buffer.clear();
+							return VertexArray();
+						}
+						buffer.push_back(normals[normalIndex].x);
+						buffer.push_back(normals[normalIndex].y);
+						buffer.push_back(normals[normalIndex].z);
+					}
+					else if (this->useNormal)
+					{
+						Logger::Instance().Error("globject",
+							"error while loading object file: normal index undefined"
+						);
 						vertexCount = 0;
 						buffer.clear();
-						return buffer;
+						return VertexArray();
 					}
-					buffer.push_back(normals[normalIndex].x);
-					buffer.push_back(normals[normalIndex].y);
-					buffer.push_back(normals[normalIndex].z);
 				}
 			}
 			else if (type == "0")
@@ -111,31 +165,44 @@ namespace MomoEngine
 			}
 			else
 			{
-				Logger::Get().Error("globject", "unexpected symbol in object file: " + type);
+				Logger::Instance().Error("globject", "unexpected symbol in object file: " + type);
 				vertexCount = 0;
 				buffer.clear();
-				return buffer;
+				return VertexArray();
 			}
 		}
 		#ifdef _DEBUG
 		this->buffer = buffer;
 		#endif
-		return buffer;
+		return LoadFromBuffer(buffer, this->useTexture, this->useNormal);
+	}
+
+	VertexArray GLObject::LoadFromBuffer(const std::vector<GLfloat>& buffer, bool useTexture, bool useNormal)
+	{
+		VertexArray VAO;
+		this->VBO = std::make_unique<VertexBuffer>(buffer);
+		VertexBufferLayout VBL;
+		VBL.Push<GLfloat>(3);
+		if (useTexture) VBL.Push<GLfloat>(2);
+		if (useNormal) VBL.Push<GLfloat>(3);
+		VAO.AddBuffer(*VBO, VBL);
+		return VAO;
 	}
 
 	GLObject::GLObject(const std::string& filepath)
-		: vertexCount(0), VBO(LoadFromFile(filepath))
+		: useTexture(false), useNormal(false), vertexCount(0), VAO(LoadFromFile(filepath))
 	{
 		
 	}
 
-	GLObject::GLObject(const std::vector<GLfloat>& bufferSource, size_t vertexCount)
-		: vertexCount(vertexCount), VBO(bufferSource) { }
+	GLObject::GLObject(const std::vector<GLfloat>& bufferSource, size_t vertexCount, bool useTexture, bool useNormal)
+		: useTexture(useTexture), useNormal(useNormal), vertexCount(vertexCount), VAO(LoadFromBuffer(bufferSource, useTexture, useNormal)) { }
 
-	VertexBuffer& GLObject::GetBuffer()
+	VertexArray& GLObject::GetVertexData()
 	{
-		return this->VBO;
+		return this->VAO;
 	}
+
 	std::vector<GLuint> GLObject::GeneratePolygonIndicies() const
 	{
 		std::vector<GLuint> indicies;
@@ -155,5 +222,15 @@ namespace MomoEngine
 	size_t GLObject::GetVertexCount() const
 	{
 		return this->vertexCount;
+	}
+
+	bool GLObject::HasTextureData() const
+	{
+		return this->useTexture;
+	}
+
+	bool GLObject::HasNormalData() const
+	{
+		return this->useNormal;
 	}
 }

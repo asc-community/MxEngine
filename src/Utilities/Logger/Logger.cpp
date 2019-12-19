@@ -2,23 +2,19 @@
 
 namespace MomoEngine
 {
-	void Logger::Error(const std::string& invoker, const std::string& message) const
+	void LoggerImpl::Error(const std::string& invoker, const std::string& message) const
 	{
 		*error << '[' << invoker << " error]: " << message << std::endl;
 	}
 
-	Logger& Logger::Get()
+	void LoggerImpl::Debug(const std::string& invoker, const std::string& message) const
 	{
-		static Logger logger;
-		return logger;
-	}
-
-	void Logger::Debug(const std::string& invoker, const std::string& message) const
-	{
+		#ifdef _DEBUG
 		*debug << '[' << invoker << " debug]: " << message << std::endl;
+		#endif
 	}
 
-	void Logger::Warning(const std::string& invoker, const std::string& message) const
+	void LoggerImpl::Warning(const std::string& invoker, const std::string& message) const
 	{
 		*warning << '[' << invoker << " warning]: " << message << std::endl;
 	}

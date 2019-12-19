@@ -19,7 +19,7 @@ namespace MomoEngine
 			success = false;
 			const char* message = (const char*)gluErrorString(error);
 			setlocale(LC_ALL, "ru");
-			Logger::Get().Error("opengl", 
+			Logger::Instance().Error("opengl", 
 				std::string(message) + "\n    " + function +
 				" in file: " + file + ", line: " + std::to_string(line)
 			);
@@ -47,7 +47,7 @@ namespace MomoEngine
 		std::ifstream file(filename);
 		if (file.bad())
 		{
-			Logger::Get().Error("file", "file with name '" + filename + "' was not found");
+			Logger::Instance().Error("file", "file with name '" + filename + "' was not found");
 			return "";
 		}
 		std::string content;

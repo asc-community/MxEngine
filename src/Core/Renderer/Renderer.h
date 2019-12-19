@@ -28,16 +28,17 @@ namespace MomoEngine
 		bool depthBufferEnabled = false;
 		GLbitfield clearMask = GL_COLOR_BUFFER_BIT;
 	public:
-		Renderer();
-
 		void DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const;
 		void DrawTriangles(const VertexArray& vao, size_t vertexCount, const Shader& shader) const;
 		void DrawTrianglesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const;
 		void DrawTrianglesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const;
+		void DrawLines(const VertexArray& vao, size_t vertexCount, const Shader& shader) const;
 		void DrawLines(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const;
 		void DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const;
+		void DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const;
 		void Clear() const;
 		void Flush() const;
+		void Finish() const;
 		Renderer& UseSampling(bool value = true);
 		Renderer& UseDepthBuffer(bool value = true);
 		Renderer& UseCulling(bool value = true, bool counterClockWise = true, bool cullBack = true);

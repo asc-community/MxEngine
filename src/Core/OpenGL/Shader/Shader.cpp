@@ -14,11 +14,11 @@ namespace MomoEngine
 
 		if (vs.empty())
 		{
-			Logger::Get().Warning("shader", "shader file is empty: " + vertexShaderPath);
+			Logger::Instance().Warning("shader", "shader file is empty: " + vertexShaderPath);
 		}
 		if (fs.empty())
 		{
-			Logger::Get().Warning("shader", "shader file is empty: " + fragmentShaderPath);
+			Logger::Instance().Warning("shader", "shader file is empty: " + fragmentShaderPath);
 		}
 
 		unsigned int vertexShader = CompileShader(GL_VERTEX_SHADER, vs);
@@ -61,7 +61,6 @@ namespace MomoEngine
 
 	void Shader::SetUniformInt(const std::string& name, int i) const
 	{
-		Bind();
 		int location = GetUniformLocation(name);
 		if (location == -1) return;
 		Bind();
@@ -83,9 +82,9 @@ namespace MomoEngine
 			GLCALL(glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &length));
 			char* msg = (char*)malloc(length * sizeof(char));
 			GLCALL(glGetShaderInfoLog(shaderId, length, &length, msg));
-			Logger::Get().Error("shader", (std::string)"failed to compile " +
+			Logger::Instance().Error("shader", (std::string)"failed to compile " +
 				(type == GL_VERTEX_SHADER ? "vertex" : "fragment") + " shader");
-			Logger::Get().Error("opengl", msg);
+			Logger::Instance().Error("opengl", msg);
 			free(msg);
 		}
 
@@ -114,7 +113,7 @@ namespace MomoEngine
 
 		GLCALL(int location = glGetUniformLocation(id, uniformName.c_str()));
 		if (location == -1)
-			Logger::Get().Warning("shader", "uniform was not found: " + uniformName);
+			Logger::Instance().Warning("shader", "uniform was not found: " + uniformName);
 		uniformCache[uniformName] = location;
 		return location;
 	}
