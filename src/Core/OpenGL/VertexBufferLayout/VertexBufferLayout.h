@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../Core/OpenGL/GLUtils/GLUtils.h"
 #include <vector>
 #include <string>
 
@@ -27,14 +26,6 @@ namespace MomoEngine
 
 		unsigned int GetStride() const;
 
-		template<typename T>
-		void Push(unsigned int count)
-		{
-			#ifdef _DEBUG
-			this->layoutString += TypeToString<T>() + std::to_string(count) + ", ";
-			#endif
-			this->elements.push_back({ count, GetGLType<T>(), GL_FALSE });
-			this->stride += sizeof(T) * count;
-		}
+		void PushFloat(unsigned int count);
 	};
 }

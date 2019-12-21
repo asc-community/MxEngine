@@ -2,7 +2,7 @@
 
 #include "CreationPolicy.h"
 #include "LifetimePolicy.h"
-#include "../Threading/ThreadingModel.h"
+#include "Utilities/Threading/ThreadingModel.h"
 #include <cassert>
 
 // Andrei's Alexandrescu SingletonHolder (see "Modern C++ Design" ch. 6)
@@ -39,6 +39,7 @@ namespace MomoEngine
 			if (instance == nullptr)
 			{
 				typename ThreadingModel<T>::Lock guard;
+				guard;
 				if (destroyed)
 				{
 					LifetimePolicy<T>::OnDeadReference();

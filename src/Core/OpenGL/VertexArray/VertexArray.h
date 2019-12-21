@@ -1,9 +1,8 @@
 #pragma once
 
-#include "../Core/OpenGL/GLUtils/GLUtils.h"
-#include "../Core/Interfaces/IBindable.h"
-#include "../Core/OpenGL/VertexBufferLayout/VertexBufferLayout.h"
-#include "../Core/OpenGL/VertexBuffer/VertexBuffer.h"
+#include "Core/Interfaces/IBindable.h"
+#include "Core/OpenGL/VertexBufferLayout/VertexBufferLayout.h"
+#include "Core/OpenGL/VertexBuffer/VertexBuffer.h"
 
 namespace MomoEngine
 {
@@ -15,6 +14,7 @@ namespace MomoEngine
 		~VertexArray();
 		VertexArray(const VertexArray&) = delete;
 		VertexArray(VertexArray&& array) noexcept;
+		VertexArray& operator=(VertexArray&& array) noexcept;
 
 		// Inherited via IBindable
 		void Bind() const override;

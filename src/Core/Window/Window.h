@@ -170,6 +170,7 @@ namespace MomoEngine
 		bool IsOpen() const;
 		float GetTime() const;
 		void PullEvents() const;
+		void Close();
 
 		struct Position
 		{
@@ -184,6 +185,7 @@ namespace MomoEngine
 		GLFWwindow* GetNativeHandler();
 
 		Window& Create();
+		Window& SwitchContext();
 		Window& UseProfile(int majorVersion, int minorVersion, Profile profile);
 		Window& UseSampling(int samples);
 		Window& UseDoubleBuffering(bool value);

@@ -1,9 +1,15 @@
 #include "Renderer.h"
-#include "../Utilities/Logger/Logger.h"
+#include "Utilities/Logger/Logger.h"
+#include "Core/OpenGL/GLUtils/GLUtils.h"
 
 namespace MomoEngine
 {
-	void Renderer::DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const
+	RendererImpl::RendererImpl()
+	{
+		this->clearMask |= GL_COLOR_BUFFER_BIT;
+	}
+
+	void RendererImpl::DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const
 	{
 		vao.Bind();
 		ibo.Bind();
@@ -11,14 +17,14 @@ namespace MomoEngine
 		GLCALL(glDrawElements(GL_TRIANGLES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexType(), nullptr));
 	}
 
-	void Renderer::DrawTriangles(const VertexArray& vao, size_t vertexCount, const Shader& shader) const
+	void RendererImpl::DrawTriangles(const VertexArray& vao, size_t vertexCount, const Shader& shader) const
 	{
 		vao.Bind();
 		shader.Bind();
 		GLCALL(glDrawArrays(GL_TRIANGLES, 0, (GLsizei)vertexCount));
 	}
 
-	void Renderer::DrawLines(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const
+	void RendererImpl::DrawLines(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const
 	{
 		vao.Bind();
 		ibo.Bind();
@@ -26,7 +32,7 @@ namespace MomoEngine
 		GLCALL(glDrawElements(GL_LINES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexType(), nullptr));
 	}
 
-	void Renderer::DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const
+	void RendererImpl::DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const
 	{
 		vao.Bind();
 		ibo.Bind();
@@ -34,14 +40,14 @@ namespace MomoEngine
 		GLCALL(glDrawElementsInstanced(GL_LINES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexType(), nullptr, (GLsizei)count));
 	}
 
-	void Renderer::DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const
+	void RendererImpl::DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const
 	{
 		vao.Bind();
 		shader.Bind();
-		GLCALL(glDrawArraysInstanced(GL_LINES, 0, vertexCount, (GLsizei)count));
+		GLCALL(glDrawArraysInstanced(GL_LINES, 0, (GLsizei)vertexCount, (GLsizei)count));
 	}
 
-	void Renderer::DrawTrianglesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const
+	void RendererImpl::DrawTrianglesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const
 	{
 		vao.Bind();
 		ibo.Bind();
@@ -49,36 +55,36 @@ namespace MomoEngine
 		GLCALL(glDrawElementsInstanced(GL_TRIANGLES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexType(), nullptr, (GLsizei)count));
 	}
 
-	void Renderer::DrawTrianglesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const
+	void RendererImpl::DrawTrianglesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const
 	{
 		vao.Bind();
 		shader.Bind();
-		GLCALL(glDrawArraysInstanced(GL_TRIANGLES, 0, vertexCount, (GLsizei)count));
+		GLCALL(glDrawArraysInstanced(GL_TRIANGLES, 0, (GLsizei)vertexCount, (GLsizei)count));
 	}
 
-	void Renderer::DrawLines(const VertexArray& vao, size_t vertexCount, const Shader& shader) const
+	void RendererImpl::DrawLines(const VertexArray& vao, size_t vertexCount, const Shader& shader) const
 	{
 		vao.Bind();
 		shader.Bind();
-		GLCALL(glDrawArrays(GL_LINES, 0, vertexCount));
+		GLCALL(glDrawArrays(GL_LINES, 0, (GLsizei)vertexCount));
 	}
 
-	void Renderer::Clear() const
+	void RendererImpl::Clear() const
 	{
 		GLCALL(glClear(clearMask));
 	}
 
-	void Renderer::Flush() const
+	void RendererImpl::Flush() const
 	{
 		GLCALL(glFlush());
 	}
 
-	void Renderer::Finish() const
+	void RendererImpl::Finish() const
 	{
 		GLCALL(glFinish());
 	}
 
-	Renderer& Renderer::UseSampling(bool value)
+	RendererImpl& RendererImpl::UseSampling(bool value)
 	{
 		if (value)
 		{
@@ -91,7 +97,7 @@ namespace MomoEngine
 		return *this;
 	}
 
-	Renderer& Renderer::UseDepthBuffer(bool value)
+	RendererImpl& RendererImpl::UseDepthBuffer(bool value)
 	{
 		depthBufferEnabled = value;
 		if (value)
@@ -108,7 +114,7 @@ namespace MomoEngine
 		return *this;
 	}
 
-	Renderer& Renderer::UseCulling(bool value, bool counterClockWise, bool cullBack)
+	RendererImpl& RendererImpl::UseCulling(bool value, bool counterClockWise, bool cullBack)
 	{
 		// culling 
 		if (value)
@@ -143,18 +149,18 @@ namespace MomoEngine
 		return *this;
 	}
 
-	Renderer& Renderer::UseClearColor(float r, float g, float b, float a)
+	RendererImpl& RendererImpl::UseClearColor(float r, float g, float b, float a)
 	{
 		GLCALL(glClearColor(r, g, b, a));
 		return *this;
 	}
-	Renderer& Renderer::UseTextureMinFilter(MinFilter filter)
+	RendererImpl& RendererImpl::UseTextureMinFilter(MinFilter filter)
 	{
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (GLint)filter));
 		return *this;
 	}
 
-	Renderer& Renderer::UseTextureMagFilter(MagFilter filter)
+	RendererImpl& RendererImpl::UseTextureMagFilter(MagFilter filter)
 	{
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (GLint)filter));
 		return *this;

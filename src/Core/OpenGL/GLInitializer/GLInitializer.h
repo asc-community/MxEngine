@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Utilities/SingletonHolder/SingletonHolder.h"
+#include "Utilities/SingletonHolder/SingletonHolder.h"
 
 namespace MomoEngine
 {
@@ -9,6 +9,8 @@ namespace MomoEngine
 	public:
 		GLInitilizerImpl();
 		~GLInitilizerImpl();
+		GLInitilizerImpl(const GLInitilizerImpl&) = delete;
+		GLInitilizerImpl(GLInitilizerImpl&&) = delete;
 		void IntializeWindow();
 		void OnWindowCreate();
 	};

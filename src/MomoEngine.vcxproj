@@ -32,14 +32,19 @@
     <ClInclude Include="Core\OpenGL\VertexBuffer\VertexBuffer.h" />
     <ClInclude Include="Core\Renderer\Renderer.h" />
     <ClInclude Include="Core\Window\Window.h" />
+    <ClInclude Include="MomoEngine.h" />
+    <ClInclude Include="MomoEngine\EntryPoint.h" />
     <ClInclude Include="Utilities\ImageLoader\ImageLoader.h" />
     <ClInclude Include="Utilities\Logger\Logger.h" />
+    <ClInclude Include="Utilities\Memory\Memory.h" />
     <ClInclude Include="Utilities\SingletonHolder\CreationPolicy.h" />
     <ClInclude Include="Utilities\SingletonHolder\LifetimePolicy.h" />
     <ClInclude Include="Utilities\SingletonHolder\SingletonHolder.h" />
     <ClInclude Include="Utilities\Threading\ThreadingModel.h" />
+    <ClInclude Include="Utilities\Time\Time.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Core\Interfaces\IApplication.cpp" />
     <ClCompile Include="Core\OpenGL\GLInitializer\GLInitializer.cpp" />
     <ClCompile Include="Core\OpenGL\GLObject\GLObject.cpp" />
     <ClCompile Include="Core\OpenGL\GLUtils\GLUtils.cpp" />
@@ -51,9 +56,9 @@
     <ClCompile Include="Core\OpenGL\VertexBuffer\VertexBuffer.cpp" />
     <ClCompile Include="Core\Renderer\Renderer.cpp" />
     <ClCompile Include="Core\Window\Window.cpp" />
-    <ClCompile Include="Sandbox\main.cpp" />
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
     <ClCompile Include="Utilities\Logger\Logger.cpp" />
+    <ClCompile Include="Utilities\Time\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\object_fragment.glsl" />
@@ -107,13 +112,13 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -162,7 +167,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\OpenGL64\include;%(Additional Dependencies)%</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\OpenGL64\include;%(Additional Dependencies)%</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -196,7 +201,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\OpenGL64\include;%(Additional Dependencies)%</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\OpenGL64\include;%(Additional Dependencies)%</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

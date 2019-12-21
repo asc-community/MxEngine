@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Core/Interfaces/IBindable.h"
+#include "Core/Interfaces/IBindable.h"
 #include <string>
 
 namespace MomoEngine
@@ -11,9 +11,13 @@ namespace MomoEngine
 		#ifdef _DEBUG
 		unsigned char* texture = nullptr;
 		#endif	
+		void FreeTexture();
 	public:
+		Texture();
 		Texture(const std::string& filepath, bool genMipmaps = true, bool flipImage = true);
 		~Texture();
+
+		void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = true);
 
 		// Inherited via IBindable
 		virtual void Bind() const override;

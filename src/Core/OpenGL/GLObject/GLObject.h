@@ -1,10 +1,10 @@
 #pragma once
 #include <string>
-#include <glm/glm.hpp>
 #include <vector>
 #include <memory>
-#include "../Texture/Texture.h"
-#include "../VertexArray/VertexArray.h"
+#include "Core/OpenGL/Texture/Texture.h"
+#include "Core/OpenGL/VertexBuffer/VertexBuffer.h"
+#include "Core/OpenGL/VertexArray/VertexArray.h"
 
 namespace MomoEngine
 {
@@ -24,10 +24,14 @@ namespace MomoEngine
 		VertexArray LoadFromFile(const std::string& filepath);
 		VertexArray LoadFromBuffer(const std::vector<GLfloat>& buffer, bool useTexture, bool useNormal);
 	public:
+		GLObject();
 		GLObject(const std::string& filepath);
 		GLObject(const std::vector<GLfloat>& bufferSource, size_t vertexCount, bool useTexture = false, bool useNormal = false);
 		GLObject(GLObject&) = delete;
 		GLObject(GLObject&&) = default;
+
+		void Load(const std::string& filepath);
+		void Load(const std::vector<GLfloat>& buffer, size_t vertexCount, bool useTexture = false, bool useNormal = false);
 
 		VertexArray& GetVertexData();
 		std::vector<GLuint> GeneratePolygonIndicies() const;

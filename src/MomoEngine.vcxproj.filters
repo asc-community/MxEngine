@@ -20,6 +20,10 @@
     <ClInclude Include="Utilities\SingletonHolder\LifetimePolicy.h" />
     <ClInclude Include="Core\OpenGL\GLInitializer\GLInitializer.h" />
     <ClInclude Include="Core\Interfaces\IApplication.h" />
+    <ClInclude Include="MomoEngine.h" />
+    <ClInclude Include="MomoEngine\EntryPoint.h" />
+    <ClInclude Include="Utilities\Memory\Memory.h" />
+    <ClInclude Include="Utilities\Time\Time.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\OpenGL\GLObject\GLObject.cpp" />
@@ -32,10 +36,11 @@
     <ClCompile Include="Core\OpenGL\VertexBufferLayout\VertexBufferLayout.cpp" />
     <ClCompile Include="Core\Renderer\Renderer.cpp" />
     <ClCompile Include="Core\Window\Window.cpp" />
-    <ClCompile Include="Sandbox\main.cpp" />
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
     <ClCompile Include="Utilities\Logger\Logger.cpp" />
     <ClCompile Include="Core\OpenGL\GLInitializer\GLInitializer.cpp" />
+    <ClCompile Include="Core\Interfaces\IApplication.cpp" />
+    <ClCompile Include="Utilities\Time\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\cube_fragment.glsl" />

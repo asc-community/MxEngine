@@ -1,8 +1,27 @@
 #include "IndexBuffer.h"
+#include "Core/OpenGL/GLUtils/GLUtils.h"
 
 namespace MomoEngine
 {
+	IndexBuffer::IndexBuffer()
+	{
+		this->id = 0;
+	}
+
 	IndexBuffer::IndexBuffer(const std::vector<IndexType>& data)
+	{
+		Load(data);
+	}
+
+	IndexBuffer::~IndexBuffer()
+	{
+		if (this->id != 0)
+		{
+			GLCALL(glDeleteBuffers(1, &id));
+		}
+	}
+
+	void IndexBuffer::Load(const std::vector<IndexType>& data)
 	{
 		#ifdef _DEBUG
 		indicies = data.data();
@@ -11,11 +30,6 @@ namespace MomoEngine
 		GLCALL(glGenBuffers(1, &id));
 		Bind();
 		GLCALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(IndexType), data.data(), GL_STATIC_DRAW));
-	}
-
-	IndexBuffer::~IndexBuffer()
-	{
-		GLCALL(glDeleteBuffers(1, &id));
 	}
 
 	void IndexBuffer::Unbind() const

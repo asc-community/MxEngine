@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../Core/OpenGL/GLUtils/GLUtils.h"
-#include "../Core/Interfaces/IBindable.h"
+#include "Core/Interfaces/IBindable.h"
 #include <vector>
 
 namespace MomoEngine
@@ -9,17 +8,21 @@ namespace MomoEngine
 	class IndexBuffer : IBindable
 	{
 	public:
-		using IndexType = GLuint;
+		using IndexType = unsigned int;
 	private:
-		size_t count;
+		size_t count = 0;
 		#ifdef _DEBUG
 		const IndexType* indicies = nullptr;
 		#endif
 	public:
+		explicit IndexBuffer();
 		explicit IndexBuffer(const std::vector<IndexType>& data);
 		IndexBuffer(const IndexBuffer&) = delete;
 		IndexBuffer(IndexBuffer&&) = delete;
 		~IndexBuffer();
+
+		void Load(const std::vector<IndexType>& data);
+
 		size_t GetCount() const;
 		size_t GetIndexType() const;
 

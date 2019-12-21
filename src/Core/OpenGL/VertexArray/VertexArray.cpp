@@ -1,10 +1,11 @@
 #include "VertexArray.h"
+#include "Core/OpenGL/GLUtils/GLUtils.h"
 
 namespace MomoEngine
 {
 	VertexArray::VertexArray()
 	{
-		GLCALL(glGenVertexArrays(1, &id));
+		this->id = 0;
 	}
 
 	VertexArray::~VertexArray()
@@ -22,6 +23,14 @@ namespace MomoEngine
 		array.id = 0;
 	}
 
+	VertexArray& VertexArray::operator=(VertexArray&& array) noexcept
+	{
+		this->attributeIndex = array.attributeIndex;
+		this->id = array.id;
+		array.id = 0;
+		return *this;
+	}
+
 	void VertexArray::Bind() const
 	{
 		glBindVertexArray(id);
@@ -34,6 +43,10 @@ namespace MomoEngine
 
 	void VertexArray::AddBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout)
 	{
+		if (id == 0)
+		{
+			GLCALL(glGenVertexArrays(1, &id));
+		}
 		Bind();
 		buffer.Bind();
 		const auto& elements = layout.GetElements();
@@ -49,6 +62,10 @@ namespace MomoEngine
 
 	void VertexArray::AddInstancedBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout)
 	{
+		if (id == 0)
+		{
+			GLCALL(glGenVertexArrays(1, &id));
+		}
 		Bind();
 		buffer.Bind();
 		const auto& elements = layout.GetElements();

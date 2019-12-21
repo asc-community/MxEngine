@@ -1,17 +1,46 @@
 #include "Texture.h"
-#include "../Core/OpenGL/GLUtils/GLUtils.h"
-#include "../Utilities/ImageLoader/ImageLoader.h"
-#include "../Utilities/Logger/Logger.h"
+#include "Core/OpenGL/GLUtils/GLUtils.h"
+#include "Utilities/ImageLoader/ImageLoader.h"
+#include "Utilities/Logger/Logger.h"
+
+void MomoEngine::Texture::FreeTexture()
+{
+	if (id != 0)
+	{
+		GLCALL(glDeleteTextures(1, &id));
+		#ifdef _DEBUG
+		if (texture != nullptr)
+			ImageLoader::FreeImage(texture);
+		#endif
+	}
+}
+
+MomoEngine::Texture::Texture()
+{
+	this->id = 0;
+}
 
 MomoEngine::Texture::Texture(const std::string& filepath, bool genMipmaps, bool flipImage)
 {
+	Load(filepath, genMipmaps, flipImage);
+}
+
+MomoEngine::Texture::~Texture()
+{
+	this->FreeTexture();
+}
+
+void MomoEngine::Texture::Load(const std::string& filepath, bool genMipmaps, bool flipImage)
+{
+	this->FreeTexture();
+
 	GLCALL(glGenTextures(1, &id));
 
 	Image image = ImageLoader::LoadImage(filepath, flipImage);
 
 	if (image.data == nullptr)
 	{
-		Logger::Instance().Error("texture", "file with name '" + filepath + "' was not found");
+		Logger::Instance().Error("MomoEngine::Texture", "file with name '" + filepath + "' was not found");
 		return;
 	}
 	this->width = image.width;
@@ -29,15 +58,6 @@ MomoEngine::Texture::Texture(const std::string& filepath, bool genMipmaps, bool 
 	this->texture = image.data;
 	#else
 	ImageLoader::FreeImage(image);
-	#endif
-}
-
-MomoEngine::Texture::~Texture()
-{
-	GLCALL(glDeleteTextures(1, &id));
-	#ifdef _DEBUG
-	if (texture != nullptr)
-		ImageLoader::FreeImage(texture);
 	#endif
 }
 

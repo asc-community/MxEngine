@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../Core/OpenGL/GLUtils/GLUtils.h"
-#include "../Core/OpenGL/VertexArray/VertexArray.h"
-#include "../Core/OpenGL/Shader/Shader.h"
-#include "../Core/OpenGL/IndexBuffer/IndexBuffer.h"
-#include "../Core/OpenGL/Texture/Texture.h"
-#include "../Core/OpenGL/GLObject/GLObject.h"
+#include "Core/OpenGL/VertexArray/VertexArray.h"
+#include "Core/OpenGL/Shader/Shader.h"
+#include "Core/OpenGL/IndexBuffer/IndexBuffer.h"
+#include "Core/OpenGL/Texture/Texture.h"
+#include "Core/OpenGL/GLObject/GLObject.h"
+#include "Utilities/SingletonHolder/SingletonHolder.h"
 
 namespace MomoEngine
 {
@@ -23,11 +23,14 @@ namespace MomoEngine
 		LINEAR = 0x2601,
 	};
 
-	class Renderer
+	class RendererImpl
 	{
 		bool depthBufferEnabled = false;
-		GLbitfield clearMask = GL_COLOR_BUFFER_BIT;
+		unsigned int clearMask = 0;
 	public:
+		RendererImpl();
+		RendererImpl(const RendererImpl&) = delete;
+		RendererImpl(RendererImpl&&) = delete;
 		void DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const;
 		void DrawTriangles(const VertexArray& vao, size_t vertexCount, const Shader& shader) const;
 		void DrawTrianglesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const;
@@ -39,11 +42,13 @@ namespace MomoEngine
 		void Clear() const;
 		void Flush() const;
 		void Finish() const;
-		Renderer& UseSampling(bool value = true);
-		Renderer& UseDepthBuffer(bool value = true);
-		Renderer& UseCulling(bool value = true, bool counterClockWise = true, bool cullBack = true);
-		Renderer& UseClearColor(float r, float g, float b, float a = 0.0f);
-		Renderer& UseTextureMinFilter(MinFilter filter);
-		Renderer& UseTextureMagFilter(MagFilter filter);
+		RendererImpl& UseSampling(bool value = true);
+		RendererImpl& UseDepthBuffer(bool value = true);
+		RendererImpl& UseCulling(bool value = true, bool counterClockWise = true, bool cullBack = true);
+		RendererImpl& UseClearColor(float r, float g, float b, float a = 0.0f);
+		RendererImpl& UseTextureMinFilter(MinFilter filter);
+		RendererImpl& UseTextureMagFilter(MagFilter filter);
 	};
+
+	using Renderer = SingletonHolder<RendererImpl>;
 }

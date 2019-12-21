@@ -17,7 +17,7 @@ namespace MomoEngine
 
 		static inline void OnDeadReference()
 		{
-			throw std::logic_error("[singleton error]: dead reference detected");
+			throw std::exception("[singleton error]: dead reference detected");
 		}
 	};
 
