@@ -9,6 +9,29 @@
 
 namespace MomoEngine
 {
+	enum class BlendFactor
+	{
+		NONE,
+		ONE_MINUS_SRC_COLOR = 0x0301,
+		SRC_ALPHA = 0x0302,
+		ONE_MINUS_SRC_ALPHA = 0x0303,
+		DST_ALPHA = 0x0304,
+		ONE_MINUS_DST_ALPHA = 0x0305,
+		DST_COLOR = 0x0306,
+		ONE_MINUS_DST_COLOR = 0x0307,
+		CONSTANT_COLOR = 0x8001,
+		ONE_MINUS_CONSTANT_COLOR = 0x8002,
+		CONSTANT_ALPHA = 0x8003,
+		ONE_MINUS_CONSTANT_ALPHA = 0x8004,
+	};
+
+	enum class WrapType
+	{
+		CLAMP_TO_EDGE = 0x812F,
+		MIRRORED_REPEAT = 0x8370,
+		REPEAT = 0x2901,
+	};
+
 	enum class MinFilter
 	{
 		NEAREST_MIPMAP_NEAREST = 0x2700,
@@ -48,6 +71,8 @@ namespace MomoEngine
 		RendererImpl& UseClearColor(float r, float g, float b, float a = 0.0f);
 		RendererImpl& UseTextureMinFilter(MinFilter filter);
 		RendererImpl& UseTextureMagFilter(MagFilter filter);
+		RendererImpl& UseBlending(BlendFactor src, BlendFactor dist);
+		RendererImpl& UseTextureWrap(WrapType textureX, WrapType textureY);
 	};
 
 	using Renderer = SingletonHolder<RendererImpl>;

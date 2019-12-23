@@ -3,16 +3,29 @@
 
 namespace MomoEngine
 {
-	VertexBuffer::VertexBuffer(const std::vector<float>& data)
+	VertexBuffer::VertexBuffer()
 	{
-		GLCALL(glGenBuffers(1, &id));
-		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, id));
-		GLCALL(glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW));
+		this->id = 0;
+	}
+
+	VertexBuffer::VertexBuffer(const std::vector<float>& data, UsageType type)
+	{
+		Load(data, type);
 	}
 
 	VertexBuffer::~VertexBuffer()
 	{
-		GLCALL(glDeleteBuffers(1, &id));
+		if (this->id != 0)
+		{
+			GLCALL(glDeleteBuffers(1, &id));
+		}
+	}
+
+	void VertexBuffer::Load(const std::vector<float>& data, UsageType type)
+	{
+		GLCALL(glGenBuffers(1, &id));
+		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, id));
+		GLCALL(glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), (GLenum)type));
 	}
 
 	void VertexBuffer::Bind() const

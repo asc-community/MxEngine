@@ -181,7 +181,7 @@ namespace MomoEngine
 	VertexArray GLObject::LoadFromBuffer(const std::vector<GLfloat>& buffer, bool useTexture, bool useNormal)
 	{
 		VertexArray VAO;
-		this->VBO = std::make_unique<VertexBuffer>(buffer);
+		this->VBO = MakeUnique<VertexBuffer>(buffer, UsageType::STATIC_DRAW);
 		VertexBufferLayout VBL;
 		VBL.PushFloat(3);
 		if (useTexture) VBL.PushFloat(2);
@@ -253,4 +253,88 @@ namespace MomoEngine
 	{
 		return this->useNormal;
 	}
-}
+
+	GLInstance::GLInstance()
+	{
+		this->Model = glm::mat4x4(1.0f);
+	}
+
+	GLInstance::GLInstance(const Ref<GLObject>& object)
+	{
+		this->Model = glm::mat4x4(1.0f);
+		Load(object);
+	}
+
+	void GLInstance::Load(const Ref<GLObject>& object)
+	{
+		this->object = object;
+	}
+
+	Ref<GLObject>& GLInstance::GetGLObject()
+	{
+		return this->object;
+	}
+
+	const Ref<GLObject>& GLInstance::GetGLObject() const
+	{
+		return this->object;
+	}
+
+	GLInstance& GLInstance::Scale(float scale)
+	{
+		return Scale(glm::vec3(scale));
+	}
+
+	GLInstance& GLInstance::Scale(float scaleX, float scaleY, float scaleZ)
+	{
+		return Scale(glm::vec3(scaleX, scaleY, scaleZ));
+	}
+
+	GLInstance& GLInstance::Scale(const glm::vec3& scale)
+	{
+		this->Model = glm::scale(this->Model, scale);
+		return *this;
+	}
+
+	GLInstance& GLInstance::Rotate(float angle, const glm::vec3& vec)
+	{
+		this->Model = glm::rotate(this->Model, angle, vec);
+		return *this;
+	}
+
+	GLInstance& GLInstance::RotateX(float angle)
+	{
+		return Rotate(angle, glm::vec3(1.0f, 0.0f, 0.0f));
+	}
+
+	GLInstance& GLInstance::RotateY(float angle)
+	{
+		return Rotate(angle, glm::vec3(0.0f, 1.0f, 0.0f));
+	}
+
+	GLInstance& GLInstance::RotateZ(float angle)
+	{
+		return Rotate(angle, glm::vec3(0.0f, 0.0f, 1.0f));
+	}
+
+	GLInstance& GLInstance::Translate(float x, float y, float z)
+	{
+		this->Model = glm::translate(this->Model, glm::vec3(x, y, z));
+		return *this;
+	}
+
+	GLInstance& GLInstance::TranslateX(float x)
+	{
+		return Translate(x, 0.0f, 0.0f);
+	}
+
+	GLInstance& GLInstance::TranslateY(float y)
+	{
+		return Translate(0.0f, y, 0.0f);
+	}
+
+	GLInstance& GLInstance::TranslateZ(float z)
+	{
+		return Translate(0.0f, 0.0f, z);
+	}
+} 

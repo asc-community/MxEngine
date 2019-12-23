@@ -4,4 +4,23 @@
     <ClCompile Include="Sandbox.h" />
     <ClCompile Include="Sandbox.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Object Include="Resources\objects\arc170.obj" />
+    <Object Include="Resources\objects\crate.obj" />
+    <Object Include="Resources\objects\grid.obj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\shaders\cube_vertex.glsl" />
+    <None Include="Resources\shaders\grid_vertex.glsl" />
+    <None Include="Resources\shaders\mesh_vertex.glsl" />
+    <None Include="Resources\shaders\object_fragment.glsl" />
+    <None Include="Resources\shaders\object_vertex.glsl" />
+    <None Include="Resources\shaders\mesh_fragment.glsl" />
+    <None Include="Resources\shaders\grid_fragment.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\textures\arc170.jpg" />
+    <Image Include="Resources\textures\crate.jpg" />
+    <Image Include="Resources\textures\grid.png" />
+  </ItemGroup>
 </Project>

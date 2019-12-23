@@ -165,4 +165,25 @@ namespace MomoEngine
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (GLint)filter));
 		return *this;
 	}
+
+	RendererImpl& RendererImpl::UseBlending(BlendFactor src, BlendFactor dist)
+	{
+		if (src == BlendFactor::NONE || dist == BlendFactor::NONE)
+		{
+			GLCALL(glDisable(GL_BLEND));
+		}
+		else
+		{
+			GLCALL(glEnable(GL_BLEND));
+			GLCALL(glBlendFunc((GLenum)GL_SRC_ALPHA, (GLenum)GL_ONE_MINUS_SRC_ALPHA));
+		}
+		return *this;
+	}
+
+	RendererImpl& RendererImpl::UseTextureWrap(WrapType textureX, WrapType textureY)
+	{
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (GLenum)textureX));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (GLenum)textureY));
+		return *this;
+	}
 }

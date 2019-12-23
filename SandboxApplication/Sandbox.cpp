@@ -8,19 +8,28 @@ MomoEngine::IApplication* MomoEngine::GetApplication()
 	return new SandboxApp();
 }
 
+SandboxApp::SandboxApp()
+{
+
+}
+
 void SandboxApp::OnCreate()
 {
 	this->ResourcePath = "Resources/";
-	ArcObject.Load(ResourcePath + "objects/arc170.obj");
-	ArcTexture.Load(ResourcePath + "textures/arc170.jpg");
-	CubeObject.Load(ResourcePath + "objects/crate.obj");
-	CubeTexture.Load(ResourcePath + "textures/crate.jpg");
-	CubeShader.Load(ResourcePath + "shaders/cube_vertex.glsl", ResourcePath + "shaders/cube_fragment.glsl");
-	GridShader.Load(ResourcePath + "shaders/line_vertex.glsl", ResourcePath + "shaders/fragment.glsl");
-	MeshShader.Load(ResourcePath + "shaders/mesh_vertex.glsl", ResourcePath + "shaders/fragment.glsl");
+	ArcObject          = MakeRef<GLObject>(ResourcePath + "objects/arc170.obj");
+	ArcObject.Texture  = MakeRef<Texture>(ResourcePath + "textures/arc170.jpg");
+	CubeObject         = MakeRef<GLObject>(ResourcePath + "objects/crate.obj");
+	CubeObject.Texture = MakeRef<Texture>(ResourcePath + "textures/crate.jpg");
+	GridObject         = MakeRef<GLObject>(ResourcePath + "objects/grid.obj");
+	GridObject.Texture = MakeRef<Texture>(ResourcePath + "textures/grid.png");
+	CubeShader.Load(ResourcePath + "shaders/cube_vertex.glsl", ResourcePath + "shaders/object_fragment.glsl");
+	GridShader.Load(ResourcePath + "shaders/grid_vertex.glsl", ResourcePath + "shaders/grid_fragment.glsl");
+	MeshShader.Load(ResourcePath + "shaders/mesh_vertex.glsl", ResourcePath + "shaders/mesh_fragment.glsl");
 	ObjectShader.Load(ResourcePath + "shaders/object_vertex.glsl", ResourcePath + "shaders/object_fragment.glsl");
 
 	GenerateBuffers();
+
+	ArcObject.Scale(0.005f);
 }
 
 void SandboxApp::OnUpdate()
@@ -105,7 +114,6 @@ void SandboxApp::OnUpdate()
 		Logger::Instance().Debug("Sandbox App", "mesh toggled " + std::string(drawMesh ? "on" : "off"));
 		drawMesh = !drawMesh;
 	}
-	auto ModelMatrix = glm::mat4(1.0f);
 	auto ProjectionMatrix = glm::perspective(glm::radians(FOV), float(Window.GetWidth()) / float(Window.GetHeight()), 0.1f, 2000.0f);
 	auto ViewMatrix = glm::lookAt(
 		position,
@@ -113,72 +121,48 @@ void SandboxApp::OnUpdate()
 		up
 	);
 
-	deltaRot += this->TimeDelta * 0.1f;
-	if (deltaRot > glm::two_pi<float>()) deltaRot -= glm::two_pi<float>();
-	auto RotationMatrix = glm::rotate(ModelMatrix, deltaRot, glm::vec3(0.0f, 1.0f, 0.0f));
-	auto ScaleMatrix = glm::scale(ModelMatrix, glm::vec3(0.005f));
+	float deltaRot = 0.1f * TimeDelta;
+	ArcObject.RotateY(deltaRot);
+	
+	auto ViewProjectMatrix = ProjectionMatrix * ViewMatrix;
 
-	auto MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+	CubeShader.SetUniformMat4("MVP", ViewProjectMatrix * CubeObject.Model);
+	CubeObject.Texture->Bind();	
+	Renderer::Instance().DrawTrianglesInstanced(CubeObject.GetGLObject()->GetVertexData(), CubeObject.GetGLObject()->GetVertexCount(), CubeShader, cubeCount);
 
-	CubeShader.SetUniformMat4("MVP", MVP);
-	CubeTexture.Bind();
-	Renderer::Instance().DrawTrianglesInstanced(CubeObject.GetVertexData(), CubeObject.GetVertexCount(), CubeShader, cubeCount);
-
-	ObjectShader.SetUniformMat4("MVP", MVP * ScaleMatrix * RotationMatrix);
-	ArcTexture.Bind();
-	Renderer::Instance().DrawTriangles(ArcObject.GetVertexData(), ArcObject.GetVertexCount(), ObjectShader);
-
-	GridShader.SetUniformMat4("MVP", MVP);
-	Renderer::Instance().DrawLines(GridObject.GetVertexData(), GridObject.GetVertexCount(), GridShader);
+	ObjectShader.SetUniformMat4("MVP", ViewProjectMatrix * ArcObject.Model);
+	ArcObject.Texture->Bind();
+	Renderer::Instance().DrawTriangles(ArcObject.GetGLObject()->GetVertexData(), ArcObject.GetGLObject()->GetVertexCount(), ObjectShader);
 
 	if (drawMesh)
 	{
-		MeshShader.SetUniformMat4("MVP", MVP);
-		Renderer::Instance().DrawLinesInstanced(CubeObject.GetVertexData(), CubeMeshIBO, MeshShader, cubeCount);
-		MeshShader.SetUniformMat4("MVP", MVP * ScaleMatrix * RotationMatrix);
-		Renderer::Instance().DrawLines(ArcObject.GetVertexData(), ArcMeshIBO, MeshShader);
+		MeshShader.SetUniformMat4("MVP", ViewProjectMatrix * CubeObject.Model);
+		Renderer::Instance().DrawLinesInstanced(CubeObject.GetGLObject()->GetVertexData(), CubeMeshIBO, MeshShader, cubeCount);
+		MeshShader.SetUniformMat4("MVP", ViewProjectMatrix * ArcObject.Model);
+		Renderer::Instance().DrawLines(ArcObject.GetGLObject()->GetVertexData(), ArcMeshIBO, MeshShader);
 	}
+
+	GridShader.SetUniformMat4("MVP", ViewProjectMatrix * GridObject.Model);
+	GridObject.Texture->Bind();
+	Renderer::Instance().DrawTriangles(GridObject.GetGLObject()->GetVertexData(), GridObject.GetGLObject()->GetVertexCount(), GridShader);
 }
 
 void SandboxApp::OnDestroy() { }
 
 void SandboxApp::GenerateBuffers()
 {
-	std::vector<float> cubeInstancedBuffer;
+	std::vector<float> cubesPos;
 	for (int i = 0; i < cubeCount; i++)
 	{
-		cubeInstancedBuffer.push_back(5.0f * sin(0.2f * i));
-		cubeInstancedBuffer.push_back(0.5f * i);
-		cubeInstancedBuffer.push_back(5.0f * cos(0.2f * i));
+		cubesPos.push_back(5.0f * sin(0.2f * i));
+		cubesPos.push_back(0.5f * i);
+		cubesPos.push_back(5.0f * cos(0.2f * i));
 	}
 
-	int lineCount = 1000;
-	std::vector<float> gridBuffer;
-	for (int i = 0; i < lineCount; i++)
-	{
-		auto lineWidth = lineCount - 1;
-		gridBuffer.push_back(lineWidth / 2 - i);
-		gridBuffer.push_back(0.0f);
-		gridBuffer.push_back(-(lineWidth - 1) / 2);
-
-		gridBuffer.push_back(lineWidth / 2 - i);
-		gridBuffer.push_back(0.0f);
-		gridBuffer.push_back((lineWidth - 1) / 2);
-
-		gridBuffer.push_back(-(lineWidth - 1) / 2);
-		gridBuffer.push_back(0.0f);
-		gridBuffer.push_back(lineWidth / 2 - i);
-
-		gridBuffer.push_back((lineWidth - 1) / 2);
-		gridBuffer.push_back(0.0f);
-		gridBuffer.push_back(lineWidth / 2 - i);
-	}
-
-	VertexBuffer CubeInstancedVBO(cubeInstancedBuffer);
+	CubesPositions.Load(cubesPos, UsageType::STATIC_DRAW);
 	VertexBufferLayout CubeInstancedVBL;
 	CubeInstancedVBL.PushFloat(3);
-	CubeObject.GetVertexData().AddInstancedBuffer(CubeInstancedVBO, CubeInstancedVBL);
-	CubeMeshIBO.Load(CubeObject.GeneratePolygonIndicies());
-	ArcMeshIBO.Load(ArcObject.GeneratePolygonIndicies());
-	GridObject.Load(gridBuffer, (int)lineCount * 4);
+	CubeObject.GetGLObject()->GetVertexData().AddInstancedBuffer(CubesPositions, CubeInstancedVBL);
+	CubeMeshIBO.Load(CubeObject.GetGLObject()->GeneratePolygonIndicies());
+	ArcMeshIBO.Load(ArcObject.GetGLObject()->GeneratePolygonIndicies());
 }

@@ -1,18 +1,22 @@
 #pragma once
 
-#include "MomoEngine.h"
-
 #ifdef MOMO_ENGINE_INCLUDE
 namespace MomoEngine
 {
 	extern IApplication* GetApplication();
 }
 
-int main()
+namespace
 {
-	MomoEngine::IApplication* app = MomoEngine::GetApplication();
-	app->Run();
-	delete app;
-	return 0;
+	extern "C"
+	{
+		int main()
+		{
+			MomoEngine::IApplication* app = MomoEngine::GetApplication();
+			app->Run();
+			delete app;
+			return 0;
+		}
+	}
 }
 #endif

@@ -19,10 +19,11 @@ namespace MomoEngine
 
 	bool Window::IsOpen() const
 	{
-		#ifdef _DEBUG
 		if (this->window == nullptr)
+		{
 			Logger::Instance().Error("MomoEngine::Window", "Window::Create() was not called");
-		#endif
+			return false;
+		}
 		return !glfwWindowShouldClose(window);
 	}
 
@@ -36,13 +37,14 @@ namespace MomoEngine
 		glfwPollEvents();
 	}
 
-	void Window::Close()
+	Window& Window::Close()
 	{
 		if (this->window != nullptr && IsOpen())
 		{
 			glfwSetWindowShouldClose(this->window, true);
 			Logger::Instance().Debug("MomoEngine::Window", "window closed");
 		}
+		return *this;
 	}
 
 	Window::Position Window::GetCursorPos() const
@@ -91,13 +93,14 @@ namespace MomoEngine
 			Logger::Instance().Error("GLFW", "glfw window was not created");
 			return *this;
 		}
+		
 		SwitchContext();
 		GLInitilizer::Instance().IntializeWindow();
 
 		UseTitle(this->title);
 		UseCursorMode(this->cursorMode);
 		UsePosition(this->xpos, this->ypos);
-		Logger::Instance().Debug("MomoEngine::Window", "window initilized");
+		Logger::Instance().Debug("MomoEngine::Window", "window initialized");
 		return *this;
 	}
 

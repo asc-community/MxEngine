@@ -6,13 +6,12 @@ using namespace MomoEngine;
 
 class SandboxApp : public MomoEngine::IApplication
 {
-	GLObject CubeObject, ArcObject, GridObject;
-	Texture CubeTexture, ArcTexture;
+	GLInstance CubeObject, ArcObject, GridObject;
 	Shader GridShader, MeshShader, ObjectShader, CubeShader;
 	IndexBuffer CubeMeshIBO, ArcMeshIBO;
+	VertexBuffer CubesPositions;
 
 	MomoEngine::TimeStep timePassed = 0.0f;
-	float deltaRot = 0.0f;
 	Window::Position cursorPos{ 0.0f, 0.0f };
 	glm::vec3 position = glm::vec3(0, 1.0f, 3.0f);
 	float horizontalAngle = 0.0f;
@@ -28,4 +27,6 @@ class SandboxApp : public MomoEngine::IApplication
 	virtual void OnDestroy () override;
 
 	void GenerateBuffers();
+public:
+	SandboxApp();
 };

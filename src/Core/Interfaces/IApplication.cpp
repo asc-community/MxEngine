@@ -36,7 +36,9 @@ namespace MomoEngine
 			.UseCulling()
 			.UseSampling()
 			.UseTextureMagFilter(MagFilter::NEAREST)
-			.UseTextureMinFilter(MinFilter::LINEAR_MIPMAP_LINEAR)
+			.UseTextureMinFilter(MinFilter::NEAREST_MIPMAP_LINEAR)
+			.UseTextureWrap(WrapType::REPEAT, WrapType::REPEAT)
+			.UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA)
 			.UseClearColor(0.0f, 0.0f, 0.0f);
 		
 		TimeStep initStart = Window.GetTime();
@@ -46,7 +48,7 @@ namespace MomoEngine
 		auto time = BeautifyTime(initEnd - initStart);
 		Logger::Instance().Debug("MomoEngine::Application", "Application::OnCreate returned in " + time);
 
-		float secondEnd = 0.0f, frameEnd = 0.0f;
+		float secondEnd = Window.GetTime(), frameEnd = Window.GetTime();
 		int fpsCounter = 0;
 
 		Logger::Instance().Debug("MomoEngine::Application", "starting main loop...");
@@ -64,7 +66,17 @@ namespace MomoEngine
 			frameEnd = now;
 
 			this->GetRenderer().Clear();
+			float onUpdateStart = this->Window.GetTime();
 			this->OnUpdate();
+			float onUpdateEnd = this->Window.GetTime();
+			if (onUpdateEnd - onUpdateStart > 16.66f)
+			{
+				if (onUpdateEnd - onUpdateStart > 33.33f)
+					Logger::Instance().Error("MomoEngine::Application", "Application::OnUpdate running more than 33.33ms");
+				else
+					Logger::Instance().Warning("MomoEngine::Application", "Application::OnUpdate running more than 16.66ms");
+			}
+
 			this->GetRenderer().Finish();
 			this->Window.PullEvents();
 		}

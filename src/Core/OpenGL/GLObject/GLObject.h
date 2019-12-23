@@ -1,10 +1,12 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <memory>
 #include "Core/OpenGL/Texture/Texture.h"
 #include "Core/OpenGL/VertexBuffer/VertexBuffer.h"
 #include "Core/OpenGL/VertexArray/VertexArray.h"
+#include "Utilities/Memory/Memory.h"
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 namespace MomoEngine
 {
@@ -18,15 +20,15 @@ namespace MomoEngine
 		#ifdef _DEBUG
 		std::vector<GLfloat> buffer;
 		#endif
-		std::unique_ptr<VertexBuffer> VBO;
+		UniqueRef<VertexBuffer> VBO;
 		VertexArray VAO;
 
 		VertexArray LoadFromFile(const std::string& filepath);
 		VertexArray LoadFromBuffer(const std::vector<GLfloat>& buffer, bool useTexture, bool useNormal);
 	public:
-		GLObject();
-		GLObject(const std::string& filepath);
-		GLObject(const std::vector<GLfloat>& bufferSource, size_t vertexCount, bool useTexture = false, bool useNormal = false);
+		explicit GLObject();
+		explicit GLObject(const std::string& filepath);
+		explicit GLObject(const std::vector<GLfloat>& bufferSource, size_t vertexCount, bool useTexture = false, bool useNormal = false);
 		GLObject(GLObject&) = delete;
 		GLObject(GLObject&&) = default;
 
@@ -38,5 +40,35 @@ namespace MomoEngine
 		size_t GetVertexCount() const;
 		bool HasTextureData() const;
 		bool HasNormalData() const;
+	};
+
+	class GLInstance
+	{
+	public:
+		glm::mat4x4 Model;
+		Ref<Texture> Texture;
+	protected:
+		Ref<GLObject> object;
+	public:
+		GLInstance();
+		GLInstance(const Ref<GLObject>& object);
+
+		void Load(const Ref<GLObject>& object);
+		Ref<GLObject>& GetGLObject();
+		const Ref<GLObject>& GetGLObject() const;
+
+		GLInstance& Scale(float scale);
+		GLInstance& Scale(float scaleX, float scaleY, float scaleZ);
+		GLInstance& Scale(const glm::vec3& scale);
+
+		GLInstance& Rotate(float angle, const glm::vec3& rotate);
+		GLInstance& RotateX(float angle);
+		GLInstance& RotateY(float angle);
+		GLInstance& RotateZ(float angle);
+
+		GLInstance& Translate(float x, float y, float z);
+		GLInstance& TranslateX(float x);
+		GLInstance& TranslateY(float y);
+		GLInstance& TranslateZ(float z);
 	};
 }
