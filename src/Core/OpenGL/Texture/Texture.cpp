@@ -2,6 +2,7 @@
 #include "Core/OpenGL/GLUtils/GLUtils.h"
 #include "Utilities/ImageLoader/ImageLoader.h"
 #include "Utilities/Logger/Logger.h"
+#include "Utilities/Time/Time.h"
 
 void MomoEngine::Texture::FreeTexture()
 {
@@ -34,6 +35,7 @@ void MomoEngine::Texture::Load(const std::string& filepath, bool genMipmaps, boo
 {
 	this->FreeTexture();
 
+	TimeStep texBeginLoad = Time::Current();
 	GLCALL(glGenTextures(1, &id));
 
 	Image image = ImageLoader::LoadImage(filepath, flipImage);
@@ -53,6 +55,9 @@ void MomoEngine::Texture::Load(const std::string& filepath, bool genMipmaps, boo
 	{
 		GLCALL(glGenerateMipmap(GL_TEXTURE_2D));
 	}
+	TimeStep texEndLoad = Time::Current();
+	Logger::Instance().Debug("MomoEngine::Texture", "texture loaded from file: " + 
+		filepath + " in " + BeautifyTime(texEndLoad - texBeginLoad));
 
 	#ifdef _DEBUG
 	this->texture = image.data;

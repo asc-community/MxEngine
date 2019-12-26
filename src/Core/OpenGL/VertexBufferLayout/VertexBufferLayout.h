@@ -26,6 +26,6 @@ namespace MomoEngine
 
 		unsigned int GetStride() const;
 
-		void PushFloat(unsigned int count);
+		void PushFloat(size_t count);
 	};
 }

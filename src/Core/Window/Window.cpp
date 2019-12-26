@@ -2,6 +2,7 @@
 #include "Utilities/Logger/Logger.h"
 #include "Core/OpenGL/GLInitializer/GLInitializer.h"
 #include <GLFW/glfw3.h>
+#include "Utilities/Time/Time.h"
 
 namespace MomoEngine
 {
@@ -12,9 +13,9 @@ namespace MomoEngine
 		Logger::Instance().Debug("MomoEngine::Window", "window object created");
 	}
 
-	int Window::GetWidth() const
+	float Window::GetWidth() const
 	{
-		return this->width;
+		return float(this->width);
 	}
 
 	bool Window::IsOpen() const
@@ -27,9 +28,9 @@ namespace MomoEngine
 		return !glfwWindowShouldClose(window);
 	}
 
-	float Window::GetTime() const
+	TimeStep Window::GetTime() const
 	{
-		return static_cast<float>(glfwGetTime());
+		return Time::Current();
 	}
 
 	void Window::PullEvents() const
@@ -155,6 +156,12 @@ namespace MomoEngine
 		return *this;
 	}
 
+	Window& Window::UseSize(int width, int height)
+	{
+		glfwSetWindowSize(this->window, width, height);
+		return *this;
+	}
+
 	Window::~Window()
 	{
 		this->Close();
@@ -162,8 +169,8 @@ namespace MomoEngine
 		Logger::Instance().Debug("MomoEngine::Window", "window destroyed");
 	}
 
-	int Window::GetHeight() const
+	float Window::GetHeight() const
 	{
-		return this->height;
+		return float(this->height);
 	}
 }

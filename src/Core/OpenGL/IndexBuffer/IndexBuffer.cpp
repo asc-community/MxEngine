@@ -13,6 +13,13 @@ namespace MomoEngine
 		Load(data);
 	}
 
+	IndexBuffer::IndexBuffer(IndexBuffer&& ibo) noexcept
+		: count(ibo.count)
+	{
+		this->id = ibo.id;
+		ibo.id = 0;
+	}
+
 	IndexBuffer::~IndexBuffer()
 	{
 		if (this->id != 0)

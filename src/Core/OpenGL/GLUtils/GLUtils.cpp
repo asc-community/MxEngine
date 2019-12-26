@@ -3,9 +3,12 @@
 
 #include <fstream>
 #include <string>
+#include <set>
 
 namespace MomoEngine
 {
+	static std::set<int> ExistingErrors;
+
 	void GlClearErrors()
 	{
 		while (glGetError() != GL_NO_ERROR);
@@ -17,6 +20,9 @@ namespace MomoEngine
 		while (GLenum error = glGetError())
 		{
 			success = false;
+			if (ExistingErrors.find(error) != ExistingErrors.end())
+				continue;
+			ExistingErrors.insert(error);
 			const char* message = (const char*)gluErrorString(error);
 			setlocale(LC_ALL, "ru");
 			Logger::Instance().Error("OpenGL", 

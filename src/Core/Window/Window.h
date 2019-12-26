@@ -2,6 +2,7 @@
 
 #include <string>
 #include <bitset>
+#include "Utilities/Time/Time.h"
 
 struct GLFWwindow; // from glfw header file
 
@@ -165,10 +166,10 @@ namespace MomoEngine
 		Window& operator=(const Window&) = delete;
 		~Window();
 
-		int GetHeight() const;
-		int GetWidth() const;
+		float GetHeight() const;
+		float GetWidth() const;
 		bool IsOpen() const;
-		float GetTime() const;
+		TimeStep GetTime() const;
 		void PullEvents() const;
 
 		struct Position
@@ -192,5 +193,6 @@ namespace MomoEngine
 		Window& UseCursorMode(CursorMode cursor);
 		Window& UseTitle(const std::string& title);
 		Window& UsePosition(int xpos, int ypos);
+		Window& UseSize(int width, int height);
 	};
 }

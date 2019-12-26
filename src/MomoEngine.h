@@ -9,3 +9,4 @@
 #include "Core/OpenGL/VertexArray/VertexArray.h"
 #include "Core/OpenGL/Shader/Shader.h"
 #include "Utilities/Logger/Logger.h"
+#include "Core/Camera/Camera.h"

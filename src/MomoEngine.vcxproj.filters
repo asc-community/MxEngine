@@ -24,6 +24,9 @@
     <ClInclude Include="MomoEngine\EntryPoint.h" />
     <ClInclude Include="Utilities\Memory\Memory.h" />
     <ClInclude Include="Utilities\Time\Time.h" />
+    <ClInclude Include="Core\Interfaces\IDrawable.h" />
+    <ClInclude Include="Core\Camera\Camera.h" />
+    <ClInclude Include="Utilities\ObjectLoader\ObjectLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\OpenGL\GLObject\GLObject.cpp" />
@@ -41,6 +44,8 @@
     <ClCompile Include="Core\OpenGL\GLInitializer\GLInitializer.cpp" />
     <ClCompile Include="Core\Interfaces\IApplication.cpp" />
     <ClCompile Include="Utilities\Time\Time.cpp" />
+    <ClCompile Include="Core\Camera\Camera.cpp" />
+    <ClCompile Include="Utilities\ObjectLoader\ObjectLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\cube_fragment.glsl" />

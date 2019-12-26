@@ -8,6 +8,8 @@
     <Object Include="Resources\objects\arc170.obj" />
     <Object Include="Resources\objects\crate.obj" />
     <Object Include="Resources\objects\grid.obj" />
+    <Object Include="Resources\objects\death_star.obj" />
+    <Object Include="Resources\objects\destroyer.obj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\cube_vertex.glsl" />
@@ -17,10 +19,5 @@
     <None Include="Resources\shaders\object_vertex.glsl" />
     <None Include="Resources\shaders\mesh_fragment.glsl" />
     <None Include="Resources\shaders\grid_fragment.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Resources\textures\arc170.jpg" />
-    <Image Include="Resources\textures\crate.jpg" />
-    <Image Include="Resources\textures\grid.png" />
   </ItemGroup>
 </Project>

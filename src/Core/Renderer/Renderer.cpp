@@ -9,7 +9,7 @@ namespace MomoEngine
 		this->clearMask |= GL_COLOR_BUFFER_BIT;
 	}
 
-	void RendererImpl::DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const
+	void RendererImpl::DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const MomoEngine::Shader& shader) const
 	{
 		vao.Bind();
 		ibo.Bind();
@@ -17,14 +17,14 @@ namespace MomoEngine
 		GLCALL(glDrawElements(GL_TRIANGLES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexType(), nullptr));
 	}
 
-	void RendererImpl::DrawTriangles(const VertexArray& vao, size_t vertexCount, const Shader& shader) const
+	void RendererImpl::DrawTriangles(const VertexArray& vao, size_t vertexCount, const MomoEngine::Shader& shader) const
 	{
 		vao.Bind();
 		shader.Bind();
 		GLCALL(glDrawArrays(GL_TRIANGLES, 0, (GLsizei)vertexCount));
 	}
 
-	void RendererImpl::DrawLines(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const
+	void RendererImpl::DrawLines(const VertexArray& vao, const IndexBuffer& ibo, const MomoEngine::Shader& shader) const
 	{
 		vao.Bind();
 		ibo.Bind();
@@ -32,7 +32,7 @@ namespace MomoEngine
 		GLCALL(glDrawElements(GL_LINES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexType(), nullptr));
 	}
 
-	void RendererImpl::DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const
+	void RendererImpl::DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const MomoEngine::Shader& shader, size_t count) const
 	{
 		vao.Bind();
 		ibo.Bind();
@@ -40,14 +40,96 @@ namespace MomoEngine
 		GLCALL(glDrawElementsInstanced(GL_LINES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexType(), nullptr, (GLsizei)count));
 	}
 
-	void RendererImpl::DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const
+	void RendererImpl::DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, const MomoEngine::Shader& shader, size_t count) const
 	{
 		vao.Bind();
 		shader.Bind();
 		GLCALL(glDrawArraysInstanced(GL_LINES, 0, (GLsizei)vertexCount, (GLsizei)count));
 	}
 
-	void RendererImpl::DrawTrianglesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const
+	void RendererImpl::Draw(const IDrawable& object) const
+	{
+		size_t iterator = object.GetIterator();
+		auto MVP = this->Camera.GetMatrix() * object.GetModel();
+		while (!object.IsLast(iterator))
+		{
+			const auto& renderObject = object.GetCurrent(iterator);
+			if (renderObject.HasTexture())
+			{
+				renderObject.GetTexture().Bind();
+				if (object.HasShader())
+				{
+					object.GetShader().SetUniformMat4("MVP", MVP);
+					DrawTriangles(renderObject.GetVAO(), renderObject.GetVertexCount(), object.GetShader());
+				}
+				else
+				{
+					this->ObjectShader->SetUniformMat4("MVP", MVP);
+					DrawTriangles(renderObject.GetVAO(), renderObject.GetVertexCount(), *this->ObjectShader);
+				}
+			}
+			iterator = object.GetNext(iterator);
+		}
+	}
+
+	void RendererImpl::DrawInstanced(const IDrawable& object, size_t count) const
+	{
+		size_t iterator = object.GetIterator();
+		auto MVP = this->Camera.GetMatrix() * object.GetModel();
+		while (!object.IsLast(iterator))
+		{
+			const auto& renderObject = object.GetCurrent(iterator);
+			if (renderObject.HasTexture())
+			{
+				renderObject.GetTexture().Bind();
+				if (object.HasShader())
+				{
+					object.GetShader().SetUniformMat4("MVP", MVP);
+					DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetVertexCount(), object.GetShader(), count);
+				}
+				else
+				{
+					this->ObjectShader->SetUniformMat4("MVP", MVP);
+					DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetVertexCount(), *this->ObjectShader, count);
+				}
+			}
+			iterator = object.GetNext(iterator);
+		}
+	}
+
+	void RendererImpl::DrawObjectMesh(const IDrawable& object) const
+	{
+		size_t iterator = object.GetIterator();
+		auto MVP = this->Camera.GetMatrix() * object.GetModel();
+		while (!object.IsLast(iterator))
+		{
+			const auto& renderObject = object.GetCurrent(iterator);
+			if (renderObject.HasTexture())
+			{
+				this->MeshShader->SetUniformMat4("MVP", MVP);
+				DrawLines(renderObject.GetVAO(), renderObject.GetIBO(), *this->MeshShader);
+			}
+			iterator = object.GetNext(iterator);
+		}
+	}
+
+	void RendererImpl::DrawObjectMeshInstanced(const IDrawable& object, size_t count) const
+	{
+		size_t iterator = object.GetIterator();
+		auto MVP = this->Camera.GetMatrix() * object.GetModel();
+		while (!object.IsLast(iterator))
+		{
+			const auto& renderObject = object.GetCurrent(iterator);
+			if (renderObject.HasTexture())
+			{
+				this->MeshShader->SetUniformMat4("MVP", MVP);
+				DrawLinesInstanced(renderObject.GetVAO(), renderObject.GetIBO(), *this->MeshShader, count);
+			}
+			iterator = object.GetNext(iterator);
+		}
+	}
+
+	void RendererImpl::DrawTrianglesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const MomoEngine::Shader& shader, size_t count) const
 	{
 		vao.Bind();
 		ibo.Bind();
@@ -55,14 +137,14 @@ namespace MomoEngine
 		GLCALL(glDrawElementsInstanced(GL_TRIANGLES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexType(), nullptr, (GLsizei)count));
 	}
 
-	void RendererImpl::DrawTrianglesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const
+	void RendererImpl::DrawTrianglesInstanced(const VertexArray& vao, size_t vertexCount, const MomoEngine::Shader& shader, size_t count) const
 	{
 		vao.Bind();
 		shader.Bind();
 		GLCALL(glDrawArraysInstanced(GL_TRIANGLES, 0, (GLsizei)vertexCount, (GLsizei)count));
 	}
 
-	void RendererImpl::DrawLines(const VertexArray& vao, size_t vertexCount, const Shader& shader) const
+	void RendererImpl::DrawLines(const VertexArray& vao, size_t vertexCount, const MomoEngine::Shader& shader) const
 	{
 		vao.Bind();
 		shader.Bind();
@@ -185,5 +267,31 @@ namespace MomoEngine
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (GLenum)textureX));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (GLenum)textureY));
 		return *this;
+	}
+
+	RendererImpl& RendererImpl::UseAnisotropicFiltering(float factor)
+	{
+		if (!glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
+		{
+			Logger::Instance().Warning("OpenGL", "anisotropic filtering is not supported");
+		}
+		else
+		{
+			GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, factor));
+			Logger::Instance().Debug("OpenGL", "set anisotropic filtering factor to " + std::to_string(factor));
+		}
+		return *this;
+	}
+
+	float RendererImpl::GetLargestAnisotropicFactor() const
+	{
+		if (!glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
+		{
+			Logger::Instance().Warning("OpenGL", "anisotropic filtering is not supported");
+			return 0.0f;
+		}
+		float factor;
+		GLCALL(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &factor));
+		return factor;
 	}
 }

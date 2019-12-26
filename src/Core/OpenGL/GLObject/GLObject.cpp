@@ -3,265 +3,100 @@
 #include <fstream>
 #include <sstream>
 #include <glm/glm.hpp>
+#include "Utilities/Time/Time.h"
+#include "Utilities/ObjectLoader/ObjectLoader.h"
 
 namespace MomoEngine
 {
-	VertexArray GLObject::LoadFromFile(const std::string& filepath)
+	void GLObject::LoadFromFile(const std::string& filepath)
 	{
-		std::vector<GLfloat> buffer;
-		std::ifstream fs(filepath);
-		if (fs.bad())
+		TimeStep objBeginLoad = Time::Current();
+		auto objectInfo = ObjectLoader::Load(filepath);
+		TimeStep objEndLoad = Time::Current();
+		if (objectInfo.isSuccess)
 		{
-			Logger::Instance().Warning("MomoEngine::GLObject", "object file was not found: " + filepath);
-			return VertexArray();
+			Logger::Instance().Debug("MomoEngine::GLObject", "object loaded from file: " +
+				filepath + " in " + BeautifyTime(objEndLoad - objBeginLoad));
 		}
-		std::vector<glm::vec3> verteces;
-		std::vector<glm::vec3> normals;
-		std::vector<glm::vec2> texCoords;
-		std::string type;
-		std::stringstream file; 
-		file << fs.rdbuf();
-		while (file >> type)
+		else
 		{
-			if(type == "v")
-			{
-				glm::vec3 v;
-				file >> v.x >> v.y >> v.z;
-				verteces.push_back(v);
-			}
-			else if (type == "vt")
-			{
-				glm::vec2 vt;
-				file >> vt.x >> vt.y;
-				texCoords.push_back(vt);
-			}
-			else if (type == "vn")
-			{
-				glm::vec3 vn;
-				file >> vn.x >> vn.y >> vn.z;
-				normals.push_back(vn);
-			}
-			else if (type == "vp")
-			{
-				Logger::Instance().Error("MomoEngine::GLObject",
-					"parameter space vertices are not supported by now");
-				vertexCount = 0;
-				buffer.clear();
-				return VertexArray();
-			}
-			else if (type == "f")
-			{
-				for (int i = 0; i < 3; i++)
-				{
-					this->vertexCount++;
-					std::string face;
-					file >> face;
-					// vertex data
-					auto v = face.substr(0, face.find('/'));
-					size_t vertexIndex = std::stoul(v) - 1;
-					if (vertexIndex >= verteces.size())
-					{
-						Logger::Instance().Error("MomoEngine::GLObject",
-							"error while loading object file: vertex index too big: " + v);
-						vertexCount = 0;
-						buffer.clear();
-						return VertexArray();
-					}
-					buffer.push_back(verteces[vertexIndex].x);
-					buffer.push_back(verteces[vertexIndex].y);
-					buffer.push_back(verteces[vertexIndex].z);
-					face.erase(0, v.size() + 1);
-					if (face.empty())
-					{
-						if (this->useTexture)
-						{
-							Logger::Instance().Error("MomoEngine::GLObject",
-								"error while loading object file: texture index undefined"
-							);
-							vertexCount = 0;
-							buffer.clear();
-							return VertexArray();
-						}
-						else
-							continue;
-					}
-					// texture data
-					auto vt = face.substr(0, face.find('/'));
-					if (!vt.empty())
-					{
-						this->useTexture = true;
-						size_t textureIndex = std::stoul(vt) - 1;
-						if (textureIndex >= texCoords.size())
-						{
-							Logger::Instance().Error("MomoEngine::GLObject",
-								"error while loading object file: texture index too big: " + vt);
-							vertexCount = 0;
-							buffer.clear();
-							return VertexArray();
-						}
-						buffer.push_back(texCoords[textureIndex].x);
-						buffer.push_back(texCoords[textureIndex].y);
-					}
-					else if (this->useTexture)
-					{
-						Logger::Instance().Error("MomoEngine::GLObject",
-							"error while loading object file: texture index undefined"
-						);
-						vertexCount = 0;
-						buffer.clear();
-						return VertexArray();
-					}
-					face.erase(0, vt.size() + 1);
-					if (face.empty())
-					{
-						if (this->useNormal)
-						{
-							Logger::Instance().Error("MomoEngine::GLObject",
-								"error while loading object file: normal index undefined"
-							);
-							vertexCount = 0;
-							buffer.clear();
-							return VertexArray();
-						}
-						else
-							continue;
-					}
-
-					// normal data
-					auto vn = face;
-					if (!vn.empty())
-					{
-						this->useNormal = true;
-						size_t normalIndex = std::stoul(vn) - 1;
-						if (normalIndex >= normals.size())
-						{
-							Logger::Instance().Error("MomoEngine::GLObject",
-								"error while loading object file: normal index too big: " + vn);
-							vertexCount = 0;
-							buffer.clear();
-							return VertexArray();
-						}
-						buffer.push_back(normals[normalIndex].x);
-						buffer.push_back(normals[normalIndex].y);
-						buffer.push_back(normals[normalIndex].z);
-					}
-					else if (this->useNormal)
-					{
-						Logger::Instance().Error("MomoEngine::GLObject",
-							"error while loading object file: normal index undefined"
-						);
-						vertexCount = 0;
-						buffer.clear();
-						return VertexArray();
-					}
-				}
-			}
-			else if (type == "0")
-			{
-				continue; // extra parameter from vt
-			}
-			else if (type[0] == '#')
-			{
-				getline(file, type); // read comment
-			}
-			else
-			{
-				Logger::Instance().Error("MomoEngine::GLObject", "unexpected symbol in object file: " + type);
-				vertexCount = 0;
-				buffer.clear();
-				return VertexArray();
-			}
+			Logger::Instance().Debug("MomoEngine::GLObject", "failed to load object from file: " +
+				filepath + " in " + BeautifyTime(objEndLoad - objBeginLoad));
 		}
-		#ifdef _DEBUG
-		this->buffer = buffer;
-		#endif
-		return LoadFromBuffer(buffer, this->useTexture, this->useNormal);
-	}
+		this->subObjects.reserve(objectInfo.groups.size());
+		std::unordered_map<std::string, Ref<Texture>> textures;
+		for (const auto& group : objectInfo.groups)
+		{
+			GLRenderObject object;
+			object.vertexCount = group.faces.size();
+			object.useTexture = group.useTexture;
+			object.useNormal = group.useNormal;
+			object.VBOs.emplace_back(group.buffer, UsageType::STATIC_DRAW);
 
-	VertexArray GLObject::LoadFromBuffer(const std::vector<GLfloat>& buffer, bool useTexture, bool useNormal)
-	{
-		VertexArray VAO;
-		this->VBO = MakeUnique<VertexBuffer>(buffer, UsageType::STATIC_DRAW);
-		VertexBufferLayout VBL;
-		VBL.PushFloat(3);
-		if (useTexture) VBL.PushFloat(2);
-		if (useNormal) VBL.PushFloat(3);
-		VAO.AddBuffer(*VBO, VBL);
-		#ifdef _DEBUG
-		this->buffer = buffer;
-		#endif
-		return VAO;
-	}
+			VertexBufferLayout VBL;
+			VBL.PushFloat(3);
+			if (group.useTexture) VBL.PushFloat(3);
+			if (group.useNormal) VBL.PushFloat(3);
+			object.VAO.AddBuffer(object.VBOs.back(), VBL);
 
-	GLObject::GLObject()
-		: useTexture(false), useNormal(false), vertexCount(0), VAO()
-	{
+			if (group.useTexture)
+			{
+				if (group.material != nullptr && textures.find(group.material->map_Ka) == textures.end())
+					textures[group.material->map_Ka] = MakeRef<Texture>(group.material->map_Ka);
+				object.Texture = textures[group.material->map_Ka];
+			}
+
+			this->subObjects.push_back(std::move(object));
+		}
 	}
 
 	GLObject::GLObject(const std::string& filepath)
-		: useTexture(false), useNormal(false), vertexCount(0), VAO(LoadFromFile(filepath))
 	{
-		
+		LoadFromFile(filepath);
 	}
-
-	GLObject::GLObject(const std::vector<GLfloat>& bufferSource, size_t vertexCount, bool useTexture, bool useNormal)
-		: useTexture(useTexture), useNormal(useNormal), vertexCount(vertexCount), VAO(LoadFromBuffer(bufferSource, useTexture, useNormal)) { }
 
 	void GLObject::Load(const std::string& filepath)
 	{
-		this->VAO = LoadFromFile(filepath);
+		LoadFromFile(filepath);
 	}
 
-	void GLObject::Load(const std::vector<GLfloat>& buffer, size_t vertexCount, bool useTexture, bool useNormal)
+	std::vector<GLRenderObject>& GLObject::GetRenderObjects()
 	{
-		this->VAO = LoadFromBuffer(buffer, useTexture, useNormal);
-		this->vertexCount = vertexCount;
+		return this->subObjects;
 	}
 
-	VertexArray& GLObject::GetVertexData()
+	void GLObject::AddInstanceBuffer(const std::vector<float>& buffer, size_t count, UsageType type)
 	{
-		return this->VAO;
-	}
-
-	std::vector<unsigned int> GLObject::GeneratePolygonIndicies() const
-	{
-		std::vector<GLuint> indicies;
-		indicies.reserve(this->vertexCount * 3);
-		for (int i = 0; i < this->vertexCount; i += 3)
+		for (auto& object : this->subObjects)
 		{
-			indicies.push_back(i + 0);
-			indicies.push_back(i + 1);
-			indicies.push_back(i + 1);
-			indicies.push_back(i + 2);
-			indicies.push_back(i + 2);
-			indicies.push_back(i + 0);
+			object.VBOs.emplace_back(buffer, type);
+			VertexBufferLayout VBL;
+			VBL.PushFloat(count);
+			object.VAO.AddInstancedBuffer(object.VBOs.back(), VBL);
 		}
-		return indicies;
 	}
 
-	size_t GLObject::GetVertexCount() const
+	void GLObject::AddInstanceBuffer(const GeneratorFunction& generator, size_t componentCount, size_t count, UsageType type)
 	{
-		return this->vertexCount;
-	}
-
-	bool GLObject::HasTextureData() const
-	{
-		return this->useTexture;
-	}
-
-	bool GLObject::HasNormalData() const
-	{
-		return this->useNormal;
+		std::vector<float> buffer;
+		buffer.reserve(componentCount * count);
+		for (size_t i = 0; i < count; i++)
+		{
+			for (size_t j = 0; j < componentCount; j++)
+			{
+				buffer.push_back(generator(int(i), int(j)));
+			}
+		}
+		this->AddInstanceBuffer(buffer, componentCount, type);
 	}
 
 	GLInstance::GLInstance()
 	{
-		this->Model = glm::mat4x4(1.0f);
+		
 	}
 
 	GLInstance::GLInstance(const Ref<GLObject>& object)
 	{
-		this->Model = glm::mat4x4(1.0f);
 		Load(object);
 	}
 
@@ -292,13 +127,17 @@ namespace MomoEngine
 
 	GLInstance& GLInstance::Scale(const glm::vec3& scale)
 	{
-		this->Model = glm::scale(this->Model, scale);
+		needUpdate = true;
+		this->scale.x *= scale.x;
+		this->scale.y *= scale.y;
+		this->scale.z *= scale.z;
 		return *this;
 	}
 
 	GLInstance& GLInstance::Rotate(float angle, const glm::vec3& vec)
 	{
-		this->Model = glm::rotate(this->Model, angle, vec);
+		needUpdate = true;
+		this->rotation += vec * angle;
 		return *this;
 	}
 
@@ -319,7 +158,8 @@ namespace MomoEngine
 
 	GLInstance& GLInstance::Translate(float x, float y, float z)
 	{
-		this->Model = glm::translate(this->Model, glm::vec3(x, y, z));
+		needUpdate = true;
+		this->translation += glm::vec3(x, y, z);
 		return *this;
 	}
 
@@ -337,4 +177,92 @@ namespace MomoEngine
 	{
 		return Translate(0.0f, 0.0f, z);
 	}
-} 
+
+	size_t GLInstance::GetIterator() const
+	{
+		return 0;
+	}
+
+	bool GLInstance::IsLast(size_t iterator) const
+	{
+		return this->GetGLObject()->GetRenderObjects().size() == iterator;
+	}
+
+	size_t GLInstance::GetNext(size_t iterator) const
+	{
+		return iterator + 1;
+	}
+
+	const IRenderable& GLInstance::GetCurrent(size_t iterator) const
+	{
+		return this->GetGLObject()->GetRenderObjects()[iterator];
+	}
+
+	const glm::mat4x4& GLInstance::GetModel() const
+	{
+		if (needUpdate)
+		{
+			this->Model = glm::mat4x4(1.0f);
+			this->Model = glm::translate(this->Model, this->translation);
+			this->Model = glm::rotate(this->Model, this->rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+			this->Model = glm::rotate(this->Model, this->rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+			this->Model = glm::rotate(this->Model, this->rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+			this->Model = glm::scale(this->Model, this->scale);
+			needUpdate = false;
+		}
+		return this->Model;
+	}
+
+	bool GLInstance::HasShader() const
+	{
+		return this->Shader != nullptr;
+	}
+
+	const MomoEngine::Shader& GLInstance::GetShader() const
+	{
+		return *this->Shader;
+	}
+
+	void GLRenderObject::GenerateMeshIndicies() const
+	{
+		std::vector<unsigned int> indicies;
+		indicies.reserve(this->vertexCount * 3);
+		for (int i = 0; i < this->vertexCount; i += 3)
+		{
+			indicies.push_back(i + 0);
+			indicies.push_back(i + 1);
+			indicies.push_back(i + 1);
+			indicies.push_back(i + 2);
+			indicies.push_back(i + 2);
+			indicies.push_back(i + 0);
+		}
+		this->IBO.Load(indicies);
+		this->meshGenerated = true;
+	}
+
+	const VertexArray& GLRenderObject::GetVAO() const
+	{
+		return this->VAO;
+	}
+
+	const IndexBuffer& GLRenderObject::GetIBO() const
+	{
+		if (!this->meshGenerated) GenerateMeshIndicies();
+		return this->IBO;
+	}
+
+	const Texture& GLRenderObject::GetTexture() const
+	{
+		return *this->Texture;
+	}
+
+	size_t GLRenderObject::GetVertexCount() const
+	{
+		return this->vertexCount;
+	}
+
+	bool GLRenderObject::HasTexture() const
+	{
+		return this->useTexture;
+	}
+}

@@ -20,7 +20,7 @@ namespace MomoEngine
 		this->Window.Close();
 	}
 
-	void IApplication::Run()
+	void IApplication::CreateDefaultContext()
 	{
 		this->Window
 			.UseProfile(3, 3, Profile::CORE)
@@ -40,7 +40,10 @@ namespace MomoEngine
 			.UseTextureWrap(WrapType::REPEAT, WrapType::REPEAT)
 			.UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA)
 			.UseClearColor(0.0f, 0.0f, 0.0f);
-		
+	}
+
+	void IApplication::Run()
+	{
 		TimeStep initStart = Window.GetTime();
 		Logger::Instance().Debug("MomoEngine::Application", "calling Application::OnCreate()");
 		this->OnCreate();

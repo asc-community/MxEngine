@@ -19,8 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\Camera\Camera.h" />
     <ClInclude Include="Core\Interfaces\IApplication.h" />
     <ClInclude Include="Core\Interfaces\IBindable.h" />
+    <ClInclude Include="Core\Interfaces\IDrawable.h" />
     <ClInclude Include="Core\OpenGL\GLInitializer\GLInitializer.h" />
     <ClInclude Include="Core\OpenGL\GLObject\GLObject.h" />
     <ClInclude Include="Core\OpenGL\GLUtils\GLUtils.h" />
@@ -37,6 +39,7 @@
     <ClInclude Include="Utilities\ImageLoader\ImageLoader.h" />
     <ClInclude Include="Utilities\Logger\Logger.h" />
     <ClInclude Include="Utilities\Memory\Memory.h" />
+    <ClInclude Include="Utilities\ObjectLoader\ObjectLoader.h" />
     <ClInclude Include="Utilities\SingletonHolder\CreationPolicy.h" />
     <ClInclude Include="Utilities\SingletonHolder\LifetimePolicy.h" />
     <ClInclude Include="Utilities\SingletonHolder\SingletonHolder.h" />
@@ -44,6 +47,7 @@
     <ClInclude Include="Utilities\Time\Time.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Core\Camera\Camera.cpp" />
     <ClCompile Include="Core\Interfaces\IApplication.cpp" />
     <ClCompile Include="Core\OpenGL\GLInitializer\GLInitializer.cpp" />
     <ClCompile Include="Core\OpenGL\GLObject\GLObject.cpp" />
@@ -58,6 +62,7 @@
     <ClCompile Include="Core\Window\Window.cpp" />
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
     <ClCompile Include="Utilities\Logger\Logger.cpp" />
+    <ClCompile Include="Utilities\ObjectLoader\ObjectLoader.cpp" />
     <ClCompile Include="Utilities\Time\Time.cpp" />
   </ItemGroup>
   <ItemGroup>

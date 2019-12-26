@@ -25,7 +25,7 @@ namespace MomoEngine
 		explicit VertexBuffer(const std::vector<float>& data, UsageType type);
 		~VertexBuffer();
 		VertexBuffer(const VertexBuffer&) = delete;
-		VertexBuffer(VertexBuffer&&) = delete;
+		VertexBuffer(VertexBuffer&& vbo);
 
 		void Load(const std::vector<float>& data, UsageType type);
 

@@ -18,7 +18,7 @@ namespace MomoEngine
 		explicit IndexBuffer();
 		explicit IndexBuffer(const std::vector<IndexType>& data);
 		IndexBuffer(const IndexBuffer&) = delete;
-		IndexBuffer(IndexBuffer&&) = delete;
+		IndexBuffer(IndexBuffer&& ibo) noexcept;
 		~IndexBuffer();
 
 		void Load(const std::vector<IndexType>& data);

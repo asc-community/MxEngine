@@ -61,10 +61,13 @@ namespace MomoEngine
 			Logger::Instance().Warning("MomoEngine::Shader", "shader file is empty: " + fragmentShaderPath);
 		}
 
+		Logger::Instance().Debug("MomoEngine::Shader", "compiling vertex shader: " + vertexShaderPath);
 		unsigned int vertexShader = CompileShader(ShaderType::VERTEX_SHADER, vs);
+		Logger::Instance().Debug("MomoEngine::Shader", "compiling fragment shader: " + fragmentShaderPath);
 		unsigned int fragmentShader = CompileShader(ShaderType::FRAGMENT_SHADER, fs);
 
 		id = CreateProgram(vertexShader, fragmentShader);
+		Logger::Instance().Debug("MomoEngine::Shader", "shader program created with id = " + std::to_string(id));
 	}
 
 	void Shader::SetUniformVec4(const std::string& name, float f1, float f2, float f3, float f4) const
@@ -104,12 +107,13 @@ namespace MomoEngine
 		{
 			GLint length;
 			GLCALL(glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &length));
-			char* msg = (char*)malloc(length * sizeof(char));
-			GLCALL(glGetShaderInfoLog(shaderId, length, &length, msg));
+			std::string msg;
+			msg.resize(length);
+			GLCALL(glGetShaderInfoLog(shaderId, length, &length, &msg[0]));
+			msg.pop_back(); // extra \n character
 			Logger::Instance().Error("MomoEngine::Shader", (std::string)"failed to compile " +
 				(type == ShaderType::VERTEX_SHADER ? "vertex" : "fragment") + " shader");
 			Logger::Instance().Error("OpenGL", msg);
-			free(msg);
 		}
 
 		return shaderId;

@@ -1,7 +1,7 @@
 #include "Sandbox.h"
-#include <MomoEngine/EntryPoint.h>
 
 #include <algorithm>
+#include <array>
 
 MomoEngine::IApplication* MomoEngine::GetApplication()
 {
@@ -10,26 +10,70 @@ MomoEngine::IApplication* MomoEngine::GetApplication()
 
 SandboxApp::SandboxApp()
 {
+	//CreateDefaultContext();
+	this->ResourcePath = "Resources/";
 
+	this->Window
+		.UseProfile(3, 3, Profile::CORE)
+		.UseCursorMode(CursorMode::DISABLED)
+		.UseSampling(4)
+		.UseDoubleBuffering(false)
+		.UseTitle("MomoEngine Project")
+		.UsePosition(600, 300)
+		.Create();
+
+	this->GetRenderer()
+		.UseAnisotropicFiltering(this->GetRenderer().GetLargestAnisotropicFactor())
+		.UseDepthBuffer()
+		.UseCulling()
+		.UseSampling()
+		.UseTextureMagFilter(MagFilter::NEAREST)
+		.UseTextureMinFilter(MinFilter::LINEAR_MIPMAP_LINEAR)
+		.UseTextureWrap(WrapType::REPEAT, WrapType::REPEAT)
+		.UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA)
+		.UseClearColor(0.0f, 0.0f, 0.0f);
 }
 
 void SandboxApp::OnCreate()
 {
-	this->ResourcePath = "Resources/";
-	ArcObject          = MakeRef<GLObject>(ResourcePath + "objects/arc170.obj");
-	ArcObject.Texture  = MakeRef<Texture>(ResourcePath + "textures/arc170.jpg");
-	CubeObject         = MakeRef<GLObject>(ResourcePath + "objects/crate.obj");
-	CubeObject.Texture = MakeRef<Texture>(ResourcePath + "textures/crate.jpg");
-	GridObject         = MakeRef<GLObject>(ResourcePath + "objects/grid.obj");
-	GridObject.Texture = MakeRef<Texture>(ResourcePath + "textures/grid.png");
-	CubeShader.Load(ResourcePath + "shaders/cube_vertex.glsl", ResourcePath + "shaders/object_fragment.glsl");
-	GridShader.Load(ResourcePath + "shaders/grid_vertex.glsl", ResourcePath + "shaders/grid_fragment.glsl");
-	MeshShader.Load(ResourcePath + "shaders/mesh_vertex.glsl", ResourcePath + "shaders/mesh_fragment.glsl");
-	ObjectShader.Load(ResourcePath + "shaders/object_vertex.glsl", ResourcePath + "shaders/object_fragment.glsl");
+	this->GetRenderer().MeshShader = MakeRef<Shader>(
+		ResourcePath + "shaders/mesh_vertex.glsl", 
+		ResourcePath + "shaders/mesh_fragment.glsl");
 
-	GenerateBuffers();
+	this->GetRenderer().ObjectShader = MakeRef<Shader>(
+		ResourcePath + "shaders/object_vertex.glsl", 
+		ResourcePath + "shaders/object_fragment.glsl");
 
-	ArcObject.Scale(0.005f);
+	DestroyerObject = MakeRef<GLObject>(ResourcePath + "objects/destroyer/destroyer.obj");
+	DeathStarObject = MakeRef<GLObject>(ResourcePath + "objects/death_star/death_star.obj");
+	ArcObject       = MakeRef<GLObject>(ResourcePath + "objects/arc170/arc170.obj");
+	CubeObject      = MakeRef<GLObject>(ResourcePath + "objects/crate/crate.obj");
+	GridObject      = MakeRef<GLObject>(ResourcePath + "objects/grid/grid.obj");
+
+	GridObject.Shader = MakeRef<Shader>(ResourcePath + "shaders/grid_vertex.glsl", ResourcePath + "shaders/grid_fragment.glsl");
+	CubeObject.Shader = MakeRef<Shader>(ResourcePath + "shaders/cube_vertex.glsl", ResourcePath + "shaders/object_fragment.glsl");
+
+	CubeObject.GetGLObject()->AddInstanceBuffer([](int idx, int coord)
+		{
+			return std::array<float, 3>({ 5.0f * std::sin(0.2f * idx), 0.5f * idx, 5.0f * std::cos(0.2f * idx) })[coord];
+		}, 3, cubeCount);
+
+	ArcObject
+		.Scale(0.005f)
+		.Translate(10.0f, 0.0f, -10.0f);
+	DeathStarObject
+		.Scale(0.00005f)
+		.RotateX(glm::radians(-90.0f))
+		.RotateZ(glm::radians(-90.0f))
+		.Translate(-10.0f, 10.0f, -10.0f);
+
+	DestroyerObject.Translate(22000.0f, 0.0f, 20000.0f);
+	
+	Camera& camera = this->GetRenderer().Camera;
+	camera.SetZFar(100000.0f);
+	camera.SetFOV(65.0f);
+	camera.SetAspectRatio(Window.GetWidth(), Window.GetHeight());
+	camera.Translate(1.0f, 3.0f, 0.0f);
 }
 
 void SandboxApp::OnUpdate()
@@ -41,128 +85,77 @@ void SandboxApp::OnUpdate()
 		timePassed = 0.0f;
 	}
 	auto curPos = Window.GetCursorPos();
-
-	horizontalAngle -= mouseSpeed * this->TimeDelta * (curPos.x - cursorPos.x);
-	verticalAngle   -= mouseSpeed * this->TimeDelta * (curPos.y - cursorPos.y);
-	verticalAngle = std::max(-glm::half_pi<float>() + 0.01f, verticalAngle);
-	verticalAngle = std::min(glm::half_pi<float>() - 0.01f, verticalAngle);
-
+	Camera& camera = Renderer::Instance().Camera;
+	camera.Rotate(
+		mouseSpeed * this->TimeDelta * (cursorPos.x - curPos.x),
+		mouseSpeed * this->TimeDelta * (cursorPos.y - curPos.y)
+	);
 	cursorPos = curPos;
-
-	glm::vec3 direction(
-		cos(verticalAngle) * sin(horizontalAngle),
-		sin(verticalAngle),
-		cos(verticalAngle) * cos(horizontalAngle)
-	);
-
-	glm::vec3 forward(
-		sin(horizontalAngle),
-		0.0f,
-		cos(horizontalAngle)
-	);
-
-	glm::vec3 right = glm::vec3(
-		sin(horizontalAngle - glm::half_pi<float>()),
-		0.0f,
-		cos(horizontalAngle - glm::half_pi<float>())
-	);
-
-	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-
-	if (Window.IsKeyHolded(KeyCode::W))
+	// event handling 
 	{
-		position += forward * this->TimeDelta * speed;
+		if (Window.IsKeyHolded(KeyCode::W))
+		{
+			camera.TranslateForward(this->TimeDelta * speed);
+		}
+		if (Window.IsKeyHolded(KeyCode::S))
+		{
+			camera.TranslateForward(-this->TimeDelta * speed);
+		}
+		if (Window.IsKeyHolded(KeyCode::D))
+		{
+			camera.TranslateRight(this->TimeDelta * speed);
+		}
+		if (Window.IsKeyHolded(KeyCode::A))
+		{
+			camera.TranslateRight(-this->TimeDelta * speed);
+		}
+		if (Window.IsKeyHolded(KeyCode::SPACE))
+		{
+			camera.TranslateUp(this->TimeDelta * speed);
+		}
+		if (Window.IsKeyHolded(KeyCode::LEFT_SHIFT))
+		{
+			camera.TranslateUp(-this->TimeDelta * speed);
+		}
+		if (Window.IsKeyPressed(KeyCode::ESCAPE))
+		{
+			this->CloseApplication();
+		}
+		if (Window.IsKeyHolded(KeyCode::UP))
+		{
+			speed += this->TimeDelta * speed;
+		}
+		if (Window.IsKeyHolded(KeyCode::DOWN))
+		{
+			speed -= this->TimeDelta * speed;
+		}
+		if (Window.IsKeyPressed(KeyCode::C))
+		{
+			camera.SetFOV(90.0f - camera.GetFOV());
+		}
+		if (Window.IsKeyPressed(KeyCode::M))
+		{
+			Logger::Instance().Debug("Sandbox App", "mesh toggled " + std::string(drawMesh ? "on" : "off"));
+			drawMesh = !drawMesh;
+		}
 	}
-	if (Window.IsKeyHolded(KeyCode::S))
-	{
-		position -= forward * this->TimeDelta * speed;
-	}
-	if (Window.IsKeyHolded(KeyCode::D))
-	{
-		position += right * this->TimeDelta * speed;
-	}
-	if (Window.IsKeyHolded(KeyCode::A))
-	{
-		position -= right * this->TimeDelta * speed;
-	}
-	if (Window.IsKeyHolded(KeyCode::SPACE))
-	{
-		position += up * this->TimeDelta * speed;
-	}
-	if (Window.IsKeyHolded(KeyCode::LEFT_SHIFT))
-	{
-		position -= up * this->TimeDelta * speed;
-	}
-	if (Window.IsKeyPressed(KeyCode::ESCAPE))
-	{
-		this->CloseApplication();
-	}
-	if (Window.IsKeyHolded(KeyCode::UP))
-	{
-		speed *= 1.001f;
-	}
-	if (Window.IsKeyHolded(KeyCode::DOWN))
-	{
-		speed *= 1 / 1.001f;
-	}
-	if (Window.IsKeyPressed(KeyCode::C))
-	{
-		FOV = 90.0f - FOV;
-	}
-	if (Window.IsKeyPressed(KeyCode::M))
-	{
-		Logger::Instance().Debug("Sandbox App", "mesh toggled " + std::string(drawMesh ? "on" : "off"));
-		drawMesh = !drawMesh;
-	}
-	auto ProjectionMatrix = glm::perspective(glm::radians(FOV), float(Window.GetWidth()) / float(Window.GetHeight()), 0.1f, 2000.0f);
-	auto ViewMatrix = glm::lookAt(
-		position,
-		position + direction,
-		up
-	);
-
 	float deltaRot = 0.1f * TimeDelta;
 	ArcObject.RotateY(deltaRot);
-	
-	auto ViewProjectMatrix = ProjectionMatrix * ViewMatrix;
 
-	CubeShader.SetUniformMat4("MVP", ViewProjectMatrix * CubeObject.Model);
-	CubeObject.Texture->Bind();	
-	Renderer::Instance().DrawTrianglesInstanced(CubeObject.GetGLObject()->GetVertexData(), CubeObject.GetGLObject()->GetVertexCount(), CubeShader, cubeCount);
-
-	ObjectShader.SetUniformMat4("MVP", ViewProjectMatrix * ArcObject.Model);
-	ArcObject.Texture->Bind();
-	Renderer::Instance().DrawTriangles(ArcObject.GetGLObject()->GetVertexData(), ArcObject.GetGLObject()->GetVertexCount(), ObjectShader);
+	this->GetRenderer().DrawInstanced(CubeObject, cubeCount);
+	this->GetRenderer().Draw(ArcObject);
+	this->GetRenderer().Draw(DeathStarObject);
+	this->GetRenderer().Draw(DestroyerObject);
 
 	if (drawMesh)
 	{
-		MeshShader.SetUniformMat4("MVP", ViewProjectMatrix * CubeObject.Model);
-		Renderer::Instance().DrawLinesInstanced(CubeObject.GetGLObject()->GetVertexData(), CubeMeshIBO, MeshShader, cubeCount);
-		MeshShader.SetUniformMat4("MVP", ViewProjectMatrix * ArcObject.Model);
-		Renderer::Instance().DrawLines(ArcObject.GetGLObject()->GetVertexData(), ArcMeshIBO, MeshShader);
+		this->GetRenderer().DrawObjectMesh(ArcObject);
+		this->GetRenderer().DrawObjectMeshInstanced(CubeObject, cubeCount);
+		this->GetRenderer().DrawObjectMesh(DeathStarObject);
+		this->GetRenderer().DrawObjectMesh(DestroyerObject);
 	}
 
-	GridShader.SetUniformMat4("MVP", ViewProjectMatrix * GridObject.Model);
-	GridObject.Texture->Bind();
-	Renderer::Instance().DrawTriangles(GridObject.GetGLObject()->GetVertexData(), GridObject.GetGLObject()->GetVertexCount(), GridShader);
+	Renderer::Instance().Draw(GridObject);
 }
 
 void SandboxApp::OnDestroy() { }
-
-void SandboxApp::GenerateBuffers()
-{
-	std::vector<float> cubesPos;
-	for (int i = 0; i < cubeCount; i++)
-	{
-		cubesPos.push_back(5.0f * sin(0.2f * i));
-		cubesPos.push_back(0.5f * i);
-		cubesPos.push_back(5.0f * cos(0.2f * i));
-	}
-
-	CubesPositions.Load(cubesPos, UsageType::STATIC_DRAW);
-	VertexBufferLayout CubeInstancedVBL;
-	CubeInstancedVBL.PushFloat(3);
-	CubeObject.GetGLObject()->GetVertexData().AddInstancedBuffer(CubesPositions, CubeInstancedVBL);
-	CubeMeshIBO.Load(CubeObject.GetGLObject()->GeneratePolygonIndicies());
-	ArcMeshIBO.Load(ArcObject.GetGLObject()->GeneratePolygonIndicies());
-}

@@ -25,9 +25,9 @@ MomoEngine::GLInitilizerImpl::~GLInitilizerImpl()
 
 void MomoEngine::GLInitilizerImpl::IntializeWindow()
 {
-	TimeStep initStart = (TimeStep)glfwGetTime();
+	TimeStep initStart = Time::Current();
 	GLenum err = glewInit();
-	TimeStep initEnd = (TimeStep)glfwGetTime();
+	TimeStep initEnd = Time::Current();
 	if (err != GLEW_OK)
 	{
 		Logger::Instance().Error("GLEW", "glew init failed");

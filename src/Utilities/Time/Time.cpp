@@ -1,4 +1,5 @@
 #include "Time.h"
+#include "Core/OpenGL/GLUtils/GLUtils.h"
 
 std::string MomoEngine::BeautifyTime(TimeStep time)
 {
@@ -12,4 +13,9 @@ std::string MomoEngine::BeautifyTime(TimeStep time)
 		int timeInt = int(time * 1000 * 100);
 		return std::to_string(timeInt / 100) + "." + std::to_string(timeInt % 100) + "ms";
 	}
+}
+
+MomoEngine::TimeStep MomoEngine::Time::Current()
+{
+	return (TimeStep)glfwGetTime();
 }

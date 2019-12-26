@@ -21,6 +21,7 @@ namespace MomoEngine
 		virtual void OnDestroy() = 0;
 
 		void CloseApplication();
+		void CreateDefaultContext();
 	public:
 		void Run();
 		virtual ~IApplication() = default;

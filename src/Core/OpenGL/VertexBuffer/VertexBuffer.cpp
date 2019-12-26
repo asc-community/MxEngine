@@ -21,6 +21,12 @@ namespace MomoEngine
 		}
 	}
 
+	VertexBuffer::VertexBuffer(VertexBuffer&& vbo)
+	{
+		this->id = vbo.id;
+		vbo.id = 0;
+	}
+
 	void VertexBuffer::Load(const std::vector<float>& data, UsageType type)
 	{
 		GLCALL(glGenBuffers(1, &id));

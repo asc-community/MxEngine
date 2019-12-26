@@ -9,7 +9,7 @@ namespace MomoEngine
 #define ASSERT(x) if(!(x)) __debugbreak(); 
 
 #ifdef _DEBUG
-#define GLCALL(x) GlClearErrors(); x; ASSERT(GlLogCall(#x, __FILE__, __LINE__))
+#define GLCALL(x) GlClearErrors(); x; GlLogCall(#x, __FILE__, __LINE__)
 #else
 #define GLCALL(x) x
 #endif

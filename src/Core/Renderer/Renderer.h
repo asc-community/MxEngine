@@ -6,6 +6,8 @@
 #include "Core/OpenGL/Texture/Texture.h"
 #include "Core/OpenGL/GLObject/GLObject.h"
 #include "Utilities/SingletonHolder/SingletonHolder.h"
+#include "Core/Interfaces/IDrawable.h"
+#include "Core/Camera/Camera.h"
 
 namespace MomoEngine
 {
@@ -51,6 +53,8 @@ namespace MomoEngine
 		bool depthBufferEnabled = false;
 		unsigned int clearMask = 0;
 	public:
+		Camera Camera;
+		Ref<Shader> ObjectShader, MeshShader;
 		RendererImpl();
 		RendererImpl(const RendererImpl&) = delete;
 		RendererImpl(RendererImpl&&) = delete;
@@ -62,6 +66,10 @@ namespace MomoEngine
 		void DrawLines(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const;
 		void DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const;
 		void DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const;
+		void Draw(const IDrawable& object) const;
+		void DrawInstanced(const IDrawable& object, size_t count) const;
+		void DrawObjectMesh(const IDrawable& object) const;
+		void DrawObjectMeshInstanced(const IDrawable& object, size_t count) const;
 		void Clear() const;
 		void Flush() const;
 		void Finish() const;
@@ -73,6 +81,9 @@ namespace MomoEngine
 		RendererImpl& UseTextureMagFilter(MagFilter filter);
 		RendererImpl& UseBlending(BlendFactor src, BlendFactor dist);
 		RendererImpl& UseTextureWrap(WrapType textureX, WrapType textureY);
+		RendererImpl& UseAnisotropicFiltering(float factor);
+
+		float GetLargestAnisotropicFactor() const;
 	};
 
 	using Renderer = SingletonHolder<RendererImpl>;
