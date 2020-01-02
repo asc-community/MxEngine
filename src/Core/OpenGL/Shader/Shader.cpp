@@ -54,20 +54,38 @@ namespace MomoEngine
 
 		if (vs.empty())
 		{
-			Logger::Instance().Warning("MomoEngine::Shader", "shader file is empty: " + vertexShaderPath);
+			Logger::Instance().Error("MomoEngine::Shader", "shader file is empty: " + vertexShaderPath);
+			return;
 		}
 		if (fs.empty())
 		{
-			Logger::Instance().Warning("MomoEngine::Shader", "shader file is empty: " + fragmentShaderPath);
+			Logger::Instance().Error("MomoEngine::Shader", "shader file is empty: " + fragmentShaderPath);
+			return;
 		}
 
 		Logger::Instance().Debug("MomoEngine::Shader", "compiling vertex shader: " + vertexShaderPath);
-		unsigned int vertexShader = CompileShader(ShaderType::VERTEX_SHADER, vs);
+		unsigned int vertexShader = CompileShader(ShaderType::VERTEX_SHADER, vs, vertexShaderPath);
 		Logger::Instance().Debug("MomoEngine::Shader", "compiling fragment shader: " + fragmentShaderPath);
-		unsigned int fragmentShader = CompileShader(ShaderType::FRAGMENT_SHADER, fs);
+		unsigned int fragmentShader = CompileShader(ShaderType::FRAGMENT_SHADER, fs, fragmentShaderPath);
 
 		id = CreateProgram(vertexShader, fragmentShader);
 		Logger::Instance().Debug("MomoEngine::Shader", "shader program created with id = " + std::to_string(id));
+	}
+
+	void Shader::SetUniformFloat(const std::string& name, float f) const
+	{
+		int location = GetUniformLocation(name);
+		if (location == -1) return;
+		Bind();
+		GLCALL(glUniform1f(location, f));
+	}
+
+	void Shader::SetUniformVec3(const std::string& name, float f1, float f2, float f3) const
+	{
+		int location = GetUniformLocation(name);
+		if (location == -1) return;
+		Bind();
+		GLCALL(glUniform3f(location, f1, f2, f3));
 	}
 
 	void Shader::SetUniformVec4(const std::string& name, float f1, float f2, float f3, float f4) const
@@ -83,7 +101,15 @@ namespace MomoEngine
 		int location = GetUniformLocation(name);
 		if (location == -1) return;
 		Bind();
-		GLCALL(glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]));
+		GLCALL(glUniformMatrix4fv(location, 1, false, &matrix[0][0]));
+	}
+
+	void Shader::SetUniformMat3(const std::string& name, const glm::mat3x3& matrix) const
+	{
+		int location = GetUniformLocation(name);
+		if (location == -1) return;
+		Bind();
+		GLCALL(glUniformMatrix3fv(location, 1, false, &matrix[0][0]));
 	}
 
 	void Shader::SetUniformInt(const std::string& name, int i) const
@@ -94,7 +120,7 @@ namespace MomoEngine
 		GLCALL(glUniform1i(location, i));
 	}
 
-	unsigned int Shader::CompileShader(ShaderType type, std::string& source) const
+	unsigned int Shader::CompileShader(ShaderType type, std::string& source, const std::string& name) const
 	{
 		GLCALL(GLuint shaderId = glCreateShader((GLenum)type));
 		const char* src = source.c_str();
@@ -112,7 +138,7 @@ namespace MomoEngine
 			GLCALL(glGetShaderInfoLog(shaderId, length, &length, &msg[0]));
 			msg.pop_back(); // extra \n character
 			Logger::Instance().Error("MomoEngine::Shader", (std::string)"failed to compile " +
-				(type == ShaderType::VERTEX_SHADER ? "vertex" : "fragment") + " shader");
+				(type == ShaderType::VERTEX_SHADER ? "vertex" : "fragment") + " shader: " + name);
 			Logger::Instance().Error("OpenGL", msg);
 		}
 

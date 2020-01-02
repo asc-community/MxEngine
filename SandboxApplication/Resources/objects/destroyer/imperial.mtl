@@ -14,7 +14,7 @@ newmtl sml_lights
 	Ke 1.0000 1.0000 1.0000
 	map_Ka Resources/objects/destroyer/Map__2_Cellular.tga
 	map_Kd Resources/objects/destroyer/Map__2_Cellular.tga
-	map_d Resources/objects/destroyer/lights aa.gif
+	map_d Resources/objects/destroyer/lights-aa.gif
 
 newmtl wire_213154229
 	Ns 32
@@ -141,7 +141,7 @@ newmtl sml_lights_3
 	Ke 1.0000 1.0000 1.0000
 	map_Ka Resources/objects/destroyer/Map__17_Cellular.tga
 	map_Kd Resources/objects/destroyer/Map__17_Cellular.tga
-	map_d Resources/objects/destroyer/Lights a.gif
+	map_d Resources/objects/destroyer/Lights-a.gif
 
 newmtl wire_087224198
 	Ns 32
@@ -238,7 +238,7 @@ newmtl sml_lights_2
 	Ke 1.0000 1.0000 1.0000
 	map_Ka Resources/objects/destroyer/Map__16_Cellular.tga
 	map_Kd Resources/objects/destroyer/Map__16_Cellular.tga
-	map_d Resources/objects/destroyer/lights aa.gif
+	map_d Resources/objects/destroyer/lights-aa.gif
 
 newmtl wire_177028149
 	Ns 32

@@ -21,6 +21,17 @@ MomoEngine::Texture::Texture()
 	this->id = 0;
 }
 
+MomoEngine::Texture::Texture(Texture&& texture)
+	: width(texture.width), height(texture.height), channels(texture.channels)
+{
+	this->id = texture.id;
+	texture.id = 0;
+	#ifdef _DEBUG
+	this->texture = texture.texture;
+	texture.texture = nullptr;
+	#endif
+}
+
 MomoEngine::Texture::Texture(const std::string& filepath, bool genMipmaps, bool flipImage)
 {
 	Load(filepath, genMipmaps, flipImage);
@@ -68,12 +79,20 @@ void MomoEngine::Texture::Load(const std::string& filepath, bool genMipmaps, boo
 
 void MomoEngine::Texture::Bind() const
 {
+	GLCALL(glActiveTexture(GL_TEXTURE0 + this->activeId));
 	GLCALL(glBindTexture(GL_TEXTURE_2D, id));
 }
 
 void MomoEngine::Texture::Unbind() const
 {
+	GLCALL(glActiveTexture(GL_TEXTURE0 + this->activeId));
 	GLCALL(glBindTexture(GL_TEXTURE_2D, 0));
+}
+
+void MomoEngine::Texture::Bind(int id) const
+{
+	this->activeId = id;
+	this->Bind();
 }
 
 int MomoEngine::Texture::GetWidth() const

@@ -3,19 +3,22 @@
 #include "Core/OpenGL/GLInitializer/GLInitializer.h"
 #include <GLFW/glfw3.h>
 #include "Utilities/Time/Time.h"
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
 
 namespace MomoEngine
 {
 	Window::Window(int width, int height)
-		: width(width), height(height), window(nullptr), cursorMode(CursorMode::NORMAL), xpos(0), ypos(0)
+		: width(width), height(height), window(nullptr), cursorMode(CursorMode::NORMAL), windowPosition{width, height}
 	{
-		GLInitilizer::Instance().OnWindowCreate();
+		GLInitilizer::Instance().Init();
 		Logger::Instance().Debug("MomoEngine::Window", "window object created");
 	}
 
-	float Window::GetWidth() const
+	int Window::GetWidth() const
 	{
-		return float(this->width);
+		return this->width;
 	}
 
 	bool Window::IsOpen() const
@@ -25,7 +28,11 @@ namespace MomoEngine
 			Logger::Instance().Error("MomoEngine::Window", "Window::Create() was not called");
 			return false;
 		}
-		return !glfwWindowShouldClose(window);
+		bool isOpen = !glfwWindowShouldClose(this->window);
+
+		GLInitilizer::Instance().OnWindowTick(this->window);
+
+		return isOpen;
 	}
 
 	TimeStep Window::GetTime() const
@@ -42,22 +49,23 @@ namespace MomoEngine
 	{
 		if (this->window != nullptr && IsOpen())
 		{
+			GLInitilizer::Instance().OnWindowClose(this->window);
 			glfwSetWindowShouldClose(this->window, true);
 			Logger::Instance().Debug("MomoEngine::Window", "window closed");
 		}
 		return *this;
 	}
 
-	Window::Position Window::GetCursorPos() const
+	Position Window::GetCursorPos() const
 	{
 		double x, y;
 		glfwGetCursorPos(window, &x, &y);
-		return { float(x), float(y) };
+		return { int(x), int(y) };
 	}
 
-	Window::Position Window::GetWindowPos() const
+	Position Window::GetWindowPos() const
 	{
-		return { (float)this->xpos, (float)this->ypos };
+		return this->windowPosition;
 	}
 
 	bool Window::IsKeyHolded(KeyCode key) const
@@ -94,13 +102,13 @@ namespace MomoEngine
 			Logger::Instance().Error("GLFW", "glfw window was not created");
 			return *this;
 		}
-		
 		SwitchContext();
-		GLInitilizer::Instance().IntializeWindow();
+		GLInitilizer::Instance().OnWindowCreate(this->window);
 
 		UseTitle(this->title);
 		UseCursorMode(this->cursorMode);
-		UsePosition(this->xpos, this->ypos);
+		UsePosition(this->windowPosition.x, this->windowPosition.y);
+		UseCursorPos(this->cursorPosition);
 		Logger::Instance().Debug("MomoEngine::Window", "window initialized");
 		return *this;
 	}
@@ -139,6 +147,16 @@ namespace MomoEngine
 		return *this;
 	}
 
+	Window& Window::UseCursorPos(Position pos)
+	{
+		this->cursorPosition = pos;
+		if (this->window != nullptr)
+		{
+			glfwSetCursorPos(this->window, pos.x, pos.y);
+		}
+		return *this;
+	}
+
 	Window& Window::UseTitle(const std::string& title)
 	{
 		this->title = title;
@@ -149,8 +167,7 @@ namespace MomoEngine
 
 	Window& Window::UsePosition(int xpos, int ypos)
 	{
-		this->xpos = xpos;
-		this->ypos = ypos;
+		this->windowPosition = { xpos, ypos };
 		if(window != nullptr)
 			glfwSetWindowPos(window, xpos, ypos);
 		return *this;
@@ -162,6 +179,11 @@ namespace MomoEngine
 		return *this;
 	}
 
+	CursorMode Window::GetCursorMode() const
+	{
+		return this->cursorMode;
+	}
+
 	Window::~Window()
 	{
 		this->Close();
@@ -169,8 +191,8 @@ namespace MomoEngine
 		Logger::Instance().Debug("MomoEngine::Window", "window destroyed");
 	}
 
-	float Window::GetHeight() const
+	int Window::GetHeight() const
 	{
-		return float(this->height);
+		return this->height;
 	}
 }

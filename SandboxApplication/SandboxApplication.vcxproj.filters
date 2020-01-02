@@ -12,7 +12,6 @@
     <Object Include="Resources\objects\destroyer.obj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\shaders\cube_vertex.glsl" />
     <None Include="Resources\shaders\grid_vertex.glsl" />
     <None Include="Resources\shaders\mesh_vertex.glsl" />
     <None Include="Resources\shaders\object_fragment.glsl" />

@@ -150,13 +150,19 @@ namespace MomoEngine
 		DISABLED = 0x00034003,
 	};
 
+	struct Position
+	{
+		int x = 0, y = 0;
+	};
+
 	class Window
 	{
 		std::string title;
 		GLFWwindow* window;
 		int width, height;
-		int xpos, ypos;
+		Position windowPosition;
 		CursorMode cursorMode;
+		Position cursorPosition;
 		mutable std::bitset<350> keyStates;
 	public:
 		Window(int width, int height);
@@ -166,16 +172,11 @@ namespace MomoEngine
 		Window& operator=(const Window&) = delete;
 		~Window();
 
-		float GetHeight() const;
-		float GetWidth() const;
+		int GetHeight() const;
+		int GetWidth() const;
 		bool IsOpen() const;
 		TimeStep GetTime() const;
 		void PullEvents() const;
-
-		struct Position
-		{
-			float x, y;
-		};
 
 		Position GetCursorPos() const;
 		Position GetWindowPos() const;
@@ -191,8 +192,11 @@ namespace MomoEngine
 		Window& UseSampling(int samples);
 		Window& UseDoubleBuffering(bool value = true);
 		Window& UseCursorMode(CursorMode cursor);
+		Window& UseCursorPos(Position pos);
 		Window& UseTitle(const std::string& title);
 		Window& UsePosition(int xpos, int ypos);
 		Window& UseSize(int width, int height);
+
+		CursorMode GetCursorMode() const;
 	};
 }

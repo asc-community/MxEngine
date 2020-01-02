@@ -41,9 +41,36 @@ namespace MomoEngine
 
 			if (group.useTexture)
 			{
-				if (group.material != nullptr && textures.find(group.material->map_Ka) == textures.end())
-					textures[group.material->map_Ka] = MakeRef<Texture>(group.material->map_Ka);
-				object.Texture = textures[group.material->map_Ka];
+				if (group.material != nullptr)
+				{
+					#define MAKE_TEX(tex) if(!group.material->tex.empty()) {\
+					if(textures.find(group.material->tex) == textures.end())\
+						textures[group.material->tex] = MakeRef<Texture>(group.material->tex);\
+					object.material->tex = textures[group.material->tex];}
+
+					object.material = MakeUnique<Material>();
+
+					MAKE_TEX(map_Ka);
+					MAKE_TEX(map_Kd);
+					MAKE_TEX(map_Ks);
+					MAKE_TEX(map_Ke);
+					MAKE_TEX(map_d);
+					MAKE_TEX(map_bump);
+					MAKE_TEX(bump);
+
+					object.material->Tf = group.material->Tf;
+					object.material->Ka = group.material->Ka;
+					object.material->Kd = group.material->Kd;
+					object.material->Ke = group.material->Ke;
+					object.material->Ks = group.material->Ks;
+					object.material->illum = group.material->illum;
+					object.material->Ns = group.material->Ns;
+					object.material->Ni = group.material->Ni;
+					object.material->d = group.material->d;
+					object.material->Tr = group.material->Tr;
+
+					if (object.material->Ns == 0.0f) object.material->Ns = 128.0f; // bad as pow(0.0, 0.0) -> NaN
+				}
 			}
 
 			this->subObjects.push_back(std::move(object));
@@ -65,9 +92,28 @@ namespace MomoEngine
 		return this->subObjects;
 	}
 
-	void GLObject::AddInstanceBuffer(const std::vector<float>& buffer, size_t count, UsageType type)
+	void GLInstance::AddInstanceBuffer(const std::vector<float>& buffer, size_t count, UsageType type)
 	{
-		for (auto& object : this->subObjects)
+		if (this->object == nullptr)
+		{
+			Logger::Instance().Warning("MomoEngine::GLInstance", "trying to add buffer to nit existing object");
+			return;
+		}
+
+		size_t objectCount = buffer.size() / count;
+
+		if (this->instanceCount == 0) this->instanceCount = objectCount;
+		if (this->instanceCount > objectCount)
+		{
+			Logger::Instance().Error("MomoEngine::GLInstance", "instance buffer was not added as it contains not enough information");
+			return;
+		}
+		else if (this->instanceCount < objectCount)
+		{
+			Logger::Instance().Error("MomoEngine::GLInstance", "instance buffer contains more data than required, additional will be ignored");
+		}
+
+		for (auto& object : this->object->GetRenderObjects())
 		{
 			object.VBOs.emplace_back(buffer, type);
 			VertexBufferLayout VBL;
@@ -76,8 +122,13 @@ namespace MomoEngine
 		}
 	}
 
-	void GLObject::AddInstanceBuffer(const GeneratorFunction& generator, size_t componentCount, size_t count, UsageType type)
+	void GLInstance::AddInstanceBuffer(const GeneratorFunction& generator, size_t componentCount, size_t count, UsageType type)
 	{
+		if (this->object == nullptr)
+		{
+			Logger::Instance().Warning("MomoEngine::GLInstance", "trying to add buffer to nit existing object");
+			return;
+		}
 		std::vector<float> buffer;
 		buffer.reserve(componentCount * count);
 		for (size_t i = 0; i < count; i++)
@@ -115,6 +166,31 @@ namespace MomoEngine
 		return this->object;
 	}
 
+	void GLInstance::Hide()
+	{
+		this->shouldRender = false;
+	}
+
+	void GLInstance::Show()
+	{
+		this->shouldRender = true;
+	}
+
+	glm::vec3 GLInstance::GetTranslation() const
+	{
+		return this->translation;
+	}
+
+	glm::vec3 GLInstance::GetRotation() const
+	{
+		return this->rotation;
+	}
+
+	glm::vec3 GLInstance::GetScale() const
+	{
+		return this->scale;
+	}
+
 	GLInstance& GLInstance::Scale(float scale)
 	{
 		return Scale(glm::vec3(scale));
@@ -136,8 +212,18 @@ namespace MomoEngine
 
 	GLInstance& GLInstance::Rotate(float angle, const glm::vec3& vec)
 	{
+		angle = glm::radians(angle);
 		needUpdate = true;
 		this->rotation += vec * angle;
+
+		// check if rotation value is too high to avoid precision loss
+		if (rotation.x > glm::two_pi<float>()) rotation.x -= glm::two_pi<float>();
+		if (rotation.y > glm::two_pi<float>()) rotation.y -= glm::two_pi<float>();
+		if (rotation.z > glm::two_pi<float>()) rotation.z -= glm::two_pi<float>();
+		if (rotation.x < 0.0f) rotation.x += glm::two_pi<float>();
+		if (rotation.y < 0.0f) rotation.y += glm::two_pi<float>();
+		if (rotation.z < 0.0f) rotation.z += glm::two_pi<float>();
+
 		return *this;
 	}
 
@@ -202,12 +288,12 @@ namespace MomoEngine
 	{
 		if (needUpdate)
 		{
-			this->Model = glm::mat4x4(1.0f);
-			this->Model = glm::translate(this->Model, this->translation);
-			this->Model = glm::rotate(this->Model, this->rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-			this->Model = glm::rotate(this->Model, this->rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-			this->Model = glm::rotate(this->Model, this->rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-			this->Model = glm::scale(this->Model, this->scale);
+			auto Transalte = glm::translate(glm::mat4x4(1.0f), this->translation);
+			auto RotateX = glm::rotate(glm::mat4x4(1.0f), this->rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+			auto RotateY = glm::rotate(glm::mat4x4(1.0f), this->rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+			auto RotateZ = glm::rotate(glm::mat4x4(1.0f), this->rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+			auto Scale = glm::scale(glm::mat4x4(1.0f), this->scale);
+			this->Model = Transalte * RotateX * RotateY * RotateZ * Scale;
 			needUpdate = false;
 		}
 		return this->Model;
@@ -221,6 +307,26 @@ namespace MomoEngine
 	const MomoEngine::Shader& GLInstance::GetShader() const
 	{
 		return *this->Shader;
+	}
+
+	bool GLInstance::IsDrawable() const
+	{
+		return this->shouldRender && this->object != nullptr;
+	}
+
+	bool GLInstance::HasTexture() const
+	{
+		return this->Texture != nullptr;
+	}
+
+	const MomoEngine::Texture& GLInstance::GetTexture() const
+	{
+		return *this->Texture;
+	}
+
+	size_t GLInstance::GetInstanceCount() const
+	{
+		return this->instanceCount;
 	}
 
 	void GLRenderObject::GenerateMeshIndicies() const
@@ -251,9 +357,9 @@ namespace MomoEngine
 		return this->IBO;
 	}
 
-	const Texture& GLRenderObject::GetTexture() const
+	const Material& GLRenderObject::GetMaterial() const
 	{
-		return *this->Texture;
+		return *this->material;
 	}
 
 	size_t GLRenderObject::GetVertexCount() const
@@ -261,8 +367,8 @@ namespace MomoEngine
 		return this->vertexCount;
 	}
 
-	bool GLRenderObject::HasTexture() const
+	bool GLRenderObject::HasMaterial() const
 	{
-		return this->useTexture;
+		return this->material != nullptr;
 	}
 }

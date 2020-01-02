@@ -1,6 +1,9 @@
 #include "Renderer.h"
 #include "Utilities/Logger/Logger.h"
 #include "Core/OpenGL/GLUtils/GLUtils.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
 
 namespace MomoEngine
 {
@@ -49,49 +52,51 @@ namespace MomoEngine
 
 	void RendererImpl::Draw(const IDrawable& object) const
 	{
+		if (!this->ViewPort.HasCamera()) return;
+		if (!object.IsDrawable()) return;
 		size_t iterator = object.GetIterator();
-		auto MVP = this->Camera.GetMatrix() * object.GetModel();
-		while (!object.IsLast(iterator))
-		{
-			const auto& renderObject = object.GetCurrent(iterator);
-			if (renderObject.HasTexture())
-			{
-				renderObject.GetTexture().Bind();
-				if (object.HasShader())
-				{
-					object.GetShader().SetUniformMat4("MVP", MVP);
-					DrawTriangles(renderObject.GetVAO(), renderObject.GetVertexCount(), object.GetShader());
-				}
-				else
-				{
-					this->ObjectShader->SetUniformMat4("MVP", MVP);
-					DrawTriangles(renderObject.GetVAO(), renderObject.GetVertexCount(), *this->ObjectShader);
-				}
-			}
-			iterator = object.GetNext(iterator);
-		}
-	}
+		auto MVP = this->ViewPort.GetCameraMatrix() * object.GetModel();
+		glm::mat3x3 NormalMatrix = glm::transpose(glm::inverse(object.GetModel()));
+		auto cameraPos = this->ViewPort.GetPosition();
 
-	void RendererImpl::DrawInstanced(const IDrawable& object, size_t count) const
-	{
-		size_t iterator = object.GetIterator();
-		auto MVP = this->Camera.GetMatrix() * object.GetModel();
 		while (!object.IsLast(iterator))
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
-			if (renderObject.HasTexture())
+			if (renderObject.HasMaterial())
 			{
-				renderObject.GetTexture().Bind();
-				if (object.HasShader())
-				{
-					object.GetShader().SetUniformMat4("MVP", MVP);
-					DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetVertexCount(), object.GetShader(), count);
-				}
+				const Material& material = renderObject.GetMaterial();
+
+				#define BIND_TEX(name, slot) \
+				if (material.name != nullptr)\
+					material.name->Bind(slot);\
+				else if (object.HasTexture())\
+					object.GetTexture().Bind(slot);\
+				else\
+					this->DefaultTexture->Bind(slot)
+
+				BIND_TEX(map_Ka, 0);
+				BIND_TEX(map_Kd, 1);
+				BIND_TEX(map_Ks, 2);
+				BIND_TEX(map_Ke, 3);
+				//BIND_TEX(map_Kd, 4); kd not used now
+
+				const Shader& shader = object.HasShader() ? object.GetShader() : *this->ObjectShader;
+				shader.SetUniformMat4("MVP", MVP);
+				shader.SetUniformMat4("Model", object.GetModel());
+				shader.SetUniformMat3("NormalMatrix", NormalMatrix);
+				shader.SetUniformVec3("material.Ka", material.Ka.r, material.Ka.g, material.Ka.b);
+				shader.SetUniformVec3("material.Kd", material.Kd.r, material.Kd.g, material.Kd.b);
+				shader.SetUniformVec3("material.Ks", material.Ks.r, material.Ks.g, material.Ks.b);
+				shader.SetUniformVec3("material.Ke", material.Ke.r, material.Ke.g, material.Ke.b);
+				shader.SetUniformFloat("material.Ns", material.Ns);
+				shader.SetUniformFloat("material.d", material.d);
+				shader.SetUniformVec3("globalLight", cameraPos.x, cameraPos.y, cameraPos.z);
+				shader.SetUniformVec3("viewPos", cameraPos.x, cameraPos.y, cameraPos.z);
+
+				if (object.GetInstanceCount() == 0)
+					DrawTriangles(renderObject.GetVAO(), renderObject.GetVertexCount(), shader);
 				else
-				{
-					this->ObjectShader->SetUniformMat4("MVP", MVP);
-					DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetVertexCount(), *this->ObjectShader, count);
-				}
+					DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetVertexCount(), shader, object.GetInstanceCount());
 			}
 			iterator = object.GetNext(iterator);
 		}
@@ -99,32 +104,17 @@ namespace MomoEngine
 
 	void RendererImpl::DrawObjectMesh(const IDrawable& object) const
 	{
+		if (!object.IsDrawable()) return;
 		size_t iterator = object.GetIterator();
-		auto MVP = this->Camera.GetMatrix() * object.GetModel();
+		auto MVP = this->ViewPort.GetCameraMatrix() * object.GetModel();
 		while (!object.IsLast(iterator))
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
-			if (renderObject.HasTexture())
-			{
-				this->MeshShader->SetUniformMat4("MVP", MVP);
+			this->MeshShader->SetUniformMat4("MVP", MVP);
+			if (object.GetInstanceCount() == 0)
 				DrawLines(renderObject.GetVAO(), renderObject.GetIBO(), *this->MeshShader);
-			}
-			iterator = object.GetNext(iterator);
-		}
-	}
-
-	void RendererImpl::DrawObjectMeshInstanced(const IDrawable& object, size_t count) const
-	{
-		size_t iterator = object.GetIterator();
-		auto MVP = this->Camera.GetMatrix() * object.GetModel();
-		while (!object.IsLast(iterator))
-		{
-			const auto& renderObject = object.GetCurrent(iterator);
-			if (renderObject.HasTexture())
-			{
-				this->MeshShader->SetUniformMat4("MVP", MVP);
-				DrawLinesInstanced(renderObject.GetVAO(), renderObject.GetIBO(), *this->MeshShader, count);
-			}
+			else
+				DrawLinesInstanced(renderObject.GetVAO(), renderObject.GetIBO(), *this->MeshShader, object.GetInstanceCount());
 			iterator = object.GetNext(iterator);
 		}
 	}
@@ -158,11 +148,19 @@ namespace MomoEngine
 
 	void RendererImpl::Flush() const
 	{
+		// draw imgui 
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 		GLCALL(glFlush());
 	}
 
 	void RendererImpl::Finish() const
 	{
+		// draw imgui
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 		GLCALL(glFinish());
 	}
 
@@ -278,7 +276,26 @@ namespace MomoEngine
 		else
 		{
 			GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, factor));
-			Logger::Instance().Debug("OpenGL", "set anisotropic filtering factor to " + std::to_string(factor));
+			Logger::Instance().Debug("OpenGL", "set anisotropic filtering factor to " + std::to_string((int)factor) + "x");
+		}
+		return *this;
+	}
+
+	RendererImpl& RendererImpl::UseImGuiStyle(ImGuiStyle style)
+	{
+		switch (style)
+		{
+		case MomoEngine::ImGuiStyle::CLASSIC:
+			ImGui::StyleColorsClassic();
+			break;
+		case MomoEngine::ImGuiStyle::LIGHT:
+			ImGui::StyleColorsLight();
+			break;
+		case MomoEngine::ImGuiStyle::DARK:
+			ImGui::StyleColorsDark();
+			break;
+		default:
+			break;
 		}
 		return *this;
 	}

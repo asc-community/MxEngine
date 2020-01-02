@@ -2,8 +2,10 @@
 
 #include "Utilities/SingletonHolder/SingletonHolder.h"
 
+struct GLFWwindow;
+
 namespace MomoEngine
-{
+{	
 	class GLInitilizerImpl
 	{
 	public:
@@ -11,8 +13,10 @@ namespace MomoEngine
 		~GLInitilizerImpl();
 		GLInitilizerImpl(const GLInitilizerImpl&) = delete;
 		GLInitilizerImpl(GLInitilizerImpl&&) = delete;
-		void IntializeWindow();
-		void OnWindowCreate();
+		void OnWindowCreate(GLFWwindow* window);
+		void OnWindowClose(GLFWwindow* window);
+		void OnWindowTick(GLFWwindow* window);
+		inline void Init() { };
 	};
 
 	using GLInitilizer = SingletonHolder<GLInitilizerImpl>;

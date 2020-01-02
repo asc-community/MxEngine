@@ -134,6 +134,10 @@ namespace MomoEngine
 		{
 			if (data == "newmtl")
 				break;
+			else if (data[0] == '#')
+			{
+				std::getline(file, data); // comment
+			}
 			else if (data == "Ns")
 			{
 				file >> material.Ns;
@@ -194,6 +198,11 @@ namespace MomoEngine
 				std::getline(file, material.map_Kd);
 				material.map_Kd = trim(material.map_Kd);
 			}
+			else if (data == "map_Ks")
+			{
+				std::getline(file, material.map_Ks);
+				material.map_Ke = trim(material.map_Ks);
+			}
 			else if (data == "map_Ke")
 			{
 				std::getline(file, material.map_Ke);
@@ -206,8 +215,20 @@ namespace MomoEngine
 			}
 			else if (data == "map_bump")
 			{
-				std::getline(file, material.map_bump);
-				material.map_bump = trim(material.map_bump);
+				std::string bumpInfo;
+				file >> bumpInfo;
+				if (bumpInfo == "-bm")
+				{
+					file >> material.bm;
+					std::getline(file, material.map_bump);
+					material.map_bump = trim(material.map_bump);
+				}
+				else // bump info was not specified, read filename accidentally
+				{
+					std::getline(file, material.map_bump);
+					material.map_bump = trim(material.map_bump);
+					material.map_bump = bumpInfo + ' ' + material.map_bump;
+				}
 			}
 			else if (data == "bump")
 			{
@@ -236,7 +257,6 @@ namespace MomoEngine
 				GROUP(object).name = "__DEFAULT";
 			}
 		};
-
 		std::ifstream fs(path);
 		ObjFileInfo obj;
 		if (fs.bad() || fs.fail())
@@ -335,22 +355,17 @@ namespace MomoEngine
 					return obj;
 				}
 				CheckGroup(obj);
+				if (GROUP(obj).material != nullptr)
+				{
+					obj.groups.emplace_back();
+					GROUP(obj).name = "__GENERATED";
+				}
 				GROUP(obj).material = &obj.materials[strBuff];
 			}
 			else if (type == "mtllib")
 			{
 				file >> strBuff; 
 				obj.materials = LoadMaterialLibrary(strBuff);
-			}
-			else if (type == "me_usetex") // MomoEngine extension
-			{
-				file >> strBuff;
-				CheckGroup(obj);
-				if (GROUP(obj).material == nullptr)
-				{
-					GROUP(obj).material = new MaterialInfo(); // memory leak. added for testing
-					GROUP(obj).material->map_Ka = strBuff;
-				}
 			}
 			else
 			{

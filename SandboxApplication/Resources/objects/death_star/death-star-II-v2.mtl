@@ -120,10 +120,10 @@ newmtl Laser_inner
 	Kd 0.6824 0.6784 0.7255
 	Ks 0.0450 0.0450 0.0450
 	Ke 0.0000 0.0000 0.0000
-	map_Ka Resources/objects/death_star/hull.gif
-	map_Kd Resources/objects/death_star/hull.gif
-	map_bump Resources/objects/death_star/hull.gif
-	bump Resources/objects/death_star/hull.gif
+	map_Ka Resources/objects/death_star/hull.jpg
+	map_Kd Resources/objects/death_star/hull.jpg
+	map_bump Resources/objects/death_star/hull.jpg
+	bump Resources/objects/death_star/hull.jpg
 
 newmtl wire_088143225
 	Ns 32

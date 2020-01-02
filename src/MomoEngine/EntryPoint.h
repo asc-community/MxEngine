@@ -3,7 +3,7 @@
 #ifdef MOMO_ENGINE_INCLUDE
 namespace MomoEngine
 {
-	extern IApplication* GetApplication();
+	extern IApplication* __cdecl GetApplication();
 }
 
 namespace

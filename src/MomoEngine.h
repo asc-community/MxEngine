@@ -9,4 +9,7 @@
 #include "Core/OpenGL/VertexArray/VertexArray.h"
 #include "Core/OpenGL/Shader/Shader.h"
 #include "Utilities/Logger/Logger.h"
-#include "Core/Camera/Camera.h"
+#include "Core/Camera/PerspectiveCamera.h"
+#include "Core/Camera/OrthographicCamera.h"
+#include "imgui/imgui.h"
+#include "Utilities/ImGuiConsole/ImGuiConsole.h"

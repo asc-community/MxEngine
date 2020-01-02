@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <functional>
+#include "Core/Material/Material.h"
 
 namespace MomoEngine
 {
@@ -20,9 +21,10 @@ namespace MomoEngine
 		size_t vertexCount = 0;
 		std::vector<VertexBuffer> VBOs;
 		VertexArray VAO;
-		Ref<Texture> Texture;
+		UniqueRef<Material> material;
 
 		friend class GLObject;
+		friend class GLInstance;
 		void GenerateMeshIndicies() const;
 	public:
 		GLRenderObject() = default;
@@ -30,9 +32,9 @@ namespace MomoEngine
 		GLRenderObject(GLRenderObject&&) noexcept = default;
 		virtual const VertexArray& GetVAO() const override;
 		virtual const IndexBuffer& GetIBO() const override;
-		virtual const MomoEngine::Texture& GetTexture() const override;
+		virtual const Material& GetMaterial() const override;
 		virtual size_t GetVertexCount() const override;
-		virtual bool HasTexture() const override;
+		virtual bool HasMaterial() const override;
 	};
 
 	class GLObject
@@ -43,9 +45,6 @@ namespace MomoEngine
 
 		void LoadFromFile(const std::string& filepath);
 	public:
-		// calls with object index as first argument and field [count specified] as second argument
-		using GeneratorFunction = std::function<float(int, int)>;
-
 		explicit GLObject() = default;
 		explicit GLObject(const std::string& filepath);
 		GLObject(GLObject&) = delete;
@@ -53,9 +52,6 @@ namespace MomoEngine
 
 		void Load(const std::string& filepath);
 		std::vector<GLRenderObject>& GetRenderObjects();
-
-		void AddInstanceBuffer(const std::vector<float>& buffer, size_t count, UsageType type = UsageType::STATIC_DRAW);
-		void AddInstanceBuffer(const GeneratorFunction& generator, size_t componentCount, size_t count, UsageType type = UsageType::STATIC_DRAW);
 	};
 
 	class GLInstance : public IDrawable
@@ -64,17 +60,31 @@ namespace MomoEngine
 		glm::vec3 translation{ 0.0f };
 		glm::vec3 rotation{ 0.0f };
 		glm::vec3 scale{ 1.0f };
+		size_t instanceCount = 0;
 		mutable bool needUpdate = true;
+		bool shouldRender = true;
 	protected:
 		Ref<GLObject> object;
 	public:
+		// calls with object index as first argument and field [count specified] as second argument
+		using GeneratorFunction = std::function<float(int, int)>;
+
 		Ref<Shader> Shader;
+		Ref<Texture> Texture;
 		GLInstance();
 		GLInstance(const Ref<GLObject>& object);
+		GLInstance(const GLInstance&) = delete;
+		GLInstance(GLInstance&&) = default;
 
 		void Load(const Ref<GLObject>& object);
 		Ref<GLObject>& GetGLObject();
 		const Ref<GLObject>& GetGLObject() const;
+		void Hide();
+		void Show();
+
+		glm::vec3 GetTranslation() const;
+		glm::vec3 GetRotation() const;
+		glm::vec3 GetScale() const;
 
 		GLInstance& Scale(float scale);
 		GLInstance& Scale(float scaleX, float scaleY, float scaleZ);
@@ -90,6 +100,9 @@ namespace MomoEngine
 		GLInstance& TranslateY(float y);
 		GLInstance& TranslateZ(float z);
 
+		void AddInstanceBuffer(const std::vector<float>& buffer, size_t count, UsageType type = UsageType::STATIC_DRAW);
+		void AddInstanceBuffer(const GeneratorFunction& generator, size_t componentCount, size_t count, UsageType type = UsageType::STATIC_DRAW);
+
 		// Inherited via IDrawable
 		virtual size_t GetIterator() const override;
 		virtual bool IsLast(size_t iterator) const override;
@@ -98,5 +111,9 @@ namespace MomoEngine
 		virtual const glm::mat4x4& GetModel() const override;
 		virtual bool HasShader() const override;
 		virtual const MomoEngine::Shader& GetShader() const override;
+		virtual bool IsDrawable() const override;
+		virtual bool HasTexture() const override;
+		virtual const MomoEngine::Texture& GetTexture() const override;
+		virtual size_t GetInstanceCount() const override;
 	};
 }

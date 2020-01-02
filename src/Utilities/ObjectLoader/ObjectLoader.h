@@ -12,6 +12,7 @@ namespace MomoEngine
 	{
 		std::string map_Ka;
 		std::string map_Kd;
+		std::string map_Ks;
 		std::string map_Ke;
 		std::string map_d;
 		std::string map_bump;
@@ -21,6 +22,7 @@ namespace MomoEngine
 		float Ni = 0.0f;
 		float d = 0.0f;
 		float Tr = 0.0f;
+		float bm = 0.0f;
 		glm::vec3 Tf{ 0.0f };
 		glm::vec3 Ka{ 0.0f };
 		glm::vec3 Kd{ 0.0f };

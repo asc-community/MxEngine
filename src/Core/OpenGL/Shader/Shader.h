@@ -19,7 +19,7 @@ namespace MomoEngine
 		#endif
 		mutable std::unordered_map<std::string, int> uniformCache;
 
-		unsigned int CompileShader(ShaderType type, std::string& source) const;
+		unsigned int CompileShader(ShaderType type, std::string& source, const std::string& name) const;
 		unsigned int CreateProgram(unsigned int vertexShader, unsigned int fragmentShader) const;
 		int GetUniformLocation(const std::string& uniformName) const;
 	public:
@@ -31,8 +31,11 @@ namespace MomoEngine
 		
 		void Load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
 
+		void SetUniformFloat(const std::string& name, float f) const;
+		void SetUniformVec3(const std::string& name, float f1, float f2, float f3) const;
 		void SetUniformVec4(const std::string& name, float f1, float f2, float f3, float f4) const;
 		void SetUniformMat4(const std::string& name, const glm::mat4x4& matrix) const;
+		void SetUniformMat3(const std::string& name, const glm::mat3x3& matrix) const;
 		void SetUniformInt(const std::string& name, int i) const;
 
 		// Унаследовано через IBindable

@@ -35,3 +35,6 @@
 x64
 .vs
 src/x64
+
+# imgui
+*.ini
