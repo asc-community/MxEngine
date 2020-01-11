@@ -18,7 +18,12 @@ namespace MomoEngine
 
 	int Window::GetWidth() const
 	{
-		return this->width;
+		if (this->window == nullptr)
+			return this->width;
+		
+		int width, height;
+		glfwGetWindowSize(this->window, &width, &height);
+		return width;
 	}
 
 	bool Window::IsOpen() const
@@ -193,6 +198,11 @@ namespace MomoEngine
 
 	int Window::GetHeight() const
 	{
-		return this->height;
+		if (this->window == nullptr)
+			return this->height;
+
+		int width, height;
+		glfwGetWindowSize(this->window, &width, &height);
+		return height;
 	}
 }

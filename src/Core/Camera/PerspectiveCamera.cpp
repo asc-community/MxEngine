@@ -44,6 +44,7 @@ namespace MomoEngine
 		updateProjection = true;
 		this->aspectRatio = w / h;
 	}
+
 	float PerspectiveCamera::GetAspectRatio() const
 	{
 		return this->aspectRatio;

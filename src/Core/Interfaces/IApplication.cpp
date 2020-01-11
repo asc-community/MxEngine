@@ -1,7 +1,7 @@
 #include "IApplication.h"
 #include "Utilities/Logger/Logger.h"
-#define CHAISCRIPT_NO_THREADS
-#include <chaiscript/chaiscript.hpp>
+#include "Core/ChaiScript/ChaiScriptUtils.h"
+
 #undef GetObject
 
 namespace MomoEngine
@@ -14,78 +14,11 @@ namespace MomoEngine
 		this->Console.SetChaiScriptObject(this->chaiScript);
 
 		//////////////////////// chai script bindings ///////////////////////////////////
-		this->chaiScript->add_global(chaiscript::var(std::ref(this->objects)), "objects");
-		this->chaiScript->add_global(chaiscript::var(std::ref(Renderer::Instance().ViewPort)), "viewport");
-
-		this->chaiScript->add(chaiscript::fun(&IApplication::CreateObject, this), "load");
-		this->chaiScript->add(chaiscript::fun(&IApplication::DestroyObject, this), "delete");
-		this->chaiScript->add(chaiscript::fun(
-			[](ObjectStorage& storage, const std::string& name) -> GLInstance&
-			{
-				return storage[name];
-			}), "[]");
-		this->chaiScript->add(chaiscript::fun(
-			[](const glm::vec3& vec)
-			{
-				return "(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ")";
-			}), "to_string");
-
-		this->chaiScript->add(chaiscript::fun(
-			[&res = this->ResourcePath](GLInstance& instance, const std::string& path)
-			{
-				instance.Texture = MakeRef<Texture>(res + path);
-			}), "set_texture");
-
-		this->chaiScript->add(chaiscript::fun(
-			[&res = this->ResourcePath](GLInstance& instance, const std::string& vertex, const std::string& fragment)
-			{
-				instance.Shader = MakeRef<Shader>(res + vertex, res + fragment);
-			}), "set_shader");
-		this->chaiScript->add(chaiscript::fun(
-			[](float zFar) { Renderer::Instance().ViewPort.GetCamera().SetZFar(zFar); }), "set_zfar");
-		this->chaiScript->add(chaiscript::fun(
-			[](float zNear) { Renderer::Instance().ViewPort.GetCamera().SetZNear(zNear); }), "set_znear");
-		this->chaiScript->add(chaiscript::fun(
-			[]() { return Renderer::Instance().ViewPort.GetCamera().GetZFar(); }), "zfar");
-		this->chaiScript->add(chaiscript::fun(
-			[]() { return Renderer::Instance().ViewPort.GetCamera().GetZNear(); }), "znear");
-
-		#define CHAI_IMPORT(SIGNATURE, NAME) this->chaiScript->add(chaiscript::fun(SIGNATURE), #NAME)
-
-		CHAI_IMPORT(&GLInstance::RotateX, rotate_x);
-		CHAI_IMPORT(&GLInstance::RotateY, rotate_y);
-		CHAI_IMPORT(&GLInstance::RotateZ, rotate_z);
-
-		CHAI_IMPORT((GLInstance&(GLInstance::*)(float))&GLInstance::Scale, scale);
-		CHAI_IMPORT((GLInstance&(GLInstance::*)(float, float, float))&GLInstance::Scale, scale);
-
-		CHAI_IMPORT(&GLInstance::Translate, translate);
-		CHAI_IMPORT(&GLInstance::TranslateX, translate_x);
-		CHAI_IMPORT(&GLInstance::TranslateY, translate_y);
-		CHAI_IMPORT(&GLInstance::TranslateZ, translate_z);
-
-		CHAI_IMPORT(&GLInstance::Hide, hide);
-		CHAI_IMPORT(&GLInstance::Show, show);
-
-		CHAI_IMPORT(&GLInstance::GetTranslation, translation);
-		CHAI_IMPORT(&GLInstance::GetRotation, rotation);
-		CHAI_IMPORT(&GLInstance::GetScale, scale);
-
-		CHAI_IMPORT(&CameraController::GetPosition,  position);
-		CHAI_IMPORT(&CameraController::GetDirection, direction);
-		CHAI_IMPORT(&CameraController::GetUpVector,  up);
-		CHAI_IMPORT(&CameraController::GetZoom, zoom);
-		CHAI_IMPORT(&CameraController::SetZoom, set_zoom);
-		CHAI_IMPORT(&CameraController::Rotate, rotate);
-
-		CHAI_IMPORT((CameraController&(CameraController::*)(float, float, float))&CameraController::Translate, translate);
-		CHAI_IMPORT(&CameraController::TranslateX, translate_x);
-		CHAI_IMPORT(&CameraController::TranslateY, translate_y);
-		CHAI_IMPORT(&CameraController::TranslateZ, translate_z);
-		CHAI_IMPORT(&CameraController::TranslateForward, move_forward);
-		CHAI_IMPORT(&CameraController::TranslateRight, move_right);
-		CHAI_IMPORT(&CameraController::TranslateUp, move_up);
-		///////////////////////////////////////////////////////////////////////////////////////////
+		ChaiScriptApplication::Init(*this->chaiScript, this);
+		ChaiScriptGLInstance::Init(*this->chaiScript);
+		ChaiScriptRenderer::Init(*this->chaiScript);
+		ChaiScriptCamera::Init(*this->chaiScript);
+		/////////////////////////////////////////////////////////////////////////////////
 	}
 
 	RendererImpl& IApplication::GetRenderer()
@@ -210,15 +143,44 @@ namespace MomoEngine
 					Logger::Instance().Warning("MomoEngine::Application", "Application::OnUpdate running more than 16.66ms");
 			}
 
-			this->GetRenderer().Finish();
+			this->GetRenderer().Flush();
 			this->Window.PullEvents();
-			this->GetRenderer().Clear();
-
 		}
 	}
 
 	IApplication::~IApplication()
 	{
 		delete this->chaiScript;
+	}
+
+	void ChaiScriptApplication::Init(chaiscript::ChaiScript& chai, IApplication* app)
+	{
+		chai.add_global(chaiscript::var(std::ref(app->objects)), "objects");
+		chai.add_global(chaiscript::var(std::ref(Renderer::Instance().ViewPort)), "view");
+
+		chai.add(chaiscript::fun(&IApplication::CreateObject, app), "load");
+		chai.add(chaiscript::fun(&IApplication::DestroyObject, app), "delete");
+		chai.add(chaiscript::fun(
+			[](IApplication::ObjectStorage& storage, const std::string& name) -> GLInstance&
+			{
+				return storage[name];
+			}), "[]");
+		chai.add(chaiscript::fun(
+			[](const glm::vec3& vec)
+			{
+				return "(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ")";
+			}), "to_string");
+
+		chai.add(chaiscript::fun(
+			[&res = app->ResourcePath](GLInstance& instance, const std::string& path)
+		{
+			instance.Texture = MakeRef<Texture>(res + path);
+		}), "set_texture");
+
+		chai.add(chaiscript::fun(
+			[&res = app->ResourcePath](GLInstance& instance, const std::string& vertex, const std::string& fragment)
+		{
+			instance.Shader = MakeRef<Shader>(res + vertex, res + fragment);
+		}), "set_shader");
 	}
 }

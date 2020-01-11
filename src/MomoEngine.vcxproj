@@ -22,6 +22,7 @@
     <ClInclude Include="Core\Camera\CameraController.h" />
     <ClInclude Include="Core\Camera\OrthographicCamera.h" />
     <ClInclude Include="Core\Camera\PerspectiveCamera.h" />
+    <ClInclude Include="Core\ChaiScript\ChaiScriptUtils.h" />
     <ClInclude Include="Core\Interfaces\IApplication.h" />
     <ClInclude Include="Core\Interfaces\IBindable.h" />
     <ClInclude Include="Core\Interfaces\ICamera.h" />

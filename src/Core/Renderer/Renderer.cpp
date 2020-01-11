@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include "Utilities/Logger/Logger.h"
 #include "Core/OpenGL/GLUtils/GLUtils.h"
+#include "Core/ChaiScript/ChaiScriptUtils.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
@@ -310,5 +311,17 @@ namespace MomoEngine
 		float factor;
 		GLCALL(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &factor));
 		return factor;
+	}
+
+	void ChaiScriptRenderer::Init(chaiscript::ChaiScript& chai)
+	{
+		chai.add(chaiscript::fun(
+			[](float zFar) { Renderer::Instance().ViewPort.GetCamera().SetZFar(zFar); }), "set_zfar");
+		chai.add(chaiscript::fun(
+			[](float zNear) { Renderer::Instance().ViewPort.GetCamera().SetZNear(zNear); }), "set_znear");
+		chai.add(chaiscript::fun(
+			[]() { return Renderer::Instance().ViewPort.GetCamera().GetZFar(); }), "zfar");
+		chai.add(chaiscript::fun(
+			[]() { return Renderer::Instance().ViewPort.GetCamera().GetZNear(); }), "znear");
 	}
 }

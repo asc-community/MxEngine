@@ -14,6 +14,7 @@ namespace MomoEngine
 		ObjectStorage objects;
 		GLInstance defaultInstance;
 		chaiscript::ChaiScript* chaiScript;
+		friend class ChaiScriptApplication;
 	protected:
 		ImGuiConsole Console;
 		std::string ResourcePath;
@@ -38,5 +39,11 @@ namespace MomoEngine
 	public:
 		void Run();
 		virtual ~IApplication();
+	};
+
+	class ChaiScriptApplication
+	{
+	public:
+		static void Init(chaiscript::ChaiScript& chai, IApplication* app);
 	};
 }

@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include "Utilities/Time/Time.h"
 #include "Utilities/ObjectLoader/ObjectLoader.h"
+#include "Core/ChaiScript/ChaiScriptUtils.h"
 
 namespace MomoEngine
 {
@@ -370,5 +371,27 @@ namespace MomoEngine
 	bool GLRenderObject::HasMaterial() const
 	{
 		return this->material != nullptr;
+	}
+
+	void ChaiScriptGLInstance::Init(chaiscript::ChaiScript& chai)
+	{
+		CHAI_IMPORT(&GLInstance::RotateX, rotate_x);
+		CHAI_IMPORT(&GLInstance::RotateY, rotate_y);
+		CHAI_IMPORT(&GLInstance::RotateZ, rotate_z);
+
+		CHAI_IMPORT((GLInstance & (GLInstance::*)(float)) & GLInstance::Scale, scale);
+		CHAI_IMPORT((GLInstance & (GLInstance::*)(float, float, float)) & GLInstance::Scale, scale);
+
+		CHAI_IMPORT(&GLInstance::Translate, translate);
+		CHAI_IMPORT(&GLInstance::TranslateX, translate_x);
+		CHAI_IMPORT(&GLInstance::TranslateY, translate_y);
+		CHAI_IMPORT(&GLInstance::TranslateZ, translate_z);
+
+		CHAI_IMPORT(&GLInstance::Hide, hide);
+		CHAI_IMPORT(&GLInstance::Show, show);
+
+		CHAI_IMPORT(&GLInstance::GetTranslation, translation);
+		CHAI_IMPORT(&GLInstance::GetRotation, rotation);
+		CHAI_IMPORT(&GLInstance::GetScale, scale);
 	}
 }

@@ -58,6 +58,11 @@ void MomoEngine::GLInitilizerImpl::OnWindowCreate(GLFWwindow* window)
 		Logger::Instance().Debug("GLEW", "glew init done in " + BeautifyTime(initEnd - initStart));
 		Logger::Instance().Debug("GLEW", "OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
 	}
+
+	glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height)
+	{
+		GLCALL(glViewport(0, 0, width, height));
+	});
 	
 	ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)window, true);
 

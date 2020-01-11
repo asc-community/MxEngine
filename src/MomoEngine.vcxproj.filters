@@ -33,6 +33,7 @@
     <ClInclude Include="Core\Camera\PerspectiveCamera.h" />
     <ClInclude Include="Core\Camera\OrthographicCamera.h" />
     <ClInclude Include="Core\Camera\CameraController.h" />
+    <ClInclude Include="Core\ChaiScript\ChaiScriptUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\OpenGL\GLObject\GLObject.cpp" />

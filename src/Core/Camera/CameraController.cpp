@@ -1,6 +1,8 @@
 #include "CameraController.h"
 #include <glm/ext.hpp>
 
+#include "Core/ChaiScript/ChaiScriptUtils.h"
+
 namespace MomoEngine
 {
 	bool CameraController::HasCamera() const
@@ -156,5 +158,23 @@ namespace MomoEngine
 	CameraController& CameraController::TranslateUp(float dist)
 	{
 		return Translate(this->up * dist);
+	}
+
+	void ChaiScriptCamera::Init(chaiscript::ChaiScript& chai)
+	{
+		CHAI_IMPORT(&CameraController::GetPosition, position);
+		CHAI_IMPORT(&CameraController::GetDirection, direction);
+		CHAI_IMPORT(&CameraController::GetUpVector, up);
+		CHAI_IMPORT(&CameraController::GetZoom, zoom);
+		CHAI_IMPORT(&CameraController::SetZoom, set_zoom);
+		CHAI_IMPORT(&CameraController::Rotate, rotate);
+
+		CHAI_IMPORT((CameraController & (CameraController::*)(float, float, float)) & CameraController::Translate, translate);
+		CHAI_IMPORT(&CameraController::TranslateX, translate_x);
+		CHAI_IMPORT(&CameraController::TranslateY, translate_y);
+		CHAI_IMPORT(&CameraController::TranslateZ, translate_z);
+		CHAI_IMPORT(&CameraController::TranslateForward, move_forward);
+		CHAI_IMPORT(&CameraController::TranslateRight, move_right);
+		CHAI_IMPORT(&CameraController::TranslateUp, move_up);
 	}
 }

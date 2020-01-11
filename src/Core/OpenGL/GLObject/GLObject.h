@@ -11,6 +11,11 @@
 #include <functional>
 #include "Core/Material/Material.h"
 
+namespace chaiscript
+{
+	class ChaiScript;
+}
+
 namespace MomoEngine
 {
 	class GLRenderObject : public IRenderable
@@ -115,5 +120,11 @@ namespace MomoEngine
 		virtual bool HasTexture() const override;
 		virtual const MomoEngine::Texture& GetTexture() const override;
 		virtual size_t GetInstanceCount() const override;
+	};
+
+	class ChaiScriptGLInstance
+	{
+	public:
+		static void Init(chaiscript::ChaiScript& chai);
 	};
 }

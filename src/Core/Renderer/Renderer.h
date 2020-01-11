@@ -9,6 +9,11 @@
 #include "Core/Interfaces/IDrawable.h"
 #include "Core/Camera/CameraController.h"
 
+namespace chaiscript
+{
+	class ChaiScript;
+}
+
 namespace MomoEngine
 {
 	enum class BlendFactor
@@ -94,4 +99,10 @@ namespace MomoEngine
 	};
 
 	using Renderer = SingletonHolder<RendererImpl>;
+
+	class ChaiScriptRenderer
+	{
+	public:
+		static void Init(chaiscript::ChaiScript& chai);
+	};
 }

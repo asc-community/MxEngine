@@ -152,6 +152,7 @@ void SandboxApp::OnUpdate()
 	if(this->Window.GetCursorMode() == CursorMode::NORMAL)
 	{
 		ImGui::SetNextWindowPos({ 0, 0 });
+		this->Console.SetSize({ this->Window.GetWidth() / 3.0f, this->Window.GetHeight() / 1.5f });
 		this->Console.Draw("Debug Console");
 
 		auto pos = this->GetRenderer().ViewPort.GetPosition();
@@ -181,9 +182,10 @@ void SandboxApp::OnUpdate()
 
 		ImGui::End();
 	}
-
 	float deltaRot = 0.1f * TimeDelta;
 	ArcObject.RotateY(deltaRot);
+
+	this->GetRenderer().Clear();
 
 	GridObject.Hide();
 	this->DrawObjects(drawMesh);
