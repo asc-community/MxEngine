@@ -265,9 +265,9 @@ namespace MomoEngine
 			INVOKE_ERR;
 			return obj;
 		}
-		std::vector<glm::vec3> verteces;
-		std::vector<glm::vec3> normals;
-		std::vector<glm::vec3> texCoords;
+		std::vector<Vector3> verteces;
+		std::vector<Vector3> normals;
+		std::vector<Vector3> texCoords;
 		std::string type, strBuff;
 		std::stringstream file, tmpBuff;
 		file << fs.rdbuf();
@@ -276,13 +276,13 @@ namespace MomoEngine
 			obj.lineCount++;
 			if (type == "v")
 			{
-				glm::vec3 v;
+				Vector3 v;
 				file >> v.x >> v.y >> v.z;
 				verteces.push_back(v);
 			}
 			else if (type == "vt")
 			{
-				glm::vec3 vt(0.0f);
+				Vector3 vt(0.0f);
 				file >> vt.x >> vt.y;
 				std::getline(file, type);
 				type = trim(type);
@@ -294,7 +294,7 @@ namespace MomoEngine
 			}
 			else if (type == "vn")
 			{
-				glm::vec3 vn;
+				Vector3 vn;
 				file >> vn.x >> vn.y >> vn.z;
 				normals.push_back(vn);
 			}

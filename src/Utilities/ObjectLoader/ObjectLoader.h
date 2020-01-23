@@ -2,9 +2,10 @@
 
 #include <string>
 #include <vector>
-#include <glm/glm.hpp>
 #include <sstream>
 #include <unordered_map>
+
+#include "Utilities/Math/Math.h"
 
 namespace MomoEngine
 {
@@ -23,11 +24,11 @@ namespace MomoEngine
 		float d = 0.0f;
 		float Tr = 0.0f;
 		float bm = 0.0f;
-		glm::vec3 Tf{ 0.0f };
-		glm::vec3 Ka{ 0.0f };
-		glm::vec3 Kd{ 0.0f };
-		glm::vec3 Ks{ 0.0f };
-		glm::vec3 Ke{ 0.0f };
+		Vector3 Tf{ 0.0f };
+		Vector3 Ka{ 0.0f };
+		Vector3 Kd{ 0.0f };
+		Vector3 Ks{ 0.0f };
+		Vector3 Ke{ 0.0f };
 		int illum = 0;
 		bool IsSuccess = true;
 	};
@@ -36,7 +37,7 @@ namespace MomoEngine
 	{
 		std::string name;
 		std::vector<float> buffer;
-		std::vector<glm::vec<3, long long>> faces;		
+		std::vector<Vector<3, long long>> faces;		
 		MaterialInfo* material = nullptr;
 		bool useTexture = false;
 		bool useNormal = false;

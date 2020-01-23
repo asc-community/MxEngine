@@ -1,13 +1,13 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include "Utilities/Math/Math.h"
 
 namespace MomoEngine
 {
 	struct ICamera
 	{
-		virtual const glm::mat4x4& GetMatrix() const = 0;
-		virtual void SetViewMatrix(const glm::mat4x4& view) = 0;
+		virtual const Matrix4x4& GetMatrix() const = 0;
+		virtual void SetViewMatrix(const Matrix4x4& view) = 0;
 		virtual void SetAspectRatio(float w, float h = 1.0f) = 0;
 		virtual float GetAspectRatio() const = 0;
 		virtual void SetZNear(float zNear) = 0;

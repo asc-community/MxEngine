@@ -96,7 +96,17 @@ namespace MomoEngine
 		GLCALL(glUniform4f(location, f1, f2, f3, f4));
 	}
 
-	void Shader::SetUniformMat4(const std::string& name, const glm::mat4x4& matrix) const
+	void Shader::SetUniformVec3(const std::string& name, const Vector3& vec) const
+	{
+		SetUniformVec3(name, vec[0], vec[1], vec[2]);
+	}
+
+	void Shader::SetUniformVec4(const std::string& name, const Vector3& vec) const
+	{
+		SetUniformVec4(name, vec[0], vec[1], vec[2], vec[3]);
+	}
+
+	void Shader::SetUniformMat4(const std::string& name, const Matrix4x4& matrix) const
 	{
 		int location = GetUniformLocation(name);
 		if (location == -1) return;
@@ -104,7 +114,7 @@ namespace MomoEngine
 		GLCALL(glUniformMatrix4fv(location, 1, false, &matrix[0][0]));
 	}
 
-	void Shader::SetUniformMat3(const std::string& name, const glm::mat3x3& matrix) const
+	void Shader::SetUniformMat3(const std::string& name, const Matrix3x3& matrix) const
 	{
 		int location = GetUniformLocation(name);
 		if (location == -1) return;

@@ -1,17 +1,15 @@
 #include "PerspectiveCamera.h"
-#include <glm/ext.hpp>
-#include <cmath>
 
 namespace MomoEngine
 {
-	const glm::mat4x4& PerspectiveCamera::GetMatrix() const
+	const Matrix4x4& PerspectiveCamera::GetMatrix() const
 	{
 		if (this->updateMatrix)
 		{
 			if (this->updateProjection)
 			{
-				float fov = glm::clamp(zoom * FOV, glm::radians(10.0f), glm::radians(150.0f));
-				this->projection = glm::perspective(fov, aspectRatio, zNear, zFar);
+				float fov = Clamp(zoom * FOV, Radians(10.0f), Radians(150.0f));
+				this->projection = MakePerspectiveMatrix(fov, aspectRatio, zNear, zFar);
 				this->updateProjection = false;
 			}
 			this->matrix = this->projection * this->view;
@@ -20,7 +18,7 @@ namespace MomoEngine
 		return this->matrix;
 	}
 
-	void PerspectiveCamera::SetViewMatrix(const glm::mat4x4& view)
+	void PerspectiveCamera::SetViewMatrix(const Matrix4x4& view)
 	{
 		this->view = view;
 		this->updateMatrix = true;
@@ -30,12 +28,12 @@ namespace MomoEngine
 	{
 		updateMatrix = true;
 		updateProjection = true;
-		this->FOV = glm::radians(angle);
+		this->FOV = Radians(angle);
 	}
 
 	float PerspectiveCamera::GetFOV() const
 	{
-		return glm::degrees(this->FOV);
+		return Degrees(this->FOV);
 	}
 
 	void PerspectiveCamera::SetAspectRatio(float w, float h)

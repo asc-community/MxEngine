@@ -1,15 +1,15 @@
 #pragma once
-#include <glm/glm.hpp>
+
 #include "Core/Interfaces/ICamera.h"
 
 namespace MomoEngine
 {
 	class PerspectiveCamera : public ICamera
 	{
-		mutable glm::mat4x4 matrix;
-		mutable glm::mat4x4 view;
-		mutable glm::mat4x4 projection;
-		float FOV = glm::radians(65.0f);
+		mutable Matrix4x4 matrix;
+		mutable Matrix4x4 view;
+		mutable Matrix4x4 projection;
+		float FOV = Radians(65.0f);
 		float zoom = 1.0f;
 		float aspectRatio = 1.777f;
 		float zNear = 0.1f, zFar = 100.0f;
@@ -20,8 +20,8 @@ namespace MomoEngine
 		float GetFOV() const;
 
 		// Inherited via ICamera
-		virtual const glm::mat4x4& GetMatrix() const override;
-		virtual void SetViewMatrix(const glm::mat4x4& view) override;
+		virtual const Matrix4x4& GetMatrix() const override;
+		virtual void SetViewMatrix(const Matrix4x4& view) override;
 		virtual void SetAspectRatio(float w, float h = 1.0f) override;
 		virtual float GetAspectRatio() const override;
 		virtual float GetZFar() const override;

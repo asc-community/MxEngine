@@ -1,4 +1,5 @@
 #include "Sandbox.h"
+#include "Library/Bindings/ViewPortInput.h"
 
 #include <algorithm>
 #include <array>
@@ -6,12 +7,6 @@
 MomoEngine::IApplication* MomoEngine::GetApplication()
 {
 	return new SandboxApp();
-}
-
-std::string helloWorld(const std::string& str)
-{
-	Logger::Instance().Debug("ChaiScript", "Hello World!");
-	return str;
 }
 
 SandboxApp::SandboxApp()
@@ -29,6 +24,7 @@ void SandboxApp::OnCreate()
 	DestroyerObject.Texture = MakeRef<Texture>(ResourcePath + "objects/destroyer/Aluminm5.jpg");
 	DeathStarObject.Texture = MakeRef<Texture>(ResourcePath + "objects/death_star/texture.jpg");
 	*/
+
 	auto& DestroyerObject = GetObject("Destroyer");
 	auto& DeathStarObject = GetObject("DeathStar");
 	
@@ -45,7 +41,7 @@ void SandboxApp::OnCreate()
 	int cubeCount = 100;
 	CubeObject.AddInstanceBuffer([](int idx, int coord)
 		{
-			return std::array<float, 3>({ 5.0f * std::sin(0.2f * idx), 0.5f * idx, 5.0f * std::cos(0.2f * idx) })[coord];
+			return std::array<float, 3>{ 5.0f * std::sin(0.2f * idx), 0.5f * idx, 5.0f * std::cos(0.2f * idx) }[coord];
 		}, 3, cubeCount);
 
 	ArcObject
@@ -66,132 +62,105 @@ void SandboxApp::OnCreate()
 	//auto camera = MakeUnique<OrthographicCamera>();
 
 	camera->SetZFar(100000.0f);
-	camera->SetAspectRatio(Window.GetWidth(), Window.GetHeight());
+	camera->SetAspectRatio(this->GetWindow().GetWidth(), this->GetWindow().GetHeight());
 	
-	this->GetRenderer().ViewPort.SetCamera(std::move(camera));
-	this->GetRenderer().ViewPort.Translate(1.0f, 3.0f, 0.0f);
+	auto& controller = this->GetRenderer().ViewPort;
+	controller.SetCamera(std::move(camera));
+	controller.Translate(1.0f, 3.0f, 0.0f);
+	controller.SetMoveSpeed(5.0f);
+	controller.SetRotateSpeed(0.75f);
+
+	ViewPortBinding("ViewPortControl", this)
+		.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT)
+		.BindRotation();
 }
 
 void SandboxApp::OnUpdate()
 {
 	static MomoEngine::TimeStep timePassed = 0.0f;
-	static Position cursorPos;
-	static float speed = 5.0;
-	static float mouseSpeed = 0.75f;
 	static bool drawMesh = false;
 
-	static auto& CubeObject      = GetObject("Cube");
-	static auto& ArcObject       = GetObject("Arc170");
-	static auto& GridObject      = GetObject("Grid");
-	static auto& DestroyerObject = GetObject("Destroyer");
-	static auto& DeathStarObject = GetObject("DeathStar");
+	auto& CubeObject      = GetObject("Cube");
+	auto& ArcObject       = GetObject("Arc170");
+	auto& GridObject      = GetObject("Grid");
+	//auto& DestroyerObject = GetObject("Destroyer");
+	//auto& DeathStarObject = GetObject("DeathStar");
+
+	auto& window = this->GetWindow();
+	if (window.GetCursorMode() != CursorMode::NORMAL)
+	{
+		if (window.IsKeyHeld(KeyCode::ESCAPE))
+		{
+			this->CloseApplication();
+		}
+	}
+	if (window.IsKeyPressed(KeyCode::GRAVE_ACCENT))
+	{
+		static Vector2 cursorPos = window.GetCursorPos();
+		if (window.GetCursorMode() == CursorMode::NORMAL)
+		{
+			window.UseCursorMode(CursorMode::DISABLED);
+			ViewPortBinding("ViewPortControl", this)
+				.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT)
+				.BindRotation();
+			window.UseCursorPos(cursorPos);
+		}
+		else
+		{
+			cursorPos = window.GetCursorPos();
+			window.UseCursorMode(CursorMode::NORMAL);
+			window.UseCursorPos({ window.GetWidth() / 2.0f, window.GetHeight() / 2.0f });
+			this->GetEventDispatcher().RemoveEventListener("ViewPortControl");
+		}
+	}
 
 	timePassed += this->TimeDelta;
 	if (timePassed > 1.0f)
 	{
-		this->Window.UseTitle("Sandbox App " + std::to_string(this->CounterFPS) + " FPS");
+		this->GetWindow().UseTitle("Sandbox App " + std::to_string(this->CounterFPS) + " FPS");
 		timePassed = 0.0f;
 	}
-	// event handling 
+	if(this->GetWindow().GetCursorMode() == CursorMode::NORMAL)
 	{
-		if (Window.GetCursorMode() != CursorMode::NORMAL)
-		{
-			auto curPos = Window.GetCursorPos();
-			auto& camera = this->GetRenderer().ViewPort;
-			camera.Rotate(
-				mouseSpeed * this->TimeDelta * (cursorPos.x - curPos.x),
-				mouseSpeed * this->TimeDelta * (cursorPos.y - curPos.y)
-			);
-			cursorPos = curPos;
+		auto& camera = this->GetRenderer().ViewPort;
+		auto pos = camera.GetPosition();
+		float speed = camera.GetMoveSpeed();
+		auto zoom = camera.GetZoom();
 
-			if (Window.IsKeyHolded(KeyCode::W))
-			{
-				camera.TranslateForward(this->TimeDelta * speed);
-			}
-			if (Window.IsKeyHolded(KeyCode::S))
-			{
-				camera.TranslateForward(-this->TimeDelta * speed);
-			}
-			if (Window.IsKeyHolded(KeyCode::D))
-			{
-				camera.TranslateRight(this->TimeDelta * speed);
-			}
-			if (Window.IsKeyHolded(KeyCode::A))
-			{
-				camera.TranslateRight(-this->TimeDelta * speed);
-			}
-			if (Window.IsKeyHolded(KeyCode::SPACE))
-			{
-				camera.TranslateUp(this->TimeDelta * speed);
-			}
-			if (Window.IsKeyHolded(KeyCode::LEFT_SHIFT))
-			{
-				camera.TranslateUp(-this->TimeDelta * speed);
-			}
-			if (Window.IsKeyPressed(KeyCode::ESCAPE))
-			{
-				this->CloseApplication(); 
-				return;
-			}
-		}
-		if (Window.IsKeyPressed(KeyCode::GRAVE_ACCENT))
-		{
-			if (this->Window.GetCursorMode() == CursorMode::NORMAL)
-			{
-				this->Window.UseCursorMode(CursorMode::DISABLED);
-				this->Window.UseCursorPos(cursorPos);
-			}
-			else
-			{
-				this->Window.UseCursorMode(CursorMode::NORMAL);
-				this->Window.UseCursorPos({ this->Window.GetWidth() / 2, this->Window.GetHeight() / 2 });
-			}
-		}
-	}
-
-	if(this->Window.GetCursorMode() == CursorMode::NORMAL)
-	{
 		ImGui::SetNextWindowPos({ 0, 0 });
-		this->Console.SetSize({ this->Window.GetWidth() / 3.0f, this->Window.GetHeight() / 1.5f });
+		this->Console.SetSize({ this->GetWindow().GetWidth() / 3.0f, this->GetWindow().GetHeight() / 1.5f });
 		this->Console.Draw("Debug Console");
-
-		auto pos = this->GetRenderer().ViewPort.GetPosition();
 
 		ImGui::SetNextWindowPos({ 0, Console.GetSize().y });
 		ImGui::SetNextWindowSize({ Console.GetSize().x, 0.0f });
 		ImGui::Begin("Fast Game Editor");
 
 		ImGui::Checkbox("display mesh", &drawMesh);
-
-		ImGui::Text("speed: %f", speed);
+		ImGui::Text("speed: %f");
 		ImGui::Text("position: (%f, %f, %f)", pos.x, pos.y, pos.z);
 
-		ImGui::InputFloat("set speed", &speed);
+		if (ImGui::InputFloat("set speed", &speed))
+		{
+			camera.SetMoveSpeed(speed);
+		}
 		if (ImGui::InputFloat3("set position", &pos[0]))
 		{
-			this->GetRenderer().ViewPort.SetPosition(pos);
+			camera.SetPosition(pos);
 		}
-
-		auto zoom = this->GetRenderer().ViewPort.GetZoom();
 
 		ImGui::Text("zoom / fov: %f", zoom);
 		if (ImGui::DragFloat("zoom", &zoom, 0.1f, 0.1f, 10.0f))
 		{
-			this->GetRenderer().ViewPort.SetZoom(zoom);
+			camera.SetZoom(zoom);
 		}
 
 		ImGui::End();
 	}
-	float deltaRot = 0.1f * TimeDelta;
+	float deltaRot = 0.1f * this->TimeDelta;
 	ArcObject.RotateY(deltaRot);
 
 	this->GetRenderer().Clear();
-
-	GridObject.Hide();
 	this->DrawObjects(drawMesh);
-	
-	GridObject.Show();
-	this->GetRenderer().Draw(GridObject);
 }
 
 void SandboxApp::OnDestroy()

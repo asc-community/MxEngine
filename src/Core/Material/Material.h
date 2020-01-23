@@ -1,8 +1,9 @@
 #pragma once
 #include <string>
-#include <glm/glm.hpp>
+
 #include "Utilities/Memory/Memory.h"
 #include "Core/OpenGL/Texture/Texture.h"
+#include "Utilities/Math/Math.h"
 
 namespace MomoEngine
 {
@@ -20,11 +21,11 @@ namespace MomoEngine
 		float Ni = 0.0f;
 		float d = 0.0f;
 		float Tr = 0.0f;
-		glm::vec3 Tf{ 0.0f };
-		glm::vec3 Ka{ 0.0f };
-		glm::vec3 Kd{ 0.0f };
-		glm::vec3 Ks{ 0.0f };
-		glm::vec3 Ke{ 0.0f };
+		Vector3 Tf{ 0.0f };
+		Vector3 Ka{ 0.0f };
+		Vector3 Kd{ 0.0f };
+		Vector3 Ks{ 0.0f };
+		Vector3 Ke{ 0.0f };
 		int illum = 0;
 	};
 }

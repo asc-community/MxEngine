@@ -1,13 +1,14 @@
 #include "IApplication.h"
 #include "Utilities/Logger/Logger.h"
 #include "Core/ChaiScript/ChaiScriptUtils.h"
+#include "Utilities/Math/Math.h"
 
 #undef GetObject
 
 namespace MomoEngine
 {
 	IApplication::IApplication()
-		: Window(1280, 720), TimeDelta(0), CounterFPS(0)
+		: window(1280, 720), TimeDelta(0), CounterFPS(0)
 	{
 		this->chaiScript = new chaiscript::ChaiScript();
 		// intialize chaiscript
@@ -19,6 +20,23 @@ namespace MomoEngine
 		ChaiScriptRenderer::Init(*this->chaiScript);
 		ChaiScriptCamera::Init(*this->chaiScript);
 		/////////////////////////////////////////////////////////////////////////////////
+		window.UseEventDispatcher(&this->Dispatcher);
+	}
+
+	Window& IApplication::GetWindow()
+	{
+		return this->window;
+	}
+
+	TimeStep IApplication::GetTimeDelta() const
+	{
+		return this->TimeDelta;
+	}
+
+	void IApplication::SetWindow(Window window)
+	{
+		this->window = std::move(window);
+		this->window.UseEventDispatcher(&this->Dispatcher);
 	}
 
 	RendererImpl& IApplication::GetRenderer()
@@ -79,12 +97,12 @@ namespace MomoEngine
 	void IApplication::CloseApplication()
 	{
 		this->OnDestroy();
-		this->Window.Close();
+		this->window.Close();
 	}
 
 	void IApplication::CreateDefaultContext()
 	{
-		this->Window
+		this->window
 			.UseProfile(3, 3, Profile::CORE)
 			.UseCursorMode(CursorMode::DISABLED)
 			.UseSampling(4)
@@ -103,26 +121,31 @@ namespace MomoEngine
 			.UseTextureWrap(WrapType::REPEAT, WrapType::REPEAT)
 			.UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA)
 			.UseClearColor(0.0f, 0.0f, 0.0f)
-			.UseImGuiStyle(ImGuiStyle::DARK);
+			.UseImGuiStyle(ImguiStyle::DARK);
+	}
+
+	AppEventDispatcher& IApplication::GetEventDispatcher()
+	{
+		return this->Dispatcher;
 	}
 
 	void IApplication::Run()
 	{
-		TimeStep initStart = Window.GetTime();
+		TimeStep initStart = Time::Current();
 		Logger::Instance().Debug("MomoEngine::Application", "calling Application::OnCreate()");
 		this->OnCreate();
-		TimeStep initEnd = Window.GetTime();
+		TimeStep initEnd = Time::Current();
 		auto time = BeautifyTime(initEnd - initStart);
 		Logger::Instance().Debug("MomoEngine::Application", "Application::OnCreate returned in " + time);
 
-		float secondEnd = Window.GetTime(), frameEnd = Window.GetTime();
+		float secondEnd = Time::Current(), frameEnd = Time::Current();
 		int fpsCounter = 0;
 
 		Logger::Instance().Debug("MomoEngine::Application", "starting main loop...");
-		while (this->Window.IsOpen())
+		while (this->window.IsOpen())
 		{
 			fpsCounter++;
-			float now = Window.GetTime();
+			float now = window.GetTime();
 			if (now - secondEnd >= 1.0f)
 			{
 				this->CounterFPS = fpsCounter;
@@ -132,25 +155,38 @@ namespace MomoEngine
 			TimeDelta = now - frameEnd;
 			frameEnd = now;
 
-			float onUpdateStart = this->Window.GetTime();
+			// event phase
+			this->Dispatcher.InvokeAll();
+			if (!this->window.IsOpen()) break;
+
+			this->window.OnUpdate();
+
+			float onUpdateStart = Time::Current();
 			this->OnUpdate();
-			float onUpdateEnd = this->Window.GetTime();
-			if (onUpdateEnd - onUpdateStart > 16.66f)
+			if (!this->window.IsOpen()) break;
+			float onUpdateEnd = Time::Current();
+			if (onUpdateEnd - onUpdateStart > 0.01666f)
 			{
-				if (onUpdateEnd - onUpdateStart > 33.33f)
+				if (onUpdateEnd - onUpdateStart > 0.03333f)
 					Logger::Instance().Error("MomoEngine::Application", "Application::OnUpdate running more than 33.33ms");
 				else
 					Logger::Instance().Warning("MomoEngine::Application", "Application::OnUpdate running more than 16.66ms");
 			}
 
 			this->GetRenderer().Flush();
-			this->Window.PullEvents();
+			this->window.PullEvents();
 		}
 	}
 
 	IApplication::~IApplication()
 	{
+		this->GetRenderer().DefaultTexture.reset();
+		this->GetRenderer().MeshShader.reset();
+		this->GetRenderer().ObjectShader.reset();
+
 		delete this->chaiScript;
+
+		Logger::Instance().Debug("MomoEngine::Application", "application destroyed");
 	}
 
 	void ChaiScriptApplication::Init(chaiscript::ChaiScript& chai, IApplication* app)
@@ -166,7 +202,7 @@ namespace MomoEngine
 				return storage[name];
 			}), "[]");
 		chai.add(chaiscript::fun(
-			[](const glm::vec3& vec)
+			[](const Vector3& vec)
 			{
 				return "(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ")";
 			}), "to_string");

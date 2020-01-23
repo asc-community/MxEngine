@@ -1,19 +1,50 @@
 #include "Window.h"
 #include "Utilities/Logger/Logger.h"
+#include "Utilities/Memory/Memory.h"
+#include "Core/Event/KeyEvent.h"
+#include "Core/Event/MouseEvent.h"
 #include "Core/OpenGL/GLInitializer/GLInitializer.h"
-#include <GLFW/glfw3.h>
 #include "Utilities/Time/Time.h"
 #include <imgui/imgui.h>
+
+#include <GLFW/glfw3.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
+#include <algorithm>
 
 namespace MomoEngine
 {
 	Window::Window(int width, int height)
-		: width(width), height(height), window(nullptr), cursorMode(CursorMode::NORMAL), windowPosition{width, height}
+		: width(width), height(height), window(nullptr), cursorMode(CursorMode::NORMAL), windowPosition{float(width), float(height)}, dispatcher(nullptr)
 	{
 		GLInitilizer::Instance().Init();
 		Logger::Instance().Debug("MomoEngine::Window", "window object created");
+	}
+
+	Window::Window(Window&& window) noexcept
+		: title(std::move(window.title)), window(window.window), width(window.width),
+		height(window.height), windowPosition(window.windowPosition), cursorMode(window.cursorMode),
+		cursorPosition(window.cursorPosition), keyHeld(std::move(window.keyHeld)), dispatcher(window.dispatcher)
+	{
+		window.window = nullptr;
+		window.dispatcher = nullptr;
+	}
+
+	Window& Window::operator=(Window&& window) noexcept
+	{
+		this->title          = std::move(window.title);
+		this->window         = window.window;
+		this->width          = window.width,
+		this->height         = window.height;
+		this->windowPosition = window.windowPosition;
+		this->cursorMode     = window.cursorMode;
+		this->cursorPosition = window.cursorPosition;
+		this->keyHeld      = window.keyHeld;
+		this->dispatcher     = window.dispatcher;
+		window.window        = nullptr;
+		window.dispatcher    = nullptr;
+
+		return *this;
 	}
 
 	int Window::GetWidth() const
@@ -35,8 +66,6 @@ namespace MomoEngine
 		}
 		bool isOpen = !glfwWindowShouldClose(this->window);
 
-		GLInitilizer::Instance().OnWindowTick(this->window);
-
 		return isOpen;
 	}
 
@@ -46,8 +75,21 @@ namespace MomoEngine
 	}
 
 	void Window::PullEvents() const
-	{
+	{		
+		this->keyPressed.reset();
+		this->keyReleased.reset();
+
 		glfwPollEvents();
+
+		auto keyEvent = MakeUnique<KeyEvent>(&this->keyHeld, &this->keyPressed, &this->keyReleased);
+		this->dispatcher->AddEvent(std::move(keyEvent));
+		auto mouseMoveEvent = MakeUnique<MouseMoveEvent>(this->cursorPosition.x, this->cursorPosition.y);
+		this->dispatcher->AddEvent(std::move(mouseMoveEvent));
+	}
+
+	void Window::OnUpdate()
+	{
+		GLInitilizer::Instance().OnWindowTick(this->window);
 	}
 
 	Window& Window::Close()
@@ -61,37 +103,31 @@ namespace MomoEngine
 		return *this;
 	}
 
-	Position Window::GetCursorPos() const
+	Vector2 Window::GetCursorPos() const
 	{
 		double x, y;
 		glfwGetCursorPos(window, &x, &y);
-		return { int(x), int(y) };
+		return Vector2(float(x), float(y));
 	}
 
-	Position Window::GetWindowPos() const
+	Vector2 Window::GetWindowPos() const
 	{
 		return this->windowPosition;
 	}
 
-	bool Window::IsKeyHolded(KeyCode key) const
+	bool Window::IsKeyHeld(KeyCode key) const
 	{
-		return glfwGetKey(window, (int)key) == GLFW_PRESS;
+		return this->keyHeld[(size_t)key];
 	}
 
 	bool Window::IsKeyPressed(KeyCode key) const
 	{
-		bool state = IsKeyHolded(key); // pressed now
-		bool result = this->keyStates[(size_t)key] != state;
-		this->keyStates[(size_t)key] = state;
-		return result && state;
+		return this->keyPressed[(size_t)key];
 	}
 
 	bool Window::IsKeyReleased(KeyCode key) const
 	{
-		bool state = !IsKeyHolded(key); // released now
-		bool result = this->keyStates[(size_t)key] != state;
-		this->keyStates[(size_t)key] = state;
-		return result && state;
+		return this->keyReleased[(size_t)key];
 	}
 
 	GLFWwindow* Window::GetNativeHandler()
@@ -107,7 +143,24 @@ namespace MomoEngine
 			Logger::Instance().Error("GLFW", "glfw window was not created");
 			return *this;
 		}
+		// window events
 		SwitchContext();
+		glfwSetWindowUserPointer(this->window, this);
+		glfwSetKeyCallback(this->window, [](GLFWwindow* w, int key, int scancode, int action, int mods)
+			{
+				if (action == GLFW_REPEAT) return;
+
+				Window& window = *(Window*)glfwGetWindowUserPointer(w);
+				window.keyPressed[(size_t)key] = (action == GLFW_PRESS);
+				window.keyReleased[(size_t)key] = (action == GLFW_RELEASE);
+				window.keyHeld[(size_t)key] = (action == GLFW_PRESS);
+			});
+		glfwSetCursorPosCallback(this->window, [](GLFWwindow* w, double x, double y)
+			{
+				Window& window = *(Window*)glfwGetWindowUserPointer(w);
+				window.cursorPosition = { float(x), float(y) };
+			});
+
 		GLInitilizer::Instance().OnWindowCreate(this->window);
 
 		UseTitle(this->title);
@@ -152,7 +205,7 @@ namespace MomoEngine
 		return *this;
 	}
 
-	Window& Window::UseCursorPos(Position pos)
+	Window& Window::UseCursorPos(const Vector2& pos)
 	{
 		this->cursorPosition = pos;
 		if (this->window != nullptr)
@@ -170,17 +223,23 @@ namespace MomoEngine
 		return *this;
 	}
 
-	Window& Window::UsePosition(int xpos, int ypos)
+	Window& Window::UsePosition(float xpos, float ypos)
 	{
 		this->windowPosition = { xpos, ypos };
 		if(window != nullptr)
-			glfwSetWindowPos(window, xpos, ypos);
+			glfwSetWindowPos(window, int(xpos), int(ypos));
 		return *this;
 	}
 
 	Window& Window::UseSize(int width, int height)
 	{
 		glfwSetWindowSize(this->window, width, height);
+		return *this;
+	}
+
+	Window& Window::UseEventDispatcher(AppEventDispatcher* dispatcher)
+	{
+		this->dispatcher = dispatcher;
 		return *this;
 	}
 
@@ -191,9 +250,12 @@ namespace MomoEngine
 
 	Window::~Window()
 	{
-		this->Close();
-		glfwDestroyWindow(this->window);
-		Logger::Instance().Debug("MomoEngine::Window", "window destroyed");
+		if (this->window != nullptr)
+		{
+			this->Close();
+			glfwDestroyWindow(this->window);
+			Logger::Instance().Debug("MomoEngine::Window", "window destroyed");
+		}
 	}
 
 	int Window::GetHeight() const

@@ -1,5 +1,4 @@
 #include "OrthographicCamera.h"
-#include <glm/ext.hpp>
 #include <algorithm>
 
 namespace MomoEngine
@@ -11,7 +10,7 @@ namespace MomoEngine
 		this->projectLimits = { left, right, bottom, top };
 	}
 
-	const glm::mat4x4& OrthographicCamera::GetMatrix() const
+	const Matrix4x4& OrthographicCamera::GetMatrix() const
 	{
 		if (this->updateMatrix)
 		{
@@ -21,7 +20,7 @@ namespace MomoEngine
 				float right = this->projectLimits.y;
 				float bottom = this->projectLimits.z;
 				float top = this->projectLimits.w;
-				this->projection = glm::ortho(
+				this->projection = MakeOrthographicMatrix(
 					left * this->aspectRatio,
 					right * this->aspectRatio,
 					bottom,
@@ -37,7 +36,7 @@ namespace MomoEngine
 		return this->matrix;
 	}
 
-	void OrthographicCamera::SetViewMatrix(const glm::mat4x4& view)
+	void OrthographicCamera::SetViewMatrix(const Matrix4x4& view)
 	{
 		this->view = view;
 		this->updateMatrix = true;

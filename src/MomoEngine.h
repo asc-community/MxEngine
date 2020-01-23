@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Interfaces/IApplication.h"
+#include "Core/Application/IApplication.h"
 #include "Utilities/Memory/Memory.h"
 #include "Core/OpenGL/GLObject/GLObject.h"
 #include "Core/OpenGL/VertexBuffer/VertexBuffer.h"
@@ -13,3 +13,6 @@
 #include "Core/Camera/OrthographicCamera.h"
 #include "imgui/imgui.h"
 #include "Utilities/ImGuiConsole/ImGuiConsole.h"
+#include "Core/Event/KeyEvent.h"
+#include "Core/Event/MouseEvent.h"
+#include "Utilities/Math/Math.h"

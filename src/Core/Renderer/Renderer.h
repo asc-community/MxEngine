@@ -53,7 +53,7 @@ namespace MomoEngine
 		LINEAR = 0x2601,
 	};
 
-	enum class ImGuiStyle
+	enum class ImguiStyle
 	{
 		CLASSIC,
 		LIGHT,
@@ -93,7 +93,7 @@ namespace MomoEngine
 		RendererImpl& UseBlending(BlendFactor src, BlendFactor dist);
 		RendererImpl& UseTextureWrap(WrapType textureX, WrapType textureY);
 		RendererImpl& UseAnisotropicFiltering(float factor);
-		RendererImpl& UseImGuiStyle(ImGuiStyle style);
+		RendererImpl& UseImGuiStyle(ImguiStyle style);
 
 		float GetLargestAnisotropicFactor() const;
 	};

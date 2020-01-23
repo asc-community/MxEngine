@@ -61,10 +61,10 @@ namespace MomoEngine
 
 	class GLInstance : public IDrawable
 	{
-		mutable glm::mat4x4 Model;
-		glm::vec3 translation{ 0.0f };
-		glm::vec3 rotation{ 0.0f };
-		glm::vec3 scale{ 1.0f };
+		mutable Matrix4x4 Model;
+		Vector3 translation{ 0.0f };
+		Vector3 rotation{ 0.0f };
+		Vector3 scale{ 1.0f };
 		size_t instanceCount = 0;
 		mutable bool needUpdate = true;
 		bool shouldRender = true;
@@ -87,15 +87,15 @@ namespace MomoEngine
 		void Hide();
 		void Show();
 
-		glm::vec3 GetTranslation() const;
-		glm::vec3 GetRotation() const;
-		glm::vec3 GetScale() const;
+		Vector3 GetTranslation() const;
+		Vector3 GetRotation() const;
+		Vector3 GetScale() const;
 
 		GLInstance& Scale(float scale);
 		GLInstance& Scale(float scaleX, float scaleY, float scaleZ);
-		GLInstance& Scale(const glm::vec3& scale);
+		GLInstance& Scale(const Vector3& scale);
 
-		GLInstance& Rotate(float angle, const glm::vec3& rotate);
+		GLInstance& Rotate(float angle, const Vector3& rotate);
 		GLInstance& RotateX(float angle);
 		GLInstance& RotateY(float angle);
 		GLInstance& RotateZ(float angle);
@@ -113,7 +113,7 @@ namespace MomoEngine
 		virtual bool IsLast(size_t iterator) const override;
 		virtual size_t GetNext(size_t iterator) const override;
 		virtual const IRenderable& GetCurrent(size_t iterator) const override;
-		virtual const glm::mat4x4& GetModel() const override;
+		virtual const Matrix4x4& GetModel() const override;
 		virtual bool HasShader() const override;
 		virtual const MomoEngine::Shader& GetShader() const override;
 		virtual bool IsDrawable() const override;

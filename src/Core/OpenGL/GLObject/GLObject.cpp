@@ -2,7 +2,6 @@
 #include "Utilities/Logger/Logger.h"
 #include <fstream>
 #include <sstream>
-#include <glm/glm.hpp>
 #include "Utilities/Time/Time.h"
 #include "Utilities/ObjectLoader/ObjectLoader.h"
 #include "Core/ChaiScript/ChaiScriptUtils.h"
@@ -177,32 +176,32 @@ namespace MomoEngine
 		this->shouldRender = true;
 	}
 
-	glm::vec3 GLInstance::GetTranslation() const
+	Vector3 GLInstance::GetTranslation() const
 	{
 		return this->translation;
 	}
 
-	glm::vec3 GLInstance::GetRotation() const
+	Vector3 GLInstance::GetRotation() const
 	{
 		return this->rotation;
 	}
 
-	glm::vec3 GLInstance::GetScale() const
+	Vector3 GLInstance::GetScale() const
 	{
 		return this->scale;
 	}
 
 	GLInstance& GLInstance::Scale(float scale)
 	{
-		return Scale(glm::vec3(scale));
+		return Scale(Vector3(scale));
 	}
 
 	GLInstance& GLInstance::Scale(float scaleX, float scaleY, float scaleZ)
 	{
-		return Scale(glm::vec3(scaleX, scaleY, scaleZ));
+		return Scale(Vector3(scaleX, scaleY, scaleZ));
 	}
 
-	GLInstance& GLInstance::Scale(const glm::vec3& scale)
+	GLInstance& GLInstance::Scale(const Vector3& scale)
 	{
 		needUpdate = true;
 		this->scale.x *= scale.x;
@@ -211,42 +210,42 @@ namespace MomoEngine
 		return *this;
 	}
 
-	GLInstance& GLInstance::Rotate(float angle, const glm::vec3& vec)
+	GLInstance& GLInstance::Rotate(float angle, const Vector3& vec)
 	{
-		angle = glm::radians(angle);
+		angle = Radians(angle);
 		needUpdate = true;
 		this->rotation += vec * angle;
 
 		// check if rotation value is too high to avoid precision loss
-		if (rotation.x > glm::two_pi<float>()) rotation.x -= glm::two_pi<float>();
-		if (rotation.y > glm::two_pi<float>()) rotation.y -= glm::two_pi<float>();
-		if (rotation.z > glm::two_pi<float>()) rotation.z -= glm::two_pi<float>();
-		if (rotation.x < 0.0f) rotation.x += glm::two_pi<float>();
-		if (rotation.y < 0.0f) rotation.y += glm::two_pi<float>();
-		if (rotation.z < 0.0f) rotation.z += glm::two_pi<float>();
+		if (rotation.x > TwoPi<float>()) rotation.x -= TwoPi<float>();
+		if (rotation.y > TwoPi<float>()) rotation.y -= TwoPi<float>();
+		if (rotation.z > TwoPi<float>()) rotation.z -= TwoPi<float>();
+		if (rotation.x < 0.0f) rotation.x += TwoPi<float>();
+		if (rotation.y < 0.0f) rotation.y += TwoPi<float>();
+		if (rotation.z < 0.0f) rotation.z += TwoPi<float>();
 
 		return *this;
 	}
 
 	GLInstance& GLInstance::RotateX(float angle)
 	{
-		return Rotate(angle, glm::vec3(1.0f, 0.0f, 0.0f));
+		return Rotate(angle, Vector3(1.0f, 0.0f, 0.0f));
 	}
 
 	GLInstance& GLInstance::RotateY(float angle)
 	{
-		return Rotate(angle, glm::vec3(0.0f, 1.0f, 0.0f));
+		return Rotate(angle, Vector3(0.0f, 1.0f, 0.0f));
 	}
 
 	GLInstance& GLInstance::RotateZ(float angle)
 	{
-		return Rotate(angle, glm::vec3(0.0f, 0.0f, 1.0f));
+		return Rotate(angle, Vector3(0.0f, 0.0f, 1.0f));
 	}
 
 	GLInstance& GLInstance::Translate(float x, float y, float z)
 	{
 		needUpdate = true;
-		this->translation += glm::vec3(x, y, z);
+		this->translation += Vector3(x, y, z);
 		return *this;
 	}
 
@@ -285,15 +284,15 @@ namespace MomoEngine
 		return this->GetGLObject()->GetRenderObjects()[iterator];
 	}
 
-	const glm::mat4x4& GLInstance::GetModel() const
+	const Matrix4x4& GLInstance::GetModel() const
 	{
 		if (needUpdate)
 		{
-			auto Transalte = glm::translate(glm::mat4x4(1.0f), this->translation);
-			auto RotateX = glm::rotate(glm::mat4x4(1.0f), this->rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-			auto RotateY = glm::rotate(glm::mat4x4(1.0f), this->rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-			auto RotateZ = glm::rotate(glm::mat4x4(1.0f), this->rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-			auto Scale = glm::scale(glm::mat4x4(1.0f), this->scale);
+			auto Transalte = MomoEngine::Translate(Matrix4x4(1.0f), this->translation);
+			auto RotateX = MomoEngine::Rotate(Matrix4x4(1.0f), this->rotation.x, Vector3(1.0f, 0.0f, 0.0f));
+			auto RotateY = MomoEngine::Rotate(Matrix4x4(1.0f), this->rotation.y, Vector3(0.0f, 1.0f, 0.0f));
+			auto RotateZ = MomoEngine::Rotate(Matrix4x4(1.0f), this->rotation.z, Vector3(0.0f, 0.0f, 1.0f));
+			auto Scale = MomoEngine::Scale(Matrix4x4(1.0f), this->scale);
 			this->Model = Transalte * RotateX * RotateY * RotateZ * Scale;
 			needUpdate = false;
 		}

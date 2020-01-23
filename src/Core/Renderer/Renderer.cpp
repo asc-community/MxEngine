@@ -57,7 +57,7 @@ namespace MomoEngine
 		if (!object.IsDrawable()) return;
 		size_t iterator = object.GetIterator();
 		auto MVP = this->ViewPort.GetCameraMatrix() * object.GetModel();
-		glm::mat3x3 NormalMatrix = glm::transpose(glm::inverse(object.GetModel()));
+		Matrix3x3 NormalMatrix = Transpose(Inverse(object.GetModel()));	
 		auto cameraPos = this->ViewPort.GetPosition();
 
 		while (!object.IsLast(iterator))
@@ -282,17 +282,17 @@ namespace MomoEngine
 		return *this;
 	}
 
-	RendererImpl& RendererImpl::UseImGuiStyle(ImGuiStyle style)
+	RendererImpl& RendererImpl::UseImGuiStyle(ImguiStyle style)
 	{
 		switch (style)
 		{
-		case MomoEngine::ImGuiStyle::CLASSIC:
+		case ImguiStyle::CLASSIC:
 			ImGui::StyleColorsClassic();
 			break;
-		case MomoEngine::ImGuiStyle::LIGHT:
+		case ImguiStyle::LIGHT:
 			ImGui::StyleColorsLight();
 			break;
-		case MomoEngine::ImGuiStyle::DARK:
+		case ImguiStyle::DARK:
 			ImGui::StyleColorsDark();
 			break;
 		default:

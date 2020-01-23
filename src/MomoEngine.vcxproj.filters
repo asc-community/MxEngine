@@ -19,7 +19,6 @@
     <ClInclude Include="Utilities\Threading\ThreadingModel.h" />
     <ClInclude Include="Utilities\SingletonHolder\LifetimePolicy.h" />
     <ClInclude Include="Core\OpenGL\GLInitializer\GLInitializer.h" />
-    <ClInclude Include="Core\Interfaces\IApplication.h" />
     <ClInclude Include="MomoEngine.h" />
     <ClInclude Include="MomoEngine\EntryPoint.h" />
     <ClInclude Include="Utilities\Memory\Memory.h" />
@@ -34,6 +33,13 @@
     <ClInclude Include="Core\Camera\OrthographicCamera.h" />
     <ClInclude Include="Core\Camera\CameraController.h" />
     <ClInclude Include="Core\ChaiScript\ChaiScriptUtils.h" />
+    <ClInclude Include="Utilities\EventDispatcher\EventDispatcher.h" />
+    <ClInclude Include="Core\Event\KeyEvent.h" />
+    <ClInclude Include="Core\Interfaces\IEvent.h" />
+    <ClInclude Include="Core\Event\MouseEvent.h" />
+    <ClInclude Include="Utilities\Math\Math.h" />
+    <ClInclude Include="Core\Application\IApplication.h" />
+    <ClInclude Include="Library\Bindings\ViewPortBinding.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\OpenGL\GLObject\GLObject.cpp" />
@@ -49,13 +55,13 @@
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
     <ClCompile Include="Utilities\Logger\Logger.cpp" />
     <ClCompile Include="Core\OpenGL\GLInitializer\GLInitializer.cpp" />
-    <ClCompile Include="Core\Interfaces\IApplication.cpp" />
     <ClCompile Include="Utilities\Time\Time.cpp" />
     <ClCompile Include="Utilities\ObjectLoader\ObjectLoader.cpp" />
     <ClCompile Include="Utilities\ImGuiConsole\ImGuiConsole.cpp" />
     <ClCompile Include="Core\Camera\PerspectiveCamera.cpp" />
     <ClCompile Include="Core\Camera\OrthographicCamera.cpp" />
     <ClCompile Include="Core\Camera\CameraController.cpp" />
+    <ClCompile Include="Core\Application\IApplication.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\cube_fragment.glsl" />

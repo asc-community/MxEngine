@@ -1,6 +1,4 @@
 #include "CameraController.h"
-#include <glm/ext.hpp>
-
 #include "Core/ChaiScript/ChaiScriptUtils.h"
 
 namespace MomoEngine
@@ -20,48 +18,68 @@ namespace MomoEngine
 		return *this->camera;
 	}
 
-	const glm::mat4x4& CameraController::GetCameraMatrix() const
+	const Matrix4x4& CameraController::GetCameraMatrix() const
 	{
 		if (updateCamera)
 		{
-			auto view = glm::lookAt(position, position + direction, up);
+			auto view = MakeViewMatrix(position, position + direction, up);
 			this->camera->SetViewMatrix(view);
 			this->updateCamera = false;
 		}
 		return this->camera->GetMatrix();
 	}
 
-	glm::vec3 CameraController::GetPosition() const
+	Vector3 CameraController::GetPosition() const
 	{
 		return this->position;
 	}
 
-	glm::vec3 CameraController::GetDirection() const
+	Vector3 CameraController::GetDirection() const
 	{
 		return this->direction;
 	}
 
-	glm::vec3 CameraController::GetUpVector() const
+	Vector3 CameraController::GetUpVector() const
 	{
 		return this->up;
 	}
 
-	void CameraController::SetPosition(const glm::vec3& position)
+	float CameraController::GetMoveSpeed() const
+	{
+		return this->moveSpeed;
+	}
+
+	float CameraController::GetRotateSpeed() const
+	{
+		return this->rotateSpeed;
+	}
+
+	void CameraController::SetPosition(const Vector3& position)
 	{
 		this->position = position;
 		this->updateCamera = true;
 	}
 
-	void CameraController::SetDirection(const glm::vec3& direction)
+	void CameraController::SetDirection(const Vector3& direction)
 	{
 		this->direction = direction;
 		this->updateCamera = true;
 	}
 
-	void CameraController::SetUpVector(const glm::vec3& up)
+	void CameraController::SetUpVector(const Vector3& up)
 	{
 		this->up = up;
 		this->updateCamera = true;
+	}
+
+	void CameraController::SetMoveSpeed(float speed)
+	{
+		this->moveSpeed = speed;
+	}
+
+	void CameraController::SetRotateSpeed(float speed)
+	{
+		this->rotateSpeed = speed;
 	}
 
 	void CameraController::SetZoom(float zoom)
@@ -89,40 +107,45 @@ namespace MomoEngine
 		return Translate({ x, y, z });
 	}
 
-	CameraController& CameraController::Translate(const glm::vec3& vec)
+	CameraController& CameraController::Translate(const Vector3& vec)
 	{
-		this->position += vec;
+		this->position += this->moveSpeed * vec;
 		this->updateCamera = true;
 		return *this;
 	}
 
 	CameraController& CameraController::TranslateX(float x)
 	{
-		this->position.x += x;
+		this->position.x += this->moveSpeed * x;
 		this->updateCamera = true;
 		return *this;
 	}
 
 	CameraController& CameraController::TranslateY(float y)
 	{
-		this->position.y += y;
+		this->position.y += this->moveSpeed * y;
 		this->updateCamera = true;
 		return *this;
 	}
 
 	CameraController& CameraController::TranslateZ(float z)
 	{
-		this->position.z += z;
+		this->position.z += this->moveSpeed * z;
 		this->updateCamera = true;
 		return *this;
 	}
 
 	CameraController& CameraController::Rotate(float horizontal, float vertical)
 	{
-		this->horizontalAngle += horizontal;
-		this->verticalAngle += vertical;
-		this->verticalAngle = glm::clamp(this->verticalAngle, 
-			-glm::half_pi<float>() + 0.001f, glm::half_pi<float>() - 0.001f);
+		this->horizontalAngle += this->rotateSpeed * horizontal;
+		this->verticalAngle += this->rotateSpeed * vertical;
+
+		this->verticalAngle = Clamp(this->verticalAngle, 
+			-HalfPi<float>() + 0.001f, HalfPi<float>() - 0.001f);
+		while (this->horizontalAngle >= TwoPi<float>())
+			this->horizontalAngle -= TwoPi<float>();
+		while (this->horizontalAngle < 0)
+			this->horizontalAngle += TwoPi<float>();
 
 		this->SetDirection({
 			std::cos(verticalAngle) * std::sin(horizontalAngle),
@@ -130,16 +153,16 @@ namespace MomoEngine
 			std::cos(verticalAngle) * std::cos(horizontalAngle)
 			});
 
-		this->forward = glm::vec3(
+		this->forward = Vector3(
 			sin(horizontalAngle),
 			0.0f,
 			cos(horizontalAngle)
 		);
 
-		this->right = glm::vec3(
-			sin(horizontalAngle - glm::half_pi<float>()),
+		this->right = Vector3(
+			sin(horizontalAngle - HalfPi<float>()),
 			0.0f,
-			cos(horizontalAngle - glm::half_pi<float>())
+			cos(horizontalAngle - HalfPi<float>())
 		);
 		this->updateCamera = true;
 		return *this;
@@ -169,7 +192,7 @@ namespace MomoEngine
 		CHAI_IMPORT(&CameraController::SetZoom, set_zoom);
 		CHAI_IMPORT(&CameraController::Rotate, rotate);
 
-		CHAI_IMPORT((CameraController & (CameraController::*)(float, float, float)) & CameraController::Translate, translate);
+		CHAI_IMPORT((CameraController& (CameraController::*)(float, float, float)) & CameraController::Translate, translate);
 		CHAI_IMPORT(&CameraController::TranslateX, translate_x);
 		CHAI_IMPORT(&CameraController::TranslateY, translate_y);
 		CHAI_IMPORT(&CameraController::TranslateZ, translate_z);

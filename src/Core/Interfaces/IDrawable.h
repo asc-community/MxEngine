@@ -6,6 +6,8 @@
 #include "Core/OpenGL/IndexBuffer/IndexBuffer.h"
 #include "Core/Material/Material.h"
 #include "Core/Interfaces/IRenderable.h"
+#include "Utilities/Math/Math.h"
+
 #include <vector>
 
 namespace MomoEngine
@@ -16,7 +18,7 @@ namespace MomoEngine
 		virtual bool IsLast(size_t iterator) const = 0;
 		virtual size_t GetNext(size_t iterator) const = 0;
 		virtual const IRenderable& GetCurrent(size_t iterator) const = 0;
-		virtual const glm::mat4x4& GetModel() const = 0;
+		virtual const Matrix4x4& GetModel() const = 0;
 		virtual const Shader& GetShader() const = 0;
 		virtual const Texture& GetTexture() const = 0;
 		virtual bool HasShader() const = 0;

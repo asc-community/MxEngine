@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Core/Interfaces/IBindable.h"
+#include "Utilities/Math/Math.h"
+
 #include <unordered_map>
-#include <glm/ext.hpp>
 
 namespace MomoEngine
 {
@@ -34,8 +35,10 @@ namespace MomoEngine
 		void SetUniformFloat(const std::string& name, float f) const;
 		void SetUniformVec3(const std::string& name, float f1, float f2, float f3) const;
 		void SetUniformVec4(const std::string& name, float f1, float f2, float f3, float f4) const;
-		void SetUniformMat4(const std::string& name, const glm::mat4x4& matrix) const;
-		void SetUniformMat3(const std::string& name, const glm::mat3x3& matrix) const;
+		void SetUniformVec3(const std::string& name, const Vector3& vec) const;
+		void SetUniformVec4(const std::string& name, const Vector3& vec) const;
+		void SetUniformMat4(const std::string& name, const Matrix4x4& matrix) const;
+		void SetUniformMat3(const std::string& name, const Matrix3x3& matrix) const;
 		void SetUniformInt(const std::string& name, int i) const;
 
 		// Унаследовано через IBindable
