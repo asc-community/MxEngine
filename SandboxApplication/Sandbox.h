@@ -1,11 +1,9 @@
 #include <MomoEngine.h>
-#include <glm/glm.hpp>
-#include <glm/ext.hpp>
-#include <MomoEngine/EntryPoint.h>
+#include <Library/EntryPoint.h>
 
 using namespace MomoEngine;
 
-class SandboxApp : public MomoEngine::IApplication
+class SandboxApp : public Application
 {
 	virtual void OnCreate () override;
 	virtual void OnUpdate () override;

@@ -5,7 +5,7 @@
 
 namespace MomoEngine
 {
-	void LoggerImpl::Error(const std::string& invoker, const std::string& message) const
+	void LoggerImpl::Error(std::string_view invoker, std::string_view message) const
 	{
 		if (error != nullptr && useError)
 		{
@@ -20,7 +20,7 @@ namespace MomoEngine
 		}
 	}
 
-	void LoggerImpl::Debug(const std::string& invoker, const std::string& message) const
+	void LoggerImpl::Debug(std::string_view invoker, std::string_view message) const
 	{
 		if (debug != nullptr && useDebug)
 		{
@@ -28,7 +28,7 @@ namespace MomoEngine
 		}
 	}
 
-	void LoggerImpl::Warning(const std::string& invoker, const std::string& message) const
+	void LoggerImpl::Warning(std::string_view invoker, std::string_view message) const
 	{
 		#ifdef _WIN32
 		auto handle = ::GetStdHandle(STD_OUTPUT_HANDLE);

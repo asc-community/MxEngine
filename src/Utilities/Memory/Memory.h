@@ -11,14 +11,20 @@ namespace MomoEngine
 	using Ref = std::shared_ptr<T>;
 
 	template<typename T, typename... Args>
-	UniqueRef<T> MakeUnique(Args&&... args)
+	inline UniqueRef<T> MakeUnique(Args&&... args)
 	{
 		return std::make_unique<T>(std::forward<Args>(args)...);
 	}
 
 	template<typename T, typename... Args>
-	Ref<T> MakeRef(Args&&... args)
+	inline Ref<T> MakeRef(Args&&... args)
 	{
 		return std::make_shared<T>(std::forward<Args>(args)...);
 	}
+
+    template<typename T, typename... Args>
+    inline T* Alloc(Args&&... args) { return new T(std::forward<Args>(args)...); }
+
+    template<typename T>
+    inline void Free(T* value) { delete value; }
 }

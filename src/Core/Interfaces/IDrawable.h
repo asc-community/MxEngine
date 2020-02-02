@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Core/OpenGL/VertexArray/VertexArray.h"
-#include "Core/OpenGL/Texture/Texture.h"
-#include "Core/OpenGL/Shader/Shader.h"
-#include "Core/OpenGL/IndexBuffer/IndexBuffer.h"
+#include "Core/Interfaces/GraphicAPI/Texture.h"
+#include "Core/Interfaces/GraphicAPI/Shader.h"
+#include "Core/Interfaces/GraphicAPI/IndexBuffer.h"
 #include "Core/Material/Material.h"
 #include "Core/Interfaces/IRenderable.h"
 #include "Utilities/Math/Math.h"

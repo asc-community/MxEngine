@@ -1,5 +1,6 @@
 #include "ObjectLoader.h"
 #include "Utilities/Logger/Logger.h"
+#include "Utilities/Profiler/Profiler.h"
 #include <fstream>
 
 namespace MomoEngine
@@ -90,11 +91,14 @@ namespace MomoEngine
 
 	MaterialLibrary ObjectLoader::LoadMaterialLibrary(const std::string& path)
 	{
+        MAKE_SCOPE_PROFILER("ObjectLoader::LoadMaterialLibrary");
+        MAKE_SCOPE_TIMER("MomoEngine::ObjectLoader", "ObjectLoader::LoadMaterialLibrary()");
+        Logger::Instance().Debug("MomoEngine::ObjectLoader", "loading material library from file: " + path);
 		MaterialLibrary library;
 		std::ifstream fs(path);
 		if (fs.bad() || fs.fail())
 		{
-			Logger::Instance().Error("MomoEngine::ObjectLoader", "material library was not loaded: " + path);
+			Logger::Instance().Error("MomoEngine::ObjectLoader", "could not open file: " + path);
 			return library;
 		}
 		std::stringstream file;
@@ -122,7 +126,6 @@ namespace MomoEngine
 				return library;
 			}
 		}
-		Logger::Instance().Debug("MomoEngine::ObjectLoader", "material library loaded: " + path);
 		return library;
 	}
 
@@ -247,6 +250,8 @@ namespace MomoEngine
 
 	ObjFileInfo MomoEngine::ObjectLoader::Load(const std::string& path)
 	{
+        MAKE_SCOPE_PROFILER("ObjectLoader::Load");
+        Logger::Instance().Debug("MomoEngine::ObjectLoader", "loading object from file: " + path);
 		auto CheckGroup = [](ObjFileInfo& object)
 		{
 			if (object.groups.empty())
@@ -382,7 +387,7 @@ namespace MomoEngine
 				auto vertex = face.x;
 				auto texture = face.y;
 				auto normal = face.z;
-				if (vertex < 0 || vertex >= verteces.size())
+				if (vertex < 0 || (size_t)vertex >= verteces.size())
 				{
 					Logger::Instance().Error("MomoEngine::ObjectLoader",
 						"vertex index is invalid: " + std::to_string(vertex)
@@ -395,7 +400,7 @@ namespace MomoEngine
 				group.buffer.push_back(verteces[vertex].z);
 				if (group.useTexture)
 				{
-					if (texture < 0 || texture >= texCoords.size())
+					if (texture < 0 || (size_t)texture >= texCoords.size())
 					{
 						Logger::Instance().Error("MomoEngine::ObjectLoader",
 							"texture index is invalid: " + std::to_string(texture)
@@ -409,7 +414,7 @@ namespace MomoEngine
 				}
 				if (group.useNormal)
 				{
-					if (normal < 0 || normal >= normals.size())
+					if (normal < 0 || (size_t)normal >= normals.size())
 					{
 						Logger::Instance().Error("MomoEngine::ObjectLoader",
 							"normal index is invalid: " + std::to_string(normal)

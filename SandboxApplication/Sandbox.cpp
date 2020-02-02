@@ -1,42 +1,49 @@
 #include "Sandbox.h"
-#include "Library/Bindings/ViewPortInput.h"
+#include <Library/Bindings/ViewPortBinding.h>
 
 #include <algorithm>
 #include <array>
 
-MomoEngine::IApplication* MomoEngine::GetApplication()
+MomoEngine::Application* MomoEngine::GetApplication()
 {
 	return new SandboxApp();
 }
 
 SandboxApp::SandboxApp()
 {
-	CreateDefaultContext();
+	CreateContext();
 	this->ResourcePath = "Resources/";
 }
 
 void SandboxApp::OnCreate()
 {
 	/*
-	auto& DestroyerObject = CreateObject("Destroyer", "objects/destroyer/destroyer.obj");
+    auto& DestroyerObject = CreateObject("Destroyer", "objects/destroyer/destroyer.obj");
 	auto& DeathStarObject = CreateObject("DeathStar", "objects/death_star/death_star.obj");
 
-	DestroyerObject.Texture = MakeRef<Texture>(ResourcePath + "objects/destroyer/Aluminm5.jpg");
-	DeathStarObject.Texture = MakeRef<Texture>(ResourcePath + "objects/death_star/texture.jpg");
-	*/
+	DestroyerObject.Texture = CreateTexture("objects/destroyer/Aluminm5.jpg");
+	DeathStarObject.Texture = CreateTexture("objects/death_star/texture.jpg");
 
-	auto& DestroyerObject = GetObject("Destroyer");
-	auto& DeathStarObject = GetObject("DeathStar");
-	
+    DeathStarObject
+        .Scale(0.00005f)
+        .RotateX(-90.0f)
+        .RotateZ(-90.0f)
+        .Translate(-10.0f, 10.0f, 10.0f);
+
+    DestroyerObject
+        .Translate(3.0f, 1.0f, 2.0f) // to origin
+        .Translate(-5, 0.0f, 5.0f)
+        .Scale(0.0005f);
+	*/
 	auto& ArcObject  = CreateObject("Arc170", "objects/arc170/arc170.obj");
 	auto& CubeObject = CreateObject("Cube", "objects/crate/crate.obj");
 	auto& GridObject = CreateObject("Grid", "objects/grid/grid.obj");
 	
-	GridObject.Shader = MakeRef<Shader>(ResourcePath + "shaders/grid_vertex.glsl", ResourcePath + "shaders/grid_fragment.glsl");
+	GridObject.Shader = CreateShader("shaders/grid_vertex.glsl", "shaders/grid_fragment.glsl");
 	
-	this->GetRenderer().DefaultTexture = MakeRef<Texture>(ResourcePath + "textures/default.jpg");
-	this->GetRenderer().ObjectShader = MakeRef<Shader>(ResourcePath + "shaders/object_vertex.glsl", ResourcePath + "shaders/object_fragment.glsl");
-	this->GetRenderer().MeshShader = MakeRef<Shader>(ResourcePath + "shaders/mesh_vertex.glsl", ResourcePath + "shaders/mesh_fragment.glsl");
+	this->GetRenderer().DefaultTexture = CreateTexture("textures/default.jpg");
+	this->GetRenderer().ObjectShader = CreateShader("shaders/object_vertex.glsl", "shaders/object_fragment.glsl");
+	this->GetRenderer().MeshShader = CreateShader("shaders/mesh_vertex.glsl", "shaders/mesh_fragment.glsl");
 	
 	int cubeCount = 100;
 	CubeObject.AddInstanceBuffer([](int idx, int coord)
@@ -47,22 +54,12 @@ void SandboxApp::OnCreate()
 	ArcObject
 		.Scale(0.005f)
 		.Translate(10.0f, 0.0f, -10.0f);
-	DeathStarObject
-		.Scale(0.00005f)
-		.RotateX(-90.0f)
-		.RotateZ(-90.0f)
-		.Translate(-10.0f, 10.0f, 10.0f);
-
-	DestroyerObject
-		.Translate(3.0f, 1.0f, 2.0f) // to origin
-		.Translate(-5, 0.0f, 5.0f)
-		.Scale(0.0005f);
 	
 	auto camera = MakeUnique<PerspectiveCamera>();
 	//auto camera = MakeUnique<OrthographicCamera>();
 
 	camera->SetZFar(100000.0f);
-	camera->SetAspectRatio(this->GetWindow().GetWidth(), this->GetWindow().GetHeight());
+	camera->SetAspectRatio((float)this->GetWindow().GetWidth(), (float)this->GetWindow().GetHeight());
 	
 	auto& controller = this->GetRenderer().ViewPort;
 	controller.SetCamera(std::move(camera));
@@ -92,6 +89,7 @@ void SandboxApp::OnUpdate()
 		if (window.IsKeyHeld(KeyCode::ESCAPE))
 		{
 			this->CloseApplication();
+            return;
 		}
 	}
 	if (window.IsKeyPressed(KeyCode::GRAVE_ACCENT))
@@ -120,6 +118,7 @@ void SandboxApp::OnUpdate()
 		this->GetWindow().UseTitle("Sandbox App " + std::to_string(this->CounterFPS) + " FPS");
 		timePassed = 0.0f;
 	}
+
 	if(this->GetWindow().GetCursorMode() == CursorMode::NORMAL)
 	{
 		auto& camera = this->GetRenderer().ViewPort;
@@ -128,11 +127,13 @@ void SandboxApp::OnUpdate()
 		auto zoom = camera.GetZoom();
 
 		ImGui::SetNextWindowPos({ 0, 0 });
-		this->Console.SetSize({ this->GetWindow().GetWidth() / 3.0f, this->GetWindow().GetHeight() / 1.5f });
-		this->Console.Draw("Debug Console");
+        float _console_xsize = this->GetWindow().GetWidth() / 3.0f;
+        float _console_ysize = this->GetWindow().GetHeight() / 1.5f;
+        this->Console._SetSize(_console_xsize, _console_ysize);
+		this->Console._Draw();
 
-		ImGui::SetNextWindowPos({ 0, Console.GetSize().y });
-		ImGui::SetNextWindowSize({ Console.GetSize().x, 0.0f });
+		ImGui::SetNextWindowPos({ 0, _console_ysize });
+		ImGui::SetNextWindowSize({ _console_xsize, 0.0f });
 		ImGui::Begin("Fast Game Editor");
 
 		ImGui::Checkbox("display mesh", &drawMesh);
@@ -156,7 +157,7 @@ void SandboxApp::OnUpdate()
 
 		ImGui::End();
 	}
-	float deltaRot = 0.1f * this->TimeDelta;
+	const float deltaRot = 0.1f * this->TimeDelta;
 	ArcObject.RotateY(deltaRot);
 
 	this->GetRenderer().Clear();

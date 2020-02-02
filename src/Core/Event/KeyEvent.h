@@ -2,7 +2,6 @@
 
 #include "Core/Interfaces/IEvent.h"
 #include <bitset>
-#include <glm/glm.hpp>
 
 namespace MomoEngine
 {

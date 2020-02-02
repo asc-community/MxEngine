@@ -20,9 +20,9 @@ namespace MomoEngine
 		LoggerImpl(const LoggerImpl&) = delete;
 		LoggerImpl(LoggerImpl&&) = delete;
 
-		void Error  (const std::string& invoker, const std::string& message) const;
-		void Debug  (const std::string& invoker, const std::string& message) const;
-		void Warning(const std::string& invoker, const std::string& message) const;
+		void Error  (std::string_view invoker, std::string_view message) const;
+		void Debug  (std::string_view invoker, std::string_view message) const;
+		void Warning(std::string_view invoker, std::string_view message) const;
 		LoggerImpl& UseErrorStream(std::ostream* error);
 		LoggerImpl& UseWarningStream(std::ostream* warning);
 		LoggerImpl& UseDebugStream(std::ostream* debug);

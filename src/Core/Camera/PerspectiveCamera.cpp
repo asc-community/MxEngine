@@ -8,7 +8,7 @@ namespace MomoEngine
 		{
 			if (this->updateProjection)
 			{
-				float fov = Clamp(zoom * FOV, Radians(10.0f), Radians(150.0f));
+				const float fov = Clamp(zoom * FOV, Radians(10.0f), Radians(150.0f));
 				this->projection = MakePerspectiveMatrix(fov, aspectRatio, zNear, zFar);
 				this->updateProjection = false;
 			}

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Application/IApplication.h"
+#include "Core/Application/Application.h"
 #include "Core/Camera/CameraController.h"
 #include "Core/Event/KeyEvent.h"
 #include "Core/Event/MouseEvent.h"
@@ -10,9 +10,9 @@ namespace MomoEngine
 	class ViewPortBinding
 	{
 		std::string handle;
-		IApplication* application;
+		Application* application;
 	public:
-		inline ViewPortBinding(const std::string& eventHandle, IApplication* application) noexcept
+		inline ViewPortBinding(const std::string& eventHandle, Application* application) noexcept
 			: handle(eventHandle), application(application) { }
 
 		inline ViewPortBinding& BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right)

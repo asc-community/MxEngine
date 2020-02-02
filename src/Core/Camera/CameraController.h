@@ -3,11 +3,6 @@
 #include "Core/Interfaces/ICamera.h"
 #include "Utilities/Memory/Memory.h"
 
-namespace chaiscript
-{
-	class ChaiScript;
-}
-
 namespace MomoEngine
 {
 	class CameraController
@@ -54,11 +49,5 @@ namespace MomoEngine
 		CameraController& TranslateForward(float dist);
 		CameraController& TranslateRight(float dist);
 		CameraController& TranslateUp(float dist);
-	};
-
-	class ChaiScriptCamera
-	{
-	public:
-		static void Init(chaiscript::ChaiScript& chai);
 	};
 }

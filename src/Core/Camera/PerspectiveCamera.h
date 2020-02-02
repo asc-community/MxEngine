@@ -6,9 +6,9 @@ namespace MomoEngine
 {
 	class PerspectiveCamera : public ICamera
 	{
-		mutable Matrix4x4 matrix;
-		mutable Matrix4x4 view;
-		mutable Matrix4x4 projection;
+		mutable Matrix4x4 matrix{0};
+		mutable Matrix4x4 view{0};
+		mutable Matrix4x4 projection{0};
 		float FOV = Radians(65.0f);
 		float zoom = 1.0f;
 		float aspectRatio = 1.777f;

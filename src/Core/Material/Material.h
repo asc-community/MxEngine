@@ -2,7 +2,7 @@
 #include <string>
 
 #include "Utilities/Memory/Memory.h"
-#include "Core/OpenGL/Texture/Texture.h"
+#include "Core/Interfaces/GraphicAPI/Texture.h"
 #include "Utilities/Math/Math.h"
 
 namespace MomoEngine

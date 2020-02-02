@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Core/OpenGL/VertexArray/VertexArray.h"
-#include "Core/OpenGL/VertexBuffer/VertexBuffer.h"
-#include "Core/OpenGL/IndexBuffer/IndexBuffer.h"
+#include "Core/Interfaces/GraphicAPI/VertexArray.h"
+#include "Core/Interfaces/GraphicAPI/VertexBuffer.h"
+#include "Core/Interfaces/GraphicAPI/IndexBuffer.h"
 #include "Core/Material/Material.h"
 
 namespace MomoEngine
