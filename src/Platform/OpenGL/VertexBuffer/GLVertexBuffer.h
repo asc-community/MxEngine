@@ -2,7 +2,7 @@
 
 #include "Core/Interfaces/GraphicAPI/VertexBuffer.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	class GLVertexBuffer final : public VertexBuffer
 	{

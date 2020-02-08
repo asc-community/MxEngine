@@ -2,7 +2,7 @@
 
 #include "Core/Interfaces/GraphicAPI/IndexBuffer.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	class GLIndexBuffer final : public IndexBuffer
 	{

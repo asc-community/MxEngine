@@ -1,6 +1,6 @@
 #include "Profiler.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
     void ProfileSession::WriteJsonHeader()
     {

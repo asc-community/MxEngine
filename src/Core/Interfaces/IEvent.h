@@ -2,7 +2,7 @@
 
 #include "Utilities/EventDispatcher/EventDispatcher.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	MAKE_EVENT_BASE(IEvent);
 

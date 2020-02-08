@@ -1,6 +1,6 @@
 #include "CameraController.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	bool CameraController::HasCamera() const
 	{
@@ -28,20 +28,20 @@ namespace MomoEngine
 		return this->camera->GetMatrix();
 	}
 
-	Vector3 CameraController::GetPosition() const
+	const Vector3& CameraController::GetPosition() const
 	{
 		return this->position;
 	}
 
-	Vector3 CameraController::GetDirection() const
+	const Vector3& CameraController::GetDirection() const
 	{
 		return this->direction;
 	}
 
-	Vector3 CameraController::GetUpVector() const
-	{
-		return this->up;
-	}
+    const Vector3& CameraController::GetUp() const
+    {
+        return this->up;
+    }
 
 	float CameraController::GetMoveSpeed() const
 	{
@@ -65,7 +65,7 @@ namespace MomoEngine
 		this->updateCamera = true;
 	}
 
-	void CameraController::SetUpVector(const Vector3& up)
+	void CameraController::SetUp(const Vector3& up)
 	{
 		this->up = up;
 		this->updateCamera = true;
@@ -166,6 +166,36 @@ namespace MomoEngine
 		this->updateCamera = true;
 		return *this;
 	}
+
+    void CameraController::SetForwardVector(const Vector3& forward)
+    {
+        this->forward = forward;
+    }
+
+    void CameraController::SetUpVector(const Vector3& up)
+    {
+        this->up = up;
+    }
+
+    void CameraController::SetRightVector(const Vector3& right)
+    {
+        this->right = right;
+    }
+
+    const Vector3& CameraController::GetForwardVector() const
+    {
+        return this->forward;
+    }
+
+    const Vector3& CameraController::GetUpVector() const
+    {
+        return this->up;
+    }
+
+    const Vector3& CameraController::GetRightVector() const
+    {
+        return this->right;
+    }
 
 	CameraController& CameraController::TranslateForward(float dist)
 	{

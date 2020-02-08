@@ -4,7 +4,7 @@
 
 #include <vector>
 
-namespace MomoEngine
+namespace MxEngine
 {
     struct IndexBuffer : IBindable
     {

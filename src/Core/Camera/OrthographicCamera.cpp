@@ -1,7 +1,7 @@
 #include "OrthographicCamera.h"
 #include <algorithm>
 
-namespace MomoEngine
+namespace MxEngine
 {
 	void OrthographicCamera::SetProjection(float left, float right, float bottom, float top)
 	{

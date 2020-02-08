@@ -1,17 +1,17 @@
 #include "Sandbox.h"
-#include <Library/Bindings/ViewPortBinding.h>
+#include <Library/Bindings/InputBinding.h>
 
 #include <algorithm>
 #include <array>
 
-MomoEngine::Application* MomoEngine::GetApplication()
+MxEngine::Application* MxEngine::GetApplication()
 {
 	return new SandboxApp();
 }
 
 SandboxApp::SandboxApp()
 {
-	CreateContext();
+	this->CreateContext();
 	this->ResourcePath = "Resources/";
 }
 
@@ -46,14 +46,16 @@ void SandboxApp::OnCreate()
 	this->GetRenderer().MeshShader = CreateShader("shaders/mesh_vertex.glsl", "shaders/mesh_fragment.glsl");
 	
 	int cubeCount = 100;
-	CubeObject.AddInstanceBuffer([](int idx, int coord)
-		{
-			return std::array<float, 3>{ 5.0f * std::sin(0.2f * idx), 0.5f * idx, 5.0f * std::cos(0.2f * idx) }[coord];
-		}, 3, cubeCount);
+    CubeObject
+        .Translate(0.5f, 0.5f, 0.5f)
+        .AddInstanceBuffer([](int idx, int coord)
+            {
+                return std::array<float, 3>{ 5.0f * std::sin(0.2f * idx), 0.5f * idx, 5.0f * std::cos(0.2f * idx) }[coord];
+            }, 3, cubeCount);
 
 	ArcObject
 		.Scale(0.005f)
-		.Translate(10.0f, 0.0f, -10.0f);
+		.Translate(10.0f, 0.5f, -10.0f);
 	
 	auto camera = MakeUnique<PerspectiveCamera>();
 	//auto camera = MakeUnique<OrthographicCamera>();
@@ -67,14 +69,14 @@ void SandboxApp::OnCreate()
 	controller.SetMoveSpeed(5.0f);
 	controller.SetRotateSpeed(0.75f);
 
-	ViewPortBinding("ViewPortControl", this)
+	InputBinding("ViewPortControl", this->GetRenderer().ViewPort)
 		.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT)
 		.BindRotation();
 }
 
 void SandboxApp::OnUpdate()
 {
-	static MomoEngine::TimeStep timePassed = 0.0f;
+	static MxEngine::TimeStep timePassed = 0.0f;
 	static bool drawMesh = false;
 
 	auto& CubeObject      = GetObject("Cube");
@@ -98,7 +100,8 @@ void SandboxApp::OnUpdate()
 		if (window.GetCursorMode() == CursorMode::NORMAL)
 		{
 			window.UseCursorMode(CursorMode::DISABLED);
-			ViewPortBinding("ViewPortControl", this)
+            this->ToggleDeveloperConsole(false);
+			InputBinding("ViewPortControl", this->GetRenderer().ViewPort)
 				.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT)
 				.BindRotation();
 			window.UseCursorPos(cursorPos);
@@ -107,7 +110,8 @@ void SandboxApp::OnUpdate()
 		{
 			cursorPos = window.GetCursorPos();
 			window.UseCursorMode(CursorMode::NORMAL);
-			window.UseCursorPos({ window.GetWidth() / 2.0f, window.GetHeight() / 2.0f });
+            this->ToggleDeveloperConsole(true);
+			window.UseCursorPos({ window.GetWidth() / 4.0f, window.GetHeight() / 2.0f });
 			this->GetEventDispatcher().RemoveEventListener("ViewPortControl");
 		}
 	}
@@ -126,14 +130,8 @@ void SandboxApp::OnUpdate()
 		float speed = camera.GetMoveSpeed();
 		auto zoom = camera.GetZoom();
 
-		ImGui::SetNextWindowPos({ 0, 0 });
-        float _console_xsize = this->GetWindow().GetWidth() / 3.0f;
-        float _console_ysize = this->GetWindow().GetHeight() / 1.5f;
-        this->Console._SetSize(_console_xsize, _console_ysize);
-		this->Console._Draw();
-
-		ImGui::SetNextWindowPos({ 0, _console_ysize });
-		ImGui::SetNextWindowSize({ _console_xsize, 0.0f });
+		ImGui::SetNextWindowPos({ 0.0f, this->Console.GetSize().y });
+		ImGui::SetNextWindowSize({ this->Console.GetSize().x, 0.0f });
 		ImGui::Begin("Fast Game Editor");
 
 		ImGui::Checkbox("display mesh", &drawMesh);
@@ -150,14 +148,14 @@ void SandboxApp::OnUpdate()
 		}
 
 		ImGui::Text("zoom / fov: %f", zoom);
-		if (ImGui::DragFloat("zoom", &zoom, 0.1f, 0.1f, 10.0f))
+		if (ImGui::DragFloat("zoom", &zoom, 0.1f, 0.1f, 20.0f))
 		{
 			camera.SetZoom(zoom);
 		}
 
 		ImGui::End();
 	}
-	const float deltaRot = 0.1f * this->TimeDelta;
+	const float deltaRot = 2.0f * this->TimeDelta;
 	ArcObject.RotateY(deltaRot);
 
 	this->GetRenderer().Clear();

@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace MomoEngine
+namespace MxEngine
 {
 	struct Image
 	{

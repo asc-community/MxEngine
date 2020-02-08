@@ -2,7 +2,7 @@
 
 #include "Core/Interfaces/GraphicAPI/Texture.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	class GLTexture final : public Texture
 	{

@@ -5,7 +5,7 @@
 #include "Core/Camera/CameraController.h"
 #include "Core/Interfaces/GraphicAPI/Renderer.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
     class RenderController
     {

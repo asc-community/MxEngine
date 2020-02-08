@@ -9,7 +9,7 @@
 
 #include <vector>
 
-namespace MomoEngine
+namespace MxEngine
 {
 	struct IDrawable
 	{

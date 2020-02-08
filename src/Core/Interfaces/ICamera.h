@@ -2,7 +2,7 @@
 
 #include "Utilities/Math/Math.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	struct ICamera
 	{

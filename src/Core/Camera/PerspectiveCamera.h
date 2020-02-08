@@ -2,7 +2,7 @@
 
 #include "Core/Interfaces/ICamera.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	class PerspectiveCamera : public ICamera
 	{

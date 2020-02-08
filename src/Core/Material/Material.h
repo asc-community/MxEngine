@@ -5,7 +5,7 @@
 #include "Core/Interfaces/GraphicAPI/Texture.h"
 #include "Utilities/Math/Math.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	struct Material
 	{

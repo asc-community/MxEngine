@@ -11,7 +11,7 @@
 
 struct GLFWwindow; // from glfw header file
 
-namespace MomoEngine
+namespace MxEngine
 {
 	class GLWindow final : public Window
 	{

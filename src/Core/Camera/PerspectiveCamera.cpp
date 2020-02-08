@@ -1,6 +1,6 @@
 #include "PerspectiveCamera.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	const Matrix4x4& PerspectiveCamera::GetMatrix() const
 	{

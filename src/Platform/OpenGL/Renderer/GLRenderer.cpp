@@ -5,7 +5,7 @@
 #include "Platform/OpenGL/GraphicFactory/GLGraphicFactory.h"
 #include "Utilities/Profiler/Profiler.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
     GLRenderer::GLRenderer()
     {

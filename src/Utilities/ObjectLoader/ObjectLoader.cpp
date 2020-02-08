@@ -1,9 +1,11 @@
 #include "ObjectLoader.h"
 #include "Utilities/Logger/Logger.h"
 #include "Utilities/Profiler/Profiler.h"
-#include <fstream>
 
-namespace MomoEngine
+#include <fstream>
+#include <algorithm>
+
+namespace MxEngine
 {
 	static std::string trim(const std::string& str)
 	{
@@ -17,7 +19,7 @@ namespace MomoEngine
 	}
 
 	#define INVOKE_ERR \
-	Logger::Instance().Error("MomoEngine::ObjectLoader", "error occured on line " + std::to_string(obj.lineCount));\
+	Logger::Instance().Error("MxEngine::ObjectLoader", "error occured on line " + std::to_string(obj.lineCount));\
 	obj.isSuccess = false
 
 	void ObjectLoader::ReadFace(std::stringstream& file, ObjFileInfo& obj)
@@ -35,7 +37,7 @@ namespace MomoEngine
 		{
 			if (GROUP(obj).useTexture)
 			{
-				Logger::Instance().Error("MomoEngine::ObjectLoader",
+				Logger::Instance().Error("MxEngine::ObjectLoader",
 					"error while loading object file: texture index undefined"
 				);
 				INVOKE_ERR;
@@ -52,7 +54,7 @@ namespace MomoEngine
 		}
 		else if (GROUP(obj).useTexture)
 		{
-			Logger::Instance().Error("MomoEngine::ObjectLoader",
+			Logger::Instance().Error("MxEngine::ObjectLoader",
 				"error while loading object file: texture index undefined"
 			);
 			INVOKE_ERR;
@@ -63,7 +65,7 @@ namespace MomoEngine
 		{
 			if (GROUP(obj).useNormal)
 			{
-				Logger::Instance().Error("MomoEngine::ObjectLoader",
+				Logger::Instance().Error("MxEngine::ObjectLoader",
 					"error while loading object file: normal index undefined"
 				);
 				INVOKE_ERR;
@@ -81,7 +83,7 @@ namespace MomoEngine
 		}
 		else if (GROUP(obj).useNormal)
 		{
-			Logger::Instance().Error("MomoEngine::ObjectLoader",
+			Logger::Instance().Error("MxEngine::ObjectLoader",
 				"error while loading object file: normal index undefined"
 			);
 			INVOKE_ERR;
@@ -92,13 +94,13 @@ namespace MomoEngine
 	MaterialLibrary ObjectLoader::LoadMaterialLibrary(const std::string& path)
 	{
         MAKE_SCOPE_PROFILER("ObjectLoader::LoadMaterialLibrary");
-        MAKE_SCOPE_TIMER("MomoEngine::ObjectLoader", "ObjectLoader::LoadMaterialLibrary()");
-        Logger::Instance().Debug("MomoEngine::ObjectLoader", "loading material library from file: " + path);
+        MAKE_SCOPE_TIMER("MxEngine::ObjectLoader", "ObjectLoader::LoadMaterialLibrary()");
+        Logger::Instance().Debug("MxEngine::ObjectLoader", "loading material library from file: " + path);
 		MaterialLibrary library;
 		std::ifstream fs(path);
 		if (fs.bad() || fs.fail())
 		{
-			Logger::Instance().Error("MomoEngine::ObjectLoader", "could not open file: " + path);
+			Logger::Instance().Error("MxEngine::ObjectLoader", "could not open file: " + path);
 			return library;
 		}
 		std::stringstream file;
@@ -122,7 +124,7 @@ namespace MomoEngine
 			}
 			else
 			{
-				Logger::Instance().Error("MomoEngine::ObjectLoader", "material library was not loaded: " + path);
+				Logger::Instance().Error("MxEngine::ObjectLoader", "material library was not loaded: " + path);
 				return library;
 			}
 		}
@@ -240,7 +242,7 @@ namespace MomoEngine
 			}
 			else
 			{
-				Logger::Instance().Error("MomoEngine::ObjectLoader", "unresolved symbol in material file: " + data);
+				Logger::Instance().Error("MxEngine::ObjectLoader", "unresolved symbol in material file: " + data);
 				material.IsSuccess = false;
 				return material;
 			}
@@ -248,15 +250,15 @@ namespace MomoEngine
 		return material;
 	}
 
-	ObjFileInfo MomoEngine::ObjectLoader::Load(const std::string& path)
+	ObjFileInfo MxEngine::ObjectLoader::Load(const std::string& path)
 	{
         MAKE_SCOPE_PROFILER("ObjectLoader::Load");
-        Logger::Instance().Debug("MomoEngine::ObjectLoader", "loading object from file: " + path);
+        Logger::Instance().Debug("MxEngine::ObjectLoader", "loading object from file: " + path);
 		auto CheckGroup = [](ObjFileInfo& object)
 		{
 			if (object.groups.empty())
 			{
-				Logger::Instance().Warning("MomoEngine::ObjectLoader",
+				Logger::Instance().Warning("MxEngine::ObjectLoader",
 					"group was not specifies, creating one as dafault. line: " + std::to_string(object.lineCount));
 				object.groups.emplace_back();
 				GROUP(object).name = "__DEFAULT";
@@ -266,7 +268,7 @@ namespace MomoEngine
 		ObjFileInfo obj;
 		if (fs.bad() || fs.fail())
 		{
-			Logger::Instance().Error("MomoEngine::ObjectLoader", "object file was not found: " + path);
+			Logger::Instance().Error("MxEngine::ObjectLoader", "object file was not found: " + path);
 			INVOKE_ERR;
 			return obj;
 		}
@@ -355,7 +357,7 @@ namespace MomoEngine
 				file >> strBuff; // mtl file
 				if (obj.materials.find(strBuff) == obj.materials.end())
 				{
-					Logger::Instance().Error("MomoEngine::ObjectLoader", "material was not found in library: " + strBuff);
+					Logger::Instance().Error("MxEngine::ObjectLoader", "material was not found in library: " + strBuff);
 					INVOKE_ERR;
 					return obj;
 				}
@@ -374,11 +376,30 @@ namespace MomoEngine
 			}
 			else
 			{
-				Logger::Instance().Error("MomoEngine::ObjectLoader", "unexpected symbol in object file: " + type);
+				Logger::Instance().Error("MxEngine::ObjectLoader", "unexpected symbol in object file: " + type);
 				INVOKE_ERR;
 				return obj;
 			}
 		}
+
+        Vector3 maxCoords(-1.0f * std::numeric_limits<float>::max());
+        Vector3 minCoords(std::numeric_limits<float>::max());
+        for (const auto& vertex : verteces)
+        {
+            minCoords.x = std::min(minCoords.x, vertex.x);
+            minCoords.y = std::min(minCoords.y, vertex.y);
+            minCoords.z = std::min(minCoords.z, vertex.z);
+
+            maxCoords.x = std::max(maxCoords.x, vertex.x);
+            maxCoords.y = std::max(maxCoords.y, vertex.y);
+            maxCoords.z = std::max(maxCoords.z, vertex.z);
+        }
+        Vector3 center = (maxCoords + minCoords) * 0.5f;
+        for (auto& vertex : verteces)
+        {
+            vertex -= center;
+        }
+
 		for(auto& group : obj.groups)
 		{
 			group.buffer.reserve(group.faces.size() * 3);
@@ -389,7 +410,7 @@ namespace MomoEngine
 				auto normal = face.z;
 				if (vertex < 0 || (size_t)vertex >= verteces.size())
 				{
-					Logger::Instance().Error("MomoEngine::ObjectLoader",
+					Logger::Instance().Error("MxEngine::ObjectLoader",
 						"vertex index is invalid: " + std::to_string(vertex)
 					);
 					INVOKE_ERR;
@@ -402,7 +423,7 @@ namespace MomoEngine
 				{
 					if (texture < 0 || (size_t)texture >= texCoords.size())
 					{
-						Logger::Instance().Error("MomoEngine::ObjectLoader",
+						Logger::Instance().Error("MxEngine::ObjectLoader",
 							"texture index is invalid: " + std::to_string(texture)
 						);
 						INVOKE_ERR;
@@ -416,7 +437,7 @@ namespace MomoEngine
 				{
 					if (normal < 0 || (size_t)normal >= normals.size())
 					{
-						Logger::Instance().Error("MomoEngine::ObjectLoader",
+						Logger::Instance().Error("MxEngine::ObjectLoader",
 							"normal index is invalid: " + std::to_string(normal)
 						);
 						INVOKE_ERR;

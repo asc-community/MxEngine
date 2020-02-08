@@ -5,7 +5,7 @@
 #include <functional>
 
 // modified console from ImGui example
-namespace MomoEngine
+namespace MxEngine
 {
 	class GraphicConsole
 	{

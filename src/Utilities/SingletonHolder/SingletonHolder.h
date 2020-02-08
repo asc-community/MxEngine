@@ -7,7 +7,7 @@
 
 // Andrei's Alexandrescu SingletonHolder (see "Modern C++ Design" ch. 6)
 
-namespace MomoEngine
+namespace MxEngine
 {
 	template<
 		typename T,

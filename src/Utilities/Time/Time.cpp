@@ -3,12 +3,12 @@
 // only for time
 #include <GLFW/glfw3.h>
 
-MomoEngine::TimeStep MomoEngine::Time::Current()
+MxEngine::TimeStep MxEngine::Time::Current()
 {
-    return (MomoEngine::TimeStep)glfwGetTime();
+    return (MxEngine::TimeStep)glfwGetTime();
 }
 
-std::string MomoEngine::BeautifyTime(TimeStep time)
+std::string MxEngine::BeautifyTime(TimeStep time)
 {
 	if (time > 1.0f)
 	{

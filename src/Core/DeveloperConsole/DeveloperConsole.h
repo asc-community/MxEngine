@@ -3,21 +3,18 @@
 #include <string>
 
 #include "Utilities/Memory/Memory.h"
+#include "Utilities/Math/Math.h"
 
-#define CHAISCRIPT_NO_THREADS
-#include <chaiscript/chaiscript.hpp>
-
-namespace MomoEngine
+namespace MxEngine
 {
     class GraphicConsole;
+    class ScriptEngine;
 
     class DeveloperConsole
     {
-        using ScriptEngine = chaiscript::ChaiScript*;
-        using Console = GraphicConsole*;
-
-        ScriptEngine engine;
-        Console console;
+        ScriptEngine* engine;
+        GraphicConsole* console;
+        bool shouldRender = false;
     public:
         DeveloperConsole();
         ~DeveloperConsole();
@@ -25,32 +22,11 @@ namespace MomoEngine
         void Log(const std::string& message);
         void ClearLog();
         void PrintHistory();
+        void OnRender();
+        void SetSize(const Vector2& size);
+        void Toggle(bool isVisible);
 
-        void _SetSize(float width, float height);
-        void _Draw() const;
-
-        template<typename T>
-        void AddReference(const std::string& name, T&& value)
-        {
-            engine->add(chaiscript::fun(std::forward<T>(value)), name);
-        }
-
-        template<typename T, typename U, typename... Args>
-        void AddReference(const std::string& name, T* object, U(T::*value)(Args...))
-        {
-            engine->add(chaiscript::fun(value, object), name);
-        }
-
-        template<typename T, typename U, typename... Args>
-        void AddReference(const std::string& name, U(T::*value)(Args...))
-        {
-            engine->add(chaiscript::fun(value), name);
-        }
-
-        template<typename T>
-        void AddVariable(const std::string& name, T&& value)
-        {
-            engine->add_global(chaiscript::var(std::ref(std::forward<T>(value))), name);
-        }
+        ScriptEngine& GetEngine();
+        Vector2 GetSize() const;
     };
 }

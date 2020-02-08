@@ -4,7 +4,7 @@
 #include "Utilities/Logger/Logger.h"
 #include "Utilities/Time/Time.h"
 
-void MomoEngine::GLTexture::FreeTexture()
+void MxEngine::GLTexture::FreeTexture()
 {
 	if (id != 0)
 	{
@@ -16,12 +16,12 @@ void MomoEngine::GLTexture::FreeTexture()
 	}
 }
 
-MomoEngine::GLTexture::GLTexture()
+MxEngine::GLTexture::GLTexture()
 {
 	this->id = 0;
 }
 
-MomoEngine::GLTexture::GLTexture(GLTexture&& texture)
+MxEngine::GLTexture::GLTexture(GLTexture&& texture)
 	: width(texture.width), height(texture.height), channels(texture.channels)
 {
 	this->id = texture.id;
@@ -32,17 +32,17 @@ MomoEngine::GLTexture::GLTexture(GLTexture&& texture)
 	#endif
 }
 
-MomoEngine::GLTexture::GLTexture(const std::string& filepath, bool genMipmaps, bool flipImage)
+MxEngine::GLTexture::GLTexture(const std::string& filepath, bool genMipmaps, bool flipImage)
 {
 	Load(filepath, genMipmaps, flipImage);
 }
 
-MomoEngine::GLTexture::~GLTexture()
+MxEngine::GLTexture::~GLTexture()
 {
 	this->FreeTexture();
 }
 
-void MomoEngine::GLTexture::Load(const std::string& filepath, bool genMipmaps, bool flipImage)
+void MxEngine::GLTexture::Load(const std::string& filepath, bool genMipmaps, bool flipImage)
 {
 	this->FreeTexture();
 
@@ -52,7 +52,7 @@ void MomoEngine::GLTexture::Load(const std::string& filepath, bool genMipmaps, b
 
 	if (image.data == nullptr)
 	{
-		Logger::Instance().Error("MomoEngine::Texture", "file with name '" + filepath + "' was not found");
+		Logger::Instance().Error("MxEngine::Texture", "file with name '" + filepath + "' was not found");
 		return;
 	}
 	this->width = image.width;
@@ -73,35 +73,35 @@ void MomoEngine::GLTexture::Load(const std::string& filepath, bool genMipmaps, b
 	#endif
 }
 
-void MomoEngine::GLTexture::Bind() const
+void MxEngine::GLTexture::Bind() const
 {
 	GLCALL(glActiveTexture(GL_TEXTURE0 + this->activeId));
 	GLCALL(glBindTexture(GL_TEXTURE_2D, id));
 }
 
-void MomoEngine::GLTexture::Unbind() const
+void MxEngine::GLTexture::Unbind() const
 {
 	GLCALL(glActiveTexture(GL_TEXTURE0 + this->activeId));
 	GLCALL(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-void MomoEngine::GLTexture::Bind(IBindable::IdType id) const
+void MxEngine::GLTexture::Bind(IBindable::IdType id) const
 {
 	this->activeId = id;
 	this->Bind();
 }
 
-size_t MomoEngine::GLTexture::GetWidth() const
+size_t MxEngine::GLTexture::GetWidth() const
 {
 	return width;
 }
 
-size_t MomoEngine::GLTexture::GetHeight() const
+size_t MxEngine::GLTexture::GetHeight() const
 {
 	return height;
 }
 
-size_t MomoEngine::GLTexture::GetChannelCount() const
+size_t MxEngine::GLTexture::GetChannelCount() const
 {
 	return channels;
 }

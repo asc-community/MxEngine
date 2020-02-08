@@ -1,7 +1,7 @@
 #include "GLVertexBufferLayout.h"
 #include "Platform/OpenGL/GLUtilities/GLUtilities.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	const std::vector<GLVertexBufferLayout::VertexBufferElement>& GLVertexBufferLayout::GetElements() const
 	{

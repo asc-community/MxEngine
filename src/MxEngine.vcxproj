@@ -23,6 +23,8 @@
     <ClInclude Include="Core\Camera\OrthographicCamera.h" />
     <ClInclude Include="Core\Camera\PerspectiveCamera.h" />
     <ClInclude Include="Core\DeveloperConsole\DeveloperConsole.h" />
+    <ClInclude Include="Core\Event\RenderEvent.h" />
+    <ClInclude Include="Library\Scripting\ScriptEngine.h" />
     <ClInclude Include="Core\Event\KeyEvent.h" />
     <ClInclude Include="Core\Event\MouseEvent.h" />
     <ClInclude Include="Core\Application\Application.h" />
@@ -40,10 +42,11 @@
     <ClInclude Include="Core\Interfaces\ICamera.h" />
     <ClInclude Include="Core\Interfaces\IDrawable.h" />
     <ClInclude Include="Core\Interfaces\IEvent.h" />
+    <ClInclude Include="Core\Interfaces\IMovable.h" />
     <ClInclude Include="Core\Interfaces\IRenderable.h" />
     <ClInclude Include="Core\Material\Material.h" />
     <ClInclude Include="Core\RenderController\RenderController.h" />
-    <ClInclude Include="MomoEngine.h" />
+    <ClInclude Include="MxEngine.h" />
     <ClInclude Include="Platform\OpenGL\GraphicFactory\GLGraphicFactory.h" />
     <ClInclude Include="Core\BaseObject\BaseObject.h" />
     <ClInclude Include="Platform\OpenGL\GraphicModule\GLGraphicModule.h" />
@@ -56,7 +59,7 @@
     <ClInclude Include="Platform\OpenGL\VertexBuffer\GLVertexBuffer.h" />
     <ClInclude Include="Platform\OpenGL\Renderer\GLRenderer.h" />
     <ClInclude Include="Platform\OpenGL\Window\GLWindow.h" />
-    <ClInclude Include="Library\Bindings\ViewPortBinding.h" />
+    <ClInclude Include="Library\Bindings\InputBinding.h" />
     <ClInclude Include="Utilities\EventDispatcher\EventDispatcher.h" />
     <ClInclude Include="Utilities\ImageLoader\ImageLoader.h" />
     <ClInclude Include="Utilities\ImGui\GraphicConsole.h" />
@@ -134,8 +137,9 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{24ACBC28-FA4F-49D7-9D69-31F578294414}</ProjectGuid>
-    <RootNamespace>MomoEngine</RootNamespace>
+    <RootNamespace>MxEngine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>MxEngine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

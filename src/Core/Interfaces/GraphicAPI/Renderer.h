@@ -5,7 +5,7 @@
 #include "Core/Interfaces/GraphicAPI/Shader.h"
 #include "Core/Interfaces/GraphicAPI/Texture.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
     enum class BlendFactor
     {

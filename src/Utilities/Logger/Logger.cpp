@@ -3,7 +3,7 @@
 #include <Windows.h>
 #endif
 
-namespace MomoEngine
+namespace MxEngine
 {
 	void LoggerImpl::Error(std::string_view invoker, std::string_view message) const
 	{

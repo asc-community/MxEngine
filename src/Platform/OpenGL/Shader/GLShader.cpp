@@ -4,7 +4,7 @@
 #include "Platform/OpenGL/GLUtilities/GLUtilities.h"
 #include <fstream>
 
-namespace MomoEngine
+namespace MxEngine
 {
 	GLShader::GLShader()
 	{
@@ -55,22 +55,22 @@ namespace MomoEngine
 
 		if (vs.empty())
 		{
-			Logger::Instance().Error("MomoEngine::Shader", "shader file is empty: " + vertexShaderPath);
+			Logger::Instance().Error("MxEngine::Shader", "shader file is empty: " + vertexShaderPath);
 			return;
 		}
 		if (fs.empty())
 		{
-			Logger::Instance().Error("MomoEngine::Shader", "shader file is empty: " + fragmentShaderPath);
+			Logger::Instance().Error("MxEngine::Shader", "shader file is empty: " + fragmentShaderPath);
 			return;
 		}
 
-		Logger::Instance().Debug("MomoEngine::Shader", "compiling vertex shader: " + vertexShaderPath);
+		Logger::Instance().Debug("MxEngine::Shader", "compiling vertex shader: " + vertexShaderPath);
 		unsigned int vertexShader = CompileShader(ShaderType::VERTEX_SHADER, vs, vertexShaderPath);
-		Logger::Instance().Debug("MomoEngine::Shader", "compiling fragment shader: " + fragmentShaderPath);
+		Logger::Instance().Debug("MxEngine::Shader", "compiling fragment shader: " + fragmentShaderPath);
 		unsigned int fragmentShader = CompileShader(ShaderType::FRAGMENT_SHADER, fs, fragmentShaderPath);
 
 		id = CreateProgram(vertexShader, fragmentShader);
-		Logger::Instance().Debug("MomoEngine::Shader", "shader program created with id = " + std::to_string(id));
+		Logger::Instance().Debug("MxEngine::Shader", "shader program created with id = " + std::to_string(id));
 	}
 
 	void GLShader::SetUniformFloat(const std::string& name, float f) const
@@ -136,7 +136,7 @@ namespace MomoEngine
         std::ifstream file(filename);
         if (file.bad())
         {
-            Logger::Instance().Error("MomoEngine::FileReader", "file with name '" + filename + "' was not found");
+            Logger::Instance().Error("MxEngine::FileReader", "file with name '" + filename + "' was not found");
             return "";
         }
         std::string content;
@@ -161,7 +161,7 @@ namespace MomoEngine
 			msg.resize(length);
 			GLCALL(glGetShaderInfoLog(shaderId, length, &length, &msg[0]));
 			msg.pop_back(); // extra \n character
-			Logger::Instance().Error("MomoEngine::Shader", (std::string)"failed to compile " +
+			Logger::Instance().Error("MxEngine::Shader", (std::string)"failed to compile " +
 				(type == ShaderType::VERTEX_SHADER ? "vertex" : "fragment") + " shader: " + name);
 			Logger::Instance().Error("OpenGL", msg);
 		}
@@ -191,7 +191,7 @@ namespace MomoEngine
 
 		GLCALL(int location = glGetUniformLocation(id, uniformName.c_str()));
 		if (location == -1)
-			Logger::Instance().Warning("MomoEngine::Shader", "uniform was not found: " + uniformName);
+			Logger::Instance().Warning("MxEngine::Shader", "uniform was not found: " + uniformName);
 		uniformCache[uniformName] = location;
 		return location;
 	}

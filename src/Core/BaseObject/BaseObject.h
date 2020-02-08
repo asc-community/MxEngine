@@ -7,14 +7,15 @@
 #include "Core/Interfaces/GraphicAPI/IndexBuffer.h"
 #include "Utilities/Memory/Memory.h"
 #include "Core/Interfaces/IDrawable.h"
+#include "Core/Interfaces/IMovable.h"
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <functional>
 #include "Core/Material/Material.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
-	class GLRenderObject : public IRenderable
+	class RenderObject : public IRenderable
 	{
 		bool useTexture = false, useNormal = false;
 		mutable bool meshGenerated = false;
@@ -28,11 +29,11 @@ namespace MomoEngine
 		friend class ObjectInstance;
 		void GenerateMeshIndicies() const;
 	public:
-		GLRenderObject() = default;
-		GLRenderObject(const GLRenderObject&) = delete;
-		GLRenderObject(GLRenderObject&&) noexcept = default;
+		RenderObject() = default;
+		RenderObject(const RenderObject&) = delete;
+		RenderObject(RenderObject&&) noexcept = default;
 		virtual const VertexArray& GetVAO() const override;
-		virtual const IndexBuffer& GetIBO() const override;
+		virtual const IndexBuffer& GetMeshIBO() const override;
 		virtual const Material& GetMaterial() const override;
 		virtual size_t GetVertexCount() const override;
 		virtual bool HasMaterial() const override;
@@ -42,7 +43,9 @@ namespace MomoEngine
 	{
 		typedef unsigned int GLuint;
 		typedef float GLfloat;
-		std::vector<GLRenderObject> subObjects;
+
+        Vector3 objectCenter;
+		std::vector<RenderObject> subObjects;
 
 		void LoadFromFile(const std::string& filepath);
 	public:
@@ -52,14 +55,16 @@ namespace MomoEngine
 		BaseObject(BaseObject&&) = default;
 
 		void Load(const std::string& filepath);
-		std::vector<GLRenderObject>& GetRenderObjects();
+		std::vector<RenderObject>& GetRenderObjects();
+        const Vector3& GetObjectCenter() const;
 	};
 
-	class ObjectInstance : public IDrawable
+	class ObjectInstance : public IDrawable, public IMovable
 	{
 		mutable Matrix4x4 Model;
 		Vector3 translation{ 0.0f };
-		Vector3 rotation{ 0.0f };
+        Vector3 forwardVec{ 1.0f, 0.0f, 0.0f }, upVec{ 0.0f, 1.0f, 0.0f }, rightVec{ 0.0f, 0.0f, 1.0f };
+        Quaternion rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
 		Vector3 scale{ 1.0f };
 		size_t instanceCount = 0;
 		mutable bool needUpdate = true;
@@ -83,9 +88,9 @@ namespace MomoEngine
 		void Hide();
 		void Show();
 
-		Vector3 GetTranslation() const;
-		Vector3 GetRotation() const;
-		Vector3 GetScale() const;
+		const Vector3& GetTranslation() const;
+		const Quaternion& GetRotation() const;
+		const Vector3& GetScale() const;
 
 		ObjectInstance& Scale(float scale);
 		ObjectInstance& Scale(float scaleX, float scaleY, float scaleZ);
@@ -96,7 +101,7 @@ namespace MomoEngine
 		ObjectInstance& RotateY(float angle);
 		ObjectInstance& RotateZ(float angle);
 
-		ObjectInstance& Translate(float x, float y, float z);
+        ObjectInstance& Translate(const Vector3& dist);
 		ObjectInstance& TranslateX(float x);
 		ObjectInstance& TranslateY(float y);
 		ObjectInstance& TranslateZ(float z);
@@ -111,10 +116,23 @@ namespace MomoEngine
 		virtual const IRenderable& GetCurrent(size_t iterator) const override;
 		virtual const Matrix4x4& GetModel() const override;
 		virtual bool HasShader() const override;
-		virtual const MomoEngine::Shader& GetShader() const override;
+		virtual const MxEngine::Shader& GetShader() const override;
 		virtual bool IsDrawable() const override;
 		virtual bool HasTexture() const override;
-		virtual const MomoEngine::Texture& GetTexture() const override;
+		virtual const MxEngine::Texture& GetTexture() const override;
 		virtual size_t GetInstanceCount() const override;
-	};
+
+        // Inherited via IMovable
+        virtual ObjectInstance& Translate(float x, float y, float z) override;
+        virtual ObjectInstance& TranslateForward(float dist) override;
+        virtual ObjectInstance& TranslateRight(float dist) override;
+        virtual ObjectInstance& TranslateUp(float dist) override;
+        virtual ObjectInstance& Rotate(float horz, float vert) override;
+        virtual void SetForwardVector(const Vector3& forward) override;
+        virtual void SetUpVector(const Vector3& up) override;
+        virtual void SetRightVector(const Vector3& right) override;
+        virtual const Vector3& GetForwardVector() const override;
+        virtual const Vector3& GetUpVector() const override;
+        virtual const Vector3& GetRightVector() const override;
+    };
 }

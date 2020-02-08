@@ -1,7 +1,7 @@
 #include "GLVertexBuffer.h"
 #include "Platform/OpenGL/GLUtilities/GLUtilities.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	GLVertexBuffer::GLVertexBuffer()
 	{

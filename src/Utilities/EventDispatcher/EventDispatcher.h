@@ -5,7 +5,7 @@
 #include <functional>
 #include <unordered_map>
 
-namespace MomoEngine
+namespace MxEngine
 {
 	#define MAKE_EVENT_BASE(name) struct name { inline virtual size_t GetEventType() const = 0; virtual ~name() = default; }
 

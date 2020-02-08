@@ -1,6 +1,6 @@
 #pragma once
 
-namespace MomoEngine
+namespace MxEngine
 {
 	template<typename T>
 	class SingleThreaded

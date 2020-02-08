@@ -3,7 +3,7 @@
 #include "Core/Interfaces/IEvent.h"
 #include "Utilities/Math/Math.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	class MouseMoveEvent : public IEvent
 	{

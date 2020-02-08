@@ -1,7 +1,7 @@
 #include "GLVertexArray.h"
 #include "Platform/OpenGL/GLUtilities/GLUtilities.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	GLVertexArray::GLVertexArray()
 	{

@@ -2,7 +2,7 @@
 
 #include "Core/Interfaces/GraphicAPI/VertexArray.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	class GLVertexArray final : public VertexArray
 	{

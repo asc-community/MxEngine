@@ -13,7 +13,7 @@
 #include "Utilities/Memory/Memory.h"
 #include "Utilities/SingletonHolder/SingletonHolder.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
     struct GraphicFactory
     {

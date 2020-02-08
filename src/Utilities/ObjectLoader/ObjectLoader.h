@@ -7,7 +7,7 @@
 
 #include "Utilities/Math/Math.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	struct MaterialInfo
 	{
@@ -49,6 +49,7 @@ namespace MomoEngine
 	{
 		MaterialLibrary materials;
 		std::vector<GroupInfo> groups;
+        Vector3 objectCenter = { 0, 0, 0 };
 		size_t lineCount = 0;
 		bool isSuccess = true;
 	};

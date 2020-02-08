@@ -22,7 +22,6 @@
     <ClInclude Include="Core\Interfaces\IEvent.h" />
     <ClInclude Include="Core\Event\MouseEvent.h" />
     <ClInclude Include="Utilities\Math\Math.h" />
-    <ClInclude Include="Library\Bindings\ViewPortBinding.h" />
     <ClInclude Include="Core\Interfaces\GraphicAPI\VertexBuffer.h" />
     <ClInclude Include="Core\Interfaces\GraphicAPI\VertexBufferLayout.h" />
     <ClInclude Include="Core\Interfaces\GraphicAPI\VertexArray.h" />
@@ -52,7 +51,11 @@
     <ClInclude Include="Core\Interfaces\GraphicAPI\GraphicFactory.h" />
     <ClInclude Include="Platform\OpenGL\GraphicFactory\GLGraphicFactory.h" />
     <ClInclude Include="Vendor\chaiscript_windows.hpp" />
-    <ClInclude Include="MomoEngine.h" />
+    <ClInclude Include="MxEngine.h" />
+    <ClInclude Include="Library\Bindings\InputBinding.h" />
+    <ClInclude Include="Core\Interfaces\IMovable.h" />
+    <ClInclude Include="Library\Scripting\ScriptEngine.h" />
+    <ClInclude Include="Core\Event\RenderEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />

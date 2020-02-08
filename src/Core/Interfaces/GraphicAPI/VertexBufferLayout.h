@@ -3,7 +3,7 @@
 #include "Core/Interfaces/GraphicAPI/IBindable.h"
 #include <vector>
 
-namespace MomoEngine
+namespace MxEngine
 {
     struct VertexBufferLayout
     {

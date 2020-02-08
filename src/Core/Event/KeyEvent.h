@@ -3,7 +3,7 @@
 #include "Core/Interfaces/IEvent.h"
 #include <bitset>
 
-namespace MomoEngine
+namespace MxEngine
 {
 	// from glfw header file
 	enum class KeyCode

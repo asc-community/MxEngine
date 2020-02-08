@@ -2,7 +2,7 @@
 
 #include <cstdlib>
 
-namespace MomoEngine
+namespace MxEngine
 {
 	template<typename T>
 	class CreateWithNew

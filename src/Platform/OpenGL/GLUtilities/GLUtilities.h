@@ -5,7 +5,7 @@
 #include <GLEW/glew.h>
 #include <GLFW/glfw3.h>
 
-namespace MomoEngine
+namespace MxEngine
 {
 #define ASSERT(x) if(!(x)) __debugbreak(); 
 

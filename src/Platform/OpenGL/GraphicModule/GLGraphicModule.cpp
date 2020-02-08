@@ -10,7 +10,7 @@
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 
-namespace MomoEngine
+namespace MxEngine
 {
     void GLGraphicModule::Init()
     {
@@ -39,7 +39,7 @@ namespace MomoEngine
     {
         {
             MAKE_SCOPE_PROFILER("OpenGL::InitGLEW");
-            MAKE_SCOPE_TIMER("MomoEngine::GLGraphicModule", "OpenGL::InitGLEW()");
+            MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "OpenGL::InitGLEW()");
             GLenum err = glewInit();
             if (err != GLEW_OK)
             {
@@ -52,7 +52,7 @@ namespace MomoEngine
         }
         {
             MAKE_SCOPE_PROFILER("ImGui::Init");
-            MAKE_SCOPE_TIMER("MomoEngine::GLGraphicModule", "ImGui::Init()");
+            MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "ImGui::Init()");
             ImGui_ImplGlfw_InitForOpenGL(reinterpret_cast<GLFWwindow*>(window), true);
 
             GLCALL(std::string shaderVersion = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));

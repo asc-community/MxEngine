@@ -6,7 +6,7 @@
 #include <string>
 #endif // _DEBUG
 
-namespace MomoEngine
+namespace MxEngine
 {
 	class GLVertexBufferLayout final : public VertexBufferLayout
 	{

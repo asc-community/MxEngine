@@ -1,91 +1,136 @@
 #include "Application.h"
 #include "Utilities/Logger/Logger.h"
 #include "Utilities/Math/Math.h"
-#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 #include "Utilities/Profiler/Profiler.h"
+#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
+#include "Core/Event/RenderEvent.h"
+#include "Core/Camera/PerspectiveCamera.h"
+#include "Core/Camera/OrthographicCamera.h"
+#include "Library/Scripting/ScriptEngine.h"
+
 #include <fstream>
 
 #include <Platform/OpenGL/GraphicFactory/GLGraphicFactory.h>
 
-namespace MomoEngine
+namespace MxEngine
 {
     void Application::CreateConsoleBindings(DeveloperConsole& console)
     {
+        this->Console.SetSize({ this->GetWindow().GetWidth() / 3.0f, this->GetWindow().GetHeight() / 2.0f });
+
+        this->GetEventDispatcher().AddEventListener<RenderEvent>("DeveloperConsole", 
+            [this] (RenderEvent&) { this->Console.OnRender(); });
+
+        auto& script = console.GetEngine();
+
+        // Vector3
+        script.AddType<Vector3>("vec3");
+        script.AddTypeConstructor<Vector3, float>("vec3");
+        script.AddTypeConstructor<Vector3, float, float, float>("vec3");
+        script.AddReference("x", &Vector3::x);
+        script.AddReference("y", &Vector3::y);
+        script.AddReference("z", &Vector3::z);
+
         // CameraController
         using TranslateFunc = CameraController & (CameraController::*)(float, float, float);
-        console.AddReference("position", &CameraController::GetPosition);
-        console.AddReference("direction", &CameraController::GetDirection);
-        console.AddReference("up", &CameraController::GetUpVector);
-        console.AddReference("zoom", &CameraController::GetZoom);
-        console.AddReference("set_zoom", &CameraController::SetZoom);
-        console.AddReference("rotate", &CameraController::Rotate);
-        console.AddReference("translate", (TranslateFunc)& CameraController::Translate);
-        console.AddReference("translate_x", &CameraController::TranslateX);
-        console.AddReference("translate_y", &CameraController::TranslateY);
-        console.AddReference("translate_z", &CameraController::TranslateZ);
-        console.AddReference("move_forward", &CameraController::TranslateForward);
-        console.AddReference("move_right", &CameraController::TranslateRight);
-        console.AddReference("move_up", &CameraController::TranslateUp);
+        script.AddReference("position", &CameraController::GetPosition);
+        script.AddReference("direction", &CameraController::GetDirection);
+        script.AddReference("up", &CameraController::GetUpVector);
+        script.AddReference("zoom", &CameraController::GetZoom);
+        script.AddReference("set_zoom", &CameraController::SetZoom);
+        script.AddReference("rotate", &CameraController::Rotate);
+        script.AddReference("translate", (TranslateFunc)& CameraController::Translate);
+        script.AddReference("translate_x", &CameraController::TranslateX);
+        script.AddReference("translate_y", &CameraController::TranslateY);
+        script.AddReference("translate_z", &CameraController::TranslateZ);
+        script.AddReference("move_forward", &CameraController::TranslateForward);
+        script.AddReference("move_right", &CameraController::TranslateRight);
+        script.AddReference("move_up", &CameraController::TranslateUp);
 
         // Camera
-        console.AddReference("set_zfar",
-            [this](float zfar) { this->GetRenderer().ViewPort.GetCamera().SetZFar(zfar); });
-        console.AddReference("set_znear", 
-            [this](float znear) { this->GetRenderer().ViewPort.GetCamera().SetZNear(znear); });
-        console.AddReference("zfar",
-            [this]() { return this->GetRenderer().ViewPort.GetCamera().GetZFar(); });
-        console.AddReference("znear",
-            [this]() { return this->GetRenderer().ViewPort.GetCamera().GetZNear(); });
+        script.AddReference("set_zfar",
+            [](float zfar) { Context::Instance()->GetRenderer().ViewPort.GetCamera().SetZFar(zfar); });
+        script.AddReference("set_znear", 
+            [](float znear) { Context::Instance()->GetRenderer().ViewPort.GetCamera().SetZNear(znear); });
+        script.AddReference("zfar",
+            []() { return Context::Instance()->GetRenderer().ViewPort.GetCamera().GetZFar(); });
+        script.AddReference("znear",
+            []() { return Context::Instance()->GetRenderer().ViewPort.GetCamera().GetZNear(); });
 
         // ObjectInstance
         using ScaleFunc1F = ObjectInstance & (ObjectInstance::*)(float);
         using ScaleFunc3F = ObjectInstance & (ObjectInstance::*)(float, float, float);
-        console.AddReference("rotate_x", &ObjectInstance::RotateX);
-        console.AddReference("rotate_y", &ObjectInstance::RotateY);
-        console.AddReference("rotate_z", &ObjectInstance::RotateZ);
-        console.AddReference("scale", (ScaleFunc1F)&ObjectInstance::Scale);
-        console.AddReference("scale", (ScaleFunc3F)&ObjectInstance::Scale);
-        console.AddReference("translate", &ObjectInstance::Translate);
-        console.AddReference("translate_x", &ObjectInstance::TranslateX);
-        console.AddReference("translate_y", &ObjectInstance::TranslateY);
-        console.AddReference("translate_z", &ObjectInstance::TranslateZ);
-        console.AddReference("hide", &ObjectInstance::Hide);
-        console.AddReference("show", &ObjectInstance::Show);                  
-        console.AddReference("translation", &ObjectInstance::GetTranslation);
-        console.AddReference("rotation", &ObjectInstance::GetRotation);
-        console.AddReference("scale", &ObjectInstance::GetScale);
+        using TranslateFunc3 = ObjectInstance & (ObjectInstance::*)(float, float, float);
+        using RotateMoveFunc = ObjectInstance & (ObjectInstance::*)(float);
+        using RotateFunc2F = ObjectInstance & (ObjectInstance::*)(float, float);
+        script.AddReference("rotate", (RotateFunc2F)&ObjectInstance::Rotate);
+        script.AddReference("rotate_x", &ObjectInstance::RotateX);
+        script.AddReference("rotate_y", &ObjectInstance::RotateY);
+        script.AddReference("rotate_z", &ObjectInstance::RotateZ);
+        script.AddReference("scale", (ScaleFunc1F)&ObjectInstance::Scale);
+        script.AddReference("scale", (ScaleFunc3F)&ObjectInstance::Scale);
+        script.AddReference("translate", (TranslateFunc3)&ObjectInstance::Translate);
+        script.AddReference("translate_x", &ObjectInstance::TranslateX);
+        script.AddReference("translate_y", &ObjectInstance::TranslateY);
+        script.AddReference("translate_z", &ObjectInstance::TranslateZ);
+        script.AddReference("move_forward", (RotateMoveFunc)&ObjectInstance::TranslateForward);
+        script.AddReference("move_right", (RotateMoveFunc)&ObjectInstance::TranslateRight);
+        script.AddReference("move_up", (RotateMoveFunc)&ObjectInstance::TranslateUp);
+        script.AddReference("forward_vec", &ObjectInstance::GetForwardVector);
+        script.AddReference("up_vec", &ObjectInstance::GetUpVector);
+        script.AddReference("right_vec", &ObjectInstance::GetRightVector);
+        script.AddReference("set_forward", &ObjectInstance::SetForwardVector);
+        script.AddReference("set_up", &ObjectInstance::SetUpVector);
+        script.AddReference("set_right", &ObjectInstance::SetRightVector);
+        script.AddReference("hide", &ObjectInstance::Hide);
+        script.AddReference("show", &ObjectInstance::Show);                  
+        script.AddReference("translation", &ObjectInstance::GetTranslation);
+        script.AddReference("rotation", &ObjectInstance::GetRotation);
+        script.AddReference("scale", &ObjectInstance::GetScale);
            
         // Application
-        console.AddVariable("objects", this->objects);
-        console.AddVariable("viewport", this->GetRenderer().ViewPort);
-        console.AddReference("load", this, &Application::CreateObject);
-        console.AddReference("delete", this, &Application::DestroyObject);
-        console.AddReference("[]",
+        script.AddVariable("objects", Context::Instance()->objects);
+        script.AddVariable("viewport", Context::Instance()->GetRenderer().ViewPort);
+        script.AddReference("load", Context::Instance(), &Application::CreateObject);
+        script.AddReference("delete", Context::Instance(), &Application::DestroyObject);
+        script.AddReference("exit", Context::Instance(), &Application::CloseApplication);
+        script.AddReference("[]",
             [](Application::ObjectStorage& storage, const std::string& name) -> ObjectInstance& 
             { 
                 return storage[name]; 
             });
-        console.AddReference("to_string",
+        script.AddReference("to_string",
             [](const Vector3& vec)
             {
                 return "(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ")";
             });
-        console.AddReference("set_texture",
-            [this](ObjectInstance& instance, const std::string& path)
+        script.AddReference("set_texture",
+            [](ObjectInstance& instance, const std::string& path)
             {
-                instance.Texture = this->CreateTexture(path);
+                instance.Texture = Context::Instance()->CreateTexture(path);
             });
-        console.AddReference("set_shader",
-            [this](ObjectInstance& instance, const std::string& vertex, const std::string& fragment)
+        script.AddReference("set_shader",
+            [](ObjectInstance& instance, const std::string& vertex, const std::string& fragment)
             {
-                instance.Shader = this->CreateShader(vertex, fragment);
+                instance.Shader = Context::Instance()->CreateShader(vertex, fragment);
             });
+        script.AddReference("orthographic",
+            [](CameraController& viewport)
+            {
+                viewport.SetCamera(MakeUnique<OrthographicCamera>());
+            });
+        script.AddReference("perspective",
+            [](CameraController& viewport)
+            {
+                viewport.SetCamera(MakeUnique<PerspectiveCamera>());
+            }
+        );
     }
 
     Application::Application()
-		: window(Graphics::Instance()->CreateWindow(1280, 720, "MomoEngine Application")), 
-          TimeDelta(0), CounterFPS(0), renderer(Graphics::Instance()->GetRenderer())
-	{
+        : manager(this), window(Graphics::Instance()->CreateWindow(1280, 720, "MxEngine Application")),
+        TimeDelta(0), CounterFPS(0), renderer(Graphics::Instance()->GetRenderer())
+    {
         this->GetWindow().UseEventDispatcher(&this->Dispatcher);
         this->CreateConsoleBindings(this->Console);
 	}
@@ -116,7 +161,7 @@ namespace MomoEngine
         MAKE_SCOPE_PROFILER("Application::CreateObject");
 		if (this->objects.find(name) != this->objects.end())
 		{
-			Logger::Instance().Warning("MomoEngine::Application", "overriding already existing object: " + name);
+			Logger::Instance().Warning("MxEngine::Application", "overriding already existing object: " + name);
 			DestroyObject(name);
 		}
 		this->objects.insert({ name, ObjectInstance(MakeRef<BaseObject>(this->ResourcePath + path)) });
@@ -141,7 +186,7 @@ namespace MomoEngine
 	{
 		if (this->objects.find(name) == this->objects.end())
 		{
-			Logger::Instance().Warning("MomoEngine::Application", "object was not found: " + name);
+			Logger::Instance().Warning("MxEngine::Application", "object was not found: " + name);
 			return this->defaultInstance;
 		}
 		return this->objects[name];
@@ -151,11 +196,16 @@ namespace MomoEngine
 	{
 		if (this->objects.find(name) == this->objects.end())
 		{
-			Logger::Instance().Warning("MomoEngine::Application", "trying to destroy object which not exists: " + name);
+			Logger::Instance().Warning("MxEngine::Application", "trying to destroy object which not exists: " + name);
 			return;
 		}
 		this->objects.erase(name);
 	}
+
+    void Application::ToggleDeveloperConsole(bool isVisible)
+    {
+        this->Console.Toggle(isVisible);
+    }
 
 	void Application::DrawObjects(bool meshes) const
 	{
@@ -179,9 +229,7 @@ namespace MomoEngine
 
 	void Application::CloseApplication()
 	{
-        MAKE_SCOPE_PROFILER("Application::CloseApplication");
-		this->OnDestroy();
-		this->GetWindow().Close();
+        this->shouldClose = true;
 	}
 
 	void Application::CreateContext()
@@ -192,7 +240,7 @@ namespace MomoEngine
 			.UseCursorMode(CursorMode::DISABLED)
 			.UseSampling(4)
 			.UseDoubleBuffering(false)
-			.UseTitle("MomoEngine Project")
+			.UseTitle("MxEngine Project")
 			.UsePosition(600, 300)
 			.Create();
 
@@ -218,7 +266,7 @@ namespace MomoEngine
 	{
         {
             MAKE_SCOPE_PROFILER("Application::OnCreate");
-            MAKE_SCOPE_TIMER("MomoEngine::Application", "Application::OnCreate()");
+            MAKE_SCOPE_TIMER("MxEngine::Application", "Application::OnCreate()");
             this->OnCreate();
         }
 
@@ -227,7 +275,7 @@ namespace MomoEngine
 
         {
             MAKE_SCOPE_PROFILER("Application::Run");
-            Logger::Instance().Debug("MomoEngine::Application", "starting main loop...");
+            Logger::Instance().Debug("MxEngine::Application", "starting main loop...");
             while (this->GetWindow().IsOpen())
             {
                 fpsCounter++;
@@ -245,26 +293,26 @@ namespace MomoEngine
                 {
                     MAKE_SCOPE_PROFILER("Application::ProcessEvents");
                     this->Dispatcher.InvokeAll();
-                    if (!this->GetWindow().IsOpen()) break;
+                    if (this->shouldClose) break;
                 }
 
                 this->GetWindow().OnUpdate();
                 {
                     MAKE_SCOPE_PROFILER("Application::OnUpdate");
-                    float onUpdateStart = Time::Current();
                     this->OnUpdate();
-                    if (!this->GetWindow().IsOpen()) break;
-                    float onUpdateEnd = Time::Current();
-                    if (onUpdateEnd - onUpdateStart > 0.01666f)
-                    {
-                        if (onUpdateEnd - onUpdateStart > 0.03333f)
-                            Logger::Instance().Error("MomoEngine::Application", "Application::OnUpdate running more than 33.33ms");
-                        else
-                            Logger::Instance().Warning("MomoEngine::Application", "Application::OnUpdate running more than 16.66ms");
-                    }
                 }
+                static RenderEvent renderEvent;
+                this->GetEventDispatcher().Invoke(renderEvent);
                 this->renderer.Render();
-                this->GetWindow().PullEvents();
+                this->GetWindow().PullEvents(); 
+                if (this->shouldClose) break;
+            }
+
+            // application exit
+            {
+                MAKE_SCOPE_PROFILER("Application::CloseApplication");
+                this->OnDestroy();
+                this->GetWindow().Close();
             }
         }
 	}
@@ -275,12 +323,15 @@ namespace MomoEngine
         this->GetRenderer().MeshShader.reset();
         this->GetRenderer().ObjectShader.reset();
 
-        Logger::Instance().Debug("MomoEngine::Application", "application destroyed");
+        Logger::Instance().Debug("MxEngine::Application", "application destroyed");
 	}
 
-    Application::ModuleManager::ModuleManager()
+    Application::ModuleManager::ModuleManager(Application* app)
     {
         Profiler::Instance().StartSession("profile_log.json");
+        
+        assert(Context::Instance() == nullptr);
+        Context::Instance() = app;
 
         RenderEngine renderer = RenderEngine::OpenGL;
         switch (renderer)
@@ -289,7 +340,7 @@ namespace MomoEngine
             Graphics::Instance().reset(Alloc<GLGraphicFactory>());
             break;
         default:
-            Logger::Instance().Error("MomoEngine::Application", "No Rendering Engine was provided");
+            Logger::Instance().Error("MxEngine::Application", "No Rendering Engine was provided");
             return;
         }
         Graphics::Instance()->GetGraphicModule().Init();

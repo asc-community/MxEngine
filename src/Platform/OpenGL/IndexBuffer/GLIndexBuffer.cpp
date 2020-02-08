@@ -1,7 +1,7 @@
 #include "GLIndexBuffer.h"
 #include "Platform/OpenGL/GLUtilities/GLUtilities.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	GLIndexBuffer::GLIndexBuffer()
 	{

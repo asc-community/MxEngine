@@ -3,7 +3,7 @@
 #include "Core/Interfaces/GraphicAPI/IBindable.h"
 #include <string>
 
-namespace MomoEngine
+namespace MxEngine
 {
     struct Texture : IBindable
     {

@@ -5,7 +5,7 @@
 
 #include <unordered_map>
 
-namespace MomoEngine
+namespace MxEngine
 {
 	class GLShader : public Shader
 	{

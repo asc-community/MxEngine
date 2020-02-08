@@ -4,7 +4,7 @@
 #include "Utilities/Math/Math.h"
 #include <string>
 
-namespace MomoEngine
+namespace MxEngine
 {
     struct Shader : IBindable
     {

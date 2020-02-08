@@ -5,7 +5,7 @@
 
 #include "Utilities/SingletonHolder/SingletonHolder.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	class LoggerImpl
 	{

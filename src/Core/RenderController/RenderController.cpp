@@ -1,6 +1,6 @@
 #include "RenderController.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
     RenderController::RenderController(Renderer& renderer)
         : renderer(renderer)
@@ -84,9 +84,9 @@ namespace MomoEngine
             const auto& renderObject = object.GetCurrent(iterator);
             this->MeshShader->SetUniformMat4("MVP", MVP);
             if (object.GetInstanceCount() == 0)
-                this->GetRenderEngine().DrawLines(renderObject.GetVAO(), renderObject.GetIBO(), *this->MeshShader);
+                this->GetRenderEngine().DrawLines(renderObject.GetVAO(), renderObject.GetMeshIBO(), *this->MeshShader);
             else
-                this->GetRenderEngine().DrawLinesInstanced(renderObject.GetVAO(), renderObject.GetIBO(), *this->MeshShader, object.GetInstanceCount());
+                this->GetRenderEngine().DrawLinesInstanced(renderObject.GetVAO(), renderObject.GetMeshIBO(), *this->MeshShader, object.GetInstanceCount());
             iterator = object.GetNext(iterator);
         }
     }

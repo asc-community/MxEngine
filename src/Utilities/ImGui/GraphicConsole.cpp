@@ -8,7 +8,7 @@ static int   Strnicmp(const char* str1, const char* str2, int n) { int d = 0; wh
 static char* Strdup(const char* str) { size_t len = strlen(str) + 1; void* buf = malloc(len); IM_ASSERT(buf); return (char*)memcpy(buf, (const void*)str, len); }
 static void  Strtrim(char* str) { char* str_end = str + strlen(str); while (str_end > str&& str_end[-1] == ' ') str_end--; *str_end = 0; }
 
-namespace MomoEngine
+namespace MxEngine
 {
 	// In C++11 you are better off using lambdas for this sort of forwarding callbacks
 	static int TextEditCallbackStub(ImGuiInputTextCallbackData* data)
@@ -25,7 +25,7 @@ namespace MomoEngine
 		HistoryPos = -1;
 		AutoScroll = true;
 		ScrollToBottom = false;
-		PrintLog("Welcome to MomoEngine developer console!");
+		PrintLog("Welcome to MxEngine developer console!");
 	}
 
     GraphicConsole::~GraphicConsole()

@@ -3,7 +3,7 @@
 #include "Utilities/Math/Math.h"
 #include "Core/Event/KeyEvent.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
     enum class Profile
     {

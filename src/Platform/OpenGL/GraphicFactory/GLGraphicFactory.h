@@ -11,7 +11,7 @@
 #include "Platform/OpenGL/VertexBufferLayout/GLVertexBufferLayout.h"
 #include "Platform/OpenGL/Renderer/GLRenderer.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
     class GLGraphicFactory final : public GraphicFactory
     {

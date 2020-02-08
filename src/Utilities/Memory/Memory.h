@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace MomoEngine
+namespace MxEngine
 {
 	template<typename T>
 	using UniqueRef = std::unique_ptr<T>;

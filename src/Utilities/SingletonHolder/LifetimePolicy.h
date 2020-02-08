@@ -2,7 +2,7 @@
 
 #include <exception>
 
-namespace MomoEngine
+namespace MxEngine
 {
 	using AtExitFunctionPointer = void (*)();
 

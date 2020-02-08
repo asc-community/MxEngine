@@ -5,7 +5,7 @@
 #include <string>
 #include <set>
 
-namespace MomoEngine
+namespace MxEngine
 {
 	static std::set<int> ExistingErrors;
 

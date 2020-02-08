@@ -7,27 +7,28 @@
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 #include "Utilities/Profiler/Profiler.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
 	void BaseObject::LoadFromFile(const std::string& filepath)
 	{
         ObjFileInfo objectInfo;
         {
-            MAKE_SCOPE_TIMER("MomoEngine::BaseObject", "ObjectLoader::LoadFromFile()");
+            MAKE_SCOPE_TIMER("MxEngine::BaseObject", "ObjectLoader::LoadFromFile()");
             objectInfo = ObjectLoader::Load(filepath);
         }
 
         MAKE_SCOPE_PROFILER("BaseObject::GenBuffers");
-        MAKE_SCOPE_TIMER("MomoEngine::BaseObject", "BaseObject::GenBuffers()");
+        MAKE_SCOPE_TIMER("MxEngine::BaseObject", "BaseObject::GenBuffers()");
 		if (!objectInfo.isSuccess)
 		{
-            Logger::Instance().Debug("MomoEngine::BaseObject", "failed to load object from file: " + filepath);
+            Logger::Instance().Debug("MxEngine::BaseObject", "failed to load object from file: " + filepath);
 		}
 		this->subObjects.reserve(objectInfo.groups.size());
+        this->objectCenter = objectInfo.objectCenter;
 		std::unordered_map<std::string, Ref<Texture>> textures;
 		for (const auto& group : objectInfo.groups)
 		{
-			GLRenderObject object;
+			RenderObject object;
             object.VAO = Graphics::Instance()->CreateVertexArray();
 			object.vertexCount = group.faces.size();
 			object.useTexture = group.useTexture;
@@ -73,7 +74,6 @@ namespace MomoEngine
 					if (object.material->Ns == 0.0f) object.material->Ns = 128.0f; // bad as pow(0.0, 0.0) -> NaN
 				}
 			}
-
 			this->subObjects.push_back(std::move(object));
 		}
 	}
@@ -88,16 +88,21 @@ namespace MomoEngine
 		LoadFromFile(filepath);
 	}
 
-	std::vector<GLRenderObject>& BaseObject::GetRenderObjects()
+	std::vector<RenderObject>& BaseObject::GetRenderObjects()
 	{
 		return this->subObjects;
 	}
+
+    const Vector3& BaseObject::GetObjectCenter() const
+    {
+        return this->objectCenter;
+    }
 
 	void ObjectInstance::AddInstanceBuffer(const std::vector<float>& buffer, size_t count, UsageType type)
 	{
 		if (this->object == nullptr)
 		{
-			Logger::Instance().Warning("MomoEngine::GLInstance", "trying to add buffer to nit existing object");
+			Logger::Instance().Warning("MxEngine::GLInstance", "trying to add buffer to nit existing object");
 			return;
 		}
 
@@ -106,12 +111,12 @@ namespace MomoEngine
 		if (this->instanceCount == 0) this->instanceCount = objectCount;
 		if (this->instanceCount > objectCount)
 		{
-			Logger::Instance().Error("MomoEngine::GLInstance", "instance buffer was not added as it contains not enough information");
+			Logger::Instance().Error("MxEngine::GLInstance", "instance buffer was not added as it contains not enough information");
 			return;
 		}
 		else if (this->instanceCount < objectCount)
 		{
-			Logger::Instance().Error("MomoEngine::GLInstance", "instance buffer contains more data than required, additional will be ignored");
+			Logger::Instance().Error("MxEngine::GLInstance", "instance buffer contains more data than required, additional will be ignored");
 		}
 
 		for (auto& object : this->object->GetRenderObjects())
@@ -127,7 +132,7 @@ namespace MomoEngine
 	{
 		if (this->object == nullptr)
 		{
-			Logger::Instance().Warning("MomoEngine::GLInstance", "trying to add buffer to nit existing object");
+			Logger::Instance().Warning("MxEngine::GLInstance", "trying to add buffer to nit existing object");
 			return;
 		}
 		std::vector<float> buffer;
@@ -172,17 +177,17 @@ namespace MomoEngine
 		this->shouldRender = true;
 	}
 
-	Vector3 ObjectInstance::GetTranslation() const
+	const Vector3& ObjectInstance::GetTranslation() const
 	{
 		return this->translation;
 	}
 
-	Vector3 ObjectInstance::GetRotation() const
+	const Quaternion& ObjectInstance::GetRotation() const
 	{
 		return this->rotation;
 	}
 
-	Vector3 ObjectInstance::GetScale() const
+	const Vector3& ObjectInstance::GetScale() const
 	{
 		return this->scale;
 	}
@@ -208,18 +213,8 @@ namespace MomoEngine
 
 	ObjectInstance& ObjectInstance::Rotate(float angle, const Vector3& vec)
 	{
-		angle = Radians(angle);
 		needUpdate = true;
-		this->rotation += vec * angle;
-
-		// check if rotation value is too high to avoid precision loss
-		if (rotation.x > TwoPi<float>()) rotation.x -= TwoPi<float>();
-		if (rotation.y > TwoPi<float>()) rotation.y -= TwoPi<float>();
-		if (rotation.z > TwoPi<float>()) rotation.z -= TwoPi<float>();
-		if (rotation.x < 0.0f) rotation.x += TwoPi<float>();
-		if (rotation.y < 0.0f) rotation.y += TwoPi<float>();
-		if (rotation.z < 0.0f) rotation.z += TwoPi<float>();
-
+        this->rotation *= MakeQuaternion(Radians(angle), vec);
 		return *this;
 	}
 
@@ -245,7 +240,68 @@ namespace MomoEngine
 		return *this;
 	}
 
-	ObjectInstance& ObjectInstance::TranslateX(float x)
+    ObjectInstance& ObjectInstance::TranslateForward(float dist)
+    {
+        this->Translate(this->rotation * this->forwardVec * dist);
+        return *this;
+    }
+
+    ObjectInstance& ObjectInstance::TranslateRight(float dist)
+    {
+        this->Translate(this->rotation * this->rightVec * dist);
+        return *this;
+    }
+
+    ObjectInstance& ObjectInstance::TranslateUp(float dist)
+    {
+        this->Translate(this->rotation * this->upVec * dist);
+        return *this;
+    }
+
+    ObjectInstance& ObjectInstance::Rotate(float horz, float vert)
+    {
+        Rotate(horz, this->rotation * this->upVec);
+        Rotate(vert, this->rotation * this->rightVec);
+        
+        return *this;
+    }
+
+    void ObjectInstance::SetForwardVector(const Vector3& forward)
+    {
+        this->forwardVec = forward;
+    }
+
+    void ObjectInstance::SetUpVector(const Vector3& up)
+    {
+        this->upVec = up;
+    }
+
+    void ObjectInstance::SetRightVector(const Vector3& right)
+    {
+        this->rightVec = right;
+    }
+
+    const Vector3& ObjectInstance::GetForwardVector() const
+    {
+        return this->forwardVec;
+    }
+
+    const Vector3& ObjectInstance::GetUpVector() const
+    {
+        return this->upVec;
+    }
+
+    const Vector3& ObjectInstance::GetRightVector() const
+    {
+        return this->rightVec;
+    }
+
+    ObjectInstance& ObjectInstance::Translate(const Vector3& dist)
+    {
+        return this->Translate(dist.x, dist.y, dist.z);
+    }
+
+    ObjectInstance& ObjectInstance::TranslateX(float x)
 	{
 		return Translate(x, 0.0f, 0.0f);
 	}
@@ -284,12 +340,10 @@ namespace MomoEngine
 	{
 		if (needUpdate)
 		{
-			auto Transalte = MomoEngine::Translate(Matrix4x4(1.0f), this->translation);
-			auto RotateX = MomoEngine::Rotate(Matrix4x4(1.0f), this->rotation.x, Vector3(1.0f, 0.0f, 0.0f));
-			auto RotateY = MomoEngine::Rotate(Matrix4x4(1.0f), this->rotation.y, Vector3(0.0f, 1.0f, 0.0f));
-			auto RotateZ = MomoEngine::Rotate(Matrix4x4(1.0f), this->rotation.z, Vector3(0.0f, 0.0f, 1.0f));
-			auto Scale = MomoEngine::Scale(Matrix4x4(1.0f), this->scale);
-			this->Model = Transalte * RotateX * RotateY * RotateZ * Scale;
+			auto Translation = MxEngine::Translate(Matrix4x4(1.0f), this->translation);
+            auto Rotation = ToMatrix(this->rotation);
+			auto Scale = MxEngine::Scale(Matrix4x4(1.0f), this->scale);
+			this->Model = Translation * Rotation * Scale;
 			needUpdate = false;
 		}
 		return this->Model;
@@ -300,7 +354,7 @@ namespace MomoEngine
 		return this->Shader != nullptr;
 	}
 
-	const MomoEngine::Shader& ObjectInstance::GetShader() const
+	const MxEngine::Shader& ObjectInstance::GetShader() const
 	{
 		return *this->Shader;
 	}
@@ -315,7 +369,7 @@ namespace MomoEngine
 		return this->Texture != nullptr;
 	}
 
-	const MomoEngine::Texture& ObjectInstance::GetTexture() const
+	const MxEngine::Texture& ObjectInstance::GetTexture() const
 	{
 		return *this->Texture;
 	}
@@ -325,7 +379,7 @@ namespace MomoEngine
 		return this->instanceCount;
 	}
 
-	void GLRenderObject::GenerateMeshIndicies() const
+	void RenderObject::GenerateMeshIndicies() const
 	{
 		std::vector<IndexBuffer::IndexType> indicies;
 		indicies.reserve(this->vertexCount * 3);
@@ -342,28 +396,28 @@ namespace MomoEngine
 		this->meshGenerated = true;
 	}
 
-	const VertexArray& GLRenderObject::GetVAO() const
+	const VertexArray& RenderObject::GetVAO() const
 	{
 		return *this->VAO;
 	}
 
-	const IndexBuffer& GLRenderObject::GetIBO() const
+	const IndexBuffer& RenderObject::GetMeshIBO() const
 	{
 		if (!this->meshGenerated) GenerateMeshIndicies();
 		return *this->IBO;
 	}
 
-	const Material& GLRenderObject::GetMaterial() const
+	const Material& RenderObject::GetMaterial() const
 	{
 		return *this->material;
 	}
 
-	size_t GLRenderObject::GetVertexCount() const
+	size_t RenderObject::GetVertexCount() const
 	{
 		return this->vertexCount;
 	}
 
-	bool GLRenderObject::HasMaterial() const
+	bool RenderObject::HasMaterial() const
 	{
 		return this->material != nullptr;
 	}

@@ -2,7 +2,7 @@
 
 #include "Core/Interfaces/GraphicAPI/GraphicModule.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
     class GLGraphicModule final : public GraphicModule
     {

@@ -7,7 +7,7 @@
 #include <fstream>
 #include <string>
 
-namespace MomoEngine
+namespace MxEngine
 {
     class ProfileSession
     {

@@ -4,7 +4,7 @@
 #include "Core/Interfaces/GraphicAPI/VertexBuffer.h"
 #include "Core/Interfaces/GraphicAPI/VertexBufferLayout.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
     struct VertexArray : IBindable
     {

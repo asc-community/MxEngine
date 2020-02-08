@@ -1,7 +1,8 @@
 #pragma once
 
 #ifdef MOMO_ENGINE_INCLUDE
-namespace MomoEngine
+
+namespace MxEngine
 {
 	extern Application* __cdecl GetApplication();
 }
@@ -12,7 +13,7 @@ namespace
 	{
 		int main()
 		{
-			MomoEngine::Application* app = MomoEngine::GetApplication();
+			MxEngine::Application* app = MxEngine::GetApplication();
 			app->Run();
 			delete app;
 			return 0;

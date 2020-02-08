@@ -2,9 +2,10 @@
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <cmath>
 
-namespace MomoEngine
+namespace MxEngine
 {
 	using Vector2 = glm::vec<2, float>;
 	using Vector3 = glm::vec<3, float>;
@@ -20,6 +21,8 @@ namespace MomoEngine
 	using Matrix2x4 = glm::mat2x4;
 	using Matrix3x4 = glm::mat3x4;
 	using Matrix4x4 = glm::mat4x4;
+
+    using Quaternion = glm::quat;
 
 	template<size_t Length, typename Type>
 	using Vector = glm::vec<Length, Type>;
@@ -56,6 +59,16 @@ namespace MomoEngine
 	{
 		return glm::rotate(mat, angle, axis);
 	}
+
+    inline Matrix4x4 ToMatrix(const Quaternion& q)
+    {
+        return glm::toMat4(q);
+    }
+
+    inline Quaternion MakeQuaternion(float angle, const Vector3& axis)
+    {
+        return glm::angleAxis(angle, axis);
+    }
 
 	template<size_t Columns, size_t Rows, typename T>
 	inline Matrix<Columns, Rows, T> Transpose(const Matrix<Columns, Rows, T>& mat)

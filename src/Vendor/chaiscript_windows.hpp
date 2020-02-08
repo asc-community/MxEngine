@@ -4,10 +4,10 @@
 // Copyright 2009-2017, Jason Turner (jason@emptycrate.com)
 // http://www.chaiscript.com
 
-// This file is used in MomoEngine Project by @MomoDev built for Windows
+// This file is used in MxEngine Project by @MomoDev on Windows platform
 // It was modified to exclude windows.h header file from ChaiScript library
-// All WIN API constants and functions are exported inside WinAPI namespace
-// Note that MomoEngine project only supports x64 for Windows
+// All required WIN API constants and functions are exported inside WinAPI namespace
+// Note that MxEngine project only supports x64 builds for Windows
 // Correct work of this file is not guaranteed for any other Windows systems
 // If you find any bugs or mistakes, please contact me, @MomoDev, NOT Jason Turner
 

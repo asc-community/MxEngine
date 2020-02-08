@@ -7,7 +7,7 @@
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 #include "Platform/OpenGL/GLUtilities/GLUtilities.h"
 
-namespace MomoEngine
+namespace MxEngine
 {
     void GLWindow::Destroy()
     {
@@ -15,14 +15,14 @@ namespace MomoEngine
         {
             this->Close();
             glfwDestroyWindow(this->window);
-            Logger::Instance().Debug("MomoEngine::Window", "window destroyed");
+            Logger::Instance().Debug("MxEngine::Window", "window destroyed");
         }
     }
 
     GLWindow::GLWindow(int width, int height, const std::string& title)
 		: title(title), width(width), height(height)
 	{		
-		Logger::Instance().Debug("MomoEngine::Window", "window object created");
+		Logger::Instance().Debug("MxEngine::Window", "window object created");
 	}
 
     GLWindow::GLWindow(GLWindow&& window) noexcept
@@ -70,7 +70,7 @@ namespace MomoEngine
 	{
 		if (this->window == nullptr)
 		{
-            Logger::Instance().Warning("MomoEngine::Window", "window was not created while calling Window::IsOpen");
+            Logger::Instance().Warning("MxEngine::Window", "window was not created while calling Window::IsOpen");
 			return false;
 		}
 		bool isOpen = !glfwWindowShouldClose(this->window);
@@ -106,7 +106,7 @@ namespace MomoEngine
             module.OnWindowDestroy(this->GetNativeHandler());
 
 			glfwSetWindowShouldClose(this->window, true);
-			Logger::Instance().Debug("MomoEngine::Window", "window closed");
+			Logger::Instance().Debug("MxEngine::Window", "window closed");
 		}
 		return *this;
 	}
@@ -183,7 +183,7 @@ namespace MomoEngine
 		UseCursorMode(this->cursorMode);
 		UsePosition(this->windowPosition.x, this->windowPosition.y);
 		UseCursorPos(this->cursorPosition);
-		Logger::Instance().Debug("MomoEngine::Window", "window initialized");
+		Logger::Instance().Debug("MxEngine::Window", "window initialized");
 		return *this;
 	}
 

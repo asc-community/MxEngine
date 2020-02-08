@@ -1,25 +1,26 @@
 #pragma once
 
 #include "Utilities/Time/Time.h"
+#include "Utilities/SingletonHolder/SingletonHolder.h"
 #include "Core/Interfaces/IEvent.h"
-#include "Core/Interfaces/GraphicAPI/Window.h"
 #include "Core/DeveloperConsole/DeveloperConsole.h"
+#include "Core/Interfaces/GraphicAPI/Window.h"
 #include "Core/RenderController/RenderController.h"
 #include "Core/BaseObject/BaseObject.h"
 #include <unordered_map>
 
-namespace MomoEngine
+namespace MxEngine
 {
     enum class RenderEngine
     {
         OpenGL,
     };
 
-    struct Application
+    class Application
     {
         struct ModuleManager
         {
-            ModuleManager();
+            ModuleManager(Application* app);
             ~ModuleManager();
         } manager;
 	private:
@@ -28,7 +29,7 @@ namespace MomoEngine
 		ObjectStorage objects;
 		ObjectInstance defaultInstance;
         RenderController renderer;
-		friend class ChaiScriptApplication;
+        bool shouldClose = false;
 
         void CreateConsoleBindings(DeveloperConsole& console);
 	protected:
@@ -37,6 +38,7 @@ namespace MomoEngine
 		std::string ResourcePath;
 		TimeStep TimeDelta;
 		int CounterFPS;
+
 		Application();
 
 		void SetWindow(UniqueRef<Window> window);
@@ -45,6 +47,7 @@ namespace MomoEngine
         Ref<Shader> CreateShader(const std::string& vertexShaderPath, const std::string fragmentShaderPath);
 		ObjectInstance& GetObject(const std::string& name);
 		void DestroyObject(const std::string& name);
+        void ToggleDeveloperConsole(bool isVisible);
 
 		void DrawObjects(bool meshes = false) const;
 
@@ -62,4 +65,6 @@ namespace MomoEngine
 		void Run();
 		virtual ~Application();
 	};
+
+    using Context = SingletonHolder<Application*>;
 }

@@ -1,19 +1,20 @@
 #include "DeveloperConsole.h"
+#include "Library/Scripting/ScriptEngine.h"
 #include "Utilities/ImGui/GraphicConsole.h"
 #include "Utilities/Profiler/Profiler.h"
 
-MomoEngine::DeveloperConsole::DeveloperConsole()
+MxEngine::DeveloperConsole::DeveloperConsole()
 {
     MAKE_SCOPE_PROFILER("DeveloperConsole::Init");
-    this->engine = Alloc<chaiscript::ChaiScript>();
+    this->engine = Alloc<ScriptEngine>();
     this->console = Alloc<GraphicConsole>();
-    this->AddVariable("console", std::ref(*this));
+    this->engine->AddVariable("console", *this);
 
-    this->AddReference("print", &DeveloperConsole::Log);
-    this->AddReference("clear", &DeveloperConsole::ClearLog);
-    this->AddReference("history", &DeveloperConsole::PrintHistory);
+    this->engine->AddReference("print", &DeveloperConsole::Log);
+    this->engine->AddReference("clear", &DeveloperConsole::ClearLog);
+    this->engine->AddReference("history", &DeveloperConsole::PrintHistory);
 
-    this->engine->eval(R"(global print = fun[print](x) { console.print("${ x }"); }; )");
+    this->engine->GetInterpreter().eval(R"(global print = fun[print](x) { console.print("${ x }"); }; )");
     this->Log("This console is powered by ChaiScript: http://chaiscript.com");
 
     this->console->SetEventCallback([this](const char* text)
@@ -21,7 +22,7 @@ MomoEngine::DeveloperConsole::DeveloperConsole()
             try
             {
                 std::string script = text;
-                this->engine->eval(script);
+                this->engine->GetInterpreter().eval(script);
             }
             catch (std::exception& e)
             {
@@ -37,33 +38,53 @@ MomoEngine::DeveloperConsole::DeveloperConsole()
         });
 }
 
-MomoEngine::DeveloperConsole::~DeveloperConsole()
+MxEngine::DeveloperConsole::~DeveloperConsole()
 {
     Free(this->engine);
     Free(this->console);
 }
 
-void MomoEngine::DeveloperConsole::Log(const std::string& message)
+void MxEngine::DeveloperConsole::Log(const std::string& message)
 {
     this->console->PrintLog("%s", message.c_str());
 }
 
-void MomoEngine::DeveloperConsole::ClearLog()
+void MxEngine::DeveloperConsole::ClearLog()
 {
     this->console->ClearLog();
 }
 
-void MomoEngine::DeveloperConsole::PrintHistory()
+void MxEngine::DeveloperConsole::PrintHistory()
 {
     this->console->PrintHistory();
 }
 
-void MomoEngine::DeveloperConsole::_SetSize(float width, float height)
+void MxEngine::DeveloperConsole::OnRender()
 {
-    this->console->SetSize({ width, height });
+    if (this->shouldRender)
+    {
+        ImGui::SetNextWindowPos({ 0, 0 });
+        this->console->Draw("Developer Console");
+        ImGui::End();
+    }
 }
 
-void MomoEngine::DeveloperConsole::_Draw() const
+void MxEngine::DeveloperConsole::SetSize(const Vector2& size)
 {
-    this->console->Draw("Developer Console");
+    this->console->SetSize({ size.x, size.y });
+}
+
+void MxEngine::DeveloperConsole::Toggle(bool isVisible)
+{
+    this->shouldRender = isVisible;
+}
+
+MxEngine::ScriptEngine& MxEngine::DeveloperConsole::GetEngine()
+{
+    return *this->engine;
+}
+
+MxEngine::Vector2 MxEngine::DeveloperConsole::GetSize() const
+{
+    return Vector2(this->console->GetSize().x, this->console->GetSize().y);
 }
