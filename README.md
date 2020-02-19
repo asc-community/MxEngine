@@ -72,4 +72,6 @@ Bug fixes & improvements are just fixes to already existing code to reestablish 
 - added IMovable interface and methods
 - new API for objects
 ### v4.3.0
-- added 
+- improved object API
+- added licening
+- added console & fps bindings
