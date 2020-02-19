@@ -80,7 +80,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\OpenGL64\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;MOMO_ENGINE_INCLUDE;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -89,7 +89,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>opengl32.lib;glu32.lib;glew32s.lib;glfw3.lib;imgui.lib;MxEngine.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(OutDir);D:\OpenGL64\lib;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);D:\cpplibs\lib;</AdditionalLibraryDirectories>
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -115,14 +116,14 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\OpenGL64\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;MOMO_ENGINE_INCLUDE;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>opengl32.lib;glu32.lib;glew32s.lib;glfw3.lib;imgui.lib;MxEngine.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(OutDir);D:\OpenGL64\lib;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);D:\cpplibs\lib;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -142,11 +143,12 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <Profile>true</Profile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Sandbox.cpp" />
-    <ClCompile Include="Sandbox.h" />
+    <ClInclude Include="Sandbox.h" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\objects\arc170.obj">
@@ -177,6 +179,14 @@
     <None Include="Resources\shaders\mesh_vertex.glsl" />
     <None Include="Resources\shaders\object_fragment.glsl" />
     <None Include="Resources\shaders\object_vertex.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Objects\Arc170Object.h" />
+    <ClInclude Include="Objects\CubeObject.h" />
+    <ClInclude Include="Objects\DeathStarObject.h" />
+    <ClInclude Include="Objects\DestroyerObject.h" />
+    <ClInclude Include="Objects\GridObject.h" />
+    <ClInclude Include="Objects\UserObjects.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -26,7 +26,6 @@
     <ClInclude Include="Core\Interfaces\GraphicAPI\VertexBufferLayout.h" />
     <ClInclude Include="Core\Interfaces\GraphicAPI\VertexArray.h" />
     <ClInclude Include="Core\Interfaces\GraphicAPI\Shader.h" />
-    <ClInclude Include="Core\BaseObject\BaseObject.h" />
     <ClInclude Include="Core\Interfaces\GraphicAPI\IBindable.h" />
     <ClInclude Include="Core\Interfaces\GraphicAPI\IndexBuffer.h" />
     <ClInclude Include="Core\Interfaces\GraphicAPI\Texture.h" />
@@ -56,6 +55,13 @@
     <ClInclude Include="Core\Interfaces\IMovable.h" />
     <ClInclude Include="Library\Scripting\ScriptEngine.h" />
     <ClInclude Include="Core\Event\RenderEvent.h" />
+    <ClInclude Include="Core\Event\UpdateEvent.h" />
+    <ClInclude Include="Library\Bindings\ConsoleBinding.h" />
+    <ClInclude Include="Library\Bindings\AppCloseBinding.h" />
+    <ClInclude Include="Library\Bindings\Bindings.h" />
+    <ClInclude Include="Core\Event\FpsUpdateEvent.h" />
+    <ClInclude Include="Core\Object\Object.h" />
+    <ClInclude Include="Core\Object\RenderObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
@@ -65,7 +71,6 @@
     <ClCompile Include="Core\Camera\PerspectiveCamera.cpp" />
     <ClCompile Include="Core\Camera\OrthographicCamera.cpp" />
     <ClCompile Include="Core\Camera\CameraController.cpp" />
-    <ClCompile Include="Core\BaseObject\BaseObject.cpp" />
     <ClCompile Include="Platform\OpenGL\IndexBuffer\GLIndexBuffer.cpp" />
     <ClCompile Include="Platform\OpenGL\Shader\GLShader.cpp" />
     <ClCompile Include="Platform\OpenGL\Texture\GLTexture.cpp" />
@@ -81,6 +86,8 @@
     <ClCompile Include="Platform\OpenGL\Renderer\GLRenderer.cpp" />
     <ClCompile Include="Core\RenderController\RenderController.cpp" />
     <ClCompile Include="Platform\OpenGL\Window\GLWindow.cpp" />
+    <ClCompile Include="Core\Object\Object.cpp" />
+    <ClCompile Include="Core\Object\RenderObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\cube_fragment.glsl" />
@@ -90,7 +97,6 @@
     <None Include="Resources\shaders\mesh_vertex.glsl" />
     <None Include="Resources\shaders\object_vertex.glsl" />
     <None Include="Resources\shaders\object_fragment.glsl" />
-    <None Include="Library\EntryPoint.h" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\objects\crate.obj" />

@@ -24,6 +24,12 @@
     <ClInclude Include="Core\Camera\PerspectiveCamera.h" />
     <ClInclude Include="Core\DeveloperConsole\DeveloperConsole.h" />
     <ClInclude Include="Core\Event\RenderEvent.h" />
+    <ClInclude Include="Core\Event\FpsUpdateEvent.h" />
+    <ClInclude Include="Core\Event\UpdateEvent.h" />
+    <ClInclude Include="Core\Object\RenderObject.h" />
+    <ClInclude Include="Library\Bindings\AppCloseBinding.h" />
+    <ClInclude Include="Library\Bindings\Bindings.h" />
+    <ClInclude Include="Library\Bindings\ConsoleBinding.h" />
     <ClInclude Include="Library\Scripting\ScriptEngine.h" />
     <ClInclude Include="Core\Event\KeyEvent.h" />
     <ClInclude Include="Core\Event\MouseEvent.h" />
@@ -48,7 +54,7 @@
     <ClInclude Include="Core\RenderController\RenderController.h" />
     <ClInclude Include="MxEngine.h" />
     <ClInclude Include="Platform\OpenGL\GraphicFactory\GLGraphicFactory.h" />
-    <ClInclude Include="Core\BaseObject\BaseObject.h" />
+    <ClInclude Include="Core\Object\Object.h" />
     <ClInclude Include="Platform\OpenGL\GraphicModule\GLGraphicModule.h" />
     <ClInclude Include="Platform\OpenGL\GLUtilities\GLUtilities.h" />
     <ClInclude Include="Platform\OpenGL\IndexBuffer\GLIndexBuffer.h" />
@@ -83,7 +89,8 @@
     <ClCompile Include="Core\Camera\PerspectiveCamera.cpp" />
     <ClCompile Include="Core\Application\Application.cpp" />
     <ClCompile Include="Core\DeveloperConsole\DeveloperConsole.cpp" />
-    <ClCompile Include="Core\BaseObject\BaseObject.cpp" />
+    <ClCompile Include="Core\Object\Object.cpp" />
+    <ClCompile Include="Core\Object\RenderObject.cpp" />
     <ClCompile Include="Core\RenderController\RenderController.cpp" />
     <ClCompile Include="Platform\OpenGL\GraphicModule\GLGraphicModule.cpp" />
     <ClCompile Include="Platform\OpenGL\GLUtilities\GLUtilities.cpp" />
@@ -103,7 +110,6 @@
     <ClCompile Include="Utilities\Time\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Library\EntryPoint.h" />
     <None Include="Resources\shaders\object_fragment.glsl" />
     <None Include="Resources\shaders\object_vertex.glsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -212,7 +218,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\OpenGL64\include;%(Additional Dependencies)%</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;%(Additional Dependencies)%</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -249,7 +255,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\OpenGL64\include;%(Additional Dependencies)%</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;%(Additional Dependencies)%</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>

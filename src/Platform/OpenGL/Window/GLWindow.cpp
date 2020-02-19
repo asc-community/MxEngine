@@ -1,3 +1,31 @@
+// Copyright(c) 2019 - 2020, #Momo
+// All rights reserved.
+// 
+// Redistributionand use in sourceand binary forms, with or without
+// modification, are permitted provided that the following conditions are met :
+// 
+// 1. Redistributions of source code must retain the above copyright notice, this
+// list of conditionsand the following disclaimer.
+// 
+// 2. Redistributions in binary form must reproduce the above copyright notice,
+// this list of conditionsand the following disclaimer in the documentation
+// and /or other materials provided with the distribution.
+// 
+// 3. Neither the name of the copyright holder nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED.IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #include "GLWindow.h"
 
 #include "Utilities/Logger/Logger.h"
@@ -6,6 +34,8 @@
 #include "Core/Event/MouseEvent.h"
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 #include "Platform/OpenGL/GLUtilities/GLUtilities.h"
+
+#include <array>
 
 namespace MxEngine
 {
@@ -66,6 +96,11 @@ namespace MxEngine
         return reinterpret_cast<WindowHandler*>(this->window);
     }
 
+	bool GLWindow::IsCreated() const
+	{
+		return this->window != nullptr;
+	}
+
 	bool GLWindow::IsOpen() const
 	{
 		if (this->window == nullptr)
@@ -86,10 +121,13 @@ namespace MxEngine
 
 		glfwPollEvents();
 
-		auto keyEvent = MakeUnique<KeyEvent>(&this->keyHeld, &this->keyPressed, &this->keyReleased);
-		this->dispatcher->AddEvent(std::move(keyEvent));
-		auto mouseMoveEvent = MakeUnique<MouseMoveEvent>(this->cursorPosition.x, this->cursorPosition.y);
-		this->dispatcher->AddEvent(std::move(mouseMoveEvent));
+		if (this->dispatcher != nullptr)
+		{
+			auto keyEvent = MakeUnique<KeyEvent>(&this->keyHeld, &this->keyPressed, &this->keyReleased);
+			this->dispatcher->AddEvent(std::move(keyEvent));
+			auto mouseMoveEvent = MakeUnique<MouseMoveEvent>(this->cursorPosition.x, this->cursorPosition.y);
+			this->dispatcher->AddEvent(std::move(mouseMoveEvent));
+		}
 	}
 
 	void GLWindow::OnUpdate()
@@ -193,11 +231,18 @@ namespace MxEngine
 		return *this;
 	}
 
+	std::array<int, 3> ProfileType =
+	{
+		GLFW_OPENGL_ANY_PROFILE,
+		GLFW_OPENGL_COMPAT_PROFILE,
+		GLFW_OPENGL_CORE_PROFILE,
+	};
+
 	GLWindow& GLWindow::UseProfile(int majorVersion, int minorVersion, Profile profile)
 	{
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, majorVersion);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minorVersion);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, (int)profile);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, ProfileType[(int)profile]);
 		return *this;
 	}
 
@@ -213,11 +258,18 @@ namespace MxEngine
 		return *this;
 	}
 
+	std::array<int, 3> CursorType =
+	{
+		GLFW_CURSOR_NORMAL,
+		GLFW_CURSOR_HIDDEN,
+		GLFW_CURSOR_DISABLED,
+	};
+
 	GLWindow& GLWindow::UseCursorMode(CursorMode cursor)
 	{
 		this->cursorMode = cursor;
 		if (window != nullptr)
-			glfwSetInputMode(window, GLFW_CURSOR, (int)cursor);
+			glfwSetInputMode(window, GLFW_CURSOR, CursorType[(int)cursor]);
 		return *this;
 	}
 

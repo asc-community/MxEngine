@@ -19,4 +19,12 @@
     <None Include="Resources\shaders\mesh_fragment.glsl" />
     <None Include="Resources\shaders\grid_fragment.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Objects\GridObject.h" />
+    <ClInclude Include="Objects\Arc170Object.h" />
+    <ClInclude Include="Objects\CubeObject.h" />
+    <ClInclude Include="Objects\UserObjects.h" />
+    <ClInclude Include="Objects\DestroyerObject.h" />
+    <ClInclude Include="Objects\DeathStarObject.h" />
+  </ItemGroup>
 </Project>
