@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "Core/Macro/Macro.h"
 #include "Core/Application/Application.h"
 #include "Utilities/Memory/Memory.h"
 #include "Core/Object/Object.h"
@@ -35,10 +36,10 @@
 #include "Utilities/Logger/Logger.h"
 #include "Core/Camera/PerspectiveCamera.h"
 #include "Core/Camera/OrthographicCamera.h"
-#include "imgui/imgui.h"
 #include "Core/Event/KeyEvent.h"
 #include "Core/Event/MouseEvent.h"
 #include "Core/Event/UpdateEvent.h"
 #include "Core/Event/FpsUpdateEvent.h"
 #include "Core/Event/RenderEvent.h"
 #include "Utilities/Math/Math.h"
+#include "imgui/imgui.h"

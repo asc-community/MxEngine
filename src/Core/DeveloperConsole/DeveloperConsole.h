@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -30,32 +30,46 @@
 
 #include <string>
 
+#include "Core/Macro/Macro.h"
 #include "Utilities/Memory/Memory.h"
 #include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-    class GraphicConsole;
-    class ScriptEngine;
+	class GraphicConsole;
 
-    class DeveloperConsole
-    {
-        ScriptEngine* engine;
-        GraphicConsole* console;
-        bool shouldRender = false;
-    public:
-        DeveloperConsole();
-        ~DeveloperConsole();
+	#if defined(MXENGINE_SCRIPTING_CHAISCRIPT)
+	class ChaiScriptEngine;
+	#elif defined(MXENGINE_SCRIPTING_PYTHON)
+	class PythonEngine;
+	#endif
 
-        void Log(const std::string& message);
-        void ClearLog();
-        void PrintHistory();
-        void OnRender();
-        void SetSize(const Vector2& size);
-        void Toggle(bool isVisible);
+	class DeveloperConsole
+	{
+		#if defined(MXENGINE_SCRIPTING_CHAISCRIPT)
+		using ScriptEngine = ChaiScriptEngine;
+		#elif defined(MXENGINE_SCRIPTING_PYTHON)
+		using ScriptEngine = PythonEngine;
+		#else
+		using ScriptEngine = int; // stub
+		#endif
 
-        ScriptEngine& GetEngine();
-        Vector2 GetSize() const;
-        bool IsToggled() const;
-    };
+		ScriptEngine* engine;
+		GraphicConsole* console;
+		bool shouldRender = false;
+	public:
+		DeveloperConsole();
+		~DeveloperConsole();
+
+		void Log(const std::string& message);
+		void ClearLog();
+		void PrintHistory();
+		void OnRender();
+		void SetSize(const Vector2& size);
+		void Toggle(bool isVisible);
+
+		ScriptEngine& GetEngine();
+		Vector2 GetSize() const;
+		bool IsToggled() const;
+	};
 }

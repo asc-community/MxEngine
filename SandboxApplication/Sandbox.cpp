@@ -8,12 +8,13 @@ void SandboxApp::OnCreate()
 	this->AddObject("Cube",   MakeUnique<CubeObject>());
 	this->AddObject("Arc170", MakeUnique<Arc170Object>());
 	this->AddObject("Grid",   MakeUnique<GridObject>());
-	//this->AddObject("Destroyer", MakeUnique<DestroyerObject>());
-	//this->AddObject("DeathStar", MakeUnique<DeathStarObject>());
+	// this->AddObject("Destroyer", MakeUnique<DestroyerObject>());
+	// this->AddObject("DeathStar", MakeUnique<DeathStarObject>());
 
 	this->GetRenderer().DefaultTexture = CreateTexture("textures/default.jpg");
 	this->GetRenderer().ObjectShader = CreateShader("shaders/object_vertex.glsl", "shaders/object_fragment.glsl");
 	this->GetRenderer().MeshShader = CreateShader("shaders/mesh_vertex.glsl", "shaders/mesh_fragment.glsl");
+	this->GetRenderer().GlobalLight.Direction = Vector3(0.0f, 1.0f, 0.0f);
 	
 	auto camera = MakeUnique<PerspectiveCamera>();
 	//auto camera = MakeUnique<OrthographicCamera>();
@@ -42,16 +43,17 @@ void SandboxApp::OnCreate()
 
 void SandboxApp::OnUpdate()
 {
-	if(this->Console.IsToggled())
+	if(this->GetConsole().IsToggled())
 	{
 		auto& camera = this->GetRenderer().ViewPort;
+		auto& globalLight = this->GetRenderer().GlobalLight;
 		auto pos = camera.GetPosition();
 		float speed = camera.GetMoveSpeed();
 		auto zoom = camera.GetZoom();
 		bool mesh = false;
 
-		ImGui::SetNextWindowPos({ 0.0f, this->Console.GetSize().y });
-		ImGui::SetNextWindowSize({ this->Console.GetSize().x, 0.0f });
+		ImGui::SetNextWindowPos({ 0.0f, this->GetConsole().GetSize().y });
+		ImGui::SetNextWindowSize({ this->GetConsole().GetSize().x, 0.0f });
 		ImGui::Begin("Fast Game Editor");
 
 		ImGui::Checkbox("display mesh", &mesh);
@@ -74,6 +76,19 @@ void SandboxApp::OnUpdate()
 		{
 			camera.SetZoom(zoom);
 		}
+
+		static Vector3 ambient(1.0f), diffuse(1.0f), specular(1.0f);
+
+		ImGui::Separator();
+		ImGui::InputFloat3("light direction", &globalLight.Direction[0]);
+			
+		if (ImGui::InputFloat3("ambient color", &ambient[0])) 
+			globalLight.UseAmbientColor(ambient);
+		if (ImGui::InputFloat3("diffuse color", &diffuse[0]))
+			globalLight.UseDiffuseColor(diffuse);
+		if (ImGui::InputFloat3("specular color", &specular[0]))
+			globalLight.UseSpecularColor(specular);
+
 		ImGui::End();
 	}
 }
@@ -85,6 +100,6 @@ void SandboxApp::OnDestroy()
 
 SandboxApp::SandboxApp()
 {
-	this->ResourcePath = "Resources/";
+	this->ResourcePath = "D:/repos/MxEngine/SandboxApplication/Resources/";
 	this->CreateContext();
 }

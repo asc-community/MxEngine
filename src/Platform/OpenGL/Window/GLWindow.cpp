@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -39,23 +39,23 @@
 
 namespace MxEngine
 {
-    void GLWindow::Destroy()
-    {
-        if (this->window != nullptr)
-        {
-            this->Close();
-            glfwDestroyWindow(this->window);
-            Logger::Instance().Debug("MxEngine::Window", "window destroyed");
-        }
-    }
+	void GLWindow::Destroy()
+	{
+		if (this->window != nullptr)
+		{
+			this->Close();
+			glfwDestroyWindow(this->window);
+			Logger::Instance().Debug("MxEngine::Window", "window destroyed");
+		}
+	}
 
-    GLWindow::GLWindow(int width, int height, const std::string& title)
+	GLWindow::GLWindow(int width, int height, const std::string& title)
 		: title(title), width(width), height(height)
 	{		
 		Logger::Instance().Debug("MxEngine::Window", "window object created");
 	}
 
-    GLWindow::GLWindow(GLWindow&& window) noexcept
+	GLWindow::GLWindow(GLWindow&& window) noexcept
 		: title(std::move(window.title)), window(window.window), width(window.width),
 		height(window.height), dispatcher(window.dispatcher), keyHeld(window.keyHeld),
 		cursorMode(window.cursorMode), windowPosition(window.windowPosition), cursorPosition(window.cursorPosition)
@@ -66,17 +66,17 @@ namespace MxEngine
 
 	GLWindow& GLWindow::operator=(GLWindow&& window) noexcept
 	{
-		this->title          = std::move(window.title);
-		this->window         = window.window;
-		this->width          = window.width,
-		this->height         = window.height;
+		this->title		  = std::move(window.title);
+		this->window		 = window.window;
+		this->width		  = window.width,
+		this->height		 = window.height;
 		this->windowPosition = window.windowPosition;
-		this->cursorMode     = window.cursorMode;
+		this->cursorMode	 = window.cursorMode;
 		this->cursorPosition = window.cursorPosition;
-		this->keyHeld        = window.keyHeld;
-		this->dispatcher     = window.dispatcher;
-		window.window        = nullptr;
-		window.dispatcher    = nullptr;
+		this->keyHeld		= window.keyHeld;
+		this->dispatcher	 = window.dispatcher;
+		window.window		= nullptr;
+		window.dispatcher	= nullptr;
 
 		return *this;
 	}
@@ -91,10 +91,10 @@ namespace MxEngine
 		return width;
 	}
 
-    WindowHandler* GLWindow::GetNativeHandler() const
-    {
-        return reinterpret_cast<WindowHandler*>(this->window);
-    }
+	WindowHandler* GLWindow::GetNativeHandler() const
+	{
+		return reinterpret_cast<WindowHandler*>(this->window);
+	}
 
 	bool GLWindow::IsCreated() const
 	{
@@ -105,7 +105,7 @@ namespace MxEngine
 	{
 		if (this->window == nullptr)
 		{
-            Logger::Instance().Warning("MxEngine::Window", "window was not created while calling Window::IsOpen");
+			Logger::Instance().Warning("MxEngine::Window", "window was not created while calling Window::IsOpen");
 			return false;
 		}
 		bool isOpen = !glfwWindowShouldClose(this->window);
@@ -115,7 +115,7 @@ namespace MxEngine
 
 	void GLWindow::PullEvents() const
 	{		
-        MAKE_SCOPE_PROFILER("Window::PullEvents");
+		MAKE_SCOPE_PROFILER("Window::PullEvents");
 		this->keyPressed.reset();
 		this->keyReleased.reset();
 
@@ -132,16 +132,16 @@ namespace MxEngine
 
 	void GLWindow::OnUpdate()
 	{
-        auto& module = Graphics::Instance()->GetGraphicModule();
-        module.OnWindowUpdate(this->GetNativeHandler());
+		auto& module = Graphics::Instance()->GetGraphicModule();
+		module.OnWindowUpdate(this->GetNativeHandler());
 	}
 
 	GLWindow& GLWindow::Close()
 	{
 		if (this->window != nullptr && IsOpen())
 		{
-            auto& module = Graphics::Instance()->GetGraphicModule();
-            module.OnWindowDestroy(this->GetNativeHandler());
+			auto& module = Graphics::Instance()->GetGraphicModule();
+			module.OnWindowDestroy(this->GetNativeHandler());
 
 			glfwSetWindowShouldClose(this->window, true);
 			Logger::Instance().Debug("MxEngine::Window", "window closed");
@@ -158,12 +158,12 @@ namespace MxEngine
 
 	Vector2 GLWindow::GetWindowPos() const
 	{
-        if (this->window != nullptr)
-        {
-            int x, y;
-            glfwGetWindowPos(this->window, &x, &y);
-            return Vector2(float(x), float(y));
-        }
+		if (this->window != nullptr)
+		{
+			int x, y;
+			glfwGetWindowPos(this->window, &x, &y);
+			return Vector2(float(x), float(y));
+		}
 		return this->windowPosition;
 	}
 
@@ -182,40 +182,40 @@ namespace MxEngine
 		return this->keyReleased[(size_t)key];
 	}
 
-    GLWindow& GLWindow::Create()
-    {
-        {
-            MAKE_SCOPE_PROFILER("Window::Create");
-            this->window = glfwCreateWindow(width, height, "", nullptr, nullptr);
-            if (this->window == nullptr)
-            {
-                Logger::Instance().Error("GLFW", "glfw window was not created");
-                return *this;
-            }
-            // window events
-            SwitchContext();
-            glfwSetWindowUserPointer(this->window, this);
-            glfwSetKeyCallback(this->window, [](GLFWwindow* w, int key, int scancode, int action, int mods)
-                {
-                    if (action == GLFW_REPEAT) return;
+	GLWindow& GLWindow::Create()
+	{
+		{
+			MAKE_SCOPE_PROFILER("Window::Create");
+			this->window = glfwCreateWindow(width, height, "", nullptr, nullptr);
+			if (this->window == nullptr)
+			{
+				Logger::Instance().Error("GLFW", "glfw window was not created");
+				return *this;
+			}
+			// window events
+			SwitchContext();
+			glfwSetWindowUserPointer(this->window, this);
+			glfwSetKeyCallback(this->window, [](GLFWwindow* w, int key, int scancode, int action, int mods)
+				{
+					if (action == GLFW_REPEAT) return;
 
-                    GLWindow& window = *(GLWindow*)glfwGetWindowUserPointer(w);
-                    window.keyPressed[(size_t)key] = (action == GLFW_PRESS);
-                    window.keyReleased[(size_t)key] = (action == GLFW_RELEASE);
-                    window.keyHeld[(size_t)key] = (action == GLFW_PRESS);
-                });
-            glfwSetCursorPosCallback(this->window, [](GLFWwindow* w, double x, double y)
-                {
-                    GLWindow& window = *(GLWindow*)glfwGetWindowUserPointer(w);
-                    window.cursorPosition = { float(x), float(y) };
-                });
-            glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height)
-                {
-                    glViewport(0, 0, width, height);
-                });
-        }
-        auto& module = Graphics::Instance()->GetGraphicModule();
-        module.OnWindowCreate(this->GetNativeHandler());
+					GLWindow& window = *(GLWindow*)glfwGetWindowUserPointer(w);
+					window.keyPressed[(size_t)key] = (action == GLFW_PRESS);
+					window.keyReleased[(size_t)key] = (action == GLFW_RELEASE);
+					window.keyHeld[(size_t)key] = (action == GLFW_PRESS);
+				});
+			glfwSetCursorPosCallback(this->window, [](GLFWwindow* w, double x, double y)
+				{
+					GLWindow& window = *(GLWindow*)glfwGetWindowUserPointer(w);
+					window.cursorPosition = { float(x), float(y) };
+				});
+			glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height)
+				{
+					glViewport(0, 0, width, height);
+				});
+		}
+		auto& module = Graphics::Instance()->GetGraphicModule();
+		module.OnWindowCreate(this->GetNativeHandler());
 
 		UseTitle(this->title);
 		UseCursorMode(this->cursorMode);
@@ -301,10 +301,10 @@ namespace MxEngine
 
 	GLWindow& GLWindow::UseSize(int width, int height)
 	{
-        this->width = width;
-        this->height = height;
-        if (window != nullptr)
-		    glfwSetWindowSize(this->window, width, height);
+		this->width = width;
+		this->height = height;
+		if (window != nullptr)
+			glfwSetWindowSize(this->window, width, height);
 		return *this;
 	}
 
@@ -321,7 +321,7 @@ namespace MxEngine
 
 	GLWindow::~GLWindow()
 	{
-        this->Destroy();
+		this->Destroy();
 	}
 
 	int GLWindow::GetHeight() const

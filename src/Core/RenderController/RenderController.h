@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -32,23 +32,25 @@
 #include "Core/Interfaces/IDrawable.h"
 #include "Core/Camera/CameraController.h"
 #include "Core/Interfaces/GraphicAPI/Renderer.h"
+#include "Core/Lighting/DirectionalLight.h"
 
 namespace MxEngine
 {
-    class RenderController
-    {
-        Renderer& renderer;
-    public:
-        RenderController(Renderer& renderer);
+	class RenderController
+	{
+		Renderer& renderer;
+	public:
+		RenderController(Renderer& renderer);
 
-        CameraController ViewPort;
-        Ref<Shader> ObjectShader, MeshShader;
-        Ref<Texture> DefaultTexture;
+		CameraController ViewPort;
+		DirectionalLight GlobalLight;
+		Ref<Shader> ObjectShader, MeshShader;
+		Ref<Texture> DefaultTexture;
 
-        Renderer& GetRenderEngine() const;
-        void Render() const;
-        void Clear() const;
-        void DrawObject(const IDrawable& object) const;
-        void DrawObjectMesh(const IDrawable& object) const;
-    };
+		Renderer& GetRenderEngine() const;
+		void Render() const;
+		void Clear() const;
+		void DrawObject(const IDrawable& object) const;
+		void DrawObjectMesh(const IDrawable& object) const;
+	};
 }

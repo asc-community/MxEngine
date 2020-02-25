@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -45,7 +45,7 @@ namespace MxEngine
 		return console->TextEditCallback(data);
 	}
 
-    GraphicConsole::GraphicConsole()
+	GraphicConsole::GraphicConsole()
 	{
 		size = { 450, 500 };
 		ClearLog();
@@ -55,7 +55,7 @@ namespace MxEngine
 		ScrollToBottom = false;
 	}
 
-    GraphicConsole::~GraphicConsole()
+	GraphicConsole::~GraphicConsole()
 	{
 		ClearLog();
 		for (int i = 0; i < History.Size; i++)
@@ -115,9 +115,9 @@ namespace MxEngine
 		// NB- if you have thousands of entries this approach may be too inefficient and may require user-side clipping to only process visible items.
 		// You can seek and display only the lines that are visible using the ImGuiListClipper helper, if your elements are evenly spaced and you have cheap random access to the elements.
 		// To use the clipper we could replace the 'for (int i = 0; i < Items.Size; i++)' loop with:
-		//     ImGuiListClipper clipper(Items.Size);
-		//     while (clipper.Step())
-		//         for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
+		//	 ImGuiListClipper clipper(Items.Size);
+		//	 while (clipper.Step())
+		//		 for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
 		// However, note that you can not use this code as is if a filter is active because it breaks the 'cheap random-access' property. We would need random-access on the post-filtered list.
 		// A typical application wanting coarse clipping and filtering may want to pre-compute an array of indices that passed the filtering test, recomputing this array when user changes the filter,
 		// and appending newly elements as they are inserted. This is left as a task to the user until we can manage to improve this example code!
@@ -197,19 +197,19 @@ namespace MxEngine
 			}
 		History.push_back(Strdup(command_line));
 
-        if(this->eventCallback != nullptr)
-            this->eventCallback(command_line);
+		if(this->eventCallback != nullptr)
+			this->eventCallback(command_line);
 
 		// On commad input, we scroll to bottom even if AutoScroll==false
 		ScrollToBottom = true;
 	}
 
-    void GraphicConsole::SetEventCallback(EventCallback callback)
-    {
-        this->eventCallback = callback;
-    }
+	void GraphicConsole::SetEventCallback(EventCallback callback)
+	{
+		this->eventCallback = callback;
+	}
 
-    void GraphicConsole::PrintHistory()
+	void GraphicConsole::PrintHistory()
 	{
 		int first = History.Size - 10;
 		for (int i = first > 0 ? first : 0; i < History.Size; i++)

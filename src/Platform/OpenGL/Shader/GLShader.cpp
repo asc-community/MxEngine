@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -109,30 +109,20 @@ namespace MxEngine
 		GLCALL(glUniform1f(location, f));
 	}
 
-	void GLShader::SetUniformVec3(const std::string& name, float f1, float f2, float f3) const
-	{
-		int location = GetUniformLocation(name);
-		if (location == -1) return;
-		Bind();
-		GLCALL(glUniform3f(location, f1, f2, f3));
-	}
-
-	void GLShader::SetUniformVec4(const std::string& name, float f1, float f2, float f3, float f4) const
-	{
-		int location = GetUniformLocation(name);
-		if (location == -1) return;
-		Bind();
-		GLCALL(glUniform4f(location, f1, f2, f3, f4));
-	}
-
 	void GLShader::SetUniformVec3(const std::string& name, const Vector3& vec) const
 	{
-		SetUniformVec3(name, vec[0], vec[1], vec[2]);
+		int location = GetUniformLocation(name);
+		if (location == -1) return;
+		Bind();
+		GLCALL(glUniform3f(location, vec.x, vec.y, vec.z));
 	}
 
-	void GLShader::SetUniformVec4(const std::string& name, const Vector3& vec) const
+	void GLShader::SetUniformVec4(const std::string& name, const Vector4& vec) const
 	{
-		SetUniformVec4(name, vec[0], vec[1], vec[2], vec[3]);
+		int location = GetUniformLocation(name);
+		if (location == -1) return;
+		Bind();
+		GLCALL(glUniform4f(location, vec.x, vec.y, vec.z, vec.w));
 	}
 
 	void GLShader::SetUniformMat4(const std::string& name, const Matrix4x4& matrix) const
@@ -159,20 +149,20 @@ namespace MxEngine
 		GLCALL(glUniform1i(location, i));
 	}
 
-    std::string GLShader::ReadFile(const std::string& filename) const
-    {
-        std::ifstream file(filename);
-        if (file.bad())
-        {
-            Logger::Instance().Error("MxEngine::FileReader", "file with name '" + filename + "' was not found");
-            return "";
-        }
-        std::string content;
-        content.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
-        return content;
-    }
+	std::string GLShader::ReadFile(const std::string& filename) const
+	{
+		std::ifstream file(filename);
+		if (file.bad())
+		{
+			Logger::Instance().Error("MxEngine::FileReader", "file with name '" + filename + "' was not found");
+			return "";
+		}
+		std::string content;
+		content.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+		return content;
+	}
 
-    GLShader::ShaderId GLShader::CompileShader(ShaderType type, std::string& source, const std::string& name) const
+	GLShader::ShaderId GLShader::CompileShader(ShaderType type, std::string& source, const std::string& name) const
 	{
 		GLCALL(GLuint shaderId = glCreateShader((GLenum)type));
 		const char* src = source.c_str();

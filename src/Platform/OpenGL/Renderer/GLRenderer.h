@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -41,7 +41,7 @@ namespace MxEngine
 		bool depthBufferEnabled = false;
 		unsigned int clearMask = 0;
 	public:
-        GLRenderer();
+		GLRenderer();
 
 		void DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const override;
 		void DrawTriangles(const VertexArray& vao, size_t vertexCount, const Shader& shader) const override;
@@ -58,11 +58,11 @@ namespace MxEngine
 		GLRenderer& UseDepthBuffer(bool value = true) override;
 		GLRenderer& UseCulling(bool value = true, bool counterClockWise = true, bool cullBack = true) override;
 		GLRenderer& UseClearColor(float r, float g, float b, float a = 0.0f) override;
-        GLRenderer& UseTextureMinFilter(MinFilter filter) override;
+		GLRenderer& UseTextureMinFilter(MinFilter filter) override;
 		GLRenderer& UseTextureMagFilter(MagFilter filter) override;
 		GLRenderer& UseBlending(BlendFactor src, BlendFactor dist) override;
 		GLRenderer& UseTextureWrap(WrapType textureX, WrapType textureY) override;
 		GLRenderer& UseAnisotropicFiltering(float factor) override;
-        float GetLargestAnisotropicFactor() const override;
+		float GetLargestAnisotropicFactor() const override;
 	};
 }

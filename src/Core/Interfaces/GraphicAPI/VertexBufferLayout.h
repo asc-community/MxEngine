@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -33,20 +33,20 @@
 
 namespace MxEngine
 {
-    struct VertexBufferLayout
-    {
-        struct VertexBufferElement
-        {
-            unsigned int count;
-            unsigned int type;
-            unsigned char normalized;
-        };
+	struct VertexBufferLayout
+	{
+		struct VertexBufferElement
+		{
+			unsigned int count;
+			unsigned int type;
+			unsigned char normalized;
+		};
 
-        using StrideType = unsigned int;
-        using ElementBuffer = std::vector<VertexBufferElement>;
+		using StrideType = unsigned int;
+		using ElementBuffer = std::vector<VertexBufferElement>;
 
-        virtual const ElementBuffer& GetElements() const = 0;
-        virtual StrideType GetStride() const = 0;
-        virtual void PushFloat(size_t count) = 0;
-    };
+		virtual const ElementBuffer& GetElements() const = 0;
+		virtual StrideType GetStride() const = 0;
+		virtual void PushFloat(size_t count) = 0;
+	};
 }

@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -34,14 +34,14 @@
 
 namespace MxEngine
 {
-    struct IndexBuffer : IBindable
-    {
-    public:
-        using IndexType = unsigned int;
-        using IndexBufferType = std::vector<IndexType>;
+	struct IndexBuffer : IBindable
+	{
+	public:
+		using IndexType = unsigned int;
+		using IndexBufferType = std::vector<IndexType>;
 
-        virtual void Load(const IndexBufferType& data) = 0;
-        virtual size_t GetCount() const = 0;
-        virtual size_t GetIndexTypeId() const = 0;
-    };
+		virtual void Load(const IndexBufferType& data) = 0;
+		virtual size_t GetCount() const = 0;
+		virtual size_t GetIndexTypeId() const = 0;
+	};
 }

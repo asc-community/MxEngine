@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -29,6 +29,8 @@
 #pragma once
 
 #include "Core/Interfaces/IRenderable.h"
+
+#include <filesystem>
 
 namespace MxEngine
 {
@@ -65,10 +67,10 @@ namespace MxEngine
 		Vector3 objectCenter;
 		std::vector<RenderObject> subObjects;
 
-		void LoadFromFile(const std::string& filepath);
+		void LoadFromFile(const std::filesystem::path& filepath);
 	public:
 		explicit RenderObjectContainer() = default;
-		explicit RenderObjectContainer(const std::string& filepath);
+		explicit RenderObjectContainer(const std::filesystem::path& filepath);
 		RenderObjectContainer(RenderObjectContainer&) = delete;
 		RenderObjectContainer(RenderObjectContainer&&) = default;
 

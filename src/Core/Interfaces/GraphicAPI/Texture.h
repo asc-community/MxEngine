@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -33,13 +33,13 @@
 
 namespace MxEngine
 {
-    struct Texture : IBindable
-    {
-        virtual void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = true) = 0;
-        virtual void Bind(IBindable::IdType id) const = 0;
+	struct Texture : IBindable
+	{
+		virtual void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = true) = 0;
+		virtual void Bind(IBindable::IdType id) const = 0;
 
-        virtual size_t GetWidth() const = 0;
-        virtual size_t GetHeight() const = 0;
-        virtual size_t GetChannelCount() const = 0;
-    };
+		virtual size_t GetWidth() const = 0;
+		virtual size_t GetHeight() const = 0;
+		virtual size_t GetChannelCount() const = 0;
+	};
 }

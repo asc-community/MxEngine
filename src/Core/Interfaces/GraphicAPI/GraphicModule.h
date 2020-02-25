@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -30,15 +30,15 @@
 
 namespace MxEngine
 {
-    struct WindowHandler;
+	struct WindowHandler;
 
-    struct GraphicModule
-    {
-        virtual void Init() = 0;
-        virtual void OnWindowCreate(WindowHandler* window) = 0;
-        virtual void OnWindowUpdate(WindowHandler* window) = 0;
-        virtual void OnWindowDestroy(WindowHandler* window) = 0;
-        virtual void OnRenderDraw() = 0;
-        virtual void Destroy() = 0;
-    };
+	struct GraphicModule
+	{
+		virtual void Init() = 0;
+		virtual void OnWindowCreate(WindowHandler* window) = 0;
+		virtual void OnWindowUpdate(WindowHandler* window) = 0;
+		virtual void OnWindowDestroy(WindowHandler* window) = 0;
+		virtual void OnRenderDraw() = 0;
+		virtual void Destroy() = 0;
+	};
 }

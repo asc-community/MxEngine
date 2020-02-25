@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -35,10 +35,10 @@
 
 namespace MxEngine
 {
-    GLRenderer::GLRenderer()
-    {
-        this->clearMask |= GL_COLOR_BUFFER_BIT;
-    }
+	GLRenderer::GLRenderer()
+	{
+		this->clearMask |= GL_COLOR_BUFFER_BIT;
+	}
 
 	void GLRenderer::DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const
 	{
@@ -107,18 +107,18 @@ namespace MxEngine
 
 	void GLRenderer::Flush() const
 	{
-        MAKE_SCOPE_PROFILER("Renderer::Flush");
+		MAKE_SCOPE_PROFILER("Renderer::Flush");
 		Graphics::Instance()->GetGraphicModule().OnRenderDraw();
 
-        GLCALL(glFlush());
+		GLCALL(glFlush());
 	}
 
 	void GLRenderer::Finish() const
 	{
-        MAKE_SCOPE_PROFILER("Renderer::Finish");
-        Graphics::Instance()->GetGraphicModule().OnRenderDraw();
+		MAKE_SCOPE_PROFILER("Renderer::Finish");
+		Graphics::Instance()->GetGraphicModule().OnRenderDraw();
 
-        GLCALL(glFinish());
+		GLCALL(glFinish());
 	}
 
 	GLRenderer& GLRenderer::UseSampling(bool value)

@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -40,85 +40,85 @@
 
 namespace MxEngine
 {
-    void GLGraphicModule::Init()
-    {
-        {
-            MAKE_SCOPE_PROFILER("OpenGL::InitGLFW");
-            MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "OpenGL::InitGLFW");
-            glfwSetErrorCallback([](int errorCode, const char* errorMessage)
-                {
-                    Logger::Instance().Error("GLFW", errorMessage);
-                });
-            if (!glfwInit())
-            {
-                Logger::Instance().Error("GLFW", "glfw init failed");
-                return;
-            }
-        }
-    }
+	void GLGraphicModule::Init()
+	{
+		{
+			MAKE_SCOPE_PROFILER("OpenGL::InitGLFW");
+			MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "OpenGL::InitGLFW");
+			glfwSetErrorCallback([](int errorCode, const char* errorMessage)
+				{
+					Logger::Instance().Error("GLFW", errorMessage);
+				});
+			if (!glfwInit())
+			{
+				Logger::Instance().Error("GLFW", "glfw init failed");
+				return;
+			}
+		}
+	}
 
-    void GLGraphicModule::OnWindowCreate(WindowHandler* window)
-    {
-        {
-            MAKE_SCOPE_PROFILER("OpenGL::InitGLEW");
-            MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "OpenGL::InitGLEW()");
-            GLenum err = glewInit();
-            if (err != GLEW_OK)
-            {
-                Logger::Instance().Error("GLEW", "glew init failed");
-            }
-            else
-            {
-                Logger::Instance().Debug("GLEW", "OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
-            }
-        }
+	void GLGraphicModule::OnWindowCreate(WindowHandler* window)
+	{
+		{
+			MAKE_SCOPE_PROFILER("OpenGL::InitGLEW");
+			MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "OpenGL::InitGLEW()");
+			GLenum err = glewInit();
+			if (err != GLEW_OK)
+			{
+				Logger::Instance().Error("GLEW", "glew init failed");
+			}
+			else
+			{
+				Logger::Instance().Debug("GLEW", "OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
+			}
+		}
 
-        {
-            MAKE_SCOPE_PROFILER("ImGui::Init");
-            MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "ImGui::Init()");
+		{
+			MAKE_SCOPE_PROFILER("ImGui::Init");
+			MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "ImGui::Init()");
 
-            auto context = ImGui::CreateContext();
-            ImGui::SetCurrentContext(context);
-            ImGui::StyleColorsDark();
+			auto context = ImGui::CreateContext();
+			ImGui::SetCurrentContext(context);
+			ImGui::StyleColorsDark();
 
-            ImGui_ImplGlfw_InitForOpenGL(reinterpret_cast<GLFWwindow*>(window), true);
+			ImGui_ImplGlfw_InitForOpenGL(reinterpret_cast<GLFWwindow*>(window), true);
 
-            GLCALL(std::string shaderVersion = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-            auto idx = shaderVersion.find('.');
-            if (idx != shaderVersion.npos)
-            {
-                if (idx > 0) shaderVersion.erase(0, idx - 1); // ... 3.30 ... -> 3.30 ...
-                shaderVersion.erase(idx + 3, shaderVersion.size()); // 3.30 ... -> 3.30
-                shaderVersion.erase(idx, idx); // 3.30 -> 330
-            }
-            shaderVersion = "#version " + shaderVersion; // 330 -> #version 330
-            ImGui_ImplOpenGL3_Init(shaderVersion.c_str());
-        }
-    }
+			GLCALL(std::string shaderVersion = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+			auto idx = shaderVersion.find('.');
+			if (idx != shaderVersion.npos)
+			{
+				if (idx > 0) shaderVersion.erase(0, idx - 1); // ... 3.30 ... -> 3.30 ...
+				shaderVersion.erase(idx + 3, shaderVersion.size()); // 3.30 ... -> 3.30
+				shaderVersion.erase(idx, idx); // 3.30 -> 330
+			}
+			shaderVersion = "#version " + shaderVersion; // 330 -> #version 330
+			ImGui_ImplOpenGL3_Init(shaderVersion.c_str());
+		}
+	}
 
-    void GLGraphicModule::OnWindowUpdate(WindowHandler* window)
-    {
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-    }
+	void GLGraphicModule::OnWindowUpdate(WindowHandler* window)
+	{
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+	}
 
-    void GLGraphicModule::OnWindowDestroy(WindowHandler* window)
-    {
-        ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplGlfw_Shutdown();
-    }
+	void GLGraphicModule::OnWindowDestroy(WindowHandler* window)
+	{
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+	}
 
-    void GLGraphicModule::OnRenderDraw()
-    {
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    }
+	void GLGraphicModule::OnRenderDraw()
+	{
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
 
-    void GLGraphicModule::Destroy()
-    {
-        if(ImGui::GetCurrentContext() != nullptr)
-            ImGui::DestroyContext();
-        glfwTerminate();
-    }
+	void GLGraphicModule::Destroy()
+	{
+		if(ImGui::GetCurrentContext() != nullptr)
+			ImGui::DestroyContext();
+		glfwTerminate();
+	}
 }

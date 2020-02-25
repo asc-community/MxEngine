@@ -1,0 +1,4 @@
+#pragma once
+
+#define MXENGINE_SCRIPTING_PYTHON
+// #define MXENGINE_SCRIPTING_CHAISCRIPT

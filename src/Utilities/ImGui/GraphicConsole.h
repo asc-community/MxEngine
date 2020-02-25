@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -37,19 +37,19 @@ namespace MxEngine
 {
 	class GraphicConsole
 	{
-		char                  InputBuf[256];
-		ImVector<char*>       Items;
-		ImVector<char*>       History;
-		int                   HistoryPos;    // -1: new line, 0..History.Size-1 browsing history.
-		ImVec2                size;
-		ImGuiTextFilter       Filter;
-		bool                  AutoScroll;
-		bool                  ScrollToBottom;
+		char				  InputBuf[256];
+		ImVector<char*>	   Items;
+		ImVector<char*>	   History;
+		int				   HistoryPos;	// -1: new line, 0..History.Size-1 browsing history.
+		ImVec2				size;
+		ImGuiTextFilter	   Filter;
+		bool				  AutoScroll;
+		bool				  ScrollToBottom;
 
 		void ExecCommand(const char* command_line);
 		int TextEditCallback(ImGuiInputTextCallbackData* data);
-        using EventCallback = std::function<void(const char*)>;
-        EventCallback eventCallback = nullptr;
+		using EventCallback = std::function<void(const char*)>;
+		EventCallback eventCallback = nullptr;
 
 		friend int TextEditCallbackStub(ImGuiInputTextCallbackData*);
 	public:
@@ -57,8 +57,8 @@ namespace MxEngine
 		GraphicConsole(const GraphicConsole&) = delete;
 		~GraphicConsole();
 
-        void SetEventCallback(EventCallback callback);
-        void PrintHistory();
+		void SetEventCallback(EventCallback callback);
+		void PrintHistory();
 		void ClearLog();
 		void PrintLog(const char* fmt, ...);
 		void Draw(const char* title);

@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -47,6 +47,9 @@ namespace MxEngine
 
 	const Matrix4x4& CameraController::GetCameraMatrix() const
 	{
+		static Matrix4x4 defaultMatrix(0.0f);
+		if (!this->HasCamera()) return defaultMatrix;
+
 		if (updateCamera)
 		{
 			auto view = MakeViewMatrix(position, position + direction, up);
@@ -66,10 +69,10 @@ namespace MxEngine
 		return this->direction;
 	}
 
-    const Vector3& CameraController::GetUp() const
-    {
-        return this->up;
-    }
+	const Vector3& CameraController::GetUp() const
+	{
+		return this->up;
+	}
 
 	float CameraController::GetMoveSpeed() const
 	{
@@ -195,35 +198,35 @@ namespace MxEngine
 		return *this;
 	}
 
-    void CameraController::SetForwardVector(const Vector3& forward)
-    {
-        this->forward = forward;
-    }
+	void CameraController::SetForwardVector(const Vector3& forward)
+	{
+		this->forward = forward;
+	}
 
-    void CameraController::SetUpVector(const Vector3& up)
-    {
-        this->up = up;
-    }
+	void CameraController::SetUpVector(const Vector3& up)
+	{
+		this->up = up;
+	}
 
-    void CameraController::SetRightVector(const Vector3& right)
-    {
-        this->right = right;
-    }
+	void CameraController::SetRightVector(const Vector3& right)
+	{
+		this->right = right;
+	}
 
-    const Vector3& CameraController::GetForwardVector() const
-    {
-        return this->forward;
-    }
+	const Vector3& CameraController::GetForwardVector() const
+	{
+		return this->forward;
+	}
 
-    const Vector3& CameraController::GetUpVector() const
-    {
-        return this->up;
-    }
+	const Vector3& CameraController::GetUpVector() const
+	{
+		return this->up;
+	}
 
-    const Vector3& CameraController::GetRightVector() const
-    {
-        return this->right;
-    }
+	const Vector3& CameraController::GetRightVector() const
+	{
+		return this->right;
+	}
 
 	CameraController& CameraController::TranslateForward(float dist)
 	{

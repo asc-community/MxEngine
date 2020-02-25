@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -32,14 +32,14 @@
 #include "Core/Event/KeyEvent.h"
 
 namespace MxEngine
-{
+{   
 	class AppCloseBinding
 	{
 		std::string handle;
 	public:
 		inline AppCloseBinding(const std::string& eventHandle) noexcept
 			: handle(eventHandle) { }
-
+		
 		inline AppCloseBinding& Bind(KeyCode activateKey)
 		{
 			Context::Instance()->GetEventDispatcher().AddEventListener<KeyEvent>(this->handle,

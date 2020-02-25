@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -33,12 +33,12 @@
 
 namespace MxEngine
 {
-	class Object : public IDrawable, public IMovable
+	class MxObject : public IDrawable, public IMovable
 	{
 		mutable Matrix4x4 Model;
 		Vector3 translation{ 0.0f };
-        Vector3 forwardVec{ 0.0f, 0.0f, 1.0f }, upVec{ 0.0f, 1.0f, 0.0f }, rightVec{ 1.0f, 0.0f, 0.0f };
-        Quaternion rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
+		Vector3 forwardVec{ 0.0f, 0.0f, 1.0f }, upVec{ 0.0f, 1.0f, 0.0f }, rightVec{ 1.0f, 0.0f, 0.0f };
+		Quaternion rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
 		Vector3 scale{ 1.0f };
 		size_t instanceCount = 0;
 		mutable bool needUpdate = true;
@@ -50,16 +50,16 @@ namespace MxEngine
 
 		Ref<Shader> Shader;
 		Ref<Texture> Texture;
-		Object() = default;
-		Object(const Ref<RenderObjectContainer>& object);
-		Object(const Object&) = delete;
-		Object(Object&&) = default;
+		MxObject() = default;
+		MxObject(const Ref<RenderObjectContainer>& object);
+		MxObject(const MxObject&) = delete;
+		MxObject(MxObject&&) = default;
 
 		virtual void OnUpdate();
 
 		void Load(const Ref<RenderObjectContainer>& object);
-		Ref<RenderObjectContainer>& GetObject();
-		const Ref<RenderObjectContainer>& GetObject() const;
+		Ref<RenderObjectContainer>& GetObjectBase();
+		const Ref<RenderObjectContainer>& GetObjectBase() const;
 		void Hide();
 		void Show();
 
@@ -67,19 +67,19 @@ namespace MxEngine
 		const Quaternion& GetRotation() const;
 		const Vector3& GetScale() const;
 
-		Object& Scale(float scale);
-		Object& Scale(float scaleX, float scaleY, float scaleZ);
-		Object& Scale(const Vector3& scale);
+		MxObject& Scale(float scale);
+		MxObject& Scale(float scaleX, float scaleY, float scaleZ);
+		MxObject& Scale(const Vector3& scale);
 
-		Object& Rotate(float angle, const Vector3& rotate);
-		Object& RotateX(float angle);
-		Object& RotateY(float angle);
-		Object& RotateZ(float angle);
+		MxObject& Rotate(float angle, const Vector3& rotate);
+		MxObject& RotateX(float angle);
+		MxObject& RotateY(float angle);
+		MxObject& RotateZ(float angle);
 
-        Object& Translate(const Vector3& dist);
-		Object& TranslateX(float x);
-		Object& TranslateY(float y);
-		Object& TranslateZ(float z);
+		MxObject& Translate(const Vector3& dist);
+		MxObject& TranslateX(float x);
+		MxObject& TranslateY(float y);
+		MxObject& TranslateZ(float z);
 
 		template<typename T>
 		void AddInstanceBufferGenerator(T&& generator, size_t count, UsageType type = UsageType::STATIC_DRAW);
@@ -98,22 +98,22 @@ namespace MxEngine
 		virtual const MxEngine::Texture& GetTexture() const override;
 		virtual size_t GetInstanceCount() const override;
 
-        // Inherited via IMovable
-        virtual Object& Translate(float x, float y, float z) override;
-        virtual Object& TranslateForward(float dist) override;
-        virtual Object& TranslateRight(float dist) override;
-        virtual Object& TranslateUp(float dist) override;
-        virtual Object& Rotate(float horz, float vert) override;
-        virtual void SetForwardVector(const Vector3& forward) override;
-        virtual void SetUpVector(const Vector3& up) override;
-        virtual void SetRightVector(const Vector3& right) override;
-        virtual const Vector3& GetForwardVector() const override;
-        virtual const Vector3& GetUpVector() const override;
+		// Inherited via IMovable
+		virtual MxObject& Translate(float x, float y, float z) override;
+		virtual MxObject& TranslateForward(float dist) override;
+		virtual MxObject& TranslateRight(float dist) override;
+		virtual MxObject& TranslateUp(float dist) override;
+		virtual MxObject& Rotate(float horz, float vert) override;
+		virtual void SetForwardVector(const Vector3& forward) override;
+		virtual void SetUpVector(const Vector3& up) override;
+		virtual void SetRightVector(const Vector3& right) override;
+		virtual const Vector3& GetForwardVector() const override;
+		virtual const Vector3& GetUpVector() const override;
 		virtual const Vector3& GetRightVector() const override;
-    };
+	};
 
 	template<typename T>
-	inline void Object::AddInstanceBufferGenerator(T&& generator, size_t count, UsageType type)
+	inline void MxObject::AddInstanceBufferGenerator(T&& generator, size_t count, UsageType type)
 	{
 		using DataType = decltype(generator(0));
 

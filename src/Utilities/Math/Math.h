@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -50,7 +50,7 @@ namespace MxEngine
 	using Matrix3x4 = glm::mat3x4;
 	using Matrix4x4 = glm::mat4x4;
 
-    using Quaternion = glm::quat;
+	using Quaternion = glm::quat;
 
 	template<size_t Length, typename Type>
 	using Vector = glm::vec<Length, Type>;
@@ -88,15 +88,15 @@ namespace MxEngine
 		return glm::rotate(mat, angle, axis);
 	}
 
-    inline Matrix4x4 ToMatrix(const Quaternion& q)
-    {
-        return glm::toMat4(q);
-    }
+	inline Matrix4x4 ToMatrix(const Quaternion& q)
+	{
+		return glm::toMat4(q);
+	}
 
-    inline Quaternion MakeQuaternion(float angle, const Vector3& axis)
-    {
-        return glm::angleAxis(angle, axis);
-    }
+	inline Quaternion MakeQuaternion(float angle, const Vector3& axis)
+	{
+		return glm::angleAxis(angle, axis);
+	}
 
 	template<size_t Columns, size_t Rows, typename T>
 	inline Matrix<Columns, Rows, T> Transpose(const Matrix<Columns, Rows, T>& mat)

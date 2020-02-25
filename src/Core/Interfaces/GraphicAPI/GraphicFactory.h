@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -41,29 +41,31 @@
 #include "Utilities/Memory/Memory.h"
 #include "Utilities/SingletonHolder/SingletonHolder.h"
 
+#include <filesystem>
+
 namespace MxEngine
 {
-    struct GraphicFactory
-    {
-        virtual GraphicModule& GetGraphicModule() = 0;
-        virtual Renderer& GetRenderer() = 0;
+	struct GraphicFactory
+	{
+		virtual GraphicModule& GetGraphicModule() = 0;
+		virtual Renderer& GetRenderer() = 0;
 
-        virtual UniqueRef<Window> CreateWindow() = 0;
-        virtual UniqueRef<IndexBuffer> CreateIndexBuffer() = 0;
-        virtual UniqueRef<Shader> CreateShader() = 0;
-        virtual UniqueRef<Texture> CreateTexture() = 0;
-        virtual UniqueRef<VertexArray> CreateVertexArray() = 0;
-        virtual UniqueRef<VertexBuffer> CreateVertexBuffer() = 0;
-        virtual UniqueRef<VertexBufferLayout> CreateVertexBufferLayout() = 0;
+		virtual UniqueRef<Window> CreateWindow() = 0;
+		virtual UniqueRef<IndexBuffer> CreateIndexBuffer() = 0;
+		virtual UniqueRef<Shader> CreateShader() = 0;
+		virtual UniqueRef<Texture> CreateTexture() = 0;
+		virtual UniqueRef<VertexArray> CreateVertexArray() = 0;
+		virtual UniqueRef<VertexBuffer> CreateVertexBuffer() = 0;
+		virtual UniqueRef<VertexBufferLayout> CreateVertexBufferLayout() = 0;
 
-        virtual UniqueRef<Window> CreateWindow(int width, int height, const std::string& name) = 0;
-        virtual UniqueRef<IndexBuffer> CreateIndexBuffer(const IndexBuffer::IndexBufferType& data) = 0;
-        virtual UniqueRef<Shader> CreateShader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) = 0;
-        virtual UniqueRef<Texture> CreateTexture(const std::string& filepath, bool genMipmaps = true, bool flipImage = true) = 0;
-        virtual UniqueRef<VertexBuffer> CreateVertexBuffer(const VertexBuffer::BufferData& data, UsageType type) = 0;
+		virtual UniqueRef<Window> CreateWindow(int width, int height, const std::string& name) = 0;
+		virtual UniqueRef<IndexBuffer> CreateIndexBuffer(const IndexBuffer::IndexBufferType& data) = 0;
+		virtual UniqueRef<Shader> CreateShader(const std::filesystem::path& vertex, const std::filesystem::path& fragment) = 0;
+		virtual UniqueRef<Texture> CreateTexture(const std::filesystem::path& texture, bool genMipmaps = true, bool flipImage = true) = 0;
+		virtual UniqueRef<VertexBuffer> CreateVertexBuffer(const VertexBuffer::BufferData& data, UsageType type) = 0;
 
-        virtual ~GraphicFactory() = default;
-    };
+		virtual ~GraphicFactory() = default;
+	};
 
-    using Graphics = SingletonHolder<UniqueRef<GraphicFactory>>;
+	using Graphics = SingletonHolder<GraphicFactory*>;
 }

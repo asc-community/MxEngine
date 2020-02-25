@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -54,8 +54,6 @@ namespace MxEngine
 		virtual void SetZFar(float zFar) override;
 		virtual float GetZNear() const override;
 		virtual float GetZFar() const override;
-
-		// Inherited via ICamera
 		virtual void SetZoom(float zoom) override;
 		virtual float GetZoom() const override;
 	};

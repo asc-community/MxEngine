@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -35,9 +35,9 @@ namespace MxEngine
 {
 	Image ImageLoader::LoadImage(const std::string& filepath, bool flipImage)
 	{
-        MAKE_SCOPE_PROFILER("ImageLoader::LoadImage");
-        MAKE_SCOPE_TIMER("MxEngine::ImageLoader", "ImageLoader::LoadImage()");
-        Logger::Instance().Debug("ImageLoader::LoadImage", "loading image from file: " + filepath);
+		MAKE_SCOPE_PROFILER("ImageLoader::LoadImage");
+		MAKE_SCOPE_TIMER("MxEngine::ImageLoader", "ImageLoader::LoadImage()");
+		Logger::Instance().Debug("MxEngine::ImageLoader", "loading image from file: " + filepath);
 
 		stbi_set_flip_vertically_on_load(flipImage);
 		Image image;

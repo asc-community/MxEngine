@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -33,19 +33,19 @@
 
 namespace MxEngine
 {
-	void RenderObjectContainer::LoadFromFile(const std::string& filepath)
+	void RenderObjectContainer::LoadFromFile(const std::filesystem::path& filepath)
 	{
 		ObjFileInfo objectInfo;
 		{
-			MAKE_SCOPE_TIMER("MxEngine::Object", "ObjectLoader::LoadFromFile()");
-			objectInfo = ObjectLoader::Load(filepath);
+			MAKE_SCOPE_TIMER("MxEngine::MxObject", "ObjectLoader::LoadFromFile()");
+			objectInfo = ObjectLoader::Load(filepath.string());
 		}
 
 		MAKE_SCOPE_PROFILER("Object::GenBuffers");
-		MAKE_SCOPE_TIMER("MxEngine::Object", "Object::GenBuffers()");
+		MAKE_SCOPE_TIMER("MxEngine::MxObject", "Object::GenBuffers()");
 		if (!objectInfo.isSuccess)
 		{
-			Logger::Instance().Debug("MxEngine::Object", "failed to load object from file: " + filepath);
+			Logger::Instance().Debug("MxEngine::MxObject", "failed to load object from file: " + filepath.string());
 		}
 		this->subObjects.reserve(objectInfo.groups.size());
 		this->objectCenter = objectInfo.objectCenter;
@@ -102,7 +102,7 @@ namespace MxEngine
 		}
 	}
 
-	RenderObjectContainer::RenderObjectContainer(const std::string& filepath)
+	RenderObjectContainer::RenderObjectContainer(const std::filesystem::path& filepath)
 	{
 		LoadFromFile(filepath);
 	}

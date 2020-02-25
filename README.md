@@ -75,3 +75,8 @@ Bug fixes & improvements are just fixes to already existing code to reestablish 
 - improved object API
 - added licening
 - added console & fps bindings
+### v4.4.0
+- added boost (stacktrace & python)
+- added python scripting
+- added directional global light
+- fixed event & object deletion bug

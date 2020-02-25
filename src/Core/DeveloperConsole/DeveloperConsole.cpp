@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -27,104 +27,144 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "DeveloperConsole.h"
-#include "Library/Scripting/ScriptEngine.h"
 #include "Utilities/ImGui/GraphicConsole.h"
 #include "Utilities/Profiler/Profiler.h"
 
-MxEngine::DeveloperConsole::DeveloperConsole()
+#include "Library/Scripting/ChaiScript/ChaiScriptEngine.h"
+#include "Library/Scripting/Python/PythonEngine.h"
+
+namespace MxEngine
 {
-    MAKE_SCOPE_PROFILER("DeveloperConsole::Init");
-    this->engine = Alloc<ScriptEngine>();
-    this->console = Alloc<GraphicConsole>();
-    this->engine->AddVariable("console", *this);
+	DeveloperConsole::~DeveloperConsole()
+	{
+		Free(this->engine);
+		Free(this->console);
+	}
 
-    this->engine->AddReference("print", &DeveloperConsole::Log);
-    this->engine->AddReference("clear", &DeveloperConsole::ClearLog);
-    this->engine->AddReference("history", &DeveloperConsole::PrintHistory);
+	void DeveloperConsole::Log(const std::string& message)
+	{
+		this->console->PrintLog("%s", message.c_str());
+	}
 
-    this->engine->GetInterpreter().eval(R"(global print = fun[print](x) { console.print("${ x }"); }; )");
+	void DeveloperConsole::ClearLog()
+	{
+		this->console->ClearLog();
+	}
 
-    // workaround to fix performance issues (https://github.com/ChaiScript/ChaiScript/issues/514)
-    this->engine->AddTypeConversion<int, float>();
-    this->engine->AddTypeConversion<int, double>();
-    this->engine->AddTypeConversion<float, int>();
-    this->engine->AddTypeConversion<float, double>();
-    this->engine->AddTypeConversion<double, float>();
-    this->engine->AddTypeConversion<double, int>();
+	void DeveloperConsole::PrintHistory()
+	{
+		this->console->PrintHistory();
+	}
 
-    this->console->SetEventCallback([this](const char* text)
-        {
-            try
-            {
-                std::string script = text;
-                this->engine->GetInterpreter().eval(script);
-            }
-            catch (std::exception& e)
-            {
-                std::string error = e.what();
-                size_t idx = error.find("Error:");
-                if (idx != error.npos)
-                {
-                    error.erase(idx, idx + 6);
-                    error = "[error]: " + error;
-                }
-                this->Log(error);
-            }
-        });
-}
+	void DeveloperConsole::OnRender()
+	{
+		if (this->shouldRender)
+		{
+			ImGui::SetNextWindowPos({ 0, 0 });
+			this->console->Draw("Developer Console");
+			ImGui::End();
+		}
+	}
 
-MxEngine::DeveloperConsole::~DeveloperConsole()
-{
-    Free(this->engine);
-    Free(this->console);
-}
+	void DeveloperConsole::SetSize(const Vector2& size)
+	{
+		this->console->SetSize({ size.x, size.y });
+	}
 
-void MxEngine::DeveloperConsole::Log(const std::string& message)
-{
-    this->console->PrintLog("%s", message.c_str());
-}
+	void DeveloperConsole::Toggle(bool isVisible)
+	{
+		this->shouldRender = isVisible;
+	}
 
-void MxEngine::DeveloperConsole::ClearLog()
-{
-    this->console->ClearLog();
-}
+	DeveloperConsole::ScriptEngine& DeveloperConsole::GetEngine()
+	{
+		return *this->engine;
+	}
 
-void MxEngine::DeveloperConsole::PrintHistory()
-{
-    this->console->PrintHistory();
-}
+	Vector2 DeveloperConsole::GetSize() const
+	{
+		return Vector2(this->console->GetSize().x, this->console->GetSize().y);
+	}
 
-void MxEngine::DeveloperConsole::OnRender()
-{
-    if (this->shouldRender)
-    {
-        ImGui::SetNextWindowPos({ 0, 0 });
-        this->console->Draw("Developer Console");
-        ImGui::End();
-    }
-}
+	bool DeveloperConsole::IsToggled() const
+	{
+		return this->shouldRender;
+	}
 
-void MxEngine::DeveloperConsole::SetSize(const Vector2& size)
-{
-    this->console->SetSize({ size.x, size.y });
-}
+#if defined(MXENGINE_SCRIPTING_CHAISCRIPT)
+	DeveloperConsole::DeveloperConsole()
+	{
+		MAKE_SCOPE_PROFILER("DeveloperConsole::Init");
+		MAKE_SCOPE_TIMER("MxEngine::DeveloperConsole", "DeveloperConsole::Init");
+		this->engine = Alloc<ChaiScriptEngine>();
+		this->console = Alloc<GraphicConsole>();
+		this->engine->AddVariable("console", *this);
 
-void MxEngine::DeveloperConsole::Toggle(bool isVisible)
-{
-    this->shouldRender = isVisible;
-}
+		this->engine->AddReference("print", &DeveloperConsole::Log);
+		this->engine->AddReference("clear", &DeveloperConsole::ClearLog);
+		this->engine->AddReference("history", &DeveloperConsole::PrintHistory);
 
-MxEngine::ScriptEngine& MxEngine::DeveloperConsole::GetEngine()
-{
-    return *this->engine;
-}
+		this->engine->GetInterpreter().eval(R"(global print = fun[print](x) { console.print("${ x }"); }; )");
 
-MxEngine::Vector2 MxEngine::DeveloperConsole::GetSize() const
-{
-    return Vector2(this->console->GetSize().x, this->console->GetSize().y);
-}
+		// workaround to fix performance issues (https://github.com/ChaiScript/ChaiScript/issues/514)
+		this->engine->AddTypeConversion<int, float>();
+		this->engine->AddTypeConversion<int, double>();
+		this->engine->AddTypeConversion<float, int>();
+		this->engine->AddTypeConversion<float, double>();
+		this->engine->AddTypeConversion<double, float>();
+		this->engine->AddTypeConversion<double, int>();
 
-bool MxEngine::DeveloperConsole::IsToggled() const
-{
-    return this->shouldRender;
+		this->console->SetEventCallback([this](const char* text)
+			{
+				try
+				{
+					std::string script = text;
+					this->engine->GetInterpreter().eval(script);
+				}
+				catch (std::exception & e)
+				{
+					std::string error = e.what();
+					size_t idx = error.find("Error:");
+					if (idx != error.npos)
+					{
+						error.erase(idx, idx + 6);
+						error = "[error]: " + error;
+					}
+					this->Log(error);
+				}
+			});
+	}
+#elif defined(MXENGINE_SCRIPTING_PYTHON)
+	DeveloperConsole::DeveloperConsole()
+	{
+		MAKE_SCOPE_PROFILER("DeveloperConsole::Init");
+		MAKE_SCOPE_TIMER("MxEngine::DeveloperConsole", "DeveloperConsole::Init");
+		this->engine = Alloc<PythonEngine>();
+		this->console = Alloc<GraphicConsole>();
+
+		this->engine->Execute("from mx_engine import *");
+		this->engine->Execute("dt = lambda: ctx.dt()");
+
+		this->console->SetEventCallback([this](const char* text)
+			{
+				this->engine->Execute(text);
+				if (this->engine->HasErrors())
+				{
+					this->Log("[error]: " + this->engine->GetErrorMessage());
+				}
+				else if (!this->engine->GetOutput().empty())
+				{
+					this->Log(this->engine->GetOutput());
+				}
+			});
+	}
+#else
+	DeveloperConsole::DeveloperConsole()
+	{
+		MAKE_SCOPE_PROFILER("DeveloperConsole::Init");
+		MAKE_SCOPE_TIMER("MxEngine::DeveloperConsole", "DeveloperConsole::Init");
+		this->engine = nullptr;
+		this->console = Alloc<GraphicConsole>();
+	}
+#endif
 }

@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -28,10 +28,13 @@
 
 #pragma once
 
-#include <vector>
+#include "Utilities/LifetimeManager/LifetimeManager.h"
+
 #include <memory>
 #include <functional>
 #include <unordered_set>
+#include <typeindex>
+#include <map>
 
 namespace MxEngine
 {
@@ -45,62 +48,44 @@ namespace MxEngine
 	template<typename EventBase>
 	class EventDispatcher
 	{
-		using CallbackList = std::vector<std::pair<std::string, std::function<void(EventBase&)>>>;
+		using EventCallback = std::function<void(EventBase&)>;
+		using EventStorage = std::vector<std::pair<std::string, EventCallback>>;
+		using CallbackManager = LifetimeManager<EventCallback, std::string, EventStorage>;
 		using EventList = std::vector<std::unique_ptr<EventBase>>;
-		using RemoveList = std::unordered_set<std::string>;
-		CallbackList callbacks;
-		RemoveList removeQueue;
-		CallbackList callbackQueue;
+		using EventTypeMap = std::map<std::type_index, size_t>;
+
 		EventList events;
-
-		size_t eventTypeId = 0;
-
-		template<typename EventType>
-		inline void RegisterEventType()
-		{
-			static size_t typeId = ++this->eventTypeId;
-			EventType::eventType = typeId;
-		}
-
-		inline void FreeQueues()
-		{
-			if (!removeQueue.empty())
-			{
-				for (auto it = this->callbacks.begin(); it != this->callbacks.end();)
-				{
-					if (removeQueue.find(it->first) != this->removeQueue.end())
-						it = this->callbacks.erase(it);
-					else
-						it++;
-				}
-				removeQueue.clear();
-			}
-			if (!callbackQueue.empty())
-			{
-				this->callbacks.insert(
-					this->callbacks.end(),
-					std::make_move_iterator(callbackQueue.begin()),
-					std::make_move_iterator(callbackQueue.end())
-				);
-				callbackQueue.clear();
-			}
-		}
+		CallbackManager callbacks;
+		EventTypeMap typeMap;
 
 		inline void ProcessEvent(EventBase& event)
 		{
-			for (const auto& callback : this->callbacks)
+			for (const auto& callback : this->callbacks.Get())
 			{
 				callback.second(event);
 			}
 		}
 
 	public:
+		template<typename EventType>
+		inline void RegisterEventType()
+		{
+			if (EventType::eventType == 0)
+			{
+				auto& typeId = typeid(EventType);
+				if (this->typeMap.find(typeId) == this->typeMap.end())
+				{
+					this->typeMap.emplace(typeId, typeMap.size() + 1);
+				}
+				EventType::eventType = this->typeMap[typeId];
+			}
+		}
 
 		template<typename EventType>
 		void AddEventListener(const std::string& name, std::function<void(EventType&)> func)
 		{
-			RegisterEventType<EventType>();
-			this->callbackQueue.emplace_back(name, [func = std::move(func)](EventBase& e)
+			this->RegisterEventType<EventType>();
+			this->callbacks.Add(name, [func = std::move(func)](EventBase& e)
 			{
 				if (e.GetEventType() == EventType::eventType)
 					func((EventType&)e);
@@ -115,12 +100,12 @@ namespace MxEngine
 
 		void RemoveEventListener(const std::string& name)
 		{
-			this->removeQueue.insert(name);
+			this->callbacks.Remove(name);
 		}
 
 		void Invoke(EventBase& event)
 		{
-			this->FreeQueues();
+			this->callbacks.Update();
 			this->ProcessEvent(event);
 		}
 
@@ -131,7 +116,7 @@ namespace MxEngine
 
 		void InvokeAll()
 		{
-			FreeQueues();
+			this->callbacks.Update();
 			for (size_t i = 0; i < this->events.size(); i++)
 			{
 				this->ProcessEvent(*this->events[i]);

@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -54,7 +54,7 @@ namespace MxEngine
 			const char* message = (const char*)gluErrorString(error);
 			setlocale(LC_ALL, "ru");
 			Logger::Instance().Error("OpenGL", 
-				std::string(message) + "\n    " + function +
+				std::string(message) + "\n	" + function +
 				" in file: " + file + ", line: " + std::to_string(line)
 			);
 		}

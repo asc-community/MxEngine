@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -55,15 +55,15 @@ namespace MxEngine
 					}
 					if (back != KeyCode::UNKNOWN && event.IsHeld(back))
 					{
-                        object.TranslateForward(-dt);
+						object.TranslateForward(-dt);
 					}
 					if (right != KeyCode::UNKNOWN && event.IsHeld(right))
 					{
-                        object.TranslateRight(dt);
+						object.TranslateRight(dt);
 					}
 					if (left != KeyCode::UNKNOWN && event.IsHeld(left))
 					{
-                        object.TranslateRight(-dt);
+						object.TranslateRight(-dt);
 					}
 				});
 			return *this;
@@ -71,33 +71,33 @@ namespace MxEngine
 
 		inline InputBinding& BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down)
 		{
-            Context::Instance()->GetEventDispatcher().AddEventListener<KeyEvent>(this->handle,
+			Context::Instance()->GetEventDispatcher().AddEventListener<KeyEvent>(this->handle,
 				[forward, back, right, left, up, down, &object = object](KeyEvent& event)
 				{
 					auto dt = Context::Instance()->GetTimeDelta();
 					if (forward != KeyCode::UNKNOWN && event.IsHeld(forward))
 					{
-                        object.TranslateForward(dt);
+						object.TranslateForward(dt);
 					}
 					if (back != KeyCode::UNKNOWN && event.IsHeld(back))
 					{
-                        object.TranslateForward(-dt);
+						object.TranslateForward(-dt);
 					}
 					if (right != KeyCode::UNKNOWN && event.IsHeld(right))
 					{
-                        object.TranslateRight(dt);
+						object.TranslateRight(dt);
 					}
 					if (left != KeyCode::UNKNOWN && event.IsHeld(left))
 					{
-                        object.TranslateRight(-dt);
+						object.TranslateRight(-dt);
 					}
 					if (up != KeyCode::UNKNOWN && event.IsHeld(up))
 					{
-                        object.TranslateUp(dt);
+						object.TranslateUp(dt);
 					}
 					if (down != KeyCode::UNKNOWN && event.IsHeld(down))
 					{
-                        object.TranslateUp(-dt);
+						object.TranslateUp(-dt);
 					}
 				});
 			return *this;
@@ -105,7 +105,7 @@ namespace MxEngine
 
 		inline InputBinding& BindRotation()
 		{
-            Context::Instance()->GetEventDispatcher().AddEventListener<MouseMoveEvent>(this->handle,
+			Context::Instance()->GetEventDispatcher().AddEventListener<MouseMoveEvent>(this->handle,
 				[&object = object](MouseMoveEvent& event)
 				{
 					static Vector2 oldPos = event.position;
@@ -118,8 +118,8 @@ namespace MxEngine
 
 		inline InputBinding& BindHorizontalRotation()
 		{
-            Context::Instance()->GetEventDispatcher().AddEventListener<MouseMoveEvent>(this->handle,
-                [&object = object](MouseMoveEvent& event)
+			Context::Instance()->GetEventDispatcher().AddEventListener<MouseMoveEvent>(this->handle,
+				[&object = object](MouseMoveEvent& event)
 				{
 					static Vector2 oldPos = event.position;
 					auto dt = Context::Instance()->GetTimeDelta();
@@ -131,8 +131,8 @@ namespace MxEngine
 
 		inline InputBinding& BindVerticalRotation()
 		{
-            Context::Instance()->GetEventDispatcher().AddEventListener<MouseMoveEvent>(this->handle,
-                [&object = object](MouseMoveEvent& event)
+			Context::Instance()->GetEventDispatcher().AddEventListener<MouseMoveEvent>(this->handle,
+				[&object = object](MouseMoveEvent& event)
 				{
 					static Vector2 oldPos = event.position;
 					auto dt = Context::Instance()->GetTimeDelta();

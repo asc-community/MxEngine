@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -37,36 +37,41 @@
 #include "Core/Object/Object.h"
 #include <unordered_map>
 
+#include <filesystem>
+
 namespace MxEngine
 {
-    enum class RenderEngine
-    {
-        OpenGL,
-    };
+	enum class RenderEngine
+	{
+		OpenGL,
+	};
 
-    class Application
-    {
-        struct ModuleManager
-        {
-            ModuleManager(Application* app);
-            ~ModuleManager();
-        } manager;
+	class LoggerImpl;
+
+	class Application
+	{
+		struct ModuleManager
+		{
+			ModuleManager(Application* app);
+			~ModuleManager();
+		} manager;
+
+		using ObjectStorage = LifetimeManager<UniqueRef<MxObject>>;
 	private:
-		using ObjectStorage = std::unordered_map<std::string, UniqueRef<Object>>;
 		UniqueRef<Window> window;
 		ObjectStorage objects;
-		Object defaultInstance;
-        RenderController renderer;
-        bool shouldClose = false;
+		MxObject defaultInstance;
+		RenderController renderer;
+		AppEventDispatcher dispatcher;
+		DeveloperConsole console;
+		bool shouldClose = false;
 		bool debugMeshDraw = false;
 
-        void CreateConsoleBindings(DeveloperConsole& console);
+		void CreateConsoleBindings(DeveloperConsole& console);
 		void DrawObjects(bool meshes) const;
 		void InvokeUpdate();
 	protected:
-		AppEventDispatcher Dispatcher;
-        DeveloperConsole Console;
-		std::string ResourcePath;
+		std::filesystem::path ResourcePath;
 		TimeStep TimeDelta;
 		int CounterFPS;
 
@@ -74,23 +79,26 @@ namespace MxEngine
 
 		void ToggleMeshDrawing(bool state = true);
 
-		virtual void OnCreate () = 0;
-		virtual void OnUpdate () = 0;
-		virtual void OnDestroy() = 0;
+		virtual void OnCreate();
+		virtual void OnUpdate();
+		virtual void OnDestroy();
 
 		void CreateContext();
 	public:
-		Ref<RenderObjectContainer> LoadObjectBase(const std::string& filepath);
-		Object& CreateObject(const std::string& name, const std::string& path);
-		Object& AddObject(const std::string& name, UniqueRef<Object> object);
-		Ref<Texture> CreateTexture(const std::string& filepath, bool genMipmaps = true, bool flipImage = true);
-		Ref<Shader> CreateShader(const std::string& vertexShaderPath, const std::string fragmentShaderPath);
-		Object& GetObject(const std::string& name);
+		Ref<RenderObjectContainer> LoadObjectBase(const std::filesystem::path& filepath);
+		MxObject& CreateObject(const std::string& name, const std::filesystem::path& path);
+		MxObject& AddObject(const std::string& name, UniqueRef<MxObject> object);
+		MxObject& CopyObject(const std::string& name, const std::string& existingObject);
+		Ref<Texture> CreateTexture(const std::filesystem::path& texture, bool genMipmaps = true, bool flipImage = true);
+		Ref<Shader> CreateShader(const std::filesystem::path& vertex, const std::filesystem::path& fragment);
+		MxObject& GetObject(const std::string& name);
 		void DestroyObject(const std::string& name);
 		void ToggleDeveloperConsole(bool isVisible);
 
 		AppEventDispatcher& GetEventDispatcher();
 		RenderController& GetRenderer();
+		LoggerImpl& GetLogger();
+		DeveloperConsole& GetConsole();
 		Window& GetWindow();
 		float GetTimeDelta() const;
 		void Run();
@@ -98,5 +106,5 @@ namespace MxEngine
 		virtual ~Application();
 	};
 
-    using Context = SingletonHolder<Application*>;
+	using Context = SingletonHolder<Application*>;
 }

@@ -53,7 +53,6 @@
     <ClInclude Include="MxEngine.h" />
     <ClInclude Include="Library\Bindings\InputBinding.h" />
     <ClInclude Include="Core\Interfaces\IMovable.h" />
-    <ClInclude Include="Library\Scripting\ScriptEngine.h" />
     <ClInclude Include="Core\Event\RenderEvent.h" />
     <ClInclude Include="Core\Event\UpdateEvent.h" />
     <ClInclude Include="Library\Bindings\ConsoleBinding.h" />
@@ -62,6 +61,11 @@
     <ClInclude Include="Core\Event\FpsUpdateEvent.h" />
     <ClInclude Include="Core\Object\Object.h" />
     <ClInclude Include="Core\Object\RenderObject.h" />
+    <ClInclude Include="Core\Lighting\DirectionalLight.h" />
+    <ClInclude Include="Utilities\LifetimeManager\LifetimeManager.h" />
+    <ClInclude Include="Library\Scripting\ChaiScript\ChaiScriptEngine.h" />
+    <ClInclude Include="Library\Scripting\Python\PythonEngine.h" />
+    <ClInclude Include="Core\Macro\Macro.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
@@ -88,6 +92,8 @@
     <ClCompile Include="Platform\OpenGL\Window\GLWindow.cpp" />
     <ClCompile Include="Core\Object\Object.cpp" />
     <ClCompile Include="Core\Object\RenderObject.cpp" />
+    <ClCompile Include="Core\Lighting\DirectionalLight.cpp" />
+    <ClCompile Include="Library\Scripting\Python\PythonEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\cube_fragment.glsl" />
