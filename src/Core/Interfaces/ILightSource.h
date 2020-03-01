@@ -26,46 +26,21 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "DirectionalLight.h"
+#pragma once
+
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-    DirectionalLight& DirectionalLight::UseAmbientColor(const Vector3& ambient)
+    struct ILightSource
     {
-        this->ambientColor = Clamp(ambient, Vector3(0.0f), Vector3(1.0f));
-        return *this;
-    }
+        virtual ILightSource& UseAmbientColor(const Vector3& ambient)   = 0;
+        virtual ILightSource& UseDiffuseColor(const Vector3& diffuse)   = 0;
+        virtual ILightSource& UseSpecularColor(const Vector3& specular) = 0;
+        virtual const Vector3& GetAmbientColor()  const = 0;
+        virtual const Vector3& GetDiffuseColor()  const = 0;
+        virtual const Vector3& GetSpecularColor() const = 0;
 
-    DirectionalLight& DirectionalLight::UseDiffuseColor(const Vector3& diffuse)
-    {
-        this->diffuseColor = Clamp(diffuse, Vector3(0.0f), Vector3(1.0f));
-        return *this;
-    }
-
-    DirectionalLight& DirectionalLight::UseSpecularColor(const Vector3& specular)
-    {
-        this->specularColor = Clamp(specular, Vector3(0.0f), Vector3(1.0f));
-        return *this;
-    }
-
-    DirectionalLight& DirectionalLight::UseDirection(const Vector3& direction)
-    {
-        this->Direction = direction;
-        return *this;
-    }
-
-    const Vector3& DirectionalLight::GetAmbientColor() const
-    {
-        return this->ambientColor;
-    }
-
-    const Vector3& DirectionalLight::GetDiffuseColor() const
-    {
-        return this->diffuseColor;
-    }
-
-    const Vector3& DirectionalLight::GetSpecularColor() const
-    {
-        return this->specularColor;
-    }
+        virtual ~ILightSource() = default;
+    };
 }

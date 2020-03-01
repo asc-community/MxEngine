@@ -1,12 +1,13 @@
 newmtl main
-	Ns 0.0000
+	Ns 64.0000
 	Ni 0.0000
-	d 0.0000
+	d  1.0000
 	Tr 0.0000
 	Tf 0.0000 0.0000 0.0000
 	illum 0
-	Ka 0.0000 0.0000 0.0000
-	Kd 0.0000 0.0000 0.0000
+	Ka 0.4000 0.4000 0.4000
+	Kd 0.6000 0.6000 0.6000
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
 	map_Ka Resources/objects/grid/grid.png
+	map_Kd Resources/objects/grid/grid.png

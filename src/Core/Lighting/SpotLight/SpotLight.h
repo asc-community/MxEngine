@@ -28,25 +28,38 @@
 
 #pragma once
 
-#include "Utilities/Math/Math.h"
+#include "Core/Interfaces/ILightSource.h"
 
 namespace MxEngine
 {
-    class DirectionalLight
+    class SpotLight final : public ILightSource
     {
-        Vector3 ambientColor  = Vector3(1.0f);
-        Vector3 diffuseColor  = Vector3(1.0f);
-        Vector3 specularColor = Vector3(1.0f);
+        Vector3 ambientColor  = MakeVector3(1.0f);
+        Vector3 diffuseColor  = MakeVector3(1.0f);
+        Vector3 specularColor = MakeVector3(1.0f);
+        float innerAngle      = 35.0f;
+        float innerCos        = std::cos(Radians(innerAngle));
+        float outerAngle      = 45.0f;
+        float outerCos        = std::cos(Radians(outerAngle));
     public:
-        Vector3 Direction = Vector3(0.0f);
+        Vector3 Position      = MakeVector3(0.0f);
+        Vector3 Direction     = MakeVector3(0.0f, 1.0f, 0.0f);
 
-        DirectionalLight& UseAmbientColor(const Vector3& ambient);
-        DirectionalLight& UseDiffuseColor(const Vector3& diffuse);
-        DirectionalLight& UseSpecularColor(const Vector3& specular);
-        DirectionalLight& UseDirection(const Vector3& direction);
+        float GetInnerAngle() const;
+        float GetOuterAngle() const;
+        float GetInnerCos() const;
+        float GetOuterCos() const;
+        SpotLight& UseInnerAngle(float angle);
+        SpotLight& UseOuterAngle(float angle);
+        SpotLight& UsePosition(const Vector3& position);
+        SpotLight& UseDirection(const Vector3& direction);
 
-        const Vector3& GetAmbientColor() const;
-        const Vector3& GetDiffuseColor() const;
-        const Vector3& GetSpecularColor() const;
+        // Inherited via ILightSource
+        virtual SpotLight& UseAmbientColor(const Vector3& ambient) override;
+        virtual SpotLight& UseDiffuseColor(const Vector3& diffuse) override;
+        virtual SpotLight& UseSpecularColor(const Vector3& specular) override;
+        virtual const Vector3& GetAmbientColor() const override;
+        virtual const Vector3& GetDiffuseColor() const override;
+        virtual const Vector3& GetSpecularColor() const override;
     };
 }

@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Core/Object/Object.h"
+#include "Core/MxObject/MxObject.h"
 #include "Utilities/SingletonHolder/SingletonHolder.h"
 #include "Core/Interfaces/IDrawable.h"
 #include "Core/Camera/CameraController.h"

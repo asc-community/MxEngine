@@ -77,6 +77,12 @@ namespace MxEngine
 		GLCALL(glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), DataType[(int)type]));
 	}
 
+    void GLVertexBuffer::BufferSubData(const BufferData& data)
+    {
+		this->Bind();
+		GLCALL(glBufferSubData(GL_ARRAY_BUFFER, 0, data.size() * sizeof(float), data.data()));
+    }
+
 	void GLVertexBuffer::Bind() const
 	{
 		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, id));

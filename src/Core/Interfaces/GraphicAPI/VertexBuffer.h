@@ -50,5 +50,6 @@ namespace MxEngine
 	{
 		using BufferData = std::vector<float>;
 		virtual void Load(const BufferData& data, UsageType type) = 0;
+		virtual void BufferSubData(const BufferData& data) = 0;
 	};
 }

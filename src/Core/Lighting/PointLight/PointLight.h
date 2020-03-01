@@ -28,23 +28,33 @@
 
 #pragma once
 
-#include "Core/Interfaces/GraphicAPI/VertexBuffer.h"
+#include "Core/Interfaces/ILightSource.h"
 
 namespace MxEngine
 {
-	class GLVertexBuffer final : public VertexBuffer
-	{
-	public:
-		explicit GLVertexBuffer();
-		explicit GLVertexBuffer(BufferData& data, UsageType type);
-		~GLVertexBuffer();
-		GLVertexBuffer(const GLVertexBuffer&) = delete;
-		GLVertexBuffer(GLVertexBuffer&& vbo);
+    class PointLight final : public ILightSource
+    {
+        Vector3 ambientColor  = MakeVector3(1.0f);
+        Vector3 diffuseColor  = MakeVector3(1.0f);
+        Vector3 specularColor = MakeVector3(1.0f);
+        Vector3 factors       = MakeVector3(1.0f, 0.009f, 0.032f);
+    public:
+        Vector3 Position      = MakeVector3(0.0f);
 
-		// Inherited via IVertexBuffer
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
-		virtual void Load(const BufferData& data, UsageType type) override;
-		virtual void BufferSubData(const BufferData& data) override;
-	};
+        constexpr static size_t Constant  = 0;
+        constexpr static size_t Linear    = 0;
+        constexpr static size_t Quadratic = 0;
+
+        PointLight& UsePosition(const Vector3& position);
+        PointLight& UseFactors(const Vector3& factors);
+        const Vector3& GetFactors() const;
+
+        // Inherited via ILightSource
+        virtual PointLight& UseAmbientColor(const Vector3& ambient) override;
+        virtual PointLight& UseDiffuseColor(const Vector3& diffuse) override;
+        virtual PointLight& UseSpecularColor(const Vector3& specular) override;
+        virtual const Vector3& GetAmbientColor() const override;
+        virtual const Vector3& GetDiffuseColor() const override;
+        virtual const Vector3& GetSpecularColor() const override;
+    };
 }

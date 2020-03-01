@@ -29,18 +29,20 @@
 #pragma once
 #include "Core/Interfaces/IDrawable.h"
 #include "Core/Interfaces/IMovable.h"
-#include "Core/Object/RenderObject.h"
+#include "Core/MxObject/RenderObject.h"
 
 namespace MxEngine
 {
 	class MxObject : public IDrawable, public IMovable
 	{
 		mutable Matrix4x4 Model;
+		size_t instanceCount = 0;
 		Vector3 translation{ 0.0f };
 		Vector3 forwardVec{ 0.0f, 0.0f, 1.0f }, upVec{ 0.0f, 1.0f, 0.0f }, rightVec{ 1.0f, 0.0f, 0.0f };
 		Quaternion rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
 		Vector3 scale{ 1.0f };
-		size_t instanceCount = 0;
+		mutable Vector3 eulerRotation;
+		mutable bool updateEuler = true;
 		mutable bool needUpdate = true;
 		bool shouldRender = true;
 	protected:
@@ -66,6 +68,7 @@ namespace MxEngine
 		const Vector3& GetTranslation() const;
 		const Quaternion& GetRotation() const;
 		const Vector3& GetScale() const;
+		const Vector3& GetEulerRotation() const;
 
 		MxObject& Scale(float scale);
 		MxObject& Scale(float scaleX, float scaleY, float scaleZ);
@@ -83,14 +86,17 @@ namespace MxEngine
 
 		template<typename T>
 		void AddInstanceBufferGenerator(T&& generator, size_t count, UsageType type = UsageType::STATIC_DRAW);
-		void AddInstanceBuffer(const ArrayBufferType& buffer, size_t count, UsageType type = UsageType::STATIC_DRAW);
+		void AddInstanceBuffer(const ArrayBufferType& buffer, size_t components, UsageType type = UsageType::STATIC_DRAW);
+		void BufferDataByIndex(size_t index, const ArrayBufferType& buffer);
+		template<typename T>
+		void GenerateDataByIndex(size_t index, T&& generator, size_t count);
 
 		// Inherited via IDrawable
 		virtual size_t GetIterator() const override;
 		virtual bool IsLast(size_t iterator) const override;
 		virtual size_t GetNext(size_t iterator) const override;
 		virtual const IRenderable& GetCurrent(size_t iterator) const override;
-		virtual const Matrix4x4& GetModel() const override;
+		virtual const Matrix4x4& GetModelMatrix() const override;
 		virtual bool HasShader() const override;
 		virtual const MxEngine::Shader& GetShader() const override;
 		virtual bool IsDrawable() const override;
@@ -125,9 +131,28 @@ namespace MxEngine
 		for (size_t i = 0; i < count; i++)
 		{
 			auto* data = reinterpret_cast<DataType*>(buffer.data() + i * componentCount);
-			*data = generator(i);
+			*data = generator(static_cast<int>(i));
 		}
 
 		this->AddInstanceBuffer(buffer, componentCount, type);
+	}
+
+	template<typename T>
+	inline void MxObject::GenerateDataByIndex(size_t index, T&& generator, size_t count)
+	{
+		using DataType = decltype(generator(0));
+
+		size_t instanceSize = sizeof(DataType);
+		size_t componentCount = instanceSize / sizeof(float);
+		ArrayBufferType buffer(count * componentCount);
+
+		// fills float array with data from generator functions
+		for (size_t i = 0; i < count; i++)
+		{
+			auto* data = reinterpret_cast<DataType*>(buffer.data() + i * componentCount);
+			*data = generator(static_cast<int>(i));
+		}
+
+		this->BufferDataByIndex(index, buffer);
 	}
 }

@@ -30,9 +30,42 @@
 
 namespace MxEngine
 {
+	std::string PointLightUniform[] = 
+	{
+		"pointLight[?].ambient",
+		"pointLight[?].diffuse",
+		"pointLight[?].specular",
+		"pointLight[?].position",
+		"pointLight[?].K",
+	};
+	constexpr size_t Ambient  = 0;
+	constexpr size_t Diffuse  = 1;
+	constexpr size_t Specular = 2;
+	constexpr size_t Position = 3;
+
+	constexpr size_t KFactor  = 4;
+	constexpr size_t PointPos = 11; // pos of '?' in "pointLight[?]"
+
+	std::string SpotLightUniform[] =
+	{
+		"spotLight[?].ambient",
+		"spotLight[?].diffuse",
+		"spotLight[?].specular",
+		"spotLight[?].position",
+		"spotLight[?].direction",
+		"spotLight[?].innerAngle",
+		"spotLight[?].outerAngle",
+	};
+	constexpr size_t Direction  = 4;
+	constexpr size_t InnerAngle = 5;
+	constexpr size_t OuterAngle = 6;
+	constexpr size_t SpotPos    = 10; // pos of '?' in "spotLight[?]"
+
 	RenderController::RenderController(Renderer& renderer)
 		: renderer(renderer)
 	{
+		this->PointLights.SetCount(1);
+		this->SpotLights.SetCount(1);
 	}
 
 	Renderer& RenderController::GetRenderEngine() const
@@ -52,13 +85,56 @@ namespace MxEngine
 
 	void RenderController::DrawObject(const IDrawable& object) const
 	{
+		// probably nothing to do at all
 		if (!this->ViewPort.HasCamera()) return;
 		if (!object.IsDrawable()) return;
+
+		// getting all data for easy use
 		size_t iterator = object.GetIterator();
-		auto MVP = this->ViewPort.GetCameraMatrix() * object.GetModel();
-		Matrix3x3 NormalMatrix = Transpose(Inverse(object.GetModel()));
+		auto MVP = this->ViewPort.GetCameraMatrix() * object.GetModelMatrix();
+		Matrix3x3 NormalMatrix = Transpose(Inverse(object.GetModelMatrix()));
 		auto cameraPos = this->ViewPort.GetPosition();
-		auto lightDir = this->GlobalLight.Direction;
+
+		// choosing shader and setting up data per object
+		const Shader& shader = object.HasShader() ? object.GetShader() : *this->ObjectShader;
+		shader.SetUniformMat4("MVP", MVP);
+		shader.SetUniformMat4("Model", object.GetModelMatrix());
+		shader.SetUniformMat3("NormalMatrix", NormalMatrix);
+		shader.SetUniformVec3("viewPos", cameraPos);
+
+		// set direction light
+		shader.SetUniformVec3("dirLight.direction", this->GlobalLight.Direction);
+		shader.SetUniformVec3("dirLight.ambient", this->GlobalLight.GetAmbientColor());
+		shader.SetUniformVec3("dirLight.diffuse", this->GlobalLight.GetDiffuseColor());
+		shader.SetUniformVec3("dirLight.specular", this->GlobalLight.GetSpecularColor());
+
+		// set point lights
+		for (size_t i = 0; i < this->PointLights.GetCount(); i++)
+		{
+			// replace "pointLight[?]" with "pointLight[{i}]"
+			for(int j = 0; j < 5; j++) PointLightUniform[j][PointPos] = char('0' + i);
+
+			shader.SetUniformVec3(PointLightUniform[Position], this->PointLights[i].Position);
+			shader.SetUniformVec3(PointLightUniform[KFactor ], this->PointLights[i].GetFactors());
+			shader.SetUniformVec3(PointLightUniform[Ambient ], this->PointLights[i].GetAmbientColor());
+			shader.SetUniformVec3(PointLightUniform[Diffuse ], this->PointLights[i].GetDiffuseColor());
+			shader.SetUniformVec3(PointLightUniform[Specular], this->PointLights[i].GetSpecularColor());
+		}
+
+		// set spot lights
+		for (size_t i = 0; i < this->SpotLights.GetCount(); i++)
+		{
+			// replace "spotLight[?]" with "spotLight[{i}]"
+			for (int j = 0; j < 7; j++) SpotLightUniform[j][SpotPos] = char('0' + i);
+
+			shader.SetUniformVec3(SpotLightUniform[Position   ], this->SpotLights[i].Position);
+			shader.SetUniformVec3(SpotLightUniform[Direction  ], this->SpotLights[i].Direction);
+			shader.SetUniformVec3(SpotLightUniform[Ambient    ], this->SpotLights[i].GetAmbientColor());
+			shader.SetUniformVec3(SpotLightUniform[Diffuse    ], this->SpotLights[i].GetDiffuseColor());
+			shader.SetUniformVec3(SpotLightUniform[Specular   ], this->SpotLights[i].GetSpecularColor());
+			shader.SetUniformFloat(SpotLightUniform[InnerAngle], this->SpotLights[i].GetInnerCos());
+			shader.SetUniformFloat(SpotLightUniform[OuterAngle], this->SpotLights[i].GetOuterCos());
+		}
 
 		while (!object.IsLast(iterator))
 		{
@@ -81,21 +157,16 @@ namespace MxEngine
 				BIND_TEX(map_Ke, 3);
 				//BIND_TEX(map_Kd, 4); kd not used now
 
-				const Shader& shader = object.HasShader() ? object.GetShader() : *this->ObjectShader;
-				shader.SetUniformMat4("MVP", MVP);
-				shader.SetUniformMat4("Model", object.GetModel());
-				shader.SetUniformMat3("NormalMatrix", NormalMatrix);
+				// setting materials
 				shader.SetUniformVec3("material.Ka", material.Ka);
 				shader.SetUniformVec3("material.Kd", material.Kd);
 				shader.SetUniformVec3("material.Ks", material.Ks);
 				shader.SetUniformVec3("material.Ke", material.Ke);
 				shader.SetUniformFloat("material.Ns", material.Ns);
 				shader.SetUniformFloat("material.d", material.d);
-				shader.SetUniformVec3("dirLight.direction", lightDir);
-				shader.SetUniformVec3("dirLight.ambient", this->GlobalLight.GetAmbientColor());
-				shader.SetUniformVec3("dirLight.diffuse", this->GlobalLight.GetDiffuseColor());
-				shader.SetUniformVec3("dirLight.specular", this->GlobalLight.GetSpecularColor());
-				shader.SetUniformVec3("viewPos", cameraPos);
+
+				shader.SetUniformFloat("Ka", material.f_Ka);
+				shader.SetUniformFloat("Kd", material.f_Kd);
 
 				if (object.GetInstanceCount() == 0)
 					this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetVertexCount(), shader);
@@ -108,13 +179,17 @@ namespace MxEngine
 
 	void RenderController::DrawObjectMesh(const IDrawable& object) const
 	{
+		// probably nothing to do at all
+		if (!this->ViewPort.HasCamera()) return;
 		if (!object.IsDrawable()) return;
+
 		size_t iterator = object.GetIterator();
-		auto MVP = this->ViewPort.GetCameraMatrix() * object.GetModel();
+		auto MVP = this->ViewPort.GetCameraMatrix() * object.GetModelMatrix();
+		this->MeshShader->SetUniformMat4("MVP", MVP);
+
 		while (!object.IsLast(iterator))
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
-			this->MeshShader->SetUniformMat4("MVP", MVP);
 			if (object.GetInstanceCount() == 0)
 				this->GetRenderEngine().DrawLines(renderObject.GetVAO(), renderObject.GetMeshIBO(), *this->MeshShader);
 			else

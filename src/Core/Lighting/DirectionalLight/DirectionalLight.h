@@ -28,23 +28,24 @@
 
 #pragma once
 
-#include "Core/Interfaces/GraphicAPI/VertexBuffer.h"
+#include "Core/Interfaces/ILightSource.h"
 
 namespace MxEngine
 {
-	class GLVertexBuffer final : public VertexBuffer
-	{
-	public:
-		explicit GLVertexBuffer();
-		explicit GLVertexBuffer(BufferData& data, UsageType type);
-		~GLVertexBuffer();
-		GLVertexBuffer(const GLVertexBuffer&) = delete;
-		GLVertexBuffer(GLVertexBuffer&& vbo);
+    class DirectionalLight final : public ILightSource
+    {
+        Vector3 ambientColor  = MakeVector3(1.0f);
+        Vector3 diffuseColor  = MakeVector3(1.0f);
+        Vector3 specularColor = MakeVector3(1.0f);
+    public:
+        Vector3 Direction = MakeVector3(0.0f, 1.0f, 0.0f);
 
-		// Inherited via IVertexBuffer
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
-		virtual void Load(const BufferData& data, UsageType type) override;
-		virtual void BufferSubData(const BufferData& data) override;
-	};
+        // Inherited via ILightSource
+        virtual DirectionalLight& UseAmbientColor(const Vector3& ambient);
+        virtual DirectionalLight& UseDiffuseColor(const Vector3& diffuse);
+        virtual DirectionalLight& UseSpecularColor(const Vector3& specular);
+        virtual const Vector3& GetAmbientColor() const;
+        virtual const Vector3& GetDiffuseColor() const;
+        virtual const Vector3& GetSpecularColor() const;
+    };
 }

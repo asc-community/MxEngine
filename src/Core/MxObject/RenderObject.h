@@ -38,11 +38,11 @@ namespace MxEngine
 	{
 		bool useTexture = false, useNormal = false;
 		mutable bool meshGenerated = false;
-		mutable UniqueRef<IndexBuffer> IBO;
-		size_t vertexCount = 0;
-		std::vector<UniqueRef<VertexBuffer>> VBOs;
+		mutable UniqueRef<IndexBuffer> IBO;		
+		UniqueRef<VertexBuffer> VBO;
 		UniqueRef<VertexArray> VAO;
 		UniqueRef<Material> material;
+		size_t vertexCount = 0;
 
 		void GenerateMeshIndicies() const;
 		friend class RenderObjectContainer;
@@ -50,13 +50,13 @@ namespace MxEngine
 		RenderObject() = default;
 		RenderObject(const RenderObject&) = delete;
 		RenderObject(RenderObject&&) noexcept = default;
+		Material& GetMaterial();
+
 		virtual const VertexArray& GetVAO() const override;
 		virtual const IndexBuffer& GetMeshIBO() const override;
 		virtual const Material& GetMaterial() const override;
 		virtual size_t GetVertexCount() const override;
 		virtual bool HasMaterial() const override;
-		void AddBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl);
-		void AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl);
 	};
 
 	class RenderObjectContainer
@@ -66,6 +66,7 @@ namespace MxEngine
 
 		Vector3 objectCenter;
 		std::vector<RenderObject> subObjects;
+		std::vector<UniqueRef<VertexBuffer>> VBOs;
 
 		void LoadFromFile(const std::filesystem::path& filepath);
 	public:
@@ -77,5 +78,8 @@ namespace MxEngine
 		void Load(const std::string& filepath);
 		std::vector<RenderObject>& GetRenderObjects();
 		const Vector3& GetObjectCenter() const;
+		void AddBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl);
+		void AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl);
+		VertexBuffer& GetBufferByIndex(size_t index);
 	};
 }

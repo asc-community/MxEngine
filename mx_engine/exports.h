@@ -196,6 +196,16 @@ MxObject& LoadObjectWrapper(Application& app, const std::string& name, const std
     return app.CreateObject(name, path);
 }
 
+void SetShaderWrapper(MxObject& object, const std::string& vertex, const std::string& fragment)
+{
+    object.Shader = Context::Instance()->CreateShader(vertex, fragment);
+}
+
+void SetTextureWrapper(MxObject& object, const std::string& texture)
+{
+    object.Texture = Context::Instance()->CreateTexture(texture);
+}
+
 void AddEventListenerWrapper(Application& app, const std::string& name, py::object callback)
 {
     app.GetEventDispatcher().AddEventListener<UpdateEvent>(name, 
@@ -229,11 +239,13 @@ void SetContextPointersWrapper(uint64_t applicationPointer, uint64_t graphicFact
 Application* GetContextWrapper() { return Context::Instance(); }
 
 #define RefGetter(method) py::make_function(method, py::return_internal_reference())
+#define StaticVar(method) py::make_function(method, py::return_value_policy<py::reference_existing_object>())
+#define NewObject(method) py::make_function(method, py::return_value_policy<py::manage_new_object>())
 
 BOOST_PYTHON_MODULE(mx_engine)
 {
     py::def("MxEngineSetContextPointers", SetContextPointersWrapper);
-    py::def("get_context", py::make_function(GetContextWrapper, py::return_value_policy<py::reference_existing_object>()));
+    py::def("get_context", StaticVar(GetContextWrapper));
 
     py::class_<Application, boost::noncopyable>("Application", py::no_init)
         .def("get", RefGetter(&Application::GetObject))
@@ -280,7 +292,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         ;
 
 	py::class_<Vector3>("vec3", py::init<float>())
-		.def(py::init<float, float, float>())
+        .def(py::init<float, float, float>())
         .def("__str__", Vector3ToString)
         .def(py::self + py::self)
         .def(py::self - py::self)
@@ -291,15 +303,15 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def(py::self / float())
         .def(-py::self)
         .def(+py::self)
-		.def("__getitem__", VectorIndexGetWrapper<Vector3>)
+        .def("__getitem__", VectorIndexGetWrapper<Vector3>)
         .def("__setitem__", VectorIndexSetWrapper<Vector3>)
-		.def_readwrite("x", &Vector3::x)
-		.def_readwrite("y", &Vector3::y)
-		.def_readwrite("z", &Vector3::z)
+        .def_readwrite("x", &Vector3::x)
+        .def_readwrite("y", &Vector3::y)
+        .def_readwrite("z", &Vector3::z)
         ;
 
 	py::class_<Vector2>("vec2", py::init<float>())
-		.def(py::init<float, float>())
+        .def(py::init<float, float>())
         .def("__str__", Vector2ToString)
         .def(py::self + py::self)
         .def(py::self - py::self)
@@ -312,8 +324,8 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def(+py::self)
         .def("__getitem__", VectorIndexGetWrapper<Vector2>)
         .def("__setitem__", VectorIndexSetWrapper<Vector2>)
-		.def_readwrite("x", &Vector2::x)
-		.def_readwrite("y", &Vector2::y)
+        .def_readwrite("x", &Vector2::x)
+        .def_readwrite("y", &Vector2::y)
         ;
 
     py::class_<Matrix4x4>("mat4", py::init<float>())
@@ -341,7 +353,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("move_speed", &CameraController::GetMoveSpeed, &CameraController::SetMoveSpeed)
         .add_property("rotate_speed", &CameraController::GetRotateSpeed, &CameraController::SetRotateSpeed)
         .add_property("position", RefGetter(&CameraController::GetPosition), &CameraController::SetPosition)
-        .add_property("direction", RefGetter(&CameraController::GetDirection), &CameraController::SetDirection)\
+        .add_property("direction", RefGetter(&CameraController::GetDirection), &CameraController::SetDirection)
         .add_property("up", RefGetter(&CameraController::GetUp), &CameraController::SetUp)
         .add_property("zoom", &CameraController::GetZoom, &CameraController::SetZoom)
         .add_property("vec_forward", RefGetter(&CameraController::GetForwardVector), &CameraController::SetForwardVector)
@@ -415,9 +427,11 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("move_up", RefGetter((RotateMoveFunc)&MxObject::TranslateUp))
         .def("hide", &MxObject::Hide)
         .def("show", &MxObject::Show)
+        .def("set_texture", SetTextureWrapper)
+        .def("set_shader", SetShaderWrapper)
+        .add_property("rotation", RefGetter(&MxObject::GetEulerRotation))
         .add_property("translation", RefGetter(&MxObject::GetTranslation))
-        .add_property("rotation", RefGetter(&MxObject::GetRotation))
-        .add_property("scale", RefGetter(&MxObject::GetScale))
+        .add_property("get_scale", RefGetter(&MxObject::GetScale))
         .add_property("vec_forward", RefGetter(&MxObject::GetForwardVector), &MxObject::SetForwardVector)
         .add_property("vec_up", RefGetter(&MxObject::GetUpVector),&MxObject::SetUpVector)
         .add_property("vec_right", RefGetter(&MxObject::GetRightVector), &MxObject::SetRightVector)

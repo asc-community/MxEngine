@@ -5,3 +5,4 @@
 #include "GridObject.h"
 #include "DestroyerObject.h"
 #include "DeathStarObject.h"
+#include "LightObject.h"

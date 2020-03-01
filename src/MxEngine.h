@@ -31,7 +31,7 @@
 #include "Core/Macro/Macro.h"
 #include "Core/Application/Application.h"
 #include "Utilities/Memory/Memory.h"
-#include "Core/Object/Object.h"
+#include "Core/MxObject/MxObject.h"
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 #include "Utilities/Logger/Logger.h"
 #include "Core/Camera/PerspectiveCamera.h"

@@ -28,23 +28,59 @@
 
 #pragma once
 
-#include "Core/Interfaces/GraphicAPI/VertexBuffer.h"
+#include "PointLight.h"
 
 namespace MxEngine
 {
-	class GLVertexBuffer final : public VertexBuffer
-	{
-	public:
-		explicit GLVertexBuffer();
-		explicit GLVertexBuffer(BufferData& data, UsageType type);
-		~GLVertexBuffer();
-		GLVertexBuffer(const GLVertexBuffer&) = delete;
-		GLVertexBuffer(GLVertexBuffer&& vbo);
+    PointLight& PointLight::UsePosition(const Vector3& position)
+    {
+        this->Position = position;
+        return *this;
+    }
 
-		// Inherited via IVertexBuffer
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
-		virtual void Load(const BufferData& data, UsageType type) override;
-		virtual void BufferSubData(const BufferData& data) override;
-	};
+    PointLight& PointLight::UseFactors(const Vector3& factors)
+    {
+        this->factors[Constant] = Max(factors[Constant ], 1.0f);
+        this->factors[Linear]   = Max(factors[Linear   ], 0.0f);
+        this->factors[Constant] = Max(factors[Quadratic], 0.0f);
+        return *this;
+    }
+
+    const Vector3& PointLight::GetFactors() const
+    {
+        return this->factors;
+    }
+
+    PointLight& PointLight::UseAmbientColor(const Vector3& ambient)
+    {
+        this->ambientColor = Clamp(ambient, MakeVector3(0.0f), MakeVector3(1.0f));
+        return *this;
+    }
+
+    PointLight& PointLight::UseDiffuseColor(const Vector3& diffuse)
+    {
+        this->diffuseColor = Clamp(diffuse, MakeVector3(0.0f), MakeVector3(1.0f));
+        return *this;
+    }
+
+    PointLight& PointLight::UseSpecularColor(const Vector3& specular)
+    {
+        this->specularColor = Clamp(specular, MakeVector3(0.0f), MakeVector3(1.0f));
+        return *this;
+    }
+
+    const Vector3& PointLight::GetAmbientColor() const
+    {
+        return this->ambientColor;
+    }
+
+    const Vector3& PointLight::GetDiffuseColor() const
+    {
+        return this->diffuseColor;
+    }
+
+    const Vector3& PointLight::GetSpecularColor() const
+    {
+        return this->specularColor;
+    }
 }

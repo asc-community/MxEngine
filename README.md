@@ -11,8 +11,9 @@ MxEngine is not a huge framework so multiple third-party libraries are used. Her
 - [GLFW](https://www.glfw.org/) - multi-platform library for OpenGL providing API for creating windows, receiving input and events
 - [GLM](https://glm.g-truc.net/0.9.9/index.html) - header only C++ mathematics library for graphics software
 - [ImGui](https://github.com/ocornut/imgui) - Bloat-free Immediate Mode Graphical User interface for C++
+- [Boost](https://www.boost.org) - Large C++ library that you should already know about
 
-Note that MxEngine may include more additional libraries in further releases. It may also use [Boost library](https://www.boost.org) in its core. Engine requires at least C++17 as depends on some new STL libraries. All souce files are compiled using MSVC through VS2019 and are not guaranteed to be compiled by GCC/clang (at least for now).
+Note that MxEngine may include more additional libraries in further releases. It also uses [Boost library](https://www.boost.org) in its core. Engine requires at least C++17 as depends on some new STL libraries. All source files are compiled using MSVC through VS2019 and are not guaranteed to be compiled by GCC/clang (at least for now).
 
 ## Versions & Releases
 MxEngine releases comes with version in format X.Y.Z where X stand for major release, Y for minor release and Z for bug fix or non-significant change. 
@@ -80,3 +81,7 @@ Bug fixes & improvements are just fixes to already existing code to reestablish 
 - added python scripting
 - added directional global light
 - fixed event & object deletion bug
+### v4.5.0
+- added point and spot lights
+- added imgui window for objects, lighting and profiling
+- added dynamic VBO support

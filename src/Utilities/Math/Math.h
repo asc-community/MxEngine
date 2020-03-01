@@ -58,6 +58,36 @@ namespace MxEngine
 	template<size_t Columns, size_t Rows, typename Type>
 	using Matrix = glm::mat<Columns, Rows, Type>;
 
+	inline Vector2 MakeVector2(float x, float y)
+	{
+		return Vector2(x, y);
+	}
+
+	inline Vector3 MakeVector3(float x, float y, float z)
+	{
+		return Vector3(x, y, z);
+	}
+
+	inline Vector4 MakeVector4(float x, float y, float z, float w)
+	{
+		return Vector4(x, y, z, w);
+	}
+
+	inline Vector2 MakeVector2(float value)
+	{
+		return Vector2(value);
+	}
+
+	inline Vector3 MakeVector3(float value)
+	{
+		return Vector3(value);
+	}
+
+	inline Vector4 MakeVector4(float value)
+	{
+		return Vector4(value);
+	}
+
 	inline Matrix4x4 MakeViewMatrix(const Vector3& eye, const Vector3& center, const Vector3& up)
 	{
 		return glm::lookAt(eye, center, up);
@@ -98,6 +128,11 @@ namespace MxEngine
 		return glm::angleAxis(angle, axis);
 	}
 
+	inline Vector3 MakeEulerAngles(const Quaternion& q)
+	{
+		return glm::eulerAngles(q);
+	}
+
 	template<size_t Columns, size_t Rows, typename T>
 	inline Matrix<Columns, Rows, T> Transpose(const Matrix<Columns, Rows, T>& mat)
 	{
@@ -114,6 +149,18 @@ namespace MxEngine
 	inline constexpr T Clamp(const T& value, const T& low, const T& high)
 	{
 		return glm::clamp(value, low, high);
+	}
+
+	template<typename T, typename U>
+	inline constexpr decltype(std::declval<T>() + std::declval<U>()) Max(const T& v1, const U& v2)
+	{
+		return (v1 > v2 ? v1 : v2);
+	}
+
+	template<typename T, typename U>
+	inline constexpr decltype(std::declval<T>() + std::declval<U>()) Min(const T& v1, const U& v2)
+	{
+		return (v1 < v2 ? v1 : v2);
 	}
 
 	template<typename T>

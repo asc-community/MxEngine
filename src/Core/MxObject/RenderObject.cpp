@@ -57,13 +57,13 @@ namespace MxEngine
 			object.vertexCount = group.faces.size();
 			object.useTexture = group.useTexture;
 			object.useNormal = group.useNormal;
-			object.VBOs.emplace_back(Graphics::Instance()->CreateVertexBuffer(group.buffer, UsageType::STATIC_DRAW));
+			object.VBO = Graphics::Instance()->CreateVertexBuffer(group.buffer, UsageType::STATIC_DRAW);
 
 			auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
 			VBL->PushFloat(3);
 			if (group.useTexture) VBL->PushFloat(3);
 			if (group.useNormal) VBL->PushFloat(3);
-			object.VAO->AddBuffer(*object.VBOs.back(), *VBL);
+			object.VAO->AddBuffer(*object.VBO, *VBL);
 
 			if (group.useTexture)
 			{
@@ -98,6 +98,15 @@ namespace MxEngine
 					if (object.material->Ns == 0.0f) object.material->Ns = 128.0f; // bad as pow(0.0, 0.0) -> NaN
 				}
 			}
+			if (!group.useTexture)
+			{
+				Logger::Instance().Warning("MxEngine::MxObject", "object file does not have texture data: " + filepath.string());
+			}
+			if (!group.useNormal)
+			{
+				Logger::Instance().Warning("MxEngine::MxObject", "object file does not have normal data: " + filepath.string());
+			}
+
 			this->subObjects.push_back(std::move(object));
 		}
 	}
@@ -155,6 +164,11 @@ namespace MxEngine
 		return *this->material;
 	}
 
+	Material& RenderObject::GetMaterial()
+	{
+		return *this->material;
+	}
+
 	size_t RenderObject::GetVertexCount() const
 	{
 		return this->vertexCount;
@@ -165,15 +179,27 @@ namespace MxEngine
 		return this->material != nullptr;
 	}
 
-	void RenderObject::AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl)
+	void RenderObjectContainer::AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl)
 	{
 		this->VBOs.push_back(std::move(vbo));
-		this->VAO->AddInstancedBuffer(*this->VBOs.back(), *vbl);
+		for (const auto& subObject : this->subObjects)
+		{
+			subObject.VAO->AddInstancedBuffer(*this->VBOs.back(), *vbl);
+		}
 	}
 
-	void RenderObject::AddBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl)
+	VertexBuffer& RenderObjectContainer::GetBufferByIndex(size_t index)
+	{
+		assert(index < this->VBOs.size());
+		return *this->VBOs[index];
+	}
+
+	void RenderObjectContainer::AddBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl)
 	{
 		this->VBOs.push_back(std::move(vbo));
-		this->VAO->AddBuffer(*this->VBOs.back(), *vbl);
+		for (const auto& subObject : this->subObjects)
+		{
+			subObject.VAO->AddBuffer(*this->VBOs.back(), *vbl);
+		}
 	}
 }

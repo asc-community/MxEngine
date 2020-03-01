@@ -32,14 +32,33 @@
 #include "Core/Interfaces/IDrawable.h"
 #include "Core/Camera/CameraController.h"
 #include "Core/Interfaces/GraphicAPI/Renderer.h"
-#include "Core/Lighting/DirectionalLight.h"
+#include "Core/Lighting/DirectionalLight/DirectionalLight.h"
+#include "Core/Lighting/PointLight/PointLight.h"
+#include "Core/Lighting/SpotLight/SpotLight.h"
+
+#include <array>
 
 namespace MxEngine
 {
 	class RenderController
 	{
 		Renderer& renderer;
+
+		template<typename LightType>
+		class LightContainer
+		{
+			using Storage = std::vector<LightType>;
+			Storage storage;
+		public:
+			size_t GetCount() const;
+			void SetCount(size_t count);
+			LightType& operator[](size_t index);
+			const LightType& operator[](size_t index) const;
+		};
 	public:
+		LightContainer<PointLight> PointLights;
+		LightContainer<SpotLight> SpotLights;
+
 		RenderController(Renderer& renderer);
 
 		CameraController ViewPort;
@@ -53,4 +72,30 @@ namespace MxEngine
 		void DrawObject(const IDrawable& object) const;
 		void DrawObjectMesh(const IDrawable& object) const;
 	};
+
+	template<typename LightType>
+	inline size_t RenderController::LightContainer<LightType>::GetCount() const
+	{
+		return storage.size();
+	}
+
+	template<typename LightType>
+	inline void RenderController::LightContainer<LightType>::SetCount(size_t count)
+	{
+		storage.resize(count);
+	}
+
+	template<typename LightType>
+	inline LightType& RenderController::LightContainer<LightType>::operator[](size_t index)
+	{
+		assert(index < storage.size());
+		return storage[index];
+	}
+	
+	template<typename LightType>
+	inline const LightType& RenderController::LightContainer<LightType>::operator[](size_t index) const
+	{
+		assert(index < storage.size());
+		return storage[index];
+	}
 }

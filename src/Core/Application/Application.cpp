@@ -128,6 +128,11 @@ namespace MxEngine
 		return AddObject(name, MakeUnique<MxObject>(object.GetObjectBase()));
 	}
 
+	const Application::ObjectStorage::Storage& Application::GetObjectList()
+	{
+		return this->objects.Get();
+	}
+
 	Ref<Texture> Application::CreateTexture(const std::filesystem::path& texture, bool genMipmaps, bool flipImage)
 	{
 		MAKE_SCOPE_PROFILER("Application::CreateTexture");
@@ -355,7 +360,7 @@ namespace MxEngine
 	#if defined(MXENGINE_SCRIPTING_CHAISCRIPT)
 	void Application::CreateConsoleBindings(DeveloperConsole& console)
 	{
-		console.SetSize({ this->GetWindow().GetWidth() / 2.0f, this->GetWindow().GetHeight() / 2.0f });
+		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });
 		this->GetEventDispatcher().AddEventListener<RenderEvent>("DeveloperConsole",
 			[this](RenderEvent&) { this->GetConsole().OnRender(); });
 
@@ -498,14 +503,14 @@ namespace MxEngine
 	#elif defined(MXENGINE_SCRIPTING_PYTHON)
 	void Application::CreateConsoleBindings(DeveloperConsole& console)
 	{
-		console.SetSize({ this->GetWindow().GetWidth() / 2.0f, this->GetWindow().GetHeight() / 2.0f });
+		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });
 		this->GetEventDispatcher().AddEventListener<RenderEvent>("DeveloperConsole",
 			[this](RenderEvent&) { this->GetConsole().OnRender(); });
 	}
 	#else
 	void Application::CreateConsoleBindings(DeveloperConsole& console)
 	{
-		console.SetSize({ this->GetWindow().GetWidth() / 2.0f, this->GetWindow().GetHeight() / 2.0f });
+		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });
 		this->GetEventDispatcher().AddEventListener<RenderEvent>("DeveloperConsole",
 			[this](RenderEvent&) { this->GetConsole().OnRender(); });
 	}

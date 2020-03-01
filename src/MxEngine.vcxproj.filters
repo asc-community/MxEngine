@@ -59,13 +59,16 @@
     <ClInclude Include="Library\Bindings\AppCloseBinding.h" />
     <ClInclude Include="Library\Bindings\Bindings.h" />
     <ClInclude Include="Core\Event\FpsUpdateEvent.h" />
-    <ClInclude Include="Core\Object\Object.h" />
-    <ClInclude Include="Core\Object\RenderObject.h" />
-    <ClInclude Include="Core\Lighting\DirectionalLight.h" />
     <ClInclude Include="Utilities\LifetimeManager\LifetimeManager.h" />
     <ClInclude Include="Library\Scripting\ChaiScript\ChaiScriptEngine.h" />
     <ClInclude Include="Library\Scripting\Python\PythonEngine.h" />
     <ClInclude Include="Core\Macro\Macro.h" />
+    <ClInclude Include="Core\MxObject\RenderObject.h" />
+    <ClInclude Include="Core\MxObject\MxObject.h" />
+    <ClInclude Include="Core\Lighting\DirectionalLight\DirectionalLight.h" />
+    <ClInclude Include="Core\Lighting\PointLight\PointLight.h" />
+    <ClInclude Include="Core\Interfaces\ILightSource.h" />
+    <ClInclude Include="Core\Lighting\SpotLight\SpotLight.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
@@ -90,10 +93,12 @@
     <ClCompile Include="Platform\OpenGL\Renderer\GLRenderer.cpp" />
     <ClCompile Include="Core\RenderController\RenderController.cpp" />
     <ClCompile Include="Platform\OpenGL\Window\GLWindow.cpp" />
-    <ClCompile Include="Core\Object\Object.cpp" />
-    <ClCompile Include="Core\Object\RenderObject.cpp" />
-    <ClCompile Include="Core\Lighting\DirectionalLight.cpp" />
     <ClCompile Include="Library\Scripting\Python\PythonEngine.cpp" />
+    <ClCompile Include="Core\MxObject\RenderObject.cpp" />
+    <ClCompile Include="Core\MxObject\MxObject.cpp" />
+    <ClCompile Include="Core\Lighting\DirectionalLight\DirectionalLight.cpp" />
+    <ClCompile Include="Core\Lighting\PointLight\PointLight.cpp" />
+    <ClCompile Include="Core\Lighting\SpotLight\SpotLight.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\cube_fragment.glsl" />

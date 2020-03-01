@@ -34,7 +34,7 @@
 #include "Core/DeveloperConsole/DeveloperConsole.h"
 #include "Core/Interfaces/GraphicAPI/Window.h"
 #include "Core/RenderController/RenderController.h"
-#include "Core/Object/Object.h"
+#include "Core/MxObject/MxObject.h"
 #include <unordered_map>
 
 #include <filesystem>
@@ -89,6 +89,7 @@ namespace MxEngine
 		MxObject& CreateObject(const std::string& name, const std::filesystem::path& path);
 		MxObject& AddObject(const std::string& name, UniqueRef<MxObject> object);
 		MxObject& CopyObject(const std::string& name, const std::string& existingObject);
+		const ObjectStorage::Storage& GetObjectList();
 		Ref<Texture> CreateTexture(const std::filesystem::path& texture, bool genMipmaps = true, bool flipImage = true);
 		Ref<Shader> CreateShader(const std::filesystem::path& vertex, const std::filesystem::path& fragment);
 		MxObject& GetObject(const std::string& name);

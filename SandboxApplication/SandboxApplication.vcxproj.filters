@@ -17,7 +17,6 @@
     <None Include="Resources\shaders\object_vertex.glsl" />
     <None Include="Resources\shaders\mesh_fragment.glsl" />
     <None Include="Resources\shaders\grid_fragment.glsl" />
-    <None Include="Resources\shaders\object_lights_fragment.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Objects\GridObject.h" />
@@ -27,5 +26,6 @@
     <ClInclude Include="Objects\DestroyerObject.h" />
     <ClInclude Include="Objects\DeathStarObject.h" />
     <ClInclude Include="Sandbox.h" />
+    <ClInclude Include="Objects\LightObject.h" />
   </ItemGroup>
 </Project>

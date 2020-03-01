@@ -26,25 +26,40 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Core/Interfaces/GraphicAPI/VertexBuffer.h"
+#include "DirectionalLight.h"
 
 namespace MxEngine
 {
-	class GLVertexBuffer final : public VertexBuffer
-	{
-	public:
-		explicit GLVertexBuffer();
-		explicit GLVertexBuffer(BufferData& data, UsageType type);
-		~GLVertexBuffer();
-		GLVertexBuffer(const GLVertexBuffer&) = delete;
-		GLVertexBuffer(GLVertexBuffer&& vbo);
+    DirectionalLight& DirectionalLight::UseAmbientColor(const Vector3& ambient)
+    {
+        this->ambientColor = Clamp(ambient, MakeVector3(0.0f), MakeVector3(1.0f));
+        return *this;
+    }
 
-		// Inherited via IVertexBuffer
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
-		virtual void Load(const BufferData& data, UsageType type) override;
-		virtual void BufferSubData(const BufferData& data) override;
-	};
+    DirectionalLight& DirectionalLight::UseDiffuseColor(const Vector3& diffuse)
+    {
+        this->diffuseColor = Clamp(diffuse, MakeVector3(0.0f), MakeVector3(1.0f));
+        return *this;
+    }
+
+    DirectionalLight& DirectionalLight::UseSpecularColor(const Vector3& specular)
+    {
+        this->specularColor = Clamp(specular, MakeVector3(0.0f), MakeVector3(1.0f));
+        return *this;
+    }
+
+    const Vector3& DirectionalLight::GetAmbientColor() const
+    {
+        return this->ambientColor;
+    }
+
+    const Vector3& DirectionalLight::GetDiffuseColor() const
+    {
+        return this->diffuseColor;
+    }
+
+    const Vector3& DirectionalLight::GetSpecularColor() const
+    {
+        return this->specularColor;
+    }
 }

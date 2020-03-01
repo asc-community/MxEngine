@@ -77,6 +77,7 @@ void MxEngine::GLTexture::Load(const std::string& filepath, bool genMipmaps, boo
 	GLCALL(glGenTextures(1, &id));
 
 	Image image = ImageLoader::LoadImage(filepath, flipImage);
+	this->filepath = filepath;
 
 	if (image.data == nullptr)
 	{
@@ -117,6 +118,11 @@ void MxEngine::GLTexture::Bind(IBindable::IdType id) const
 {
 	this->activeId = id;
 	this->Bind();
+}
+
+const std::string& MxEngine::GLTexture::GetPath() const
+{
+	return this->filepath;
 }
 
 size_t MxEngine::GLTexture::GetWidth() const

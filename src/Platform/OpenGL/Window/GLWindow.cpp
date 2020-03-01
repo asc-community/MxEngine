@@ -66,17 +66,17 @@ namespace MxEngine
 
 	GLWindow& GLWindow::operator=(GLWindow&& window) noexcept
 	{
-		this->title		  = std::move(window.title);
-		this->window		 = window.window;
-		this->width		  = window.width,
-		this->height		 = window.height;
+		this->title          = std::move(window.title);
+		this->window         = window.window;
+		this->width          = window.width,
+		this->height         = window.height;
 		this->windowPosition = window.windowPosition;
-		this->cursorMode	 = window.cursorMode;
+		this->cursorMode     = window.cursorMode;
 		this->cursorPosition = window.cursorPosition;
-		this->keyHeld		= window.keyHeld;
-		this->dispatcher	 = window.dispatcher;
-		window.window		= nullptr;
-		window.dispatcher	= nullptr;
+		this->keyHeld        = window.keyHeld;
+		this->dispatcher     = window.dispatcher;
+		window.window        = nullptr;
+		window.dispatcher    = nullptr;
 
 		return *this;
 	}
@@ -200,6 +200,7 @@ namespace MxEngine
 					if (action == GLFW_REPEAT) return;
 
 					GLWindow& window = *(GLWindow*)glfwGetWindowUserPointer(w);
+					if ((size_t)key >= 350) return; // TODO: handle all key input
 					window.keyPressed[(size_t)key] = (action == GLFW_PRESS);
 					window.keyReleased[(size_t)key] = (action == GLFW_RELEASE);
 					window.keyHeld[(size_t)key] = (action == GLFW_PRESS);

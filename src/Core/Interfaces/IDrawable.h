@@ -45,7 +45,7 @@ namespace MxEngine
 		virtual bool IsLast(size_t iterator) const = 0;
 		virtual size_t GetNext(size_t iterator) const = 0;
 		virtual const IRenderable& GetCurrent(size_t iterator) const = 0;
-		virtual const Matrix4x4& GetModel() const = 0;
+		virtual const Matrix4x4& GetModelMatrix() const = 0;
 		virtual const Shader& GetShader() const = 0;
 		virtual const Texture& GetTexture() const = 0;
 		virtual bool HasShader() const = 0;

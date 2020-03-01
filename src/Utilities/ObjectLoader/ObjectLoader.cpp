@@ -287,7 +287,7 @@ namespace MxEngine
 			if (object.groups.empty())
 			{
 				Logger::Instance().Warning("MxEngine::MxObjectLoader",
-					"group was not specifies, creating one as dafault. line: " + std::to_string(object.lineCount));
+					"group was not specifies, creating one as default. line: " + std::to_string(object.lineCount));
 				object.groups.emplace_back();
 				GROUP(object).name = "__DEFAULT";
 			}
@@ -374,7 +374,7 @@ namespace MxEngine
 			{
 				file >> strBuff; // smoothing group id / 'off'
 			}
-			else if (type == "g")
+			else if (type == "g" || type == "o") // probably o meaning is not g
 			{
 				file >> strBuff; // group name
 				obj.groups.emplace_back();

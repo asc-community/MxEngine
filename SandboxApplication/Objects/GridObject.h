@@ -12,6 +12,6 @@ public:
 	{
 		auto context = Context::Instance();
 		this->Load(context->LoadObjectBase("objects/grid/grid.obj"));
-		this->Shader = context->CreateShader("shaders/grid_vertex.glsl", "shaders/grid_fragment.glsl");
+		this->Texture = context->CreateTexture("objects/grid/grid.png");
 	}
 };

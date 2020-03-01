@@ -55,5 +55,8 @@ namespace MxEngine
 		Vector3 Ks{ 0.0f };
 		Vector3 Ke{ 0.0f };
 		int illum = 0;
+
+		float f_Ka = 1.0f;
+		float f_Kd = 1.0f;
 	};
 }

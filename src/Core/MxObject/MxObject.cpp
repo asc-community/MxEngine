@@ -26,16 +26,14 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Object.h"
+#include "MxObject.h"
 #include "Utilities/ObjectLoader/ObjectLoader.h"
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 #include "Utilities/Profiler/Profiler.h"
 
-
-
 namespace MxEngine
 {
-	void MxObject::AddInstanceBuffer(const ArrayBufferType& buffer, size_t count, UsageType type)
+	void MxObject::AddInstanceBuffer(const ArrayBufferType& buffer, size_t components, UsageType type)
 	{
 		if (this->object == nullptr)
 		{
@@ -43,7 +41,7 @@ namespace MxEngine
 			return;
 		}
 
-		size_t objectCount = buffer.size() / count;
+		size_t objectCount = buffer.size() / components;
 
 		if (this->instanceCount == 0) this->instanceCount = objectCount;
 		if (this->instanceCount > objectCount)
@@ -56,13 +54,16 @@ namespace MxEngine
 			Logger::Instance().Error("MxEngine::MxObject", "instance buffer contains more data than required, additional will be ignored");
 		}
 
-		for (auto& object : this->object->GetRenderObjects())
-		{
-			auto VBO = Graphics::Instance()->CreateVertexBuffer(buffer, type);
-			auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
-			VBL->PushFloat(count);
-			object.AddInstancedBuffer(std::move(VBO), std::move(VBL));
-		}
+		auto VBO = Graphics::Instance()->CreateVertexBuffer(buffer, type);
+		auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
+		VBL->PushFloat(components);
+		this->object->AddInstancedBuffer(std::move(VBO), std::move(VBL));
+	}
+
+	void MxObject::BufferDataByIndex(size_t index, const ArrayBufferType& buffer)
+	{
+		VertexBuffer& VBO = this->object->GetBufferByIndex(index);
+		VBO.BufferSubData(buffer);
 	}
 
 	MxObject::MxObject(const Ref<RenderObjectContainer>& object)
@@ -115,14 +116,24 @@ namespace MxEngine
 		return this->scale;
 	}
 
+    const Vector3& MxObject::GetEulerRotation() const
+    {
+		if (this->updateEuler)
+		{
+			this->eulerRotation = MakeEulerAngles(this->rotation);
+			this->updateEuler = false;
+		}
+		return this->eulerRotation;
+    }
+
 	MxObject& MxObject::Scale(float scale)
 	{
-		return Scale(Vector3(scale));
+		return Scale(MakeVector3(scale));
 	}
 
 	MxObject& MxObject::Scale(float scaleX, float scaleY, float scaleZ)
 	{
-		return Scale(Vector3(scaleX, scaleY, scaleZ));
+		return Scale(MakeVector3(scaleX, scaleY, scaleZ));
 	}
 
 	MxObject& MxObject::Scale(const Vector3& scale)
@@ -137,29 +148,30 @@ namespace MxEngine
 	MxObject& MxObject::Rotate(float angle, const Vector3& vec)
 	{
 		needUpdate = true;
+		updateEuler = true;
 		this->rotation *= MakeQuaternion(Radians(angle), vec);
 		return *this;
 	}
 
 	MxObject& MxObject::RotateX(float angle)
 	{
-		return Rotate(angle, Vector3(1.0f, 0.0f, 0.0f));
+		return Rotate(angle, MakeVector3(1.0f, 0.0f, 0.0f));
 	}
 
 	MxObject& MxObject::RotateY(float angle)
 	{
-		return Rotate(angle, Vector3(0.0f, 1.0f, 0.0f));
+		return Rotate(angle, MakeVector3(0.0f, 1.0f, 0.0f));
 	}
 
 	MxObject& MxObject::RotateZ(float angle)
 	{
-		return Rotate(angle, Vector3(0.0f, 0.0f, 1.0f));
+		return Rotate(angle, MakeVector3(0.0f, 0.0f, 1.0f));
 	}
 
 	MxObject& MxObject::Translate(float x, float y, float z)
 	{
 		needUpdate = true;
-		this->translation += Vector3(x, y, z);
+		this->translation += MakeVector3(x, y, z);
 		return *this;
 	}
 
@@ -259,7 +271,7 @@ namespace MxEngine
 		return this->GetObjectBase()->GetRenderObjects()[iterator];
 	}
 
-	const Matrix4x4& MxObject::GetModel() const
+	const Matrix4x4& MxObject::GetModelMatrix() const
 	{
 		if (needUpdate)
 		{

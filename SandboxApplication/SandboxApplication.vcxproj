@@ -156,6 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Sandbox.cpp" />
+    <ClInclude Include="Objects\LightObject.h" />
     <ClInclude Include="Sandbox.h" />
   </ItemGroup>
   <ItemGroup>
@@ -186,7 +187,6 @@
     <None Include="Resources\shaders\grid_vertex.glsl" />
     <None Include="Resources\shaders\mesh_vertex.glsl" />
     <None Include="Resources\shaders\object_fragment.glsl" />
-    <None Include="Resources\shaders\object_lights_fragment.glsl" />
     <None Include="Resources\shaders\object_vertex.glsl" />
   </ItemGroup>
   <ItemGroup>

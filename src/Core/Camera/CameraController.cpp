@@ -183,13 +183,13 @@ namespace MxEngine
 			std::cos(verticalAngle) * std::cos(horizontalAngle)
 			});
 
-		this->forward = Vector3(
+		this->forward = MakeVector3(
 			sin(horizontalAngle),
 			0.0f,
 			cos(horizontalAngle)
 		);
 
-		this->right = Vector3(
+		this->right = MakeVector3(
 			sin(horizontalAngle - HalfPi<float>()),
 			0.0f,
 			cos(horizontalAngle - HalfPi<float>())

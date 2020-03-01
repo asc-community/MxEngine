@@ -125,6 +125,10 @@ namespace MxEngine
         }
 
     public:
+        using Value = ValueType;
+        using Key = Id;
+        using Storage = ValueStorage;
+
         template<typename IdT, typename ValueT>
         void Add(IdT&& key, ValueT&& value)
         {
