@@ -36,6 +36,7 @@ x64
 .vs
 src/x64
 
-# momoEngine
+# MxEngine
 imgui.ini
 profile_log.json
+compile_commands.json

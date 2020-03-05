@@ -33,7 +33,7 @@
 
 namespace MxEngine
 {
-	void MxObject::AddInstanceBuffer(const ArrayBufferType& buffer, size_t components, UsageType type)
+	void MxObject::AddInstancedBuffer(const ArrayBufferType& buffer, size_t components, UsageType type)
 	{
 		if (this->object == nullptr)
 		{
@@ -64,6 +64,16 @@ namespace MxEngine
 	{
 		VertexBuffer& VBO = this->object->GetBufferByIndex(index);
 		VBO.BufferSubData(buffer);
+	}
+
+	size_t MxObject::GetBufferCount() const
+	{
+		if (this->object == nullptr)
+		{
+			Logger::Instance().Warning("MxEngine::MxObject", "GetBufferCount() is called on null render object");
+			return 0;
+		}
+		return this->object->GetBufferCount();
 	}
 
 	MxObject::MxObject(const Ref<RenderObjectContainer>& object)

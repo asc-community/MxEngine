@@ -23,6 +23,7 @@
     <ClInclude Include="Core\Camera\OrthographicCamera.h" />
     <ClInclude Include="Core\Camera\PerspectiveCamera.h" />
     <ClInclude Include="Core\DeveloperConsole\DeveloperConsole.h" />
+    <ClInclude Include="Core\Event\AppDestroyEvent.h" />
     <ClInclude Include="Core\Event\RenderEvent.h" />
     <ClInclude Include="Core\Event\FpsUpdateEvent.h" />
     <ClInclude Include="Core\Event\UpdateEvent.h" />
@@ -35,6 +36,13 @@
     <ClInclude Include="Library\Bindings\AppCloseBinding.h" />
     <ClInclude Include="Library\Bindings\Bindings.h" />
     <ClInclude Include="Library\Bindings\ConsoleBinding.h" />
+    <ClInclude Include="Library\Bindings\LightBinding.h" />
+    <ClInclude Include="Library\Primitives\AbstractPrimitive.h" />
+    <ClInclude Include="Library\Primitives\Colors.h" />
+    <ClInclude Include="Library\Primitives\Cube.h" />
+    <ClInclude Include="Library\Primitives\Grid.h" />
+    <ClInclude Include="Library\Primitives\Primitives.h" />
+    <ClInclude Include="Library\Primitives\Sphere.h" />
     <ClInclude Include="Library\Scripting\ChaiScript\ChaiScriptEngine.h" />
     <ClInclude Include="Core\Event\KeyEvent.h" />
     <ClInclude Include="Core\Event\MouseEvent.h" />
@@ -74,7 +82,13 @@
     <ClInclude Include="Library\Bindings\InputBinding.h" />
     <ClInclude Include="Utilities\EventDispatcher\EventDispatcher.h" />
     <ClInclude Include="Utilities\ImageLoader\ImageLoader.h" />
-    <ClInclude Include="Utilities\ImGui\GraphicConsole.h" />
+    <ClInclude Include="Utilities\ImGui\Editors\CameraEditor.h" />
+    <ClInclude Include="Utilities\ImGui\Editors\LightEditor.h" />
+    <ClInclude Include="Utilities\ImGui\GraphicConsole\GraphicConsole.h" />
+    <ClInclude Include="Utilities\ImGui\ImGuiUtils.h" />
+    <ClInclude Include="Utilities\ImGui\Editors\ObjectEditor.h" />
+    <ClInclude Include="Utilities\ImGui\Layout\Layout.h" />
+    <ClInclude Include="Utilities\ImGui\Profiler\Profiler.h" />
     <ClInclude Include="Utilities\LifetimeManager\LifetimeManager.h" />
     <ClInclude Include="Utilities\Logger\Logger.h" />
     <ClInclude Include="Utilities\Math\Math.h" />
@@ -114,7 +128,7 @@
     <ClCompile Include="Platform\OpenGL\Renderer\GLRenderer.cpp" />
     <ClCompile Include="Platform\OpenGL\Window\GLWindow.cpp" />
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
-    <ClCompile Include="Utilities\ImGui\GraphicConsole.cpp" />
+    <ClCompile Include="Utilities\ImGui\GraphicConsole\GraphicConsole.cpp" />
     <ClCompile Include="Utilities\Logger\Logger.cpp" />
     <ClCompile Include="Utilities\ObjectLoader\ObjectLoader.cpp" />
     <ClCompile Include="Utilities\Profiler\Profiler.cpp" />
@@ -212,7 +226,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;D:\cpplibs\boost;D:\cpplibs\python\include;C:\%(Additional Dependencies)%</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;D:\cpplibs\boost;D:\cpplibs\python\include;D:\cpplibs\assimp\include;C:\%(Additional Dependencies)%</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -229,7 +243,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;D:\cpplibs\boost;D:\cpplibs\python\include;C:\%(Additional Dependencies)%</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;D:\cpplibs\boost;D:\cpplibs\python\include;D:\cpplibs\assimp\include;C:\%(Additional Dependencies)%</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -250,7 +264,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;D:\cpplibs\boost;D:\cpplibs\python\include;C:\%(Additional Dependencies)%</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;D:\cpplibs\boost;D:\cpplibs\python\include;D:\cpplibs\assimp\include;C:\%(Additional Dependencies)%</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -267,7 +281,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;D:\cpplibs\boost;D:\cpplibs\python\include;C:\%(Additional Dependencies)%</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;D:\cpplibs\boost;D:\cpplibs\python\include;D:\cpplibs\assimp\include;C:\%(Additional Dependencies)%</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>

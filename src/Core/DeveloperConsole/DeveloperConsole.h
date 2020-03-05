@@ -38,17 +38,17 @@ namespace MxEngine
 {
 	class GraphicConsole;
 
-	#if defined(MXENGINE_SCRIPTING_CHAISCRIPT)
+	#if defined(MXENGINE_USE_CHAISCRIPT)
 	class ChaiScriptEngine;
-	#elif defined(MXENGINE_SCRIPTING_PYTHON)
+	#elif defined(MXENGINE_USE_PYTHON)
 	class PythonEngine;
 	#endif
 
 	class DeveloperConsole
 	{
-		#if defined(MXENGINE_SCRIPTING_CHAISCRIPT)
+		#if defined(MXENGINE_USE_CHAISCRIPT)
 		using ScriptEngine = ChaiScriptEngine;
-		#elif defined(MXENGINE_SCRIPTING_PYTHON)
+		#elif defined(MXENGINE_USE_PYTHON)
 		using ScriptEngine = PythonEngine;
 		#else
 		using ScriptEngine = int; // stub
@@ -57,8 +57,11 @@ namespace MxEngine
 		ScriptEngine* engine;
 		GraphicConsole* console;
 		bool shouldRender = false;
+		bool debugTools = true;
 	public:
 		DeveloperConsole();
+		DeveloperConsole(const DeveloperConsole&) = delete;
+		DeveloperConsole(DeveloperConsole&&) = default;
 		~DeveloperConsole();
 
 		void Log(const std::string& message);
@@ -66,7 +69,8 @@ namespace MxEngine
 		void PrintHistory();
 		void OnRender();
 		void SetSize(const Vector2& size);
-		void Toggle(bool isVisible);
+		void Toggle(bool isVisible = true);
+		void UseDebugTools(bool value = true);
 
 		ScriptEngine& GetEngine();
 		Vector2 GetSize() const;

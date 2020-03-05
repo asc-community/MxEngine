@@ -33,11 +33,13 @@
 #include <GLEW/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "Core/Macro/Macro.h"
+
 namespace MxEngine
 {
 #define ASSERT(x) if(!(x)) __debugbreak(); 
 
-	#ifdef _DEBUG
+	#if defined(MXENGINE_DEBUG)
 	#define GLCALL(x) GlClearErrors(); x; GlLogCall(#x, __FILE__, __LINE__)
 	#else
 	#define GLCALL(x) x
@@ -54,6 +56,4 @@ namespace MxEngine
 
 	template<typename T>
 	unsigned int GetGLType();
-
-	std::string ReadFile(const std::string& filename);
 }

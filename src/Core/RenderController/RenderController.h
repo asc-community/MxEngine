@@ -43,7 +43,7 @@ namespace MxEngine
 	class RenderController
 	{
 		Renderer& renderer;
-
+	public:
 		template<typename LightType>
 		class LightContainer
 		{
@@ -55,7 +55,7 @@ namespace MxEngine
 			LightType& operator[](size_t index);
 			const LightType& operator[](size_t index) const;
 		};
-	public:
+
 		LightContainer<PointLight> PointLights;
 		LightContainer<SpotLight> SpotLights;
 

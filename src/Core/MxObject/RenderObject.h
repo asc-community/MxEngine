@@ -47,10 +47,17 @@ namespace MxEngine
 		void GenerateMeshIndicies() const;
 		friend class RenderObjectContainer;
 	public:
-		RenderObject() = default;
+		RenderObject(UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<Material> material, 
+			bool useTexture, bool useNormal, size_t vertexCount);
+
 		RenderObject(const RenderObject&) = delete;
 		RenderObject(RenderObject&&) noexcept = default;
+		RenderObject& operator=(const RenderObject&) = delete;
+		RenderObject& operator=(RenderObject&&) noexcept = default;
+
 		Material& GetMaterial();
+		bool UsesTexture() const;
+		bool UsesNormals() const;
 
 		virtual const VertexArray& GetVAO() const override;
 		virtual const IndexBuffer& GetMeshIBO() const override;
@@ -64,9 +71,10 @@ namespace MxEngine
 		typedef unsigned int GLuint;
 		typedef float GLfloat;
 
-		Vector3 objectCenter;
+		Vector3 objectCenter = MakeVector3(0.0f);
 		std::vector<RenderObject> subObjects;
 		std::vector<UniqueRef<VertexBuffer>> VBOs;
+		std::vector<UniqueRef<VertexBufferLayout>> VBLs;
 
 		void LoadFromFile(const std::filesystem::path& filepath);
 	public:
@@ -78,8 +86,9 @@ namespace MxEngine
 		void Load(const std::string& filepath);
 		std::vector<RenderObject>& GetRenderObjects();
 		const Vector3& GetObjectCenter() const;
-		void AddBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl);
 		void AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl);
-		VertexBuffer& GetBufferByIndex(size_t index);
+		VertexBuffer& GetBufferByIndex(size_t index); 
+		VertexBufferLayout& GetBufferLayoutByIndex(size_t index);
+		size_t GetBufferCount() const;
 	};
 }

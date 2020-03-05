@@ -28,6 +28,7 @@
 
 #include "GLIndexBuffer.h"
 #include "Platform/OpenGL/GLUtilities/GLUtilities.h"
+#include "Core/Macro/Macro.h"
 
 namespace MxEngine
 {
@@ -58,7 +59,7 @@ namespace MxEngine
 
 	void GLIndexBuffer::Load(const IndexBufferType& data)
 	{
-		#ifdef _DEBUG
+		#if defined(MXENGINE_DEBUG)
 		indicies = data.data();
 		#endif
 		this->count = data.size() * sizeof(IndexType);

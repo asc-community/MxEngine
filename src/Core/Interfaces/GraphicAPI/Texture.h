@@ -35,7 +35,10 @@ namespace MxEngine
 {
 	struct Texture : IBindable
 	{
+		using RawDataPointer = const uint8_t*;
+
 		virtual void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = true) = 0;
+		virtual void Load(RawDataPointer data, int width, int height, bool genMipmaps = true) = 0;
 		virtual void Bind(IBindable::IdType id) const = 0;
 		virtual const std::string& GetPath() const = 0;
 

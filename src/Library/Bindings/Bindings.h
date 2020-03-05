@@ -31,3 +31,4 @@
 #include "AppCloseBinding.h"
 #include "ConsoleBinding.h"
 #include "InputBinding.h"
+#include "LightBinding.h"

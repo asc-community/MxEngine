@@ -30,7 +30,7 @@
 
 #include "Core/Macro/Macro.h"
 
-#if defined(MXENGINE_SCRIPTING_CHAISCRIPT)
+#if defined(MXENGINE_USE_CHAISCRIPT)
 
 #define CHAISCRIPT_NO_THREADS
 #include <chaiscript/chaiscript.hpp>

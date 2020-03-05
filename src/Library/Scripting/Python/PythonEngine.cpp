@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "PythonEngine.h"
-#if defined(MXENGINE_SCRIPTING_PYTHON)
+#if defined(MXENGINE_USE_PYTHON)
 
 #include "Core/Application/Application.h"
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"

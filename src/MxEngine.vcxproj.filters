@@ -35,8 +35,6 @@
     <ClInclude Include="Platform\OpenGL\VertexArray\GLVertexArray.h" />
     <ClInclude Include="Platform\OpenGL\VertexBuffer\GLVertexBuffer.h" />
     <ClInclude Include="Platform\OpenGL\VertexBufferLayout\GLVertexBufferLayout.h" />
-    <ClInclude Include="Core\DeveloperConsole\DeveloperConsole.h" />
-    <ClInclude Include="Utilities\ImGui\GraphicConsole.h" />
     <ClInclude Include="Utilities\Profiler\Profiler.h" />
     <ClInclude Include="Core\Application\Application.h" />
     <ClInclude Include="Platform\OpenGL\GLUtilities\GLUtilities.h" />
@@ -69,6 +67,22 @@
     <ClInclude Include="Core\Lighting\PointLight\PointLight.h" />
     <ClInclude Include="Core\Interfaces\ILightSource.h" />
     <ClInclude Include="Core\Lighting\SpotLight\SpotLight.h" />
+    <ClInclude Include="Library\Primitives\Cube.h" />
+    <ClInclude Include="Core\Event\AppDestroyEvent.h" />
+    <ClInclude Include="Library\Primitives\Sphere.h" />
+    <ClInclude Include="Library\Primitives\Colors.h" />
+    <ClInclude Include="Library\Bindings\LightBinding.h" />
+    <ClInclude Include="Library\Primitives\AbstractPrimitive.h" />
+    <ClInclude Include="Library\Primitives\Grid.h" />
+    <ClInclude Include="Library\Primitives\Primitives.h" />
+    <ClInclude Include="Core\DeveloperConsole\DeveloperConsole.h" />
+    <ClInclude Include="Utilities\ImGui\ImGuiUtils.h" />
+    <ClInclude Include="Utilities\ImGui\GraphicConsole\GraphicConsole.h" />
+    <ClInclude Include="Utilities\ImGui\Editors\CameraEditor.h" />
+    <ClInclude Include="Utilities\ImGui\Editors\ObjectEditor.h" />
+    <ClInclude Include="Utilities\ImGui\Editors\LightEditor.h" />
+    <ClInclude Include="Utilities\ImGui\Profiler\Profiler.h" />
+    <ClInclude Include="Utilities\ImGui\Layout\Layout.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
@@ -84,8 +98,6 @@
     <ClCompile Include="Platform\OpenGL\VertexArray\GLVertexArray.cpp" />
     <ClCompile Include="Platform\OpenGL\VertexBuffer\GLVertexBuffer.cpp" />
     <ClCompile Include="Platform\OpenGL\VertexBufferLayout\GLVertexBufferLayout.cpp" />
-    <ClCompile Include="Core\DeveloperConsole\DeveloperConsole.cpp" />
-    <ClCompile Include="Utilities\ImGui\GraphicConsole.cpp" />
     <ClCompile Include="Utilities\Profiler\Profiler.cpp" />
     <ClCompile Include="Core\Application\Application.cpp" />
     <ClCompile Include="Platform\OpenGL\GLUtilities\GLUtilities.cpp" />
@@ -99,6 +111,8 @@
     <ClCompile Include="Core\Lighting\DirectionalLight\DirectionalLight.cpp" />
     <ClCompile Include="Core\Lighting\PointLight\PointLight.cpp" />
     <ClCompile Include="Core\Lighting\SpotLight\SpotLight.cpp" />
+    <ClCompile Include="Core\DeveloperConsole\DeveloperConsole.cpp" />
+    <ClCompile Include="Utilities\ImGui\GraphicConsole\GraphicConsole.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\cube_fragment.glsl" />

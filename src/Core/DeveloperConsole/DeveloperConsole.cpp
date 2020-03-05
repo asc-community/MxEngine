@@ -27,8 +27,9 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "DeveloperConsole.h"
-#include "Utilities/ImGui/GraphicConsole.h"
+#include "Utilities/ImGui/GraphicConsole/GraphicConsole.h"
 #include "Utilities/Profiler/Profiler.h"
+#include "Utilities/ImGui/ImGuiUtils.h"
 
 #include "Library/Scripting/ChaiScript/ChaiScriptEngine.h"
 #include "Library/Scripting/Python/PythonEngine.h"
@@ -62,7 +63,17 @@ namespace MxEngine
 		{
 			ImGui::SetNextWindowPos({ 0, 0 });
 			this->console->Draw("Developer Console");
-			ImGui::End();
+
+			if (this->debugTools)
+			{
+				GUI::RightFromConsole();
+				ImGui::Begin("Debug Tools");
+				GUI_TREE_NODE("Camera Editor",  GUI::DrawCameraEditor());
+				GUI_TREE_NODE("Objects Editor", GUI::DrawObjectEditor());
+				GUI_TREE_NODE("Profiler",       GUI::DrawProfiler());
+				GUI_TREE_NODE("Light Editor",   GUI::DrawLightEditor());
+				ImGui::End();
+			}
 		}
 	}
 
@@ -75,6 +86,11 @@ namespace MxEngine
 	{
 		this->shouldRender = isVisible;
 	}
+
+    void DeveloperConsole::UseDebugTools(bool value)
+    {
+		this->debugTools = value;
+    }
 
 	DeveloperConsole::ScriptEngine& DeveloperConsole::GetEngine()
 	{
@@ -91,7 +107,7 @@ namespace MxEngine
 		return this->shouldRender;
 	}
 
-#if defined(MXENGINE_SCRIPTING_CHAISCRIPT)
+#if defined(MXENGINE_USE_CHAISCRIPT)
 	DeveloperConsole::DeveloperConsole()
 	{
 		MAKE_SCOPE_PROFILER("DeveloperConsole::Init");
@@ -134,7 +150,7 @@ namespace MxEngine
 				}
 			});
 	}
-#elif defined(MXENGINE_SCRIPTING_PYTHON)
+#elif defined(MXENGINE_USE_PYTHON)
 	DeveloperConsole::DeveloperConsole()
 	{
 		MAKE_SCOPE_PROFILER("DeveloperConsole::Init");

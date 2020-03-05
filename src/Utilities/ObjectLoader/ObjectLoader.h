@@ -39,6 +39,8 @@ namespace MxEngine
 {
 	struct MaterialInfo
 	{
+		std::string name;
+
 		std::string map_Ka;
 		std::string map_Kd;
 		std::string map_Ks;
@@ -71,9 +73,9 @@ namespace MxEngine
 		bool useNormal = false;
 	};
 
-	using MaterialLibrary = std::unordered_map<std::string, MaterialInfo>;
+	using MaterialLibrary = std::vector<MaterialInfo>;
 
-	struct ObjFileInfo
+	struct ObjectInfo
 	{
 		MaterialLibrary materials;
 		std::vector<GroupInfo> groups;
@@ -84,10 +86,10 @@ namespace MxEngine
 
 	class ObjectLoader
 	{
-		static void ReadFace(std::stringstream& file, ObjFileInfo& obj);
-		static MaterialLibrary LoadMaterialLibrary(const std::string& path);
+		static void ReadFace(std::stringstream& file, ObjectInfo& obj);
+		static MaterialLibrary LoadMaterialLibrary(const std::string& directory, const std::string& path);
 		static MaterialInfo LoadMaterial(std::stringstream& file);
 	public:
-		static ObjFileInfo Load(const std::string& path);
+		static ObjectInfo Load(std::string path);
 	};
 }

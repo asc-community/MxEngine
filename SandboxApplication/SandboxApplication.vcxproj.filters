@@ -11,21 +11,18 @@
     <Object Include="Resources\objects\destroyer.obj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\shaders\grid_vertex.glsl" />
     <None Include="Resources\shaders\mesh_vertex.glsl" />
     <None Include="Resources\shaders\object_fragment.glsl" />
     <None Include="Resources\shaders\object_vertex.glsl" />
     <None Include="Resources\shaders\mesh_fragment.glsl" />
-    <None Include="Resources\shaders\grid_fragment.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Objects\GridObject.h" />
     <ClInclude Include="Objects\Arc170Object.h" />
-    <ClInclude Include="Objects\CubeObject.h" />
     <ClInclude Include="Objects\UserObjects.h" />
     <ClInclude Include="Objects\DestroyerObject.h" />
     <ClInclude Include="Objects\DeathStarObject.h" />
     <ClInclude Include="Sandbox.h" />
-    <ClInclude Include="Objects\LightObject.h" />
+    <ClInclude Include="Objects\SphereObject.h" />
+    <ClInclude Include="Objects\CubeObject.h" />
   </ItemGroup>
 </Project>

@@ -12,11 +12,11 @@ newmtl plate_reinforcement
 	Kd 1.0000 1.0000 1.0000
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka Resources/objects/death_star/panels.jpg
-	map_Kd Resources/objects/death_star/panels.jpg
-	map_Ke Resources/objects/death_star/Map__70_Falloff.tga
-	map_d Resources/objects/death_star/Map__69_Tiles.tga
-	map_bump -bm 0.3000 Resources/objects/death_star/Map__69_Tiles.tga
+	map_Ka panels.jpg
+	map_Kd panels.jpg
+	map_Ke Map__70_Falloff.tga
+	map_d Map__69_Tiles.tga
+	map_bump -bm 0.3000 Map__69_Tiles.tga
 
 newmtl EXHAUST_tube
 	Ns 86.0000
@@ -41,9 +41,9 @@ newmtl EXHAUST_inner_tube
 	Kd 0.4588 0.4588 0.5529
 	Ks 0.6030 0.6030 0.6030
 	Ke 0.0000 0.0000 0.0000
-	map_Ke Resources/objects/death_star/Map__24_Checker.tga
-	map_d Resources/objects/death_star/Map__22_Falloff.tga
-	map_bump -bm 0.3000 Resources/objects/death_star/Map__22_Checker.tga
+	map_Ke Map__24_Checker.tga
+	map_d Map__22_Falloff.tga
+	map_bump -bm 0.3000 Map__22_Checker.tga
 
 newmtl reinforce
 	Ns 74.0000
@@ -104,10 +104,10 @@ newmtl Laser_outter
 	Kd 0.5725 0.5725 0.6078
 	Ks 0.0500 0.0500 0.0500
 	Ke 0.0000 0.0000 0.0000
-	map_Ka Resources/objects/death_star/d-star.jpg
-	map_Kd Resources/objects/death_star/d-star.jpg
-	map_bump Resources/objects/death_star/d-star.jpg
-	bump Resources/objects/death_star/d-star.jpg
+	map_Ka d-star.jpg
+	map_Kd d-star.jpg
+	map_bump d-star.jpg
+	bump d-star.jpg
 
 newmtl Laser_inner
 	Ns 25.0000
@@ -120,10 +120,10 @@ newmtl Laser_inner
 	Kd 0.6824 0.6784 0.7255
 	Ks 0.0450 0.0450 0.0450
 	Ke 0.0000 0.0000 0.0000
-	map_Ka Resources/objects/death_star/hull.jpg
-	map_Kd Resources/objects/death_star/hull.jpg
-	map_bump Resources/objects/death_star/hull.jpg
-	bump Resources/objects/death_star/hull.jpg
+	map_Ka hull.jpg
+	map_Kd hull.jpg
+	map_bump hull.jpg
+	bump hull.jpg
 
 newmtl wire_088143225
 	Ns 32
@@ -146,8 +146,8 @@ newmtl Laser_prstenec
 	Kd 0.4235 0.4549 0.5216
 	Ks 1.0050 1.0050 1.0050
 	Ke 0.0000 0.0000 0.0000
-	map_Ka Resources/objects/death_star/corrosion.jpg
-	map_Kd Resources/objects/death_star/corrosion.jpg
+	map_Ka corrosion.jpg
+	map_Kd corrosion.jpg
 
 newmtl construction_reinforce
 	Ns 15.0000
@@ -160,8 +160,8 @@ newmtl construction_reinforce
 	Kd 1.0000 1.0000 1.0000
 	Ks 0.6600 0.6600 0.6600
 	Ke 0.0000 0.0000 0.0000
-	map_d Resources/objects/death_star/construction_Mask.tga
-	map_bump Resources/objects/death_star/construction_Mask.tga
+	map_d construction_Mask.tga
+	map_bump construction_Mask.tga
 
 newmtl construction
 	Ns 10.0000
@@ -174,9 +174,9 @@ newmtl construction
 	Kd 0.0000 0.0000 0.0000
 	Ks 0.4788 0.4788 0.4788
 	Ke 0.0000 0.0000 0.0000
-	map_Ka Resources/objects/death_star/Map__12_Mix.tga
-	map_Kd Resources/objects/death_star/Map__12_Mix.tga
-	map_Ke Resources/objects/death_star/lights2.gif
-	bump Resources/objects/death_star/lights2.gif
-	map_d Resources/objects/death_star/construction_Mix.tga
-	map_bump Resources/objects/death_star/panel-bump2.jpg
+	map_Ka Map__12_Mix.tga
+	map_Kd Map__12_Mix.tga
+	map_Ke lights2.gif
+	bump lights2.gif
+	map_d construction_Mix.tga
+	map_bump panel-bump2.jpg

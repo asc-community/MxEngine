@@ -32,6 +32,7 @@
 #include <glm/ext.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <cmath>
+#include <algorithm>
 
 namespace MxEngine
 {
@@ -347,5 +348,24 @@ namespace MxEngine
 	inline constexpr T GoldenRatio()
 	{
 		return glm::golden_ratio<T>();
+	}
+
+	inline Vector3 FindCenter(Vector3* verteces, size_t size)
+	{
+		auto center = MakeVector3(0.0f);
+		Vector3 maxCoords(-1.0f * std::numeric_limits<float>::max());
+		Vector3 minCoords(std::numeric_limits<float>::max());
+		for (size_t i = 0; i < size; i++)
+		{
+			minCoords.x = std::min(minCoords.x, verteces[i].x);
+			minCoords.y = std::min(minCoords.y, verteces[i].y);
+			minCoords.z = std::min(minCoords.z, verteces[i].z);
+
+			maxCoords.x = std::max(maxCoords.x, verteces[i].x);
+			maxCoords.y = std::max(maxCoords.y, verteces[i].y);
+			maxCoords.z = std::max(maxCoords.z, verteces[i].z);
+		}
+		center = (maxCoords + minCoords) * 0.5f;
+		return center;
 	}
 }

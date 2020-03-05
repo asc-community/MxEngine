@@ -15,11 +15,12 @@ public:
 
 		this->Scale(0.005f);
 		this->Translate(10.0f, 1.0f, -10.0f);
-		this->AddInstanceBufferGenerator([this] (int idx)
+		/*this->AddInstancedBufferGenerator([this] (int idx)
 			{
 				auto v = MakeVector3(5.0f * idx - 10.0f, 0.0f, 5.0f * idx - 10.0f);
 				return Inverse(this->GetModelMatrix()) * Vector4(v, 0.0f);
 			}, 4);
+		*/
 	}
 
 	inline virtual void OnUpdate() override

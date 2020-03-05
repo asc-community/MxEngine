@@ -17,7 +17,7 @@ public:
 		this->Translate(-5, 0.0f, 5.0f);
 		this->Scale(0.0005f);
 
-		this->AddInstanceBufferGenerator([](size_t idx)
+		this->AddInstancedBufferGenerator([](size_t idx)
 			{
 				Vector3 pos(0.0f);
 				pos.x = 20000.0f * idx;

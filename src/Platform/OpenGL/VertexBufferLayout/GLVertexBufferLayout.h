@@ -29,16 +29,17 @@
 #pragma once
 
 #include "Core/Interfaces/GraphicAPI/VertexBufferLayout.h"
+#include "Core/Macro/Macro.h"
 
-#ifdef _DEBUG
+#if defined(MXENGINE_DEBUG)
 #include <string>
-#endif // _DEBUG
+#endif
 
 namespace MxEngine
 {
 	class GLVertexBufferLayout final : public VertexBufferLayout
 	{
-		#ifdef _DEBUG
+		#if defined(MXENGINE_DEBUG)
 		std::string layoutString;
 		#endif
 

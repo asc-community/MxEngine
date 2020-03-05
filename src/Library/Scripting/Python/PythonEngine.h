@@ -30,7 +30,7 @@
 
 #include "Core/Macro/Macro.h"
 
-#if defined(MXENGINE_SCRIPTING_PYTHON)
+#if defined(MXENGINE_USE_PYTHON)
 
 #define BOOST_PYTHON_STATIC_LIB
 #include <boost/python.hpp>

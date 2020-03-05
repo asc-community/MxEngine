@@ -47,10 +47,10 @@ namespace MxEngine
 	}
 
 	#define INVOKE_ERR \
-	Logger::Instance().Error("MxEngine::MxObjectLoader", "error occured on line " + std::to_string(obj.lineCount));\
+	Logger::Instance().Warning("MxEngine::MxObjectLoader", "error in object file occured on line " + std::to_string(obj.lineCount));\
 	obj.isSuccess = false
 
-	void ObjectLoader::ReadFace(std::stringstream& file, ObjFileInfo& obj)
+	void ObjectLoader::ReadFace(std::stringstream& file, ObjectInfo& obj)
 	{
 		#define GROUP(object) object.groups.back()
 		GROUP(obj).faces.emplace_back(0);
@@ -119,16 +119,16 @@ namespace MxEngine
 		}
 	}
 
-	MaterialLibrary ObjectLoader::LoadMaterialLibrary(const std::string& path)
+	MaterialLibrary ObjectLoader::LoadMaterialLibrary(const std::string& directory, const std::string& path)
 	{
 		MAKE_SCOPE_PROFILER("ObjectLoader::LoadMaterialLibrary");
 		MAKE_SCOPE_TIMER("MxEngine::MxObjectLoader", "ObjectLoader::LoadMaterialLibrary()");
 		Logger::Instance().Debug("MxEngine::MxObjectLoader", "loading material library from file: " + path);
 		MaterialLibrary library;
-		std::ifstream fs(path);
+		std::ifstream fs(directory + path);
 		if (fs.bad() || fs.fail())
 		{
-			Logger::Instance().Error("MxEngine::MxObjectLoader", "could not open file: " + path);
+			Logger::Instance().Error("MxEngine::MxObjectLoader", "could not open file: " + directory + path);
 			return library;
 		}
 		std::stringstream file;
@@ -148,13 +148,31 @@ namespace MxEngine
 				MaterialInfo material = LoadMaterial(file);
 				if (!material.IsSuccess)
 					return MaterialLibrary();
-				library[name] = material;
+				material.name = name;
+				library.push_back(std::move(material));
 			}
 			else
 			{
 				Logger::Instance().Error("MxEngine::MxObjectLoader", "material library was not loaded: " + path);
 				return library;
 			}
+		}
+		for (auto& material : library)
+		{
+			if(!material.bump.empty()) 
+				material.bump     = directory + material.bump;
+			if(!material.map_bump.empty()) 
+				material.map_bump = directory + material.map_bump;
+			if(!material.map_d.empty())
+				material.map_d    = directory + material.map_d;
+			if(!material.map_Ka.empty())
+				material.map_Ka   = directory + material.map_Ka;
+			if(!material.map_Kd.empty())
+				material.map_Kd   = directory + material.map_Kd;
+			if(!material.map_Ks.empty())
+				material.map_Ks   = directory + material.map_Ks;
+			if(!material.map_Ke.empty())
+				material.map_Ke   = directory + material.map_Ke;
 		}
 		return library;
 	}
@@ -278,11 +296,11 @@ namespace MxEngine
 		return material;
 	}
 
-	ObjFileInfo MxEngine::ObjectLoader::Load(const std::string& path)
+	ObjectInfo MxEngine::ObjectLoader::Load(std::string path)
 	{
 		MAKE_SCOPE_PROFILER("ObjectLoader::Load");
 		Logger::Instance().Debug("MxEngine::MxObjectLoader", "loading object from file: " + path);
-		auto CheckGroup = [](ObjFileInfo& object)
+		auto CheckGroup = [](ObjectInfo& object)
 		{
 			if (object.groups.empty())
 			{
@@ -293,13 +311,22 @@ namespace MxEngine
 			}
 		};
 		std::ifstream fs(path);
-		ObjFileInfo obj;
+		std::unordered_map<std::string, MaterialInfo*> materialCache;
+		ObjectInfo obj;
 		if (fs.bad() || fs.fail())
 		{
 			Logger::Instance().Error("MxEngine::MxObjectLoader", "object file was not found: " + path);
 			INVOKE_ERR;
 			return obj;
 		}
+
+		std::transform(path.begin(), path.end(), path.begin(), [](char c) { return c == '\\' ? '/' : c; });
+		auto it = std::find(path.rbegin(), path.rend(), '/');
+		if (it != path.rend())
+		{
+			path = path.substr(0, size_t(path.rend() - it));
+		}
+
 		std::vector<Vector3> verteces;
 		std::vector<Vector3> normals;
 		std::vector<Vector3> texCoords;
@@ -383,11 +410,9 @@ namespace MxEngine
 			else if (type == "usemtl")
 			{
 				file >> strBuff; // mtl file
-				if (obj.materials.find(strBuff) == obj.materials.end())
+				if (materialCache.find(strBuff) == materialCache.end())
 				{
-					Logger::Instance().Error("MxEngine::MxObjectLoader", "material was not found in library: " + strBuff);
-					INVOKE_ERR;
-					return obj;
+					Logger::Instance().Warning("MxEngine::MxObjectLoader", "material was not found in library: " + strBuff);
 				}
 				CheckGroup(obj);
 				if (GROUP(obj).material != nullptr)
@@ -395,12 +420,16 @@ namespace MxEngine
 					obj.groups.emplace_back();
 					GROUP(obj).name = "__GENERATED";
 				}
-				GROUP(obj).material = &obj.materials[strBuff];
+				GROUP(obj).material = materialCache[strBuff];
 			}
 			else if (type == "mtllib")
 			{
 				file >> strBuff; 
-				obj.materials = LoadMaterialLibrary(strBuff);
+				obj.materials = LoadMaterialLibrary(path, strBuff);
+				for (auto it = obj.materials.begin(); it != obj.materials.end(); it++)
+				{
+					materialCache[it->name] = &(*it);
+				}
 			}
 			else
 			{
@@ -409,24 +438,8 @@ namespace MxEngine
 				return obj;
 			}
 		}
-
-		Vector3 maxCoords(-1.0f * std::numeric_limits<float>::max());
-		Vector3 minCoords(std::numeric_limits<float>::max());
-		for (const auto& vertex : verteces)
-		{
-			minCoords.x = std::min(minCoords.x, vertex.x);
-			minCoords.y = std::min(minCoords.y, vertex.y);
-			minCoords.z = std::min(minCoords.z, vertex.z);
-
-			maxCoords.x = std::max(maxCoords.x, vertex.x);
-			maxCoords.y = std::max(maxCoords.y, vertex.y);
-			maxCoords.z = std::max(maxCoords.z, vertex.z);
-		}
-		Vector3 center = (maxCoords + minCoords) * 0.5f;
-		for (auto& vertex : verteces)
-		{
-			vertex -= center;
-		}
+		auto center = FindCenter(verteces.data(), verteces.size());
+		for (auto& vertex : verteces) vertex -= center;
 
 		for(auto& group : obj.groups)
 		{
@@ -480,3 +493,29 @@ namespace MxEngine
 		return obj;
 	}
 }
+
+// TODO: add assimp loader
+/*
+#include "Core/Macro/Macro.h"
+#if defined(MXENGINE_USE_ASSIMP)
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+
+namespace MxEngine
+{
+	void Load(const std::string filename)
+	{
+		static Assimp::Importer importer;
+		auto scene = importer.ReadFile(filename, 0);
+		if (scene == nullptr)
+		{
+			MxEngine::Logger::Instance().Error("Assimp::Importer", importer.GetErrorString());
+			return;
+		}
+		ObjectInfo object;
+		object.groups.resize(scene->mNumMeshes);
+		object.materials.resize(scene->mNumMaterials);
+	}
+}
+#endif
+*/

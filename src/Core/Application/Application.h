@@ -77,8 +77,6 @@ namespace MxEngine
 
 		Application();
 
-		void ToggleMeshDrawing(bool state = true);
-
 		virtual void OnCreate();
 		virtual void OnUpdate();
 		virtual void OnDestroy();
@@ -90,11 +88,13 @@ namespace MxEngine
 		MxObject& AddObject(const std::string& name, UniqueRef<MxObject> object);
 		MxObject& CopyObject(const std::string& name, const std::string& existingObject);
 		const ObjectStorage::Storage& GetObjectList();
+		void InvalidateObjects();
 		Ref<Texture> CreateTexture(const std::filesystem::path& texture, bool genMipmaps = true, bool flipImage = true);
 		Ref<Shader> CreateShader(const std::filesystem::path& vertex, const std::filesystem::path& fragment);
 		MxObject& GetObject(const std::string& name);
 		void DestroyObject(const std::string& name);
 		void ToggleDeveloperConsole(bool isVisible);
+		void ToggleMeshDrawing(bool state = true);
 
 		AppEventDispatcher& GetEventDispatcher();
 		RenderController& GetRenderer();

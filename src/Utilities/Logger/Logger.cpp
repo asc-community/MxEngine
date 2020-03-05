@@ -27,12 +27,16 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Logger.h"
-#ifdef _WIN32
-#define BOOST_STACKTRACE_USE_WINDBG_CACHED
-#include <Windows.h>
+#include "Core/Macro/Macro.h"
+
+#if defined(MXENGINE_WINDOWS)
+	#include <Windows.h>
+	#define BOOST_STACKTRACE_USE_WINDBG_CACHED
 #endif
 
-#include <boost/stacktrace.hpp>
+#if defined(MXENGINE_USE_BOOST)
+	#include <boost/stacktrace.hpp>
+#endif
 
 namespace MxEngine
 {
@@ -40,14 +44,14 @@ namespace MxEngine
 	{
 		if (error != nullptr && useError)
 		{
-			#ifdef _WIN32
+			#if defined(MXENGINE_WINDOWS)
 			auto handle = ::GetStdHandle(STD_OUTPUT_HANDLE);
 			::SetConsoleTextAttribute(handle, FOREGROUND_RED | FOREGROUND_INTENSITY);
 			#endif
 
-			*error << '[' << invoker << " error]: " << message << std::endl;
+			* error << '[' << invoker << " error]: " << message << std::endl;
 
-			#ifdef _WIN32
+			#if defined(MXENGINE_WINDOWS)
 			::SetConsoleTextAttribute(handle, 7); // default
 			#endif
 			this->StackTrace();
@@ -64,7 +68,7 @@ namespace MxEngine
 
 	void LoggerImpl::Warning(const std::string& invoker, const std::string& message) const
 	{
-		#ifdef _WIN32
+		#if defined(MXENGINE_WINDOWS)
 		auto handle = ::GetStdHandle(STD_OUTPUT_HANDLE);
 		::SetConsoleTextAttribute(handle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 		#endif
@@ -74,11 +78,12 @@ namespace MxEngine
 			*warning << '[' << invoker << " warning]: " << message << std::endl;
 		}
 
-		#ifdef _WIN32
+		#if defined(MXENGINE_WINDOWS)
 		::SetConsoleTextAttribute(handle, 7); // default
 		#endif
 	}
 
+#if defined(MXENGINE_USE_BOOST)
 	void LoggerImpl::StackTrace() const
 	{
 		if (error != nullptr && useStackTrace)
@@ -88,9 +93,15 @@ namespace MxEngine
 			{
 				auto function = st[i].name();
 				auto filename = st[i].source_file();
-				if ((function.find("MxEngine::LoggerImpl") == function.npos) &&
-					(function.find("boost::stacktrace") == function.npos) &&
-					!filename.empty())
+				// in C++20 starts_with will replace _Starts_with
+				if(!filename.empty() && 
+					!function._Starts_with("boost::") && 
+					!function._Starts_with("MxEngine::LoggerImpl") &&
+					!function._Starts_with("std::") &&
+					!function._Starts_with("function_call") &&
+					function.find("main") == function.npos &&
+					function.find("lambda_") == function.npos
+					)
 				{
 					*error << "  at " << function;
 					*error << " in " << filename << ':' << st[i].source_line();
@@ -99,6 +110,16 @@ namespace MxEngine
 			}
 		}
 	}
+#else
+	void LoggerImpl::StackTrace() const
+	{
+		if (error != nullptr && useStackTrace)
+		{
+			// warning must NOT print stacktrace
+			Logger::Instance().Warning("MxEngine::Logger", "stacktrace was disabled as MXENGINE_USE_BOOST is undefined");
+		}
+	}
+#endif
 
 	LoggerImpl& LoggerImpl::UseErrorStream(std::ostream* error)
 	{

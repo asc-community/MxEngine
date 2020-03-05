@@ -2,7 +2,6 @@
 
 #include "CubeObject.h"
 #include "Arc170Object.h"
-#include "GridObject.h"
 #include "DestroyerObject.h"
 #include "DeathStarObject.h"
-#include "LightObject.h"
+#include "SphereObject.h"

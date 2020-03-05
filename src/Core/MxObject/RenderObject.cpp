@@ -35,7 +35,7 @@ namespace MxEngine
 {
 	void RenderObjectContainer::LoadFromFile(const std::filesystem::path& filepath)
 	{
-		ObjFileInfo objectInfo;
+		ObjectInfo objectInfo;
 		{
 			MAKE_SCOPE_TIMER("MxEngine::MxObject", "ObjectLoader::LoadFromFile()");
 			objectInfo = ObjectLoader::Load(filepath.string());
@@ -50,31 +50,19 @@ namespace MxEngine
 		this->subObjects.reserve(objectInfo.groups.size());
 		this->objectCenter = objectInfo.objectCenter;
 		std::unordered_map<std::string, Ref<Texture>> textures;
+
+		UniqueRef<Material> material;
 		for (const auto& group : objectInfo.groups)
 		{
-			RenderObject object;
-			object.VAO = Graphics::Instance()->CreateVertexArray();
-			object.vertexCount = group.faces.size();
-			object.useTexture = group.useTexture;
-			object.useNormal = group.useNormal;
-			object.VBO = Graphics::Instance()->CreateVertexBuffer(group.buffer, UsageType::STATIC_DRAW);
-
-			auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
-			VBL->PushFloat(3);
-			if (group.useTexture) VBL->PushFloat(3);
-			if (group.useNormal) VBL->PushFloat(3);
-			object.VAO->AddBuffer(*object.VBO, *VBL);
-
 			if (group.useTexture)
 			{
 				if (group.material != nullptr)
 				{
+					material = MakeUnique<Material>();
 					#define MAKE_TEX(tex) if(!group.material->tex.empty()) {\
 						if(textures.find(group.material->tex) == textures.end())\
 							textures[group.material->tex] = Graphics::Instance()->CreateTexture(group.material->tex);\
-						object.material->tex = textures[group.material->tex];}
-
-					object.material = MakeUnique<Material>();
+						material->tex = textures[group.material->tex];}
 
 					MAKE_TEX(map_Ka);
 					MAKE_TEX(map_Kd);
@@ -84,19 +72,29 @@ namespace MxEngine
 					MAKE_TEX(map_bump);
 					MAKE_TEX(bump);
 
-					object.material->Tf = group.material->Tf;
-					object.material->Ka = group.material->Ka;
-					object.material->Kd = group.material->Kd;
-					object.material->Ke = group.material->Ke;
-					object.material->Ks = group.material->Ks;
-					object.material->illum = group.material->illum;
-					object.material->Ns = group.material->Ns;
-					object.material->Ni = group.material->Ni;
-					object.material->d = group.material->d;
-					object.material->Tr = group.material->Tr;
+					material->Tf = group.material->Tf;
+					material->Ka = group.material->Ka;
+					material->Kd = group.material->Kd;
+					material->Ke = group.material->Ke;
+					material->Ks = group.material->Ks;
+					material->illum = group.material->illum;
+					material->Ns = group.material->Ns;
+					material->Ni = group.material->Ni;
+					material->d = group.material->d;
+					material->Tr = group.material->Tr;
 
-					if (object.material->Ns == 0.0f) object.material->Ns = 128.0f; // bad as pow(0.0, 0.0) -> NaN
+					if (material->Ns == 0.0f) material->Ns = 128.0f; // bad as pow(0.0, 0.0) -> NaN
 				}
+				auto VBO = Graphics::Instance()->CreateVertexBuffer(group.buffer, UsageType::STATIC_DRAW);
+				auto VAO = Graphics::Instance()->CreateVertexArray();
+				auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
+				VBL->PushFloat(3);
+				if (group.useTexture) VBL->PushFloat(3);
+				if (group.useNormal) VBL->PushFloat(3);
+				VAO->AddBuffer(*VBO, *VBL);
+
+				RenderObject object(std::move(VBO), std::move(VAO), std::move(material), group.useTexture, group.useNormal, group.faces.size());
+				this->subObjects.push_back(std::move(object));
 			}
 			if (!group.useTexture)
 			{
@@ -106,8 +104,6 @@ namespace MxEngine
 			{
 				Logger::Instance().Warning("MxEngine::MxObject", "object file does not have normal data: " + filepath.string());
 			}
-
-			this->subObjects.push_back(std::move(object));
 		}
 	}
 
@@ -148,6 +144,16 @@ namespace MxEngine
 		this->meshGenerated = true;
 	}
 
+    RenderObject::RenderObject(UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<Material> material, bool useTexture, bool useNormal, size_t vertexCount)
+    {
+		this->VBO = std::move(VBO);
+		this->VAO = std::move(VAO);
+		this->material = std::move(material);
+		this->useTexture = useTexture;
+		this->useNormal = useTexture;
+		this->vertexCount = vertexCount;
+    }
+
 	const VertexArray& RenderObject::GetVAO() const
 	{
 		return *this->VAO;
@@ -169,6 +175,16 @@ namespace MxEngine
 		return *this->material;
 	}
 
+    bool RenderObject::UsesTexture() const
+    {
+		return this->useTexture;
+    }
+
+	bool RenderObject::UsesNormals() const
+	{
+		return this->useNormal;
+	}
+
 	size_t RenderObject::GetVertexCount() const
 	{
 		return this->vertexCount;
@@ -182,9 +198,10 @@ namespace MxEngine
 	void RenderObjectContainer::AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl)
 	{
 		this->VBOs.push_back(std::move(vbo));
+		this->VBLs.push_back(std::move(vbl));
 		for (const auto& subObject : this->subObjects)
 		{
-			subObject.VAO->AddInstancedBuffer(*this->VBOs.back(), *vbl);
+			subObject.VAO->AddInstancedBuffer(*this->VBOs.back(), *this->VBLs.back());
 		}
 	}
 
@@ -194,12 +211,14 @@ namespace MxEngine
 		return *this->VBOs[index];
 	}
 
-	void RenderObjectContainer::AddBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl)
+	VertexBufferLayout& RenderObjectContainer::GetBufferLayoutByIndex(size_t index)
 	{
-		this->VBOs.push_back(std::move(vbo));
-		for (const auto& subObject : this->subObjects)
-		{
-			subObject.VAO->AddBuffer(*this->VBOs.back(), *vbl);
-		}
+		assert(index < this->VBLs.size());
+		return *this->VBLs[index];
 	}
+
+    size_t RenderObjectContainer::GetBufferCount() const
+    {
+		return this->VBOs.size();
+    }
 }

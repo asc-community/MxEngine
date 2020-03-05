@@ -2,8 +2,6 @@
 
 #include <MxEngine.h>
 
-#include <array>
-
 using namespace MxEngine;
 
 class CubeObject : public MxObject
@@ -17,7 +15,7 @@ public:
 		this->Texture = context->CreateTexture("objects/crate/crate.jpg");
 
 		this->Translate(0.5f, 0.0f, 0.5f);
-		this->AddInstanceBufferGenerator([](int idx) { return MakeVector3(0.0f); }, cubeCount, UsageType::DYNAMIC_DRAW);
+		this->AddInstancedBufferGenerator([](int idx) { return MakeVector3(0.0f); }, cubeCount, UsageType::DYNAMIC_DRAW);
 	}
 
 	inline virtual void OnUpdate() override

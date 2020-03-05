@@ -62,11 +62,7 @@ namespace MxEngine
 	constexpr size_t SpotPos    = 10; // pos of '?' in "spotLight[?]"
 
 	RenderController::RenderController(Renderer& renderer)
-		: renderer(renderer)
-	{
-		this->PointLights.SetCount(1);
-		this->SpotLights.SetCount(1);
-	}
+		: renderer(renderer) { }
 
 	Renderer& RenderController::GetRenderEngine() const
 	{
@@ -109,6 +105,7 @@ namespace MxEngine
 		shader.SetUniformVec3("dirLight.specular", this->GlobalLight.GetSpecularColor());
 
 		// set point lights
+		shader.SetUniformInt("pointLightCount", this->PointLights.GetCount());
 		for (size_t i = 0; i < this->PointLights.GetCount(); i++)
 		{
 			// replace "pointLight[?]" with "pointLight[{i}]"
@@ -122,6 +119,7 @@ namespace MxEngine
 		}
 
 		// set spot lights
+		shader.SetUniformInt("spotLightCount", this->SpotLights.GetCount());
 		for (size_t i = 0; i < this->SpotLights.GetCount(); i++)
 		{
 			// replace "spotLight[?]" with "spotLight[{i}]"

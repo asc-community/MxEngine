@@ -80,19 +80,19 @@ namespace MxEngine
 
     SpotLight& SpotLight::UseAmbientColor(const Vector3& ambient)
     {
-        this->ambientColor = ambient;
+        this->ambientColor = Clamp(ambient, MakeVector3(0.0f), MakeVector3(1.0f));
         return *this;
     }
 
     SpotLight& SpotLight::UseDiffuseColor(const Vector3& diffuse)
     {
-        this->diffuseColor = diffuse;
+        this->diffuseColor = Clamp(diffuse, MakeVector3(0.0f), MakeVector3(1.0f));
         return *this;
     }
 
     SpotLight& SpotLight::UseSpecularColor(const Vector3& specular)
     {
-        this->specularColor = specular;
+        this->specularColor = Clamp(specular, MakeVector3(0.0f), MakeVector3(1.0f));
         return *this;
     }
 

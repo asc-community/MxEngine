@@ -37,9 +37,6 @@ namespace MxEngine
 		std::string filepath;
 		size_t width = 0, height = 0, channels = 0;
 		mutable IBindable::IdType activeId = 0;
-		#ifdef _DEBUG
-		unsigned char* texture = nullptr;
-		#endif	
 		void FreeTexture();
 	public:
 		GLTexture();
@@ -52,6 +49,7 @@ namespace MxEngine
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 		virtual void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = true) override;
+		virtual void Load(Texture::RawDataPointer data, int width, int height, bool genMipmaps = true) override;
 		virtual void Bind(IBindable::IdType id) const override;
 		virtual const std::string& GetPath() const override;
 		virtual size_t GetWidth() const override;

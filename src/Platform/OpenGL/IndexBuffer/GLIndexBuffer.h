@@ -29,13 +29,14 @@
 #pragma once
 
 #include "Core/Interfaces/GraphicAPI/IndexBuffer.h"
+#include "Core/Macro/Macro.h"
 
 namespace MxEngine
 {
 	class GLIndexBuffer final : public IndexBuffer
 	{
 		size_t count = 0;
-		#ifdef _DEBUG
+		#if defined(MXENGINE_DEBUG)
 		const IndexType* indicies = nullptr;
 		#endif
 	public:

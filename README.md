@@ -12,6 +12,7 @@ MxEngine is not a huge framework so multiple third-party libraries are used. Her
 - [GLM](https://glm.g-truc.net/0.9.9/index.html) - header only C++ mathematics library for graphics software
 - [ImGui](https://github.com/ocornut/imgui) - Bloat-free Immediate Mode Graphical User interface for C++
 - [Boost](https://www.boost.org) - Large C++ library that you should already know about
+- [Assimp](http://www.assimp.org/) - Portable Open Source library to import various well-known 3D model formats
 
 Note that MxEngine may include more additional libraries in further releases. It also uses [Boost library](https://www.boost.org) in its core. Engine requires at least C++17 as depends on some new STL libraries. All source files are compiled using MSVC through VS2019 and are not guaranteed to be compiled by GCC/clang (at least for now).
 
@@ -85,3 +86,8 @@ Bug fixes & improvements are just fixes to already existing code to reestablish 
 - added point and spot lights
 - added imgui window for objects, lighting and profiling
 - added dynamic VBO support
+### v4.6.0
+- added geometric primivited (cube, sphere, grid) and colored textures
+- added macros to specify builds (libraries, scripting, etc.)
+- added imgui draw functions for debug tools (included into developer console)
+- added lighting bindings & fixed some issues

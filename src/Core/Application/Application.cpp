@@ -35,6 +35,7 @@
 #include "Core/Event/UpdateEvent.h"
 #include "Core/Event/FpsUpdateEvent.h"
 #include "Core/Event/MouseEvent.h"
+#include "Core/Event/AppDestroyEvent.h"
 #include "Core/Camera/PerspectiveCamera.h"
 #include "Core/Camera/OrthographicCamera.h"
 
@@ -131,6 +132,11 @@ namespace MxEngine
 	const Application::ObjectStorage::Storage& Application::GetObjectList()
 	{
 		return this->objects.Get();
+	}
+
+	void Application::InvalidateObjects()
+	{
+		this->objects.Update();
 	}
 
 	Ref<Texture> Application::CreateTexture(const std::filesystem::path& texture, bool genMipmaps, bool flipImage)
@@ -260,9 +266,9 @@ namespace MxEngine
 		if (this->GetConsole().IsToggled())
 		{
 			this->GetConsole().Log("Welcome to MxEngine developer console!");
-			#if defined(MXENGINE_SCRIPTING_CHAISCRIPT)
+			#if defined(MXENGINE_USE_CHAISCRIPT)
 			this->GetConsole().Log("This console is powered by ChaiScript: http://chaiscript.com");
-			#elif defined(MXENGINE_SCRIPTING_PYTHON)
+			#elif defined(MXENGINE_USE_PYTHON)
 			this->GetConsole().Log("This console is powered by Python: https://www.python.org");
 			#endif
 		}
@@ -315,6 +321,8 @@ namespace MxEngine
 			// application exit
 			{
 				MAKE_SCOPE_PROFILER("Application::CloseApplication");
+				static AppDestroyEvent appDestroyEvent;
+				this->GetEventDispatcher().Invoke(appDestroyEvent);
 				this->OnDestroy();
 				this->GetWindow().Close();
 			}
@@ -357,7 +365,7 @@ namespace MxEngine
 		Profiler::Instance().EndSession();
 	}
 
-	#if defined(MXENGINE_SCRIPTING_CHAISCRIPT)
+	#if defined(MXENGINE_USE_CHAISCRIPT)
 	void Application::CreateConsoleBindings(DeveloperConsole& console)
 	{
 		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });
@@ -500,7 +508,7 @@ namespace MxEngine
 				});
 			});
 	}
-	#elif defined(MXENGINE_SCRIPTING_PYTHON)
+	#elif defined(MXENGINE_USE_PYTHON)
 	void Application::CreateConsoleBindings(DeveloperConsole& console)
 	{
 		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });

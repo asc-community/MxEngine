@@ -106,8 +106,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>$(OutDir);D:\cpplibs\lib;D:\cpplibs\boost\stage\lib;D:\cpplibs\python\libs</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32s.lib;glfw3.lib;imgui.lib;MxEngine.lib;libboost_random-vc142-mt-x64-1_72.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);D:\cpplibs\lib;D:\cpplibs\boost\stage\lib;D:\cpplibs\python\libs;D:\cpplibs\assimp\out\build\x64-Release\lib;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -126,8 +126,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>$(OutDir);D:\cpplibs\lib;D:\cpplibs\boost\stage\lib;D:\cpplibs\python\libs</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32s.lib;glfw3.lib;imgui.lib;MxEngine.lib;libboost_random-vc142-mt-gd-x64-1_72.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);D:\cpplibs\lib;D:\cpplibs\boost\stage\lib;D:\cpplibs\python\libs;D:\cpplibs\assimp\out\build\x64-Debug\lib;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -146,8 +146,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>$(OutDir);D:\cpplibs\lib;D:\cpplibs\boost\stage\lib;D:\cpplibs\python\libs</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32s.lib;glfw3.lib;imgui.lib;MxEngine.lib;libboost_random-vc142-mt-gd-x64-1_72.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);D:\cpplibs\lib;D:\cpplibs\boost\stage\lib;D:\cpplibs\python\libs;D:\cpplibs\assimp\out\build\x64-Debug\lib;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -170,8 +170,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>$(OutDir);D:\cpplibs\lib;D:\cpplibs\boost\stage\lib;D:\cpplibs\python\libs</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32s.lib;glfw3.lib;imgui.lib;MxEngine.lib;libboost_random-vc142-mt-x64-1_72.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);D:\cpplibs\lib;D:\cpplibs\boost\stage\lib;D:\cpplibs\python\libs;D:\cpplibs\assimp\out\build\x64-Release\lib;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

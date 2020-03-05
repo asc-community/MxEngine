@@ -30,6 +30,7 @@
 
 #include "Core/Interfaces/GraphicAPI/Shader.h"
 #include "Utilities/Math/Math.h"
+#include "core/Macro/Macro.h"
 
 #include <unordered_map>
 
@@ -43,7 +44,7 @@ namespace MxEngine
 			VERTEX_SHADER = 0x8B31,
 		};
 
-		#ifdef _DEBUG
+		#if defined(MXENGINE_DEBUG)
 		std::string vertexShaderPath, fragmentShaderPath;
 		#endif
 		using UniformType = int;

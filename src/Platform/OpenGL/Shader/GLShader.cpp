@@ -28,7 +28,7 @@
 
 #include "GLShader.h"
 #include "Utilities/Logger/Logger.h"
-
+#include "Core/Macro/Macro.h"
 #include "Platform/OpenGL/GLUtilities/GLUtilities.h"
 #include <fstream>
 
@@ -56,7 +56,7 @@ namespace MxEngine
 
 	GLShader::GLShader(GLShader&& shader) noexcept
 	{
-		#ifdef _DEBUG
+		#if defined(MXENGINE_DEBUG)
 		this->vertexShaderPath = shader.vertexShaderPath;
 		this->fragmentShaderPath = shader.fragmentShaderPath;
 		#endif
@@ -74,7 +74,7 @@ namespace MxEngine
 
 	void GLShader::Load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
 	{
-		#ifdef _DEBUG
+		#if defined(MXENGINE_DEBUG)
 		this->vertexShaderPath = vertexShaderPath;
 		this->fragmentShaderPath = fragmentShaderPath;
 		#endif

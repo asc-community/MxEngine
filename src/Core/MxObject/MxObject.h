@@ -35,13 +35,13 @@ namespace MxEngine
 {
 	class MxObject : public IDrawable, public IMovable
 	{
-		mutable Matrix4x4 Model;
+		mutable Matrix4x4 Model{ 0.0f };
 		size_t instanceCount = 0;
 		Vector3 translation{ 0.0f };
 		Vector3 forwardVec{ 0.0f, 0.0f, 1.0f }, upVec{ 0.0f, 1.0f, 0.0f }, rightVec{ 1.0f, 0.0f, 0.0f };
 		Quaternion rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
 		Vector3 scale{ 1.0f };
-		mutable Vector3 eulerRotation;
+		mutable Vector3 eulerRotation{ 0.0f };
 		mutable bool updateEuler = true;
 		mutable bool needUpdate = true;
 		bool shouldRender = true;
@@ -85,11 +85,12 @@ namespace MxEngine
 		MxObject& TranslateZ(float z);
 
 		template<typename T>
-		void AddInstanceBufferGenerator(T&& generator, size_t count, UsageType type = UsageType::STATIC_DRAW);
-		void AddInstanceBuffer(const ArrayBufferType& buffer, size_t components, UsageType type = UsageType::STATIC_DRAW);
+		void AddInstancedBufferGenerator(T&& generator, size_t count, UsageType type = UsageType::STATIC_DRAW);
+		void AddInstancedBuffer(const ArrayBufferType& buffer, size_t components, UsageType type = UsageType::STATIC_DRAW);
 		void BufferDataByIndex(size_t index, const ArrayBufferType& buffer);
 		template<typename T>
 		void GenerateDataByIndex(size_t index, T&& generator, size_t count);
+		size_t GetBufferCount() const;
 
 		// Inherited via IDrawable
 		virtual size_t GetIterator() const override;
@@ -119,7 +120,7 @@ namespace MxEngine
 	};
 
 	template<typename T>
-	inline void MxObject::AddInstanceBufferGenerator(T&& generator, size_t count, UsageType type)
+	inline void MxObject::AddInstancedBufferGenerator(T&& generator, size_t count, UsageType type)
 	{
 		using DataType = decltype(generator(0));
 
@@ -134,7 +135,7 @@ namespace MxEngine
 			*data = generator(static_cast<int>(i));
 		}
 
-		this->AddInstanceBuffer(buffer, componentCount, type);
+		this->AddInstancedBuffer(buffer, componentCount, type);
 	}
 
 	template<typename T>
