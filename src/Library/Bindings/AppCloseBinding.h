@@ -42,10 +42,10 @@ namespace MxEngine
 		
 		inline AppCloseBinding& Bind(KeyCode activateKey)
 		{
-			Context::Instance()->GetEventDispatcher().AddEventListener<KeyEvent>(this->handle,
+			Application::Get()->GetEventDispatcher().AddEventListener<KeyEvent>(this->handle,
 				[key = activateKey](KeyEvent& event)
 				{
-					auto context = Context::Instance();
+					auto context = Application::Get();
 					if (event.IsHeld(KeyCode::ESCAPE))
 					{
 						context->CloseApplication();

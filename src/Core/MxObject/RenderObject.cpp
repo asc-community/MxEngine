@@ -33,19 +33,19 @@
 
 namespace MxEngine
 {
-	void RenderObjectContainer::LoadFromFile(const std::filesystem::path& filepath)
+	void Mesh::LoadFromFile(const std::string& filepath)
 	{
 		ObjectInfo objectInfo;
 		{
 			MAKE_SCOPE_TIMER("MxEngine::MxObject", "ObjectLoader::LoadFromFile()");
-			objectInfo = ObjectLoader::Load(filepath.string());
+			objectInfo = ObjectLoader::Load(filepath);
 		}
 
 		MAKE_SCOPE_PROFILER("Object::GenBuffers");
 		MAKE_SCOPE_TIMER("MxEngine::MxObject", "Object::GenBuffers()");
 		if (!objectInfo.isSuccess)
 		{
-			Logger::Instance().Debug("MxEngine::MxObject", "failed to load object from file: " + filepath.string());
+			Logger::Instance().Debug("MxEngine::MxObject", "failed to load object from file: " + filepath);
 		}
 		this->subObjects.reserve(objectInfo.groups.size());
 		this->objectCenter = objectInfo.objectCenter;
@@ -85,7 +85,7 @@ namespace MxEngine
 
 					if (material->Ns == 0.0f) material->Ns = 128.0f; // bad as pow(0.0, 0.0) -> NaN
 				}
-				auto VBO = Graphics::Instance()->CreateVertexBuffer(group.buffer, UsageType::STATIC_DRAW);
+				auto VBO = Graphics::Instance()->CreateVertexBuffer(group.buffer.data(), group.buffer.size(), UsageType::STATIC_DRAW);
 				auto VAO = Graphics::Instance()->CreateVertexArray();
 				auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
 				VBL->PushFloat(3);
@@ -98,31 +98,36 @@ namespace MxEngine
 			}
 			if (!group.useTexture)
 			{
-				Logger::Instance().Warning("MxEngine::MxObject", "object file does not have texture data: " + filepath.string());
+				Logger::Instance().Warning("MxEngine::MxObject", "object file does not have texture data: " + filepath);
 			}
 			if (!group.useNormal)
 			{
-				Logger::Instance().Warning("MxEngine::MxObject", "object file does not have normal data: " + filepath.string());
+				Logger::Instance().Warning("MxEngine::MxObject", "object file does not have normal data: " + filepath);
 			}
 		}
 	}
 
-	RenderObjectContainer::RenderObjectContainer(const std::filesystem::path& filepath)
+	Mesh::Mesh(const std::string& filepath)
 	{
 		LoadFromFile(filepath);
 	}
 
-	void RenderObjectContainer::Load(const std::string& filepath)
+	void Mesh::Load(const std::string& filepath)
 	{
 		LoadFromFile(filepath);
 	}
 
-	std::vector<RenderObject>& RenderObjectContainer::GetRenderObjects()
+	std::vector<RenderObject>& Mesh::GetRenderObjects()
 	{
 		return this->subObjects;
 	}
 
-	const Vector3& RenderObjectContainer::GetObjectCenter() const
+	const std::vector<RenderObject>& Mesh::GetRenderObjects() const
+	{
+		return this->subObjects;
+	}
+
+	const Vector3& Mesh::GetObjectCenter() const
 	{
 		return this->objectCenter;
 	}
@@ -195,7 +200,7 @@ namespace MxEngine
 		return this->material != nullptr;
 	}
 
-	void RenderObjectContainer::AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl)
+	void Mesh::AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl)
 	{
 		this->VBOs.push_back(std::move(vbo));
 		this->VBLs.push_back(std::move(vbl));
@@ -205,19 +210,19 @@ namespace MxEngine
 		}
 	}
 
-	VertexBuffer& RenderObjectContainer::GetBufferByIndex(size_t index)
+	VertexBuffer& Mesh::GetBufferByIndex(size_t index)
 	{
 		assert(index < this->VBOs.size());
 		return *this->VBOs[index];
 	}
 
-	VertexBufferLayout& RenderObjectContainer::GetBufferLayoutByIndex(size_t index)
+	VertexBufferLayout& Mesh::GetBufferLayoutByIndex(size_t index)
 	{
 		assert(index < this->VBLs.size());
 		return *this->VBLs[index];
 	}
 
-    size_t RenderObjectContainer::GetBufferCount() const
+    size_t Mesh::GetBufferCount() const
     {
 		return this->VBOs.size();
     }

@@ -45,10 +45,10 @@ namespace MxEngine
 
 		inline InputBinding& BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right)
 		{
-			Context::Instance()->GetEventDispatcher().AddEventListener<KeyEvent>(this->handle, 
+			Application::Get()->GetEventDispatcher().AddEventListener<KeyEvent>(this->handle, 
 				[forward, back, right, left, &object = object](KeyEvent& event)
 				{
-					auto dt = Context::Instance()->GetTimeDelta();
+					auto dt = Application::Get()->GetTimeDelta();
 					if (forward != KeyCode::UNKNOWN && event.IsHeld(forward))
 					{
 						object.TranslateForward(dt);
@@ -71,10 +71,10 @@ namespace MxEngine
 
 		inline InputBinding& BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down)
 		{
-			Context::Instance()->GetEventDispatcher().AddEventListener<KeyEvent>(this->handle,
+			Application::Get()->GetEventDispatcher().AddEventListener<KeyEvent>(this->handle,
 				[forward, back, right, left, up, down, &object = object](KeyEvent& event)
 				{
-					auto dt = Context::Instance()->GetTimeDelta();
+					auto dt = Application::Get()->GetTimeDelta();
 					if (forward != KeyCode::UNKNOWN && event.IsHeld(forward))
 					{
 						object.TranslateForward(dt);
@@ -105,11 +105,11 @@ namespace MxEngine
 
 		inline InputBinding& BindRotation()
 		{
-			Context::Instance()->GetEventDispatcher().AddEventListener<MouseMoveEvent>(this->handle,
+			Application::Get()->GetEventDispatcher().AddEventListener<MouseMoveEvent>(this->handle,
 				[&object = object](MouseMoveEvent& event)
 				{
 					static Vector2 oldPos = event.position;
-					auto dt = Context::Instance()->GetTimeDelta();
+					auto dt = Application::Get()->GetTimeDelta();
 					object.Rotate(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
 					oldPos = event.position;
 				});
@@ -118,11 +118,11 @@ namespace MxEngine
 
 		inline InputBinding& BindHorizontalRotation()
 		{
-			Context::Instance()->GetEventDispatcher().AddEventListener<MouseMoveEvent>(this->handle,
+			Application::Get()->GetEventDispatcher().AddEventListener<MouseMoveEvent>(this->handle,
 				[&object = object](MouseMoveEvent& event)
 				{
 					static Vector2 oldPos = event.position;
-					auto dt = Context::Instance()->GetTimeDelta();
+					auto dt = Application::Get()->GetTimeDelta();
 					object.Rotate(dt * (oldPos.x - event.position.x), 0.0f);
 					oldPos = event.position;
 				});
@@ -131,11 +131,11 @@ namespace MxEngine
 
 		inline InputBinding& BindVerticalRotation()
 		{
-			Context::Instance()->GetEventDispatcher().AddEventListener<MouseMoveEvent>(this->handle,
+			Application::Get()->GetEventDispatcher().AddEventListener<MouseMoveEvent>(this->handle,
 				[&object = object](MouseMoveEvent& event)
 				{
 					static Vector2 oldPos = event.position;
-					auto dt = Context::Instance()->GetTimeDelta();
+					auto dt = Application::Get()->GetTimeDelta();
 					object.Rotate(0.0f, dt * (oldPos.y - event.position.y));
 					oldPos = event.position;
 				});

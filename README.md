@@ -11,8 +11,9 @@ MxEngine is not a huge framework so multiple third-party libraries are used. Her
 - [GLFW](https://www.glfw.org/) - multi-platform library for OpenGL providing API for creating windows, receiving input and events
 - [GLM](https://glm.g-truc.net/0.9.9/index.html) - header only C++ mathematics library for graphics software
 - [ImGui](https://github.com/ocornut/imgui) - Bloat-free Immediate Mode Graphical User interface for C++
-- [Boost](https://www.boost.org) - Large C++ library that you should already know about
-- [Assimp](http://www.assimp.org/) - Portable Open Source library to import various well-known 3D model formats
+- [Boost](https://www.boost.org) - large C++ library that you should already know about
+- [Assimp](http://www.assimp.org/) - portable Open Source library to import various well-known 3D model formats
+- [fmt](https://github.com/fmtlib/fmt) - formatting library for modern C++
 
 Note that MxEngine may include more additional libraries in further releases. It also uses [Boost library](https://www.boost.org) in its core. Engine requires at least C++17 as depends on some new STL libraries. All source files are compiled using MSVC through VS2019 and are not guaranteed to be compiled by GCC/clang (at least for now).
 
@@ -25,69 +26,4 @@ Minor releases may change API or add new features but usually user code can be e
 
 Bug fixes & improvements are just fixes to already existing code to reestablish initially planned behaviour. This fixes may also be merged into major or minor releases if they come in the same time.
 
-## Full MxEngine version List
-### v1.0.0
-- added basic renderer
-- added basic window wrapper
-- added OpenGL units abstractions (shaders, buffers)
-- added logger class
-### v1.1.0
-- added OpenGL texture wrapper
-- added image loader
-- improved existing implementations
-### v1.2.0
-- added .obj file support
-- improved source file hierarchy
-- improved renderer API
-### v1.3.0
-- added SingletonHolder template
-- moved OpenGL state to initializer class
-- added renderable object abstraction
-### v2.0.0
-- added Application class
-### v2.1.0
-- added ObjectInstance class
-- improved API for objects
-### v2.2.0
-- added Camera
-- added new object loading API
-- added basic material system
-### v3.0.0
-- added orthographic camera
-- added camera controller
-- added ImGui library support
-- added ChaiScript scripting library
-- added in-game developer console
-- added Application object list controller
-- improved material system
-### v3.0.1
-- added more ChaiScript bindings
-### v4.0.0
-- added Event system and event dispatcher
-- added math library based on GLM
-- added viewport binding
-### v4.1.0
-- added platform independent graphic API
-- added new scripting binding methods
-- added profiler to json format
-### v4.2.0
-- added IMovable interface and methods
-- new API for objects
-### v4.3.0
-- improved object API
-- added licening
-- added console & fps bindings
-### v4.4.0
-- added boost (stacktrace & python)
-- added python scripting
-- added directional global light
-- fixed event & object deletion bug
-### v4.5.0
-- added point and spot lights
-- added imgui window for objects, lighting and profiling
-- added dynamic VBO support
-### v4.6.0
-- added geometric primivited (cube, sphere, grid) and colored textures
-- added macros to specify builds (libraries, scripting, etc.)
-- added imgui draw functions for debug tools (included into developer console)
-- added lighting bindings & fixed some issues
+For full version list see versions.md file

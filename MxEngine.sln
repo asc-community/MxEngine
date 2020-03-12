@@ -16,7 +16,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mx_engine", "mx_engine\mx_e
 		{24ACBC28-FA4F-49D7-9D69-31F578294414} = {24ACBC28-FA4F-49D7-9D69-31F578294414}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestApplication", "TestApplication\TestApplication.vcxproj", "{58BA3894-8461-47CF-924F-C2AE0735FD5A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestInstancing", "examples\TestInstancing\TestInstancing.vcxproj", "{58BA3894-8461-47CF-924F-C2AE0735FD5A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{24ACBC28-FA4F-49D7-9D69-31F578294414} = {24ACBC28-FA4F-49D7-9D69-31F578294414}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SnakePath3D", "SnakePath3D\SnakePath3D.vcxproj", "{A62F271F-862C-41B2-9B52-475567E78D9F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{24ACBC28-FA4F-49D7-9D69-31F578294414} = {24ACBC28-FA4F-49D7-9D69-31F578294414}
 	EndProjectSection
@@ -61,6 +66,14 @@ Global
 		{58BA3894-8461-47CF-924F-C2AE0735FD5A}.Release|x64.Build.0 = Release|x64
 		{58BA3894-8461-47CF-924F-C2AE0735FD5A}.Release|x86.ActiveCfg = Release|Win32
 		{58BA3894-8461-47CF-924F-C2AE0735FD5A}.Release|x86.Build.0 = Release|Win32
+		{A62F271F-862C-41B2-9B52-475567E78D9F}.Debug|x64.ActiveCfg = Debug|x64
+		{A62F271F-862C-41B2-9B52-475567E78D9F}.Debug|x64.Build.0 = Debug|x64
+		{A62F271F-862C-41B2-9B52-475567E78D9F}.Debug|x86.ActiveCfg = Debug|Win32
+		{A62F271F-862C-41B2-9B52-475567E78D9F}.Debug|x86.Build.0 = Debug|Win32
+		{A62F271F-862C-41B2-9B52-475567E78D9F}.Release|x64.ActiveCfg = Release|x64
+		{A62F271F-862C-41B2-9B52-475567E78D9F}.Release|x64.Build.0 = Release|x64
+		{A62F271F-862C-41B2-9B52-475567E78D9F}.Release|x86.ActiveCfg = Release|Win32
+		{A62F271F-862C-41B2-9B52-475567E78D9F}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

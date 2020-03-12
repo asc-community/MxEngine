@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Library/Primitives/AbstractPrimitive.h"
+#include "Utilities/Format/Format.h"
 #include <array>
 
 namespace MxEngine
@@ -36,77 +37,80 @@ namespace MxEngine
     class Cube : public AbstractPrimitive
     {
     public:
+
         inline Cube()
         {
-            static std::array vertex =
+            auto resourceName = Format(FMT_STRING("MxCube_{0}"), Application::Get()->GenerateResourceId());
+            auto data = Cube::GetCubeData();
+            this->SubmitData(resourceName, data);
+        }
+
+    private:
+        static ArrayView<float> GetCubeData()
+        {
+            constexpr std::array vertex =
             {
-                Vector3(0.0f, 0.0f, 0.0f),
-                Vector3(0.0f, 0.0f, 1.0f),
-                Vector3(0.0f, 1.0f, 0.0f),
-                Vector3(0.0f, 1.0f, 1.0f),
-                Vector3(1.0f, 0.0f, 0.0f),
-                Vector3(1.0f, 0.0f, 1.0f),
-                Vector3(1.0f, 1.0f, 0.0f),
-                Vector3(1.0f, 1.0f, 1.0f),
+                Vector3(-0.5f, -0.5f, -0.5f),
+                Vector3(-0.5f, -0.5f,  0.5f),
+                Vector3(-0.5f,  0.5f, -0.5f),
+                Vector3(-0.5f,  0.5f,  0.5f),
+                Vector3(0.5f, -0.5f, -0.5f),
+                Vector3(0.5f, -0.5f,  0.5f),
+                Vector3(0.5f,  0.5f, -0.5f),
+                Vector3(0.5f,  0.5f,  0.5f),
             };
-            static std::array texture =
+            constexpr std::array texture =
             {
                 Vector2(0.0f, 0.0f),
                 Vector2(0.0f, 1.0f),
                 Vector2(1.0f, 0.0f),
                 Vector2(1.0f, 1.0f),
             };
-            static std::array normal =
+            constexpr std::array normal =
             {
-                Vector3( 0.0f,  0.0f,  1.0f),
-                Vector3( 0.0f,  0.0f, -1.0f),
-                Vector3( 1.0f,  0.0f,  0.0f),
+                Vector3(0.0f,  0.0f,  1.0f),
+                Vector3(0.0f,  0.0f, -1.0f),
+                Vector3(1.0f,  0.0f,  0.0f),
                 Vector3(-1.0f,  0.0f,  0.0f),
-                Vector3( 0.0f, -1.0f,  0.0f),
-                Vector3( 0.0f,  1.0f,  0.0f),
+                Vector3(0.0f, -1.0f,  0.0f),
+                Vector3(0.0f,  1.0f,  0.0f),
             };
-            static std::array face =
+            constexpr std::array face =
             {
-                 VectorInt3(2, 1, 1), VectorInt3(6, 3, 1), VectorInt3(8, 4, 1),
-                 VectorInt3(8, 4, 1), VectorInt3(4, 2, 1), VectorInt3(2, 1, 1),
-                 VectorInt3(5, 3, 2), VectorInt3(1, 1, 2), VectorInt3(3, 2, 2),
-                 VectorInt3(3, 2, 2), VectorInt3(7, 4, 2), VectorInt3(5, 3, 2),
-                 VectorInt3(5, 1, 3), VectorInt3(7, 2, 3), VectorInt3(8, 4, 3),
-                 VectorInt3(8, 4, 3), VectorInt3(6, 3, 3), VectorInt3(5, 1, 3),
-                 VectorInt3(3, 1, 4), VectorInt3(1, 2, 4), VectorInt3(2, 4, 4),
-                 VectorInt3(2, 4, 4), VectorInt3(4, 3, 4), VectorInt3(3, 1, 4),
-                 VectorInt3(1, 1, 5), VectorInt3(5, 3, 5), VectorInt3(6, 4, 5),
-                 VectorInt3(6, 4, 5), VectorInt3(2, 2, 5), VectorInt3(1, 1, 5),
-                 VectorInt3(7, 1, 6), VectorInt3(3, 3, 6), VectorInt3(4, 4, 6),
-                 VectorInt3(4, 4, 6), VectorInt3(8, 2, 6), VectorInt3(7, 1, 6),
+                VectorInt3(1, 0, 0), VectorInt3(5, 2, 0), VectorInt3(7, 3, 0),
+                VectorInt3(7, 3, 0), VectorInt3(3, 1, 0), VectorInt3(1, 0, 0),
+                VectorInt3(4, 2, 1), VectorInt3(0, 0, 1), VectorInt3(2, 1, 1),
+                VectorInt3(2, 1, 1), VectorInt3(6, 3, 1), VectorInt3(4, 2, 1),
+                VectorInt3(4, 0, 2), VectorInt3(6, 1, 2), VectorInt3(7, 3, 2),
+                VectorInt3(7, 3, 2), VectorInt3(5, 2, 2), VectorInt3(4, 0, 2),
+                VectorInt3(2, 0, 3), VectorInt3(0, 1, 3), VectorInt3(1, 3, 3),
+                VectorInt3(1, 3, 3), VectorInt3(3, 2, 3), VectorInt3(2, 0, 3),
+                VectorInt3(0, 0, 4), VectorInt3(4, 2, 4), VectorInt3(5, 3, 4),
+                VectorInt3(5, 3, 4), VectorInt3(1, 1, 4), VectorInt3(0, 0, 4),
+                VectorInt3(6, 0, 5), VectorInt3(2, 2, 5), VectorInt3(3, 3, 5),
+                VectorInt3(3, 3, 5), VectorInt3(7, 1, 5), VectorInt3(6, 0, 5),
             };
-            static VertexBuffer::BufferData data;
-
+            constexpr size_t dataSize = face.size() * AbstractPrimitive::VertexSize;
+            static std::array<float, dataSize> data; // data MUST be static as its view is returned
             INVOKE_ONCE(
-                auto center = FindCenter(vertex.data(), vertex.size());
-                for (auto& v : vertex) v -= center;
-
-                data.reserve(face.size() * AbstractPrimitive::VertexSize);
-                for (auto& f : face)
+                for (size_t i = 0; i < face.size(); i++)
                 {
-                    f -= VectorInt3(1);
+                    const Vector3& v = vertex[face[i].x];
+                    data[8 * i + 0] = v.x;
+                    data[8 * i + 1] = v.y;
+                    data[8 * i + 2] = v.z;
 
-                    const Vector3& v = vertex[f.x];
-                    data.push_back(v.x);
-                    data.push_back(v.y);
-                    data.push_back(v.z);
+                    const Vector2& vt = texture[face[i].y];
+                    data[8 * i + 3] = vt.x;
+                    data[8 * i + 4] = vt.y;
 
-                    const Vector2& vt = texture[f.y];
-                    data.push_back(vt.x);
-                    data.push_back(vt.y);
-
-                    const Vector3& vn = normal[f.z];
-                    data.push_back(vn.x);
-                    data.push_back(vn.y);
-                    data.push_back(vn.z);
+                    const Vector3& vn = normal[face[i].z];
+                    data[8 * i + 5] = vn.x;
+                    data[8 * i + 6] = vn.y;
+                    data[8 * i + 7] = vn.z;
                 }
             );
-            this->SubmitData(data);
+            return ArrayView<float>(data);
         }
     };
 }

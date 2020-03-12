@@ -28,11 +28,11 @@
 
 #pragma once
 
-#include "Core/Interfaces/ILightSource.h"
+#include "Core/Lighting/LightSource.h"
 
 namespace MxEngine
 {
-    class DirectionalLight final : public ILightSource
+    class DirectionalLight final : public LightSource<DirectionalLight>
     {
         Vector3 ambientColor  = MakeVector3(1.0f);
         Vector3 diffuseColor  = MakeVector3(1.0f);
@@ -40,12 +40,12 @@ namespace MxEngine
     public:
         Vector3 Direction = MakeVector3(0.0f, 1.0f, 0.0f);
 
-        // Inherited via ILightSource
-        virtual DirectionalLight& UseAmbientColor(const Vector3& ambient);
-        virtual DirectionalLight& UseDiffuseColor(const Vector3& diffuse);
-        virtual DirectionalLight& UseSpecularColor(const Vector3& specular);
-        virtual const Vector3& GetAmbientColor() const;
-        virtual const Vector3& GetDiffuseColor() const;
-        virtual const Vector3& GetSpecularColor() const;
+        // Inherited via LightSource
+        DirectionalLight& UseAmbientColor(const Vector3& ambient);
+        DirectionalLight& UseDiffuseColor(const Vector3& diffuse);
+        DirectionalLight& UseSpecularColor(const Vector3& specular);
+        const Vector3& GetAmbientColor() const;
+        const Vector3& GetDiffuseColor() const;
+        const Vector3& GetSpecularColor() const;
     };
 }

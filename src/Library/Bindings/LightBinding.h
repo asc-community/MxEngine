@@ -45,8 +45,8 @@ namespace MxEngine
 		inline LightObject(const Container& container, size_t id)
 			: container(container), id(id)
 		{
-			this->Scale(0.33f);
-			auto& material = this->GetObjectBase()->GetRenderObjects().front().GetMaterial();
+			this->ObjectTransform.Scale(0.33f);
+			auto& material = this->GetMesh().GetRenderObjects().front().GetMaterial();
 			material.f_Ka = 0.0f;
 			material.f_Kd = 0.0f;
 		}
@@ -56,9 +56,9 @@ namespace MxEngine
 			if (this->id < this->container.GetCount())
 			{
 				const auto& light = this->container[this->id];
-				this->Translate(light.Position - this->GetTranslation());
+				this->ObjectTransform.SetTranslation(light.Position);
 
-				auto& material = this->GetObjectBase()->GetRenderObjects().front().GetMaterial();
+				auto& material = this->GetMesh().GetRenderObjects().front().GetMaterial();
 				material.Ke = Clamp(light.GetAmbientColor() + light.GetDiffuseColor(), MakeVector3(0.0f), MakeVector3(1.0f));
 			}
 		}
@@ -101,13 +101,13 @@ namespace MxEngine
 		inline void Bind()
 		{
 			std::string objectName = this->name + std::to_string(this->id);
-			Context::Instance()->AddObject(objectName, MakeUnique<LightObject<LightType>>(this->container, this->id));
+			Application::Get()->AddObject(objectName, MakeUnique<LightObject<LightType>>(this->container, this->id));
 		}
 
 		inline void Unbind()
 		{
 			std::string objectName = this->name = std::to_string(this->id);
-			Context::Instance()->DestroyObject(objectName);
+			Application::Get()->DestroyObject(objectName);
 		}
 
 		inline void BindAll()

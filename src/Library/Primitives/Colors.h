@@ -31,13 +31,12 @@
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 #include "Core/Application/Application.h"
 #include "Core/Macro/Macro.h"
-#include "Core/Event/AppDestroyEvent.h"
+#include "Utilities/Format/Format.h"
 
 namespace MxEngine
 {
     class Colors
     {
-        inline static std::vector<Ref<Texture>> CommonColors;
     public:
         enum Palette
         {
@@ -55,25 +54,33 @@ namespace MxEngine
             VIOLET,
             SKYBLUE,
             SPRING,
+            GREY,
         };
 
-        static inline Ref<Texture> MakeTexture(uint8_t r, uint8_t g, uint8_t b)
+        static inline Texture* MakeTexture(uint8_t r, uint8_t g, uint8_t b)
         {
-            auto texture = Graphics::Instance()->CreateTexture();
-            uint8_t buffer[3];
-            buffer[0] = r;
-            buffer[1] = g;
-            buffer[2] = b;
-            texture->Load(buffer, 1, 1);
-            return texture;
+            auto& manager = Application::Get()->GetResourceManager<Texture>();
+            auto name = Format(FMT_STRING("MxColor{0}_{1}_{2}"), r, g, b);
+            
+            if (!manager.Exists(name))
+            {
+                auto texture = Graphics::Instance()->CreateTexture();
+                uint8_t buffer[3];
+                buffer[0] = r;
+                buffer[1] = g;
+                buffer[2] = b;
+                texture->Load(buffer, 1, 1);
+                manager.Add(name, std::move(texture));
+            }                
+            return manager.Get(name);
         }
 
-        static inline Ref<Texture> MakeTexture(float r, float g, float b)
+        static inline Texture* MakeTexture(float r, float g, float b)
         {
             return MakeTexture(MakeVector3(r, g, b));
         }
 
-        static inline Ref<Texture> MakeTexture(const Vector3& color)
+        static inline Texture* MakeTexture(const Vector3& color)
         {
             uint8_t r = static_cast<uint8_t>(Clamp(color.r, 0.0f, 1.0f) * 255.0f);
             uint8_t g = static_cast<uint8_t>(Clamp(color.g, 0.0f, 1.0f) * 255.0f);
@@ -81,29 +88,43 @@ namespace MxEngine
             return MakeTexture(r, g, b);
         }
 
-        static Ref<Texture> MakeTexture(Palette color)
+        static Texture* MakeTexture(Palette color)
         {
-            INVOKE_ONCE(
-                Context::Instance()->GetEventDispatcher().AddEventListener<AppDestroyEvent>("Colors",
-                    [](AppDestroyEvent& e) { CommonColors.clear(); });
-            
-                CommonColors.resize(14);
-                CommonColors[Palette::RED]     = MakeTexture(1.0f, 0.0f, 0.0f);
-                CommonColors[Palette::GREEN]   = MakeTexture(0.0f, 1.0f, 0.0f);
-                CommonColors[Palette::BLUE]    = MakeTexture(0.0f, 0.0f, 1.0f);
-                CommonColors[Palette::YELLOW]  = MakeTexture(1.0f, 1.0f, 0.0f);
-                CommonColors[Palette::AQUA]    = MakeTexture(0.0f, 1.0f, 1.0f);
-                CommonColors[Palette::PURPLE]  = MakeTexture(1.0f, 0.0f, 1.0f);
-                CommonColors[Palette::BLACK]   = MakeTexture(0.0f, 0.0f, 0.0f);
-                CommonColors[Palette::WHITE]   = MakeTexture(1.0f, 1.0f, 1.0f);
-                CommonColors[Palette::ORANGE]  = MakeTexture(1.0f, 0.5f, 0.0f);
-                CommonColors[Palette::LIME]    = MakeTexture(0.5f, 1.0f, 0.0f);
-                CommonColors[Palette::MAGENTA] = MakeTexture(1.0f, 0.0f, 0.5f);
-                CommonColors[Palette::VIOLET]  = MakeTexture(0.5f, 0.0f, 1.0f);
-                CommonColors[Palette::SKYBLUE] = MakeTexture(0.0f, 0.5f, 1.0f);
-                CommonColors[Palette::SPRING]  = MakeTexture(0.0f, 1.0f, 0.5f);
-            );
-            return CommonColors[color];
+            switch (color)
+            {
+            case Colors::RED:
+                return MakeTexture((uint8_t)255, 0,   0  );
+            case Colors::GREEN:
+                return MakeTexture((uint8_t)0,   255, 0  );
+            case Colors::BLUE:
+                return MakeTexture((uint8_t)0,   0,   255);
+            case Colors::YELLOW:
+                return MakeTexture((uint8_t)255, 255, 0  );
+            case Colors::AQUA:
+                return MakeTexture((uint8_t)0,   255, 255);
+            case Colors::PURPLE:
+                return MakeTexture((uint8_t)255, 0,   255);
+            case Colors::BLACK:
+                return MakeTexture((uint8_t)0,   0,   0  );
+            case Colors::WHITE:
+                return MakeTexture((uint8_t)255, 255, 255);
+            case Colors::ORANGE:
+                return MakeTexture((uint8_t)255, 127, 0  );
+            case Colors::LIME:
+                return MakeTexture((uint8_t)127, 255, 0  );
+            case Colors::MAGENTA:
+                return MakeTexture((uint8_t)255, 0,   127);
+            case Colors::VIOLET:
+                return MakeTexture((uint8_t)127, 0,   255);
+            case Colors::SKYBLUE:
+                return MakeTexture((uint8_t)0,   127, 255);
+            case Colors::SPRING:
+                return MakeTexture((uint8_t)0,   255, 127);
+            case Colors::GREY:
+                return MakeTexture((uint8_t)127, 127, 127);
+            default:
+                return nullptr;
+            }
         }
     };
 }

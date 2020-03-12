@@ -87,15 +87,17 @@ namespace MxEngine
 
 		// getting all data for easy use
 		size_t iterator = object.GetIterator();
-		auto MVP = this->ViewPort.GetCameraMatrix() * object.GetModelMatrix();
+		auto ViewProjection = this->ViewPort.GetCameraMatrix();
 		Matrix3x3 NormalMatrix = Transpose(Inverse(object.GetModelMatrix()));
 		auto cameraPos = this->ViewPort.GetPosition();
 
 		// choosing shader and setting up data per object
 		const Shader& shader = object.HasShader() ? object.GetShader() : *this->ObjectShader;
-		shader.SetUniformMat4("MVP", MVP);
-		shader.SetUniformMat4("Model", object.GetModelMatrix());
-		shader.SetUniformMat3("NormalMatrix", NormalMatrix);
+
+		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
+		this->GetRenderEngine().SetDefaultVertexAttribute(7, NormalMatrix);
+
+		shader.SetUniformMat4("ViewProjMatrix", ViewProjection);
 		shader.SetUniformVec3("viewPos", cameraPos);
 
 		// set direction light
@@ -105,7 +107,7 @@ namespace MxEngine
 		shader.SetUniformVec3("dirLight.specular", this->GlobalLight.GetSpecularColor());
 
 		// set point lights
-		shader.SetUniformInt("pointLightCount", this->PointLights.GetCount());
+		shader.SetUniformInt("pointLightCount", (int)this->PointLights.GetCount());
 		for (size_t i = 0; i < this->PointLights.GetCount(); i++)
 		{
 			// replace "pointLight[?]" with "pointLight[{i}]"
@@ -119,7 +121,7 @@ namespace MxEngine
 		}
 
 		// set spot lights
-		shader.SetUniformInt("spotLightCount", this->SpotLights.GetCount());
+		shader.SetUniformInt("spotLightCount", (int)this->SpotLights.GetCount());
 		for (size_t i = 0; i < this->SpotLights.GetCount(); i++)
 		{
 			// replace "spotLight[?]" with "spotLight[{i}]"
@@ -141,13 +143,13 @@ namespace MxEngine
 			{
 				const Material& material = renderObject.GetMaterial();
 
-				#define BIND_TEX(name, slot) \
-				if (material.name != nullptr)\
-					material.name->Bind(slot);\
-				else if (object.HasTexture())\
-					object.GetTexture().Bind(slot);\
-				else\
-					this->DefaultTexture->Bind(slot)
+				#define BIND_TEX(NAME, SLOT)        \
+				if (material.NAME != nullptr)       \
+					material.NAME->Bind(SLOT);      \
+				else if (object.HasTexture())       \
+					object.GetTexture().Bind(SLOT); \
+				else                                \
+					this->DefaultTexture->Bind(SLOT)
 
 				BIND_TEX(map_Ka, 0);
 				BIND_TEX(map_Kd, 1);
@@ -167,9 +169,13 @@ namespace MxEngine
 				shader.SetUniformFloat("Kd", material.f_Kd);
 
 				if (object.GetInstanceCount() == 0)
+				{
 					this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetVertexCount(), shader);
+				}
 				else
+				{
 					this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetVertexCount(), shader, object.GetInstanceCount());
+				}
 			}
 			iterator = object.GetNext(iterator);
 		}
@@ -182,16 +188,25 @@ namespace MxEngine
 		if (!object.IsDrawable()) return;
 
 		size_t iterator = object.GetIterator();
-		auto MVP = this->ViewPort.GetCameraMatrix() * object.GetModelMatrix();
-		this->MeshShader->SetUniformMat4("MVP", MVP);
+		auto ViewProjection = this->ViewPort.GetCameraMatrix();
+		auto NormalMatrix = Transpose(Inverse(object.GetModelMatrix()));
+		this->MeshShader->SetUniformMat4("ViewProjMatrix", ViewProjection);
+
+		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
+		this->GetRenderEngine().SetDefaultVertexAttribute(7, NormalMatrix);
 
 		while (!object.IsLast(iterator))
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
+
 			if (object.GetInstanceCount() == 0)
+			{
 				this->GetRenderEngine().DrawLines(renderObject.GetVAO(), renderObject.GetMeshIBO(), *this->MeshShader);
+			}
 			else
+			{
 				this->GetRenderEngine().DrawLinesInstanced(renderObject.GetVAO(), renderObject.GetMeshIBO(), *this->MeshShader, object.GetInstanceCount());
+			}
 			iterator = object.GetNext(iterator);
 		}
 	}

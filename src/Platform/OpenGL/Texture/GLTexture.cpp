@@ -97,7 +97,7 @@ namespace MxEngine
 
 		if (data == nullptr)
 		{
-			Logger::Instance().Warning("MxEngine::Texture", "null data was provided as texture");
+			Logger::Instance().Warning("Texture", "null data was provided as texture");
 			return;
 		}
 

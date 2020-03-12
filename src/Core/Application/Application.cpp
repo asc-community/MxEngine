@@ -47,6 +47,7 @@
 #include "Platform/OpenGL/GraphicFactory/GLGraphicFactory.h"
 #include "Library/Scripting/ChaiScript/ChaiScriptEngine.h"
 #include "Library/Scripting/Python/PythonEngine.h"
+#include "Utilities/Format/Format.h"
 
 namespace MxEngine
 {
@@ -74,7 +75,7 @@ namespace MxEngine
 
 	void Application::OnDestroy()
 	{
-		// must be overwritten in derived class
+		// is overriden in derived class
 	}
 
 	Window& Application::GetWindow()
@@ -82,7 +83,12 @@ namespace MxEngine
 		return *this->window;
 	}
 
-	float Application::GetTimeDelta() const
+    Counter::CounterType Application::GenerateResourceId()
+    {
+		return this->resourceIdCounter++;
+    }
+
+    float Application::GetTimeDelta() const
 	{
 		return this->TimeDelta;
 	}
@@ -97,12 +103,16 @@ namespace MxEngine
 		return Logger::Instance();
 	}
 
-	Ref<RenderObjectContainer> Application::LoadObjectBase(const std::filesystem::path& filepath)
+	Mesh* Application::LoadMesh(const FilePath& filepath)
 	{
-		return MakeRef<RenderObjectContainer>(this->ResourcePath / filepath);
+		auto mesh = MakeUnique<Mesh>((this->ResourcePath / filepath).string());
+		Mesh* ret = mesh.get();
+		auto name = Format(FMT_STRING("Mesh_{0}"), this->GenerateResourceId());
+		this->GetResourceManager<Mesh>().Add(name, std::move(mesh));
+		return ret;
 	}
 
-	MxObject& Application::CreateObject(const std::string& name, const std::filesystem::path& filepath)
+	MxObject& Application::CreateObject(const std::string& name, const FilePath& filepath)
 	{
 		MAKE_SCOPE_PROFILER("Application::CreateObject");
 		if (this->objects.Get().find(name) != this->objects.Get().end())
@@ -110,7 +120,7 @@ namespace MxEngine
 			Logger::Instance().Warning("MxEngine::Application", "overriding already existing object: " + name);
 			DestroyObject(name);
 		}
-		auto ptr = MakeUnique<MxObject>(this->LoadObjectBase(filepath));
+		auto ptr = MakeUnique<MxObject>(this->LoadMesh(filepath));
 		auto& object = *ptr;
 		this->objects.Add(name, std::move(ptr));
 		return object;
@@ -126,7 +136,7 @@ namespace MxEngine
 	MxObject& Application::CopyObject(const std::string& name, const std::string& existingObject)
 	{
 		auto& object = GetObject(existingObject);
-		return AddObject(name, MakeUnique<MxObject>(object.GetObjectBase()));
+		return AddObject(name, MakeUnique<MxObject>(&object.GetMesh()));
 	}
 
 	const Application::ObjectStorage::Storage& Application::GetObjectList()
@@ -139,18 +149,25 @@ namespace MxEngine
 		this->objects.Update();
 	}
 
-	Ref<Texture> Application::CreateTexture(const std::filesystem::path& texture, bool genMipmaps, bool flipImage)
+	Texture* Application::CreateTexture(const FilePath& texture, bool genMipmaps, bool flipImage)
 	{
 		MAKE_SCOPE_PROFILER("Application::CreateTexture");
 		auto textureObject = Graphics::Instance()->CreateTexture(this->ResourcePath / texture, genMipmaps, flipImage);
-		return Ref<Texture>(textureObject.release());
+		auto name = Format(FMT_STRING("MxTexture_{0}"), this->GenerateResourceId());
+		return this->GetResourceManager<Texture>().Add(name, std::move(textureObject));
 	}
 
-	Ref<Shader> Application::CreateShader(const std::filesystem::path& vertex, const std::filesystem::path& fragment)
+	Shader* Application::CreateShader(const FilePath& vertex, const FilePath& fragment)
 	{
 		MAKE_SCOPE_PROFILER("Application::CreateShader");
 		auto shader = Graphics::Instance()->CreateShader(this->ResourcePath / vertex, this->ResourcePath / fragment);
-		return Ref<Shader>(shader.release());
+		auto name = Format(FMT_STRING("MxShader_{0}"), this->GenerateResourceId());
+		return this->GetResourceManager<Shader>().Add(name, std::move(shader));
+	}
+
+	void Application::ExecuteScript(const FilePath& script)
+	{
+		std::ifstream file(this->ResourcePath / script);
 	}
 
 	MxObject& Application::GetObject(const std::string& name)
@@ -311,7 +328,7 @@ namespace MxEngine
 				this->GetRenderer().Clear();
 				this->DrawObjects(this->debugMeshDraw);
 
-				static RenderEvent renderEvent;
+				RenderEvent renderEvent;
 				this->GetEventDispatcher().Invoke(renderEvent);
 				this->renderer.Render();
 				this->GetWindow().PullEvents(); 
@@ -321,7 +338,7 @@ namespace MxEngine
 			// application exit
 			{
 				MAKE_SCOPE_PROFILER("Application::CloseApplication");
-				static AppDestroyEvent appDestroyEvent;
+				AppDestroyEvent appDestroyEvent;
 				this->GetEventDispatcher().Invoke(appDestroyEvent);
 				this->OnDestroy();
 				this->GetWindow().Close();
@@ -331,31 +348,38 @@ namespace MxEngine
 
 	Application::~Application()
 	{
-		this->GetRenderer().DefaultTexture.reset();
-		this->GetRenderer().MeshShader.reset();
-		this->GetRenderer().ObjectShader.reset();
-
+		{
+			MAKE_SCOPE_PROFILER("Application::DestroyObjects");
+			MAKE_SCOPE_TIMER("MxEngine::Application", "Application::DestroyObjects");
+			this->objects.Get().clear();
+		}
 		Logger::Instance().Debug("MxEngine::Application", "application destroyed");
+	}
+
+	Application* Application::Get()
+	{
+		return Application::Current;
+	}
+
+	void Application::Set(Application* application)
+	{
+		Application::Current = application;
 	}
 
 	Application::ModuleManager::ModuleManager(Application* app)
 	{
 		Profiler::Instance().StartSession("profile_log.json");
 		
-		assert(Context::Instance() == nullptr);
-		Context::Instance() = app;
+		assert(Application::Get() == nullptr);
+		Application::Set(app);
 
-		RenderEngine renderer = RenderEngine::OpenGL;
-		switch (renderer)
-		{
-		case RenderEngine::OpenGL:
-			Graphics::Instance() = Alloc<GLGraphicFactory>();
-			break;
-		default:
-			Graphics::Instance() = nullptr;
-			Logger::Instance().Error("MxEngine::Application", "No Rendering Engine was provided");
-			return;
-		}
+#if defined(MXENGINE_USE_OPENGL)
+		Graphics::Instance() = Alloc<GLGraphicFactory>();
+#else
+		Graphics::Instance() = nullptr;
+		Logger::Instance().Error("MxEngine::Application", "No Rendering Engine was provided");
+		return;
+#endif
 		Graphics::Instance()->GetGraphicModule().Init();
 	}
 
@@ -400,13 +424,13 @@ namespace MxEngine
 
 		// Camera
 		script.AddReference("set_zfar",
-			[](float zfar) { Context::Instance()->GetRenderer().ViewPort.GetCamera().SetZFar(zfar); });
+			[](float zfar) { Application::Get()->GetRenderer().ViewPort.GetCamera().SetZFar(zfar); });
 		script.AddReference("set_znear",
-			[](float znear) { Context::Instance()->GetRenderer().ViewPort.GetCamera().SetZNear(znear); });
+			[](float znear) { Application::Get()->GetRenderer().ViewPort.GetCamera().SetZNear(znear); });
 		script.AddReference("zfar",
-			[]() { return Context::Instance()->GetRenderer().ViewPort.GetCamera().GetZFar(); });
+			[]() { return Application::Get()->GetRenderer().ViewPort.GetCamera().GetZFar(); });
 		script.AddReference("znear",
-			[]() { return Context::Instance()->GetRenderer().ViewPort.GetCamera().GetZNear(); });
+			[]() { return Application::Get()->GetRenderer().ViewPort.GetCamera().GetZNear(); });
 
 		// Object
 		using ScaleFunc1F = MxObject & (MxObject::*)(float);
@@ -440,13 +464,13 @@ namespace MxEngine
 		script.AddReference("scale", &MxObject::GetScale);
 
 		// Application
-		script.AddVariable("objects", Context::Instance()->objects);
-		script.AddVariable("viewport", Context::Instance()->GetRenderer().ViewPort);
-		script.AddReference("load", Context::Instance(), &Application::CreateObject);
-		script.AddReference("copy", Context::Instance(), &Application::CopyObject);
-		script.AddReference("delete", Context::Instance(), &Application::DestroyObject);
-		script.AddReference("exit", Context::Instance(), &Application::CloseApplication);
-		script.AddReference("dt", Context::Instance(), &Application::GetTimeDelta);
+		script.AddVariable("objects", Application::Get()->objects);
+		script.AddVariable("viewport", Application::Get()->GetRenderer().ViewPort);
+		script.AddReference("load", Application::Get(), &Application::CreateObject);
+		script.AddReference("copy", Application::Get(), &Application::CopyObject);
+		script.AddReference("delete", Application::Get(), &Application::DestroyObject);
+		script.AddReference("exit", Application::Get(), &Application::CloseApplication);
+		script.AddReference("dt", Application::Get(), &Application::GetTimeDelta);
 		script.AddReference("[]",
 			[](Application::ObjectStorage& storage, const std::string& name) -> MxObject&
 			{
@@ -460,17 +484,17 @@ namespace MxEngine
 		script.AddReference("set_texture",
 			[](MxObject& instance, const std::string& path)
 			{
-				instance.Texture = Context::Instance()->CreateTexture(path);
+				instance.Texture = Application::Get()->CreateTexture(path);
 			});
 		script.AddReference("set_shader",
 			[](MxObject& instance, const std::string& vertex, const std::string& fragment)
 			{
-				instance.Shader = Context::Instance()->CreateShader(vertex, fragment);
+				instance.Shader = Application::Get()->CreateShader(vertex, fragment);
 			});
 		script.AddReference("remove_event",
 			[](const std::string& name)
 			{
-				Context::Instance()->GetEventDispatcher().RemoveEventListener(name);
+				Application::Get()->GetEventDispatcher().RemoveEventListener(name);
 			});
 		script.AddReference("orthographic",
 			[](CameraController& viewport)
@@ -486,7 +510,7 @@ namespace MxEngine
 		script.AddReference("on_update",
 			[](const std::string& eventName, std::function<void()> func)
 			{
-				Context::Instance()->GetEventDispatcher().AddEventListener<UpdateEvent>(eventName,
+				Application::Get()->GetEventDispatcher().AddEventListener<UpdateEvent>(eventName,
 					[name = eventName, func = std::move(func)](UpdateEvent&)
 				{
 					try
@@ -502,8 +526,8 @@ namespace MxEngine
 							error.erase(it, it + 6);
 							error = "[error]:" + error;
 						}
-						Context::Instance()->Console.Log(error);
-						Context::Instance()->GetEventDispatcher().RemoveEventListener(name);
+						Application::Get()->Console.Log(error);
+						Application::Get()->GetEventDispatcher().RemoveEventListener(name);
 					}
 				});
 			});

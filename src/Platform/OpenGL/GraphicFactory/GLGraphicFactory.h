@@ -105,24 +105,24 @@ namespace MxEngine
 			return std::move(ibo);
 		}
 
-		inline virtual UniqueRef<Shader> CreateShader(const std::filesystem::path& vertex, const std::filesystem::path& fragment) override
+		inline virtual UniqueRef<Shader> CreateShader(const FilePath& vertex, const FilePath& fragment) override
 		{
 			auto shader = this->CreateShader();
 			shader->Load(vertex.string(), fragment.string());
 			return std::move(shader);
 		}
 
-		inline virtual UniqueRef<Texture> CreateTexture(const std::filesystem::path& texture, bool genMipmaps = true, bool flipImage = true) override
+		inline virtual UniqueRef<Texture> CreateTexture(const FilePath& texture, bool genMipmaps = true, bool flipImage = true) override
 		{
 			auto textureObject = this->CreateTexture();
 			textureObject->Load(texture.string(), genMipmaps, flipImage);
 			return std::move(textureObject);
 		}
 
-		inline virtual UniqueRef<VertexBuffer> CreateVertexBuffer(const VertexBuffer::BufferData& data, UsageType type) override
+		inline virtual UniqueRef<VertexBuffer> CreateVertexBuffer(VertexBuffer::BufferData data, size_t count, UsageType type) override
 		{
 			auto vbo = this->CreateVertexBuffer();
-			vbo->Load(data, type);
+			vbo->Load(data, count, type);
 			return std::move(vbo);
 		}
 	};

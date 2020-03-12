@@ -26,21 +26,49 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
+#include "Core/Interfaces/IComponent.h"
 #include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-    struct ILightSource
-    {
-        virtual ILightSource& UseAmbientColor(const Vector3& ambient)   = 0;
-        virtual ILightSource& UseDiffuseColor(const Vector3& diffuse)   = 0;
-        virtual ILightSource& UseSpecularColor(const Vector3& specular) = 0;
-        virtual const Vector3& GetAmbientColor()  const = 0;
-        virtual const Vector3& GetDiffuseColor()  const = 0;
-        virtual const Vector3& GetSpecularColor() const = 0;
+	class Transform final : public IComponent
+	{
+		Vector3 translation = MakeVector3(0.0f);
+		Vector3 scale = MakeVector3(1.0f);
+		Quaternion rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
+		mutable Vector3 eulerRotation{ 0.0f };
+		mutable Matrix4x4 transform{ 0.0f };
+		mutable bool needTransformUpdate = true;
+		mutable bool needRotationUpdate = true;
 
-        virtual ~ILightSource() = default;
-    };
+	public:
+		const Matrix4x4& GetMatrix() const;
+
+		const Vector3& GetTranslation() const;
+		const Quaternion& GetRotation() const;
+		const Vector3& GetScale() const;
+		const Vector3& GetEulerRotation() const;
+
+		Transform& SetTranslation(const Vector3& dist);
+		Transform& SetRotation(float angle, const Vector3& axis);
+		Transform& SetRotation(const Quaternion& q);
+		Transform& SetScale(const Vector3& scale);
+
+		Transform& Scale(float scale);
+		Transform& Scale(const Vector3& scale);
+		Transform& ScaleX(float scale);
+		Transform& ScaleY(float scale);
+		Transform& ScaleZ(float scale);
+
+		Transform& Rotate(float angle, const Vector3& axis);
+		Transform& Rotate(const Quaternion& q);
+		Transform& RotateX(float angle);
+		Transform& RotateY(float angle);
+		Transform& RotateZ(float angle);
+
+		Transform& Translate(const Vector3& dist);
+		Transform& TranslateX(float x);
+		Transform& TranslateY(float y);
+		Transform& TranslateZ(float z);
+	};
 }

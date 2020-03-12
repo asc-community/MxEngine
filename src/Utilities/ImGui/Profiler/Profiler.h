@@ -28,9 +28,8 @@
 
 #pragma once
 
-#include <imgui/imgui.h>
+#include "Utilities/ImGui/ImGuiBase.h"
 #include "Core/Application/Application.h"
-#include "Core/Macro/Macro.h"
 #include "Core/Event/FpsUpdateEvent.h"
 
 namespace MxEngine::GUI
@@ -40,7 +39,7 @@ namespace MxEngine::GUI
 		static std::vector<float> fpsData;
 		static size_t curPointer = 0;
 		fpsData.resize(graphRecordSize);
-		auto context = Context::Instance();
+		auto context = Application::Get();
 		
 		INVOKE_ONCE(context->GetEventDispatcher().AddEventListener<FpsUpdateEvent>("FpsGraph", [graphRecordSize](FpsUpdateEvent& e)
 			{

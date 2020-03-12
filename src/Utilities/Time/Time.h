@@ -39,5 +39,6 @@ namespace MxEngine
 	struct Time
 	{
 		static TimeStep Current();
+		static time_t System();
 	};
 }

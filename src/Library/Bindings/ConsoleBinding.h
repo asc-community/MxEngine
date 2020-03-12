@@ -43,24 +43,25 @@ namespace MxEngine
 
 		inline ConsoleBinding& Bind(KeyCode activateKey)
 		{
-			Context::Instance()->GetEventDispatcher().AddEventListener<UpdateEvent>(this->handle,
+			Application::Get()->GetEventDispatcher().AddEventListener<UpdateEvent>(this->handle,
 				[key = activateKey](UpdateEvent& event)
 				{
-					auto& window = Context::Instance()->GetWindow();
+					auto& window = Application::Get()->GetWindow();
 					if (window.IsKeyPressed(key))
 					{
+						// save cursor position to static variable, restore it when return to default cursor mode
 						static Vector2 cursorPos = window.GetCursorPos();
 						if (window.GetCursorMode() == CursorMode::NORMAL)
 						{
 							window.UseCursorMode(CursorMode::DISABLED);
-							Context::Instance()->ToggleDeveloperConsole(false);
+							Application::Get()->ToggleDeveloperConsole(false);
 							window.UseCursorPos(cursorPos);
 						}
 						else
 						{
 							cursorPos = window.GetCursorPos();
 							window.UseCursorMode(CursorMode::NORMAL);
-							Context::Instance()->ToggleDeveloperConsole(true);
+							Application::Get()->ToggleDeveloperConsole(true);
 							window.UseCursorPos({ window.GetWidth() / 4.0f, window.GetHeight() / 2.0f });
 						}
 					}

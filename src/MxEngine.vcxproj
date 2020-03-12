@@ -22,17 +22,26 @@
     <ClInclude Include="Core\Camera\CameraController.h" />
     <ClInclude Include="Core\Camera\OrthographicCamera.h" />
     <ClInclude Include="Core\Camera\PerspectiveCamera.h" />
+    <ClInclude Include="Core\Components\Transform\Transform.h" />
     <ClInclude Include="Core\DeveloperConsole\DeveloperConsole.h" />
     <ClInclude Include="Core\Event\AppDestroyEvent.h" />
     <ClInclude Include="Core\Event\RenderEvent.h" />
     <ClInclude Include="Core\Event\FpsUpdateEvent.h" />
     <ClInclude Include="Core\Event\UpdateEvent.h" />
-    <ClInclude Include="Core\Interfaces\ILightSource.h" />
+    <ClInclude Include="Core\Interfaces\IComponent.h" />
+    <ClInclude Include="Core\Lighting\LightSource.h" />
     <ClInclude Include="Core\Lighting\DirectionalLight\DirectionalLight.h" />
     <ClInclude Include="Core\Lighting\PointLight\PointLight.h" />
     <ClInclude Include="Core\Lighting\SpotLight\SpotLight.h" />
     <ClInclude Include="Core\Macro\Macro.h" />
+    <ClInclude Include="Core\MxObject\Instanced.h" />
     <ClInclude Include="Core\MxObject\RenderObject.h" />
+    <ClInclude Include="Core\ResourceStorage\ResourceStorage.h" />
+    <ClInclude Include="Utilities\Array\Array2D.h" />
+    <ClInclude Include="Utilities\Array\ArrayView.h" />
+    <ClInclude Include="Utilities\Counter\Counter.h" />
+    <ClInclude Include="Utilities\FileSystem\FileSystem.h" />
+    <ClInclude Include="Utilities\GenericStorage\GenericStorage.h" />
     <ClInclude Include="Library\Bindings\AppCloseBinding.h" />
     <ClInclude Include="Library\Bindings\Bindings.h" />
     <ClInclude Include="Library\Bindings\ConsoleBinding.h" />
@@ -81,10 +90,12 @@
     <ClInclude Include="Platform\OpenGL\Window\GLWindow.h" />
     <ClInclude Include="Library\Bindings\InputBinding.h" />
     <ClInclude Include="Utilities\EventDispatcher\EventDispatcher.h" />
+    <ClInclude Include="Utilities\Format\Format.h" />
     <ClInclude Include="Utilities\ImageLoader\ImageLoader.h" />
     <ClInclude Include="Utilities\ImGui\Editors\CameraEditor.h" />
     <ClInclude Include="Utilities\ImGui\Editors\LightEditor.h" />
     <ClInclude Include="Utilities\ImGui\GraphicConsole\GraphicConsole.h" />
+    <ClInclude Include="Utilities\ImGui\ImGuiBase.h" />
     <ClInclude Include="Utilities\ImGui\ImGuiUtils.h" />
     <ClInclude Include="Utilities\ImGui\Editors\ObjectEditor.h" />
     <ClInclude Include="Utilities\ImGui\Layout\Layout.h" />
@@ -95,6 +106,7 @@
     <ClInclude Include="Utilities\Memory\Memory.h" />
     <ClInclude Include="Utilities\ObjectLoader\ObjectLoader.h" />
     <ClInclude Include="Utilities\Profiler\Profiler.h" />
+    <ClInclude Include="Utilities\Random\Random.h" />
     <ClInclude Include="Utilities\SingletonHolder\CreationPolicy.h" />
     <ClInclude Include="Utilities\SingletonHolder\LifetimePolicy.h" />
     <ClInclude Include="Utilities\SingletonHolder\SingletonHolder.h" />
@@ -109,6 +121,7 @@
     <ClCompile Include="Core\Camera\OrthographicCamera.cpp" />
     <ClCompile Include="Core\Camera\PerspectiveCamera.cpp" />
     <ClCompile Include="Core\Application\Application.cpp" />
+    <ClCompile Include="Core\Components\Transform\Transform.cpp" />
     <ClCompile Include="Core\DeveloperConsole\DeveloperConsole.cpp" />
     <ClCompile Include="Core\Lighting\DirectionalLight\DirectionalLight.cpp" />
     <ClCompile Include="Core\Lighting\PointLight\PointLight.cpp" />
@@ -127,11 +140,14 @@
     <ClCompile Include="Platform\OpenGL\VertexBuffer\GLVertexBuffer.cpp" />
     <ClCompile Include="Platform\OpenGL\Renderer\GLRenderer.cpp" />
     <ClCompile Include="Platform\OpenGL\Window\GLWindow.cpp" />
+    <ClCompile Include="Utilities\Counter\Counter.cpp" />
+    <ClCompile Include="Utilities\FileSystem\FileSystem.cpp" />
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
     <ClCompile Include="Utilities\ImGui\GraphicConsole\GraphicConsole.cpp" />
     <ClCompile Include="Utilities\Logger\Logger.cpp" />
     <ClCompile Include="Utilities\ObjectLoader\ObjectLoader.cpp" />
     <ClCompile Include="Utilities\Profiler\Profiler.cpp" />
+    <ClCompile Include="Utilities\Random\Random.cpp" />
     <ClCompile Include="Utilities\Time\Time.cpp" />
   </ItemGroup>
   <ItemGroup>

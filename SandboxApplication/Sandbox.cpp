@@ -71,7 +71,7 @@ void SandboxApp::OnCreate()
 
 void SandboxApp::OnUpdate()
 {
-	
+
 }
 
 void SandboxApp::OnDestroy()
@@ -81,6 +81,6 @@ void SandboxApp::OnDestroy()
 
 SandboxApp::SandboxApp()
 {
-	this->ResourcePath = "D:/repos/MxEngine/SandboxApplication/Resources/";
+	this->ResourcePath = "Resources/";
 	this->CreateContext();
 }

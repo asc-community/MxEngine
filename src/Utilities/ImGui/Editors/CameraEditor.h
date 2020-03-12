@@ -28,14 +28,14 @@
 
 #pragma once
 
-#include <imgui/imgui.h>
+#include "Utilities/ImGui/ImGuiBase.h"
 #include "Core/Application/Application.h"
 
 namespace MxEngine::GUI
 {
 	inline void DrawCameraEditor()
 	{
-		auto context = Context::Instance();
+		auto context = Application::Get();
 		static bool mesh = false;
 
 		auto& camera = context->GetRenderer().ViewPort;

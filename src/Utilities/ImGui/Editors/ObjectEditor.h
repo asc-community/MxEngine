@@ -28,14 +28,14 @@
 
 #pragma once
 
-#include <imgui/imgui.h>
+#include "Utilities/ImGui/ImGuiBase.h"
 #include "Core/Application/Application.h"
 
 namespace MxEngine::GUI
 {
 	inline void DrawObjectEditor()
 	{
-		auto context = Context::Instance();
+		auto context = Application::Get();
 		for (const auto& pair : context->GetObjectList())
 		{
 			if (ImGui::CollapsingHeader(pair.first.c_str()))
@@ -52,38 +52,32 @@ namespace MxEngine::GUI
 				ImGui::SameLine(); ImGui::Checkbox("dir. vecs", &dirVecs);
 
 				// current texture path
-				ImGui::Text((std::string("texture: ") + (object.Texture ? object.Texture->GetPath() : std::string("none"))).c_str());
+				ImGui::Text((std::string("texture: ") + (object.ObjectTexture ? object.GetTexture().GetPath() : std::string("none"))).c_str());
 
 				// object translation
-				const auto& oldTranslation = object.GetTranslation();
+				const auto& oldTranslation = object.ObjectTransform.GetTranslation();
 				Vector3 newTranslation = oldTranslation;
 				if (ImGui::InputFloat3("translation", &newTranslation[0]))
-					pair.second->Translate(newTranslation - oldTranslation);
+					pair.second->ObjectTransform.SetTranslation(newTranslation);
 
 				// object rotation (euler)
-				const auto& oldRotation = object.GetEulerRotation();
+				const auto& oldRotation = object.ObjectTransform.GetEulerRotation();
 				Vector3 newRotation = oldRotation;
 				if (ImGui::InputFloat3("rotation", &newRotation[0]))
-				{
-					auto diffRotation = newRotation - oldRotation;
-					pair.second->RotateX(diffRotation.x).RotateY(diffRotation.y).RotateZ(diffRotation.z);
-				}
+					pair.second->ObjectTransform.SetRotation(1.0f, newRotation);
 
 				// object scale
-				const auto& oldScale = object.GetScale();
+				const auto& oldScale = object.ObjectTransform.GetScale();
 				Vector3 newScale = oldScale;
 				if (ImGui::InputFloat3("scale", &newScale[0]))
-				{
-					newScale = Clamp(newScale, MakeVector3(1e-6f), MakeVector3(1e6f));
-					pair.second->Scale(newScale / oldScale);
-				}
+					pair.second->ObjectTransform.SetScale(newScale);
 
 				// object texture (loads from file)
 				static std::string texturePath(64, '\0');
 				ImGui::InputText("texture path", texturePath.data(), texturePath.size());
 				ImGui::SameLine();
 				if (ImGui::Button("update"))
-					object.Texture = context->CreateTexture(texturePath);
+					object.ObjectTexture = context->CreateTexture(texturePath);
 
 				if (dirVecs)
 				{

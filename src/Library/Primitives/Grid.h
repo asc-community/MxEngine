@@ -39,28 +39,20 @@ namespace MxEngine
 {
     class Grid : public AbstractPrimitive
     {
-        inline static size_t lastSize = 0;
-        inline static std::vector<float> Data;
     public:
         inline Grid(size_t size = 2000)
         {
-            if (lastSize != size)
-            {
-                this->UpdateDataBuffer(size);
-                lastSize = size;
-            }
-            this->SubmitData(Data);
-            this->Texture = GetGridTexture();
+            this->ObjectTexture = GetGridTexture();
+            this->Resize(size);
         }
 
         inline void Resize(size_t size)
         {
-            this->UpdateDataBuffer(size);
-            lastSize = size;
-            this->SubmitData(Data);
+            auto data = Grid::GetGridData(size);
+            this->SubmitData(Format(FMT_STRING("MxGrid_{0}"), size), data);
         }
 
-        inline static void UpdateDataBuffer(size_t size)
+        inline static ArrayView<float> GetGridData(size_t size)
         {
             float gridSize = float(size) / 2.0f;
             std::array vertex =
@@ -77,43 +69,45 @@ namespace MxEngine
                 Vector2(size * 1.0f,        0.0f),
                 Vector2(size * 1.0f, size * 1.0f),
             };
-            std::array normal =
+            constexpr std::array normal =
             {
                 Vector3(0.0f, 1.0f, 0.0f)
             };
-            std::array face =
+            constexpr std::array face =
             {
                 VectorInt3(0, 0, 0), VectorInt3(1, 1, 0), VectorInt3(2, 2, 0),
                 VectorInt3(2, 2, 0), VectorInt3(1, 1, 0), VectorInt3(3, 3, 0),
                 VectorInt3(0, 0, 0), VectorInt3(2, 2, 0), VectorInt3(1, 1, 0),
                 VectorInt3(1, 1, 0), VectorInt3(2, 2, 0), VectorInt3(3, 3, 0),
             };
-            Data.clear();
-            auto center = FindCenter(vertex.data(), vertex.size());
-            for (auto& v : vertex) v -= center;
+            constexpr size_t dataSize = face.size() * AbstractPrimitive::VertexSize;
+            static std::array<float, dataSize> data; // data MUST be static as its view is returned
 
-            for (auto& f : face)
+            for (size_t i = 0; i < face.size(); i++)
             {
-                const Vector3& v = vertex[f.x];
-                Data.push_back(v.x);
-                Data.push_back(v.y);
-                Data.push_back(v.z);
+                const Vector3& v = vertex[face[i].x];
+                data[8 * i + 0] = v.x;
+                data[8 * i + 1] = v.y;
+                data[8 * i + 2] = v.z;
 
-                const Vector2& vt = texture[f.y];
-                Data.push_back(vt.x);
-                Data.push_back(vt.y);
+                const Vector2& vt = texture[face[i].y];
+                data[8 * i + 3] = vt.x;
+                data[8 * i + 4] = vt.y;
 
-                const Vector3& vn = normal[f.z];
-                Data.push_back(vn.x);
-                Data.push_back(vn.y);
-                Data.push_back(vn.z);
+                const Vector3& vn = normal[face[i].z];
+                data[8 * i + 5] = vn.x;
+                data[8 * i + 6] = vn.y;
+                data[8 * i + 7] = vn.z;
             }
+            return ArrayView<float>(data);
         }
 
-        inline static Ref<MxEngine::Texture> GetGridTexture()
+        inline static Texture* GetGridTexture()
         {
-            static Ref<MxEngine::Texture> texture;
-            INVOKE_ONCE(
+            auto& manager = Application::Get()->GetResourceManager<Texture>();
+            static std::string textureName = "MxTexGrid";
+            if (!manager.Exists(textureName))
+            {
                 const size_t size = 512;
                 const size_t border = 5;
                 std::vector<uint8_t> data(size * size * 3);
@@ -121,7 +115,7 @@ namespace MxEngine
                 {
                     for (int j = 0; j < size; j++)
                     {
-                        if (i < border || i + border > size || 
+                        if (i < border || i + border > size ||
                             j < border || j + border > size)
                         {
                             data[(i * size + j) * 3 + 0] = 0;
@@ -136,12 +130,11 @@ namespace MxEngine
                         }
                     }
                 }
-                Context::Instance()->GetEventDispatcher().AddEventListener<AppDestroyEvent>("DeleteGrid",
-                    [](AppDestroyEvent& e) { texture.reset(); });
-                texture = Graphics::Instance()->CreateTexture();
+                auto texture = Graphics::Instance()->CreateTexture();
                 texture->Load(data.data(), 512, 512);
-            );
-            return texture;
+                manager.Add(textureName, std::move(texture));
+            }
+            return manager.Get(textureName);
         }
     };
 }

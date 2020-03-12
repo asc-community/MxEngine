@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include <imgui/imgui.h>
+#include "Utilities/ImGui/ImGuiBase.h"
 #include "Core/Application/Application.h"
 
 namespace MxEngine::GUI
@@ -53,7 +53,7 @@ namespace MxEngine::GUI
 
     inline void RightFromConsole()
     {
-        auto& context = Context::Instance();
+        auto context = Application::Get();
         // Set next window to be right from console
         ImGui::SetNextWindowPos({ context->GetConsole().GetSize().x, 0.0f });
         // Also limit its size according to environment
@@ -62,7 +62,7 @@ namespace MxEngine::GUI
 
     inline void UnderConsole()
     {
-        auto& context = Context::Instance();
+        auto context = Application::Get();
         // Set next window to be under console
         ImGui::SetNextWindowPos({ 0.0f, context->GetConsole().GetSize().y });
         // Also limit its size according to environment

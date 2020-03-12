@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "imgui/imgui.h"
+#include "Utilities/ImGui/ImGuiBase.h"
 
 #include <functional>
 
@@ -37,14 +37,14 @@ namespace MxEngine
 {
 	class GraphicConsole
 	{
-		char				  InputBuf[256];
+		char               InputBuf[256];
 		ImVector<char*>	   Items;
 		ImVector<char*>	   History;
 		int				   HistoryPos;	// -1: new line, 0..History.Size-1 browsing history.
-		ImVec2				size;
+		ImVec2			   size;
 		ImGuiTextFilter	   Filter;
-		bool				  AutoScroll;
-		bool				  ScrollToBottom;
+		bool			   AutoScroll;
+		bool			   ScrollToBottom;
 
 		void ExecCommand(const char* command_line);
 		int TextEditCallback(ImGuiInputTextCallbackData* data);

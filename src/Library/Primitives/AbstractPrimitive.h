@@ -30,6 +30,8 @@
 
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 #include "Core/MxObject/MxObject.h"
+#include "Utilities/Array/ArrayView.h"
+#include "Utilities/Logger/Logger.h"
 
 namespace MxEngine
 {
@@ -38,11 +40,28 @@ namespace MxEngine
     protected:
         static constexpr size_t VertexSize = (3 + 2 + 3);
 
-        ~AbstractPrimitive() = default;
+        std::string resourceName;
 
-        inline void SubmitData(const std::vector<float>& data)
+        ~AbstractPrimitive()
         {
-            auto VBO = Graphics::Instance()->CreateVertexBuffer(data, UsageType::STATIC_DRAW);
+            this->FreeResource();
+        }
+
+        inline void FreeResource()
+        {
+            if (!this->resourceName.empty())
+            {
+                Application::Get()->GetResourceManager<Mesh>().Delete(this->resourceName);
+            }
+            this->resourceName.clear();
+        }
+
+        // submits vertex data in format [v3, v2, v3] into first RenderObject on MxObject (creates or replaces existing VBO)
+        inline void SubmitData(const std::string& resourceName, ArrayView<float> buffer)
+        {
+            this->FreeResource();
+            // first we create VBO + VAO with data
+            auto VBO = Graphics::Instance()->CreateVertexBuffer(buffer.data(), buffer.size(), UsageType::STATIC_DRAW);
             auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
             VBL->PushFloat(3);
             VBL->PushFloat(2);
@@ -50,27 +69,30 @@ namespace MxEngine
             auto VAO = Graphics::Instance()->CreateVertexArray();
             VAO->AddBuffer(*VBO, *VBL);
 
-            if (this->object != nullptr && !this->object->GetRenderObjects().empty())
+            // check if object already has mesh. If so - replace first render object VAO
+            if (this->ObjectMesh != nullptr && !this->ObjectMesh->GetRenderObjects().empty())
             {
-                size_t size = object->GetBufferCount();
-                for (size_t i = 0; i < size; i++)
+                size_t buffers = ObjectMesh->GetBufferCount();
+                for (size_t i = 0; i < buffers; i++)
                 {
-                    VAO->AddInstancedBuffer(object->GetBufferByIndex(i), object->GetBufferLayoutByIndex(i));
+                    VAO->AddInstancedBuffer(ObjectMesh->GetBufferByIndex(i), ObjectMesh->GetBufferLayoutByIndex(i));
                 }
-                auto& base = this->object->GetRenderObjects().front();
-                RenderObject sphere(std::move(VBO), std::move(VAO), MakeUnique<Material>(base.GetMaterial()),
-                    base.UsesTexture(), base.UsesNormals(), data.size() / VertexSize);
-                base = std::move(sphere);
+                // Note that we replace only first render object as we are working with AbstractPrimitive
+                auto& base = this->ObjectMesh->GetRenderObjects().front();
+                RenderObject newBase(std::move(VBO), std::move(VAO), MakeUnique<Material>(base.GetMaterial()),
+                    base.UsesTexture(), base.UsesNormals(), buffer.size() / VertexSize);
+                base = std::move(newBase);
             }
             else
             {
+                // if no render object exists (it is possible if MxObject is empty) - create one
                 auto material = MakeUnique<Material>();
 
-                RenderObject object(std::move(VBO), std::move(VAO), std::move(material), true, true, data.size() / VertexSize);
-                auto container = MakeRef<RenderObjectContainer>();
-                container->GetRenderObjects().push_back(std::move(object));
-
-                this->Load(container);
+                RenderObject object(std::move(VBO), std::move(VAO), std::move(material), true, true, buffer.size() / VertexSize);
+                auto mesh = MakeUnique<Mesh>();
+                mesh->GetRenderObjects().push_back(std::move(object));
+                this->resourceName = resourceName;
+                this->SetMesh(Application::Get()->GetResourceManager<Mesh>().Add(resourceName, std::move(mesh)));
             }
         }
     };

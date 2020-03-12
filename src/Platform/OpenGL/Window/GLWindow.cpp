@@ -186,6 +186,7 @@ namespace MxEngine
 	{
 		{
 			MAKE_SCOPE_PROFILER("Window::Create");
+			MAKE_SCOPE_TIMER("MxEngine::Window", "Window::Create");
 			this->window = glfwCreateWindow(width, height, "", nullptr, nullptr);
 			if (this->window == nullptr)
 			{

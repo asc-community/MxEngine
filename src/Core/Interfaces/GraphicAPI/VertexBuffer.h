@@ -48,8 +48,8 @@ namespace MxEngine
 
 	struct VertexBuffer : IBindable
 	{
-		using BufferData = std::vector<float>;
-		virtual void Load(const BufferData& data, UsageType type) = 0;
-		virtual void BufferSubData(const BufferData& data) = 0;
+		using BufferData = const float*;
+		virtual void Load(BufferData data, size_t count, UsageType type) = 0;
+		virtual void BufferSubData(BufferData data, size_t count, size_t offset = 0) = 0;
 	};
 }

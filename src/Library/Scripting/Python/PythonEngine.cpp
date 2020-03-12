@@ -61,7 +61,7 @@ class MxEngineIOHandler:
         this->Execute("sys.stdout = outputHandler");
 
         // very unsafe. But idk how to do it the best way
-        auto ctxPtr = reinterpret_cast<uint64_t>(Context::Instance());
+        auto ctxPtr = reinterpret_cast<uint64_t>(Application::Get());
         auto grfPtr = reinterpret_cast<uint64_t>(Graphics::Instance());
         this->Execute("mx_engine.MxEngineSetContextPointers(" + std::to_string(ctxPtr) + ", " + std::to_string(grfPtr) + ")");
         this->Execute("ctx = mx_engine.get_context()");

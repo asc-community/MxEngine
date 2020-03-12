@@ -249,4 +249,32 @@ namespace MxEngine
 		GLCALL(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &factor));
 		return factor;
 	}
+
+    void GLRenderer::SetDefaultVertexAttribute(size_t index, float v) const
+    {
+		GLCALL(glVertexAttrib1f(index, v));
+    }
+
+    void GLRenderer::SetDefaultVertexAttribute(size_t index, const Vector2& vec) const
+    {
+		GLCALL(glVertexAttrib2f(index, vec.x, vec.y));
+    }
+
+    void GLRenderer::SetDefaultVertexAttribute(size_t index, const Vector3& vec) const
+    {
+		GLCALL(glVertexAttrib3f(index, vec.x, vec.y, vec.z));
+    }
+
+    void GLRenderer::SetDefaultVertexAttribute(size_t index, const Vector4& vec) const
+    {
+		GLCALL(glVertexAttrib4f(index, vec.x, vec.y, vec.z, vec.w));
+    }
+
+    void GLRenderer::SetDefaultVertexAttribute(size_t index, const Matrix4x4& mat) const
+    {
+		for (size_t i = 0; i < 4; i++)
+		{
+			this->SetDefaultVertexAttribute(index + i, mat[i]);
+		}
+    }
 }

@@ -53,7 +53,6 @@ namespace MxEngine
 
 		mutable UniformCache uniformCache;
 
-		std::string ReadFile(const std::string& path) const;
 		ShaderId CompileShader(ShaderType type, std::string& source, const std::string& name) const;
 		IBindable::IdType CreateProgram(ShaderId vertexShader, ShaderId fragmentShader) const;
 		UniformType GetUniformLocation(const std::string& uniformName) const;

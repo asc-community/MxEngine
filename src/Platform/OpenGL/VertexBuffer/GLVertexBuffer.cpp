@@ -51,9 +51,9 @@ namespace MxEngine
 		this->id = 0;
 	}
 
-	GLVertexBuffer::GLVertexBuffer(BufferData& data, UsageType type)
+	GLVertexBuffer::GLVertexBuffer(BufferData data, size_t count, UsageType type)
 	{
-		Load(data, type);
+		Load(data, count, type);
 	}
 
 	GLVertexBuffer::~GLVertexBuffer()
@@ -70,17 +70,17 @@ namespace MxEngine
 		vbo.id = 0;
 	}
 
-	void GLVertexBuffer::Load(const BufferData& data, UsageType type)
+	void GLVertexBuffer::Load(BufferData data, size_t count, UsageType type)
 	{
 		GLCALL(glGenBuffers(1, &id));
 		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, id));
-		GLCALL(glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), DataType[(int)type]));
+		GLCALL(glBufferData(GL_ARRAY_BUFFER, count * sizeof(float), data, DataType[(int)type]));
 	}
 
-    void GLVertexBuffer::BufferSubData(const BufferData& data)
+    void GLVertexBuffer::BufferSubData(BufferData data, size_t count, size_t offset)
     {
 		this->Bind();
-		GLCALL(glBufferSubData(GL_ARRAY_BUFFER, 0, data.size() * sizeof(float), data.data()));
+		GLCALL(glBufferSubData(GL_ARRAY_BUFFER, sizeof(float) * offset, count * sizeof(float), data));
     }
 
 	void GLVertexBuffer::Bind() const

@@ -28,8 +28,6 @@
 
 #pragma once
 
-#include "Utilities/LifetimeManager/LifetimeManager.h"
-
 #include <memory>
 #include <functional>
 #include <unordered_set>
@@ -50,20 +48,55 @@ namespace MxEngine
 	{
 		using EventCallback = std::function<void(EventBase&)>;
 		using EventStorage = std::vector<std::pair<std::string, EventCallback>>;
-		using CallbackManager = LifetimeManager<EventCallback, std::string, EventStorage>;
 		using EventList = std::vector<std::unique_ptr<EventBase>>;
 		using EventTypeMap = std::map<std::type_index, size_t>;
 
 		EventList events;
-		CallbackManager callbacks;
+		std::unordered_map<size_t, EventStorage> callbacks;
+		std::unordered_map<size_t, EventStorage> toAddCache;
+		std::vector<std::string> toRemoveCache;
 		EventTypeMap typeMap;
 
 		inline void ProcessEvent(EventBase& event)
 		{
-			for (const auto& callback : this->callbacks.Get())
+			for (const auto& [_, eventCallbacks] : this->callbacks)
 			{
-				callback.second(event);
+				for (const auto& [_unused, callback] : eventCallbacks)
+				{
+					callback(event);
+				}
 			}
+		}
+
+		template<typename EventType>
+		inline void AddCallbackImpl(std::string name, EventCallback func)
+		{
+			this->toAddCache[EventType::eventType].emplace_back(std::move(name), std::move(func));
+		}
+
+		inline void ReleaseCachesImpl()
+		{
+			for (auto it = this->toRemoveCache.begin(); it != this->toRemoveCache.end(); it++)
+			{
+				for (auto& [event, callbacks] : this->callbacks)
+				{
+					auto callbackIt = std::find_if(callbacks.begin(), callbacks.end(), [&name = *it](const auto& p)
+					{
+						return p.first == name;
+					});
+				}
+			}
+			this->toRemoveCache.clear();
+
+			for (auto it = this->toAddCache.begin(); it != this->toAddCache.end(); it++)
+			{
+				auto& [event, funcs] = *it;
+				for (auto& func : funcs)
+				{
+					callbacks[event].push_back(std::move(func));
+				}
+			}
+			for (auto& list : this->toAddCache) list.second.clear();
 		}
 
 	public:
@@ -85,7 +118,7 @@ namespace MxEngine
 		void AddEventListener(const std::string& name, std::function<void(EventType&)> func)
 		{
 			this->RegisterEventType<EventType>();
-			this->callbacks.Add(name, [func = std::move(func)](EventBase& e)
+			this->AddCallbackImpl<EventType>(name, [func = std::move(func)](EventBase& e)
 			{
 				if (e.GetEventType() == EventType::eventType)
 					func((EventType&)e);
@@ -95,17 +128,17 @@ namespace MxEngine
 		template<typename EventType, typename FunctionType>
 		void AddEventListener(const std::string& name, FunctionType&& func)
 		{
-			this->AddEventListener(name, std::function<void(EventType&)>(std::forward<FunctionType>(func)));
+			this->AddEventListener<EventType>(name, std::function<void(EventType&)>(std::forward<FunctionType>(func)));
 		}
 
 		void RemoveEventListener(const std::string& name)
 		{
-			this->callbacks.Remove(name);
+			this->toRemoveCache.push_back(name);
 		}
 
 		void Invoke(EventBase& event)
 		{
-			this->callbacks.Update();
+			this->ReleaseCachesImpl();
 			this->ProcessEvent(event);
 		}
 
@@ -116,7 +149,8 @@ namespace MxEngine
 
 		void InvokeAll()
 		{
-			this->callbacks.Update();
+			this->ReleaseCachesImpl();
+
 			for (size_t i = 0; i < this->events.size(); i++)
 			{
 				this->ProcessEvent(*this->events[i]);

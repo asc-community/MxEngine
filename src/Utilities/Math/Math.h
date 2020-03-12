@@ -104,6 +104,24 @@ namespace MxEngine
 		return glm::ortho(left, right, bottom, top, znear, zfar);
 	}
 
+	template<typename T>
+	inline T Normalize(const T& value)
+	{
+		return glm::normalize(value);
+	}
+
+	template<typename T>
+	inline auto Length(const T& value)
+	{
+		return glm::length(value);
+	}
+
+	template<typename T>
+	inline auto Length2(const T& value)
+	{
+		return glm::length2(value);
+	}
+
 	inline Matrix4x4 Translate(const Matrix4x4& mat, const Vector3& vec)
 	{
 		return glm::translate(mat, vec);
@@ -112,6 +130,11 @@ namespace MxEngine
 	inline Matrix4x4 Scale(const Matrix4x4& mat, const Vector3& vec)
 	{
 		return glm::scale(mat, vec);
+	}
+
+	inline Matrix4x4 Scale(const Matrix4x4& mat, float value)
+	{
+		return glm::scale(mat, MakeVector3(value));
 	}
 
 	inline Matrix4x4 Rotate(const Matrix4x4& mat, float angle, const Vector3& axis)

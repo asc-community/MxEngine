@@ -9,19 +9,19 @@ class DeathStarObject : public MxObject
 public:
 	inline DeathStarObject()
 	{
-		auto context = Context::Instance();
-		this->Load(context->LoadObjectBase("objects/death_star/death_star.obj"));
-		this->Texture = context->CreateTexture("objects/death_star/texture.jpg");
+		auto context = Application::Get();
+		this->SetMesh(context->LoadMesh("objects/death_star/death_star.obj"));
+		this->ObjectTexture = context->CreateTexture("objects/death_star/texture.jpg");
 
-		this->Scale(0.00005f);
-		this->RotateX(-90.0f);
-		this->RotateZ(-90.0f);
-		this->Translate(-10.0f, 10.0f, 10.0f);
+		this->ObjectTransform.Scale(0.00005f);
+		this->ObjectTransform.RotateX(-90.0f);
+		this->ObjectTransform.RotateZ(-90.0f);
+		this->ObjectTransform.Translate({ -10.0f, 10.0f, 10.0f });
 	}
 
 	inline virtual void OnUpdate() override
 	{
-		float dt = Context::Instance()->GetTimeDelta();
-		this->RotateZ(2.0f * dt);
+		float dt = Application::Get()->GetTimeDelta();
+		this->ObjectTransform.RotateZ(2.0f * dt);
 	}
 };

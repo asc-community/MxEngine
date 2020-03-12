@@ -29,8 +29,8 @@
 #include "ObjectLoader.h"
 #include "Utilities/Logger/Logger.h"
 #include "Utilities/Profiler/Profiler.h"
+#include "Utilities/FileSystem/FileSystem.h"
 
-#include <fstream>
 #include <algorithm>
 
 namespace MxEngine
@@ -125,14 +125,15 @@ namespace MxEngine
 		MAKE_SCOPE_TIMER("MxEngine::MxObjectLoader", "ObjectLoader::LoadMaterialLibrary()");
 		Logger::Instance().Debug("MxEngine::MxObjectLoader", "loading material library from file: " + path);
 		MaterialLibrary library;
-		std::ifstream fs(directory + path);
-		if (fs.bad() || fs.fail())
+		std::string fullPath = directory + path;
+		File fileObject(fullPath);
+		if (!fileObject.IsOpen())
 		{
-			Logger::Instance().Error("MxEngine::MxObjectLoader", "could not open file: " + directory + path);
+			Logger::Instance().Error("MxEngine::MxObjectLoader", "could not load file: " + fullPath);
 			return library;
 		}
 		std::stringstream file;
-		file << fs.rdbuf();
+		file << fileObject.ReadAllText();
 		std::string buff;
 		while (!file.eof())
 		{
@@ -310,12 +311,12 @@ namespace MxEngine
 				GROUP(object).name = "__DEFAULT";
 			}
 		};
-		std::ifstream fs(path);
+		File fileObject(path);
 		std::unordered_map<std::string, MaterialInfo*> materialCache;
 		ObjectInfo obj;
-		if (fs.bad() || fs.fail())
+		if (!fileObject.IsOpen())
 		{
-			Logger::Instance().Error("MxEngine::MxObjectLoader", "object file was not found: " + path);
+			Logger::Instance().Error("MxEngine::MxObjectLoader", "cannot open object file: " + path);
 			INVOKE_ERR;
 			return obj;
 		}
@@ -332,7 +333,7 @@ namespace MxEngine
 		std::vector<Vector3> texCoords;
 		std::string type, strBuff;
 		std::stringstream file, tmpBuff;
-		file << fs.rdbuf();
+		file << fileObject.ReadAllText();
 		while (file >> type)
 		{
 			obj.lineCount++;

@@ -2,19 +2,21 @@
 
 using namespace MxEngine;
 
-class TestApp : public Application
+class SnakePath3D : public Application
 {
 public:
 	virtual void OnCreate () override;
 	virtual void OnUpdate () override;
 	virtual void OnDestroy() override;
 
-	TestApp();
+	SnakePath3D();
 };
 
 int main()
 {
-	TestApp app;
+	int a[3];
+	ArrayView<int> A(a);
+	SnakePath3D app;
 	app.Run();
 	return 0;
 }

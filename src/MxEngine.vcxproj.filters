@@ -65,7 +65,6 @@
     <ClInclude Include="Core\MxObject\MxObject.h" />
     <ClInclude Include="Core\Lighting\DirectionalLight\DirectionalLight.h" />
     <ClInclude Include="Core\Lighting\PointLight\PointLight.h" />
-    <ClInclude Include="Core\Interfaces\ILightSource.h" />
     <ClInclude Include="Core\Lighting\SpotLight\SpotLight.h" />
     <ClInclude Include="Library\Primitives\Cube.h" />
     <ClInclude Include="Core\Event\AppDestroyEvent.h" />
@@ -83,6 +82,19 @@
     <ClInclude Include="Utilities\ImGui\Editors\LightEditor.h" />
     <ClInclude Include="Utilities\ImGui\Profiler\Profiler.h" />
     <ClInclude Include="Utilities\ImGui\Layout\Layout.h" />
+    <ClInclude Include="Utilities\Random\Random.h" />
+    <ClInclude Include="Utilities\ImGui\ImGuiBase.h" />
+    <ClInclude Include="Utilities\Format\Format.h" />
+    <ClInclude Include="Core\MxObject\Instanced.h" />
+    <ClInclude Include="Utilities\GenericStorage\GenericStorage.h" />
+    <ClInclude Include="Core\ResourceStorage\ResourceStorage.h" />
+    <ClInclude Include="Core\Components\Transform\Transform.h" />
+    <ClInclude Include="Core\Interfaces\IComponent.h" />
+    <ClInclude Include="Core\Lighting\LightSource.h" />
+    <ClInclude Include="Utilities\Array\ArrayView.h" />
+    <ClInclude Include="Utilities\Counter\Counter.h" />
+    <ClInclude Include="Utilities\Array\Array2D.h" />
+    <ClInclude Include="Utilities\FileSystem\FileSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
@@ -113,6 +125,10 @@
     <ClCompile Include="Core\Lighting\SpotLight\SpotLight.cpp" />
     <ClCompile Include="Core\DeveloperConsole\DeveloperConsole.cpp" />
     <ClCompile Include="Utilities\ImGui\GraphicConsole\GraphicConsole.cpp" />
+    <ClCompile Include="Utilities\Random\Random.cpp" />
+    <ClCompile Include="Core\Components\Transform\Transform.cpp" />
+    <ClCompile Include="Utilities\Counter\Counter.cpp" />
+    <ClCompile Include="Utilities\FileSystem\FileSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\cube_fragment.glsl" />

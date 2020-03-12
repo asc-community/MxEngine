@@ -29,37 +29,34 @@
 #pragma once
 
 #include "Library/Primitives/AbstractPrimitive.h"
+#include "Utilities/Format/Format.h"
 
 namespace MxEngine
 {
     class Sphere : public AbstractPrimitive
     {
-        inline static size_t lastPolygons = 0;
-        inline static std::vector<float> Data;
     public:
         inline Sphere(size_t polygons = 30)
         {
-            if (lastPolygons != polygons)
-            {
-                UpdateDataBuffer(polygons);
-                lastPolygons = polygons;
-            }
-            this->SubmitData(Data);
+            this->Resize(polygons);
         }
 
         inline void Resize(size_t polygons)
         {
-            this->UpdateDataBuffer(polygons);
-            lastPolygons = polygons;
-            this->SubmitData(Data);
+            auto resourceName = Format(FMT_STRING("Sphere_{0}"), Application::Get()->GenerateResourceId());
+            auto data = Sphere::GetSphereData(polygons);
+            this->SubmitData(resourceName, data);
         }
     private:
-        inline static void UpdateDataBuffer(size_t polygons)
+        inline static ArrayView<float> GetSphereData(size_t polygons)
         {
-            Data.clear();
-            Data.reserve(polygons * polygons * 6 * AbstractPrimitive::VertexSize);
-            std::vector<float> vertex;
-            vertex.reserve(polygons * polygons * AbstractPrimitive::VertexSize);
+            static std::vector<float> data; // data must be static as its view is returned
+
+            data.clear();
+            data.reserve(polygons * polygons * 6 * AbstractPrimitive::VertexSize);
+            std::vector<float> verteces;
+            verteces.reserve(polygons * polygons * AbstractPrimitive::VertexSize);
+            // generate raw data for verteces (must be rearranged after)
             for (size_t m = 0; m <= polygons; m++)
             {
                 for (size_t n = 0; n <= polygons; n++)
@@ -68,19 +65,20 @@ namespace MxEngine
                     float y = std::sin(Pi<float>() * m / polygons) * std::sin(2 * Pi<float>() * n / polygons);
                     float z = std::cos(Pi<float>() * m / polygons);
                     // position
-                    vertex.push_back(x);
-                    vertex.push_back(y);
-                    vertex.push_back(z);
+                    verteces.push_back(x);
+                    verteces.push_back(y);
+                    verteces.push_back(z);
                     // texture
-                    vertex.push_back(static_cast<float>(m / polygons));
-                    vertex.push_back(static_cast<float>(n / polygons));
+                    verteces.push_back(static_cast<float>(m / polygons));
+                    verteces.push_back(static_cast<float>(n / polygons));
                     // normal
-                    vertex.push_back(x);
-                    vertex.push_back(y);
-                    vertex.push_back(z);
+                    verteces.push_back(x);
+                    verteces.push_back(y);
+                    verteces.push_back(z);
                 }
             }
 
+            // rearrange data
             for (size_t i = 0; i < polygons; i++)
             {
                 size_t idx1 = i * (polygons + 1);
@@ -90,18 +88,20 @@ namespace MxEngine
                 {
                     if (i != 0)
                     {
-                        Data.insert(Data.end(), vertex.begin() + idx1 * VertexSize, vertex.begin() + (idx1 + 1) * VertexSize);
-                        Data.insert(Data.end(), vertex.begin() + idx2 * VertexSize, vertex.begin() + (idx2 + 1) * VertexSize);
-                        Data.insert(Data.end(), vertex.begin() + (idx1 + 1) * VertexSize, vertex.begin() + (idx1 + 2) * VertexSize);
+                        data.insert(data.end(), verteces.begin() + idx1 * VertexSize, verteces.begin() + (idx1 + 1) * VertexSize);
+                        data.insert(data.end(), verteces.begin() + idx2 * VertexSize, verteces.begin() + (idx2 + 1) * VertexSize);
+                        data.insert(data.end(), verteces.begin() + (idx1 + 1) * VertexSize, verteces.begin() + (idx1 + 2) * VertexSize);
                     }
                     if (i + 1 != polygons)
                     {
-                        Data.insert(Data.end(), vertex.begin() + (idx1 + 1) * VertexSize, vertex.begin() + (idx1 + 2) * VertexSize);
-                        Data.insert(Data.end(), vertex.begin() + idx2 * VertexSize, vertex.begin() + (idx2 + 1) * VertexSize);
-                        Data.insert(Data.end(), vertex.begin() + (idx2 + 1) * VertexSize, vertex.begin() + (idx2 + 2) * VertexSize);
+                        data.insert(data.end(), verteces.begin() + (idx1 + 1) * VertexSize, verteces.begin() + (idx1 + 2) * VertexSize);
+                        data.insert(data.end(), verteces.begin() + idx2 * VertexSize, verteces.begin() + (idx2 + 1) * VertexSize);
+                        data.insert(data.end(), verteces.begin() + (idx2 + 1) * VertexSize, verteces.begin() + (idx2 + 2) * VertexSize);
                     }
                 }
             }
+
+            return ArrayView<float>(data);
         }
     };
 }

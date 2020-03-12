@@ -30,66 +30,46 @@
 #include "Core/Interfaces/IDrawable.h"
 #include "Core/Interfaces/IMovable.h"
 #include "Core/MxObject/RenderObject.h"
+#include "Core/Components/Transform/Transform.h"
 
 namespace MxEngine
 {
 	class MxObject : public IDrawable, public IMovable
 	{
-		mutable Matrix4x4 Model{ 0.0f };
 		size_t instanceCount = 0;
-		Vector3 translation{ 0.0f };
 		Vector3 forwardVec{ 0.0f, 0.0f, 1.0f }, upVec{ 0.0f, 1.0f, 0.0f }, rightVec{ 1.0f, 0.0f, 0.0f };
-		Quaternion rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
-		Vector3 scale{ 1.0f };
-		mutable Vector3 eulerRotation{ 0.0f };
-		mutable bool updateEuler = true;
-		mutable bool needUpdate = true;
 		bool shouldRender = true;
 	protected:
-		Ref<RenderObjectContainer> object;
+		Mesh* ObjectMesh = nullptr;
 	public:
-		using ArrayBufferType = std::vector<float>;
+		using ArrayBufferType = const float*;
 
-		Ref<Shader> Shader;
-		Ref<Texture> Texture;
+		Transform ObjectTransform;
+		Shader* ObjectShader = nullptr;
+		Texture* ObjectTexture = nullptr;
 		MxObject() = default;
-		MxObject(const Ref<RenderObjectContainer>& object);
+		MxObject(Mesh* mesh);
 		MxObject(const MxObject&) = delete;
 		MxObject(MxObject&&) = default;
 
 		virtual void OnUpdate();
 
-		void Load(const Ref<RenderObjectContainer>& object);
-		Ref<RenderObjectContainer>& GetObjectBase();
-		const Ref<RenderObjectContainer>& GetObjectBase() const;
+		void SetMesh(Mesh* mesh);
+		Mesh& GetMesh();
+		const Mesh& GetMesh() const;
 		void Hide();
 		void Show();
 
-		const Vector3& GetTranslation() const;
-		const Quaternion& GetRotation() const;
-		const Vector3& GetScale() const;
-		const Vector3& GetEulerRotation() const;
+		void SetForwardVector(const Vector3& forward);
+		void SetUpVector(const Vector3& up);
+		void SetRightVector(const Vector3& right);
+		MxObject& Scale(float x, float y, float z);
+		MxObject& Rotate(float x, float y, float z);
 
-		MxObject& Scale(float scale);
-		MxObject& Scale(float scaleX, float scaleY, float scaleZ);
-		MxObject& Scale(const Vector3& scale);
-
-		MxObject& Rotate(float angle, const Vector3& rotate);
-		MxObject& RotateX(float angle);
-		MxObject& RotateY(float angle);
-		MxObject& RotateZ(float angle);
-
-		MxObject& Translate(const Vector3& dist);
-		MxObject& TranslateX(float x);
-		MxObject& TranslateY(float y);
-		MxObject& TranslateZ(float z);
-
+		void AddInstancedBuffer(ArrayBufferType buffer, size_t count, size_t components, UsageType type = UsageType::STATIC_DRAW);
+		void BufferDataByIndex(size_t index, ArrayBufferType buffer, size_t count, size_t offset = 0);
 		template<typename T>
-		void AddInstancedBufferGenerator(T&& generator, size_t count, UsageType type = UsageType::STATIC_DRAW);
-		void AddInstancedBuffer(const ArrayBufferType& buffer, size_t components, UsageType type = UsageType::STATIC_DRAW);
-		void BufferDataByIndex(size_t index, const ArrayBufferType& buffer);
-		template<typename T>
-		void GenerateDataByIndex(size_t index, T&& generator, size_t count);
+		void GenerateDataByIndex(size_t index, T&& generator);
 		size_t GetBufferCount() const;
 
 		// Inherited via IDrawable
@@ -99,10 +79,10 @@ namespace MxEngine
 		virtual const IRenderable& GetCurrent(size_t iterator) const override;
 		virtual const Matrix4x4& GetModelMatrix() const override;
 		virtual bool HasShader() const override;
-		virtual const MxEngine::Shader& GetShader() const override;
+		virtual const Shader& GetShader() const override;
 		virtual bool IsDrawable() const override;
 		virtual bool HasTexture() const override;
-		virtual const MxEngine::Texture& GetTexture() const override;
+		virtual const Texture& GetTexture() const override;
 		virtual size_t GetInstanceCount() const override;
 
 		// Inherited via IMovable
@@ -111,49 +91,28 @@ namespace MxEngine
 		virtual MxObject& TranslateRight(float dist) override;
 		virtual MxObject& TranslateUp(float dist) override;
 		virtual MxObject& Rotate(float horz, float vert) override;
-		virtual void SetForwardVector(const Vector3& forward) override;
-		virtual void SetUpVector(const Vector3& up) override;
-		virtual void SetRightVector(const Vector3& right) override;
 		virtual const Vector3& GetForwardVector() const override;
 		virtual const Vector3& GetUpVector() const override;
 		virtual const Vector3& GetRightVector() const override;
 	};
 
 	template<typename T>
-	inline void MxObject::AddInstancedBufferGenerator(T&& generator, size_t count, UsageType type)
+	inline void MxObject::GenerateDataByIndex(size_t index, T&& generator)
 	{
 		using DataType = decltype(generator(0));
+		static std::vector<float> buffer;
 
 		size_t instanceSize = sizeof(DataType);
 		size_t componentCount = instanceSize / sizeof(float);
-		ArrayBufferType buffer(count * componentCount);
+		buffer.resize(this->instanceCount * componentCount);
 
-		// fills float array with data from generator functions
-		for (size_t i = 0; i < count; i++)
+		// fills float array with data from generator function
+		for (size_t i = 0; i < this->instanceCount; i++)
 		{
 			auto* data = reinterpret_cast<DataType*>(buffer.data() + i * componentCount);
 			*data = generator(static_cast<int>(i));
 		}
 
-		this->AddInstancedBuffer(buffer, componentCount, type);
-	}
-
-	template<typename T>
-	inline void MxObject::GenerateDataByIndex(size_t index, T&& generator, size_t count)
-	{
-		using DataType = decltype(generator(0));
-
-		size_t instanceSize = sizeof(DataType);
-		size_t componentCount = instanceSize / sizeof(float);
-		ArrayBufferType buffer(count * componentCount);
-
-		// fills float array with data from generator functions
-		for (size_t i = 0; i < count; i++)
-		{
-			auto* data = reinterpret_cast<DataType*>(buffer.data() + i * componentCount);
-			*data = generator(static_cast<int>(i));
-		}
-
-		this->BufferDataByIndex(index, buffer);
+		this->BufferDataByIndex(index, buffer.data(), buffer.size());
 	}
 }

@@ -17,12 +17,20 @@
     #define MXENGINE_RELEASE
 #endif
 
+// at least one must be defined:
 #define MXENGINE_USE_OPENGL
-#define MXENGINE_USE_IMGUI
+// #define MXENGINE_USE_DIRECTX // not supported
+// #define MXENGINE_USE_VULKAN  // not supported
+
+// at least one must be defined:
 #define MXENGINE_USE_PYTHON
 // #define MXENGINE_USE_CHAISCRIPT
+
+// required in engine source:
 #define MXENGINE_USE_BOOST
 #define MXENGINE_USE_ASSIMP
+#define MXENGINE_USE_FMT
+#define MXENGINE_USE_IMGUI
 
 #pragma comment(lib, "MxEngine.lib")
 
@@ -42,6 +50,14 @@
         #pragma comment(lib, "assimp-vc142-mt.lib")
     #elif defined(MXENGINE_DEBUG)
         #pragma comment(lib, "assimp-vc142-mtd.lib")
+    #endif
+#endif
+
+#if defined(MXENGINE_USE_FMT)
+    #if defined(MXENGINE_RELEASE)
+        #pragma comment(lib, "fmt.lib")
+    #elif defined(MXENGINE_DEBUG)
+        #pragma comment(lib, "fmtd.lib")
     #endif
 #endif
 

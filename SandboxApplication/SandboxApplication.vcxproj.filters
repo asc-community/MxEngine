@@ -15,6 +15,9 @@
     <None Include="Resources\shaders\object_fragment.glsl" />
     <None Include="Resources\shaders\object_vertex.glsl" />
     <None Include="Resources\shaders\mesh_fragment.glsl" />
+    <None Include="assimp-vc142-mt.dll" />
+    <None Include="assimp-vc142-mtd.dll" />
+    <None Include="python36.dll" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Objects\Arc170Object.h" />

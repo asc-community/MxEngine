@@ -51,6 +51,11 @@ namespace MxEngine
 		void DrawLines(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const override;
 		void DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const override;
 		void DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const override;
+		virtual void SetDefaultVertexAttribute(size_t index, float v) const override;
+		virtual void SetDefaultVertexAttribute(size_t index, const Vector2& vec) const override;
+		virtual void SetDefaultVertexAttribute(size_t index, const Vector3& vec) const override;
+		virtual void SetDefaultVertexAttribute(size_t index, const Vector4& vec) const override;
+		virtual void SetDefaultVertexAttribute(size_t index, const Matrix4x4& mat) const override;
 		void Clear() const override;
 		void Flush() const override;
 		void Finish() const override;

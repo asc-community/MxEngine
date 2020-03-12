@@ -63,8 +63,9 @@ namespace MxEngine
 
 		CameraController ViewPort;
 		DirectionalLight GlobalLight;
-		Ref<Shader> ObjectShader, MeshShader;
-		Ref<Texture> DefaultTexture;
+		Shader* ObjectShader = nullptr;
+		Shader* MeshShader = nullptr;
+		Texture* DefaultTexture = nullptr;
 
 		Renderer& GetRenderEngine() const;
 		void Render() const;

@@ -33,52 +33,55 @@
 
 namespace MxEngine
 {
-	void MxObject::AddInstancedBuffer(const ArrayBufferType& buffer, size_t components, UsageType type)
+	void MxObject::AddInstancedBuffer(ArrayBufferType buffer, size_t count, size_t components, UsageType type)
 	{
-		if (this->object == nullptr)
+		if (this->ObjectMesh == nullptr)
 		{
 			Logger::Instance().Warning("MxEngine::MxObject", "trying to add buffer to not existing object");
 			return;
 		}
 
-		size_t objectCount = buffer.size() / components;
-
-		if (this->instanceCount == 0) this->instanceCount = objectCount;
-		if (this->instanceCount > objectCount)
+		if (this->instanceCount == 0) this->instanceCount = count;
+		if (this->instanceCount > count)
 		{
 			Logger::Instance().Error("MxEngine::MxObject", "instance buffer was not added as it contains not enough information");
 			return;
 		}
-		else if (this->instanceCount < objectCount)
+		else if (this->instanceCount < count)
 		{
 			Logger::Instance().Error("MxEngine::MxObject", "instance buffer contains more data than required, additional will be ignored");
 		}
 
-		auto VBO = Graphics::Instance()->CreateVertexBuffer(buffer, type);
+		auto VBO = Graphics::Instance()->CreateVertexBuffer(buffer, count * components, type);
 		auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
+		while (components > 4)
+		{
+			VBL->PushFloat(4);
+			components -= 4;
+		}
 		VBL->PushFloat(components);
-		this->object->AddInstancedBuffer(std::move(VBO), std::move(VBL));
+		this->ObjectMesh->AddInstancedBuffer(std::move(VBO), std::move(VBL));
 	}
 
-	void MxObject::BufferDataByIndex(size_t index, const ArrayBufferType& buffer)
+	void MxObject::BufferDataByIndex(size_t index, ArrayBufferType buffer, size_t count, size_t offset)
 	{
-		VertexBuffer& VBO = this->object->GetBufferByIndex(index);
-		VBO.BufferSubData(buffer);
+		VertexBuffer& VBO = this->ObjectMesh->GetBufferByIndex(index);
+		VBO.BufferSubData(buffer, count, offset);
 	}
 
 	size_t MxObject::GetBufferCount() const
 	{
-		if (this->object == nullptr)
+		if (this->ObjectMesh == nullptr)
 		{
 			Logger::Instance().Warning("MxEngine::MxObject", "GetBufferCount() is called on null render object");
 			return 0;
 		}
-		return this->object->GetBufferCount();
+		return this->ObjectMesh->GetBufferCount();
 	}
 
-	MxObject::MxObject(const Ref<RenderObjectContainer>& object)
+	MxObject::MxObject(Mesh* mesh)
 	{
-		Load(object);
+		this->SetMesh(mesh);
 	}
 
 	void MxObject::OnUpdate()
@@ -86,19 +89,21 @@ namespace MxEngine
 		// this method is overloaded in derived class
 	}
 
-	void MxObject::Load(const Ref<RenderObjectContainer>& object)
+	void MxObject::SetMesh(Mesh* mesh)
 	{
-		this->object = object;
+		this->ObjectMesh = mesh;
 	}
 
-	Ref<RenderObjectContainer>& MxObject::GetObjectBase()
+	Mesh& MxObject::GetMesh()
 	{
-		return this->object;
+		assert(this->ObjectMesh != nullptr);
+		return *this->ObjectMesh;
 	}
 
-	const Ref<RenderObjectContainer>& MxObject::GetObjectBase() const
+	const Mesh& MxObject::GetMesh() const
 	{
-		return this->object;
+		assert(this->ObjectMesh != nullptr);
+		return *this->ObjectMesh;
 	}
 
 	void MxObject::Hide()
@@ -111,102 +116,34 @@ namespace MxEngine
 		this->shouldRender = true;
 	}
 
-	const Vector3& MxObject::GetTranslation() const
-	{
-		return this->translation;
-	}
-
-	const Quaternion& MxObject::GetRotation() const
-	{
-		return this->rotation;
-	}
-
-	const Vector3& MxObject::GetScale() const
-	{
-		return this->scale;
-	}
-
-    const Vector3& MxObject::GetEulerRotation() const
-    {
-		if (this->updateEuler)
-		{
-			this->eulerRotation = MakeEulerAngles(this->rotation);
-			this->updateEuler = false;
-		}
-		return this->eulerRotation;
-    }
-
-	MxObject& MxObject::Scale(float scale)
-	{
-		return Scale(MakeVector3(scale));
-	}
-
-	MxObject& MxObject::Scale(float scaleX, float scaleY, float scaleZ)
-	{
-		return Scale(MakeVector3(scaleX, scaleY, scaleZ));
-	}
-
-	MxObject& MxObject::Scale(const Vector3& scale)
-	{
-		needUpdate = true;
-		this->scale.x *= scale.x;
-		this->scale.y *= scale.y;
-		this->scale.z *= scale.z;
-		return *this;
-	}
-
-	MxObject& MxObject::Rotate(float angle, const Vector3& vec)
-	{
-		needUpdate = true;
-		updateEuler = true;
-		this->rotation *= MakeQuaternion(Radians(angle), vec);
-		return *this;
-	}
-
-	MxObject& MxObject::RotateX(float angle)
-	{
-		return Rotate(angle, MakeVector3(1.0f, 0.0f, 0.0f));
-	}
-
-	MxObject& MxObject::RotateY(float angle)
-	{
-		return Rotate(angle, MakeVector3(0.0f, 1.0f, 0.0f));
-	}
-
-	MxObject& MxObject::RotateZ(float angle)
-	{
-		return Rotate(angle, MakeVector3(0.0f, 0.0f, 1.0f));
-	}
-
 	MxObject& MxObject::Translate(float x, float y, float z)
 	{
-		needUpdate = true;
-		this->translation += MakeVector3(x, y, z);
+		this->ObjectTransform.Translate(MakeVector3(x, y, z));
 		return *this;
 	}
 
 	MxObject& MxObject::TranslateForward(float dist)
 	{
-		this->Translate(this->rotation * this->forwardVec * dist);
+		this->ObjectTransform.Translate(this->ObjectTransform.GetRotation() * this->forwardVec * dist);
 		return *this;
 	}
 
 	MxObject& MxObject::TranslateRight(float dist)
 	{
-		this->Translate(this->rotation * this->rightVec * dist);
+		this->ObjectTransform.Translate(this->ObjectTransform.GetRotation() * this->rightVec * dist);
 		return *this;
 	}
 
 	MxObject& MxObject::TranslateUp(float dist)
 	{
-		this->Translate(this->rotation * this->upVec * dist);
+		this->ObjectTransform.Translate(this->ObjectTransform.GetRotation() * this->upVec * dist);
 		return *this;
 	}
 
 	MxObject& MxObject::Rotate(float horz, float vert)
 	{
-		Rotate(horz, this->rotation * this->upVec);
-		Rotate(vert, this->rotation * this->rightVec);
+		this->ObjectTransform.Rotate(horz, this->ObjectTransform.GetRotation() * this->upVec);
+		this->ObjectTransform.Rotate(vert, this->ObjectTransform.GetRotation() * this->rightVec);
 		
 		return *this;
 	}
@@ -226,6 +163,18 @@ namespace MxEngine
 		this->rightVec = right;
 	}
 
+	MxObject& MxObject::Scale(float x, float y, float z)
+	{
+		this->ObjectTransform.Scale(MakeVector3(x, y, z));
+		return *this;
+	}
+
+	MxObject& MxObject::Rotate(float x, float y, float z)
+	{
+		this->ObjectTransform.Rotate(1.0f, MakeVector3(x, y, z));
+		return *this;
+	}
+
 	const Vector3& MxObject::GetForwardVector() const
 	{
 		return this->forwardVec;
@@ -241,26 +190,6 @@ namespace MxEngine
 		return this->rightVec;
 	}
 
-	MxObject& MxObject::Translate(const Vector3& dist)
-	{
-		return this->Translate(dist.x, dist.y, dist.z);
-	}
-
-	MxObject& MxObject::TranslateX(float x)
-	{
-		return Translate(x, 0.0f, 0.0f);
-	}
-
-	MxObject& MxObject::TranslateY(float y)
-	{
-		return Translate(0.0f, y, 0.0f);
-	}
-
-	MxObject& MxObject::TranslateZ(float z)
-	{
-		return Translate(0.0f, 0.0f, z);
-	}
-
 	size_t MxObject::GetIterator() const
 	{
 		return 0;
@@ -268,7 +197,7 @@ namespace MxEngine
 
 	bool MxObject::IsLast(size_t iterator) const
 	{
-		return this->GetObjectBase()->GetRenderObjects().size() == iterator;
+		return this->GetMesh().GetRenderObjects().size() == iterator;
 	}
 
 	size_t MxObject::GetNext(size_t iterator) const
@@ -278,45 +207,37 @@ namespace MxEngine
 
 	const IRenderable& MxObject::GetCurrent(size_t iterator) const
 	{
-		return this->GetObjectBase()->GetRenderObjects()[iterator];
+		return this->GetMesh().GetRenderObjects()[iterator];
 	}
 
 	const Matrix4x4& MxObject::GetModelMatrix() const
 	{
-		if (needUpdate)
-		{
-			auto Translation = MxEngine::Translate(Matrix4x4(1.0f), this->translation);
-			auto Rotation = ToMatrix(this->rotation);
-			auto Scale = MxEngine::Scale(Matrix4x4(1.0f), this->scale);
-			this->Model = Translation * Rotation * Scale;
-			needUpdate = false;
-		}
-		return this->Model;
+		return this->ObjectTransform.GetMatrix();
 	}
 
 	bool MxObject::HasShader() const
 	{
-		return this->Shader != nullptr;
+		return this->ObjectShader != nullptr;
 	}
 
-	const MxEngine::Shader& MxObject::GetShader() const
+	const Shader& MxObject::GetShader() const
 	{
-		return *this->Shader;
+		return *this->ObjectShader;
 	}
 
 	bool MxObject::IsDrawable() const
 	{
-		return this->shouldRender && this->object != nullptr;
+		return this->shouldRender && this->ObjectMesh != nullptr;
 	}
 
 	bool MxObject::HasTexture() const
 	{
-		return this->Texture != nullptr;
+		return this->ObjectTexture != nullptr;
 	}
 
-	const MxEngine::Texture& MxObject::GetTexture() const
+	const Texture& MxObject::GetTexture() const
 	{
-		return *this->Texture;
+		return *this->ObjectTexture;
 	}
 
 	size_t MxObject::GetInstanceCount() const

@@ -74,15 +74,16 @@ namespace MxEngine
 		CameraController& TranslateY(float y);
 		CameraController& TranslateZ(float z);
 
+		void SetForwardVector(const Vector3& forward);
+		void SetUpVector(const Vector3& up);
+		void SetRightVector(const Vector3& right);
+
 		// Inherited via IMovable
 		virtual CameraController& Translate(float x, float y, float z) override;
 		virtual CameraController& TranslateForward(float dist) override;
 		virtual CameraController& TranslateRight(float dist) override;
 		virtual CameraController& TranslateUp(float dist) override;
 		virtual CameraController& Rotate(float horz, float vert) override;
-		virtual void SetForwardVector(const Vector3& forward) override;
-		virtual void SetUpVector(const Vector3& up) override;
-		virtual void SetRightVector(const Vector3& right) override;
 		virtual const Vector3& GetForwardVector() const override;
 		virtual const Vector3& GetUpVector() const override;
 		virtual const Vector3& GetRightVector() const override;

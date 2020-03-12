@@ -34,7 +34,7 @@ namespace MxEngine::GUI
 {
     inline void DrawLightEditor()
     {
-        auto context = Context::Instance();
+        auto context = Application::Get();
 
 		auto& Renderer = context->GetRenderer();
 		auto& globalLight = Renderer.GlobalLight;

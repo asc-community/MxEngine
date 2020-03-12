@@ -11,7 +11,7 @@ class SphereObject : public Sphere
 public:
     inline SphereObject()
     {
-        this->Texture = Colors::MakeTexture(Colors::LIME);
+        this->ObjectTexture = Colors::MakeTexture(Colors::LIME);
         this->Translate(-13.0f, 1.0f, 2.0f);
     }
 };

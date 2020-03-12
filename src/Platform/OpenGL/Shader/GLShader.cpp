@@ -30,7 +30,7 @@
 #include "Utilities/Logger/Logger.h"
 #include "Core/Macro/Macro.h"
 #include "Platform/OpenGL/GLUtilities/GLUtilities.h"
-#include <fstream>
+#include "Utilities/FileSystem/FileSystem.h"
 
 namespace MxEngine
 {
@@ -78,27 +78,25 @@ namespace MxEngine
 		this->vertexShaderPath = vertexShaderPath;
 		this->fragmentShaderPath = fragmentShaderPath;
 		#endif
-		std::string vs = ReadFile(vertexShaderPath);
-		std::string fs = ReadFile(fragmentShaderPath);
+		std::string vs = File::ReadAllText(vertexShaderPath);
+		std::string fs = File::ReadAllText(fragmentShaderPath);
 
-		if (vs.empty())
-		{
-			Logger::Instance().Error("MxEngine::Shader", "shader file is empty: " + vertexShaderPath);
-			return;
-		}
 		if (fs.empty())
 		{
-			Logger::Instance().Error("MxEngine::Shader", "shader file is empty: " + fragmentShaderPath);
-			return;
+			Logger::Instance().Warning("MxEngine::Shader", "fragment shader is empty: " + fragmentShaderPath);
+		}
+		if (vs.empty())
+		{
+			Logger::Instance().Warning("MxEngine::Shader", "vertex shader is empty: " + vertexShaderPath);
 		}
 
-		Logger::Instance().Debug("MxEngine::Shader", "compiling vertex shader: " + vertexShaderPath);
+		Logger::Instance().Debug("Shader", "compiling vertex shader: " + vertexShaderPath);
 		unsigned int vertexShader = CompileShader(ShaderType::VERTEX_SHADER, vs, vertexShaderPath);
-		Logger::Instance().Debug("MxEngine::Shader", "compiling fragment shader: " + fragmentShaderPath);
+		Logger::Instance().Debug("Shader", "compiling fragment shader: " + fragmentShaderPath);
 		unsigned int fragmentShader = CompileShader(ShaderType::FRAGMENT_SHADER, fs, fragmentShaderPath);
 
 		id = CreateProgram(vertexShader, fragmentShader);
-		Logger::Instance().Debug("MxEngine::Shader", "shader program created with id = " + std::to_string(id));
+		Logger::Instance().Debug("Shader", "shader program created with id = " + std::to_string(id));
 	}
 
 	void GLShader::SetUniformFloat(const std::string& name, float f) const
@@ -149,19 +147,6 @@ namespace MxEngine
 		GLCALL(glUniform1i(location, i));
 	}
 
-	std::string GLShader::ReadFile(const std::string& filename) const
-	{
-		std::ifstream file(filename);
-		if (file.bad())
-		{
-			Logger::Instance().Error("MxEngine::FileReader", "file with name '" + filename + "' was not found");
-			return "";
-		}
-		std::string content;
-		content.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
-		return content;
-	}
-
 	GLShader::ShaderId GLShader::CompileShader(ShaderType type, std::string& source, const std::string& name) const
 	{
 		GLCALL(GLuint shaderId = glCreateShader((GLenum)type));
@@ -179,7 +164,7 @@ namespace MxEngine
 			msg.resize(length);
 			GLCALL(glGetShaderInfoLog(shaderId, length, &length, &msg[0]));
 			msg.pop_back(); // extra \n character
-			Logger::Instance().Error("MxEngine::Shader", (std::string)"failed to compile " +
+			Logger::Instance().Error("Shader", (std::string)"failed to compile " +
 				(type == ShaderType::VERTEX_SHADER ? "vertex" : "fragment") + " shader: " + name);
 			Logger::Instance().Error("OpenGL", msg);
 		}
@@ -209,7 +194,7 @@ namespace MxEngine
 
 		GLCALL(int location = glGetUniformLocation(id, uniformName.c_str()));
 		if (location == -1)
-			Logger::Instance().Warning("MxEngine::Shader", "uniform was not found: " + uniformName);
+			Logger::Instance().Warning("Shader", "uniform was not found: " + uniformName);
 		uniformCache[uniformName] = location;
 		return location;
 	}

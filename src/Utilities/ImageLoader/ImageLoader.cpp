@@ -27,9 +27,10 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ImageLoader.h"
+#include "Utilities/Profiler/Profiler.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
-#include "Utilities/Profiler/Profiler.h"
 
 namespace MxEngine
 {

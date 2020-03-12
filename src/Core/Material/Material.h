@@ -45,7 +45,7 @@ namespace MxEngine
 		Ref<Texture> map_bump;
 		Ref<Texture> bump;
 
-		float Ns = 32.0f;
+		float Ns = 128.0f;
 		float Ni = 0.0f;
 		float d = 1.0f;
 		float Tr = 0.0f;

@@ -28,11 +28,11 @@
 
 #pragma once
 
-#include "Core/Interfaces/ILightSource.h"
+#include "Core/Lighting/LightSource.h"
 
 namespace MxEngine
 {
-    class PointLight final : public ILightSource
+    class PointLight final : public LightSource<PointLight>
     {
         Vector3 ambientColor  = MakeVector3(1.0f);
         Vector3 diffuseColor  = MakeVector3(1.0f);
@@ -49,12 +49,12 @@ namespace MxEngine
         PointLight& UseFactors(const Vector3& factors);
         const Vector3& GetFactors() const;
 
-        // Inherited via ILightSource
-        virtual PointLight& UseAmbientColor(const Vector3& ambient) override;
-        virtual PointLight& UseDiffuseColor(const Vector3& diffuse) override;
-        virtual PointLight& UseSpecularColor(const Vector3& specular) override;
-        virtual const Vector3& GetAmbientColor() const override;
-        virtual const Vector3& GetDiffuseColor() const override;
-        virtual const Vector3& GetSpecularColor() const override;
+        // Inherited via LightSource
+        PointLight& UseAmbientColor(const Vector3& ambient);
+        PointLight& UseDiffuseColor(const Vector3& diffuse);
+        PointLight& UseSpecularColor(const Vector3& specular);
+        const Vector3& GetAmbientColor() const;
+        const Vector3& GetDiffuseColor() const;
+        const Vector3& GetSpecularColor() const;
     };
 }

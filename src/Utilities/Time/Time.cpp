@@ -29,23 +29,36 @@
 #include "Time.h"
 
 // only for time
-#include <GLFW/glfw3.h>
+#include <chrono>
+#include "Core/Macro/Macro.h"
+#if defined(MXENGINE_USE_OPENGL)
+#include "Platform/OpenGL/GLUtilities/GLUtilities.h"
 
 MxEngine::TimeStep MxEngine::Time::Current()
 {
 	return (MxEngine::TimeStep)glfwGetTime();
 }
+#endif
 
-std::string MxEngine::BeautifyTime(TimeStep time)
+namespace MxEngine
 {
-	if (time > 1.0f)
+	time_t Time::System()
 	{
-		int timeInt = int(time * 100);
-		return std::to_string(timeInt / 100) + "." + std::to_string(timeInt % 100) + "s";
+		using namespace std::chrono;
+		return system_clock::to_time_t(system_clock::now());
 	}
-	else
+
+	std::string BeautifyTime(TimeStep time)
 	{
-		int timeInt = int(time * 1000 * 100);
-		return std::to_string(timeInt / 100) + "." + std::to_string(timeInt % 100) + "ms";
+		if (time > 1.0f)
+		{
+			int timeInt = int(time * 100);
+			return std::to_string(timeInt / 100) + "." + std::to_string(timeInt % 100) + "s";
+		}
+		else
+		{
+			int timeInt = int(time * 1000 * 100);
+			return std::to_string(timeInt / 100) + "." + std::to_string(timeInt % 100) + "ms";
+		}
 	}
 }
