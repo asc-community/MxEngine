@@ -33,6 +33,9 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Utilities/Logger/Logger.h"
+#include "Utilities/Format/Format.h"
+
 namespace MxEngine
 {
     template<
@@ -61,12 +64,32 @@ namespace MxEngine
             container.emplace(std::forward<IdT>(key), std::forward<ValueT>(value));
         }
 
+        template<typename T, typename IdT>
+        auto ExistsImpl(T& container, IdT&& key, int) ->
+            decltype(std::declval<T>().find(key) != std::declval<T>().end(), bool())
+        {
+            return container.find(std::forward<IdT>(key)) != container.end();
+        }
+
+        template<typename T, typename IdT>
+        auto ExistsImpl(T& container, IdT&& key, long) ->
+            decltype(bool())
+        {
+            auto it = std::find_if(container.begin(), container.end(),
+                [&key](const auto& p)
+                {
+                    return p.first == key;
+                });
+            return it != container.end();
+        }
+
         template<typename T>
         auto FreeRemoveQueueImpl(T& container, int) ->
             decltype(std::declval<T>().erase(std::declval<Id>()), void())
         {
             for (const auto& id : this->toRemove)
             {
+                Logger::Instance().Debug("MxEngine::LifetimeManager", Format(FMT_STRING("deleting object: {0}"), id));
                 this->storage.erase(id);
             }
             this->toRemove.clear();
@@ -83,7 +106,11 @@ namespace MxEngine
                     {
                         return p.first == id;
                     });
-                this->storage.erase(it);
+                if (it != this->storage.end())
+                {
+                    Logger::Instance().Debug("MxEngine::LifetimeManager", Format(FMT_STRING("deleting object: {0}"), id));
+                    this->storage.erase(it);
+                }
             }
             this->toRemove.clear();
         }
@@ -149,6 +176,12 @@ namespace MxEngine
         void Remove(IdT&& key)
         {
             this->toRemove.emplace_back(std::forward<IdT>(key));
+        }
+
+        template<typename IdT>
+        bool Exists(IdT&& key)
+        {
+            return this->ExistsImpl(this->storage, std::forward<IdT>(key), 0);
         }
 
         void Update()

@@ -42,13 +42,13 @@ namespace MxEngine
 		UniqueRef<VertexBuffer> VBO;
 		UniqueRef<VertexArray> VAO;
 		UniqueRef<Material> material;
-		size_t vertexCount = 0;
+		size_t vertexBufferSize = 0;
 
 		void GenerateMeshIndicies() const;
 		friend class Mesh;
 	public:
 		RenderObject(UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<Material> material, 
-			bool useTexture, bool useNormal, size_t vertexCount);
+			bool useTexture, bool useNormal, size_t sizeInFloats);
 
 		RenderObject(const RenderObject&) = delete;
 		RenderObject(RenderObject&&) noexcept = default;
@@ -62,7 +62,7 @@ namespace MxEngine
 		virtual const VertexArray& GetVAO() const override;
 		virtual const IndexBuffer& GetMeshIBO() const override;
 		virtual const Material& GetMaterial() const override;
-		virtual size_t GetVertexCount() const override;
+		virtual size_t GetVertexBufferSize() const override;
 		virtual bool HasMaterial() const override;
 	};
 

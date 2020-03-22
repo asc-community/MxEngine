@@ -83,7 +83,14 @@ namespace MxEngine
 		this->channels = image.channels;
 
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
-		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data));
+		if (this->channels == 3)
+		{
+			GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data));
+		}
+		else
+		{
+			GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data));
+		}
 		if (genMipmaps)
 		{
 			GLCALL(glGenerateMipmap(GL_TEXTURE_2D));
@@ -109,7 +116,7 @@ namespace MxEngine
 		this->channels = 3;
 
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
-		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
+		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
 		if (genMipmaps)
 		{
 			GLCALL(glGenerateMipmap(GL_TEXTURE_2D));

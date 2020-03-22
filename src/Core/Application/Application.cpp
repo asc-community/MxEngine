@@ -31,31 +31,53 @@
 #include "Utilities/Math/Math.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
-#include "Core/Event/RenderEvent.h"
-#include "Core/Event/UpdateEvent.h"
-#include "Core/Event/FpsUpdateEvent.h"
-#include "Core/Event/MouseEvent.h"
-#include "Core/Event/AppDestroyEvent.h"
+#include "Core/Event/Event.h"
 #include "Core/Camera/PerspectiveCamera.h"
 #include "Core/Camera/OrthographicCamera.h"
-
-#include <fstream>
 
 // conditional includes
 #include "Core/Macro/Macro.h"
 
 #include "Platform/OpenGL/GraphicFactory/GLGraphicFactory.h"
-#include "Library/Scripting/ChaiScript/ChaiScriptEngine.h"
 #include "Library/Scripting/Python/PythonEngine.h"
+#include "Library/Primitives/Colors.h"
 #include "Utilities/Format/Format.h"
 
 namespace MxEngine
 {
+	#define DECL_EVENT_TYPE(event) dispatcher.RegisterEventType<event>()
+	void InitEventDispatcher(AppEventDispatcher& dispatcher)
+	{
+		DECL_EVENT_TYPE(AppDestroyEvent);
+		DECL_EVENT_TYPE(FpsUpdateEvent);
+		DECL_EVENT_TYPE(KeyEvent);
+		DECL_EVENT_TYPE(MouseMoveEvent);
+		DECL_EVENT_TYPE(RenderEvent);
+		DECL_EVENT_TYPE(UpdateEvent);
+	}
+
 	Application::Application()
 		: manager(this), window(Graphics::Instance()->CreateWindow(1280, 720, "MxEngine Application")),
-		TimeDelta(0), CounterFPS(0), renderer(Graphics::Instance()->GetRenderer())
+		timeDelta(0), counterFPS(0), renderer(Graphics::Instance()->GetRenderer())
 	{
 		this->GetWindow().UseEventDispatcher(&this->dispatcher);
+		this->CreateScene("Global", MakeUnique<Scene>("Global", "Resources/"));
+		this->CreateScene("Default", MakeUnique<Scene>("Default", "Resources/"));
+		this->LoadScene("Default");
+
+		InitEventDispatcher(this->GetEventDispatcher());
+
+		#define FORWARD_EVENT_SCENE(event)\
+		this->dispatcher.AddEventListener<event>(#event, [this](event& e)\
+		{\
+			this->GetCurrentScene().GetEventDispatcher().Invoke(e);\
+		})
+		FORWARD_EVENT_SCENE(AppDestroyEvent);
+		FORWARD_EVENT_SCENE(FpsUpdateEvent);
+		FORWARD_EVENT_SCENE(KeyEvent);
+		FORWARD_EVENT_SCENE(MouseMoveEvent);
+		FORWARD_EVENT_SCENE(RenderEvent);
+		FORWARD_EVENT_SCENE(UpdateEvent);
 	}
 
 	void Application::ToggleMeshDrawing(bool state)
@@ -65,12 +87,12 @@ namespace MxEngine
 
 	void Application::OnCreate()
 	{
-		// must be overwritten in derived class
+		//is overriden in derived class
 	}
 
 	void Application::OnUpdate()
 	{
-		// must be overwritten in derived class
+		// is overriden in derived class
 	}
 
 	void Application::OnDestroy()
@@ -83,6 +105,83 @@ namespace MxEngine
 		return *this->window;
 	}
 
+	Scene& Application::GetCurrentScene()
+	{
+		return *this->currentScene;
+	}
+
+	Scene& Application::GetGlobalScene()
+	{
+		assert(this->scenes.Exists("Global"));
+		return *this->scenes.Get("Global");
+	}
+
+    void Application::LoadScene(const std::string& name)
+    {
+		if (name == this->GetGlobalScene().GetName())
+		{
+			Logger::Instance().Error("MxEngine::Application", "global scene cannot be loaded: " + name);
+			return;
+		}
+		if (!this->scenes.Exists(name))
+		{
+			Logger::Instance().Error("MxEngine::Application", "cannot load scene as it does not exist: " + name);
+			return;
+		}
+		// unload previous scene if it exists
+		if (this->currentScene != nullptr) 
+			this->currentScene->OnUnload();
+
+		this->currentScene = this->scenes.Get(name);
+		this->currentScene->OnLoad();
+    }
+
+	void Application::DestroyScene(const std::string& name)
+	{
+		if (name == this->GetGlobalScene().GetName())
+		{
+			Logger::Instance().Error("MxEngine::Application", "trying to destroy global scene: " + name);
+			return;
+		}
+		if (!this->scenes.Exists(name))
+		{
+			Logger::Instance().Warning("MxEngine::Application", "trying to destroy not existing scene: " + name);
+			return;
+		}
+		if (this->scenes.Get(name) == this->currentScene)
+		{
+			Logger::Instance().Error("MxEngine::Application", "cannot destroy scene which is used: " + name);
+			return;
+		}
+		this->scenes.Delete(name);
+	}
+
+	Scene& Application::CreateScene(const std::string& name, UniqueRef<Scene> scene)
+	{
+		if (scenes.Exists(name))
+		{
+			Logger::Instance().Error("MxEngine::Application", "scene with such name already exists: " + name);
+		}
+		else
+		{
+			scene->GetEventDispatcher() = this->GetEventDispatcher().Clone();
+			scenes.Add(name, std::move(scene));
+			scenes.Get(name)->OnCreate();
+		}
+		return *scenes.Get(name);
+	}
+
+	Scene& Application::GetScene(const std::string& name)
+	{
+		assert(this->scenes.Exists(name));
+		return *this->scenes.Get(name);
+	}
+
+	bool Application::SceneExists(const std::string& name)
+	{
+		return this->scenes.Exists(name);
+	}
+
     Counter::CounterType Application::GenerateResourceId()
     {
 		return this->resourceIdCounter++;
@@ -90,7 +189,17 @@ namespace MxEngine
 
     float Application::GetTimeDelta() const
 	{
-		return this->TimeDelta;
+		return this->timeDelta;
+	}
+
+    int Application::GetCurrentFPS() const
+    {
+		return this->counterFPS;
+    }
+
+	AppEventDispatcher& Application::GetEventDispatcher()
+	{
+		return this->dispatcher;
 	}
 
 	RenderController& Application::GetRenderer()
@@ -103,91 +212,15 @@ namespace MxEngine
 		return Logger::Instance();
 	}
 
-	Mesh* Application::LoadMesh(const FilePath& filepath)
+	void Application::ExecuteScript(const Script& script)
 	{
-		auto mesh = MakeUnique<Mesh>((this->ResourcePath / filepath).string());
-		Mesh* ret = mesh.get();
-		auto name = Format(FMT_STRING("Mesh_{0}"), this->GenerateResourceId());
-		this->GetResourceManager<Mesh>().Add(name, std::move(mesh));
-		return ret;
-	}
-
-	MxObject& Application::CreateObject(const std::string& name, const FilePath& filepath)
-	{
-		MAKE_SCOPE_PROFILER("Application::CreateObject");
-		if (this->objects.Get().find(name) != this->objects.Get().end())
+		MAKE_SCOPE_PROFILER("Application::ExecuteScript");
+		auto& engine = this->GetConsole().GetEngine();
+		engine.Execute(script.GetContent());
+		if (engine.HasErrors())
 		{
-			Logger::Instance().Warning("MxEngine::Application", "overriding already existing object: " + name);
-			DestroyObject(name);
+			Logger::Instance().Error("Application::ExecuteScript", engine.GetErrorMessage());
 		}
-		auto ptr = MakeUnique<MxObject>(this->LoadMesh(filepath));
-		auto& object = *ptr;
-		this->objects.Add(name, std::move(ptr));
-		return object;
-	}
-
-	MxObject& Application::AddObject(const std::string& name, UniqueRef<MxObject> object)
-	{
-		auto& value = *object;
-		this->objects.Add(name, std::move(object));
-		return value;
-	}
-
-	MxObject& Application::CopyObject(const std::string& name, const std::string& existingObject)
-	{
-		auto& object = GetObject(existingObject);
-		return AddObject(name, MakeUnique<MxObject>(&object.GetMesh()));
-	}
-
-	const Application::ObjectStorage::Storage& Application::GetObjectList()
-	{
-		return this->objects.Get();
-	}
-
-	void Application::InvalidateObjects()
-	{
-		this->objects.Update();
-	}
-
-	Texture* Application::CreateTexture(const FilePath& texture, bool genMipmaps, bool flipImage)
-	{
-		MAKE_SCOPE_PROFILER("Application::CreateTexture");
-		auto textureObject = Graphics::Instance()->CreateTexture(this->ResourcePath / texture, genMipmaps, flipImage);
-		auto name = Format(FMT_STRING("MxTexture_{0}"), this->GenerateResourceId());
-		return this->GetResourceManager<Texture>().Add(name, std::move(textureObject));
-	}
-
-	Shader* Application::CreateShader(const FilePath& vertex, const FilePath& fragment)
-	{
-		MAKE_SCOPE_PROFILER("Application::CreateShader");
-		auto shader = Graphics::Instance()->CreateShader(this->ResourcePath / vertex, this->ResourcePath / fragment);
-		auto name = Format(FMT_STRING("MxShader_{0}"), this->GenerateResourceId());
-		return this->GetResourceManager<Shader>().Add(name, std::move(shader));
-	}
-
-	void Application::ExecuteScript(const FilePath& script)
-	{
-		std::ifstream file(this->ResourcePath / script);
-	}
-
-	MxObject& Application::GetObject(const std::string& name)
-	{
-		if (this->objects.Get().find(name) == this->objects.Get().end())
-		{
-			Logger::Instance().Warning("MxEngine::Application", "object was not found: " + name);
-			return this->defaultInstance;
-		}
-		return *this->objects.Get()[name];
-	}
-
-	void Application::DestroyObject(const std::string& name)
-	{
-		if (this->objects.Get().find(name) == this->objects.Get().end())
-		{
-			Logger::Instance().Warning("MxEngine::Application", "trying to destroy object which not exists: " + name);
-			return;
-		}
-		this->objects.Remove(name);
 	}
 
 	void Application::ToggleDeveloperConsole(bool isVisible)
@@ -199,19 +232,22 @@ namespace MxEngine
 	void Application::DrawObjects(bool meshes) const
 	{
 		MAKE_SCOPE_PROFILER("Application::DrawObjects");
+		const auto& viewport = this->currentScene->Viewport;
+
+		LightSystem lights;
+		lights.Global = this->currentScene->GlobalLight;
+		lights.Point = this->currentScene->PointLights.GetView();
+		lights.Spot = this->currentScene->SpotLights.GetView();
+
+		for (const auto& object : this->currentScene->GetObjectList())
+		{
+			this->renderer.DrawObject(*object.second, viewport, lights);
+		}
 		if (meshes)
 		{
-			for (const auto& object : this->objects.Get())
+			for (const auto& object : this->currentScene->GetObjectList())
 			{
-				this->renderer.DrawObject(*object.second);
-				this->renderer.DrawObjectMesh(*object.second);
-			}
-		}
-		else
-		{
-			for (const auto& object : this->objects.Get())
-			{
-				this->renderer.DrawObject(*object.second);
+				this->renderer.DrawObjectMesh(*object.second, viewport);
 			}
 		}
 	}
@@ -220,14 +256,65 @@ namespace MxEngine
 	{
 		this->GetWindow().OnUpdate();
 		MAKE_SCOPE_PROFILER("MxEngine::OnUpdate");
-		UpdateEvent updateEvent(this->TimeDelta);
+		UpdateEvent updateEvent(this->timeDelta);
 		this->GetEventDispatcher().Invoke(updateEvent);
-		for (const auto& object : this->objects.Get())
+		for (auto& [_, object] : this->currentScene->GetObjectList())
 		{
-			object.second->OnUpdate();
+			object->OnUpdate();
 		}
-		this->objects.Update();
+		this->currentScene->OnUpdate();
 		this->OnUpdate();
+		this->currentScene->OnRender();
+		this->currentScene->PrepareRender();
+	}
+
+	bool Application::VerifyApplicationState()
+	{
+		if (!this->GetWindow().IsCreated())
+		{
+			Logger::Instance().Error("MxEngine::Application", "window was not created, aborting...");
+			return false;
+		}
+		if (this->isRunning)
+		{
+			Logger::Instance().Error("MxEngine::Application", "Application::Run() is called when application is already running");
+			return false;
+		}
+		if (!this->GetWindow().IsOpen())
+		{
+			Logger::Instance().Error("MxEngine::Application", "window was created but is closed. Note that application can be runned only once");
+			return false;
+		}
+		return true; // verified!
+	}
+
+	void Application::VerifyRendererState()
+	{
+		auto& Renderer = this->GetRenderer();
+		if (Renderer.DefaultTexture == nullptr)
+		{
+			Renderer.DefaultTexture = Colors::MakeTexture(Colors::WHITE);
+		}
+		if (Renderer.ObjectShader == nullptr)
+		{
+			Renderer.ObjectShader = Application::Get()->GetGlobalScene().GetResourceManager<Shader>().Add(
+				"MxObjectShader", Graphics::Instance()->CreateShader());
+			Renderer.ObjectShader->LoadFromSource(
+				#include "Core/Shaders/object_vertex.glsl"
+				,
+				#include "Core/Shaders/object_fragment.glsl"
+			);
+		}
+		if (Renderer.MeshShader == nullptr)
+		{
+			Renderer.MeshShader = Application::Get()->GetGlobalScene().GetResourceManager<Shader>().Add(
+				"MxMeshShader", Graphics::Instance()->CreateShader());
+			Renderer.MeshShader->LoadFromSource(
+				#include "Core/Shaders/mesh_vertex.glsl"
+				,		 
+				#include "Core/Shaders/mesh_fragment.glsl"
+			);
+		}
 	}
 
 	void Application::CloseApplication()
@@ -237,6 +324,11 @@ namespace MxEngine
 
 	void Application::CreateContext()
 	{
+		if (this->GetWindow().IsCreated())
+		{
+			Logger::Instance().Warning("MxEngine::Application", "CreateContext() called when window was already created");
+			return;
+		}
 		MAKE_SCOPE_PROFILER("Application::CreateContext");
 		this->GetWindow()
 			.UseProfile(3, 3, Profile::CORE)
@@ -262,11 +354,6 @@ namespace MxEngine
 		this->CreateConsoleBindings(this->GetConsole());
 	}
 
-	AppEventDispatcher& Application::GetEventDispatcher()
-	{
-		return this->dispatcher;
-	}
-
 	DeveloperConsole& Application::GetConsole()
 	{
 		return this->console;
@@ -274,18 +361,13 @@ namespace MxEngine
 
 	void Application::Run()
 	{
-		if (!this->GetWindow().IsCreated())
-		{
-			Logger::Instance().Error("MxEngine::Application", "window was not created, aborting...");
-			return;
-		}
+		if (!VerifyApplicationState()) return;
+		this->isRunning = true;
 
 		if (this->GetConsole().IsToggled())
 		{
 			this->GetConsole().Log("Welcome to MxEngine developer console!");
-			#if defined(MXENGINE_USE_CHAISCRIPT)
-			this->GetConsole().Log("This console is powered by ChaiScript: http://chaiscript.com");
-			#elif defined(MXENGINE_USE_PYTHON)
+			#if defined(MXENGINE_USE_PYTHON)
 			this->GetConsole().Log("This console is powered by Python: https://www.python.org");
 			#endif
 		}
@@ -295,12 +377,12 @@ namespace MxEngine
 			MAKE_SCOPE_TIMER("MxEngine::Application", "Application::OnCreate()");
 			this->OnCreate();
 		}
-
 		float secondEnd = Time::Current(), frameEnd = Time::Current();
 		int fpsCounter = 0;
-
+		VerifyRendererState();
 		{
 			MAKE_SCOPE_PROFILER("Application::Run");
+			MAKE_SCOPE_TIMER("MxEngine::Application", "Application::Run()");
 			Logger::Instance().Debug("MxEngine::Application", "starting main loop...");
 			while (this->GetWindow().IsOpen())
 			{
@@ -308,23 +390,23 @@ namespace MxEngine
 				float now = Time::Current();
 				if (now - secondEnd >= 1.0f)
 				{
-					this->CounterFPS = fpsCounter;
+					this->counterFPS = fpsCounter;
 					fpsCounter = 0;
 					secondEnd = now;
-					this->GetEventDispatcher().AddEvent(MakeUnique<FpsUpdateEvent>(this->CounterFPS));
+					this->GetEventDispatcher().AddEvent(MakeUnique<FpsUpdateEvent>(this->counterFPS));
 				}
-				TimeDelta = now - frameEnd;
+				timeDelta = now - frameEnd;
 				frameEnd = now;
 
 				// event phase
 				{
 					MAKE_SCOPE_PROFILER("Application::ProcessEvents");
 					this->GetEventDispatcher().InvokeAll();
+					this->currentScene->GetEventDispatcher().InvokeAll();
 					if (this->shouldClose) break;
 				}
 
-				InvokeUpdate();
-				
+				this->InvokeUpdate();
 				this->GetRenderer().Clear();
 				this->DrawObjects(this->debugMeshDraw);
 
@@ -338,12 +420,20 @@ namespace MxEngine
 			// application exit
 			{
 				MAKE_SCOPE_PROFILER("Application::CloseApplication");
+				MAKE_SCOPE_TIMER("MxEngine::Application", "Application::CloseApplication()");
+				this->currentScene->OnUnload();
 				AppDestroyEvent appDestroyEvent;
 				this->GetEventDispatcher().Invoke(appDestroyEvent);
 				this->OnDestroy();
 				this->GetWindow().Close();
+				this->isRunning = false;
 			}
 		}
+	}
+
+	bool Application::IsRunning() const
+	{
+		return this->isRunning;
 	}
 
 	Application::~Application()
@@ -351,7 +441,12 @@ namespace MxEngine
 		{
 			MAKE_SCOPE_PROFILER("Application::DestroyObjects");
 			MAKE_SCOPE_TIMER("MxEngine::Application", "Application::DestroyObjects");
-			this->objects.Get().clear();
+
+			for (auto& scene : this->scenes.GetStorage())
+			{
+				scene.second->OnDestroy();
+			}
+			this->scenes.Clear();
 		}
 		Logger::Instance().Debug("MxEngine::Application", "application destroyed");
 	}
@@ -373,13 +468,13 @@ namespace MxEngine
 		assert(Application::Get() == nullptr);
 		Application::Set(app);
 
-#if defined(MXENGINE_USE_OPENGL)
+		#if defined(MXENGINE_USE_OPENGL)
 		Graphics::Instance() = Alloc<GLGraphicFactory>();
-#else
+		#else
 		Graphics::Instance() = nullptr;
 		Logger::Instance().Error("MxEngine::Application", "No Rendering Engine was provided");
 		return;
-#endif
+		#endif
 		Graphics::Instance()->GetGraphicModule().Init();
 	}
 
@@ -389,150 +484,7 @@ namespace MxEngine
 		Profiler::Instance().EndSession();
 	}
 
-	#if defined(MXENGINE_USE_CHAISCRIPT)
-	void Application::CreateConsoleBindings(DeveloperConsole& console)
-	{
-		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });
-		this->GetEventDispatcher().AddEventListener<RenderEvent>("DeveloperConsole",
-			[this](RenderEvent&) { this->GetConsole().OnRender(); });
-
-		auto& script = console.GetEngine();
-
-		// Vector3
-		script.AddType<Vector3>("vec3");
-		script.AddTypeConstructor<Vector3, float>("vec3");
-		script.AddTypeConstructor<Vector3, float, float, float>("vec3");
-		script.AddReference("x", &Vector3::x);
-		script.AddReference("y", &Vector3::y);
-		script.AddReference("z", &Vector3::z);
-
-		// CameraController
-		using TranslateFunc = CameraController & (CameraController::*)(float, float, float);
-		script.AddReference("position", &CameraController::GetPosition);
-		script.AddReference("direction", &CameraController::GetDirection);
-		script.AddReference("up", &CameraController::GetUpVector);
-		script.AddReference("zoom", &CameraController::GetZoom);
-		script.AddReference("set_zoom", &CameraController::SetZoom);
-		script.AddReference("rotate", &CameraController::Rotate);
-		script.AddReference("translate", (TranslateFunc)&CameraController::Translate);
-		script.AddReference("translate_x", &CameraController::TranslateX);
-		script.AddReference("translate_y", &CameraController::TranslateY);
-		script.AddRseference("translate_z", &CameraController::TranslateZ);
-		script.AddReference("move_forward", &CameraController::TranslateForward);
-		script.AddReference("move_right", &CameraController::TranslateRight);
-		script.AddReference("move_up", &CameraController::TranslateUp);
-
-		// Camera
-		script.AddReference("set_zfar",
-			[](float zfar) { Application::Get()->GetRenderer().ViewPort.GetCamera().SetZFar(zfar); });
-		script.AddReference("set_znear",
-			[](float znear) { Application::Get()->GetRenderer().ViewPort.GetCamera().SetZNear(znear); });
-		script.AddReference("zfar",
-			[]() { return Application::Get()->GetRenderer().ViewPort.GetCamera().GetZFar(); });
-		script.AddReference("znear",
-			[]() { return Application::Get()->GetRenderer().ViewPort.GetCamera().GetZNear(); });
-
-		// Object
-		using ScaleFunc1F = MxObject & (MxObject::*)(float);
-		using ScaleFunc3F = MxObject & (MxObject::*)(float, float, float);
-		using TranslateFunc3 = MxObject & (MxObject::*)(float, float, float);
-		using RotateMoveFunc = MxObject & (MxObject::*)(float);
-		using RotateFunc2F = MxObject & (MxObject::*)(float, float);
-		script.AddReference("rotate", (RotateFunc2F)&MxObject::Rotate);
-		script.AddReference("rotate_x", &MxObject::RotateX);
-		script.AddReference("rotate_y", &MxObject::RotateY);
-		script.AddReference("rotate_z", &MxObject::RotateZ);
-		script.AddReference("scale", (ScaleFunc1F)&MxObject::Scale);
-		script.AddReference("scale", (ScaleFunc3F)&MxObject::Scale);
-		script.AddReference("translate", (TranslateFunc3)&MxObject::Translate);
-		script.AddReference("translate_x", &MxObject::TranslateX);
-		script.AddReference("translate_y", &MxObject::TranslateY);
-		script.AddReference("translate_z", &MxObject::TranslateZ);
-		script.AddReference("move_forward", (RotateMoveFunc)&MxObject::TranslateForward);
-		script.AddReference("move_right", (RotateMoveFunc)&MxObject::TranslateRight);
-		script.AddReference("move_up", (RotateMoveFunc)&MxObject::TranslateUp);
-		script.AddReference("forward_vec", &MxObject::GetForwardVector);
-		script.AddReference("up_vec", &MxObject::GetUpVector);
-		script.AddReference("right_vec", &MxObject::GetRightVector);
-		script.AddReference("set_forward", &MxObject::SetForwardVector);
-		script.AddReference("set_up", &MxObject::SetUpVector);
-		script.AddReference("set_right", &MxObject::SetRightVector);
-		script.AddReference("hide", &MxObject::Hide);
-		script.AddReference("show", &MxObject::Show);
-		script.AddReference("translation", &MxObject::GetTranslation);
-		script.AddReference("rotation", &MxObject::GetRotation);
-		script.AddReference("scale", &MxObject::GetScale);
-
-		// Application
-		script.AddVariable("objects", Application::Get()->objects);
-		script.AddVariable("viewport", Application::Get()->GetRenderer().ViewPort);
-		script.AddReference("load", Application::Get(), &Application::CreateObject);
-		script.AddReference("copy", Application::Get(), &Application::CopyObject);
-		script.AddReference("delete", Application::Get(), &Application::DestroyObject);
-		script.AddReference("exit", Application::Get(), &Application::CloseApplication);
-		script.AddReference("dt", Application::Get(), &Application::GetTimeDelta);
-		script.AddReference("[]",
-			[](Application::ObjectStorage& storage, const std::string& name) -> MxObject&
-			{
-				return *storage.Get()[name];
-			});
-		script.AddReference("to_string",
-			[](const Vector3& vec)
-			{
-				return "(" + std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z) + ")";
-			});
-		script.AddReference("set_texture",
-			[](MxObject& instance, const std::string& path)
-			{
-				instance.Texture = Application::Get()->CreateTexture(path);
-			});
-		script.AddReference("set_shader",
-			[](MxObject& instance, const std::string& vertex, const std::string& fragment)
-			{
-				instance.Shader = Application::Get()->CreateShader(vertex, fragment);
-			});
-		script.AddReference("remove_event",
-			[](const std::string& name)
-			{
-				Application::Get()->GetEventDispatcher().RemoveEventListener(name);
-			});
-		script.AddReference("orthographic",
-			[](CameraController& viewport)
-			{
-				viewport.SetCamera(MakeUnique<OrthographicCamera>());
-			});
-		script.AddReference("perspective",
-			[](CameraController& viewport)
-			{
-				viewport.SetCamera(MakeUnique<PerspectiveCamera>());
-			}
-		);
-		script.AddReference("on_update",
-			[](const std::string& eventName, std::function<void()> func)
-			{
-				Application::Get()->GetEventDispatcher().AddEventListener<UpdateEvent>(eventName,
-					[name = eventName, func = std::move(func)](UpdateEvent&)
-				{
-					try
-					{
-						func();
-					}
-					catch (std::exception & e)
-					{
-						std::string error = e.what();
-						auto it = error.find("Error:");
-						if (it != error.npos)
-						{
-							error.erase(it, it + 6);
-							error = "[error]:" + error;
-						}
-						Application::Get()->Console.Log(error);
-						Application::Get()->GetEventDispatcher().RemoveEventListener(name);
-					}
-				});
-			});
-	}
-	#elif defined(MXENGINE_USE_PYTHON)
+	#if defined(MXENGINE_USE_PYTHON)
 	void Application::CreateConsoleBindings(DeveloperConsole& console)
 	{
 		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });

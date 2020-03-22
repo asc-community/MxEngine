@@ -18,9 +18,7 @@
     <ClInclude Include="Core\Camera\OrthographicCamera.h" />
     <ClInclude Include="Core\Camera\CameraController.h" />
     <ClInclude Include="Utilities\EventDispatcher\EventDispatcher.h" />
-    <ClInclude Include="Core\Event\KeyEvent.h" />
     <ClInclude Include="Core\Interfaces\IEvent.h" />
-    <ClInclude Include="Core\Event\MouseEvent.h" />
     <ClInclude Include="Utilities\Math\Math.h" />
     <ClInclude Include="Core\Interfaces\GraphicAPI\VertexBuffer.h" />
     <ClInclude Include="Core\Interfaces\GraphicAPI\VertexBufferLayout.h" />
@@ -51,14 +49,10 @@
     <ClInclude Include="MxEngine.h" />
     <ClInclude Include="Library\Bindings\InputBinding.h" />
     <ClInclude Include="Core\Interfaces\IMovable.h" />
-    <ClInclude Include="Core\Event\RenderEvent.h" />
-    <ClInclude Include="Core\Event\UpdateEvent.h" />
     <ClInclude Include="Library\Bindings\ConsoleBinding.h" />
     <ClInclude Include="Library\Bindings\AppCloseBinding.h" />
     <ClInclude Include="Library\Bindings\Bindings.h" />
-    <ClInclude Include="Core\Event\FpsUpdateEvent.h" />
     <ClInclude Include="Utilities\LifetimeManager\LifetimeManager.h" />
-    <ClInclude Include="Library\Scripting\ChaiScript\ChaiScriptEngine.h" />
     <ClInclude Include="Library\Scripting\Python\PythonEngine.h" />
     <ClInclude Include="Core\Macro\Macro.h" />
     <ClInclude Include="Core\MxObject\RenderObject.h" />
@@ -67,7 +61,6 @@
     <ClInclude Include="Core\Lighting\PointLight\PointLight.h" />
     <ClInclude Include="Core\Lighting\SpotLight\SpotLight.h" />
     <ClInclude Include="Library\Primitives\Cube.h" />
-    <ClInclude Include="Core\Event\AppDestroyEvent.h" />
     <ClInclude Include="Library\Primitives\Sphere.h" />
     <ClInclude Include="Library\Primitives\Colors.h" />
     <ClInclude Include="Library\Bindings\LightBinding.h" />
@@ -85,9 +78,7 @@
     <ClInclude Include="Utilities\Random\Random.h" />
     <ClInclude Include="Utilities\ImGui\ImGuiBase.h" />
     <ClInclude Include="Utilities\Format\Format.h" />
-    <ClInclude Include="Core\MxObject\Instanced.h" />
     <ClInclude Include="Utilities\GenericStorage\GenericStorage.h" />
-    <ClInclude Include="Core\ResourceStorage\ResourceStorage.h" />
     <ClInclude Include="Core\Components\Transform\Transform.h" />
     <ClInclude Include="Core\Interfaces\IComponent.h" />
     <ClInclude Include="Core\Lighting\LightSource.h" />
@@ -95,6 +86,17 @@
     <ClInclude Include="Utilities\Counter\Counter.h" />
     <ClInclude Include="Utilities\Array\Array2D.h" />
     <ClInclude Include="Utilities\FileSystem\FileSystem.h" />
+    <ClInclude Include="Library\Scripting\Script\Script.h" />
+    <ClInclude Include="Core\Components\Instancing\Instancing.h" />
+    <ClInclude Include="Core\Scene\Scene.h" />
+    <ClInclude Include="Utilities\ResourceStorage\ResourceStorage.h" />
+    <ClInclude Include="Core\Event\Event.h" />
+    <ClInclude Include="Core\Event\Events\FpsUpdateEvent.h" />
+    <ClInclude Include="Core\Event\Events\KeyEvent.h" />
+    <ClInclude Include="Core\Event\Events\RenderEvent.h" />
+    <ClInclude Include="Core\Event\Events\UpdateEvent.h" />
+    <ClInclude Include="Core\Event\Events\MouseEvent.h" />
+    <ClInclude Include="Core\Event\Events\AppDestroyEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
@@ -129,6 +131,8 @@
     <ClCompile Include="Core\Components\Transform\Transform.cpp" />
     <ClCompile Include="Utilities\Counter\Counter.cpp" />
     <ClCompile Include="Utilities\FileSystem\FileSystem.cpp" />
+    <ClCompile Include="Library\Scripting\Script\Script.cpp" />
+    <ClCompile Include="Core\Scene\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\cube_fragment.glsl" />
@@ -138,6 +142,10 @@
     <None Include="Resources\shaders\mesh_vertex.glsl" />
     <None Include="Resources\shaders\object_vertex.glsl" />
     <None Include="Resources\shaders\object_fragment.glsl" />
+    <None Include="Core\Shaders\mesh_fragment.glsl" />
+    <None Include="Core\Shaders\mesh_vertex.glsl" />
+    <None Include="Core\Shaders\object_fragment.glsl" />
+    <None Include="Core\Shaders\object_vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\objects\crate.obj" />

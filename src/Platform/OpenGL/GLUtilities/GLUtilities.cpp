@@ -61,7 +61,7 @@ namespace MxEngine
 		return success;
 	}
 
-	unsigned int GetGLTypeSize(unsigned int type)
+	size_t GetGLTypeSize(unsigned int type)
 	{
 		switch (type)
 		{

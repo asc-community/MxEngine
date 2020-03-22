@@ -32,7 +32,7 @@
 #include "Core/Macro/Macro.h"
 #include "Core/Application/Application.h"
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
-#include "Core/Event/AppDestroyEvent.h"
+#include "Core/Event/Events/AppDestroyEvent.h"
 #include <array>
 
 namespace MxEngine
@@ -104,7 +104,7 @@ namespace MxEngine
 
         inline static Texture* GetGridTexture()
         {
-            auto& manager = Application::Get()->GetResourceManager<Texture>();
+            auto& manager = Application::Get()->GetCurrentScene().GetResourceManager<Texture>();
             static std::string textureName = "MxTexGrid";
             if (!manager.Exists(textureName))
             {

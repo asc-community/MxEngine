@@ -22,9 +22,8 @@
 // #define MXENGINE_USE_DIRECTX // not supported
 // #define MXENGINE_USE_VULKAN  // not supported
 
-// at least one must be defined:
+// scripting (optional):
 #define MXENGINE_USE_PYTHON
-// #define MXENGINE_USE_CHAISCRIPT
 
 // required in engine source:
 #define MXENGINE_USE_BOOST
@@ -48,8 +47,12 @@
 #if defined(MXENGINE_USE_ASSIMP)
     #if defined(MXENGINE_RELEASE)
         #pragma comment(lib, "assimp-vc142-mt.lib")
+        #pragma comment(lib, "IrrXML.lib")
+        #pragma comment(lib, "zlibstatic.lib")
     #elif defined(MXENGINE_DEBUG)
         #pragma comment(lib, "assimp-vc142-mtd.lib")
+        #pragma comment(lib, "IrrXMLd.lib")
+        #pragma comment(lib, "zlibstaticd.lib")
     #endif
 #endif
 

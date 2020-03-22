@@ -14,8 +14,6 @@ public:
 
 int main()
 {
-	int a[3];
-	ArrayView<int> A(a);
 	SnakePath3D app;
 	app.Run();
 	return 0;

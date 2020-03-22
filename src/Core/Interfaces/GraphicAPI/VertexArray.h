@@ -38,5 +38,6 @@ namespace MxEngine
 	{
 		virtual void AddBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout) = 0;
 		virtual void AddInstancedBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout) = 0;
+		virtual int GetAttributeCount() const = 0;
 	};
 }

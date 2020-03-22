@@ -37,7 +37,7 @@ namespace MxEngine
 	{
 		struct VertexBufferElement
 		{
-			unsigned int count;
+			size_t count;
 			unsigned int type;
 			unsigned char normalized;
 		};

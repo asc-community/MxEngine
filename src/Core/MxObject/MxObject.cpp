@@ -30,6 +30,7 @@
 #include "Utilities/ObjectLoader/ObjectLoader.h"
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 #include "Utilities/Profiler/Profiler.h"
+#include "Utilities/Format/Format.h"
 
 namespace MxEngine
 {
@@ -41,15 +42,16 @@ namespace MxEngine
 			return;
 		}
 
-		if (this->instanceCount == 0) this->instanceCount = count;
-		if (this->instanceCount > count)
+		if (this->instances != nullptr && this->instances->GetCount() > 0)
 		{
-			Logger::Instance().Error("MxEngine::MxObject", "instance buffer was not added as it contains not enough information");
-			return;
-		}
-		else if (this->instanceCount < count)
-		{
-			Logger::Instance().Error("MxEngine::MxObject", "instance buffer contains more data than required, additional will be ignored");
+			if (this->instances->GetCount() > count)
+			{
+				Logger::Instance().Warning("MxEngine::MxObject", "instance buffer has less size than object instances count");
+			}
+			else if (this->instances->GetCount() < count)
+			{
+				Logger::Instance().Warning("MxEngine::MxObject", "instance buffer contains more data than instances count");
+			}
 		}
 
 		auto VBO = Graphics::Instance()->CreateVertexBuffer(buffer, count * components, type);
@@ -66,7 +68,49 @@ namespace MxEngine
 	void MxObject::BufferDataByIndex(size_t index, ArrayBufferType buffer, size_t count, size_t offset)
 	{
 		VertexBuffer& VBO = this->ObjectMesh->GetBufferByIndex(index);
-		VBO.BufferSubData(buffer, count, offset);
+		if (count <= VBO.GetSize()) // replace data if VBO size is big enough
+		{
+			assert(offset + count <= VBO.GetSize());
+			VBO.BufferSubData(buffer, count, offset);
+		}
+		else // allocate new buffer (VBO handle remains the same)
+		{
+			assert(offset == 0);
+			VBO.Load(buffer, count, UsageType::DYNAMIC_DRAW);
+		}
+	}
+
+	MxInstanceWrapper<MxObject> MxObject::Instanciate()
+	{
+		if (this->instances == nullptr)
+		{
+			constexpr size_t baseSize = 8;
+			this->ReserveInstances(baseSize, UsageType::DYNAMIC_DRAW);
+		}
+		auto instance = this->instances->MakeInstance();
+		instance->Model = this->ObjectTransform;
+		return instance;
+	}
+
+	const Instancing<MxObject>::InstanceList& MxObject::GetInstances() const
+	{
+		if (this->instances == nullptr)
+		{
+			static Instancing<MxObject>::InstanceList empty;
+			return empty;
+		}
+		return this->instances->GetInstanceList();
+	}
+
+	Instancing<MxObject>::InstanceList& MxObject::GetInstances()
+	{
+		if (this->instances == nullptr)
+		{
+			Logger::Instance().Warning("MxEngine::MxObject", "object has not been instanced");
+			static Instancing<MxObject>::InstanceList empty;
+			return empty;
+		}
+		return this->instances->GetInstanceList();
 	}
 
 	size_t MxObject::GetBufferCount() const
@@ -78,6 +122,49 @@ namespace MxEngine
 		}
 		return this->ObjectMesh->GetBufferCount();
 	}
+
+	void MxObject::ReserveInstances(size_t count, UsageType usage)
+	{
+		Logger::Instance().Debug("MxEngine::MxObject", Format("making object instanced with reserved count: {0}", count));
+		assert(this->instances == nullptr);
+		this->instances = MakeUnique<Instancing<MxObject>>();
+		this->instances->InstanceDataIndex = this->GetBufferCount();
+		// add model matrix buffer
+		this->AddInstancedBuffer(nullptr, count, sizeof(Matrix4x4) / sizeof(float), usage);
+		// add normal matrix buffer
+		this->AddInstancedBuffer(nullptr, count, sizeof(Matrix4x4) / sizeof(float), usage);
+	}
+
+	void MxObject::MakeInstanced(size_t instances, UsageType usage)
+	{
+		this->ReserveInstances(instances, usage);
+		for (size_t i = 0; i < instances; i++)
+			this->Instanciate();
+	}
+
+	void MxObject::DestroyInstances()
+	{
+		this->instances->GetInstanceList().resize(0);
+	}
+
+    void MxObject::SetAutoBuffering(bool value)
+    {
+		this->instanceUpdate = value;
+    }
+
+    void MxObject::BufferInstances()
+    {
+		assert(this->instances != nullptr);
+		assert(this->instances->InstanceDataIndex != this->instances->Undefined);
+		constexpr size_t matrixSize = sizeof(Matrix4x4) / sizeof(float);
+
+		size_t index = this->instances->InstanceDataIndex;
+		size_t count = this->instances->GetCount();
+		auto& models = this->instances->GetModelData();
+		auto& normals = this->instances->GetNormalData();
+		this->BufferDataByIndex(index, reinterpret_cast<float*>(models.data()), count* matrixSize);
+		this->BufferDataByIndex(index + 1, reinterpret_cast<float*>(normals.data()), count* matrixSize);
+    }
 
 	MxObject::MxObject(Mesh* mesh)
 	{
@@ -94,16 +181,14 @@ namespace MxEngine
 		this->ObjectMesh = mesh;
 	}
 
-	Mesh& MxObject::GetMesh()
+	Mesh* MxObject::GetMesh()
 	{
-		assert(this->ObjectMesh != nullptr);
-		return *this->ObjectMesh;
+		return this->ObjectMesh;
 	}
 
-	const Mesh& MxObject::GetMesh() const
+	const Mesh* MxObject::GetMesh() const
 	{
-		assert(this->ObjectMesh != nullptr);
-		return *this->ObjectMesh;
+		return this->ObjectMesh;
 	}
 
 	void MxObject::Hide()
@@ -118,32 +203,32 @@ namespace MxEngine
 
 	MxObject& MxObject::Translate(float x, float y, float z)
 	{
-		this->ObjectTransform.Translate(MakeVector3(x, y, z));
+		this->ObjectTransform.Translate(MakeVector3(x, y, z) * this->TranslateSpeed);
 		return *this;
 	}
 
 	MxObject& MxObject::TranslateForward(float dist)
 	{
-		this->ObjectTransform.Translate(this->ObjectTransform.GetRotation() * this->forwardVec * dist);
+		this->ObjectTransform.Translate(this->ObjectTransform.GetRotation() * this->forwardVec * dist * this->TranslateSpeed);
 		return *this;
 	}
 
 	MxObject& MxObject::TranslateRight(float dist)
 	{
-		this->ObjectTransform.Translate(this->ObjectTransform.GetRotation() * this->rightVec * dist);
+		this->ObjectTransform.Translate(this->ObjectTransform.GetRotation() * this->rightVec * dist * this->TranslateSpeed);
 		return *this;
 	}
 
 	MxObject& MxObject::TranslateUp(float dist)
 	{
-		this->ObjectTransform.Translate(this->ObjectTransform.GetRotation() * this->upVec * dist);
+		this->ObjectTransform.Translate(this->ObjectTransform.GetRotation() * this->upVec * dist * this->TranslateSpeed);
 		return *this;
 	}
 
 	MxObject& MxObject::Rotate(float horz, float vert)
 	{
-		this->ObjectTransform.Rotate(horz, this->ObjectTransform.GetRotation() * this->upVec);
-		this->ObjectTransform.Rotate(vert, this->ObjectTransform.GetRotation() * this->rightVec);
+		this->ObjectTransform.Rotate(this->RotateSpeed * horz, this->ObjectTransform.GetRotation() * this->upVec);
+		this->ObjectTransform.Rotate(this->RotateSpeed * vert, this->ObjectTransform.GetRotation() * this->rightVec);
 		
 		return *this;
 	}
@@ -165,14 +250,24 @@ namespace MxEngine
 
 	MxObject& MxObject::Scale(float x, float y, float z)
 	{
-		this->ObjectTransform.Scale(MakeVector3(x, y, z));
+		this->ObjectTransform.Scale(MakeVector3(x, y, z) * this->ScaleSpeed);
 		return *this;
 	}
 
 	MxObject& MxObject::Rotate(float x, float y, float z)
 	{
-		this->ObjectTransform.Rotate(1.0f, MakeVector3(x, y, z));
+		this->ObjectTransform.Rotate(this->RotateSpeed, MakeVector3(x, y, z));
 		return *this;
+	}
+
+    void MxObject::SetRenderColor(const Vector4& color)
+    {
+		this->renderColor = Clamp(color, MakeVector4(0.0f), MakeVector4(1.0f));
+    }
+
+	const Vector4& MxObject::GetRenderColor() const
+	{
+		return this->renderColor;
 	}
 
 	const Vector3& MxObject::GetForwardVector() const
@@ -197,7 +292,7 @@ namespace MxEngine
 
 	bool MxObject::IsLast(size_t iterator) const
 	{
-		return this->GetMesh().GetRenderObjects().size() == iterator;
+		return this->GetMesh()->GetRenderObjects().size() == iterator;
 	}
 
 	size_t MxObject::GetNext(size_t iterator) const
@@ -207,12 +302,17 @@ namespace MxEngine
 
 	const IRenderable& MxObject::GetCurrent(size_t iterator) const
 	{
-		return this->GetMesh().GetRenderObjects()[iterator];
+		return this->GetMesh()->GetRenderObjects()[iterator];
 	}
 
 	const Matrix4x4& MxObject::GetModelMatrix() const
 	{
 		return this->ObjectTransform.GetMatrix();
+	}
+
+	const Matrix4x4& MxObject::GetNormalMatrix() const
+	{
+		return this->ObjectTransform.GetNormalMatrix();
 	}
 
 	bool MxObject::HasShader() const
@@ -242,6 +342,14 @@ namespace MxEngine
 
 	size_t MxObject::GetInstanceCount() const
 	{
-		return this->instanceCount;
+		if (this->instances == nullptr) return 0;
+		return this->instances->GetCount();
+	}
+
+	void MxObject::OnRenderDraw()
+	{
+		if (this->instances == nullptr || !this->instanceUpdate) return;
+		assert(this->instances->InstanceDataIndex != Instancing<MxObject>::Undefined);
+		this->BufferInstances();
 	}
 }

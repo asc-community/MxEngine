@@ -59,7 +59,7 @@ namespace MxEngine
 
         static inline Texture* MakeTexture(uint8_t r, uint8_t g, uint8_t b)
         {
-            auto& manager = Application::Get()->GetResourceManager<Texture>();
+            auto& manager = Application::Get()->GetCurrentScene().GetResourceManager<Texture>();
             auto name = Format(FMT_STRING("MxColor{0}_{1}_{2}"), r, g, b);
             
             if (!manager.Exists(name))

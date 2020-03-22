@@ -22,21 +22,24 @@
     <ClInclude Include="Core\Camera\CameraController.h" />
     <ClInclude Include="Core\Camera\OrthographicCamera.h" />
     <ClInclude Include="Core\Camera\PerspectiveCamera.h" />
+    <ClInclude Include="Core\Components\Instancing\Instancing.h" />
     <ClInclude Include="Core\Components\Transform\Transform.h" />
     <ClInclude Include="Core\DeveloperConsole\DeveloperConsole.h" />
-    <ClInclude Include="Core\Event\AppDestroyEvent.h" />
-    <ClInclude Include="Core\Event\RenderEvent.h" />
-    <ClInclude Include="Core\Event\FpsUpdateEvent.h" />
-    <ClInclude Include="Core\Event\UpdateEvent.h" />
+    <ClInclude Include="Core\Event\Events\AppDestroyEvent.h" />
+    <ClInclude Include="Core\Event\Event.h" />
+    <ClInclude Include="Core\Event\Events\RenderEvent.h" />
+    <ClInclude Include="Core\Event\Events\FpsUpdateEvent.h" />
+    <ClInclude Include="Core\Event\Events\UpdateEvent.h" />
     <ClInclude Include="Core\Interfaces\IComponent.h" />
     <ClInclude Include="Core\Lighting\LightSource.h" />
     <ClInclude Include="Core\Lighting\DirectionalLight\DirectionalLight.h" />
     <ClInclude Include="Core\Lighting\PointLight\PointLight.h" />
     <ClInclude Include="Core\Lighting\SpotLight\SpotLight.h" />
     <ClInclude Include="Core\Macro\Macro.h" />
-    <ClInclude Include="Core\MxObject\Instanced.h" />
     <ClInclude Include="Core\MxObject\RenderObject.h" />
-    <ClInclude Include="Core\ResourceStorage\ResourceStorage.h" />
+    <ClInclude Include="Utilities\ResourceStorage\ResourceStorage.h" />
+    <ClInclude Include="Core\Scene\Scene.h" />
+    <ClInclude Include="Library\Scripting\Script\Script.h" />
     <ClInclude Include="Utilities\Array\Array2D.h" />
     <ClInclude Include="Utilities\Array\ArrayView.h" />
     <ClInclude Include="Utilities\Counter\Counter.h" />
@@ -52,9 +55,8 @@
     <ClInclude Include="Library\Primitives\Grid.h" />
     <ClInclude Include="Library\Primitives\Primitives.h" />
     <ClInclude Include="Library\Primitives\Sphere.h" />
-    <ClInclude Include="Library\Scripting\ChaiScript\ChaiScriptEngine.h" />
-    <ClInclude Include="Core\Event\KeyEvent.h" />
-    <ClInclude Include="Core\Event\MouseEvent.h" />
+    <ClInclude Include="Core\Event\Events\KeyEvent.h" />
+    <ClInclude Include="Core\Event\Events\MouseEvent.h" />
     <ClInclude Include="Core\Application\Application.h" />
     <ClInclude Include="Core\Interfaces\GraphicAPI\GraphicFactory.h" />
     <ClInclude Include="Core\Interfaces\GraphicAPI\GraphicModule.h" />
@@ -129,7 +131,9 @@
     <ClCompile Include="Core\MxObject\MxObject.cpp" />
     <ClCompile Include="Core\MxObject\RenderObject.cpp" />
     <ClCompile Include="Core\RenderController\RenderController.cpp" />
+    <ClCompile Include="Core\Scene\Scene.cpp" />
     <ClCompile Include="Library\Scripting\Python\PythonEngine.cpp" />
+    <ClCompile Include="Library\Scripting\Script\Script.cpp" />
     <ClCompile Include="Platform\OpenGL\GraphicModule\GLGraphicModule.cpp" />
     <ClCompile Include="Platform\OpenGL\GLUtilities\GLUtilities.cpp" />
     <ClCompile Include="Platform\OpenGL\IndexBuffer\GLIndexBuffer.cpp" />
@@ -151,6 +155,13 @@
     <ClCompile Include="Utilities\Time\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Core\Shaders\mesh_fragment.glsl">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+    </None>
+    <None Include="Core\Shaders\mesh_vertex.glsl" />
+    <None Include="Core\Shaders\object_fragment.glsl" />
+    <None Include="Core\Shaders\object_vertex.glsl" />
     <None Include="Resources\shaders\object_fragment.glsl" />
     <None Include="Resources\shaders\object_vertex.glsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -259,7 +270,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;D:\cpplibs\boost;D:\cpplibs\python\include;D:\cpplibs\assimp\include;C:\%(Additional Dependencies)%</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;D:\cpplibs\boost;D:\cpplibs\python\include;D;\cpplibs\assimp\include;C:\%(Additional Dependencies)%</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -297,7 +308,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;D:\cpplibs\boost;D:\cpplibs\python\include;D:\cpplibs\assimp\include;C:\%(Additional Dependencies)%</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;D:\cpplibs\boost;D:\cpplibs\python\include;D;\cpplibs\assimp\include;C:\%(Additional Dependencies)%</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>

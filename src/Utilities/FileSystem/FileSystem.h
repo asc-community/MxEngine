@@ -35,17 +35,23 @@ namespace MxEngine
 {
     using FilePath = std::filesystem::path;
     using FileStream = std::fstream;
-      
+
     class File
     {
         FileStream fileStream;
         FilePath filePath;
     public:
+        enum FileMode
+        {
+            READ = 0x1,
+            WRITE = 0x2,
+            BINARY = 0x4,
+        };
         using FileData = std::string;
 
         File() = default;
-        File(const FilePath& path);
-        File(const std::string& path);
+        File(const FilePath& path, FileMode mode = FileMode::READ);
+        File(const std::string& path, FileMode mode = FileMode::READ);
         File(File&) = delete;
         File(File&&) = default;
         File& operator=(const File&) = delete;
@@ -54,8 +60,8 @@ namespace MxEngine
 
         FileStream& GetStream();
         bool IsOpen() const;
-        void Open(FilePath path);
-        void Open(const std::string& path);
+        void Open(FilePath path, FileMode mode = FileMode::READ);
+        void Open(const std::string& path, FileMode mode = FileMode::READ);
         FileData ReadAllText();
         FilePath GetPath() const;
 

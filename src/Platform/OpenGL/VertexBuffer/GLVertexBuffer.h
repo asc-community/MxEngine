@@ -34,17 +34,19 @@ namespace MxEngine
 {
 	class GLVertexBuffer final : public VertexBuffer
 	{
+		size_t size;
 	public:
 		explicit GLVertexBuffer();
 		explicit GLVertexBuffer(BufferData data, size_t count, UsageType type);
 		~GLVertexBuffer();
 		GLVertexBuffer(const GLVertexBuffer&) = delete;
-		GLVertexBuffer(GLVertexBuffer&& vbo);
+		GLVertexBuffer(GLVertexBuffer&& vbo) noexcept;
 
 		// Inherited via IVertexBuffer
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 		virtual void Load(BufferData data, size_t count, UsageType type) override;
 		virtual void BufferSubData(BufferData data, size_t count, size_t offset = 0) override;
+		virtual size_t GetSize() const override;
 	};
 }

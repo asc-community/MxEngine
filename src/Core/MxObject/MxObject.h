@@ -31,19 +31,27 @@
 #include "Core/Interfaces/IMovable.h"
 #include "Core/MxObject/RenderObject.h"
 #include "Core/Components/Transform/Transform.h"
+#include "Core/Components/Instancing/Instancing.h"
 
 namespace MxEngine
 {
 	class MxObject : public IDrawable, public IMovable
-	{
-		size_t instanceCount = 0;
+	{		
 		Vector3 forwardVec{ 0.0f, 0.0f, 1.0f }, upVec{ 0.0f, 1.0f, 0.0f }, rightVec{ 1.0f, 0.0f, 0.0f };
+		Vector4 renderColor{ 1.0f, 1.0f, 1.0f, 1.0f };
 		bool shouldRender = true;
+		bool instanceUpdate = true;
+		UniqueRef<Instancing<MxObject>> instances;
+
+		void ReserveInstances(size_t count, UsageType usage);
 	protected:
 		Mesh* ObjectMesh = nullptr;
 	public:
 		using ArrayBufferType = const float*;
 
+		float TranslateSpeed = 1.0f;
+		float RotateSpeed = 1.0f;
+		float ScaleSpeed = 1.0f;
 		Transform ObjectTransform;
 		Shader* ObjectShader = nullptr;
 		Texture* ObjectTexture = nullptr;
@@ -53,10 +61,11 @@ namespace MxEngine
 		MxObject(MxObject&&) = default;
 
 		virtual void OnUpdate();
+		virtual void OnRenderDraw();
 
 		void SetMesh(Mesh* mesh);
-		Mesh& GetMesh();
-		const Mesh& GetMesh() const;
+		Mesh* GetMesh();
+		const Mesh* GetMesh() const;
 		void Hide();
 		void Show();
 
@@ -65,12 +74,18 @@ namespace MxEngine
 		void SetRightVector(const Vector3& right);
 		MxObject& Scale(float x, float y, float z);
 		MxObject& Rotate(float x, float y, float z);
+		void SetRenderColor(const Vector4& color);
 
-		void AddInstancedBuffer(ArrayBufferType buffer, size_t count, size_t components, UsageType type = UsageType::STATIC_DRAW);
+		void AddInstancedBuffer(ArrayBufferType buffer, size_t count, size_t components, UsageType type = UsageType::DYNAMIC_DRAW);
 		void BufferDataByIndex(size_t index, ArrayBufferType buffer, size_t count, size_t offset = 0);
-		template<typename T>
-		void GenerateDataByIndex(size_t index, T&& generator);
 		size_t GetBufferCount() const;
+		MxInstanceWrapper<MxObject> Instanciate();
+		const Instancing<MxObject>::InstanceList& GetInstances() const;
+		Instancing<MxObject>::InstanceList& GetInstances();
+		void MakeInstanced(size_t instanced, UsageType usage = UsageType::DYNAMIC_DRAW);
+		void DestroyInstances();
+		void SetAutoBuffering(bool value = true);
+		void BufferInstances();
 
 		// Inherited via IDrawable
 		virtual size_t GetIterator() const override;
@@ -78,7 +93,9 @@ namespace MxEngine
 		virtual size_t GetNext(size_t iterator) const override;
 		virtual const IRenderable& GetCurrent(size_t iterator) const override;
 		virtual const Matrix4x4& GetModelMatrix() const override;
+		virtual const Matrix4x4& GetNormalMatrix() const override;
 		virtual bool HasShader() const override;
+		virtual const Vector4& GetRenderColor() const override;
 		virtual const Shader& GetShader() const override;
 		virtual bool IsDrawable() const override;
 		virtual bool HasTexture() const override;
@@ -95,24 +112,4 @@ namespace MxEngine
 		virtual const Vector3& GetUpVector() const override;
 		virtual const Vector3& GetRightVector() const override;
 	};
-
-	template<typename T>
-	inline void MxObject::GenerateDataByIndex(size_t index, T&& generator)
-	{
-		using DataType = decltype(generator(0));
-		static std::vector<float> buffer;
-
-		size_t instanceSize = sizeof(DataType);
-		size_t componentCount = instanceSize / sizeof(float);
-		buffer.resize(this->instanceCount * componentCount);
-
-		// fills float array with data from generator function
-		for (size_t i = 0; i < this->instanceCount; i++)
-		{
-			auto* data = reinterpret_cast<DataType*>(buffer.data() + i * componentCount);
-			*data = generator(static_cast<int>(i));
-		}
-
-		this->BufferDataByIndex(index, buffer.data(), buffer.size());
-	}
 }

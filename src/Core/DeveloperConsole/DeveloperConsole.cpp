@@ -30,8 +30,6 @@
 #include "Utilities/ImGui/GraphicConsole/GraphicConsole.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
-
-#include "Library/Scripting/ChaiScript/ChaiScriptEngine.h"
 #include "Library/Scripting/Python/PythonEngine.h"
 
 namespace MxEngine
@@ -107,50 +105,7 @@ namespace MxEngine
 		return this->shouldRender;
 	}
 
-#if defined(MXENGINE_USE_CHAISCRIPT)
-	DeveloperConsole::DeveloperConsole()
-	{
-		MAKE_SCOPE_PROFILER("DeveloperConsole::Init");
-		MAKE_SCOPE_TIMER("MxEngine::DeveloperConsole", "DeveloperConsole::Init");
-		this->engine = Alloc<ChaiScriptEngine>();
-		this->console = Alloc<GraphicConsole>();
-		this->engine->AddVariable("console", *this);
-
-		this->engine->AddReference("print", &DeveloperConsole::Log);
-		this->engine->AddReference("clear", &DeveloperConsole::ClearLog);
-		this->engine->AddReference("history", &DeveloperConsole::PrintHistory);
-
-		this->engine->GetInterpreter().eval(R"(global print = fun[print](x) { console.print("${ x }"); }; )");
-
-		// workaround to fix performance issues (https://github.com/ChaiScript/ChaiScript/issues/514)
-		this->engine->AddTypeConversion<int, float>();
-		this->engine->AddTypeConversion<int, double>();
-		this->engine->AddTypeConversion<float, int>();
-		this->engine->AddTypeConversion<float, double>();
-		this->engine->AddTypeConversion<double, float>();
-		this->engine->AddTypeConversion<double, int>();
-
-		this->console->SetEventCallback([this](const char* text)
-			{
-				try
-				{
-					std::string script = text;
-					this->engine->GetInterpreter().eval(script);
-				}
-				catch (std::exception & e)
-				{
-					std::string error = e.what();
-					size_t idx = error.find("Error:");
-					if (idx != error.npos)
-					{
-						error.erase(idx, idx + 6);
-						error = "[error]: " + error;
-					}
-					this->Log(error);
-				}
-			});
-	}
-#elif defined(MXENGINE_USE_PYTHON)
+#if defined(MXENGINE_USE_PYTHON)
 	DeveloperConsole::DeveloperConsole()
 	{
 		MAKE_SCOPE_PROFILER("DeveloperConsole::Init");
@@ -159,7 +114,7 @@ namespace MxEngine
 		this->console = Alloc<GraphicConsole>();
 
 		this->engine->Execute("from mx_engine import *");
-		this->engine->Execute("dt = lambda: ctx.dt()");
+		this->engine->Execute("dt = lambda: mx.dt()");
 
 		this->console->SetEventCallback([this](const char* text)
 			{

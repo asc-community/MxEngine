@@ -47,5 +47,6 @@ namespace MxEngine
 		virtual void Unbind() const override;
 		virtual void AddBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout) override;
 		virtual void AddInstancedBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout) override;
+		virtual int GetAttributeCount() const override;
 	};
 }

@@ -26,6 +26,8 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#pragma once
+
 #include "Core/Interfaces/IComponent.h"
 #include "Utilities/Math/Math.h"
 
@@ -40,19 +42,25 @@ namespace MxEngine
 		mutable Matrix4x4 transform{ 0.0f };
 		mutable bool needTransformUpdate = true;
 		mutable bool needRotationUpdate = true;
-
+		mutable Matrix4x4 normalMatrix{ 0.0f };
 	public:
 		const Matrix4x4& GetMatrix() const;
+		const Matrix4x4& GetNormalMatrix() const;
+		void GetMatrix(Matrix4x4& inPlaceMatrix) const;
+		void GetNormalMatrix(const Matrix4x4& model, Matrix4x4& inPlaceMatrix) const;
 
 		const Vector3& GetTranslation() const;
 		const Quaternion& GetRotation() const;
 		const Vector3& GetScale() const;
 		const Vector3& GetEulerRotation() const;
+		const Vector3& GetPosition() const;
 
 		Transform& SetTranslation(const Vector3& dist);
 		Transform& SetRotation(float angle, const Vector3& axis);
 		Transform& SetRotation(const Quaternion& q);
 		Transform& SetScale(const Vector3& scale);
+		Transform& SetScale(float scale);
+		Transform& SetPosition(const Vector3& position);
 
 		Transform& Scale(float scale);
 		Transform& Scale(const Vector3& scale);

@@ -30,13 +30,32 @@
 
 #include "Utilities/ImGui/ImGuiBase.h"
 #include "Core/Application/Application.h"
+#include "Utilities/Format/Format.h"
 
 namespace MxEngine::GUI
 {
+	inline void DrawTransform(Transform& transform)
+	{
+		// translation
+		auto translation = transform.GetTranslation();
+		if (ImGui::InputFloat3("translation", &translation[0]))
+			transform.SetTranslation(translation);
+
+		// rotation (euler)
+		auto rotation = transform.GetEulerRotation();
+		if (ImGui::InputFloat3("rotation", &rotation[0]))
+			transform.SetRotation(1.0f, rotation);
+
+		// scale
+		auto scale = transform.GetScale();
+		if (ImGui::InputFloat3("scale", &scale[0]))
+			transform.SetScale(scale);
+	}
+
 	inline void DrawObjectEditor()
 	{
 		auto context = Application::Get();
-		for (const auto& pair : context->GetObjectList())
+		for (const auto& pair : context->GetCurrentScene().GetObjectList())
 		{
 			if (ImGui::CollapsingHeader(pair.first.c_str()))
 			{
@@ -45,39 +64,78 @@ namespace MxEngine::GUI
 				// toggle object visibility
 				bool isDrawn = object.IsDrawable();
 				static bool dirVecs = false;
+				static bool instanced = false;
 				if (ImGui::Checkbox("drawn", &isDrawn))
 					isDrawn ? object.Show() : object.Hide();
 
 				// toggle dir vec input (see below)
 				ImGui::SameLine(); ImGui::Checkbox("dir. vecs", &dirVecs);
+				// toggle instance editing (see below)
+				ImGui::SameLine(); ImGui::Checkbox("instances", &instanced);
 
 				// current texture path
 				ImGui::Text((std::string("texture: ") + (object.ObjectTexture ? object.GetTexture().GetPath() : std::string("none"))).c_str());
 
-				// object translation
-				const auto& oldTranslation = object.ObjectTransform.GetTranslation();
-				Vector3 newTranslation = oldTranslation;
-				if (ImGui::InputFloat3("translation", &newTranslation[0]))
-					pair.second->ObjectTransform.SetTranslation(newTranslation);
+				auto renderColor = object.GetRenderColor();
+				if (ImGui::InputFloat4("render color", &renderColor[0]))
+					object.SetRenderColor(renderColor);
 
-				// object rotation (euler)
-				const auto& oldRotation = object.ObjectTransform.GetEulerRotation();
-				Vector3 newRotation = oldRotation;
-				if (ImGui::InputFloat3("rotation", &newRotation[0]))
-					pair.second->ObjectTransform.SetRotation(1.0f, newRotation);
-
-				// object scale
-				const auto& oldScale = object.ObjectTransform.GetScale();
-				Vector3 newScale = oldScale;
-				if (ImGui::InputFloat3("scale", &newScale[0]))
-					pair.second->ObjectTransform.SetScale(newScale);
+				ImGui::PushID(-1);
+				DrawTransform(object.ObjectTransform);
+				ImGui::PopID();
+				ImGui::InputFloat("translate speed", &object.TranslateSpeed);
+				ImGui::InputFloat("rotate speed", &object.RotateSpeed);
+				ImGui::InputFloat("scale speed", &object.ScaleSpeed);
 
 				// object texture (loads from file)
-				static std::string texturePath(64, '\0');
+				static std::string texturePath(128, '\0');
 				ImGui::InputText("texture path", texturePath.data(), texturePath.size());
 				ImGui::SameLine();
 				if (ImGui::Button("update"))
-					object.ObjectTexture = context->CreateTexture(texturePath);
+					object.ObjectTexture = context->GetCurrentScene().LoadTexture(
+						Format(FMT_STRING("MxRuntimeTex_{0}"), context->GenerateResourceId()),
+						texturePath);
+
+				if (instanced)
+				{
+					if (object.GetInstanceCount() > 0)
+					{
+						int idx = 0;
+						for (auto& instance : object.GetInstances())
+						{
+							if(ImGui::CollapsingHeader(Format(FMT_STRING("instance #{0}"), idx).c_str()))
+							{
+								ImGui::PushID(idx);
+
+								DrawTransform(instance.Model);
+								bool draw = instance.IsDrawn();
+								if (ImGui::Checkbox("visible", &draw))
+								{
+									if (draw)
+										instance.Show();
+									else
+										instance.Hide();
+								}
+
+								ImGui::PopID();
+							}
+							idx++;
+						}
+						if (ImGui::Button("instanciate"))
+						{
+							object.Instanciate();
+						}
+						ImGui::SameLine();
+						if (ImGui::Button("destroy instances"))
+						{
+							object.DestroyInstances();
+						}
+					}
+					else if (ImGui::Button("make instanced"))
+					{
+						object.Instanciate();
+					}
+				}
 
 				if (dirVecs)
 				{

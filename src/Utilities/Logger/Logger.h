@@ -63,4 +63,6 @@ namespace MxEngine
 	};
 
 	using Logger = SingletonHolder<LoggerImpl>;
+
+	#define MX_DBG(msg) Logger::Instance().Warning("MX_DBG", msg)
 }

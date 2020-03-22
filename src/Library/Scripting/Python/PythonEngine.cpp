@@ -48,23 +48,27 @@ namespace MxEngine
         // creating IO handler
         const char* IOHandler = R"(
 class MxEngineIOHandler:
-    def __init__(self):
+    def __init__(self, std_stream):
         self.value = ''
+        self.std = std_stream
     def write(self, txt):
-        self.value += txt)";
+        self.value += txt
+        if self.std is not None:
+            self.std.write(txt)
+    def flush(self):
+        pass
+)";
         this->Execute(IOHandler);
         
         // redirecting stdout and stderr
-        this->Execute("errorHandler = MxEngineIOHandler()");
-        this->Execute("sys.stderr = errorHandler");
-        this->Execute("outputHandler = MxEngineIOHandler()");
-        this->Execute("sys.stdout = outputHandler");
+        this->MirrorOutStream(false);
+        this->MirrorErrorStream(false);
 
         // very unsafe. But idk how to do it the best way
         auto ctxPtr = reinterpret_cast<uint64_t>(Application::Get());
         auto grfPtr = reinterpret_cast<uint64_t>(Graphics::Instance());
         this->Execute("mx_engine.MxEngineSetContextPointers(" + std::to_string(ctxPtr) + ", " + std::to_string(grfPtr) + ")");
-        this->Execute("ctx = mx_engine.get_context()");
+        this->Execute("mx = mx_engine.get_context()");
     }
 
     PythonEngine::BoxedValue PythonEngine::Execute(const std::string& code)
@@ -96,9 +100,15 @@ class MxEngineIOHandler:
         catch (python::error_already_set&)
         {
             ::PyErr_Print();
-
-            python::object msg = this->pythonNamespace["errorHandler"].attr("value");
-            this->lastError = python::extract<std::string>(msg);
+            try
+            {
+                python::object msg = this->pythonNamespace["errorHandler"].attr("value");
+                this->lastError = python::extract<std::string>(msg);
+            }
+            catch (python::error_already_set&)
+            {
+                this->lastError = "cannot get python error. Probably python module is not initialized correctly\n";
+            }
             if (!this->lastError.empty())
                 this->lastError.pop_back(); // delete last '\n'
 
@@ -106,6 +116,26 @@ class MxEngineIOHandler:
             ::PyErr_Clear();
             return BoxedValue();
         }
+    }
+
+    void PythonEngine::MirrorOutStream(bool value)
+    {
+        if (value)
+            this->Execute("outputHandler = MxEngineIOHandler(sys.__stdout__)");
+        else
+            this->Execute("outputHandler = MxEngineIOHandler(None)");
+
+        this->Execute("sys.stdout = outputHandler");
+    }
+
+    void PythonEngine::MirrorErrorStream(bool value)
+    {
+        if (value)
+            this->Execute("errorHandler = MxEngineIOHandler(sys.__stderr__)");
+        else
+            this->Execute("errorHandler = MxEngineIOHandler(None)");
+
+        this->Execute("sys.stderr = errorHandler");
     }
 
     const std::string& PythonEngine::GetErrorMessage() const

@@ -74,16 +74,27 @@ namespace MxEngine
 			this->toAddCache[EventType::eventType].emplace_back(std::move(name), std::move(func));
 		}
 
+		inline bool RemoveEventByName(EventStorage& callbacks, const std::string& name)
+		{
+			auto callbackIt = std::find_if(callbacks.begin(), callbacks.end(), [&name](const auto& p)
+			{
+				return p.first == name;
+			});
+			bool found = callbackIt != callbacks.end();
+			if (found)
+			{
+				callbacks.erase(callbackIt);
+			}
+			return found;
+		}
+
 		inline void ReleaseCachesImpl()
 		{
 			for (auto it = this->toRemoveCache.begin(); it != this->toRemoveCache.end(); it++)
 			{
 				for (auto& [event, callbacks] : this->callbacks)
 				{
-					auto callbackIt = std::find_if(callbacks.begin(), callbacks.end(), [&name = *it](const auto& p)
-					{
-						return p.first == name;
-					});
+					while (RemoveEventByName(callbacks, *it)); 
 				}
 			}
 			this->toRemoveCache.clear();
@@ -100,6 +111,13 @@ namespace MxEngine
 		}
 
 	public:
+		EventDispatcher<EventBase> Clone()
+		{
+			EventDispatcher<EventBase> cloned;
+			cloned.typeMap = this->typeMap;
+			return cloned;
+		}
+
 		template<typename EventType>
 		inline void RegisterEventType()
 		{
@@ -111,6 +129,10 @@ namespace MxEngine
 					this->typeMap.emplace(typeId, typeMap.size() + 1);
 				}
 				EventType::eventType = this->typeMap[typeId];
+			}
+			else
+			{
+				this->typeMap[typeid(EventType)] = EventType::eventType;
 			}
 		}
 

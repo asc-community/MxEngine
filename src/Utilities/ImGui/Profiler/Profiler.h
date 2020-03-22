@@ -30,7 +30,7 @@
 
 #include "Utilities/ImGui/ImGuiBase.h"
 #include "Core/Application/Application.h"
-#include "Core/Event/FpsUpdateEvent.h"
+#include "Core/Event/Events/FpsUpdateEvent.h"
 
 namespace MxEngine::GUI
 {

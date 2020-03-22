@@ -27,19 +27,31 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "FileSystem.h"
-
 #include "Utilities/Logger/Logger.h"
+
+#include <map>
 
 namespace MxEngine
 {
-    File::File(const FilePath& path)
+    std::map<int, int> FileModeTable =
     {
-        this->Open(path);
+        { File::READ, std::fstream::in },
+        { File::WRITE, std::fstream::out },
+        { File::BINARY, std::fstream::binary },
+        { File::READ | File::BINARY, std::fstream::in | std::fstream::binary },
+        { File::WRITE | File::BINARY, std::fstream::out | std::fstream::binary },
+        { File::READ | File::WRITE, std::fstream::in | std::fstream::out },
+        { File::READ | File::WRITE | File::BINARY, std::fstream::in | std::fstream::out | std::fstream::binary },
+    };
+
+    File::File(const FilePath& path, FileMode mode)
+    {
+        this->Open(path, mode);
     }
 
-    File::File(const std::string& path)
+    File::File(const std::string& path, FileMode mode)
     {
-        this->Open(path);
+        this->Open(path, mode);
     }
 
     FileStream& File::GetStream()
@@ -52,7 +64,7 @@ namespace MxEngine
         return this->fileStream.is_open() && this->fileStream.good();
     }
 
-    void File::Open(FilePath path)
+    void File::Open(FilePath path, FileMode mode)
     {
         this->filePath = std::move(path);
         if (!File::Exists(this->filePath))
@@ -60,10 +72,10 @@ namespace MxEngine
             Logger::Instance().Error("MxEngine::File", "file was not found: " + this->filePath.string());
             return;
         }
-        this->fileStream.open(this->filePath);
+        this->fileStream.open(this->filePath, FileModeTable[mode]);
     }
 
-    void File::Open(const std::string& path)
+    void File::Open(const std::string& path, FileMode mode)
     {
         this->filePath = path;
         if (!File::Exists(this->filePath))
@@ -71,7 +83,7 @@ namespace MxEngine
             Logger::Instance().Error("MxEngine::File", "file was not found: " + path);
             return;
         }
-        this->fileStream.open(path);
+        this->fileStream.open(path, FileModeTable[mode]);
     }
 
     File::FileData File::ReadAllText()
@@ -92,12 +104,12 @@ namespace MxEngine
 
     File::FileData File::ReadAllText(const FilePath& path)
     {
-        return File(path).ReadAllText();
+        return File(path, FileMode::READ).ReadAllText();
     }
 
     File::FileData File::ReadAllText(const std::string& path)
     {
-        return File(path).ReadAllText();
+        return File(path, FileMode::READ).ReadAllText();
     }
 
     bool File::Exists(const FilePath& path)

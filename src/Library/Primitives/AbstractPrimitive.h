@@ -40,26 +40,9 @@ namespace MxEngine
     protected:
         static constexpr size_t VertexSize = (3 + 2 + 3);
 
-        std::string resourceName;
-
-        ~AbstractPrimitive()
-        {
-            this->FreeResource();
-        }
-
-        inline void FreeResource()
-        {
-            if (!this->resourceName.empty())
-            {
-                Application::Get()->GetResourceManager<Mesh>().Delete(this->resourceName);
-            }
-            this->resourceName.clear();
-        }
-
         // submits vertex data in format [v3, v2, v3] into first RenderObject on MxObject (creates or replaces existing VBO)
         inline void SubmitData(const std::string& resourceName, ArrayView<float> buffer)
         {
-            this->FreeResource();
             // first we create VBO + VAO with data
             auto VBO = Graphics::Instance()->CreateVertexBuffer(buffer.data(), buffer.size(), UsageType::STATIC_DRAW);
             auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
@@ -91,8 +74,8 @@ namespace MxEngine
                 RenderObject object(std::move(VBO), std::move(VAO), std::move(material), true, true, buffer.size() / VertexSize);
                 auto mesh = MakeUnique<Mesh>();
                 mesh->GetRenderObjects().push_back(std::move(object));
-                this->resourceName = resourceName;
-                this->SetMesh(Application::Get()->GetResourceManager<Mesh>().Add(resourceName, std::move(mesh)));
+                auto& meshManager = Application::Get()->GetCurrentScene().GetResourceManager<Mesh>();
+                this->SetMesh(meshManager.Add(resourceName, std::move(mesh)));
             }
         }
     };

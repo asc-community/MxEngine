@@ -51,5 +51,6 @@ namespace MxEngine
 		using BufferData = const float*;
 		virtual void Load(BufferData data, size_t count, UsageType type) = 0;
 		virtual void BufferSubData(BufferData data, size_t count, size_t offset = 0) = 0;
+		virtual size_t GetSize() const = 0;
 	};
 }

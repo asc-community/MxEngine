@@ -34,7 +34,9 @@
 # Visual Studio
 x64
 .vs
-src/x64
+
+# Python
+__pycache__
 
 # MxEngine
 imgui.ini

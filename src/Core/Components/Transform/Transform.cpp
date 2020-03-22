@@ -30,17 +30,39 @@
 
 namespace MxEngine
 {
+    static Matrix4x4 I(1.0f);
+
     const Matrix4x4& Transform::GetMatrix() const
     {
         if (this->needTransformUpdate)
         {
-            Matrix4x4 Translation = MxEngine::Translate(Matrix4x4(1.0f), this->translation);
+            Matrix4x4 Translation = MxEngine::Translate(I, this->translation);
             Matrix4x4 Rotation = ToMatrix(this->rotation);
-            Matrix4x4 Scale = MxEngine::Scale(Matrix4x4(1.0f), this->scale);
+            Matrix4x4 Scale = MxEngine::Scale(I, this->scale);
             this->transform = Translation * Rotation * Scale;
+            this->normalMatrix = Transpose(Inverse(this->transform));
             this->needTransformUpdate = false;
         }
         return this->transform;
+    }
+
+    const Matrix4x4& Transform::GetNormalMatrix() const
+    {
+        auto _ = GetMatrix();
+        return this->normalMatrix;
+    }
+
+    void Transform::GetMatrix(Matrix4x4& inPlaceMatrix) const
+    {
+        Matrix4x4 Translation = MxEngine::Translate(I, this->translation);
+        Matrix4x4 Rotation = ToMatrix(this->rotation);
+        Matrix4x4 Scale = MxEngine::Scale(I, this->scale);
+        inPlaceMatrix = Translation * Rotation * Scale;
+    }
+
+    void Transform::GetNormalMatrix(const Matrix4x4& model, Matrix4x4& inPlaceMatrix) const
+    {
+        inPlaceMatrix = Transpose(Inverse(model));
     }
 
     const Vector3& Transform::GetTranslation() const
@@ -68,6 +90,11 @@ namespace MxEngine
         return this->eulerRotation;
     }
 
+    const Vector3& Transform::GetPosition() const
+    {
+        return this->translation;
+    }
+
     Transform& Transform::SetTranslation(const Vector3& dist)
     {
         this->translation = dist;
@@ -93,6 +120,16 @@ namespace MxEngine
         this->scale = scale;
         this->needTransformUpdate = true;
         return *this;
+    }
+
+    Transform& Transform::SetScale(float scale)
+    {
+        return this->SetScale(MakeVector3(scale));
+    }
+
+    Transform& Transform::SetPosition(const Vector3& position)
+    {
+        return this->SetTranslation(position);
     }
 
     Transform& Transform::Scale(float scale)

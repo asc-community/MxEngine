@@ -156,8 +156,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Sandbox.cpp" />
-    <ClInclude Include="Objects\CubeObject.h" />
-    <ClInclude Include="Objects\SphereObject.h" />
+    <ClInclude Include="Gameplay\CubeObject.h" />
+    <ClInclude Include="Gameplay\SandboxScene.h" />
+    <ClInclude Include="Gameplay\SphereObject.h" />
     <ClInclude Include="Sandbox.h" />
   </ItemGroup>
   <ItemGroup>
@@ -183,19 +184,16 @@
     </Object>
   </ItemGroup>
   <ItemGroup>
-    <None Include="assimp-vc142-mt.dll" />
-    <None Include="assimp-vc142-mtd.dll" />
     <None Include="python36.dll" />
-    <None Include="Resources\shaders\mesh_fragment.glsl" />
-    <None Include="Resources\shaders\mesh_vertex.glsl" />
-    <None Include="Resources\shaders\object_fragment.glsl" />
-    <None Include="Resources\shaders\object_vertex.glsl" />
+    <None Include="Resources\scripts\init.py" />
+    <None Include="Resources\scripts\load.py" />
+    <None Include="Resources\scripts\update.py" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Objects\Arc170Object.h" />
-    <ClInclude Include="Objects\DeathStarObject.h" />
-    <ClInclude Include="Objects\DestroyerObject.h" />
-    <ClInclude Include="Objects\UserObjects.h" />
+    <ClInclude Include="Gameplay\Arc170Object.h" />
+    <ClInclude Include="Gameplay\DeathStarObject.h" />
+    <ClInclude Include="Gameplay\DestroyerObject.h" />
+    <ClInclude Include="Gameplay\UserObjects.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

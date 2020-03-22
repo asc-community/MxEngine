@@ -1,29 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <None Include="Resources\shaders\mesh_fragment.glsl">
-      <Filter>res\shaders</Filter>
-    </None>
-    <None Include="Resources\shaders\mesh_vertex.glsl">
-      <Filter>res\shaders</Filter>
-    </None>
-    <None Include="Resources\shaders\object_fragment.glsl">
-      <Filter>res\shaders</Filter>
-    </None>
-    <None Include="Resources\shaders\object_vertex.glsl">
-      <Filter>res\shaders</Filter>
-    </None>
-    <None Include="assimp-vc142-mt.dll" />
-    <None Include="assimp-vc142-mtd.dll" />
     <None Include="python36.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="res">
-      <UniqueIdentifier>{e014c655-1c22-4843-80e6-1c003a784dc1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="res\shaders">
-      <UniqueIdentifier>{d242724a-1dbe-4eef-8615-ef70cb377798}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestApplication.cpp" />

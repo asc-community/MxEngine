@@ -46,8 +46,10 @@ namespace MxEngine
 		virtual size_t GetNext(size_t iterator) const = 0;
 		virtual const IRenderable& GetCurrent(size_t iterator) const = 0;
 		virtual const Matrix4x4& GetModelMatrix() const = 0;
+		virtual const Matrix4x4& GetNormalMatrix() const = 0;
 		virtual const Shader& GetShader() const = 0;
 		virtual const Texture& GetTexture() const = 0;
+		virtual const Vector4& GetRenderColor() const = 0;
 		virtual bool HasShader() const = 0;
 		virtual bool IsDrawable() const = 0;
 		virtual bool HasTexture() const = 0;

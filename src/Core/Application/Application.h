@@ -35,10 +35,11 @@
 #include "Core/Interfaces/GraphicAPI/Window.h"
 #include "Core/RenderController/RenderController.h"
 #include "Core/MxObject/MxObject.h"
-#include "Core/ResourceStorage/ResourceStorage.h"
-#include "Utilities/LifetimeManager/LifetimeManager.h"
 #include "Utilities/Counter/Counter.h"
 #include "Utilities/FileSystem/FileSystem.h"
+#include "Library/Scripting/Script/Script.h"
+#include "Core/Scene/Scene.h"
+
 
 namespace MxEngine
 {
@@ -51,51 +52,37 @@ namespace MxEngine
 			ModuleManager(Application* app);
 			~ModuleManager();
 		} manager;
-
-		using ObjectStorage = LifetimeManager<UniqueRef<MxObject>>;
-		using AppResourceManager = GenericStorage<ResourceStorage, Texture, Mesh, Shader>;
 	private:
 		static inline Application* Current = nullptr;
 
-		UniqueRef<AppResourceManager> resourceManager = MakeUnique<AppResourceManager>();
+		ResourceStorage<Scene> scenes;
 		UniqueRef<Window> window;
-		ObjectStorage objects;
-		MxObject defaultInstance;
 		RenderController renderer;
 		AppEventDispatcher dispatcher;
 		DeveloperConsole console;
 		Counter resourceIdCounter;
+		TimeStep timeDelta;
+		Scene* currentScene = nullptr;
+		int counterFPS;
 		bool shouldClose = false;
 		bool debugMeshDraw = false;
+		bool isRunning = false;
 
 		void CreateConsoleBindings(DeveloperConsole& console);
 		void DrawObjects(bool meshes) const;
 		void InvokeUpdate();
+		bool VerifyApplicationState();
+		void VerifyRendererState();
 	protected:
-		FilePath ResourcePath;
-		TimeStep TimeDelta;
-		int CounterFPS;
 
 		Application();
 
 		virtual void OnCreate();
 		virtual void OnUpdate();
 		virtual void OnDestroy();
-
-		void CreateContext();
 	public:
-
-		Mesh* LoadMesh(const FilePath& filepath);
-		MxObject& CreateObject(const std::string& name, const FilePath& path);
-		MxObject& AddObject(const std::string& name, UniqueRef<MxObject> object);
-		MxObject& CopyObject(const std::string& name, const std::string& existingObject);
-		MxObject& GetObject(const std::string& name);
-		void DestroyObject(const std::string& name);
-		const ObjectStorage::Storage& GetObjectList();
-		void InvalidateObjects();
-		Texture* CreateTexture(const FilePath& texture, bool genMipmaps = true, bool flipImage = true);
-		Shader* CreateShader(const FilePath& vertex, const FilePath& fragment);
-		void ExecuteScript(const FilePath& script);
+		void CreateContext();
+		void ExecuteScript(const Script& script);
 
 		void ToggleDeveloperConsole(bool isVisible);
 		void ToggleMeshDrawing(bool state = true);
@@ -105,21 +92,22 @@ namespace MxEngine
 		LoggerImpl& GetLogger();
 		DeveloperConsole& GetConsole();
 		Window& GetWindow();
-		template<typename Resource>
-		AppResourceManager::ConcreteStorage<Resource>& GetResourceManager();
+		Scene& GetCurrentScene();
+		Scene& GetGlobalScene();
+		void LoadScene(const std::string& name);
+		Scene& CreateScene(const std::string& name, UniqueRef<Scene> scene);
+		Scene& GetScene(const std::string& name);
+		bool SceneExists(const std::string& name);
+		void DestroyScene(const std::string& name);
 		Counter::CounterType GenerateResourceId();
 		float GetTimeDelta() const;
+		int GetCurrentFPS() const;
 		void Run();
+		bool IsRunning() const;
 		void CloseApplication();
 		virtual ~Application();
 
 		static Application* Get();
 		static void Set(Application* application);
 	};
-
-	template<typename Resource>
-	inline Application::AppResourceManager::ConcreteStorage<Resource>& Application::GetResourceManager()
-	{
-		return this->resourceManager->Get<Resource>();
-	}
 }

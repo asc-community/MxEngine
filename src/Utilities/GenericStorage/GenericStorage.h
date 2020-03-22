@@ -43,6 +43,8 @@ namespace MxEngine
     public:
         template<typename Type, typename U>
         U Get() { static_assert(false, "no suitable type in generic storage"); }
+
+        void Clear() { }
     };
 
     template<template<typename> typename Storage, typename T, typename... Args>
@@ -66,6 +68,12 @@ namespace MxEngine
         auto Get() -> typename std::enable_if<!std::is_same<T, Type>::value, Storage<Type>&>::type
         {
             return static_cast<Base*>(this)->Get<Type>();
+        }
+
+        void Clear()
+        {
+            this->resources.Clear();
+            static_cast<Base*>(this)->Clear();
         }
     };
 }

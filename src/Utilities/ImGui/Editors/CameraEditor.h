@@ -38,8 +38,9 @@ namespace MxEngine::GUI
 		auto context = Application::Get();
 		static bool mesh = false;
 
-		auto& camera = context->GetRenderer().ViewPort;
+		auto& camera = context->GetCurrentScene().Viewport;
 		float speed = camera.GetMoveSpeed();
+		float sensitivity = camera.GetRotateSpeed();
 		float zoom = camera.GetZoom();
 		Vector3 pos = camera.GetPosition();
 
@@ -51,6 +52,10 @@ namespace MxEngine::GUI
 		if (ImGui::InputFloat("set speed", &speed))
 		{
 			camera.SetMoveSpeed(speed);
+		}
+		if (ImGui::InputFloat("set sensitivity", &sensitivity))
+		{
+			camera.SetRotateSpeed(sensitivity);
 		}
 		if (ImGui::InputFloat3("set position", &pos[0]))
 		{

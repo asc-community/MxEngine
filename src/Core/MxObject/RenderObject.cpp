@@ -31,6 +31,8 @@
 #include "Utilities/Profiler/Profiler.h"
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 
+#include <algorithm>
+
 namespace MxEngine
 {
 	void Mesh::LoadFromFile(const std::string& filepath)
@@ -47,12 +49,12 @@ namespace MxEngine
 		{
 			Logger::Instance().Debug("MxEngine::MxObject", "failed to load object from file: " + filepath);
 		}
-		this->subObjects.reserve(objectInfo.groups.size());
+		this->subObjects.reserve(objectInfo.meshes.size());
 		this->objectCenter = objectInfo.objectCenter;
 		std::unordered_map<std::string, Ref<Texture>> textures;
 
 		UniqueRef<Material> material;
-		for (const auto& group : objectInfo.groups)
+		for (const auto& group : objectInfo.meshes)
 		{
 			if (group.useTexture)
 			{
@@ -88,12 +90,13 @@ namespace MxEngine
 				auto VBO = Graphics::Instance()->CreateVertexBuffer(group.buffer.data(), group.buffer.size(), UsageType::STATIC_DRAW);
 				auto VAO = Graphics::Instance()->CreateVertexArray();
 				auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
+
 				VBL->PushFloat(3);
 				if (group.useTexture) VBL->PushFloat(3);
 				if (group.useNormal) VBL->PushFloat(3);
 				VAO->AddBuffer(*VBO, *VBL);
 
-				RenderObject object(std::move(VBO), std::move(VAO), std::move(material), group.useTexture, group.useNormal, group.faces.size());
+				RenderObject object(std::move(VBO), std::move(VAO), std::move(material), group.useTexture, group.useNormal, group.buffer.size());
 				this->subObjects.push_back(std::move(object));
 			}
 			if (!group.useTexture)
@@ -135,8 +138,8 @@ namespace MxEngine
 	void RenderObject::GenerateMeshIndicies() const
 	{
 		std::vector<IndexBuffer::IndexType> indicies;
-		indicies.reserve(this->vertexCount * 3);
-		for (int i = 0; i < this->vertexCount; i += 3)
+		indicies.reserve(this->vertexBufferSize * 3);
+		for (int i = 0; i < this->vertexBufferSize; i += 3)
 		{
 			indicies.push_back(i + 0);
 			indicies.push_back(i + 1);
@@ -149,14 +152,14 @@ namespace MxEngine
 		this->meshGenerated = true;
 	}
 
-    RenderObject::RenderObject(UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<Material> material, bool useTexture, bool useNormal, size_t vertexCount)
+    RenderObject::RenderObject(UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<Material> material, bool useTexture, bool useNormal, size_t sizeInFloats)
     {
 		this->VBO = std::move(VBO);
 		this->VAO = std::move(VAO);
 		this->material = std::move(material);
 		this->useTexture = useTexture;
 		this->useNormal = useTexture;
-		this->vertexCount = vertexCount;
+		this->vertexBufferSize = sizeInFloats;
     }
 
 	const VertexArray& RenderObject::GetVAO() const
@@ -190,9 +193,9 @@ namespace MxEngine
 		return this->useNormal;
 	}
 
-	size_t RenderObject::GetVertexCount() const
+	size_t RenderObject::GetVertexBufferSize() const
 	{
-		return this->vertexCount;
+		return this->vertexBufferSize;
 	}
 
 	bool RenderObject::HasMaterial() const

@@ -62,7 +62,10 @@ namespace MxEngine
 	constexpr size_t SpotPos    = 10; // pos of '?' in "spotLight[?]"
 
 	RenderController::RenderController(Renderer& renderer)
-		: renderer(renderer) { }
+		: renderer(renderer)
+	{
+		
+	}
 
 	Renderer& RenderController::GetRenderEngine() const
 	{
@@ -79,61 +82,62 @@ namespace MxEngine
 		this->renderer.Clear();
 	}
 
-	void RenderController::DrawObject(const IDrawable& object) const
+	void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights) const
 	{
 		// probably nothing to do at all
-		if (!this->ViewPort.HasCamera()) return;
+		if (!viewport.HasCamera()) return;
 		if (!object.IsDrawable()) return;
 
 		// getting all data for easy use
 		size_t iterator = object.GetIterator();
-		auto ViewProjection = this->ViewPort.GetCameraMatrix();
-		Matrix3x3 NormalMatrix = Transpose(Inverse(object.GetModelMatrix()));
-		auto cameraPos = this->ViewPort.GetPosition();
+		const auto& renderColor = object.GetRenderColor();
+		const auto& ViewProjection = viewport.GetCameraMatrix();
+		const auto& cameraPos = viewport.GetPosition();
 
 		// choosing shader and setting up data per object
 		const Shader& shader = object.HasShader() ? object.GetShader() : *this->ObjectShader;
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
-		this->GetRenderEngine().SetDefaultVertexAttribute(7, NormalMatrix);
+		this->GetRenderEngine().SetDefaultVertexAttribute(7, object.GetNormalMatrix());
 
 		shader.SetUniformMat4("ViewProjMatrix", ViewProjection);
 		shader.SetUniformVec3("viewPos", cameraPos);
+		shader.SetUniformVec4("renderColor", renderColor);
 
 		// set direction light
-		shader.SetUniformVec3("dirLight.direction", this->GlobalLight.Direction);
-		shader.SetUniformVec3("dirLight.ambient", this->GlobalLight.GetAmbientColor());
-		shader.SetUniformVec3("dirLight.diffuse", this->GlobalLight.GetDiffuseColor());
-		shader.SetUniformVec3("dirLight.specular", this->GlobalLight.GetSpecularColor());
+		shader.SetUniformVec3("dirLight.direction", lights.Global.Direction);
+		shader.SetUniformVec3("dirLight.ambient", lights.Global.GetAmbientColor());
+		shader.SetUniformVec3("dirLight.diffuse", lights.Global.GetDiffuseColor());
+		shader.SetUniformVec3("dirLight.specular", lights.Global.GetSpecularColor());
 
 		// set point lights
-		shader.SetUniformInt("pointLightCount", (int)this->PointLights.GetCount());
-		for (size_t i = 0; i < this->PointLights.GetCount(); i++)
+		shader.SetUniformInt("pointLightCount", (int)lights.Point.size());
+		for (size_t i = 0; i < lights.Point.size(); i++)
 		{
 			// replace "pointLight[?]" with "pointLight[{i}]"
 			for(int j = 0; j < 5; j++) PointLightUniform[j][PointPos] = char('0' + i);
 
-			shader.SetUniformVec3(PointLightUniform[Position], this->PointLights[i].Position);
-			shader.SetUniformVec3(PointLightUniform[KFactor ], this->PointLights[i].GetFactors());
-			shader.SetUniformVec3(PointLightUniform[Ambient ], this->PointLights[i].GetAmbientColor());
-			shader.SetUniformVec3(PointLightUniform[Diffuse ], this->PointLights[i].GetDiffuseColor());
-			shader.SetUniformVec3(PointLightUniform[Specular], this->PointLights[i].GetSpecularColor());
+			shader.SetUniformVec3(PointLightUniform[Position], lights.Point[i].Position);
+			shader.SetUniformVec3(PointLightUniform[KFactor ], lights.Point[i].GetFactors());
+			shader.SetUniformVec3(PointLightUniform[Ambient ], lights.Point[i].GetAmbientColor());
+			shader.SetUniformVec3(PointLightUniform[Diffuse ], lights.Point[i].GetDiffuseColor());
+			shader.SetUniformVec3(PointLightUniform[Specular], lights.Point[i].GetSpecularColor());
 		}
 
 		// set spot lights
-		shader.SetUniformInt("spotLightCount", (int)this->SpotLights.GetCount());
-		for (size_t i = 0; i < this->SpotLights.GetCount(); i++)
+		shader.SetUniformInt("spotLightCount", (int)lights.Spot.size());
+		for (size_t i = 0; i < lights.Spot.size(); i++)
 		{
 			// replace "spotLight[?]" with "spotLight[{i}]"
 			for (int j = 0; j < 7; j++) SpotLightUniform[j][SpotPos] = char('0' + i);
 
-			shader.SetUniformVec3(SpotLightUniform[Position   ], this->SpotLights[i].Position);
-			shader.SetUniformVec3(SpotLightUniform[Direction  ], this->SpotLights[i].Direction);
-			shader.SetUniformVec3(SpotLightUniform[Ambient    ], this->SpotLights[i].GetAmbientColor());
-			shader.SetUniformVec3(SpotLightUniform[Diffuse    ], this->SpotLights[i].GetDiffuseColor());
-			shader.SetUniformVec3(SpotLightUniform[Specular   ], this->SpotLights[i].GetSpecularColor());
-			shader.SetUniformFloat(SpotLightUniform[InnerAngle], this->SpotLights[i].GetInnerCos());
-			shader.SetUniformFloat(SpotLightUniform[OuterAngle], this->SpotLights[i].GetOuterCos());
+			shader.SetUniformVec3(SpotLightUniform[Position   ], lights.Spot[i].Position);
+			shader.SetUniformVec3(SpotLightUniform[Direction  ], lights.Spot[i].Direction);
+			shader.SetUniformVec3(SpotLightUniform[Ambient    ], lights.Spot[i].GetAmbientColor());
+			shader.SetUniformVec3(SpotLightUniform[Diffuse    ], lights.Spot[i].GetDiffuseColor());
+			shader.SetUniformVec3(SpotLightUniform[Specular   ], lights.Spot[i].GetSpecularColor());
+			shader.SetUniformFloat(SpotLightUniform[InnerAngle], lights.Spot[i].GetInnerCos());
+			shader.SetUniformFloat(SpotLightUniform[OuterAngle], lights.Spot[i].GetOuterCos());
 		}
 
 		while (!object.IsLast(iterator))
@@ -170,30 +174,29 @@ namespace MxEngine
 
 				if (object.GetInstanceCount() == 0)
 				{
-					this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetVertexCount(), shader);
+					this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetVertexBufferSize(), shader);
 				}
 				else
 				{
-					this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetVertexCount(), shader, object.GetInstanceCount());
+					this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetVertexBufferSize(), shader, object.GetInstanceCount());
 				}
 			}
 			iterator = object.GetNext(iterator);
 		}
 	}
 
-	void RenderController::DrawObjectMesh(const IDrawable& object) const
+	void RenderController::DrawObjectMesh(const IDrawable& object, const CameraController& viewport) const
 	{
 		// probably nothing to do at all
-		if (!this->ViewPort.HasCamera()) return;
+		if (!viewport.HasCamera()) return;
 		if (!object.IsDrawable()) return;
 
 		size_t iterator = object.GetIterator();
-		auto ViewProjection = this->ViewPort.GetCameraMatrix();
-		auto NormalMatrix = Transpose(Inverse(object.GetModelMatrix()));
+		auto ViewProjection = viewport.GetCameraMatrix();
 		this->MeshShader->SetUniformMat4("ViewProjMatrix", ViewProjection);
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
-		this->GetRenderEngine().SetDefaultVertexAttribute(7, NormalMatrix);
+		this->GetRenderEngine().SetDefaultVertexAttribute(7, object.GetNormalMatrix());
 
 		while (!object.IsLast(iterator))
 		{

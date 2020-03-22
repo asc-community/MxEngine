@@ -31,7 +31,7 @@
 #include "Utilities/Logger/Logger.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/Memory/Memory.h"
-#include "Core/Event/MouseEvent.h"
+#include "Core/Event/Events/MouseEvent.h"
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 #include "Platform/OpenGL/GLUtilities/GLUtilities.h"
 

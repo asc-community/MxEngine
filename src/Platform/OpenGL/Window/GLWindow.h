@@ -34,7 +34,7 @@
 #include "Utilities/Time/Time.h"
 #include "Core/Interfaces/IEvent.h"
 #include "Utilities/Math/Math.h"
-#include "Core/Event/KeyEvent.h"
+#include "Core/Event/Events/KeyEvent.h"
 #include "Core/Interfaces/GraphicAPI/Window.h"
 
 struct GLFWwindow; // from glfw header file

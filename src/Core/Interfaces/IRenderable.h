@@ -41,7 +41,7 @@ namespace MxEngine
 		virtual const IndexBuffer& GetMeshIBO() const = 0;
 		virtual const Material& GetMaterial() const = 0;
 		virtual bool HasMaterial() const = 0;
-		virtual size_t GetVertexCount() const = 0;
+		virtual size_t GetVertexBufferSize() const = 0;
 
 		virtual ~IRenderable() = default;
 	};

@@ -36,11 +36,13 @@ namespace MxEngine::GUI
     {
         auto context = Application::Get();
 
-		auto& Renderer = context->GetRenderer();
-		auto& globalLight = Renderer.GlobalLight;
+		auto& scene = context->GetCurrentScene();
+		auto& globalLight = scene.GlobalLight;
 
 		if (ImGui::CollapsingHeader("global light", ImGuiTreeNodeFlags_None))
 		{
+			ImGui::PushID(0);
+
 			auto ambient = globalLight.GetAmbientColor();
 			auto diffuse = globalLight.GetDiffuseColor();
 			auto specular = globalLight.GetSpecularColor();
@@ -52,15 +54,19 @@ namespace MxEngine::GUI
 				globalLight.UseDiffuseColor(diffuse);
 			if (ImGui::InputFloat3("specular color", &specular[0]))
 				globalLight.UseSpecularColor(specular);
+
+			ImGui::PopID();
 		}
 
-		for (size_t i = 0; i < Renderer.PointLights.GetCount(); i++)
+		for (size_t i = 0; i < scene.PointLights.GetCount(); i++)
 		{
 			static std::string strLight;
 			strLight = "point light #" + std::to_string(i);
 			if (ImGui::CollapsingHeader(strLight.c_str(), ImGuiTreeNodeFlags_None))
 			{
-				auto& pointLight = Renderer.PointLights[i];
+				ImGui::PushID((int)i);
+
+				auto& pointLight = scene.PointLights[i];
 				auto ambientPoint = pointLight.GetAmbientColor();
 				auto diffusePoint = pointLight.GetDiffuseColor();
 				auto specularPoint = pointLight.GetSpecularColor();
@@ -76,16 +82,20 @@ namespace MxEngine::GUI
 					pointLight.UseDiffuseColor(diffusePoint);
 				if (ImGui::InputFloat3("specular color", &specularPoint[0]))
 					pointLight.UseSpecularColor(specularPoint);
+
+				ImGui::PopID();
 			}
 		}
 
-		for (size_t i = 0; i < Renderer.SpotLights.GetCount(); i++)
+		for (size_t i = 0; i < scene.SpotLights.GetCount(); i++)
 		{
 			static std::string strLight;
 			strLight = "spot light #" + std::to_string(i);
 			if (ImGui::CollapsingHeader(strLight.c_str(), ImGuiTreeNodeFlags_None))
 			{
-				auto& spotLight = Renderer.SpotLights[i];
+				ImGui::PushID(int(i + scene.PointLights.GetCount()));
+
+				auto& spotLight = scene.SpotLights[i];
 				auto innerAngle = spotLight.GetInnerAngle();
 				auto outerAngle = spotLight.GetOuterAngle();
 				auto ambientPoint = spotLight.GetAmbientColor();
@@ -106,6 +116,8 @@ namespace MxEngine::GUI
 					spotLight.UseDiffuseColor(diffusePoint);
 				if (ImGui::InputFloat3("specular color", &specularPoint[0]))
 					spotLight.UseSpecularColor(specularPoint);
+
+				ImGui::PopID();
 			}
 		}
     }

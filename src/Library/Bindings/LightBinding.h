@@ -38,7 +38,7 @@ namespace MxEngine
 	template<typename LightType>
 	class LightObject : public Cube
 	{
-		using Container = RenderController::LightContainer<LightType>;
+		using Container = Scene::LightContainer<LightType>;
 		const Container& container;
 		size_t id;
 	public:
@@ -46,7 +46,7 @@ namespace MxEngine
 			: container(container), id(id)
 		{
 			this->ObjectTransform.Scale(0.33f);
-			auto& material = this->GetMesh().GetRenderObjects().front().GetMaterial();
+			auto& material = this->GetMesh()->GetRenderObjects().front().GetMaterial();
 			material.f_Ka = 0.0f;
 			material.f_Kd = 0.0f;
 		}
@@ -55,11 +55,16 @@ namespace MxEngine
 		{
 			if (this->id < this->container.GetCount())
 			{
+				this->Show();
 				const auto& light = this->container[this->id];
 				this->ObjectTransform.SetTranslation(light.Position);
 
-				auto& material = this->GetMesh().GetRenderObjects().front().GetMaterial();
+				auto& material = this->GetMesh()->GetRenderObjects().front().GetMaterial();
 				material.Ke = Clamp(light.GetAmbientColor() + light.GetDiffuseColor(), MakeVector3(0.0f), MakeVector3(1.0f));
+			}
+			else
+			{
+				this->Hide();
 			}
 		}
 	};
@@ -69,13 +74,13 @@ namespace MxEngine
 	{
 		static constexpr size_t bindAll = std::numeric_limits<size_t>::max();
 		template<typename T>
-		using Container = RenderController::LightContainer<T>;
+		using Container = Scene::LightContainer<T>;
 
 		std::string name;
 		const Container<LightType>& container;
 		size_t id;
 	public:
-		inline LightBinding(const RenderController::LightContainer<LightType>& container)
+		inline LightBinding(const Scene::LightContainer<LightType>& container)
 			: container(container), id(bindAll)
 		{
 			if constexpr (std::is_same<LightType, PointLight>::value)
@@ -92,7 +97,7 @@ namespace MxEngine
 			}
 		}
 
-		inline LightBinding(const RenderController::LightContainer<LightType>& container, size_t id)
+		inline LightBinding(const Scene::LightContainer<LightType>& container, size_t id)
 			: LightBinding(container)
 		{
 			this->id = id;
@@ -101,13 +106,13 @@ namespace MxEngine
 		inline void Bind()
 		{
 			std::string objectName = this->name + std::to_string(this->id);
-			Application::Get()->AddObject(objectName, MakeUnique<LightObject<LightType>>(this->container, this->id));
+			Application::Get()->GetCurrentScene().AddObject(objectName, MakeUnique<LightObject<LightType>>(this->container, this->id));
 		}
 
 		inline void Unbind()
 		{
-			std::string objectName = this->name = std::to_string(this->id);
-			Application::Get()->DestroyObject(objectName);
+			std::string objectName = this->name + std::to_string(this->id);
+			Application::Get()->GetCurrentScene().DestroyObject(objectName);
 		}
 
 		inline void BindAll()

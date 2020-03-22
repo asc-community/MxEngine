@@ -63,7 +63,7 @@ namespace MxEngine
 		bool IsSuccess = true;
 	};
 
-	struct GroupInfo
+	struct MeshInfo
 	{
 		std::string name;
 		std::vector<float> buffer;
@@ -78,7 +78,7 @@ namespace MxEngine
 	struct ObjectInfo
 	{
 		MaterialLibrary materials;
-		std::vector<GroupInfo> groups;
+		std::vector<MeshInfo> meshes;
 		Vector3 objectCenter = { 0, 0, 0 };
 		size_t lineCount = 0;
 		bool isSuccess = true;
@@ -86,9 +86,6 @@ namespace MxEngine
 
 	class ObjectLoader
 	{
-		static void ReadFace(std::stringstream& file, ObjectInfo& obj);
-		static MaterialLibrary LoadMaterialLibrary(const std::string& directory, const std::string& path);
-		static MaterialInfo LoadMaterial(std::stringstream& file);
 	public:
 		static ObjectInfo Load(std::string path);
 	};

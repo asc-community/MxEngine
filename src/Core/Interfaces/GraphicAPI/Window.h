@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Utilities/Math/Math.h"
-#include "Core/Event/KeyEvent.h"
+#include "Core/Event/Events/KeyEvent.h"
 
 namespace MxEngine
 {

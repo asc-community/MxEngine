@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Core/Application/Application.h"
-#include "Core/Event/KeyEvent.h"
+#include "Core/Event/Events/KeyEvent.h"
 
 namespace MxEngine
 {   
@@ -42,11 +42,12 @@ namespace MxEngine
 		
 		inline AppCloseBinding& Bind(KeyCode activateKey)
 		{
+			Logger::Instance().Debug("MxEngine::AppCloseBinding", Format("bound app close to keycode: {0}", int(activateKey)));
 			Application::Get()->GetEventDispatcher().AddEventListener<KeyEvent>(this->handle,
 				[key = activateKey](KeyEvent& event)
 				{
 					auto context = Application::Get();
-					if (event.IsHeld(KeyCode::ESCAPE))
+					if (event.IsHeld(key))
 					{
 						context->CloseApplication();
 					}

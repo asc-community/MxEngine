@@ -2,7 +2,7 @@
 
 void SnakePath3D::GenerateLevel()
 {
-	auto& camera = GetRenderer().ViewPort;
+	auto& camera = GetCurrentScene().Viewport;
 	control->Reset();
 	cellCount = (int)control->GenerateLevel(600);
 	trace = stack<Cell*>();
@@ -11,20 +11,16 @@ void SnakePath3D::GenerateLevel()
 
 void SnakePath3D::OnCreate()
 {
-	Random::SetSeed(Time::System());
+	Random::SetSeed((unsigned int)Time::System());
 	control = MakeUnique<GameController>(20, 1.0f, 0.05f, 1.0f);
 	GenerateLevel();
 	// add objects here
-	this->AddObject("Grid", MakeUnique<Grid>());
-	this->InvalidateObjects();
+	this->GetCurrentScene().SetDirectory("Resources/");
+	this->GetCurrentScene().AddObject("Grid", MakeUnique<Grid>());
 
-	auto& Renderer = this->GetRenderer();
-
-	Renderer.DefaultTexture = Colors::MakeTexture(Colors::WHITE);
-	Renderer.ObjectShader = this->CreateShader("shaders/object_vertex.glsl", "shaders/object_fragment.glsl");
-	Renderer.MeshShader = this->CreateShader("shaders/mesh_vertex.glsl", "shaders/mesh_fragment.glsl");
+	auto& scene = this->GetCurrentScene();
 	
-	Renderer.GlobalLight
+	scene.GlobalLight
 		.UseAmbientColor ({ 0.1f, 0.1f, 0.1f })
 		.UseDiffuseColor ({ 0.5f, 0.5f, 0.5f })
 		.UseSpecularColor({ 1.0f, 1.0f, 1.0f });
@@ -33,7 +29,7 @@ void SnakePath3D::OnCreate()
 	camera->SetZFar(1000.0f);
 	camera->SetAspectRatio((float)this->GetWindow().GetWidth(), (float)this->GetWindow().GetHeight());
 	
-	auto& controller = Renderer.ViewPort;
+	auto& controller = scene.Viewport;
 	controller.SetCamera(std::move(camera));
 	//controller.Translate(control->GetSize() / 2, 1.5f, control->GetSize() / 2);
 	controller.SetMoveSpeed(5.0f);
@@ -41,17 +37,17 @@ void SnakePath3D::OnCreate()
 
 	ConsoleBinding("Console").Bind(KeyCode::GRAVE_ACCENT);
 	AppCloseBinding("AppClose").Bind(KeyCode::ESCAPE);
-	InputBinding("CameraControl", Renderer.ViewPort)
+	InputControlBinding("CameraControl", scene.Viewport)
 		.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT)
 		.BindRotation();
 }
 
 void SnakePath3D::OnUpdate()
 {
-	auto& camera = this->GetRenderer().ViewPort;
+	auto& camera = this->GetCurrentScene().Viewport;
 	static Vector3 lastPos = camera.GetPosition();
 	auto pos = camera.GetPosition();
-	this->GetRenderer().ViewPort.SetPosition({ pos.x, 1.5f, pos.z });
+	this->GetCurrentScene().Viewport.SetPosition({ pos.x, 1.5f, pos.z });
 	Cell* cell = control->GetCollidedCell(pos + Vector3(0.5f));
 
 	if (cell != nullptr)  
@@ -96,6 +92,5 @@ void SnakePath3D::OnDestroy()
 
 SnakePath3D::SnakePath3D()
 {
-	this->ResourcePath = "Resources/";
 	this->CreateContext();
 }

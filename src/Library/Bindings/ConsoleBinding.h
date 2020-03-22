@@ -29,8 +29,8 @@
 #pragma once
 
 #include "Core/Application/Application.h"
-#include "Core/Event/KeyEvent.h"
-#include "Core/Event/UpdateEvent.h"
+#include "Core/Event/Events/KeyEvent.h"
+#include "Core/Event/Events/UpdateEvent.h"
 
 namespace MxEngine
 {
@@ -43,6 +43,7 @@ namespace MxEngine
 
 		inline ConsoleBinding& Bind(KeyCode activateKey)
 		{
+			Logger::Instance().Debug("MxEngine::ConsoleBinding", Format("bound console to keycode: {0}", int(activateKey)));
 			Application::Get()->GetEventDispatcher().AddEventListener<UpdateEvent>(this->handle,
 				[key = activateKey](UpdateEvent& event)
 				{

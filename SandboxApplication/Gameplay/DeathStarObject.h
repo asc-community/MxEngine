@@ -10,8 +10,8 @@ public:
 	inline DeathStarObject()
 	{
 		auto context = Application::Get();
-		this->SetMesh(context->LoadMesh("objects/death_star/death_star.obj"));
-		this->ObjectTexture = context->CreateTexture("objects/death_star/texture.jpg");
+		this->SetMesh(context->GetCurrentScene().LoadMesh("DeathStarMesh", "objects/death_star/death_star.obj"));
+		this->ObjectTexture = context->GetCurrentScene().LoadTexture("DeathStartTexture", "objects/death_star/texture.jpg");
 
 		this->ObjectTransform.Scale(0.00005f);
 		this->ObjectTransform.RotateX(-90.0f);

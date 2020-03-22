@@ -28,51 +28,9 @@
 
 #pragma once
 
-#include <unordered_map>
-#include <string>
-
-#include "Utilities/Memory/Memory.h"
-#include "Utilities/Logger/Logger.h"
-
-namespace MxEngine
-{
-    template<typename T, typename Key = std::string>
-    class ResourceStorage
-    {
-        using BaseStorage = std::unordered_map<Key, UniqueRef<T>>;
-
-        BaseStorage storage;
-    public:
-        BaseStorage& GetStorage() { return storage; }
-        const BaseStorage& GetStorage() const { return storage; }
-
-        T* Get(const Key& key)
-        {
-            auto it = this->storage.find(key);
-            if (it == this->storage.end()) return nullptr;
-            return it->second.get();
-        }
-
-        bool Exists(const Key& key)
-        {
-            return this->storage.find(key) != this->storage.end();
-        }
-
-        T* Add(const Key& key, UniqueRef<T> value)
-        {
-            Logger::Instance().Debug("MxEngine::ResourceStorage", "adding resource: " + key);
-            T* ret = value.get();
-            this->storage[key] = std::move(value);
-            return ret;
-        }
-
-        void Delete(const Key& key)
-        {
-            if (this->Exists(key))
-            {
-                this->storage.erase(key);
-                Logger::Instance().Debug("MxEngine::ResourceStorage", "deleting resource: " + key);
-            }
-        }
-    };
-}
+#include "Events/AppDestroyEvent.h"
+#include "Events/FpsUpdateEvent.h"
+#include "Events/KeyEvent.h"
+#include "Events/MouseEvent.h"
+#include "Events/RenderEvent.h"
+#include "Events/UpdateEvent.h"

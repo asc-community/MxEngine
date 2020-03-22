@@ -155,13 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="assimp-vc142-mt.dll" />
-    <None Include="assimp-vc142-mtd.dll" />
     <None Include="python36.dll" />
-    <None Include="Resources\shaders\mesh_fragment.glsl" />
-    <None Include="Resources\shaders\mesh_vertex.glsl" />
-    <None Include="Resources\shaders\object_fragment.glsl" />
-    <None Include="Resources\shaders\object_vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestApplication.h" />

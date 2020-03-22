@@ -29,6 +29,9 @@
 #pragma once
 
 #include <MxEngine.h>
+#include <Library/Scripting/Python/PythonEngine.h>
+#include <Library/Primitives/Primitives.h>
+#include <Library/Bindings/Bindings.h>
 
 #define BOOST_PYTHON_STATIC_LIB
 #include <boost/python.hpp>
@@ -38,10 +41,73 @@ namespace py = boost::python;
 
 using namespace MxEngine;
 
+template<typename T>
+void LightContainerIndexSetWrapper(Scene::LightContainer<T>& v, int index, T value)
+{
+    if (index >= 0 && index < v.GetCount()) {
+        v[index] = value;
+    }
+    else {
+        ::PyErr_SetString(::PyExc_IndexError, "index out of range");
+        py::throw_error_already_set();
+    }
+}
+
+template<typename T>
+T& LightContainerIndexGetWrapper(Scene::LightContainer<T>& v, int index)
+{
+    if (index >= 0 && index < v.GetCount()) {
+        return v[index];
+    }
+    else {
+        ::PyErr_SetString(::PyExc_IndexError, "index out of range");
+        py::throw_error_already_set();
+        return (*(T*)nullptr); // execution wont go here because of exception
+    }
+}
+
 template <typename T, typename U = typename T::value_type>
 void VectorIndexSetWrapper(T& v, int index, U value)
 {
     if (index >= 0 && index < v.length()) {
+        v[index] = value;
+    }
+    else {
+        ::PyErr_SetString(::PyExc_IndexError, "index out of range");
+        py::throw_error_already_set();
+    }
+}
+
+template <typename T>
+T StdVectorGetWrapper(std::vector<T>& v, int index)
+{
+    if (index >= 0 && index < v.size()) {
+        return v[index];
+    }
+    else {
+        ::PyErr_SetString(::PyExc_IndexError, "index out of range");
+        py::throw_error_already_set();
+        return v[0]; // execution wont go here because of exception
+    }
+}
+
+template <typename T>
+T& StdVectorGetRefWrapper(std::vector<T>& v, int index)
+{
+    if (index >= 0 && index < v.size()) {
+        return v[index];
+    }
+    else {
+        ::PyErr_SetString(::PyExc_IndexError, "index out of range");
+        py::throw_error_already_set();
+        return v[0]; // execution wont go here because of exception
+    }
+}
+
+template <typename T>
+void StdVectorSetWrapper(std::vector<T>& v, int index, T& value)
+{
+    if (index >= 0 && index < v.size()) {
         v[index] = value;
     }
     else {
@@ -59,7 +125,7 @@ auto VectorIndexGetWrapper(T& v, int index)
     else {
         ::PyErr_SetString(::PyExc_IndexError, "index out of range");
         py::throw_error_already_set();
-        return 0.0f;
+        return v[0]; // execution wont go here because of exception
     }
 }
 
@@ -74,7 +140,7 @@ void Matrix4IndexSetWrapper(Matrix4x4& m, int index, const Vector4& value)
     }
 }
 
-auto Matrix4IndexGetWrapper(Matrix4x4& m, int index)
+auto& Matrix4IndexGetWrapper(Matrix4x4& m, int index)
 {
     if (index >= 0 && index < m.length()) {
         return m[index];
@@ -82,7 +148,7 @@ auto Matrix4IndexGetWrapper(Matrix4x4& m, int index)
     else {
         ::PyErr_SetString(::PyExc_IndexError, "index out of range");
         py::throw_error_already_set();
-        return Vector4(0.0f);
+        return m[0]; // execution wont go here because of exception
     }
 }
 
@@ -129,6 +195,370 @@ void SetOrthographicCamera(CameraController& controller)
 {
     controller.SetCamera(MakeUnique<OrthographicCamera>());
 }
+
+template<typename... Args>
+void InvokePythonFunction(const py::object& func, Args&&... args)
+{
+    try
+    {
+        func(std::forward<Args>(args)...);
+    }
+    catch (py::error_already_set&)
+    {
+        ::PyErr_Print();
+        std::string error;
+        try
+        {
+            auto dict = py::import("__main__").attr("__dict__");
+            py::object msg = dict["errorHandler"].attr("value");
+            error = py::extract<std::string>(msg);
+        }
+        catch (python::error_already_set&)
+        {
+            error = "cannot get python error. Probably python module is not initialized correctly\n";
+        }
+        if (!error.empty()) error.pop_back(); // delete last '\n'
+        ::PyErr_Clear();
+        Application::Get()->GetConsole().Log("[error]: " + error);
+    }
+}
+
+class PyApplication : public Application
+{
+public:
+    py::object createCallback, updateCallback, destroyCallback;
+
+    virtual void OnCreate() override 
+    { 
+        auto& scriptEngine = this->GetConsole().GetEngine();
+        scriptEngine.MirrorOutStream(true);
+        scriptEngine.MirrorErrorStream(true);
+
+        if (this->createCallback)
+            InvokePythonFunction(this->createCallback);
+    }
+    virtual void OnUpdate() override
+    { 
+        if(this->updateCallback) 
+            InvokePythonFunction(this->updateCallback);
+    }
+    virtual void OnDestroy() override 
+    { 
+        if(this->destroyCallback) 
+            InvokePythonFunction(this->destroyCallback);
+    }
+};
+
+class PyScene : public Scene
+{
+public:
+    py::object createCallback, loadCallback, unloadCallback, updateCallback, renderCallback, destroyCallback;
+
+    PyScene(const std::string& name, const std::string& directory)
+        : Scene(name, directory) { }
+
+    virtual void OnCreate() override
+    {
+        if (this->createCallback)
+            this->createCallback();
+    }
+
+    virtual void OnLoad() override
+    {
+        if (this->loadCallback)
+            this->loadCallback();
+    }
+
+    virtual void OnUnload() override
+    {
+        if (this->unloadCallback)
+            this->unloadCallback();
+    }
+
+    virtual void OnUpdate() override
+    {
+        if (this->updateCallback)
+            this->updateCallback();
+    }
+
+    virtual void OnRender() override
+    {
+        if (this->renderCallback)
+            this->renderCallback();
+    }
+
+    virtual void OnDestroy() override
+    {
+        if (this->destroyCallback)
+            this->destroyCallback();
+    }
+};
+
+class VertexBufferWrapper : public VertexBuffer, public py::wrapper<VertexBuffer>
+{
+public:
+    virtual void Bind() const override
+    {
+        this->get_override("bind")();
+    }
+
+    virtual void Unbind() const override
+    {
+        this->get_override("unbind")();
+    }
+
+    virtual void Load(BufferData data, size_t count, UsageType type) override
+    {
+        this->get_override("load")(data, count, type);
+    }
+
+    virtual void BufferSubData(BufferData data, size_t count, size_t offset = 0) override
+    {
+        this->get_override("buffer")(data, count, offset);
+    }
+
+    virtual size_t GetSize() const override
+    {
+        return this->get_override("size")();
+    }
+};
+
+class VertexArrayWrapper : public VertexArray, public py::wrapper<VertexArray>
+{
+public:
+    virtual void Bind() const override
+    {
+        this->get_override("bind")();
+    }
+
+    virtual void Unbind() const override
+    {
+        this->get_override("unbind")();
+    }
+
+    virtual void AddBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout)
+    {
+        this->get_override("add_buffer")(buffer, layout);
+    }
+
+    virtual void AddInstancedBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout)
+    {
+        this->get_override("add_instanced_buffer")(buffer, layout);
+    }
+
+    virtual int GetAttributeCount() const override
+    {
+        return this->get_override("attribute_count")();
+    }
+};
+
+class VertexBufferLayoutWrapper : public VertexBufferLayout, public py::wrapper<VertexBufferLayout>
+{
+public:
+    virtual const ElementBuffer& GetElements() const override
+    {
+        return this->get_override("elements")();
+    }
+
+    virtual StrideType GetStride() const override
+    {
+        return this->get_override("stride")();
+    }
+
+    virtual void PushFloat(size_t count) override
+    {
+        this->get_override("push")(count);
+    }
+};
+
+class IndexBufferWrapper : public IndexBuffer, public py::wrapper<IndexBuffer>
+{
+public:
+    virtual void Bind() const override
+    {
+        this->get_override("bind")();
+    }
+
+    virtual void Unbind() const override
+    {
+        this->get_override("unbind")();
+    }
+
+    virtual void Load(const IndexBufferType& data) override
+    {
+        this->get_override("load")(data);
+    }
+
+    virtual size_t GetCount() const override
+    {
+        return this->get_override("count")();
+    }
+
+    virtual size_t GetIndexTypeId() const override
+    {
+        return this->get_override("type_id")();
+    }
+};
+
+class TextureWrapper : public Texture, public py::wrapper<Texture>
+{
+    virtual void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = true) override
+    {
+        this->get_override("load")(filepath, genMipmaps, flipImage);
+    }
+
+    virtual void Load(RawDataPointer data, int width, int height, bool genMipmaps = true) override
+    {
+        this->get_override("load_raw")(data, width, height, genMipmaps);
+    }
+
+    virtual void Bind(IBindable::IdType id) const override
+    {
+        this->get_override("bind")(id);
+    }
+
+    virtual const std::string& GetPath() const override
+    {
+        return this->get_override("path")();
+    }
+
+    virtual size_t GetWidth() const override
+    {
+        return this->get_override("width")();
+    }
+
+    virtual size_t GetHeight() const override
+    {
+        return this->get_override("height")();
+    }
+
+    virtual size_t GetChannelCount() const override
+    {
+        return this->get_override("channels")();
+    }
+
+    virtual void Bind() const override
+    {
+        this->get_override("bind")();
+    }
+
+    virtual void Unbind() const override
+    {
+        this->get_override("unbind")();
+    }
+};
+
+class ShaderWrapper : public Shader, public py::wrapper<Shader>
+{
+public:
+    virtual void Load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) override
+    {
+        this->get_override("load")(vertexShaderPath, fragmentShaderPath);
+    }
+
+    virtual void LoadFromSource(const std::string& vertexSource, const std::string& fragmentSource) override
+    {
+        this->get_override("load_source")(vertexSource, fragmentSource);
+    }
+
+    virtual void SetUniformFloat(const std::string& name, float f) const override
+    {
+        this->get_override("set_float")(name, f);
+    }
+
+    virtual void SetUniformVec3(const std::string& name, const Vector3& vec) const override
+    {
+        this->get_override("set_vec3")(name, vec);
+    }
+
+    virtual void SetUniformVec4(const std::string& name, const Vector4& vec) const override
+    {
+        this->get_override("set_vec4")(name, vec);
+    }
+
+    virtual void SetUniformMat4(const std::string& name, const Matrix4x4& matrix) const override
+    {
+        this->get_override("set_mat4")(name, matrix);
+    }
+
+    virtual void SetUniformMat3(const std::string& name, const Matrix3x3& matrix) const override
+    {
+        this->get_override("set_mat3")(name, matrix);
+    }
+
+    virtual void SetUniformInt(const std::string& name, int i) const override
+    {
+        this->get_override("set_int")(name, i);
+    }
+
+    virtual void Bind() const override
+    {
+        this->get_override("bind")();
+    }
+
+    virtual void Unbind() const override
+    {
+        this->get_override("unbind")();
+    }
+};
+
+class IBindableWrapper : public IBindable, public py::wrapper<IBindable>
+{
+public:
+    virtual void Bind() const override
+    {
+        this->get_override("bind")();
+    }
+
+    virtual void Unbind() const override
+    {
+        this->get_override("unbind")();
+    }
+};
+
+class IMovableWrapper : public IMovable, public py::wrapper<IMovable>
+{
+public:
+    virtual IMovable& Translate(float x, float y, float z) override
+    {
+        return (IMovable&)this->get_override("move")(x, y, z);
+    }
+
+    virtual IMovable& TranslateForward(float dist) override
+    {
+        return (IMovable&)this->get_override("move_forward")(dist);
+    }
+
+    virtual IMovable& TranslateRight(float dist) override
+    {
+        return (IMovable&)this->get_override("move_right")(dist);
+    }
+
+    virtual IMovable& TranslateUp(float dist) override
+    {
+        return (IMovable&)this->get_override("move_up")(dist);
+    }
+
+    virtual IMovable& Rotate(float horz, float vert)
+    {
+        return (IMovable&)this->get_override("rotate")(horz, vert);
+    }
+
+    virtual const Vector3& GetForwardVector() const override
+    {
+        return this->get_override("vec_forward")();
+    }
+
+    virtual const Vector3& GetUpVector() const override
+    {
+        return this->get_override("vec_up")();
+    }
+
+    virtual const Vector3& GetRightVector() const override
+    {
+        return this->get_override("vec_right")();
+    }
+};
 
 class ICameraWrapper : public ICamera, public py::wrapper<ICamera>
 {
@@ -184,49 +614,152 @@ public:
     }
 };
 
-CameraController& ViewportWrapper(Application& app) { return app.GetRenderer().ViewPort; }
+struct FilePathToPyString
+{
+    static PyObject* convert(const FilePath& path)
+    {
+        return ::PyUnicode_FromString(path.string().c_str());
+    }
+};
+
+struct StringToPyString
+{
+    static PyObject* convert(const std::string& s)
+    {
+        return ::PyUnicode_FromString(s.c_str());
+    }
+};
+
+struct FilePathFromPyString
+{
+    FilePathFromPyString()
+    {
+        py::converter::registry::push_back(
+            &convertible,
+            &construct,
+            py::type_id<FilePath>());
+    }
+
+    static void* convertible(PyObject* obj_ptr)
+    {
+        if (!PyUnicode_Check(obj_ptr)) return nullptr;
+        return obj_ptr;
+    }
+
+    static void construct(
+        PyObject* obj_ptr,
+        py::converter::rvalue_from_python_stage1_data* data)
+    {
+        const char* value = ::_PyUnicode_AsString(obj_ptr);
+        if (value == 0) py::throw_error_already_set();
+        void* storage = (
+            (py::converter::rvalue_from_python_storage<FilePath>*)
+            data)->storage.bytes;
+        new (storage) FilePath(value);
+        data->convertible = storage;
+    }
+};
+
+void InitFilePathWrapper()
+{
+    py::to_python_converter<
+        FilePath,
+        FilePathToPyString>();
+
+    py::to_python_converter<
+        std::string,
+        StringToPyString>();
+
+    FilePathFromPyString();
+}
 
 void RemoveEventWrapper(Application& app, const std::string& name)
 {
     app.GetEventDispatcher().RemoveEventListener(name);
 }
 
-MxObject& LoadObjectWrapper(Application& app, const std::string& name, const std::string& path)
+Mesh* LoadMeshWrapper(Scene& scene, const std::string& path)
 {
-    return app.CreateObject(name, path);
+    std::string name = Format(FMT_STRING("pyMesh_{0}"), Application::Get()->GenerateResourceId());
+    return scene.LoadMesh(name, path);
+}
+
+Script* LoadScriptWrapper(Scene& scene, const std::string& path)
+{
+    std::string name = Format(FMT_STRING("pyScript_{0}"), Application::Get()->GenerateResourceId());
+    return scene.LoadScript(name, path);
+}
+
+Shader* LoadShaderWrapper(Scene& scene, const std::string& vertex, const std::string& fragment)
+{
+    std::string name = Format(FMT_STRING("pyShader_{0}"), Application::Get()->GenerateResourceId());
+    return scene.LoadShader(name, vertex, fragment);
+}
+
+Texture* LoadTextureWrapper(Scene& scene, const std::string& path)
+{
+    std::string name = Format(FMT_STRING("pyTexture_{0}"), Application::Get()->GenerateResourceId());
+    return scene.LoadTexture(name, path);
 }
 
 void SetShaderWrapper(MxObject& object, const std::string& vertex, const std::string& fragment)
 {
-    object.ObjectShader = Application::Get()->CreateShader(vertex, fragment);
+    object.ObjectShader = LoadShaderWrapper(Application::Get()->GetCurrentScene(), vertex, fragment);
 }
 
 void SetTextureWrapper(MxObject& object, const std::string& texture)
 {
-    object.ObjectTexture = Application::Get()->CreateTexture(texture);
+    object.ObjectTexture = LoadTextureWrapper(Application::Get()->GetCurrentScene(), texture);
 }
 
+template<typename T, typename... Args>
+MxObject& AddPrimitiveWrapper(Scene& scene, const std::string& name, Args... args)
+{
+    return scene.AddObject(name, MakeUnique<T>(args...));
+}
+
+Texture* MakeTextureIntWrapper(int r, int g, int b)
+{
+    return Colors::MakeTexture((uint8_t)Clamp(r, 0, 255), Clamp(g, 0, 255), Clamp(b, 0, 255));
+}
+
+void MakeInstancedWrapper(MxObject& object, size_t count)
+{
+    object.MakeInstanced(count);
+}
+
+std::string GetDirectoryWrapper(Scene& scene)
+{
+    return scene.GetDirectory().string();
+}
+
+std::string GetNameWrapper(Scene& scene)
+{
+    return scene.GetName();
+}
+
+Scene& CreatePySceneWrapper(Application& app, const std::string& name, const std::string& directory)
+{
+    return app.CreateScene(name, MakeUnique<PyScene>(name, directory));
+}
+
+void ConsoleBindWrapper(const std::string& handle, KeyCode key)
+{
+    ConsoleBinding(handle).Bind(key);
+}
+
+void AppCloseBindWrapper(const std::string& handle, KeyCode key)
+{
+    AppCloseBinding(handle).Bind(key);
+}
+
+template<typename Event>
 void AddEventListenerWrapper(Application& app, const std::string& name, py::object callback)
 {
-    app.GetEventDispatcher().AddEventListener<UpdateEvent>(name, 
-        [name, callback = std::move(callback)](UpdateEvent&)
+    app.GetEventDispatcher().AddEventListener<Event>(name, 
+        [name, callback = std::move(callback)](Event& e)
         {
-            try
-            {
-                callback();
-            }
-            catch (py::error_already_set&)
-            {
-                ::PyErr_Print();
-                auto dict = py::import("__main__").attr("__dict__");
-                py::object msg = dict["errorHandler"].attr("value");
-                std::string error = py::extract<std::string>(msg);
-                if (!error.empty()) error.pop_back(); // delete last '\n'
-                ::PyErr_Clear();
-
-                Application::Get()->GetConsole().Log("[error]: " + error);
-                Application::Get()->GetEventDispatcher().RemoveEventListener(name);
-            }
+            InvokePythonFunction(callback, e);
         });
 }
 
@@ -236,29 +769,256 @@ void SetContextPointersWrapper(uint64_t applicationPointer, uint64_t graphicFact
     Graphics::Instance() = reinterpret_cast<GraphicFactory*>(graphicFactoryPointer);
 }
 
-#define RefGetter(method) py::make_function(method, py::return_internal_reference())
-#define StaticVar(method) py::make_function(method, py::return_value_policy<py::reference_existing_object>())
-#define NewObject(method) py::make_function(method, py::return_value_policy<py::manage_new_object>())
+UniqueRef<PyApplication>& StaticAppWrapper()
+{
+    static auto app = MakeUnique<PyApplication>();
+    return app;
+}
+
+Application* CreatePyApplication()
+{
+    if (Application::Get() != nullptr)
+    {
+        return Application::Get();
+    }
+    else
+    {
+        return StaticAppWrapper().get();
+    }
+}
+
+void DestroyPyApplication()
+{
+    StaticAppWrapper().reset();
+}
+
+#define RefGetter(...) py::make_function(__VA_ARGS__, py::return_internal_reference())
+#define StaticVar(...) py::make_function(__VA_ARGS__, py::return_value_policy<py::reference_existing_object>())
+#define NewObject(...) py::make_function(__VA_ARGS__, py::return_value_policy<py::manage_new_object>())
 
 BOOST_PYTHON_MODULE(mx_engine)
 {
+    InitFilePathWrapper();
+
     py::def("MxEngineSetContextPointers", SetContextPointersWrapper);
     py::def("get_context", StaticVar(Application::Get));
+    py::def("create_application", StaticVar(CreatePyApplication));
+    py::def("destroy_application", DestroyPyApplication);
 
-    py::class_<Application, boost::noncopyable>("Application", py::no_init)
-        .def("get", RefGetter(&Application::GetObject))
-        .def("load", RefGetter(LoadObjectWrapper))
-        .def("copy", RefGetter(&Application::CopyObject))
-        .def("delete", &Application::DestroyObject)
+    py::class_<Application, boost::noncopyable>("application", py::no_init)
+        .def("create_context", &Application::CreateContext)
+        .def("create_scene", RefGetter(CreatePySceneWrapper))
+        .def("load_scene", &Application::LoadScene)
+        .def("get_scene", RefGetter(&Application::GetScene))
+        .def("scene_exists", &Application::SceneExists)
+        .def("delete_scene", &Application::DestroyScene)
+        .def("run", &Application::Run)
         .def("remove_event", RemoveEventWrapper)
         .def("exit", &Application::CloseApplication)
         .def("dt", &Application::GetTimeDelta)
-        .def("on_update", AddEventListenerWrapper)
-        .add_property("viewport", RefGetter(ViewportWrapper))
+        .def("listen_update", AddEventListenerWrapper<UpdateEvent>)
+        .def("listen_key", AddEventListenerWrapper<KeyEvent>)
+        .def("listen_close", AddEventListenerWrapper<AppDestroyEvent>)
+        .def("listen_mouse", AddEventListenerWrapper<MouseMoveEvent>)
+        .def("listen_fps", AddEventListenerWrapper<FpsUpdateEvent>)
+        .def("listen_render", AddEventListenerWrapper<RenderEvent>)
+        .add_property("global", RefGetter(&Application::GetGlobalScene))
+        .add_property("is_running", &Application::IsRunning)
+        .add_property("scene", RefGetter(&Application::GetCurrentScene))
+        .add_property("renderer", RefGetter(&Application::GetRenderer))
         .add_property("log", RefGetter(&Application::GetLogger))
         ;
 
-    py::class_<LoggerImpl, boost::noncopyable>("Logger", py::no_init)
+    py::class_<PyApplication, boost::noncopyable, py::bases<Application>>("pyapplication", py::no_init)
+        .def_readwrite("on_create", &PyApplication::createCallback)
+        .def_readwrite("on_update", &PyApplication::updateCallback)
+        .def_readwrite("on_destroy", &PyApplication::destroyCallback)
+        ;
+
+    py::class_<UpdateEvent>("update_event", py::no_init)
+        .def_readonly("dt", &UpdateEvent::TimeDelta)
+        ;
+
+    py::class_<RenderEvent>("render_event", py::no_init)
+        ;
+
+    py::class_<MouseMoveEvent>("mouse_move_event", py::no_init)
+        .def_readonly("pos", &MouseMoveEvent::position)
+        ;
+
+    py::class_<KeyEvent>("key_event", py::no_init)
+        .def("is_held", &KeyEvent::IsHeld)
+        .def("is_pressed", &KeyEvent::IsPressed)
+        .def("is_released", &KeyEvent::IsReleased)
+        ;
+
+    py::class_<FpsUpdateEvent>("fps_update_event", py::no_init)
+        .def_readonly("fps", &FpsUpdateEvent::FPS)
+        ;
+
+    py::class_<AppDestroyEvent>("app_destroy_event", py::no_init)
+        ;
+
+    py::class_<Scene, boost::noncopyable>("scene", py::no_init)
+        .def("clear", &Scene::Clear)
+        .def("load_mesh", RefGetter(LoadMeshWrapper))
+        .def("load_script", RefGetter(LoadScriptWrapper))
+        .def("load_shader", RefGetter(LoadShaderWrapper))
+        .def("load_texture", RefGetter(LoadTextureWrapper))
+        .def("load_object", RefGetter(&Scene::CreateObject))
+        .def("copy_object", RefGetter(&Scene::CopyObject))
+        .def("get_object", RefGetter(&Scene::GetObject))
+        .def("has_object", &Scene::HasObject)
+        .def("get_mesh", RefGetter(&Scene::GetResource<Mesh>))
+        .def("get_script", RefGetter(&Scene::GetResource<Script>))
+        .def("get_shader", RefGetter(&Scene::GetResource<Shader>))
+        .def("get_texture", RefGetter(&Scene::GetResource<Texture>))
+        .def("delete_object", RefGetter(&Scene::DestroyObject))
+        .def("add_cube", RefGetter(AddPrimitiveWrapper<Cube>))
+        .def("add_sphere", RefGetter(AddPrimitiveWrapper<Sphere, size_t>))
+        .def("add_grid", RefGetter(AddPrimitiveWrapper<Grid, size_t>))
+        .def_readwrite("global_light", &Scene::GlobalLight)
+        .def_readwrite("point_lights", &Scene::PointLights)
+        .def_readwrite("spot_lights", &Scene::SpotLights)
+        .def_readonly("viewport", &Scene::Viewport)
+        .add_property("directory", GetDirectoryWrapper, &Scene::SetDirectory)
+        .add_property("name", GetNameWrapper)
+        ;
+
+    py::class_<PyScene, boost::noncopyable, py::bases<Scene>>("pyscene", py::no_init)
+        .def_readwrite("on_create", &PyScene::OnCreate)
+        .def_readwrite("on_load", &PyScene::OnLoad)
+        .def_readwrite("on_unload", &PyScene::OnUnload)
+        .def_readwrite("on_update", &PyScene::OnUpdate)
+        .def_readwrite("on_render", &PyScene::OnRender)
+        .def_readwrite("on_destroy", &PyScene::OnDestroy)
+        ;
+
+    py::enum_<KeyCode>("keycode")
+        .value("UNKNOWN", KeyCode::UNKNOWN)
+        .value("SPACE", KeyCode::SPACE)
+        .value("APOSTROPHE", KeyCode::APOSTROPHE)
+        .value("COMMA", KeyCode::COMMA)
+        .value("MINUS", KeyCode::MINUS)
+        .value("PERIOD", KeyCode::PERIOD)
+        .value("SLASH", KeyCode::SLASH)
+        .value("D0", KeyCode::D0)
+        .value("D1", KeyCode::D1)
+        .value("D2", KeyCode::D2)
+        .value("D3", KeyCode::D3)
+        .value("D4", KeyCode::D4)
+        .value("D5", KeyCode::D5)
+        .value("D6", KeyCode::D6)
+        .value("D7", KeyCode::D7)
+        .value("D8", KeyCode::D8)
+        .value("D9", KeyCode::D9)
+        .value("SEMICOLON", KeyCode::SEMICOLON)
+        .value("EQUAL", KeyCode::EQUAL)
+        .value("A", KeyCode::A)
+        .value("B", KeyCode::B)
+        .value("C", KeyCode::C)
+        .value("D", KeyCode::D)
+        .value("E", KeyCode::E)
+        .value("F", KeyCode::F)
+        .value("G", KeyCode::G)
+        .value("H", KeyCode::H)
+        .value("I", KeyCode::I)
+        .value("J", KeyCode::J)
+        .value("K", KeyCode::K)
+        .value("L", KeyCode::L)
+        .value("M", KeyCode::M)
+        .value("N", KeyCode::N)
+        .value("O", KeyCode::O)
+        .value("P", KeyCode::P)
+        .value("Q", KeyCode::Q)
+        .value("R", KeyCode::R)
+        .value("S", KeyCode::S)
+        .value("T", KeyCode::T)
+        .value("U", KeyCode::U)
+        .value("V", KeyCode::V)
+        .value("W", KeyCode::W)
+        .value("X", KeyCode::X)
+        .value("Y", KeyCode::Y)
+        .value("Z", KeyCode::Z)
+        .value("LEFT_BRACKET", KeyCode::LEFT_BRACKET)
+        .value("BACKSLASH", KeyCode::BACKSLASH)
+        .value("RIGHT_BRACKET", KeyCode::RIGHT_BRACKET)
+        .value("GRAVE_ACCENT", KeyCode::GRAVE_ACCENT)
+        .value("WORLD_1", KeyCode::WORLD_1)
+        .value("WORLD_2", KeyCode::WORLD_2)
+        .value("ESCAPE", KeyCode::ESCAPE)
+        .value("ENTER", KeyCode::ENTER)
+        .value("TAB", KeyCode::TAB)
+        .value("BACKSPACE", KeyCode::BACKSPACE)
+        .value("INSERT", KeyCode::INSERT)
+        .value("DELETE", KeyCode::DELETE)
+        .value("RIGHT", KeyCode::RIGHT)
+        .value("LEFT", KeyCode::LEFT)
+        .value("DOWN", KeyCode::DOWN)
+        .value("UP", KeyCode::UP)
+        .value("PAGE_UP", KeyCode::PAGE_UP)
+        .value("PAGE_DOWN", KeyCode::PAGE_DOWN)
+        .value("HOME", KeyCode::HOME)
+        .value("END", KeyCode::END)
+        .value("CAPS_LOCK", KeyCode::CAPS_LOCK)
+        .value("SCROLL_LOCK", KeyCode::SCROLL_LOCK)
+        .value("NUM_LOCK", KeyCode::NUM_LOCK)
+        .value("PRINT_SCREEN", KeyCode::PRINT_SCREEN)
+        .value("PAUSE", KeyCode::PAUSE)
+        .value("F1", KeyCode::F1)
+        .value("F2", KeyCode::F2)
+        .value("F3", KeyCode::F3)
+        .value("F4", KeyCode::F4)
+        .value("F5", KeyCode::F5)
+        .value("F6", KeyCode::F6)
+        .value("F7", KeyCode::F7)
+        .value("F8", KeyCode::F8)
+        .value("F9", KeyCode::F9)
+        .value("F10", KeyCode::F10)
+        .value("F11", KeyCode::F11)
+        .value("F12", KeyCode::F12)
+        .value("F13", KeyCode::F13)
+        .value("F14", KeyCode::F14)
+        .value("F15", KeyCode::F15)
+        .value("F16", KeyCode::F16)
+        .value("F17", KeyCode::F17)
+        .value("F18", KeyCode::F18)
+        .value("F19", KeyCode::F19)
+        .value("F20", KeyCode::F20)
+        .value("F21", KeyCode::F21)
+        .value("F22", KeyCode::F22)
+        .value("F23", KeyCode::F23)
+        .value("F24", KeyCode::F24)
+        .value("F25", KeyCode::F25)
+        .value("KP_0", KeyCode::KP_0)
+        .value("KP_1", KeyCode::KP_1)
+        .value("KP_2", KeyCode::KP_2)
+        .value("KP_3", KeyCode::KP_3)
+        .value("KP_4", KeyCode::KP_4)
+        .value("KP_5", KeyCode::KP_5)
+        .value("KP_6", KeyCode::KP_6)
+        .value("KP_7", KeyCode::KP_7)
+        .value("KP_8", KeyCode::KP_8)
+        .value("KP_9", KeyCode::KP_9)
+        .value("KP_DECIMAL", KeyCode::KP_DECIMAL)
+        .value("KP_DIVIDE", KeyCode::KP_DIVIDE)
+        .value("KP_MULTIPLY", KeyCode::KP_MULTIPLY)
+        .value("KP_SUBTRACT", KeyCode::KP_SUBTRACT)
+        .value("KP_ADD", KeyCode::KP_ADD)
+        .value("KP_ENTER", KeyCode::KP_ENTER)
+        .value("KP_EQUAL", KeyCode::KP_EQUAL)
+        .value("LEFT_SHIFT", KeyCode::LEFT_SHIFT)
+        .value("LEFT_CONTROL", KeyCode::LEFT_CONTROL)
+        .value("LEFT_ALT", KeyCode::LEFT_ALT)
+        .value("LEFT_SUPER", KeyCode::LEFT_SUPER)
+        .value("RIGHT_SHIFT", KeyCode::RIGHT_SHIFT)
+        .value("RIGHT_CONTROL", KeyCode::RIGHT_CONTROL)
+        .value("RIGHT_ALT", KeyCode::RIGHT_ALT)
+        .value("RIGHT_SUPER", KeyCode::RIGHT_SUPER)
+        .value("MENU", KeyCode::MENU)
+        ;
+
+    py::class_<LoggerImpl, boost::noncopyable>("logger", py::no_init)
         .def("error", &LoggerImpl::Error)
         .def("warning", &LoggerImpl::Warning)
         .def("debug", &LoggerImpl::Debug)
@@ -268,6 +1028,38 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("use_debug", RefGetter(&LoggerImpl::UseDebug))
         .def("use_stacktrace", RefGetter(&LoggerImpl::UseStackTrace))
         ;
+
+    using ScaleF3 = Matrix4x4(*)(const Matrix4x4&, const Vector3&);
+    using ScaleF1 = Matrix4x4(*)(const Matrix4x4&, float);
+
+    py::def("view_matrix", MakeViewMatrix);
+    py::def("perspective_matrix", MakePerspectiveMatrix);
+    py::def("orthographic_matrix", MakeOrthographicMatrix);
+    py::def("normalize", Normalize<Vector2>);
+    py::def("normalize", Normalize<Vector3>);
+    py::def("normalize", Normalize<Vector4>);
+    py::def("length", Length<Vector2>);
+    py::def("length", Length<Vector3>);
+    py::def("length", Length<Vector4>);
+    py::def("length2", Length2<Vector2>);
+    py::def("length2", Length2<Vector3>);
+    py::def("length2", Length2<Vector4>);
+    py::def("translate", Translate);
+    py::def("scale", (ScaleF1)Scale);
+    py::def("scale", (ScaleF3)Scale);
+    py::def("rotate", Rotate);
+    py::def("mat4", ToMatrix);
+    py::def("qua", MakeQuaternion);
+    py::def("euler", MakeEulerAngles);
+    py::def("transpose", Transpose<4, 4, float>);
+    py::def("inverse", Inverse<4, 4, float>);
+    py::def("clamp", Clamp<int>);
+    py::def("clamp", Clamp<float>);
+    py::def("clamp", Clamp<Vector2>);
+    py::def("clamp", Clamp<Vector3>);
+    py::def("clamp", Clamp<Vector4>);
+    py::def("radians", Radians<float>);
+    py::def("degrees", Degrees<float>);
 
     py::class_<Vector4>("vec4", py::init<float>())
         .def(py::init<float, float, float, float>())
@@ -337,14 +1129,166 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def(py::self / float())
         .def(-py::self)
         .def(+py::self)
-        .def("__getitem__", Matrix4IndexGetWrapper)
+        .def("__getitem__", RefGetter(Matrix4IndexGetWrapper))
         .def("__setitem__", Matrix4IndexSetWrapper)
         ;
+
+    using ResizeFunc = void(std::vector<float>::*)(size_t);
+    using PushBackFunc = void(std::vector<float>::*)(const float&);
+
+    py::class_<std::vector<float>>("vec_float", py::init())
+        .def("resize", (ResizeFunc)&std::vector<float>::resize)
+        .def("__getitem__", StdVectorGetWrapper<float>)
+        .def("__setitem__", RefGetter(StdVectorSetWrapper<float>))
+        .def("clear", &std::vector<float>::clear)
+        .def("push", (PushBackFunc)&std::vector<float>::push_back)
+        .def("pop", &std::vector<float>::pop_back)
+        .def("__len__", &std::vector<float>::size)
+        .def("size", &std::vector<float>::size)
+        ;
+
+    py::class_<IBindableWrapper, boost::noncopyable>("bindable", py::no_init)
+        .def("bind", py::pure_virtual(&IBindable::Bind))
+        .def("unbind", py::pure_virtual(&IBindable::Unbind))
+        .add_property("handle", &IBindable::GetNativeHandler)
+        ;
+
+    py::class_<ShaderWrapper, py::bases<IBindable>, boost::noncopyable>("shader", py::init())
+        .def("load", py::pure_virtual(&Shader::Load))
+        .def("load_source", py::pure_virtual(&Shader::LoadFromSource))
+        .def("set_int", py::pure_virtual(&Shader::SetUniformInt))
+        .def("set_float", py::pure_virtual(&Shader::SetUniformFloat))
+        .def("set_vec3", py::pure_virtual(&Shader::SetUniformVec3))
+        .def("set_vec4", py::pure_virtual(&Shader::SetUniformVec4))
+        .def("set_mat3", py::pure_virtual(&Shader::SetUniformMat3))
+        .def("set_mat4", py::pure_virtual(&Shader::SetUniformMat4))
+        ;
+
+    using LoadTextureFile = void(Texture::*)(const std::string&, bool, bool);
+    using LoadTextureRaw = void(Texture::*)(Texture::RawDataPointer, int, int, bool);
+    using BindTextureId = void(Texture::*)(Texture::IdType);
+
+    py::class_<TextureWrapper, py::bases<IBindable>, boost::noncopyable>("texture", py::init())
+        .def("load", py::pure_virtual((LoadTextureFile)&Texture::Load))
+        .def("load_raw", py::pure_virtual((LoadTextureRaw)&Texture::Load))
+        .def("bind", py::pure_virtual((BindTextureId)&Texture::Bind))
+        .add_property("width", &Texture::GetWidth)
+        .add_property("height", &Texture::GetHeight)
+        .add_property("path", RefGetter(&Texture::GetPath))
+        .add_property("channels", &Texture::GetChannelCount)
+        ;
+
+    py::class_<VertexBufferWrapper, py::bases<IBindable>, boost::noncopyable>("vertex_buffer", py::init())
+        .def("load", py::pure_virtual(&VertexBuffer::Load))
+        .def("buffer", py::pure_virtual(&VertexBuffer::BufferSubData))
+        .add_property("size", &VertexBuffer::GetSize)
+        ;
+
+    py::class_<VertexBufferLayoutWrapper, boost::noncopyable>("vertex_buffer_layout", py::init())
+        .def("push", py::pure_virtual(&VertexBufferLayout::PushFloat))
+        .add_property("stride", &VertexBufferLayout::GetStride)
+        .add_property("elements", RefGetter(&VertexBufferLayout::GetElements))
+        ;
+
+    py::class_<VertexArrayWrapper, py::bases<IBindable>, boost::noncopyable>("vertex_array", py::init())
+        .def("add_buffer", py::pure_virtual(&VertexArray::AddBuffer))
+        .def("add_instanced_buffer", py::pure_virtual(&VertexArray::AddInstancedBuffer))
+        .add_property("attribute_count", &VertexArray::GetAttributeCount)
+        ;
+
+    py::class_<IndexBufferWrapper, py::bases<IBindable>, boost::noncopyable>("index_buffer", py::init())
+        .def("load", py::pure_virtual(&IndexBuffer::Load))
+        .add_property("count", &IndexBuffer::GetCount)
+        .add_property("type_id", &IndexBuffer::GetIndexTypeId)
+        ;
+
+    py::enum_<Colors::Palette>("colors")
+        .value("red", Colors::RED)
+        .value("green", Colors::GREEN)
+        .value("blue", Colors::BLUE)
+        .value("yellow", Colors::YELLOW)
+        .value("aqua", Colors::AQUA)
+        .value("purple", Colors::PURPLE)
+        .value("black", Colors::BLACK)
+        .value("white", Colors::WHITE)
+        .value("orange", Colors::ORANGE)
+        .value("lime", Colors::LIME)
+        .value("magenta", Colors::MAGENTA)
+        .value("violet", Colors::VIOLET)
+        .value("skyblue", Colors::SKYBLUE)
+        .value("spring", Colors::SPRING)
+        .value("grey", Colors::GREY)
+        ;
+
+    using TextureFloat = Texture* (*)(float, float, float);
+    using TextureColor = Texture* (*)(Colors::Palette);
+    using TextureVec3 = Texture* (*)(const Vector3&);
+
+    py::def("make_texture", RefGetter(MakeTextureIntWrapper));
+    py::def("make_texture", RefGetter((TextureFloat)Colors::MakeTexture));
+    py::def("make_texture", RefGetter((TextureColor)Colors::MakeTexture));
+    py::def("make_texture", RefGetter((TextureVec3)Colors::MakeTexture));
 
     using TranslateFunc3F = CameraController & (CameraController::*)(float, float, float);
     using TranslateFunc3V = CameraController & (CameraController::*)(const Vector3&);
 
-    py::class_<CameraController, boost::noncopyable>("CameraController", py::init())
+    py::class_<RenderController, boost::noncopyable>("render_controller", py::no_init)
+        .def_readwrite("object_shader", &RenderController::ObjectShader)
+        .def_readwrite("mesh_shader", &RenderController::MeshShader)
+        .def_readwrite("default_texture", &RenderController::DefaultTexture)
+        ;
+
+    py::class_<DirectionalLight>("dir_light", py::init())
+        .add_property("ambient", RefGetter(&DirectionalLight::GetAmbientColor), RefGetter(&DirectionalLight::UseAmbientColor))
+        .add_property("diffuse", RefGetter(&DirectionalLight::GetDiffuseColor), RefGetter(&DirectionalLight::UseDiffuseColor))
+        .add_property("specular", RefGetter(&DirectionalLight::GetSpecularColor), RefGetter(&DirectionalLight::UseSpecularColor))
+        .def_readwrite("direction", &DirectionalLight::Direction)
+        ;
+
+    py::class_<PointLight>("point_light", py::init())
+        .add_property("ambient", RefGetter(&PointLight::GetAmbientColor), RefGetter(&PointLight::UseAmbientColor))
+        .add_property("diffuse", RefGetter(&PointLight::GetDiffuseColor), RefGetter(&PointLight::UseDiffuseColor))
+        .add_property("specular", RefGetter(&PointLight::GetSpecularColor), RefGetter(&PointLight::UseSpecularColor))
+        .add_property("factors", RefGetter(&PointLight::GetFactors), RefGetter(&PointLight::UseFactors))
+        .def_readwrite("position", &PointLight::Position)
+        ;
+
+    py::class_<SpotLight>("spot_light", py::init())
+        .add_property("ambient", RefGetter(&SpotLight::GetAmbientColor), RefGetter(&SpotLight::UseAmbientColor))
+        .add_property("diffuse", RefGetter(&SpotLight::GetDiffuseColor), RefGetter(&SpotLight::UseDiffuseColor))
+        .add_property("specular", RefGetter(&SpotLight::GetSpecularColor), RefGetter(&SpotLight::UseSpecularColor))
+        .add_property("outer_angle", &SpotLight::GetOuterAngle, RefGetter(&SpotLight::UseOuterAngle))
+        .add_property("inner_angle", &SpotLight::GetInnerAngle, RefGetter(&SpotLight::UseInnerAngle))
+        .def_readwrite("direction", &SpotLight::Direction)
+        .def_readwrite("position", &SpotLight::Position)
+        ;
+
+    py::class_<Scene::LightContainer<PointLight>, boost::noncopyable>("point_light_list", py::no_init)
+        .def("__setitem__", LightContainerIndexSetWrapper<PointLight>)
+        .def("__getitem__", RefGetter(LightContainerIndexGetWrapper<PointLight>))
+        .def("__len__", &Scene::LightContainer<PointLight>::GetCount)
+        .def("resize", &Scene::LightContainer<PointLight>::SetCount)
+        ;
+
+    py::class_<Scene::LightContainer<SpotLight>, boost::noncopyable>("spot_light_list", py::no_init)
+        .def("__setitem__", LightContainerIndexSetWrapper<SpotLight>)
+        .def("__getitem__", RefGetter(LightContainerIndexGetWrapper<SpotLight>))
+        .def("__len__", &Scene::LightContainer<SpotLight>::GetCount)
+        .def("resize", &Scene::LightContainer<SpotLight>::SetCount)
+        ;
+
+    py::class_<IMovableWrapper, boost::noncopyable>("movable", py::no_init)
+        .def("move", RefGetter(&IMovable::Translate))
+        .def("move_forward", RefGetter(&IMovable::TranslateForward))
+        .def("move_right", RefGetter(&IMovable::TranslateRight))
+        .def("move_up", RefGetter(&IMovable::TranslateUp))
+        .def("rotate", RefGetter(&IMovable::Rotate))
+        .add_property("vec_forward", RefGetter(&IMovable::GetForwardVector))
+        .add_property("vec_right", RefGetter(&IMovable::GetRightVector))
+        .add_property("vec_up", RefGetter(&IMovable::GetUpVector))
+        ;
+
+    py::class_<CameraController, py::bases<IMovable>, boost::noncopyable>("camera_controller", py::init())
         .def("has_camera", &CameraController::HasCamera)
         .add_property("camera", RefGetter(&CameraController::GetCamera))
         .add_property("camera_matrix", RefGetter(&CameraController::GetCameraMatrix))
@@ -354,51 +1298,58 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("direction", RefGetter(&CameraController::GetDirection), &CameraController::SetDirection)
         .add_property("up", RefGetter(&CameraController::GetUp), &CameraController::SetUp)
         .add_property("zoom", &CameraController::GetZoom, &CameraController::SetZoom)
-        .add_property("vec_forward", RefGetter(&CameraController::GetForwardVector), &CameraController::SetForwardVector)
-        .add_property("vec_up", RefGetter(&CameraController::GetUpVector), &CameraController::SetUpVector)
-        .add_property("vec_right", RefGetter(&CameraController::GetRightVector), &CameraController::SetRightVector)
         .add_property("horizontal_angle", &CameraController::GetHorizontalAngle)
         .add_property("vertical_angle", &CameraController::GetVerticalAngle)
-        .def("translate", RefGetter((TranslateFunc3F)&CameraController::Translate))
-        .def("translate", RefGetter((TranslateFunc3V)&CameraController::Translate))
-        .def("translate_x", RefGetter(&CameraController::TranslateX))
-        .def("translate_y", RefGetter(&CameraController::TranslateY))
-        .def("translate_z", RefGetter(&CameraController::TranslateZ))
-        .def("move_forward", RefGetter(&CameraController::TranslateForward))
-        .def("move_up", RefGetter(&CameraController::TranslateUp))
-        .def("move_right", RefGetter(&CameraController::TranslateRight))
-        .def("rotate", RefGetter(&CameraController::Rotate))
+        .def("move", RefGetter((TranslateFunc3V)&CameraController::Translate))
+        .def("move_x", RefGetter(&CameraController::TranslateX))
+        .def("move_y", RefGetter(&CameraController::TranslateY))
+        .def("move_z", RefGetter(&CameraController::TranslateZ)) 
         .def("orthographic", SetOrthographicCamera)
         .def("perspective", SetPerspectiveCamera)
         ;
 
-    py::class_<ICameraWrapper, boost::noncopyable>("Camera")
-        .def("set_view", &ICameraWrapper::SetViewMatrix)
-        .add_property("matrix", RefGetter(&ICameraWrapper::GetMatrix))
-        .add_property("aspect_ratio", &ICameraWrapper::GetAspectRatio, &ICameraWrapper::SetAspectRatio)
-        .add_property("znear", &ICameraWrapper::GetZNear, &ICameraWrapper::SetZNear)
-        .add_property("zfar", &ICameraWrapper::GetZFar, &ICameraWrapper::SetZFar)
-        .add_property("zoom", &ICameraWrapper::GetZoom, &ICameraWrapper::SetZoom)
+    py::class_<ICameraWrapper, boost::noncopyable>("camera", py::no_init)
+        .def("set_view", py::pure_virtual(&ICamera::SetViewMatrix))
+        .add_property("matrix", RefGetter(&ICamera::GetMatrix))
+        .add_property("aspect_ratio", &ICamera::GetAspectRatio, &ICamera::SetAspectRatio)
+        .add_property("znear",&ICamera::GetZNear, &ICamera::SetZNear)
+        .add_property("zfar", &ICamera::GetZFar, &ICamera::SetZFar)
+        .add_property("zoom", &ICamera::GetZoom, &ICamera::SetZoom)
         ;
 
-    py::class_<PerspectiveCamera, py::bases<ICamera>>("PerspectiveCamera")
-        .def("set_view", &PerspectiveCamera::SetViewMatrix)
+    py::class_<PerspectiveCamera, py::bases<ICamera>>("perspective_camera", py::init())
         .add_property("fov", &PerspectiveCamera::GetFOV, &PerspectiveCamera::SetFOV)
-        .add_property("matrix", RefGetter(&PerspectiveCamera::GetMatrix))
-        .add_property("aspect_ratio", &PerspectiveCamera::GetAspectRatio, &PerspectiveCamera::SetAspectRatio)
-        .add_property("znear", &PerspectiveCamera::GetZNear, &PerspectiveCamera::SetZNear)
-        .add_property("zfar", &PerspectiveCamera::GetZFar, &PerspectiveCamera::SetZFar)
-        .add_property("zoom", &PerspectiveCamera::GetZoom, &PerspectiveCamera::SetZoom)
         ;
 
-    py::class_<OrthographicCamera, py::bases<ICamera>>("OrthographicCamera")
-        .def("set_view", &OrthographicCamera::SetViewMatrix)
+    py::class_<OrthographicCamera, py::bases<ICamera>>("orthographic_camera", py::init())
         .def("set_projection", &OrthographicCamera::SetProjection)
-        .add_property("matrix", RefGetter(&OrthographicCamera::GetMatrix))
-        .add_property("aspect_ratio", &OrthographicCamera::GetAspectRatio, &OrthographicCamera::SetAspectRatio)
-        .add_property("znear", &OrthographicCamera::GetZNear, &OrthographicCamera::SetZNear)
-        .add_property("zfar", &OrthographicCamera::GetZFar, &OrthographicCamera::SetZFar)
-        .add_property("zoom", &OrthographicCamera::GetZoom, &OrthographicCamera::SetZoom)
+        ;
+
+    using RotateQua = Transform& (Transform::*)(const Quaternion&);
+    using Rotate4F = Transform & (Transform::*)(float, const Vector3&);
+    using Scale3F = Transform & (Transform::*)(const Vector3&);
+    using Scale1F = Transform & (Transform::*)(float);
+    using MatrixGet = const Matrix4x4 & (Transform::*)() const;
+
+    py::class_<Transform>("transform", py::init())
+        .add_property("position", RefGetter(&Transform::GetPosition), RefGetter(&Transform::SetPosition))
+        .add_property("rotation", RefGetter(&Transform::GetRotation), RefGetter((RotateQua)&Transform::SetRotation))
+        .add_property("scale", RefGetter(&Transform::GetScale), RefGetter((Scale3F)&Transform::SetScale))
+        .add_property("euler", RefGetter(&Transform::GetEulerRotation))
+        .add_property("matrix", RefGetter((MatrixGet)&Transform::GetMatrix))
+        .add_property("normal_matrix", RefGetter((MatrixGet)&Transform::GetNormalMatrix))
+        .def("scale_xyz", RefGetter((Scale1F)&Transform::Scale))
+        .def("scale_x", RefGetter(&Transform::ScaleX))
+        .def("scale_y", RefGetter(&Transform::ScaleY))
+        .def("scale_z", RefGetter(&Transform::ScaleZ))
+        .def("rotate_x", RefGetter(&Transform::RotateX))
+        .def("rotate_y", RefGetter(&Transform::RotateY))
+        .def("rotate_z", RefGetter(&Transform::RotateZ))
+        .def("move", RefGetter(&Transform::Translate))
+        .def("move_x", RefGetter(&Transform::TranslateX))
+        .def("move_y", RefGetter(&Transform::TranslateY))
+        .def("move_z", RefGetter(&Transform::TranslateZ))
+        .def("rotate_euler", RefGetter((Rotate4F)&Transform::SetRotation));
         ;
 
     // MxObject
@@ -406,32 +1357,64 @@ BOOST_PYTHON_MODULE(mx_engine)
     using ScaleFuncVec = MxObject & (MxObject::*)(const Vector3&);
     using TranslateFunc3 = MxObject & (MxObject::*)(float, float, float);
     using RotateMoveFunc = MxObject & (MxObject::*)(float);
-    using RotateFunc2F = MxObject & (MxObject::*)(float, float);
+    using InstanceListFunc = Instancing<MxObject>::InstanceList & (MxObject::*)();
 
-    // TODO: add all methods
-    py::class_<MxObject, boost::noncopyable>("MxObject")
-        .def("rotate", RefGetter((RotateFunc2F)&MxObject::Rotate))
-        //.def("rotate_x", RefGetter(&MxObject::RotateX))
-        //.def("rotate_y", RefGetter(&MxObject::RotateY))
-        //.def("rotate_z", RefGetter(&MxObject::RotateZ))
-        //.def("scale", RefGetter(((ScaleFunc1F)&MxObject::Scale)))
-        //.def("scale", RefGetter(((ScaleFuncVec)&MxObject::Scale)))
-        .def("translate", RefGetter(((TranslateFunc3)&MxObject::Translate)))
-        //.def("translate_x", RefGetter(&MxObject::TranslateX))
-        //.def("translate_y", RefGetter(&MxObject::TranslateY))
-        //.def("translate_z", RefGetter(&MxObject::TranslateZ))
-        .def("move_forward", RefGetter((RotateMoveFunc)&MxObject::TranslateForward))
-        .def("move_right", RefGetter((RotateMoveFunc)&MxObject::TranslateRight))
-        .def("move_up", RefGetter((RotateMoveFunc)&MxObject::TranslateUp))
+    py::class_<MxObject, py::bases<IMovable>, boost::noncopyable>("mx_object")
+        .def("instanciate", &MxObject::Instanciate)
+        .def("scale", RefGetter(&MxObject::Scale))
         .def("hide", &MxObject::Hide)
         .def("show", &MxObject::Show)
         .def("set_texture", SetTextureWrapper)
         .def("set_shader", SetShaderWrapper)
-        //.add_property("rotation", RefGetter(&MxObject::GetEulerRotation))
-        //.add_property("translation", RefGetter(&MxObject::GetTranslation))
-        //.add_property("get_scale", RefGetter(&MxObject::GetScale))
-        .add_property("vec_forward", RefGetter(&MxObject::GetForwardVector), &MxObject::SetForwardVector)
-        .add_property("vec_up", RefGetter(&MxObject::GetUpVector),&MxObject::SetUpVector)
-        .add_property("vec_right", RefGetter(&MxObject::GetRightVector), &MxObject::SetRightVector)
+        .def("instanciate", &MxObject::Instanciate)
+        .def("make_instanced", MakeInstancedWrapper)
+        .def("set_autobuffering", &MxObject::SetAutoBuffering)
+        .def("buffer_instances", &MxObject::BufferInstances)
+        .def_readwrite("transform", &MxObject::ObjectTransform)
+        .def_readwrite("texture", &MxObject::ObjectTexture)
+        .def_readwrite("shader", &MxObject::ObjectShader)
+        .def_readwrite("move_speed", &MxObject::TranslateSpeed)
+        .def_readwrite("rotate_speed", &MxObject::RotateSpeed)
+        .def_readwrite("scale_speed", &MxObject::ScaleSpeed)
+        .add_property("buffer_count", &MxObject::GetBufferCount)
+        .add_property("instances", RefGetter((InstanceListFunc)&MxObject::GetInstances))
+        .add_property("render_color", RefGetter(&MxObject::GetRenderColor), &MxObject::SetRenderColor)
+        ;
+
+    py::class_<MxInstance, boost::noncopyable>("mx_instance", py::no_init)
+        .def_readwrite("transform", &MxInstance::Model)
+        .def("hide", &MxInstance::Hide)
+        .def("show", &MxInstance::Show)
+        ;
+
+    py::class_<std::vector<MxInstance>, boost::noncopyable>("instance_list", py::no_init)
+        .def("__getitem__", RefGetter(StdVectorGetRefWrapper<MxInstance>))
+        .def("__setitem__", StdVectorSetWrapper<MxInstance>)
+        .def("__len__", &std::vector<MxInstance>::size)
+        .def("size", &std::vector<MxInstance>::size)
+        ;
+
+    py::def("bind_console", ConsoleBindWrapper);
+    py::def("bind_close", AppCloseBindWrapper);
+
+    using Move4Func = InputControlBinding & (InputControlBinding::*)(KeyCode, KeyCode, KeyCode, KeyCode);
+    using Move6Func = InputControlBinding & (InputControlBinding::*)(KeyCode, KeyCode, KeyCode, KeyCode, KeyCode, KeyCode);
+
+    py::class_<InputControlBinding>("control_binder", py::init<std::string, IMovable&>())
+        .def("bind_move", RefGetter((Move4Func)&InputControlBinding::BindMovement))
+        .def("bind_move", RefGetter((Move6Func)&InputControlBinding::BindMovement))
+        .def("bind_rotate", RefGetter(&InputControlBinding::BindRotation))
+        .def("bind_rotate_vert", RefGetter(&InputControlBinding::BindVerticalRotation))
+        .def("bind_rotate_horz", RefGetter(&InputControlBinding::BindHorizontalRotation))
+        ;
+
+    py::class_<LightBinding<SpotLight>>("spot_lights_binder", py::init<Scene::LightContainer<SpotLight>&>())
+        .def("bind", &LightBinding<SpotLight>::BindAll)
+        .def("unbind", &LightBinding<SpotLight>::UnbindAll)
+        ;
+
+    py::class_<LightBinding<PointLight>>("point_lights_binder", py::init<Scene::LightContainer<PointLight>&>())
+        .def("bind", &LightBinding<PointLight>::BindAll)
+        .def("unbind", &LightBinding<PointLight>::UnbindAll)
         ;
 }

@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Utilities/Memory/Memory.h"
+#include "Utilities/Array/ArrayView.h"
 #include "Core/Interfaces/IDrawable.h"
 #include "Core/Camera/CameraController.h"
 #include "Core/Interfaces/GraphicAPI/Renderer.h"
@@ -40,29 +41,19 @@
 
 namespace MxEngine
 {
+	struct LightSystem
+	{
+		DirectionalLight Global;
+		ArrayView<PointLight> Point;
+		ArrayView<SpotLight> Spot;
+	};
+
 	class RenderController
 	{
 		Renderer& renderer;
 	public:
-		template<typename LightType>
-		class LightContainer
-		{
-			using Storage = std::vector<LightType>;
-			Storage storage;
-		public:
-			size_t GetCount() const;
-			void SetCount(size_t count);
-			LightType& operator[](size_t index);
-			const LightType& operator[](size_t index) const;
-		};
-
-		LightContainer<PointLight> PointLights;
-		LightContainer<SpotLight> SpotLights;
-
 		RenderController(Renderer& renderer);
 
-		CameraController ViewPort;
-		DirectionalLight GlobalLight;
 		Shader* ObjectShader = nullptr;
 		Shader* MeshShader = nullptr;
 		Texture* DefaultTexture = nullptr;
@@ -70,33 +61,7 @@ namespace MxEngine
 		Renderer& GetRenderEngine() const;
 		void Render() const;
 		void Clear() const;
-		void DrawObject(const IDrawable& object) const;
-		void DrawObjectMesh(const IDrawable& object) const;
+		void DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights) const;
+		void DrawObjectMesh(const IDrawable& object, const CameraController& viewport) const;
 	};
-
-	template<typename LightType>
-	inline size_t RenderController::LightContainer<LightType>::GetCount() const
-	{
-		return storage.size();
-	}
-
-	template<typename LightType>
-	inline void RenderController::LightContainer<LightType>::SetCount(size_t count)
-	{
-		storage.resize(count);
-	}
-
-	template<typename LightType>
-	inline LightType& RenderController::LightContainer<LightType>::operator[](size_t index)
-	{
-		assert(index < storage.size());
-		return storage[index];
-	}
-	
-	template<typename LightType>
-	inline const LightType& RenderController::LightContainer<LightType>::operator[](size_t index) const
-	{
-		assert(index < storage.size());
-		return storage[index];
-	}
 }

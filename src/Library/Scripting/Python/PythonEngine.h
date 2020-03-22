@@ -55,6 +55,8 @@ namespace MxEngine
         PythonEngine();
         BoxedValue Execute(const std::string& code);
         BoxedValue Execute(const char* code);
+        void MirrorOutStream(bool value);
+        void MirrorErrorStream(bool value);
         
         bool HasErrors() const;
         const std::string& GetErrorMessage() const;

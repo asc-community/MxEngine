@@ -72,3 +72,10 @@
 - added resource manager for textures/meshes/shaders
 - added transform component for MxObject and camera
 - some code refactoring
+### v6.0.0
+- added scenes (with scene loader, auto managed resources, etc)
+- exported almost all MxEngine API to python
+- added more imgui editing options
+- assimp library integration
+- MxEngine now does not have file dependencies
+- scripting API in C++ with python (chaiscript has been removed)

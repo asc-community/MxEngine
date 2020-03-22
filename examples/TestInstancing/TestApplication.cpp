@@ -2,12 +2,10 @@
 #include <Library/Bindings/Bindings.h>
 #include <Library/Primitives/Primitives.h>
 
-class BallObject : public Instanced<Sphere>
+class BallObject : public Sphere
 {
-	size_t count = 100000;
+	size_t count = 50000;
 	float fadeFactor = 0.995f;
-	std::vector<Vector3> positions = std::vector<Vector3>(count);
-	std::vector<float> scale = std::vector<float>(count);
 	std::vector<Vector3> impulse = std::vector<Vector3>(count, MakeVector3(0.0f));
 public:
 	BallObject() 
@@ -17,62 +15,56 @@ public:
 		this->Resize(10);
 
 		this->ObjectTexture = Colors::MakeTexture(Colors::RED);
-		this->MakeInstanced(count, UsageType::DYNAMIC_DRAW);
+		this->MakeInstanced(count);
 
 		for (size_t i = 0; i < count; i++)
 		{
-			positions[i].x = Random::Get(-range, range);
-			positions[i].y = Random::Get(  5.0f, 2.0f * range + 5.0f);
-			positions[i].z = Random::Get(-range, range);
-			scale[i] = Random::Get(0.5f, 10.0f);
+			auto instance = this->Instanciate();
+			instance->Model.SetPosition({
+				Random::Get(-range, range),
+				Random::Get(5.0f, 2.0f * range + 5.0f),
+				Random::Get(-range, range)
+			});
+			instance->Model.SetScale(Random::Get(0.5f, 10.0f));
 		}
 	}
 
 	virtual void OnUpdate() override
 	{
 		auto ctx = Application::Get();
-		auto& camera = ctx->GetRenderer().ViewPort;
+		auto& camera = ctx->GetCurrentScene().Viewport;
 		Vector3 cameraPos = camera.GetPosition();
+		auto& instances = this->GetInstances();
 		for (size_t i = 0; i < count; i++)
 		{
-			if (Length(cameraPos - positions[i]) < 5.0f * Length(MakeVector3(scale[i])))
+			const auto& model = instances[i].Model;
+			if (Length(cameraPos - model.GetPosition()) < 5.0f * Length(model.GetScale()))
 			{
-				impulse[i] += 10.0f * camera.GetMoveSpeed() / scale[i] * Normalize(positions[i] - cameraPos);
+				impulse[i] += 10.0f * camera.GetMoveSpeed() / model.GetScale() * Normalize(model.GetPosition() - cameraPos);
 			}
 		}
 
 		for (size_t i = 0; i < count; i++)
 		{
-			positions[i] += ctx->GetTimeDelta() * impulse[i];
-			if (positions[i].y < scale[i])
+			auto& model = instances[i].Model;
+			model.Translate(ctx->GetTimeDelta() * impulse[i]);
+			if (model.GetPosition().y < model.GetScale().y)
 				impulse[i].y = std::abs(impulse[i].y);
 			impulse[i] *= fadeFactor;
 		}
-
-		this->GenerateInstanceModels([this](int idx)
-			{
-				Matrix4x4 T = MxEngine::Translate(Matrix4x4(1.0f), positions[idx]);
-				return MxEngine::Scale(T, scale[idx]);
-			});
-
-		this->BufferInstances();
 	}
 };
 
 void SnakePath3D::OnCreate()
 {
 	// add objects here
-	this->AddObject("Grid", MakeUnique<Grid>());
-	this->AddObject("Ball", MakeUnique<BallObject>());
-	this->InvalidateObjects();
+	this->GetCurrentScene().SetDirectory("Resources/");
+	this->GetCurrentScene().AddObject("Grid", MakeUnique<Grid>());
+	this->GetCurrentScene().AddObject("Ball", MakeUnique<BallObject>());
 
-	auto& Renderer = this->GetRenderer();
-
-	Renderer.DefaultTexture = Colors::MakeTexture(Colors::WHITE);
-	Renderer.ObjectShader = this->CreateShader("shaders/object_vertex.glsl", "shaders/object_fragment.glsl");
-	Renderer.MeshShader = this->CreateShader("shaders/mesh_vertex.glsl", "shaders/mesh_fragment.glsl");
+	auto& scene = this->GetCurrentScene();
 	
-	Renderer.GlobalLight
+	scene.GlobalLight
 		.UseAmbientColor ({ 0.3f, 0.3f, 0.3f })
 		.UseDiffuseColor ({ 0.8f, 0.8f, 0.8f })
 		.UseSpecularColor({ 1.0f, 1.0f, 1.0f })
@@ -82,7 +74,7 @@ void SnakePath3D::OnCreate()
 	camera->SetZFar(1000.0f);
 	camera->SetAspectRatio((float)this->GetWindow().GetWidth(), (float)this->GetWindow().GetHeight());
 	
-	auto& controller = Renderer.ViewPort;
+	auto& controller = scene.Viewport;
 	controller.SetCamera(std::move(camera));
 	controller.TranslateY(1.0f);
 	controller.SetMoveSpeed(5.0f);
@@ -91,7 +83,7 @@ void SnakePath3D::OnCreate()
 
 	ConsoleBinding("Console").Bind(KeyCode::GRAVE_ACCENT);
 	AppCloseBinding("AppClose").Bind(KeyCode::ESCAPE);
-	InputBinding("CameraControl", Renderer.ViewPort)
+	InputControlBinding("CameraControl", scene.Viewport)
 		.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT)
 		.BindRotation();
 }
@@ -108,6 +100,5 @@ void SnakePath3D::OnDestroy()
 
 SnakePath3D::SnakePath3D()
 {
-	this->ResourcePath = "Resources/";
 	this->CreateContext();
 }
