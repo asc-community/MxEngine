@@ -36,8 +36,10 @@ namespace MxEngine
 {
 	struct Shader : IBindable
 	{
-		virtual void Load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) = 0;
-		virtual void LoadFromSource(const std::string& vertexSource, const std::string& fragmentSource) = 0;
+		virtual void Load(const std::string& vertex, const std::string& fragment) = 0;
+		virtual void Load(const std::string& vertex, const std::string& geometry, const std::string& fragment) = 0;
+		virtual void LoadFromSource(const std::string& vertex, const std::string& fragment) = 0;
+		virtual void LoadFromSource(const std::string& vertex, const std::string& geometry, const std::string& fragment) = 0;
 
 		virtual void SetUniformFloat(const std::string& name, float f) const = 0;
 		virtual void SetUniformVec3(const std::string& name, const Vector3& vec) const = 0;

@@ -54,10 +54,15 @@ namespace MxEngine
         array_view(std::array<T, N>& array);
         array_view(std::vector<T>& vec);
         size_t size() const;
+        bool empty() const;
         T* data();
         const T* data() const;
         T& operator[](size_t idx);
         const T& operator[](size_t idx) const;
+        T& front();
+        const T& front() const;
+        T& back();
+        const T& back() const;
 
         T* begin();
         T* end();
@@ -96,6 +101,12 @@ namespace MxEngine
     }
 
     template<typename T>
+    inline bool array_view<T>::empty() const
+    {
+        return this->_size == 0;
+    }
+
+    template<typename T>
     inline T* array_view<T>::data()
     {
         return this->_data;
@@ -119,6 +130,34 @@ namespace MxEngine
     {
         assert(idx < this->_size);
         return this->_data[idx];
+    }
+
+    template<typename T>
+    inline T& array_view<T>::front()
+    {
+        assert(this->_size > 0);
+        return this->_data[0];
+    }
+
+    template<typename T>
+    inline const T& array_view<T>::front() const
+    {
+        assert(this->_size > 0);
+        return this->_data[0];
+    }
+
+    template<typename T>
+    inline T& array_view<T>::back()
+    {
+        assert(this->_size > 0);
+        return this->_data[this->_size - 1];
+    }
+
+    template<typename T>
+    inline const T& array_view<T>::back() const
+    {
+        assert(this->_size > 0);
+        return this->_data[this->_size - 1];
     }
 
     template<typename T>

@@ -131,7 +131,7 @@ namespace MxEngine
         auto& object = GetObject(existingObject);
         if (object.GetInstanceCount() > 0)
         {
-            Logger::Instance().Warning("MxEngine::Scene", "instanced objects cannot be copied: " + existingObject);
+            Logger::Instance().Error("MxEngine::Scene", "instanced objects cannot be copied: " + existingObject);
             return object;
         }
         return AddObject(name, MakeUnique<MxObject>(object.GetMesh()));
@@ -183,6 +183,13 @@ namespace MxEngine
     {
         MAKE_SCOPE_PROFILER("Scene::LoadShader");
         auto shader = Graphics::Instance()->CreateShader(this->scenePath / vertex, this->scenePath / fragment);
+        return this->GetResourceManager<Shader>().Add(name, std::move(shader));
+    }
+
+    Shader* Scene::LoadShader(const std::string& name, const FilePath& vertex, const FilePath& geometry, const FilePath& fragment)
+    {
+        MAKE_SCOPE_PROFILER("Scene::LoadShader");
+        auto shader = Graphics::Instance()->CreateShader(this->scenePath / vertex, this->scenePath / geometry, this->scenePath / fragment);
         return this->GetResourceManager<Shader>().Add(name, std::move(shader));
     }
 

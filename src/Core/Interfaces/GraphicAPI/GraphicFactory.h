@@ -33,9 +33,11 @@
 #include "Core/Interfaces/GraphicAPI/IndexBuffer.h"
 #include "Core/Interfaces/GraphicAPI/Shader.h"
 #include "Core/Interfaces/GraphicAPI/Texture.h"
+#include "Core/Interfaces/GraphicAPI/CubeMap.h"
 #include "Core/Interfaces/GraphicAPI/VertexArray.h"
 #include "Core/Interfaces/GraphicAPI/VertexBuffer.h"
 #include "Core/Interfaces/GraphicAPI/VertexBufferLayout.h"
+#include "Core/Interfaces/GraphicAPI/FrameBuffer.h"
 #include "Core/Interfaces/GraphicAPI/Renderer.h"
 
 #include "Utilities/Memory/Memory.h"
@@ -55,14 +57,18 @@ namespace MxEngine
 		virtual UniqueRef<IndexBuffer> CreateIndexBuffer() = 0;
 		virtual UniqueRef<Shader> CreateShader() = 0;
 		virtual UniqueRef<Texture> CreateTexture() = 0;
+		virtual UniqueRef<CubeMap> CreateCubeMap() = 0;
 		virtual UniqueRef<VertexArray> CreateVertexArray() = 0;
 		virtual UniqueRef<VertexBuffer> CreateVertexBuffer() = 0;
 		virtual UniqueRef<VertexBufferLayout> CreateVertexBufferLayout() = 0;
+		virtual UniqueRef<FrameBuffer> CreateFrameBuffer() = 0;
 
 		virtual UniqueRef<Window> CreateWindow(int width, int height, const std::string& name) = 0;
 		virtual UniqueRef<IndexBuffer> CreateIndexBuffer(const IndexBuffer::IndexBufferType& data) = 0;
 		virtual UniqueRef<Shader> CreateShader(const FilePath& vertex, const FilePath& fragment) = 0;
+		virtual UniqueRef<Shader> CreateShader(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment) = 0;
 		virtual UniqueRef<Texture> CreateTexture(const FilePath& texture, bool genMipmaps = true, bool flipImage = true) = 0;
+		virtual UniqueRef<CubeMap> CreateCubeMap(const std::array<FilePath, 6>& cubemaps, bool genMipMaps = true, bool flipImage = true) = 0;
 		virtual UniqueRef<VertexBuffer> CreateVertexBuffer(VertexBuffer::BufferData data, size_t count, UsageType type) = 0;
 
 		virtual ~GraphicFactory() = default;

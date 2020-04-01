@@ -27,12 +27,12 @@ def on_create():
     mx.scene.global_light.ambient   = vec3(0.1)
     mx.scene.global_light.diffuse   = vec3(0.2)
     mx.scene.global_light.specular  = vec3(0.5)
-    mx.scene.global_light.direction = vec3(-1.0, 1.0, 0.0)
+    mx.scene.global_light.direction = vec3(1.0, 1.0, 0.0)
     
     mx.scene.point_lights[0].ambient  = vec3(0.1, 0.0, 0.0)
     mx.scene.point_lights[0].diffuse  = vec3(0.8, 0.3, 0.0)
     mx.scene.point_lights[0].specular = vec3(0.8, 0.3, 0.0)
-    mx.scene.point_lights[0].position = vec3(2.0, 0.0, 0.0)
+    mx.scene.point_lights[0].position = vec3(2.0, 1.0, 0.0)
 
     point_lights_binder(mx.scene.point_lights).bind()
 

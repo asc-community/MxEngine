@@ -56,4 +56,6 @@ namespace MxEngine
 
 	template<typename T>
 	unsigned int GetGLType();
+
+	void APIENTRY PrintDebugInformation(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 }

@@ -71,13 +71,15 @@ namespace MxEngine
 		typedef unsigned int GLuint;
 		typedef float GLfloat;
 
-		Vector3 objectCenter = MakeVector3(0.0f);
+		std::pair<Vector3, Vector3> boundingBox{ MakeVector3(0.0f), MakeVector3(0.0f) };
 		std::vector<RenderObject> subObjects;
 		std::vector<UniqueRef<VertexBuffer>> VBOs;
 		std::vector<UniqueRef<VertexBufferLayout>> VBLs;
 
 		void LoadFromFile(const std::string& filepath);
 	public:
+		size_t RefCounter = 0;
+
 		explicit Mesh() = default;
 		explicit Mesh(const std::string& filepath);
 		Mesh(Mesh&) = delete;
@@ -88,7 +90,8 @@ namespace MxEngine
 		void Load(const std::string& filepath);
 		std::vector<RenderObject>& GetRenderObjects();
 		const std::vector<RenderObject>& GetRenderObjects() const;
-		const Vector3& GetObjectCenter() const;
+		Vector3 GetObjectCenter() const;
+		const std::pair<Vector3, Vector3> GetBoundingBox();
 		void AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl);
 		VertexBuffer& GetBufferByIndex(size_t index); 
 		VertexBufferLayout& GetBufferLayoutByIndex(size_t index);

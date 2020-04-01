@@ -27,6 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Script.h"
+#include "Utilities/Logger/Logger.h"
 
 namespace MxEngine
 {
@@ -38,7 +39,22 @@ namespace MxEngine
 
     void Script::UpdateContents()
     { 
-        this->data = File(path).ReadAllText();
+        auto currentTime = Time::Current();
+        if (currentTime - this->lastUpdate > 1.0f)
+        {
+            this->lastUpdate = currentTime;
+            if (File::Exists(this->path))
+            {
+                auto systemFileTime = File::LastModifiedTime(this->path);
+                if (this->fileUpdate < systemFileTime)
+                {
+                    Logger::Instance().Debug("MxEngine::Script", "updated script: " + this->path.string());
+                    this->data = File(this->path).ReadAllText();
+                }
+
+                this->fileUpdate = std::move(systemFileTime);
+            }
+        }
     }
 
     const Script::ScriptData& Script::GetContent() const

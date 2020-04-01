@@ -69,6 +69,7 @@ namespace MxEngine
 		virtual Window& Create() = 0;
 		virtual Window& Close() = 0;
 		virtual Window& SwitchContext() = 0;
+		virtual Window& UseDebugging(bool value = true) = 0;
 		virtual Window& UseDoubleBuffering(bool value = true) = 0;
 		virtual Window& UseCursorMode(CursorMode cursor) = 0;
 		virtual Window& UseCursorPos(const Vector2& pos) = 0;

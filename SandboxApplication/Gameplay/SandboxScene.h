@@ -13,7 +13,7 @@ class SandboxScene : public Scene
     {
         this->SetDirectory("Resources/");
 
-        this->AddObject("Grid", MakeUnique<Grid>());
+        this->AddObject("Grid", MakeUnique<Grid>(2000));
         this->AddObject("Cube", MakeUnique<CubeObject>());
         this->AddObject("Arc170", MakeUnique<Arc170Object>());
         this->AddObject("Sphere", MakeUnique<SphereObject>());
@@ -32,14 +32,15 @@ class SandboxScene : public Scene
 		this->GlobalLight
 			.UseAmbientColor({ 0.0f, 0.0f, 0.0f })
 			.UseDiffuseColor({ 0.3f, 0.3f, 0.3f })
-			.UseSpecularColor({ 1.0f, 1.0f, 1.0f });
+			.UseSpecularColor({ 1.0f, 1.0f, 1.0f })
+			;
 
 		this->PointLights[0]
 			.UseAmbientColor({ 1.0f, 0.3f, 0.0f })
 			.UseDiffuseColor({ 1.0f, 0.3f, 0.0f })
 			.UseSpecularColor({ 1.0f, 0.3f, 0.0f })
 			.UsePosition({ -3.0f, 2.0f, -3.0f });
-
+		
 		this->SpotLights[0]
 			.UseAmbientColor({ 0.2f, 0.2f, 0.2f })
 			.UseDiffuseColor({ 0.5f, 0.5f, 0.5f })
@@ -50,7 +51,8 @@ class SandboxScene : public Scene
 			.UseInnerAngle(15.0f);
 
 		auto camera = MakeUnique<PerspectiveCamera>();
-		//auto camera = MakeUnique<OrthographicCamera>();
+		// auto camera = MakeUnique<OrthographicCamera>();
+		// Application::Get()->GetRenderer().ToggleReversedDepth(false);
 
 		const auto& window = Application::Get()->GetWindow();
 		camera->SetZFar(100000.0f);
@@ -75,6 +77,6 @@ class SandboxScene : public Scene
 
     virtual void OnUpdate() override
     {
-        Application::Get()->ExecuteScript(*this->GetResource<Script>("update"));
+		Application::Get()->ExecuteScript(*this->GetResource<Script>("update"));
     }
 };

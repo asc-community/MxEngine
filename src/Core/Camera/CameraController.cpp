@@ -45,7 +45,7 @@ namespace MxEngine
 		return *this->camera;
 	}
 
-	const Matrix4x4& CameraController::GetCameraMatrix() const
+	const Matrix4x4& CameraController::GetMatrix() const
 	{
 		static Matrix4x4 defaultMatrix(0.0f);
 		if (!this->HasCamera()) return defaultMatrix;

@@ -64,7 +64,7 @@ namespace MxEngine
 
     SpotLight& SpotLight::UseInnerAngle(float angle)
     {
-        this->innerAngle = Clamp(angle, 0.0f, this->outerAngle);
+        this->innerAngle = Clamp(angle, 0.0f, this->outerAngle - 0.0001f);
         this->innerCos = std::cos(Radians(this->innerAngle));
         return *this;
     }
@@ -76,6 +76,26 @@ namespace MxEngine
         // update inner as it can be larger than outer
         this->UseInnerAngle(this->GetInnerAngle()); 
         return *this;
+    }
+
+    const Texture* SpotLight::GetDepthTexture() const
+    {
+        return this->texture.get();
+    }
+
+    Texture* SpotLight::GetDepthTexture()
+    {
+        return this->texture.get();
+    }
+
+    const Vector3& SpotLight::GetDirection() const
+    {
+        return this->Direction;
+    }
+
+    void SpotLight::AttachDepthTexture(UniqueRef<Texture> texture)
+    {
+        this->texture = std::move(texture);
     }
 
     SpotLight& SpotLight::UseAmbientColor(const Vector3& ambient)
@@ -109,5 +129,21 @@ namespace MxEngine
     const Vector3& SpotLight::GetSpecularColor() const
     {
         return this->specularColor;
+    }
+
+    Matrix4x4 SpotLight::GetMatrix() const
+    {
+        auto Projection = MakePerspectiveMatrix(Radians(2.0f * this->outerAngle), 1.0f, 1.1f, 1000.0f);
+        auto directionNorm = Normalize(MakeVector3(
+            this->Direction.x + 0.0001f,
+            this->Direction.y,
+            this->Direction.z + 0.0001f
+        ));
+        auto View = MakeViewMatrix(
+            this->Position + directionNorm,
+            this->Position,
+            MakeVector3(0.0f, 1.0f, 0.0f)
+        );
+        return Projection * View;
     }
 }

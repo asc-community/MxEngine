@@ -20,7 +20,7 @@ public:
 	inline virtual void OnUpdate() override
 	{
 		float dt = Application::Get()->GetTimeDelta();
-		this->ObjectTransform.RotateY(-0.2f * dt);
+		this->ObjectTransform.RotateY(-10.0f * dt);
 		this->TranslateForward(2.0f * dt);
 	}
 };

@@ -41,7 +41,7 @@ namespace MxEngine
 	public:
 		GLTexture();
 		GLTexture(const GLTexture&) = delete;
-		GLTexture(GLTexture&& texture);
+		GLTexture(GLTexture&& texture) noexcept;
 		GLTexture(const std::string& filepath, bool genMipmaps = true, bool flipImage = true);
 		~GLTexture();
 
@@ -50,6 +50,7 @@ namespace MxEngine
 		virtual void Unbind() const override;
 		virtual void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = true) override;
 		virtual void Load(Texture::RawDataPointer data, int width, int height, bool genMipmaps = true) override;
+		virtual void LoadDepth(int width, int height) override;
 		virtual void Bind(IBindable::IdType id) const override;
 		virtual const std::string& GetPath() const override;
 		virtual size_t GetWidth() const override;

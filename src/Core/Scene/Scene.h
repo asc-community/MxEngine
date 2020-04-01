@@ -37,6 +37,7 @@
 #include "Core/Lighting/DirectionalLight/DirectionalLight.h"
 #include "Core/Lighting/PointLight/PointLight.h"
 #include "Core/Lighting/SpotLight/SpotLight.h"
+#include "Core/Interfaces/GraphicAPI/FrameBuffer.h"
 #include "Core/MxObject/MxObject.h"
 #include "Core/Interfaces/IEvent.h"
 
@@ -47,7 +48,7 @@ namespace MxEngine
     class Scene
     {
     public:
-        using ResourceManager = GenericStorage<ResourceStorage, Texture, Mesh, Shader, Script>;
+        using ResourceManager = GenericStorage<ResourceStorage, Texture, Mesh, Shader, Script, FrameBuffer>;
         using ObjectManager = LifetimeManager<UniqueRef<MxObject>>;
         template<typename LightType>
         class LightContainer
@@ -105,6 +106,7 @@ namespace MxEngine
         Mesh* LoadMesh(const std::string& name, const FilePath& filepath);
         Script* LoadScript(const std::string& name, const FilePath& path);
         Shader* LoadShader(const std::string& name, const FilePath& vertex, const FilePath& fragment);
+        Shader* LoadShader(const std::string& name, const FilePath& vertex, const FilePath& geometry, const FilePath& fragment);
         Texture* LoadTexture(const std::string& name, const FilePath& texture, bool genMipmaps = true, bool flipImage = true);
     
         void SetDirectory(const FilePath& path);

@@ -42,12 +42,12 @@ namespace MxEngine
 		mutable Matrix4x4 transform{ 0.0f };
 		mutable bool needTransformUpdate = true;
 		mutable bool needRotationUpdate = true;
-		mutable Matrix4x4 normalMatrix{ 0.0f };
+		mutable Matrix3x3 normalMatrix{ 0.0f };
 	public:
 		const Matrix4x4& GetMatrix() const;
-		const Matrix4x4& GetNormalMatrix() const;
+		const Matrix3x3& GetNormalMatrix() const;
 		void GetMatrix(Matrix4x4& inPlaceMatrix) const;
-		void GetNormalMatrix(const Matrix4x4& model, Matrix4x4& inPlaceMatrix) const;
+		void GetNormalMatrix(const Matrix4x4& model, Matrix3x3& inPlaceMatrix) const;
 
 		const Vector3& GetTranslation() const;
 		const Quaternion& GetRotation() const;

@@ -1,4 +1,4 @@
-# Full MxEngine version List
+# Full MxEngine version List [alpha]
 ### v1.0.0
 - added basic renderer
 - added basic window wrapper
@@ -77,5 +77,9 @@
 - exported almost all MxEngine API to python
 - added more imgui editing options
 - assimp library integration
-- MxEngine now does not have file dependencies
+- MxEngine now does not have file dependencies (shaders / textures / objects)
 - scripting API in C++ with python (chaiscript has been removed)
+### v6.1.0
+- added shadow mapping (texture maps, cubemaps)
+- added runtime script & shader editing support
+- minor fixes in opengl debugging, instancing and imgui editor

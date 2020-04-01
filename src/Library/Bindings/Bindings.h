@@ -32,3 +32,4 @@
 #include "ConsoleBinding.h"
 #include "InputBinding.h"
 #include "LightBinding.h"
+#include "ShaderBinding.h"

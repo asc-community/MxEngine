@@ -4,7 +4,7 @@
 
 class BallObject : public Sphere
 {
-	size_t count = 50000;
+	size_t count = 10000;
 	float fadeFactor = 0.995f;
 	std::vector<Vector3> impulse = std::vector<Vector3>(count, MakeVector3(0.0f));
 public:
@@ -17,15 +17,16 @@ public:
 		this->ObjectTexture = Colors::MakeTexture(Colors::RED);
 		this->MakeInstanced(count);
 
-		for (size_t i = 0; i < count; i++)
+		auto& instances = this->GetInstances();
+		for (size_t i = 0; i < instances.size(); i++)
 		{
-			auto instance = this->Instanciate();
-			instance->Model.SetPosition({
+			auto& instance = instances[i];
+			instance.Model.SetPosition({
 				Random::Get(-range, range),
 				Random::Get(5.0f, 2.0f * range + 5.0f),
 				Random::Get(-range, range)
 			});
-			instance->Model.SetScale(Random::Get(0.5f, 10.0f));
+			instance.Model.SetScale(Random::Get(0.5f, 10.0f));
 		}
 	}
 
@@ -38,7 +39,7 @@ public:
 		for (size_t i = 0; i < count; i++)
 		{
 			const auto& model = instances[i].Model;
-			if (Length(cameraPos - model.GetPosition()) < 5.0f * Length(model.GetScale()))
+			if (Length(cameraPos - model.GetPosition()) < 3.0f * Length(model.GetScale()))
 			{
 				impulse[i] += 10.0f * camera.GetMoveSpeed() / model.GetScale() * Normalize(model.GetPosition() - cameraPos);
 			}
@@ -80,6 +81,9 @@ void SnakePath3D::OnCreate()
 	controller.SetMoveSpeed(5.0f);
 	controller.SetRotateSpeed(0.75f);
 	controller.SetMoveSpeed(20.0f);
+
+	GetCurrentScene().GlobalLight.ProjectionSize = 1000.0f;
+	GetRenderer().SetDepthBufferSize<DirectionalLight>(8192);
 
 	ConsoleBinding("Console").Bind(KeyCode::GRAVE_ACCENT);
 	AppCloseBinding("AppClose").Bind(KeyCode::ESCAPE);

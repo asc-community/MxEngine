@@ -51,7 +51,7 @@ namespace MxEngine
             auto data = Grid::GetGridData(size);
             this->SubmitData(Format(FMT_STRING("MxGrid_{0}"), size), data);
         }
-
+    private:
         inline static ArrayView<float> GetGridData(size_t size)
         {
             float gridSize = float(size) / 2.0f;

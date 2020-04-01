@@ -1,1 +1,1 @@
-#arc.rotate(0.05 * dt(), 0)
+arc.rotate(dt(), 0)

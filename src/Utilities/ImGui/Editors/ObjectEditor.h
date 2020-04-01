@@ -72,6 +72,8 @@ namespace MxEngine::GUI
 				ImGui::SameLine(); ImGui::Checkbox("dir. vecs", &dirVecs);
 				// toggle instance editing (see below)
 				ImGui::SameLine(); ImGui::Checkbox("instances", &instanced);
+				// add delete button
+				ImGui::SameLine(); if (ImGui::Button("delete")) context->GetCurrentScene().DestroyObject(pair.first);
 
 				// current texture path
 				ImGui::Text((std::string("texture: ") + (object.ObjectTexture ? object.GetTexture().GetPath() : std::string("none"))).c_str());
@@ -131,9 +133,10 @@ namespace MxEngine::GUI
 							object.DestroyInstances();
 						}
 					}
-					else if (ImGui::Button("make instanced"))
+					else if (object.GetMesh() != nullptr && object.GetMesh()->RefCounter == 1)
 					{
-						object.Instanciate();
+						if(ImGui::Button("make instanced"))
+							object.Instanciate();
 					}
 				}
 

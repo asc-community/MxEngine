@@ -89,6 +89,11 @@ namespace MxEngine
 		return Vector4(value);
 	}
 
+	inline Vector3 Cross(const Vector3& v1, const Vector3& v2)
+	{
+		return glm::cross(v1, v2);
+	}
+
 	inline Matrix4x4 MakeViewMatrix(const Vector3& eye, const Vector3& center, const Vector3& up)
 	{
 		return glm::lookAt(eye, center, up);
@@ -99,9 +104,35 @@ namespace MxEngine
 		return glm::perspective(fov, aspect, znear, zfar);
 	}
 
+	inline Matrix4x4 MakeInversePerspectiveMatrix(float fov, float aspect, float znear, float zfar)
+	{
+		assert(std::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
+		// zfar is unused. It is okay, as -1.0f in Result[2][3] means infinity zfar
+
+		float const tanHalfFovy = std::tan(fov / 2.0f);
+
+		Matrix4x4 Result(0.0f);
+		Result[0][0] = 1.0f / (tanHalfFovy * aspect);
+		Result[1][1] = 1.0f / tanHalfFovy;
+		Result[2][3] = -1.0f;
+		Result[3][2] = znear;
+		return Result;
+	}
+
 	inline Matrix4x4 MakeOrthographicMatrix(float left, float right, float bottom, float top, float znear, float zfar)
 	{
 		return glm::ortho(left, right, bottom, top, znear, zfar);
+	}
+
+	inline Matrix4x4 MakeBiasMatrix()
+	{
+		Matrix4x4 Result(
+			0.5f, 0.0f, 0.0f, 0.0f,
+			0.0f, 0.5f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.5f, 0.0f,
+			0.5f, 0.5f, 0.5f, 1.0f
+		);
+		return Result;
 	}
 
 	template<typename T>
@@ -155,6 +186,16 @@ namespace MxEngine
 	inline Vector3 MakeEulerAngles(const Quaternion& q)
 	{
 		return glm::eulerAngles(q);
+	}
+
+	inline Quaternion Lerp(const Quaternion& q1, const Quaternion q2, float a)
+	{
+		return glm::lerp(q1, q2, a);
+	}
+
+	inline Quaternion Slerp(const Quaternion& q1, const Quaternion q2, float a)
+	{
+		return glm::slerp(q1, q2, a);
 	}
 
 	template<size_t Columns, size_t Rows, typename T>
@@ -373,9 +414,8 @@ namespace MxEngine
 		return glm::golden_ratio<T>();
 	}
 
-	inline Vector3 FindCenter(Vector3* verteces, size_t size)
+	inline std::pair<Vector3, Vector3>MinMaxComponents(Vector3* verteces, size_t size)
 	{
-		auto center = MakeVector3(0.0f);
 		Vector3 maxCoords(-1.0f * std::numeric_limits<float>::max());
 		Vector3 minCoords(std::numeric_limits<float>::max());
 		for (size_t i = 0; i < size; i++)
@@ -388,7 +428,12 @@ namespace MxEngine
 			maxCoords.y = std::max(maxCoords.y, verteces[i].y);
 			maxCoords.z = std::max(maxCoords.z, verteces[i].z);
 		}
-		center = (maxCoords + minCoords) * 0.5f;
-		return center;
+		return { minCoords, maxCoords };
+	}
+
+	inline Vector3 FindCenter(Vector3* verteces, size_t size)
+	{
+		auto coords = MinMaxComponents(verteces, size);
+		return (coords.first + coords.second) * 0.5f;
 	}
 }

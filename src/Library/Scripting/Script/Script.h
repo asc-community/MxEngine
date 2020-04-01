@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Utilities/FileSystem/FileSystem.h"
+#include "Utilities/Time/Time.h"
 
 namespace MxEngine
 {
@@ -39,6 +40,8 @@ namespace MxEngine
     private:
         FilePath path;
         ScriptData data;
+        TimeStep lastUpdate = 0.0f;
+        FileSystemTime fileUpdate = FileSystemTime();
     public:
         Script(FilePath path);
         Script(const Script&) = delete;

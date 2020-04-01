@@ -121,6 +121,11 @@ namespace MxEngine
 		GLCALL(glFinish());
 	}
 
+	void GLRenderer::SetViewport(int x, int y, int width, int height) const
+	{
+		GLCALL(glViewport(x, y, width, height));
+	}
+
 	GLRenderer& GLRenderer::UseSampling(bool value)
 	{
 		if (value)
@@ -140,13 +145,29 @@ namespace MxEngine
 		if (value)
 		{
 			GLCALL(glEnable(GL_DEPTH_TEST));
-			GLCALL(glDepthFunc(GL_LESS));
 			clearMask |= GL_DEPTH_BUFFER_BIT;
 		}
 		else
 		{
 			GLCALL(glDisable(GL_DEPTH_TEST));
 			clearMask &= ~GL_DEPTH_BUFFER_BIT;
+		}
+		return *this;
+	}
+
+	GLRenderer& GLRenderer::UseReversedDepth(bool value)
+	{
+		if (value)
+		{
+			GLCALL(glClearDepth(0.0f));
+			GLCALL(glDepthFunc(GL_GREATER));
+			GLCALL(glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE));
+		}
+		else
+		{
+			GLCALL(glClearDepth(1.0f));
+			GLCALL(glDepthFunc(GL_LESS));
+			GLCALL(glClipControl(GL_LOWER_LEFT, GL_NEGATIVE_ONE_TO_ONE));
 		}
 		return *this;
 	}
@@ -191,17 +212,6 @@ namespace MxEngine
 		GLCALL(glClearColor(r, g, b, a));
 		return *this;
 	}
-	GLRenderer& GLRenderer::UseTextureMinFilter(MinFilter filter)
-	{
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (GLint)filter));
-		return *this;
-	}
-
-	GLRenderer& GLRenderer::UseTextureMagFilter(MagFilter filter)
-	{
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (GLint)filter));
-		return *this;
-	}
 
 	GLRenderer& GLRenderer::UseBlending(BlendFactor src, BlendFactor dist)
 	{
@@ -217,18 +227,11 @@ namespace MxEngine
 		return *this;
 	}
 
-	GLRenderer& GLRenderer::UseTextureWrap(WrapType textureX, WrapType textureY)
-	{
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (GLenum)textureX));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (GLenum)textureY));
-		return *this;
-	}
-
 	GLRenderer& GLRenderer::UseAnisotropicFiltering(float factor)
 	{
 		if (!glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
 		{
-			Logger::Instance().Warning("OpenGL", "anisotropic filtering is not supported");
+			Logger::Instance().Error("OpenGL", "anisotropic filtering is not supported on your device");
 		}
 		else
 		{
@@ -277,4 +280,13 @@ namespace MxEngine
 			this->SetDefaultVertexAttribute(index + i, mat[(glm::length_t)i]);
 		}
     }
+
+	void GLRenderer::SetDefaultVertexAttribute(size_t index, const Matrix3x3& mat) const
+	{
+		for (size_t i = 0; i < 3; i++)
+		{
+			this->SetDefaultVertexAttribute(index + i, mat[(glm::length_t)i]);
+		}
+	}
+
 }

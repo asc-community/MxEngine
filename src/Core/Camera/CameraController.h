@@ -52,7 +52,7 @@ namespace MxEngine
 		bool HasCamera() const;
 		void SetCamera(UniqueRef<ICamera> camera);
 		ICamera& GetCamera();
-		const Matrix4x4& GetCameraMatrix() const;
+		const Matrix4x4& GetMatrix() const;
 
 		float GetMoveSpeed() const;
 		float GetRotateSpeed() const;

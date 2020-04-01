@@ -28,7 +28,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SnakePath3D", "examples\Sna
 		{C8868D7C-31C2-44CE-AF2D-837400FC8F1C} = {C8868D7C-31C2-44CE-AF2D-837400FC8F1C}
 	EndProjectSection
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PythonApplication", "examples\PythonApplication\PythonApplication.pyproj", "{1284E07E-466C-4D26-9E63-B3068E299CCD}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "python_application", "examples\python_application\python_application.pyproj", "{DBF2A109-D4F0-4988-8170-E150291C1AB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -90,12 +90,12 @@ Global
 		{A62F271F-862C-41B2-9B52-475567E78D9F}.Release|x64.Build.0 = Release|x64
 		{A62F271F-862C-41B2-9B52-475567E78D9F}.Release|x86.ActiveCfg = Release|Win32
 		{A62F271F-862C-41B2-9B52-475567E78D9F}.Release|x86.Build.0 = Release|Win32
-		{1284E07E-466C-4D26-9E63-B3068E299CCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1284E07E-466C-4D26-9E63-B3068E299CCD}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{1284E07E-466C-4D26-9E63-B3068E299CCD}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1284E07E-466C-4D26-9E63-B3068E299CCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1284E07E-466C-4D26-9E63-B3068E299CCD}.Release|x64.ActiveCfg = Release|Any CPU
-		{1284E07E-466C-4D26-9E63-B3068E299CCD}.Release|x86.ActiveCfg = Release|Any CPU
+		{DBF2A109-D4F0-4988-8170-E150291C1AB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBF2A109-D4F0-4988-8170-E150291C1AB2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DBF2A109-D4F0-4988-8170-E150291C1AB2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DBF2A109-D4F0-4988-8170-E150291C1AB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBF2A109-D4F0-4988-8170-E150291C1AB2}.Release|x64.ActiveCfg = Release|Any CPU
+		{DBF2A109-D4F0-4988-8170-E150291C1AB2}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

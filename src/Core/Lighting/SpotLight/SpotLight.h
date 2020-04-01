@@ -29,11 +29,13 @@
 #pragma once
 
 #include "Core/Lighting/LightSource.h"
+#include "Core/Interfaces/GraphicAPI/Texture.h"
 
 namespace MxEngine
 {
     class SpotLight final : public LightSource<SpotLight>
     {
+        UniqueRef<Texture> texture;
         Vector3 ambientColor  = MakeVector3(1.0f);
         Vector3 diffuseColor  = MakeVector3(1.0f);
         Vector3 specularColor = MakeVector3(1.0f);
@@ -53,13 +55,19 @@ namespace MxEngine
         SpotLight& UseOuterAngle(float angle);
         SpotLight& UsePosition(const Vector3& position);
         SpotLight& UseDirection(const Vector3& direction);
+        const Vector3& GetDirection() const;
+
+        const Texture* GetDepthTexture() const;
+        Texture* GetDepthTexture();
+        Matrix4x4 GetMatrix() const;
 
         // Inherited via LightSource
-       SpotLight& UseAmbientColor(const Vector3& ambient);
-       SpotLight& UseDiffuseColor(const Vector3& diffuse);
-       SpotLight& UseSpecularColor(const Vector3& specular);
-       const Vector3& GetAmbientColor() const;
-       const Vector3& GetDiffuseColor() const;
-       const Vector3& GetSpecularColor() const;
+        void AttachDepthTexture(UniqueRef<Texture> texture);
+        SpotLight& UseAmbientColor(const Vector3& ambient);
+        SpotLight& UseDiffuseColor(const Vector3& diffuse);
+        SpotLight& UseSpecularColor(const Vector3& specular);
+        const Vector3& GetAmbientColor() const;
+        const Vector3& GetDiffuseColor() const;
+        const Vector3& GetSpecularColor() const;
     };
 }

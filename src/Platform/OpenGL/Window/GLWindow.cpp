@@ -254,6 +254,13 @@ namespace MxEngine
 		return *this;
 	}
 
+	GLWindow& GLWindow::UseDebugging(bool value)
+	{
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, value);
+		Logger::Instance().Debug("OpenGL::Window", "debug context was set to: " + (std::string)BOOL_STRING(value));
+		return *this;
+	}
+
 	GLWindow& GLWindow::UseDoubleBuffering(bool value)
 	{
 		glfwWindowHint(GLFW_DOUBLEBUFFER, value);

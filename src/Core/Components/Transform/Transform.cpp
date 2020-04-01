@@ -40,13 +40,16 @@ namespace MxEngine
             Matrix4x4 Rotation = ToMatrix(this->rotation);
             Matrix4x4 Scale = MxEngine::Scale(I, this->scale);
             this->transform = Translation * Rotation * Scale;
-            this->normalMatrix = Transpose(Inverse(this->transform));
+            if (this->scale.x == this->scale.y && this->scale.y == this->scale.z)
+                this->normalMatrix = Rotation;
+            else
+                this->normalMatrix = Transpose(Inverse(this->transform));
             this->needTransformUpdate = false;
         }
         return this->transform;
     }
 
-    const Matrix4x4& Transform::GetNormalMatrix() const
+    const Matrix3x3& Transform::GetNormalMatrix() const
     {
         auto _ = GetMatrix();
         return this->normalMatrix;
@@ -60,9 +63,12 @@ namespace MxEngine
         inPlaceMatrix = Translation * Rotation * Scale;
     }
 
-    void Transform::GetNormalMatrix(const Matrix4x4& model, Matrix4x4& inPlaceMatrix) const
+    void Transform::GetNormalMatrix(const Matrix4x4& model, Matrix3x3& inPlaceMatrix) const
     {
-        inPlaceMatrix = Transpose(Inverse(model));
+        if (this->scale.x == this->scale.y && this->scale.y == this->scale.z)
+            inPlaceMatrix = Matrix3x3(model);
+        else
+            inPlaceMatrix = Transpose(Inverse(model));
     }
 
     const Vector3& Transform::GetTranslation() const
@@ -161,7 +167,7 @@ namespace MxEngine
 
     Transform& Transform::Rotate(float angle, const Vector3& axis)
     {
-        return this->Rotate(MakeQuaternion(angle, axis));
+        return this->Rotate(MakeQuaternion(Radians(angle), axis));
     }
 
     Transform& Transform::Rotate(const Quaternion& q)

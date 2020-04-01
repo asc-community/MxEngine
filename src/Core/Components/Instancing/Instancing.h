@@ -72,6 +72,7 @@ namespace MxEngine
 		std::vector<MxInstance>* InstanceList;
 
 		friend class Instancing<T>;
+		friend typename T;
 	public:
 		MxInstance* operator->();
 		const MxInstance* operator->() const;
@@ -82,11 +83,12 @@ namespace MxEngine
 	{
 	public:
 		using InstanceList = std::vector<MxInstance>;
-		using InstancedData = std::vector<Matrix4x4>;
+		using ModelData = std::vector<Matrix4x4>;
+		using NormalData = std::vector<Matrix3x3>;
 	private:
 		InstanceList instances;
-		InstancedData models;
-		InstancedData normals;
+		ModelData models;
+		NormalData normals;
 	public:
 		constexpr static size_t Undefined = std::numeric_limits<size_t>::max();
 		size_t InstanceDataIndex = Undefined;
@@ -94,8 +96,8 @@ namespace MxEngine
 		const InstanceList& GetInstanceList() const;
 		InstanceList& GetInstanceList();
 		MxInstanceWrapper<T> MakeInstance();
-		InstancedData& GetModelData();
-		InstancedData& GetNormalData();
+		ModelData& GetModelData();
+		NormalData& GetNormalData();
 		size_t GetCount() const;
 	};
 
@@ -115,14 +117,16 @@ namespace MxEngine
 	inline MxInstanceWrapper<T> Instancing<T>::MakeInstance()
 	{
 		MxInstanceWrapper<T> wrapper;
+		
 		wrapper.Index = this->instances.size();
 		wrapper.InstanceList = &this->instances;
 		this->instances.emplace_back();
+
 		return wrapper;
 	}
 
 	template<typename T>
-	inline typename Instancing<T>::InstancedData& Instancing<T>::GetModelData()
+	inline typename Instancing<T>::ModelData& Instancing<T>::GetModelData()
 	{
 		this->models.resize(this->instances.size());
 		auto model = this->models.begin();
@@ -135,14 +139,15 @@ namespace MxEngine
 	}
 
 	template<typename T>
-	inline typename Instancing<T>::InstancedData& Instancing<T>::GetNormalData()
+	inline typename Instancing<T>::NormalData& Instancing<T>::GetNormalData()
 	{
 		this->normals.resize(this->models.size());
 		auto normal = this->normals.begin();
 		auto model = this->models.begin();
-		for (; model != this->models.end(); model++, normal++)
+		auto instance = this->instances.begin();
+		for (; model != this->models.end(); model++, normal++, instance++)
 		{
-			*normal = Transpose(Inverse(*model));
+			instance->Model.GetNormalMatrix(*model, *normal);
 		}
 		return this->normals;
 	}

@@ -42,18 +42,6 @@ namespace py = boost::python;
 using namespace MxEngine;
 
 template<typename T>
-void LightContainerIndexSetWrapper(Scene::LightContainer<T>& v, int index, T value)
-{
-    if (index >= 0 && index < v.GetCount()) {
-        v[index] = value;
-    }
-    else {
-        ::PyErr_SetString(::PyExc_IndexError, "index out of range");
-        py::throw_error_already_set();
-    }
-}
-
-template<typename T>
 T& LightContainerIndexGetWrapper(Scene::LightContainer<T>& v, int index)
 {
     if (index >= 0 && index < v.GetCount()) {
@@ -129,7 +117,8 @@ auto VectorIndexGetWrapper(T& v, int index)
     }
 }
 
-void Matrix4IndexSetWrapper(Matrix4x4& m, int index, const Vector4& value)
+template<typename Matrix>
+void MatrixIndexSetWrapper(Matrix& m, int index, const Vector4& value)
 {
     if (index >= 0 && index < m.length()) {
         m[index] = value;
@@ -140,7 +129,8 @@ void Matrix4IndexSetWrapper(Matrix4x4& m, int index, const Vector4& value)
     }
 }
 
-auto& Matrix4IndexGetWrapper(Matrix4x4& m, int index)
+template<typename Matrix>
+auto& MatrixIndexGetWrapper(Matrix& m, int index)
 {
     if (index >= 0 && index < m.length()) {
         return m[index];
@@ -152,35 +142,29 @@ auto& Matrix4IndexGetWrapper(Matrix4x4& m, int index)
     }
 }
 
-std::string Vector4ToString(const Vector4& v)
+template<typename Vector>
+std::string VectorToString(const Vector& v)
 {
     std::stringstream out;
-    out << '[' << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ']';
+    out << '[';
+    for (size_t i = 0; i < v.length(); i++)
+    {
+        if (i != 0) out << ", ";
+        out << v[(Vector::length_type)i];
+    }
+    out << ']';
     return out.str();
 }
 
-std::string Vector3ToString(const Vector3& v)
-{
-    std::stringstream out;
-    out << '[' << v.x << ", " << v.y << ", " << v.z << ']';
-    return out.str();
-}
-
-std::string Vector2ToString(const Vector2& v)
-{
-    std::stringstream out;
-    out << '[' << v.x << ", " << v.y << ']';
-    return out.str();
-}
-
-std::string Matrix4ToString(const Matrix4x4& m)
+template<typename Matrix>
+std::string MatrixToString(const Matrix& m)
 {
     std::stringstream out;
     out << '[';
     for (int i = 0; i < m.length(); i++)
     {
         if (i != 0) out << ", ";
-        out << Vector4ToString(m[i]);
+        out << VectorToString(m[i]);
     }
     out << ']';
     return out.str();
@@ -188,11 +172,13 @@ std::string Matrix4ToString(const Matrix4x4& m)
 
 void SetPerspectiveCamera(CameraController& controller)
 {
+    Application::Get()->GetRenderer().ToggleReversedDepth(true);
     controller.SetCamera(MakeUnique<PerspectiveCamera>());
 }
 
 void SetOrthographicCamera(CameraController& controller)
 {
+    Application::Get()->GetRenderer().ToggleReversedDepth(false);
     controller.SetCamera(MakeUnique<OrthographicCamera>());
 }
 
@@ -407,6 +393,11 @@ class TextureWrapper : public Texture, public py::wrapper<Texture>
         this->get_override("load")(filepath, genMipmaps, flipImage);
     }
 
+    virtual void LoadDepth(int width, int height) override
+    {
+        this->get_override("load_depth")(width, height);
+    }
+
     virtual void Load(RawDataPointer data, int width, int height, bool genMipmaps = true) override
     {
         this->get_override("load_raw")(data, width, height, genMipmaps);
@@ -451,14 +442,24 @@ class TextureWrapper : public Texture, public py::wrapper<Texture>
 class ShaderWrapper : public Shader, public py::wrapper<Shader>
 {
 public:
-    virtual void Load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) override
+    virtual void Load(const std::string& vertex, const std::string& geometry, const std::string& fragment) override
     {
-        this->get_override("load")(vertexShaderPath, fragmentShaderPath);
+        this->get_override("load")(vertex, geometry, fragment);
     }
 
-    virtual void LoadFromSource(const std::string& vertexSource, const std::string& fragmentSource) override
+    virtual void Load(const std::string& vertex, const std::string& fragment) override
     {
-        this->get_override("load_source")(vertexSource, fragmentSource);
+        this->get_override("load")(vertex, fragment);
+    }
+
+    virtual void LoadFromSource(const std::string& vertex, const std::string& geometry, const std::string& fragment) override
+    {
+        this->get_override("load_source")(vertex, geometry, fragment);
+    }
+
+    virtual void LoadFromSource(const std::string& vertex, const std::string& fragment) override
+    {
+        this->get_override("load_source")(vertex, fragment);
     }
 
     virtual void SetUniformFloat(const std::string& name, float f) const override
@@ -690,10 +691,16 @@ Script* LoadScriptWrapper(Scene& scene, const std::string& path)
     return scene.LoadScript(name, path);
 }
 
-Shader* LoadShaderWrapper(Scene& scene, const std::string& vertex, const std::string& fragment)
+Shader* LoadShaderWrapper2(Scene& scene, const std::string& vertex, const std::string& fragment)
 {
     std::string name = Format(FMT_STRING("pyShader_{0}"), Application::Get()->GenerateResourceId());
     return scene.LoadShader(name, vertex, fragment);
+}
+
+Shader* LoadShaderWrapper3(Scene& scene, const std::string& vertex, const std::string& geometry, const std::string& fragment)
+{
+    std::string name = Format(FMT_STRING("pyShader_{0}"), Application::Get()->GenerateResourceId());
+    return scene.LoadShader(name, vertex, geometry, fragment);
 }
 
 Texture* LoadTextureWrapper(Scene& scene, const std::string& path)
@@ -704,7 +711,7 @@ Texture* LoadTextureWrapper(Scene& scene, const std::string& path)
 
 void SetShaderWrapper(MxObject& object, const std::string& vertex, const std::string& fragment)
 {
-    object.ObjectShader = LoadShaderWrapper(Application::Get()->GetCurrentScene(), vertex, fragment);
+    object.ObjectShader = LoadShaderWrapper2(Application::Get()->GetCurrentScene(), vertex, fragment);
 }
 
 void SetTextureWrapper(MxObject& object, const std::string& texture)
@@ -738,6 +745,11 @@ std::string GetNameWrapper(Scene& scene)
     return scene.GetName();
 }
 
+void AspectRatioWrapper(ICamera& camera, float aspect)
+{
+    camera.SetAspectRatio(aspect);
+}
+
 Scene& CreatePySceneWrapper(Application& app, const std::string& name, const std::string& directory)
 {
     return app.CreateScene(name, MakeUnique<PyScene>(name, directory));
@@ -751,6 +763,18 @@ void ConsoleBindWrapper(const std::string& handle, KeyCode key)
 void AppCloseBindWrapper(const std::string& handle, KeyCode key)
 {
     AppCloseBinding(handle).Bind(key);
+}
+
+void ShaderVertFragWrapper(const std::string& vertex, const std::string& fragment)
+{
+    Shader** shader = &Application::Get()->GetRenderer().ObjectShader;
+    ShaderBinding("PyShaderBinding", shader).Bind(vertex, fragment);
+}
+
+void ShaderVertGeomFragWrapper(const std::string& vertex, const std::string& geometry, const std::string& fragment)
+{
+    Shader** shader = &Application::Get()->GetRenderer().ObjectShader;
+    ShaderBinding("PyShaderBinding", shader).Bind(vertex, geometry, fragment);
 }
 
 template<typename Event>
@@ -808,6 +832,7 @@ BOOST_PYTHON_MODULE(mx_engine)
     py::class_<Application, boost::noncopyable>("application", py::no_init)
         .def("create_context", &Application::CreateContext)
         .def("create_scene", RefGetter(CreatePySceneWrapper))
+        .def("execute", &Application::ExecuteScript)
         .def("load_scene", &Application::LoadScene)
         .def("get_scene", RefGetter(&Application::GetScene))
         .def("scene_exists", &Application::SceneExists)
@@ -822,6 +847,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("listen_mouse", AddEventListenerWrapper<MouseMoveEvent>)
         .def("listen_fps", AddEventListenerWrapper<FpsUpdateEvent>)
         .def("listen_render", AddEventListenerWrapper<RenderEvent>)
+        .def("use_lighting", &Application::ToggleLighting)
         .add_property("global", RefGetter(&Application::GetGlobalScene))
         .add_property("is_running", &Application::IsRunning)
         .add_property("scene", RefGetter(&Application::GetCurrentScene))
@@ -833,6 +859,11 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def_readwrite("on_create", &PyApplication::createCallback)
         .def_readwrite("on_update", &PyApplication::updateCallback)
         .def_readwrite("on_destroy", &PyApplication::destroyCallback)
+        ;
+
+    py::class_<Script, boost::noncopyable>("script", py::no_init)
+        .add_property("text", RefGetter(&Script::GetContent))
+        .def("update", &Script::UpdateContents)
         ;
 
     py::class_<UpdateEvent>("update_event", py::no_init)
@@ -863,7 +894,8 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("clear", &Scene::Clear)
         .def("load_mesh", RefGetter(LoadMeshWrapper))
         .def("load_script", RefGetter(LoadScriptWrapper))
-        .def("load_shader", RefGetter(LoadShaderWrapper))
+        .def("load_shader", RefGetter(LoadShaderWrapper2))
+        .def("load_shader", RefGetter(LoadShaderWrapper3))
         .def("load_texture", RefGetter(LoadTextureWrapper))
         .def("load_object", RefGetter(&Scene::CreateObject))
         .def("copy_object", RefGetter(&Scene::CopyObject))
@@ -877,9 +909,9 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("add_cube", RefGetter(AddPrimitiveWrapper<Cube>))
         .def("add_sphere", RefGetter(AddPrimitiveWrapper<Sphere, size_t>))
         .def("add_grid", RefGetter(AddPrimitiveWrapper<Grid, size_t>))
-        .def_readwrite("global_light", &Scene::GlobalLight)
-        .def_readwrite("point_lights", &Scene::PointLights)
-        .def_readwrite("spot_lights", &Scene::SpotLights)
+        .def_readonly("global_light", &Scene::GlobalLight)
+        .def_readonly("point_lights", &Scene::PointLights)
+        .def_readonly("spot_lights", &Scene::SpotLights)
         .def_readonly("viewport", &Scene::Viewport)
         .add_property("directory", GetDirectoryWrapper, &Scene::SetDirectory)
         .add_property("name", GetNameWrapper)
@@ -1063,7 +1095,7 @@ BOOST_PYTHON_MODULE(mx_engine)
 
     py::class_<Vector4>("vec4", py::init<float>())
         .def(py::init<float, float, float, float>())
-        .def("__str__", Vector4ToString)
+        .def("__str__", VectorToString<Vector4>)
         .def(py::self + py::self)
         .def(py::self - py::self)
         .def(py::self == py::self)
@@ -1083,7 +1115,7 @@ BOOST_PYTHON_MODULE(mx_engine)
 
 	py::class_<Vector3>("vec3", py::init<float>())
         .def(py::init<float, float, float>())
-        .def("__str__", Vector3ToString)
+        .def("__str__", VectorToString<Vector3>)
         .def(py::self + py::self)
         .def(py::self - py::self)
         .def(py::self == py::self)
@@ -1102,7 +1134,7 @@ BOOST_PYTHON_MODULE(mx_engine)
 
 	py::class_<Vector2>("vec2", py::init<float>())
         .def(py::init<float, float>())
-        .def("__str__", Vector2ToString)
+        .def("__str__", VectorToString<Vector2>)
         .def(py::self + py::self)
         .def(py::self - py::self)
         .def(py::self == py::self)
@@ -1119,7 +1151,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         ;
 
     py::class_<Matrix4x4>("mat4", py::init<float>())
-        .def("__str__", Matrix4ToString)
+        .def("__str__", MatrixToString<Matrix4x4>)
         .def(py::self + py::self)
         .def(py::self - py::self)
         .def(py::self == py::self)
@@ -1129,8 +1161,23 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def(py::self / float())
         .def(-py::self)
         .def(+py::self)
-        .def("__getitem__", RefGetter(Matrix4IndexGetWrapper))
-        .def("__setitem__", Matrix4IndexSetWrapper)
+        .def("__getitem__", RefGetter(MatrixIndexGetWrapper<Matrix4x4>))
+        .def("__setitem__", MatrixIndexSetWrapper<Matrix4x4>)
+        ;
+
+    py::class_<Matrix3x3>("mat3", py::init<float>())
+        .def("__str__", MatrixToString<Matrix3x3>)
+        .def(py::self + py::self)
+        .def(py::self - py::self)
+        .def(py::self == py::self)
+        .def(py::self != py::self)
+        .def(py::self* float())
+        .def(float()* py::self)
+        .def(py::self / float())
+        .def(-py::self)
+        .def(+py::self)
+        .def("__getitem__", RefGetter(MatrixIndexGetWrapper<Matrix3x3>))
+        .def("__setitem__", MatrixIndexSetWrapper<Matrix3x3>)
         ;
 
     using ResizeFunc = void(std::vector<float>::*)(size_t);
@@ -1153,9 +1200,14 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("handle", &IBindable::GetNativeHandler)
         ;
 
+    using LoadVsFs = void(Shader::*)(const std::string&, const std::string&);
+    using LoadVsGsFs = void(Shader::*)(const std::string&, const std::string&, const std::string&);
+
     py::class_<ShaderWrapper, py::bases<IBindable>, boost::noncopyable>("shader", py::init())
-        .def("load", py::pure_virtual(&Shader::Load))
-        .def("load_source", py::pure_virtual(&Shader::LoadFromSource))
+        .def("load", py::pure_virtual((LoadVsFs)&Shader::Load))
+        .def("load", py::pure_virtual((LoadVsGsFs)&Shader::Load))
+        .def("load_source", py::pure_virtual((LoadVsFs)&Shader::LoadFromSource))
+        .def("load_source", py::pure_virtual((LoadVsGsFs)&Shader::LoadFromSource))
         .def("set_int", py::pure_virtual(&Shader::SetUniformInt))
         .def("set_float", py::pure_virtual(&Shader::SetUniformFloat))
         .def("set_vec3", py::pure_virtual(&Shader::SetUniformVec3))
@@ -1171,6 +1223,7 @@ BOOST_PYTHON_MODULE(mx_engine)
     py::class_<TextureWrapper, py::bases<IBindable>, boost::noncopyable>("texture", py::init())
         .def("load", py::pure_virtual((LoadTextureFile)&Texture::Load))
         .def("load_raw", py::pure_virtual((LoadTextureRaw)&Texture::Load))
+        .def("load_depth", py::pure_virtual(&Texture::LoadDepth))
         .def("bind", py::pure_virtual((BindTextureId)&Texture::Bind))
         .add_property("width", &Texture::GetWidth)
         .add_property("height", &Texture::GetHeight)
@@ -1233,19 +1286,32 @@ BOOST_PYTHON_MODULE(mx_engine)
     using TranslateFunc3V = CameraController & (CameraController::*)(const Vector3&);
 
     py::class_<RenderController, boost::noncopyable>("render_controller", py::no_init)
+        .def("set_viewport", &RenderController::SetViewport)
+        .def("set_pcf", &RenderController::SetPCFDistance)
+        .def("use_culling", &RenderController::ToggleFaceCulling)
+        .def("use_reversed_depth", &RenderController::ToggleReversedDepth)
+        .def("set_anisotropic", &RenderController::SetAnisotropicFiltering)
         .def_readwrite("object_shader", &RenderController::ObjectShader)
         .def_readwrite("mesh_shader", &RenderController::MeshShader)
+        .def_readwrite("depth_texture_shader", &RenderController::DepthTextureShader)
+        .def_readwrite("depth_cubemap_shader", &RenderController::DepthCubeMapShader)
         .def_readwrite("default_texture", &RenderController::DefaultTexture)
+        .add_property("dir_depth_size",
+            &RenderController::GetDepthBufferSize<DirectionalLight>, 
+            &RenderController::SetDepthBufferSize<DirectionalLight>)
+        .add_property("spot_depth_size",
+            &RenderController::GetDepthBufferSize<SpotLight>,
+            &RenderController::SetDepthBufferSize<SpotLight>)
         ;
 
-    py::class_<DirectionalLight>("dir_light", py::init())
+    py::class_<DirectionalLight, boost::noncopyable>("dir_light", py::init())
         .add_property("ambient", RefGetter(&DirectionalLight::GetAmbientColor), RefGetter(&DirectionalLight::UseAmbientColor))
         .add_property("diffuse", RefGetter(&DirectionalLight::GetDiffuseColor), RefGetter(&DirectionalLight::UseDiffuseColor))
         .add_property("specular", RefGetter(&DirectionalLight::GetSpecularColor), RefGetter(&DirectionalLight::UseSpecularColor))
         .def_readwrite("direction", &DirectionalLight::Direction)
         ;
 
-    py::class_<PointLight>("point_light", py::init())
+    py::class_<PointLight, boost::noncopyable>("point_light", py::init())
         .add_property("ambient", RefGetter(&PointLight::GetAmbientColor), RefGetter(&PointLight::UseAmbientColor))
         .add_property("diffuse", RefGetter(&PointLight::GetDiffuseColor), RefGetter(&PointLight::UseDiffuseColor))
         .add_property("specular", RefGetter(&PointLight::GetSpecularColor), RefGetter(&PointLight::UseSpecularColor))
@@ -1253,25 +1319,23 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def_readwrite("position", &PointLight::Position)
         ;
 
-    py::class_<SpotLight>("spot_light", py::init())
+    py::class_<SpotLight, boost::noncopyable>("spot_light", py::init())
         .add_property("ambient", RefGetter(&SpotLight::GetAmbientColor), RefGetter(&SpotLight::UseAmbientColor))
         .add_property("diffuse", RefGetter(&SpotLight::GetDiffuseColor), RefGetter(&SpotLight::UseDiffuseColor))
         .add_property("specular", RefGetter(&SpotLight::GetSpecularColor), RefGetter(&SpotLight::UseSpecularColor))
         .add_property("outer_angle", &SpotLight::GetOuterAngle, RefGetter(&SpotLight::UseOuterAngle))
         .add_property("inner_angle", &SpotLight::GetInnerAngle, RefGetter(&SpotLight::UseInnerAngle))
-        .def_readwrite("direction", &SpotLight::Direction)
+        .add_property("direction", &SpotLight::Direction)
         .def_readwrite("position", &SpotLight::Position)
         ;
 
     py::class_<Scene::LightContainer<PointLight>, boost::noncopyable>("point_light_list", py::no_init)
-        .def("__setitem__", LightContainerIndexSetWrapper<PointLight>)
         .def("__getitem__", RefGetter(LightContainerIndexGetWrapper<PointLight>))
         .def("__len__", &Scene::LightContainer<PointLight>::GetCount)
         .def("resize", &Scene::LightContainer<PointLight>::SetCount)
         ;
 
     py::class_<Scene::LightContainer<SpotLight>, boost::noncopyable>("spot_light_list", py::no_init)
-        .def("__setitem__", LightContainerIndexSetWrapper<SpotLight>)
         .def("__getitem__", RefGetter(LightContainerIndexGetWrapper<SpotLight>))
         .def("__len__", &Scene::LightContainer<SpotLight>::GetCount)
         .def("resize", &Scene::LightContainer<SpotLight>::SetCount)
@@ -1291,7 +1355,7 @@ BOOST_PYTHON_MODULE(mx_engine)
     py::class_<CameraController, py::bases<IMovable>, boost::noncopyable>("camera_controller", py::init())
         .def("has_camera", &CameraController::HasCamera)
         .add_property("camera", RefGetter(&CameraController::GetCamera))
-        .add_property("camera_matrix", RefGetter(&CameraController::GetCameraMatrix))
+        .add_property("camera_matrix", RefGetter(&CameraController::GetMatrix))
         .add_property("move_speed", &CameraController::GetMoveSpeed, &CameraController::SetMoveSpeed)
         .add_property("rotate_speed", &CameraController::GetRotateSpeed, &CameraController::SetRotateSpeed)
         .add_property("position", RefGetter(&CameraController::GetPosition), &CameraController::SetPosition)
@@ -1311,7 +1375,7 @@ BOOST_PYTHON_MODULE(mx_engine)
     py::class_<ICameraWrapper, boost::noncopyable>("camera", py::no_init)
         .def("set_view", py::pure_virtual(&ICamera::SetViewMatrix))
         .add_property("matrix", RefGetter(&ICamera::GetMatrix))
-        .add_property("aspect_ratio", &ICamera::GetAspectRatio, &ICamera::SetAspectRatio)
+        .add_property("aspect", &ICamera::GetAspectRatio, AspectRatioWrapper)
         .add_property("znear",&ICamera::GetZNear, &ICamera::SetZNear)
         .add_property("zfar", &ICamera::GetZFar, &ICamera::SetZFar)
         .add_property("zoom", &ICamera::GetZoom, &ICamera::SetZoom)
@@ -1329,15 +1393,16 @@ BOOST_PYTHON_MODULE(mx_engine)
     using Rotate4F = Transform & (Transform::*)(float, const Vector3&);
     using Scale3F = Transform & (Transform::*)(const Vector3&);
     using Scale1F = Transform & (Transform::*)(float);
-    using MatrixGet = const Matrix4x4 & (Transform::*)() const;
+    using Matrix4Get = const Matrix4x4 & (Transform::*)() const;
+    using Matrix3Get = const Matrix3x3 & (Transform::*)() const;
 
     py::class_<Transform>("transform", py::init())
         .add_property("position", RefGetter(&Transform::GetPosition), RefGetter(&Transform::SetPosition))
         .add_property("rotation", RefGetter(&Transform::GetRotation), RefGetter((RotateQua)&Transform::SetRotation))
         .add_property("scale", RefGetter(&Transform::GetScale), RefGetter((Scale3F)&Transform::SetScale))
         .add_property("euler", RefGetter(&Transform::GetEulerRotation))
-        .add_property("matrix", RefGetter((MatrixGet)&Transform::GetMatrix))
-        .add_property("normal_matrix", RefGetter((MatrixGet)&Transform::GetNormalMatrix))
+        .add_property("matrix", RefGetter((Matrix4Get)&Transform::GetMatrix))
+        .add_property("normal_matrix", RefGetter((Matrix3Get)&Transform::GetNormalMatrix))
         .def("scale_xyz", RefGetter((Scale1F)&Transform::Scale))
         .def("scale_x", RefGetter(&Transform::ScaleX))
         .def("scale_y", RefGetter(&Transform::ScaleY))
@@ -1396,6 +1461,8 @@ BOOST_PYTHON_MODULE(mx_engine)
 
     py::def("bind_console", ConsoleBindWrapper);
     py::def("bind_close", AppCloseBindWrapper);
+    py::def("bind_shader", ShaderVertFragWrapper);
+    py::def("bind_shader", ShaderVertGeomFragWrapper);
 
     using Move4Func = InputControlBinding & (InputControlBinding::*)(KeyCode, KeyCode, KeyCode, KeyCode);
     using Move6Func = InputControlBinding & (InputControlBinding::*)(KeyCode, KeyCode, KeyCode, KeyCode, KeyCode, KeyCode);

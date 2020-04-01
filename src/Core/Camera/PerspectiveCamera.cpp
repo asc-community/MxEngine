@@ -37,7 +37,7 @@ namespace MxEngine
 			if (this->updateProjection)
 			{
 				const float fov = Clamp(zoom * FOV, Radians(10.0f), Radians(150.0f));
-				this->projection = MakePerspectiveMatrix(fov, aspectRatio, zNear, zFar);
+				this->projection = MakeInversePerspectiveMatrix(fov, aspectRatio, zNear, zFar);
 				this->updateProjection = false;
 			}
 			this->matrix = this->projection * this->view;

@@ -27,40 +27,11 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "RenderController.h"
+#include "Core/Interfaces/GraphicAPI/FrameBuffer.h"
+#include "Utilities/Format/Format.h"
 
 namespace MxEngine
 {
-	std::string PointLightUniform[] = 
-	{
-		"pointLight[?].ambient",
-		"pointLight[?].diffuse",
-		"pointLight[?].specular",
-		"pointLight[?].position",
-		"pointLight[?].K",
-	};
-	constexpr size_t Ambient  = 0;
-	constexpr size_t Diffuse  = 1;
-	constexpr size_t Specular = 2;
-	constexpr size_t Position = 3;
-
-	constexpr size_t KFactor  = 4;
-	constexpr size_t PointPos = 11; // pos of '?' in "pointLight[?]"
-
-	std::string SpotLightUniform[] =
-	{
-		"spotLight[?].ambient",
-		"spotLight[?].diffuse",
-		"spotLight[?].specular",
-		"spotLight[?].position",
-		"spotLight[?].direction",
-		"spotLight[?].innerAngle",
-		"spotLight[?].outerAngle",
-	};
-	constexpr size_t Direction  = 4;
-	constexpr size_t InnerAngle = 5;
-	constexpr size_t OuterAngle = 6;
-	constexpr size_t SpotPos    = 10; // pos of '?' in "spotLight[?]"
-
 	RenderController::RenderController(Renderer& renderer)
 		: renderer(renderer)
 	{
@@ -82,6 +53,110 @@ namespace MxEngine
 		this->renderer.Clear();
 	}
 
+	void RenderController::AttachDepthTexture(const Texture& texture)
+	{
+		this->DepthBuffer->AttachTexture(texture, Attachment::DEPTH_ATTACHMENT);
+		this->SetViewport(0, 0, this->DepthBuffer->GetWidth(), this->DepthBuffer->GetHeight());
+		this->Clear();
+	}
+
+    void RenderController::AttachDepthCubeMap(const CubeMap& cubemap)
+    {
+		this->DepthBuffer->AttachCubeMap(cubemap, Attachment::DEPTH_ATTACHMENT);
+		this->SetViewport(0, 0, this->DepthBuffer->GetWidth(), this->DepthBuffer->GetHeight());
+		this->Clear();
+    }
+
+	void RenderController::DetachDepthBuffer(int viewportWidth, int viewportHeight)
+	{
+		this->DepthBuffer->Unbind();
+		this->SetViewport(0, 0, viewportWidth, viewportHeight);
+	}
+	
+	void RenderController::ToggleReversedDepth(bool value) const
+	{
+		this->renderer.UseReversedDepth(value);
+	}
+
+	void RenderController::ToggleFaceCulling(bool value, bool counterClockWise, bool cullBack) const
+	{
+		this->GetRenderEngine().UseCulling(value, counterClockWise, cullBack);
+	}
+
+	void RenderController::SetAnisotropicFiltering(float value) const
+	{
+		this->GetRenderEngine().UseAnisotropicFiltering(value);
+	}
+
+	void RenderController::SetViewport(int x, int y, int width, int height) const
+	{
+		this->renderer.SetViewport(x, y, width, height);
+	}
+
+    void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport) const
+    {
+		// probably nothing to do at all
+		if (!viewport.HasCamera()) return;
+		if (!object.IsDrawable()) return;
+
+		// getting all data for easy use
+		size_t iterator = object.GetIterator();
+		const auto& renderColor = object.GetRenderColor();
+		const auto& ViewProjection = viewport.GetMatrix();
+
+		// choosing shader and setting up data per object
+		const Shader& shader = object.HasShader() ? object.GetShader() : *this->ObjectShader;
+
+		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
+		this->GetRenderEngine().SetDefaultVertexAttribute(7, object.GetNormalMatrix());
+
+		shader.SetUniformMat4("ViewProjMatrix", ViewProjection);
+		shader.SetUniformVec4("renderColor", renderColor);
+
+		while (!object.IsLast(iterator))
+		{
+			const auto& renderObject = object.GetCurrent(iterator);
+			if (renderObject.HasMaterial())
+			{
+				const Material& material = renderObject.GetMaterial();
+
+				#define BIND_TEX(NAME, SLOT)         \
+				if (material.NAME != nullptr)        \
+					material.NAME->Bind(SLOT);       \
+				else if (object.HasTexture())        \
+					object.GetTexture().Bind(SLOT);  \
+				else                                 \
+					this->DefaultTexture->Bind(SLOT);\
+				shader.SetUniformInt(#NAME, SLOT)
+
+				BIND_TEX(map_Ka, 0);
+				BIND_TEX(map_Kd, 1);
+				BIND_TEX(map_Ks, 2);
+				BIND_TEX(map_Ke, 3);
+
+				// setting materials
+				shader.SetUniformVec3("material.Ka", material.Ka);
+				shader.SetUniformVec3("material.Kd", material.Kd);
+				shader.SetUniformVec3("material.Ks", material.Ks);
+				shader.SetUniformVec3("material.Ke", material.Ke);
+				shader.SetUniformFloat("material.d", material.d);
+
+				shader.SetUniformFloat("Ka", material.f_Ka);
+				shader.SetUniformFloat("Kd", material.f_Kd);
+
+				if (object.GetInstanceCount() == 0)
+				{
+					this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetVertexBufferSize(), shader);
+				}
+				else
+				{
+					this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetVertexBufferSize(), shader, object.GetInstanceCount());
+				}
+			}
+			iterator = object.GetNext(iterator);
+		}
+    }
+
 	void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights) const
 	{
 		// probably nothing to do at all
@@ -91,7 +166,7 @@ namespace MxEngine
 		// getting all data for easy use
 		size_t iterator = object.GetIterator();
 		const auto& renderColor = object.GetRenderColor();
-		const auto& ViewProjection = viewport.GetCameraMatrix();
+		const auto& ViewProjection = viewport.GetMatrix();
 		const auto& cameraPos = viewport.GetPosition();
 
 		// choosing shader and setting up data per object
@@ -104,40 +179,43 @@ namespace MxEngine
 		shader.SetUniformVec3("viewPos", cameraPos);
 		shader.SetUniformVec4("renderColor", renderColor);
 
+		// set shadow mapping
+		shader.SetUniformInt("PCFdistance", this->PCFdistance);
+		shader.SetUniformMat4("DirLightProjMatrix", MakeBiasMatrix() * lights.Global->GetMatrix());
+		for (size_t i = 0; i < lights.Spot.size(); i++)
+		{
+			shader.SetUniformMat4(Format(FMT_STRING("SpotLightProjMatrix[{0}]"), i), MakeBiasMatrix() * lights.Spot[i].GetMatrix());
+		}
+
 		// set direction light
-		shader.SetUniformVec3("dirLight.direction", lights.Global.Direction);
-		shader.SetUniformVec3("dirLight.ambient", lights.Global.GetAmbientColor());
-		shader.SetUniformVec3("dirLight.diffuse", lights.Global.GetDiffuseColor());
-		shader.SetUniformVec3("dirLight.specular", lights.Global.GetSpecularColor());
+		shader.SetUniformVec3("dirLight.direction", lights.Global->Direction);
+		shader.SetUniformVec3("dirLight.ambient", lights.Global->GetAmbientColor());
+		shader.SetUniformVec3("dirLight.diffuse", lights.Global->GetDiffuseColor());
+		shader.SetUniformVec3("dirLight.specular", lights.Global->GetSpecularColor());
 
 		// set point lights
 		shader.SetUniformInt("pointLightCount", (int)lights.Point.size());
 		for (size_t i = 0; i < lights.Point.size(); i++)
 		{
-			// replace "pointLight[?]" with "pointLight[{i}]"
-			for(int j = 0; j < 5; j++) PointLightUniform[j][PointPos] = char('0' + i);
-
-			shader.SetUniformVec3(PointLightUniform[Position], lights.Point[i].Position);
-			shader.SetUniformVec3(PointLightUniform[KFactor ], lights.Point[i].GetFactors());
-			shader.SetUniformVec3(PointLightUniform[Ambient ], lights.Point[i].GetAmbientColor());
-			shader.SetUniformVec3(PointLightUniform[Diffuse ], lights.Point[i].GetDiffuseColor());
-			shader.SetUniformVec3(PointLightUniform[Specular], lights.Point[i].GetSpecularColor());
+			shader.SetUniformVec3 (Format(FMT_STRING("pointLight[{0}].position"), i), lights.Point[i].Position);
+			shader.SetUniformFloat(Format(FMT_STRING("pointLight[{0}].zfar"),     i), lights.Point[i].FarDistance);
+			shader.SetUniformVec3 (Format(FMT_STRING("pointLight[{0}].K"),        i), lights.Point[i].GetFactors());
+			shader.SetUniformVec3 (Format(FMT_STRING("pointLight[{0}].ambient"),  i), lights.Point[i].GetAmbientColor());
+			shader.SetUniformVec3 (Format(FMT_STRING("pointLight[{0}].diffuse"),  i), lights.Point[i].GetDiffuseColor());
+			shader.SetUniformVec3 (Format(FMT_STRING("pointLight[{0}].specular"), i), lights.Point[i].GetSpecularColor());
 		}
 
 		// set spot lights
 		shader.SetUniformInt("spotLightCount", (int)lights.Spot.size());
 		for (size_t i = 0; i < lights.Spot.size(); i++)
 		{
-			// replace "spotLight[?]" with "spotLight[{i}]"
-			for (int j = 0; j < 7; j++) SpotLightUniform[j][SpotPos] = char('0' + i);
-
-			shader.SetUniformVec3(SpotLightUniform[Position   ], lights.Spot[i].Position);
-			shader.SetUniformVec3(SpotLightUniform[Direction  ], lights.Spot[i].Direction);
-			shader.SetUniformVec3(SpotLightUniform[Ambient    ], lights.Spot[i].GetAmbientColor());
-			shader.SetUniformVec3(SpotLightUniform[Diffuse    ], lights.Spot[i].GetDiffuseColor());
-			shader.SetUniformVec3(SpotLightUniform[Specular   ], lights.Spot[i].GetSpecularColor());
-			shader.SetUniformFloat(SpotLightUniform[InnerAngle], lights.Spot[i].GetInnerCos());
-			shader.SetUniformFloat(SpotLightUniform[OuterAngle], lights.Spot[i].GetOuterCos());
+			shader.SetUniformVec3 (Format(FMT_STRING("spotLight[{0}].position"),   i), lights.Spot[i].Position);
+			shader.SetUniformVec3 (Format(FMT_STRING("spotLight[{0}].direction"),  i), lights.Spot[i].GetDirection());
+			shader.SetUniformVec3 (Format(FMT_STRING("spotLight[{0}].ambient"),    i), lights.Spot[i].GetAmbientColor());
+			shader.SetUniformVec3 (Format(FMT_STRING("spotLight[{0}].diffuse"),    i), lights.Spot[i].GetDiffuseColor());
+			shader.SetUniformVec3 (Format(FMT_STRING("spotLight[{0}].specular"),   i), lights.Spot[i].GetSpecularColor());
+			shader.SetUniformFloat(Format(FMT_STRING("spotLight[{0}].innerAngle"), i), lights.Spot[i].GetInnerCos());
+			shader.SetUniformFloat(Format(FMT_STRING("spotLight[{0}].outerAngle"), i), lights.Spot[i].GetOuterCos());
 		}
 
 		while (!object.IsLast(iterator))
@@ -147,23 +225,40 @@ namespace MxEngine
 			{
 				const Material& material = renderObject.GetMaterial();
 
-				#define BIND_TEX(NAME, SLOT)        \
-				if (material.NAME != nullptr)       \
-					material.NAME->Bind(SLOT);      \
-				else if (object.HasTexture())       \
-					object.GetTexture().Bind(SLOT); \
-				else                                \
-					this->DefaultTexture->Bind(SLOT)
+				#define BIND_TEX(NAME, SLOT)         \
+				if (material.NAME != nullptr)        \
+					material.NAME->Bind(SLOT);       \
+				else if (object.HasTexture())        \
+					object.GetTexture().Bind(SLOT);  \
+				else                                 \
+					this->DefaultTexture->Bind(SLOT);\
+				shader.SetUniformInt(#NAME, SLOT)
 
 				BIND_TEX(map_Ka, 0);
 				BIND_TEX(map_Kd, 1);
 				BIND_TEX(map_Ks, 2);
 				BIND_TEX(map_Ke, 3);
-				//BIND_TEX(map_Kd, 4); kd not used now
 
-				// setting materials
-				shader.SetUniformVec3("material.Ka", material.Ka);
-				shader.SetUniformVec3("material.Kd", material.Kd);
+				lights.Global->GetDepthTexture()->Bind(4);
+				shader.SetUniformInt("map_dirLight_shadow", 4);
+
+				for (int i = 0; i < lights.Point.size(); i++)
+				{
+					int bindIndex = 5 + i;
+					lights.Point[i].GetDepthCubeMap()->Bind(bindIndex);
+					shader.SetUniformInt(Format(FMT_STRING("map_pointLight_shadow[{0}]"), i), bindIndex);
+				}
+
+				for (int i = 0; i < lights.Spot.size(); i++)
+				{
+					int bindIndex = (5 + (int)lights.Point.size()) + i;
+					lights.Spot[i].GetDepthTexture()->Bind(bindIndex);
+					shader.SetUniformInt(Format(FMT_STRING("map_spotLight_shadow[{0}]"), i), bindIndex);
+				}
+
+				// setting materials (ka, kd not used for now
+				// shader.SetUniformVec3("material.Ka", material.Ka);
+				// shader.SetUniformVec3("material.Kd", material.Kd);
 				shader.SetUniformVec3("material.Ks", material.Ks);
 				shader.SetUniformVec3("material.Ke", material.Ke);
 				shader.SetUniformFloat("material.Ns", material.Ns);
@@ -192,7 +287,7 @@ namespace MxEngine
 		if (!object.IsDrawable()) return;
 
 		size_t iterator = object.GetIterator();
-		auto ViewProjection = viewport.GetCameraMatrix();
+		auto ViewProjection = viewport.GetMatrix();
 		this->MeshShader->SetUniformMat4("ViewProjMatrix", ViewProjection);
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
@@ -212,5 +307,10 @@ namespace MxEngine
 			}
 			iterator = object.GetNext(iterator);
 		}
+	}
+
+	void RenderController::SetPCFDistance(int value)
+	{
+		this->PCFdistance = value;
 	}
 }

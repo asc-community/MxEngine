@@ -30,6 +30,21 @@
 
 namespace MxEngine
 {
+    const Texture* DirectionalLight::GetDepthTexture() const
+    {
+        return this->texture.get();
+    }
+
+    Texture* DirectionalLight::GetDepthTexture()
+    {
+        return this->texture.get();
+    }
+
+    void DirectionalLight::AttachDepthTexture(UniqueRef<Texture> texture)
+    {
+        this->texture = std::move(texture);
+    }
+
     DirectionalLight& DirectionalLight::UseAmbientColor(const Vector3& ambient)
     {
         this->ambientColor = Clamp(ambient, MakeVector3(0.0f), MakeVector3(1.0f));
@@ -61,5 +76,23 @@ namespace MxEngine
     const Vector3& DirectionalLight::GetSpecularColor() const
     {
         return this->specularColor;
+    }
+
+    Matrix4x4 DirectionalLight::GetMatrix() const
+    {
+        // this values were derived experimentally
+        float sizeLx = -this->ProjectionSize;
+        float sizeRx = +this->ProjectionSize;
+        float sizeLy = -this->ProjectionSize;
+        float sizeRy = +this->ProjectionSize;
+        float sizeLz = -this->ProjectionSize;
+        float sizeRz = +this->ProjectionSize;
+        Matrix4x4 OrthoProjection = MakeOrthographicMatrix(sizeLx, sizeRx, sizeLy, sizeRy, sizeLz, sizeRz);
+        Matrix4x4 LightView = MakeViewMatrix(
+            this->Direction,
+            MakeVector3(0.0f, 0.0f, 0.00001f),
+            MakeVector3(0.0f, 1.0f, 0.00001f)
+        );
+        return OrthoProjection * LightView;
     }
 }

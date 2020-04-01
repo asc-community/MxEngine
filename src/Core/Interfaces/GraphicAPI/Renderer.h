@@ -51,27 +51,6 @@ namespace MxEngine
 		ONE_MINUS_CONSTANT_ALPHA = 0x8004,
 	};
 
-	enum class WrapType
-	{
-		CLAMP_TO_EDGE = 0x812F,
-		MIRRORED_REPEAT = 0x8370,
-		REPEAT = 0x2901,
-	};
-
-	enum class MinFilter
-	{
-		NEAREST_MIPMAP_NEAREST = 0x2700,
-		LINEAR_MIPMAP_NEAREST = 0x2701,
-		NEAREST_MIPMAP_LINEAR = 0x2702,
-		LINEAR_MIPMAP_LINEAR = 0x2703,
-	};
-
-	enum class MagFilter
-	{
-		NEAREST = 0x2600,
-		LINEAR = 0x2601,
-	};
-
 	struct Renderer
 	{
 		virtual void DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const = 0;
@@ -87,17 +66,17 @@ namespace MxEngine
 		virtual void SetDefaultVertexAttribute(size_t index, const Vector3& vec) const = 0;
 		virtual void SetDefaultVertexAttribute(size_t index, const Vector4& vec) const = 0;
 		virtual void SetDefaultVertexAttribute(size_t index, const Matrix4x4& mat) const = 0;
+		virtual void SetDefaultVertexAttribute(size_t index, const Matrix3x3& mat) const = 0;
 		virtual void Clear() const = 0;
 		virtual void Flush() const = 0;
 		virtual void Finish() const = 0;
+		virtual void SetViewport(int x, int y, int width, int height) const = 0;
 		virtual Renderer& UseSampling(bool value = true) = 0;
 		virtual Renderer& UseDepthBuffer(bool value = true) = 0;
+		virtual Renderer& UseReversedDepth(bool value = true) = 0;
 		virtual Renderer& UseCulling(bool value = true, bool counterClockWise = true, bool cullBack = true) = 0;
 		virtual Renderer& UseClearColor(float r, float g, float b, float a = 0.0f) = 0;
-		virtual Renderer& UseTextureMinFilter(MinFilter filter) = 0;
-		virtual Renderer& UseTextureMagFilter(MagFilter filter) = 0;
 		virtual Renderer& UseBlending(BlendFactor src, BlendFactor dist) = 0;
-		virtual Renderer& UseTextureWrap(WrapType textureX, WrapType textureY) = 0;
 		virtual Renderer& UseAnisotropicFiltering(float factor) = 0;
 		virtual float GetLargestAnisotropicFactor() const = 0;
 	};

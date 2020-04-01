@@ -82,6 +82,7 @@ namespace MxEngine
 		virtual GLWindow& Create() override;
 		virtual GLWindow& Close() override;
 		virtual GLWindow& SwitchContext() override;
+		virtual GLWindow& UseDebugging(bool value = true) override;
 		virtual GLWindow& UseDoubleBuffering(bool value = true) override;
 		virtual GLWindow& UseCursorMode(CursorMode cursor) override;
 		virtual GLWindow& UseCursorPos(const Vector2& pos) override;

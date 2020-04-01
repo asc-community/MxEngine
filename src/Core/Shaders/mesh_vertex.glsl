@@ -1,6 +1,6 @@
 #define MAKE_STRING(...) #__VA_ARGS__
 R"(
-#version 330 core
+#version 400 core
 )" \
 MAKE_STRING(
 

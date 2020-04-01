@@ -38,14 +38,8 @@ namespace MxEngine
 {
 	class GLShader : public Shader
 	{
-		enum class ShaderType
-		{
-			FRAGMENT_SHADER = 0x8B30,
-			VERTEX_SHADER = 0x8B31,
-		};
-
 		#if defined(MXENGINE_DEBUG)
-		std::string vertexShaderPath, fragmentShaderPath;
+		std::string vertexShaderPath, geometryShaderPath, fragmentShaderPath;
 		#endif
 		using UniformType = int;
 		using UniformCache = std::unordered_map<std::string, UniformType>;
@@ -53,12 +47,14 @@ namespace MxEngine
 
 		mutable UniformCache uniformCache;
 
-		ShaderId CompileShader(ShaderType type, const std::string& source, const std::string& name) const;
+		ShaderId CompileShader(unsigned int type, const std::string& source, const std::string& name) const;
 		IBindable::IdType CreateProgram(ShaderId vertexShader, ShaderId fragmentShader) const;
+		IBindable::IdType CreateProgram(ShaderId vertexShader, ShaderId geometryShader, ShaderId fragmentShader) const;
 		UniformType GetUniformLocation(const std::string& uniformName) const;
 	public:
 		GLShader();
 		GLShader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+		GLShader(const std::string& vertexShaderPath, const std::string& geometryShaderPath, const std::string& fragmentShaderPath);
 		GLShader(const GLShader&) = delete;
 		GLShader(GLShader&& shader) noexcept;
 		~GLShader();
@@ -66,8 +62,10 @@ namespace MxEngine
 		// Inherited via IShader
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
-		virtual void Load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) override;
-		virtual void LoadFromSource(const std::string& vertexSource, const std::string& fragmentSource) override;
+		virtual void Load(const std::string& vertex, const std::string& fragment) override;
+		virtual void Load(const std::string& vertex, const std::string& geometry, const std::string& fragment) override;
+		virtual void LoadFromSource(const std::string& vertex, const std::string& fragment) override;
+		virtual void LoadFromSource(const std::string& vertex, const std::string& geometry, const std::string& fragment) override;
 		virtual void SetUniformFloat(const std::string& name, float f) const override;
 		virtual void SetUniformVec3(const std::string& name, const Vector3& vec) const override;
 		virtual void SetUniformVec4(const std::string& name, const Vector4& vec) const override;

@@ -92,6 +92,16 @@ namespace MxEngine
 			shaderVersion = "#version " + shaderVersion; // 330 -> #version 330
 			ImGui_ImplOpenGL3_Init(shaderVersion.c_str());
 		}
+
+		GLint flags; 
+		GLCALL(glGetIntegerv(GL_CONTEXT_FLAGS, &flags));
+		if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+		{
+			GLCALL(glEnable(GL_DEBUG_OUTPUT));
+			GLCALL(glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS));
+			GLCALL(glDebugMessageCallback(PrintDebugInformation, nullptr));
+			GLCALL(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE));
+		}
 	}
 
 	void GLGraphicModule::OnWindowUpdate(WindowHandler* window)

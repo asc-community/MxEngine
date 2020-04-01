@@ -55,7 +55,6 @@
     <ClInclude Include="Utilities\LifetimeManager\LifetimeManager.h" />
     <ClInclude Include="Library\Scripting\Python\PythonEngine.h" />
     <ClInclude Include="Core\Macro\Macro.h" />
-    <ClInclude Include="Core\MxObject\RenderObject.h" />
     <ClInclude Include="Core\MxObject\MxObject.h" />
     <ClInclude Include="Core\Lighting\DirectionalLight\DirectionalLight.h" />
     <ClInclude Include="Core\Lighting\PointLight\PointLight.h" />
@@ -97,12 +96,17 @@
     <ClInclude Include="Core\Event\Events\UpdateEvent.h" />
     <ClInclude Include="Core\Event\Events\MouseEvent.h" />
     <ClInclude Include="Core\Event\Events\AppDestroyEvent.h" />
+    <ClInclude Include="Core\Interfaces\GraphicAPI\FrameBuffer.h" />
+    <ClInclude Include="Platform\OpenGL\FrameBuffer\GLFrameBuffer.h" />
+    <ClInclude Include="Core\Interfaces\GraphicAPI\CubeMap.h" />
+    <ClInclude Include="Platform\OpenGL\CubeMap\GLCubeMap.h" />
+    <ClInclude Include="Library\Bindings\ShaderBinding.h" />
+    <ClInclude Include="Core\MxObject\Mesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
     <ClCompile Include="Utilities\Logger\Logger.cpp" />
     <ClCompile Include="Utilities\Time\Time.cpp" />
-    <ClCompile Include="Utilities\ObjectLoader\ObjectLoader.cpp" />
     <ClCompile Include="Core\Camera\PerspectiveCamera.cpp" />
     <ClCompile Include="Core\Camera\OrthographicCamera.cpp" />
     <ClCompile Include="Core\Camera\CameraController.cpp" />
@@ -120,7 +124,6 @@
     <ClCompile Include="Core\RenderController\RenderController.cpp" />
     <ClCompile Include="Platform\OpenGL\Window\GLWindow.cpp" />
     <ClCompile Include="Library\Scripting\Python\PythonEngine.cpp" />
-    <ClCompile Include="Core\MxObject\RenderObject.cpp" />
     <ClCompile Include="Core\MxObject\MxObject.cpp" />
     <ClCompile Include="Core\Lighting\DirectionalLight\DirectionalLight.cpp" />
     <ClCompile Include="Core\Lighting\PointLight\PointLight.cpp" />
@@ -133,6 +136,10 @@
     <ClCompile Include="Utilities\FileSystem\FileSystem.cpp" />
     <ClCompile Include="Library\Scripting\Script\Script.cpp" />
     <ClCompile Include="Core\Scene\Scene.cpp" />
+    <ClCompile Include="Platform\OpenGL\FrameBuffer\GLFrameBuffer.cpp" />
+    <ClCompile Include="Platform\OpenGL\CubeMap\GLCubeMap.cpp" />
+    <ClCompile Include="Utilities\ObjectLoader\ObjectLoader.cpp" />
+    <ClCompile Include="Core\MxObject\Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\cube_fragment.glsl" />
@@ -146,6 +153,13 @@
     <None Include="Core\Shaders\mesh_vertex.glsl" />
     <None Include="Core\Shaders\object_fragment.glsl" />
     <None Include="Core\Shaders\object_vertex.glsl" />
+    <None Include="Core\Shaders\depthtexture_fragment.glsl" />
+    <None Include="Core\Shaders\depthtexture_vertex.glsl" />
+    <None Include="Core\Shaders\depthcubemap_vertex.glsl" />
+    <None Include="Core\Shaders\depthcubemap_geometry.glsl" />
+    <None Include="Core\Shaders\depthcubemap_fragment.glsl" />
+    <None Include="Core\Shaders\nolight_object_vertex.glsl" />
+    <None Include="Core\Shaders\nolight_object_fragment.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\objects\crate.obj" />

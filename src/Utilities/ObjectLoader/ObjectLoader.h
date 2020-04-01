@@ -79,7 +79,7 @@ namespace MxEngine
 	{
 		MaterialLibrary materials;
 		std::vector<MeshInfo> meshes;
-		Vector3 objectCenter = { 0, 0, 0 };
+		std::pair<Vector3, Vector3> boundingBox{ MakeVector3(0.0f), MakeVector3(0.0f) };
 		size_t lineCount = 0;
 		bool isSuccess = true;
 	};

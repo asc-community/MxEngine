@@ -34,6 +34,13 @@
 
 namespace MxEngine
 {
+	enum class ShaderType
+	{
+		VERTEX_SHADER   = GL_VERTEX_SHADER,
+		GEOMETRY_SHADER = GL_GEOMETRY_SHADER,
+		FRAGMENT_SHADER = GL_FRAGMENT_SHADER,
+	};
+
 	GLShader::GLShader()
 	{
 		this->id = 0;
@@ -41,7 +48,12 @@ namespace MxEngine
 
 	GLShader::GLShader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
 	{
-		Load(vertexShaderPath, fragmentShaderPath);
+		this->Load(vertexShaderPath, fragmentShaderPath);
+	}
+
+	GLShader::GLShader(const std::string& vertexShaderPath, const std::string& geometryShaderPath, const std::string& fragmentShaderPath)
+	{
+		this->Load(vertexShaderPath, geometryShaderPath, fragmentShaderPath);
 	}
 
 	void GLShader::Bind() const
@@ -72,43 +84,81 @@ namespace MxEngine
 		}
 	}
 
-	void GLShader::Load(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+	void GLShader::Load(const std::string& vertex, const std::string& fragment)
 	{
 		#if defined(MXENGINE_DEBUG)
-		this->vertexShaderPath = vertexShaderPath;
-		this->fragmentShaderPath = fragmentShaderPath;
+		this->vertexShaderPath = vertex;
+		this->fragmentShaderPath = fragment;
 		#endif
-		std::string vs = File::ReadAllText(vertexShaderPath);
-		std::string fs = File::ReadAllText(fragmentShaderPath);
+		std::string vs = File::ReadAllText(vertex);
+		std::string fs = File::ReadAllText(fragment);
 
 		if (fs.empty())
-		{
-			Logger::Instance().Warning("MxEngine::Shader", "fragment shader is empty: " + fragmentShaderPath);
-		}
+			Logger::Instance().Warning("MxEngine::Shader", "fragment shader is empty: " + fragment);
 		if (vs.empty())
-		{
-			Logger::Instance().Warning("MxEngine::Shader", "vertex shader is empty: " + vertexShaderPath);
-		}
+			Logger::Instance().Warning("MxEngine::Shader", "vertex shader is empty: " + vertex);
 
-		Logger::Instance().Debug("Shader", "compiling vertex shader: " + vertexShaderPath);
-		unsigned int vertexShader = CompileShader(ShaderType::VERTEX_SHADER, vs, vertexShaderPath);
-		Logger::Instance().Debug("Shader", "compiling fragment shader: " + fragmentShaderPath);
-		unsigned int fragmentShader = CompileShader(ShaderType::FRAGMENT_SHADER, fs, fragmentShaderPath);
+		Logger::Instance().Debug("Shader", "compiling vertex shader: " + vertex);
+		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vs, vertex);
+		Logger::Instance().Debug("Shader", "compiling fragment shader: " + fragment);
+		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fs, fragment);
 
 		id = CreateProgram(vertexShader, fragmentShader);
 		Logger::Instance().Debug("Shader", "shader program created with id = " + std::to_string(id));
 	}
 
-    void GLShader::LoadFromSource(const std::string& vertexSource, const std::string& fragmentSource)
+	void GLShader::Load(const std::string& vertex, const std::string& geometry, const std::string& fragment)
+	{
+		#if defined(MXENGINE_DEBUG)
+		this->vertexShaderPath = vertex;
+		this->geometryShaderPath = geometry;
+		this->fragmentShaderPath = fragment;
+		#endif
+		std::string vs = File::ReadAllText(vertex);
+		std::string gs = File::ReadAllText(geometry);
+		std::string fs = File::ReadAllText(fragment);
+
+		if (fs.empty())
+			Logger::Instance().Warning("MxEngine::Shader", "fragment shader is empty: " + fragment);
+		if (gs.empty())
+			Logger::Instance().Warning("MxEngine::Shader", "fragment shader is empty: " + geometry);
+		if (vs.empty())
+			Logger::Instance().Warning("MxEngine::Shader", "vertex shader is empty: " + vertex);
+
+		Logger::Instance().Debug("Shader", "compiling vertex shader: " + vertex);
+		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vs, vertex);
+		Logger::Instance().Debug("Shader", "compiling geometry shader: " + geometry);
+		unsigned int geometryShader = CompileShader((GLenum)ShaderType::GEOMETRY_SHADER, gs, geometry);
+		Logger::Instance().Debug("Shader", "compiling fragment shader: " + fragment);
+		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fs, fragment);
+
+		id = CreateProgram(vertexShader, geometryShader, fragmentShader);
+		Logger::Instance().Debug("Shader", "shader program created with id = " + std::to_string(id));
+	}
+
+    void GLShader::LoadFromSource(const std::string& vertex, const std::string& fragment)
     {
 		Logger::Instance().Debug("Shader", "compiling vertex shader: [[raw source]]");
-		unsigned int vertexShader = CompileShader(ShaderType::VERTEX_SHADER, vertexSource, "[[raw source]]");
+		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, "[[raw source]]");
 		Logger::Instance().Debug("Shader", "compiling fragment shader: [[raw source]]");
-		unsigned int fragmentShader = CompileShader(ShaderType::FRAGMENT_SHADER, fragmentSource, "[[raw source]]");
+		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fragment, "[[raw source]]");
 
 		id = CreateProgram(vertexShader, fragmentShader);
 		Logger::Instance().Debug("Shader", "shader program created with id = " + std::to_string(id));
     }
+
+	void GLShader::LoadFromSource(const std::string& vertex, const std::string& geometry, const std::string& fragment)
+	{
+		Logger::Instance().Debug("Shader", "compiling vertex shader: [[raw source]]");
+		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, "[[raw source]]");
+		Logger::Instance().Debug("Shader", "compiling geometry shader: [[raw source]]");
+		unsigned int geometryShader = CompileShader((GLenum)ShaderType::GEOMETRY_SHADER, geometry, "[[raw source]]");
+		Logger::Instance().Debug("Shader", "compiling fragment shader: [[raw source]]");
+		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fragment, "[[raw source]]");
+
+		id = CreateProgram(vertexShader, geometryShader, fragmentShader);
+		Logger::Instance().Debug("Shader", "shader program created with id = " + std::to_string(id));
+	}
 
 	void GLShader::SetUniformFloat(const std::string& name, float f) const
 	{
@@ -158,7 +208,7 @@ namespace MxEngine
 		GLCALL(glUniform1i(location, i));
 	}
 
-	GLShader::ShaderId GLShader::CompileShader(ShaderType type, const std::string& source, const std::string& name) const
+	GLShader::ShaderId GLShader::CompileShader(unsigned int type, const std::string& source, const std::string& name) const
 	{
 		GLCALL(GLuint shaderId = glCreateShader((GLenum)type));
 		const char* src = source.c_str();
@@ -175,8 +225,20 @@ namespace MxEngine
 			msg.resize(length);
 			GLCALL(glGetShaderInfoLog(shaderId, length, &length, &msg[0]));
 			msg.pop_back(); // extra \n character
-			Logger::Instance().Error("Shader", (std::string)"failed to compile " +
-				(type == ShaderType::VERTEX_SHADER ? "vertex" : "fragment") + " shader: " + name);
+			std::string typeName;
+			switch ((ShaderType)type)
+			{
+			case ShaderType::VERTEX_SHADER:
+				typeName = "vertex";
+				break;
+			case ShaderType::GEOMETRY_SHADER:
+				typeName = "geometry";
+				break;
+			case ShaderType::FRAGMENT_SHADER:
+				typeName = "fragment";
+				break;
+			}
+			Logger::Instance().Error("Shader", "failed to compile " + typeName + " shader: " + name);
 			Logger::Instance().Error("OpenGL", msg);
 		}
 
@@ -193,6 +255,23 @@ namespace MxEngine
 		GLCALL(glValidateProgram(program));
 
 		GLCALL(glDeleteShader(vertexShader));
+		GLCALL(glDeleteShader(fragmentShader));
+
+		return program;
+	}
+
+	IBindable::IdType GLShader::CreateProgram(ShaderId vertexShader, ShaderId geometryShader, ShaderId fragmentShader) const
+	{
+		GLCALL(unsigned int program = glCreateProgram());
+
+		GLCALL(glAttachShader(program, vertexShader));
+		GLCALL(glAttachShader(program, geometryShader));
+		GLCALL(glAttachShader(program, fragmentShader));
+		GLCALL(glLinkProgram(program));
+		GLCALL(glValidateProgram(program));
+
+		GLCALL(glDeleteShader(vertexShader));
+		GLCALL(glDeleteShader(geometryShader));
 		GLCALL(glDeleteShader(fragmentShader));
 
 		return program;

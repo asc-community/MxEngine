@@ -26,7 +26,7 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "RenderObject.h"
+#include "Mesh.h"
 #include "Utilities/ObjectLoader/ObjectLoader.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
@@ -50,7 +50,7 @@ namespace MxEngine
 			Logger::Instance().Debug("MxEngine::MxObject", "failed to load object from file: " + filepath);
 		}
 		this->subObjects.reserve(objectInfo.meshes.size());
-		this->objectCenter = objectInfo.objectCenter;
+		this->boundingBox = objectInfo.boundingBox;
 		std::unordered_map<std::string, Ref<Texture>> textures;
 
 		UniqueRef<Material> material;
@@ -130,9 +130,14 @@ namespace MxEngine
 		return this->subObjects;
 	}
 
-	const Vector3& Mesh::GetObjectCenter() const
+	Vector3 Mesh::GetObjectCenter() const
 	{
-		return this->objectCenter;
+		return (this->boundingBox.first + this->boundingBox.second) * 0.5f;
+	}
+
+	const std::pair<Vector3, Vector3> Mesh::GetBoundingBox()
+	{
+		return this->boundingBox;
 	}
 
 	void RenderObject::GenerateMeshIndicies() const

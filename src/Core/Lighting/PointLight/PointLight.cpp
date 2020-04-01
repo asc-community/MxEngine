@@ -40,15 +40,62 @@ namespace MxEngine
 
     PointLight& PointLight::UseFactors(const Vector3& factors)
     {
-        this->factors[Constant] = Max(factors[Constant ], 1.0f);
-        this->factors[Linear]   = Max(factors[Linear   ], 0.0f);
-        this->factors[Constant] = Max(factors[Quadratic], 0.0f);
+        this->factors[Constant]  = Max(factors[Constant],  1.0f);
+        this->factors[Linear]    = Max(factors[Linear],    0.0f);
+        this->factors[Quadratic] = Max(factors[Quadratic], 0.0f);
         return *this;
     }
 
     const Vector3& PointLight::GetFactors() const
     {
         return this->factors;
+    }
+
+    const CubeMap* PointLight::GetDepthCubeMap() const
+    {
+        return this->cubemap.get();
+    }
+
+    CubeMap* PointLight::GetDepthCubeMap()
+    {
+        return this->cubemap.get();
+    }
+
+    void PointLight::AttachDepthCubeMap(UniqueRef<CubeMap> cubemap)
+    {
+        this->cubemap = std::move(cubemap);
+    }
+
+    Vector3 DirectionTable[] =
+    {
+         Normalize(MakeVector3(   1.0f, 0.0001f, 0.0001f)),
+         Normalize(MakeVector3(  -1.0f, 0.0001f, 0.0001f)),
+         Normalize(MakeVector3(0.0001f,    1.0f, 0.0001f)),
+         Normalize(MakeVector3(0.0001f,   -1.0f, 0.0001f)),
+         Normalize(MakeVector3(0.0001f, 0.0001f,    1.0f)),
+         Normalize(MakeVector3(0.0001f, 0.0001f,   -1.0f)),
+    };
+
+    Vector3 UpTable[] =
+    {
+         MakeVector3(0.0f, -1.0f,  0.0f),
+         MakeVector3(0.0f, -1.0f,  0.0f),
+         MakeVector3(0.0f,  0.0f,  1.0f),
+         MakeVector3(0.0f,  0.0f, -1.0f),
+         MakeVector3(0.0f, -1.0f,  0.0f),
+         MakeVector3(0.0f, -1.0f,  0.0f),
+    };
+
+    Matrix4x4 PointLight::GetMatrix(size_t index) const
+    {
+        auto Projection = MakePerspectiveMatrix(Radians(90.0f), 1.0f, 0.1f, this->FarDistance);
+        auto directionNorm = DirectionTable[index];
+        auto View = MakeViewMatrix(
+            this->Position,
+            this->Position + directionNorm,
+            UpTable[index]
+        );
+        return Projection * View;
     }
 
     PointLight& PointLight::UseAmbientColor(const Vector3& ambient)

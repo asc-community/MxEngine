@@ -33,12 +33,13 @@
 namespace MxEngine
 {
 	using TimeStep = float;
+	using SystemTime = time_t;
 
 	std::string BeautifyTime(TimeStep time);
 
 	struct Time
 	{
 		static TimeStep Current();
-		static time_t System();
+		static SystemTime System();
 	};
 }

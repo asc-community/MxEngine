@@ -34,9 +34,11 @@
 #include "Platform/OpenGL/IndexBuffer/GLIndexBuffer.h"
 #include "Platform/OpenGL/Shader/GLShader.h"
 #include "Platform/OpenGL/Texture/GLTexture.h"
+#include "Platform/OpenGL/CubeMap/GLCubeMap.h"
 #include "Platform/OpenGL/VertexBuffer/GLVertexBuffer.h"
 #include "Platform/OpenGL/VertexArray/GLVertexArray.h"
 #include "Platform/OpenGL/VertexBufferLayout/GLVertexBufferLayout.h"
+#include "Platform/OpenGL/FrameBuffer/GLFrameBuffer.h"
 #include "Platform/OpenGL/Renderer/GLRenderer.h"
 
 namespace MxEngine
@@ -75,6 +77,11 @@ namespace MxEngine
 			return UniqueRef<Texture>(Alloc<GLTexture>());
 		}
 
+		inline virtual UniqueRef<CubeMap> CreateCubeMap() override
+		{
+			return UniqueRef<CubeMap>(Alloc<GLCubeMap>());
+		}
+
 		inline virtual UniqueRef<VertexArray> CreateVertexArray() override
 		{
 			return UniqueRef<VertexArray>(Alloc<GLVertexArray>());
@@ -88,6 +95,11 @@ namespace MxEngine
 		inline virtual UniqueRef<VertexBufferLayout> CreateVertexBufferLayout() override
 		{
 			return UniqueRef<VertexBufferLayout>(Alloc<GLVertexBufferLayout>());
+		}
+
+		inline virtual UniqueRef<FrameBuffer> CreateFrameBuffer() override
+		{
+			return UniqueRef<FrameBuffer>(Alloc<GLFrameBuffer>());
 		}
 
 		inline virtual UniqueRef<Window> CreateWindow(int width, int height, const std::string& title)
@@ -112,11 +124,29 @@ namespace MxEngine
 			return std::move(shader);
 		}
 
+		inline virtual UniqueRef<Shader> CreateShader(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment) override
+		{
+			auto shader = this->CreateShader();
+			shader->Load(vertex.string(), geometry.string(), fragment.string());
+			return std::move(shader);
+		}
+
 		inline virtual UniqueRef<Texture> CreateTexture(const FilePath& texture, bool genMipmaps = true, bool flipImage = true) override
 		{
 			auto textureObject = this->CreateTexture();
 			textureObject->Load(texture.string(), genMipmaps, flipImage);
 			return std::move(textureObject);
+		}
+
+		inline virtual UniqueRef<CubeMap> CreateCubeMap(const std::array<FilePath, 6>& cubemaps, bool genMipmaps = true, bool flipImage = true) override
+		{
+			auto cubemapObject = this->CreateCubeMap();
+			cubemapObject->Load(
+				{
+					cubemaps[0].string(), cubemaps[1].string(), cubemaps[2].string(), 
+					cubemaps[3].string(), cubemaps[4].string(), cubemaps[5].string(),
+				}, genMipmaps, flipImage);
+			return std::move(cubemapObject);
 		}
 
 		inline virtual UniqueRef<VertexBuffer> CreateVertexBuffer(VertexBuffer::BufferData data, size_t count, UsageType type) override

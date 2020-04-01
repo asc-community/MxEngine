@@ -30,6 +30,7 @@
 #include "Utilities/Logger/Logger.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Core/Macro/Macro.h"
+#include "Utilities/FileSystem/FileSystem.h"
 
 #include <algorithm>
 
@@ -42,6 +43,7 @@ namespace MxEngine
 {
 	ObjectInfo ObjectLoader::Load(std::string filename)
 	{
+		auto directory = FilePath(filename).parent_path();
 		ObjectInfo object;
 		MAKE_SCOPE_PROFILER("ObjectLoader::LoadObject");
 		MAKE_SCOPE_TIMER("MxEngine::ObjectLoader", "ObjectLoader::LoadObject");
@@ -96,7 +98,7 @@ namespace MxEngine
 				aiString path;\
 				if (material->GetTexture(type, 0, &path) == aiReturn_SUCCESS)\
 				{\
-					materialInfo.field = path.C_Str(); \
+					materialInfo.field = (directory / path.C_Str()).string(); \
 				}\
 			}
 			GET_TEXTURE(aiTextureType_AMBIENT, map_Ka);
@@ -104,6 +106,24 @@ namespace MxEngine
 			GET_TEXTURE(aiTextureType_SPECULAR, map_Ks);
 			GET_TEXTURE(aiTextureType_EMISSIVE, map_Ke);
 		}
+
+		Vector3 minCoords = MakeVector3(std::numeric_limits<float>::max());
+		Vector3 maxCoords = MakeVector3(-1.0f * std::numeric_limits<float>::max());
+		for (size_t i = 0; i < object.meshes.size(); i++)
+		{
+			auto& mesh = scene->mMeshes[i];
+			auto coords = MinMaxComponents((Vector3*)mesh->mVertices, mesh->mNumVertices);
+
+			minCoords.x = std::min(minCoords.x, coords.first.x);
+			minCoords.y = std::min(minCoords.y, coords.first.y);
+			minCoords.z = std::min(minCoords.z, coords.first.z);
+
+			maxCoords.x = std::max(maxCoords.x, coords.second.x);
+			maxCoords.y = std::max(maxCoords.y, coords.second.y);
+			maxCoords.z = std::max(maxCoords.z, coords.second.z);
+		}
+		object.boundingBox = { minCoords, maxCoords };
+		auto objectCenter = (minCoords + maxCoords) * 0.5f;
 
 		for (size_t i = 0; i < object.meshes.size(); i++)
 		{
@@ -124,6 +144,7 @@ namespace MxEngine
 			vertex.reserve(VertexSize * (size_t)mesh->mNumVertices);
 			for (size_t i = 0; i < (size_t)mesh->mNumVertices; i++)
 			{
+				((Vector3*)mesh->mVertices)[i] -= objectCenter;
 				vertex.push_back(mesh->mVertices[i].x);
 				vertex.push_back(mesh->mVertices[i].y);
 				vertex.push_back(mesh->mVertices[i].z);
@@ -141,31 +162,29 @@ namespace MxEngine
 				}
 			}
 
-			meshInfo.buffer = std::move(vertex);
-
-			//  meshInfo.faces.resize((size_t)mesh->mNumFaces);
-			//  for (size_t i = 0; i < (size_t)mesh->mNumFaces; i++)
-			//  {
-			//  	assert(mesh->mFaces[i].mNumIndices == 3);
-			//  	meshInfo.faces[i].x = mesh->mFaces[i].mIndices[0];
-			//  	meshInfo.faces[i].y = mesh->mFaces[i].mIndices[1];
-			//  	meshInfo.faces[i].z = mesh->mFaces[i].mIndices[2];
-			//  }
-			  
-			//  // convert IBO + VBO -> VBO
-			//  meshInfo.buffer.reserve(mesh->mNumFaces * 3 * VertexSize);
-			//  for (size_t i = 0; i < (size_t)mesh->mNumFaces; i++)
-			//  {
-			//  	for (size_t j = 0; j < 3; j++)
-			//  	{
-			//  		size_t index = mesh->mFaces[i].mIndices[j];
-			//  		meshInfo.buffer.insert(
-			//  			meshInfo.buffer.end(),
-			//  			vertex.begin() + VertexSize * (index + 0), 
-			//  			vertex.begin() + VertexSize * (index + 1)
-			//  		);
-			//  	}
-			//  }
+			meshInfo.faces.resize((size_t)mesh->mNumFaces);
+			for (size_t i = 0; i < (size_t)mesh->mNumFaces; i++)
+			{
+				assert(mesh->mFaces[i].mNumIndices == 3);
+				meshInfo.faces[i].x = mesh->mFaces[i].mIndices[0];
+				meshInfo.faces[i].y = mesh->mFaces[i].mIndices[1];
+				meshInfo.faces[i].z = mesh->mFaces[i].mIndices[2];
+			}
+			
+			// convert IBO + VBO -> VBO
+			meshInfo.buffer.reserve(mesh->mNumFaces * 3 * VertexSize);
+			for (size_t i = 0; i < (size_t)mesh->mNumFaces; i++)
+			{
+				for (size_t j = 0; j < 3; j++)
+				{
+					size_t index = mesh->mFaces[i].mIndices[j];
+					meshInfo.buffer.insert(
+						meshInfo.buffer.end(),
+						vertex.begin() + VertexSize * (index + 0), 
+						vertex.begin() + VertexSize * (index + 1)
+					);
+				}
+			}
 		}
 		return object;
 	}

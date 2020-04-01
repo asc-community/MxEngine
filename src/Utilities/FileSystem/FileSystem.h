@@ -35,6 +35,7 @@ namespace MxEngine
 {
     using FilePath = std::filesystem::path;
     using FileStream = std::fstream;
+    using FileSystemTime = std::filesystem::file_time_type;
 
     class File
     {
@@ -73,6 +74,7 @@ namespace MxEngine
         static FileData ReadAllText(const FilePath& path);
         static FileData ReadAllText(const std::string& path);
         static bool Exists(const FilePath& path);
+        static FileSystemTime LastModifiedTime(const FilePath& path);
     };
 
     template<typename T>

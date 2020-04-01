@@ -6,7 +6,6 @@ Fow now MxEngine supports OpenGL as graphic API and targeting Win64 only. My fut
 ## Additional dependencies
 MxEngine is not a huge framework so multiple third-party libraries are used. Here is the full list of dependencies for last MxEngine release version:
 - [stbimage](https://github.com/nothings/stb/blob/master/stb_image.h) - header-only one-file library to load images from disk
-- [ChaiScript](https://github.com/MomoDeve/ChaiScript) - embedded c++ scripting language for application debugging and runtime editing
 - [GLEW](http://glew.sourceforge.net/) - OpenGL C/C++ extension loading library
 - [GLFW](https://www.glfw.org/) - multi-platform library for OpenGL providing API for creating windows, receiving input and events
 - [GLM](https://glm.g-truc.net/0.9.9/index.html) - header only C++ mathematics library for graphics software
@@ -15,7 +14,7 @@ MxEngine is not a huge framework so multiple third-party libraries are used. Her
 - [Assimp](http://www.assimp.org/) - portable Open Source library to import various well-known 3D model formats
 - [fmt](https://github.com/fmtlib/fmt) - formatting library for modern C++
 
-Note that MxEngine may include more additional libraries in further releases. It also uses [Boost library](https://www.boost.org) in its core. Engine requires at least C++17 as depends on some new STL libraries. All source files are compiled using MSVC through VS2019 and are not guaranteed to be compiled by GCC/clang (at least for now).
+Note that MxEngine may include more additional libraries in further releases. It also uses [Boost library](https://www.boost.org) in its core. Engine requires at least C++17 as it depends on some new STL features. All source files are compiled using MSVC through VS2019 and are not guaranteed to be compiled by GCC/clang (at least for now).
 
 ## Versions & Releases
 MxEngine releases comes with version in format X.Y.Z where X stand for major release, Y for minor release and Z for bug fix or non-significant change. 

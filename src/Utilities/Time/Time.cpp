@@ -42,7 +42,7 @@ MxEngine::TimeStep MxEngine::Time::Current()
 
 namespace MxEngine
 {
-	time_t Time::System()
+	SystemTime Time::System()
 	{
 		using namespace std::chrono;
 		return system_clock::to_time_t(system_clock::now());

@@ -64,15 +64,17 @@ namespace MxEngine
 		TimeStep timeDelta;
 		Scene* currentScene = nullptr;
 		int counterFPS;
-		bool shouldClose = false;
+		bool shouldClose   = false;
 		bool debugMeshDraw = false;
-		bool isRunning = false;
+		bool isRunning     = false;
+		bool drawLighting  = true;
 
 		void CreateConsoleBindings(DeveloperConsole& console);
-		void DrawObjects(bool meshes) const;
+		void DrawObjects(bool meshes);
 		void InvokeUpdate();
 		bool VerifyApplicationState();
 		void VerifyRendererState();
+		void VerifyLightSystem(LightSystem& lights);
 	protected:
 
 		Application();
@@ -82,9 +84,10 @@ namespace MxEngine
 		virtual void OnDestroy();
 	public:
 		void CreateContext();
-		void ExecuteScript(const Script& script);
+		void ExecuteScript(Script& script);
 
 		void ToggleDeveloperConsole(bool isVisible);
+		void ToggleLighting(bool state = true);
 		void ToggleMeshDrawing(bool state = true);
 
 		AppEventDispatcher& GetEventDispatcher();

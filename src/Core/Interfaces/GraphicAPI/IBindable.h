@@ -40,6 +40,6 @@ namespace MxEngine
 	public:
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
-		virtual inline IdType GetNativeHandler() { return this->id; };
+		virtual inline IdType GetNativeHandler() const { return this->id; };
 	};
 }

@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Utilities/Math/Math.h"
+#include "Utilities/Memory/Memory.h"
 
 namespace MxEngine
 {

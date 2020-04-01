@@ -29,25 +29,34 @@
 #pragma once
 
 #include "Core/Lighting/LightSource.h"
+#include "Core/Interfaces/GraphicAPI/CubeMap.h"
 
 namespace MxEngine
 {
     class PointLight final : public LightSource<PointLight>
     {
+        UniqueRef<CubeMap> cubemap;
         Vector3 ambientColor  = MakeVector3(1.0f);
         Vector3 diffuseColor  = MakeVector3(1.0f);
         Vector3 specularColor = MakeVector3(1.0f);
         Vector3 factors       = MakeVector3(1.0f, 0.009f, 0.032f);
     public:
+        float FarDistance = 1000.0f;
+
         Vector3 Position      = MakeVector3(0.0f);
 
         constexpr static size_t Constant  = 0;
-        constexpr static size_t Linear    = 0;
-        constexpr static size_t Quadratic = 0;
+        constexpr static size_t Linear    = 1;
+        constexpr static size_t Quadratic = 2;
 
         PointLight& UsePosition(const Vector3& position);
         PointLight& UseFactors(const Vector3& factors);
         const Vector3& GetFactors() const;
+
+        const CubeMap* GetDepthCubeMap() const;
+        CubeMap* GetDepthCubeMap();
+        void AttachDepthCubeMap(UniqueRef<CubeMap> cubemap);
+        Matrix4x4 GetMatrix(size_t index) const;
 
         // Inherited via LightSource
         PointLight& UseAmbientColor(const Vector3& ambient);

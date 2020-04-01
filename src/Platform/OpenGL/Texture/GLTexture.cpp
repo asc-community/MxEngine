@@ -40,18 +40,25 @@ namespace MxEngine
 		{
 			GLCALL(glDeleteTextures(1, &id));
 		}
+		id = 0;
+		activeId = 0;
 	}
 
 	GLTexture::GLTexture()
 	{
-		this->id = 0;
+		GLCALL(glGenTextures(1, &id));
+		Logger::Instance().Debug("OpenGL::Texture", "created texture with id = " + std::to_string(id));
 	}
 
-	GLTexture::GLTexture(GLTexture&& texture)
+	GLTexture::GLTexture(GLTexture&& texture) noexcept
 		: width(texture.width), height(texture.height), channels(texture.channels)
 	{
 		this->id = texture.id;
 		texture.id = 0;
+		texture.activeId = 0;
+		texture.width = 0;
+		texture.height = 0;
+		texture.channels = 0;
 	}
 
 	GLTexture::GLTexture(const std::string& filepath, bool genMipmaps, bool flipImage)
@@ -66,10 +73,6 @@ namespace MxEngine
 
 	void GLTexture::Load(const std::string& filepath, bool genMipmaps, bool flipImage)
 	{
-		this->FreeTexture();
-
-		GLCALL(glGenTextures(1, &id));
-
 		Image image = ImageLoader::LoadImage(filepath, flipImage);
 		this->filepath = filepath;
 
@@ -83,33 +86,22 @@ namespace MxEngine
 		this->channels = image.channels;
 
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
-		if (this->channels == 3)
-		{
-			GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data));
-		}
-		else
-		{
-			GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data));
-		}
+		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data));
+
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
 		if (genMipmaps)
 		{
 			GLCALL(glGenerateMipmap(GL_TEXTURE_2D));
 		}
+
 		ImageLoader::FreeImage(image);
 	}
 
 	void GLTexture::Load(RawDataPointer data, int width, int height, bool genMipmaps)
 	{
-		this->FreeTexture();
-
-		if (data == nullptr)
-		{
-			Logger::Instance().Warning("Texture", "null data was provided as texture");
-			return;
-		}
-
-		GLCALL(glGenTextures(1, &id));
-
 		this->filepath = "[[raw data]]";
 		this->width = width;
 		this->height = height;
@@ -117,10 +109,30 @@ namespace MxEngine
 
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
 		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
+
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
 		if (genMipmaps)
 		{
 			GLCALL(glGenerateMipmap(GL_TEXTURE_2D));
 		}
+	}
+
+	void GLTexture::LoadDepth(int width, int height)
+	{
+		this->filepath = "[[depth]]";
+		this->width = width;
+		this->height = height;
+	
+		this->Bind();
+
+		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
 	}
 
 	void GLTexture::Bind() const

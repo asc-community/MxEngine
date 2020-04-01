@@ -29,7 +29,7 @@
 #pragma once
 #include "Core/Interfaces/IDrawable.h"
 #include "Core/Interfaces/IMovable.h"
-#include "Core/MxObject/RenderObject.h"
+#include "Core/MxObject/Mesh.h"
 #include "Core/Components/Transform/Transform.h"
 #include "Core/Components/Instancing/Instancing.h"
 
@@ -76,7 +76,7 @@ namespace MxEngine
 		MxObject& Rotate(float x, float y, float z);
 		void SetRenderColor(const Vector4& color);
 
-		void AddInstancedBuffer(ArrayBufferType buffer, size_t count, size_t components, UsageType type = UsageType::DYNAMIC_DRAW);
+		void AddInstancedBuffer(ArrayBufferType buffer, size_t count, size_t components, size_t perComponentFloats = 4, UsageType type = UsageType::DYNAMIC_DRAW);
 		void BufferDataByIndex(size_t index, ArrayBufferType buffer, size_t count, size_t offset = 0);
 		size_t GetBufferCount() const;
 		MxInstanceWrapper<MxObject> Instanciate();
@@ -93,7 +93,7 @@ namespace MxEngine
 		virtual size_t GetNext(size_t iterator) const override;
 		virtual const IRenderable& GetCurrent(size_t iterator) const override;
 		virtual const Matrix4x4& GetModelMatrix() const override;
-		virtual const Matrix4x4& GetNormalMatrix() const override;
+		virtual const Matrix3x3& GetNormalMatrix() const override;
 		virtual bool HasShader() const override;
 		virtual const Vector4& GetRenderColor() const override;
 		virtual const Shader& GetShader() const override;

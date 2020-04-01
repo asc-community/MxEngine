@@ -68,3 +68,5 @@
 #define MXENGINE_CONCAT(x, y) MXENGINE_CONCAT_IMPL(x, y)
 
 #define INVOKE_ONCE(...) static char MXENGINE_CONCAT(unused, __LINE__) = [&](){ __VA_ARGS__; return '\0'; }()
+
+#define BOOL_STRING(b) ((b) ? "true" : "false")

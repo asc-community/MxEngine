@@ -34,7 +34,9 @@
 
 namespace MxEngine
 {
-	void MxObject::AddInstancedBuffer(ArrayBufferType buffer, size_t count, size_t components, UsageType type)
+	static Instancing<MxObject>::InstanceList DefaultInstancing { MxInstance() };
+
+	void MxObject::AddInstancedBuffer(ArrayBufferType buffer, size_t count, size_t components, size_t perComponentFloats, UsageType type)
 	{
 		if (this->ObjectMesh == nullptr)
 		{
@@ -56,10 +58,10 @@ namespace MxEngine
 
 		auto VBO = Graphics::Instance()->CreateVertexBuffer(buffer, count * components, type);
 		auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
-		while (components > 4)
+		while (components > perComponentFloats)
 		{
-			VBL->PushFloat(4);
-			components -= 4;
+			VBL->PushFloat(perComponentFloats);
+			components -= perComponentFloats;
 		}
 		VBL->PushFloat(components);
 		this->ObjectMesh->AddInstancedBuffer(std::move(VBO), std::move(VBL));
@@ -86,6 +88,14 @@ namespace MxEngine
 		{
 			constexpr size_t baseSize = 8;
 			this->ReserveInstances(baseSize, UsageType::DYNAMIC_DRAW);
+
+			if (this->instances == nullptr) // something went wrong, so we cannot call MakeInstance
+			{
+				MxInstanceWrapper<MxObject> wrapper;
+				wrapper.Index = 0;
+				wrapper.InstanceList = &DefaultInstancing;
+				return wrapper;
+			}
 		}
 		auto instance = this->instances->MakeInstance();
 		instance->Model = this->ObjectTransform;
@@ -96,8 +106,8 @@ namespace MxEngine
 	{
 		if (this->instances == nullptr)
 		{
-			static Instancing<MxObject>::InstanceList empty;
-			return empty;
+			Logger::Instance().Warning("MxEngine::MxObject", "object has not been instanced");
+			return DefaultInstancing;
 		}
 		return this->instances->GetInstanceList();
 	}
@@ -107,8 +117,7 @@ namespace MxEngine
 		if (this->instances == nullptr)
 		{
 			Logger::Instance().Warning("MxEngine::MxObject", "object has not been instanced");
-			static Instancing<MxObject>::InstanceList empty;
-			return empty;
+			return DefaultInstancing;
 		}
 		return this->instances->GetInstanceList();
 	}
@@ -127,12 +136,19 @@ namespace MxEngine
 	{
 		Logger::Instance().Debug("MxEngine::MxObject", Format("making object instanced with reserved count: {0}", count));
 		assert(this->instances == nullptr);
+
+		if (this->ObjectMesh != nullptr && this->ObjectMesh->RefCounter > 1)
+		{
+			Logger::Instance().Error("MxEngine::MxObject", "object which has copies cannot be instanced");
+			return;
+		}
+
 		this->instances = MakeUnique<Instancing<MxObject>>();
 		this->instances->InstanceDataIndex = this->GetBufferCount();
 		// add model matrix buffer
-		this->AddInstancedBuffer(nullptr, count, sizeof(Matrix4x4) / sizeof(float), usage);
+		this->AddInstancedBuffer(nullptr, count, sizeof(Matrix4x4) / sizeof(float), 4, usage);
 		// add normal matrix buffer
-		this->AddInstancedBuffer(nullptr, count, sizeof(Matrix4x4) / sizeof(float), usage);
+		this->AddInstancedBuffer(nullptr, count, sizeof(Matrix3x3) / sizeof(float), 3, usage);
 	}
 
 	void MxObject::MakeInstanced(size_t instances, UsageType usage)
@@ -156,14 +172,15 @@ namespace MxEngine
     {
 		assert(this->instances != nullptr);
 		assert(this->instances->InstanceDataIndex != this->instances->Undefined);
-		constexpr size_t matrixSize = sizeof(Matrix4x4) / sizeof(float);
+		constexpr size_t modelMatrixSize = sizeof(Matrix4x4) / sizeof(float);
+		constexpr size_t normalMatrixSize = sizeof(Matrix3x3) / sizeof(float);
 
 		size_t index = this->instances->InstanceDataIndex;
 		size_t count = this->instances->GetCount();
 		auto& models = this->instances->GetModelData();
 		auto& normals = this->instances->GetNormalData();
-		this->BufferDataByIndex(index, reinterpret_cast<float*>(models.data()), count* matrixSize);
-		this->BufferDataByIndex(index + 1, reinterpret_cast<float*>(normals.data()), count* matrixSize);
+		this->BufferDataByIndex(index, reinterpret_cast<float*>(models.data()), count * modelMatrixSize);
+		this->BufferDataByIndex(index + 1, reinterpret_cast<float*>(normals.data()), count * normalMatrixSize);
     }
 
 	MxObject::MxObject(Mesh* mesh)
@@ -178,7 +195,11 @@ namespace MxEngine
 
 	void MxObject::SetMesh(Mesh* mesh)
 	{
+		if (this->ObjectMesh != nullptr) 
+			this->ObjectMesh->RefCounter--;
+
 		this->ObjectMesh = mesh;
+		this->ObjectMesh->RefCounter++;
 	}
 
 	Mesh* MxObject::GetMesh()
@@ -310,7 +331,7 @@ namespace MxEngine
 		return this->ObjectTransform.GetMatrix();
 	}
 
-	const Matrix4x4& MxObject::GetNormalMatrix() const
+	const Matrix3x3& MxObject::GetNormalMatrix() const
 	{
 		return this->ObjectTransform.GetNormalMatrix();
 	}

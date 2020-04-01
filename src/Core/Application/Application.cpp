@@ -212,9 +212,10 @@ namespace MxEngine
 		return Logger::Instance();
 	}
 
-	void Application::ExecuteScript(const Script& script)
+	void Application::ExecuteScript(Script& script)
 	{
 		MAKE_SCOPE_PROFILER("Application::ExecuteScript");
+		script.UpdateContents();
 		auto& engine = this->GetConsole().GetEngine();
 		engine.Execute(script.GetContent());
 		if (engine.HasErrors())
@@ -229,20 +230,87 @@ namespace MxEngine
 		this->GetWindow().UseEventDispatcher(isVisible ? nullptr : &this->dispatcher);
 	}
 
-	void Application::DrawObjects(bool meshes) const
+    void Application::ToggleLighting(bool state)
+    {
+		if (state != this->drawLighting)
+		{
+			this->drawLighting = state;
+			this->renderer.ObjectShader = nullptr;
+			this->VerifyRendererState();
+		}
+    }
+
+	void Application::DrawObjects(bool meshes)
 	{
 		MAKE_SCOPE_PROFILER("Application::DrawObjects");
 		const auto& viewport = this->currentScene->Viewport;
+		this->renderer.Clear();
 
-		LightSystem lights;
-		lights.Global = this->currentScene->GlobalLight;
-		lights.Point = this->currentScene->PointLights.GetView();
-		lights.Spot = this->currentScene->SpotLights.GetView();
-
-		for (const auto& object : this->currentScene->GetObjectList())
+		if (this->drawLighting)
 		{
-			this->renderer.DrawObject(*object.second, viewport, lights);
+			LightSystem lights;
+			lights.Global = &this->currentScene->GlobalLight;
+			lights.Point = this->currentScene->PointLights.GetView();
+			lights.Spot = this->currentScene->SpotLights.GetView();
+
+			VerifyLightSystem(lights);
+
+			this->renderer.ToggleReversedDepth(false);
+
+			// first draw global directional light
+			{
+				lights.Global->ProjectionCenter = viewport.GetPosition();
+				this->renderer.AttachDepthTexture(*lights.Global->GetDepthTexture());
+				MAKE_SCOPE_PROFILER("Renderer::DrawGlobalLightDepthTexture");
+				for (const auto& object : this->currentScene->GetObjectList())
+				{
+					this->renderer.DrawDepthTexture(*object.second, *lights.Global);
+				}
+			}
+
+			// then draw spot lights
+			for (const auto& spotLight : lights.Spot)
+			{
+				MAKE_SCOPE_PROFILER("Renderer::DrawSpotLightDepthTexture");
+				this->renderer.AttachDepthTexture(*spotLight.GetDepthTexture());
+				for (const auto& object : this->currentScene->GetObjectList())
+				{
+					this->renderer.DrawDepthTexture(*object.second, spotLight);
+				}
+			}
+
+			// after draw point lights
+			for (const auto& pointLight : lights.Point)
+			{
+				MAKE_SCOPE_PROFILER("Renderer::DrawPointLightDepthCubeMap");
+				this->renderer.AttachDepthCubeMap(*pointLight.GetDepthCubeMap());
+				for (const auto& object : this->currentScene->GetObjectList())
+				{
+					this->renderer.DrawDepthCubeMap(*object.second, pointLight, pointLight.FarDistance);
+				}
+			}
+
+			this->renderer.DetachDepthBuffer(this->window->GetWidth(), this->window->GetHeight());
+			this->renderer.ToggleReversedDepth(true);
+
+			// now draw the scene as usual (with all framebuffers)
+			{
+				MAKE_SCOPE_PROFILER("Renderer::DrawScene");
+				for (const auto& object : this->currentScene->GetObjectList())
+				{
+					this->renderer.DrawObject(*object.second, viewport, lights);
+				}
+			}
 		}
+		else // no lighting, no shadows
+		{
+			MAKE_SCOPE_PROFILER("Renderer::DrawScene");
+			for (const auto& object : this->currentScene->GetObjectList())
+			{
+				this->renderer.DrawObject(*object.second, viewport);
+			}
+		}
+
 		if (meshes)
 		{
 			for (const auto& object : this->currentScene->GetObjectList())
@@ -297,13 +365,26 @@ namespace MxEngine
 		}
 		if (Renderer.ObjectShader == nullptr)
 		{
-			Renderer.ObjectShader = Application::Get()->GetGlobalScene().GetResourceManager<Shader>().Add(
-				"MxObjectShader", Graphics::Instance()->CreateShader());
-			Renderer.ObjectShader->LoadFromSource(
-				#include "Core/Shaders/object_vertex.glsl"
-				,
-				#include "Core/Shaders/object_fragment.glsl"
-			);
+			if (this->drawLighting)
+			{
+				Renderer.ObjectShader = Application::Get()->GetGlobalScene().GetResourceManager<Shader>().Add(
+					"MxObjectShader", Graphics::Instance()->CreateShader());
+				Renderer.ObjectShader->LoadFromSource(
+					#include "Core/Shaders/object_vertex.glsl"
+					,
+					#include "Core/Shaders/object_fragment.glsl"
+				);
+			}
+			else
+			{
+				Renderer.ObjectShader = Application::Get()->GetGlobalScene().GetResourceManager<Shader>().Add(
+					"MxNoLightShader", Graphics::Instance()->CreateShader());
+				Renderer.ObjectShader->LoadFromSource(
+					#include "Core/Shaders/nolight_object_vertex.glsl"
+					,
+					#include "Core/Shaders/nolight_object_fragment.glsl"
+				);
+			}
 		}
 		if (Renderer.MeshShader == nullptr)
 		{
@@ -315,6 +396,70 @@ namespace MxEngine
 				#include "Core/Shaders/mesh_fragment.glsl"
 			);
 		}
+		if (Renderer.DepthTextureShader == nullptr)
+		{
+			Renderer.DepthTextureShader = Application::Get()->GetGlobalScene().GetResourceManager<Shader>().Add(
+				"MxDepthTextureShader", Graphics::Instance()->CreateShader());
+			Renderer.DepthTextureShader->LoadFromSource(
+				#include "Core/Shaders/depthtexture_vertex.glsl"
+				,
+				#include "Core/Shaders/depthtexture_fragment.glsl"
+			);
+		}
+		if (Renderer.DepthCubeMapShader == nullptr)
+		{
+			Renderer.DepthCubeMapShader = Application::Get()->GetGlobalScene().GetResourceManager<Shader>().Add(
+				"MxDepthCubeMapShader", Graphics::Instance()->CreateShader());
+			Renderer.DepthCubeMapShader->LoadFromSource(
+				#include "Core/Shaders/depthcubemap_vertex.glsl"
+				,
+				#include "Core/Shaders/depthcubemap_geometry.glsl"
+				,
+				#include "Core/Shaders/depthcubemap_fragment.glsl"
+			);
+		}
+		if (Renderer.DepthBuffer == nullptr)
+		{
+			Renderer.DepthBuffer = Application::Get()->GetGlobalScene().GetResourceManager<FrameBuffer>().Add(
+				"MxDepthBuffer", Graphics::Instance()->CreateFrameBuffer());
+		}
+	}
+
+	void Application::VerifyLightSystem(LightSystem& lights)
+	{
+		auto dirBufferSize   = (int)this->renderer.GetDepthBufferSize<DirectionalLight>();
+		auto spotBufferSize  = (int)this->renderer.GetDepthBufferSize<SpotLight>();
+		auto pointBufferSize = (int)this->renderer.GetDepthBufferSize<PointLight>();
+
+		if (lights.Global->GetDepthTexture() == nullptr || 
+			lights.Global->GetDepthTexture()->GetWidth() != dirBufferSize)
+		{
+			auto depthTexture = Graphics::Instance()->CreateTexture();
+			depthTexture->LoadDepth(dirBufferSize, dirBufferSize);
+			lights.Global->AttachDepthTexture(std::move(depthTexture));
+		}
+
+		for (auto& spotLight : lights.Spot)
+		{
+			if (spotLight.GetDepthTexture() == nullptr ||
+				spotLight.GetDepthTexture()->GetWidth() != spotBufferSize)
+			{
+				auto depthTexture = Graphics::Instance()->CreateTexture();
+				depthTexture->LoadDepth(spotBufferSize, spotBufferSize);
+				spotLight.AttachDepthTexture(std::move(depthTexture));
+			}
+		}
+
+		for (auto& pointLight : lights.Point)
+		{
+			if (pointLight.GetDepthCubeMap() == nullptr ||
+				pointLight.GetDepthCubeMap()->GetWidth() != pointBufferSize)
+			{
+				auto depthCubeMap = Graphics::Instance()->CreateCubeMap();
+				depthCubeMap->LoadDepth(pointBufferSize, pointBufferSize);
+				pointLight.AttachDepthCubeMap(std::move(depthCubeMap));
+			}
+		}
 	}
 
 	void Application::CloseApplication()
@@ -324,6 +469,13 @@ namespace MxEngine
 
 	void Application::CreateContext()
 	{
+		#if defined(MXENGINE_DEBUG)
+		bool useDebugging = true;
+		#else
+		bool useDebugging = false;
+		#endif
+
+
 		if (this->GetWindow().IsCreated())
 		{
 			Logger::Instance().Warning("MxEngine::Application", "CreateContext() called when window was already created");
@@ -331,25 +483,25 @@ namespace MxEngine
 		}
 		MAKE_SCOPE_PROFILER("Application::CreateContext");
 		this->GetWindow()
-			.UseProfile(3, 3, Profile::CORE)
+			.UseProfile(4, 0, Profile::CORE)
 			.UseCursorMode(CursorMode::DISABLED)
 			.UseSampling(4)
 			.UseDoubleBuffering(false)
 			.UseTitle("MxEngine Project")
+			.UseDebugging(useDebugging)
 			.UsePosition(600, 300)
 			.Create();
 
 		auto& renderingEngine = this->renderer.GetRenderEngine();
 		renderingEngine
 			.UseDepthBuffer()
+			.UseReversedDepth(false)
 			.UseCulling()
 			.UseSampling()
 			.UseClearColor(0.0f, 0.0f, 0.0f)
-			.UseTextureMagFilter(MagFilter::NEAREST)
-			.UseTextureMinFilter(MinFilter::LINEAR_MIPMAP_LINEAR)
-			.UseTextureWrap(WrapType::REPEAT, WrapType::REPEAT)
 			.UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA)
-			.UseAnisotropicFiltering(renderingEngine.GetLargestAnisotropicFactor());
+			.UseAnisotropicFiltering(renderingEngine.GetLargestAnisotropicFactor())
+			;
 
 		this->CreateConsoleBindings(this->GetConsole());
 	}
@@ -407,7 +559,6 @@ namespace MxEngine
 				}
 
 				this->InvokeUpdate();
-				this->GetRenderer().Clear();
 				this->DrawObjects(this->debugMeshDraw);
 
 				RenderEvent renderEvent;
@@ -463,7 +614,9 @@ namespace MxEngine
 
 	Application::ModuleManager::ModuleManager(Application* app)
 	{
+		#if defined(MXENGINE_DEBUG)
 		Profiler::Instance().StartSession("profile_log.json");
+		#endif
 		
 		assert(Application::Get() == nullptr);
 		Application::Set(app);
@@ -481,7 +634,9 @@ namespace MxEngine
 	Application::ModuleManager::~ModuleManager()
 	{
 		Graphics::Instance()->GetGraphicModule().Destroy();
+		#if defined(MXENGINE_DEBUG)
 		Profiler::Instance().EndSession();
+		#endif
 	}
 
 	#if defined(MXENGINE_USE_PYTHON)

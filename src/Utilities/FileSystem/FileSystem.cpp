@@ -116,4 +116,14 @@ namespace MxEngine
     {
         return std::filesystem::exists(path);
     }
+
+    FileSystemTime File::LastModifiedTime(const FilePath& path)
+    {
+        if (!File::Exists(path))
+        {
+            Logger::Instance().Warning("MxEngine::File", "file was not found: " + path.string());
+            return FileSystemTime();
+        }
+        return std::filesystem::last_write_time(path);
+    }
 }
