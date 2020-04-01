@@ -393,6 +393,11 @@ class TextureWrapper : public Texture, public py::wrapper<Texture>
         this->get_override("load")(filepath, genMipmaps, flipImage);
     }
 
+    virtual void LoadMipmaps(RawDataPointer* data, size_t mipmaps, int width, int height) override
+    {
+        this->get_override("load_mipmaps")(data, mipmaps, width, height);
+    }
+
     virtual void LoadDepth(int width, int height) override
     {
         this->get_override("load_depth")(width, height);
@@ -1309,6 +1314,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("diffuse", RefGetter(&DirectionalLight::GetDiffuseColor), RefGetter(&DirectionalLight::UseDiffuseColor))
         .add_property("specular", RefGetter(&DirectionalLight::GetSpecularColor), RefGetter(&DirectionalLight::UseSpecularColor))
         .def_readwrite("direction", &DirectionalLight::Direction)
+        .def_readwrite("projection_size", &DirectionalLight::ProjectionSize)
         ;
 
     py::class_<PointLight, boost::noncopyable>("point_light", py::init())

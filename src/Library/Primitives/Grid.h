@@ -102,36 +102,35 @@ namespace MxEngine
             return ArrayView<float>(data);
         }
 
+        inline static void DrawBorder(uint8_t* data, size_t size, size_t borderSize)
+        {
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    if (i < borderSize || i + borderSize >= size ||
+                        j < borderSize || j + borderSize >= size)
+                    {
+                        data[(i * size + j) * 3 + 0] = 0;
+                        data[(i * size + j) * 3 + 1] = 0;
+                        data[(i * size + j) * 3 + 2] = 0;
+                    }
+                }
+            }
+        }
+
         inline static Texture* GetGridTexture()
         {
             auto& manager = Application::Get()->GetCurrentScene().GetResourceManager<Texture>();
             static std::string textureName = "MxTexGrid";
             if (!manager.Exists(textureName))
             {
-                const size_t size = 512;
-                const size_t border = 5;
-                std::vector<uint8_t> data(size * size * 3);
-                for (int i = 0; i < size; i++)
-                {
-                    for (int j = 0; j < size; j++)
-                    {
-                        if (i < border || i + border > size ||
-                            j < border || j + border > size)
-                        {
-                            data[(i * size + j) * 3 + 0] = 0;
-                            data[(i * size + j) * 3 + 1] = 0;
-                            data[(i * size + j) * 3 + 2] = 0;
-                        }
-                        else
-                        {
-                            data[(i * size + j) * 3 + 0] = 192;
-                            data[(i * size + j) * 3 + 1] = 192;
-                            data[(i * size + j) * 3 + 2] = 192;
-                        }
-                    }
-                }
+                constexpr size_t size = 512;
+                std::array<uint8_t, size * size * 3> data;
+                DrawBorder(data.data(), size, 6);
+           
                 auto texture = Graphics::Instance()->CreateTexture();
-                texture->Load(data.data(), 512, 512);
+                texture->Load(data.data(), size, size);
                 manager.Add(textureName, std::move(texture));
             }
             return manager.Get(textureName);

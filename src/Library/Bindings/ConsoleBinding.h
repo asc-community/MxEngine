@@ -45,13 +45,11 @@ namespace MxEngine
 		{
 			Logger::Instance().Debug("MxEngine::ConsoleBinding", Format("bound console to keycode: {0}", int(activateKey)));
 			Application::Get()->GetEventDispatcher().AddEventListener<UpdateEvent>(this->handle,
-				[key = activateKey](UpdateEvent& event)
+				[cursorPos = Vector2(), key = activateKey](UpdateEvent& event) mutable
 				{
 					auto& window = Application::Get()->GetWindow();
 					if (window.IsKeyPressed(key))
 					{
-						// save cursor position to static variable, restore it when return to default cursor mode
-						static Vector2 cursorPos = window.GetCursorPos();
 						if (window.GetCursorMode() == CursorMode::NORMAL)
 						{
 							window.UseCursorMode(CursorMode::DISABLED);

@@ -83,3 +83,4 @@
 - added shadow mapping (texture maps, cubemaps)
 - added runtime script & shader editing support
 - minor fixes in opengl debugging, instancing and imgui editor
+- added new python api to render controller

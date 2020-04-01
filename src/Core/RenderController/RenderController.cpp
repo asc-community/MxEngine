@@ -130,19 +130,9 @@ namespace MxEngine
 				shader.SetUniformInt(#NAME, SLOT)
 
 				BIND_TEX(map_Ka, 0);
-				BIND_TEX(map_Kd, 1);
-				BIND_TEX(map_Ks, 2);
-				BIND_TEX(map_Ke, 3);
 
 				// setting materials
-				shader.SetUniformVec3("material.Ka", material.Ka);
-				shader.SetUniformVec3("material.Kd", material.Kd);
-				shader.SetUniformVec3("material.Ks", material.Ks);
-				shader.SetUniformVec3("material.Ke", material.Ke);
 				shader.SetUniformFloat("material.d", material.d);
-
-				shader.SetUniformFloat("Ka", material.f_Ka);
-				shader.SetUniformFloat("Kd", material.f_Kd);
 
 				if (object.GetInstanceCount() == 0)
 				{

@@ -13,32 +13,19 @@ out vec4 Color;
 
 struct Material
 {
-	vec3 Ka;
-	vec3 Kd;
-	vec3 Ks;
-	vec3 Ke;
 	float d;
 };
 
 uniform sampler2D map_Ka;
-uniform sampler2D map_Kd;
-uniform sampler2D map_Ks;
-uniform sampler2D map_Ke;
-uniform float Ka;
-uniform float Kd;
 uniform Material material;
 uniform vec4 renderColor;
 
 void main()
 {
-	vec3 ambient  = vec3(texture(map_Ka, fsin.TexCoord)) * Ka; // * material.Ka;
-	vec3 diffuse  = vec3(texture(map_Kd, fsin.TexCoord)) * Kd; // * material.Kd;
-	vec3 specular = vec3(texture(map_Ks, fsin.TexCoord)) * material.Ks;
-	vec3 emmisive = vec3(texture(map_Ke, fsin.TexCoord)) * material.Ke;
+	vec3 ambient = vec3(texture(map_Ka, fsin.TexCoord));
+	float dissolve = material.d;
 
-	float dissolve = material.d; // * texture(map_d, fsin.TexCoord).x * material.d;
-
-	vec3 color = ambient + diffuse + specular + emmisive;
+	vec3 color = ambient;
 
 	color    *= renderColor.rgb;
 	dissolve *= renderColor.a;

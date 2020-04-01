@@ -27,6 +27,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "DirectionalLight.h"
+#include "Utilities/Logger/Logger.h"
+#include "Utilities/Format/Format.h"
 
 namespace MxEngine
 {
@@ -80,17 +82,13 @@ namespace MxEngine
 
     Matrix4x4 DirectionalLight::GetMatrix() const
     {
-        // this values were derived experimentally
-        float sizeLx = -this->ProjectionSize;
-        float sizeRx = +this->ProjectionSize;
-        float sizeLy = -this->ProjectionSize;
-        float sizeRy = +this->ProjectionSize;
-        float sizeLz = -this->ProjectionSize;
-        float sizeRz = +this->ProjectionSize;
-        Matrix4x4 OrthoProjection = MakeOrthographicMatrix(sizeLx, sizeRx, sizeLy, sizeRy, sizeLz, sizeRz);
+        Vector3 Low  = MakeVector3(-this->ProjectionSize);
+        Vector3 High = MakeVector3( this->ProjectionSize);
+        
+        Matrix4x4 OrthoProjection = MakeOrthographicMatrix(Low.x, High.x, Low.y, High.y, Low.z, High.z);
         Matrix4x4 LightView = MakeViewMatrix(
-            this->Direction,
-            MakeVector3(0.0f, 0.0f, 0.00001f),
+            this->ProjectionCenter + this->Direction,
+            this->ProjectionCenter + MakeVector3(0.0f, 0.0f, 0.00001f),
             MakeVector3(0.0f, 1.0f, 0.00001f)
         );
         return OrthoProjection * LightView;

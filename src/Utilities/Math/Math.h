@@ -436,4 +436,9 @@ namespace MxEngine
 		auto coords = MinMaxComponents(verteces, size);
 		return (coords.first + coords.second) * 0.5f;
 	}
+
+	constexpr size_t Log2(size_t n)
+	{
+		return ((n <= 2) ? 1 : 1 + Log2(n / 2));
+	}
 }
