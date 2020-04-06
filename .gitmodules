@@ -22,6 +22,3 @@
 [submodule "fmt"]
 	path = fmt
 	url = https://github.com/fmtlib/fmt
-[submodule "cpython"]
-	path = cpython
-	url = https://github.com/python/cpython

@@ -102,6 +102,56 @@
     <ClInclude Include="Platform\OpenGL\CubeMap\GLCubeMap.h" />
     <ClInclude Include="Library\Bindings\ShaderBinding.h" />
     <ClInclude Include="Core\MxObject\Mesh.h" />
+    <ClInclude Include="Vendors\fmt\chrono.h" />
+    <ClInclude Include="Vendors\fmt\color.h" />
+    <ClInclude Include="Vendors\fmt\compile.h" />
+    <ClInclude Include="Vendors\fmt\core.h" />
+    <ClInclude Include="Vendors\fmt\format.h" />
+    <ClInclude Include="Vendors\fmt\format-inl.h" />
+    <ClInclude Include="Vendors\fmt\locale.h" />
+    <ClInclude Include="Vendors\fmt\os.h" />
+    <ClInclude Include="Vendors\fmt\ostream.h" />
+    <ClInclude Include="Vendors\fmt\posix.h" />
+    <ClInclude Include="Vendors\fmt\printf.h" />
+    <ClInclude Include="Vendors\fmt\ranges.h" />
+    <ClInclude Include="Vendors\glm\common.hpp" />
+    <ClInclude Include="Vendors\glm\exponential.hpp" />
+    <ClInclude Include="Vendors\glm\ext.hpp" />
+    <ClInclude Include="Vendors\glm\fwd.hpp" />
+    <ClInclude Include="Vendors\glm\geometric.hpp" />
+    <ClInclude Include="Vendors\glm\glm.hpp" />
+    <ClInclude Include="Vendors\glm\integer.hpp" />
+    <ClInclude Include="Vendors\glm\mat2x2.hpp" />
+    <ClInclude Include="Vendors\glm\mat2x3.hpp" />
+    <ClInclude Include="Vendors\glm\mat2x4.hpp" />
+    <ClInclude Include="Vendors\glm\mat3x2.hpp" />
+    <ClInclude Include="Vendors\glm\mat3x3.hpp" />
+    <ClInclude Include="Vendors\glm\mat3x4.hpp" />
+    <ClInclude Include="Vendors\glm\mat4x2.hpp" />
+    <ClInclude Include="Vendors\glm\mat4x3.hpp" />
+    <ClInclude Include="Vendors\glm\mat4x4.hpp" />
+    <ClInclude Include="Vendors\glm\matrix.hpp" />
+    <ClInclude Include="Vendors\glm\packing.hpp" />
+    <ClInclude Include="Vendors\glm\trigonometric.hpp" />
+    <ClInclude Include="Vendors\glm\vec2.hpp" />
+    <ClInclude Include="Vendors\glm\vec3.hpp" />
+    <ClInclude Include="Vendors\glm\vec4.hpp" />
+    <ClInclude Include="Vendors\glm\vector_relational.hpp" />
+    <ClInclude Include="Vendors\stb\stb_image.h" />
+    <ClInclude Include="Vendors\imgui\imconfig.h" />
+    <ClInclude Include="Vendors\imgui\imgui.h" />
+    <ClInclude Include="Vendors\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="Vendors\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="Vendors\imgui\imgui_internal.h" />
+    <ClInclude Include="Vendors\imgui\imstb_rectpack.h" />
+    <ClInclude Include="Vendors\imgui\imstb_textedit.h" />
+    <ClInclude Include="Vendors\imgui\imstb_truetype.h" />
+    <ClInclude Include="Vendors\glew\eglew.h" />
+    <ClInclude Include="Vendors\glew\glew.h" />
+    <ClInclude Include="Vendors\glew\glxew.h" />
+    <ClInclude Include="Vendors\glew\wglew.h" />
+    <ClInclude Include="Vendors\GLFW\glfw3.h" />
+    <ClInclude Include="Vendors\GLFW\glfw3native.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
@@ -140,6 +190,14 @@
     <ClCompile Include="Platform\OpenGL\CubeMap\GLCubeMap.cpp" />
     <ClCompile Include="Utilities\ObjectLoader\ObjectLoader.cpp" />
     <ClCompile Include="Core\MxObject\Mesh.cpp" />
+    <ClCompile Include="Vendors\fmt\format.cc" />
+    <ClCompile Include="Vendors\fmt\os.cc" />
+    <ClCompile Include="Vendors\imgui\imgui.cpp" />
+    <ClCompile Include="Vendors\imgui\imgui_demo.cpp" />
+    <ClCompile Include="Vendors\imgui\imgui_draw.cpp" />
+    <ClCompile Include="Vendors\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="Vendors\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Vendors\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\cube_fragment.glsl" />
@@ -160,6 +218,7 @@
     <None Include="Core\Shaders\depthcubemap_fragment.glsl" />
     <None Include="Core\Shaders\nolight_object_vertex.glsl" />
     <None Include="Core\Shaders\nolight_object_fragment.glsl" />
+    <None Include="Vendors\stb\LICENSE" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\objects\crate.obj" />
@@ -168,5 +227,9 @@
   <ItemGroup>
     <Image Include="Resources\textures\crate.jpg" />
     <Image Include="Resources\textures\arc170.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Vendors\glm\copying.txt" />
+    <Text Include="Vendors\imgui\LICENSE.txt" />
   </ItemGroup>
 </Project>

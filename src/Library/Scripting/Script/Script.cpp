@@ -34,7 +34,10 @@ namespace MxEngine
     Script::Script(FilePath path)
     {
         this->path = std::move(path);
-        this->UpdateContents();
+        if (File::Exists(this->path))
+            this->UpdateContents();
+        else
+            Logger::Instance().Error("MxEngine::Script", "script file was not found: " + this->path.string());
     }
 
     void Script::UpdateContents()

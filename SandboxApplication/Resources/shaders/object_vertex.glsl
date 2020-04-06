@@ -1,5 +1,5 @@
 #version 400 core
-#define MAX_POINT_LIGHTS 1
+#define MAX_POINT_LIGHTS 2
 #define MAX_SPOT_LIGHTS 8
 
 layout(location = 0) in vec4 position;

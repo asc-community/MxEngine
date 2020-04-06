@@ -115,6 +115,12 @@ namespace MxEngine
                         data[(i * size + j) * 3 + 1] = 0;
                         data[(i * size + j) * 3 + 2] = 0;
                     }
+                    else
+                    {
+                        data[(i * size + j) * 3 + 0] = 192;
+                        data[(i * size + j) * 3 + 1] = 192;
+                        data[(i * size + j) * 3 + 2] = 192;
+                    }
                 }
             }
         }
@@ -126,7 +132,7 @@ namespace MxEngine
             if (!manager.Exists(textureName))
             {
                 constexpr size_t size = 512;
-                std::array<uint8_t, size * size * 3> data;
+                std::vector<uint8_t> data(size * size * 3);
                 DrawBorder(data.data(), size, 6);
            
                 auto texture = Graphics::Instance()->CreateTexture();

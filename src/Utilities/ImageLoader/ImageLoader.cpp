@@ -30,7 +30,7 @@
 #include "Utilities/Profiler/Profiler.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb/stb_image.h"
+#include "Vendors/stb/stb_image.h"
 
 namespace MxEngine
 {

@@ -43,7 +43,7 @@ namespace MxEngine
 
         inline void Resize(size_t polygons)
         {
-            auto resourceName = Format(FMT_STRING("Sphere_{0}"), Application::Get()->GenerateResourceId());
+            auto resourceName = Format(FMT_STRING("MxSphere_{0}"), Application::Get()->GenerateResourceId());
             auto data = Sphere::GetSphereData(polygons);
             this->SubmitData(resourceName, data);
         }

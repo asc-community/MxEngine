@@ -31,19 +31,18 @@
 #include "Utilities/Math/Math.h"
 #include "Core/Macro/Macro.h"
 
-#if defined(MXENGINE_USE_IMGUI)
-    #define IM_VEC2_CLASS_EXTRA\
-        ImVec2(const MxEngine::Vector2& f) { x = f.x; y = f.y; }\
-        operator MxEngine::Vector2() const { return MxEngine::MakeVector2(x,y); }
+#define IM_VEC2_CLASS_EXTRA\
+    ImVec2(const MxEngine::Vector2& f) { x = f.x; y = f.y; }\
+    operator MxEngine::Vector2() const { return MxEngine::MakeVector2(x,y); }
 
-    #define IM_VEC4_CLASS_EXTRA\
-        ImVec4(const MxEngine::Vector4& f) { x = f.x; y = f.y; z = f.z; w = f.w; }\
-        operator MxEngine::Vector4() const { return MxEngine::MakeVector4(x,y,z,w); }
+#define IM_VEC4_CLASS_EXTRA\
+    ImVec4(const MxEngine::Vector4& f) { x = f.x; y = f.y; z = f.z; w = f.w; }\
+    operator MxEngine::Vector4() const { return MxEngine::MakeVector4(x,y,z,w); }
 
-    #include <imgui/imgui.h>
+#include "Vendors/imgui/imgui.h"
 
-    #if defined(MXENGINE_USE_OPENGL)
-        #include <imgui/imgui_impl_glfw.h>
-        #include <imgui/imgui_impl_opengl3.h>
-    #endif
+#if defined(MXENGINE_USE_OPENGL)
+    #define IMGUI_IMPL_OPENGL_LOADER_GLEW
+    #include "Vendors/imgui/imgui_impl_glfw.h"
+    #include "Vendors/imgui/imgui_impl_opengl3.h"
 #endif

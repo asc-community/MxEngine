@@ -181,6 +181,7 @@ namespace MxEngine
         template<typename IdT>
         bool Exists(IdT&& key)
         {
+            this->Update();
             return this->ExistsImpl(this->storage, std::forward<IdT>(key), 0);
         }
 

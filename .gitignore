@@ -43,3 +43,7 @@ imgui.ini
 profile_log.json
 compile_commands.json
 /SandboxApplication/Debug
+mx_engine/Debug
+out
+examples/TestInstancing/Debug
+examples/SnakePath3D/Debug

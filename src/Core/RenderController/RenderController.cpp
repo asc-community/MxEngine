@@ -232,18 +232,27 @@ namespace MxEngine
 				lights.Global->GetDepthTexture()->Bind(4);
 				shader.SetUniformInt("map_dirLight_shadow", 4);
 
-				for (int i = 0; i < lights.Point.size(); i++)
+				for (int i = 0; i < lights.Spot.size(); i++)
 				{
 					int bindIndex = 5 + i;
+					lights.Spot[i].GetDepthTexture()->Bind(bindIndex);
+					shader.SetUniformInt(Format(FMT_STRING("map_spotLight_shadow[{0}]"), i), bindIndex);
+				}
+
+				for (int i = 0; i < lights.Point.size(); i++)
+				{
+					int bindIndex = (5 + (int)lights.Spot.size()) + i;
 					lights.Point[i].GetDepthCubeMap()->Bind(bindIndex);
 					shader.SetUniformInt(Format(FMT_STRING("map_pointLight_shadow[{0}]"), i), bindIndex);
 				}
 
-				for (int i = 0; i < lights.Spot.size(); i++)
+				// dont ask - OpenGL requires all samplerCubes to be bound
+				constexpr size_t MAX_POINT_SOURCES = 2;
+				for (int i = (int)lights.Point.size(); i < MAX_POINT_SOURCES; i++)
 				{
-					int bindIndex = (5 + (int)lights.Point.size()) + i;
-					lights.Spot[i].GetDepthTexture()->Bind(bindIndex);
-					shader.SetUniformInt(Format(FMT_STRING("map_spotLight_shadow[{0}]"), i), bindIndex);
+					int bindIndex = int(5 + lights.Spot.size() + lights.Point.size()) + i;
+					lights.Global->GetDepthTexture()->Bind(bindIndex);
+					shader.SetUniformInt(Format(FMT_STRING("map_pointLight_shadow[{0}]"), i), bindIndex);
 				}
 
 				// setting materials (ka, kd not used for now

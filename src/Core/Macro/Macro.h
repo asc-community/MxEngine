@@ -28,8 +28,6 @@
 // required in engine source:
 #define MXENGINE_USE_BOOST
 #define MXENGINE_USE_ASSIMP
-#define MXENGINE_USE_FMT
-#define MXENGINE_USE_IMGUI
 
 #pragma comment(lib, "MxEngine.lib")
 
@@ -38,10 +36,6 @@
     #pragma comment(lib, "glu32.lib")
     #pragma comment(lib, "glew32s.lib")
     #pragma comment(lib, "glfw3.lib")
-#endif
-
-#if defined(MXENGINE_USE_IMGUI)
-    #pragma comment(lib, "imgui.lib")
 #endif
 
 #if defined(MXENGINE_USE_ASSIMP)
@@ -53,14 +47,6 @@
         #pragma comment(lib, "assimp-vc142-mtd.lib")
         #pragma comment(lib, "IrrXMLd.lib")
         #pragma comment(lib, "zlibstaticd.lib")
-    #endif
-#endif
-
-#if defined(MXENGINE_USE_FMT)
-    #if defined(MXENGINE_RELEASE)
-        #pragma comment(lib, "fmt.lib")
-    #elif defined(MXENGINE_DEBUG)
-        #pragma comment(lib, "fmtd.lib")
     #endif
 #endif
 
