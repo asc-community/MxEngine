@@ -152,6 +152,7 @@
     <ClInclude Include="Vendors\glew\wglew.h" />
     <ClInclude Include="Vendors\GLFW\glfw3.h" />
     <ClInclude Include="Vendors\GLFW\glfw3native.h" />
+    <ClInclude Include="Library\Primitives\Surface.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />

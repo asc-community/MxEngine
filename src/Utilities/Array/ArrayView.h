@@ -53,6 +53,8 @@ namespace MxEngine
         template<size_t N>
         array_view(std::array<T, N>& array);
         array_view(std::vector<T>& vec);
+        template<typename RandomIt>
+        array_view(RandomIt begin, RandomIt end);
         size_t size() const;
         bool empty() const;
         T* data();
@@ -198,5 +200,13 @@ namespace MxEngine
     {
         this->_data = array.data();
         this->_size = N;
+    }
+
+    template<typename T>
+    template<typename RandomIt>
+    inline array_view<T>::array_view(RandomIt begin, RandomIt end)
+    {
+        this->_data = begin;
+        this->_size = end - begin;
     }
 }

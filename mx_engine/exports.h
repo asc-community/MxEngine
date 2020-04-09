@@ -782,6 +782,24 @@ void ShaderVertGeomFragWrapper(const std::string& vertex, const std::string& geo
     ShaderBinding("PyShaderBinding", shader).Bind(vertex, geometry, fragment);
 }
 
+void SetSurfaceWrapper(Surface& surface, py::object func, float xsize, float ysize, float step)
+{
+    try
+    {
+        auto wrap = [&func](float x, float y) -> float
+        {
+            auto result = func(x, y);
+            return py::extract<float>(result);
+        };
+        surface.SetSurface(wrap, xsize, ysize, step);
+    }
+    catch (std::exception&)
+    {
+        Logger::Instance().Warning("MxEngine::SetSurface", "error while generating surface in python function");
+        surface.SetSurface([](float, float) { return 0.0f; }, xsize, ysize, step);
+    }
+}
+
 template<typename Event>
 void AddEventListenerWrapper(Application& app, const std::string& name, py::object callback)
 {
@@ -1450,6 +1468,10 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("buffer_count", &MxObject::GetBufferCount)
         .add_property("instances", RefGetter((InstanceListFunc)&MxObject::GetInstances))
         .add_property("render_color", RefGetter(&MxObject::GetRenderColor), &MxObject::SetRenderColor)
+        ;
+
+    py::class_<Surface, py::bases<MxObject>, boost::noncopyable>("surface", py::no_init)
+        .def("set", SetSurfaceWrapper)
         ;
 
     py::class_<MxInstance, boost::noncopyable>("mx_instance", py::no_init)

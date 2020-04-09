@@ -199,7 +199,8 @@ namespace MxEngine
 			this->ObjectMesh->RefCounter--;
 
 		this->ObjectMesh = mesh;
-		this->ObjectMesh->RefCounter++;
+		if (this->ObjectMesh != nullptr)
+			this->ObjectMesh->RefCounter++;
 	}
 
 	Mesh* MxObject::GetMesh()

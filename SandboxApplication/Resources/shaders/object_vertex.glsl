@@ -25,7 +25,8 @@ out VSout
 
 void main()
 {
-	vec4 modelPos = model * position;
+	vec4 pos = position;
+	vec4 modelPos = model * pos;
 	gl_Position = ViewProjMatrix * modelPos;
 
 	vsout.TexCoord = texCoord.xy;

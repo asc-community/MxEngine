@@ -15,10 +15,18 @@ class SandboxScene : public Scene
 
         this->AddObject("Grid", MakeUnique<Grid>(2000));
         this->AddObject("Cube", MakeUnique<CubeObject>());
-        this->AddObject("Arc170", MakeUnique<Arc170Object>());
+        // this->AddObject("Arc170", MakeUnique<Arc170Object>());
         this->AddObject("Sphere", MakeUnique<SphereObject>());
         // this->AddObject("Destroyer", MakeUnique<DestroyerObject>());
         // this->AddObject("DeathStar", MakeUnique<DeathStarObject>());
+		
+		auto& surface = (Surface&)this->AddObject("Surface", MakeUnique<Surface>());
+		surface.SetSurface([](float x, float y) 
+			{ 
+				return std::sin(10.0f * x) * std::sin(10.0f * y);
+			}, 1.0f, 1.0f, 0.01f);
+		surface.Scale(10.0f, 2.0f, 10.0f);
+		surface.Translate(0.0f, 2.0f, 0.0f);
 
         this->LoadScript("init", "scripts/init.py");
         this->LoadScript("update", "scripts/update.py");

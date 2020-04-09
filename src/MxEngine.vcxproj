@@ -40,6 +40,7 @@
     <ClInclude Include="Core\Macro\Macro.h" />
     <ClInclude Include="Core\MxObject\Mesh.h" />
     <ClInclude Include="Library\Bindings\ShaderBinding.h" />
+    <ClInclude Include="Library\Primitives\Surface.h" />
     <ClInclude Include="Platform\OpenGL\CubeMap\GLCubeMap.h" />
     <ClInclude Include="Platform\OpenGL\FrameBuffer\GLFrameBuffer.h" />
     <ClInclude Include="Utilities\ResourceStorage\ResourceStorage.h" />
