@@ -49,6 +49,8 @@ namespace MxEngine
 
 		// Inherited via ICamera
 		virtual const Matrix4x4& GetMatrix() const override;
+		virtual const Matrix4x4& GetViewMatrix() const override;
+		virtual const Matrix4x4& GetProjectionMatrix() const override;
 		virtual void SetViewMatrix(const Matrix4x4& view) override;
 		virtual void SetAspectRatio(float w, float h = 1.0f) override;
 		virtual float GetAspectRatio() const override;

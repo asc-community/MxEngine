@@ -70,8 +70,8 @@
 //   1.07 (2015-08-01) allow PackFontRanges to accept arrays of sparse codepoints;
 //                     variant PackFontRanges to pack and render in separate phases;
 //                     fix stbtt_GetFontOFfsetForIndex (never worked for non-0 input?);
-//                     fixed an assert() bug in the new rasterizer
-//                     replace assert() with STBTT_assert() in new rasterizer
+//                     fixed an MX_ASSERT() bug in the new rasterizer
+//                     replace MX_ASSERT() with STBTT_MX_ASSERT() in new rasterizer
 //
 //   Full history can be found at the end of this file.
 //
@@ -473,9 +473,9 @@ int main(int arg, char **argv)
    #define STBTT_free(x,u)    ((void)(u),free(x))
    #endif
 
-   #ifndef STBTT_assert
-   #include <assert.h>
-   #define STBTT_assert(x)    assert(x)
+   #ifndef STBTT_MX_ASSERT
+   #include <MX_ASSERT.h>
+   #define STBTT_MX_ASSERT(x)    MX_ASSERT(x)
    #endif
 
    #ifndef STBTT_strlen
@@ -1129,7 +1129,7 @@ static stbtt_uint8 stbtt__buf_peek8(stbtt__buf *b)
 
 static void stbtt__buf_seek(stbtt__buf *b, int o)
 {
-   STBTT_assert(!(o > b->size || o < 0));
+   STBTT_MX_ASSERT(!(o > b->size || o < 0));
    b->cursor = (o > b->size || o < 0) ? b->size : o;
 }
 
@@ -1142,7 +1142,7 @@ static stbtt_uint32 stbtt__buf_get(stbtt__buf *b, int n)
 {
    stbtt_uint32 v = 0;
    int i;
-   STBTT_assert(n >= 1 && n <= 4);
+   STBTT_MX_ASSERT(n >= 1 && n <= 4);
    for (i = 0; i < n; i++)
       v = (v << 8) | stbtt__buf_get8(b);
    return v;
@@ -1151,7 +1151,7 @@ static stbtt_uint32 stbtt__buf_get(stbtt__buf *b, int n)
 static stbtt__buf stbtt__new_buf(const void *p, size_t size)
 {
    stbtt__buf r;
-   STBTT_assert(size < 0x40000000);
+   STBTT_MX_ASSERT(size < 0x40000000);
    r.data = (stbtt_uint8*) p;
    r.size = (int) size;
    r.cursor = 0;
@@ -1177,7 +1177,7 @@ static stbtt__buf stbtt__cff_get_index(stbtt__buf *b)
    count = stbtt__buf_get16(b);
    if (count) {
       offsize = stbtt__buf_get8(b);
-      STBTT_assert(offsize >= 1 && offsize <= 4);
+      STBTT_MX_ASSERT(offsize >= 1 && offsize <= 4);
       stbtt__buf_skip(b, offsize * count);
       stbtt__buf_skip(b, stbtt__buf_get(b, offsize) - 1);
    }
@@ -1192,13 +1192,13 @@ static stbtt_uint32 stbtt__cff_int(stbtt__buf *b)
    else if (b0 >= 251 && b0 <= 254) return -(b0 - 251)*256 - stbtt__buf_get8(b) - 108;
    else if (b0 == 28)               return stbtt__buf_get16(b);
    else if (b0 == 29)               return stbtt__buf_get32(b);
-   STBTT_assert(0);
+   STBTT_MX_ASSERT(0);
    return 0;
 }
 
 static void stbtt__cff_skip_operand(stbtt__buf *b) {
    int v, b0 = stbtt__buf_peek8(b);
-   STBTT_assert(b0 >= 28);
+   STBTT_MX_ASSERT(b0 >= 28);
    if (b0 == 30) {
       stbtt__buf_skip(b, 1);
       while (b->cursor < b->size) {
@@ -1246,8 +1246,8 @@ static stbtt__buf stbtt__cff_index_get(stbtt__buf b, int i)
    stbtt__buf_seek(&b, 0);
    count = stbtt__buf_get16(&b);
    offsize = stbtt__buf_get8(&b);
-   STBTT_assert(i >= 0 && i < count);
-   STBTT_assert(offsize >= 1 && offsize <= 4);
+   STBTT_MX_ASSERT(i >= 0 && i < count);
+   STBTT_MX_ASSERT(offsize >= 1 && offsize <= 4);
    stbtt__buf_skip(&b, i*offsize);
    start = stbtt__buf_get(&b, offsize);
    end = stbtt__buf_get(&b, offsize);
@@ -1476,7 +1476,7 @@ STBTT_DEF int stbtt_FindGlyphIndex(const stbtt_fontinfo *info, int unicode_codep
          return ttUSHORT(data + index_map + 10 + (unicode_codepoint - first)*2);
       return 0;
    } else if (format == 2) {
-      STBTT_assert(0); // @TODO: high-byte mapping for japanese/chinese/korean
+      STBTT_MX_ASSERT(0); // @TODO: high-byte mapping for japanese/chinese/korean
       return 0;
    } else if (format == 4) { // standard mapping for windows fonts: binary search collection of ranges
       stbtt_uint16 segcount = ttUSHORT(data+index_map+6) >> 1;
@@ -1512,7 +1512,7 @@ STBTT_DEF int stbtt_FindGlyphIndex(const stbtt_fontinfo *info, int unicode_codep
          stbtt_uint16 offset, start;
          stbtt_uint16 item = (stbtt_uint16) ((search - endCount) >> 1);
 
-         STBTT_assert(unicode_codepoint <= ttUSHORT(data + endCount + 2*item));
+         STBTT_MX_ASSERT(unicode_codepoint <= ttUSHORT(data + endCount + 2*item));
          start = ttUSHORT(data + index_map + 14 + segcount*2 + 2 + 2*item);
          if (unicode_codepoint < start)
             return 0;
@@ -1547,7 +1547,7 @@ STBTT_DEF int stbtt_FindGlyphIndex(const stbtt_fontinfo *info, int unicode_codep
       return 0; // not found
    }
    // @TODO
-   STBTT_assert(0);
+   STBTT_MX_ASSERT(0);
    return 0;
 }
 
@@ -1569,7 +1569,7 @@ static int stbtt__GetGlyfOffset(const stbtt_fontinfo *info, int glyph_index)
 {
    int g1,g2;
 
-   STBTT_assert(!info->cff.size);
+   STBTT_MX_ASSERT(!info->cff.size);
 
    if (glyph_index >= info->numGlyphs) return -1; // glyph index out of range
    if (info->indexToLocFormat >= 2)    return -1; // unknown index->glyph map format
@@ -1800,7 +1800,7 @@ static int stbtt__GetGlyphShapeTT(const stbtt_fontinfo *info, int glyph_index, s
          }
          else {
             // @TODO handle matching point
-            STBTT_assert(0);
+            STBTT_MX_ASSERT(0);
          }
          if (flags & (1<<3)) { // WE_HAVE_A_SCALE
             mtx[0] = mtx[3] = ttSHORT(comp)/16384.0f; comp+=2;
@@ -1853,7 +1853,7 @@ static int stbtt__GetGlyphShapeTT(const stbtt_fontinfo *info, int glyph_index, s
       }
    } else if (numberOfContours < 0) {
       // @TODO other compound variations?
-      STBTT_assert(0);
+      STBTT_MX_ASSERT(0);
    } else {
       // numberOfCounters == 0, do nothing
    }
@@ -2243,7 +2243,7 @@ static int stbtt__GetGlyphShapeT2(const stbtt_fontinfo *info, int glyph_index, s
       *pvertices = (stbtt_vertex*)STBTT_malloc(count_ctx.num_vertices*sizeof(stbtt_vertex), info->userdata);
       output_ctx.pvertices = *pvertices;
       if (stbtt__run_charstring(info, glyph_index, &output_ctx)) {
-         STBTT_assert(output_ctx.num_vertices == count_ctx.num_vertices);
+         STBTT_MX_ASSERT(output_ctx.num_vertices == count_ctx.num_vertices);
          return output_ctx.num_vertices;
       }
    }
@@ -2364,7 +2364,7 @@ static stbtt_int32  stbtt__GetCoverageIndex(stbtt_uint8 *coverageTable, int glyp
 
         default: {
             // There are no other cases.
-            STBTT_assert(0);
+            STBTT_MX_ASSERT(0);
         } break;
     }
 
@@ -2415,15 +2415,15 @@ static stbtt_int32  stbtt__GetGlyphClass(stbtt_uint8 *classDefTable, int glyph)
 
         default: {
             // There are no other cases.
-            STBTT_assert(0);
+            STBTT_MX_ASSERT(0);
         } break;
     }
 
     return -1;
 }
 
-// Define to STBTT_assert(x) if you want to break on unimplemented formats.
-#define STBTT_GPOS_TODO_assert(x)
+// Define to STBTT_MX_ASSERT(x) if you want to break on unimplemented formats.
+#define STBTT_GPOS_TODO_MX_ASSERT(x)
 
 static stbtt_int32  stbtt__GetGlyphGPOSInfoAdvance(const stbtt_fontinfo *info, int glyph1, int glyph2)
 {
@@ -2475,12 +2475,12 @@ static stbtt_int32  stbtt__GetGlyphGPOSInfoAdvance(const stbtt_fontinfo *info, i
                             stbtt_uint16 pairValueCount = ttUSHORT(pairValueTable);
                             stbtt_uint8 *pairValueArray = pairValueTable + 2;
                             // TODO: Support more formats.
-                            STBTT_GPOS_TODO_assert(valueFormat1 == 4);
+                            STBTT_GPOS_TODO_MX_ASSERT(valueFormat1 == 4);
                             if (valueFormat1 != 4) return 0;
-                            STBTT_GPOS_TODO_assert(valueFormat2 == 0);
+                            STBTT_GPOS_TODO_MX_ASSERT(valueFormat2 == 0);
                             if (valueFormat2 != 0) return 0;
 
-                            STBTT_assert(coverageIndex < pairSetCount);
+                            STBTT_MX_ASSERT(coverageIndex < pairSetCount);
                             STBTT__NOTUSED(pairSetCount);
 
                             needle=glyph2;
@@ -2517,13 +2517,13 @@ static stbtt_int32  stbtt__GetGlyphGPOSInfoAdvance(const stbtt_fontinfo *info, i
 
                             stbtt_uint16 class1Count = ttUSHORT(table + 12);
                             stbtt_uint16 class2Count = ttUSHORT(table + 14);
-                            STBTT_assert(glyph1class < class1Count);
-                            STBTT_assert(glyph2class < class2Count);
+                            STBTT_MX_ASSERT(glyph1class < class1Count);
+                            STBTT_MX_ASSERT(glyph2class < class2Count);
 
                             // TODO: Support more formats.
-                            STBTT_GPOS_TODO_assert(valueFormat1 == 4);
+                            STBTT_GPOS_TODO_MX_ASSERT(valueFormat1 == 4);
                             if (valueFormat1 != 4) return 0;
-                            STBTT_GPOS_TODO_assert(valueFormat2 == 0);
+                            STBTT_GPOS_TODO_MX_ASSERT(valueFormat2 == 0);
                             if (valueFormat2 != 0) return 0;
 
                             if (glyph1class >= 0 && glyph1class < class1Count && glyph2class >= 0 && glyph2class < class2Count) {
@@ -2536,7 +2536,7 @@ static stbtt_int32  stbtt__GetGlyphGPOSInfoAdvance(const stbtt_fontinfo *info, i
 
                         default: {
                             // There are no other cases.
-                            STBTT_assert(0);
+                            STBTT_MX_ASSERT(0);
                             break;
                         } // [DEAR IMGUI] removed ;
                     }
@@ -2744,7 +2744,7 @@ static stbtt__active_edge *stbtt__new_active(stbtt__hheap *hh, stbtt__edge *e, i
 {
    stbtt__active_edge *z = (stbtt__active_edge *) stbtt__hheap_alloc(hh, sizeof(*z), userdata);
    float dxdy = (e->x1 - e->x0) / (e->y1 - e->y0);
-   STBTT_assert(z != NULL);
+   STBTT_MX_ASSERT(z != NULL);
    if (!z) return z;
    
    // round dx down to avoid overshooting
@@ -2766,8 +2766,8 @@ static stbtt__active_edge *stbtt__new_active(stbtt__hheap *hh, stbtt__edge *e, i
 {
    stbtt__active_edge *z = (stbtt__active_edge *) stbtt__hheap_alloc(hh, sizeof(*z), userdata);
    float dxdy = (e->x1 - e->x0) / (e->y1 - e->y0);
-   STBTT_assert(z != NULL);
-   //STBTT_assert(e->y0 <= start_point);
+   STBTT_MX_ASSERT(z != NULL);
+   //STBTT_MX_ASSERT(e->y0 <= start_point);
    if (!z) return z;
    z->fdx = dxdy;
    z->fdy = dxdy != 0.0f ? (1.0f/dxdy) : 0.0f;
@@ -2859,7 +2859,7 @@ static void stbtt__rasterize_sorted_edges(stbtt__bitmap *result, stbtt__edge *e,
             stbtt__active_edge * z = *step;
             if (z->ey <= scan_y) {
                *step = z->next; // delete from list
-               STBTT_assert(z->direction);
+               STBTT_MX_ASSERT(z->direction);
                z->direction = 0;
                stbtt__hheap_free(&hh, z);
             } else {
@@ -2936,8 +2936,8 @@ static void stbtt__rasterize_sorted_edges(stbtt__bitmap *result, stbtt__edge *e,
 static void stbtt__handle_clipped_edge(float *scanline, int x, stbtt__active_edge *e, float x0, float y0, float x1, float y1)
 {
    if (y0 == y1) return;
-   STBTT_assert(y0 < y1);
-   STBTT_assert(e->sy <= e->ey);
+   STBTT_MX_ASSERT(y0 < y1);
+   STBTT_MX_ASSERT(e->sy <= e->ey);
    if (y0 > e->ey) return;
    if (y1 < e->sy) return;
    if (y0 < e->sy) {
@@ -2950,22 +2950,22 @@ static void stbtt__handle_clipped_edge(float *scanline, int x, stbtt__active_edg
    }
 
    if (x0 == x)
-      STBTT_assert(x1 <= x+1);
+      STBTT_MX_ASSERT(x1 <= x+1);
    else if (x0 == x+1)
-      STBTT_assert(x1 >= x);
+      STBTT_MX_ASSERT(x1 >= x);
    else if (x0 <= x)
-      STBTT_assert(x1 <= x);
+      STBTT_MX_ASSERT(x1 <= x);
    else if (x0 >= x+1)
-      STBTT_assert(x1 >= x+1);
+      STBTT_MX_ASSERT(x1 >= x+1);
    else
-      STBTT_assert(x1 >= x && x1 <= x+1);
+      STBTT_MX_ASSERT(x1 >= x && x1 <= x+1);
 
    if (x0 <= x && x1 <= x)
       scanline[x] += e->direction * (y1-y0);
    else if (x0 >= x+1 && x1 >= x+1)
       ;
    else {
-      STBTT_assert(x0 >= x && x0 <= x+1 && x1 >= x && x1 <= x+1);
+      STBTT_MX_ASSERT(x0 >= x && x0 <= x+1 && x1 >= x && x1 <= x+1);
       scanline[x] += e->direction * (y1-y0) * (1-((x0-x)+(x1-x))/2); // coverage = 1 - average x position
    }
 }
@@ -2978,7 +2978,7 @@ static void stbtt__fill_active_edges_new(float *scanline, float *scanline_fill, 
       // brute force every pixel
 
       // compute intersection points with top & bottom
-      STBTT_assert(e->ey >= y_top);
+      STBTT_MX_ASSERT(e->ey >= y_top);
 
       if (e->fdx == 0) {
          float x0 = e->fx;
@@ -2997,7 +2997,7 @@ static void stbtt__fill_active_edges_new(float *scanline, float *scanline_fill, 
          float x_top, x_bottom;
          float sy0,sy1;
          float dy = e->fdy;
-         STBTT_assert(e->sy <= y_bottom && e->ey >= y_top);
+         STBTT_MX_ASSERT(e->sy <= y_bottom && e->ey >= y_top);
 
          // compute endpoints of line segment clipped to this scanline (if the
          // line segment starts on this scanline. x0 is the intersection of the
@@ -3025,7 +3025,7 @@ static void stbtt__fill_active_edges_new(float *scanline, float *scanline_fill, 
                // simple case, only spans one pixel
                int x = (int) x_top;
                height = sy1 - sy0;
-               STBTT_assert(x >= 0 && x < len);
+               STBTT_MX_ASSERT(x >= 0 && x < len);
                scanline[x] += e->direction * (1-((x_top - x) + (x_bottom-x))/2)  * height;
                scanline_fill[x] += e->direction * height; // everything right of this pixel is filled
             } else {
@@ -3064,7 +3064,7 @@ static void stbtt__fill_active_edges_new(float *scanline, float *scanline_fill, 
                }
                y_crossing += dy * (x2 - (x1+1));
 
-               STBTT_assert(STBTT_fabs(area) <= 1.01f);
+               STBTT_MX_ASSERT(STBTT_fabs(area) <= 1.01f);
 
                scanline[x2] += area + sign * (1-((x2-x2)+(x_bottom-x2))/2) * (sy1-y_crossing);
 
@@ -3168,7 +3168,7 @@ static void stbtt__rasterize_sorted_edges(stbtt__bitmap *result, stbtt__edge *e,
          stbtt__active_edge * z = *step;
          if (z->ey <= scan_y_top) {
             *step = z->next; // delete from list
-            STBTT_assert(z->direction);
+            STBTT_MX_ASSERT(z->direction);
             z->direction = 0;
             stbtt__hheap_free(&hh, z);
          } else {
@@ -3187,7 +3187,7 @@ static void stbtt__rasterize_sorted_edges(stbtt__bitmap *result, stbtt__edge *e,
                      z->ey = scan_y_top;
                   }
                }
-               STBTT_assert(z->ey >= scan_y_top); // if we get really unlucky a tiny bit of an edge can be out of bounds
+               STBTT_MX_ASSERT(z->ey >= scan_y_top); // if we get really unlucky a tiny bit of an edge can be out of bounds
                // insert at front
                z->next = active;
                active = z;
@@ -3679,8 +3679,8 @@ static int stbtt_BakeFontBitmap_internal(unsigned char *data, int offset,  // fo
          y = bottom_y, x = 1; // advance to next row
       if (y + gh + 1 >= ph) // check if it fits vertically AFTER potentially moving to next row
          return -i;
-      STBTT_assert(x+gw < pw);
-      STBTT_assert(y+gh < ph);
+      STBTT_MX_ASSERT(x+gw < pw);
+      STBTT_MX_ASSERT(y+gh < ph);
       stbtt_MakeGlyphBitmap(&f, pixels+x+y*pw, gw,gh,pw, scale,scale, g);
       chardata[i].x0 = (stbtt_int16) x;
       chardata[i].y0 = (stbtt_int16) y;
@@ -3834,8 +3834,8 @@ STBTT_DEF void stbtt_PackEnd  (stbtt_pack_context *spc)
 
 STBTT_DEF void stbtt_PackSetOversampling(stbtt_pack_context *spc, unsigned int h_oversample, unsigned int v_oversample)
 {
-   STBTT_assert(h_oversample <= STBTT_MAX_OVERSAMPLE);
-   STBTT_assert(v_oversample <= STBTT_MAX_OVERSAMPLE);
+   STBTT_MX_ASSERT(h_oversample <= STBTT_MAX_OVERSAMPLE);
+   STBTT_MX_ASSERT(v_oversample <= STBTT_MAX_OVERSAMPLE);
    if (h_oversample <= STBTT_MAX_OVERSAMPLE)
       spc->h_oversample = h_oversample;
    if (v_oversample <= STBTT_MAX_OVERSAMPLE)
@@ -3902,7 +3902,7 @@ static void stbtt__h_prefilter(unsigned char *pixels, int w, int h, int stride_i
       }
 
       for (; i < w; ++i) {
-         STBTT_assert(pixels[i] == 0);
+         STBTT_MX_ASSERT(pixels[i] == 0);
          total -= buffer[i & STBTT__OVER_MASK];
          pixels[i] = (unsigned char) (total / kernel_width);
       }
@@ -3964,7 +3964,7 @@ static void stbtt__v_prefilter(unsigned char *pixels, int w, int h, int stride_i
       }
 
       for (; i < h; ++i) {
-         STBTT_assert(pixels[i*stride_in_bytes] == 0);
+         STBTT_MX_ASSERT(pixels[i*stride_in_bytes] == 0);
          total -= buffer[i & STBTT__OVER_MASK];
          pixels[i*stride_in_bytes] = (unsigned char) (total / kernel_width);
       }
@@ -4396,9 +4396,9 @@ static int stbtt__solve_cubic(float a, float b, float c, float* r)
 	   r[1] = s - u * (m + n);
 	   r[2] = s - u * (m - n);
 
-      //STBTT_assert( STBTT_fabs(((r[0]+a)*r[0]+b)*r[0]+c) < 0.05f);  // these asserts may not be safe at all scales, though they're in bezier t parameter units so maybe?
-      //STBTT_assert( STBTT_fabs(((r[1]+a)*r[1]+b)*r[1]+c) < 0.05f);
-      //STBTT_assert( STBTT_fabs(((r[2]+a)*r[2]+b)*r[2]+c) < 0.05f);
+      //STBTT_MX_ASSERT( STBTT_fabs(((r[0]+a)*r[0]+b)*r[0]+c) < 0.05f);  // these MX_ASSERTs may not be safe at all scales, though they're in bezier t parameter units so maybe?
+      //STBTT_MX_ASSERT( STBTT_fabs(((r[1]+a)*r[1]+b)*r[1]+c) < 0.05f);
+      //STBTT_MX_ASSERT( STBTT_fabs(((r[2]+a)*r[2]+b)*r[2]+c) < 0.05f);
    	return 3;
    }
 }
@@ -4493,7 +4493,7 @@ STBTT_DEF unsigned char * stbtt_GetGlyphSDF(const stbtt_fontinfo *info, float sc
                   //if (sx > STBTT_min(x0,x1)-min_dist && sx < STBTT_max(x0,x1)+min_dist &&
                   //    sy > STBTT_min(y0,y1)-min_dist && sy < STBTT_max(y0,y1)+min_dist)
                   float dist = (float) STBTT_fabs((x1-x0)*(y0-sy) - (y1-y0)*(x0-sx)) * precompute[i];
-                  STBTT_assert(i != 0);
+                  STBTT_MX_ASSERT(i != 0);
                   if (dist < min_dist) {
                      // check position along line
                      // x' = x0 + t*(x1-x0), y' = y0 + t*(y1-y0)
@@ -4822,8 +4822,8 @@ STBTT_DEF int stbtt_CompareUTF8toUTF16_bigendian(const char *s1, int len1, const
 //   1.07 (2015-08-01) allow PackFontRanges to accept arrays of sparse codepoints;
 //                     allow PackFontRanges to pack and render in separate phases;
 //                     fix stbtt_GetFontOFfsetForIndex (never worked for non-0 input?);
-//                     fixed an assert() bug in the new rasterizer
-//                     replace assert() with STBTT_assert() in new rasterizer
+//                     fixed an MX_ASSERT() bug in the new rasterizer
+//                     replace MX_ASSERT() with STBTT_MX_ASSERT() in new rasterizer
 //   1.06 (2015-07-14) performance improvements (~35% faster on x86 and x64 on test machine)
 //                     also more precise AA rasterizer, except if shapes overlap
 //                     remove need for STBTT_sort

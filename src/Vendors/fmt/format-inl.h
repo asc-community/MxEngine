@@ -39,8 +39,8 @@ inline fmt::internal::null<> strerror_s(char*, std::size_t, ...) { return {}; }
 FMT_BEGIN_NAMESPACE
 namespace internal {
 
-FMT_FUNC void assert_fail(const char* file, int line, const char* message) {
-  print(stderr, "{}:{}: assertion failed: {}", file, line, message);
+FMT_FUNC void MX_ASSERT_fail(const char* file, int line, const char* message) {
+  print(stderr, "{}:{}: MX_ASSERTion failed: {}", file, line, message);
   std::abort();
 }
 
@@ -68,7 +68,7 @@ inline int fmt_snprintf(char* buffer, size_t size, const char* format, ...) {
 // Buffer should be at least of size 1.
 FMT_FUNC int safe_strerror(int error_code, char*& buffer,
                            std::size_t buffer_size) FMT_NOEXCEPT {
-  FMT_ASSERT(buffer != nullptr && buffer_size != 0, "invalid buffer");
+  FMT_MX_ASSERT(buffer != nullptr && buffer_size != 0, "invalid buffer");
 
   class dispatcher {
    private:
@@ -528,8 +528,8 @@ class bigint {
 
   // Computes *this -= other assuming aligned bigints and *this >= other.
   void subtract_aligned(const bigint& other) {
-    FMT_ASSERT(other.exp_ >= exp_, "unaligned bigints");
-    FMT_ASSERT(compare(*this, other) >= 0, "");
+    FMT_MX_ASSERT(other.exp_ >= exp_, "unaligned bigints");
+    FMT_MX_ASSERT(compare(*this, other) >= 0, "");
     bigit borrow = 0;
     int i = other.exp_ - exp_;
     for (size_t j = 0, n = other.bigits_.size(); j != n; ++i, ++j) {
@@ -610,7 +610,7 @@ class bigint {
   }
 
   template <typename Int> bigint& operator*=(Int value) {
-    FMT_ASSERT(value > 0, "");
+    FMT_MX_ASSERT(value > 0, "");
     multiply(uint32_or_64_or_128_t<Int>(value));
     return *this;
   }
@@ -708,10 +708,10 @@ class bigint {
   // Divides this bignum by divisor, assigning the remainder to this and
   // returning the quotient.
   int divmod_assign(const bigint& divisor) {
-    FMT_ASSERT(this != &divisor, "");
+    FMT_MX_ASSERT(this != &divisor, "");
     if (compare(*this, divisor) < 0) return 0;
     int num_bigits = static_cast<int>(bigits_.size());
-    FMT_ASSERT(divisor.bigits_[divisor.bigits_.size() - 1u] != 0, "");
+    FMT_MX_ASSERT(divisor.bigits_[divisor.bigits_.size() - 1u] != 0, "");
     int exp_difference = exp_ - divisor.exp_;
     if (exp_difference > 0) {
       // Align bigints by adding trailing zeros to simplify subtraction.
@@ -738,9 +738,9 @@ enum class round_direction { unknown, up, down };
 // error should be less than divisor / 2.
 inline round_direction get_round_direction(uint64_t divisor, uint64_t remainder,
                                            uint64_t error) {
-  FMT_ASSERT(remainder < divisor, "");  // divisor - remainder won't overflow.
-  FMT_ASSERT(error < divisor, "");      // divisor - error won't overflow.
-  FMT_ASSERT(error < divisor - error, "");  // error * 2 won't overflow.
+  FMT_MX_ASSERT(remainder < divisor, "");  // divisor - remainder won't overflow.
+  FMT_MX_ASSERT(error < divisor, "");      // divisor - error won't overflow.
+  FMT_MX_ASSERT(error < divisor - error, "");  // error * 2 won't overflow.
   // Round down if (remainder + error) * 2 <= divisor.
   if (remainder <= divisor - remainder && error * 2 <= divisor - remainder * 2)
     return round_direction::down;
@@ -785,8 +785,8 @@ FMT_ALWAYS_INLINE digits::result grisu_gen_digits(fp value, uint64_t error,
   // zero because it contains a product of two 64-bit numbers with MSB set (due
   // to normalization) - 1, shifted right by at most 60 bits.
   auto integral = static_cast<uint32_t>(value.f >> -one.e);
-  FMT_ASSERT(integral != 0, "");
-  FMT_ASSERT(integral == value.f >> -one.e, "");
+  FMT_MX_ASSERT(integral != 0, "");
+  FMT_MX_ASSERT(integral == value.f >> -one.e, "");
   // The fractional part of scaled value (p2 in Grisu) c = value % one.
   uint64_t fractional = value.f & (one.f - 1);
   exp = grisu_count_digits(integral);  // kappa in Grisu.
@@ -836,7 +836,7 @@ FMT_ALWAYS_INLINE digits::result grisu_gen_digits(fp value, uint64_t error,
       integral = 0;
       break;
     default:
-      FMT_ASSERT(false, "invalid number of digits");
+      FMT_MX_ASSERT(false, "invalid number of digits");
     }
     --exp;
     uint64_t remainder =
@@ -886,7 +886,7 @@ struct fixed_handler {
 
   digits::result on_digit(char digit, uint64_t divisor, uint64_t remainder,
                           uint64_t error, int, bool integral) {
-    FMT_ASSERT(remainder < divisor, "");
+    FMT_MX_ASSERT(remainder < divisor, "");
     buf[size++] = digit;
     if (size < precision) return digits::more;
     if (!integral) {
@@ -895,7 +895,7 @@ struct fixed_handler {
       // and divisor > (1 << 32) there.
       if (error >= divisor || error >= divisor - error) return digits::error;
     } else {
-      FMT_ASSERT(error == 1 && divisor > 2, "");
+      FMT_MX_ASSERT(error == 1 && divisor > 2, "");
     }
     auto dir = get_round_direction(divisor, remainder, error);
     if (dir != round_direction::up)
@@ -1042,7 +1042,7 @@ void fallback_format(Double d, buffer<char>& buf, int& exp10) {
 template <typename T>
 int format_float(T value, int precision, float_specs specs, buffer<char>& buf) {
   static_assert(!std::is_same<T, float>::value, "");
-  FMT_ASSERT(value >= 0, "value is negative");
+  FMT_MX_ASSERT(value >= 0, "value is negative");
 
   const bool fixed = specs.format == float_format::fixed;
   if (value <= 0) {  // <= instead of == to silence a warning.
@@ -1115,7 +1115,7 @@ template <typename T>
 int snprintf_float(T value, int precision, float_specs specs,
                    buffer<char>& buf) {
   // Buffer capacity must be non-zero, otherwise MSVC's vsnprintf_s will fail.
-  FMT_ASSERT(buf.capacity() > buf.size(), "empty buffer");
+  FMT_MX_ASSERT(buf.capacity() > buf.size(), "empty buffer");
   static_assert(!std::is_same<T, float>::value, "");
 
   // Subtract 1 to account for the difference in precision since we use %e for

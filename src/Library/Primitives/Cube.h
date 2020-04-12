@@ -30,6 +30,7 @@
 
 #include "Library/Primitives/AbstractPrimitive.h"
 #include "Utilities/Format/Format.h"
+#include "Core/Application/Application.h"
 #include <array>
 
 namespace MxEngine

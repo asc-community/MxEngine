@@ -849,7 +849,7 @@ bool ImGui::ScrollbarEx(const ImRect& bb_frame, ImGuiID id, ImGuiAxis axis, floa
 
     // Calculate the height of our grabbable box. It generally represent the amount visible (vs the total scrollable amount)
     // But we maintain a minimum size in pixel to allow for the user to still aim inside.
-    IM_ASSERT(ImMax(size_contents_v, size_avail_v) > 0.0f); // Adding this assert to check if the ImMax(XXX,1.0f) is still needed. PLEASE CONTACT ME if this triggers.
+    IM_ASSERT(ImMax(size_contents_v, size_avail_v) > 0.0f); // Adding this MX_ASSERT to check if the ImMax(XXX,1.0f) is still needed. PLEASE CONTACT ME if this triggers.
     const float win_size_v = ImMax(ImMax(size_contents_v, size_avail_v), 1.0f);
     const float grab_h_pixels = ImClamp(scrollbar_size_v * (size_avail_v / win_size_v), style.GrabMinSize, scrollbar_size_v);
     const float grab_h_norm = grab_h_pixels / scrollbar_size_v;
@@ -1675,7 +1675,7 @@ static const ImGuiDataTypeInfo GDataTypeInfo[] =
     { sizeof(float),            "%f",   "%f"    },  // ImGuiDataType_Float (float are promoted to double in va_arg)
     { sizeof(double),           "%f",   "%lf"   },  // ImGuiDataType_Double
 };
-IM_STATIC_ASSERT(IM_ARRAYSIZE(GDataTypeInfo) == ImGuiDataType_COUNT);
+IM_STATIC_MX_ASSERT(IM_ARRAYSIZE(GDataTypeInfo) == ImGuiDataType_COUNT);
 
 // FIXME-LEGACY: Prior to 1.61 our DragInt() function internally used floats and because of this the compile-time default value for format was "%.0f".
 // Even though we changed the compile-time default, we expect users to have carried %f around, which would break the display of DragInt() calls.

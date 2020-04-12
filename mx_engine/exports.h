@@ -1376,9 +1376,11 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("vec_up", RefGetter(&IMovable::GetUpVector))
         ;
 
+    using CameraFunc = ICamera & (CameraController::*)();
+
     py::class_<CameraController, py::bases<IMovable>, boost::noncopyable>("camera_controller", py::init())
         .def("has_camera", &CameraController::HasCamera)
-        .add_property("camera", RefGetter(&CameraController::GetCamera))
+        .add_property("camera", RefGetter((CameraFunc)&CameraController::GetCamera))
         .add_property("camera_matrix", RefGetter(&CameraController::GetMatrix))
         .add_property("move_speed", &CameraController::GetMoveSpeed, &CameraController::SetMoveSpeed)
         .add_property("rotate_speed", &CameraController::GetRotateSpeed, &CameraController::SetRotateSpeed)

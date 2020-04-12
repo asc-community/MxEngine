@@ -83,6 +83,7 @@ set(project_files_group
     "Library/Primitives/Grid.h"
     "Library/Primitives/Primitives.h"
     "Library/Primitives/Sphere.h"
+    "Library/Primitives/Surface.h"
     "Library/Scripting/Python/PythonEngine.cpp"
     "Library/Scripting/Python/PythonEngine.h"
     "Library/Scripting/Script/Script.cpp"

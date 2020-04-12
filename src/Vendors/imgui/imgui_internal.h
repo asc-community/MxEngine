@@ -150,14 +150,14 @@ extern IMGUI_API ImGuiContext* GImGui;  // Current implicit context pointer
 #define IMGUI_DEBUG_LOG(_FMT,...)       printf("[%05d] " _FMT, GImGui->FrameCount, __VA_ARGS__)
 #endif
 
-// Static Asserts
+// Static MX_ASSERTs
 #if (__cplusplus >= 201100)
-#define IM_STATIC_ASSERT(_COND)         static_assert(_COND, "")
+#define IM_STATIC_MX_ASSERT(_COND)         static_assert(_COND, "")
 #else
-#define IM_STATIC_ASSERT(_COND)         typedef char static_assertion_##__line__[(_COND)?1:-1]
+#define IM_STATIC_MX_ASSERT(_COND)         typedef char static_assertion_##__line__[(_COND)?1:-1]
 #endif
 
-// "Paranoid" Debug Asserts are meant to only be enabled during specific debugging/work, otherwise would slow down the code too much.
+// "Paranoid" Debug MX_ASSERTs are meant to only be enabled during specific debugging/work, otherwise would slow down the code too much.
 // We currently don't have many of those so the effect is currently negligible, but onward intent to add more aggressive ones in the code.
 //#define IMGUI_DEBUG_PARANOID
 #ifdef IMGUI_DEBUG_PARANOID
@@ -1414,7 +1414,7 @@ struct IMGUI_API ImGuiWindowTempData
     ImVector<float>         ItemWidthStack;
     ImVector<float>         TextWrapPosStack;
     ImVector<ImGuiGroupData>GroupStack;
-    short                   StackSizesBackup[6];    // Store size of various stacks for asserting
+    short                   StackSizesBackup[6];    // Store size of various stacks for MX_ASSERTing
 
     ImGuiWindowTempData()
     {

@@ -207,7 +207,7 @@ static void ShowDemoWindowMisc();
 // You may execute this function to experiment with the UI and understand what it does. You may then search for keywords in the code when you are interested by a specific feature.
 void ImGui::ShowDemoWindow(bool* p_open)
 {
-    IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing dear imgui context. Refer to examples app!"); // Exceptionally add an extra assert here for people confused with initial dear imgui setup
+    IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing dear imgui context. Refer to examples app!"); // Exceptionally add an extra MX_ASSERT here for people confused with initial dear imgui setup
 
     // Examples Apps (accessible from the "Examples" menu)
     static bool show_app_documents = false;

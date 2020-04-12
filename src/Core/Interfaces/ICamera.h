@@ -35,6 +35,8 @@ namespace MxEngine
 	struct ICamera
 	{
 		virtual const Matrix4x4& GetMatrix() const = 0;
+		virtual const Matrix4x4& GetViewMatrix() const = 0;
+		virtual const Matrix4x4& GetProjectionMatrix() const = 0;
 		virtual void SetViewMatrix(const Matrix4x4& view) = 0;
 		virtual void SetAspectRatio(float w, float h = 1.0f) = 0;
 		virtual float GetAspectRatio() const = 0;

@@ -30,7 +30,7 @@
 
 #include <array>
 #include <vector>
-#include <cassert>
+#include "Core/Macro/Macro.h"
 
 namespace MxEngine
 {
@@ -123,42 +123,42 @@ namespace MxEngine
     template<typename T>
     inline T& array_view<T>::operator[](size_t idx)
     {
-        assert(idx < this->_size);
+        MX_ASSERT(idx < this->_size);
         return this->_data[idx];
     }
 
     template<typename T>
     inline const T& array_view<T>::operator[](size_t idx) const
     {
-        assert(idx < this->_size);
+        MX_ASSERT(idx < this->_size);
         return this->_data[idx];
     }
 
     template<typename T>
     inline T& array_view<T>::front()
     {
-        assert(this->_size > 0);
+        MX_ASSERT(this->_size > 0);
         return this->_data[0];
     }
 
     template<typename T>
     inline const T& array_view<T>::front() const
     {
-        assert(this->_size > 0);
+        MX_ASSERT(this->_size > 0);
         return this->_data[0];
     }
 
     template<typename T>
     inline T& array_view<T>::back()
     {
-        assert(this->_size > 0);
+        MX_ASSERT(this->_size > 0);
         return this->_data[this->_size - 1];
     }
 
     template<typename T>
     inline const T& array_view<T>::back() const
     {
-        assert(this->_size > 0);
+        MX_ASSERT(this->_size > 0);
         return this->_data[this->_size - 1];
     }
 

@@ -42,7 +42,7 @@ namespace MxEngine
 
     private:
         BaseStorage _vec;
-        size_t _width;
+        size_t _height;
     public:
 
         Array2D();
@@ -71,7 +71,7 @@ namespace MxEngine
 
     template<typename T, template<typename> typename Base>
     inline Array2D<T, Base>::Array2D()
-        : _width(0)
+        : _height(0)
     {
     }
 
@@ -82,15 +82,15 @@ namespace MxEngine
     }
 
     template<typename T, template<typename> typename Base>
-    inline size_t Array2D<T, Base>::width() const
+    inline size_t Array2D<T, Base>::height() const
     {
-        return this->_width;
+        return this->_height;
     }
 
     template<typename T, template<typename> typename Base>
-    inline size_t Array2D<T, Base>::height() const
+    inline size_t Array2D<T, Base>::width() const
     {
-        return this->_width == 0 ? 0 : this->_vec.size() / this->_width;
+        return this->_height == 0 ? 0 : this->_vec.size() / this->_height;
     }
 
     template<typename T, template<typename> typename Base>
@@ -108,35 +108,35 @@ namespace MxEngine
     template<typename T, template<typename> typename Base>
     inline ArrayView<T> Array2D<T, Base>::operator[](size_t idx)
     {
-        assert(idx * this->_width < this->_vec.size());
-        return ArrayView<T>(_vec.data() + idx * this->_width, this->_vec.size() / this->_width);
+        MX_ASSERT(idx * this->_height < this->_vec.size());
+        return ArrayView<T>(_vec.data() + idx * this->_height, this->_height);
     }
 
     template<typename T, template<typename> typename Base>
     inline ArrayView<const T> Array2D<T, Base>::operator[](size_t idx) const
     {
-        assert(idx * this->_width < this->_vec.size());
-        return ArrayView<const T>(_vec.data() + idx * this->_width, this->_vec.size() / this->_width);
+        MX_ASSERT(idx * this->_height < this->_vec.size());
+        return ArrayView<const T>(_vec.data() + idx * this->_height, this->_height);
     }
 
     template<typename T, template<typename> typename Base>
     inline void Array2D<T, Base>::resize(size_t width, size_t height, T value)
     {
         this->_vec.resize(width * height, value);
-        this->_width = width;
+        this->_height = height;
     }
 
     template<typename T, template<typename> typename Base>
     inline void Array2D<T, Base>::rearrange(size_t width, size_t height)
     {
-        assert(width * height == this->_vec.size());
-        this->_width = width;
+        MX_ASSERT(width * height == this->_vec.size());
+        this->_height = height;
     }
 
     template<typename T, template<typename> typename Base>
     inline void Array2D<T, Base>::clear()
     {
         this->_vec.clear();
-        this->_width = 0;
+        this->_height = 0;
     }
 }

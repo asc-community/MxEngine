@@ -64,6 +64,18 @@ namespace MxEngine
 		return this->matrix;
 	}
 
+    const Matrix4x4& OrthographicCamera::GetViewMatrix() const
+    {
+		auto& _ = this->GetMatrix();
+		return this->view;
+    }
+
+	const Matrix4x4& OrthographicCamera::GetProjectionMatrix() const
+	{
+		auto& _ = this->GetMatrix();
+		return this->projection;
+	}
+
 	void OrthographicCamera::SetViewMatrix(const Matrix4x4& view)
 	{
 		this->view = view;

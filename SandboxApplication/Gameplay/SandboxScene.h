@@ -20,13 +20,13 @@ class SandboxScene : public Scene
         // this->AddObject("Destroyer", MakeUnique<DestroyerObject>());
         // this->AddObject("DeathStar", MakeUnique<DeathStarObject>());
 		
-		auto& surface = (Surface&)this->AddObject("Surface", MakeUnique<Surface>());
-		surface.SetSurface([](float x, float y) 
-			{ 
-				return std::sin(10.0f * x) * std::sin(10.0f * y);
-			}, 1.0f, 1.0f, 0.01f);
-		surface.Scale(10.0f, 2.0f, 10.0f);
-		surface.Translate(0.0f, 2.0f, 0.0f);
+		// auto& surface = (Surface&)this->AddObject("Surface", MakeUnique<Surface>());
+		// surface.SetSurface([](float x, float y) 
+		// 	{ 
+		// 		return std::sin(10.0f * x) * std::sin(10.0f * y);
+		// 	}, 1.0f, 1.0f, 0.01f);
+		// surface.Scale(10.0f, 2.0f, 10.0f);
+		// surface.Translate(0.0f, 2.0f, 0.0f);
 
         this->LoadScript("init", "scripts/init.py");
         this->LoadScript("update", "scripts/update.py");
@@ -34,11 +34,14 @@ class SandboxScene : public Scene
 
         Application::Get()->ExecuteScript(*this->GetResource<Script>("init"));
 
+		this->SceneSkybox = MakeUnique<Skybox>();
+		this->SceneSkybox->SkyboxTexture = this->LoadCubeMap("Skybox", "textures/dawn.jpg");
+
 		this->PointLights.SetCount(1);
 		this->SpotLights.SetCount(1);
 
 		this->GlobalLight
-			.UseAmbientColor({ 0.0f, 0.0f, 0.0f })
+			.UseAmbientColor({ 0.3f, 0.3f, 0.3f })
 			.UseDiffuseColor({ 0.3f, 0.3f, 0.3f })
 			.UseSpecularColor({ 1.0f, 1.0f, 1.0f })
 			;

@@ -29,8 +29,7 @@
 #include "GLFrameBuffer.h"
 #include "Platform/OpenGL/GLUtilities/GLUtilities.h"
 #include "Utilities/Logger/Logger.h"
-
-#include <cassert>
+#include "Core/Macro/Macro.h"
 
 namespace MxEngine
 {

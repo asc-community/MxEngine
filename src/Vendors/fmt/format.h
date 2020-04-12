@@ -109,7 +109,7 @@ FMT_END_NAMESPACE
 #    define FMT_THROW(x)              \
       do {                            \
         static_cast<void>(sizeof(x)); \
-        FMT_ASSERT(false, "");        \
+        FMT_MX_ASSERT(false, "");        \
       } while (false)
 #  endif
 #endif
@@ -185,7 +185,7 @@ inline uint32_t clz(uint32_t x) {
   unsigned long r = 0;
   _BitScanReverse(&r, x);
 
-  FMT_ASSERT(x != 0, "");
+  FMT_MX_ASSERT(x != 0, "");
   // Static analysis complains about using uninitialized data
   // "r", but the only way that can happen is if "x" is 0,
   // which the callers guarantee to not happen.
@@ -210,7 +210,7 @@ inline uint32_t clzll(uint64_t x) {
   _BitScanReverse(&r, static_cast<uint32_t>(x));
 #  endif
 
-  FMT_ASSERT(x != 0, "");
+  FMT_MX_ASSERT(x != 0, "");
   // Static analysis complains about using uninitialized data
   // "r", but the only way that can happen is if "x" is 0,
   // which the callers guarantee to not happen.
@@ -686,7 +686,7 @@ class basic_memory_buffer : private Allocator, public internal::buffer<T> {
     \endrst
    */
   basic_memory_buffer& operator=(basic_memory_buffer&& other) FMT_NOEXCEPT {
-    FMT_ASSERT(this != &other, "");
+    FMT_MX_ASSERT(this != &other, "");
     deallocate();
     move(other);
     return *this;
@@ -880,7 +880,7 @@ template <> inline wchar_t decimal_point(locale_ref loc) {
 template <typename UInt, typename Char, typename F>
 inline Char* format_decimal(Char* buffer, UInt value, int num_digits,
                             F add_thousands_sep) {
-  FMT_ASSERT(num_digits >= 0, "invalid digit count");
+  FMT_MX_ASSERT(num_digits >= 0, "invalid digit count");
   buffer += num_digits;
   Char* end = buffer;
   while (value >= 100) {
@@ -914,7 +914,7 @@ template <> constexpr int digits10<uint128_t>() FMT_NOEXCEPT { return 38; }
 template <typename Char, typename UInt, typename Iterator, typename F>
 inline Iterator format_decimal(Iterator out, UInt value, int num_digits,
                                F add_thousands_sep) {
-  FMT_ASSERT(num_digits >= 0, "invalid digit count");
+  FMT_MX_ASSERT(num_digits >= 0, "invalid digit count");
   // Buffer should be large enough to hold all digits (<= digits10 + 1).
   enum { max_size = digits10<UInt>() + 1 };
   Char buffer[2 * max_size];
@@ -1079,7 +1079,7 @@ struct float_specs {
 
 // Writes the exponent exp in the form "[+-]d{2,3}" to buffer.
 template <typename Char, typename It> It write_exponent(int exp, It it) {
-  FMT_ASSERT(-10000 < exp && exp < 10000, "exponent out of range");
+  FMT_MX_ASSERT(-10000 < exp && exp < 10000, "exponent out of range");
   if (exp < 0) {
     *it++ = static_cast<Char>('-');
     exp = -exp;
@@ -1891,7 +1891,7 @@ class arg_formatter_base {
       : writer_(r, loc), specs_(s) {}
 
   iterator operator()(monostate) {
-    FMT_ASSERT(false, "invalid argument type");
+    FMT_MX_ASSERT(false, "invalid argument type");
     return out();
   }
 
@@ -1921,7 +1921,7 @@ class arg_formatter_base {
     if (const_check(is_supported_floating_point(value)))
       writer_.write(value, specs_ ? *specs_ : format_specs());
     else
-      FMT_ASSERT(false, "unsupported float argument type");
+      FMT_MX_ASSERT(false, "unsupported float argument type");
     return out();
   }
 
@@ -1986,7 +1986,7 @@ template <typename Char> FMT_CONSTEXPR bool is_name_start(Char c) {
 template <typename Char, typename ErrorHandler>
 FMT_CONSTEXPR int parse_nonnegative_int(const Char*& begin, const Char* end,
                                         ErrorHandler&& eh) {
-  FMT_ASSERT(begin != end && '0' <= *begin && *begin <= '9', "");
+  FMT_MX_ASSERT(begin != end && '0' <= *begin && *begin <= '9', "");
   unsigned value = 0;
   // Convert to unsigned to prevent a warning.
   constexpr unsigned max_int = max_value<int>();
@@ -2335,7 +2335,7 @@ class dynamic_specs_handler
 template <typename Char, typename IDHandler>
 FMT_CONSTEXPR const Char* parse_arg_id(const Char* begin, const Char* end,
                                        IDHandler&& handler) {
-  FMT_ASSERT(begin != end, "");
+  FMT_MX_ASSERT(begin != end, "");
   Char c = *begin;
   if (c == '}' || c == ':') {
     handler();
@@ -2412,7 +2412,7 @@ FMT_CONSTEXPR const Char* next_code_point(const Char* begin, const Char* end) {
 template <typename Char, typename Handler>
 FMT_CONSTEXPR const Char* parse_align(const Char* begin, const Char* end,
                                       Handler&& handler) {
-  FMT_ASSERT(begin != end, "");
+  FMT_MX_ASSERT(begin != end, "");
   auto align = align::none;
   auto p = next_code_point(begin, end);
   if (p == end) p = begin;
@@ -2455,7 +2455,7 @@ FMT_CONSTEXPR const Char* parse_align(const Char* begin, const Char* end,
 template <typename Char, typename Handler>
 FMT_CONSTEXPR const Char* parse_width(const Char* begin, const Char* end,
                                       Handler&& handler) {
-  FMT_ASSERT(begin != end, "");
+  FMT_MX_ASSERT(begin != end, "");
   if ('0' <= *begin && *begin <= '9') {
     handler.on_width(parse_nonnegative_int(begin, end, handler));
   } else if (*begin == '{') {
@@ -2945,7 +2945,7 @@ struct formatter<T, Char,
     switch (type) {
     case internal::type::none_type:
     case internal::type::named_arg_type:
-      FMT_ASSERT(false, "invalid argument type");
+      FMT_MX_ASSERT(false, "invalid argument type");
       break;
     case internal::type::int_type:
     case internal::type::uint_type:
@@ -2965,21 +2965,21 @@ struct formatter<T, Char,
       if (internal::const_check(FMT_USE_FLOAT)) {
         internal::parse_float_type_spec(specs_, eh);
       } else {
-        FMT_ASSERT(false, "float support disabled");
+        FMT_MX_ASSERT(false, "float support disabled");
       }
       break;
     case internal::type::double_type:
       if (internal::const_check(FMT_USE_DOUBLE)) {
         internal::parse_float_type_spec(specs_, eh);
       } else {
-        FMT_ASSERT(false, "double support disabled");
+        FMT_MX_ASSERT(false, "double support disabled");
       }
       break;
     case internal::type::long_double_type:
       if (internal::const_check(FMT_USE_LONG_DOUBLE)) {
         internal::parse_float_type_spec(specs_, eh);
       } else {
-        FMT_ASSERT(false, "long double support disabled");
+        FMT_MX_ASSERT(false, "long double support disabled");
       }
       break;
     case internal::type::cstring_type:

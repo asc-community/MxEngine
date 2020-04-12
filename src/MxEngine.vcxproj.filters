@@ -153,6 +153,7 @@
     <ClInclude Include="Vendors\GLFW\glfw3.h" />
     <ClInclude Include="Vendors\GLFW\glfw3native.h" />
     <ClInclude Include="Library\Primitives\Surface.h" />
+    <ClInclude Include="Core\Skybox\Skybox.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
@@ -199,6 +200,7 @@
     <ClCompile Include="Vendors\imgui\imgui_impl_glfw.cpp" />
     <ClCompile Include="Vendors\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="Vendors\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="Core\Skybox\Skybox.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\cube_fragment.glsl" />
@@ -220,6 +222,8 @@
     <None Include="Core\Shaders\nolight_object_vertex.glsl" />
     <None Include="Core\Shaders\nolight_object_fragment.glsl" />
     <None Include="Vendors\stb\LICENSE" />
+    <None Include="Core\Shaders\skybox_vertex.glsl" />
+    <None Include="Core\Shaders\skybox_fragment.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\objects\crate.obj" />

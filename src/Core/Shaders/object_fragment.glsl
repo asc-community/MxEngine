@@ -4,7 +4,7 @@ R"(
 #define Kconstant  K[0]
 #define Klinear    K[1]
 #define Kquadratic K[2]
-#define MAX_POINT_LIGHTS 8
+#define MAX_POINT_LIGHTS 2
 #define MAX_SPOT_LIGHTS 8
 #define POINT_LIGHT_SAMPLES 20
 )" \
@@ -70,7 +70,7 @@ uniform sampler2D map_Ks;
 uniform sampler2D map_Ke;
 uniform sampler2D map_dirLight_shadow;
 uniform sampler2D map_spotLight_shadow[MAX_SPOT_LIGHTS];
-uniform samplerCube map_pointLight_shadow[2];
+uniform samplerCube map_pointLight_shadow[MAX_POINT_LIGHTS];
 uniform float Ka;
 uniform float Kd;
 uniform int pointLightCount;

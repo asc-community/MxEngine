@@ -25,6 +25,8 @@
 // scripting (optional):
 #define MXENGINE_USE_PYTHON
 
+#define MX_ASSERT_EXCEPTION
+
 // required in engine source:
 #define MXENGINE_USE_BOOST
 #define MXENGINE_USE_ASSIMP
@@ -56,3 +58,16 @@
 #define INVOKE_ONCE(...) static char MXENGINE_CONCAT(unused, __LINE__) = [&](){ __VA_ARGS__; return '\0'; }()
 
 #define BOOL_STRING(b) ((b) ? "true" : "false")
+
+#if defined(MXENGINE_DEBUG)
+    #if defined(MX_ASSERT_EXCEPTION)
+            #include <exception>
+            namespace MxEngine { class assert_exception : public std::exception { public: assert_exception(const char* msg) : std::exception(msg) {} }; }
+        #define MX_ASSERT(expr) if(!(expr)) throw MxEngine::assert_exception(#expr) 
+    #else
+        #define MX_ASSERT(expr) assert(expr)
+    #endif
+#else
+    #define MX_ASSERT(expr)
+#endif
+    

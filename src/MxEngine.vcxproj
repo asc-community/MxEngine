@@ -39,6 +39,7 @@
     <ClInclude Include="Core\Lighting\SpotLight\SpotLight.h" />
     <ClInclude Include="Core\Macro\Macro.h" />
     <ClInclude Include="Core\MxObject\Mesh.h" />
+    <ClInclude Include="Core\Skybox\Skybox.h" />
     <ClInclude Include="Library\Bindings\ShaderBinding.h" />
     <ClInclude Include="Library\Primitives\Surface.h" />
     <ClInclude Include="Platform\OpenGL\CubeMap\GLCubeMap.h" />
@@ -188,6 +189,7 @@
     <ClCompile Include="Core\MxObject\Mesh.cpp" />
     <ClCompile Include="Core\RenderController\RenderController.cpp" />
     <ClCompile Include="Core\Scene\Scene.cpp" />
+    <ClCompile Include="Core\Skybox\Skybox.cpp" />
     <ClCompile Include="Library\Scripting\Python\PythonEngine.cpp" />
     <ClCompile Include="Library\Scripting\Script\Script.cpp" />
     <ClCompile Include="Platform\OpenGL\CubeMap\GLCubeMap.cpp" />
@@ -240,6 +242,8 @@
     <None Include="Core\Shaders\depthtexture_fragment.glsl" />
     <None Include="Core\Shaders\depthtexture_vertex.glsl" />
     <None Include="Core\Shaders\nolight_object_vertex.glsl" />
+    <None Include="Core\Shaders\skybox_fragment.glsl" />
+    <None Include="Core\Shaders\skybox_vertex.glsl" />
     <None Include="Resources\shaders\object_fragment.glsl" />
     <None Include="Resources\shaders\object_vertex.glsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

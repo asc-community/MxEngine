@@ -279,18 +279,18 @@ template <typename T> FMT_CONSTEXPR T const_check(T value) { return value; }
 // A workaround for gcc 4.8 to make void_t work in a SFINAE context.
 template <typename... Ts> struct void_t_impl { using type = void; };
 
-FMT_NORETURN FMT_API void assert_fail(const char* file, int line,
+FMT_NORETURN FMT_API void MX_ASSERT_fail(const char* file, int line,
                                       const char* message);
 
-#ifndef FMT_ASSERT
+#ifndef FMT_MX_ASSERT
 #  ifdef NDEBUG
-// FMT_ASSERT is not empty to avoid -Werror=empty-body.
-#    define FMT_ASSERT(condition, message) ((void)0)
+// FMT_MX_ASSERT is not empty to avoid -Werror=empty-body.
+#    define FMT_MX_ASSERT(condition, message) ((void)0)
 #  else
-#    define FMT_ASSERT(condition, message)                                    \
+#    define FMT_MX_ASSERT(condition, message)                                    \
       ((condition) /* void() fails with -Winvalid-constexpr on clang 4.0.1 */ \
            ? (void)0                                                          \
-           : ::fmt::internal::assert_fail(__FILE__, __LINE__, (message)))
+           : ::fmt::internal::MX_ASSERT_fail(__FILE__, __LINE__, (message)))
 #  endif
 #endif
 
@@ -320,7 +320,7 @@ struct uint128_t {};
 // Casts a nonnegative integer to unsigned.
 template <typename Int>
 FMT_CONSTEXPR typename std::make_unsigned<Int>::type to_unsigned(Int value) {
-  FMT_ASSERT(value >= 0, "negative value");
+  FMT_MX_ASSERT(value >= 0, "negative value");
   return static_cast<typename std::make_unsigned<Int>::type>(value);
 }
 
@@ -813,12 +813,12 @@ FMT_TYPE_CONSTANT(basic_string_view<Char>, string_type);
 FMT_TYPE_CONSTANT(const void*, pointer_type);
 
 FMT_CONSTEXPR bool is_integral_type(type t) {
-  FMT_ASSERT(t != type::named_arg_type, "invalid argument type");
+  FMT_MX_ASSERT(t != type::named_arg_type, "invalid argument type");
   return t > type::none_type && t <= type::last_integer_type;
 }
 
 FMT_CONSTEXPR bool is_arithmetic_type(type t) {
-  FMT_ASSERT(t != type::named_arg_type, "invalid argument type");
+  FMT_MX_ASSERT(t != type::named_arg_type, "invalid argument type");
   return t > type::none_type && t <= type::last_numeric_type;
 }
 
@@ -1098,7 +1098,7 @@ FMT_CONSTEXPR auto visit_format_arg(Visitor&& vis,
   case internal::type::none_type:
     break;
   case internal::type::named_arg_type:
-    FMT_ASSERT(false, "invalid argument type");
+    FMT_MX_ASSERT(false, "invalid argument type");
     break;
   case internal::type::int_type:
     return vis(arg.value_.int_value);

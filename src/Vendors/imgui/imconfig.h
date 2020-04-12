@@ -13,10 +13,10 @@
 
 #pragma once
 
-//---- Define assertion handler. Defaults to calling assert().
+//---- Define MX_ASSERTion handler. Defaults to calling MX_ASSERT().
 // If your macro uses multiple statements, make sure is enclosed in a 'do { .. } while (0)' block so it can be used as a single statement.
-//#define IM_ASSERT(_EXPR)  MyAssert(_EXPR)
-//#define IM_ASSERT(_EXPR)  ((void)(_EXPR))     // Disable asserts
+//#define IM_ASSERT(_EXPR)  MyMX_ASSERT(_EXPR)
+//#define IM_ASSERT(_EXPR)  ((void)(_EXPR))     // Disable MX_ASSERTs
 
 //---- Define attributes of all API symbols declarations, e.g. for DLL under Windows
 // Using dear imgui via a shared library is not recommended, because of function call overhead and because we don't guarantee backward nor forward ABI compatibility.
@@ -96,7 +96,7 @@
 // This adds a small runtime cost which is why it is not enabled by default.
 //#define IMGUI_DEBUG_TOOL_ITEM_PICKER_EX
 
-//---- Debug Tools: Enable slower asserts
+//---- Debug Tools: Enable slower MX_ASSERTs
 //#define IMGUI_DEBUG_PARANOID
 
 //---- Tip: You can add extra functions within the ImGui:: namespace, here or in your own headers files.

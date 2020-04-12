@@ -201,6 +201,13 @@ namespace MxEngine
         return this->GetResourceManager<Texture>().Add(name, std::move(textureObject));
     }
 
+    CubeMap* Scene::LoadCubeMap(const std::string& name, const FilePath& texture, bool genMipmaps, bool flipImage)
+    {
+        MAKE_SCOPE_PROFILER("Scene::LoadCubeMap");
+        auto cubemapObject = Graphics::Instance()->CreateCubeMap(this->scenePath / texture, genMipmaps, flipImage);
+        return this->GetResourceManager<CubeMap>().Add(name, std::move(cubemapObject));
+    }
+
     void Scene::SetDirectory(const FilePath& path)
     {
         Logger::Instance().Debug("MxEngine::Scene", "setting " + this->name + " scene directory to: " + path.string());

@@ -41,7 +41,7 @@ template <typename Double>
 char* sprintf_format(Double value, internal::buffer<char>& buf,
                      sprintf_specs specs) {
   // Buffer capacity must be non-zero, otherwise MSVC's vsnprintf_s will fail.
-  FMT_ASSERT(buf.capacity() != 0, "empty buffer");
+  FMT_MX_ASSERT(buf.capacity() != 0, "empty buffer");
 
   // Build format string.
   enum { max_format_size = 10 };  // longest format: %#-*.*Lg

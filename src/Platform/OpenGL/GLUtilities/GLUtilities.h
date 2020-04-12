@@ -37,8 +37,6 @@
 
 namespace MxEngine
 {
-#define ASSERT(x) if(!(x)) __debugbreak(); 
-
 	#if defined(MXENGINE_DEBUG)
 	#define GLCALL(x) GlClearErrors(); x; GlLogCall(#x, __FILE__, __LINE__)
 	#else

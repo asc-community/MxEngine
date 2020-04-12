@@ -1,7 +1,7 @@
 #define MAKE_STRING(...) #__VA_ARGS__
 R"(
 #version 400 core
-#define MAX_POINT_LIGHTS 8
+#define MAX_POINT_LIGHTS 2
 #define MAX_SPOT_LIGHTS 8
 )" \
 MAKE_STRING(

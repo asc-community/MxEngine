@@ -36,6 +36,7 @@
 #include "Core/Lighting/DirectionalLight/DirectionalLight.h"
 #include "Core/Lighting/PointLight/PointLight.h"
 #include "Core/Lighting/SpotLight/SpotLight.h"
+#include "Core/Skybox/Skybox.h"
 
 #include <array>
 
@@ -81,6 +82,7 @@ namespace MxEngine
 		void DrawObject(const IDrawable& object, const CameraController& viewport) const;
 		void DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights) const;
 		void DrawObjectMesh(const IDrawable& object, const CameraController& viewport) const;
+		void DrawSkybox(const Skybox& skybox, const CameraController& viewport);
 		void SetPCFDistance(int value);
 		template<typename LightSource>
 		void DrawDepthTexture(const IDrawable& object, const LightSource& light) const;

@@ -220,13 +220,13 @@ namespace MxEngine
 
 	VertexBuffer& Mesh::GetBufferByIndex(size_t index)
 	{
-		assert(index < this->VBOs.size());
+		MX_ASSERT(index < this->VBOs.size());
 		return *this->VBOs[index];
 	}
 
 	VertexBufferLayout& Mesh::GetBufferLayoutByIndex(size_t index)
 	{
-		assert(index < this->VBLs.size());
+		MX_ASSERT(index < this->VBLs.size());
 		return *this->VBLs[index];
 	}
 

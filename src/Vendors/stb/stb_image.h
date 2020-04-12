@@ -7477,7 +7477,7 @@ STBIDEF int stbi_is_16_bit_from_callbacks(stbi_io_callbacks const *c, void *user
       2.03  (2015-04-12) extra corruption checking (mmozeiko)
                          stbi_set_flip_vertically_on_load (nguillemot)
                          fix NEON support; fix mingw support
-      2.02  (2015-01-19) fix incorrect assert, fix warning
+      2.02  (2015-01-19) fix incorrect asser, fix warning
       2.01  (2015-01-17) fix various warnings; suppress SIMD on gcc 32-bit without -msse2
       2.00b (2014-12-25) fix STBI_MALLOC in progressive JPEG
       2.00  (2014-12-25) optimize JPG, including x86 SSE2 & NEON SIMD (ryg)

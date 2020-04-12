@@ -68,4 +68,25 @@ namespace MxEngine::GUI
         // Also limit its size according to environment
         ImGui::SetNextWindowSize({ context->GetConsole().GetSize().x, 0.0f });
     }
+
+    inline bool InputIntOnClick(const char* title, int* v)
+    {
+        ImGui::InputInt(title, v); 
+        ImGui::SameLine();
+        return ImGui::Button("apply");
+    }
+
+    inline bool InputFloatOnClick(const char* title, float* v)
+    {
+        ImGui::InputFloat(title, v);
+        ImGui::SameLine();
+        return ImGui::Button("apply");
+    }
+
+    inline bool InputFloatOnClick(const char* title, char* v, size_t size)
+    {
+        ImGui::InputText(title, v, size);
+        ImGui::SameLine();
+        return ImGui::Button("apply");
+    }
 }

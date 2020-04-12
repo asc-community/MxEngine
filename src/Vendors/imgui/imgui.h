@@ -76,7 +76,7 @@ Index of this file:
 // Helper Macros
 #ifndef IM_ASSERT
 #include <assert.h>
-#define IM_ASSERT(_EXPR)            assert(_EXPR)                               // You can override the default assert handler by editing imconfig.h
+#define IM_ASSERT(_EXPR)            assert(_EXPR)                               // You can override the default MX_ASSERT handler by editing imconfig.h
 #endif
 #if !defined(IMGUI_USE_STB_SPRINTF) && (defined(__clang__) || defined(__GNUC__))
 #define IM_FMTARGS(FMT)             __attribute__((format(printf, FMT, FMT+1))) // To apply printf-style warnings to our functions.
@@ -86,7 +86,7 @@ Index of this file:
 #define IM_FMTLIST(FMT)
 #endif
 #define IM_ARRAYSIZE(_ARR)          ((int)(sizeof(_ARR) / sizeof(*_ARR)))       // Size of a static C-style array. Don't use on pointers!
-#define IM_UNUSED(_VAR)             ((void)_VAR)                                // Used to silence "unused variable warnings". Often useful as asserts may be stripped out from final builds.
+#define IM_UNUSED(_VAR)             ((void)_VAR)                                // Used to silence "unused variable warnings". Often useful as MX_ASSERTs may be stripped out from final builds.
 #if (__cplusplus >= 201100)
 #define IM_OFFSETOF(_TYPE,_MEMBER)  offsetof(_TYPE, _MEMBER)                    // Offset of _MEMBER within _TYPE. Standardized as offsetof() in C++11
 #else
@@ -210,8 +210,8 @@ struct ImVec2
     float                                   x, y;
     ImVec2()                                { x = y = 0.0f; }
     ImVec2(float _x, float _y)              { x = _x; y = _y; }
-    float  operator[] (size_t idx) const    { IM_ASSERT(idx <= 1); return (&x)[idx]; }    // We very rarely use this [] operator, the assert overhead is fine.
-    float& operator[] (size_t idx)          { IM_ASSERT(idx <= 1); return (&x)[idx]; }    // We very rarely use this [] operator, the assert overhead is fine.
+    float  operator[] (size_t idx) const    { IM_ASSERT(idx <= 1); return (&x)[idx]; }    // We very rarely use this [] operator, the MX_ASSERT overhead is fine.
+    float& operator[] (size_t idx)          { IM_ASSERT(idx <= 1); return (&x)[idx]; }    // We very rarely use this [] operator, the MX_ASSERT overhead is fine.
 #ifdef IM_VEC2_CLASS_EXTRA
     IM_VEC2_CLASS_EXTRA     // Define additional constructors and implicit cast operators in imconfig.h to convert back and forth between your math types and ImVec2.
 #endif
@@ -1796,7 +1796,7 @@ struct ImGuiListClipper
     // items_height: Use -1.0f to be calculated automatically on first step. Otherwise pass in the distance between your items, typically GetTextLineHeightWithSpacing() or GetFrameHeightWithSpacing().
     // If you don't specify an items_height, you NEED to call Step(). If you specify items_height you may call the old Begin()/End() api directly, but prefer calling Step().
     ImGuiListClipper(int items_count = -1, float items_height = -1.0f)  { Begin(items_count, items_height); } // NB: Begin() initialize every fields (as we allow user to call Begin/End multiple times on a same instance if they want).
-    ~ImGuiListClipper()                                                 { IM_ASSERT(ItemsCount == -1); }      // Assert if user forgot to call End() or Step() until false.
+    ~ImGuiListClipper()                                                 { IM_ASSERT(ItemsCount == -1); }      // MX_ASSERT if user forgot to call End() or Step() until false.
 
     IMGUI_API bool Step();                                              // Call until it returns false. The DisplayStart/DisplayEnd fields will be set and you can process/draw those items.
     IMGUI_API void Begin(int items_count, float items_height = -1.0f);  // Automatically called by constructor if you passed 'items_count' or by Step() in Step 1.
@@ -2242,7 +2242,7 @@ struct ImFontAtlas
     // Members
     //-------------------------------------------
 
-    bool                        Locked;             // Marked as Locked by ImGui::NewFrame() so attempt to modify the atlas will assert.
+    bool                        Locked;             // Marked as Locked by ImGui::NewFrame() so attempt to modify the atlas will MX_ASSERT.
     ImFontAtlasFlags            Flags;              // Build flags (see ImFontAtlasFlags_)
     ImTextureID                 TexID;              // User data to refer to the texture once it has been uploaded to user's graphic systems. It is passed back to you during rendering via the ImDrawCmd structure.
     int                         TexDesiredWidth;    // Texture width desired by user before Build(). Must be a power-of-two. If have many glyphs your graphics API have texture size restrictions you may want to increase texture width to decrease height.

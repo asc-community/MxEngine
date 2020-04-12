@@ -145,8 +145,8 @@ CODE
    where the UI code is called multiple times ("multiple passes") from a single entry point. There are pros and cons to both approaches.
  - Our origin are on the top-left. In axis aligned bounding boxes, Min = top-left, Max = bottom-right.
  - This codebase is also optimized to yield decent performances with typical "Debug" builds settings.
- - Please make sure you have asserts enabled (IM_ASSERT redirects to assert() by default, but can be redirected).
-   If you get an assert, read the messages and comments around the assert.
+ - Please make sure you have MX_ASSERTs enabled (IM_ASSERT redirects to MX_ASSERT() by default, but can be redirected).
+   If you get an MX_ASSERT, read the messages and comments around the MX_ASSERT.
  - C++: this is a very C-ish codebase: we don't rely on C++11, we don't include any C++ headers, and ImGui:: is a namespace.
  - C++: ImVec2/ImVec4 do not expose math operators by default, because it is expected that you use your own math types.
    See FAQ "How can I use my own math types instead of ImVec2/ImVec4?" for details about setting up imconfig.h for that.
@@ -367,7 +367,7 @@ CODE
  You can read releases logs https://github.com/ocornut/imgui/releases for more details.
 
  - 2020/01/22 (1.75) - ImDrawList::AddCircle()/AddCircleFilled() functions don't accept negative radius any more.
- - 2019/12/17 (1.75) - made Columns() limited to 64 columns by asserting above that limit. While the current code technically supports it, future code may not so we're putting the restriction ahead.
+ - 2019/12/17 (1.75) - made Columns() limited to 64 columns by MX_ASSERTing above that limit. While the current code technically supports it, future code may not so we're putting the restriction ahead.
  - 2019/12/13 (1.75) - [imgui_internal.h] changed ImRect() default constructor initializes all fields to 0.0f instead of (FLT_MAX,FLT_MAX,-FLT_MAX,-FLT_MAX). If you used ImRect::Add() to create bounding boxes by adding multiple points into it, you may need to fix your initial value.
  - 2019/12/08 (1.75) - removed redirecting functions/enums that were marked obsolete in 1.53 (December 2017):
                        - ShowTestWindow()                    -> use ShowDemoWindow()
@@ -381,7 +381,7 @@ CODE
                        - IMGUI_DISABLE_TEST_WINDOWS          -> use IMGUI_DISABLE_DEMO_WINDOWS
  - 2019/12/08 (1.75) - obsoleted calling ImDrawList::PrimReserve() with a negative count (which was the vaguely documented and rarely if ever used). Instead we added an explicit PrimUnreserve() API.
  - 2019/12/06 (1.75) - removed implicit default parameter to IsMouseDragging(int button = 0) to be consistent with other mouse functions (none of the other functions have it).
- - 2019/11/21 (1.74) - ImFontAtlas::AddCustomRectRegular() now requires an ID larger than 0x110000 (instead of 0x10000) to conform with supporting Unicode planes 1-16 in a future update. ID below 0x110000 will now assert.
+ - 2019/11/21 (1.74) - ImFontAtlas::AddCustomRectRegular() now requires an ID larger than 0x110000 (instead of 0x10000) to conform with supporting Unicode planes 1-16 in a future update. ID below 0x110000 will now MX_ASSERT.
  - 2019/11/19 (1.74) - renamed IMGUI_DISABLE_FORMAT_STRING_FUNCTIONS to IMGUI_DISABLE_DEFAULT_FORMAT_FUNCTIONS for consistency.
  - 2019/11/19 (1.74) - renamed IMGUI_DISABLE_MATH_FUNCTIONS to IMGUI_DISABLE_DEFAULT_MATH_FUNCTIONS for consistency.
  - 2019/10/22 (1.74) - removed redirecting functions/enums that were marked obsolete in 1.52 (October 2017):
@@ -407,7 +407,7 @@ CODE
  - 2019/04/29 (1.70) - removed GetContentRegionAvailWidth(), use GetContentRegionAvail().x instead. Kept inline redirection function (will obsolete).
  - 2019/03/04 (1.69) - renamed GetOverlayDrawList() to GetForegroundDrawList(). Kept redirection function (will obsolete).
  - 2019/02/26 (1.69) - renamed ImGuiColorEditFlags_RGB/ImGuiColorEditFlags_HSV/ImGuiColorEditFlags_HEX to ImGuiColorEditFlags_DisplayRGB/ImGuiColorEditFlags_DisplayHSV/ImGuiColorEditFlags_DisplayHex. Kept redirection enums (will obsolete).
- - 2019/02/14 (1.68) - made it illegal/assert when io.DisplayTime == 0.0f (with an exception for the first frame). If for some reason your time step calculation gives you a zero value, replace it with a dummy small value!
+ - 2019/02/14 (1.68) - made it illegal/MX_ASSERT when io.DisplayTime == 0.0f (with an exception for the first frame). If for some reason your time step calculation gives you a zero value, replace it with a dummy small value!
  - 2019/02/01 (1.68) - removed io.DisplayVisibleMin/DisplayVisibleMax (which were marked obsolete and removed from viewport/docking branch already).
  - 2019/01/06 (1.67) - renamed io.InputCharacters[], marked internal as was always intended. Please don't access directly, and use AddInputCharacter() instead!
  - 2019/01/06 (1.67) - renamed ImFontAtlas::GlyphRangesBuilder to ImFontGlyphRangesBuilder. Kept redirection typedef (will obsolete).
@@ -437,7 +437,7 @@ CODE
  - 2018/05/03 (1.61) - DragInt(): the default compile-time format string has been changed from "%.0f" to "%d", as we are not using integers internally any more.
                        If you used DragInt() with custom format strings, make sure you change them to use %d or an integer-compatible format.
                        To honor backward-compatibility, the DragInt() code will currently parse and modify format strings to replace %*f with %d, giving time to users to upgrade their code.
-                       If you have IMGUI_DISABLE_OBSOLETE_FUNCTIONS enabled, the code will instead assert! You may run a reg-exp search on your codebase for e.g. "DragInt.*%f" to help you find them.
+                       If you have IMGUI_DISABLE_OBSOLETE_FUNCTIONS enabled, the code will instead MX_ASSERT! You may run a reg-exp search on your codebase for e.g. "DragInt.*%f" to help you find them.
  - 2018/04/28 (1.61) - obsoleted InputFloat() functions taking an optional "int decimal_precision" in favor of an equivalent and more flexible "const char* format",
                        consistent with other functions. Kept redirection functions (will obsolete).
  - 2018/04/09 (1.61) - IM_DELETE() helper function added in 1.60 doesn't clear the input _pointer_ reference, more consistent with expectation and allows passing r-value.
@@ -499,7 +499,7 @@ CODE
  - 2017/08/08 (1.51) - removed ColorEditMode() and ImGuiColorEditMode in favor of ImGuiColorEditFlags and parameters to the various Color*() functions. The SetColorEditOptions() allows to initialize default but the user can still change them with right-click context menu.
                      - changed prototype of 'ColorEdit4(const char* label, float col[4], bool show_alpha = true)' to 'ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flags = 0)', where passing flags = 0x01 is a safe no-op (hello dodgy backward compatibility!). - check and run the demo window, under "Color/Picker Widgets", to understand the various new options.
                      - changed prototype of rarely used 'ColorButton(ImVec4 col, bool small_height = false, bool outline_border = true)' to 'ColorButton(const char* desc_id, ImVec4 col, ImGuiColorEditFlags flags = 0, ImVec2 size = ImVec2(0,0))'
- - 2017/07/20 (1.51) - removed IsPosHoveringAnyWindow(ImVec2), which was partly broken and misleading. ASSERT + redirect user to io.WantCaptureMouse
+ - 2017/07/20 (1.51) - removed IsPosHoveringAnyWindow(ImVec2), which was partly broken and misleading. MX_ASSERT + redirect user to io.WantCaptureMouse
  - 2017/05/26 (1.50) - removed ImFontConfig::MergeGlyphCenterV in favor of a more multipurpose ImFontConfig::GlyphOffset.
  - 2017/05/01 (1.50) - renamed ImDrawList::PathFill() (rarely used directly) to ImDrawList::PathFillConvex() for clarity.
  - 2016/11/06 (1.50) - BeginChild(const char*) now applies the stack id to the provided label, consistently with other functions as it should always have been. It shouldn't affect you unless (extremely unlikely) you were appending multiple times to a same child from different locations of the stack id. If that's the case, generate an id with GetId() and use it instead of passing string to BeginChild().
@@ -518,7 +518,7 @@ CODE
  - 2016/04/03 (1.48) - removed style.WindowFillAlphaDefault setting which was redundant. Bake default BG alpha inside style.Colors[ImGuiCol_WindowBg] and all other Bg color values. (ref github issue #337).
  - 2016/04/03 (1.48) - renamed ImGuiCol_TooltipBg to ImGuiCol_PopupBg, used by popups/menus and tooltips. popups/menus were previously using ImGuiCol_WindowBg. (ref github issue #337)
  - 2016/03/21 (1.48) - renamed GetWindowFont() to GetFont(), GetWindowFontSize() to GetFontSize(). Kept inline redirection function (will obsolete).
- - 2016/03/02 (1.48) - InputText() completion/history/always callbacks: if you modify the text buffer manually (without using DeleteChars()/InsertChars() helper) you need to maintain the BufTextLen field. added an assert.
+ - 2016/03/02 (1.48) - InputText() completion/history/always callbacks: if you modify the text buffer manually (without using DeleteChars()/InsertChars() helper) you need to maintain the BufTextLen field. added an MX_ASSERT.
  - 2016/01/23 (1.48) - fixed not honoring exact width passed to PushItemWidth(), previously it would add extra FramePadding.x*2 over that width. if you had manual pixel-perfect alignment in place it might affect you.
  - 2015/12/27 (1.48) - fixed ImDrawList::AddRect() which used to render a rectangle 1 px too large on each axis.
  - 2015/12/04 (1.47) - renamed Color() helpers to ValueColor() - dangerously named, rarely used and probably to be made obsolete.
@@ -1066,7 +1066,7 @@ ImGuiIO::ImGuiIO()
 {
     // Most fields are initialized with zero
     memset(this, 0, sizeof(*this));
-    IM_ASSERT(IM_ARRAYSIZE(ImGuiIO::MouseDown) == ImGuiMouseButton_COUNT && IM_ARRAYSIZE(ImGuiIO::MouseClicked) == ImGuiMouseButton_COUNT); // Our pre-C++11 IM_STATIC_ASSERT() macros triggers warning on modern compilers so we don't use it here.
+    IM_ASSERT(IM_ARRAYSIZE(ImGuiIO::MouseDown) == ImGuiMouseButton_COUNT && IM_ARRAYSIZE(ImGuiIO::MouseClicked) == ImGuiMouseButton_COUNT); // Our pre-C++11 IM_STATIC_MX_ASSERT() macros triggers warning on modern compilers so we don't use it here.
 
     // Settings
     ConfigFlags = ImGuiConfigFlags_None;
@@ -2285,7 +2285,7 @@ void ImGuiListClipper::End()
 {
     if (ItemsCount < 0)
         return;
-    // In theory here we should assert that ImGui::GetCursorPosY() == StartPosY + DisplayEnd * ItemsHeight, but it feels saner to just seek at the end and not assert/crash the user.
+    // In theory here we should MX_ASSERT that ImGui::GetCursorPosY() == StartPosY + DisplayEnd * ItemsHeight, but it feels saner to just seek at the end and not MX_ASSERT/crash the user.
     if (ItemsCount < INT_MAX)
         SetCursorPosYAndSetupDummyPrevLine(StartPosY + ItemsCount * ItemsHeight, ItemsHeight); // advance cursor
     ItemsCount = -1;
@@ -3033,7 +3033,7 @@ void ImGui::MarkItemEdited(ImGuiID id)
     // ActiveId might have been released by the time we call this (as in the typical press/release button behavior) but still need need to fill the data.
     ImGuiContext& g = *GImGui;
     IM_ASSERT(g.ActiveId == id || g.ActiveId == 0 || g.DragDropActive);
-    IM_UNUSED(id); // Avoid unused variable warnings when asserts are compiled out.
+    IM_UNUSED(id); // Avoid unused variable warnings when MX_ASSERTs are compiled out.
     //IM_ASSERT(g.CurrentWindow->DC.LastItemId == id);
     g.ActiveIdHasBeenEditedThisFrame = true;
     g.ActiveIdHasBeenEditedBefore = true;
@@ -3697,7 +3697,7 @@ void ImGui::NewFrame()
     ImGuiTestEngineHook_PreNewFrame(&g);
 #endif
 
-    // Check and assert for various common IO and Configuration mistakes
+    // Check and MX_ASSERT for various common IO and Configuration mistakes
     ErrorCheckNewFrameSanityChecks();
 
     // Load settings on first frame, save settings when modified (after a delay)
@@ -4048,7 +4048,7 @@ static void AddDrawListToDrawData(ImVector<ImDrawList*>* out_list, ImDrawList* d
         IM_ASSERT((int)draw_list->_VtxCurrentIdx == draw_list->VtxBuffer.Size);
 
     // Check that draw_list doesn't use more vertices than indexable (default ImDrawIdx = unsigned short = 2 bytes = 64K vertices per ImDrawList = per window)
-    // If this assert triggers because you are drawing lots of stuff manually:
+    // If this MX_ASSERT triggers because you are drawing lots of stuff manually:
     // - First, make sure you are coarse clipping yourself and not trying to draw many things outside visible bounds.
     //   Be mindful that the ImDrawList API doesn't filter vertices. Use the Metrics window to inspect draw list contents.
     // - If you want large meshes with more than 64K vertices, you can either:
@@ -4205,7 +4205,7 @@ void ImGui::EndFrame()
         AddWindowToSortBuffer(&g.WindowsTempSortBuffer, window);
     }
 
-    // This usually assert if there is a mismatch between the ImGuiWindowFlags_ChildWindow / ParentWindow values and DC.ChildWindows[] in parents, aka we've done something wrong.
+    // This usually MX_ASSERT if there is a mismatch between the ImGuiWindowFlags_ChildWindow / ParentWindow values and DC.ChildWindows[] in parents, aka we've done something wrong.
     IM_ASSERT(g.Windows.Size == g.WindowsTempSortBuffer.Size);
     g.Windows.swap(g.WindowsTempSortBuffer);
     g.IO.MetricsActiveWindows = g.WindowsActiveCount;
@@ -4499,7 +4499,7 @@ ImVec2 ImGui::GetMousePosOnOpeningCurrentPopup()
 // We typically use ImVec2(-FLT_MAX,-FLT_MAX) to denote an invalid mouse position.
 bool ImGui::IsMousePosValid(const ImVec2* mouse_pos)
 {
-    // The assert is only to silence a false-positive in XCode Static Analysis.
+    // The MX_ASSERT is only to silence a false-positive in XCode Static Analysis.
     // Because GImGui is not dereferenced in every code path, the static analyzer assume that it may be NULL (which it doesn't for other functions).
     IM_ASSERT(GImGui != NULL);
     const float MOUSE_INVALID = -256000.0f;
@@ -6711,7 +6711,7 @@ static void ImGui::ErrorCheckNewFrameSanityChecks()
     ImGuiContext& g = *GImGui;
 
     // Check user data
-    // (We pass an error message in the assert expression to make it visible to programmers who are not using a debugger, as most assert handlers display their argument)
+    // (We pass an error message in the MX_ASSERT expression to make it visible to programmers who are not using a debugger, as most MX_ASSERT handlers display their argument)
     IM_ASSERT(g.Initialized);
     IM_ASSERT((g.IO.DeltaTime > 0.0f || g.FrameCount == 0)              && "Need a positive DeltaTime!");
     IM_ASSERT((g.FrameCount == 0 || g.FrameCountEnded == g.FrameCount)  && "Forgot to call Render() or EndFrame() at the end of the previous frame?");

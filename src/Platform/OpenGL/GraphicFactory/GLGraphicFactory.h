@@ -138,14 +138,10 @@ namespace MxEngine
 			return std::move(textureObject);
 		}
 
-		inline virtual UniqueRef<CubeMap> CreateCubeMap(const std::array<FilePath, 6>& cubemaps, bool genMipmaps = true, bool flipImage = true) override
+		inline virtual UniqueRef<CubeMap> CreateCubeMap(const FilePath& cubemap, bool genMipmaps = true, bool flipImage = false) override
 		{
 			auto cubemapObject = this->CreateCubeMap();
-			cubemapObject->Load(
-				{
-					cubemaps[0].string(), cubemaps[1].string(), cubemaps[2].string(), 
-					cubemaps[3].string(), cubemaps[4].string(), cubemaps[5].string(),
-				}, genMipmaps, flipImage);
+			cubemapObject->Load(cubemap.string(), genMipmaps, flipImage);
 			return std::move(cubemapObject);
 		}
 

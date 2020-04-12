@@ -308,6 +308,23 @@ namespace MxEngine
 		}
 	}
 
+    void RenderController::DrawSkybox(const Skybox& skybox, const CameraController& viewport)
+    {
+		if (!viewport.HasCamera()) return;
+		if (skybox.SkyboxTexture == nullptr) return;
+
+		auto& shader = *skybox.SkyboxShader;
+		auto View = (Matrix3x3)viewport.GetCamera().GetViewMatrix();
+		auto Projection = viewport.GetCamera().GetProjectionMatrix();
+		shader.SetUniformMat4("ViewProjection", Projection * (Matrix4x4)View);
+		shader.SetUniformFloat("size", 100000.0f);
+
+		skybox.SkyboxTexture->Bind(0);
+		shader.SetUniformInt("skybox", 0);
+
+		this->GetRenderEngine().DrawTriangles(*skybox.VAO, skybox.VBO->GetSize(), shader);
+    }
+
 	void RenderController::SetPCFDistance(int value)
 	{
 		this->PCFdistance = value;

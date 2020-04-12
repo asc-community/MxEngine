@@ -134,10 +134,10 @@ namespace MxEngine
 			meshInfo.useTexture = mesh->HasTextureCoords(0);
 			meshInfo.material = object.materials.data() + mesh->mMaterialIndex;
 
-			assert(mesh->mNormals != nullptr);
-			assert(mesh->mTextureCoords != nullptr);
-			assert(mesh->mVertices != nullptr);
-			assert(mesh->mNumFaces > 0);
+			MX_ASSERT(mesh->mNormals != nullptr);
+			MX_ASSERT(mesh->mTextureCoords != nullptr);
+			MX_ASSERT(mesh->mVertices != nullptr);
+			MX_ASSERT(mesh->mNumFaces > 0);
 			constexpr size_t VertexSize = (3 + 3 + 3);
 
 			std::vector<float> vertex;
@@ -165,7 +165,7 @@ namespace MxEngine
 			meshInfo.faces.resize((size_t)mesh->mNumFaces);
 			for (size_t i = 0; i < (size_t)mesh->mNumFaces; i++)
 			{
-				assert(mesh->mFaces[i].mNumIndices == 3);
+				MX_ASSERT(mesh->mFaces[i].mNumIndices == 3);
 				meshInfo.faces[i].x = mesh->mFaces[i].mIndices[0];
 				meshInfo.faces[i].y = mesh->mFaces[i].mIndices[1];
 				meshInfo.faces[i].z = mesh->mFaces[i].mIndices[2];

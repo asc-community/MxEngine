@@ -31,6 +31,7 @@
 #include "Vendors/glm/glm.hpp"
 #include "Vendors/glm/ext.hpp"
 #include "Vendors/glm/gtx/quaternion.hpp"
+#include "Core/Macro/Macro.h"
 #include <cmath>
 #include <algorithm>
 
@@ -110,9 +111,9 @@ namespace MxEngine
 		return glm::perspective(fov, aspect, znear, zfar);
 	}
 
-	inline Matrix4x4 MakeInversePerspectiveMatrix(float fov, float aspect, float znear, float zfar)
+	inline Matrix4x4 MakeReversedPerspectiveMatrix(float fov, float aspect, float znear, float zfar)
 	{
-		assert(std::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
+		MX_ASSERT(std::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
 		// zfar is unused. It is okay, as -1.0f in Result[2][3] means infinity zfar
 
 		float const tanHalfFovy = std::tan(fov / 2.0f);
@@ -463,5 +464,10 @@ namespace MxEngine
 	inline constexpr size_t Log2(size_t n)
 	{
 		return ((n <= 2) ? 1 : 1 + Log2(n / 2));
+	}
+
+	inline constexpr size_t CeilToLog2(size_t n)
+	{
+		return static_cast<size_t>(1) << Log2(n);
 	}
 }

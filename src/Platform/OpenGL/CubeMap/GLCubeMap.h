@@ -34,7 +34,7 @@ namespace MxEngine
 {
     class GLCubeMap : public CubeMap
     {
-        std::array<std::string, 6> filepaths;
+        std::string filepath;
         size_t width = 0, height = 0, channels = 0;
         mutable CubeMapId activeId = 0;
         void FreeCubeMap();
@@ -48,10 +48,10 @@ namespace MxEngine
         virtual void Bind() const override;
         virtual void Unbind() const override;
         virtual void Bind(CubeMapId id) const override;
-        virtual void Load(const std::array<std::string, 6>& filepaths, bool genMipmaps = true, bool flipImage = true) override;
+        virtual void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = false) override;
         virtual void Load(std::array<RawDataPointer, 6> data, int width, int height, bool genMipmaps = true) override;
         virtual void LoadDepth(int width, int height) override;
-        virtual const std::string& GetPath(size_t index) const override;
+        virtual const std::string& GetPath() const override;
         virtual size_t GetWidth() const override;
         virtual size_t GetHeight() const override;
         virtual size_t GetChannelCount() const override;

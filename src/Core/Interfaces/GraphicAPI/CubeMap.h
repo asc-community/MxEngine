@@ -40,10 +40,10 @@ namespace MxEngine
 		using RawDataPointer = const uint8_t*;
 
 		virtual void Bind(CubeMapId id) const = 0;
-		virtual void Load(const std::array<std::string, 6>& filepaths, bool genMipmaps = true, bool flipImage = true) = 0;
+		virtual void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = false) = 0;
 		virtual void Load(std::array<RawDataPointer, 6> data, int width, int height, bool genMipmaps = true) = 0;
 		virtual void LoadDepth(int width, int height) = 0;
-		virtual const std::string& GetPath(size_t index) const = 0;
+		virtual const std::string& GetPath() const = 0;
 		virtual size_t GetWidth() const = 0;
 		virtual size_t GetHeight() const = 0;
 		virtual size_t GetChannelCount() const = 0;
