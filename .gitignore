@@ -25,7 +25,6 @@
 *.a
 
 # Executables
-*.exe
 *.out
 *.app
 
@@ -37,6 +36,7 @@ x64
 __pycache__
 
 # MxEngine
+CmakeFiles
 imgui.ini
 profile_log.json
 compile_commands.json
