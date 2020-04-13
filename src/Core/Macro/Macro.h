@@ -25,6 +25,7 @@
 // scripting (optional):
 #define MXENGINE_USE_PYTHON
 
+// assert handling 
 #define MX_ASSERT_EXCEPTION
 
 // required in engine source:
@@ -38,6 +39,9 @@
     #pragma comment(lib, "glu32.lib")
     #pragma comment(lib, "glew32s.lib")
     #pragma comment(lib, "glfw3.lib")
+
+    #define PLATFORM_SHADER_PATH Platform/OpenGL/Shaders/
+    #define PLATFORM_SHADER_EXTENSION .glsl
 #endif
 
 #if defined(MXENGINE_USE_ASSIMP)
@@ -58,6 +62,10 @@
 #define INVOKE_ONCE(...) static char MXENGINE_CONCAT(unused, __LINE__) = [&](){ __VA_ARGS__; return '\0'; }()
 
 #define BOOL_STRING(b) ((b) ? "true" : "false")
+
+#define MXENGINE_STRING_IMPL(x) #x
+#define MXENGINE_STRING(x) MXENGINE_STRING_IMPL(x)
+#define MAKE_PLATFORM_SHADER(name) MXENGINE_STRING(MXENGINE_CONCAT(MXENGINE_CONCAT(PLATFORM_SHADER_PATH, name), PLATFORM_SHADER_EXTENSION))
 
 #if defined(MXENGINE_DEBUG)
     #if defined(MX_ASSERT_EXCEPTION)

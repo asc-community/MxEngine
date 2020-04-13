@@ -210,20 +210,20 @@
     <None Include="Resources\shaders\mesh_vertex.glsl" />
     <None Include="Resources\shaders\object_vertex.glsl" />
     <None Include="Resources\shaders\object_fragment.glsl" />
-    <None Include="Core\Shaders\mesh_fragment.glsl" />
-    <None Include="Core\Shaders\mesh_vertex.glsl" />
-    <None Include="Core\Shaders\object_fragment.glsl" />
-    <None Include="Core\Shaders\object_vertex.glsl" />
-    <None Include="Core\Shaders\depthtexture_fragment.glsl" />
-    <None Include="Core\Shaders\depthtexture_vertex.glsl" />
-    <None Include="Core\Shaders\depthcubemap_vertex.glsl" />
-    <None Include="Core\Shaders\depthcubemap_geometry.glsl" />
-    <None Include="Core\Shaders\depthcubemap_fragment.glsl" />
-    <None Include="Core\Shaders\nolight_object_vertex.glsl" />
-    <None Include="Core\Shaders\nolight_object_fragment.glsl" />
     <None Include="Vendors\stb\LICENSE" />
-    <None Include="Core\Shaders\skybox_vertex.glsl" />
-    <None Include="Core\Shaders\skybox_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\depthcubemap_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\depthcubemap_geometry.glsl" />
+    <None Include="Platform\OpenGL\Shaders\depthcubemap_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\depthtexture_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\depthtexture_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\mesh_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\mesh_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\nolight_object_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\nolight_object_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\object_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\object_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\skybox_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\skybox_vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="Resources\objects\crate.obj" />

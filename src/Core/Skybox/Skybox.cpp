@@ -75,4 +75,46 @@ namespace MxEngine
         this->VAO = Graphics::Instance()->CreateVertexArray();
         VAO->AddBuffer(*VBO, *VBL);
     }
+
+    void Skybox::RotateZ(float angle)
+    {
+        this->needUpdate = true;
+        this->rotation.z += Radians(angle);
+        while (this->rotation.z > 2.0f * Pi<float>()) this->rotation.z -= 2 * Pi<float>();
+        while (this->rotation.z < 0.0f) this->rotation.z += 2 * Pi<float>();
+    }
+
+    void Skybox::RotateY(float angle)
+    {
+        this->needUpdate = true;
+        this->rotation.y += Radians(angle);
+        while (this->rotation.y > 2.0f * Pi<float>()) this->rotation.y -= 2 * Pi<float>();
+        while (this->rotation.y < 0.0f) this->rotation.y += 2 * Pi<float>();
+    }
+
+    void Skybox::RotateX(float angle)
+    {
+        this->needUpdate = true;
+        this->rotation.x += Radians(angle);
+        while (this->rotation.x > 2.0f * Pi<float>()) this->rotation.x -= 2 * Pi<float>();
+        while (this->rotation.x < 0.0f) this->rotation.x += 2 * Pi<float>();
+    }
+
+    const Vector3& Skybox::GetRotation() const
+    {
+        return this->rotation;
+    }
+
+    const Matrix3x3& Skybox::GetRotationMatrix() const
+    {
+        if (needUpdate)
+        {
+            Quaternion q = MakeQuaternion(rotation.x, MakeVector3(1.0f, 0.0f, 0.0f));
+            q *= MakeQuaternion(rotation.y, MakeVector3(0.0f, 1.0f, 0.0f));
+            q *= MakeQuaternion(rotation.z, MakeVector3(0.0f, 0.0f, 1.0f));
+            this->cachedRotation = (Matrix3x3)ToMatrix(q);
+            this->needUpdate = false;
+        }
+        return this->cachedRotation;
+    }
 }

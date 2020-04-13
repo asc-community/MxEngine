@@ -83,7 +83,7 @@ namespace MxEngine::GUI
         return ImGui::Button("apply");
     }
 
-    inline bool InputFloatOnClick(const char* title, char* v, size_t size)
+    inline bool InputTextOnClick(const char* title, char* v, size_t size)
     {
         ImGui::InputText(title, v, size);
         ImGui::SameLine();

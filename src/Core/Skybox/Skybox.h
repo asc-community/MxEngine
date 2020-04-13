@@ -34,6 +34,9 @@ namespace MxEngine
 {
     class Skybox
     {
+        Vector3 rotation;
+        mutable Matrix3x3 cachedRotation;
+        mutable bool needUpdate = true;
     public:
         Shader* SkyboxShader;
         CubeMap* SkyboxTexture;
@@ -41,5 +44,11 @@ namespace MxEngine
         UniqueRef<VertexArray> VAO;
 
         Skybox();
+
+        void RotateX(float angle);
+        void RotateY(float angle);
+        void RotateZ(float angle);
+        const Vector3& GetRotation() const;
+        const Matrix3x3& GetRotationMatrix() const;
     };
 }

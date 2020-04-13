@@ -317,7 +317,7 @@ namespace MxEngine
 		auto View = (Matrix3x3)viewport.GetCamera().GetViewMatrix();
 		auto Projection = viewport.GetCamera().GetProjectionMatrix();
 		shader.SetUniformMat4("ViewProjection", Projection * (Matrix4x4)View);
-		shader.SetUniformFloat("size", 100000.0f);
+		shader.SetUniformMat3("Rotation", skybox.GetRotationMatrix());
 
 		skybox.SkyboxTexture->Bind(0);
 		shader.SetUniformInt("skybox", 0);

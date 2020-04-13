@@ -47,10 +47,11 @@ namespace MxEngine::GUI
 			static int bufferSize = (int)context->GetRenderer().GetDepthBufferSize<DirectionalLight>();
 			if (GUI::InputIntOnClick("depth buffer size", &bufferSize))
 			{
-				bufferSize = (int)CeilToLog2((size_t)Clamp(bufferSize, 1, 1 << 16));
+				bufferSize = (int)FloorToLog2((size_t)Clamp(bufferSize, 1, 1 << 16));
 				context->GetRenderer().SetDepthBufferSize<DirectionalLight>(bufferSize);
 				bufferSize = (int)context->GetRenderer().GetDepthBufferSize<DirectionalLight>();
 			}
+			ImGui::InputInt("PCF distance", &context->GetRenderer().PCFdistance);
 
 			auto ambient = globalLight.GetAmbientColor();
 			auto diffuse = globalLight.GetDiffuseColor();
@@ -79,7 +80,7 @@ namespace MxEngine::GUI
 				static int bufferSize = (int)context->GetRenderer().GetDepthBufferSize<PointLight>();
 				if(GUI::InputIntOnClick("depth buffer size", &bufferSize))
 				{
-					bufferSize = (int)CeilToLog2((size_t)Clamp(bufferSize, 1, 1 << 16));
+					bufferSize = (int)FloorToLog2((size_t)Clamp(bufferSize, 1, 1 << 16));
 					context->GetRenderer().SetDepthBufferSize<PointLight>(bufferSize);
 					int bufferSize = (int)context->GetRenderer().GetDepthBufferSize<PointLight>();
 				}
@@ -116,7 +117,7 @@ namespace MxEngine::GUI
 				static int bufferSize = (int)context->GetRenderer().GetDepthBufferSize<SpotLight>();
 				if (GUI::InputIntOnClick("depth buffer size", &bufferSize))
 				{
-					bufferSize = (int)CeilToLog2((size_t)Clamp(bufferSize, 1, 1 << 16));
+					bufferSize = (int)FloorToLog2((size_t)Clamp(bufferSize, 1, 1 << 16));
 					context->GetRenderer().SetDepthBufferSize<SpotLight>(bufferSize);
 					bufferSize = (int)context->GetRenderer().GetDepthBufferSize<SpotLight>();
 				}

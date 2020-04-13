@@ -223,27 +223,27 @@
     <ClCompile Include="Vendors\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Core\Shaders\depthcubemap_fragment.glsl">
+    <None Include="Platform\OpenGL\Shaders\depthcubemap_fragment.glsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </None>
-    <None Include="Core\Shaders\depthcubemap_geometry.glsl" />
-    <None Include="Core\Shaders\depthcubemap_vertex.glsl" />
-    <None Include="Core\Shaders\mesh_fragment.glsl">
+    <None Include="Platform\OpenGL\Shaders\depthcubemap_geometry.glsl" />
+    <None Include="Platform\OpenGL\Shaders\depthcubemap_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\mesh_fragment.glsl">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
     </None>
-    <None Include="Core\Shaders\mesh_vertex.glsl" />
-    <None Include="Core\Shaders\object_fragment.glsl" />
-    <None Include="Core\Shaders\nolight_object_fragment.glsl" />
-    <None Include="Core\Shaders\object_vertex.glsl" />
-    <None Include="Core\Shaders\depthtexture_fragment.glsl" />
-    <None Include="Core\Shaders\depthtexture_vertex.glsl" />
-    <None Include="Core\Shaders\nolight_object_vertex.glsl" />
-    <None Include="Core\Shaders\skybox_fragment.glsl" />
-    <None Include="Core\Shaders\skybox_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\mesh_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\object_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\nolight_object_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\object_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\depthtexture_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\depthtexture_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\nolight_object_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\skybox_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\skybox_vertex.glsl" />
     <None Include="Resources\shaders\object_fragment.glsl" />
     <None Include="Resources\shaders\object_vertex.glsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -358,6 +358,9 @@
       <SubSystem>
       </SubSystem>
     </Link>
+    <PreBuildEvent>
+      <Command>copy $(SolutionDir)assimp\out\build\x64-Debug\assimp-vc142-mtd.lib $(SolutionDir)external_libraries</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -377,6 +380,9 @@
       <AdditionalLibraryDirectories>D:\OpenGL64\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>Glu32.lib;glew32s.lib;opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>copy $(SolutionDir)assimp\out\build\x64-Debug\assimp-vc142-mtd.lib $(SolutionDir)external_libraries</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -397,6 +403,9 @@
       <SubSystem>
       </SubSystem>
     </Link>
+    <PreBuildEvent>
+      <Command>copy $(SolutionDir)assimp\out\build\x64-Release\assimp-vc142-mt.lib $(SolutionDir)external_libraries</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -420,6 +429,9 @@
       <AdditionalLibraryDirectories>D:\OpenGL64\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>Glu32.lib;glew32s.lib;opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>copy $(SolutionDir)assimp\out\build\x64-Release\assimp-vc142-mt.lib $(SolutionDir)external_libraries</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

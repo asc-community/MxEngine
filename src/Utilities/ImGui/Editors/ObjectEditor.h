@@ -60,6 +60,7 @@ namespace MxEngine::GUI
 			if (ImGui::CollapsingHeader(pair.first.c_str()))
 			{
 				auto& object = *pair.second;
+				ImGui::PushID(pair.first.c_str());
 
 				// toggle object visibility
 				bool isDrawn = object.IsDrawable();
@@ -79,7 +80,7 @@ namespace MxEngine::GUI
 				ImGui::Text((std::string("texture: ") + (object.ObjectTexture ? object.GetTexture().GetPath() : std::string("none"))).c_str());
 
 				auto renderColor = object.GetRenderColor();
-				if (ImGui::InputFloat4("render color", &renderColor[0]))
+				if (ImGui::ColorEdit4("render color", &renderColor[0]))
 					object.SetRenderColor(renderColor);
 
 				ImGui::PushID(-1);
@@ -152,6 +153,8 @@ namespace MxEngine::GUI
 					if (ImGui::InputFloat3("right vec", &right[0]))
 						object.SetRightVector(right);
 				}
+
+				ImGui::PopID();
 			}
 		}
 	}

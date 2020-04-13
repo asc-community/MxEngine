@@ -376,9 +376,9 @@ namespace MxEngine
 				Renderer.ObjectShader = GlobalScene.GetResourceManager<Shader>().Add(
 					"MxObjectShader", Graphics::Instance()->CreateShader());
 				Renderer.ObjectShader->LoadFromSource(
-					#include "Core/Shaders/object_vertex.glsl"
+					#include MAKE_PLATFORM_SHADER(object_vertex)
 					,
-					#include "Core/Shaders/object_fragment.glsl"
+					#include MAKE_PLATFORM_SHADER(object_fragment)
 				);
 			}
 			else
@@ -386,9 +386,9 @@ namespace MxEngine
 				Renderer.ObjectShader = GlobalScene.GetResourceManager<Shader>().Add(
 					"MxNoLightShader", Graphics::Instance()->CreateShader());
 				Renderer.ObjectShader->LoadFromSource(
-					#include "Core/Shaders/nolight_object_vertex.glsl"
+					#include MAKE_PLATFORM_SHADER(nolight_object_vertex)
 					,
-					#include "Core/Shaders/nolight_object_fragment.glsl"
+					#include MAKE_PLATFORM_SHADER(nolight_object_fragment)
 				);
 			}
 		}
@@ -397,9 +397,9 @@ namespace MxEngine
 			Renderer.MeshShader = GlobalScene.GetResourceManager<Shader>().Add(
 				"MxMeshShader", Graphics::Instance()->CreateShader());
 			Renderer.MeshShader->LoadFromSource(
-				#include "Core/Shaders/mesh_vertex.glsl"
+				#include MAKE_PLATFORM_SHADER(mesh_vertex)
 				,		 
-				#include "Core/Shaders/mesh_fragment.glsl"
+				#include MAKE_PLATFORM_SHADER(mesh_fragment)
 			);
 		}
 		if (Renderer.DepthTextureShader == nullptr)
@@ -407,9 +407,9 @@ namespace MxEngine
 			Renderer.DepthTextureShader = GlobalScene.GetResourceManager<Shader>().Add(
 				"MxDepthTextureShader", Graphics::Instance()->CreateShader());
 			Renderer.DepthTextureShader->LoadFromSource(
-				#include "Core/Shaders/depthtexture_vertex.glsl"
+				#include MAKE_PLATFORM_SHADER(depthtexture_vertex)
 				,
-				#include "Core/Shaders/depthtexture_fragment.glsl"
+				#include MAKE_PLATFORM_SHADER(depthtexture_fragment)
 			);
 		}
 		if (Renderer.DepthCubeMapShader == nullptr)
@@ -417,11 +417,11 @@ namespace MxEngine
 			Renderer.DepthCubeMapShader = GlobalScene.GetResourceManager<Shader>().Add(
 				"MxDepthCubeMapShader", Graphics::Instance()->CreateShader());
 			Renderer.DepthCubeMapShader->LoadFromSource(
-				#include "Core/Shaders/depthcubemap_vertex.glsl"
+				#include MAKE_PLATFORM_SHADER(depthcubemap_vertex)
 				,
-				#include "Core/Shaders/depthcubemap_geometry.glsl"
+				#include MAKE_PLATFORM_SHADER(depthcubemap_geometry)
 				,
-				#include "Core/Shaders/depthcubemap_fragment.glsl"
+				#include MAKE_PLATFORM_SHADER(depthcubemap_fragment)
 			);
 		}
 
@@ -433,9 +433,9 @@ namespace MxEngine
 			skybox->SkyboxShader = GlobalScene.GetResourceManager<Shader>().Add(
 				"MxSkyboxShader", Graphics::Instance()->CreateShader());
 			skybox->SkyboxShader->LoadFromSource(
-				#include "Core/Shaders/skybox_vertex.glsl"
+				#include MAKE_PLATFORM_SHADER(skybox_vertex)
 					,
-				#include "Core/Shaders/skybox_fragment.glsl"
+				#include MAKE_PLATFORM_SHADER(skybox_fragment)
 			);
 		}
 		if (Renderer.DepthBuffer == nullptr)
