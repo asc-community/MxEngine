@@ -5,7 +5,6 @@
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -40,9 +39,6 @@ CmakeFiles
 imgui.ini
 profile_log.json
 compile_commands.json
-/SandboxApplication/Debug
-mx_engine/Debug
 external_libraries/*.lib
 out
-examples/TestInstancing/Debug
-examples/SnakePath3D/Debug
+Debug
