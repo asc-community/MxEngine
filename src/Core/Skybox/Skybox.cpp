@@ -109,10 +109,7 @@ namespace MxEngine
     {
         if (needUpdate)
         {
-            Quaternion q = MakeQuaternion(rotation.x, MakeVector3(1.0f, 0.0f, 0.0f));
-            q *= MakeQuaternion(rotation.y, MakeVector3(0.0f, 1.0f, 0.0f));
-            q *= MakeQuaternion(rotation.z, MakeVector3(0.0f, 0.0f, 1.0f));
-            this->cachedRotation = (Matrix3x3)ToMatrix(q);
+            this->cachedRotation = RotateAngles(this->rotation.x, this->rotation.y, this->rotation.z);
             this->needUpdate = false;
         }
         return this->cachedRotation;

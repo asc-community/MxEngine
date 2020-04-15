@@ -470,4 +470,47 @@ namespace MxEngine
 	{
 		return static_cast<size_t>(1) << Log2(n);
 	}
+
+	inline Matrix3x3 RotateAngles(float xRot, float yRot, float zRot)
+	{
+		Matrix3x3 ret;
+		using std::sin;
+		using std::cos;
+
+		float s0 = sin(xRot), c0 = cos(xRot);
+		float s1 = sin(yRot), c1 = cos(yRot);
+		float s2 = sin(zRot), c2 = cos(zRot);
+		constexpr int i = 0;
+		constexpr int j = 1;
+		constexpr int k = 2;
+
+		ret[i][i] = c1 * c2;
+		ret[k][k] = c0 * c1;
+
+		if ((2 + i - j) % 3)
+		{
+			ret[j][i] = -c1 * s2;
+			ret[k][i] = s1;
+
+			ret[i][j] = c0 * s2 + s0 * s1 * c2;
+			ret[j][j] = c0 * c2 - s0 * s1 * s2;
+			ret[k][j] = -s0 * c1;
+
+			ret[i][k] = s0 * s2 - c0 * s1 * c2;
+			ret[j][k] = s0 * c2 + c0 * s1 * s2;
+		}
+		else
+		{
+			ret[j][i] = c1 * s2;
+			ret[k][i] = -s1;
+
+			ret[i][j] = -c0 * s2 + s0 * s1 * c2;
+			ret[j][j] = c0 * c2 + s0 * s1 * s2;
+			ret[k][j] = s0 * c1;
+
+			ret[i][k] = s0 * s2 + c0 * s1 * c2;
+			ret[j][k] = -s0 * c2 + c0 * s1 * s2;
+		}
+		return ret;
+	}
 }

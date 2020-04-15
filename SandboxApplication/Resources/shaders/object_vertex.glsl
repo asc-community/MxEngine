@@ -25,15 +25,14 @@ out VSout
 
 void main()
 {
-	vec4 pos = position;
-	vec4 modelPos = model * pos;
+	vec4 modelPos = model * position;
 	gl_Position = ViewProjMatrix * modelPos;
 
 	vsout.TexCoord = texCoord.xy;
 	vsout.Normal = normalMatrix * vec3(normal);
 	vsout.FragPosWorld = vec3(modelPos);
 	vsout.FragPosDirLight = DirLightProjMatrix * modelPos;
-	
+
 	for (int i = 0; i < spotLightCount; i++)
 	{
 		vsout.FragPosSpotLight[i] = SpotLightProjMatrix[i] * modelPos;

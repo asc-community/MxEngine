@@ -45,7 +45,7 @@ namespace MxEngine
 
 	void RenderController::Render() const
 	{
-		this->renderer.Finish();
+		this->renderer.Flush();
 	}
 
 	void RenderController::Clear() const
@@ -166,6 +166,7 @@ namespace MxEngine
 		this->GetRenderEngine().SetDefaultVertexAttribute(7, object.GetNormalMatrix());
 
 		shader.SetUniformMat4("ViewProjMatrix", ViewProjection);
+		shader.SetUniformMat3("skyboxModelMatrix", Transpose(skybox->GetRotationMatrix()));
 		shader.SetUniformVec3("viewPos", cameraPos);
 		shader.SetUniformVec4("renderColor", renderColor);
 
@@ -255,12 +256,10 @@ namespace MxEngine
 					shader.SetUniformInt(Format(FMT_STRING("map_pointLight_shadow[{0}]"), i), bindIndex);
 				}
 
-				if(skybox != nullptr && skybox->SkyboxTexture != nullptr) // TODO: what should we do if no skybox exists for scene?
-				{
-					int bindIndex = int(5 + lights.Spot.size() + MAX_POINT_SOURCES);
+				int bindIndex = int(5 + lights.Spot.size() + MAX_POINT_SOURCES);
+				if(skybox->SkyboxTexture != nullptr) // TODO: what should we do if no skybox exists for scene?
 					skybox->SkyboxTexture->Bind(bindIndex);
-					shader.SetUniformInt("map_skybox", bindIndex);
-				}
+				shader.SetUniformInt("map_skybox", bindIndex);
 
 				// setting materials (ka, kd not used for now
 				// shader.SetUniformVec3("material.Ka", material.Ka);

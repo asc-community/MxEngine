@@ -68,6 +68,7 @@ uniform sampler2D map_dirLight_shadow;
 uniform sampler2D map_spotLight_shadow[MAX_SPOT_LIGHTS];
 uniform samplerCube map_pointLight_shadow[MAX_POINT_LIGHTS];
 uniform samplerCube map_skybox;
+uniform mat3 skyboxModelMatrix;
 uniform float Ka;
 uniform float Kd;
 uniform int pointLightCount;
@@ -189,7 +190,8 @@ vec3 calcSpotLight(vec3 ambient, vec3 diffuse, vec3 specular, SpotLight light, v
 vec3 calcReflection(vec3 viewDir, vec3 normal)
 {
 	vec3 I = -viewDir;
-	vec3 reflection = reflect(I, normalize(normal));
+	vec3 reflection = reflect(I, normal);
+	reflection = skyboxModelMatrix * reflection;
 	vec3 color = texture(map_skybox, reflection).rgb;
 	return color;
 }

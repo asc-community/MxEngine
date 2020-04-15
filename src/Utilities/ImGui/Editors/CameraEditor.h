@@ -64,7 +64,7 @@ namespace MxEngine::GUI
 			camera.SetZoom(zoom);
 
 		GUI_TREE_NODE("skybox",
-			auto & skybox = context->GetCurrentScene().SceneSkybox;
+			auto& skybox = context->GetCurrentScene().SceneSkybox;
 			if (skybox != nullptr)
 			{
 				auto rotation = skybox->GetRotation();

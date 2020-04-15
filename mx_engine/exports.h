@@ -1349,7 +1349,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("specular", RefGetter(&SpotLight::GetSpecularColor), RefGetter(&SpotLight::UseSpecularColor))
         .add_property("outer_angle", &SpotLight::GetOuterAngle, RefGetter(&SpotLight::UseOuterAngle))
         .add_property("inner_angle", &SpotLight::GetInnerAngle, RefGetter(&SpotLight::UseInnerAngle))
-        .add_property("direction", &SpotLight::Direction)
+        .def_readwrite("direction", &SpotLight::Direction)
         .def_readwrite("position", &SpotLight::Position)
         ;
 
