@@ -297,7 +297,7 @@ namespace MxEngine
 				MAKE_SCOPE_PROFILER("Renderer::DrawScene");
 				for (const auto& object : this->currentScene->GetObjectList())
 				{
-					this->renderer.DrawObject(*object.second, viewport, lights);
+					this->renderer.DrawObject(*object.second, viewport, lights, this->currentScene->SceneSkybox.get());
 				}
 			}
 		}

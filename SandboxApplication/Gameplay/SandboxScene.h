@@ -15,7 +15,7 @@ class SandboxScene : public Scene
 
         this->AddObject("Grid", MakeUnique<Grid>(2000));
         this->AddObject("Cube", MakeUnique<CubeObject>());
-        // this->AddObject("Arc170", MakeUnique<Arc170Object>());
+        this->AddObject("Arc170", MakeUnique<Arc170Object>());
         this->AddObject("Sphere", MakeUnique<SphereObject>());
         // this->AddObject("Destroyer", MakeUnique<DestroyerObject>());
         // this->AddObject("DeathStar", MakeUnique<DeathStarObject>());

@@ -147,7 +147,7 @@ namespace MxEngine
 		}
     }
 
-	void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights) const
+	void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights, const Skybox* skybox) const
 	{
 		// probably nothing to do at all
 		if (!viewport.HasCamera()) return;
@@ -253,6 +253,13 @@ namespace MxEngine
 					int bindIndex = int(5 + lights.Spot.size() + lights.Point.size()) + i;
 					lights.Global->GetDepthTexture()->Bind(bindIndex);
 					shader.SetUniformInt(Format(FMT_STRING("map_pointLight_shadow[{0}]"), i), bindIndex);
+				}
+
+				if(skybox != nullptr && skybox->SkyboxTexture != nullptr) // TODO: what should we do if no skybox exists for scene?
+				{
+					int bindIndex = int(5 + lights.Spot.size() + MAX_POINT_SOURCES);
+					skybox->SkyboxTexture->Bind(bindIndex);
+					shader.SetUniformInt("map_skybox", bindIndex);
 				}
 
 				// setting materials (ka, kd not used for now

@@ -65,8 +65,9 @@ uniform sampler2D map_Kd;
 uniform sampler2D map_Ks;
 uniform sampler2D map_Ke;
 uniform sampler2D map_dirLight_shadow;
-uniform samplerCube map_pointLight_shadow[MAX_POINT_LIGHTS];
 uniform sampler2D map_spotLight_shadow[MAX_SPOT_LIGHTS];
+uniform samplerCube map_pointLight_shadow[MAX_POINT_LIGHTS];
+uniform samplerCube map_skybox;
 uniform float Ka;
 uniform float Kd;
 uniform int pointLightCount;
@@ -101,12 +102,12 @@ float CalcShadowFactor2D(vec4 fragPosLight, sampler2D map_shadow)
 
 vec3 sampleOffsetDirections[POINT_LIGHT_SAMPLES] = vec3[]
 (
-	vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1),
-	vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
-	vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
-	vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
-	vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
-);
+	vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1),
+	vec3(1, 1, -1), vec3(1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+	vec3(1, 1, 0), vec3(1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
+	vec3(1, 0, 1), vec3(-1, 0, 1), vec3(1, 0, -1), vec3(-1, 0, -1),
+	vec3(0, 1, 1), vec3(0, -1, 1), vec3(0, -1, -1), vec3(0, 1, -1)
+	);
 
 float CalcShadowFactorCube(vec3 lightDistance, vec3 viewDist, float zfar, samplerCube map_shadow)
 {
@@ -127,7 +128,7 @@ float CalcShadowFactorCube(vec3 lightDistance, vec3 viewDist, float zfar, sample
 	return shadowFactor;
 }
 
-vec3 calcDirLight(vec3 ambient, vec3 diffuse, vec3 specular, DirLight light, vec3 normal, vec3 viewDir, vec4 fragLightSpace, sampler2D map_shadow)
+vec3 calcDirLight(vec3 ambient, vec3 diffuse, vec3 specular, DirLight light, vec3 normal, vec3 viewDir, vec3 reflection, vec4 fragLightSpace, sampler2D map_shadow)
 {
 	vec3 lightDir = normalize(light.direction);
 	vec3 Hdir = normalize(lightDir + viewDir);
@@ -139,8 +140,9 @@ vec3 calcDirLight(vec3 ambient, vec3 diffuse, vec3 specular, DirLight light, vec
 	ambient = ambient * light.ambient;
 	diffuse = diffuse * light.diffuse * diffuseFactor;
 	specular = specular * light.specular * specularFactor;
+	reflection = light.specular * reflection * diffuse;
 
-	return vec3(ambient + shadowFactor * (diffuse + specular));
+	return vec3(ambient + shadowFactor * (diffuse + specular + reflection));
 }
 
 vec3 calcPointLight(vec3 ambient, vec3 diffuse, vec3 specular, PointLight light, vec3 normal, vec3 viewDir, samplerCube map_shadow)
@@ -184,20 +186,29 @@ vec3 calcSpotLight(vec3 ambient, vec3 diffuse, vec3 specular, SpotLight light, v
 	return vec3(ambient + shadowFactor * (diffuse + specular));
 }
 
+vec3 calcReflection(vec3 viewDir, vec3 normal)
+{
+	vec3 I = -viewDir;
+	vec3 reflection = reflect(I, normalize(normal));
+	vec3 color = texture(map_skybox, reflection).rgb;
+	return color;
+}
+
 void main()
 {
-	vec3 normal   = normalize(fsin.Normal);
+	vec3 normal = normalize(fsin.Normal);
 	vec3 viewDist = viewPos - fsin.FragPosWorld;
-	vec3 viewDir  = normalize(viewDist);
+	vec3 viewDir = normalize(viewDist);
 
-	vec3 ambient  = vec3(texture(map_Ka, fsin.TexCoord)) * Ka; // * material.Ka;
-	vec3 diffuse  = vec3(texture(map_Kd, fsin.TexCoord)) * Kd; // * material.Kd;
+	vec3 ambient = vec3(texture(map_Ka, fsin.TexCoord)) * Ka; // * material.Ka;
+	vec3 diffuse = vec3(texture(map_Kd, fsin.TexCoord)) * Kd; // * material.Kd;
 	vec3 specular = vec3(texture(map_Ks, fsin.TexCoord)) * material.Ks;
 	vec3 emmisive = vec3(texture(map_Ke, fsin.TexCoord)) * material.Ke;
+	vec3 reflection = calcReflection(viewDir, normal);
 
 	vec3 color = vec3(0.0f);
 	// directional light
-	color += calcDirLight(ambient, diffuse, specular, dirLight, normal, viewDir, fsin.FragPosDirLight, map_dirLight_shadow);
+	color += calcDirLight(ambient, diffuse, specular, dirLight, normal, viewDir, reflection, fsin.FragPosDirLight, map_dirLight_shadow);
 	// point lights
 	for (int i = 0; i < pointLightCount; i++)
 	{
@@ -212,7 +223,7 @@ void main()
 	// emmisive light
 	color += emmisive;
 
-	color    *= renderColor.rgb;
+	color *= renderColor.rgb;
 	dissolve *= renderColor.a;
 
 	const vec3 gamma = vec3(1.0f / 2.2f);
