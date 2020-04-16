@@ -35,7 +35,7 @@ x64
 __pycache__
 
 # MxEngine
-CmakeFiles
+CMakeFiles
 imgui.ini
 profile_log.json
 compile_commands.json
