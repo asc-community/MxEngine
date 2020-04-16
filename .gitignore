@@ -35,6 +35,7 @@ x64
 __pycache__
 
 # MxEngine
+submodules
 CmakeFiles
 imgui.ini
 profile_log.json
