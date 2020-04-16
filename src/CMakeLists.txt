@@ -60,17 +60,8 @@ set(project_files_group
     "Core/RenderController/RenderController.h"
     "Core/Scene/Scene.cpp"
     "Core/Scene/Scene.h"
-    "Core/Shaders/depthcubemap_fragment.glsl"
-    "Core/Shaders/depthcubemap_geometry.glsl"
-    "Core/Shaders/depthcubemap_vertex.glsl"
-    "Core/Shaders/depthtexture_fragment.glsl"
-    "Core/Shaders/depthtexture_vertex.glsl"
-    "Core/Shaders/mesh_fragment.glsl"
-    "Core/Shaders/mesh_vertex.glsl"
-    "Core/Shaders/nolight_object_fragment.glsl"
-    "Core/Shaders/nolight_object_vertex.glsl"
-    "Core/Shaders/object_fragment.glsl"
-    "Core/Shaders/object_vertex.glsl"
+    "Core/Skybox/Skybox.cpp"
+    "Core/Skybox/Skybox.h"
     "Library/Bindings/AppCloseBinding.h"
     "Library/Bindings/Bindings.h"
     "Library/Bindings/ConsoleBinding.h"
@@ -207,7 +198,6 @@ if("${CMAKE_TARGET_ARCH}" STREQUAL "x64")
         "${CMAKE_CURRENT_SOURCE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}/../boost_headers"
         "${CMAKE_CURRENT_SOURCE_DIR}/../python/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../assimp/include"
     )
 endif()
 
@@ -290,5 +280,16 @@ target_link_libraries(${PROJECT_NAME} PUBLIC "${ADDITIONAL_LIBRARY_DEPENDENCIES}
 if("${CMAKE_TARGET_ARCH}" STREQUAL "x64")
     target_link_directories(${PROJECT_NAME} PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/../external_libraries"
+    )
+endif()
+
+################################################################################
+# Post build events
+################################################################################
+if(MXENGINE_UPDATE_PYTHON_LIB)
+    add_custom_command(
+        TARGET ${PROJECT_NAME}
+        POST_BUILD COMMAND 
+        xcopy /d $<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/../python> $<SHELL_PATH:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}> /e
     )
 endif()

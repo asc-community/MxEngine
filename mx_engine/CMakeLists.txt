@@ -109,7 +109,7 @@ if(MXENGINE_UPDATE_PYTHON_LIB)
     add_custom_command(
         TARGET ${PROJECT_NAME}
         POST_BUILD COMMAND 
-        copy $<SHELL_PATH:${MXENGINE_DYN_LIB_ABS_PATH}> $<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/../python/Lib/mx_engine>
+        copy $<SHELL_PATH:${MXENGINE_DYN_LIB_ABS_PATH}> $<SHELL_PATH:${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Lib/mx_engine>
     )
 endif()
 

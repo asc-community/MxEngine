@@ -35,9 +35,9 @@
 #include <algorithm>
 
 #if defined(MXENGINE_USE_ASSIMP)
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+#include "Vendors/assimp/Importer.hpp"
+#include "Vendors/assimp/scene.h"
+#include "Vendors/assimp/postprocess.h"
 
 namespace MxEngine
 {

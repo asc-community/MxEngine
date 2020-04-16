@@ -41,7 +41,7 @@ namespace MxEngine::GUI
 		if (ImGui::InputFloat3("translation", &translation[0]))
 			transform.SetTranslation(translation);
 
-		// rotation (euler)
+		// rotation (euler) TODO: fix rotation
 		auto rotation = transform.GetEulerRotation();
 		if (ImGui::InputFloat3("rotation", &rotation[0]))
 			transform.SetRotation(1.0f, rotation);
@@ -64,8 +64,8 @@ namespace MxEngine::GUI
 
 				// toggle object visibility
 				bool isDrawn = object.IsDrawable();
-				static bool dirVecs = false;
-				static bool instanced = false;
+				bool dirVecs = false;
+				bool instanced = false;
 				if (ImGui::Checkbox("drawn", &isDrawn))
 					isDrawn ? object.Show() : object.Hide();
 
@@ -95,9 +95,12 @@ namespace MxEngine::GUI
 				ImGui::InputText("texture path", texturePath.data(), texturePath.size());
 				ImGui::SameLine();
 				if (ImGui::Button("update"))
+				{
 					object.ObjectTexture = context->GetCurrentScene().LoadTexture(
 						Format(FMT_STRING("MxRuntimeTex_{0}"), context->GenerateResourceId()),
 						texturePath);
+					texturePath.assign(128, '\0');
+				}
 
 				if (instanced)
 				{

@@ -95,7 +95,3 @@ endif()
 
 add_subdirectory(mx_engine)
 add_subdirectory(src)
-
-# external libraries
-# uncommenting line below fails build
-# add_subdirectory(assimp)

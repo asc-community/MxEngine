@@ -65,7 +65,7 @@ class SandboxScene : public Scene
 		// auto camera = MakeUnique<OrthographicCamera>();
 		// Application::Get()->GetRenderer().ToggleReversedDepth(false);
 
-		this->PointLights.SetCount(0);
+		// this->PointLights.SetCount(0);
 
 		const auto& window = Application::Get()->GetWindow();
 		camera->SetZFar(100000.0f);

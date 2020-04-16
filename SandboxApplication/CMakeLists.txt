@@ -11,7 +11,6 @@ set(no_group_source_files
     "Gameplay/SandboxScene.h"
     "Gameplay/SphereObject.h"
     "Gameplay/UserObjects.h"
-    "python36.dll"
     "Resources/scripts/init.py"
     "Resources/scripts/load.py"
     "Resources/scripts/update.py"

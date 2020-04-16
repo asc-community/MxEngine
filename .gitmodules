@@ -1,24 +1,24 @@
 [submodule "assimp"]
-	path = assimp
+	path = submodules/assimp
 	url = https://github.com/assimp/assimp
 [submodule "glew"]
-	path = glew
+	path = submodules/glew
 	url = https://github.com/nigels-com/glew
 [submodule "glfw"]
-	path = glfw
+	path = submodules/glfw
 	url = https://github.com/glfw/glfw
 [submodule "stb"]
-	path = stb
+	path = submodules/stb
 	url = https://github.com/nothings/stb
 [submodule "glm"]
-	path = glm
+	path = submodules/glm
 	url = https://github.com/g-truc/glm
 [submodule "imgui"]
-	path = imgui
+	path =submodules/imgui
 	url = https://github.com/ocornut/imgui
 [submodule "boost"]
-	path = boost
+	path = submodules/boost
 	url = https://github.com/boostorg/boost
 [submodule "fmt"]
-	path = fmt
+	path = submodules/fmt
 	url = https://github.com/fmtlib/fmt
