@@ -84,3 +84,8 @@
 - added runtime script & shader editing support
 - minor fixes in opengl debugging, instancing and imgui editor
 - added new python api to render controller
+### v6.2.0
+- added skybox, skybox reflection (reflection will be improved soon)
+- MxEngine now can be built from sources using Visual Studio and CMake, yay!
+- included all dependencies as submodules or precompiled libraries
+- added dynamic surfaces (can be configured in runtime via function f(x, y))

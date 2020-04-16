@@ -444,6 +444,59 @@ class TextureWrapper : public Texture, public py::wrapper<Texture>
     }
 };
 
+class CubeMapWrapper : public CubeMap, public py::wrapper<CubeMap>
+{
+    virtual void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = true) override
+    {
+        this->get_override("load")(filepath, genMipmaps, flipImage);
+    }
+
+    virtual void LoadDepth(int width, int height) override
+    {
+        this->get_override("load_depth")(width, height);
+    }
+
+    virtual void Load(std::array<RawDataPointer, 6> data, int width, int height, bool genMipmaps = true) override
+    {
+        this->get_override("load_raw")(data, width, height, genMipmaps);
+    }
+
+    virtual void Bind(IBindable::IdType id) const override
+    {
+        this->get_override("bind")(id);
+    }
+
+    virtual const std::string& GetPath() const override
+    {
+        return this->get_override("path")();
+    }
+
+    virtual size_t GetWidth() const override
+    {
+        return this->get_override("width")();
+    }
+
+    virtual size_t GetHeight() const override
+    {
+        return this->get_override("height")();
+    }
+
+    virtual size_t GetChannelCount() const override
+    {
+        return this->get_override("channels")();
+    }
+
+    virtual void Bind() const override
+    {
+        this->get_override("bind")();
+    }
+
+    virtual void Unbind() const override
+    {
+        this->get_override("unbind")();
+    }
+};
+
 class ShaderWrapper : public Shader, public py::wrapper<Shader>
 {
 public:
@@ -745,6 +798,11 @@ std::string GetDirectoryWrapper(Scene& scene)
     return scene.GetDirectory().string();
 }
 
+Skybox* GetSceneSkyboxWrapper(Scene& scene)
+{
+    return scene.SceneSkybox.get();
+}
+
 std::string GetNameWrapper(Scene& scene)
 {
     return scene.GetName();
@@ -936,6 +994,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def_readonly("point_lights", &Scene::PointLights)
         .def_readonly("spot_lights", &Scene::SpotLights)
         .def_readonly("viewport", &Scene::Viewport)
+        .add_property("skybox", RefGetter(GetSceneSkyboxWrapper))
         .add_property("directory", GetDirectoryWrapper, &Scene::SetDirectory)
         .add_property("name", GetNameWrapper)
         ;
@@ -1254,6 +1313,17 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("channels", &Texture::GetChannelCount)
         ;
 
+    py::class_<CubeMapWrapper, py::bases<IBindable>, boost::noncopyable>("cubemap", py::init())
+        .def("load", py::pure_virtual((LoadTextureFile)&Texture::Load))
+        .def("load_raw", py::pure_virtual((LoadTextureRaw)&Texture::Load))
+        .def("load_depth", py::pure_virtual(&Texture::LoadDepth))
+        .def("bind", py::pure_virtual((BindTextureId)&Texture::Bind))
+        .add_property("width", &Texture::GetWidth)
+        .add_property("height", &Texture::GetHeight)
+        .add_property("path", RefGetter(&Texture::GetPath))
+        .add_property("channels", &Texture::GetChannelCount)
+        ;
+
     py::class_<VertexBufferWrapper, py::bases<IBindable>, boost::noncopyable>("vertex_buffer", py::init())
         .def("load", py::pure_virtual(&VertexBuffer::Load))
         .def("buffer", py::pure_virtual(&VertexBuffer::BufferSubData))
@@ -1325,6 +1395,16 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("spot_depth_size",
             &RenderController::GetDepthBufferSize<SpotLight>,
             &RenderController::SetDepthBufferSize<SpotLight>)
+        ;
+
+    py::class_<Skybox, boost::noncopyable>("skybox", py::no_init)
+        .def_readwrite("shader", &Skybox::SkyboxShader)
+        .def_readwrite("texture", &Skybox::SkyboxShader)
+        .def("rotate_x", &Skybox::RotateX)
+        .def("rotate_y", &Skybox::RotateY)
+        .def("rotate_z", &Skybox::RotateZ)
+        .add_property("rotation", RefGetter(&Skybox::GetRotation))
+        .add_property("matrix", RefGetter(&Skybox::GetRotationMatrix))
         ;
 
     py::class_<DirectionalLight, boost::noncopyable>("dir_light", py::init())
