@@ -370,9 +370,9 @@ public:
         this->get_override("unbind")();
     }
 
-    virtual void Load(const IndexBufferType& data) override
+    virtual void Load(IndexData data, size_t count) override
     {
-        this->get_override("load")(data);
+        this->get_override("load")(data, count);
     }
 
     virtual size_t GetCount() const override
@@ -1358,6 +1358,47 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("vec_up", RefGetter(&IMovable::GetUpVector))
         ;
 
+<<<<<<< Updated upstream
+=======
+    using SubMeshesGetFunc = std::vector<RenderObject>& (Mesh::*)();
+    py::class_<Mesh, boost::noncopyable>("mesh", py::no_init)
+        .add_property("center", &Mesh::GetObjectCenter)
+        .add_property("submeshes", RefGetter((SubMeshesGetFunc)&Mesh::GetRenderObjects))
+        ;
+
+    using SubMeshesGetMeshFunc = RenderObject& (std::vector<RenderObject>::*)(size_t);
+    py::class_<std::vector<RenderObject>, boost::noncopyable>("submesh_list", py::no_init)
+        .def("__getitem__", RefGetter((SubMeshesGetMeshFunc)&std::vector<RenderObject>::operator[]))
+        .def("__len__", &std::vector<RenderObject>::size)
+        ;
+
+    using GetMaterialFunc = Material& (RenderObject::*)();
+    py::class_<RenderObject, boost::noncopyable>("submesh", py::no_init)
+        .add_property("material", RefGetter((GetMaterialFunc)&RenderObject::GetMaterial))
+        .add_property("name", RefGetter(&RenderObject::GetName))
+        .add_property("has_texture", &RenderObject::UsesTexture)
+        .add_property("has_normals", &RenderObject::UsesNormals)
+        ;
+
+    py::class_<Material, boost::noncopyable>("material", py::no_init)
+        .def_readwrite("Ns", &Material::Ns)
+        .def_readwrite("Ni", &Material::Ni)
+        .def_readwrite("d", &Material::d)
+        .def_readwrite("Tr", &Material::Tr)
+        .def_readwrite("Tf", &Material::Tf)
+        .def_readwrite("Ka", &Material::Ka)
+        .def_readwrite("Kd", &Material::Kd)
+        .def_readwrite("Ks", &Material::Ks)
+        .def_readwrite("Ke", &Material::Ke)
+        .def_readwrite("illum", &Material::illum)
+        .def_readwrite("f_Ka", &Material::f_Ka)
+        .def_readwrite("f_Kd", &Material::f_Kd)
+        .def_readwrite("refl", &Material::reflection)
+        ;
+
+    using CameraFunc = ICamera & (CameraController::*)();
+
+>>>>>>> Stashed changes
     py::class_<CameraController, py::bases<IMovable>, boost::noncopyable>("camera_controller", py::init())
         .def("has_camera", &CameraController::HasCamera)
         .add_property("camera", RefGetter(&CameraController::GetCamera))
@@ -1423,12 +1464,12 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("rotate_euler", RefGetter((Rotate4F)&Transform::SetRotation));
         ;
 
-    // MxObject
     using ScaleFunc1F = MxObject & (MxObject::*)(float);
     using ScaleFuncVec = MxObject & (MxObject::*)(const Vector3&);
     using TranslateFunc3 = MxObject & (MxObject::*)(float, float, float);
     using RotateMoveFunc = MxObject & (MxObject::*)(float);
     using InstanceListFunc = Instancing<MxObject>::InstanceList & (MxObject::*)();
+    using MeshFunc = Mesh* (MxObject::*)();
 
     py::class_<MxObject, py::bases<IMovable>, boost::noncopyable>("mx_object")
         .def("instanciate", &MxObject::Instanciate)
@@ -1448,6 +1489,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def_readwrite("rotate_speed", &MxObject::RotateSpeed)
         .def_readwrite("scale_speed", &MxObject::ScaleSpeed)
         .add_property("buffer_count", &MxObject::GetBufferCount)
+        .add_property("mesh", RefGetter((MeshFunc)&MxObject::GetMesh), &MxObject::SetMesh)
         .add_property("instances", RefGetter((InstanceListFunc)&MxObject::GetInstances))
         .add_property("render_color", RefGetter(&MxObject::GetRenderColor), &MxObject::SetRenderColor)
         ;

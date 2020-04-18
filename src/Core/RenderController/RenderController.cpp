@@ -136,11 +136,11 @@ namespace MxEngine
 
 				if (object.GetInstanceCount() == 0)
 				{
-					this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetVertexBufferSize(), shader);
+					this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetIBO(), shader);
 				}
 				else
 				{
-					this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetVertexBufferSize(), shader, object.GetInstanceCount());
+					this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetIBO(), shader, object.GetInstanceCount());
 				}
 			}
 			iterator = object.GetNext(iterator);
@@ -253,17 +253,18 @@ namespace MxEngine
 				shader.SetUniformVec3("material.Ke", material.Ke);
 				shader.SetUniformFloat("material.Ns", material.Ns);
 				shader.SetUniformFloat("material.d", material.d);
+				shader.SetUniformFloat("material.refl", material.reflection);
 
 				shader.SetUniformFloat("Ka", material.f_Ka);
 				shader.SetUniformFloat("Kd", material.f_Kd);
 
 				if (object.GetInstanceCount() == 0)
 				{
-					this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetVertexBufferSize(), shader);
+					this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetIBO(), shader);
 				}
 				else
 				{
-					this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetVertexBufferSize(), shader, object.GetInstanceCount());
+					this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetIBO(), shader, object.GetInstanceCount());
 				}
 			}
 			iterator = object.GetNext(iterator);

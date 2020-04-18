@@ -109,11 +109,11 @@ namespace MxEngine
 
 			if (object.GetInstanceCount() == 0)
 			{
-				this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetVertexBufferSize(), *this->DepthTextureShader);
+				this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetIBO(), *this->DepthTextureShader);
 			}
 			else
 			{
-				this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetVertexBufferSize(), *this->DepthTextureShader, object.GetInstanceCount());
+				this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetIBO(), *this->DepthTextureShader, object.GetInstanceCount());
 			}
 			iterator = object.GetNext(iterator);
 		}
@@ -142,14 +142,13 @@ namespace MxEngine
 		while (!object.IsLast(iterator))
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
-
 			if (object.GetInstanceCount() == 0)
 			{
-				this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetVertexBufferSize(), *this->DepthCubeMapShader);
+				this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetIBO(), *this->DepthCubeMapShader);
 			}
 			else
 			{
-				this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetVertexBufferSize(), *this->DepthCubeMapShader, object.GetInstanceCount());
+				this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetIBO(), *this->DepthCubeMapShader, object.GetInstanceCount());
 			}
 			iterator = object.GetNext(iterator);
 		}

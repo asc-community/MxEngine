@@ -49,10 +49,10 @@ namespace MxEngine
         inline void Resize(size_t size)
         {
             auto data = Grid::GetGridData(size);
-            this->SubmitData(Format(FMT_STRING("MxGrid_{0}"), size), data);
+            this->SubmitData(Format(FMT_STRING("MxGrid_{0}"), size), data.first, data.second);
         }
     private:
-        inline static ArrayView<float> GetGridData(size_t size)
+        inline static std::pair<ArrayView<float>, ArrayView<unsigned int>> GetGridData(size_t size)
         {
             float gridSize = float(size) / 2.0f;
             std::array vertex =
@@ -81,10 +81,13 @@ namespace MxEngine
                 VectorInt3(1, 1, 0), VectorInt3(2, 2, 0), VectorInt3(3, 3, 0),
             };
             constexpr size_t dataSize = face.size() * AbstractPrimitive::VertexSize;
-            static std::array<float, dataSize> data; // data MUST be static as its view is returned
+            static std::array<float, dataSize> data; // data must be static as its view is returned
+            static std::array<unsigned int, face.size()> indicies; // data must be static as its view is returned
 
             for (size_t i = 0; i < face.size(); i++)
             {
+                indicies[i] = (unsigned int)i;
+
                 const Vector3& v = vertex[face[i].x];
                 data[8 * i + 0] = v.x;
                 data[8 * i + 1] = v.y;
@@ -99,7 +102,7 @@ namespace MxEngine
                 data[8 * i + 6] = vn.y;
                 data[8 * i + 7] = vn.z;
             }
-            return ArrayView<float>(data);
+            return { data, indicies };
         }
 
         inline static void DrawBorder(uint8_t* data, size_t size, size_t borderSize)

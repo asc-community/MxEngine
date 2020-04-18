@@ -67,7 +67,7 @@ namespace MxEngine
 	{
 		std::string name;
 		std::vector<float> buffer;
-		std::vector<Vector<3, long long>> faces;		
+		std::vector<unsigned int> faces;		
 		MaterialInfo* material = nullptr;
 		bool useTexture = false;
 		bool useNormal = false;

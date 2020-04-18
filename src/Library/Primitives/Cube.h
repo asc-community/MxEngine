@@ -42,11 +42,11 @@ namespace MxEngine
         {
             auto resourceName = Format(FMT_STRING("MxCube_{0}"), Application::Get()->GenerateResourceId());
             auto data = Cube::GetCubeData();
-            this->SubmitData(resourceName, data);
+            this->SubmitData(resourceName, data.first, data.second);
         }
 
     private:
-        static ArrayView<float> GetCubeData()
+        static std::pair<ArrayView<float>, ArrayView<unsigned int>> GetCubeData()
         {
             constexpr std::array vertex =
             {
@@ -91,10 +91,13 @@ namespace MxEngine
                 VectorInt3(3, 3, 5), VectorInt3(7, 1, 5), VectorInt3(6, 0, 5),
             };
             constexpr size_t dataSize = face.size() * AbstractPrimitive::VertexSize;
-            static std::array<float, dataSize> data; // data MUST be static as its view is returned
+            static std::array<float, dataSize> data; // data must be static as its view is returned
+            static std::array<unsigned int, face.size()> indicies; // data must be static as its view is returned
             INVOKE_ONCE(
                 for (size_t i = 0; i < face.size(); i++)
                 {
+                    indicies[i] = (unsigned int)i;
+
                     const Vector3& v = vertex[face[i].x];
                     data[8 * i + 0] = v.x;
                     data[8 * i + 1] = v.y;
@@ -110,7 +113,7 @@ namespace MxEngine
                     data[8 * i + 7] = vn.z;
                 }
             );
-            return ArrayView<float>(data);
+            return { data, indicies };
         }
     };
 }

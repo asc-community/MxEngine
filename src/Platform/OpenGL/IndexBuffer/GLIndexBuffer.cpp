@@ -37,9 +37,9 @@ namespace MxEngine
 		this->id = 0;
 	}
 
-	GLIndexBuffer::GLIndexBuffer(const IndexBufferType& data)
+	GLIndexBuffer::GLIndexBuffer(IndexData data, size_t count)
 	{
-		Load(data);
+		Load(data, count);
 	}
 
 	GLIndexBuffer::GLIndexBuffer(GLIndexBuffer&& ibo) noexcept
@@ -57,15 +57,15 @@ namespace MxEngine
 		}
 	}
 
-	void GLIndexBuffer::Load(const IndexBufferType& data)
+	void GLIndexBuffer::Load(IndexData data, size_t count)
 	{
-		#if defined(MXENGINE_DEBUG)
-		indicies = data.data();
-		#endif
-		this->count = data.size() * sizeof(IndexType);
-		GLCALL(glGenBuffers(1, &id));
-		Bind();
-		GLCALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.size() * sizeof(IndexType), data.data(), GL_STATIC_DRAW));
+		this->count = count;
+		if (id == 0)
+		{
+			GLCALL(glGenBuffers(1, &id));
+		}
+		this->Bind();
+		GLCALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(IndexType), data, GL_STATIC_DRAW));
 	}
 
 	void GLIndexBuffer::Unbind() const

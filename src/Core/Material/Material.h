@@ -58,5 +58,6 @@ namespace MxEngine
 
 		float f_Ka = 1.0f;
 		float f_Kd = 1.0f;
+		float reflection = 0.1f;
 	};
 }

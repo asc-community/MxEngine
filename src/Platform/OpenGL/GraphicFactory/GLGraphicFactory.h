@@ -110,10 +110,10 @@ namespace MxEngine
 			return window;
 		}
 
-		inline virtual UniqueRef<IndexBuffer> CreateIndexBuffer(const IndexBuffer::IndexBufferType& data) override
+		inline virtual UniqueRef<IndexBuffer> CreateIndexBuffer(IndexBuffer::IndexData data, size_t count) override
 		{
 			auto ibo = this->CreateIndexBuffer();
-			ibo->Load(data);
+			ibo->Load(data, count);
 			return std::move(ibo);
 		}
 

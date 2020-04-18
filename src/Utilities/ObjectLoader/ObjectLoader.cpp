@@ -134,11 +134,19 @@ namespace MxEngine
 			meshInfo.useTexture = mesh->HasTextureCoords(0);
 			meshInfo.material = object.materials.data() + mesh->mMaterialIndex;
 
+<<<<<<< Updated upstream
 			assert(mesh->mNormals != nullptr);
 			assert(mesh->mTextureCoords != nullptr);
 			assert(mesh->mVertices != nullptr);
 			assert(mesh->mNumFaces > 0);
 			constexpr size_t VertexSize = (3 + 3 + 3);
+=======
+			MX_ASSERT(mesh->mNormals != nullptr);
+			MX_ASSERT(mesh->mTextureCoords != nullptr);
+			MX_ASSERT(mesh->mVertices != nullptr);
+			MX_ASSERT(mesh->mNumFaces > 0);
+			constexpr size_t VertexSize = (3 + 2 + 3);
+>>>>>>> Stashed changes
 
 			std::vector<float> vertex;
 			vertex.reserve(VertexSize * (size_t)mesh->mNumVertices);
@@ -152,7 +160,11 @@ namespace MxEngine
 				{
 					vertex.push_back(mesh->mTextureCoords[0][i].x);
 					vertex.push_back(mesh->mTextureCoords[0][i].y);
-					vertex.push_back(mesh->mTextureCoords[0][i].z);
+				}
+				else
+				{
+					vertex.push_back(0.0f);
+					vertex.push_back(0.0f);
 				}
 				if (meshInfo.useNormal)
 				{
@@ -162,9 +174,10 @@ namespace MxEngine
 				}
 			}
 
-			meshInfo.faces.resize((size_t)mesh->mNumFaces);
+			meshInfo.faces.resize((size_t)mesh->mNumFaces * 3);
 			for (size_t i = 0; i < (size_t)mesh->mNumFaces; i++)
 			{
+<<<<<<< Updated upstream
 				assert(mesh->mFaces[i].mNumIndices == 3);
 				meshInfo.faces[i].x = mesh->mFaces[i].mIndices[0];
 				meshInfo.faces[i].y = mesh->mFaces[i].mIndices[1];
@@ -184,7 +197,15 @@ namespace MxEngine
 						vertex.begin() + VertexSize * (index + 1)
 					);
 				}
+=======
+				MX_ASSERT(mesh->mFaces[i].mNumIndices == 3);
+				meshInfo.faces[3 * i + 0] = mesh->mFaces[i].mIndices[0];
+				meshInfo.faces[3 * i + 1] = mesh->mFaces[i].mIndices[1];
+				meshInfo.faces[3 * i + 2] = mesh->mFaces[i].mIndices[2];
+>>>>>>> Stashed changes
 			}
+			meshInfo.useTexture = true;
+			meshInfo.buffer = std::move(vertex);
 		}
 		return object;
 	}

@@ -38,9 +38,9 @@ namespace MxEngine
 	{
 	public:
 		using IndexType = unsigned int;
-		using IndexBufferType = std::vector<IndexType>;
+		using IndexData = const IndexType*;
 
-		virtual void Load(const IndexBufferType& data) = 0;
+		virtual void Load(IndexData data, size_t count) = 0;
 		virtual size_t GetCount() const = 0;
 		virtual size_t GetIndexTypeId() const = 0;
 	};

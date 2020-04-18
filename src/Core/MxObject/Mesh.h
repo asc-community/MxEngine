@@ -38,16 +38,18 @@ namespace MxEngine
 	{
 		bool useTexture = false, useNormal = false;
 		mutable bool meshGenerated = false;
-		mutable UniqueRef<IndexBuffer> IBO;		
+		mutable UniqueRef<IndexBuffer> meshIBO;		
 		UniqueRef<VertexBuffer> VBO;
 		UniqueRef<VertexArray> VAO;
+		UniqueRef<IndexBuffer> IBO;
 		UniqueRef<Material> material;
 		size_t vertexBufferSize = 0;
+		std::string name;
 
 		void GenerateMeshIndicies() const;
 		friend class Mesh;
 	public:
-		RenderObject(UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<Material> material, 
+		RenderObject(std::string name, UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<IndexBuffer> IBO, UniqueRef<Material> material,
 			bool useTexture, bool useNormal, size_t sizeInFloats);
 
 		RenderObject(const RenderObject&) = delete;
@@ -56,10 +58,12 @@ namespace MxEngine
 		RenderObject& operator=(RenderObject&&) noexcept = default;
 
 		Material& GetMaterial();
+		const std::string& GetName() const;
 		bool UsesTexture() const;
 		bool UsesNormals() const;
 
 		virtual const VertexArray& GetVAO() const override;
+		virtual IndexBuffer& GetIBO() const override;
 		virtual const IndexBuffer& GetMeshIBO() const override;
 		virtual const Material& GetMaterial() const override;
 		virtual size_t GetVertexBufferSize() const override;

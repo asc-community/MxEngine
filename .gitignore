@@ -34,12 +34,27 @@
 # Visual Studio
 x64
 .vs
+Debug
+*.vcxproj.filters
+*vcxproj.user
 
 # Python
 __pycache__
 
+<<<<<<< Updated upstream
+=======
+#CMake
+CMakeFiles
+CMakeCache.txt
+out
+
+>>>>>>> Stashed changes
 # MxEngine
 imgui.ini
 profile_log.json
 compile_commands.json
+<<<<<<< Updated upstream
 /SandboxApplication/Debug
+=======
+external_libraries/*.lib
+>>>>>>> Stashed changes

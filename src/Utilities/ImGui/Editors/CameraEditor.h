@@ -66,6 +66,30 @@ namespace MxEngine::GUI
 		if (ImGui::DragFloat("zoom", &zoom, 0.1f, 0.1f, 20.0f))
 		{
 			camera.SetZoom(zoom);
+<<<<<<< Updated upstream
 		}
+=======
+
+		GUI_TREE_NODE("skybox",
+			auto& skybox = context->GetCurrentScene().SceneSkybox;
+			if (skybox != nullptr)
+			{
+				auto rotation = DegreesVec(skybox->GetRotation());
+				auto newRotation = rotation;
+				if (ImGui::DragFloat("skybox rotate x", &newRotation.x))
+					skybox->RotateX(newRotation.x - rotation.x);
+				if (ImGui::DragFloat("skybox rotate y", &newRotation.y))
+					skybox->RotateY(newRotation.y - rotation.y);
+				if (ImGui::DragFloat("skybox rotate z", &newRotation.z))
+					skybox->RotateZ(newRotation.z - rotation.z);
+
+				static char buf[128];
+				if (GUI::InputTextOnClick("skybox texture", buf, 128))
+				{
+					skybox->SkyboxTexture = context->GetCurrentScene().LoadCubeMap("SceneRuntimeSkybox", buf);
+				}
+			}
+		);
+>>>>>>> Stashed changes
 	}
 }

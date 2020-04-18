@@ -40,12 +40,18 @@ namespace MxEngine
     protected:
         static constexpr size_t VertexSize = (3 + 2 + 3);
 
+<<<<<<< Updated upstream
         // submits vertex data in format [v3, v2, v3] into first RenderObject on MxObject (creates or replaces existing VBO)
         inline void SubmitData(const std::string& resourceName, ArrayView<float> buffer)
+=======
+        // submits vertex data in format [v3 (pos), v2 (tex), v3 (norm)] into first RenderObject on MxObject (creates or replaces existing VBO)
+        inline void SubmitData(const std::string& resourceName, ArrayView<float> vbo, ArrayView<unsigned int> ibo)
+>>>>>>> Stashed changes
         {
             // first we create VBO + VAO with data
-            auto VBO = Graphics::Instance()->CreateVertexBuffer(buffer.data(), buffer.size(), UsageType::STATIC_DRAW);
+            auto VBO = Graphics::Instance()->CreateVertexBuffer(vbo.data(), vbo.size(), UsageType::STATIC_DRAW);
             auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
+            auto IBO = Graphics::Instance()->CreateIndexBuffer(ibo.data(), ibo.size());
             VBL->PushFloat(3);
             VBL->PushFloat(2);
             VBL->PushFloat(3);
@@ -62,8 +68,8 @@ namespace MxEngine
                 }
                 // Note that we replace only first render object as we are working with AbstractPrimitive
                 auto& base = this->ObjectMesh->GetRenderObjects().front();
-                RenderObject newBase(std::move(VBO), std::move(VAO), MakeUnique<Material>(base.GetMaterial()),
-                    base.UsesTexture(), base.UsesNormals(), buffer.size() / VertexSize);
+                RenderObject newBase(base.GetName(), std::move(VBO), std::move(VAO), std::move(IBO), MakeUnique<Material>(base.GetMaterial()),
+                    base.UsesTexture(), base.UsesNormals(), vbo.size() / VertexSize);
                 base = std::move(newBase);
             }
             else
@@ -71,7 +77,7 @@ namespace MxEngine
                 // if no render object exists (it is possible if MxObject is empty) - create one
                 auto material = MakeUnique<Material>();
 
-                RenderObject object(std::move(VBO), std::move(VAO), std::move(material), true, true, buffer.size() / VertexSize);
+                RenderObject object("main", std::move(VBO), std::move(VAO), std::move(IBO), std::move(material), true, true, vbo.size() / VertexSize);
                 auto mesh = MakeUnique<Mesh>();
                 mesh->GetRenderObjects().push_back(std::move(object));
                 auto& meshManager = Application::Get()->GetCurrentScene().GetResourceManager<Mesh>();

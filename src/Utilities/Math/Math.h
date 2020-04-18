@@ -441,4 +441,75 @@ namespace MxEngine
 	{
 		return ((n <= 2) ? 1 : 1 + Log2(n / 2));
 	}
+<<<<<<< Updated upstream
+=======
+
+	inline constexpr size_t FloorToLog2(size_t n)
+	{
+		return static_cast<size_t>(1) << Log2(n);
+	}
+
+	template<typename T>
+	inline auto DegreesVec(T vec)
+		-> decltype(vec.length(), vec[0], vec)
+	{
+		T result = vec;
+		for (typename T::length_type i = 0; i < vec.length(); i++)
+			result[i] = Degrees(vec[i]);
+		return result;
+	}
+
+	template<typename T>
+	inline auto RadiansVec(T vec)
+		-> decltype(vec.length(), vec[0], vec)
+	{
+		T result = vec;
+		for (typename T::length_type i = 0; i < vec.length(); i++)
+			result[i] = Radians(vec[i]);
+		return result;
+	}
+
+	inline Matrix3x3 RotateAngles(float xRot, float yRot, float zRot)
+	{
+		Matrix3x3 ret;
+		using std::sin;
+		using std::cos;
+
+		float s0 = sin(xRot), c0 = cos(xRot);
+		float s1 = sin(yRot), c1 = cos(yRot);
+		float s2 = sin(zRot), c2 = cos(zRot);
+		constexpr int i = 0;
+		constexpr int j = 1;
+		constexpr int k = 2;
+
+		ret[i][i] = c1 * c2;
+		ret[k][k] = c0 * c1;
+
+		if ((2 + i - j) % 3)
+		{
+			ret[j][i] = -c1 * s2;
+			ret[k][i] = s1;
+
+			ret[i][j] = c0 * s2 + s0 * s1 * c2;
+			ret[j][j] = c0 * c2 - s0 * s1 * s2;
+			ret[k][j] = -s0 * c1;
+
+			ret[i][k] = s0 * s2 - c0 * s1 * c2;
+			ret[j][k] = s0 * c2 + c0 * s1 * s2;
+		}
+		else
+		{
+			ret[j][i] = c1 * s2;
+			ret[k][i] = -s1;
+
+			ret[i][j] = -c0 * s2 + s0 * s1 * c2;
+			ret[j][j] = c0 * c2 + s0 * s1 * s2;
+			ret[k][j] = s0 * c1;
+
+			ret[i][k] = s0 * s2 + c0 * s1 * c2;
+			ret[j][k] = -s0 * c2 + c0 * s1 * s2;
+		}
+		return ret;
+	}
+>>>>>>> Stashed changes
 }

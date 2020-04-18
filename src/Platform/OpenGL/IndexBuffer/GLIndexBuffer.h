@@ -36,12 +36,9 @@ namespace MxEngine
 	class GLIndexBuffer final : public IndexBuffer
 	{
 		size_t count = 0;
-		#if defined(MXENGINE_DEBUG)
-		const IndexType* indicies = nullptr;
-		#endif
 	public:
 		explicit GLIndexBuffer();
-		explicit GLIndexBuffer(const IndexBufferType& data);
+		explicit GLIndexBuffer(const IndexData data, size_t count);
 		GLIndexBuffer(const GLIndexBuffer&) = delete;
 		GLIndexBuffer(GLIndexBuffer&& ibo) noexcept;
 		~GLIndexBuffer();
@@ -49,7 +46,7 @@ namespace MxEngine
 		// Inherited via IIndexBuffer
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
-		virtual void Load(const IndexBufferType& data) override;
+		virtual void Load(const IndexData data, size_t count) override;
 		virtual size_t GetCount() const override;
 		virtual size_t GetIndexTypeId() const override;
 	};

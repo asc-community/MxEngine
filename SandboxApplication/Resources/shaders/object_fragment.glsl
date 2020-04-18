@@ -25,6 +25,7 @@ struct Material
 	vec3 Ke;
 	float Ns;
 	float d;
+	float refl;
 };
 
 struct DirLight
@@ -135,10 +136,18 @@ vec3 calcDirLight(vec3 ambient, vec3 diffuse, vec3 specular, DirLight light, vec
 
 	float diffuseFactor = max(dot(lightDir, normal), 0.0f);
 	float specularFactor = pow(max(dot(Hdir, normal), 0.0f), material.Ns);
+	vec3 diffuseObject = diffuse * diffuseFactor;
 
 	ambient = ambient * light.ambient;
 	diffuse = diffuse * light.diffuse * diffuseFactor;
 	specular = specular * light.specular * specularFactor;
+<<<<<<< Updated upstream
+=======
+
+	reflection = reflection * diffuseObject * light.specular;
+	diffuse = (1.0f - material.refl) * diffuse;
+	ambient = (1.0f - material.refl) * ambient;
+>>>>>>> Stashed changes
 
 	return vec3(ambient + shadowFactor * (diffuse + specular));
 }
@@ -184,6 +193,18 @@ vec3 calcSpotLight(vec3 ambient, vec3 diffuse, vec3 specular, SpotLight light, v
 	return vec3(ambient + shadowFactor * (diffuse + specular));
 }
 
+<<<<<<< Updated upstream
+=======
+vec3 calcReflection(vec3 viewDir, vec3 normal)
+{
+	vec3 I = -viewDir;
+	vec3 reflection = reflect(I, normal);
+	reflection = skyboxModelMatrix * reflection;
+	vec3 color = material.refl * texture(map_skybox, reflection).rgb;
+	return color;
+}
+
+>>>>>>> Stashed changes
 void main()
 {
 	vec3 normal   = normalize(fsin.Normal);
