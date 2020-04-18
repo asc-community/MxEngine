@@ -32,3 +32,4 @@
 #include "Library/Primitives/Sphere.h"
 #include "Library/Primitives/Cube.h"
 #include "Library/Primitives/Grid.h"
+#include "Library/Primitives/Surface.h"

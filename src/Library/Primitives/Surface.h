@@ -119,12 +119,16 @@ namespace MxEngine
                     down[1].position = surface[x + 1][y + 0];
                     down[2].position = surface[x + 0][y + 1];
 
-                    up[0].texture   = MakeVector2(0.0f, 0.0f);
-                    up[1].texture   = MakeVector2(0.0f, 1.0f);
-                    up[2].texture   = MakeVector2(1.0f, 0.0f);
-                    down[0].texture = MakeVector2(1.0f, 1.0f);
-                    down[1].texture = MakeVector2(1.0f, 0.0f);
-                    down[2].texture = MakeVector2(0.0f, 1.0f);
+                    float x1 = float(x + 0) / (float)xsize;
+                    float y1 = float(y + 0) / (float)ysize;
+                    float x2 = float(x + 1) / (float)ysize;
+                    float y2 = float(y + 1) / (float)ysize;
+                    up[0].texture   = MakeVector2(x1, y1);
+                    up[1].texture   = MakeVector2(x1, y2);
+                    up[2].texture   = MakeVector2(x2, y1);
+                    down[0].texture = MakeVector2(x2, y2);
+                    down[1].texture = MakeVector2(x2, y1);
+                    down[2].texture = MakeVector2(x1, y2);
 
                     Vector3 v1, v2, n;
 

@@ -780,6 +780,29 @@ void AppCloseBindWrapper(const std::string& handle, KeyCode key)
     AppCloseBinding(handle).Bind(key);
 }
 
+void SetSurfaceWrapper(Surface& surface, py::object func, float xsize, float ysize, float step)
+{
+    try
+    {
+        auto wrap = [&func](float x, float y) -> float
+        {
+            auto result = func(x, y);
+            return py::extract<float>(result);
+        };
+        surface.SetSurface(wrap, xsize, ysize, step);
+    }
+    catch (std::exception&)
+    {
+        Logger::Instance().Warning("MxEngine::SetSurface", "error while generating surface in python function");
+        surface.SetSurface([](float, float) { return 0.0f; }, xsize, ysize, step);
+    }
+}
+
+Skybox* GetSkyboxWrapper(Scene& scene)
+{
+    return scene.SceneSkybox.get();
+}
+
 void ShaderVertFragWrapper(const std::string& vertex, const std::string& fragment)
 {
     Shader** shader = &Application::Get()->GetRenderer().ObjectShader;
@@ -843,6 +866,8 @@ BOOST_PYTHON_MODULE(mx_engine)
     py::def("get_context", StaticVar(Application::Get));
     py::def("create_application", StaticVar(CreatePyApplication));
     py::def("destroy_application", DestroyPyApplication);
+    py::def("degrees", DegreesVec<Vector3>);
+    py::def("radians", RadiansVec<Vector3>);
 
     py::class_<Application, boost::noncopyable>("application", py::no_init)
         .def("create_context", &Application::CreateContext)
@@ -927,6 +952,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def_readonly("global_light", &Scene::GlobalLight)
         .def_readonly("point_lights", &Scene::PointLights)
         .def_readonly("spot_lights", &Scene::SpotLights)
+        .def_readonly("skybox", RefGetter(GetSkyboxWrapper))
         .def_readonly("viewport", &Scene::Viewport)
         .add_property("directory", GetDirectoryWrapper, &Scene::SetDirectory)
         .add_property("name", GetNameWrapper)
@@ -939,6 +965,16 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def_readwrite("on_update", &PyScene::OnUpdate)
         .def_readwrite("on_render", &PyScene::OnRender)
         .def_readwrite("on_destroy", &PyScene::OnDestroy)
+        ;
+
+    py::class_<Skybox, boost::noncopyable>("skybox", py::no_init)
+        .def_readwrite("shader", &Skybox::SkyboxShader)
+        .def_readwrite("texture", &Skybox::SkyboxShader)
+        .def("rotate_x", &Skybox::RotateX)
+        .def("rotate_y", &Skybox::RotateY)
+        .def("rotate_z", &Skybox::RotateZ)
+        .add_property("rotation", RefGetter(&Skybox::GetRotation))
+        .add_property("matrix", RefGetter(&Skybox::GetRotationMatrix))
         ;
 
     py::enum_<KeyCode>("keycode")
@@ -1501,6 +1537,10 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("mesh", RefGetter((MeshFunc)&MxObject::GetMesh), &MxObject::SetMesh)
         .add_property("instances", RefGetter((InstanceListFunc)&MxObject::GetInstances))
         .add_property("render_color", RefGetter(&MxObject::GetRenderColor), &MxObject::SetRenderColor)
+        ;
+
+    py::class_<Surface, py::bases<MxObject>, boost::noncopyable>("surface", py::no_init)
+        .def("set", SetSurfaceWrapper)
         ;
 
     py::class_<MxInstance, boost::noncopyable>("mx_instance", py::no_init)
