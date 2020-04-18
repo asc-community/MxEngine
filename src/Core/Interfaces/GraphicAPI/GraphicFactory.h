@@ -68,7 +68,7 @@ namespace MxEngine
 		virtual UniqueRef<Shader> CreateShader(const FilePath& vertex, const FilePath& fragment) = 0;
 		virtual UniqueRef<Shader> CreateShader(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment) = 0;
 		virtual UniqueRef<Texture> CreateTexture(const FilePath& texture, bool genMipmaps = true, bool flipImage = true) = 0;
-		virtual UniqueRef<CubeMap> CreateCubeMap(const std::array<FilePath, 6>& cubemaps, bool genMipMaps = true, bool flipImage = true) = 0;
+		virtual UniqueRef<CubeMap> CreateCubeMap(const FilePath& cubemap, bool genMipMaps = true, bool flipImage = true) = 0;
 		virtual UniqueRef<VertexBuffer> CreateVertexBuffer(VertexBuffer::BufferData data, size_t count, UsageType type) = 0;
 
 		virtual ~GraphicFactory() = default;

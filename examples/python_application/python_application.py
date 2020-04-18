@@ -21,19 +21,21 @@ def on_create():
         dist += 2.0
 
     mx.scene.viewport.perspective()
-    mx.scene.point_lights.resize(1)
-    #mx.scene.spot_lights.resize(1)
+    #mx.scene.point_lights.resize(1)
+    mx.scene.spot_lights.resize(1)
 
     mx.scene.global_light.ambient   = vec3(0.1)
     mx.scene.global_light.diffuse   = vec3(0.2)
     mx.scene.global_light.specular  = vec3(0.5)
     mx.scene.global_light.direction = vec3(1.0, 1.0, 0.0)
     
-    mx.scene.point_lights[0].ambient  = vec3(0.1, 0.0, 0.0)
-    mx.scene.point_lights[0].diffuse  = vec3(0.8, 0.3, 0.0)
-    mx.scene.point_lights[0].specular = vec3(0.8, 0.3, 0.0)
-    mx.scene.point_lights[0].position = vec3(2.0, 1.0, 0.0)
+    mx.scene.spot_lights[0].ambient   = vec3(0.1, 0.0,  0.0)
+    mx.scene.spot_lights[0].diffuse   = vec3(0.8, 0.3,  0.0)
+    mx.scene.spot_lights[0].specular  = vec3(0.8, 0.3,  0.0)
+    mx.scene.spot_lights[0].position  = vec3(2.0, 1.0,  0.0)
+    mx.scene.spot_lights[0].direction = vec3(0.7, 1.0, -1.0)
 
+    spot_lights_binder(mx.scene.spot_lights).bind()
     point_lights_binder(mx.scene.point_lights).bind()
 
     control = control_binder("control", mx.scene.viewport)

@@ -30,6 +30,7 @@
 
 #include "Utilities/ImGui/ImGuiBase.h"
 #include "Core/Application/Application.h"
+#include "Utilities/ImGui/Layout/Layout.h"
 
 namespace MxEngine::GUI
 {
@@ -50,25 +51,17 @@ namespace MxEngine::GUI
 		context->ToggleMeshDrawing(mesh);
 
 		if (ImGui::InputFloat("set speed", &speed))
-		{
 			camera.SetMoveSpeed(speed);
-		}
+
 		if (ImGui::InputFloat("set sensitivity", &sensitivity))
-		{
 			camera.SetRotateSpeed(sensitivity);
-		}
+
 		if (ImGui::InputFloat3("set position", &pos[0]))
-		{
 			camera.SetPosition(pos);
-		}
 
 		ImGui::Text("zoom / fov: %f", zoom);
 		if (ImGui::DragFloat("zoom", &zoom, 0.1f, 0.1f, 20.0f))
-		{
 			camera.SetZoom(zoom);
-<<<<<<< Updated upstream
-		}
-=======
 
 		GUI_TREE_NODE("skybox",
 			auto& skybox = context->GetCurrentScene().SceneSkybox;
@@ -90,6 +83,5 @@ namespace MxEngine::GUI
 				}
 			}
 		);
->>>>>>> Stashed changes
 	}
 }

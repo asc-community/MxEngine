@@ -81,6 +81,7 @@ namespace MxEngine
 			Logger::Instance().Error("Texture", "file with name '" + filepath + "' was not found");
 			return;
 		}
+		MX_ASSERT(image.channels == 3);
 		this->width = image.width;
 		this->height = image.height;
 		this->channels = image.channels;
@@ -135,7 +136,7 @@ namespace MxEngine
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, (GLint)mipmaps - 1));
 		while (width > 0 && height > 0)
 		{
-			assert(level < mipmaps);
+			MX_ASSERT(level < mipmaps);
 			GLCALL(glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data[level]));
 			height /= 2;
 			width /= 2;

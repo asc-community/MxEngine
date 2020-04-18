@@ -37,13 +37,25 @@ namespace MxEngine
 			if (this->updateProjection)
 			{
 				const float fov = Clamp(zoom * FOV, Radians(10.0f), Radians(150.0f));
-				this->projection = MakeInversePerspectiveMatrix(fov, aspectRatio, zNear, zFar);
+				this->projection = MakeReversedPerspectiveMatrix(fov, aspectRatio, zNear, zFar);
 				this->updateProjection = false;
 			}
 			this->matrix = this->projection * this->view;
 			this->updateMatrix = false;
 		}
 		return this->matrix;
+	}
+
+	const Matrix4x4& PerspectiveCamera::GetViewMatrix() const
+	{
+		const auto& _ = GetMatrix();
+		return this->view;
+	}
+
+	const Matrix4x4& PerspectiveCamera::GetProjectionMatrix() const
+	{
+		const auto& _ = GetMatrix();
+		return this->projection;
 	}
 
 	void PerspectiveCamera::SetViewMatrix(const Matrix4x4& view)

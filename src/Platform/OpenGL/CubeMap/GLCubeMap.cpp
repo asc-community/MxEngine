@@ -89,30 +89,31 @@ namespace MxEngine
 		this->Bind();
 	}
 
-	void GLCubeMap::Load(const std::array<std::string, 6>& filepaths, bool genMipmaps, bool flipImage)
+	void GLCubeMap::Load(const std::string& filepath, bool genMipmaps, bool flipImage)
 	{
-		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
-		for (size_t i = 0; i < filepaths.size(); i++)
+		Image img = ImageLoader::LoadImage(filepath, flipImage);
+		if (img.data == nullptr)
 		{
-			Image image = ImageLoader::LoadImage(filepaths[i], flipImage);
-			this->filepaths[i] = filepaths[i];
-
-			if (image.data == nullptr)
-			{
-				Logger::Instance().Error("OpenGL::CubeMap", "file with name '" + filepaths[i] + "' was not found");
-				return;
-			}
-			this->width    = image.width;
-			this->height   = image.height;
-			this->channels = image.channels;
-
-			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGBA, 
-				(GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data));
-
-			ImageLoader::FreeImage(image);
+			Logger::Instance().Error("OpenGL::CubeMap", "file with name '" + filepath + "' was not found");
+			return;
 		}
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+		auto images = ImageLoader::CreateFromSingle(img);
+		MX_ASSERT(img.channels >= 3);
+		this->filepath = filepath;
+		this->channels = img.channels;
+		this->width = img.width;
+		this->height = img.height;
+		ImageLoader::FreeImage(img);
+
+		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
+		int glChannels = 3;
+		for (size_t i = 0; i < 6; i++)
+		{
+			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGBA, 
+				(GLsizei)images[i].width(), (GLsizei)images[i].height() / 3, 0, GL_RGB, GL_UNSIGNED_BYTE, images[i].data()));
+		}
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
@@ -126,18 +127,16 @@ namespace MxEngine
 	{
 		this->width = width;
 		this->height = height;
+		this->filepath = "[[raw data]]";
+		this->channels = 3;
 
 		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
 		for (size_t i = 0; i < data.size(); i++)
 		{
-			this->filepaths[i] = "[[raw data]]";
-			this->channels = 3;
 
 			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGBA,
 				(GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, data[i]));
 		}
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
@@ -151,25 +150,26 @@ namespace MxEngine
 	{
 		this->width = width;
 		this->height = height;
+		this->filepath = "[[depth]]";
+		this->channels = 3;
 		
 		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
 		for (size_t i = 0; i < 6; i++)
 		{
-			this->filepaths[i] = "[[depth]]";
 			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_DEPTH_COMPONENT, 
 				width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr));
 		}
+
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER));
 	}
 
-	const std::string& GLCubeMap::GetPath(size_t index) const
+	const std::string& GLCubeMap::GetPath() const
 	{
-		assert(index < this->filepaths.size());
-		return this->filepaths[index];
+		return this->filepath;
 	}
 
 	size_t GLCubeMap::GetWidth() const

@@ -35,9 +35,9 @@
 #include <algorithm>
 
 #if defined(MXENGINE_USE_ASSIMP)
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+#include "Vendors/assimp/Importer.hpp"
+#include "Vendors/assimp/scene.h"
+#include "Vendors/assimp/postprocess.h"
 
 namespace MxEngine
 {
@@ -134,19 +134,11 @@ namespace MxEngine
 			meshInfo.useTexture = mesh->HasTextureCoords(0);
 			meshInfo.material = object.materials.data() + mesh->mMaterialIndex;
 
-<<<<<<< Updated upstream
-			assert(mesh->mNormals != nullptr);
-			assert(mesh->mTextureCoords != nullptr);
-			assert(mesh->mVertices != nullptr);
-			assert(mesh->mNumFaces > 0);
-			constexpr size_t VertexSize = (3 + 3 + 3);
-=======
 			MX_ASSERT(mesh->mNormals != nullptr);
 			MX_ASSERT(mesh->mTextureCoords != nullptr);
 			MX_ASSERT(mesh->mVertices != nullptr);
 			MX_ASSERT(mesh->mNumFaces > 0);
 			constexpr size_t VertexSize = (3 + 2 + 3);
->>>>>>> Stashed changes
 
 			std::vector<float> vertex;
 			vertex.reserve(VertexSize * (size_t)mesh->mNumVertices);
@@ -177,32 +169,10 @@ namespace MxEngine
 			meshInfo.faces.resize((size_t)mesh->mNumFaces * 3);
 			for (size_t i = 0; i < (size_t)mesh->mNumFaces; i++)
 			{
-<<<<<<< Updated upstream
-				assert(mesh->mFaces[i].mNumIndices == 3);
-				meshInfo.faces[i].x = mesh->mFaces[i].mIndices[0];
-				meshInfo.faces[i].y = mesh->mFaces[i].mIndices[1];
-				meshInfo.faces[i].z = mesh->mFaces[i].mIndices[2];
-			}
-			
-			// convert IBO + VBO -> VBO
-			meshInfo.buffer.reserve(mesh->mNumFaces * 3 * VertexSize);
-			for (size_t i = 0; i < (size_t)mesh->mNumFaces; i++)
-			{
-				for (size_t j = 0; j < 3; j++)
-				{
-					size_t index = mesh->mFaces[i].mIndices[j];
-					meshInfo.buffer.insert(
-						meshInfo.buffer.end(),
-						vertex.begin() + VertexSize * (index + 0), 
-						vertex.begin() + VertexSize * (index + 1)
-					);
-				}
-=======
 				MX_ASSERT(mesh->mFaces[i].mNumIndices == 3);
 				meshInfo.faces[3 * i + 0] = mesh->mFaces[i].mIndices[0];
 				meshInfo.faces[3 * i + 1] = mesh->mFaces[i].mIndices[1];
 				meshInfo.faces[3 * i + 2] = mesh->mFaces[i].mIndices[2];
->>>>>>> Stashed changes
 			}
 			meshInfo.useTexture = true;
 			meshInfo.buffer = std::move(vertex);

@@ -83,9 +83,6 @@
 - added shadow mapping (texture maps, cubemaps)
 - added runtime script & shader editing support
 - minor fixes in opengl debugging, instancing and imgui editor
-<<<<<<< Updated upstream
-- added new python api to render controller
-=======
 - added new python api to render controller
 ### v6.2.0
 - added skybox, skybox reflection (reflection will be improved soon)
@@ -96,4 +93,3 @@
 - improved object mesh loading (now all object has IBO for rendering)
 - material editing from in runtime from ImGui and python
 - fixed multiple bugs
->>>>>>> Stashed changes

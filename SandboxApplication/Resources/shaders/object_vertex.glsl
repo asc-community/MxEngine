@@ -1,5 +1,5 @@
 #version 400 core
-#define MAX_POINT_LIGHTS 1
+#define MAX_POINT_LIGHTS 2
 #define MAX_SPOT_LIGHTS 8
 
 layout(location = 0) in vec4 position;
@@ -32,7 +32,7 @@ void main()
 	vsout.Normal = normalMatrix * vec3(normal);
 	vsout.FragPosWorld = vec3(modelPos);
 	vsout.FragPosDirLight = DirLightProjMatrix * modelPos;
-	
+
 	for (int i = 0; i < spotLightCount; i++)
 	{
 		vsout.FragPosSpotLight[i] = SpotLightProjMatrix[i] * modelPos;

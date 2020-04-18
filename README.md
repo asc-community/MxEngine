@@ -3,6 +3,8 @@ MxEngine is a modern C++ general-purpose 3D game engine aiming to bring easy gam
 Right now MxEngine is developed only by me, #Momo, but any contributions are welcome and will be reviewed.
 Fow now MxEngine supports OpenGL as graphic API and targeting Win64 only. My future plans include other OS and API support but not in the near future.
 
+![preview](readme_preview.png)
+
 ## Additional dependencies
 MxEngine is not a huge framework so multiple third-party libraries are used. Here is the full list of dependencies for last MxEngine release version:
 - [stbimage](https://github.com/nothings/stb/blob/master/stb_image.h) - header-only one-file library to load images from disk
@@ -26,3 +28,16 @@ Minor releases may change API or add new features but usually user code can be e
 Bug fixes & improvements are just fixes to already existing code to reestablish initially planned behaviour. This fixes may also be merged into major or minor releases if they come in the same time.
 
 For full version list see versions.md file
+
+## Building from source
+MxEngine can be built from sources using Visual Studio or CMake. Note that by now this project was only tested on Windows platform, so I do not guarantee that it can be built on other OS. Also, MxEngine is distributed with precompiled libraries, so if you have other OS/CPU, you probably will need to compile them from sources too. All project dependencies are included in this repository as git submodules.
+### Building from Visual Studio
+1. clone the repository via `git clone https://github.com/MomoDeve/MxEngine`
+2. unzip precompiled libraries located in folder `MxEngine/external_libraries`
+3. open MxEngine.sln in Visual Studio. Select `Release`/`Debug` configuration and press "`build solution`"
+### Building from CMake
+1. clone the repository via `git clone https://github.com/MomoDeve/MxEngine`
+2. unzip precompiled libraries located in folder `MxEngine/external_libraries`
+3. open `CMakeLists.txt` located in project root directory and set it up for your system (CMake project can be built through Visual Studio without editing)
+
+If you have free time and you are interested in this project, I will really appreciate your help with porting library on other systems. If you would like to help, please contact me via github or create a pull request.

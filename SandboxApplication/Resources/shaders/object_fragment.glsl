@@ -2,7 +2,7 @@
 #define Kconstant  K[0]
 #define Klinear    K[1]
 #define Kquadratic K[2]
-#define MAX_POINT_LIGHTS 1
+#define MAX_POINT_LIGHTS 2
 #define MAX_SPOT_LIGHTS 8
 #define POINT_LIGHT_SAMPLES 20
 
@@ -68,11 +68,13 @@ uniform sampler2D map_Ke;
 uniform sampler2D map_dirLight_shadow;
 uniform samplerCube map_pointLight_shadow[MAX_POINT_LIGHTS];
 uniform sampler2D map_spotLight_shadow[MAX_SPOT_LIGHTS];
+uniform samplerCube map_skybox;
 uniform float Ka;
 uniform float Kd;
 uniform int pointLightCount;
 uniform int spotLightCount;
 uniform int PCFdistance;
+uniform mat3 skyboxModelMatrix;
 uniform Material material;
 uniform vec4 renderColor;
 uniform vec3 viewPos;
@@ -128,7 +130,7 @@ float CalcShadowFactorCube(vec3 lightDistance, vec3 viewDist, float zfar, sample
 	return shadowFactor;
 }
 
-vec3 calcDirLight(vec3 ambient, vec3 diffuse, vec3 specular, DirLight light, vec3 normal, vec3 viewDir, vec4 fragLightSpace, sampler2D map_shadow)
+vec3 calcDirLight(vec3 ambient, vec3 diffuse, vec3 specular, DirLight light, vec3 normal, vec3 viewDir, vec3 reflection, vec4 fragLightSpace, sampler2D map_shadow)
 {
 	vec3 lightDir = normalize(light.direction);
 	vec3 Hdir = normalize(lightDir + viewDir);
@@ -139,17 +141,14 @@ vec3 calcDirLight(vec3 ambient, vec3 diffuse, vec3 specular, DirLight light, vec
 	vec3 diffuseObject = diffuse * diffuseFactor;
 
 	ambient = ambient * light.ambient;
-	diffuse = diffuse * light.diffuse * diffuseFactor;
+	diffuse = light.diffuse * diffuseObject;
 	specular = specular * light.specular * specularFactor;
-<<<<<<< Updated upstream
-=======
 
-	reflection = reflection * diffuseObject * light.specular;
+	reflection = reflection * diffuseObject;
 	diffuse = (1.0f - material.refl) * diffuse;
 	ambient = (1.0f - material.refl) * ambient;
->>>>>>> Stashed changes
 
-	return vec3(ambient + shadowFactor * (diffuse + specular));
+	return vec3(ambient + shadowFactor * (diffuse + specular + reflection));
 }
 
 vec3 calcPointLight(vec3 ambient, vec3 diffuse, vec3 specular, PointLight light, vec3 normal, vec3 viewDir, samplerCube map_shadow)
@@ -193,8 +192,6 @@ vec3 calcSpotLight(vec3 ambient, vec3 diffuse, vec3 specular, SpotLight light, v
 	return vec3(ambient + shadowFactor * (diffuse + specular));
 }
 
-<<<<<<< Updated upstream
-=======
 vec3 calcReflection(vec3 viewDir, vec3 normal)
 {
 	vec3 I = -viewDir;
@@ -204,7 +201,6 @@ vec3 calcReflection(vec3 viewDir, vec3 normal)
 	return color;
 }
 
->>>>>>> Stashed changes
 void main()
 {
 	vec3 normal   = normalize(fsin.Normal);
@@ -215,10 +211,11 @@ void main()
 	vec3 diffuse  = vec3(texture(map_Kd, fsin.TexCoord)) * Kd; // * material.Kd;
 	vec3 specular = vec3(texture(map_Ks, fsin.TexCoord)) * material.Ks;
 	vec3 emmisive = vec3(texture(map_Ke, fsin.TexCoord)) * material.Ke;
+	vec3 reflection = calcReflection(viewDir, normal);
 
 	vec3 color = vec3(0.0f);
 	// directional light
-	color += calcDirLight(ambient, diffuse, specular, dirLight, normal, viewDir, fsin.FragPosDirLight, map_dirLight_shadow);
+	color += calcDirLight(ambient, diffuse, specular, dirLight, normal, viewDir, reflection, fsin.FragPosDirLight, map_dirLight_shadow);
 	// point lights
 	for (int i = 0; i < pointLightCount; i++)
 	{

@@ -36,6 +36,7 @@
 #include "Core/Lighting/DirectionalLight/DirectionalLight.h"
 #include "Core/Lighting/PointLight/PointLight.h"
 #include "Core/Lighting/SpotLight/SpotLight.h"
+#include "Core/Skybox/Skybox.h"
 
 #include <array>
 
@@ -79,8 +80,9 @@ namespace MxEngine
 		void SetAnisotropicFiltering(float value) const;
 		void SetViewport(int x, int y, int width, int height) const;
 		void DrawObject(const IDrawable& object, const CameraController& viewport) const;
-		void DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights) const;
+		void DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights, const Skybox* skybox) const;
 		void DrawObjectMesh(const IDrawable& object, const CameraController& viewport) const;
+		void DrawSkybox(const Skybox& skybox, const CameraController& viewport);
 		void SetPCFDistance(int value);
 		template<typename LightSource>
 		void DrawDepthTexture(const IDrawable& object, const LightSource& light) const;

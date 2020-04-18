@@ -28,10 +28,7 @@
 
 #pragma once
 
-#include "Core/Macro/Macro.h"
-
-#if defined(MXENGINE_USE_FMT)
-#include <fmt/format.h>
+#include "Vendors/fmt/format.h"
 
 namespace MxEngine
 {
@@ -41,15 +38,3 @@ namespace MxEngine
         return fmt::format(formatStr, std::forward<Args>(args)...);
     }
 }
-#else
-#include "Utilities/Logger/Logger.h"
-namespace MxEngine
-{
-    template<typename S, typename... Args, typename Char = fmt::char_t<S>>
-    inline auto Format(const S& formatStr, Args&&... args)
-    {
-        Logger::Instance().Warning("MxEngine::Format", "fmt library was disabled");
-        return formatStr;
-    }
-}
-#endif

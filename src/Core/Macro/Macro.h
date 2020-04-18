@@ -25,11 +25,12 @@
 // scripting (optional):
 #define MXENGINE_USE_PYTHON
 
+// assert handling 
+#define MX_ASSERT_EXCEPTION
+
 // required in engine source:
 #define MXENGINE_USE_BOOST
 #define MXENGINE_USE_ASSIMP
-#define MXENGINE_USE_FMT
-#define MXENGINE_USE_IMGUI
 
 #pragma comment(lib, "MxEngine.lib")
 
@@ -38,10 +39,9 @@
     #pragma comment(lib, "glu32.lib")
     #pragma comment(lib, "glew32s.lib")
     #pragma comment(lib, "glfw3.lib")
-#endif
 
-#if defined(MXENGINE_USE_IMGUI)
-    #pragma comment(lib, "imgui.lib")
+    #define PLATFORM_SHADER_PATH Platform/OpenGL/Shaders/
+    #define PLATFORM_SHADER_EXTENSION .glsl
 #endif
 
 #if defined(MXENGINE_USE_ASSIMP)
@@ -56,17 +56,25 @@
     #endif
 #endif
 
-#if defined(MXENGINE_USE_FMT)
-    #if defined(MXENGINE_RELEASE)
-        #pragma comment(lib, "fmt.lib")
-    #elif defined(MXENGINE_DEBUG)
-        #pragma comment(lib, "fmtd.lib")
-    #endif
-#endif
-
 #define MXENGINE_CONCAT_IMPL(x, y) x##y
 #define MXENGINE_CONCAT(x, y) MXENGINE_CONCAT_IMPL(x, y)
 
 #define INVOKE_ONCE(...) static char MXENGINE_CONCAT(unused, __LINE__) = [&](){ __VA_ARGS__; return '\0'; }()
 
 #define BOOL_STRING(b) ((b) ? "true" : "false")
+
+#define MXENGINE_STRING_IMPL(x) #x
+#define MXENGINE_STRING(x) MXENGINE_STRING_IMPL(x)
+#define MAKE_PLATFORM_SHADER(name) MXENGINE_STRING(MXENGINE_CONCAT(MXENGINE_CONCAT(PLATFORM_SHADER_PATH, name), PLATFORM_SHADER_EXTENSION))
+
+#if defined(MXENGINE_DEBUG)
+    #if defined(MX_ASSERT_EXCEPTION)
+            #include <exception>
+            namespace MxEngine { class assert_exception : public std::exception { public: assert_exception(const char* msg) : std::exception(msg) {} }; }
+        #define MX_ASSERT(expr) if(!(expr)) throw MxEngine::assert_exception(#expr) 
+    #else
+        #define MX_ASSERT(expr) assert(expr)
+    #endif
+#else
+    #define MX_ASSERT(expr)
+#endif

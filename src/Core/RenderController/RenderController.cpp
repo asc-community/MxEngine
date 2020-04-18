@@ -35,7 +35,7 @@ namespace MxEngine
 	RenderController::RenderController(Renderer& renderer)
 		: renderer(renderer)
 	{
-		
+
 	}
 
 	Renderer& RenderController::GetRenderEngine() const
@@ -45,7 +45,7 @@ namespace MxEngine
 
 	void RenderController::Render() const
 	{
-		this->renderer.Finish();
+		this->renderer.Flush();
 	}
 
 	void RenderController::Clear() const
@@ -60,19 +60,19 @@ namespace MxEngine
 		this->Clear();
 	}
 
-    void RenderController::AttachDepthCubeMap(const CubeMap& cubemap)
-    {
+	void RenderController::AttachDepthCubeMap(const CubeMap& cubemap)
+	{
 		this->DepthBuffer->AttachCubeMap(cubemap, Attachment::DEPTH_ATTACHMENT);
 		this->SetViewport(0, 0, this->DepthBuffer->GetWidth(), this->DepthBuffer->GetHeight());
 		this->Clear();
-    }
+	}
 
 	void RenderController::DetachDepthBuffer(int viewportWidth, int viewportHeight)
 	{
 		this->DepthBuffer->Unbind();
 		this->SetViewport(0, 0, viewportWidth, viewportHeight);
 	}
-	
+
 	void RenderController::ToggleReversedDepth(bool value) const
 	{
 		this->renderer.UseReversedDepth(value);
@@ -93,8 +93,8 @@ namespace MxEngine
 		this->renderer.SetViewport(x, y, width, height);
 	}
 
-    void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport) const
-    {
+	void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport) const
+	{
 		// probably nothing to do at all
 		if (!viewport.HasCamera()) return;
 		if (!object.IsDrawable()) return;
@@ -120,7 +120,7 @@ namespace MxEngine
 			{
 				const Material& material = renderObject.GetMaterial();
 
-				#define BIND_TEX(NAME, SLOT)         \
+#define BIND_TEX(NAME, SLOT)         \
 				if (material.NAME != nullptr)        \
 					material.NAME->Bind(SLOT);       \
 				else if (object.HasTexture())        \
@@ -145,9 +145,9 @@ namespace MxEngine
 			}
 			iterator = object.GetNext(iterator);
 		}
-    }
+	}
 
-	void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights) const
+	void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights, const Skybox* skybox) const
 	{
 		// probably nothing to do at all
 		if (!viewport.HasCamera()) return;
@@ -166,6 +166,7 @@ namespace MxEngine
 		this->GetRenderEngine().SetDefaultVertexAttribute(7, object.GetNormalMatrix());
 
 		shader.SetUniformMat4("ViewProjMatrix", ViewProjection);
+		shader.SetUniformMat3("skyboxModelMatrix", Transpose(skybox->GetRotationMatrix()));
 		shader.SetUniformVec3("viewPos", cameraPos);
 		shader.SetUniformVec4("renderColor", renderColor);
 
@@ -187,23 +188,23 @@ namespace MxEngine
 		shader.SetUniformInt("pointLightCount", (int)lights.Point.size());
 		for (size_t i = 0; i < lights.Point.size(); i++)
 		{
-			shader.SetUniformVec3 (Format(FMT_STRING("pointLight[{0}].position"), i), lights.Point[i].Position);
-			shader.SetUniformFloat(Format(FMT_STRING("pointLight[{0}].zfar"),     i), lights.Point[i].FarDistance);
-			shader.SetUniformVec3 (Format(FMT_STRING("pointLight[{0}].K"),        i), lights.Point[i].GetFactors());
-			shader.SetUniformVec3 (Format(FMT_STRING("pointLight[{0}].ambient"),  i), lights.Point[i].GetAmbientColor());
-			shader.SetUniformVec3 (Format(FMT_STRING("pointLight[{0}].diffuse"),  i), lights.Point[i].GetDiffuseColor());
-			shader.SetUniformVec3 (Format(FMT_STRING("pointLight[{0}].specular"), i), lights.Point[i].GetSpecularColor());
+			shader.SetUniformVec3(Format(FMT_STRING("pointLight[{0}].position"), i), lights.Point[i].Position);
+			shader.SetUniformFloat(Format(FMT_STRING("pointLight[{0}].zfar"), i), lights.Point[i].FarDistance);
+			shader.SetUniformVec3(Format(FMT_STRING("pointLight[{0}].K"), i), lights.Point[i].GetFactors());
+			shader.SetUniformVec3(Format(FMT_STRING("pointLight[{0}].ambient"), i), lights.Point[i].GetAmbientColor());
+			shader.SetUniformVec3(Format(FMT_STRING("pointLight[{0}].diffuse"), i), lights.Point[i].GetDiffuseColor());
+			shader.SetUniformVec3(Format(FMT_STRING("pointLight[{0}].specular"), i), lights.Point[i].GetSpecularColor());
 		}
 
 		// set spot lights
 		shader.SetUniformInt("spotLightCount", (int)lights.Spot.size());
 		for (size_t i = 0; i < lights.Spot.size(); i++)
 		{
-			shader.SetUniformVec3 (Format(FMT_STRING("spotLight[{0}].position"),   i), lights.Spot[i].Position);
-			shader.SetUniformVec3 (Format(FMT_STRING("spotLight[{0}].direction"),  i), lights.Spot[i].GetDirection());
-			shader.SetUniformVec3 (Format(FMT_STRING("spotLight[{0}].ambient"),    i), lights.Spot[i].GetAmbientColor());
-			shader.SetUniformVec3 (Format(FMT_STRING("spotLight[{0}].diffuse"),    i), lights.Spot[i].GetDiffuseColor());
-			shader.SetUniformVec3 (Format(FMT_STRING("spotLight[{0}].specular"),   i), lights.Spot[i].GetSpecularColor());
+			shader.SetUniformVec3(Format(FMT_STRING("spotLight[{0}].position"), i), lights.Spot[i].Position);
+			shader.SetUniformVec3(Format(FMT_STRING("spotLight[{0}].direction"), i), lights.Spot[i].GetDirection());
+			shader.SetUniformVec3(Format(FMT_STRING("spotLight[{0}].ambient"), i), lights.Spot[i].GetAmbientColor());
+			shader.SetUniformVec3(Format(FMT_STRING("spotLight[{0}].diffuse"), i), lights.Spot[i].GetDiffuseColor());
+			shader.SetUniformVec3(Format(FMT_STRING("spotLight[{0}].specular"), i), lights.Spot[i].GetSpecularColor());
 			shader.SetUniformFloat(Format(FMT_STRING("spotLight[{0}].innerAngle"), i), lights.Spot[i].GetInnerCos());
 			shader.SetUniformFloat(Format(FMT_STRING("spotLight[{0}].outerAngle"), i), lights.Spot[i].GetOuterCos());
 		}
@@ -215,7 +216,7 @@ namespace MxEngine
 			{
 				const Material& material = renderObject.GetMaterial();
 
-				#define BIND_TEX(NAME, SLOT)         \
+#define BIND_TEX(NAME, SLOT)         \
 				if (material.NAME != nullptr)        \
 					material.NAME->Bind(SLOT);       \
 				else if (object.HasTexture())        \
@@ -232,19 +233,33 @@ namespace MxEngine
 				lights.Global->GetDepthTexture()->Bind(4);
 				shader.SetUniformInt("map_dirLight_shadow", 4);
 
-				for (int i = 0; i < lights.Point.size(); i++)
+				for (int i = 0; i < lights.Spot.size(); i++)
 				{
 					int bindIndex = 5 + i;
+					lights.Spot[i].GetDepthTexture()->Bind(bindIndex);
+					shader.SetUniformInt(Format(FMT_STRING("map_spotLight_shadow[{0}]"), i), bindIndex);
+				}
+
+				for (int i = 0; i < lights.Point.size(); i++)
+				{
+					int bindIndex = (5 + (int)lights.Spot.size()) + i;
 					lights.Point[i].GetDepthCubeMap()->Bind(bindIndex);
 					shader.SetUniformInt(Format(FMT_STRING("map_pointLight_shadow[{0}]"), i), bindIndex);
 				}
 
-				for (int i = 0; i < lights.Spot.size(); i++)
+				// dont ask - OpenGL requires all samplerCubes to be bound
+				constexpr size_t MAX_POINT_SOURCES = 2;
+				for (int i = (int)lights.Point.size(); i < MAX_POINT_SOURCES; i++)
 				{
-					int bindIndex = (5 + (int)lights.Point.size()) + i;
-					lights.Spot[i].GetDepthTexture()->Bind(bindIndex);
-					shader.SetUniformInt(Format(FMT_STRING("map_spotLight_shadow[{0}]"), i), bindIndex);
+					int bindIndex = int(5 + lights.Spot.size() + lights.Point.size()) + i;
+					lights.Global->GetDepthTexture()->Bind(bindIndex);
+					shader.SetUniformInt(Format(FMT_STRING("map_pointLight_shadow[{0}]"), i), bindIndex);
 				}
+
+				int bindIndex = int(5 + lights.Spot.size() + MAX_POINT_SOURCES);
+				if (skybox->SkyboxTexture != nullptr) // TODO: what should we do if no skybox exists for scene?
+					skybox->SkyboxTexture->Bind(bindIndex);
+				shader.SetUniformInt("map_skybox", bindIndex);
 
 				// setting materials (ka, kd not used for now
 				// shader.SetUniformVec3("material.Ka", material.Ka);
@@ -298,6 +313,23 @@ namespace MxEngine
 			}
 			iterator = object.GetNext(iterator);
 		}
+	}
+
+	void RenderController::DrawSkybox(const Skybox& skybox, const CameraController& viewport)
+	{
+		if (!viewport.HasCamera()) return;
+		if (skybox.SkyboxTexture == nullptr) return;
+
+		auto& shader = *skybox.SkyboxShader;
+		auto View = (Matrix3x3)viewport.GetCamera().GetViewMatrix();
+		auto Projection = viewport.GetCamera().GetProjectionMatrix();
+		shader.SetUniformMat4("ViewProjection", Projection * (Matrix4x4)View);
+		shader.SetUniformMat3("Rotation", skybox.GetRotationMatrix());
+
+		skybox.SkyboxTexture->Bind(0);
+		shader.SetUniformInt("skybox", 0);
+
+		this->GetRenderEngine().DrawTriangles(*skybox.VAO, skybox.VBO->GetSize(), shader);
 	}
 
 	void RenderController::SetPCFDistance(int value)

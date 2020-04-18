@@ -11,7 +11,6 @@
     <Object Include="Resources\objects\destroyer.obj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="python36.dll" />
     <None Include="Resources\scripts\init.py" />
     <None Include="Resources\scripts\update.py" />
     <None Include="Resources\scripts\load.py" />

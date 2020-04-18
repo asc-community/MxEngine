@@ -116,11 +116,12 @@ namespace MxEngine
 
     MxObject& Scene::AddObject(const std::string& name, UniqueRef<MxObject> object)
     {
-        if (this->objectManager.Get().find(name) != this->objectManager.Get().end())
+        if (this->objectManager.Exists(name))
         {
             Logger::Instance().Warning("MxEngine::Scene", "overriding already existing object: " + name);
             this->DestroyObject(name);
         }
+        Logger::Instance().Debug("MxEngine::Scene", "adding object with name: " + name);
         auto& value = *object;
         this->objectManager.Add(name, std::move(object));
         return value;
@@ -198,6 +199,13 @@ namespace MxEngine
         MAKE_SCOPE_PROFILER("Scene::LoadTexture");
         auto textureObject = Graphics::Instance()->CreateTexture(this->scenePath / texture, genMipmaps, flipImage);
         return this->GetResourceManager<Texture>().Add(name, std::move(textureObject));
+    }
+
+    CubeMap* Scene::LoadCubeMap(const std::string& name, const FilePath& texture, bool genMipmaps, bool flipImage)
+    {
+        MAKE_SCOPE_PROFILER("Scene::LoadCubeMap");
+        auto cubemapObject = Graphics::Instance()->CreateCubeMap(this->scenePath / texture, genMipmaps, flipImage);
+        return this->GetResourceManager<CubeMap>().Add(name, std::move(cubemapObject));
     }
 
     void Scene::SetDirectory(const FilePath& path)

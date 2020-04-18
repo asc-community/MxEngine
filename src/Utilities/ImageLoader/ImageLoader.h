@@ -29,6 +29,8 @@
 #pragma once
 
 #include <string>
+#include <array>
+#include "Utilities/Array/Array2D.h"
 
 namespace MxEngine
 {
@@ -46,5 +48,8 @@ namespace MxEngine
 		static Image LoadImage(const std::string& filepath, bool flipImage = true);
 		static void FreeImage(Image image);
 		static void FreeImage(unsigned char* imageData);
+
+		using ImageArray = std::array<Array2D<unsigned char>, 6>;
+		static ImageArray CreateFromSingle(const Image& image);
 	};
 }

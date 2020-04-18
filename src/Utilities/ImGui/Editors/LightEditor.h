@@ -29,12 +29,13 @@
 #pragma once
 
 #include "Core/Application/Application.h"
+#include "Utilities/ImGui/Layout/Layout.h"
 
 namespace MxEngine::GUI
 {
-    inline void DrawLightEditor()
-    {
-        auto context = Application::Get();
+	inline void DrawLightEditor()
+	{
+		auto context = Application::Get();
 
 		auto& scene = context->GetCurrentScene();
 		auto& globalLight = scene.GlobalLight;
@@ -43,16 +44,26 @@ namespace MxEngine::GUI
 		{
 			ImGui::PushID(0xFFFF);
 
+			static int bufferSize = (int)context->GetRenderer().GetDepthBufferSize<DirectionalLight>();
+			if (GUI::InputIntOnClick("depth buffer size", &bufferSize))
+			{
+				bufferSize = (int)FloorToLog2((size_t)Clamp(bufferSize, 1, 1 << 16));
+				context->GetRenderer().SetDepthBufferSize<DirectionalLight>(bufferSize);
+				bufferSize = (int)context->GetRenderer().GetDepthBufferSize<DirectionalLight>();
+			}
+			ImGui::InputInt("PCF distance", &context->GetRenderer().PCFdistance);
+
 			auto ambient = globalLight.GetAmbientColor();
 			auto diffuse = globalLight.GetDiffuseColor();
 			auto specular = globalLight.GetSpecularColor();
 			ImGui::InputFloat3("direction", &globalLight.Direction[0]);
+			ImGui::DragFloat("projection size", &globalLight.ProjectionSize, 10.0f, 50.0f, 5000.0f);
 
-			if (ImGui::InputFloat3("ambient color", &ambient[0]))
+			if (ImGui::ColorEdit3("ambient color", &ambient[0]))
 				globalLight.UseAmbientColor(ambient);
-			if (ImGui::InputFloat3("diffuse color", &diffuse[0]))
+			if (ImGui::ColorEdit3("diffuse color", &diffuse[0]))
 				globalLight.UseDiffuseColor(diffuse);
-			if (ImGui::InputFloat3("specular color", &specular[0]))
+			if (ImGui::ColorEdit3("specular color", &specular[0]))
 				globalLight.UseSpecularColor(specular);
 
 			ImGui::PopID();
@@ -66,6 +77,14 @@ namespace MxEngine::GUI
 			{
 				ImGui::PushID((int)i);
 
+				static int bufferSize = (int)context->GetRenderer().GetDepthBufferSize<PointLight>();
+				if (GUI::InputIntOnClick("depth buffer size", &bufferSize))
+				{
+					bufferSize = (int)FloorToLog2((size_t)Clamp(bufferSize, 1, 1 << 16));
+					context->GetRenderer().SetDepthBufferSize<PointLight>(bufferSize);
+					int bufferSize = (int)context->GetRenderer().GetDepthBufferSize<PointLight>();
+				}
+
 				auto& pointLight = scene.PointLights[i];
 				auto ambientPoint = pointLight.GetAmbientColor();
 				auto diffusePoint = pointLight.GetDiffuseColor();
@@ -76,11 +95,11 @@ namespace MxEngine::GUI
 
 				if (ImGui::InputFloat3("K factors", &factors[0]))
 					pointLight.UseFactors(factors);
-				if (ImGui::InputFloat3("ambient color", &ambientPoint[0]))
+				if (ImGui::ColorEdit3("ambient color", &ambientPoint[0]))
 					pointLight.UseAmbientColor(ambientPoint);
-				if (ImGui::InputFloat3("diffuse color", &diffusePoint[0]))
+				if (ImGui::ColorEdit3("diffuse color", &diffusePoint[0]))
 					pointLight.UseDiffuseColor(diffusePoint);
-				if (ImGui::InputFloat3("specular color", &specularPoint[0]))
+				if (ImGui::ColorEdit3("specular color", &specularPoint[0]))
 					pointLight.UseSpecularColor(specularPoint);
 
 				ImGui::PopID();
@@ -94,6 +113,14 @@ namespace MxEngine::GUI
 			if (ImGui::CollapsingHeader(strLight.c_str(), ImGuiTreeNodeFlags_None))
 			{
 				ImGui::PushID(int(i + scene.PointLights.GetCount()));
+
+				static int bufferSize = (int)context->GetRenderer().GetDepthBufferSize<SpotLight>();
+				if (GUI::InputIntOnClick("depth buffer size", &bufferSize))
+				{
+					bufferSize = (int)FloorToLog2((size_t)Clamp(bufferSize, 1, 1 << 16));
+					context->GetRenderer().SetDepthBufferSize<SpotLight>(bufferSize);
+					bufferSize = (int)context->GetRenderer().GetDepthBufferSize<SpotLight>();
+				}
 
 				auto& spotLight = scene.SpotLights[i];
 				auto innerAngle = spotLight.GetInnerAngle();
@@ -110,15 +137,15 @@ namespace MxEngine::GUI
 				if (ImGui::DragFloat("inner angle", &innerAngle, 1.0f, 0.0f, 90.0f))
 					spotLight.UseInnerAngle(innerAngle);
 
-				if (ImGui::InputFloat3("ambient color", &ambientSpot[0]))
+				if (ImGui::ColorEdit3("ambient color", &ambientSpot[0]))
 					spotLight.UseAmbientColor(ambientSpot);
-				if (ImGui::InputFloat3("diffuse color", &diffuseSpot[0]))
+				if (ImGui::ColorEdit3("diffuse color", &diffuseSpot[0]))
 					spotLight.UseDiffuseColor(diffuseSpot);
-				if (ImGui::InputFloat3("specular color", &specularSpot[0]))
+				if (ImGui::ColorEdit3("specular color", &specularSpot[0]))
 					spotLight.UseSpecularColor(specularSpot);
 
 				ImGui::PopID();
 			}
 		}
-    }
+	}
 }

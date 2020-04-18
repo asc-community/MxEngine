@@ -569,6 +569,16 @@ public:
 class ICameraWrapper : public ICamera, public py::wrapper<ICamera>
 {
 public:
+    virtual const Matrix4x4& GetViewMatrix() const override
+    {
+        return this->get_override("view_matrix")();
+    }
+
+    virtual const Matrix4x4& GetProjectionMatrix() const override
+    {
+        return this->get_override("projection_matrix")();
+    }
+
     virtual const Matrix4x4& GetMatrix() const override
     {
         return this->get_override("matrix")();
@@ -1358,8 +1368,6 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("vec_up", RefGetter(&IMovable::GetUpVector))
         ;
 
-<<<<<<< Updated upstream
-=======
     using SubMeshesGetFunc = std::vector<RenderObject>& (Mesh::*)();
     py::class_<Mesh, boost::noncopyable>("mesh", py::no_init)
         .add_property("center", &Mesh::GetObjectCenter)
@@ -1398,10 +1406,9 @@ BOOST_PYTHON_MODULE(mx_engine)
 
     using CameraFunc = ICamera & (CameraController::*)();
 
->>>>>>> Stashed changes
     py::class_<CameraController, py::bases<IMovable>, boost::noncopyable>("camera_controller", py::init())
         .def("has_camera", &CameraController::HasCamera)
-        .add_property("camera", RefGetter(&CameraController::GetCamera))
+        .add_property("camera", RefGetter((CameraFunc)&CameraController::GetCamera))
         .add_property("camera_matrix", RefGetter(&CameraController::GetMatrix))
         .add_property("move_speed", &CameraController::GetMoveSpeed, &CameraController::SetMoveSpeed)
         .add_property("rotate_speed", &CameraController::GetRotateSpeed, &CameraController::SetRotateSpeed)
@@ -1422,6 +1429,8 @@ BOOST_PYTHON_MODULE(mx_engine)
     py::class_<ICameraWrapper, boost::noncopyable>("camera", py::no_init)
         .def("set_view", py::pure_virtual(&ICamera::SetViewMatrix))
         .add_property("matrix", RefGetter(&ICamera::GetMatrix))
+        .add_property("view_matrix", RefGetter(&ICamera::GetViewMatrix))
+        .add_property("projection_matrix", RefGetter(&ICamera::GetProjectionMatrix))
         .add_property("aspect", &ICamera::GetAspectRatio, AspectRatioWrapper)
         .add_property("znear",&ICamera::GetZNear, &ICamera::SetZNear)
         .add_property("zfar", &ICamera::GetZFar, &ICamera::SetZFar)

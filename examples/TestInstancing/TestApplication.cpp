@@ -4,11 +4,12 @@
 
 class BallObject : public Sphere
 {
-	size_t count = 10000;
+	size_t count;
 	float fadeFactor = 0.995f;
 	std::vector<Vector3> impulse = std::vector<Vector3>(count, MakeVector3(0.0f));
 public:
-	BallObject() 
+	BallObject(size_t count)
+		: count(count)
 	{
 		float range = 100.0f;
 
@@ -61,7 +62,7 @@ void SnakePath3D::OnCreate()
 	// add objects here
 	this->GetCurrentScene().SetDirectory("Resources/");
 	this->GetCurrentScene().AddObject("Grid", MakeUnique<Grid>());
-	this->GetCurrentScene().AddObject("Ball", MakeUnique<BallObject>());
+	this->GetCurrentScene().AddObject("Ball", MakeUnique<BallObject>(10000));
 
 	auto& scene = this->GetCurrentScene();
 	
@@ -94,7 +95,19 @@ void SnakePath3D::OnCreate()
 
 void SnakePath3D::OnUpdate()
 {
-
+	if (GetConsole().IsToggled())
+	{
+		GUI::UnderConsole();
+		ImGui::Begin("Instancing test window");
+		static int count = 10000;
+		ImGui::InputInt("Ball count", &count);
+		if (ImGui::Button("update"))
+		{
+			this->GetCurrentScene().DestroyObject("Ball");
+			this->GetCurrentScene().AddObject("Ball", MakeUnique<BallObject>((size_t)count));
+		}
+		ImGui::End();
+	}
 }
 
 void SnakePath3D::OnDestroy()

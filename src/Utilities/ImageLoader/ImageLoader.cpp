@@ -27,10 +27,12 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ImageLoader.h"
+#include "Core/Macro/Macro.h"
 #include "Utilities/Profiler/Profiler.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb/stb_image.h"
+#include "Vendors/stb/stb_image.h"
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
@@ -54,5 +56,60 @@ namespace MxEngine
 	void ImageLoader::FreeImage(unsigned char* imageData)
 	{
 		stbi_image_free(imageData);
+	}
+
+	/*
+	    0X00
+	    XXXX -> format of input
+	    0X00
+	*/
+
+	/*
+		result[0] = right
+		result[1] = left
+		result[2] = top
+		result[3] = bottom
+		result[4] = front
+		result[5] = back
+	*/
+	ImageLoader::ImageArray ImageLoader::CreateFromSingle(const Image& image)
+	{
+		ImageArray result;
+		size_t channels = 3; 
+		size_t width = image.width / 4;
+		size_t height = width;
+		if (image.width / 4 != image.height / 3)
+		{
+			Logger::Instance().Warning("MxEngine::ImageLoader", "image size is invalid, it will be reduced to fit skybox cubemap");
+			width = height = FloorToLog2(std::min(image.width / 4, image.height / 3));
+		}
+		for (auto& arr : result)
+		{
+			arr.resize(height, width * channels, 0);
+		}
+
+		auto copySide = [&image, &width, &height, &channels](Array2D<unsigned char>& dst, size_t sliceX, size_t sliceY)
+		{
+			for (size_t i = 0; i < height; i++)
+			{
+				for (size_t j = 0; j < width; j++)
+				{
+					size_t y = i + sliceY * height;
+					size_t x = j + sliceX * width;
+					for (size_t k = 0; k < channels; k++)
+					{
+						dst[i][j * channels + k] = image.data[(y * image.width + x) * channels + k];
+					}
+				}
+			}
+		};
+
+		copySide(result[0], 2, 1);
+		copySide(result[1], 0, 1);
+		copySide(result[2], 1, 0);
+		copySide(result[3], 1, 2);
+		copySide(result[4], 1, 1);
+		copySide(result[5], 3, 1);
+		return result;
 	}
 }

@@ -19,29 +19,29 @@ class SandboxScene : public Scene
         this->AddObject("Sphere", MakeUnique<SphereObject>());
         // this->AddObject("Destroyer", MakeUnique<DestroyerObject>());
         // this->AddObject("DeathStar", MakeUnique<DeathStarObject>());
-<<<<<<< Updated upstream
-=======
 		
-		auto& surface = (Surface&)this->AddObject("Surface", MakeUnique<Surface>());
-		surface.SetSurface([](float x, float y) 
-			{ 
-				return std::sin(10.0f * x) * std::sin(10.0f * y);
-			}, 1.0f, 1.0f, 0.01f);
-		surface.Scale(10.0f, 2.0f, 10.0f);
-		surface.Translate(0.0f, 2.0f, 0.0f);
->>>>>>> Stashed changes
-
+		// auto& surface = (Surface&)this->AddObject("Surface", MakeUnique<Surface>());
+		// surface.SetSurface([](float x, float y) 
+		// 	{ 
+		// 		return std::sin(10.0f * x) * std::sin(10.0f * y);
+		// 	}, 1.0f, 1.0f, 0.01f);
+		// surface.Scale(10.0f, 2.0f, 10.0f);
+		// surface.Translate(0.0f, 2.0f, 0.0f);
+		
         this->LoadScript("init", "scripts/init.py");
         this->LoadScript("update", "scripts/update.py");
         this->LoadScript("load", "scripts/load.py");
 
         Application::Get()->ExecuteScript(*this->GetResource<Script>("init"));
 
+		this->SceneSkybox = MakeUnique<Skybox>();
+		this->SceneSkybox->SkyboxTexture = this->LoadCubeMap("Skybox", "textures/dawn.jpg");
+
 		this->PointLights.SetCount(1);
 		this->SpotLights.SetCount(1);
 
 		this->GlobalLight
-			.UseAmbientColor({ 0.0f, 0.0f, 0.0f })
+			.UseAmbientColor({ 0.3f, 0.3f, 0.3f })
 			.UseDiffuseColor({ 0.3f, 0.3f, 0.3f })
 			.UseSpecularColor({ 1.0f, 1.0f, 1.0f })
 			;
@@ -65,11 +65,8 @@ class SandboxScene : public Scene
 		// auto camera = MakeUnique<OrthographicCamera>();
 		// Application::Get()->GetRenderer().ToggleReversedDepth(false);
 
-<<<<<<< Updated upstream
-=======
-		this->PointLights.SetCount(0);
+		// this->PointLights.SetCount(0);
 
->>>>>>> Stashed changes
 		const auto& window = Application::Get()->GetWindow();
 		camera->SetZFar(100000.0f);
 		camera->SetAspectRatio((float)window.GetWidth(), (float)window.GetHeight());

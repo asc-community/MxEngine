@@ -40,13 +40,8 @@ namespace MxEngine
     protected:
         static constexpr size_t VertexSize = (3 + 2 + 3);
 
-<<<<<<< Updated upstream
-        // submits vertex data in format [v3, v2, v3] into first RenderObject on MxObject (creates or replaces existing VBO)
-        inline void SubmitData(const std::string& resourceName, ArrayView<float> buffer)
-=======
         // submits vertex data in format [v3 (pos), v2 (tex), v3 (norm)] into first RenderObject on MxObject (creates or replaces existing VBO)
         inline void SubmitData(const std::string& resourceName, ArrayView<float> vbo, ArrayView<unsigned int> ibo)
->>>>>>> Stashed changes
         {
             // first we create VBO + VAO with data
             auto VBO = Graphics::Instance()->CreateVertexBuffer(vbo.data(), vbo.size(), UsageType::STATIC_DRAW);

@@ -1,27 +1,21 @@
-[submodule "assimp"]
-	path = assimp
+[submodule "submodules/assimp"]
+	path = submodules/assimp
 	url = https://github.com/assimp/assimp
-[submodule "glew"]
-	path = glew
-	url = https://github.com/nigels-com/glew
-[submodule "glfw"]
-	path = glfw
-	url = https://github.com/glfw/glfw
-[submodule "stb"]
-	path = stb
-	url = https://github.com/nothings/stb
-[submodule "glm"]
-	path = glm
-	url = https://github.com/g-truc/glm
-[submodule "imgui"]
-	path = imgui
-	url = https://github.com/ocornut/imgui
-[submodule "boost"]
-	path = boost
+[submodule "submodules/boost"]
+	path = submodules/boost
 	url = https://github.com/boostorg/boost
-[submodule "fmt"]
-	path = fmt
+[submodule "submodules/fmt"]
+	path = submodules/fmt
 	url = https://github.com/fmtlib/fmt
-[submodule "cpython"]
-	path = cpython
-	url = https://github.com/python/cpython
+[submodule "submodules/glfw"]
+	path = submodules/glfw
+	url = https://github.com/glfw/glfw
+[submodule "submodules/stb"]
+	path = submodules/stb
+	url = https://github.com/nothings/stb
+[submodule "submodules/glm"]
+	path = submodules/glm
+	url = https://github.com/g-truc/glm
+[submodule "submodules/imgui"]
+	path = submodules/imgui
+	url = https://github.com/ocornut/imgui

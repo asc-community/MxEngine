@@ -45,11 +45,11 @@ namespace MxEngine
 			MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "OpenGL::InitGLFW");
 			glfwSetErrorCallback([](int errorCode, const char* errorMessage)
 				{
-					Logger::Instance().Error("GLFW", errorMessage);
+					Logger::Instance().Error("OpenGL::Init", errorMessage);
 				});
 			if (!glfwInit())
 			{
-				Logger::Instance().Error("GLFW", "glfw init failed");
+				Logger::Instance().Error("OpenGL::Init", "OpenGL init failed");
 				return;
 			}
 		}
@@ -63,11 +63,11 @@ namespace MxEngine
 			GLenum err = glewInit();
 			if (err != GLEW_OK)
 			{
-				Logger::Instance().Error("GLEW", "glew init failed");
+				Logger::Instance().Error("OpenGL::InitGLEW", "OpenGL init failed");
 			}
 			else
 			{
-				Logger::Instance().Debug("GLEW", "OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
+				Logger::Instance().Debug("OpenGL::InitGLEW", "OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
 			}
 		}
 

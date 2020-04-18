@@ -40,6 +40,7 @@
 #include "Core/Interfaces/GraphicAPI/FrameBuffer.h"
 #include "Core/MxObject/MxObject.h"
 #include "Core/Interfaces/IEvent.h"
+#include "Core/Skybox/Skybox.h"
 
 #include "Library/Scripting/Script/Script.h"
 
@@ -48,7 +49,7 @@ namespace MxEngine
     class Scene
     {
     public:
-        using ResourceManager = GenericStorage<ResourceStorage, Texture, Mesh, Shader, Script, FrameBuffer>;
+        using ResourceManager = GenericStorage<ResourceStorage, Texture, CubeMap, Mesh, Shader, Script, FrameBuffer>;
         using ObjectManager = LifetimeManager<UniqueRef<MxObject>>;
         template<typename LightType>
         class LightContainer
@@ -76,6 +77,7 @@ namespace MxEngine
         virtual ~Scene() = default;
 
         CameraController Viewport;
+        UniqueRef<Skybox> SceneSkybox;
         DirectionalLight GlobalLight;
         LightContainer<PointLight> PointLights;
         LightContainer<SpotLight> SpotLights;
@@ -108,6 +110,7 @@ namespace MxEngine
         Shader* LoadShader(const std::string& name, const FilePath& vertex, const FilePath& fragment);
         Shader* LoadShader(const std::string& name, const FilePath& vertex, const FilePath& geometry, const FilePath& fragment);
         Texture* LoadTexture(const std::string& name, const FilePath& texture, bool genMipmaps = true, bool flipImage = true);
+        CubeMap* LoadCubeMap(const std::string& name, const FilePath& texture, bool genMipmaps = true, bool flipImage = false);
     
         void SetDirectory(const FilePath& path);
         const FilePath& GetDirectory() const;
@@ -123,7 +126,7 @@ namespace MxEngine
     template<typename Resource>
     inline Resource* Scene::GetResource(const std::string& name)
     {
-        assert(this->GetResourceManager<Resource>().Exists(name));
+        MX_ASSERT(this->GetResourceManager<Resource>().Exists(name));
         return this->GetResourceManager<Resource>().Get(name);
     }
 
@@ -142,14 +145,14 @@ namespace MxEngine
     template<typename LightType>
     inline LightType& Scene::LightContainer<LightType>::operator[](size_t index)
     {
-        assert(index < storage.size());
+        MX_ASSERT(index < storage.size());
         return storage[index];
     }
 
     template<typename LightType>
     inline const LightType& Scene::LightContainer<LightType>::operator[](size_t index) const
     {
-        assert(index < storage.size());
+        MX_ASSERT(index < storage.size());
         return storage[index];
     }
 

@@ -39,7 +39,9 @@
     <ClInclude Include="Core\Lighting\SpotLight\SpotLight.h" />
     <ClInclude Include="Core\Macro\Macro.h" />
     <ClInclude Include="Core\MxObject\Mesh.h" />
+    <ClInclude Include="Core\Skybox\Skybox.h" />
     <ClInclude Include="Library\Bindings\ShaderBinding.h" />
+    <ClInclude Include="Library\Primitives\Surface.h" />
     <ClInclude Include="Platform\OpenGL\CubeMap\GLCubeMap.h" />
     <ClInclude Include="Platform\OpenGL\FrameBuffer\GLFrameBuffer.h" />
     <ClInclude Include="Utilities\ResourceStorage\ResourceStorage.h" />
@@ -119,6 +121,56 @@
     <ClInclude Include="Utilities\SingletonHolder\SingletonHolder.h" />
     <ClInclude Include="Utilities\Threading\ThreadingModel.h" />
     <ClInclude Include="Utilities\Time\Time.h" />
+    <ClInclude Include="Vendors\fmt\chrono.h" />
+    <ClInclude Include="Vendors\fmt\color.h" />
+    <ClInclude Include="Vendors\fmt\compile.h" />
+    <ClInclude Include="Vendors\fmt\core.h" />
+    <ClInclude Include="Vendors\fmt\format-inl.h" />
+    <ClInclude Include="Vendors\fmt\format.h" />
+    <ClInclude Include="Vendors\fmt\locale.h" />
+    <ClInclude Include="Vendors\fmt\os.h" />
+    <ClInclude Include="Vendors\fmt\ostream.h" />
+    <ClInclude Include="Vendors\fmt\posix.h" />
+    <ClInclude Include="Vendors\fmt\printf.h" />
+    <ClInclude Include="Vendors\fmt\ranges.h" />
+    <ClInclude Include="Vendors\glew\eglew.h" />
+    <ClInclude Include="Vendors\glew\glew.h" />
+    <ClInclude Include="Vendors\glew\glxew.h" />
+    <ClInclude Include="Vendors\glew\wglew.h" />
+    <ClInclude Include="Vendors\GLFW\glfw3.h" />
+    <ClInclude Include="Vendors\GLFW\glfw3native.h" />
+    <ClInclude Include="Vendors\glm\common.hpp" />
+    <ClInclude Include="Vendors\glm\exponential.hpp" />
+    <ClInclude Include="Vendors\glm\ext.hpp" />
+    <ClInclude Include="Vendors\glm\fwd.hpp" />
+    <ClInclude Include="Vendors\glm\geometric.hpp" />
+    <ClInclude Include="Vendors\glm\glm.hpp" />
+    <ClInclude Include="Vendors\glm\integer.hpp" />
+    <ClInclude Include="Vendors\glm\mat2x2.hpp" />
+    <ClInclude Include="Vendors\glm\mat2x3.hpp" />
+    <ClInclude Include="Vendors\glm\mat2x4.hpp" />
+    <ClInclude Include="Vendors\glm\mat3x2.hpp" />
+    <ClInclude Include="Vendors\glm\mat3x3.hpp" />
+    <ClInclude Include="Vendors\glm\mat3x4.hpp" />
+    <ClInclude Include="Vendors\glm\mat4x2.hpp" />
+    <ClInclude Include="Vendors\glm\mat4x3.hpp" />
+    <ClInclude Include="Vendors\glm\mat4x4.hpp" />
+    <ClInclude Include="Vendors\glm\matrix.hpp" />
+    <ClInclude Include="Vendors\glm\packing.hpp" />
+    <ClInclude Include="Vendors\glm\trigonometric.hpp" />
+    <ClInclude Include="Vendors\glm\vec2.hpp" />
+    <ClInclude Include="Vendors\glm\vec3.hpp" />
+    <ClInclude Include="Vendors\glm\vec4.hpp" />
+    <ClInclude Include="Vendors\glm\vector_relational.hpp" />
+    <ClInclude Include="Vendors\imgui\imconfig.h" />
+    <ClInclude Include="Vendors\imgui\imgui.h" />
+    <ClInclude Include="Vendors\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="Vendors\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="Vendors\imgui\imgui_internal.h" />
+    <ClInclude Include="Vendors\imgui\imstb_rectpack.h" />
+    <ClInclude Include="Vendors\imgui\imstb_textedit.h" />
+    <ClInclude Include="Vendors\imgui\imstb_truetype.h" />
+    <ClInclude Include="Vendors\stb\stb_image.h" />
     <ClInclude Include="Vendor\chaiscript_windows.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
@@ -137,6 +189,7 @@
     <ClCompile Include="Core\MxObject\Mesh.cpp" />
     <ClCompile Include="Core\RenderController\RenderController.cpp" />
     <ClCompile Include="Core\Scene\Scene.cpp" />
+    <ClCompile Include="Core\Skybox\Skybox.cpp" />
     <ClCompile Include="Library\Scripting\Python\PythonEngine.cpp" />
     <ClCompile Include="Library\Scripting\Script\Script.cpp" />
     <ClCompile Include="Platform\OpenGL\CubeMap\GLCubeMap.cpp" />
@@ -160,27 +213,37 @@
     <ClCompile Include="Utilities\Profiler\Profiler.cpp" />
     <ClCompile Include="Utilities\Random\Random.cpp" />
     <ClCompile Include="Utilities\Time\Time.cpp" />
+    <ClCompile Include="Vendors\fmt\format.cc" />
+    <ClCompile Include="Vendors\fmt\os.cc" />
+    <ClCompile Include="Vendors\imgui\imgui.cpp" />
+    <ClCompile Include="Vendors\imgui\imgui_demo.cpp" />
+    <ClCompile Include="Vendors\imgui\imgui_draw.cpp" />
+    <ClCompile Include="Vendors\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="Vendors\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Vendors\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Core\Shaders\depthcubemap_fragment.glsl">
+    <None Include="Platform\OpenGL\Shaders\depthcubemap_fragment.glsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </None>
-    <None Include="Core\Shaders\depthcubemap_geometry.glsl" />
-    <None Include="Core\Shaders\depthcubemap_vertex.glsl" />
-    <None Include="Core\Shaders\mesh_fragment.glsl">
+    <None Include="Platform\OpenGL\Shaders\depthcubemap_geometry.glsl" />
+    <None Include="Platform\OpenGL\Shaders\depthcubemap_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\mesh_fragment.glsl">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
     </None>
-    <None Include="Core\Shaders\mesh_vertex.glsl" />
-    <None Include="Core\Shaders\object_fragment.glsl" />
-    <None Include="Core\Shaders\nolight_object_fragment.glsl" />
-    <None Include="Core\Shaders\object_vertex.glsl" />
-    <None Include="Core\Shaders\depthtexture_fragment.glsl" />
-    <None Include="Core\Shaders\depthtexture_vertex.glsl" />
-    <None Include="Core\Shaders\nolight_object_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\mesh_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\object_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\nolight_object_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\object_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\depthtexture_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\depthtexture_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\nolight_object_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\skybox_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\skybox_vertex.glsl" />
     <None Include="Resources\shaders\object_fragment.glsl" />
     <None Include="Resources\shaders\object_vertex.glsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -189,6 +252,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <FileType>Document</FileType>
     </None>
+    <None Include="Vendors\stb\LICENSE" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\cube_fragment.glsl" />
@@ -211,6 +275,10 @@
     <Image Include="Resources\textures\arc170.jpg" />
     <Image Include="Resources\textures\crate.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Vendors\glm\copying.txt" />
+    <Text Include="Vendors\imgui\LICENSE.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{24ACBC28-FA4F-49D7-9D69-31F578294414}</ProjectGuid>
@@ -220,13 +288,13 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -265,6 +333,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -272,16 +346,26 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;D:\cpplibs\boost;D:\cpplibs\python\include;D:\cpplibs\assimp\include;C:\%(Additional Dependencies)%</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)python\include;$(SolutionDir)boost_headers;$(SolutionDir)assimp\include;</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>C:\Program Files\Common Files\MSVC\freeglut\lib\; C:\Program Files\Common Files\MSVC\glew\lib\</AdditionalLibraryDirectories>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <AdditionalDependencies>glew32.lib; kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>
       </SubSystem>
     </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>xcopy /d $(SolutionDir)python $(SolutionDir)\$(Platform)\$(Configuration) /e</Command>
+      <Message>xcopy /d $(SolutionDir)python $(SolutionDir)\$(Platform)\$(Configuration) /e</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -289,10 +373,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;D:\cpplibs\boost;D:\cpplibs\python\include;D;\cpplibs\assimp\include;C:\%(Additional Dependencies)%</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)python\include;$(SolutionDir)boost_headers;$(SolutionDir)assimp\include;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -300,6 +385,14 @@
       <AdditionalLibraryDirectories>D:\OpenGL64\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>Glu32.lib;glew32s.lib;opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>xcopy /d $(SolutionDir)python $(SolutionDir)\$(Platform)\$(Configuration) /e</Command>
+      <Message>xcopy /d $(SolutionDir)python $(SolutionDir)\$(Platform)\$(Configuration) /e</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -310,7 +403,9 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;D:\cpplibs\boost;D:\cpplibs\python\include;D:\cpplibs\assimp\include;C:\%(Additional Dependencies)%</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)python\include;$(SolutionDir)boost_headers;$(SolutionDir)assimp\include;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -318,6 +413,14 @@
       <SubSystem>
       </SubSystem>
     </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>xcopy /d $(SolutionDir)python $(SolutionDir)\$(Platform)\$(Configuration) /e</Command>
+      <Message>xcopy /d $(SolutionDir)python $(SolutionDir)\$(Platform)\$(Configuration) /e</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -327,10 +430,11 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;D:\cpplibs\include;D:\cpplibs\boost;D:\cpplibs\python\include;D;\cpplibs\assimp\include;C:\%(Additional Dependencies)%</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)python\include;$(SolutionDir)boost_headers;$(SolutionDir)assimp\include;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -340,6 +444,14 @@
       <AdditionalLibraryDirectories>D:\OpenGL64\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>Glu32.lib;glew32s.lib;opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>xcopy /d $(SolutionDir)python $(SolutionDir)\$(Platform)\$(Configuration) /e</Command>
+      <Message>xcopy /d $(SolutionDir)python $(SolutionDir)\$(Platform)\$(Configuration) /e</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

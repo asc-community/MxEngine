@@ -54,13 +54,7 @@ namespace MxEngine::GUI
 		if (ImGui::InputFloat3("translation", &translation[0]))
 			transform.SetTranslation(translation);
 
-<<<<<<< Updated upstream
 		// rotation (euler)
-		auto rotation = transform.GetEulerRotation();
-		if (ImGui::InputFloat3("rotation", &rotation[0]))
-			transform.SetRotation(1.0f, rotation);
-=======
-		// rotation (euler) TODO: fix rotation
 		auto rotation = DegreesVec(transform.GetEulerRotation());
 		auto newRotation = rotation;
 		if (ImGui::DragFloat("rotate x", &newRotation.x))
@@ -69,7 +63,6 @@ namespace MxEngine::GUI
 			transform.RotateY(newRotation.y - rotation.y);
 		if (ImGui::DragFloat("rotate z", &newRotation.z))
 			transform.RotateZ(newRotation.z - rotation.z);
->>>>>>> Stashed changes
 
 		// scale
 		auto scale = transform.GetScale();
@@ -82,20 +75,14 @@ namespace MxEngine::GUI
 		auto context = Application::Get();
 		for (const auto& pair : context->GetCurrentScene().GetObjectList())
 		{
-<<<<<<< Updated upstream
-			if (ImGui::CollapsingHeader(pair.first.c_str()))
-			{
-				auto& object = *pair.second;
-=======
 			GUI_TREE_NODE(pair.first.c_str(),
 				auto & object = *pair.second;
 				ImGui::PushID(pair.first.c_str());
->>>>>>> Stashed changes
 
 				// toggle object visibility
 				bool isDrawn = object.IsDrawable();
-				static bool dirVecs = false;
-				static bool instanced = false;
+				bool dirVecs = false;
+				bool instanced = false;
 				if (ImGui::Checkbox("drawn", &isDrawn))
 					isDrawn ? object.Show() : object.Hide();
 
@@ -110,7 +97,7 @@ namespace MxEngine::GUI
 				ImGui::Text((std::string("texture: ") + (object.ObjectTexture ? object.GetTexture().GetPath() : std::string("none"))).c_str());
 
 				auto renderColor = object.GetRenderColor();
-				if (ImGui::InputFloat4("render color", &renderColor[0]))
+				if (ImGui::ColorEdit4("render color", &renderColor[0]))
 					object.SetRenderColor(renderColor);
 
 				DrawTransform(object.ObjectTransform);
@@ -183,7 +170,7 @@ namespace MxEngine::GUI
 						if (ImGui::Button("make instanced"))
 							object.Instanciate();
 					}
-				);
+				}
 
 				if (dirVecs)
 				{
@@ -197,7 +184,9 @@ namespace MxEngine::GUI
 					if (ImGui::InputFloat3("right vec", &right[0]))
 						object.SetRightVector(right);
 				}
-			}
+
+				ImGui::PopID();
+			);
 		}
 	}
 }
