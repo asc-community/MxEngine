@@ -144,7 +144,6 @@ namespace MxEngine
 		while (!object.IsLast(iterator))
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
-
 			if (object.GetInstanceCount() == 0)
 			{
 				this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetIBO(), *this->DepthCubeMapShader);

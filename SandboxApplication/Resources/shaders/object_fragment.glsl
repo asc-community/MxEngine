@@ -201,7 +201,6 @@ vec3 calcReflection(vec3 viewDir, vec3 normal)
 	return color;
 }
 
-
 void main()
 {
 	vec3 normal   = normalize(fsin.Normal);

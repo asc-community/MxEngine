@@ -30,6 +30,9 @@
 # Visual Studio
 x64
 .vs
+Debug
+*.vcxproj.filters
+*vcxproj.user
 
 # Python
 __pycache__
@@ -37,11 +40,11 @@ __pycache__
 #CMake
 CMakeFiles
 CMakeCache.txt
+out
 
 # MxEngine
 imgui.ini
 profile_log.json
 compile_commands.json
 external_libraries/*.lib
-out
 Debug

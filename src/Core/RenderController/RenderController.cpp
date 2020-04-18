@@ -136,11 +136,11 @@ namespace MxEngine
 
 				if (object.GetInstanceCount() == 0)
 				{
-					this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetVertexBufferSize(), shader);
+					this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetIBO(), shader);
 				}
 				else
 				{
-					this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetVertexBufferSize(), shader, object.GetInstanceCount());
+					this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetIBO(), shader, object.GetInstanceCount());
 				}
 			}
 			iterator = object.GetNext(iterator);

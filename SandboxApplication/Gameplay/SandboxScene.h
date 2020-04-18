@@ -27,7 +27,7 @@ class SandboxScene : public Scene
 		// 	}, 1.0f, 1.0f, 0.01f);
 		// surface.Scale(10.0f, 2.0f, 10.0f);
 		// surface.Translate(0.0f, 2.0f, 0.0f);
-
+		
         this->LoadScript("init", "scripts/init.py");
         this->LoadScript("update", "scripts/update.py");
         this->LoadScript("load", "scripts/load.py");
