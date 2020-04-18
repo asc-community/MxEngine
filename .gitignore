@@ -31,8 +31,8 @@
 x64
 .vs
 Debug
-*.vcxproj.filters
-*vcxproj.user
+*.filters
+*.user
 
 # Python
 __pycache__
