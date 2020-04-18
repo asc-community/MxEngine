@@ -33,9 +33,9 @@
 
 namespace MxEngine::GUI
 {
-    inline void DrawLightEditor()
-    {
-        auto context = Application::Get();
+	inline void DrawLightEditor()
+	{
+		auto context = Application::Get();
 
 		auto& scene = context->GetCurrentScene();
 		auto& globalLight = scene.GlobalLight;
@@ -78,7 +78,7 @@ namespace MxEngine::GUI
 				ImGui::PushID((int)i);
 
 				static int bufferSize = (int)context->GetRenderer().GetDepthBufferSize<PointLight>();
-				if(GUI::InputIntOnClick("depth buffer size", &bufferSize))
+				if (GUI::InputIntOnClick("depth buffer size", &bufferSize))
 				{
 					bufferSize = (int)FloorToLog2((size_t)Clamp(bufferSize, 1, 1 << 16));
 					context->GetRenderer().SetDepthBufferSize<PointLight>(bufferSize);
@@ -147,5 +147,5 @@ namespace MxEngine::GUI
 				ImGui::PopID();
 			}
 		}
-    }
+	}
 }

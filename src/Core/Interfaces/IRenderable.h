@@ -38,6 +38,7 @@ namespace MxEngine
 	struct IRenderable
 	{
 		virtual const VertexArray& GetVAO() const = 0;
+		virtual const IndexBuffer& GetIBO() const = 0;
 		virtual const IndexBuffer& GetMeshIBO() const = 0;
 		virtual const Material& GetMaterial() const = 0;
 		virtual bool HasMaterial() const = 0;

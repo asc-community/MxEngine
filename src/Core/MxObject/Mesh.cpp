@@ -88,15 +88,16 @@ namespace MxEngine
 					if (material->Ns == 0.0f) material->Ns = 128.0f; // bad as pow(0.0, 0.0) -> NaN
 				}
 				auto VBO = Graphics::Instance()->CreateVertexBuffer(group.buffer.data(), group.buffer.size(), UsageType::STATIC_DRAW);
+				auto IBO = Graphics::Instance()->CreateIndexBuffer(group.faces.data(), group.faces.size());
 				auto VAO = Graphics::Instance()->CreateVertexArray();
 				auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
 
 				VBL->PushFloat(3);
-				if (group.useTexture) VBL->PushFloat(3);
+				if (group.useTexture) VBL->PushFloat(2);
 				if (group.useNormal) VBL->PushFloat(3);
 				VAO->AddBuffer(*VBO, *VBL);
 
-				RenderObject object(std::move(VBO), std::move(VAO), std::move(material), group.useTexture, group.useNormal, group.buffer.size());
+				RenderObject object(std::move(group.name), std::move(VBO), std::move(VAO), std::move(IBO), std::move(material), group.useTexture, group.useNormal, group.buffer.size());
 				this->subObjects.push_back(std::move(object));
 			}
 			if (!group.useTexture)
@@ -153,14 +154,16 @@ namespace MxEngine
 			indicies.push_back(i + 2);
 			indicies.push_back(i + 0);
 		}
-		this->IBO = Graphics::Instance()->CreateIndexBuffer(indicies);
+		this->meshIBO = Graphics::Instance()->CreateIndexBuffer(indicies.data(), indicies.size());
 		this->meshGenerated = true;
 	}
 
-    RenderObject::RenderObject(UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<Material> material, bool useTexture, bool useNormal, size_t sizeInFloats)
+    RenderObject::RenderObject(std::string name, UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<IndexBuffer> IBO, UniqueRef<Material> material, bool useTexture, bool useNormal, size_t sizeInFloats)
     {
+		this->name = std::move(name);
 		this->VBO = std::move(VBO);
 		this->VAO = std::move(VAO);
+		this->IBO = std::move(IBO);
 		this->material = std::move(material);
 		this->useTexture = useTexture;
 		this->useNormal = useTexture;
@@ -169,13 +172,20 @@ namespace MxEngine
 
 	const VertexArray& RenderObject::GetVAO() const
 	{
+		MX_ASSERT(this->VBO != nullptr);
 		return *this->VAO;
+	}
+
+	IndexBuffer& RenderObject::GetIBO() const
+	{
+		MX_ASSERT(this->IBO != nullptr);
+		return *this->IBO;
 	}
 
 	const IndexBuffer& RenderObject::GetMeshIBO() const
 	{
 		if (!this->meshGenerated) GenerateMeshIndicies();
-		return *this->IBO;
+		return *this->meshIBO;
 	}
 
 	const Material& RenderObject::GetMaterial() const
@@ -186,6 +196,11 @@ namespace MxEngine
 	Material& RenderObject::GetMaterial()
 	{
 		return *this->material;
+	}
+
+	const std::string& RenderObject::GetName() const
+	{
+		return name;
 	}
 
     bool RenderObject::UsesTexture() const
@@ -220,13 +235,13 @@ namespace MxEngine
 
 	VertexBuffer& Mesh::GetBufferByIndex(size_t index)
 	{
-		MX_ASSERT(index < this->VBOs.size());
+		assert(index < this->VBOs.size());
 		return *this->VBOs[index];
 	}
 
 	VertexBufferLayout& Mesh::GetBufferLayoutByIndex(size_t index)
 	{
-		MX_ASSERT(index < this->VBLs.size());
+		assert(index < this->VBLs.size());
 		return *this->VBLs[index];
 	}
 

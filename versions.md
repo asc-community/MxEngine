@@ -89,3 +89,8 @@
 - MxEngine now can be built from sources using Visual Studio and CMake, yay!
 - included all dependencies as submodules or precompiled libraries
 - added dynamic surfaces (can be configured in runtime via function f(x, y))
+### 6.2.1
+- improved object mesh loading (now all object has IBO for rendering)
+- material editing from in runtime from ImGui and python
+- fixed multiple bugs
+

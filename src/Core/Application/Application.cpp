@@ -45,7 +45,7 @@
 
 namespace MxEngine
 {
-	#define DECL_EVENT_TYPE(event) dispatcher.RegisterEventType<event>()
+#define DECL_EVENT_TYPE(event) dispatcher.RegisterEventType<event>()
 	void InitEventDispatcher(AppEventDispatcher& dispatcher)
 	{
 		DECL_EVENT_TYPE(AppDestroyEvent);
@@ -66,7 +66,7 @@ namespace MxEngine
 
 		InitEventDispatcher(this->GetEventDispatcher());
 
-		#define FORWARD_EVENT_SCENE(event)\
+#define FORWARD_EVENT_SCENE(event)\
 		this->dispatcher.AddEventListener<event>(#event, [this](event& e)\
 		{\
 			this->GetCurrentScene().GetEventDispatcher().Invoke(e);\
@@ -115,8 +115,8 @@ namespace MxEngine
 		return *this->scenes.Get("Global");
 	}
 
-    void Application::LoadScene(const std::string& name)
-    {
+	void Application::LoadScene(const std::string& name)
+	{
 		if (name == this->GetGlobalScene().GetName())
 		{
 			Logger::Instance().Error("MxEngine::Application", "global scene cannot be loaded: " + name);
@@ -128,12 +128,12 @@ namespace MxEngine
 			return;
 		}
 		// unload previous scene if it exists
-		if (this->currentScene != nullptr) 
+		if (this->currentScene != nullptr)
 			this->currentScene->OnUnload();
 
 		this->currentScene = this->scenes.Get(name);
 		this->currentScene->OnLoad();
-    }
+	}
 
 	void Application::DestroyScene(const std::string& name)
 	{
@@ -181,20 +181,20 @@ namespace MxEngine
 		return this->scenes.Exists(name);
 	}
 
-    Counter::CounterType Application::GenerateResourceId()
-    {
+	Counter::CounterType Application::GenerateResourceId()
+	{
 		return this->resourceIdCounter++;
-    }
+	}
 
-    float Application::GetTimeDelta() const
+	float Application::GetTimeDelta() const
 	{
 		return this->timeDelta;
 	}
 
-    int Application::GetCurrentFPS() const
-    {
+	int Application::GetCurrentFPS() const
+	{
 		return this->counterFPS;
-    }
+	}
 
 	AppEventDispatcher& Application::GetEventDispatcher()
 	{
@@ -229,15 +229,15 @@ namespace MxEngine
 		this->GetWindow().UseEventDispatcher(isVisible ? nullptr : &this->dispatcher);
 	}
 
-    void Application::ToggleLighting(bool state)
-    {
+	void Application::ToggleLighting(bool state)
+	{
 		if (state != this->drawLighting)
 		{
 			this->drawLighting = state;
 			this->renderer.ObjectShader = nullptr;
 			this->VerifyRendererState();
 		}
-    }
+	}
 
 	void Application::DrawObjects(bool meshes)
 	{
@@ -321,7 +321,7 @@ namespace MxEngine
 		{
 			MAKE_SCOPE_PROFILER("Renderer::DrawSkybox");
 			auto& skybox = this->GetCurrentScene().SceneSkybox;
-			if(skybox != nullptr) this->renderer.DrawSkybox(*skybox, viewport);
+			if (skybox != nullptr) this->renderer.DrawSkybox(*skybox, viewport);
 		}
 	}
 
@@ -376,9 +376,9 @@ namespace MxEngine
 				Renderer.ObjectShader = GlobalScene.GetResourceManager<Shader>().Add(
 					"MxObjectShader", Graphics::Instance()->CreateShader());
 				Renderer.ObjectShader->LoadFromSource(
-					#include MAKE_PLATFORM_SHADER(object_vertex)
+#include MAKE_PLATFORM_SHADER(object_vertex)
 					,
-					#include MAKE_PLATFORM_SHADER(object_fragment)
+#include MAKE_PLATFORM_SHADER(object_fragment)
 				);
 			}
 			else
@@ -386,9 +386,9 @@ namespace MxEngine
 				Renderer.ObjectShader = GlobalScene.GetResourceManager<Shader>().Add(
 					"MxNoLightShader", Graphics::Instance()->CreateShader());
 				Renderer.ObjectShader->LoadFromSource(
-					#include MAKE_PLATFORM_SHADER(nolight_object_vertex)
+#include MAKE_PLATFORM_SHADER(nolight_object_vertex)
 					,
-					#include MAKE_PLATFORM_SHADER(nolight_object_fragment)
+#include MAKE_PLATFORM_SHADER(nolight_object_fragment)
 				);
 			}
 		}
@@ -397,9 +397,9 @@ namespace MxEngine
 			Renderer.MeshShader = GlobalScene.GetResourceManager<Shader>().Add(
 				"MxMeshShader", Graphics::Instance()->CreateShader());
 			Renderer.MeshShader->LoadFromSource(
-				#include MAKE_PLATFORM_SHADER(mesh_vertex)
-				,		 
-				#include MAKE_PLATFORM_SHADER(mesh_fragment)
+#include MAKE_PLATFORM_SHADER(mesh_vertex)
+				,
+#include MAKE_PLATFORM_SHADER(mesh_fragment)
 			);
 		}
 		if (Renderer.DepthTextureShader == nullptr)
@@ -407,9 +407,9 @@ namespace MxEngine
 			Renderer.DepthTextureShader = GlobalScene.GetResourceManager<Shader>().Add(
 				"MxDepthTextureShader", Graphics::Instance()->CreateShader());
 			Renderer.DepthTextureShader->LoadFromSource(
-				#include MAKE_PLATFORM_SHADER(depthtexture_vertex)
+#include MAKE_PLATFORM_SHADER(depthtexture_vertex)
 				,
-				#include MAKE_PLATFORM_SHADER(depthtexture_fragment)
+#include MAKE_PLATFORM_SHADER(depthtexture_fragment)
 			);
 		}
 		if (Renderer.DepthCubeMapShader == nullptr)
@@ -417,25 +417,25 @@ namespace MxEngine
 			Renderer.DepthCubeMapShader = GlobalScene.GetResourceManager<Shader>().Add(
 				"MxDepthCubeMapShader", Graphics::Instance()->CreateShader());
 			Renderer.DepthCubeMapShader->LoadFromSource(
-				#include MAKE_PLATFORM_SHADER(depthcubemap_vertex)
+#include MAKE_PLATFORM_SHADER(depthcubemap_vertex)
 				,
-				#include MAKE_PLATFORM_SHADER(depthcubemap_geometry)
+#include MAKE_PLATFORM_SHADER(depthcubemap_geometry)
 				,
-				#include MAKE_PLATFORM_SHADER(depthcubemap_fragment)
+#include MAKE_PLATFORM_SHADER(depthcubemap_fragment)
 			);
 		}
 
 		auto& skybox = this->GetCurrentScene().SceneSkybox;
 		if (skybox == nullptr) skybox = MakeUnique<Skybox>();
-		
-		if(skybox->SkyboxShader == nullptr)
+
+		if (skybox->SkyboxShader == nullptr)
 		{
 			skybox->SkyboxShader = GlobalScene.GetResourceManager<Shader>().Add(
 				"MxSkyboxShader", Graphics::Instance()->CreateShader());
 			skybox->SkyboxShader->LoadFromSource(
-				#include MAKE_PLATFORM_SHADER(skybox_vertex)
-					,
-				#include MAKE_PLATFORM_SHADER(skybox_fragment)
+#include MAKE_PLATFORM_SHADER(skybox_vertex)
+				,
+#include MAKE_PLATFORM_SHADER(skybox_fragment)
 			);
 		}
 		if (Renderer.DepthBuffer == nullptr)
@@ -447,11 +447,11 @@ namespace MxEngine
 
 	void Application::VerifyLightSystem(LightSystem& lights)
 	{
-		auto dirBufferSize   = (int)this->renderer.GetDepthBufferSize<DirectionalLight>();
-		auto spotBufferSize  = (int)this->renderer.GetDepthBufferSize<SpotLight>();
+		auto dirBufferSize = (int)this->renderer.GetDepthBufferSize<DirectionalLight>();
+		auto spotBufferSize = (int)this->renderer.GetDepthBufferSize<SpotLight>();
 		auto pointBufferSize = (int)this->renderer.GetDepthBufferSize<PointLight>();
 
-		if (lights.Global->GetDepthTexture() == nullptr || 
+		if (lights.Global->GetDepthTexture() == nullptr ||
 			lights.Global->GetDepthTexture()->GetWidth() != dirBufferSize)
 		{
 			auto depthTexture = Graphics::Instance()->CreateTexture();
@@ -489,11 +489,11 @@ namespace MxEngine
 
 	void Application::CreateContext()
 	{
-		#if defined(MXENGINE_DEBUG)
+#if defined(MXENGINE_DEBUG)
 		bool useDebugging = true;
-		#else
+#else
 		bool useDebugging = false;
-		#endif
+#endif
 
 
 		if (this->GetWindow().IsCreated())
@@ -539,9 +539,9 @@ namespace MxEngine
 		if (this->GetConsole().IsToggled())
 		{
 			this->GetConsole().Log("Welcome to MxEngine developer console!");
-			#if defined(MXENGINE_USE_PYTHON)
+#if defined(MXENGINE_USE_PYTHON)
 			this->GetConsole().Log("This console is powered by Python: https://www.python.org");
-			#endif
+#endif
 		}
 
 		{
@@ -585,7 +585,7 @@ namespace MxEngine
 				RenderEvent renderEvent;
 				this->GetEventDispatcher().Invoke(renderEvent);
 				this->renderer.Render();
-				this->GetWindow().PullEvents(); 
+				this->GetWindow().PullEvents();
 				if (this->shouldClose) break;
 			}
 
@@ -635,44 +635,44 @@ namespace MxEngine
 
 	Application::ModuleManager::ModuleManager(Application* app)
 	{
-		#if defined(MXENGINE_DEBUG)
+#if defined(MXENGINE_DEBUG)
 		Profiler::Instance().StartSession("profile_log.json");
-		#endif
-		
+#endif
+
 		MX_ASSERT(Application::Get() == nullptr);
 		Application::Set(app);
 
-		#if defined(MXENGINE_USE_OPENGL)
+#if defined(MXENGINE_USE_OPENGL)
 		Graphics::Instance() = Alloc<GLGraphicFactory>();
-		#else
+#else
 		Graphics::Instance() = nullptr;
 		Logger::Instance().Error("MxEngine::Application", "No Rendering Engine was provided");
 		return;
-		#endif
+#endif
 		Graphics::Instance()->GetGraphicModule().Init();
 	}
 
 	Application::ModuleManager::~ModuleManager()
 	{
 		Graphics::Instance()->GetGraphicModule().Destroy();
-		#if defined(MXENGINE_DEBUG)
+#if defined(MXENGINE_DEBUG)
 		Profiler::Instance().EndSession();
-		#endif
+#endif
 	}
 
-	#if defined(MXENGINE_USE_PYTHON)
+#if defined(MXENGINE_USE_PYTHON)
 	void Application::CreateConsoleBindings(DeveloperConsole& console)
 	{
 		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });
 		this->GetEventDispatcher().AddEventListener<RenderEvent>("DeveloperConsole",
 			[this](RenderEvent&) { this->GetConsole().OnRender(); });
 	}
-	#else
+#else
 	void Application::CreateConsoleBindings(DeveloperConsole& console)
 	{
 		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });
 		this->GetEventDispatcher().AddEventListener<RenderEvent>("DeveloperConsole",
 			[this](RenderEvent&) { this->GetConsole().OnRender(); });
 	}
-	#endif
+#endif
 }

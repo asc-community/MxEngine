@@ -42,8 +42,8 @@ namespace MxEngine
         this->pythonNamespace = this->pythonModule.attr("__dict__");
 
         // importing MxEngine library & system
-        this->Execute("import sys");
         this->Execute("import mx_engine");
+        this->Execute("import sys");
 
         // creating IO handler
         const char* IOHandler = R"(

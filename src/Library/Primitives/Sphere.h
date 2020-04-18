@@ -43,19 +43,21 @@ namespace MxEngine
 
         inline void Resize(size_t polygons)
         {
-            auto resourceName = Format(FMT_STRING("MxSphere_{0}"), Application::Get()->GenerateResourceId());
+            auto resourceName = Format(FMT_STRING("Sphere_{0}"), Application::Get()->GenerateResourceId());
             auto data = Sphere::GetSphereData(polygons);
-            this->SubmitData(resourceName, data);
+            this->SubmitData(resourceName, data.first, data.second);
         }
     private:
-        inline static ArrayView<float> GetSphereData(size_t polygons)
+        inline static std::pair<ArrayView<float>, ArrayView<unsigned int>> GetSphereData(size_t polygons)
         {
-            static std::vector<float> data; // data must be static as its view is returned
+            // data must be static as its view is returned
+            static std::vector<float> verteces;
+            static std::vector<unsigned int> indicies;
 
-            data.clear();
-            data.reserve(polygons * polygons * 6 * AbstractPrimitive::VertexSize);
-            std::vector<float> verteces;
+            verteces.clear();
+            indicies.clear();
             verteces.reserve(polygons * polygons * AbstractPrimitive::VertexSize);
+            indicies.reserve(polygons * polygons * 6); // two triangles
             // generate raw data for verteces (must be rearranged after)
             for (size_t m = 0; m <= polygons; m++)
             {
@@ -78,7 +80,7 @@ namespace MxEngine
                 }
             }
 
-            // rearrange data
+            // create indicies
             for (size_t i = 0; i < polygons; i++)
             {
                 size_t idx1 = i * (polygons + 1);
@@ -88,20 +90,20 @@ namespace MxEngine
                 {
                     if (i != 0)
                     {
-                        data.insert(data.end(), verteces.begin() + idx1 * VertexSize, verteces.begin() + (idx1 + 1) * VertexSize);
-                        data.insert(data.end(), verteces.begin() + idx2 * VertexSize, verteces.begin() + (idx2 + 1) * VertexSize);
-                        data.insert(data.end(), verteces.begin() + (idx1 + 1) * VertexSize, verteces.begin() + (idx1 + 2) * VertexSize);
+                        indicies.push_back((unsigned int)idx1);
+                        indicies.push_back((unsigned int)idx2);
+                        indicies.push_back((unsigned int)idx1 + 1);
                     }
                     if (i + 1 != polygons)
                     {
-                        data.insert(data.end(), verteces.begin() + (idx1 + 1) * VertexSize, verteces.begin() + (idx1 + 2) * VertexSize);
-                        data.insert(data.end(), verteces.begin() + idx2 * VertexSize, verteces.begin() + (idx2 + 1) * VertexSize);
-                        data.insert(data.end(), verteces.begin() + (idx2 + 1) * VertexSize, verteces.begin() + (idx2 + 2) * VertexSize);
+                        indicies.push_back((unsigned int)idx1 + 1);
+                        indicies.push_back((unsigned int)idx2);
+                        indicies.push_back((unsigned int)idx2 + 1);
                     }
                 }
             }
 
-            return ArrayView<float>(data);
+            return { verteces, indicies };
         }
     };
 }

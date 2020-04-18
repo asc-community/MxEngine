@@ -31,6 +31,7 @@
 #include "Vendors/glm/glm.hpp"
 #include "Vendors/glm/ext.hpp"
 #include "Vendors/glm/gtx/quaternion.hpp"
+#include "Core/Macro/Macro.h"
 #include <cmath>
 #include <algorithm>
 
@@ -89,6 +90,12 @@ namespace MxEngine
 		return Vector4(value);
 	}
 
+	template<typename Vector>
+	inline float Dot(const Vector& v1, const Vector& v2)
+	{
+		return glm::dot(v1, v2);
+	}
+
 	inline Vector3 Cross(const Vector3& v1, const Vector3& v2)
 	{
 		return glm::cross(v1, v2);
@@ -104,9 +111,9 @@ namespace MxEngine
 		return glm::perspective(fov, aspect, znear, zfar);
 	}
 
-	inline Matrix4x4 MakeInversePerspectiveMatrix(float fov, float aspect, float znear, float zfar)
+	inline Matrix4x4 MakeReversedPerspectiveMatrix(float fov, float aspect, float znear, float zfar)
 	{
-		assert(std::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
+		MX_ASSERT(std::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
 		// zfar is unused. It is okay, as -1.0f in Result[2][3] means infinity zfar
 
 		float const tanHalfFovy = std::tan(fov / 2.0f);
@@ -437,12 +444,27 @@ namespace MxEngine
 		return (coords.first + coords.second) * 0.5f;
 	}
 
-	constexpr size_t Log2(size_t n)
+	inline constexpr float SignedSqrt(float x)
+	{
+		if (x < 0.0f) return -std::sqrt(-x);
+		else return std::sqrt(x);
+	}
+
+	template<typename Vector>
+	inline float Angle(const Vector& v1, const Vector& v2)
+	{
+		return std::acos(Dot(v1, v2) / (Length(v1) * Length(v2)));
+	}
+
+	inline constexpr float Sqr(float x)
+	{
+		return x * x;
+	}
+
+	inline constexpr size_t Log2(size_t n)
 	{
 		return ((n <= 2) ? 1 : 1 + Log2(n / 2));
 	}
-<<<<<<< Updated upstream
-=======
 
 	inline constexpr size_t FloorToLog2(size_t n)
 	{
@@ -511,5 +533,4 @@ namespace MxEngine
 		}
 		return ret;
 	}
->>>>>>> Stashed changes
 }

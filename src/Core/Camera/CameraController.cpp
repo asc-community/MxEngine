@@ -42,13 +42,11 @@ namespace MxEngine
 
 	ICamera& CameraController::GetCamera()
 	{
-		MX_ASSERT(this->camera != nullptr);
 		return *this->camera;
 	}
 
 	const ICamera& CameraController::GetCamera() const
 	{
-		MX_ASSERT(this->camera != nullptr);
 		return *this->camera;
 	}
 

@@ -34,6 +34,19 @@
 
 namespace MxEngine::GUI
 {
+	inline void DrawMaterial(Material& material)
+	{
+		ImGui::ColorEdit3("ambient color", &material.Ka[0]);
+		ImGui::ColorEdit3("diffuse color", &material.Kd[0]);
+		ImGui::ColorEdit3("specular color", &material.Ks[0]);
+		ImGui::ColorEdit3("emmisive color", &material.Ke[0]);
+		ImGui::DragFloat("ambient factor", &material.f_Ka, 0.01f, 0.0f, 1.0f);
+		ImGui::DragFloat("diffuse factor", &material.f_Kd, 0.01f, 0.0f, 1.0f);
+		ImGui::DragFloat("specular exponent", &material.Ns, 1.0f, 1.0f, 512.0f);
+		ImGui::DragFloat("transparency", &material.d, 0.01f, 0.0f, 1.0f);
+		ImGui::DragFloat("reflection", &material.reflection, 0.01f, 0.0f, 1.0f);
+	}
+
 	inline void DrawTransform(Transform& transform)
 	{
 		// translation
@@ -41,10 +54,15 @@ namespace MxEngine::GUI
 		if (ImGui::InputFloat3("translation", &translation[0]))
 			transform.SetTranslation(translation);
 
-		// rotation (euler) TODO: fix rotation
-		auto rotation = transform.GetEulerRotation();
-		if (ImGui::InputFloat3("rotation", &rotation[0]))
-			transform.SetRotation(1.0f, rotation);
+		// rotation (euler)
+		auto rotation = DegreesVec(transform.GetEulerRotation());
+		auto newRotation = rotation;
+		if (ImGui::DragFloat("rotate x", &newRotation.x))
+			transform.RotateX(newRotation.x - rotation.x);
+		if (ImGui::DragFloat("rotate y", &newRotation.y))
+			transform.RotateY(newRotation.y - rotation.y);
+		if (ImGui::DragFloat("rotate z", &newRotation.z))
+			transform.RotateZ(newRotation.z - rotation.z);
 
 		// scale
 		auto scale = transform.GetScale();
@@ -57,9 +75,8 @@ namespace MxEngine::GUI
 		auto context = Application::Get();
 		for (const auto& pair : context->GetCurrentScene().GetObjectList())
 		{
-			if (ImGui::CollapsingHeader(pair.first.c_str()))
-			{
-				auto& object = *pair.second;
+			GUI_TREE_NODE(pair.first.c_str(),
+				auto & object = *pair.second;
 				ImGui::PushID(pair.first.c_str());
 
 				// toggle object visibility
@@ -83,9 +100,8 @@ namespace MxEngine::GUI
 				if (ImGui::ColorEdit4("render color", &renderColor[0]))
 					object.SetRenderColor(renderColor);
 
-				ImGui::PushID(-1);
 				DrawTransform(object.ObjectTransform);
-				ImGui::PopID();
+
 				ImGui::InputFloat("translate speed", &object.TranslateSpeed);
 				ImGui::InputFloat("rotate speed", &object.RotateSpeed);
 				ImGui::InputFloat("scale speed", &object.ScaleSpeed);
@@ -95,11 +111,23 @@ namespace MxEngine::GUI
 				ImGui::InputText("texture path", texturePath.data(), texturePath.size());
 				ImGui::SameLine();
 				if (ImGui::Button("update"))
-				{
 					object.ObjectTexture = context->GetCurrentScene().LoadTexture(
 						Format(FMT_STRING("MxRuntimeTex_{0}"), context->GenerateResourceId()),
 						texturePath);
-					texturePath.assign(128, '\0');
+
+				if (object.GetMesh() != nullptr)
+				{
+					GUI_TREE_NODE("mesh list",
+						for (auto& submesh : object.GetMesh()->GetRenderObjects())
+						{
+							GUI_TREE_NODE(submesh.GetName().c_str(),
+								if (submesh.HasMaterial())
+								{
+									DrawMaterial(submesh.GetMaterial());
+								}
+							);
+						}
+					);
 				}
 
 				if (instanced)
@@ -109,7 +137,7 @@ namespace MxEngine::GUI
 						int idx = 0;
 						for (auto& instance : object.GetInstances())
 						{
-							if(ImGui::CollapsingHeader(Format(FMT_STRING("instance #{0}"), idx).c_str()))
+							if (ImGui::CollapsingHeader(Format(FMT_STRING("instance #{0}"), idx).c_str()))
 							{
 								ImGui::PushID(idx);
 
@@ -139,7 +167,7 @@ namespace MxEngine::GUI
 					}
 					else if (object.GetMesh() != nullptr && object.GetMesh()->RefCounter == 1)
 					{
-						if(ImGui::Button("make instanced"))
+						if (ImGui::Button("make instanced"))
 							object.Instanciate();
 					}
 				}
@@ -158,7 +186,7 @@ namespace MxEngine::GUI
 				}
 
 				ImGui::PopID();
-			}
+			);
 		}
 	}
 }

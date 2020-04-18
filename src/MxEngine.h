@@ -28,7 +28,6 @@
 
 #pragma once
 
-#define MXENGINE_FRAMEWORK
 #include "Core/Macro/Macro.h"
 #include "Core/Application/Application.h"
 #include "Utilities/Memory/Memory.h"

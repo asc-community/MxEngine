@@ -67,10 +67,7 @@ namespace MxEngine::GUI
 			auto& skybox = context->GetCurrentScene().SceneSkybox;
 			if (skybox != nullptr)
 			{
-				auto rotation = skybox->GetRotation();
-				rotation.x = Degrees(rotation.x);
-				rotation.y = Degrees(rotation.y);
-				rotation.z = Degrees(rotation.z);
+				auto rotation = DegreesVec(skybox->GetRotation());
 				auto newRotation = rotation;
 				if (ImGui::DragFloat("skybox rotate x", &newRotation.x))
 					skybox->RotateX(newRotation.x - rotation.x);

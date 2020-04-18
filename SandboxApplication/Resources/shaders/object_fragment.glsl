@@ -25,6 +25,7 @@ struct Material
 	vec3 Ke;
 	float Ns;
 	float d;
+	float refl;
 };
 
 struct DirLight
@@ -65,15 +66,15 @@ uniform sampler2D map_Kd;
 uniform sampler2D map_Ks;
 uniform sampler2D map_Ke;
 uniform sampler2D map_dirLight_shadow;
-uniform sampler2D map_spotLight_shadow[MAX_SPOT_LIGHTS];
 uniform samplerCube map_pointLight_shadow[MAX_POINT_LIGHTS];
+uniform sampler2D map_spotLight_shadow[MAX_SPOT_LIGHTS];
 uniform samplerCube map_skybox;
-uniform mat3 skyboxModelMatrix;
 uniform float Ka;
 uniform float Kd;
 uniform int pointLightCount;
 uniform int spotLightCount;
 uniform int PCFdistance;
+uniform mat3 skyboxModelMatrix;
 uniform Material material;
 uniform vec4 renderColor;
 uniform vec3 viewPos;
@@ -103,12 +104,12 @@ float CalcShadowFactor2D(vec4 fragPosLight, sampler2D map_shadow)
 
 vec3 sampleOffsetDirections[POINT_LIGHT_SAMPLES] = vec3[]
 (
-	vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1),
-	vec3(1, 1, -1), vec3(1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
-	vec3(1, 1, 0), vec3(1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
-	vec3(1, 0, 1), vec3(-1, 0, 1), vec3(1, 0, -1), vec3(-1, 0, -1),
-	vec3(0, 1, 1), vec3(0, -1, 1), vec3(0, -1, -1), vec3(0, 1, -1)
-	);
+	vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1),
+	vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+	vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+	vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+	vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
 
 float CalcShadowFactorCube(vec3 lightDistance, vec3 viewDist, float zfar, samplerCube map_shadow)
 {
@@ -137,11 +138,15 @@ vec3 calcDirLight(vec3 ambient, vec3 diffuse, vec3 specular, DirLight light, vec
 
 	float diffuseFactor = max(dot(lightDir, normal), 0.0f);
 	float specularFactor = pow(max(dot(Hdir, normal), 0.0f), material.Ns);
+	vec3 diffuseObject = diffuse * diffuseFactor;
 
 	ambient = ambient * light.ambient;
-	diffuse = diffuse * light.diffuse * diffuseFactor;
+	diffuse = light.diffuse * diffuseObject;
 	specular = specular * light.specular * specularFactor;
-	reflection = light.specular * reflection * diffuse;
+
+	reflection = reflection * diffuseObject;
+	diffuse = (1.0f - material.refl) * diffuse;
+	ambient = (1.0f - material.refl) * ambient;
 
 	return vec3(ambient + shadowFactor * (diffuse + specular + reflection));
 }
@@ -192,18 +197,19 @@ vec3 calcReflection(vec3 viewDir, vec3 normal)
 	vec3 I = -viewDir;
 	vec3 reflection = reflect(I, normal);
 	reflection = skyboxModelMatrix * reflection;
-	vec3 color = texture(map_skybox, reflection).rgb;
+	vec3 color = material.refl * texture(map_skybox, reflection).rgb;
 	return color;
 }
 
+
 void main()
 {
-	vec3 normal = normalize(fsin.Normal);
+	vec3 normal   = normalize(fsin.Normal);
 	vec3 viewDist = viewPos - fsin.FragPosWorld;
-	vec3 viewDir = normalize(viewDist);
+	vec3 viewDir  = normalize(viewDist);
 
-	vec3 ambient = vec3(texture(map_Ka, fsin.TexCoord)) * Ka; // * material.Ka;
-	vec3 diffuse = vec3(texture(map_Kd, fsin.TexCoord)) * Kd; // * material.Kd;
+	vec3 ambient  = vec3(texture(map_Ka, fsin.TexCoord)) * Ka; // * material.Ka;
+	vec3 diffuse  = vec3(texture(map_Kd, fsin.TexCoord)) * Kd; // * material.Kd;
 	vec3 specular = vec3(texture(map_Ks, fsin.TexCoord)) * material.Ks;
 	vec3 emmisive = vec3(texture(map_Ke, fsin.TexCoord)) * material.Ke;
 	vec3 reflection = calcReflection(viewDir, normal);
@@ -225,7 +231,7 @@ void main()
 	// emmisive light
 	color += emmisive;
 
-	color *= renderColor.rgb;
+	color    *= renderColor.rgb;
 	dissolve *= renderColor.a;
 
 	const vec3 gamma = vec3(1.0f / 2.2f);

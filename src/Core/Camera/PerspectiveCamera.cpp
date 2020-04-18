@@ -46,15 +46,15 @@ namespace MxEngine
 		return this->matrix;
 	}
 
-    const Matrix4x4& PerspectiveCamera::GetViewMatrix() const
-    {
-		auto& _ = this->GetMatrix();
+	const Matrix4x4& PerspectiveCamera::GetViewMatrix() const
+	{
+		const auto& _ = GetMatrix();
 		return this->view;
-    }
+	}
 
 	const Matrix4x4& PerspectiveCamera::GetProjectionMatrix() const
 	{
-		auto& _ = this->GetMatrix();
+		const auto& _ = GetMatrix();
 		return this->projection;
 	}
 

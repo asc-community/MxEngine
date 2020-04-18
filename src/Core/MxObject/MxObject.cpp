@@ -72,12 +72,12 @@ namespace MxEngine
 		VertexBuffer& VBO = this->ObjectMesh->GetBufferByIndex(index);
 		if (count <= VBO.GetSize()) // replace data if VBO size is big enough
 		{
-			MX_ASSERT(offset + count <= VBO.GetSize());
+			assert(offset + count <= VBO.GetSize());
 			VBO.BufferSubData(buffer, count, offset);
 		}
 		else // allocate new buffer (VBO handle remains the same)
 		{
-			MX_ASSERT(offset == 0);
+			assert(offset == 0);
 			VBO.Load(buffer, count, UsageType::DYNAMIC_DRAW);
 		}
 	}
@@ -135,7 +135,7 @@ namespace MxEngine
 	void MxObject::ReserveInstances(size_t count, UsageType usage)
 	{
 		Logger::Instance().Debug("MxEngine::MxObject", Format("making object instanced with reserved count: {0}", count));
-		MX_ASSERT(this->instances == nullptr);
+		assert(this->instances == nullptr);
 
 		if (this->ObjectMesh != nullptr && this->ObjectMesh->RefCounter > 1)
 		{
@@ -170,8 +170,8 @@ namespace MxEngine
 
     void MxObject::BufferInstances()
     {
-		MX_ASSERT(this->instances != nullptr);
-		MX_ASSERT(this->instances->InstanceDataIndex != this->instances->Undefined);
+		assert(this->instances != nullptr);
+		assert(this->instances->InstanceDataIndex != this->instances->Undefined);
 		constexpr size_t modelMatrixSize = sizeof(Matrix4x4) / sizeof(float);
 		constexpr size_t normalMatrixSize = sizeof(Matrix3x3) / sizeof(float);
 
@@ -199,8 +199,7 @@ namespace MxEngine
 			this->ObjectMesh->RefCounter--;
 
 		this->ObjectMesh = mesh;
-		if (this->ObjectMesh != nullptr)
-			this->ObjectMesh->RefCounter++;
+		this->ObjectMesh->RefCounter++;
 	}
 
 	Mesh* MxObject::GetMesh()
@@ -371,7 +370,7 @@ namespace MxEngine
 	void MxObject::OnRenderDraw()
 	{
 		if (this->instances == nullptr || !this->instanceUpdate) return;
-		MX_ASSERT(this->instances->InstanceDataIndex != Instancing<MxObject>::Undefined);
+		assert(this->instances->InstanceDataIndex != Instancing<MxObject>::Undefined);
 		this->BufferInstances();
 	}
 }

@@ -64,11 +64,11 @@ namespace MxEngine
 		virtual UniqueRef<FrameBuffer> CreateFrameBuffer() = 0;
 
 		virtual UniqueRef<Window> CreateWindow(int width, int height, const std::string& name) = 0;
-		virtual UniqueRef<IndexBuffer> CreateIndexBuffer(const IndexBuffer::IndexBufferType& data) = 0;
+		virtual UniqueRef<IndexBuffer> CreateIndexBuffer(IndexBuffer::IndexData data, size_t count) = 0;
 		virtual UniqueRef<Shader> CreateShader(const FilePath& vertex, const FilePath& fragment) = 0;
 		virtual UniqueRef<Shader> CreateShader(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment) = 0;
 		virtual UniqueRef<Texture> CreateTexture(const FilePath& texture, bool genMipmaps = true, bool flipImage = true) = 0;
-		virtual UniqueRef<CubeMap> CreateCubeMap(const FilePath& cubemap, bool genMipMaps = true, bool flipImage = false) = 0;
+		virtual UniqueRef<CubeMap> CreateCubeMap(const FilePath& cubemap, bool genMipMaps = true, bool flipImage = true) = 0;
 		virtual UniqueRef<VertexBuffer> CreateVertexBuffer(VertexBuffer::BufferData data, size_t count, UsageType type) = 0;
 
 		virtual ~GraphicFactory() = default;

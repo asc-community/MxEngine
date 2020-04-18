@@ -138,7 +138,7 @@ namespace MxEngine
 			MX_ASSERT(mesh->mTextureCoords != nullptr);
 			MX_ASSERT(mesh->mVertices != nullptr);
 			MX_ASSERT(mesh->mNumFaces > 0);
-			constexpr size_t VertexSize = (3 + 3 + 3);
+			constexpr size_t VertexSize = (3 + 2 + 3);
 
 			std::vector<float> vertex;
 			vertex.reserve(VertexSize * (size_t)mesh->mNumVertices);
@@ -152,7 +152,11 @@ namespace MxEngine
 				{
 					vertex.push_back(mesh->mTextureCoords[0][i].x);
 					vertex.push_back(mesh->mTextureCoords[0][i].y);
-					vertex.push_back(mesh->mTextureCoords[0][i].z);
+				}
+				else
+				{
+					vertex.push_back(0.0f);
+					vertex.push_back(0.0f);
 				}
 				if (meshInfo.useNormal)
 				{
@@ -162,29 +166,16 @@ namespace MxEngine
 				}
 			}
 
-			meshInfo.faces.resize((size_t)mesh->mNumFaces);
+			meshInfo.faces.resize((size_t)mesh->mNumFaces * 3);
 			for (size_t i = 0; i < (size_t)mesh->mNumFaces; i++)
 			{
 				MX_ASSERT(mesh->mFaces[i].mNumIndices == 3);
-				meshInfo.faces[i].x = mesh->mFaces[i].mIndices[0];
-				meshInfo.faces[i].y = mesh->mFaces[i].mIndices[1];
-				meshInfo.faces[i].z = mesh->mFaces[i].mIndices[2];
+				meshInfo.faces[3 * i + 0] = mesh->mFaces[i].mIndices[0];
+				meshInfo.faces[3 * i + 1] = mesh->mFaces[i].mIndices[1];
+				meshInfo.faces[3 * i + 2] = mesh->mFaces[i].mIndices[2];
 			}
-			
-			// convert IBO + VBO -> VBO
-			meshInfo.buffer.reserve(mesh->mNumFaces * 3 * VertexSize);
-			for (size_t i = 0; i < (size_t)mesh->mNumFaces; i++)
-			{
-				for (size_t j = 0; j < 3; j++)
-				{
-					size_t index = mesh->mFaces[i].mIndices[j];
-					meshInfo.buffer.insert(
-						meshInfo.buffer.end(),
-						vertex.begin() + VertexSize * (index + 0), 
-						vertex.begin() + VertexSize * (index + 1)
-					);
-				}
-			}
+			meshInfo.useTexture = true;
+			meshInfo.buffer = std::move(vertex);
 		}
 		return object;
 	}

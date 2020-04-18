@@ -84,11 +84,13 @@ namespace MxEngine
         void Apply()
         {
             std::vector<float> buffer;
+            std::vector<unsigned int> indicies;
             Array2D<Vector3> pointNormals;
             size_t xsize = surface.width();
             size_t ysize = surface.height();
             size_t triangleCount = 2 * (xsize - 1) * (ysize - 1);
-            buffer.reserve(2 * triangleCount * VertexSize);
+            buffer.reserve(2 * triangleCount * 3 * VertexSize);
+            indicies.reserve(2 * triangleCount * 3);
             pointNormals.resize(xsize, ysize, MakeVector3(0.0f));
 
             struct Vertex
@@ -164,9 +166,13 @@ namespace MxEngine
                 }
             }
 
-            for (const auto& triangle : triangles)
+            unsigned int indexCounter = 0;
+            for(size_t i = 0; i < triangles.size(); i += 2)
             {
-                for (const auto& vertex : triangle)
+                auto& up = triangles[i];
+                auto& down = triangles[i + 1];
+
+                constexpr auto add_vertex = [](auto& buffer, auto& vertex)
                 {
                     buffer.push_back(vertex.position.x);
                     buffer.push_back(vertex.position.y);
@@ -176,10 +182,22 @@ namespace MxEngine
                     buffer.push_back(vertex.normal.x);
                     buffer.push_back(vertex.normal.y);
                     buffer.push_back(vertex.normal.z);
-                }
+                };
+
+                add_vertex(buffer,   up[0]);
+                add_vertex(buffer,   up[1]);
+                add_vertex(buffer,   up[2]);
+                add_vertex(buffer, down[0]);
+                
+                indicies.push_back(2 * (unsigned int)i + 0);
+                indicies.push_back(2 * (unsigned int)i + 1);
+                indicies.push_back(2 * (unsigned int)i + 2);
+                indicies.push_back(2 * (unsigned int)i + 3);
+                indicies.push_back(2 * (unsigned int)i + 2);
+                indicies.push_back(2 * (unsigned int)i + 1);
             }
 
-            this->SubmitData(name, buffer);
+            this->SubmitData(name, buffer, indicies);
         }
     };
 }
