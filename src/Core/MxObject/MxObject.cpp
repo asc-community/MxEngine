@@ -99,6 +99,7 @@ namespace MxEngine
 		}
 		auto instance = this->instances->MakeInstance();
 		instance->Model = this->ObjectTransform;
+		instance->SetColor(this->renderColor);
 		return instance;
 	}
 
@@ -149,6 +150,8 @@ namespace MxEngine
 		this->AddInstancedBuffer(nullptr, count, sizeof(Matrix4x4) / sizeof(float), 4, usage);
 		// add normal matrix buffer
 		this->AddInstancedBuffer(nullptr, count, sizeof(Matrix3x3) / sizeof(float), 3, usage);
+		// add color vector buffer
+		this->AddInstancedBuffer(nullptr, count, sizeof(Vector4) / sizeof(float), 4, usage);
 	}
 
 	void MxObject::MakeInstanced(size_t instances, UsageType usage)
@@ -172,15 +175,18 @@ namespace MxEngine
     {
 		assert(this->instances != nullptr);
 		assert(this->instances->InstanceDataIndex != this->instances->Undefined);
-		constexpr size_t modelMatrixSize = sizeof(Matrix4x4) / sizeof(float);
+		constexpr size_t modelMatrixSize  = sizeof(Matrix4x4) / sizeof(float);
 		constexpr size_t normalMatrixSize = sizeof(Matrix3x3) / sizeof(float);
+		constexpr size_t colorVectorSize  = sizeof(Vector4) / sizeof(float);
 
-		size_t index = this->instances->InstanceDataIndex;
-		size_t count = this->instances->GetCount();
-		auto& models = this->instances->GetModelData();
+		size_t index  = this->instances->InstanceDataIndex;
+		size_t count  = this->instances->GetCount();
+		auto& models  = this->instances->GetModelData();
 		auto& normals = this->instances->GetNormalData();
+		auto& colors  = this->instances->GetColorData();
 		this->BufferDataByIndex(index, reinterpret_cast<float*>(models.data()), count * modelMatrixSize);
 		this->BufferDataByIndex(index + 1, reinterpret_cast<float*>(normals.data()), count * normalMatrixSize);
+		this->BufferDataByIndex(index + 2, reinterpret_cast<float*>(colors.data()), count * colorVectorSize);
     }
 
 	MxObject::MxObject(Mesh* mesh)
@@ -199,7 +205,8 @@ namespace MxEngine
 			this->ObjectMesh->RefCounter--;
 
 		this->ObjectMesh = mesh;
-		this->ObjectMesh->RefCounter++;
+		if(mesh != nullptr)
+			this->ObjectMesh->RefCounter++;
 	}
 
 	Mesh* MxObject::GetMesh()

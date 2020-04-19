@@ -39,12 +39,23 @@ namespace MxEngine
 	{
 		inline static Vector3 zeroVec = MakeVector3(0.0f);
 		Vector3 scaleFactor{ 1.0f };
+		Vector4 color{ 1.0f };
 	public:
 		Transform Model;
 
 		inline bool IsDrawn() const
 		{
 			return Model.GetScale() != zeroVec;
+		}
+
+		inline void SetColor(const Vector4& color)
+		{
+			this->color = Clamp(color, MakeVector4(0.0f), MakeVector4(1.0f));
+		}
+
+		inline const Vector4& GetColor() const
+		{
+			return this->color;
 		}
 
 		inline void Hide()
@@ -85,10 +96,12 @@ namespace MxEngine
 		using InstanceList = std::vector<MxInstance>;
 		using ModelData = std::vector<Matrix4x4>;
 		using NormalData = std::vector<Matrix3x3>;
+		using ColorData = std::vector<Vector4>;
 	private:
 		InstanceList instances;
 		ModelData models;
 		NormalData normals;
+		ColorData colors;
 	public:
 		constexpr static size_t Undefined = std::numeric_limits<size_t>::max();
 		size_t InstanceDataIndex = Undefined;
@@ -98,6 +111,7 @@ namespace MxEngine
 		MxInstanceWrapper<T> MakeInstance();
 		ModelData& GetModelData();
 		NormalData& GetNormalData();
+		ColorData& GetColorData();
 		size_t GetCount() const;
 	};
 
@@ -150,6 +164,18 @@ namespace MxEngine
 			instance->Model.GetNormalMatrix(*model, *normal);
 		}
 		return this->normals;
+	}
+
+	template<typename T>
+	inline typename Instancing<T>::ColorData& Instancing<T>::GetColorData()
+	{
+		this->colors.resize(this->instances.size());
+		auto instance = this->instances.begin();
+		for (auto it = this->colors.begin(); it != this->colors.end(); it++, instance++)
+		{
+			*it = instance->GetColor();
+		}
+		return this->colors;
 	}
 
 	template<typename T>

@@ -6,11 +6,12 @@ R"(
 )" \
 MAKE_STRING(
 
-layout(location = 0) in vec4 position;
-layout(location = 1) in vec3 texCoord;
-layout(location = 2) in vec4 normal;
-layout(location = 3) in mat4 model;
-layout(location = 7) in mat3 normalMatrix;
+layout(location = 0)  in vec4 position;
+layout(location = 1)  in vec3 texCoord;
+layout(location = 2)  in vec4 normal;
+layout(location = 3)  in mat4 model;
+layout(location = 7)  in mat3 normalMatrix;
+layout(location = 10) in vec4 renderColor;
 
 uniform mat4 ViewProjMatrix;
 uniform mat4 DirLightProjMatrix;
@@ -23,6 +24,7 @@ out VSout
 	vec2 TexCoord;
 	vec3 Normal;
 	vec3 FragPosWorld;
+	vec4 RenderColor;
 	vec4 FragPosDirLight;
 	vec4 FragPosSpotLight[MAX_SPOT_LIGHTS];
 } vsout;
@@ -35,6 +37,7 @@ void main()
 	vsout.TexCoord = texCoord.xy;
 	vsout.Normal = normalMatrix * vec3(normal);
 	vsout.FragPosWorld = vec3(modelPos);
+	vsout.RenderColor = renderColor;
 	vsout.FragPosDirLight = DirLightProjMatrix * modelPos;
 
 	for (int i = 0; i < spotLightCount; i++)

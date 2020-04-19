@@ -15,6 +15,7 @@ in VSout
 	vec2 TexCoord;
 	vec3 Normal;
 	vec3 FragPosWorld;
+	vec4 RenderColor;
 	vec4 FragPosDirLight;
 	vec4 FragPosSpotLight[MAX_SPOT_LIGHTS];
 } fsin;
@@ -80,7 +81,6 @@ uniform int spotLightCount;
 uniform int PCFdistance;
 uniform mat3 skyboxModelMatrix;
 uniform Material material;
-uniform vec4 renderColor;
 uniform vec3 viewPos;
 uniform DirLight dirLight;
 uniform PointLight pointLight[MAX_POINT_LIGHTS];
@@ -234,8 +234,8 @@ void main()
 	// emmisive light
 	color += emmisive;
 
-	color *= renderColor.rgb;
-	dissolve *= renderColor.a;
+	color *= fsin.RenderColor.rgb;
+	dissolve *= fsin.RenderColor.a;
 
 	const vec3 gamma = vec3(1.0f / 2.2f);
 	// color = pow(color, gamma);

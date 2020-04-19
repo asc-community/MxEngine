@@ -101,7 +101,6 @@ namespace MxEngine
 
 		// getting all data for easy use
 		size_t iterator = object.GetIterator();
-		const auto& renderColor = object.GetRenderColor();
 		const auto& ViewProjection = viewport.GetMatrix();
 
 		// choosing shader and setting up data per object
@@ -109,9 +108,9 @@ namespace MxEngine
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
 		this->GetRenderEngine().SetDefaultVertexAttribute(7, object.GetNormalMatrix());
+		this->GetRenderEngine().SetDefaultVertexAttribute(10, object.GetRenderColor());
 
 		shader.SetUniformMat4("ViewProjMatrix", ViewProjection);
-		shader.SetUniformVec4("renderColor", renderColor);
 
 		while (!object.IsLast(iterator))
 		{
@@ -155,7 +154,6 @@ namespace MxEngine
 
 		// getting all data for easy use
 		size_t iterator = object.GetIterator();
-		const auto& renderColor = object.GetRenderColor();
 		const auto& ViewProjection = viewport.GetMatrix();
 		const auto& cameraPos = viewport.GetPosition();
 
@@ -164,11 +162,11 @@ namespace MxEngine
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
 		this->GetRenderEngine().SetDefaultVertexAttribute(7, object.GetNormalMatrix());
+		this->GetRenderEngine().SetDefaultVertexAttribute(10, object.GetRenderColor());
 
 		shader.SetUniformMat4("ViewProjMatrix", ViewProjection);
 		shader.SetUniformMat3("skyboxModelMatrix", Transpose(skybox->GetRotationMatrix()));
 		shader.SetUniformVec3("viewPos", cameraPos);
-		shader.SetUniformVec4("renderColor", renderColor);
 
 		// set shadow mapping
 		shader.SetUniformInt("PCFdistance", this->PCFdistance);
@@ -298,6 +296,7 @@ namespace MxEngine
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
 		this->GetRenderEngine().SetDefaultVertexAttribute(7, object.GetNormalMatrix());
+		this->GetRenderEngine().SetDefaultVertexAttribute(10, object.GetRenderColor());
 
 		while (!object.IsLast(iterator))
 		{

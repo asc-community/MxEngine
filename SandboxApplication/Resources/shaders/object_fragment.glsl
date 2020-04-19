@@ -11,6 +11,7 @@ in VSout
 	vec2 TexCoord;
 	vec3 Normal;
 	vec3 FragPosWorld;
+	vec4 RenderColor;
 	vec4 FragPosDirLight;
 	vec4 FragPosSpotLight[MAX_SPOT_LIGHTS];
 } fsin;
@@ -76,7 +77,6 @@ uniform int spotLightCount;
 uniform int PCFdistance;
 uniform mat3 skyboxModelMatrix;
 uniform Material material;
-uniform vec4 renderColor;
 uniform vec3 viewPos;
 uniform DirLight dirLight;
 uniform PointLight pointLight[MAX_POINT_LIGHTS];
@@ -104,12 +104,12 @@ float CalcShadowFactor2D(vec4 fragPosLight, sampler2D map_shadow)
 
 vec3 sampleOffsetDirections[POINT_LIGHT_SAMPLES] = vec3[]
 (
-	vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1),
-	vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
-	vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
-	vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
-	vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
-);
+	vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1),
+	vec3(1, 1, -1), vec3(1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+	vec3(1, 1, 0), vec3(1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
+	vec3(1, 0, 1), vec3(-1, 0, 1), vec3(1, 0, -1), vec3(-1, 0, -1),
+	vec3(0, 1, 1), vec3(0, -1, 1), vec3(0, -1, -1), vec3(0, 1, -1)
+	);
 
 float CalcShadowFactorCube(vec3 lightDistance, vec3 viewDist, float zfar, samplerCube map_shadow)
 {
@@ -203,12 +203,12 @@ vec3 calcReflection(vec3 viewDir, vec3 normal)
 
 void main()
 {
-	vec3 normal   = normalize(fsin.Normal);
+	vec3 normal = normalize(fsin.Normal);
 	vec3 viewDist = viewPos - fsin.FragPosWorld;
-	vec3 viewDir  = normalize(viewDist);
+	vec3 viewDir = normalize(viewDist);
 
-	vec3 ambient  = vec3(texture(map_Ka, fsin.TexCoord)) * Ka; // * material.Ka;
-	vec3 diffuse  = vec3(texture(map_Kd, fsin.TexCoord)) * Kd; // * material.Kd;
+	vec3 ambient = vec3(texture(map_Ka, fsin.TexCoord)) * Ka; // * material.Ka;
+	vec3 diffuse = vec3(texture(map_Kd, fsin.TexCoord)) * Kd; // * material.Kd;
 	vec3 specular = vec3(texture(map_Ks, fsin.TexCoord)) * material.Ks;
 	vec3 emmisive = vec3(texture(map_Ke, fsin.TexCoord)) * material.Ke;
 	vec3 reflection = calcReflection(viewDir, normal);
@@ -230,8 +230,8 @@ void main()
 	// emmisive light
 	color += emmisive;
 
-	color    *= renderColor.rgb;
-	dissolve *= renderColor.a;
+	color *= fsin.RenderColor.rgb;
+	dissolve *= fsin.RenderColor.a;
 
 	const vec3 gamma = vec3(1.0f / 2.2f);
 	// color = pow(color, gamma);

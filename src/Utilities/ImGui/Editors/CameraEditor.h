@@ -50,13 +50,13 @@ namespace MxEngine::GUI
 
 		context->ToggleMeshDrawing(mesh);
 
-		if (ImGui::InputFloat("set speed", &speed))
+		if (ImGui::InputFloat("speed", &speed))
 			camera.SetMoveSpeed(speed);
 
-		if (ImGui::InputFloat("set sensitivity", &sensitivity))
+		if (ImGui::InputFloat("sensitivity", &sensitivity))
 			camera.SetRotateSpeed(sensitivity);
 
-		if (ImGui::InputFloat3("set position", &pos[0]))
+		if (ImGui::DragFloat3("position", &pos[0], 0.5f))
 			camera.SetPosition(pos);
 
 		ImGui::Text("zoom / fov: %f", zoom);

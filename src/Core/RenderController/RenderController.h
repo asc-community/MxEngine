@@ -104,6 +104,7 @@ namespace MxEngine
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
 		this->GetRenderEngine().SetDefaultVertexAttribute(7, object.GetNormalMatrix());
+		this->GetRenderEngine().SetDefaultVertexAttribute(10, object.GetRenderColor());
 
 		while (!object.IsLast(iterator))
 		{
@@ -140,6 +141,7 @@ namespace MxEngine
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
 		this->GetRenderEngine().SetDefaultVertexAttribute(7, object.GetNormalMatrix());
+		this->GetRenderEngine().SetDefaultVertexAttribute(10, object.GetRenderColor());
 
 		while (!object.IsLast(iterator))
 		{

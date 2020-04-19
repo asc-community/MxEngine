@@ -51,7 +51,7 @@ namespace MxEngine::GUI
 	{
 		// translation
 		auto translation = transform.GetTranslation();
-		if (ImGui::InputFloat3("translation", &translation[0]))
+		if (ImGui::DragFloat3("translation", &translation[0], 0.5f))
 			transform.SetTranslation(translation);
 
 		// rotation (euler)
@@ -66,7 +66,7 @@ namespace MxEngine::GUI
 
 		// scale
 		auto scale = transform.GetScale();
-		if (ImGui::InputFloat3("scale", &scale[0]))
+		if (ImGui::DragFloat3("scale", &scale[0], 0.5f))
 			transform.SetScale(scale);
 	}
 
@@ -81,8 +81,8 @@ namespace MxEngine::GUI
 
 				// toggle object visibility
 				bool isDrawn = object.IsDrawable();
-				bool dirVecs = false;
-				bool instanced = false;
+				static bool dirVecs = false;
+				static bool instanced = false;
 				if (ImGui::Checkbox("drawn", &isDrawn))
 					isDrawn ? object.Show() : object.Hide();
 
@@ -143,6 +143,9 @@ namespace MxEngine::GUI
 
 								DrawTransform(instance.Model);
 								bool draw = instance.IsDrawn();
+								auto color = instance.GetColor();
+								if (ImGui::ColorEdit4("color", &color[0]))
+									instance.SetColor(color);
 								if (ImGui::Checkbox("visible", &draw))
 								{
 									if (draw)

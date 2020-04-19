@@ -91,7 +91,7 @@ namespace MxEngine::GUI
 				auto specularPoint = pointLight.GetSpecularColor();
 				auto factors = pointLight.GetFactors();
 
-				ImGui::InputFloat3("position", &pointLight.Position[0]);
+				ImGui::DragFloat3("position", &pointLight.Position[0], 0.5f);
 
 				if (ImGui::InputFloat3("K factors", &factors[0]))
 					pointLight.UseFactors(factors);
@@ -129,7 +129,7 @@ namespace MxEngine::GUI
 				auto diffuseSpot = spotLight.GetDiffuseColor();
 				auto specularSpot = spotLight.GetSpecularColor();
 
-				ImGui::InputFloat3("position", &spotLight.Position[0]);
+				ImGui::DragFloat3("position", &spotLight.Position[0], 0.5f);
 				ImGui::InputFloat3("direction", &spotLight.Direction[0]);
 
 				if (ImGui::DragFloat("outer angle", &outerAngle, 1.0f, 0.0f, 90.0f))
