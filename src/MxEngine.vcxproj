@@ -44,6 +44,7 @@
     <ClInclude Include="Library\Primitives\Surface.h" />
     <ClInclude Include="Platform\OpenGL\CubeMap\GLCubeMap.h" />
     <ClInclude Include="Platform\OpenGL\FrameBuffer\GLFrameBuffer.h" />
+    <ClInclude Include="Utilities\LODGenerator\LODGenerator.h" />
     <ClInclude Include="Utilities\ResourceStorage\ResourceStorage.h" />
     <ClInclude Include="Core\Scene\Scene.h" />
     <ClInclude Include="Library\Scripting\Script\Script.h" />
@@ -208,6 +209,7 @@
     <ClCompile Include="Utilities\FileSystem\FileSystem.cpp" />
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
     <ClCompile Include="Utilities\ImGui\GraphicConsole\GraphicConsole.cpp" />
+    <ClCompile Include="Utilities\LODGenerator\LODGenerator.cpp" />
     <ClCompile Include="Utilities\Logger\Logger.cpp" />
     <ClCompile Include="Utilities\ObjectLoader\ObjectLoader.cpp" />
     <ClCompile Include="Utilities\Profiler\Profiler.cpp" />

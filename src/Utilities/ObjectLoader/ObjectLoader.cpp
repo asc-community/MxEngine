@@ -31,6 +31,8 @@
 #include "Utilities/Profiler/Profiler.h"
 #include "Core/Macro/Macro.h"
 #include "Utilities/FileSystem/FileSystem.h"
+#include "Utilities/Format/Format.h"
+#include "Utilities/Random/Random.h"
 
 #include <algorithm>
 
@@ -49,11 +51,11 @@ namespace MxEngine
 		MAKE_SCOPE_TIMER("MxEngine::ObjectLoader", "ObjectLoader::LoadObject");
 		Logger::Instance().Debug("Assimp::Importer", "loading object from file: " + filename);
 		static Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_GenSmoothNormals);
+		const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices 
+			| aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_ImproveCacheLocality | aiProcess_GenUVCoords);
 		if (scene == nullptr)
 		{
 			MxEngine::Logger::Instance().Error("Assimp::Importer", importer.GetErrorString());
-			object.isSuccess = false;
 			return object;
 		}
 
@@ -174,6 +176,8 @@ namespace MxEngine
 				meshInfo.faces[3 * i + 1] = mesh->mFaces[i].mIndices[1];
 				meshInfo.faces[3 * i + 2] = mesh->mFaces[i].mIndices[2];
 			}
+			if (meshInfo.name.empty()) 
+				meshInfo.name = Format(FMT_STRING("unnamed_hash_{0}"), Random::Get(0, Random::Max));
 			meshInfo.useTexture = true;
 			meshInfo.buffer = std::move(vertex);
 		}

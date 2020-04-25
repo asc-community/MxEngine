@@ -45,7 +45,7 @@ namespace MxEngine
 
 	void RenderController::Render() const
 	{
-		this->renderer.Flush();
+		this->renderer.Finish();
 	}
 
 	void RenderController::Clear() const
@@ -107,7 +107,6 @@ namespace MxEngine
 		const Shader& shader = object.HasShader() ? object.GetShader() : *this->ObjectShader;
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
-		this->GetRenderEngine().SetDefaultVertexAttribute(7, object.GetNormalMatrix());
 		this->GetRenderEngine().SetDefaultVertexAttribute(10, object.GetRenderColor());
 
 		shader.SetUniformMat4("ViewProjMatrix", ViewProjection);
@@ -119,7 +118,7 @@ namespace MxEngine
 			{
 				const Material& material = renderObject.GetMaterial();
 
-#define BIND_TEX(NAME, SLOT)         \
+				#define BIND_TEX(NAME, SLOT)         \
 				if (material.NAME != nullptr)        \
 					material.NAME->Bind(SLOT);       \
 				else if (object.HasTexture())        \
@@ -129,6 +128,7 @@ namespace MxEngine
 				shader.SetUniformInt(#NAME, SLOT)
 
 				BIND_TEX(map_Ka, 0);
+				BIND_TEX(map_Kd, 1);
 
 				// setting materials
 				shader.SetUniformFloat("material.d", material.d);

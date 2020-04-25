@@ -42,14 +42,14 @@ namespace MxEngine
 		UniqueRef<VertexBuffer> VBO;
 		UniqueRef<VertexArray> VAO;
 		UniqueRef<IndexBuffer> IBO;
-		UniqueRef<Material> material;
+		Ref<Material> material;
 		size_t vertexBufferSize = 0;
 		std::string name;
 
 		void GenerateMeshIndicies() const;
 		friend class Mesh;
 	public:
-		RenderObject(std::string name, UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<IndexBuffer> IBO, UniqueRef<Material> material,
+		RenderObject(std::string name, UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<IndexBuffer> IBO, Ref<Material> material,
 			bool useTexture, bool useNormal, size_t sizeInFloats);
 
 		RenderObject(const RenderObject&) = delete;
@@ -75,8 +75,11 @@ namespace MxEngine
 		typedef unsigned int GLuint;
 		typedef float GLfloat;
 
+		using LOD = std::vector<RenderObject>;
+
+		size_t currentLOD = 0;
 		std::pair<Vector3, Vector3> boundingBox{ MakeVector3(0.0f), MakeVector3(0.0f) };
-		std::vector<RenderObject> subObjects;
+		std::vector<LOD> LODs = std::vector<LOD>(1);
 		std::vector<UniqueRef<VertexBuffer>> VBOs;
 		std::vector<UniqueRef<VertexBufferLayout>> VBLs;
 
@@ -90,11 +93,13 @@ namespace MxEngine
 		Mesh(Mesh&&) = default;
 		Mesh& operator=(const Mesh&) = delete;
 		Mesh& operator=(Mesh&&) = default;
-
+		
 		void Load(const std::string& filepath);
 		std::vector<RenderObject>& GetRenderObjects();
 		const std::vector<RenderObject>& GetRenderObjects() const;
 		Vector3 GetObjectCenter() const;
+		void SetLOD(size_t LOD);
+		size_t GetLOD() const;
 		const std::pair<Vector3, Vector3> GetBoundingBox();
 		void AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl);
 		VertexBuffer& GetBufferByIndex(size_t index); 

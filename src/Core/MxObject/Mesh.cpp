@@ -30,83 +30,114 @@
 #include "Utilities/ObjectLoader/ObjectLoader.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
+#include "Utilities/LODGenerator/LODGenerator.h"
+#include "Utilities/Format/Format.h"
 
 #include <algorithm>
 
 namespace MxEngine
 {
+	void CopyMaterial(Material& material, const MaterialInfo& mat, std::unordered_map<std::string, Ref<Texture>>& textures)
+	{
+		#define MAKE_TEX(tex) if(!mat.tex.empty()) {\
+			if(textures.find(mat.tex) == textures.end())\
+				textures[mat.tex] = Graphics::Instance()->CreateTexture(mat.tex);\
+			material.tex = textures[mat.tex];}
+
+		MAKE_TEX(map_Ka);
+		MAKE_TEX(map_Kd);
+		MAKE_TEX(map_Ks);
+		MAKE_TEX(map_Ke);
+		MAKE_TEX(map_d);
+		MAKE_TEX(map_bump);
+		MAKE_TEX(bump);
+
+		material.Tf    = mat.Tf;
+		material.Ka    = mat.Ka;
+		material.Kd    = mat.Kd;
+		material.Ke    = mat.Ke;
+		material.Ks    = mat.Ks;
+		material.illum = mat.illum;
+		material.Ns    = mat.Ns;
+		material.Ni    = mat.Ni;
+		material.d     = mat.d;
+		material.Tr    = mat.Tr;
+
+		if (material.Ns == 0.0f) material.Ns = 128.0f; // bad as pow(0.0, 0.0) -> NaN
+	}
+
 	void Mesh::LoadFromFile(const std::string& filepath)
 	{
-		ObjectInfo objectInfo;
-		{
-			MAKE_SCOPE_TIMER("MxEngine::MxObject", "ObjectLoader::LoadFromFile()");
-			objectInfo = ObjectLoader::Load(filepath);
-		}
-
-		MAKE_SCOPE_PROFILER("Object::GenBuffers");
-		MAKE_SCOPE_TIMER("MxEngine::MxObject", "Object::GenBuffers()");
-		if (!objectInfo.isSuccess)
-		{
-			Logger::Instance().Debug("MxEngine::MxObject", "failed to load object from file: " + filepath);
-		}
-		this->subObjects.reserve(objectInfo.meshes.size());
+		ObjectInfo objectInfo = ObjectLoader::Load(filepath);
 		this->boundingBox = objectInfo.boundingBox;
-		std::unordered_map<std::string, Ref<Texture>> textures;
 
-		UniqueRef<Material> material;
+		std::unordered_map<std::string, Ref<Texture>> textures;
+		std::unordered_map<uintptr_t, Ref<Material>> materials;
 		for (const auto& group : objectInfo.meshes)
 		{
 			if (group.useTexture)
 			{
 				if (group.material != nullptr)
 				{
-					material = MakeUnique<Material>();
-					#define MAKE_TEX(tex) if(!group.material->tex.empty()) {\
-						if(textures.find(group.material->tex) == textures.end())\
-							textures[group.material->tex] = Graphics::Instance()->CreateTexture(group.material->tex);\
-						material->tex = textures[group.material->tex];}
-
-					MAKE_TEX(map_Ka);
-					MAKE_TEX(map_Kd);
-					MAKE_TEX(map_Ks);
-					MAKE_TEX(map_Ke);
-					MAKE_TEX(map_d);
-					MAKE_TEX(map_bump);
-					MAKE_TEX(bump);
-
-					material->Tf = group.material->Tf;
-					material->Ka = group.material->Ka;
-					material->Kd = group.material->Kd;
-					material->Ke = group.material->Ke;
-					material->Ks = group.material->Ks;
-					material->illum = group.material->illum;
-					material->Ns = group.material->Ns;
-					material->Ni = group.material->Ni;
-					material->d = group.material->d;
-					material->Tr = group.material->Tr;
-
-					if (material->Ns == 0.0f) material->Ns = 128.0f; // bad as pow(0.0, 0.0) -> NaN
+					auto material = MakeRef<Material>();
+					CopyMaterial(*material, *group.material, textures);
+					materials[(uintptr_t)group.material] = material;
 				}
-				auto VBO = Graphics::Instance()->CreateVertexBuffer(group.buffer.data(), group.buffer.size(), UsageType::STATIC_DRAW);
-				auto IBO = Graphics::Instance()->CreateIndexBuffer(group.faces.data(), group.faces.size());
+			}
+		}
+
+		std::vector<ObjectInfo> LODdata;
+		{
+			MAKE_SCOPE_TIMER("MxEngine::LODGenerator", "GenerateLODs");
+			MAKE_SCOPE_PROFILER("LODGenerator::GenerareLODs");
+
+			LODGenerator lod(objectInfo);
+			std::array LODfactors = { 0.001f, 0.01f, 0.05f, 0.15f, 0.3f };
+			for (size_t factor = 0; factor < LODfactors.size(); factor++)
+			{
+				LODdata.push_back(lod.CreateObject(LODfactors[factor]));
+
+				#if defined(MXENGINE_DEBUG)
+				size_t vertecies = 0;
+				for (const auto& mesh : LODdata.back().meshes)
+				{
+					vertecies += mesh.faces.size();
+				}
+				Logger::Instance().Debug("MxEngine::LODGenerator", Format("LOD[{0}]: vertecies = {1}", factor + 1, vertecies));
+				#endif
+			}
+		}
+		LODdata.insert(LODdata.begin(), std::move(objectInfo));
+
+		MAKE_SCOPE_TIMER("MxEngine::Mesh", "GenerateBuffers");
+		MAKE_SCOPE_PROFILER("Mesh::GenerateBuffers"); 
+		this->LODs.clear();
+		for(const auto& lod : LODdata)
+		{
+			auto& meshes = this->LODs.emplace_back();
+			for (const auto& mesh : lod.meshes)
+			{
+				auto VBO = Graphics::Instance()->CreateVertexBuffer(mesh.buffer.data(), mesh.buffer.size(), UsageType::STATIC_DRAW);
+				auto IBO = Graphics::Instance()->CreateIndexBuffer(mesh.faces.data(), mesh.faces.size());
 				auto VAO = Graphics::Instance()->CreateVertexArray();
 				auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
 
 				VBL->PushFloat(3);
-				if (group.useTexture) VBL->PushFloat(2);
-				if (group.useNormal) VBL->PushFloat(3);
+				if (mesh.useTexture) VBL->PushFloat(2);
+				if (mesh.useNormal) VBL->PushFloat(3);
 				VAO->AddBuffer(*VBO, *VBL);
 
-				RenderObject object(std::move(group.name), std::move(VBO), std::move(VAO), std::move(IBO), std::move(material), group.useTexture, group.useNormal, group.buffer.size());
-				this->subObjects.push_back(std::move(object));
-			}
-			if (!group.useTexture)
-			{
-				Logger::Instance().Warning("MxEngine::MxObject", "object file does not have texture data: " + filepath);
-			}
-			if (!group.useNormal)
-			{
-				Logger::Instance().Warning("MxEngine::MxObject", "object file does not have normal data: " + filepath);
+				RenderObject object(std::move(mesh.name), std::move(VBO), std::move(VAO), std::move(IBO), materials[(uintptr_t)mesh.material], 
+					mesh.useTexture, mesh.useNormal, mesh.buffer.size());
+				meshes.push_back(std::move(object));
+				if (!mesh.useTexture)
+				{
+					Logger::Instance().Warning("MxEngine::MxObject", "object file does not have texture data: " + filepath);
+				}
+				if (!mesh.useNormal)
+				{
+					Logger::Instance().Warning("MxEngine::MxObject", "object file does not have normal data: " + filepath);
+				}
 			}
 		}
 	}
@@ -123,18 +154,28 @@ namespace MxEngine
 
 	std::vector<RenderObject>& Mesh::GetRenderObjects()
 	{
-		return this->subObjects;
+		return this->LODs[this->currentLOD];
 	}
 
 	const std::vector<RenderObject>& Mesh::GetRenderObjects() const
 	{
-		return this->subObjects;
+		return this->LODs[this->currentLOD];
 	}
 
 	Vector3 Mesh::GetObjectCenter() const
 	{
 		return (this->boundingBox.first + this->boundingBox.second) * 0.5f;
 	}
+
+	void Mesh::SetLOD(size_t LOD)
+	{
+		this->currentLOD = Min(LOD, (int)this->LODs.size() - 1);
+	}
+
+    size_t Mesh::GetLOD() const
+    {
+		return this->currentLOD;
+    }
 
 	const std::pair<Vector3, Vector3> Mesh::GetBoundingBox()
 	{
@@ -158,7 +199,7 @@ namespace MxEngine
 		this->meshGenerated = true;
 	}
 
-    RenderObject::RenderObject(std::string name, UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<IndexBuffer> IBO, UniqueRef<Material> material, bool useTexture, bool useNormal, size_t sizeInFloats)
+    RenderObject::RenderObject(std::string name, UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<IndexBuffer> IBO, Ref<Material> material, bool useTexture, bool useNormal, size_t sizeInFloats)
     {
 		this->name = std::move(name);
 		this->VBO = std::move(VBO);
@@ -227,9 +268,12 @@ namespace MxEngine
 	{
 		this->VBOs.push_back(std::move(vbo));
 		this->VBLs.push_back(std::move(vbl));
-		for (const auto& subObject : this->subObjects)
+		for (const auto& meshes : this->LODs)
 		{
-			subObject.VAO->AddInstancedBuffer(*this->VBOs.back(), *this->VBLs.back());
+			for (const auto& mesh : meshes)
+			{
+				mesh.VAO->AddInstancedBuffer(*this->VBOs.back(), *this->VBLs.back());
+			}
 		}
 	}
 

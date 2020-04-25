@@ -60,32 +60,32 @@ namespace MxEngine
 	template<size_t Columns, size_t Rows, typename Type>
 	using Matrix = glm::mat<Columns, Rows, Type>;
 
-	inline Vector2 MakeVector2(float x, float y)
+	constexpr inline Vector2 MakeVector2(float x, float y)
 	{
 		return Vector2(x, y);
 	}
 
-	inline Vector3 MakeVector3(float x, float y, float z)
+	constexpr inline Vector3 MakeVector3(float x, float y, float z)
 	{
 		return Vector3(x, y, z);
 	}
 
-	inline Vector4 MakeVector4(float x, float y, float z, float w)
+	constexpr inline Vector4 MakeVector4(float x, float y, float z, float w)
 	{
 		return Vector4(x, y, z, w);
 	}
 
-	inline Vector2 MakeVector2(float value)
+	constexpr inline Vector2 MakeVector2(float value)
 	{
 		return Vector2(value);
 	}
 
-	inline Vector3 MakeVector3(float value)
+	constexpr inline Vector3 MakeVector3(float value)
 	{
 		return Vector3(value);
 	}
 
-	inline Vector4 MakeVector4(float value)
+	constexpr inline Vector4 MakeVector4(float value)
 	{
 		return Vector4(value);
 	}

@@ -49,7 +49,7 @@ namespace MxEngine
 			::SetConsoleTextAttribute(handle, FOREGROUND_RED | FOREGROUND_INTENSITY);
 			#endif
 
-			* error << '[' << invoker << " error]: " << message << std::endl;
+			* error << '[' << invoker << " error]: " << message << '\n';
 
 			#if defined(MXENGINE_WINDOWS)
 			::SetConsoleTextAttribute(handle, 7); // default
@@ -62,7 +62,7 @@ namespace MxEngine
 	{
 		if (debug != nullptr && useDebug)
 		{
-			*debug << '[' << invoker << " debug]: " << message << std::endl;
+			*debug << '[' << invoker << " debug]: " << message << '\n';
 		}
 	}
 
@@ -75,7 +75,7 @@ namespace MxEngine
 
 		if (warning != nullptr && useWarning)
 		{
-			*warning << '[' << invoker << " warning]: " << message << std::endl;
+			*warning << '[' << invoker << " warning]: " << message << '\n';
 		}
 
 		#if defined(MXENGINE_WINDOWS)

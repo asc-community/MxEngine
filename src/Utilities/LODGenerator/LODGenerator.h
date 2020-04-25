@@ -28,66 +28,51 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include <sstream>
-#include <unordered_map>
-
-#include "Utilities/Math/Math.h"
+#include "Utilities/ObjectLoader/ObjectLoader.h"
+#include <set>
+#include <map>
 
 namespace MxEngine
 {
-	struct MaterialInfo
-	{
-		std::string name;
+    struct Vector3Cmp
+    {
+        inline static float Threshold = 100.0f;
 
-		std::string map_Ka;
-		std::string map_Kd;
-		std::string map_Ks;
-		std::string map_Ke;
-		std::string map_d;
-		std::string map_bump;
-		std::string bump;
+        static bool EqF(float x, float y)
+        {
+            return std::abs(x - y) <= Threshold;
+        }
 
-		float Ns = 0.0f;
-		float Ni = 0.0f;
-		float d = 0.0f;
-		float Tr = 0.0f;
-		float bm = 0.0f;
-		Vector3 Tf{ 0.0f };
-		Vector3 Ka{ 0.0f };
-		Vector3 Kd{ 0.0f };
-		Vector3 Ks{ 0.0f };
-		Vector3 Ke{ 0.0f };
-		int illum = 0;
-		bool IsSuccess = true;
-	};
+        static bool LessF(float x, float y) 
+        {
+            return y - x >= Threshold;
+        }
 
-	struct MeshInfo
-	{
-		std::string name;
-		std::vector<float> buffer;
-		std::vector<unsigned int> faces;		
-		MaterialInfo* material = nullptr;
-		bool useTexture = false;
-		bool useNormal = false;
-		constexpr static size_t VertexSize = (3 + 2 + 3);
+        bool operator()(const Vector3& v1, const Vector3& v2) const
+        {
+            if (EqF(v1.x, v2.x))
+                if (EqF(v1.y, v2.y))
+                    return LessF(v1.z, v2.z);
+                else
+                    return LessF(v1.y, v2.y);
+            else
+                return LessF(v1.x, v2.x);
+        }
+    };
 
-		size_t GetVertexCount() const { return this->buffer.size() / VertexSize; }
-	};
+    class LODGenerator
+    {
+        using ProjectionTable = std::vector<size_t>;
+        using WeightList = std::map<size_t, size_t>;
+        const ObjectInfo& objectInfo;
+        std::vector<ProjectionTable> projection;
+        std::vector<std::vector<WeightList>> weights;
 
-	using MaterialLibrary = std::vector<MaterialInfo>;
-
-	struct ObjectInfo
-	{
-		MaterialLibrary materials;
-		std::vector<MeshInfo> meshes;
-		std::pair<Vector3, Vector3> boundingBox{ MakeVector3(0.0f), MakeVector3(0.0f) };
-	};
-
-	class ObjectLoader
-	{
-	public:
-		static ObjectInfo Load(std::string path);
-	};
+        size_t CollapseDublicate(std::map<Vector3, size_t, Vector3Cmp>& vertecies, size_t meshId, size_t f);
+        void PrepareIndexData(float threshold);
+    public:
+        LODGenerator(const ObjectInfo& objectInfo);
+        // fow now this function can be called only from a single thread!
+        ObjectInfo CreateObject(float threshold);
+    };
 }

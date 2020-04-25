@@ -1408,11 +1408,12 @@ BOOST_PYTHON_MODULE(mx_engine)
     py::class_<Mesh, boost::noncopyable>("mesh", py::no_init)
         .add_property("center", &Mesh::GetObjectCenter)
         .add_property("submeshes", RefGetter((SubMeshesGetFunc)&Mesh::GetRenderObjects))
+        .add_property("lod", &Mesh::GetLOD, &Mesh::SetLOD)
         ;
 
     using SubMeshesGetMeshFunc = RenderObject& (std::vector<RenderObject>::*)(size_t);
     py::class_<std::vector<RenderObject>, boost::noncopyable>("submesh_list", py::no_init)
-        .def("__getitem__", RefGetter((SubMeshesGetMeshFunc)&std::vector<RenderObject>::operator[]))
+        .def("__getitem__", RefGetter(StdVectorGetRefWrapper<RenderObject>))
         .def("__len__", &std::vector<RenderObject>::size)
         ;
 

@@ -222,7 +222,7 @@ namespace MxEngine
 		else
 		{
 			GLCALL(glEnable(GL_BLEND));
-			GLCALL(glBlendFunc((GLenum)GL_SRC_ALPHA, (GLenum)GL_ONE_MINUS_SRC_ALPHA));
+			GLCALL(glBlendFunc((GLenum)src, (GLenum)dist));
 		}
 		return *this;
 	}

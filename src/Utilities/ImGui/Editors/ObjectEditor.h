@@ -66,7 +66,7 @@ namespace MxEngine::GUI
 
 		// scale
 		auto scale = transform.GetScale();
-		if (ImGui::DragFloat3("scale", &scale[0], 0.5f))
+		if (ImGui::DragFloat3("scale", &scale[0], 0.01f, 0.01f, 1000.0f))
 			transform.SetScale(scale);
 	}
 
@@ -117,14 +117,21 @@ namespace MxEngine::GUI
 
 				if (object.GetMesh() != nullptr)
 				{
+					int LOD = (int)object.GetMesh()->GetLOD();
+					ImGui::DragInt("LOD", &LOD, 0.1f);
+					object.GetMesh()->SetLOD(Max(LOD, 0));
+
 					GUI_TREE_NODE("mesh list",
+						int meshIdx = 0;
 						for (auto& submesh : object.GetMesh()->GetRenderObjects())
 						{
 							GUI_TREE_NODE(submesh.GetName().c_str(),
+								ImGui::PushID(meshIdx++);
 								if (submesh.HasMaterial())
 								{
 									DrawMaterial(submesh.GetMaterial());
 								}
+								ImGui::PopID();
 							);
 						}
 					);
