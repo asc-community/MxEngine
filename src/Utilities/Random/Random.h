@@ -32,18 +32,22 @@
 
 namespace MxEngine
 {
-    // TODO: add improved random generator
-    // TODO: add random generator instances
-
-    // static random generator based on cstdlib rand() function
+    // static random generator based on Mersenne's twist algorithm
     class Random
     {
     public:
-        constexpr static unsigned int Max = RAND_MAX;
-
-        static void SetSeed(unsigned int seed);
+        using Generator = std::mersenne_twister_engine<std::uint_fast64_t, 64, 312, 156, 31,
+            0xb5026f5aa96619e9, 29,
+            0x5555555555555555, 17,
+            0x71d67fffeda60000, 37,
+            0xfff7eee000000000, 43, 6364136223846793005>;
+    private:
+        static thread_local inline Generator mersenne64;
+    public:
+        static void SetSeed(uint64_t seed);
         static float GetFloat();
-        static int Get(int lower, int upper);
+        static int64_t Get(int64_t lower, int64_t upper);
+        static int32_t Get(int32_t lower, int32_t upper);
         static float Get(float lower, float upper);
     };
 }
