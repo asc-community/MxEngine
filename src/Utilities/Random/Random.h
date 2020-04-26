@@ -29,6 +29,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <random>
 
 namespace MxEngine
 {

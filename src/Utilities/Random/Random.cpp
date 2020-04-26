@@ -1,4 +1,5 @@
 #include "Random.h"
+#include "Core/Macro/Macro.h"
 
 template<typename T>
 T GetRandomImpl(MxEngine::Random::Generator& gen, T lower, T upper)
