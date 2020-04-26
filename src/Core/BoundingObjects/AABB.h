@@ -28,67 +28,44 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include <sstream>
-#include <unordered_map>
-
 #include "Utilities/Math/Math.h"
-#include "Core/BoundingObjects/AABB.h"
 
 namespace MxEngine
 {
-	struct MaterialInfo
-	{
-		std::string name;
+    class AABB
+    {
+    public:
+        Vector3 Min = MakeVector3(0.0f);
+        Vector3 Max = MakeVector3(0.0f);
 
-		std::string map_Ka;
-		std::string map_Kd;
-		std::string map_Ks;
-		std::string map_Ke;
-		std::string map_d;
-		std::string map_bump;
-		std::string bump;
+        constexpr Vector3 Length() const
+        {
+            return Max - Min;
+        }
 
-		float Ns = 0.0f;
-		float Ni = 0.0f;
-		float d = 0.0f;
-		float Tr = 0.0f;
-		float bm = 0.0f;
-		Vector3 Tf{ 0.0f };
-		Vector3 Ka{ 0.0f };
-		Vector3 Kd{ 0.0f };
-		Vector3 Ks{ 0.0f };
-		Vector3 Ke{ 0.0f };
-		int illum = 0;
-		bool IsSuccess = true;
-	};
+        constexpr Vector3 GetCenter() const
+        {
+            return (Max + Min) * 0.5f;
+        }
+    };
 
-	struct MeshInfo
-	{
-		std::string name;
-		std::vector<float> buffer;
-		std::vector<unsigned int> faces;		
-		MaterialInfo* material = nullptr;
-		bool useTexture = false;
-		bool useNormal = false;
-		constexpr static size_t VertexSize = (3 + 2 + 3);
+    inline constexpr AABB operator*(const AABB& box, const Vector3& scale)
+    {
+        return AABB{ box.Min * scale, box.Max * scale };
+    }
 
-		size_t GetVertexCount() const { return this->buffer.size() / VertexSize; }
-	};
+    inline constexpr AABB operator/(const AABB& box, const Vector3& scale)
+    {
+        return AABB{ box.Min / scale, box.Max / scale };
+    }
 
-	using MaterialLibrary = std::vector<MaterialInfo>;
+    inline constexpr AABB operator+(const AABB& box, const Vector3& translate)
+    {
+        return AABB{ box.Min + translate, box.Max + translate };
+    }
 
-	struct ObjectInfo
-	{
-		MaterialLibrary materials;
-		std::vector<MeshInfo> meshes;
-		AABB boundingBox;
-	};
-
-	class ObjectLoader
-	{
-	public:
-		static ObjectInfo Load(std::string path);
-	};
+    inline constexpr AABB operator-(const AABB& box, const Vector3& translate)
+    {
+        return AABB{ box.Min - translate, box.Max - translate };
+    }
 }

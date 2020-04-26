@@ -110,7 +110,7 @@ namespace MxEngine
         result.boundingBox = this->objectInfo.boundingBox;
         result.meshes.resize(this->objectInfo.meshes.size());
 
-        Vector3 distance = (result.boundingBox.second - result.boundingBox.first) * 0.5f;
+        Vector3 distance = result.boundingBox.Length();
         float averageDistance = (distance.x + distance.y + distance.z) / 3.0f;
         this->PrepareIndexData(threshold * averageDistance);
         

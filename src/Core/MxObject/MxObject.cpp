@@ -189,6 +189,13 @@ namespace MxEngine
 		this->BufferDataByIndex(index + 2, reinterpret_cast<float*>(colors.data()), count * colorVectorSize);
     }
 
+    AABB MxObject::GetAABB() const
+    {
+		if (this->ObjectMesh == nullptr)
+			return AABB{ };
+		return (this->ObjectMesh->GetAABB() + this->ObjectTransform.GetTranslation()) * this->ObjectTransform.GetScale();
+    }
+
 	MxObject::MxObject(Mesh* mesh)
 	{
 		this->SetMesh(mesh);

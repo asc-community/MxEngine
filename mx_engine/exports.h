@@ -1404,9 +1404,16 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("vec_up", RefGetter(&IMovable::GetUpVector))
         ;
 
+    py::class_<AABB>("AABB", py::init())
+        .def_readwrite("min", &AABB::Min)
+        .def_readwrite("max", &AABB::Max)
+        .add_property("center", &AABB::GetCenter)
+        .add_property("length", &AABB::Length)
+        ;
+
     using SubMeshesGetFunc = std::vector<RenderObject>& (Mesh::*)();
     py::class_<Mesh, boost::noncopyable>("mesh", py::no_init)
-        .add_property("center", &Mesh::GetObjectCenter)
+        .add_property("AABB", RefGetter(&Mesh::GetAABB))
         .add_property("submeshes", RefGetter((SubMeshesGetFunc)&Mesh::GetRenderObjects))
         .add_property("lod", &Mesh::GetLOD, &Mesh::SetLOD)
         ;
@@ -1535,6 +1542,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def_readwrite("rotate_speed", &MxObject::RotateSpeed)
         .def_readwrite("scale_speed", &MxObject::ScaleSpeed)
         .add_property("buffer_count", &MxObject::GetBufferCount)
+        .add_property("AABB", &MxObject::GetAABB)
         .add_property("mesh", RefGetter((MeshFunc)&MxObject::GetMesh), &MxObject::SetMesh)
         .add_property("instances", RefGetter((InstanceListFunc)&MxObject::GetInstances))
         .add_property("render_color", RefGetter(&MxObject::GetRenderColor), &MxObject::SetRenderColor)

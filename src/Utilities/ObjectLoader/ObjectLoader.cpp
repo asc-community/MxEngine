@@ -124,8 +124,8 @@ namespace MxEngine
 			maxCoords.y = std::max(maxCoords.y, coords.second.y);
 			maxCoords.z = std::max(maxCoords.z, coords.second.z);
 		}
-		object.boundingBox = { minCoords, maxCoords };
 		auto objectCenter = (minCoords + maxCoords) * 0.5f;
+		object.boundingBox = AABB{ minCoords - objectCenter, maxCoords - objectCenter };
 
 		for (size_t i = 0; i < object.meshes.size(); i++)
 		{

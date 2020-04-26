@@ -56,6 +56,28 @@ namespace MxEngine
 		DECL_EVENT_TYPE(UpdateEvent);
 	}
 
+	size_t ComputeLODLevel(const MxObject& object, const CameraController& camera)
+	{
+		const auto& box = object.GetAABB();
+		float distance  = Length(box.GetCenter() - camera.GetPosition());
+		Vector3 length = box.Length();
+		float maxLength = Max(length.x, length.y, length.z);
+		float scaledDistance = maxLength / distance / camera.GetZoom();
+
+		constexpr static std::array lodDistance = {
+				0.21f,
+				0.15f,
+				0.10f,
+				0.06f,
+				0.03f,
+		};
+		size_t lod = 0;
+		while (lod < lodDistance.size() && scaledDistance < lodDistance[lod]) 
+			lod++;
+
+		return lod;
+	}
+
 	Application::Application()
 		: manager(this), window(Graphics::Instance()->CreateWindow(1600, 900, "MxEngine Application")),
 		timeDelta(0), counterFPS(0), renderer(Graphics::Instance()->GetRenderer())
@@ -295,18 +317,26 @@ namespace MxEngine
 			// now draw the scene as usual (with all framebuffers)
 			{
 				MAKE_SCOPE_PROFILER("Renderer::DrawScene");
-				for (const auto& object : this->currentScene->GetObjectList())
+				for (const auto& [name, object] : this->currentScene->GetObjectList())
 				{
-					this->renderer.DrawObject(*object.second, viewport, lights, this->currentScene->SceneSkybox.get());
+					if (object->GetMesh() != nullptr)
+					{
+						object->GetMesh()->SetLOD(ComputeLODLevel(*object, viewport));
+						this->renderer.DrawObject(*object, viewport, lights, this->currentScene->SceneSkybox.get());
+					}
 				}
 			}
 		}
 		else // no lighting, no shadows
 		{
 			MAKE_SCOPE_PROFILER("Renderer::DrawScene");
-			for (const auto& object : this->currentScene->GetObjectList())
+			for (const auto& [name, object] : this->currentScene->GetObjectList())
 			{
-				this->renderer.DrawObject(*object.second, viewport);
+				if (object->GetMesh() != nullptr)
+				{
+					object->GetMesh()->SetLOD(ComputeLODLevel(*object, viewport));
+					this->renderer.DrawObject(*object, viewport);
+				}
 			}
 		}
 

@@ -162,11 +162,6 @@ namespace MxEngine
 		return this->LODs[this->currentLOD];
 	}
 
-	Vector3 Mesh::GetObjectCenter() const
-	{
-		return (this->boundingBox.first + this->boundingBox.second) * 0.5f;
-	}
-
 	void Mesh::SetLOD(size_t LOD)
 	{
 		this->currentLOD = Min(LOD, (int)this->LODs.size() - 1);
@@ -177,7 +172,7 @@ namespace MxEngine
 		return this->currentLOD;
     }
 
-	const std::pair<Vector3, Vector3> Mesh::GetBoundingBox()
+	const AABB& Mesh::GetAABB() const
 	{
 		return this->boundingBox;
 	}

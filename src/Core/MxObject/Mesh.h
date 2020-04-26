@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Core/Interfaces/IRenderable.h"
+#include "Core/BoundingObjects/AABB.h"
 
 #include <filesystem>
 
@@ -77,8 +78,9 @@ namespace MxEngine
 
 		using LOD = std::vector<RenderObject>;
 
+		AABB boundingBox;
 		size_t currentLOD = 0;
-		std::pair<Vector3, Vector3> boundingBox{ MakeVector3(0.0f), MakeVector3(0.0f) };
+		
 		std::vector<LOD> LODs = std::vector<LOD>(1);
 		std::vector<UniqueRef<VertexBuffer>> VBOs;
 		std::vector<UniqueRef<VertexBufferLayout>> VBLs;
@@ -97,10 +99,9 @@ namespace MxEngine
 		void Load(const std::string& filepath);
 		std::vector<RenderObject>& GetRenderObjects();
 		const std::vector<RenderObject>& GetRenderObjects() const;
-		Vector3 GetObjectCenter() const;
 		void SetLOD(size_t LOD);
 		size_t GetLOD() const;
-		const std::pair<Vector3, Vector3> GetBoundingBox();
+		const AABB& GetAABB() const;
 		void AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl);
 		VertexBuffer& GetBufferByIndex(size_t index); 
 		VertexBufferLayout& GetBufferLayoutByIndex(size_t index);

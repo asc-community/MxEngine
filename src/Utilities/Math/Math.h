@@ -229,10 +229,22 @@ namespace MxEngine
 		return (v1 > v2 ? v1 : v2);
 	}
 
+	template<typename T, typename U, typename R>
+	inline constexpr decltype(std::declval<T>() + std::declval<U>() + std::declval<R>()) Max(const T& v1, const U& v2, const R& v3)
+	{
+		return Max(Max(v1, v2), v3);
+	}
+
 	template<typename T, typename U>
 	inline constexpr decltype(std::declval<T>() + std::declval<U>()) Min(const T& v1, const U& v2)
 	{
 		return (v1 < v2 ? v1 : v2);
+	}
+
+	template<typename T, typename U, typename R>
+	inline constexpr decltype(std::declval<T>() + std::declval<U>() + std::declval<R>()) Min(const T& v1, const U& v2, const R& v3)
+	{
+		return Min(Min(v1, v2), v3);
 	}
 
 	template<typename T>

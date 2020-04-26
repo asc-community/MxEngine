@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\BoundingObjects\AABB.h" />
     <ClInclude Include="Core\Camera\CameraController.h" />
     <ClInclude Include="Core\Camera\OrthographicCamera.h" />
     <ClInclude Include="Core\Camera\PerspectiveCamera.h" />

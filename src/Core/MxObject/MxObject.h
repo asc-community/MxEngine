@@ -87,6 +87,8 @@ namespace MxEngine
 		void SetAutoBuffering(bool value = true);
 		void BufferInstances();
 
+		AABB GetAABB() const;
+
 		// Inherited via IDrawable
 		virtual size_t GetIterator() const override;
 		virtual bool IsLast(size_t iterator) const override;
