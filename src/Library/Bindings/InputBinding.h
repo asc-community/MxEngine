@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -30,112 +30,129 @@
 
 #include "Core/Application/Application.h"
 #include "Core/Interfaces/IMovable.h"
-#include "Core/Event/KeyEvent.h"
-#include "Core/Event/MouseEvent.h"
+#include "Core/Event/Events/KeyEvent.h"
+#include "Core/Event/Events/MouseEvent.h"
 
 namespace MxEngine
 {
-	class InputBinding
+	class InputControlBinding
 	{
 		std::string handle;
 		IMovable& object;
 	public:
-		inline InputBinding(const std::string& eventHandle, IMovable& object) noexcept
+		inline InputControlBinding(const std::string& eventHandle, IMovable& object) noexcept
 			: handle(eventHandle), object(object) { }
 
-		inline InputBinding& BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right)
+		inline InputControlBinding& Unbind()
 		{
-			Context::Instance()->GetEventDispatcher().AddEventListener<KeyEvent>(this->handle, 
+			auto& dispatcher = Application::Get()->GetCurrentScene().GetEventDispatcher();
+			dispatcher.RemoveEventListener(this->handle);
+			return *this;
+		}
+
+		inline InputControlBinding& BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right)
+		{
+			Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object movement");
+			auto& dispatcher = Application::Get()->GetCurrentScene().GetEventDispatcher();
+			dispatcher.AddEventListener<KeyEvent>(this->handle, 
 				[forward, back, right, left, &object = object](KeyEvent& event)
 				{
-					auto dt = Context::Instance()->GetTimeDelta();
+					auto dt = Application::Get()->GetTimeDelta();
 					if (forward != KeyCode::UNKNOWN && event.IsHeld(forward))
 					{
 						object.TranslateForward(dt);
 					}
 					if (back != KeyCode::UNKNOWN && event.IsHeld(back))
 					{
-                        object.TranslateForward(-dt);
+						object.TranslateForward(-dt);
 					}
 					if (right != KeyCode::UNKNOWN && event.IsHeld(right))
 					{
-                        object.TranslateRight(dt);
+						object.TranslateRight(dt);
 					}
 					if (left != KeyCode::UNKNOWN && event.IsHeld(left))
 					{
-                        object.TranslateRight(-dt);
+						object.TranslateRight(-dt);
 					}
 				});
 			return *this;
 		}
 
-		inline InputBinding& BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down)
+		inline InputControlBinding& BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down)
 		{
-            Context::Instance()->GetEventDispatcher().AddEventListener<KeyEvent>(this->handle,
+			Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object movement");
+			auto& dispatcher = Application::Get()->GetCurrentScene().GetEventDispatcher();
+			dispatcher.AddEventListener<KeyEvent>(this->handle,
 				[forward, back, right, left, up, down, &object = object](KeyEvent& event)
 				{
-					auto dt = Context::Instance()->GetTimeDelta();
+					auto dt = Application::Get()->GetTimeDelta();
 					if (forward != KeyCode::UNKNOWN && event.IsHeld(forward))
 					{
-                        object.TranslateForward(dt);
+						object.TranslateForward(dt);
 					}
 					if (back != KeyCode::UNKNOWN && event.IsHeld(back))
 					{
-                        object.TranslateForward(-dt);
+						object.TranslateForward(-dt);
 					}
 					if (right != KeyCode::UNKNOWN && event.IsHeld(right))
 					{
-                        object.TranslateRight(dt);
+						object.TranslateRight(dt);
 					}
 					if (left != KeyCode::UNKNOWN && event.IsHeld(left))
 					{
-                        object.TranslateRight(-dt);
+						object.TranslateRight(-dt);
 					}
 					if (up != KeyCode::UNKNOWN && event.IsHeld(up))
 					{
-                        object.TranslateUp(dt);
+						object.TranslateUp(dt);
 					}
 					if (down != KeyCode::UNKNOWN && event.IsHeld(down))
 					{
-                        object.TranslateUp(-dt);
+						object.TranslateUp(-dt);
 					}
 				});
 			return *this;
 		}
 
-		inline InputBinding& BindRotation()
+		inline InputControlBinding& BindRotation()
 		{
-            Context::Instance()->GetEventDispatcher().AddEventListener<MouseMoveEvent>(this->handle,
+			Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object rotation");
+			auto& dispatcher = Application::Get()->GetCurrentScene().GetEventDispatcher();
+			dispatcher.AddEventListener<MouseMoveEvent>(this->handle,
 				[&object = object](MouseMoveEvent& event)
 				{
 					static Vector2 oldPos = event.position;
-					auto dt = Context::Instance()->GetTimeDelta();
+					auto dt = Application::Get()->GetTimeDelta();
 					object.Rotate(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
 					oldPos = event.position;
 				});
 			return *this;
 		}
 
-		inline InputBinding& BindHorizontalRotation()
+		inline InputControlBinding& BindHorizontalRotation()
 		{
-            Context::Instance()->GetEventDispatcher().AddEventListener<MouseMoveEvent>(this->handle,
-                [&object = object](MouseMoveEvent& event)
+			Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object rotation");
+			auto& dispatcher = Application::Get()->GetCurrentScene().GetEventDispatcher();
+			dispatcher.AddEventListener<MouseMoveEvent>(this->handle,
+				[&object = object](MouseMoveEvent& event)
 				{
 					static Vector2 oldPos = event.position;
-					auto dt = Context::Instance()->GetTimeDelta();
+					auto dt = Application::Get()->GetTimeDelta();
 					object.Rotate(dt * (oldPos.x - event.position.x), 0.0f);
 					oldPos = event.position;
 				});
 			return *this;
 		}
 
-		inline InputBinding& BindVerticalRotation()
+		inline InputControlBinding& BindVerticalRotation()
 		{
-            Context::Instance()->GetEventDispatcher().AddEventListener<MouseMoveEvent>(this->handle,
-                [&object = object](MouseMoveEvent& event)
+			Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object rotation");
+			auto& dispatcher = Application::Get()->GetCurrentScene().GetEventDispatcher();
+			dispatcher.AddEventListener<MouseMoveEvent>(this->handle,
+				[&object = object](MouseMoveEvent& event)
 				{
 					static Vector2 oldPos = event.position;
-					auto dt = Context::Instance()->GetTimeDelta();
+					auto dt = Application::Get()->GetTimeDelta();
 					object.Rotate(0.0f, dt * (oldPos.y - event.position.y));
 					oldPos = event.position;
 				});

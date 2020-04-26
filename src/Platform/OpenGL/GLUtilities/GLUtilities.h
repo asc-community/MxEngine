@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -30,24 +30,24 @@
 
 #include <string>
 
-#include <GLEW/glew.h>
-#include <GLFW/glfw3.h>
+#include "Vendors/glew/glew.h"
+#include "Vendors/GLFW/glfw3.h"
+
+#include "Core/Macro/Macro.h"
 
 namespace MxEngine
 {
-#define ASSERT(x) if(!(x)) __debugbreak(); 
-
-    #ifdef _DEBUG
-    #define GLCALL(x) GlClearErrors(); x; GlLogCall(#x, __FILE__, __LINE__)
-    #else
-    #define GLCALL(x) x
-    #endif
+	#if defined(MXENGINE_DEBUG)
+	#define GLCALL(x) GlClearErrors(); x; GlLogCall(#x, __FILE__, __LINE__)
+	#else
+	#define GLCALL(x) x
+	#endif
 
 	void GlClearErrors();
 
 	bool GlLogCall(const char* function, const char* file, int line);
 
-	unsigned int GetGLTypeSize(unsigned int type);
+	size_t GetGLTypeSize(unsigned int type);
 
 	template<typename T>
 	std::string TypeToString();
@@ -55,5 +55,5 @@ namespace MxEngine
 	template<typename T>
 	unsigned int GetGLType();
 
-	std::string ReadFile(const std::string& filename);
+	void APIENTRY PrintDebugInformation(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 }

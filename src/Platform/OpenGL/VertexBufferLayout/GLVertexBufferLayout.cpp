@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -28,6 +28,7 @@
 
 #include "GLVertexBufferLayout.h"
 #include "Platform/OpenGL/GLUtilities/GLUtilities.h"
+#include "core/Macro/Macro.h"
 
 namespace MxEngine
 {
@@ -43,7 +44,7 @@ namespace MxEngine
 
 	void GLVertexBufferLayout::PushFloat(size_t count)
 	{
-		#ifdef _DEBUG
+		#if defined(MXENGINE_DEBUG)
 		this->layoutString += TypeToString<float>() + std::to_string(count) + ", ";
 		#endif
 		this->elements.push_back({ (unsigned int)count, GetGLType<float>(), false });

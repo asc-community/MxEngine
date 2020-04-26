@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -62,6 +62,18 @@ namespace MxEngine
 			this->updateMatrix = false;
 		}
 		return this->matrix;
+	}
+
+	const Matrix4x4& OrthographicCamera::GetViewMatrix() const
+	{
+		const auto& _ = GetMatrix();
+		return this->view;
+	}
+
+	const Matrix4x4& OrthographicCamera::GetProjectionMatrix() const
+	{
+		const auto& _ = GetMatrix();
+		return this->projection;
 	}
 
 	void OrthographicCamera::SetViewMatrix(const Matrix4x4& view)

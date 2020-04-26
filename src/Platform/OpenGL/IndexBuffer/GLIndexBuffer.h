@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -29,27 +29,25 @@
 #pragma once
 
 #include "Core/Interfaces/GraphicAPI/IndexBuffer.h"
+#include "Core/Macro/Macro.h"
 
 namespace MxEngine
 {
 	class GLIndexBuffer final : public IndexBuffer
 	{
 		size_t count = 0;
-		#ifdef _DEBUG
-		const IndexType* indicies = nullptr;
-		#endif
 	public:
 		explicit GLIndexBuffer();
-		explicit GLIndexBuffer(const IndexBufferType& data);
+		explicit GLIndexBuffer(const IndexData data, size_t count);
 		GLIndexBuffer(const GLIndexBuffer&) = delete;
 		GLIndexBuffer(GLIndexBuffer&& ibo) noexcept;
 		~GLIndexBuffer();
 
-        // Inherited via IIndexBuffer
-        virtual void Bind() const override;
-        virtual void Unbind() const override;
-        virtual void Load(const IndexBufferType& data) override;
-        virtual size_t GetCount() const override;
-        virtual size_t GetIndexTypeId() const override;
-    };
+		// Inherited via IIndexBuffer
+		virtual void Bind() const override;
+		virtual void Unbind() const override;
+		virtual void Load(const IndexData data, size_t count) override;
+		virtual size_t GetCount() const override;
+		virtual size_t GetIndexTypeId() const override;
+	};
 }

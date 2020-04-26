@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -34,26 +34,28 @@ namespace MxEngine
 {
 	class GLTexture final : public Texture
 	{
+		std::string filepath;
 		size_t width = 0, height = 0, channels = 0;
 		mutable IBindable::IdType activeId = 0;
-		#ifdef _DEBUG
-		unsigned char* texture = nullptr;
-		#endif	
 		void FreeTexture();
 	public:
 		GLTexture();
 		GLTexture(const GLTexture&) = delete;
-		GLTexture(GLTexture&& texture);
+		GLTexture(GLTexture&& texture) noexcept;
 		GLTexture(const std::string& filepath, bool genMipmaps = true, bool flipImage = true);
 		~GLTexture();
 
-        // Inherited via ITexture
-        virtual void Bind() const override;
-        virtual void Unbind() const override;
-        virtual void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = true) override;
-        virtual void Bind(IBindable::IdType id) const override;
-        virtual size_t GetWidth() const override;
-        virtual size_t GetHeight() const override;
-        virtual size_t GetChannelCount() const override;
-    };
+		// Inherited via ITexture
+		virtual void Bind() const override;
+		virtual void Unbind() const override;
+		virtual void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = true) override;
+		virtual void Load(Texture::RawDataPointer data, int width, int height, bool genMipmaps = true) override;
+		virtual void LoadMipmaps(Texture::RawDataPointer* data, size_t mipmaps, int biggestWidth, int biggestHeight) override;
+		virtual void LoadDepth(int width, int height) override;
+		virtual void Bind(IBindable::IdType id) const override;
+		virtual const std::string& GetPath() const override;
+		virtual size_t GetWidth() const override;
+		virtual size_t GetHeight() const override;
+		virtual size_t GetChannelCount() const override;
+	};
 }

@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -38,10 +38,11 @@ namespace MxEngine
 	struct IRenderable
 	{
 		virtual const VertexArray& GetVAO() const = 0;
+		virtual const IndexBuffer& GetIBO() const = 0;
 		virtual const IndexBuffer& GetMeshIBO() const = 0;
 		virtual const Material& GetMaterial() const = 0;
 		virtual bool HasMaterial() const = 0;
-		virtual size_t GetVertexCount() const = 0;
+		virtual size_t GetVertexBufferSize() const = 0;
 
 		virtual ~IRenderable() = default;
 	};

@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -33,22 +33,24 @@
 
 namespace MxEngine
 {
-    enum class UsageType
-    {
-        STREAM_DRAW,
-        STREAM_READ,
-        STREAM_COPY,
-        STATIC_DRAW,
-        STATIC_READ,
-        STATIC_COPY,
-        DYNAMIC_DRAW,
-        DYNAMIC_READ,
-        DYNAMIC_COPY,
-    };
+	enum class UsageType
+	{
+		STREAM_DRAW,
+		STREAM_READ,
+		STREAM_COPY,
+		STATIC_DRAW,
+		STATIC_READ,
+		STATIC_COPY,
+		DYNAMIC_DRAW,
+		DYNAMIC_READ,
+		DYNAMIC_COPY,
+	};
 
-    struct VertexBuffer : IBindable
-    {
-        using BufferData = std::vector<float>;
-        virtual void Load(const BufferData& data, UsageType type) = 0;
-    };
+	struct VertexBuffer : IBindable
+	{
+		using BufferData = const float*;
+		virtual void Load(BufferData data, size_t count, UsageType type) = 0;
+		virtual void BufferSubData(BufferData data, size_t count, size_t offset = 0) = 0;
+		virtual size_t GetSize() const = 0;
+	};
 }

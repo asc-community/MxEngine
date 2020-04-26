@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -32,15 +32,15 @@
 
 namespace MxEngine
 {
-    class GLGraphicModule final : public GraphicModule
-    {
-    public:
-        // Inherited via GraphicModule
-        virtual void Init() override;
-        virtual void OnWindowCreate(WindowHandler* window) override;
-        virtual void OnWindowUpdate(WindowHandler* window) override;
-        virtual void OnWindowDestroy(WindowHandler* window) override;
-        virtual void OnRenderDraw() override;
-        virtual void Destroy() override;
-    };
+	class GLGraphicModule final : public GraphicModule
+	{
+	public:
+		// Inherited via GraphicModule
+		virtual void Init() override;
+		virtual void OnWindowCreate(WindowHandler* window) override;
+		virtual void OnWindowUpdate(WindowHandler* window) override;
+		virtual void OnWindowDestroy(WindowHandler* window) override;
+		virtual void OnRenderDraw() override;
+		virtual void Destroy() override;
+	};
 }

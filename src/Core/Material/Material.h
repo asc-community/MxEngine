@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -45,9 +45,9 @@ namespace MxEngine
 		Ref<Texture> map_bump;
 		Ref<Texture> bump;
 
-		float Ns = 0.0f;
+		float Ns = 128.0f;
 		float Ni = 0.0f;
-		float d = 0.0f;
+		float d = 1.0f;
 		float Tr = 0.0f;
 		Vector3 Tf{ 0.0f };
 		Vector3 Ka{ 0.0f };
@@ -55,5 +55,9 @@ namespace MxEngine
 		Vector3 Ks{ 0.0f };
 		Vector3 Ke{ 0.0f };
 		int illum = 0;
+
+		float f_Ka = 1.0f;
+		float f_Kd = 1.0f;
+		float reflection = 0.1f;
 	};
 }

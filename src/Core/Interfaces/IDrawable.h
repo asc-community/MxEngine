@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -45,9 +45,11 @@ namespace MxEngine
 		virtual bool IsLast(size_t iterator) const = 0;
 		virtual size_t GetNext(size_t iterator) const = 0;
 		virtual const IRenderable& GetCurrent(size_t iterator) const = 0;
-		virtual const Matrix4x4& GetModel() const = 0;
+		virtual const Matrix4x4& GetModelMatrix() const = 0;
+		virtual const Matrix3x3& GetNormalMatrix() const = 0;
 		virtual const Shader& GetShader() const = 0;
 		virtual const Texture& GetTexture() const = 0;
+		virtual const Vector4& GetRenderColor() const = 0;
 		virtual bool HasShader() const = 0;
 		virtual bool IsDrawable() const = 0;
 		virtual bool HasTexture() const = 0;

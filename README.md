@@ -3,16 +3,20 @@ MxEngine is a modern C++ general-purpose 3D game engine aiming to bring easy gam
 Right now MxEngine is developed only by me, #Momo, but any contributions are welcome and will be reviewed.
 Fow now MxEngine supports OpenGL as graphic API and targeting Win64 only. My future plans include other OS and API support but not in the near future.
 
+![preview](readme_preview.png)
+
 ## Additional dependencies
 MxEngine is not a huge framework so multiple third-party libraries are used. Here is the full list of dependencies for last MxEngine release version:
 - [stbimage](https://github.com/nothings/stb/blob/master/stb_image.h) - header-only one-file library to load images from disk
-- [ChaiScript](https://github.com/MomoDeve/ChaiScript) - embedded c++ scripting language for application debugging and runtime editing
 - [GLEW](http://glew.sourceforge.net/) - OpenGL C/C++ extension loading library
 - [GLFW](https://www.glfw.org/) - multi-platform library for OpenGL providing API for creating windows, receiving input and events
 - [GLM](https://glm.g-truc.net/0.9.9/index.html) - header only C++ mathematics library for graphics software
 - [ImGui](https://github.com/ocornut/imgui) - Bloat-free Immediate Mode Graphical User interface for C++
+- [Boost](https://www.boost.org) - large C++ library that you should already know about
+- [Assimp](http://www.assimp.org/) - portable Open Source library to import various well-known 3D model formats
+- [fmt](https://github.com/fmtlib/fmt) - formatting library for modern C++
 
-Note that MxEngine may include more additional libraries in further releases. It may also use [Boost library](https://www.boost.org) in its core. Engine requires at least C++17 as depends on some new STL libraries. All souce files are compiled using MSVC through VS2019 and are not guaranteed to be compiled by GCC/clang (at least for now).
+Note that MxEngine may include more additional libraries in further releases. It also uses [Boost library](https://www.boost.org) in its core. Engine requires at least C++17 as it depends on some new STL features. All source files are compiled using MSVC through VS2019 and are not guaranteed to be compiled by GCC/clang (at least for now).
 
 ## Versions & Releases
 MxEngine releases comes with version in format X.Y.Z where X stand for major release, Y for minor release and Z for bug fix or non-significant change. 
@@ -23,55 +27,17 @@ Minor releases may change API or add new features but usually user code can be e
 
 Bug fixes & improvements are just fixes to already existing code to reestablish initially planned behaviour. This fixes may also be merged into major or minor releases if they come in the same time.
 
-## Full MxEngine version List
-### v1.0.0
-- added basic renderer
-- added basic window wrapper
-- added OpenGL units abstractions (shaders, buffers)
-- added logger class
-### v1.1.0
-- added OpenGL texture wrapper
-- added image loader
-- improved existing implementations
-### v1.2.0
-- added .obj file support
-- improved source file hierarchy
-- improved renderer API
-### v1.3.0
-- added SingletonHolder template
-- moved OpenGL state to initializer class
-- added renderable object abstraction
-### v2.0.0
-- added Application class
-### v2.1.0
-- added ObjectInstance class
-- improved API for objects
-### v2.2.0
-- added Camera
-- added new object loading API
-- added basic material system
-### v3.0.0
-- added orthographic camera
-- added camera controller
-- added ImGui library support
-- added ChaiScript scripting library
-- added in-game developer console
-- added Application object list controller
-- improved material system
-### v3.0.1
-- added more ChaiScript bindings
-### v4.0.0
-- added Event system and event dispatcher
-- added math library based on GLM
-- added viewport binding
-### v4.1.0
-- added platform independent graphic API
-- added new scripting binding methods
-- added profiler to json format
-### v4.2.0
-- added IMovable interface and methods
-- new API for objects
-### v4.3.0
-- improved object API
-- added licening
-- added console & fps bindings
+For full version list see versions.md file
+
+## Building from source
+MxEngine can be built from sources using Visual Studio or CMake. Note that by now this project was only tested on Windows platform, so I do not guarantee that it can be built on other OS. Also, MxEngine is distributed with precompiled libraries, so if you have other OS/CPU, you probably will need to compile them from sources too. All project dependencies are included in this repository as git submodules.
+### Building from Visual Studio
+1. clone the repository via `git clone https://github.com/MomoDeve/MxEngine`
+2. unzip precompiled libraries located in folder `MxEngine/external_libraries`
+3. open MxEngine.sln in Visual Studio. Select `Release`/`Debug` configuration and press "`build solution`"
+### Building from CMake
+1. clone the repository via `git clone https://github.com/MomoDeve/MxEngine`
+2. unzip precompiled libraries located in folder `MxEngine/external_libraries`
+3. open `CMakeLists.txt` located in project root directory and set it up for your system (CMake project can be built through Visual Studio without editing)
+
+If you have free time and you are interested in this project, I will really appreciate your help with porting library on other systems. If you would like to help, please contact me via github or create a pull request.

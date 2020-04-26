@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -34,11 +34,14 @@
 #include <unordered_map>
 
 #include "Utilities/Math/Math.h"
+#include "Core/BoundingObjects/AABB.h"
 
 namespace MxEngine
 {
 	struct MaterialInfo
 	{
+		std::string name;
+
 		std::string map_Ka;
 		std::string map_Kd;
 		std::string map_Ks;
@@ -61,33 +64,31 @@ namespace MxEngine
 		bool IsSuccess = true;
 	};
 
-	struct GroupInfo
+	struct MeshInfo
 	{
 		std::string name;
 		std::vector<float> buffer;
-		std::vector<Vector<3, long long>> faces;		
+		std::vector<unsigned int> faces;		
 		MaterialInfo* material = nullptr;
 		bool useTexture = false;
 		bool useNormal = false;
+		constexpr static size_t VertexSize = (3 + 2 + 3);
+
+		size_t GetVertexCount() const { return this->buffer.size() / VertexSize; }
 	};
 
-	using MaterialLibrary = std::unordered_map<std::string, MaterialInfo>;
+	using MaterialLibrary = std::vector<MaterialInfo>;
 
-	struct ObjFileInfo
+	struct ObjectInfo
 	{
 		MaterialLibrary materials;
-		std::vector<GroupInfo> groups;
-        Vector3 objectCenter = { 0, 0, 0 };
-		size_t lineCount = 0;
-		bool isSuccess = true;
+		std::vector<MeshInfo> meshes;
+		AABB boundingBox;
 	};
 
 	class ObjectLoader
 	{
-		static void ReadFace(std::stringstream& file, ObjFileInfo& obj);
-		static MaterialLibrary LoadMaterialLibrary(const std::string& path);
-		static MaterialInfo LoadMaterial(std::stringstream& file);
 	public:
-		static ObjFileInfo Load(const std::string& path);
+		static ObjectInfo Load(std::string path);
 	};
 }

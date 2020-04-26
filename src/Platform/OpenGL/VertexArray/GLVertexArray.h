@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -42,10 +42,11 @@ namespace MxEngine
 		GLVertexArray(GLVertexArray&& array) noexcept;
 		GLVertexArray& operator=(GLVertexArray&& array) noexcept;
 
-        // Inherited via IVertexArray
-        virtual void Bind() const override;
-        virtual void Unbind() const override;
-        virtual void AddBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout) override;
-        virtual void AddInstancedBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout) override;
-    };
+		// Inherited via IVertexArray
+		virtual void Bind() const override;
+		virtual void Unbind() const override;
+		virtual void AddBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout) override;
+		virtual void AddInstancedBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout) override;
+		virtual int GetAttributeCount() const override;
+	};
 }

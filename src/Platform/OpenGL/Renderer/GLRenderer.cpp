@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -35,10 +35,10 @@
 
 namespace MxEngine
 {
-    GLRenderer::GLRenderer()
-    {
-        this->clearMask |= GL_COLOR_BUFFER_BIT;
-    }
+	GLRenderer::GLRenderer()
+	{
+		this->clearMask |= GL_COLOR_BUFFER_BIT;
+	}
 
 	void GLRenderer::DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const
 	{
@@ -107,18 +107,23 @@ namespace MxEngine
 
 	void GLRenderer::Flush() const
 	{
-        MAKE_SCOPE_PROFILER("Renderer::Flush");
+		MAKE_SCOPE_PROFILER("Renderer::Flush");
 		Graphics::Instance()->GetGraphicModule().OnRenderDraw();
 
-        GLCALL(glFlush());
+		GLCALL(glFlush());
 	}
 
 	void GLRenderer::Finish() const
 	{
-        MAKE_SCOPE_PROFILER("Renderer::Finish");
-        Graphics::Instance()->GetGraphicModule().OnRenderDraw();
+		MAKE_SCOPE_PROFILER("Renderer::Finish");
+		Graphics::Instance()->GetGraphicModule().OnRenderDraw();
 
-        GLCALL(glFinish());
+		GLCALL(glFinish());
+	}
+
+	void GLRenderer::SetViewport(int x, int y, int width, int height) const
+	{
+		GLCALL(glViewport(x, y, width, height));
 	}
 
 	GLRenderer& GLRenderer::UseSampling(bool value)
@@ -140,13 +145,29 @@ namespace MxEngine
 		if (value)
 		{
 			GLCALL(glEnable(GL_DEPTH_TEST));
-			GLCALL(glDepthFunc(GL_LESS));
 			clearMask |= GL_DEPTH_BUFFER_BIT;
 		}
 		else
 		{
 			GLCALL(glDisable(GL_DEPTH_TEST));
 			clearMask &= ~GL_DEPTH_BUFFER_BIT;
+		}
+		return *this;
+	}
+
+	GLRenderer& GLRenderer::UseReversedDepth(bool value)
+	{
+		if (value)
+		{
+			GLCALL(glClearDepth(0.0f));
+			GLCALL(glDepthFunc(GL_GREATER));
+			GLCALL(glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE));
+		}
+		else
+		{
+			GLCALL(glClearDepth(1.0f));
+			GLCALL(glDepthFunc(GL_LESS));
+			GLCALL(glClipControl(GL_LOWER_LEFT, GL_NEGATIVE_ONE_TO_ONE));
 		}
 		return *this;
 	}
@@ -191,17 +212,6 @@ namespace MxEngine
 		GLCALL(glClearColor(r, g, b, a));
 		return *this;
 	}
-	GLRenderer& GLRenderer::UseTextureMinFilter(MinFilter filter)
-	{
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (GLint)filter));
-		return *this;
-	}
-
-	GLRenderer& GLRenderer::UseTextureMagFilter(MagFilter filter)
-	{
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (GLint)filter));
-		return *this;
-	}
 
 	GLRenderer& GLRenderer::UseBlending(BlendFactor src, BlendFactor dist)
 	{
@@ -212,15 +222,8 @@ namespace MxEngine
 		else
 		{
 			GLCALL(glEnable(GL_BLEND));
-			GLCALL(glBlendFunc((GLenum)GL_SRC_ALPHA, (GLenum)GL_ONE_MINUS_SRC_ALPHA));
+			GLCALL(glBlendFunc((GLenum)src, (GLenum)dist));
 		}
-		return *this;
-	}
-
-	GLRenderer& GLRenderer::UseTextureWrap(WrapType textureX, WrapType textureY)
-	{
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (GLenum)textureX));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (GLenum)textureY));
 		return *this;
 	}
 
@@ -228,7 +231,7 @@ namespace MxEngine
 	{
 		if (!glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
 		{
-			Logger::Instance().Warning("OpenGL", "anisotropic filtering is not supported");
+			Logger::Instance().Error("OpenGL", "anisotropic filtering is not supported on your device");
 		}
 		else
 		{
@@ -249,4 +252,41 @@ namespace MxEngine
 		GLCALL(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &factor));
 		return factor;
 	}
+
+    void GLRenderer::SetDefaultVertexAttribute(size_t index, float v) const
+    {
+		GLCALL(glVertexAttrib1f((GLuint)index, v));
+    }
+
+    void GLRenderer::SetDefaultVertexAttribute(size_t index, const Vector2& vec) const
+    {
+		GLCALL(glVertexAttrib2f((GLuint)index, vec.x, vec.y));
+    }
+
+    void GLRenderer::SetDefaultVertexAttribute(size_t index, const Vector3& vec) const
+    {
+		GLCALL(glVertexAttrib3f((GLuint)index, vec.x, vec.y, vec.z));
+    }
+
+    void GLRenderer::SetDefaultVertexAttribute(size_t index, const Vector4& vec) const
+    {
+		GLCALL(glVertexAttrib4f((GLuint)index, vec.x, vec.y, vec.z, vec.w));
+    }
+
+    void GLRenderer::SetDefaultVertexAttribute(size_t index, const Matrix4x4& mat) const
+    {
+		for (size_t i = 0; i < 4; i++)
+		{
+			this->SetDefaultVertexAttribute(index + i, mat[(glm::length_t)i]);
+		}
+    }
+
+	void GLRenderer::SetDefaultVertexAttribute(size_t index, const Matrix3x3& mat) const
+	{
+		for (size_t i = 0; i < 3; i++)
+		{
+			this->SetDefaultVertexAttribute(index + i, mat[(glm::length_t)i]);
+		}
+	}
+
 }

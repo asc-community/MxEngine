@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -35,6 +35,8 @@ namespace MxEngine
 	struct ICamera
 	{
 		virtual const Matrix4x4& GetMatrix() const = 0;
+		virtual const Matrix4x4& GetViewMatrix() const = 0;
+		virtual const Matrix4x4& GetProjectionMatrix() const = 0;
 		virtual void SetViewMatrix(const Matrix4x4& view) = 0;
 		virtual void SetAspectRatio(float w, float h = 1.0f) = 0;
 		virtual float GetAspectRatio() const = 0;

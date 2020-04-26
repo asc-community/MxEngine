@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -27,49 +27,99 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Logger.h"
-#ifdef _WIN32
-#include <Windows.h>
+#include "Core/Macro/Macro.h"
+
+#if defined(MXENGINE_WINDOWS)
+	#include <Windows.h>
+	#define BOOST_STACKTRACE_USE_WINDBG_CACHED
+#endif
+
+#if defined(MXENGINE_USE_BOOST)
+	#include <boost/stacktrace.hpp>
 #endif
 
 namespace MxEngine
 {
-	void LoggerImpl::Error(std::string_view invoker, std::string_view message) const
+	void LoggerImpl::Error(const std::string& invoker, const std::string& message) const
 	{
 		if (error != nullptr && useError)
 		{
-			#ifdef _WIN32
+			#if defined(MXENGINE_WINDOWS)
 			auto handle = ::GetStdHandle(STD_OUTPUT_HANDLE);
 			::SetConsoleTextAttribute(handle, FOREGROUND_RED | FOREGROUND_INTENSITY);
 			#endif
-			*error << '[' << invoker << " error]: " << message << std::endl;
-			#ifdef _WIN32
+
+			* error << '[' << invoker << " error]: " << message << '\n';
+
+			#if defined(MXENGINE_WINDOWS)
 			::SetConsoleTextAttribute(handle, 7); // default
 			#endif
+			this->StackTrace();
 		}
 	}
 
-	void LoggerImpl::Debug(std::string_view invoker, std::string_view message) const
+	void LoggerImpl::Debug(const std::string& invoker, const std::string& message) const
 	{
 		if (debug != nullptr && useDebug)
 		{
-			*debug << '[' << invoker << " debug]: " << message << std::endl;
+			*debug << '[' << invoker << " debug]: " << message << '\n';
 		}
 	}
 
-	void LoggerImpl::Warning(std::string_view invoker, std::string_view message) const
+	void LoggerImpl::Warning(const std::string& invoker, const std::string& message) const
 	{
-		#ifdef _WIN32
+		#if defined(MXENGINE_WINDOWS)
 		auto handle = ::GetStdHandle(STD_OUTPUT_HANDLE);
 		::SetConsoleTextAttribute(handle, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 		#endif
+
 		if (warning != nullptr && useWarning)
 		{
-			*warning << '[' << invoker << " warning]: " << message << std::endl;
+			*warning << '[' << invoker << " warning]: " << message << '\n';
 		}
-		#ifdef _WIN32
+
+		#if defined(MXENGINE_WINDOWS)
 		::SetConsoleTextAttribute(handle, 7); // default
 		#endif
 	}
+
+#if defined(MXENGINE_USE_BOOST)
+	void LoggerImpl::StackTrace() const
+	{
+		if (error != nullptr && useStackTrace)
+		{
+			auto st = boost::stacktrace::stacktrace().as_vector();
+			for (size_t i = 0, size = st.size(); i < size; i++)
+			{
+				auto function = st[i].name();
+				auto filename = st[i].source_file();
+				// in C++20 starts_with will replace _Starts_with
+				if(!filename.empty() && 
+					!function._Starts_with("boost::") && 
+					!function._Starts_with("MxEngine::LoggerImpl") &&
+					!function._Starts_with("std::") &&
+					!function._Starts_with("function_call") &&
+					function.find("main") == function.npos &&
+					function.find("lambda_") == function.npos
+					)
+				{
+					*error << "  at " << function;
+					*error << " in " << filename << ':' << st[i].source_line() - 1;
+					*error << " | " << st[i].address() << '\n';
+				}
+			}
+		}
+	}
+#else
+	void LoggerImpl::StackTrace() const
+	{
+		if (error != nullptr && useStackTrace)
+		{
+			// warning must NOT print stacktrace
+			Logger::Instance().Warning("MxEngine::Logger", "stacktrace was disabled as MXENGINE_USE_BOOST is undefined");
+		}
+	}
+#endif
 
 	LoggerImpl& LoggerImpl::UseErrorStream(std::ostream* error)
 	{
@@ -104,6 +154,12 @@ namespace MxEngine
 	LoggerImpl& LoggerImpl::UseError(bool value)
 	{
 		this->useError = value;
+		return *this;
+	}
+
+	LoggerImpl& LoggerImpl::UseStackTrace(bool value)
+	{
+		this->useStackTrace = value;
 		return *this;
 	}
 }

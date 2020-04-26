@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -49,15 +49,16 @@ namespace MxEngine
 	{
 		this->id = array.id;
 		array.id = 0;
+		array.attributeIndex = 0;
 	}
 
-    GLVertexArray& GLVertexArray::operator=(GLVertexArray&& array) noexcept
-    {
-        this->attributeIndex = array.attributeIndex;
-        this->id = array.id;
-        array.id = 0;
-        return *this;
-    }
+	GLVertexArray& GLVertexArray::operator=(GLVertexArray&& array) noexcept
+	{
+		this->attributeIndex = array.attributeIndex;
+		this->id = array.id;
+		array.id = 0;
+		return *this;
+	}
 
 	void GLVertexArray::Bind() const
 	{
@@ -78,11 +79,11 @@ namespace MxEngine
 		Bind();
 		buffer.Bind();
 		const auto& elements = layout.GetElements();
-		unsigned int offset = 0;
+		size_t offset = 0;
 		for (const auto& element : elements)
 		{
 			GLCALL(glEnableVertexAttribArray(this->attributeIndex));
-			GLCALL(glVertexAttribPointer(this->attributeIndex, element.count, element.type, element.normalized, layout.GetStride(), (void*)offset));
+			GLCALL(glVertexAttribPointer(this->attributeIndex, (GLint)element.count, element.type, element.normalized, layout.GetStride(), (void*)offset));
 			offset += element.count * GetGLTypeSize(element.type);
 			this->attributeIndex++;
 		}
@@ -97,14 +98,19 @@ namespace MxEngine
 		Bind();
 		buffer.Bind();
 		const auto& elements = layout.GetElements();
-		unsigned int offset = 0;
+		size_t offset = 0;
 		for (const auto& element : elements)
 		{
 			GLCALL(glEnableVertexAttribArray(this->attributeIndex));
-			GLCALL(glVertexAttribPointer(this->attributeIndex, element.count, element.type, element.normalized, layout.GetStride(), (void*)offset));
+			GLCALL(glVertexAttribPointer(this->attributeIndex, (GLint)element.count, element.type, element.normalized, layout.GetStride(), (void*)offset));
 			GLCALL(glVertexAttribDivisor(this->attributeIndex, 1));
 			offset += element.count * GetGLTypeSize(element.type);
 			this->attributeIndex++;
 		}
 	}
+
+    int GLVertexArray::GetAttributeCount() const
+    {
+		return this->attributeIndex;
+    }
 }

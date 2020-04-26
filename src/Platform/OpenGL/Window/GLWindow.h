@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -34,7 +34,7 @@
 #include "Utilities/Time/Time.h"
 #include "Core/Interfaces/IEvent.h"
 #include "Utilities/Math/Math.h"
-#include "Core/Event/KeyEvent.h"
+#include "Core/Event/Events/KeyEvent.h"
 #include "Core/Interfaces/GraphicAPI/Window.h"
 
 struct GLFWwindow; // from glfw header file
@@ -55,9 +55,9 @@ namespace MxEngine
 		Vector2 windowPosition{ 0.0f, 0.0f };
 		Vector2 cursorPosition{ 0.0f, 0.0f };
 
-        void Destroy();
+		void Destroy();
 	public:
-        GLWindow() = default;
+		GLWindow() = default;
 		GLWindow(int width, int height, const std::string& title);
 		GLWindow(const GLWindow&) = delete;
 		GLWindow(GLWindow&& window) noexcept;
@@ -65,31 +65,32 @@ namespace MxEngine
 		GLWindow& operator=(const GLWindow&) = delete;
 		~GLWindow();
 
-        // Inherited via Window
-        virtual int GetHeight() const override;
-        virtual int GetWidth() const override;
-        virtual bool IsOpen() const override;
-        virtual void PullEvents() const override;
-        virtual void OnUpdate() override;
-        virtual Vector2 GetCursorPos() const override;
-        virtual Vector2 GetWindowPos() const override;
-        virtual CursorMode GetCursorMode() const override;
-        virtual bool IsKeyHeld(KeyCode key) const override;
-        virtual bool IsKeyPressed(KeyCode key) const override;
-        virtual bool IsKeyReleased(KeyCode key) const override;
-        virtual WindowHandler* GetNativeHandler() const override;
-        virtual bool IsCreated() const override;
-        virtual GLWindow& Create() override;
-        virtual GLWindow& Close() override;
-        virtual GLWindow& SwitchContext() override;
-        virtual GLWindow& UseDoubleBuffering(bool value = true) override;
-        virtual GLWindow& UseCursorMode(CursorMode cursor) override;
-        virtual GLWindow& UseCursorPos(const Vector2& pos) override;
-        virtual GLWindow& UseTitle(const std::string& title) override;
-        virtual GLWindow& UsePosition(float xpos, float ypos) override;
-        virtual GLWindow& UseSize(int width, int height) override;
-        virtual GLWindow& UseEventDispatcher(AppEventDispatcher* dispatcher) override;
-        virtual GLWindow& UseProfile(int majorVersion, int minorVersion, Profile profile) override;
-        virtual GLWindow& UseSampling(int samples) override;
-    };
+		// Inherited via Window
+		virtual int GetHeight() const override;
+		virtual int GetWidth() const override;
+		virtual bool IsOpen() const override;
+		virtual void PullEvents() const override;
+		virtual void OnUpdate() override;
+		virtual Vector2 GetCursorPos() const override;
+		virtual Vector2 GetWindowPos() const override;
+		virtual CursorMode GetCursorMode() const override;
+		virtual bool IsKeyHeld(KeyCode key) const override;
+		virtual bool IsKeyPressed(KeyCode key) const override;
+		virtual bool IsKeyReleased(KeyCode key) const override;
+		virtual WindowHandler* GetNativeHandler() const override;
+		virtual bool IsCreated() const override;
+		virtual GLWindow& Create() override;
+		virtual GLWindow& Close() override;
+		virtual GLWindow& SwitchContext() override;
+		virtual GLWindow& UseDebugging(bool value = true) override;
+		virtual GLWindow& UseDoubleBuffering(bool value = true) override;
+		virtual GLWindow& UseCursorMode(CursorMode cursor) override;
+		virtual GLWindow& UseCursorPos(const Vector2& pos) override;
+		virtual GLWindow& UseTitle(const std::string& title) override;
+		virtual GLWindow& UsePosition(float xpos, float ypos) override;
+		virtual GLWindow& UseSize(int width, int height) override;
+		virtual GLWindow& UseEventDispatcher(AppEventDispatcher* dispatcher) override;
+		virtual GLWindow& UseProfile(int majorVersion, int minorVersion, Profile profile) override;
+		virtual GLWindow& UseSampling(int samples) override;
+	};
 }

@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -34,96 +34,122 @@
 #include "Platform/OpenGL/IndexBuffer/GLIndexBuffer.h"
 #include "Platform/OpenGL/Shader/GLShader.h"
 #include "Platform/OpenGL/Texture/GLTexture.h"
+#include "Platform/OpenGL/CubeMap/GLCubeMap.h"
 #include "Platform/OpenGL/VertexBuffer/GLVertexBuffer.h"
 #include "Platform/OpenGL/VertexArray/GLVertexArray.h"
 #include "Platform/OpenGL/VertexBufferLayout/GLVertexBufferLayout.h"
+#include "Platform/OpenGL/FrameBuffer/GLFrameBuffer.h"
 #include "Platform/OpenGL/Renderer/GLRenderer.h"
 
 namespace MxEngine
 {
-    class GLGraphicFactory final : public GraphicFactory
-    {
-        inline virtual Renderer& GetRenderer() override
-        {
-            static GLRenderer renderer;
-            return renderer;
-        }
+	class GLGraphicFactory final : public GraphicFactory
+	{
+		inline virtual Renderer& GetRenderer() override
+		{
+			static GLRenderer renderer;
+			return renderer;
+		}
 
-        inline virtual GraphicModule& GetGraphicModule() override
-        {
-            static GLGraphicModule module;
-            return module;
-        }
+		inline virtual GraphicModule& GetGraphicModule() override
+		{
+			static GLGraphicModule module;
+			return module;
+		}
 
-        inline virtual UniqueRef<Window> CreateWindow() override
-        {
-            return UniqueRef<Window>(Alloc<GLWindow>());
-        }
+		inline virtual UniqueRef<Window> CreateWindow() override
+		{
+			return UniqueRef<Window>(Alloc<GLWindow>());
+		}
 
-        inline virtual UniqueRef<IndexBuffer> CreateIndexBuffer() override
-        {
-            return UniqueRef<IndexBuffer>(Alloc<GLIndexBuffer>());
-        }
+		inline virtual UniqueRef<IndexBuffer> CreateIndexBuffer() override
+		{
+			return UniqueRef<IndexBuffer>(Alloc<GLIndexBuffer>());
+		}
 
-        inline virtual UniqueRef<Shader> CreateShader() override
-        {
-            return UniqueRef<Shader>(Alloc<GLShader>());
-        }
+		inline virtual UniqueRef<Shader> CreateShader() override
+		{
+			return UniqueRef<Shader>(Alloc<GLShader>());
+		}
 
-        inline virtual UniqueRef<Texture> CreateTexture() override
-        {
-            return UniqueRef<Texture>(Alloc<GLTexture>());
-        }
+		inline virtual UniqueRef<Texture> CreateTexture() override
+		{
+			return UniqueRef<Texture>(Alloc<GLTexture>());
+		}
 
-        inline virtual UniqueRef<VertexArray> CreateVertexArray() override
-        {
-            return UniqueRef<VertexArray>(Alloc<GLVertexArray>());
-        }
+		inline virtual UniqueRef<CubeMap> CreateCubeMap() override
+		{
+			return UniqueRef<CubeMap>(Alloc<GLCubeMap>());
+		}
 
-        inline virtual UniqueRef<VertexBuffer> CreateVertexBuffer() override
-        {
-            return UniqueRef<VertexBuffer>(Alloc<GLVertexBuffer>());
-        }
+		inline virtual UniqueRef<VertexArray> CreateVertexArray() override
+		{
+			return UniqueRef<VertexArray>(Alloc<GLVertexArray>());
+		}
 
-        inline virtual UniqueRef<VertexBufferLayout> CreateVertexBufferLayout() override
-        {
-            return UniqueRef<VertexBufferLayout>(Alloc<GLVertexBufferLayout>());
-        }
+		inline virtual UniqueRef<VertexBuffer> CreateVertexBuffer() override
+		{
+			return UniqueRef<VertexBuffer>(Alloc<GLVertexBuffer>());
+		}
 
-        inline virtual UniqueRef<Window> CreateWindow(int width, int height, const std::string& title)
-        {
-            auto window = this->CreateWindow();
-            window->UseSize(width, height);
-            window->UseTitle(title);
-            return window;
-        }
+		inline virtual UniqueRef<VertexBufferLayout> CreateVertexBufferLayout() override
+		{
+			return UniqueRef<VertexBufferLayout>(Alloc<GLVertexBufferLayout>());
+		}
 
-        inline virtual UniqueRef<IndexBuffer> CreateIndexBuffer(const IndexBuffer::IndexBufferType& data) override
-        {
-            auto ibo = this->CreateIndexBuffer();
-            ibo->Load(data);
-            return std::move(ibo);
-        }
+		inline virtual UniqueRef<FrameBuffer> CreateFrameBuffer() override
+		{
+			return UniqueRef<FrameBuffer>(Alloc<GLFrameBuffer>());
+		}
 
-        inline virtual UniqueRef<Shader> CreateShader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) override
-        {
-            auto shader = this->CreateShader();
-            shader->Load(vertexShaderPath, fragmentShaderPath);
-            return std::move(shader);
-        }
+		inline virtual UniqueRef<Window> CreateWindow(int width, int height, const std::string& title)
+		{
+			auto window = this->CreateWindow();
+			window->UseSize(width, height);
+			window->UseTitle(title);
+			return window;
+		}
 
-        inline virtual UniqueRef<Texture> CreateTexture(const std::string& filepath, bool genMipmaps = true, bool flipImage = true) override
-        {
-            auto texture = this->CreateTexture();
-            texture->Load(filepath, genMipmaps, flipImage);
-            return std::move(texture);
-        }
+		inline virtual UniqueRef<IndexBuffer> CreateIndexBuffer(IndexBuffer::IndexData data, size_t count) override
+		{
+			auto ibo = this->CreateIndexBuffer();
+			ibo->Load(data, count);
+			return std::move(ibo);
+		}
 
-        inline virtual UniqueRef<VertexBuffer> CreateVertexBuffer(const VertexBuffer::BufferData& data, UsageType type) override
-        {
-            auto vbo = this->CreateVertexBuffer();
-            vbo->Load(data, type);
-            return std::move(vbo);
-        }
-    };
+		inline virtual UniqueRef<Shader> CreateShader(const FilePath& vertex, const FilePath& fragment) override
+		{
+			auto shader = this->CreateShader();
+			shader->Load(vertex.string(), fragment.string());
+			return std::move(shader);
+		}
+
+		inline virtual UniqueRef<Shader> CreateShader(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment) override
+		{
+			auto shader = this->CreateShader();
+			shader->Load(vertex.string(), geometry.string(), fragment.string());
+			return std::move(shader);
+		}
+
+		inline virtual UniqueRef<Texture> CreateTexture(const FilePath& texture, bool genMipmaps = true, bool flipImage = true) override
+		{
+			auto textureObject = this->CreateTexture();
+			textureObject->Load(texture.string(), genMipmaps, flipImage);
+			return std::move(textureObject);
+		}
+
+		inline virtual UniqueRef<CubeMap> CreateCubeMap(const FilePath& cubemap, bool genMipmaps = true, bool flipImage = false) override
+		{
+			auto cubemapObject = this->CreateCubeMap();
+			cubemapObject->Load(cubemap.string(), genMipmaps, flipImage);
+			return std::move(cubemapObject);
+		}
+
+		inline virtual UniqueRef<VertexBuffer> CreateVertexBuffer(VertexBuffer::BufferData data, size_t count, UsageType type) override
+		{
+			auto vbo = this->CreateVertexBuffer();
+			vbo->Load(data, count, type);
+			return std::move(vbo);
+		}
+	};
 }

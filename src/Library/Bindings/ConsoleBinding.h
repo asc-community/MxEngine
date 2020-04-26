@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -29,8 +29,8 @@
 #pragma once
 
 #include "Core/Application/Application.h"
-#include "Core/Event/KeyEvent.h"
-#include "Core/Event/UpdateEvent.h"
+#include "Core/Event/Events/KeyEvent.h"
+#include "Core/Event/Events/UpdateEvent.h"
 
 namespace MxEngine
 {
@@ -43,24 +43,24 @@ namespace MxEngine
 
 		inline ConsoleBinding& Bind(KeyCode activateKey)
 		{
-			Context::Instance()->GetEventDispatcher().AddEventListener<UpdateEvent>(this->handle,
-				[key = activateKey](UpdateEvent& event)
+			Logger::Instance().Debug("MxEngine::ConsoleBinding", Format("bound console to keycode: {0}", int(activateKey)));
+			Application::Get()->GetEventDispatcher().AddEventListener<UpdateEvent>(this->handle,
+				[cursorPos = Vector2(), key = activateKey](UpdateEvent& event) mutable
 				{
-					auto& window = Context::Instance()->GetWindow();
+					auto& window = Application::Get()->GetWindow();
 					if (window.IsKeyPressed(key))
 					{
-						static Vector2 cursorPos = window.GetCursorPos();
 						if (window.GetCursorMode() == CursorMode::NORMAL)
 						{
 							window.UseCursorMode(CursorMode::DISABLED);
-							Context::Instance()->ToggleDeveloperConsole(false);
+							Application::Get()->ToggleDeveloperConsole(false);
 							window.UseCursorPos(cursorPos);
 						}
 						else
 						{
 							cursorPos = window.GetCursorPos();
 							window.UseCursorMode(CursorMode::NORMAL);
-							Context::Instance()->ToggleDeveloperConsole(true);
+							Application::Get()->ToggleDeveloperConsole(true);
 							window.UseCursorPos({ window.GetWidth() / 4.0f, window.GetHeight() / 2.0f });
 						}
 					}

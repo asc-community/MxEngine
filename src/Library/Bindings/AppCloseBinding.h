@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -29,24 +29,25 @@
 #pragma once
 
 #include "Core/Application/Application.h"
-#include "Core/Event/KeyEvent.h"
+#include "Core/Event/Events/KeyEvent.h"
 
 namespace MxEngine
-{
+{   
 	class AppCloseBinding
 	{
 		std::string handle;
 	public:
 		inline AppCloseBinding(const std::string& eventHandle) noexcept
 			: handle(eventHandle) { }
-
+		
 		inline AppCloseBinding& Bind(KeyCode activateKey)
 		{
-			Context::Instance()->GetEventDispatcher().AddEventListener<KeyEvent>(this->handle,
+			Logger::Instance().Debug("MxEngine::AppCloseBinding", Format("bound app close to keycode: {0}", int(activateKey)));
+			Application::Get()->GetEventDispatcher().AddEventListener<KeyEvent>(this->handle,
 				[key = activateKey](KeyEvent& event)
 				{
-					auto context = Context::Instance();
-					if (event.IsHeld(KeyCode::ESCAPE))
+					auto context = Application::Get();
+					if (event.IsHeld(key))
 					{
 						context->CloseApplication();
 					}

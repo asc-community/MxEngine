@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Core/Object/Object.h"
+#include "Core/MxObject/MxObject.h"
 #include "Utilities/SingletonHolder/SingletonHolder.h"
 #include "Core/Interfaces/IDrawable.h"
 #include "Core/Camera/CameraController.h"
@@ -41,28 +41,33 @@ namespace MxEngine
 		bool depthBufferEnabled = false;
 		unsigned int clearMask = 0;
 	public:
-        GLRenderer();
+		GLRenderer();
 
-		void DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const override;
-		void DrawTriangles(const VertexArray& vao, size_t vertexCount, const Shader& shader) const override;
-		void DrawTrianglesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const override;
-		void DrawTrianglesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const override;
-		void DrawLines(const VertexArray& vao, size_t vertexCount, const Shader& shader) const override;
-		void DrawLines(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const override;
-		void DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const override;
-		void DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const override;
-		void Clear() const override;
-		void Flush() const override;
-		void Finish() const override;
-		GLRenderer& UseSampling(bool value = true) override;
-		GLRenderer& UseDepthBuffer(bool value = true) override;
-		GLRenderer& UseCulling(bool value = true, bool counterClockWise = true, bool cullBack = true) override;
-		GLRenderer& UseClearColor(float r, float g, float b, float a = 0.0f) override;
-        GLRenderer& UseTextureMinFilter(MinFilter filter) override;
-		GLRenderer& UseTextureMagFilter(MagFilter filter) override;
-		GLRenderer& UseBlending(BlendFactor src, BlendFactor dist) override;
-		GLRenderer& UseTextureWrap(WrapType textureX, WrapType textureY) override;
-		GLRenderer& UseAnisotropicFiltering(float factor) override;
-        float GetLargestAnisotropicFactor() const override;
+		virtual void DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const override;
+		virtual void DrawTriangles(const VertexArray& vao, size_t vertexCount, const Shader& shader) const override;
+		virtual void DrawTrianglesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const override;
+		virtual void DrawTrianglesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const override;
+		virtual void DrawLines(const VertexArray& vao, size_t vertexCount, const Shader& shader) const override;
+		virtual void DrawLines(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const override;
+		virtual void DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const override;
+		virtual void DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const override;
+		virtual void SetDefaultVertexAttribute(size_t index, float v) const override;
+		virtual void SetDefaultVertexAttribute(size_t index, const Vector2& vec) const override;
+		virtual void SetDefaultVertexAttribute(size_t index, const Vector3& vec) const override;
+		virtual void SetDefaultVertexAttribute(size_t index, const Vector4& vec) const override;
+		virtual void SetDefaultVertexAttribute(size_t index, const Matrix4x4& mat) const override;
+		virtual void SetDefaultVertexAttribute(size_t index, const Matrix3x3& mat) const override;
+		virtual void Clear() const override;
+		virtual void Flush() const override;
+		virtual void Finish() const override;
+		virtual void SetViewport(int x, int y, int width, int height) const override;
+		virtual GLRenderer& UseSampling(bool value = true) override;
+		virtual GLRenderer& UseDepthBuffer(bool value = true) override;
+		virtual GLRenderer& UseReversedDepth(bool value = true) override;
+		virtual GLRenderer& UseCulling(bool value = true, bool counterClockWise = true, bool cullBack = true) override;
+		virtual GLRenderer& UseClearColor(float r, float g, float b, float a = 0.0f) override;
+		virtual GLRenderer& UseBlending(BlendFactor src, BlendFactor dist) override;
+		virtual GLRenderer& UseAnisotropicFiltering(float factor) override;
+		virtual float GetLargestAnisotropicFactor() const override;
 	};
 }

@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -29,16 +29,17 @@
 #pragma once
 
 #include "Core/Interfaces/GraphicAPI/VertexBufferLayout.h"
+#include "Core/Macro/Macro.h"
 
-#ifdef _DEBUG
+#if defined(MXENGINE_DEBUG)
 #include <string>
-#endif // _DEBUG
+#endif
 
 namespace MxEngine
 {
 	class GLVertexBufferLayout final : public VertexBufferLayout
 	{
-		#ifdef _DEBUG
+		#if defined(MXENGINE_DEBUG)
 		std::string layoutString;
 		#endif
 
@@ -47,9 +48,9 @@ namespace MxEngine
 	public:
 		GLVertexBufferLayout() = default;
 
-        // Inherited via IVertexBufferLayout
-        virtual const ElementBuffer& GetElements() const override;
-        virtual StrideType GetStride() const override;
-        virtual void PushFloat(size_t count) override;
-    };
+		// Inherited via IVertexBufferLayout
+		virtual const ElementBuffer& GetElements() const override;
+		virtual StrideType GetStride() const override;
+		virtual void PushFloat(size_t count) override;
+	};
 }

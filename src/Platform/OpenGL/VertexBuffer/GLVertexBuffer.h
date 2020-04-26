@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -34,16 +34,19 @@ namespace MxEngine
 {
 	class GLVertexBuffer final : public VertexBuffer
 	{
+		size_t size;
 	public:
 		explicit GLVertexBuffer();
-		explicit GLVertexBuffer(BufferData& data, UsageType type);
+		explicit GLVertexBuffer(BufferData data, size_t count, UsageType type);
 		~GLVertexBuffer();
 		GLVertexBuffer(const GLVertexBuffer&) = delete;
-		GLVertexBuffer(GLVertexBuffer&& vbo);
+		GLVertexBuffer(GLVertexBuffer&& vbo) noexcept;
 
-        // Inherited via IVertexBuffer
-        virtual void Bind() const override;
-        virtual void Unbind() const override;
-        virtual void Load(const BufferData& data, UsageType type) override;
-    };
+		// Inherited via IVertexBuffer
+		virtual void Bind() const override;
+		virtual void Unbind() const override;
+		virtual void Load(BufferData data, size_t count, UsageType type) override;
+		virtual void BufferSubData(BufferData data, size_t count, size_t offset = 0) override;
+		virtual size_t GetSize() const override;
+	};
 }

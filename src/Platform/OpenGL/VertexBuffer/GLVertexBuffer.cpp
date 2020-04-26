@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -49,11 +49,12 @@ namespace MxEngine
 	GLVertexBuffer::GLVertexBuffer()
 	{
 		this->id = 0;
+		this->size = 0;
 	}
 
-	GLVertexBuffer::GLVertexBuffer(BufferData& data, UsageType type)
+	GLVertexBuffer::GLVertexBuffer(BufferData data, size_t count, UsageType type)
 	{
-		Load(data, type);
+		Load(data, count, type);
 	}
 
 	GLVertexBuffer::~GLVertexBuffer()
@@ -64,18 +65,35 @@ namespace MxEngine
 		}
 	}
 
-	GLVertexBuffer::GLVertexBuffer(GLVertexBuffer&& vbo)
+	GLVertexBuffer::GLVertexBuffer(GLVertexBuffer&& vbo) noexcept
 	{
 		this->id = vbo.id;
+		this->size = vbo.size;
 		vbo.id = 0;
+		vbo.size = 0;
 	}
 
-	void GLVertexBuffer::Load(const BufferData& data, UsageType type)
+	void GLVertexBuffer::Load(BufferData data, size_t count, UsageType type)
 	{
-		GLCALL(glGenBuffers(1, &id));
+		this->size = count;
+		if (id == 0)
+		{
+			GLCALL(glGenBuffers(1, &id));
+		}
 		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, id));
-		GLCALL(glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), DataType[(int)type]));
+		GLCALL(glBufferData(GL_ARRAY_BUFFER, count * sizeof(float), data, DataType[(int)type]));
 	}
+
+    void GLVertexBuffer::BufferSubData(BufferData data, size_t count, size_t offset)
+    {
+		this->Bind();
+		GLCALL(glBufferSubData(GL_ARRAY_BUFFER, sizeof(float) * offset, count * sizeof(float), data));
+    }
+
+    size_t GLVertexBuffer::GetSize() const
+    {
+		return this->size;
+    }
 
 	void GLVertexBuffer::Bind() const
 	{

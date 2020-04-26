@@ -5,7 +5,6 @@
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -14,7 +13,6 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
 
 # Fortran module files
 *.mod
@@ -24,18 +22,29 @@
 *.lai
 *.la
 *.a
-*.lib
 
 # Executables
-*.exe
 *.out
 *.app
 
 # Visual Studio
 x64
 .vs
-src/x64
+Debug
+*.filters
+*.user
 
-# momoEngine
+# Python
+__pycache__
+
+#CMake
+CMakeFiles
+CMakeCache.txt
+out
+
+# MxEngine
 imgui.ini
 profile_log.json
+compile_commands.json
+external_libraries/*.lib
+Debug

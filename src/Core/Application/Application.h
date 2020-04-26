@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -29,74 +29,88 @@
 #pragma once
 
 #include "Utilities/Time/Time.h"
-#include "Utilities/SingletonHolder/SingletonHolder.h"
+#include "Utilities/GenericStorage/GenericStorage.h"
 #include "Core/Interfaces/IEvent.h"
 #include "Core/DeveloperConsole/DeveloperConsole.h"
 #include "Core/Interfaces/GraphicAPI/Window.h"
 #include "Core/RenderController/RenderController.h"
-#include "Core/Object/Object.h"
-#include <unordered_map>
+#include "Core/MxObject/MxObject.h"
+#include "Utilities/Counter/Counter.h"
+#include "Utilities/FileSystem/FileSystem.h"
+#include "Library/Scripting/Script/Script.h"
+#include "Core/Scene/Scene.h"
+
 
 namespace MxEngine
 {
-    enum class RenderEngine
-    {
-        OpenGL,
-    };
+	class LoggerImpl;
 
-    class Application
-    {
-        struct ModuleManager
-        {
-            ModuleManager(Application* app);
-            ~ModuleManager();
-        } manager;
+	class Application
+	{
+		struct ModuleManager
+		{
+			ModuleManager(Application* app);
+			~ModuleManager();
+		} manager;
 	private:
-		using ObjectStorage = std::unordered_map<std::string, UniqueRef<Object>>;
-		UniqueRef<Window> window;
-		ObjectStorage objects;
-		Object defaultInstance;
-        RenderController renderer;
-        bool shouldClose = false;
-		bool debugMeshDraw = false;
+		static inline Application* Current = nullptr;
 
-        void CreateConsoleBindings(DeveloperConsole& console);
-		void DrawObjects(bool meshes) const;
+		ResourceStorage<Scene> scenes;
+		UniqueRef<Window> window;
+		RenderController renderer;
+		AppEventDispatcher dispatcher;
+		DeveloperConsole console;
+		Counter resourceIdCounter;
+		TimeStep timeDelta;
+		Scene* currentScene = nullptr;
+		int counterFPS;
+		bool shouldClose   = false;
+		bool debugMeshDraw = false;
+		bool isRunning     = false;
+		bool drawLighting  = true;
+
+		void CreateConsoleBindings(DeveloperConsole& console);
+		void DrawObjects(bool meshes);
 		void InvokeUpdate();
+		bool VerifyApplicationState();
+		void VerifyRendererState();
+		void VerifyLightSystem(LightSystem& lights);
 	protected:
-		AppEventDispatcher Dispatcher;
-        DeveloperConsole Console;
-		std::string ResourcePath;
-		TimeStep TimeDelta;
-		int CounterFPS;
 
 		Application();
 
-		void ToggleMeshDrawing(bool state = true);
-
-		virtual void OnCreate () = 0;
-		virtual void OnUpdate () = 0;
-		virtual void OnDestroy() = 0;
-
-		void CreateContext();
+		virtual void OnCreate();
+		virtual void OnUpdate();
+		virtual void OnDestroy();
 	public:
-		Ref<RenderObjectContainer> LoadObjectBase(const std::string& filepath);
-		Object& CreateObject(const std::string& name, const std::string& path);
-		Object& AddObject(const std::string& name, UniqueRef<Object> object);
-		Ref<Texture> CreateTexture(const std::string& filepath, bool genMipmaps = true, bool flipImage = true);
-		Ref<Shader> CreateShader(const std::string& vertexShaderPath, const std::string fragmentShaderPath);
-		Object& GetObject(const std::string& name);
-		void DestroyObject(const std::string& name);
+		void CreateContext();
+		void ExecuteScript(Script& script);
+
 		void ToggleDeveloperConsole(bool isVisible);
+		void ToggleLighting(bool state = true);
+		void ToggleMeshDrawing(bool state = true);
 
 		AppEventDispatcher& GetEventDispatcher();
 		RenderController& GetRenderer();
+		LoggerImpl& GetLogger();
+		DeveloperConsole& GetConsole();
 		Window& GetWindow();
+		Scene& GetCurrentScene();
+		Scene& GetGlobalScene();
+		void LoadScene(const std::string& name);
+		Scene& CreateScene(const std::string& name, UniqueRef<Scene> scene);
+		Scene& GetScene(const std::string& name);
+		bool SceneExists(const std::string& name);
+		void DestroyScene(const std::string& name);
+		Counter::CounterType GenerateResourceId();
 		float GetTimeDelta() const;
+		int GetCurrentFPS() const;
 		void Run();
+		bool IsRunning() const;
 		void CloseApplication();
 		virtual ~Application();
-	};
 
-    using Context = SingletonHolder<Application*>;
+		static Application* Get();
+		static void Set(Application* application);
+	};
 }

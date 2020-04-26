@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -31,7 +31,7 @@
 #include "CreationPolicy.h"
 #include "LifetimePolicy.h"
 #include "Utilities/Threading/ThreadingModel.h"
-#include <cassert>
+#include "Core/Macro/Macro.h"
 
 // Andrei's Alexandrescu SingletonHolder (see "Modern C++ Design" ch. 6)
 
@@ -52,7 +52,7 @@ namespace MxEngine
 
 		static inline void DestroySingleton()
 		{
-			assert(instance != nullptr);
+			MX_ASSERT(instance != nullptr);
 			CreationPolicy<T>::Destroy(instance);
 			instance = nullptr;
 			destroyed = true;

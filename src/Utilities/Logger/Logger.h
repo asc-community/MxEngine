@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -43,21 +43,26 @@ namespace MxEngine
 		bool useDebug = true;
 		bool useWarning = true;
 		bool useError = true;
+		bool useStackTrace = true;
 	public:
 		LoggerImpl() = default;
 		LoggerImpl(const LoggerImpl&) = delete;
 		LoggerImpl(LoggerImpl&&) = delete;
 
-		void Error  (std::string_view invoker, std::string_view message) const;
-		void Debug  (std::string_view invoker, std::string_view message) const;
-		void Warning(std::string_view invoker, std::string_view message) const;
+		void Error  (const std::string& invoker, const std::string& message) const;
+		void Debug  (const std::string& invoker, const std::string& message) const;
+		void Warning(const std::string& invoker, const std::string& message) const;
+		void StackTrace() const;
 		LoggerImpl& UseErrorStream(std::ostream* error);
 		LoggerImpl& UseWarningStream(std::ostream* warning);
 		LoggerImpl& UseDebugStream(std::ostream* debug);
 		LoggerImpl& UseDebug(bool value = true);
 		LoggerImpl& UseWarning(bool value = true);
 		LoggerImpl& UseError(bool value = true);
+		LoggerImpl& UseStackTrace(bool value = true);
 	};
 
 	using Logger = SingletonHolder<LoggerImpl>;
+
+	#define MX_DBG(msg) Logger::Instance().Warning("MX_DBG", msg)
 }

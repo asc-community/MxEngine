@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in sourceand binary forms, with or without
+// Redistributionand use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -28,10 +28,12 @@
 
 #pragma once
 
-#include <glm/glm.hpp>
-#include <glm/ext.hpp>
-#include <glm/gtx/quaternion.hpp>
+#include "Vendors/glm/glm.hpp"
+#include "Vendors/glm/ext.hpp"
+#include "Vendors/glm/gtx/quaternion.hpp"
+#include "Core/Macro/Macro.h"
 #include <cmath>
+#include <algorithm>
 
 namespace MxEngine
 {
@@ -50,13 +52,54 @@ namespace MxEngine
 	using Matrix3x4 = glm::mat3x4;
 	using Matrix4x4 = glm::mat4x4;
 
-    using Quaternion = glm::quat;
+	using Quaternion = glm::quat;
 
 	template<size_t Length, typename Type>
 	using Vector = glm::vec<Length, Type>;
 
 	template<size_t Columns, size_t Rows, typename Type>
 	using Matrix = glm::mat<Columns, Rows, Type>;
+
+	constexpr inline Vector2 MakeVector2(float x, float y)
+	{
+		return Vector2(x, y);
+	}
+
+	constexpr inline Vector3 MakeVector3(float x, float y, float z)
+	{
+		return Vector3(x, y, z);
+	}
+
+	constexpr inline Vector4 MakeVector4(float x, float y, float z, float w)
+	{
+		return Vector4(x, y, z, w);
+	}
+
+	constexpr inline Vector2 MakeVector2(float value)
+	{
+		return Vector2(value);
+	}
+
+	constexpr inline Vector3 MakeVector3(float value)
+	{
+		return Vector3(value);
+	}
+
+	constexpr inline Vector4 MakeVector4(float value)
+	{
+		return Vector4(value);
+	}
+
+	template<typename Vector>
+	inline float Dot(const Vector& v1, const Vector& v2)
+	{
+		return glm::dot(v1, v2);
+	}
+
+	inline Vector3 Cross(const Vector3& v1, const Vector3& v2)
+	{
+		return glm::cross(v1, v2);
+	}
 
 	inline Matrix4x4 MakeViewMatrix(const Vector3& eye, const Vector3& center, const Vector3& up)
 	{
@@ -68,9 +111,53 @@ namespace MxEngine
 		return glm::perspective(fov, aspect, znear, zfar);
 	}
 
+	inline Matrix4x4 MakeReversedPerspectiveMatrix(float fov, float aspect, float znear, float zfar)
+	{
+		MX_ASSERT(std::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
+		// zfar is unused. It is okay, as -1.0f in Result[2][3] means infinity zfar
+
+		float const tanHalfFovy = std::tan(fov / 2.0f);
+
+		Matrix4x4 Result(0.0f);
+		Result[0][0] = 1.0f / (tanHalfFovy * aspect);
+		Result[1][1] = 1.0f / tanHalfFovy;
+		Result[2][3] = -1.0f;
+		Result[3][2] = znear;
+		return Result;
+	}
+
 	inline Matrix4x4 MakeOrthographicMatrix(float left, float right, float bottom, float top, float znear, float zfar)
 	{
 		return glm::ortho(left, right, bottom, top, znear, zfar);
+	}
+
+	inline Matrix4x4 MakeBiasMatrix()
+	{
+		Matrix4x4 Result(
+			0.5f, 0.0f, 0.0f, 0.0f,
+			0.0f, 0.5f, 0.0f, 0.0f,
+			0.0f, 0.0f, 0.5f, 0.0f,
+			0.5f, 0.5f, 0.5f, 1.0f
+		);
+		return Result;
+	}
+
+	template<typename T>
+	inline T Normalize(const T& value)
+	{
+		return glm::normalize(value);
+	}
+
+	template<typename T>
+	inline auto Length(const T& value)
+	{
+		return glm::length(value);
+	}
+
+	template<typename T>
+	inline auto Length2(const T& value)
+	{
+		return glm::length2(value);
 	}
 
 	inline Matrix4x4 Translate(const Matrix4x4& mat, const Vector3& vec)
@@ -83,20 +170,40 @@ namespace MxEngine
 		return glm::scale(mat, vec);
 	}
 
+	inline Matrix4x4 Scale(const Matrix4x4& mat, float value)
+	{
+		return glm::scale(mat, MakeVector3(value));
+	}
+
 	inline Matrix4x4 Rotate(const Matrix4x4& mat, float angle, const Vector3& axis)
 	{
 		return glm::rotate(mat, angle, axis);
 	}
 
-    inline Matrix4x4 ToMatrix(const Quaternion& q)
-    {
-        return glm::toMat4(q);
-    }
+	inline Matrix4x4 ToMatrix(const Quaternion& q)
+	{
+		return glm::toMat4(q);
+	}
 
-    inline Quaternion MakeQuaternion(float angle, const Vector3& axis)
-    {
-        return glm::angleAxis(angle, axis);
-    }
+	inline Quaternion MakeQuaternion(float angle, const Vector3& axis)
+	{
+		return glm::angleAxis(angle, axis);
+	}
+
+	inline Vector3 MakeEulerAngles(const Quaternion& q)
+	{
+		return glm::eulerAngles(q);
+	}
+
+	inline Quaternion Lerp(const Quaternion& q1, const Quaternion q2, float a)
+	{
+		return glm::lerp(q1, q2, a);
+	}
+
+	inline Quaternion Slerp(const Quaternion& q1, const Quaternion q2, float a)
+	{
+		return glm::slerp(q1, q2, a);
+	}
 
 	template<size_t Columns, size_t Rows, typename T>
 	inline Matrix<Columns, Rows, T> Transpose(const Matrix<Columns, Rows, T>& mat)
@@ -114,6 +221,30 @@ namespace MxEngine
 	inline constexpr T Clamp(const T& value, const T& low, const T& high)
 	{
 		return glm::clamp(value, low, high);
+	}
+
+	template<typename T, typename U>
+	inline constexpr decltype(std::declval<T>() + std::declval<U>()) Max(const T& v1, const U& v2)
+	{
+		return (v1 > v2 ? v1 : v2);
+	}
+
+	template<typename T, typename U, typename R>
+	inline constexpr decltype(std::declval<T>() + std::declval<U>() + std::declval<R>()) Max(const T& v1, const U& v2, const R& v3)
+	{
+		return Max(Max(v1, v2), v3);
+	}
+
+	template<typename T, typename U>
+	inline constexpr decltype(std::declval<T>() + std::declval<U>()) Min(const T& v1, const U& v2)
+	{
+		return (v1 < v2 ? v1 : v2);
+	}
+
+	template<typename T, typename U, typename R>
+	inline constexpr decltype(std::declval<T>() + std::declval<U>() + std::declval<R>()) Min(const T& v1, const U& v2, const R& v3)
+	{
+		return Min(Min(v1, v2), v3);
 	}
 
 	template<typename T>
@@ -300,5 +431,118 @@ namespace MxEngine
 	inline constexpr T GoldenRatio()
 	{
 		return glm::golden_ratio<T>();
+	}
+
+	inline std::pair<Vector3, Vector3>MinMaxComponents(Vector3* verteces, size_t size)
+	{
+		Vector3 maxCoords(-1.0f * std::numeric_limits<float>::max());
+		Vector3 minCoords(std::numeric_limits<float>::max());
+		for (size_t i = 0; i < size; i++)
+		{
+			minCoords.x = std::min(minCoords.x, verteces[i].x);
+			minCoords.y = std::min(minCoords.y, verteces[i].y);
+			minCoords.z = std::min(minCoords.z, verteces[i].z);
+
+			maxCoords.x = std::max(maxCoords.x, verteces[i].x);
+			maxCoords.y = std::max(maxCoords.y, verteces[i].y);
+			maxCoords.z = std::max(maxCoords.z, verteces[i].z);
+		}
+		return { minCoords, maxCoords };
+	}
+
+	inline Vector3 FindCenter(Vector3* verteces, size_t size)
+	{
+		auto coords = MinMaxComponents(verteces, size);
+		return (coords.first + coords.second) * 0.5f;
+	}
+
+	inline constexpr float SignedSqrt(float x)
+	{
+		if (x < 0.0f) return -std::sqrt(-x);
+		else return std::sqrt(x);
+	}
+
+	template<typename Vector>
+	inline float Angle(const Vector& v1, const Vector& v2)
+	{
+		return std::acos(Dot(v1, v2) / (Length(v1) * Length(v2)));
+	}
+
+	inline constexpr float Sqr(float x)
+	{
+		return x * x;
+	}
+
+	inline constexpr size_t Log2(size_t n)
+	{
+		return ((n <= 2) ? 1 : 1 + Log2(n / 2));
+	}
+
+	inline constexpr size_t FloorToLog2(size_t n)
+	{
+		return static_cast<size_t>(1) << Log2(n);
+	}
+
+	template<typename T>
+	inline auto DegreesVec(T vec)
+		-> decltype(vec.length(), vec[0], vec)
+	{
+		T result = vec;
+		for (typename T::length_type i = 0; i < vec.length(); i++)
+			result[i] = Degrees(vec[i]);
+		return result;
+	}
+
+	template<typename T>
+	inline auto RadiansVec(T vec)
+		-> decltype(vec.length(), vec[0], vec)
+	{
+		T result = vec;
+		for (typename T::length_type i = 0; i < vec.length(); i++)
+			result[i] = Radians(vec[i]);
+		return result;
+	}
+
+	inline Matrix3x3 RotateAngles(float xRot, float yRot, float zRot)
+	{
+		Matrix3x3 ret;
+		using std::sin;
+		using std::cos;
+
+		float s0 = sin(xRot), c0 = cos(xRot);
+		float s1 = sin(yRot), c1 = cos(yRot);
+		float s2 = sin(zRot), c2 = cos(zRot);
+		constexpr int i = 0;
+		constexpr int j = 1;
+		constexpr int k = 2;
+
+		ret[i][i] = c1 * c2;
+		ret[k][k] = c0 * c1;
+
+		if ((2 + i - j) % 3)
+		{
+			ret[j][i] = -c1 * s2;
+			ret[k][i] = s1;
+
+			ret[i][j] = c0 * s2 + s0 * s1 * c2;
+			ret[j][j] = c0 * c2 - s0 * s1 * s2;
+			ret[k][j] = -s0 * c1;
+
+			ret[i][k] = s0 * s2 - c0 * s1 * c2;
+			ret[j][k] = s0 * c2 + c0 * s1 * s2;
+		}
+		else
+		{
+			ret[j][i] = c1 * s2;
+			ret[k][i] = -s1;
+
+			ret[i][j] = -c0 * s2 + s0 * s1 * c2;
+			ret[j][j] = c0 * c2 + s0 * s1 * s2;
+			ret[k][j] = s0 * c1;
+
+			ret[i][k] = s0 * s2 + c0 * s1 * c2;
+			ret[j][k] = -s0 * c2 + c0 * s1 * s2;
+		}
+		return ret;
 	}
 }

@@ -1,0 +1,1 @@
+arc.rotate(dt(), 0)
