@@ -38,6 +38,7 @@
 #include "Core/Interfaces/GraphicAPI/VertexBuffer.h"
 #include "Core/Interfaces/GraphicAPI/VertexBufferLayout.h"
 #include "Core/Interfaces/GraphicAPI/FrameBuffer.h"
+#include "Core/Interfaces/GraphicAPI/RenderBuffer.h"
 #include "Core/Interfaces/GraphicAPI/Renderer.h"
 
 #include "Utilities/Memory/Memory.h"
@@ -62,6 +63,7 @@ namespace MxEngine
 		virtual UniqueRef<VertexBuffer> CreateVertexBuffer() = 0;
 		virtual UniqueRef<VertexBufferLayout> CreateVertexBufferLayout() = 0;
 		virtual UniqueRef<FrameBuffer> CreateFrameBuffer() = 0;
+		virtual UniqueRef<RenderBuffer> CreateRenderBuffer() = 0;
 
 		virtual UniqueRef<Window> CreateWindow(int width, int height, const std::string& name) = 0;
 		virtual UniqueRef<IndexBuffer> CreateIndexBuffer(IndexBuffer::IndexData data, size_t count) = 0;

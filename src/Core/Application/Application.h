@@ -64,6 +64,7 @@ namespace MxEngine
 		TimeStep timeDelta;
 		Scene* currentScene = nullptr;
 		int counterFPS;
+		size_t MSAAfactor;
 		bool shouldClose   = false;
 		bool debugMeshDraw = false;
 		bool isRunning     = false;
@@ -105,6 +106,8 @@ namespace MxEngine
 		Counter::CounterType GenerateResourceId();
 		float GetTimeDelta() const;
 		int GetCurrentFPS() const;
+		void SetMSAASampling(size_t samples);
+		size_t GetMSAASampling() const;
 		void Run();
 		bool IsRunning() const;
 		void CloseApplication();

@@ -76,7 +76,7 @@ namespace MxEngine::GUI
 		for (const auto& pair : context->GetCurrentScene().GetObjectList())
 		{
 			GUI_TREE_NODE(pair.first.c_str(),
-				auto & object = *pair.second;
+				auto& object = *pair.second;
 				ImGui::PushID(pair.first.c_str());
 
 				// toggle object visibility
@@ -90,8 +90,10 @@ namespace MxEngine::GUI
 				ImGui::SameLine(); ImGui::Checkbox("dir. vecs", &dirVecs);
 				// toggle instance editing (see below)
 				ImGui::SameLine(); ImGui::Checkbox("instances", &instanced);
-				// add delete button
+				// delete object button
 				ImGui::SameLine(); if (ImGui::Button("delete")) context->GetCurrentScene().DestroyObject(pair.first);
+				// use LOD for object mesh
+				ImGui::SameLine(); ImGui::Checkbox("use LOD", &object.UseLOD);
 
 				// current texture path
 				ImGui::Text((std::string("texture: ") + (object.ObjectTexture ? object.GetTexture().GetPath() : std::string("none"))).c_str());

@@ -31,8 +31,10 @@
     <ClInclude Include="Core\Event\Events\RenderEvent.h" />
     <ClInclude Include="Core\Event\Events\FpsUpdateEvent.h" />
     <ClInclude Include="Core\Event\Events\UpdateEvent.h" />
+    <ClInclude Include="Core\Event\Events\WindowResizeEvent.h" />
     <ClInclude Include="Core\Interfaces\GraphicAPI\CubeMap.h" />
     <ClInclude Include="Core\Interfaces\GraphicAPI\FrameBuffer.h" />
+    <ClInclude Include="Core\Interfaces\GraphicAPI\RenderBuffer.h" />
     <ClInclude Include="Core\Interfaces\IComponent.h" />
     <ClInclude Include="Core\Lighting\LightSource.h" />
     <ClInclude Include="Core\Lighting\DirectionalLight\DirectionalLight.h" />
@@ -45,6 +47,7 @@
     <ClInclude Include="Library\Primitives\Surface.h" />
     <ClInclude Include="Platform\OpenGL\CubeMap\GLCubeMap.h" />
     <ClInclude Include="Platform\OpenGL\FrameBuffer\GLFrameBuffer.h" />
+    <ClInclude Include="Platform\OpenGL\RenderBuffer\GLRenderBuffer.h" />
     <ClInclude Include="Utilities\LODGenerator\LODGenerator.h" />
     <ClInclude Include="Utilities\ResourceStorage\ResourceStorage.h" />
     <ClInclude Include="Core\Scene\Scene.h" />
@@ -199,6 +202,7 @@
     <ClCompile Include="Platform\OpenGL\GraphicModule\GLGraphicModule.cpp" />
     <ClCompile Include="Platform\OpenGL\GLUtilities\GLUtilities.cpp" />
     <ClCompile Include="Platform\OpenGL\IndexBuffer\GLIndexBuffer.cpp" />
+    <ClCompile Include="Platform\OpenGL\RenderBuffer\GLRenderBuffer.cpp" />
     <ClCompile Include="Platform\OpenGL\Shader\GLShader.cpp" />
     <ClCompile Include="Platform\OpenGL\Texture\GLTexture.cpp" />
     <ClCompile Include="Platform\OpenGL\VertexArray\GLVertexArray.cpp" />

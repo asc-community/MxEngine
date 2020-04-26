@@ -37,17 +37,19 @@ namespace MxEngine
 {
 	class MxObject : public IDrawable, public IMovable
 	{		
-		Vector3 forwardVec{ 0.0f, 0.0f, 1.0f }, upVec{ 0.0f, 1.0f, 0.0f }, rightVec{ 1.0f, 0.0f, 0.0f };
-		Vector4 renderColor{ 1.0f, 1.0f, 1.0f, 1.0f };
-		bool shouldRender = true;
-		bool instanceUpdate = true;
-		UniqueRef<Instancing<MxObject>> instances;
-
-		void ReserveInstances(size_t count, UsageType usage);
 	protected:
 		Mesh* ObjectMesh = nullptr;
+	private:
+		Vector3 forwardVec{ 0.0f, 0.0f, 1.0f }, upVec{ 0.0f, 1.0f, 0.0f }, rightVec{ 1.0f, 0.0f, 0.0f };
+		Vector4 renderColor{ 1.0f, 1.0f, 1.0f, 1.0f };
+		UniqueRef<Instancing<MxObject>> instances;
+		bool shouldRender = true;
+		bool instanceUpdate = true;
+
+		void ReserveInstances(size_t count, UsageType usage);
 	public:
 		using ArrayBufferType = const float*;
+		bool UseLOD = true;
 
 		float TranslateSpeed = 1.0f;
 		float RotateSpeed = 1.0f;

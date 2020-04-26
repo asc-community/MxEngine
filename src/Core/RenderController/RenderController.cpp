@@ -67,10 +67,10 @@ namespace MxEngine
 		this->Clear();
 	}
 
-	void RenderController::DetachDepthBuffer(int viewportWidth, int viewportHeight)
+	void RenderController::DetachDepthBuffer()
 	{
+		this->SetViewport(0, 0, viewportSize.x, viewportSize.y);
 		this->DepthBuffer->Unbind();
-		this->SetViewport(0, 0, viewportWidth, viewportHeight);
 	}
 
 	void RenderController::ToggleReversedDepth(bool value) const
@@ -88,9 +88,10 @@ namespace MxEngine
 		this->GetRenderEngine().UseAnisotropicFiltering(value);
 	}
 
-	void RenderController::SetViewport(int x, int y, int width, int height) const
+	void RenderController::SetViewport(int x, int y, int width, int height)
 	{
 		this->renderer.SetViewport(x, y, width, height);
+		this->viewportSize = VectorInt2(width, height);
 	}
 
 	void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport) const
@@ -214,7 +215,7 @@ namespace MxEngine
 			{
 				const Material& material = renderObject.GetMaterial();
 
-#define BIND_TEX(NAME, SLOT)         \
+				#define BIND_TEX(NAME, SLOT)         \
 				if (material.NAME != nullptr)        \
 					material.NAME->Bind(SLOT);       \
 				else if (object.HasTexture())        \
@@ -334,5 +335,49 @@ namespace MxEngine
 	void RenderController::SetPCFDistance(int value)
 	{
 		this->PCFdistance = value;
+	}
+
+	void RenderController::SetMSAASampling(size_t samples, int viewportWidth, int viewportHeight)
+	{
+		if (samples == 0)
+		{
+			this->GetRenderEngine().UseSampling(false);
+			this->MSAABuffer.reset();
+			this->renderBuffer.reset();
+			return;
+		}
+		else
+		{
+			this->GetRenderEngine().UseSampling(true);
+
+			auto MSAATexture = Graphics::Instance()->CreateTexture();
+			MSAATexture->LoadMultisample(viewportWidth, viewportHeight, (int)samples);
+
+			this->MSAABuffer = Graphics::Instance()->CreateFrameBuffer();
+			this->MSAABuffer->AttachTexture(std::move(MSAATexture), Attachment::COLOR_ATTACHMENT0);
+
+			this->renderBuffer = Graphics::Instance()->CreateRenderBuffer();
+			this->renderBuffer->InitStorage(viewportWidth, viewportHeight, (int)samples);
+			this->renderBuffer->LinkToFrameBuffer(*this->MSAABuffer);
+		}
+	}
+
+	void RenderController::AttachDrawBuffer()
+	{
+		if (this->MSAABuffer != nullptr &&
+			this->MSAABuffer->GetWidth() == this->viewportSize.x && this->MSAABuffer->GetHeight() == this->viewportSize.y)
+		{
+			this->MSAABuffer->Bind();
+		}
+		this->Clear();
+	}
+
+	void RenderController::DetachDrawBuffer()
+	{
+		if (this->MSAABuffer != nullptr &&
+			this->MSAABuffer->GetWidth() == this->viewportSize.x && this->MSAABuffer->GetHeight() == this->viewportSize.y)
+		{
+			this->MSAABuffer->CopyFrameBufferContents(this->MSAABuffer->GetWidth(), this->MSAABuffer->GetHeight());
+		}
 	}
 }

@@ -58,6 +58,10 @@ namespace MxEngine
 		size_t directionalDepthSize = 4096;
 		size_t spotDepthSize = 512;
 		size_t pointDepthSize = 512;
+
+		VectorInt2 viewportSize{ 0, 0 };
+		UniqueRef<FrameBuffer> MSAABuffer;
+		UniqueRef<RenderBuffer> renderBuffer;
 	public:
 		RenderController(Renderer& renderer);
 
@@ -74,11 +78,11 @@ namespace MxEngine
 		void Clear() const;
 		void AttachDepthTexture(const Texture& texture);
 		void AttachDepthCubeMap(const CubeMap& cubemap);
-		void DetachDepthBuffer(int viewportWidth, int viewportHeight);
+		void DetachDepthBuffer();
 		void ToggleReversedDepth(bool value) const;
 		void ToggleFaceCulling(bool value, bool counterClockWise = true, bool cullBack = true) const;
 		void SetAnisotropicFiltering(float value) const;
-		void SetViewport(int x, int y, int width, int height) const;
+		void SetViewport(int x, int y, int width, int height);
 		void DrawObject(const IDrawable& object, const CameraController& viewport) const;
 		void DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights, const Skybox* skybox) const;
 		void DrawObjectMesh(const IDrawable& object, const CameraController& viewport) const;
@@ -92,6 +96,9 @@ namespace MxEngine
 		size_t GetDepthBufferSize() const;
 		template<typename LightSource>
 		void SetDepthBufferSize(size_t size);
+		void SetMSAASampling(size_t samples, int viewportWidth, int viewportHeight);
+		void AttachDrawBuffer();
+		void DetachDrawBuffer();
 	};
 
 	template<typename LightSource>

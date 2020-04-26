@@ -79,11 +79,6 @@ namespace MxEngine
         }
         GLint textureId = this->texture->GetNativeHandler();
         GLCALL(glFramebufferTexture2D(GL_FRAMEBUFFER, mode, GL_TEXTURE_2D, textureId, 0));
-        
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        {
-            Logger::Instance().Error("OpenGL::FrameBuffer", "framebuffer is not completed after texture attachment");
-        }
     }
 
     void GLFrameBuffer::AttachTexture(const Texture& texture, Attachment attachment)
@@ -94,15 +89,17 @@ namespace MxEngine
         GLint textureId = texture.GetNativeHandler();
 
         this->Bind();
-        GLCALL(glFramebufferTexture2D(GL_FRAMEBUFFER, mode, GL_TEXTURE_2D, textureId, 0));
+        GLCALL(glFramebufferTexture2D(GL_FRAMEBUFFER, mode, texture.GetTextureType(), textureId, 0));
         if (mode == GL_DEPTH_ATTACHMENT)
         {
             GLCALL(glDrawBuffer(GL_NONE));
         }
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        {
-            Logger::Instance().Error("OpenGL::FrameBuffer", "framebuffer is not completed after texture attachment");
-        }
+    }
+
+    void GLFrameBuffer::AttachTexture(UniqueRef<Texture> texture, Attachment attachment)
+    {
+        this->texture = std::move(texture);
+        this->AttachTexture(*this->texture, attachment);
     }
 
     void GLFrameBuffer::AttachCubeMap(Attachment attachment, int width, int height)
@@ -124,11 +121,6 @@ namespace MxEngine
         }
         GLint cubemapId = this->cubemap->GetNativeHandler();
         GLCALL(glFramebufferTexture(GL_FRAMEBUFFER, mode, cubemapId, 0));
-
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        {
-            Logger::Instance().Error("OpenGL::FrameBuffer", "framebuffer is not completed after texture attachment");
-        }
     }
 
     void GLFrameBuffer::AttachCubeMap(const CubeMap& cubemap, Attachment attachment)
@@ -144,10 +136,19 @@ namespace MxEngine
         {
             GLCALL(glDrawBuffer(GL_NONE));
         }
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        {
-            Logger::Instance().Error("OpenGL::FrameBuffer", "framebuffer is not completed after texture attachment");
-        }
+    }
+
+    void GLFrameBuffer::AttachCubeMap(UniqueRef<CubeMap> cubemap, Attachment attachment)
+    {
+        this->cubemap = std::move(cubemap);
+        this->AttachCubeMap(*this->cubemap, attachment);
+    }
+
+    void GLFrameBuffer::CopyFrameBufferContents(int screenWidth, int screenHeight) const
+    {
+        GLCALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, this->id));
+        GLCALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0));
+        GLCALL(glBlitFramebuffer(0, 0, this->width, this->height, 0, 0, screenWidth, screenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST));
     }
 
     Texture* GLFrameBuffer::GetAttachedTexture()
@@ -185,29 +186,6 @@ namespace MxEngine
         GLCALL(glDeleteFramebuffers(1, &id));
     }
 
-    GLFrameBuffer::GLFrameBuffer(GLFrameBuffer&& framebuffer) noexcept
-    {
-        this->id = framebuffer.id;
-        this->texture = std::move(framebuffer.texture);
-        this->width = framebuffer.width;
-        this->height = framebuffer.height;
-        framebuffer.width = 0;
-        framebuffer.height = 0;
-        framebuffer.id = 0;
-    }
-
-    GLFrameBuffer& GLFrameBuffer::operator=(GLFrameBuffer&& framebuffer) noexcept
-    {
-        this->id = framebuffer.id;
-        this->texture = std::move(framebuffer.texture);
-        this->width = framebuffer.width;
-        this->height = framebuffer.height;
-        framebuffer.width = 0;
-        framebuffer.height = 0;
-        framebuffer.id = 0;
-        return *this;
-    }
-
     void GLFrameBuffer::Bind() const
     {
         GLCALL(glBindFramebuffer(GL_FRAMEBUFFER, id));
@@ -216,5 +194,12 @@ namespace MxEngine
     void GLFrameBuffer::Unbind() const
     {
         GLCALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+    }
+
+    void GLFrameBuffer::CopyFrameBufferContents(const FrameBuffer& framebuffer) const
+    {
+        GLCALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, this->id));
+        GLCALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer.GetNativeHandler()));
+        GLCALL(glBlitFramebuffer(0, 0, this->width, this->height, 0, 0, framebuffer.GetWidth(), framebuffer.GetHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST));
     }
 }

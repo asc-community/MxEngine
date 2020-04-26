@@ -28,6 +28,7 @@
 
 #include "GLUtilities.h"
 #include "Utilities/Logger/Logger.h"
+#include "Utilities/Format/Format.h"
 
 #include <fstream>
 #include <string>
@@ -53,11 +54,9 @@ namespace MxEngine
 				continue;
 			ExistingErrors.insert(error);
 			const char* message = (const char*)gluErrorString(error);
-			setlocale(LC_ALL, "ru");
-			Logger::Instance().Error("OpenGL", 
-				std::string(message) + "\n	" + function +
-				" in file: " + file + ", line: " + std::to_string(line)
-			);
+			if (message == nullptr) message = "unknown";
+			setlocale(LC_ALL, "");
+			Logger::Instance().Error("OpenGL::ErrorHandler", Format(FMT_STRING("{0}\n  {1} in file: {2}, line: {3}"), message, function, file, line));
 		}
 		return success;
 	}

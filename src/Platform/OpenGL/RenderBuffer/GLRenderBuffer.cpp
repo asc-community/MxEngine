@@ -26,39 +26,63 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Core/Interfaces/GraphicAPI/Texture.h"
+#include "GLRenderBuffer.h"
+#include "Platform/OpenGL/GLUtilities/GLUtilities.h"
+#include "Utilities/Logger/Logger.h"
 
 namespace MxEngine
 {
-	class GLTexture final : public Texture
-	{
-		std::string filepath;
-		size_t width = 0, height = 0, channels = 0;
-		mutable IBindable::IdType activeId = 0;
-		unsigned int textureType = 0;
-		void FreeTexture();
-	public:
-		GLTexture();
-		GLTexture(const GLTexture&) = delete;
-		GLTexture(GLTexture&& texture) noexcept;
-		GLTexture(const std::string& filepath, bool genMipmaps = true, bool flipImage = true);
-		~GLTexture();
+    GLRenderBuffer::GLRenderBuffer()
+    {
+        GLCALL(glGenRenderbuffers(1, &this->id));
+        Logger::Instance().Debug("OpenGL::RenderBuffer", "created renderbuffer with id = " + std::to_string(this->id));
+    }
 
-		// Inherited via ITexture
-		virtual void Bind() const override;
-		virtual void Unbind() const override;
-		virtual void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = true) override;
-		virtual void Load(Texture::RawDataPointer data, int width, int height, bool genMipmaps = true) override;
-		virtual void LoadMipmaps(Texture::RawDataPointer* data, size_t mipmaps, int biggestWidth, int biggestHeight) override;
-		virtual void LoadDepth(int width, int height) override;
-		virtual void LoadMultisample(int width, int height, int samples) override;
-		virtual void Bind(IBindable::IdType id) const override;
-		virtual const std::string& GetPath() const override;
-		virtual unsigned int GetTextureType() const override;
-		virtual size_t GetWidth() const override;
-		virtual size_t GetHeight() const override;
-		virtual size_t GetChannelCount() const override;
-	};
+    GLRenderBuffer::~GLRenderBuffer()
+    {
+        GLCALL(glDeleteRenderbuffers(1, &this->id));
+    }
+
+    int GLRenderBuffer::GetWidth() const
+    {
+        return this->width;
+    }
+
+    int GLRenderBuffer::GetHeight() const
+    {
+        return this->height;
+    }
+
+    int GLRenderBuffer::GetSamples() const
+    {
+        return this->samples;
+    }
+
+    void GLRenderBuffer::Bind() const
+    {
+        GLCALL(glBindRenderbuffer(GL_RENDERBUFFER, this->id));
+    }
+
+    void GLRenderBuffer::Unbind() const
+    {
+        GLCALL(glBindRenderbuffer(GL_RENDERBUFFER, 0));
+    }
+
+    void GLRenderBuffer::InitStorage(int width, int height, int samples)
+    {
+        MX_ASSERT(samples >= 0 && width >= 0 && height >= 0);
+        this->width = width;
+        this->height = height;
+        this->samples = samples;
+
+        this->Bind();
+        GLCALL(glRenderbufferStorageMultisample(GL_RENDERBUFFER, (GLsizei)samples, GL_DEPTH_STENCIL, (GLsizei)width, (GLsizei)height));
+    }
+
+    void GLRenderBuffer::LinkToFrameBuffer(const FrameBuffer& framebuffer) const
+    {
+        framebuffer.Bind();
+        GLCALL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, this->id));
+        framebuffer.Unbind();
+    }
 }

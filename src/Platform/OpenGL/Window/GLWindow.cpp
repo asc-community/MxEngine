@@ -32,8 +32,10 @@
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/Memory/Memory.h"
 #include "Core/Event/Events/MouseEvent.h"
+#include "Core/Event/Events/WindowResizeEvent.h"
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 #include "Platform/OpenGL/GLUtilities/GLUtilities.h"
+#include "Utilities/Format/Format.h"
 
 #include <array>
 
@@ -55,32 +57,6 @@ namespace MxEngine
 		Logger::Instance().Debug("MxEngine::Window", "window object created");
 	}
 
-	GLWindow::GLWindow(GLWindow&& window) noexcept
-		: title(std::move(window.title)), window(window.window), width(window.width),
-		height(window.height), dispatcher(window.dispatcher), keyHeld(window.keyHeld),
-		cursorMode(window.cursorMode), windowPosition(window.windowPosition), cursorPosition(window.cursorPosition)
-	{
-		window.window = nullptr;
-		window.dispatcher = nullptr;
-	}
-
-	GLWindow& GLWindow::operator=(GLWindow&& window) noexcept
-	{
-		this->title          = std::move(window.title);
-		this->window         = window.window;
-		this->width          = window.width,
-		this->height         = window.height;
-		this->windowPosition = window.windowPosition;
-		this->cursorMode     = window.cursorMode;
-		this->cursorPosition = window.cursorPosition;
-		this->keyHeld        = window.keyHeld;
-		this->dispatcher     = window.dispatcher;
-		window.window        = nullptr;
-		window.dispatcher    = nullptr;
-
-		return *this;
-	}
-
 	int GLWindow::GetWidth() const
 	{
 		if (this->window == nullptr)
@@ -94,6 +70,11 @@ namespace MxEngine
 	WindowHandler* GLWindow::GetNativeHandler() const
 	{
 		return reinterpret_cast<WindowHandler*>(this->window);
+	}
+
+	AppEventDispatcher& GLWindow::GetEventDispatcher()
+	{
+		return *this->dispatcher;
 	}
 
 	bool GLWindow::IsCreated() const
@@ -134,6 +115,16 @@ namespace MxEngine
 	{
 		auto& module = Graphics::Instance()->GetGraphicModule();
 		module.OnWindowUpdate(this->GetNativeHandler());
+
+		if (this->dispatcher != nullptr)
+		{
+			Vector2 currentSize(this->GetWidth(), this->GetHeight());
+			if (currentSize != this->windowSize)
+			{
+				this->dispatcher->AddEvent(MakeUnique<WindowResizeEvent>(this->windowSize, currentSize));
+				this->windowSize = currentSize;
+			}
+		}
 	}
 
 	GLWindow& GLWindow::Close()
@@ -211,7 +202,7 @@ namespace MxEngine
 					GLWindow& window = *(GLWindow*)glfwGetWindowUserPointer(w);
 					window.cursorPosition = { float(x), float(y) };
 				});
-			glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height)
+			glfwSetWindowSizeCallback(window, [](GLFWwindow* w, int width, int height)
 				{
 					glViewport(0, 0, width, height);
 				});
@@ -248,12 +239,6 @@ namespace MxEngine
 		return *this;
 	}
 
-	GLWindow& GLWindow::UseSampling(int samples)
-	{
-		glfwWindowHint(GLFW_SAMPLES, samples);
-		return *this;
-	}
-
 	GLWindow& GLWindow::UseDebugging(bool value)
 	{
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, value);
@@ -264,6 +249,7 @@ namespace MxEngine
 	GLWindow& GLWindow::UseDoubleBuffering(bool value)
 	{
 		glfwWindowHint(GLFW_DOUBLEBUFFER, value);
+		Logger::Instance().Debug("OpenGL::Window", "doublebuffering was set to: " + (std::string)BOOL_STRING(value));
 		return *this;
 	}
 

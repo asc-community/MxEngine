@@ -54,6 +54,7 @@ namespace MxEngine
 		DECL_EVENT_TYPE(MouseMoveEvent);
 		DECL_EVENT_TYPE(RenderEvent);
 		DECL_EVENT_TYPE(UpdateEvent);
+		DECL_EVENT_TYPE(WindowResizeEvent);
 	}
 
 	size_t ComputeLODLevel(const MxObject& object, const CameraController& camera)
@@ -80,7 +81,7 @@ namespace MxEngine
 
 	Application::Application()
 		: manager(this), window(Graphics::Instance()->CreateWindow(1600, 900, "MxEngine Application")),
-		timeDelta(0), counterFPS(0), renderer(Graphics::Instance()->GetRenderer())
+		timeDelta(0), counterFPS(0), MSAAfactor(0), renderer(Graphics::Instance()->GetRenderer())
 	{
 		this->GetWindow().UseEventDispatcher(&this->dispatcher);
 		this->CreateScene("Global", MakeUnique<Scene>("Global", "Resources/"));
@@ -218,6 +219,17 @@ namespace MxEngine
 		return this->counterFPS;
 	}
 
+	void Application::SetMSAASampling(size_t samples)
+	{
+		this->MSAAfactor = samples;
+		this->GetEventDispatcher().AddEventListener<WindowResizeEvent>("MSAAfactorTrack", [](WindowResizeEvent& e)
+			{
+				size_t samples = Application::Get()->GetMSAASampling();
+				Application::Get()->GetRenderer().SetMSAASampling(samples, (int)e.New.x, (int)e.New.y);
+			});
+		this->GetRenderer().SetMSAASampling(samples, this->GetWindow().GetWidth(), this->GetWindow().GetHeight());
+	}
+
 	AppEventDispatcher& Application::GetEventDispatcher()
 	{
 		return this->dispatcher;
@@ -265,11 +277,10 @@ namespace MxEngine
 	{
 		MAKE_SCOPE_PROFILER("Application::DrawObjects");
 		const auto& viewport = this->currentScene->Viewport;
-		this->renderer.Clear();
 
+		LightSystem lights;
 		if (this->drawLighting)
 		{
-			LightSystem lights;
 			lights.Global = &this->currentScene->GlobalLight;
 			lights.Point = this->currentScene->PointLights.GetView();
 			lights.Spot = this->currentScene->SpotLights.GetView();
@@ -311,19 +322,24 @@ namespace MxEngine
 				}
 			}
 
-			this->renderer.DetachDepthBuffer(this->window->GetWidth(), this->window->GetHeight());
+			this->renderer.SetViewport(0, 0, this->window->GetWidth(), this->window->GetHeight());
+			this->renderer.DetachDepthBuffer();
 			this->renderer.ToggleReversedDepth(true);
+		}
 
+		this->renderer.AttachDrawBuffer();
+		if (this->drawLighting)
+		{
 			// now draw the scene as usual (with all framebuffers)
 			{
 				MAKE_SCOPE_PROFILER("Renderer::DrawScene");
 				for (const auto& [name, object] : this->currentScene->GetObjectList())
 				{
-					if (object->GetMesh() != nullptr)
+					if (object->GetMesh() != nullptr && object->UseLOD)
 					{
 						object->GetMesh()->SetLOD(ComputeLODLevel(*object, viewport));
-						this->renderer.DrawObject(*object, viewport, lights, this->currentScene->SceneSkybox.get());
 					}
+					this->renderer.DrawObject(*object, viewport, lights, this->currentScene->SceneSkybox.get());
 				}
 			}
 		}
@@ -353,6 +369,7 @@ namespace MxEngine
 			auto& skybox = this->GetCurrentScene().SceneSkybox;
 			if (skybox != nullptr) this->renderer.DrawSkybox(*skybox, viewport);
 		}
+		this->renderer.DetachDrawBuffer();
 	}
 
 	void Application::InvokeUpdate()
@@ -519,11 +536,11 @@ namespace MxEngine
 
 	void Application::CreateContext()
 	{
-#if defined(MXENGINE_DEBUG)
+		#if defined(MXENGINE_DEBUG)
 		bool useDebugging = true;
-#else
+		#else
 		bool useDebugging = false;
-#endif
+		#endif
 
 
 		if (this->GetWindow().IsCreated())
@@ -535,7 +552,6 @@ namespace MxEngine
 		this->GetWindow()
 			.UseProfile(4, 0, Profile::CORE)
 			.UseCursorMode(CursorMode::DISABLED)
-			.UseSampling(4)
 			.UseDoubleBuffering(false)
 			.UseTitle("MxEngine Project")
 			.UseDebugging(useDebugging)
@@ -547,18 +563,23 @@ namespace MxEngine
 			.UseDepthBuffer()
 			.UseReversedDepth(false)
 			.UseCulling()
-			.UseSampling()
 			.UseClearColor(0.0f, 0.0f, 0.0f)
 			.UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA)
 			.UseAnisotropicFiltering(renderingEngine.GetLargestAnisotropicFactor())
 			;
 
 		this->CreateConsoleBindings(this->GetConsole());
+		this->SetMSAASampling(4);
 	}
 
 	DeveloperConsole& Application::GetConsole()
 	{
 		return this->console;
+	}
+
+	size_t Application::GetMSAASampling() const
+	{
+		return this->MSAAfactor;
 	}
 
 	void Application::Run()

@@ -34,3 +34,4 @@
 #include "Events/MouseEvent.h"
 #include "Events/RenderEvent.h"
 #include "Events/UpdateEvent.h"
+#include "Events/WindowResizeEvent.h"

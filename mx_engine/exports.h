@@ -403,6 +403,11 @@ class TextureWrapper : public Texture, public py::wrapper<Texture>
         this->get_override("load_depth")(width, height);
     }
 
+    virtual void LoadMultisample(int width, int height, int samples) override
+    {
+        this->get_override("load_multisample")(width, height, samples);
+    }
+
     virtual void Load(RawDataPointer data, int width, int height, bool genMipmaps = true) override
     {
         this->get_override("load_raw")(data, width, height, genMipmaps);
@@ -431,6 +436,11 @@ class TextureWrapper : public Texture, public py::wrapper<Texture>
     virtual size_t GetChannelCount() const override
     {
         return this->get_override("channels")();
+    }
+
+    virtual unsigned int GetTextureType() const override
+    {
+        return this->get_override("type")();
     }
 
     virtual void Bind() const override
@@ -887,7 +897,9 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("listen_mouse", AddEventListenerWrapper<MouseMoveEvent>)
         .def("listen_fps", AddEventListenerWrapper<FpsUpdateEvent>)
         .def("listen_render", AddEventListenerWrapper<RenderEvent>)
+        .def("listen_resize", AddEventListenerWrapper<WindowResizeEvent>)
         .def("use_lighting", &Application::ToggleLighting)
+        .add_property("msaa", &Application::GetMSAASampling, &Application::SetMSAASampling)
         .add_property("global", RefGetter(&Application::GetGlobalScene))
         .add_property("is_running", &Application::IsRunning)
         .add_property("scene", RefGetter(&Application::GetCurrentScene))
@@ -921,6 +933,11 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("is_held", &KeyEvent::IsHeld)
         .def("is_pressed", &KeyEvent::IsPressed)
         .def("is_released", &KeyEvent::IsReleased)
+        ;
+
+    py::class_<WindowResizeEvent>("resize_event", py::no_init)
+        .def_readonly("old", &WindowResizeEvent::Old)
+        .def_readonly("new", &WindowResizeEvent::New)
         ;
 
     py::class_<FpsUpdateEvent>("fps_update_event", py::no_init)
@@ -1275,11 +1292,13 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("load", py::pure_virtual((LoadTextureFile)&Texture::Load))
         .def("load_raw", py::pure_virtual((LoadTextureRaw)&Texture::Load))
         .def("load_depth", py::pure_virtual(&Texture::LoadDepth))
+        .def("load_multisample", py::pure_virtual(&Texture::LoadMultisample))
         .def("bind", py::pure_virtual((BindTextureId)&Texture::Bind))
         .add_property("width", &Texture::GetWidth)
         .add_property("height", &Texture::GetHeight)
         .add_property("path", RefGetter(&Texture::GetPath))
         .add_property("channels", &Texture::GetChannelCount)
+        .add_property("type", &Texture::GetTextureType)
         ;
 
     py::class_<VertexBufferWrapper, py::bases<IBindable>, boost::noncopyable>("vertex_buffer", py::init())
@@ -1535,6 +1554,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("make_instanced", MakeInstancedWrapper)
         .def("set_autobuffering", &MxObject::SetAutoBuffering)
         .def("buffer_instances", &MxObject::BufferInstances)
+        .def_readwrite("use_lod", &MxObject::UseLOD)
         .def_readwrite("transform", &MxObject::ObjectTransform)
         .def_readwrite("texture", &MxObject::ObjectTexture)
         .def_readwrite("shader", &MxObject::ObjectShader)

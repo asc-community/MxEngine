@@ -51,7 +51,7 @@ namespace MxEngine
 	}
 
 	GLTexture::GLTexture(GLTexture&& texture) noexcept
-		: width(texture.width), height(texture.height), channels(texture.channels)
+		: width(texture.width), height(texture.height), channels(texture.channels), textureType(texture.textureType)
 	{
 		this->id = texture.id;
 		texture.id = 0;
@@ -85,6 +85,7 @@ namespace MxEngine
 		this->width = image.width;
 		this->height = image.height;
 		this->channels = image.channels;
+		this->textureType = GL_TEXTURE_2D;
 
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
 		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data));
@@ -107,6 +108,7 @@ namespace MxEngine
 		this->width = width;
 		this->height = height;
 		this->channels = 3;
+		this->textureType = GL_TEXTURE_2D;
 
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
 		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
@@ -127,6 +129,7 @@ namespace MxEngine
 		this->width = biggestWidth;
 		this->height = biggestHeight;
 		this->channels = 3;
+		this->textureType = GL_TEXTURE_2D;
 
 		GLint level = 0;
 		GLsizei width = biggestWidth;
@@ -154,6 +157,7 @@ namespace MxEngine
 		this->filepath = "[[depth]]";
 		this->width = width;
 		this->height = height;
+		this->textureType = GL_TEXTURE_2D;
 	
 		this->Bind();
 
@@ -164,16 +168,28 @@ namespace MxEngine
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 	}
 
+    void GLTexture::LoadMultisample(int width, int height, int samples)
+    {
+		this->filepath = "[[multisample]]";
+		this->width = width;
+		this->height = height;
+		this->textureType = GL_TEXTURE_2D_MULTISAMPLE;
+
+		this->Bind();
+
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGB, width, height, GL_TRUE);
+    }
+
 	void GLTexture::Bind() const
 	{
 		GLCALL(glActiveTexture(GL_TEXTURE0 + this->activeId));
-		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
+		GLCALL(glBindTexture(this->textureType, id));
 	}
 
 	void GLTexture::Unbind() const
 	{
 		GLCALL(glActiveTexture(GL_TEXTURE0 + this->activeId));
-		GLCALL(glBindTexture(GL_TEXTURE_2D, 0));
+		GLCALL(glBindTexture(this->textureType, 0));
 	}
 
 	void GLTexture::Bind(IBindable::IdType id) const
@@ -186,6 +202,11 @@ namespace MxEngine
 	{
 		return this->filepath;
 	}
+
+    unsigned int GLTexture::GetTextureType() const
+    {
+		return this->textureType;
+    }
 
 	size_t GLTexture::GetWidth() const
 	{

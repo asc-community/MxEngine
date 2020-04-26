@@ -41,16 +41,17 @@ namespace MxEngine
     public:
         GLFrameBuffer();
         ~GLFrameBuffer();
-        GLFrameBuffer(GLFrameBuffer&& framebuffer) noexcept;
         GLFrameBuffer(const GLFrameBuffer&) = delete;
-        GLFrameBuffer& operator=(const GLFrameBuffer&) = delete;
-        GLFrameBuffer& operator=(GLFrameBuffer&& framebuffer) noexcept;
 
         // Inherited via FrameBuffer
         virtual void AttachTexture(Attachment attachment, int width, int height) override;
         virtual void AttachTexture(const Texture& texture, Attachment attachment) override;
+        virtual void AttachTexture(UniqueRef<Texture> texture, Attachment attachment) override;
         virtual void AttachCubeMap(Attachment attachment, int width, int height) override;
         virtual void AttachCubeMap(const CubeMap& cubemap, Attachment attachment) override;
+        virtual void AttachCubeMap(UniqueRef<CubeMap> cubemap, Attachment attachment) override;
+        virtual void CopyFrameBufferContents(const FrameBuffer& framebuffer) const override;
+        virtual void CopyFrameBufferContents(int screenWidth, int screenHeight) const override;
         virtual Texture* GetAttachedTexture() override;
         virtual const Texture* GetAttachedTexture() const override;
         virtual CubeMap* GetAttachedCubeMap() override;

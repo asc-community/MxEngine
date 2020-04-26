@@ -31,6 +31,7 @@
 #include "Core/Interfaces/GraphicAPI/IBindable.h"
 #include "Core/Interfaces/GraphicAPI/Texture.h"
 #include "Core/Interfaces/GraphicAPI/CubeMap.h"
+#include "Utilities/Memory/Memory.h"
 
 namespace MxEngine
 {
@@ -57,15 +58,19 @@ namespace MxEngine
 
     struct FrameBuffer : IBindable
     {
-        virtual void AttachTexture(Attachment attachment, int width, int height)  = 0;
-        virtual void AttachTexture(const Texture& texture, Attachment attachment) = 0;
-        virtual void AttachCubeMap(Attachment attachment, int width, int height)  = 0;
-        virtual void AttachCubeMap(const CubeMap& cubemap, Attachment attachment) = 0;
+        virtual void AttachTexture(Attachment attachment, int width, int height)      = 0;
+        virtual void AttachTexture(const Texture& texture, Attachment attachment)     = 0;
+        virtual void AttachTexture(UniqueRef<Texture> texture, Attachment attachment) = 0;
+        virtual void AttachCubeMap(Attachment attachment, int width, int height)      = 0;
+        virtual void AttachCubeMap(const CubeMap& cubemap, Attachment attachment)     = 0;
+        virtual void AttachCubeMap(UniqueRef<CubeMap> cubemap, Attachment attachment) = 0;
         virtual int GetWidth() const = 0;
         virtual int GetHeight() const = 0;
         virtual Texture* GetAttachedTexture() = 0;
         virtual const Texture* GetAttachedTexture() const = 0;
         virtual CubeMap* GetAttachedCubeMap() = 0;
         virtual const CubeMap* GetAttachedCubeMap() const = 0;
+        virtual void CopyFrameBufferContents(const FrameBuffer& framebuffer) const = 0;
+        virtual void CopyFrameBufferContents(int screenWidth, int screenHeight) const = 0;
     };
 }

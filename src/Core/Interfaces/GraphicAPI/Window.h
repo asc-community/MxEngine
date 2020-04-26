@@ -78,6 +78,5 @@ namespace MxEngine
 		virtual Window& UseSize(int width, int height) = 0;
 		virtual Window& UseEventDispatcher(AppEventDispatcher* dispatcher) = 0;
 		virtual Window& UseProfile(int majorVersion, int minorVersion, Profile profile) = 0;
-		virtual Window& UseSampling(int samples) = 0;
 	};
 }

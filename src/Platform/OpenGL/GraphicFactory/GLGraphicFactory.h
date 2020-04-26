@@ -39,6 +39,7 @@
 #include "Platform/OpenGL/VertexArray/GLVertexArray.h"
 #include "Platform/OpenGL/VertexBufferLayout/GLVertexBufferLayout.h"
 #include "Platform/OpenGL/FrameBuffer/GLFrameBuffer.h"
+#include "Platform/OpenGL/RenderBuffer/GLRenderBuffer.h"
 #include "Platform/OpenGL/Renderer/GLRenderer.h"
 
 namespace MxEngine
@@ -100,6 +101,11 @@ namespace MxEngine
 		inline virtual UniqueRef<FrameBuffer> CreateFrameBuffer() override
 		{
 			return UniqueRef<FrameBuffer>(Alloc<GLFrameBuffer>());
+		}
+
+		inline virtual UniqueRef<RenderBuffer> CreateRenderBuffer() override
+		{
+			return UniqueRef<RenderBuffer>(Alloc<GLRenderBuffer>());
 		}
 
 		inline virtual UniqueRef<Window> CreateWindow(int width, int height, const std::string& title)

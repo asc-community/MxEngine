@@ -54,15 +54,13 @@ namespace MxEngine
 		CursorMode cursorMode = CursorMode::NORMAL;
 		Vector2 windowPosition{ 0.0f, 0.0f };
 		Vector2 cursorPosition{ 0.0f, 0.0f };
+		Vector2 windowSize{ 0.0f, 0.0f };
 
 		void Destroy();
 	public:
 		GLWindow() = default;
 		GLWindow(int width, int height, const std::string& title);
 		GLWindow(const GLWindow&) = delete;
-		GLWindow(GLWindow&& window) noexcept;
-		GLWindow& operator=(GLWindow&& window) noexcept;
-		GLWindow& operator=(const GLWindow&) = delete;
 		~GLWindow();
 
 		// Inherited via Window
@@ -78,6 +76,7 @@ namespace MxEngine
 		virtual bool IsKeyPressed(KeyCode key) const override;
 		virtual bool IsKeyReleased(KeyCode key) const override;
 		virtual WindowHandler* GetNativeHandler() const override;
+		virtual AppEventDispatcher& GetEventDispatcher();
 		virtual bool IsCreated() const override;
 		virtual GLWindow& Create() override;
 		virtual GLWindow& Close() override;
@@ -91,6 +90,5 @@ namespace MxEngine
 		virtual GLWindow& UseSize(int width, int height) override;
 		virtual GLWindow& UseEventDispatcher(AppEventDispatcher* dispatcher) override;
 		virtual GLWindow& UseProfile(int majorVersion, int minorVersion, Profile profile) override;
-		virtual GLWindow& UseSampling(int samples) override;
 	};
 }

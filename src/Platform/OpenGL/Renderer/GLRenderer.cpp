@@ -32,6 +32,7 @@
 #include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 #include "Platform/OpenGL/GraphicFactory/GLGraphicFactory.h"
 #include "Utilities/Profiler/Profiler.h"
+#include "Utilities/Format/Format.h"
 
 namespace MxEngine
 {
@@ -131,10 +132,12 @@ namespace MxEngine
 		if (value)
 		{
 			GLCALL(glEnable(GL_MULTISAMPLE));
+			Logger::Instance().Debug("OpenGL::Renderer", "multisampling is enabled");
 		}
 		else
 		{
 			GLCALL(glDisable(GL_MULTISAMPLE));
+			Logger::Instance().Debug("OpenGL::Renderer", "multisampling is disabled");
 		}
 		return *this;
 	}
@@ -231,12 +234,12 @@ namespace MxEngine
 	{
 		if (!glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
 		{
-			Logger::Instance().Error("OpenGL", "anisotropic filtering is not supported on your device");
+			Logger::Instance().Error("OpenGL::Renderer", "anisotropic filtering is not supported on your device");
 		}
 		else
 		{
 			GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, factor));
-			Logger::Instance().Debug("OpenGL", "set anisotropic filtering factor to " + std::to_string((int)factor) + "x");
+			Logger::Instance().Debug("OpenGL::Renderer", "set anisotropic filtering factor to " + std::to_string((int)factor) + "x");
 		}
 		return *this;
 	}
@@ -245,7 +248,7 @@ namespace MxEngine
 	{
 		if (!glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
 		{
-			Logger::Instance().Warning("OpenGL", "anisotropic filtering is not supported");
+			Logger::Instance().Warning("OpenGL::Renderer", "anisotropic filtering is not supported");
 			return 0.0f;
 		}
 		float factor;
