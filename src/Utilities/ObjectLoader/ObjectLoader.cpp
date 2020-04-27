@@ -177,7 +177,7 @@ namespace MxEngine
 				meshInfo.faces[3 * i + 2] = mesh->mFaces[i].mIndices[2];
 			}
 			if (meshInfo.name.empty()) 
-				meshInfo.name = Format(FMT_STRING("unnamed_hash_{0}"), Random::Get(0, Random::Max));
+				meshInfo.name = Format(FMT_STRING("unnamed_hash_{0}"), Random::Get(0LL, Random::Max));
 			meshInfo.useTexture = true;
 			meshInfo.buffer = std::move(vertex);
 		}

@@ -73,8 +73,13 @@ namespace MxEngine
 
 		std::unordered_map<std::string, Ref<Texture>> textures;
 		std::unordered_map<uintptr_t, Ref<Material>> materials;
+		std::vector<Ref<Vector4>> submeshColors;
+		std::vector<Ref<Transform>> submeshTransforms;
 		for (const auto& group : objectInfo.meshes)
 		{
+			submeshColors.push_back(MakeRef<Vector4>(1.0f));
+			submeshTransforms.push_back(MakeRef<Transform>());
+
 			if (group.useTexture)
 			{
 				if (group.material != nullptr)
@@ -115,8 +120,12 @@ namespace MxEngine
 		for(const auto& lod : LODdata)
 		{
 			auto& meshes = this->LODs.emplace_back();
-			for (const auto& mesh : lod.meshes)
+			for (size_t i = 0; i < lod.meshes.size(); i++)
 			{
+				auto& mesh = lod.meshes[i];
+				auto& color = submeshColors[i];
+				auto& transform = submeshTransforms[i];
+
 				auto VBO = Graphics::Instance()->CreateVertexBuffer(mesh.buffer.data(), mesh.buffer.size(), UsageType::STATIC_DRAW);
 				auto IBO = Graphics::Instance()->CreateIndexBuffer(mesh.faces.data(), mesh.faces.size());
 				auto VAO = Graphics::Instance()->CreateVertexArray();
@@ -127,7 +136,8 @@ namespace MxEngine
 				if (mesh.useNormal) VBL->PushFloat(3);
 				VAO->AddBuffer(*VBO, *VBL);
 
-				RenderObject object(std::move(mesh.name), std::move(VBO), std::move(VAO), std::move(IBO), materials[(uintptr_t)mesh.material], 
+				SubMesh object(std::move(mesh.name), std::move(VBO), std::move(VAO), std::move(IBO), 
+					materials[(uintptr_t)mesh.material], color, transform,
 					mesh.useTexture, mesh.useNormal, mesh.buffer.size());
 				meshes.push_back(std::move(object));
 				if (!mesh.useTexture)
@@ -152,12 +162,12 @@ namespace MxEngine
 		LoadFromFile(filepath);
 	}
 
-	std::vector<RenderObject>& Mesh::GetRenderObjects()
+	std::vector<SubMesh>& Mesh::GetRenderObjects()
 	{
 		return this->LODs[this->currentLOD];
 	}
 
-	const std::vector<RenderObject>& Mesh::GetRenderObjects() const
+	const std::vector<SubMesh>& Mesh::GetRenderObjects() const
 	{
 		return this->LODs[this->currentLOD];
 	}
@@ -177,7 +187,7 @@ namespace MxEngine
 		return this->boundingBox;
 	}
 
-	void RenderObject::GenerateMeshIndicies() const
+	void SubMesh::GenerateMeshIndicies() const
 	{
 		std::vector<IndexBuffer::IndexType> indicies;
 		indicies.reserve(this->vertexBufferSize * 3);
@@ -194,67 +204,99 @@ namespace MxEngine
 		this->meshGenerated = true;
 	}
 
-    RenderObject::RenderObject(std::string name, UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<IndexBuffer> IBO, Ref<Material> material, bool useTexture, bool useNormal, size_t sizeInFloats)
+    SubMesh::SubMesh(std::string name, UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<IndexBuffer> IBO, Ref<Material> material, Ref<Vector4> color, Ref<Transform> transform, bool useTexture, bool useNormal, size_t sizeInFloats)
     {
 		this->name = std::move(name);
 		this->VBO = std::move(VBO);
 		this->VAO = std::move(VAO);
 		this->IBO = std::move(IBO);
 		this->material = std::move(material);
+		this->renderColor = std::move(color);
+		this->transform = std::move(transform);
 		this->useTexture = useTexture;
 		this->useNormal = useTexture;
 		this->vertexBufferSize = sizeInFloats;
     }
 
-	const VertexArray& RenderObject::GetVAO() const
+	const VertexArray& SubMesh::GetVAO() const
 	{
 		MX_ASSERT(this->VBO != nullptr);
 		return *this->VAO;
 	}
 
-	IndexBuffer& RenderObject::GetIBO() const
+	IndexBuffer& SubMesh::GetIBO() const
 	{
 		MX_ASSERT(this->IBO != nullptr);
 		return *this->IBO;
 	}
 
-	const IndexBuffer& RenderObject::GetMeshIBO() const
+	const IndexBuffer& SubMesh::GetMeshIBO() const
 	{
 		if (!this->meshGenerated) GenerateMeshIndicies();
 		return *this->meshIBO;
 	}
 
-	const Material& RenderObject::GetMaterial() const
+	const Material& SubMesh::GetMaterial() const
 	{
 		return *this->material;
 	}
 
-	Material& RenderObject::GetMaterial()
+	Material& SubMesh::GetMaterial()
 	{
 		return *this->material;
 	}
 
-	const std::string& RenderObject::GetName() const
+	const std::string& SubMesh::GetName() const
 	{
 		return name;
 	}
 
-    bool RenderObject::UsesTexture() const
+    bool SubMesh::UsesTexture() const
     {
 		return this->useTexture;
     }
 
-	bool RenderObject::UsesNormals() const
+	bool SubMesh::UsesNormals() const
 	{
 		return this->useNormal;
 	}
 
-	size_t RenderObject::GetVertexBufferSize() const
+    void SubMesh::SetRenderColor(const Vector4& color)
+    {
+		*this->renderColor = Clamp(color, MakeVector4(0.0f), MakeVector4(1.0f));
+    }
+
+	const Transform& SubMesh::GetTransform() const
+	{
+		return *this->transform;
+	}
+
+	Transform& SubMesh::GetTransform()
+	{
+		return *this->transform;
+	}
+
+    const Matrix4x4& SubMesh::GetMatrix() const
+    {
+		return this->transform->GetMatrix();
+    }
+
+    const Matrix3x3& SubMesh::GetNormalMatrix() const
+    {
+		return this->transform->GetNormalMatrix();
+    }
+
+    const Vector4& SubMesh::GetRenderColor() const
+    {
+		return *this->renderColor;
+    }
+
+	size_t SubMesh::GetVertexBufferSize() const
 	{
 		return this->vertexBufferSize;
 	}
 
-	bool RenderObject::HasMaterial() const
+	bool SubMesh::HasMaterial() const
 	{
 		return this->material != nullptr;
 	}

@@ -132,6 +132,10 @@ namespace MxEngine::GUI
 								if (submesh.HasMaterial())
 								{
 									DrawMaterial(submesh.GetMaterial());
+									DrawTransform(submesh.GetTransform());
+									auto renderColor = submesh.GetRenderColor();
+									if (ImGui::ColorEdit4("render color", &renderColor[0]))
+										submesh.SetRenderColor(renderColor);
 								}
 								ImGui::PopID();
 							);

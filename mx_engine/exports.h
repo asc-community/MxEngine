@@ -1430,25 +1430,25 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("length", &AABB::Length)
         ;
 
-    using SubMeshesGetFunc = std::vector<RenderObject>& (Mesh::*)();
+    using SubMeshesGetFunc = std::vector<SubMesh>& (Mesh::*)();
     py::class_<Mesh, boost::noncopyable>("mesh", py::no_init)
         .add_property("AABB", RefGetter(&Mesh::GetAABB))
         .add_property("submeshes", RefGetter((SubMeshesGetFunc)&Mesh::GetRenderObjects))
         .add_property("lod", &Mesh::GetLOD, &Mesh::SetLOD)
         ;
 
-    using SubMeshesGetMeshFunc = RenderObject& (std::vector<RenderObject>::*)(size_t);
-    py::class_<std::vector<RenderObject>, boost::noncopyable>("submesh_list", py::no_init)
-        .def("__getitem__", RefGetter(StdVectorGetRefWrapper<RenderObject>))
-        .def("__len__", &std::vector<RenderObject>::size)
+    using SubMeshesGetMeshFunc = SubMesh& (std::vector<SubMesh>::*)(size_t);
+    py::class_<std::vector<SubMesh>, boost::noncopyable>("submesh_list", py::no_init)
+        .def("__getitem__", RefGetter(StdVectorGetRefWrapper<SubMesh>))
+        .def("__len__", &std::vector<SubMesh>::size)
         ;
 
-    using GetMaterialFunc = Material& (RenderObject::*)();
-    py::class_<RenderObject, boost::noncopyable>("submesh", py::no_init)
-        .add_property("material", RefGetter((GetMaterialFunc)&RenderObject::GetMaterial))
-        .add_property("name", RefGetter(&RenderObject::GetName))
-        .add_property("has_texture", &RenderObject::UsesTexture)
-        .add_property("has_normals", &RenderObject::UsesNormals)
+    using GetMaterialFunc = Material& (SubMesh::*)();
+    py::class_<SubMesh, boost::noncopyable>("submesh", py::no_init)
+        .add_property("material", RefGetter((GetMaterialFunc)&SubMesh::GetMaterial))
+        .add_property("name", RefGetter(&SubMesh::GetName))
+        .add_property("has_texture", &SubMesh::UsesTexture)
+        .add_property("has_normals", &SubMesh::UsesNormals)
         ;
 
     py::class_<Material, boost::noncopyable>("material", py::no_init)

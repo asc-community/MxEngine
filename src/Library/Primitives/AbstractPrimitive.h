@@ -63,16 +63,22 @@ namespace MxEngine
                 }
                 // Note that we replace only first render object as we are working with AbstractPrimitive
                 auto& base = this->ObjectMesh->GetRenderObjects().front();
-                RenderObject newBase(base.GetName(), std::move(VBO), std::move(VAO), std::move(IBO), MakeUnique<Material>(base.GetMaterial()),
+
+                SubMesh newBase(base.GetName(), std::move(VBO), std::move(VAO), std::move(IBO),
+                    MakeRef<Material>(base.GetMaterial()), MakeRef<Vector4>(base.GetRenderColor()), MakeRef<Transform>(base.GetTransform()),
                     base.UsesTexture(), base.UsesNormals(), vbo.size() / VertexSize);
                 base = std::move(newBase);
             }
             else
             {
                 // if no render object exists (it is possible if MxObject is empty) - create one
-                auto material = MakeUnique<Material>();
+                auto material = MakeRef<Material>();
+                auto color = MakeRef<Vector4>(1.0f);
+                auto transform = MakeRef<Transform>();
 
-                RenderObject object("main", std::move(VBO), std::move(VAO), std::move(IBO), std::move(material), true, true, vbo.size() / VertexSize);
+                SubMesh object("main", std::move(VBO), std::move(VAO), std::move(IBO), 
+                    std::move(material), std::move(color), std::move(transform),
+                    true, true, vbo.size() / VertexSize);
                 auto mesh = MakeUnique<Mesh>();
                 mesh->GetRenderObjects().push_back(std::move(object));
                 auto& meshManager = Application::Get()->GetCurrentScene().GetResourceManager<Mesh>();

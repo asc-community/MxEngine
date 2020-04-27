@@ -107,8 +107,8 @@ namespace MxEngine
 		// choosing shader and setting up data per object
 		const Shader& shader = object.HasShader() ? object.GetShader() : *this->ObjectShader;
 
-		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
-		this->GetRenderEngine().SetDefaultVertexAttribute(10, object.GetRenderColor());
+		auto& ModelMatrix  = object.GetModelMatrix();
+		auto& renderColor  = object.GetRenderColor();
 
 		shader.SetUniformMat4("ViewProjMatrix", ViewProjection);
 
@@ -133,6 +133,9 @@ namespace MxEngine
 
 				// setting materials
 				shader.SetUniformFloat("material.d", material.d);
+				
+				this->GetRenderEngine().SetDefaultVertexAttribute(3, ModelMatrix * renderObject.GetMatrix());
+				this->GetRenderEngine().SetDefaultVertexAttribute(10, renderColor * renderObject.GetRenderColor());
 
 				if (object.GetInstanceCount() == 0)
 				{
@@ -161,9 +164,9 @@ namespace MxEngine
 		// choosing shader and setting up data per object
 		const Shader& shader = object.HasShader() ? object.GetShader() : *this->ObjectShader;
 
-		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
-		this->GetRenderEngine().SetDefaultVertexAttribute(7, object.GetNormalMatrix());
-		this->GetRenderEngine().SetDefaultVertexAttribute(10, object.GetRenderColor());
+		auto& ModelMatrix = object.GetModelMatrix();
+		auto& NormalMatrix = object.GetNormalMatrix();
+		auto& renderColor = object.GetRenderColor();
 
 		shader.SetUniformMat4("ViewProjMatrix", ViewProjection);
 		shader.SetUniformMat3("skyboxModelMatrix", Transpose(skybox->GetRotationMatrix()));
@@ -272,6 +275,10 @@ namespace MxEngine
 				shader.SetUniformFloat("Ka", material.f_Ka);
 				shader.SetUniformFloat("Kd", material.f_Kd);
 
+				this->GetRenderEngine().SetDefaultVertexAttribute(3, ModelMatrix * renderObject.GetMatrix());
+				this->GetRenderEngine().SetDefaultVertexAttribute(7, NormalMatrix * renderObject.GetNormalMatrix());
+				this->GetRenderEngine().SetDefaultVertexAttribute(10, renderColor * renderObject.GetRenderColor());
+
 				if (object.GetInstanceCount() == 0)
 				{
 					this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetIBO(), shader);
@@ -295,13 +302,13 @@ namespace MxEngine
 		auto ViewProjection = viewport.GetMatrix();
 		this->MeshShader->SetUniformMat4("ViewProjMatrix", ViewProjection);
 
-		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
-		this->GetRenderEngine().SetDefaultVertexAttribute(7, object.GetNormalMatrix());
-		this->GetRenderEngine().SetDefaultVertexAttribute(10, object.GetRenderColor());
+		auto& ModelMatrix = object.GetModelMatrix();
 
 		while (!object.IsLast(iterator))
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
+
+			this->GetRenderEngine().SetDefaultVertexAttribute(3, ModelMatrix * renderObject.GetMatrix());
 
 			if (object.GetInstanceCount() == 0)
 			{

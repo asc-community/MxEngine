@@ -109,13 +109,13 @@ namespace MxEngine
 		this->DepthTextureShader->SetUniformMat4("LightProjMatrix", light.GetMatrix());
 		size_t iterator = object.GetIterator();
 
-		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
-		this->GetRenderEngine().SetDefaultVertexAttribute(7, object.GetNormalMatrix());
-		this->GetRenderEngine().SetDefaultVertexAttribute(10, object.GetRenderColor());
+		auto& ModelMatrix = object.GetModelMatrix();
 
 		while (!object.IsLast(iterator))
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
+
+			this->GetRenderEngine().SetDefaultVertexAttribute(3, ModelMatrix * renderObject.GetMatrix());
 
 			if (object.GetInstanceCount() == 0)
 			{
@@ -145,14 +145,15 @@ namespace MxEngine
 		this->DepthCubeMapShader->SetUniformVec3("lightPos", light.Position);
 
 		size_t iterator = object.GetIterator();
-
-		this->GetRenderEngine().SetDefaultVertexAttribute(3, object.GetModelMatrix());
-		this->GetRenderEngine().SetDefaultVertexAttribute(7, object.GetNormalMatrix());
-		this->GetRenderEngine().SetDefaultVertexAttribute(10, object.GetRenderColor());
+		
+		auto& ModelMatrix  = object.GetModelMatrix();
 
 		while (!object.IsLast(iterator))
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
+
+			this->GetRenderEngine().SetDefaultVertexAttribute(3, ModelMatrix * renderObject.GetMatrix());
+
 			if (object.GetInstanceCount() == 0)
 			{
 				this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetIBO(), *this->DepthCubeMapShader);

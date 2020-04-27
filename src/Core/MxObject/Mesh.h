@@ -30,12 +30,13 @@
 
 #include "Core/Interfaces/IRenderable.h"
 #include "Core/BoundingObjects/AABB.h"
+#include "Core/Components/Transform/Transform.h"
 
 #include <filesystem>
 
 namespace MxEngine
 {
-	class RenderObject : public IRenderable
+	class SubMesh : public IRenderable
 	{
 		bool useTexture = false, useNormal = false;
 		mutable bool meshGenerated = false;
@@ -43,26 +44,35 @@ namespace MxEngine
 		UniqueRef<VertexBuffer> VBO;
 		UniqueRef<VertexArray> VAO;
 		UniqueRef<IndexBuffer> IBO;
-		Ref<Material> material;
 		size_t vertexBufferSize = 0;
+		Ref<Material> material;
+		Ref<Vector4> renderColor;
+		Ref<Transform> transform;
 		std::string name;
 
 		void GenerateMeshIndicies() const;
 		friend class Mesh;
 	public:
-		RenderObject(std::string name, UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<IndexBuffer> IBO, Ref<Material> material,
+		SubMesh(std::string name, UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<IndexBuffer> IBO, 
+			Ref<Material> material, Ref<Vector4> color, Ref<Transform> transform,
 			bool useTexture, bool useNormal, size_t sizeInFloats);
 
-		RenderObject(const RenderObject&) = delete;
-		RenderObject(RenderObject&&) noexcept = default;
-		RenderObject& operator=(const RenderObject&) = delete;
-		RenderObject& operator=(RenderObject&&) noexcept = default;
+		SubMesh(const SubMesh&) = delete;
+		SubMesh(SubMesh&&) noexcept = default;
+		SubMesh& operator=(const SubMesh&) = delete;
+		SubMesh& operator=(SubMesh&&) noexcept = default;
 
 		Material& GetMaterial();
 		const std::string& GetName() const;
 		bool UsesTexture() const;
 		bool UsesNormals() const;
+		void SetRenderColor(const Vector4& color);
+		const Transform& GetTransform() const;
+		Transform& GetTransform();
 
+		virtual const Matrix4x4& GetMatrix() const override;
+		virtual const Matrix3x3& GetNormalMatrix() const override;
+		virtual const Vector4& GetRenderColor() const override;
 		virtual const VertexArray& GetVAO() const override;
 		virtual IndexBuffer& GetIBO() const override;
 		virtual const IndexBuffer& GetMeshIBO() const override;
@@ -71,12 +81,17 @@ namespace MxEngine
 		virtual bool HasMaterial() const override;
 	};
 
+	class SubMeshLOD
+	{
+
+	};
+
 	class Mesh
 	{
 		typedef unsigned int GLuint;
 		typedef float GLfloat;
 
-		using LOD = std::vector<RenderObject>;
+		using LOD = std::vector<SubMesh>;
 
 		AABB boundingBox;
 		size_t currentLOD = 0;
@@ -97,8 +112,8 @@ namespace MxEngine
 		Mesh& operator=(Mesh&&) = default;
 		
 		void Load(const std::string& filepath);
-		std::vector<RenderObject>& GetRenderObjects();
-		const std::vector<RenderObject>& GetRenderObjects() const;
+		std::vector<SubMesh>& GetRenderObjects();
+		const std::vector<SubMesh>& GetRenderObjects() const;
 		void SetLOD(size_t LOD);
 		size_t GetLOD() const;
 		const AABB& GetAABB() const;

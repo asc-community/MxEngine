@@ -28,16 +28,17 @@
 
 #pragma once
 
-#include <cstdlib>
 #include <random>
 
 namespace MxEngine
 {
-    // static random generator based on Mersenne's twist algorithm
+    // static thread-safe random generator based on Mersenne's twist algorithm
     class Random
     {
     public:
-        using Generator = std::mersenne_twister_engine<std::uint_fast64_t, 64, 312, 156, 31,
+        using RandomReturnType = std::uint_fast64_t;
+
+        using Generator = std::mersenne_twister_engine<RandomReturnType, 64, 312, 156, 31,
             0xb5026f5aa96619e9, 29,
             0x5555555555555555, 17,
             0x71d67fffeda60000, 37,
@@ -45,7 +46,10 @@ namespace MxEngine
     private:
         static thread_local inline Generator mersenne64;
     public:
-        static void SetSeed(uint64_t seed);
+        static constexpr RandomReturnType Max = Generator::max();
+        static constexpr RandomReturnType Min = Generator::min();
+
+        static void SetSeed(RandomReturnType seed);
         static float GetFloat();
         static int64_t Get(int64_t lower, int64_t upper);
         static int32_t Get(int32_t lower, int32_t upper);
