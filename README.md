@@ -1,4 +1,8 @@
 # MxEngine
+![](https://img.shields.io/badge/version-6.3.0-red)
+![](https://img.shields.io/badge/license-bsd--3-yellow)
+[![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
+
 MxEngine is a modern C++ general-purpose 3D game engine aiming to bring easy game & graphic application development into C++. 
 Right now MxEngine is developed only by me, #Momo, but any contributions are welcome and will be reviewed.
 Fow now MxEngine supports OpenGL as graphic API and targeting x64 only. My plans include other graphic API support, but do not expect it in the near future, as there are still a lot of other stuff to do.
@@ -28,7 +32,6 @@ Minor releases may change API or add new features but usually user code can be e
 Bug fixes & improvements are just fixes to already existing code to reestablish initially planned behaviour. This fixes may also be merged into major or minor releases if they come in the same time.
 
 For full version list see versions.md file
-
 ## Building from source
 MxEngine can be built from sources using Visual Studio or CMake. Note that by now this project was only tested on Windows platform, so I do not guarantee that it can be built on other OS. Also, MxEngine is distributed with precompiled libraries, so if you have other OS/CPU, you probably will need to compile them from sources too. All project dependencies are included in this repository as git submodules.
 ### Building with Visual Studio
