@@ -34,6 +34,8 @@
 #include <typeindex>
 #include <map>
 
+#include "Utilities/Profiler/Profiler.h"
+
 namespace MxEngine
 {
 	#define MAKE_EVENT_BASE(name) struct name { inline virtual size_t GetEventType() const = 0; virtual ~name() = default; }
@@ -175,6 +177,7 @@ namespace MxEngine
 
 			for (size_t i = 0; i < this->events.size(); i++)
 			{
+				MAKE_SCOPE_PROFILER(typeid(*this->events[i]).name());
 				this->ProcessEvent(*this->events[i]);
 			}
 			this->events.clear();

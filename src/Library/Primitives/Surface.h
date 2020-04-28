@@ -51,6 +51,8 @@ namespace MxEngine
             MX_ASSERT(step  > 0.0f);
             MX_ASSERT(xsize > 0.0f);
             MX_ASSERT(ysize > 0.0f);
+            MAKE_SCOPE_PROFILER("Surface::GenerateSurface");
+
             size_t intxsize = static_cast<size_t>(xsize / step);
             size_t intysize = static_cast<size_t>(ysize / step);
             surface.resize(intxsize, intysize);
@@ -83,6 +85,8 @@ namespace MxEngine
 
         void Apply()
         {
+            MAKE_SCOPE_PROFILER("Surface::GenerateVertexData");
+
             std::vector<float> buffer;
             std::vector<unsigned int> indicies;
             Array2D<Vector3> pointNormals;
@@ -92,6 +96,13 @@ namespace MxEngine
             buffer.reserve(2 * triangleCount * 3 * VertexSize);
             indicies.reserve(2 * triangleCount * 3);
             pointNormals.resize(xsize, ysize, MakeVector3(0.0f));
+
+            AABB boundingBox{ this->surface[0][0], this->surface[0][0] };
+            for (const auto& v : this->surface)
+            {
+                boundingBox.Min = VectorMin(boundingBox.Min, v);
+                boundingBox.Max = VectorMax(boundingBox.Max, v);
+            }
 
             struct Vertex
             {
@@ -201,7 +212,7 @@ namespace MxEngine
                 indicies.push_back(2 * (unsigned int)i + 1);
             }
 
-            this->SubmitData(name, buffer, indicies);
+            this->SubmitData(name, boundingBox, make_view(buffer), make_view(indicies));
         }
     };
 }

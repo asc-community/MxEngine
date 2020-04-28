@@ -38,17 +38,13 @@ namespace MxEngine
 {
 	class GraphicConsole;
 
-	#if defined(MXENGINE_USE_CHAISCRIPT)
-	class ChaiScriptEngine;
-	#elif defined(MXENGINE_USE_PYTHON)
+	#if defined(MXENGINE_USE_PYTHON)
 	class PythonEngine;
 	#endif
 
 	class DeveloperConsole
 	{
-		#if defined(MXENGINE_USE_CHAISCRIPT)
-		using ScriptEngine = ChaiScriptEngine;
-		#elif defined(MXENGINE_USE_PYTHON)
+		#if defined(MXENGINE_USE_PYTHON)
 		using ScriptEngine = PythonEngine;
 		#else
 		using ScriptEngine = int; // stub

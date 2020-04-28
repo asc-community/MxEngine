@@ -73,6 +73,12 @@ namespace MxEngine
 		this->DepthBuffer->Unbind();
 	}
 
+    void RenderController::ToggleDepthOnlyMode(bool value) const
+    {
+		bool useColor = !value;
+		this->GetRenderEngine().UseColorMask(useColor, useColor, useColor, useColor);
+    }
+
 	void RenderController::ToggleReversedDepth(bool value) const
 	{
 		this->renderer.UseReversedDepth(value);

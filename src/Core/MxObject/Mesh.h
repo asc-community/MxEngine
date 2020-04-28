@@ -114,9 +114,13 @@ namespace MxEngine
 		void Load(const std::string& filepath);
 		std::vector<SubMesh>& GetRenderObjects();
 		const std::vector<SubMesh>& GetRenderObjects() const;
+		void PushEmptyLOD();
+		void PopLastLOD();
 		void SetLOD(size_t LOD);
 		size_t GetLOD() const;
+		size_t GetLODCount() const;
 		const AABB& GetAABB() const;
+		void SetAABB(const AABB& boundingBox);
 		void AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl);
 		VertexBuffer& GetBufferByIndex(size_t index); 
 		VertexBufferLayout& GetBufferLayoutByIndex(size_t index);

@@ -127,6 +127,12 @@ namespace MxEngine
 		GLCALL(glViewport(x, y, width, height));
 	}
 
+    GLRenderer& GLRenderer::UseColorMask(bool r, bool g, bool b, bool a)
+    {
+		GLCALL(glColorMask(r, g, b, a));
+		return *this;
+    }
+
 	GLRenderer& GLRenderer::UseSampling(bool value)
 	{
 		if (value)
@@ -163,7 +169,7 @@ namespace MxEngine
 		if (value)
 		{
 			GLCALL(glClearDepth(0.0f));
-			GLCALL(glDepthFunc(GL_GREATER));
+			GLCALL(glDepthFunc(GL_GEQUAL));
 			GLCALL(glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE));
 		}
 		else

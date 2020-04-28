@@ -61,6 +61,7 @@ namespace MxEngine
 		virtual void Flush() const override;
 		virtual void Finish() const override;
 		virtual void SetViewport(int x, int y, int width, int height) const override;
+		virtual GLRenderer& UseColorMask(bool r, bool g, bool b, bool a) override;
 		virtual GLRenderer& UseSampling(bool value = true) override;
 		virtual GLRenderer& UseDepthBuffer(bool value = true) override;
 		virtual GLRenderer& UseReversedDepth(bool value = true) override;

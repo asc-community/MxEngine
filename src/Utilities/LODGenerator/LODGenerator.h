@@ -62,9 +62,10 @@ namespace MxEngine
 
     class LODGenerator
     {
+        const ObjectInfo& objectLOD;
+
         using ProjectionTable = std::vector<size_t>;
         using WeightList = std::map<size_t, size_t>;
-        const ObjectInfo& objectInfo;
         std::vector<ProjectionTable> projection;
         std::vector<std::vector<WeightList>> weights;
 

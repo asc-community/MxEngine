@@ -172,6 +172,16 @@ namespace MxEngine
 		return this->LODs[this->currentLOD];
 	}
 
+    void Mesh::PushEmptyLOD()
+    {
+		this->LODs.emplace_back();
+    }
+
+	void Mesh::PopLastLOD()
+	{
+		this->LODs.pop_back();
+	}
+
 	void Mesh::SetLOD(size_t LOD)
 	{
 		this->currentLOD = Min(LOD, (int)this->LODs.size() - 1);
@@ -182,9 +192,19 @@ namespace MxEngine
 		return this->currentLOD;
     }
 
+	size_t Mesh::GetLODCount() const
+	{
+		return this->LODs.size();
+	}
+
 	const AABB& Mesh::GetAABB() const
 	{
 		return this->boundingBox;
+	}
+
+	void Mesh::SetAABB(const AABB& boundingBox)
+	{
+		this->boundingBox = boundingBox;
 	}
 
 	void SubMesh::GenerateMeshIndicies() const

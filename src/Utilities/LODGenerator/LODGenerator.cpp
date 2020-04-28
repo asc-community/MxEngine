@@ -37,24 +37,27 @@
 namespace MxEngine
 {
     LODGenerator::LODGenerator(const ObjectInfo& objectInfo)
-        : objectInfo(objectInfo) { }
+        : objectLOD(objectInfo)
+    {
+        projection.resize(this->objectLOD.meshes.size());
+        weights.resize(this->objectLOD.meshes.size());
+    }
 
     void LODGenerator::PrepareIndexData(float threshold)
     {
-        projection.resize(objectInfo.meshes.size());
-        weights.resize(objectInfo.meshes.size());
-
-        for (size_t meshIdx = 0; meshIdx < objectInfo.meshes.size(); meshIdx++)
+        for (size_t meshIdx = 0; meshIdx < this->objectLOD.meshes.size(); meshIdx++)
         {
             auto& meshProjection = projection[meshIdx];
             auto& meshWeights = weights[meshIdx];
-            const auto& mesh = objectInfo.meshes[meshIdx];
+            const auto& mesh = this->objectLOD.meshes[meshIdx];
+
+            size_t vertexCount = mesh.GetVertexCount();
+            meshProjection.resize(vertexCount, std::numeric_limits<size_t>::max());
+            meshWeights.resize(vertexCount, { });
 
             Vector3Cmp::Threshold = threshold;
             std::map<Vector3, size_t, Vector3Cmp> vertecies;
         
-            meshProjection.resize(mesh.GetVertexCount(), std::numeric_limits<size_t>::max());
-            meshWeights.resize(mesh.GetVertexCount(), { });
             for (size_t i = 0; i < mesh.faces.size(); i += 3)
             {
                 std::array<size_t, 3> triangle = {
@@ -75,7 +78,7 @@ namespace MxEngine
 
     size_t LODGenerator::CollapseDublicate(std::map<Vector3, size_t, Vector3Cmp>& vertecies, size_t meshId, size_t f)
     {
-        const auto& mesh = objectInfo.meshes[meshId];
+        const auto& mesh = this->objectLOD.meshes[meshId];
         const Vector3& Vf = *reinterpret_cast<const Vector3*>(mesh.buffer.data() + f * mesh.VertexSize + 0);
         const Vector3& Nf = *reinterpret_cast<const Vector3*>(mesh.buffer.data() + f * mesh.VertexSize + 5);
 
@@ -87,12 +90,7 @@ namespace MxEngine
         }
         else
         {
-            // const Vector3& N = *reinterpret_cast<const Vector3*>(mesh.buffer.data() + it->second * mesh.VertexSize + 5);
             return it->second;
-            // if (std::abs(Dot(N, Nf)) < 0.01f)
-            //     return f;
-            // else
-            //     return vertecies[Vf];
         }
     }
 
@@ -103,21 +101,21 @@ namespace MxEngine
         threshold = Clamp(threshold, 0.0f, 1.0f);
         if (threshold == 0.0f)
         {
-            result = objectInfo;
+            result = this->objectLOD;
             return std::move(result);
         }
 
-        result.boundingBox = this->objectInfo.boundingBox;
-        result.meshes.resize(this->objectInfo.meshes.size());
+        result.boundingBox = this->objectLOD.boundingBox;
+        result.meshes.resize(this->objectLOD.meshes.size());
 
         Vector3 distance = result.boundingBox.Length();
         float averageDistance = (distance.x + distance.y + distance.z) / 3.0f;
         this->PrepareIndexData(threshold * averageDistance);
         
-        for (size_t meshIdx = 0; meshIdx < this->objectInfo.meshes.size(); meshIdx++)
+        for (size_t meshIdx = 0; meshIdx < this->objectLOD.meshes.size(); meshIdx++)
         {
             auto& mesh = result.meshes[meshIdx];
-            const auto& oldMesh = objectInfo.meshes[meshIdx];
+            const auto& oldMesh = objectLOD.meshes[meshIdx];
             const auto& meshProjection = this->projection[meshIdx];
             const auto& meshWeights = this->weights[meshIdx];
 

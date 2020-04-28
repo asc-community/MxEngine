@@ -31,6 +31,7 @@
 #include <vector>
 #include "Utilities/Math/Math.h"
 #include "Utilities/Memory/Memory.h"
+#include "Utilities/Profiler/Profiler.h"
 #include "Core/Components/Transform/Transform.h"
 
 namespace MxEngine
@@ -142,6 +143,8 @@ namespace MxEngine
 	template<typename T>
 	inline typename Instancing<T>::ModelData& Instancing<T>::GetModelData()
 	{
+		MAKE_SCOPE_PROFILER("Instancing::BufferModelData");
+
 		this->models.resize(this->instances.size());
 		auto model = this->models.begin();
 		auto instance = this->instances.begin();
@@ -155,6 +158,8 @@ namespace MxEngine
 	template<typename T>
 	inline typename Instancing<T>::NormalData& Instancing<T>::GetNormalData()
 	{
+		MAKE_SCOPE_PROFILER("Instancing::BufferNormalData");
+
 		this->normals.resize(this->models.size());
 		auto normal = this->normals.begin();
 		auto model = this->models.begin();
@@ -169,6 +174,8 @@ namespace MxEngine
 	template<typename T>
 	inline typename Instancing<T>::ColorData& Instancing<T>::GetColorData()
 	{
+		MAKE_SCOPE_PROFILER("Instancing::BufferColorData");
+
 		this->colors.resize(this->instances.size());
 		auto instance = this->instances.begin();
 		for (auto it = this->colors.begin(); it != this->colors.end(); it++, instance++)

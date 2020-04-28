@@ -93,3 +93,8 @@
 - improved object mesh loading (now all object has IBO for rendering)
 - material editing from in runtime from ImGui and python
 - fixed multiple bugs
+### 6.3.0
+- added LOD generator for meshes and auto LOD selection when rendering objects
+- added per-submesh transformations and color (first step in animations)
+- added MSAA support (default to 4x)
+- other performance improvements and profile-logging

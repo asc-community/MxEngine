@@ -44,18 +44,26 @@ namespace MxEngine
         inline void Resize(size_t polygons)
         {
             auto resourceName = Format(FMT_STRING("Sphere_{0}"), Application::Get()->GenerateResourceId());
-            auto data = Sphere::GetSphereData(polygons);
-            this->SubmitData(resourceName, data.first, data.second);
+
+            std::vector<decltype(Sphere::GetSphereData(polygons).first)> vbos;
+            std::vector<decltype(Sphere::GetSphereData(polygons).second)> ibos;
+            AABB aabb{MakeVector3(-1.0f), MakeVector3(1.0f)};
+
+            for (size_t lod = 0; lod < 6 && polygons > 5; lod++)
+            {
+                auto data = Sphere::GetSphereData(polygons);
+                vbos.push_back(std::move(data.first));
+                ibos.push_back(std::move(data.second));
+                polygons = (size_t)(polygons * 0.667);
+            }
+            this->SubmitData(resourceName, aabb, vbos, ibos);
         }
     private:
-        inline static std::pair<ArrayView<float>, ArrayView<unsigned int>> GetSphereData(size_t polygons)
+        inline static std::pair<std::vector<float>, std::vector<unsigned int>> GetSphereData(size_t polygons)
         {
-            // data must be static as its view is returned
-            static std::vector<float> verteces;
-            static std::vector<unsigned int> indicies;
+            std::vector<float> verteces;
+            std::vector<unsigned int> indicies;
 
-            verteces.clear();
-            indicies.clear();
             verteces.reserve(polygons * polygons * AbstractPrimitive::VertexSize);
             indicies.reserve(polygons * polygons * 6); // two triangles
             // generate raw data for verteces (must be rearranged after)
@@ -103,7 +111,7 @@ namespace MxEngine
                 }
             }
 
-            return { verteces, indicies };
+            return std::make_pair(std::move(verteces), std::move(indicies));
         }
     };
 }

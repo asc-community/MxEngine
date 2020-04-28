@@ -209,4 +209,10 @@ namespace MxEngine
         this->_data = begin;
         this->_size = end - begin;
     }
+
+    template<typename T>
+    inline array_view<T> make_view(T& value)
+    {
+        return array_view<T>(&value, 1);
+    }
 }

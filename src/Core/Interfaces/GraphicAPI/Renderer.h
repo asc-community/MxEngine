@@ -71,6 +71,7 @@ namespace MxEngine
 		virtual void Flush() const = 0;
 		virtual void Finish() const = 0;
 		virtual void SetViewport(int x, int y, int width, int height) const = 0;
+		virtual Renderer& UseColorMask(bool r, bool g, bool b, bool a) = 0;
 		virtual Renderer& UseSampling(bool value = true) = 0;
 		virtual Renderer& UseDepthBuffer(bool value = true) = 0;
 		virtual Renderer& UseReversedDepth(bool value = true) = 0;

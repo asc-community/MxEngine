@@ -79,6 +79,7 @@ namespace MxEngine
 		void AttachDepthTexture(const Texture& texture);
 		void AttachDepthCubeMap(const CubeMap& cubemap);
 		void DetachDepthBuffer();
+		void ToggleDepthOnlyMode(bool value) const;
 		void ToggleReversedDepth(bool value) const;
 		void ToggleFaceCulling(bool value, bool counterClockWise = true, bool cullBack = true) const;
 		void SetAnisotropicFiltering(float value) const;

@@ -40,49 +40,67 @@ namespace MxEngine
     protected:
         static constexpr size_t VertexSize = (3 + 2 + 3);
 
-        // submits vertex data in format [v3 (pos), v2 (tex), v3 (norm)] into first RenderObject on MxObject (creates or replaces existing VBO)
-        inline void SubmitData(const std::string& resourceName, ArrayView<float> vbo, ArrayView<unsigned int> ibo)
+        // submits vertex data of different LODs in format [v3 (pos), v2 (tex), v3 (norm)] into first RenderObject on MxObject (creates or replaces existing VBO)
+        inline void SubmitData(const std::string& resourceName, const AABB& boundingBox, ArrayView<std::vector<float>> vbos, ArrayView<std::vector<unsigned int>> ibos)
         {
-            // first we create VBO + VAO with data
-            auto VBO = Graphics::Instance()->CreateVertexBuffer(vbo.data(), vbo.size(), UsageType::STATIC_DRAW);
-            auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
-            auto IBO = Graphics::Instance()->CreateIndexBuffer(ibo.data(), ibo.size());
-            VBL->PushFloat(3);
-            VBL->PushFloat(2);
-            VBL->PushFloat(3);
-            auto VAO = Graphics::Instance()->CreateVertexArray();
-            VAO->AddBuffer(*VBO, *VBL);
+            MX_ASSERT(vbos.size() == ibos.size());
 
-            // check if object already has mesh. If so - replace first render object VAO
-            if (this->ObjectMesh != nullptr && !this->ObjectMesh->GetRenderObjects().empty())
+            size_t lodCount = vbos.size();
+            auto material = MakeRef<Material>();
+            auto transform = MakeRef<Transform>();
+            auto color = MakeRef<Vector4>(MakeVector4(1.0f));
+
+            if (this->ObjectMesh == nullptr)
             {
-                size_t buffers = ObjectMesh->GetBufferCount();
-                for (size_t i = 0; i < buffers; i++)
-                {
-                    VAO->AddInstancedBuffer(ObjectMesh->GetBufferByIndex(i), ObjectMesh->GetBufferLayoutByIndex(i));
-                }
-                // Note that we replace only first render object as we are working with AbstractPrimitive
-                auto& base = this->ObjectMesh->GetRenderObjects().front();
-
-                SubMesh newBase(base.GetName(), std::move(VBO), std::move(VAO), std::move(IBO),
-                    MakeRef<Material>(base.GetMaterial()), MakeRef<Vector4>(base.GetRenderColor()), MakeRef<Transform>(base.GetTransform()),
-                    base.UsesTexture(), base.UsesNormals(), vbo.size() / VertexSize);
-                base = std::move(newBase);
-            }
-            else
-            {
-                // if no render object exists (it is possible if MxObject is empty) - create one
-                auto material = MakeRef<Material>();
-                auto color = MakeRef<Vector4>(1.0f);
-                auto transform = MakeRef<Transform>();
-
-                SubMesh object("main", std::move(VBO), std::move(VAO), std::move(IBO), 
-                    std::move(material), std::move(color), std::move(transform),
-                    true, true, vbo.size() / VertexSize);
-                auto mesh = MakeUnique<Mesh>();
-                mesh->GetRenderObjects().push_back(std::move(object));
                 auto& meshManager = Application::Get()->GetCurrentScene().GetResourceManager<Mesh>();
-                this->SetMesh(meshManager.Add(resourceName, std::move(mesh)));
+                this->SetMesh(meshManager.Add(resourceName, MakeUnique<Mesh>()));
+            }
+            this->ObjectMesh->SetAABB(boundingBox);
+
+            size_t lods = this->ObjectMesh->GetLODCount();
+            MX_ASSERT(lods <= lodCount);
+            while (lods < lodCount)
+            {
+                this->ObjectMesh->PushEmptyLOD();
+                lods++;
+            }
+
+            for (size_t lod = 0; lod < lodCount; lod++)
+            {
+                // first we create VBO + VAO with data
+                auto VBO = Graphics::Instance()->CreateVertexBuffer(vbos[lod].data(), vbos[lod].size(), UsageType::STATIC_DRAW);
+                auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
+                auto IBO = Graphics::Instance()->CreateIndexBuffer(ibos[lod].data(), ibos[lod].size());
+                VBL->PushFloat(3);
+                VBL->PushFloat(2);
+                VBL->PushFloat(3);
+                auto VAO = Graphics::Instance()->CreateVertexArray();
+                VAO->AddBuffer(*VBO, *VBL);
+
+                this->GetMesh()->SetLOD(lod);
+
+                // check if object already has mesh.If so - replace first render object VAO
+                if (!this->ObjectMesh->GetRenderObjects().empty())
+                {
+                    size_t buffers = ObjectMesh->GetBufferCount();
+                    for (size_t i = 0; i < buffers; i++)
+                    {
+                        VAO->AddInstancedBuffer(ObjectMesh->GetBufferByIndex(i), ObjectMesh->GetBufferLayoutByIndex(i));
+                    }
+                    // Note that we replace only first render object as we are working with AbstractPrimitive
+                    auto& base = this->ObjectMesh->GetRenderObjects().front();
+
+                    SubMesh newBase(base.GetName(), std::move(VBO), std::move(VAO), std::move(IBO),
+                        MakeRef<Material>(base.GetMaterial()), MakeRef<Vector4>(base.GetRenderColor()), MakeRef<Transform>(base.GetTransform()), 
+                        base.UsesTexture(), base.UsesNormals(), vbos[lod].size() / VertexSize);
+                    base = std::move(newBase);
+                }
+                else
+                {
+                    SubMesh object("main", std::move(VBO), std::move(VAO), std::move(IBO),
+                        material, color, transform, true, true, vbos[lod].size() / VertexSize);
+                    this->ObjectMesh->GetRenderObjects().push_back(std::move(object));
+                }
             }
         }
     };

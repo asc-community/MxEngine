@@ -1444,8 +1444,11 @@ BOOST_PYTHON_MODULE(mx_engine)
         ;
 
     using GetMaterialFunc = Material& (SubMesh::*)();
+    using GetTransformFunc = Transform& (SubMesh::*)();
     py::class_<SubMesh, boost::noncopyable>("submesh", py::no_init)
         .add_property("material", RefGetter((GetMaterialFunc)&SubMesh::GetMaterial))
+        .add_property("transform", RefGetter((GetTransformFunc)&SubMesh::GetTransform))
+        .add_property("color", RefGetter(&SubMesh::GetRenderColor), &SubMesh::SetRenderColor)
         .add_property("name", RefGetter(&SubMesh::GetName))
         .add_property("has_texture", &SubMesh::UsesTexture)
         .add_property("has_normals", &SubMesh::UsesNormals)

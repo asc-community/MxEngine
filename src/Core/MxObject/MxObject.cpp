@@ -184,9 +184,12 @@ namespace MxEngine
 		auto& models  = this->instances->GetModelData();
 		auto& normals = this->instances->GetNormalData();
 		auto& colors  = this->instances->GetColorData();
-		this->BufferDataByIndex(index, reinterpret_cast<float*>(models.data()), count * modelMatrixSize);
-		this->BufferDataByIndex(index + 1, reinterpret_cast<float*>(normals.data()), count * normalMatrixSize);
-		this->BufferDataByIndex(index + 2, reinterpret_cast<float*>(colors.data()), count * colorVectorSize);
+		{
+			MAKE_SCOPE_PROFILER("MxObject::BufferInstancesToGPU");
+			this->BufferDataByIndex(index, reinterpret_cast<float*>(models.data()), count * modelMatrixSize);
+			this->BufferDataByIndex(index + 1, reinterpret_cast<float*>(normals.data()), count * normalMatrixSize);
+			this->BufferDataByIndex(index + 2, reinterpret_cast<float*>(colors.data()), count * colorVectorSize);
+		}
     }
 
     AABB MxObject::GetAABB() const

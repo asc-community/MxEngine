@@ -450,12 +450,6 @@ namespace MxEngine
 		return { minCoords, maxCoords };
 	}
 
-	inline Vector3 FindCenter(Vector3* verteces, size_t size)
-	{
-		auto coords = MinMaxComponents(verteces, size);
-		return (coords.first + coords.second) * 0.5f;
-	}
-
 	inline constexpr float SignedSqrt(float x)
 	{
 		if (x < 0.0f) return -std::sqrt(-x);
@@ -500,6 +494,30 @@ namespace MxEngine
 		T result = vec;
 		for (typename T::length_type i = 0; i < vec.length(); i++)
 			result[i] = Radians(vec[i]);
+		return result;
+	}
+
+	template<typename T>
+	inline auto VectorMax(const T& v1, const T& v2)
+		-> decltype(v1.length(), v1[0], v1)
+	{
+		T result;
+		for (typename T::length_type i = 0; i < result.length(); i++)
+		{
+			result[i] = std::max(v1[i], v2[i]);
+		}
+		return result;
+	}
+
+	template<typename T>
+	inline auto VectorMin(const T& v1, const T& v2)
+		-> decltype(v1.length(), v1[0], v1)
+	{
+		T result;
+		for (typename T::length_type i = 0; i < result.length(); i++)
+		{
+			result[i] = std::min(v1[i], v2[i]);
+		}
 		return result;
 	}
 

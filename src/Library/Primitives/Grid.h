@@ -49,10 +49,11 @@ namespace MxEngine
         inline void Resize(size_t size)
         {
             auto data = Grid::GetGridData(size);
-            this->SubmitData(Format(FMT_STRING("MxGrid_{0}"), size), data.first, data.second);
+            AABB aabb{ MakeVector3(-(float)size, -0.0001f, -(float)size), MakeVector3((float)size, 0.0001f, (float)size) };
+            this->SubmitData(Format(FMT_STRING("MxGrid_{0}"), size), aabb, make_view(data.first), make_view(data.second));
         }
     private:
-        inline static std::pair<ArrayView<float>, ArrayView<unsigned int>> GetGridData(size_t size)
+        inline static std::pair<std::vector<float>, std::vector<unsigned int>> GetGridData(size_t size)
         {
             float gridSize = float(size) / 2.0f;
             std::array vertex =
@@ -81,8 +82,8 @@ namespace MxEngine
                 VectorInt3(1, 1, 0), VectorInt3(2, 2, 0), VectorInt3(3, 3, 0),
             };
             constexpr size_t dataSize = face.size() * AbstractPrimitive::VertexSize;
-            static std::array<float, dataSize> data; // data must be static as its view is returned
-            static std::array<unsigned int, face.size()> indicies; // data must be static as its view is returned
+            std::vector<float> data(dataSize);
+            std::vector<unsigned int> indicies(face.size());
 
             for (size_t i = 0; i < face.size(); i++)
             {
@@ -102,7 +103,7 @@ namespace MxEngine
                 data[8 * i + 6] = vn.y;
                 data[8 * i + 7] = vn.z;
             }
-            return { data, indicies };
+            return std::make_pair(std::move(data), std::move(indicies));
         }
 
         inline static void DrawBorder(uint8_t* data, size_t size, size_t borderSize)

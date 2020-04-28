@@ -288,15 +288,27 @@ namespace MxEngine
 			VerifyLightSystem(lights);
 
 			this->renderer.ToggleReversedDepth(false);
+			this->renderer.ToggleDepthOnlyMode(true);
+
+			// compute LOD for each object
+			for (const auto& [name, object] : this->currentScene->GetObjectList())
+			{
+				// we do not try to compute LOD for instanced objects, as it is potentially more resource-demanding, then rendering
+				// better to let user himself specify desired LOD. TODO: consider optimizing LOD computing for instances
+				if (object->GetMesh() != nullptr && object->UseLOD && object->GetInstanceCount() == 0)
+				{
+					object->GetMesh()->SetLOD(ComputeLODLevel(*object, viewport));
+				}
+			}
 
 			// first draw global directional light
 			{
 				lights.Global->ProjectionCenter = viewport.GetPosition();
 				this->renderer.AttachDepthTexture(*lights.Global->GetDepthTexture());
 				MAKE_SCOPE_PROFILER("Renderer::DrawGlobalLightDepthTexture");
-				for (const auto& object : this->currentScene->GetObjectList())
+				for (const auto& [name, object] : this->currentScene->GetObjectList())
 				{
-					this->renderer.DrawDepthTexture(*object.second, *lights.Global);
+					this->renderer.DrawDepthTexture(*object, *lights.Global);
 				}
 			}
 
@@ -328,6 +340,17 @@ namespace MxEngine
 		}
 
 		this->renderer.AttachDrawBuffer();
+
+		// draw objects depth
+		{
+			MAKE_SCOPE_PROFILER("Renderer::DrawDepth");
+			for (const auto& [name, object] : this->currentScene->GetObjectList())
+			{
+				this->renderer.DrawDepthTexture(*object, viewport);
+			}
+			this->renderer.ToggleDepthOnlyMode(false);
+		}
+
 		if (this->drawLighting)
 		{
 			// now draw the scene as usual (with all framebuffers)
@@ -335,10 +358,6 @@ namespace MxEngine
 				MAKE_SCOPE_PROFILER("Renderer::DrawScene");
 				for (const auto& [name, object] : this->currentScene->GetObjectList())
 				{
-					if (object->GetMesh() != nullptr && object->UseLOD)
-					{
-						object->GetMesh()->SetLOD(ComputeLODLevel(*object, viewport));
-					}
 					this->renderer.DrawObject(*object, viewport, lights, this->currentScene->SceneSkybox.get());
 				}
 			}
@@ -348,11 +367,7 @@ namespace MxEngine
 			MAKE_SCOPE_PROFILER("Renderer::DrawScene");
 			for (const auto& [name, object] : this->currentScene->GetObjectList())
 			{
-				if (object->GetMesh() != nullptr)
-				{
-					object->GetMesh()->SetLOD(ComputeLODLevel(*object, viewport));
-					this->renderer.DrawObject(*object, viewport);
-				}
+				this->renderer.DrawObject(*object, viewport);
 			}
 		}
 
@@ -378,14 +393,23 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("MxEngine::OnUpdate");
 		UpdateEvent updateEvent(this->timeDelta);
 		this->GetEventDispatcher().Invoke(updateEvent);
-		for (auto& [_, object] : this->currentScene->GetObjectList())
 		{
-			object->OnUpdate();
+			MAKE_SCOPE_PROFILER("Scene::OnUpdate");
+			for (auto& [_, object] : this->currentScene->GetObjectList())
+			{
+				object->OnUpdate();
+			}
+			this->currentScene->OnUpdate();
 		}
-		this->currentScene->OnUpdate();
-		this->OnUpdate();
-		this->currentScene->OnRender();
-		this->currentScene->PrepareRender();
+		{
+			MAKE_SCOPE_PROFILER("Application::OnUpdate");
+			this->OnUpdate();
+		}
+		{
+			MAKE_SCOPE_PROFILER("Scene::PrepareRender");
+			this->currentScene->OnRender();
+			this->currentScene->PrepareRender();
+		}
 	}
 
 	bool Application::VerifyApplicationState()
