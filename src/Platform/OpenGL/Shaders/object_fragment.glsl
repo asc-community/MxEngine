@@ -18,6 +18,7 @@ in VSout
 	vec4 RenderColor;
 	vec4 FragPosDirLight;
 	vec4 FragPosSpotLight[MAX_SPOT_LIGHTS];
+	mat3 TBN;
 } fsin;
 
 out vec4 Color;
@@ -70,6 +71,7 @@ uniform sampler2D map_Ka;
 uniform sampler2D map_Kd;
 uniform sampler2D map_Ks;
 uniform sampler2D map_Ke;
+uniform sampler2D map_normal;
 uniform sampler2D map_dirLight_shadow;
 uniform samplerCube map_pointLight_shadow[MAX_POINT_LIGHTS];
 uniform sampler2D map_spotLight_shadow[MAX_SPOT_LIGHTS];
@@ -205,9 +207,16 @@ vec3 calcReflection(vec3 viewDir, vec3 normal)
 	return color;
 }
 
+vec3 calcNormal(vec2 texcoord, mat3 TBN)
+{
+	vec3 normal = texture(map_normal, texcoord).rgb;
+	normal = normalize(normal * 2.0f - 1.0f);
+	return TBN * normal;
+}
+
 void main()
 {
-	vec3 normal = normalize(fsin.Normal);
+	vec3 normal = calcNormal(fsin.TexCoord, fsin.TBN);
 	vec3 viewDist = viewPos - fsin.FragPosWorld;
 	vec3 viewDir = normalize(viewDist);
 
@@ -236,9 +245,6 @@ void main()
 
 	color *= fsin.RenderColor.rgb;
 	dissolve *= fsin.RenderColor.a;
-
-	const vec3 gamma = vec3(1.0f / 2.2f);
-	// color = pow(color, gamma);
 
 	Color = vec4(color, dissolve);
 }

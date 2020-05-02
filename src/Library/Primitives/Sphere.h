@@ -74,6 +74,9 @@ namespace MxEngine
                     float x = std::sin(Pi<float>() * m / polygons) * std::cos(2 * Pi<float>() * n / polygons);
                     float y = std::sin(Pi<float>() * m / polygons) * std::sin(2 * Pi<float>() * n / polygons);
                     float z = std::cos(Pi<float>() * m / polygons);
+
+                    Vector3 T = Normalize(Cross(MakeVector3(0.0f, 1.0f, 0.0f), MakeVector3(x, y, z)));
+                    Vector3 B = Cross(MakeVector3(x, y, z), T);
                     // position
                     verteces.push_back(x);
                     verteces.push_back(y);
@@ -85,6 +88,14 @@ namespace MxEngine
                     verteces.push_back(x);
                     verteces.push_back(y);
                     verteces.push_back(z);
+                    // tangent
+                    verteces.push_back(T.x);
+                    verteces.push_back(T.y);
+                    verteces.push_back(T.z);
+                    // bitangent
+                    verteces.push_back(B.x);
+                    verteces.push_back(B.y);
+                    verteces.push_back(B.z);
                 }
             }
 

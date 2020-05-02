@@ -140,8 +140,8 @@ namespace MxEngine
 				// setting materials
 				shader.SetUniformFloat("material.d", material.d);
 				
-				this->GetRenderEngine().SetDefaultVertexAttribute(3, ModelMatrix * renderObject.GetMatrix());
-				this->GetRenderEngine().SetDefaultVertexAttribute(10, renderColor * renderObject.GetRenderColor());
+				this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetMatrix());
+				this->GetRenderEngine().SetDefaultVertexAttribute(12, renderColor * renderObject.GetRenderColor());
 
 				if (object.GetInstanceCount() == 0)
 				{
@@ -224,12 +224,12 @@ namespace MxEngine
 			{
 				const Material& material = renderObject.GetMaterial();
 
-				#define BIND_TEX(NAME, SLOT)         \
-				if (material.NAME != nullptr)        \
-					material.NAME->Bind(SLOT);       \
-				else if (object.HasTexture())        \
-					object.GetTexture().Bind(SLOT);  \
-				else                                 \
+				#define BIND_TEX(NAME, SLOT)\
+				if (material.NAME != nullptr)            \
+					material.NAME->Bind(SLOT);           \
+				else if (object.HasTexture())            \
+					object.GetTexture().Bind(SLOT);      \
+				else                                     \
 					this->DefaultTexture->Bind(SLOT);\
 				shader.SetUniformInt(#NAME, SLOT)
 
@@ -238,19 +238,26 @@ namespace MxEngine
 				BIND_TEX(map_Ks, 2);
 				BIND_TEX(map_Ke, 3);
 
-				lights.Global->GetDepthTexture()->Bind(4);
-				shader.SetUniformInt("map_dirLight_shadow", 4);
+				if (material.map_normal != nullptr)
+					material.map_normal->Bind(4);
+				else
+					this->DefaultNormal->Bind(4);
+				shader.SetUniformInt("map_normal", 4);
+
+				int shadowMapsStartIdx = 5;
+				lights.Global->GetDepthTexture()->Bind(shadowMapsStartIdx);
+				shader.SetUniformInt("map_dirLight_shadow", shadowMapsStartIdx);
 
 				for (int i = 0; i < lights.Spot.size(); i++)
 				{
-					int bindIndex = 5 + i;
+					int bindIndex = shadowMapsStartIdx + 1 + i;
 					lights.Spot[i].GetDepthTexture()->Bind(bindIndex);
 					shader.SetUniformInt(Format(FMT_STRING("map_spotLight_shadow[{0}]"), i), bindIndex);
 				}
 
 				for (int i = 0; i < lights.Point.size(); i++)
 				{
-					int bindIndex = (5 + (int)lights.Spot.size()) + i;
+					int bindIndex = (shadowMapsStartIdx + 1 + (int)lights.Spot.size()) + i;
 					lights.Point[i].GetDepthCubeMap()->Bind(bindIndex);
 					shader.SetUniformInt(Format(FMT_STRING("map_pointLight_shadow[{0}]"), i), bindIndex);
 				}
@@ -259,12 +266,12 @@ namespace MxEngine
 				constexpr size_t MAX_POINT_SOURCES = 2;
 				for (int i = (int)lights.Point.size(); i < MAX_POINT_SOURCES; i++)
 				{
-					int bindIndex = int(5 + lights.Spot.size() + lights.Point.size()) + i;
+					int bindIndex = int(shadowMapsStartIdx + 1 + lights.Spot.size() + lights.Point.size()) + i;
 					lights.Global->GetDepthTexture()->Bind(bindIndex);
 					shader.SetUniformInt(Format(FMT_STRING("map_pointLight_shadow[{0}]"), i), bindIndex);
 				}
 
-				int bindIndex = int(5 + lights.Spot.size() + MAX_POINT_SOURCES);
+				int bindIndex = int(6 + lights.Spot.size() + MAX_POINT_SOURCES);
 				if (skybox->SkyboxTexture != nullptr) // TODO: what should we do if no skybox exists for scene?
 					skybox->SkyboxTexture->Bind(bindIndex);
 				shader.SetUniformInt("map_skybox", bindIndex);
@@ -281,9 +288,9 @@ namespace MxEngine
 				shader.SetUniformFloat("Ka", material.f_Ka);
 				shader.SetUniformFloat("Kd", material.f_Kd);
 
-				this->GetRenderEngine().SetDefaultVertexAttribute(3, ModelMatrix * renderObject.GetMatrix());
-				this->GetRenderEngine().SetDefaultVertexAttribute(7, NormalMatrix * renderObject.GetNormalMatrix());
-				this->GetRenderEngine().SetDefaultVertexAttribute(10, renderColor * renderObject.GetRenderColor());
+				this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetMatrix());
+				this->GetRenderEngine().SetDefaultVertexAttribute(9, NormalMatrix * renderObject.GetNormalMatrix());
+				this->GetRenderEngine().SetDefaultVertexAttribute(12, renderColor * renderObject.GetRenderColor());
 
 				if (object.GetInstanceCount() == 0)
 				{
@@ -314,7 +321,7 @@ namespace MxEngine
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
 
-			this->GetRenderEngine().SetDefaultVertexAttribute(3, ModelMatrix * renderObject.GetMatrix());
+			this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetMatrix());
 
 			if (object.GetInstanceCount() == 0)
 			{
@@ -392,5 +399,6 @@ namespace MxEngine
 		{
 			this->MSAABuffer->CopyFrameBufferContents(this->MSAABuffer->GetWidth(), this->MSAABuffer->GetHeight());
 		}
+		this->MSAABuffer->Unbind();
 	}
 }

@@ -879,10 +879,13 @@ BOOST_PYTHON_MODULE(mx_engine)
     py::def("degrees", DegreesVec<Vector3>);
     py::def("radians", RadiansVec<Vector3>);
 
+    using ExecuteScriptStrFunc = void (Application::*)(const std::string&);
+    using ExecuteScriptFileFunc = void (Application::*)(Script&);
     py::class_<Application, boost::noncopyable>("application", py::no_init)
         .def("create_context", &Application::CreateContext)
         .def("create_scene", RefGetter(CreatePySceneWrapper))
-        .def("execute", &Application::ExecuteScript)
+        .def("execute", (ExecuteScriptFileFunc)&Application::ExecuteScript)
+        .def("execute", (ExecuteScriptStrFunc)&Application::ExecuteScript)
         .def("load_scene", &Application::LoadScene)
         .def("get_scene", RefGetter(&Application::GetScene))
         .def("scene_exists", &Application::SceneExists)

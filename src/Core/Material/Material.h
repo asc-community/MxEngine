@@ -42,6 +42,7 @@ namespace MxEngine
 		Ref<Texture> map_Ks;
 		Ref<Texture> map_Ke;
 		Ref<Texture> map_d;
+		Ref<Texture> map_normal;
 		Ref<Texture> map_bump;
 		Ref<Texture> bump;
 

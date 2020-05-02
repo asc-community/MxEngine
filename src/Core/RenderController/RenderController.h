@@ -71,6 +71,7 @@ namespace MxEngine
 		Shader* DepthTextureShader = nullptr;
 		Shader* DepthCubeMapShader = nullptr;
 		Texture* DefaultTexture = nullptr;
+		Texture* DefaultNormal = nullptr;
 		FrameBuffer* DepthBuffer = nullptr;
 
 		Renderer& GetRenderEngine() const;
@@ -116,7 +117,7 @@ namespace MxEngine
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
 
-			this->GetRenderEngine().SetDefaultVertexAttribute(3, ModelMatrix * renderObject.GetMatrix());
+			this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetMatrix());
 
 			if (object.GetInstanceCount() == 0)
 			{
@@ -153,7 +154,7 @@ namespace MxEngine
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
 
-			this->GetRenderEngine().SetDefaultVertexAttribute(3, ModelMatrix * renderObject.GetMatrix());
+			this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetMatrix());
 
 			if (object.GetInstanceCount() == 0)
 			{

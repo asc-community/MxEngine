@@ -44,7 +44,7 @@ namespace MxEngine
 		inline ConsoleBinding& Bind(KeyCode activateKey)
 		{
 			Logger::Instance().Debug("MxEngine::ConsoleBinding", Format("bound console to keycode: {0}", int(activateKey)));
-			Application::Get()->GetEventDispatcher().AddEventListener<UpdateEvent>(this->handle,
+			Application::Get()->GetEventDispatcher().AddEventListener(this->handle,
 				[cursorPos = Vector2(), key = activateKey](UpdateEvent& event) mutable
 				{
 					auto& window = Application::Get()->GetWindow();

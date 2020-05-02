@@ -43,7 +43,7 @@ namespace MxEngine
 		inline AppCloseBinding& Bind(KeyCode activateKey)
 		{
 			Logger::Instance().Debug("MxEngine::AppCloseBinding", Format("bound app close to keycode: {0}", int(activateKey)));
-			Application::Get()->GetEventDispatcher().AddEventListener<KeyEvent>(this->handle,
+			Application::Get()->GetEventDispatcher().AddEventListener(this->handle,
 				[key = activateKey](KeyEvent& event)
 				{
 					auto context = Application::Get();

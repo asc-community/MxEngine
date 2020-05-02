@@ -45,16 +45,24 @@
 
 namespace MxEngine
 {
-#define DECL_EVENT_TYPE(event) dispatcher.RegisterEventType<event>()
-	void InitEventDispatcher(AppEventDispatcher& dispatcher)
+	template<typename EventType>
+	void ForwardEvent(const std::string& name)
 	{
-		DECL_EVENT_TYPE(AppDestroyEvent);
-		DECL_EVENT_TYPE(FpsUpdateEvent);
-		DECL_EVENT_TYPE(KeyEvent);
-		DECL_EVENT_TYPE(MouseMoveEvent);
-		DECL_EVENT_TYPE(RenderEvent);
-		DECL_EVENT_TYPE(UpdateEvent);
-		DECL_EVENT_TYPE(WindowResizeEvent);
+		Application::Get()->GetEventDispatcher().AddEventListener(name, [](EventType& e)
+		{
+			Application::Get()->GetCurrentScene().GetEventDispatcher().Invoke(e);
+		});
+	}
+
+	void InitEventDispatcher()
+	{
+		ForwardEvent<AppDestroyEvent>  ("MxAppDestroyEvent");
+		ForwardEvent<FpsUpdateEvent>   ("MxFpsUpdateEvent");
+		ForwardEvent<WindowResizeEvent>("MxWindowResizeEvent");
+		ForwardEvent<MouseMoveEvent>   ("MxMouseMoveEvent");
+		ForwardEvent<RenderEvent>      ("MxRenderEvent"); 
+		ForwardEvent<UpdateEvent>      ("MxUpdateEvent"); 
+		ForwardEvent<KeyEvent>         ("MxKeyEvent");
 	}
 
 	size_t ComputeLODLevel(const MxObject& object, const CameraController& camera)
@@ -87,19 +95,7 @@ namespace MxEngine
 		this->CreateScene("Global", MakeUnique<Scene>("Global", "Resources/"));
 		this->CreateScene("Default", MakeUnique<Scene>("Default", "Resources/"));
 
-		InitEventDispatcher(this->GetEventDispatcher());
-
-#define FORWARD_EVENT_SCENE(event)\
-		this->dispatcher.AddEventListener<event>(#event, [this](event& e)\
-		{\
-			this->GetCurrentScene().GetEventDispatcher().Invoke(e);\
-		})
-		FORWARD_EVENT_SCENE(AppDestroyEvent);
-		FORWARD_EVENT_SCENE(FpsUpdateEvent);
-		FORWARD_EVENT_SCENE(KeyEvent);
-		FORWARD_EVENT_SCENE(MouseMoveEvent);
-		FORWARD_EVENT_SCENE(RenderEvent);
-		FORWARD_EVENT_SCENE(UpdateEvent);
+		InitEventDispatcher();
 	}
 
 	void Application::ToggleMeshDrawing(bool state)
@@ -222,7 +218,7 @@ namespace MxEngine
 	void Application::SetMSAASampling(size_t samples)
 	{
 		this->MSAAfactor = samples;
-		this->GetEventDispatcher().AddEventListener<WindowResizeEvent>("MSAAfactorTrack", [](WindowResizeEvent& e)
+		this->GetEventDispatcher().AddEventListener("MSAAfactorTrack", [](WindowResizeEvent& e)
 			{
 				size_t samples = Application::Get()->GetMSAASampling();
 				Application::Get()->GetRenderer().SetMSAASampling(samples, (int)e.New.x, (int)e.New.y);
@@ -247,10 +243,20 @@ namespace MxEngine
 
 	void Application::ExecuteScript(Script& script)
 	{
-		MAKE_SCOPE_PROFILER("Application::ExecuteScript");
 		script.UpdateContents();
+		this->ExecuteScript(script.GetContent());
+	}
+
+	void Application::ExecuteScript(const std::string& script)
+	{
+		this->ExecuteScript(script.c_str());
+	}
+
+	void Application::ExecuteScript(const char* script)
+	{
+		MAKE_SCOPE_PROFILER("Application::ExecuteScript");
 		auto& engine = this->GetConsole().GetEngine();
-		engine.Execute(script.GetContent());
+		engine.Execute(script);
 		if (engine.HasErrors())
 		{
 			Logger::Instance().Error("Application::ExecuteScript", engine.GetErrorMessage());
@@ -339,17 +345,18 @@ namespace MxEngine
 			this->renderer.ToggleReversedDepth(true);
 		}
 
+		this->renderer.Clear();
 		this->renderer.AttachDrawBuffer();
 
-		// draw objects depth
-		{
-			MAKE_SCOPE_PROFILER("Renderer::DrawDepth");
-			for (const auto& [name, object] : this->currentScene->GetObjectList())
-			{
-				this->renderer.DrawDepthTexture(*object, viewport);
-			}
-			this->renderer.ToggleDepthOnlyMode(false);
-		}
+		//  // draw objects depth
+		//  {
+		//  	MAKE_SCOPE_PROFILER("Renderer::DrawDepth");
+		//  	for (const auto& [name, object] : this->currentScene->GetObjectList())
+		//  	{
+		//  		this->renderer.DrawDepthTexture(*object, viewport);
+		//  	}
+		//  }
+		this->renderer.ToggleDepthOnlyMode(false);
 
 		if (this->drawLighting)
 		{
@@ -439,6 +446,10 @@ namespace MxEngine
 		if (Renderer.DefaultTexture == nullptr)
 		{
 			Renderer.DefaultTexture = Colors::MakeTexture(Colors::WHITE);
+		}
+		if (Renderer.DefaultNormal == nullptr)
+		{
+			Renderer.DefaultNormal = Colors::MakeTexture(Colors::FLAT_NORMAL);
 		}
 		if (Renderer.ObjectShader == nullptr)
 		{
@@ -739,14 +750,14 @@ namespace MxEngine
 	void Application::CreateConsoleBindings(DeveloperConsole& console)
 	{
 		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });
-		this->GetEventDispatcher().AddEventListener<RenderEvent>("DeveloperConsole",
+		this->GetEventDispatcher().AddEventListener("DeveloperConsole",
 			[this](RenderEvent&) { this->GetConsole().OnRender(); });
 	}
 #else
 	void Application::CreateConsoleBindings(DeveloperConsole& console)
 	{
 		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });
-		this->GetEventDispatcher().AddEventListener<RenderEvent>("DeveloperConsole",
+		this->GetEventDispatcher().AddEventListener("DeveloperConsole",
 			[this](RenderEvent&) { this->GetConsole().OnRender(); });
 	}
 #endif

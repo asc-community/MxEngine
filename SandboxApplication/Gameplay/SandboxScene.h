@@ -75,17 +75,23 @@ class SandboxScene : public Scene
 		this->Viewport.Translate(1.0f, 3.0f, 0.0f);
 		this->Viewport.SetMoveSpeed(5.0f);
 		this->Viewport.SetRotateSpeed(0.75f);
+
     }
 
 	virtual void OnLoad() override
 	{
-		LightBinding(this->PointLights).BindAll();
-		LightBinding(this->SpotLights).BindAll();
 		InputControlBinding("CameraControl", this->Viewport)
 			.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT)
 			.BindRotation();
 
 		Application::Get()->ExecuteScript(*this->GetResource<Script>("load"));
+		LightBinding(this->PointLights).BindAll();
+		LightBinding(this->SpotLights).BindAll();
+	}
+
+	virtual void OnUnload() override
+	{
+
 	}
 
     virtual void OnUpdate() override

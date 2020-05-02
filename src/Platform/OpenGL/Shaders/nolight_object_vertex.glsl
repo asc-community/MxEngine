@@ -6,8 +6,8 @@ MAKE_STRING(
 
 layout(location = 0)  in vec4 position;
 layout(location = 1)  in vec3 texCoord;
-layout(location = 3)  in mat4 model;
-layout(location = 10) in vec4 renderColor;
+layout(location = 5)  in mat4 model;
+layout(location = 12) in vec4 renderColor;
 
 uniform mat4 ViewProjMatrix;
 

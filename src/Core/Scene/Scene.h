@@ -46,6 +46,8 @@
 
 namespace MxEngine
 {
+    class Application;
+
     class Scene
     {
     public:

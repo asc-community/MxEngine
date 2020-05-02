@@ -81,10 +81,9 @@ namespace MxEngine
 			Logger::Instance().Error("Texture", "file with name '" + filepath + "' was not found");
 			return;
 		}
-		MX_ASSERT(image.channels == 3);
 		this->width = image.width;
 		this->height = image.height;
-		this->channels = image.channels;
+		this->channels = 3;
 		this->textureType = GL_TEXTURE_2D;
 
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));

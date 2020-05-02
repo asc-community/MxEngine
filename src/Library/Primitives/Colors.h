@@ -54,6 +54,9 @@ namespace MxEngine
             VIOLET,
             SKYBLUE,
             SPRING,
+            FLAT_NORMAL,
+            PINK,
+            SALAD,
             GREY,
         };
 
@@ -120,6 +123,12 @@ namespace MxEngine
                 return MakeTexture((uint8_t)0,   127, 255);
             case Colors::SPRING:
                 return MakeTexture((uint8_t)0,   255, 127);
+            case Colors::FLAT_NORMAL:
+                return MakeTexture((uint8_t)127, 127, 255);
+            case Colors::PINK:
+                return MakeTexture((uint8_t)255, 127, 127);
+            case Colors::SALAD:
+                return MakeTexture((uint8_t)127, 255, 127);
             case Colors::GREY:
                 return MakeTexture((uint8_t)127, 127, 127);
             default:

@@ -54,7 +54,7 @@ namespace MxEngine
 		{
 			Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object movement");
 			auto& dispatcher = Application::Get()->GetCurrentScene().GetEventDispatcher();
-			dispatcher.AddEventListener<KeyEvent>(this->handle, 
+			dispatcher.AddEventListener(this->handle, 
 				[forward, back, right, left, &object = object](KeyEvent& event)
 				{
 					auto dt = Application::Get()->GetTimeDelta();
@@ -82,7 +82,7 @@ namespace MxEngine
 		{
 			Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object movement");
 			auto& dispatcher = Application::Get()->GetCurrentScene().GetEventDispatcher();
-			dispatcher.AddEventListener<KeyEvent>(this->handle,
+			dispatcher.AddEventListener(this->handle,
 				[forward, back, right, left, up, down, &object = object](KeyEvent& event)
 				{
 					auto dt = Application::Get()->GetTimeDelta();
@@ -118,7 +118,7 @@ namespace MxEngine
 		{
 			Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object rotation");
 			auto& dispatcher = Application::Get()->GetCurrentScene().GetEventDispatcher();
-			dispatcher.AddEventListener<MouseMoveEvent>(this->handle,
+			dispatcher.AddEventListener(this->handle,
 				[&object = object](MouseMoveEvent& event)
 				{
 					static Vector2 oldPos = event.position;
@@ -133,7 +133,7 @@ namespace MxEngine
 		{
 			Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object rotation");
 			auto& dispatcher = Application::Get()->GetCurrentScene().GetEventDispatcher();
-			dispatcher.AddEventListener<MouseMoveEvent>(this->handle,
+			dispatcher.AddEventListener(this->handle,
 				[&object = object](MouseMoveEvent& event)
 				{
 					static Vector2 oldPos = event.position;
@@ -148,7 +148,7 @@ namespace MxEngine
 		{
 			Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object rotation");
 			auto& dispatcher = Application::Get()->GetCurrentScene().GetEventDispatcher();
-			dispatcher.AddEventListener<MouseMoveEvent>(this->handle,
+			dispatcher.AddEventListener(this->handle,
 				[&object = object](MouseMoveEvent& event)
 				{
 					static Vector2 oldPos = event.position;

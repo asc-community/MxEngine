@@ -80,7 +80,6 @@ namespace MxEngine
     {
         const auto& mesh = this->objectLOD.meshes[meshId];
         const Vector3& Vf = *reinterpret_cast<const Vector3*>(mesh.buffer.data() + f * mesh.VertexSize + 0);
-        const Vector3& Nf = *reinterpret_cast<const Vector3*>(mesh.buffer.data() + f * mesh.VertexSize + 5);
 
         auto it = vertecies.find(Vf);
         if (it == vertecies.end())
@@ -156,7 +155,9 @@ namespace MxEngine
                     auto V = MakeVector3(0.0f);
                     auto T = MakeVector2(0.0f);
                     auto N = MakeVector3(0.0f);
-                    
+                    auto U = MakeVector3(0.0f);
+                    auto B = MakeVector3(0.0f);
+
                     size_t total = 0;
                     for (const auto& [face, count] : meshWeights[f])
                         total += count;
@@ -167,9 +168,13 @@ namespace MxEngine
                         const Vector3& Vf = *reinterpret_cast<const Vector3*>(oldMesh.buffer.data() + face * oldMesh.VertexSize + 0);
                         const Vector2& Tf = *reinterpret_cast<const Vector3*>(oldMesh.buffer.data() + face * oldMesh.VertexSize + 3);
                         const Vector3& Nf = *reinterpret_cast<const Vector3*>(oldMesh.buffer.data() + face * oldMesh.VertexSize + 5);
+                        const Vector3& Uf = *reinterpret_cast<const Vector3*>(oldMesh.buffer.data() + face * oldMesh.VertexSize + 8);
+                        const Vector3& Bf = *reinterpret_cast<const Vector3*>(oldMesh.buffer.data() + face * oldMesh.VertexSize + 11);
                         V += weight * Vf;
                         T += weight * Tf;
                         N += weight * Nf;
+                        U += weight * Uf;
+                        B += weight * Bf;
                     }
 
                     mesh.buffer.push_back(V.x);
@@ -180,6 +185,12 @@ namespace MxEngine
                     mesh.buffer.push_back(N.x);
                     mesh.buffer.push_back(N.y);
                     mesh.buffer.push_back(N.z);
+                    mesh.buffer.push_back(U.x);
+                    mesh.buffer.push_back(U.y);
+                    mesh.buffer.push_back(U.z);
+                    mesh.buffer.push_back(B.x);
+                    mesh.buffer.push_back(B.y);
+                    mesh.buffer.push_back(B.z);
                     indexTable[f] = lastId++;
                 }
                 f = (unsigned int)indexTable[f];

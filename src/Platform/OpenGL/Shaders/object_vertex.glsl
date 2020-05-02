@@ -7,11 +7,13 @@ R"(
 MAKE_STRING(
 
 layout(location = 0)  in vec4 position;
-layout(location = 1)  in vec3 texCoord;
-layout(location = 2)  in vec4 normal;
-layout(location = 3)  in mat4 model;
-layout(location = 7)  in mat3 normalMatrix;
-layout(location = 10) in vec4 renderColor;
+layout(location = 1)  in vec2 texCoord;
+layout(location = 2)  in vec3 normal;
+layout(location = 3)  in vec3 tangent;
+layout(location = 4)  in vec3 bitangent;
+layout(location = 5)  in mat4 model;
+layout(location = 9)  in mat3 normalMatrix;
+layout(location = 12) in vec4 renderColor;
 
 uniform mat4 ViewProjMatrix;
 uniform mat4 DirLightProjMatrix;
@@ -27,6 +29,7 @@ out VSout
 	vec4 RenderColor;
 	vec4 FragPosDirLight;
 	vec4 FragPosSpotLight[MAX_SPOT_LIGHTS];
+	mat3 TBN;
 } vsout;
 
 void main()
@@ -34,8 +37,13 @@ void main()
 	vec4 modelPos = model * position;
 	gl_Position = ViewProjMatrix * modelPos;
 
-	vsout.TexCoord = texCoord.xy;
-	vsout.Normal = normalMatrix * vec3(normal);
+	vec3 T = normalize(vec3(normalMatrix * tangent));
+	vec3 B = normalize(vec3(normalMatrix * bitangent));
+	vec3 N = normalize(vec3(normalMatrix * normal));
+
+	vsout.TBN = mat3(T, B, N);
+	vsout.TexCoord = texCoord;
+	vsout.Normal = normalMatrix * normal;
 	vsout.FragPosWorld = vec3(modelPos);
 	vsout.RenderColor = renderColor;
 	vsout.FragPosDirLight = DirLightProjMatrix * modelPos;

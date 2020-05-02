@@ -86,6 +86,8 @@ namespace MxEngine
 	public:
 		void CreateContext();
 		void ExecuteScript(Script& script);
+		void ExecuteScript(const std::string& script);
+		void ExecuteScript(const char* script);
 
 		void ToggleDeveloperConsole(bool isVisible);
 		void ToggleLighting(bool state = true);

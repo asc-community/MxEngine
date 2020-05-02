@@ -52,7 +52,7 @@ namespace MxEngine
 		Logger::Instance().Debug("Assimp::Importer", "loading object from file: " + filename);
 		static Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices 
-			| aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_ImproveCacheLocality | aiProcess_GenUVCoords);
+			| aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_ImproveCacheLocality | aiProcess_GenUVCoords | aiProcess_CalcTangentSpace);
 		if (scene == nullptr)
 		{
 			MxEngine::Logger::Instance().Error("Assimp::Importer", importer.GetErrorString());
@@ -92,7 +92,6 @@ namespace MxEngine
 			GET_COLOR(DIFFUSE,     Kd);
 			GET_COLOR(SPECULAR,    Ks);
 			GET_COLOR(EMISSIVE,    Ke);
-			GET_COLOR(TRANSPARENT, Tf);
 
 			#define GET_TEXTURE(type, field)\
 			if (material->GetTextureCount(type) > 0)\
@@ -116,13 +115,8 @@ namespace MxEngine
 			auto& mesh = scene->mMeshes[i];
 			auto coords = MinMaxComponents((Vector3*)mesh->mVertices, mesh->mNumVertices);
 
-			minCoords.x = std::min(minCoords.x, coords.first.x);
-			minCoords.y = std::min(minCoords.y, coords.first.y);
-			minCoords.z = std::min(minCoords.z, coords.first.z);
-
-			maxCoords.x = std::max(maxCoords.x, coords.second.x);
-			maxCoords.y = std::max(maxCoords.y, coords.second.y);
-			maxCoords.z = std::max(maxCoords.z, coords.second.z);
+			minCoords = VectorMin(minCoords, coords.first);
+			maxCoords = VectorMax(maxCoords, coords.second);
 		}
 		auto objectCenter = (minCoords + maxCoords) * 0.5f;
 		object.boundingBox = AABB{ minCoords - objectCenter, maxCoords - objectCenter };
@@ -140,7 +134,7 @@ namespace MxEngine
 			MX_ASSERT(mesh->mTextureCoords != nullptr);
 			MX_ASSERT(mesh->mVertices != nullptr);
 			MX_ASSERT(mesh->mNumFaces > 0);
-			constexpr size_t VertexSize = (3 + 2 + 3);
+			constexpr size_t VertexSize = (3 + 2 + 3 + 3 + 3);
 
 			std::vector<float> vertex;
 			vertex.reserve(VertexSize * (size_t)mesh->mNumVertices);
@@ -160,12 +154,18 @@ namespace MxEngine
 					vertex.push_back(0.0f);
 					vertex.push_back(0.0f);
 				}
-				if (meshInfo.useNormal)
-				{
-					vertex.push_back(mesh->mNormals[i].x);
-					vertex.push_back(mesh->mNormals[i].y);
-					vertex.push_back(mesh->mNormals[i].z);
-				}
+
+				vertex.push_back(mesh->mNormals[i].x);
+				vertex.push_back(mesh->mNormals[i].y);
+				vertex.push_back(mesh->mNormals[i].z);
+
+				vertex.push_back(mesh->mTangents[i].x);
+				vertex.push_back(mesh->mTangents[i].y);
+				vertex.push_back(mesh->mTangents[i].z);
+
+				vertex.push_back(mesh->mBitangents[i].x);
+				vertex.push_back(mesh->mBitangents[i].y);
+				vertex.push_back(mesh->mBitangents[i].z);
 			}
 
 			meshInfo.faces.resize((size_t)mesh->mNumFaces * 3);

@@ -87,15 +87,22 @@ namespace MxEngine
         {
             MAKE_SCOPE_PROFILER("Surface::GenerateVertexData");
 
+            struct NormalSpace
+            {
+                Vector3 normal = MakeVector3(0.0f);
+                Vector3 tangent = MakeVector3(0.0f);
+                Vector3 bitangent = MakeVector3(0.0f);
+            };
+
             std::vector<float> buffer;
             std::vector<unsigned int> indicies;
-            Array2D<Vector3> pointNormals;
+            Array2D<NormalSpace> normalSpace;
             size_t xsize = surface.width();
             size_t ysize = surface.height();
             size_t triangleCount = 2 * (xsize - 1) * (ysize - 1);
             buffer.reserve(2 * triangleCount * 3 * VertexSize);
             indicies.reserve(2 * triangleCount * 3);
-            pointNormals.resize(xsize, ysize, MakeVector3(0.0f));
+            normalSpace.resize(xsize, ysize);
 
             AABB boundingBox{ this->surface[0][0], this->surface[0][0] };
             for (const auto& v : this->surface)
@@ -109,6 +116,8 @@ namespace MxEngine
                 Vector3 position;
                 Vector2 texture;
                 Vector3 normal;
+                Vector3 tangent;
+                Vector3 bitangent;
             };
             using Triangle = std::array<Vertex, 3>;
 
@@ -146,18 +155,38 @@ namespace MxEngine
                     v1 = up[1].position - up[0].position;
                     v2 = up[2].position - up[0].position;
                     n =  Normalize(Cross(v1, v2));
+                    auto tanbitan = ComputeTangentSpace(
+                        up[0].position, up[1].position, up[2].position,
+                        up[0].texture,  up[1].texture,  up[2].texture
+                    );
 
-                    pointNormals[x + 0][y + 0] += n;
-                    pointNormals[x + 1][y + 0] += n;
-                    pointNormals[x + 0][y + 1] += n;
+                    normalSpace[x + 0][y + 0].normal += n;
+                    normalSpace[x + 1][y + 0].normal += n;
+                    normalSpace[x + 0][y + 1].normal += n;
+                    normalSpace[x + 0][y + 0].tangent += tanbitan[0];
+                    normalSpace[x + 1][y + 0].tangent += tanbitan[0];
+                    normalSpace[x + 0][y + 1].tangent += tanbitan[0];
+                    normalSpace[x + 0][y + 0].bitangent += tanbitan[1];
+                    normalSpace[x + 1][y + 0].bitangent += tanbitan[1];
+                    normalSpace[x + 0][y + 1].bitangent += tanbitan[1];
 
                     v1 = down[1].position - down[0].position;
                     v2 = down[2].position - down[0].position;
                     n =  Normalize(Cross(v1, v2));
+                    tanbitan = ComputeTangentSpace(
+                        down[0].position, down[1].position, down[2].position,
+                        down[0].texture,  down[1].texture,  down[2].texture
+                    );
 
-                    pointNormals[x + 1][y + 1] += n;
-                    pointNormals[x + 0][y + 1] += n;
-                    pointNormals[x + 1][y + 0] += n;
+                    normalSpace[x + 1][y + 1].normal += n;
+                    normalSpace[x + 0][y + 1].normal += n;
+                    normalSpace[x + 1][y + 0].normal += n;
+                    normalSpace[x + 1][y + 1].tangent += tanbitan[0];
+                    normalSpace[x + 0][y + 1].tangent += tanbitan[0];
+                    normalSpace[x + 1][y + 0].tangent += tanbitan[0];
+                    normalSpace[x + 1][y + 1].bitangent += tanbitan[1];
+                    normalSpace[x + 0][y + 1].bitangent += tanbitan[1];
+                    normalSpace[x + 1][y + 0].bitangent += tanbitan[1];
                 }
             }
 
@@ -170,14 +199,26 @@ namespace MxEngine
                         return p / 6.0f;
                     };
 
-                    auto& up       = triangles[2 * (x * (ysize - 1) + y) + 0];
-                    auto& down     = triangles[2 * (x * (ysize - 1) + y) + 1];
-                    up[0].normal   = pointNormals[x + 0][y + 0];
-                    up[1].normal   = pointNormals[x + 0][y + 1];
-                    up[2].normal   = pointNormals[x + 1][y + 0];
-                    down[0].normal = pointNormals[x + 1][y + 1];
-                    down[1].normal = pointNormals[x + 1][y + 0];
-                    down[2].normal = pointNormals[x + 0][y + 1];
+                    auto& up          = triangles[2 * (x * (ysize - 1) + y) + 0];
+                    auto& down        = triangles[2 * (x * (ysize - 1) + y) + 1];
+                    up[0].normal      = normalSpace[x + 0][y + 0].normal;
+                    up[1].normal      = normalSpace[x + 0][y + 1].normal;
+                    up[2].normal      = normalSpace[x + 1][y + 0].normal;
+                    up[0].tangent     = normalSpace[x + 0][y + 0].tangent;
+                    up[1].tangent     = normalSpace[x + 0][y + 1].tangent;
+                    up[2].tangent     = normalSpace[x + 1][y + 0].tangent;
+                    up[0].bitangent   = normalSpace[x + 0][y + 0].bitangent;
+                    up[1].bitangent   = normalSpace[x + 0][y + 1].bitangent;
+                    up[2].bitangent   = normalSpace[x + 1][y + 0].bitangent;
+                    down[0].normal    = normalSpace[x + 1][y + 1].normal;
+                    down[1].normal    = normalSpace[x + 1][y + 0].normal;
+                    down[2].normal    = normalSpace[x + 0][y + 1].normal;
+                    down[0].tangent   = normalSpace[x + 1][y + 1].tangent;
+                    down[1].tangent   = normalSpace[x + 1][y + 0].tangent;
+                    down[2].tangent   = normalSpace[x + 0][y + 1].tangent;
+                    down[0].bitangent = normalSpace[x + 1][y + 1].bitangent;
+                    down[1].bitangent = normalSpace[x + 1][y + 0].bitangent;
+                    down[2].bitangent = normalSpace[x + 0][y + 1].bitangent;
                 }
             }
 
@@ -197,6 +238,12 @@ namespace MxEngine
                     buffer.push_back(vertex.normal.x);
                     buffer.push_back(vertex.normal.y);
                     buffer.push_back(vertex.normal.z);
+                    buffer.push_back(vertex.tangent.x);
+                    buffer.push_back(vertex.tangent.y);
+                    buffer.push_back(vertex.tangent.z);
+                    buffer.push_back(vertex.bitangent.x);
+                    buffer.push_back(vertex.bitangent.y);
+                    buffer.push_back(vertex.bitangent.z);
                 };
 
                 add_vertex(buffer,   up[0]);

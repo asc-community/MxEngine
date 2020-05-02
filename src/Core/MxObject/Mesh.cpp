@@ -61,7 +61,6 @@ namespace MxEngine
 		material.Ns    = mat.Ns;
 		material.Ni    = mat.Ni;
 		material.d     = mat.d;
-		material.Tr    = mat.Tr;
 
 		if (material.Ns == 0.0f) material.Ns = 128.0f; // bad as pow(0.0, 0.0) -> NaN
 	}
@@ -132,8 +131,16 @@ namespace MxEngine
 				auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
 
 				VBL->PushFloat(3);
-				if (mesh.useTexture) VBL->PushFloat(2);
-				if (mesh.useNormal) VBL->PushFloat(3);
+				if (mesh.useTexture)
+				{
+					VBL->PushFloat(2);
+				}
+				if (mesh.useNormal)
+				{
+					VBL->PushFloat(3); // normal
+					VBL->PushFloat(3); // tangent
+					VBL->PushFloat(3); // bitangent
+				}
 				VAO->AddBuffer(*VBO, *VBL);
 
 				SubMesh object(std::move(mesh.name), std::move(VBO), std::move(VAO), std::move(IBO), 

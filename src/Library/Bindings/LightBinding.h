@@ -105,8 +105,10 @@ namespace MxEngine
 
 		inline void Bind()
 		{
+			auto& scene = Application::Get()->GetCurrentScene();
 			std::string objectName = this->name + std::to_string(this->id);
-			Application::Get()->GetCurrentScene().AddObject(objectName, MakeUnique<LightObject<LightType>>(this->container, this->id));
+			if (scene.HasObject(objectName)) scene.DestroyObject(objectName);
+			scene.AddObject(objectName, MakeUnique<LightObject<LightType>>(this->container, this->id));
 		}
 
 		inline void Unbind()

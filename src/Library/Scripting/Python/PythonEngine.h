@@ -53,7 +53,6 @@ namespace MxEngine
         using BoxedValue = python::api::object;
 
         PythonEngine();
-        BoxedValue Execute(const std::string& code);
         BoxedValue Execute(const char* code);
         void MirrorOutStream(bool value);
         void MirrorErrorStream(bool value);

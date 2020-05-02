@@ -63,7 +63,7 @@ namespace MxEngine
 			}
 
 			auto context = Application::Get();
-			context->GetEventDispatcher().AddEventListener<FpsUpdateEvent>(handle, 
+			context->GetEventDispatcher().AddEventListener(handle, 
 			[shader = shader, name = "MxShader" + handle, vertex = vertex, fragment = fragment, 
 				absVertex = std::move(vt), absFragment = std::move(fr),
 				vertexTime = FileSystemTime(), fragmentTime = FileSystemTime()] (FpsUpdateEvent& e) mutable
@@ -105,7 +105,7 @@ namespace MxEngine
 			}
 
 			auto context = Application::Get();
-			context->GetEventDispatcher().AddEventListener<FpsUpdateEvent>(handle,
+			context->GetEventDispatcher().AddEventListener(handle,
 				[shader = shader, name = "MxShader" + handle, vertex = vertex, fragment = fragment, geometry = geometry,
 				absVertex = std::move(vt), absGeometry = std::move(gm), absFragment = std::move(fr),
 				vertexTime = FileSystemTime(), geometryTime = FileSystemTime(), fragmentTime = FileSystemTime()](FpsUpdateEvent& e) mutable

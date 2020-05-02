@@ -45,6 +45,14 @@ namespace MxEngine::GUI
 		ImGui::DragFloat("specular exponent", &material.Ns, 1.0f, 1.0f, 512.0f);
 		ImGui::DragFloat("transparency", &material.d, 0.01f, 0.0f, 1.0f);
 		ImGui::DragFloat("reflection", &material.reflection, 0.01f, 0.0f, 1.0f);
+
+		static std::string normapMapPath(128, '\0');
+		if (GUI::InputTextOnClick("normal map", normapMapPath.data(), normapMapPath.size()))
+		{
+			auto context = Application::Get();
+			material.map_normal = Graphics::Instance()->CreateTexture(
+				context->GetCurrentScene().GetDirectory() / normapMapPath);
+		}
 	}
 
 	inline void DrawTransform(Transform& transform)
@@ -102,7 +110,9 @@ namespace MxEngine::GUI
 				if (ImGui::ColorEdit4("render color", &renderColor[0]))
 					object.SetRenderColor(renderColor);
 
-				DrawTransform(object.ObjectTransform);
+				GUI_TREE_NODE("transform",
+					DrawTransform(object.ObjectTransform);
+				);
 
 				ImGui::InputFloat("translate speed", &object.TranslateSpeed);
 				ImGui::InputFloat("rotate speed", &object.RotateSpeed);
@@ -110,12 +120,12 @@ namespace MxEngine::GUI
 
 				// object texture (loads from file)
 				static std::string texturePath(128, '\0');
-				ImGui::InputText("texture path", texturePath.data(), texturePath.size());
-				ImGui::SameLine();
-				if (ImGui::Button("update"))
+				if(GUI::InputTextOnClick("texture", texturePath.data(), texturePath.size()))
+				{
 					object.ObjectTexture = context->GetCurrentScene().LoadTexture(
 						Format(FMT_STRING("MxRuntimeTex_{0}"), context->GenerateResourceId()),
 						texturePath);
+				}
 
 				if (object.GetMesh() != nullptr)
 				{
@@ -131,11 +141,15 @@ namespace MxEngine::GUI
 								ImGui::PushID(meshIdx++);
 								if (submesh.HasMaterial())
 								{
-									DrawMaterial(submesh.GetMaterial());
-									DrawTransform(submesh.GetTransform());
-									auto renderColor = submesh.GetRenderColor();
-									if (ImGui::ColorEdit4("render color", &renderColor[0]))
-										submesh.SetRenderColor(renderColor);
+									GUI_TREE_NODE("material",
+										DrawMaterial(submesh.GetMaterial());
+										auto renderColor = submesh.GetRenderColor();
+										if (ImGui::ColorEdit4("render color", &renderColor[0]))
+											submesh.SetRenderColor(renderColor);
+									);
+									GUI_TREE_NODE("transform",
+										DrawTransform(submesh.GetTransform());
+									);
 								}
 								ImGui::PopID();
 							);

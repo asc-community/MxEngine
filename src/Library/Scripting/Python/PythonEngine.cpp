@@ -64,16 +64,11 @@ class MxEngineIOHandler:
         this->MirrorOutStream(false);
         this->MirrorErrorStream(false);
 
-        // very unsafe. But idk how to do it the best way
-        auto ctxPtr = reinterpret_cast<uint64_t>(Application::Get());
-        auto grfPtr = reinterpret_cast<uint64_t>(Graphics::Instance());
-        this->Execute("mx_engine.MxEngineSetContextPointers(" + std::to_string(ctxPtr) + ", " + std::to_string(grfPtr) + ")");
+        auto ctxPtr = reinterpret_cast<uintptr_t>(Application::Get());
+        auto grfPtr = reinterpret_cast<uintptr_t>(Graphics::Instance());
+        auto contextInitScript = Format("mx_engine.MxEngineSetContextPointers({0}, {1})", ctxPtr, grfPtr);
+        this->Execute(contextInitScript.c_str());
         this->Execute("mx = mx_engine.get_context()");
-    }
-
-    PythonEngine::BoxedValue PythonEngine::Execute(const std::string& code)
-    {
-        return this->Execute(code.c_str());
     }
 
     PythonEngine::BoxedValue PythonEngine::Execute(const char* code)
