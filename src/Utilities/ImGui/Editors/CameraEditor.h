@@ -34,12 +34,26 @@
 
 namespace MxEngine::GUI
 {
+	inline void DrawDebugMeshes()
+	{
+		auto context = Application::Get();
+
+		static bool boundingBoxes = false;
+		static bool boundingSpheres = false;
+		static bool debugOverlay = false;
+		static Vector4 debugColor = MakeVector4(1.0f, 0.0f, 0.0f, 1.0f);
+
+		ImGui::Checkbox("display AABB", &boundingBoxes);
+		ImGui::SameLine();  ImGui::Checkbox("display spheres", &boundingSpheres);
+		ImGui::SameLine(); ImGui::Checkbox("overlay debug meshes", &debugOverlay);
+		ImGui::ColorEdit4("debug mesh color", &debugColor[0]);
+
+		context->ToggleDebugDraw(boundingBoxes, boundingSpheres, debugColor, debugOverlay);
+	}
+
 	inline void DrawCameraEditor()
 	{
 		auto context = Application::Get();
-		static bool boundingBoxes = false;
-		static bool debugOverlay  = false;
-		static Vector4 debugColor = MakeVector4(1.0f, 0.0f, 0.0f, 1.0f);
 
 		auto& camera = context->GetCurrentScene().Viewport;
 		float speed = camera.GetMoveSpeed();
@@ -47,12 +61,9 @@ namespace MxEngine::GUI
 		float zoom = camera.GetZoom();
 		Vector3 pos = camera.GetPosition();
 
-		ImGui::Checkbox("display AABB", &boundingBoxes);
-		ImGui::SameLine(); ImGui::Checkbox("overlay debug meshes", &debugOverlay);
-		ImGui::ColorEdit4("debug mesh color", &debugColor[0]);
-		ImGui::Text("position: (%f, %f, %f)", pos.x, pos.y, pos.z);
+		DrawDebugMeshes();
 
-		context->ToggleBoundingBoxes(boundingBoxes, debugColor, debugOverlay);
+		ImGui::Text("position: (%f, %f, %f)", pos.x, pos.y, pos.z);
 
 		if (ImGui::InputFloat("speed", &speed))
 			camera.SetMoveSpeed(speed);

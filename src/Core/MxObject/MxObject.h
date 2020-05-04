@@ -91,7 +91,6 @@ namespace MxEngine
 		void BufferInstances();
 
 		const AABB& GetAABB() const;
-		const AABB& GetCachedAABB() const;
 
 		// Inherited via IDrawable
 		virtual size_t GetIterator() const override;

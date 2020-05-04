@@ -76,6 +76,66 @@ namespace MxEngine
         this->storage.push_back({ MakeVector3(box.Max.x, box.Max.y, box.Min.z), color });
     }
 
+    auto InitializeSphere()
+    {
+        std::vector<Vector3> linesData;
+        std::vector<Vector3> vertecies;
+        constexpr size_t SpherePolygons = 8;
+        vertecies.reserve((SpherePolygons + 1) * (SpherePolygons + 1));
+        linesData.reserve((SpherePolygons + 1) * (SpherePolygons + 1) * 12);
+
+        for (size_t m = 0; m <= SpherePolygons; m++)
+        {
+            for (size_t n = 0; n <= SpherePolygons; n++)
+            {
+                float x = std::sin(Pi<float>() * m / SpherePolygons) * std::cos(2 * Pi<float>() * n / SpherePolygons);
+                float y = std::sin(Pi<float>() * m / SpherePolygons) * std::sin(2 * Pi<float>() * n / SpherePolygons);
+                float z = std::cos(Pi<float>() * m / SpherePolygons);
+                vertecies.emplace_back(x, y, z);
+            }
+        }
+
+        for (size_t i = 0; i < SpherePolygons; i++)
+        {
+            size_t idx1 = i * (SpherePolygons + 1);
+            size_t idx2 = idx1 + SpherePolygons + 1;
+
+            for (size_t j = 0; j < SpherePolygons; j++, idx1++, idx2++)
+            {
+                if (i != 0)
+                {
+                    linesData.push_back(vertecies[idx1]);
+                    linesData.push_back(vertecies[idx2]);
+                    linesData.push_back(vertecies[idx2]);
+                    linesData.push_back(vertecies[idx1 + 1]);
+                    linesData.push_back(vertecies[idx1 + 1]);
+                    linesData.push_back(vertecies[idx1]);
+                }
+                if (i + 1 != SpherePolygons)
+                {
+                    linesData.push_back(vertecies[idx1 + 1]);
+                    linesData.push_back(vertecies[idx2]);
+                    linesData.push_back(vertecies[idx2]);
+                    linesData.push_back(vertecies[idx2 + 1]);
+                    linesData.push_back(vertecies[idx2 + 1]);
+                    linesData.push_back(vertecies[idx1 + 1]);
+                }
+            }
+        }
+
+        return linesData;
+    }
+
+    void DebugBuffer::SubmitSphere(const BoundingSphere& sphere, const Vector4 color)
+    {
+        static const auto sphereData = InitializeSphere();
+
+        for (const Vector3& v : sphereData)
+        {
+            this->storage.push_back({ sphere.GetRedius() * v * RootThree<float>() + sphere.Center, color });
+        }
+    }
+
     void DebugBuffer::ClearBuffer()
     {
         this->storage.clear();

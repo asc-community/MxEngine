@@ -201,11 +201,6 @@ namespace MxEngine
 		return this->boundingBox;
 	}
 
-	const AABB& MxObject::GetCachedAABB() const
-	{
-		return this->boundingBox;
-	}
-
 	MxObject::MxObject(Mesh* mesh)
 	{
 		this->SetMesh(mesh);

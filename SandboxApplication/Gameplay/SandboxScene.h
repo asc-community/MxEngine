@@ -15,7 +15,7 @@ class SandboxScene : public Scene
 
         this->AddObject("Cube", MakeUnique<CubeObject>());
         this->AddObject("Sphere", MakeUnique<SphereObject>());
-        this->AddObject("Arc170", MakeUnique<Arc170Object>());
+        // this->AddObject("Arc170", MakeUnique<Arc170Object>());
         // this->AddObject("Destroyer", MakeUnique<DestroyerObject>());
         // this->AddObject("DeathStar", MakeUnique<DeathStarObject>());
 		
@@ -29,9 +29,8 @@ class SandboxScene : public Scene
 
 		auto& grid = this->AddObject("Grid", MakeUnique<Grid>(2000));
 		grid.Scale(3.0f, 3.0f, 3.0f);
-		grid.ObjectTexture = Colors::MakeTexture(Colors::WHITE);
+		grid.ObjectTexture = this->LoadTexture("Bricks", "textures/brick.jpg");
 		auto& material = grid.GetMesh()->GetRenderObjects()[0].GetMaterial();
-		material.reflection = 0.9f;
 		material.map_normal = Graphics::Instance()->CreateTexture(GetDirectory() / "textures/brick_normal.jpg");
 		
         this->LoadScript("init", "scripts/init.py");

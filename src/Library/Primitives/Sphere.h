@@ -64,8 +64,8 @@ namespace MxEngine
             std::vector<float> verteces;
             std::vector<unsigned int> indicies;
 
-            verteces.reserve(polygons * polygons * AbstractPrimitive::VertexSize);
-            indicies.reserve(polygons * polygons * 6); // two triangles
+            verteces.reserve((polygons + 1) * (polygons + 1) * AbstractPrimitive::VertexSize);
+            indicies.reserve((polygons + 1) * (polygons + 1) * 6); // two triangles
             // generate raw data for verteces (must be rearranged after)
             for (size_t m = 0; m <= polygons; m++)
             {

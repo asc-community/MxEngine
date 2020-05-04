@@ -153,6 +153,7 @@ vec3 calcDirLight(vec3 ambient, vec3 diffuse, vec3 specular, DirLight light, vec
 	reflection = reflection * diffuseObject;
 	diffuse = (1.0f - material.refl) * diffuse;
 	ambient = (1.0f - material.refl) * ambient;
+	shadowFactor = max(shadowFactor, 0.5f);
 
 	return vec3(ambient + shadowFactor * (diffuse + specular + reflection));
 }

@@ -66,14 +66,15 @@ namespace MxEngine
 		int counterFPS;
 		size_t MSAAfactor;
 		Vector4 debugColor = MakeVector4(1.0f, 0.0f, 0.0f, 1.0f);
-		bool debugDraw     = false;
+		bool drawBoxes     = false;
+		bool drawSpheres   = false;
 		bool overlayDebug  = false;
 		bool shouldClose   = false;
 		bool isRunning     = false;
 		bool drawLighting  = true;
 
 		void CreateConsoleBindings(DeveloperConsole& console);
-		void DrawObjects(bool meshes);
+		void DrawObjects();
 		void InvokeUpdate();
 		bool VerifyApplicationState();
 		void VerifyRendererState();
@@ -93,7 +94,7 @@ namespace MxEngine
 
 		void ToggleDeveloperConsole(bool isVisible);
 		void ToggleLighting(bool state = true);
-		void ToggleBoundingBoxes(bool state, Vector4 color, bool overlay = false);
+		void ToggleDebugDraw(bool aabb, bool spheres, const Vector4& color,  bool overlay = false);
 
 		AppEventDispatcher& GetEventDispatcher();
 		RenderController& GetRenderer();

@@ -484,7 +484,7 @@ namespace MxEngine
 	template<typename T>
 	inline T VectorMax(const T& v1, const T& v2)
 	{
-		T result;
+		T result(0.0f);
 		for (typename T::length_type i = 0; i < result.length(); i++)
 		{
 			result[i] = std::max(v1[i], v2[i]);
@@ -495,7 +495,7 @@ namespace MxEngine
 	template<typename T>
 	inline T VectorMin(const T& v1, const T& v2)
 	{
-		T result;
+		T result(0.0f);
 		for (typename T::length_type i = 0; i < result.length(); i++)
 		{
 			result[i] = std::min(v1[i], v2[i]);

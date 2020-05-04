@@ -98,10 +98,11 @@ namespace MxEngine
 		InitEventDispatcher();
 	}
 
-	void Application::ToggleBoundingBoxes(bool state, Vector4 color, bool overlay)
+	void Application::ToggleDebugDraw(bool aabb, bool spheres, const Vector4& color, bool overlay)
 	{
-		this->debugDraw = state;
 		this->debugColor = color;
+		this->drawBoxes = aabb;
+		this->drawSpheres = spheres;
 		this->overlayDebug = overlay;
 	}
 
@@ -281,7 +282,7 @@ namespace MxEngine
 		}
 	}
 
-	void Application::DrawObjects(bool meshes)
+	void Application::DrawObjects()
 	{
 		MAKE_SCOPE_PROFILER("Application::DrawObjects");
 		const auto& viewport = this->currentScene->Viewport;
@@ -377,21 +378,30 @@ namespace MxEngine
 			if (skybox != nullptr) this->renderer.DrawSkybox(*skybox, viewport);
 		}
 
-		if (this->debugDraw)
+		if (this->drawBoxes | this->drawSpheres)
 		{
 			auto& buffer = this->renderer.GetDebugBuffer();
 			for (const auto& [name, object] : this->currentScene->GetObjectList())
 			{
+				AABB box;
 				if (object->GetInstanceCount() > 0 && object->GetMesh() != nullptr)
 				{
 					for (const auto& instance : object->GetInstances())
 					{
-						buffer.SubmitAABB(object->GetMesh()->GetAABB() * instance.Model.GetMatrix(), this->debugColor);
+						box = object->GetMesh()->GetAABB() * instance.Model.GetMatrix();
+						if (this->drawBoxes) 
+							buffer.SubmitAABB(box, debugColor);
+						if (this->drawSpheres) 
+							buffer.SubmitSphere(ToSphere(box), debugColor);
 					}
 				}
 				else
 				{
-					buffer.SubmitAABB(object->GetCachedAABB(), this->debugColor);
+					box = object->GetAABB();
+					if (this->drawBoxes) 
+						buffer.SubmitAABB(box, debugColor);
+					if (this->drawSpheres) 
+						buffer.SubmitSphere(ToSphere(box), debugColor);
 				}
 			}
 			this->renderer.DrawDebugBuffer(viewport, this->overlayDebug);
@@ -653,7 +663,7 @@ namespace MxEngine
 				}
 
 				this->InvokeUpdate();
-				this->DrawObjects(this->debugDraw);
+				this->DrawObjects();
 
 				RenderEvent renderEvent;
 				this->GetEventDispatcher().Invoke(renderEvent);

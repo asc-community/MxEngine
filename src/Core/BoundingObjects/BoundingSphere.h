@@ -26,39 +26,32 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
-#include "Core/BoundingObjects/AABB.h"
-#include "Core/BoundingObjects/BoundingSphere.h"
-
 #pragma once
 
-#include <array>
-#include <vector>
+#include "Core/BoundingObjects/AABB.h"
 
 namespace MxEngine
 {
-	class DebugBuffer
-	{
-		struct Point
-		{
-			Vector3 position;
-			Vector4 color;
-		};
-		using FrontendStorage = std::vector<Point>;
+    class BoundingSphere
+    {
+        float radius;
+    public:
+        Vector3 Center;
 
-		FrontendStorage storage;
+        constexpr BoundingSphere(const Vector3& center, float r)
+            : radius(Max(0.0f, r)), Center(center) { }
 
-		UniqueRef<VertexBuffer> VBO;
-		UniqueRef<VertexArray> VAO;
-		UniqueRef<Shader> shader;
-	public:
-		DebugBuffer();
-		void SubmitAABB(const AABB& box, const Vector4& color);
-		void SubmitSphere(const BoundingSphere& sphere, const Vector4 color);
-		void ClearBuffer(); 
-		void SubmitBuffer();
-		size_t GetSize() const;
-		const VertexArray& GetVAO() const;
-		const Shader& GetShader() const;
-	};
+        constexpr float GetRedius() const { return radius; }
+        constexpr void SetRadius(float r) { this->radius = Max(0.0f, r); }
+    };
+
+    // TODO: sphere must be created more precisely, as it is almost always less in size than AABB
+
+    inline constexpr BoundingSphere ToSphere(const AABB& box)
+    {
+        auto center = box.GetCenter();
+        auto length = box.Length();
+        float radius = Max(length.x, length.y, length.z) * 0.5f;
+        return BoundingSphere(center, radius);
+    }
 }
