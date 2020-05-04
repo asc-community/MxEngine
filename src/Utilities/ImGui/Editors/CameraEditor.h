@@ -37,7 +37,9 @@ namespace MxEngine::GUI
 	inline void DrawCameraEditor()
 	{
 		auto context = Application::Get();
-		static bool mesh = false;
+		static bool boundingBoxes = false;
+		static bool debugOverlay  = false;
+		static Vector4 debugColor = MakeVector4(1.0f, 0.0f, 0.0f, 1.0f);
 
 		auto& camera = context->GetCurrentScene().Viewport;
 		float speed = camera.GetMoveSpeed();
@@ -45,10 +47,12 @@ namespace MxEngine::GUI
 		float zoom = camera.GetZoom();
 		Vector3 pos = camera.GetPosition();
 
-		ImGui::Checkbox("display mesh", &mesh);
+		ImGui::Checkbox("display AABB", &boundingBoxes);
+		ImGui::SameLine(); ImGui::Checkbox("overlay debug meshes", &debugOverlay);
+		ImGui::ColorEdit4("debug mesh color", &debugColor[0]);
 		ImGui::Text("position: (%f, %f, %f)", pos.x, pos.y, pos.z);
 
-		context->ToggleMeshDrawing(mesh);
+		context->ToggleBoundingBoxes(boundingBoxes, debugColor, debugOverlay);
 
 		if (ImGui::InputFloat("speed", &speed))
 			camera.SetMoveSpeed(speed);

@@ -65,8 +65,10 @@ namespace MxEngine
 		Scene* currentScene = nullptr;
 		int counterFPS;
 		size_t MSAAfactor;
+		Vector4 debugColor = MakeVector4(1.0f, 0.0f, 0.0f, 1.0f);
+		bool debugDraw     = false;
+		bool overlayDebug  = false;
 		bool shouldClose   = false;
-		bool debugMeshDraw = false;
 		bool isRunning     = false;
 		bool drawLighting  = true;
 
@@ -91,7 +93,7 @@ namespace MxEngine
 
 		void ToggleDeveloperConsole(bool isVisible);
 		void ToggleLighting(bool state = true);
-		void ToggleMeshDrawing(bool state = true);
+		void ToggleBoundingBoxes(bool state, Vector4 color, bool overlay = false);
 
 		AppEventDispatcher& GetEventDispatcher();
 		RenderController& GetRenderer();

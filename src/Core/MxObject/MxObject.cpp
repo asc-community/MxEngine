@@ -192,12 +192,19 @@ namespace MxEngine
 		}
     }
 
-    AABB MxObject::GetAABB() const
+    const AABB& MxObject::GetAABB() const
     {
-		if (this->ObjectMesh == nullptr)
-			return AABB{ };
-		return (this->ObjectMesh->GetAABB() + this->ObjectTransform.GetTranslation()) * this->ObjectTransform.GetScale();
-    }
+		if (this->ObjectMesh != nullptr)
+			this->boundingBox = this->ObjectMesh->GetAABB() * this->ObjectTransform.GetMatrix();
+		else
+			this->boundingBox = AABB{ };
+		return this->boundingBox;
+	}
+
+	const AABB& MxObject::GetCachedAABB() const
+	{
+		return this->boundingBox;
+	}
 
 	MxObject::MxObject(Mesh* mesh)
 	{

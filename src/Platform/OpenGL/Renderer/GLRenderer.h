@@ -69,6 +69,7 @@ namespace MxEngine
 		virtual GLRenderer& UseClearColor(float r, float g, float b, float a = 0.0f) override;
 		virtual GLRenderer& UseBlending(BlendFactor src, BlendFactor dist) override;
 		virtual GLRenderer& UseAnisotropicFiltering(float factor) override;
+		virtual GLRenderer& UseLineWidth(size_t width) override;
 		virtual float GetLargestAnisotropicFactor() const override;
 	};
 }

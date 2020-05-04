@@ -305,42 +305,12 @@ namespace MxEngine
 		}
 	}
 
-	void RenderController::DrawObjectMesh(const IDrawable& object, const CameraController& viewport) const
-	{
-		// probably nothing to do at all
-		if (!viewport.HasCamera()) return;
-		if (!object.IsDrawable()) return;
-
-		size_t iterator = object.GetIterator();
-		auto ViewProjection = viewport.GetMatrix();
-		this->MeshShader->SetUniformMat4("ViewProjMatrix", ViewProjection);
-
-		auto& ModelMatrix = object.GetModelMatrix();
-
-		while (!object.IsLast(iterator))
-		{
-			const auto& renderObject = object.GetCurrent(iterator);
-
-			this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetMatrix());
-
-			if (object.GetInstanceCount() == 0)
-			{
-				this->GetRenderEngine().DrawLines(renderObject.GetVAO(), renderObject.GetMeshIBO(), *this->MeshShader);
-			}
-			else
-			{
-				this->GetRenderEngine().DrawLinesInstanced(renderObject.GetVAO(), renderObject.GetMeshIBO(), *this->MeshShader, object.GetInstanceCount());
-			}
-			iterator = object.GetNext(iterator);
-		}
-	}
-
 	void RenderController::DrawSkybox(const Skybox& skybox, const CameraController& viewport)
 	{
 		if (!viewport.HasCamera()) return;
 		if (skybox.SkyboxTexture == nullptr) return;
 
-		auto& shader = *skybox.SkyboxShader;
+		auto& shader = skybox.GetShader();
 		auto View = (Matrix3x3)viewport.GetCamera().GetViewMatrix();
 		auto Projection = viewport.GetCamera().GetProjectionMatrix();
 		shader.SetUniformMat4("ViewProjection", Projection * (Matrix4x4)View);
@@ -349,7 +319,7 @@ namespace MxEngine
 		skybox.SkyboxTexture->Bind(0);
 		shader.SetUniformInt("skybox", 0);
 
-		this->GetRenderEngine().DrawTriangles(*skybox.VAO, skybox.VBO->GetSize(), shader);
+		this->GetRenderEngine().DrawTriangles(skybox.GetVAO(), skybox.GetVBO().GetSize(), shader);
 	}
 
 	void RenderController::SetPCFDistance(int value)
@@ -398,7 +368,29 @@ namespace MxEngine
 			this->MSAABuffer->GetWidth() == this->viewportSize.x && this->MSAABuffer->GetHeight() == this->viewportSize.y)
 		{
 			this->MSAABuffer->CopyFrameBufferContents(this->MSAABuffer->GetWidth(), this->MSAABuffer->GetHeight());
+			this->MSAABuffer->Unbind();
 		}
-		this->MSAABuffer->Unbind();
+	}
+
+	DebugBuffer& RenderController::GetDebugBuffer()
+	{
+		if (this->debugBuffer == nullptr)
+			this->debugBuffer = MakeUnique<DebugBuffer>();
+		return *this->debugBuffer;
+	}
+
+	void RenderController::DrawDebugBuffer(const CameraController& viewport, bool overlay) const
+	{
+		this->debugBuffer->SubmitBuffer();
+
+		this->GetRenderEngine().UseDepthBuffer(!overlay);
+
+		auto& shader = this->debugBuffer->GetShader();
+		shader.SetUniformMat4("ViewProjMatrix", viewport.GetMatrix());
+
+		this->GetRenderEngine().DrawLines(this->debugBuffer->GetVAO(), this->debugBuffer->GetSize(), shader);
+		this->debugBuffer->ClearBuffer();
+
+		this->GetRenderEngine().UseDepthBuffer(true);
 	}
 }

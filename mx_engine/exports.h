@@ -467,12 +467,12 @@ public:
         this->get_override("load")(vertex, fragment);
     }
 
-    virtual void LoadFromSource(const std::string& vertex, const std::string& geometry, const std::string& fragment) override
+    virtual void LoadFromString(const std::string& vertex, const std::string& geometry, const std::string& fragment) override
     {
         this->get_override("load_source")(vertex, geometry, fragment);
     }
 
-    virtual void LoadFromSource(const std::string& vertex, const std::string& fragment) override
+    virtual void LoadFromString(const std::string& vertex, const std::string& fragment) override
     {
         this->get_override("load_source")(vertex, fragment);
     }
@@ -902,6 +902,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("listen_render", AddEventListenerWrapper<RenderEvent>)
         .def("listen_resize", AddEventListenerWrapper<WindowResizeEvent>)
         .def("use_lighting", &Application::ToggleLighting)
+        .def("draw_aabb", &Application::ToggleBoundingBoxes)
         .add_property("msaa", &Application::GetMSAASampling, &Application::SetMSAASampling)
         .add_property("global", RefGetter(&Application::GetGlobalScene))
         .add_property("is_running", &Application::IsRunning)
@@ -988,13 +989,13 @@ BOOST_PYTHON_MODULE(mx_engine)
         ;
 
     py::class_<Skybox, boost::noncopyable>("skybox", py::no_init)
-        .def_readwrite("shader", &Skybox::SkyboxShader)
-        .def_readwrite("texture", &Skybox::SkyboxShader)
         .def("rotate_x", &Skybox::RotateX)
         .def("rotate_y", &Skybox::RotateY)
         .def("rotate_z", &Skybox::RotateZ)
+        .def_readwrite("texture", &Skybox::SkyboxTexture)
         .add_property("rotation", RefGetter(&Skybox::GetRotation))
         .add_property("matrix", RefGetter(&Skybox::GetRotationMatrix))
+        .add_property("shader", RefGetter(&Skybox::GetShader))
         ;
 
     py::enum_<KeyCode>("keycode")
@@ -1277,8 +1278,8 @@ BOOST_PYTHON_MODULE(mx_engine)
     py::class_<ShaderWrapper, py::bases<IBindable>, boost::noncopyable>("shader", py::init())
         .def("load", py::pure_virtual((LoadVsFs)&Shader::Load))
         .def("load", py::pure_virtual((LoadVsGsFs)&Shader::Load))
-        .def("load_source", py::pure_virtual((LoadVsFs)&Shader::LoadFromSource))
-        .def("load_source", py::pure_virtual((LoadVsGsFs)&Shader::LoadFromSource))
+        .def("load_source", py::pure_virtual((LoadVsFs)&Shader::LoadFromString))
+        .def("load_source", py::pure_virtual((LoadVsGsFs)&Shader::LoadFromString))
         .def("set_int", py::pure_virtual(&Shader::SetUniformInt))
         .def("set_float", py::pure_virtual(&Shader::SetUniformFloat))
         .def("set_vec3", py::pure_virtual(&Shader::SetUniformVec3))
@@ -1365,7 +1366,6 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("use_reversed_depth", &RenderController::ToggleReversedDepth)
         .def("set_anisotropic", &RenderController::SetAnisotropicFiltering)
         .def_readwrite("object_shader", &RenderController::ObjectShader)
-        .def_readwrite("mesh_shader", &RenderController::MeshShader)
         .def_readwrite("depth_texture_shader", &RenderController::DepthTextureShader)
         .def_readwrite("depth_cubemap_shader", &RenderController::DepthCubeMapShader)
         .def_readwrite("default_texture", &RenderController::DefaultTexture)
@@ -1568,7 +1568,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def_readwrite("rotate_speed", &MxObject::RotateSpeed)
         .def_readwrite("scale_speed", &MxObject::ScaleSpeed)
         .add_property("buffer_count", &MxObject::GetBufferCount)
-        .add_property("AABB", &MxObject::GetAABB)
+        .add_property("AABB", RefGetter(&MxObject::GetAABB))
         .add_property("mesh", RefGetter((MeshFunc)&MxObject::GetMesh), &MxObject::SetMesh)
         .add_property("instances", RefGetter((InstanceListFunc)&MxObject::GetInstances))
         .add_property("render_color", RefGetter(&MxObject::GetRenderColor), &MxObject::SetRenderColor)

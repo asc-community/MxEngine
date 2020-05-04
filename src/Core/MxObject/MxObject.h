@@ -45,6 +45,7 @@ namespace MxEngine
 		UniqueRef<Instancing<MxObject>> instances;
 		bool shouldRender = true;
 		bool instanceUpdate = true;
+		mutable AABB boundingBox;
 
 		void ReserveInstances(size_t count, UsageType usage);
 	public:
@@ -89,7 +90,8 @@ namespace MxEngine
 		void SetAutoBuffering(bool value = true);
 		void BufferInstances();
 
-		AABB GetAABB() const;
+		const AABB& GetAABB() const;
+		const AABB& GetCachedAABB() const;
 
 		// Inherited via IDrawable
 		virtual size_t GetIterator() const override;

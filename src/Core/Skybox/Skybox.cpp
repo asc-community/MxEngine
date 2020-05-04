@@ -39,10 +39,10 @@ namespace MxEngine
             Vector3(-size, -size,  size),
             Vector3(-size,  size, -size),
             Vector3(-size,  size,  size),
-            Vector3(size, -size, -size),
-            Vector3(size, -size,  size),
-            Vector3(size,  size, -size),
-            Vector3(size,  size,  size),
+            Vector3( size, -size, -size),
+            Vector3( size, -size,  size),
+            Vector3( size,  size, -size),
+            Vector3( size,  size,  size),
         };
         constexpr std::array face =
         {
@@ -74,6 +74,13 @@ namespace MxEngine
         VBL->PushFloat(3);
         this->VAO = Graphics::Instance()->CreateVertexArray();
         VAO->AddBuffer(*VBO, *VBL);
+        
+        this->shader = Graphics::Instance()->CreateShader();
+        this->shader->LoadFromString(
+            #include MAKE_PLATFORM_SHADER(skybox_vertex)
+            ,
+            #include MAKE_PLATFORM_SHADER(skybox_fragment)
+        );
     }
 
     void Skybox::RotateZ(float angle)
@@ -113,5 +120,20 @@ namespace MxEngine
             this->needUpdate = false;
         }
         return this->cachedRotation;
+    }
+
+    const Shader& Skybox::GetShader() const
+    {
+        return *this->shader;
+    }
+
+    const VertexBuffer& Skybox::GetVBO() const
+    {
+        return *this->VBO;
+    }
+
+    const VertexArray& Skybox::GetVAO() const
+    {
+        return *this->VAO;
     }
 }

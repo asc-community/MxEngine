@@ -37,6 +37,7 @@
 #include "Core/Lighting/PointLight/PointLight.h"
 #include "Core/Lighting/SpotLight/SpotLight.h"
 #include "Core/Skybox/Skybox.h"
+#include "Core/DebugDraw/DebugBuffer.h"
 
 #include <array>
 
@@ -62,12 +63,12 @@ namespace MxEngine
 		VectorInt2 viewportSize{ 0, 0 };
 		UniqueRef<FrameBuffer> MSAABuffer;
 		UniqueRef<RenderBuffer> renderBuffer;
+		UniqueRef<DebugBuffer> debugBuffer;
 	public:
 		RenderController(Renderer& renderer);
 
 		int PCFdistance = 1;
 		Shader* ObjectShader = nullptr;
-		Shader* MeshShader = nullptr;
 		Shader* DepthTextureShader = nullptr;
 		Shader* DepthCubeMapShader = nullptr;
 		Texture* DefaultTexture = nullptr;
@@ -87,7 +88,6 @@ namespace MxEngine
 		void SetViewport(int x, int y, int width, int height);
 		void DrawObject(const IDrawable& object, const CameraController& viewport) const;
 		void DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights, const Skybox* skybox) const;
-		void DrawObjectMesh(const IDrawable& object, const CameraController& viewport) const;
 		void DrawSkybox(const Skybox& skybox, const CameraController& viewport);
 		void SetPCFDistance(int value);
 		template<typename LightSource>
@@ -101,6 +101,8 @@ namespace MxEngine
 		void SetMSAASampling(size_t samples, int viewportWidth, int viewportHeight);
 		void AttachDrawBuffer();
 		void DetachDrawBuffer();
+		DebugBuffer& GetDebugBuffer();
+		void DrawDebugBuffer(const CameraController& viewport, bool overlay = false) const;
 	};
 
 	template<typename LightSource>

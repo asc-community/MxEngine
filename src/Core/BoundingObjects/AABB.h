@@ -68,4 +68,22 @@ namespace MxEngine
     {
         return AABB{ box.Min - translate, box.Max - translate };
     }
+
+    inline AABB operator*(const AABB& box, const Matrix4x4& matrix)
+    {
+        std::array<Vector3, 8> vecs;
+        vecs =
+        {
+            matrix * MakeVector4(box.Min.x, box.Min.y, box.Min.z, 1.0f),
+            matrix * MakeVector4(box.Min.x, box.Min.y, box.Max.z, 1.0f),
+            matrix * MakeVector4(box.Min.x, box.Max.y, box.Min.z, 1.0f),
+            matrix * MakeVector4(box.Min.x, box.Max.y, box.Max.z, 1.0f),
+            matrix * MakeVector4(box.Max.x, box.Min.y, box.Min.z, 1.0f),
+            matrix * MakeVector4(box.Max.x, box.Min.y, box.Max.z, 1.0f),
+            matrix * MakeVector4(box.Max.x, box.Max.y, box.Min.z, 1.0f),
+            matrix * MakeVector4(box.Max.x, box.Max.y, box.Max.z, 1.0f),
+        };
+        auto minmax = MinMaxComponents(vecs.data(), vecs.size());
+        return AABB{ minmax.first, minmax.second };
+    }
 }

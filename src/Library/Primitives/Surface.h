@@ -110,6 +110,8 @@ namespace MxEngine
                 boundingBox.Min = VectorMin(boundingBox.Min, v);
                 boundingBox.Max = VectorMax(boundingBox.Max, v);
             }
+            auto center = boundingBox.GetCenter();
+            boundingBox = boundingBox - center;
 
             struct Vertex
             {
@@ -132,12 +134,12 @@ namespace MxEngine
                     Triangle& up = triangles.back();
                     triangles.emplace_back();
                     Triangle& down = triangles.back();
-                    up[0].position   = surface[x + 0][y + 0];
-                    up[1].position   = surface[x + 0][y + 1];
-                    up[2].position   = surface[x + 1][y + 0];
-                    down[0].position = surface[x + 1][y + 1];
-                    down[1].position = surface[x + 1][y + 0];
-                    down[2].position = surface[x + 0][y + 1];
+                    up[0].position   = surface[x + 0][y + 0] - center;
+                    up[1].position   = surface[x + 0][y + 1] - center;
+                    up[2].position   = surface[x + 1][y + 0] - center;
+                    down[0].position = surface[x + 1][y + 1] - center;
+                    down[1].position = surface[x + 1][y + 0] - center;
+                    down[2].position = surface[x + 0][y + 1] - center;
 
                     float x1 = float(x + 0) / (float)xsize;
                     float y1 = float(y + 0) / (float)ysize;

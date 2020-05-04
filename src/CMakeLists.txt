@@ -63,6 +63,8 @@ set(project_files_group
     "Core/Scene/Scene.h"
     "Core/Skybox/Skybox.cpp"
     "Core/Skybox/Skybox.h"
+    "Core/DebugDraw/DebugBuffer.h"
+    "Core/DebugDraw/DebugBuffer.cpp"
     "Library/Bindings/AppCloseBinding.h"
     "Library/Bindings/Bindings.h"
     "Library/Bindings/ConsoleBinding.h"

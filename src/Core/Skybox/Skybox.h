@@ -37,11 +37,12 @@ namespace MxEngine
         Vector3 rotation;
         mutable Matrix3x3 cachedRotation;
         mutable bool needUpdate = true;
-    public:
-        Shader* SkyboxShader;
-        CubeMap* SkyboxTexture;
+
+        UniqueRef<Shader> shader;
         UniqueRef<VertexBuffer> VBO;
         UniqueRef<VertexArray> VAO;
+    public:
+        CubeMap* SkyboxTexture;
 
         Skybox();
 
@@ -50,5 +51,8 @@ namespace MxEngine
         void RotateZ(float angle);
         const Vector3& GetRotation() const;
         const Matrix3x3& GetRotationMatrix() const;
+        const Shader& GetShader() const;
+        const VertexBuffer& GetVBO() const;
+        const VertexArray& GetVAO() const;
     };
 }

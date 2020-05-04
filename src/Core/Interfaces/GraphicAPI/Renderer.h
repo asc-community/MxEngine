@@ -79,6 +79,7 @@ namespace MxEngine
 		virtual Renderer& UseClearColor(float r, float g, float b, float a = 0.0f) = 0;
 		virtual Renderer& UseBlending(BlendFactor src, BlendFactor dist) = 0;
 		virtual Renderer& UseAnisotropicFiltering(float factor) = 0;
+		virtual Renderer& UseLineWidth(size_t width) = 0;
 		virtual float GetLargestAnisotropicFactor() const = 0;
 	};
 }

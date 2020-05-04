@@ -25,6 +25,7 @@
     <ClInclude Include="Core\Camera\PerspectiveCamera.h" />
     <ClInclude Include="Core\Components\Instancing\Instancing.h" />
     <ClInclude Include="Core\Components\Transform\Transform.h" />
+    <ClInclude Include="Core\DebugDraw\DebugBuffer.h" />
     <ClInclude Include="Core\DeveloperConsole\DeveloperConsole.h" />
     <ClInclude Include="Core\Event\Events\AppDestroyEvent.h" />
     <ClInclude Include="Core\Event\Event.h" />
@@ -186,6 +187,7 @@
     <ClCompile Include="Core\Camera\PerspectiveCamera.cpp" />
     <ClCompile Include="Core\Application\Application.cpp" />
     <ClCompile Include="Core\Components\Transform\Transform.cpp" />
+    <ClCompile Include="Core\DebugDraw\DebugBuffer.cpp" />
     <ClCompile Include="Core\DeveloperConsole\DeveloperConsole.cpp" />
     <ClCompile Include="Core\Lighting\DirectionalLight\DirectionalLight.cpp" />
     <ClCompile Include="Core\Lighting\PointLight\PointLight.cpp" />
@@ -238,11 +240,11 @@
     </None>
     <None Include="Platform\OpenGL\Shaders\depthcubemap_geometry.glsl" />
     <None Include="Platform\OpenGL\Shaders\depthcubemap_vertex.glsl" />
-    <None Include="Platform\OpenGL\Shaders\mesh_fragment.glsl">
+    <None Include="Platform\OpenGL\Shaders\debug_fragment.glsl">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
     </None>
-    <None Include="Platform\OpenGL\Shaders\mesh_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\debug_vertex.glsl" />
     <None Include="Platform\OpenGL\Shaders\object_fragment.glsl" />
     <None Include="Platform\OpenGL\Shaders\nolight_object_fragment.glsl" />
     <None Include="Platform\OpenGL\Shaders\object_vertex.glsl" />

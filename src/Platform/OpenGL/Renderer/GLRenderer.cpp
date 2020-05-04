@@ -250,6 +250,12 @@ namespace MxEngine
 		return *this;
 	}
 
+    GLRenderer& GLRenderer::UseLineWidth(size_t width)
+    {
+		GLCALL(glLineWidth((GLfloat)width));
+		return *this;
+    }
+
 	float GLRenderer::GetLargestAnisotropicFactor() const
 	{
 		if (!glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))

@@ -136,7 +136,7 @@ namespace MxEngine
 		Logger::Instance().Debug("OpenGL::Shader", "shader program created with id = " + std::to_string(id));
 	}
 
-    void GLShader::LoadFromSource(const std::string& vertex, const std::string& fragment)
+    void GLShader::LoadFromString(const std::string& vertex, const std::string& fragment)
     {
 		Logger::Instance().Debug("OpenGL::Shader", "compiling vertex shader: [[raw source]]");
 		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, "[[raw source]]");
@@ -147,7 +147,7 @@ namespace MxEngine
 		Logger::Instance().Debug("OpenGL::Shader", "shader program created with id = " + std::to_string(id));
     }
 
-	void GLShader::LoadFromSource(const std::string& vertex, const std::string& geometry, const std::string& fragment)
+	void GLShader::LoadFromString(const std::string& vertex, const std::string& geometry, const std::string& fragment)
 	{
 		Logger::Instance().Debug("OpenGL::Shader", "compiling vertex shader: [[raw source]]");
 		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, "[[raw source]]");

@@ -26,26 +26,37 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
+#include "Core/BoundingObjects/AABB.h"
+
 #pragma once
 
-#include "Core/Interfaces/GraphicAPI/IBindable.h"
-#include "Utilities/Math/Math.h"
-#include <string>
+#include <array>
+#include <vector>
 
 namespace MxEngine
 {
-	struct Shader : IBindable
+	class DebugBuffer
 	{
-		virtual void Load(const std::string& vertex, const std::string& fragment) = 0;
-		virtual void Load(const std::string& vertex, const std::string& geometry, const std::string& fragment) = 0;
-		virtual void LoadFromString(const std::string& vertex, const std::string& fragment) = 0;
-		virtual void LoadFromString(const std::string& vertex, const std::string& geometry, const std::string& fragment) = 0;
+		struct Point
+		{
+			Vector3 position;
+			Vector4 color;
+		};
+		using FrontendStorage = std::vector<Point>;
 
-		virtual void SetUniformFloat(const std::string& name, float f) const = 0;
-		virtual void SetUniformVec3(const std::string& name, const Vector3& vec) const = 0;
-		virtual void SetUniformVec4(const std::string& name, const Vector4& vec) const = 0;
-		virtual void SetUniformMat4(const std::string& name, const Matrix4x4& matrix) const = 0;
-		virtual void SetUniformMat3(const std::string& name, const Matrix3x3& matrix) const = 0;
-		virtual void SetUniformInt(const std::string& name, int i) const = 0;
+		FrontendStorage storage;
+
+		UniqueRef<VertexBuffer> VBO;
+		UniqueRef<VertexArray> VAO;
+		UniqueRef<Shader> shader;
+	public:
+		DebugBuffer();
+		void SubmitAABB(const AABB& box, const Vector4& color);
+		void ClearBuffer(); 
+		void SubmitBuffer();
+		size_t GetSize() const;
+		const VertexArray& GetVAO() const;
+		const Shader& GetShader() const;
 	};
 }

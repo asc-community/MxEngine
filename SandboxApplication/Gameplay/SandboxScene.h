@@ -13,7 +13,6 @@ class SandboxScene : public Scene
     {
         this->SetDirectory("Resources/");
 
-        this->AddObject("Grid", MakeUnique<Grid>(2000));
         this->AddObject("Cube", MakeUnique<CubeObject>());
         this->AddObject("Sphere", MakeUnique<SphereObject>());
         this->AddObject("Arc170", MakeUnique<Arc170Object>());
@@ -26,7 +25,14 @@ class SandboxScene : public Scene
 				return std::sin(10.0f * x) * std::sin(10.0f * y);
 			}, 1.0f, 1.0f, 0.01f);
 		surface.Scale(10.0f, 2.0f, 10.0f);
-		surface.Translate(5.0f, 3.0f, 5.0f);
+		surface.Translate(10.0f, 3.0f, 10.0f);
+
+		auto& grid = this->AddObject("Grid", MakeUnique<Grid>(2000));
+		grid.Scale(3.0f, 3.0f, 3.0f);
+		grid.ObjectTexture = Colors::MakeTexture(Colors::WHITE);
+		auto& material = grid.GetMesh()->GetRenderObjects()[0].GetMaterial();
+		material.reflection = 0.9f;
+		material.map_normal = Graphics::Instance()->CreateTexture(GetDirectory() / "textures/brick_normal.jpg");
 		
         this->LoadScript("init", "scripts/init.py");
         this->LoadScript("update", "scripts/update.py");

@@ -482,8 +482,7 @@ namespace MxEngine
 	}
 
 	template<typename T>
-	inline auto VectorMax(const T& v1, const T& v2)
-		-> decltype(v1.length(), v1[0], v1)
+	inline T VectorMax(const T& v1, const T& v2)
 	{
 		T result;
 		for (typename T::length_type i = 0; i < result.length(); i++)
@@ -494,8 +493,7 @@ namespace MxEngine
 	}
 
 	template<typename T>
-	inline auto VectorMin(const T& v1, const T& v2)
-		-> decltype(v1.length(), v1[0], v1)
+	inline T VectorMin(const T& v1, const T& v2)
 	{
 		T result;
 		for (typename T::length_type i = 0; i < result.length(); i++)

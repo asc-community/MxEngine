@@ -98,9 +98,11 @@ namespace MxEngine
 		InitEventDispatcher();
 	}
 
-	void Application::ToggleMeshDrawing(bool state)
+	void Application::ToggleBoundingBoxes(bool state, Vector4 color, bool overlay)
 	{
-		this->debugMeshDraw = state;
+		this->debugDraw = state;
+		this->debugColor = color;
+		this->overlayDebug = overlay;
 	}
 
 	void Application::OnCreate()
@@ -345,18 +347,9 @@ namespace MxEngine
 			this->renderer.ToggleReversedDepth(true);
 		}
 
+		this->renderer.ToggleDepthOnlyMode(false);
 		this->renderer.Clear();
 		this->renderer.AttachDrawBuffer();
-
-		//  // draw objects depth
-		//  {
-		//  	MAKE_SCOPE_PROFILER("Renderer::DrawDepth");
-		//  	for (const auto& [name, object] : this->currentScene->GetObjectList())
-		//  	{
-		//  		this->renderer.DrawDepthTexture(*object, viewport);
-		//  	}
-		//  }
-		this->renderer.ToggleDepthOnlyMode(false);
 
 		if (this->drawLighting)
 		{
@@ -378,19 +371,32 @@ namespace MxEngine
 			}
 		}
 
-		if (meshes)
-		{
-			for (const auto& object : this->currentScene->GetObjectList())
-			{
-				this->renderer.DrawObjectMesh(*object.second, viewport);
-			}
-		}
-
 		{
 			MAKE_SCOPE_PROFILER("Renderer::DrawSkybox");
 			auto& skybox = this->GetCurrentScene().SceneSkybox;
 			if (skybox != nullptr) this->renderer.DrawSkybox(*skybox, viewport);
 		}
+
+		if (this->debugDraw)
+		{
+			auto& buffer = this->renderer.GetDebugBuffer();
+			for (const auto& [name, object] : this->currentScene->GetObjectList())
+			{
+				if (object->GetInstanceCount() > 0 && object->GetMesh() != nullptr)
+				{
+					for (const auto& instance : object->GetInstances())
+					{
+						buffer.SubmitAABB(object->GetMesh()->GetAABB() * instance.Model.GetMatrix(), this->debugColor);
+					}
+				}
+				else
+				{
+					buffer.SubmitAABB(object->GetCachedAABB(), this->debugColor);
+				}
+			}
+			this->renderer.DrawDebugBuffer(viewport, this->overlayDebug);
+		}
+
 		this->renderer.DetachDrawBuffer();
 	}
 
@@ -457,7 +463,7 @@ namespace MxEngine
 			{
 				Renderer.ObjectShader = GlobalScene.GetResourceManager<Shader>().Add(
 					"MxObjectShader", Graphics::Instance()->CreateShader());
-				Renderer.ObjectShader->LoadFromSource(
+				Renderer.ObjectShader->LoadFromString(
 					#include MAKE_PLATFORM_SHADER(object_vertex)
 					,
 					#include MAKE_PLATFORM_SHADER(object_fragment)
@@ -467,28 +473,18 @@ namespace MxEngine
 			{
 				Renderer.ObjectShader = GlobalScene.GetResourceManager<Shader>().Add(
 					"MxNoLightShader", Graphics::Instance()->CreateShader());
-				Renderer.ObjectShader->LoadFromSource(
+				Renderer.ObjectShader->LoadFromString(
 					#include MAKE_PLATFORM_SHADER(nolight_object_vertex)
 					,
 					#include MAKE_PLATFORM_SHADER(nolight_object_fragment)
 				);
 			}
 		}
-		if (Renderer.MeshShader == nullptr)
-		{
-			Renderer.MeshShader = GlobalScene.GetResourceManager<Shader>().Add(
-				"MxMeshShader", Graphics::Instance()->CreateShader());
-			Renderer.MeshShader->LoadFromSource(
-				#include MAKE_PLATFORM_SHADER(mesh_vertex)
-				,
-				#include MAKE_PLATFORM_SHADER(mesh_fragment)
-			);
-		}
 		if (Renderer.DepthTextureShader == nullptr)
 		{
 			Renderer.DepthTextureShader = GlobalScene.GetResourceManager<Shader>().Add(
 				"MxDepthTextureShader", Graphics::Instance()->CreateShader());
-			Renderer.DepthTextureShader->LoadFromSource(
+			Renderer.DepthTextureShader->LoadFromString(
 				#include MAKE_PLATFORM_SHADER(depthtexture_vertex)
 				,
 				#include MAKE_PLATFORM_SHADER(depthtexture_fragment)
@@ -498,7 +494,7 @@ namespace MxEngine
 		{
 			Renderer.DepthCubeMapShader = GlobalScene.GetResourceManager<Shader>().Add(
 				"MxDepthCubeMapShader", Graphics::Instance()->CreateShader());
-			Renderer.DepthCubeMapShader->LoadFromSource(
+			Renderer.DepthCubeMapShader->LoadFromString(
 				#include MAKE_PLATFORM_SHADER(depthcubemap_vertex)
 				,
 				#include MAKE_PLATFORM_SHADER(depthcubemap_geometry)
@@ -510,16 +506,6 @@ namespace MxEngine
 		auto& skybox = this->GetCurrentScene().SceneSkybox;
 		if (skybox == nullptr) skybox = MakeUnique<Skybox>();
 
-		if (skybox->SkyboxShader == nullptr)
-		{
-			skybox->SkyboxShader = GlobalScene.GetResourceManager<Shader>().Add(
-				"MxSkyboxShader", Graphics::Instance()->CreateShader());
-			skybox->SkyboxShader->LoadFromSource(
-				#include MAKE_PLATFORM_SHADER(skybox_vertex)
-				,
-				#include MAKE_PLATFORM_SHADER(skybox_fragment)
-			);
-		}
 		if (Renderer.DepthBuffer == nullptr)
 		{
 			Renderer.DepthBuffer = GlobalScene.GetResourceManager<FrameBuffer>().Add(
@@ -595,9 +581,10 @@ namespace MxEngine
 
 		auto& renderingEngine = this->renderer.GetRenderEngine();
 		renderingEngine
-			.UseDepthBuffer()
-			.UseReversedDepth(false)
 			.UseCulling()
+			.UseDepthBuffer()
+			.UseLineWidth(3)
+			.UseReversedDepth(false)
 			.UseClearColor(0.0f, 0.0f, 0.0f)
 			.UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA)
 			.UseAnisotropicFiltering(renderingEngine.GetLargestAnisotropicFactor())
@@ -666,7 +653,7 @@ namespace MxEngine
 				}
 
 				this->InvokeUpdate();
-				this->DrawObjects(this->debugMeshDraw);
+				this->DrawObjects(this->debugDraw);
 
 				RenderEvent renderEvent;
 				this->GetEventDispatcher().Invoke(renderEvent);

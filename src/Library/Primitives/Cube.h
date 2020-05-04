@@ -42,7 +42,7 @@ namespace MxEngine
         {
             auto resourceName = Format(FMT_STRING("MxCube_{0}"), Application::Get()->GenerateResourceId());
             auto data = Cube::GetCubeData();
-            AABB aabb{ MakeVector3(-1.0f), MakeVector3(1.0f) };
+            AABB aabb { MakeVector3(-0.5f), MakeVector3(0.5f) };
             this->SubmitData(std::move(resourceName), aabb, make_view(data.first), make_view(data.second));
         }
 
