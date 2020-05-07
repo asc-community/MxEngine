@@ -34,6 +34,6 @@ namespace MxEngine
 {
     class AppDestroyEvent : public IEvent
     {
-        MAKE_EVENT;
+        MAKE_EVENT(AppDestroyEvent);
     };
 }

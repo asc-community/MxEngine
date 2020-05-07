@@ -54,8 +54,9 @@ namespace MxEngine::GUI
 	inline void DrawCameraEditor()
 	{
 		auto context = Application::Get();
+		auto& scene = context->GetCurrentScene();
 
-		auto& camera = context->GetCurrentScene().Viewport;
+		auto& camera = scene.Viewport;
 		float speed = camera.GetMoveSpeed();
 		float sensitivity = camera.GetRotateSpeed();
 		float zoom = camera.GetZoom();

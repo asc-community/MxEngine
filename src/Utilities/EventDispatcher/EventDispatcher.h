@@ -36,15 +36,17 @@
 #include <algorithm>
 
 #include "Utilities/Profiler/Profiler.h"
+#include "Utilities/String/String.h"
+#include "Utilities/Memory/Memory.h"
 
 namespace MxEngine
 {
-	#define MAKE_EVENT_BASE(name) struct name { inline virtual size_t GetEventType() const = 0; virtual ~name() = default; }
+	#define MAKE_EVENT_BASE(name) struct name { inline virtual uint32_t GetEventType() const = 0; virtual ~name() = default; }
 
-	#define MAKE_EVENT \
+	#define MAKE_EVENT(class_name) \
 	template<typename T> friend class EventDispatcher;\
-	public: inline virtual size_t GetEventType() const override { return this->eventType; } private:\
-	inline static size_t eventType
+	public: inline virtual uint32_t GetEventType() const override { return eventType; } private:\
+	constexpr static uint32_t eventType = STRING_ID(#class_name)
 
 	template<typename EventBase>
 	class EventDispatcher
@@ -52,15 +54,13 @@ namespace MxEngine
 		using CallbackBaseFunction = std::function<void(EventBase&)>;
 		using NamedCallback = std::pair<std::string, CallbackBaseFunction>;
 		using CallbackList = std::vector<NamedCallback>;
-		using EventList = std::vector<std::unique_ptr<EventBase>>;
-		using EventTypeIndex = size_t;
-		using EventTypeMap = std::map<std::type_index, EventTypeIndex>;
+		using EventList = std::vector<UniqueRef<EventBase>>;
+		using EventTypeIndex = uint32_t;
 
 		EventList events;
 		std::unordered_map<EventTypeIndex, CallbackList> callbacks;
 		std::unordered_map<EventTypeIndex, CallbackList> toAddCache;
 		std::vector<std::string> toRemoveCache;
-		EventTypeMap typeMap;
 
 		inline void ProcessEvent(EventBase& event)
 		{
@@ -111,35 +111,9 @@ namespace MxEngine
 		}
 
 	public:
-		EventDispatcher<EventBase> Clone()
-		{
-			EventDispatcher<EventBase> cloned;
-			cloned.typeMap = this->typeMap;
-			return cloned;
-		}
-
-		template<typename EventType>
-		inline void RegisterEventType()
-		{
-			if (EventType::eventType == 0)
-			{
-				auto& typeId = typeid(EventType);
-				if (this->typeMap.find(typeId) == this->typeMap.end())
-				{
-					this->typeMap.emplace(typeId, typeMap.size() + 1);
-				}
-				EventType::eventType = this->typeMap[typeId];
-			}
-			else
-			{
-				this->typeMap[typeid(EventType)] = EventType::eventType;
-			}
-		}
-
 		template<typename EventType>
 		void AddEventListener(const std::string& name, std::function<void(EventType&)> func)
 		{
-			this->RegisterEventType<EventType>();
 			this->AddCallbackImpl<EventType>(name, [func = std::move(func)](EventBase& e)
 			{
 				if (e.GetEventType() == EventType::eventType)
@@ -164,7 +138,7 @@ namespace MxEngine
 			this->ProcessEvent(event);
 		}
 
-		void AddEvent(std::unique_ptr<EventBase> event)
+		void AddEvent(UniqueRef<EventBase> event)
 		{
 			this->events.push_back(std::move(event));
 		}

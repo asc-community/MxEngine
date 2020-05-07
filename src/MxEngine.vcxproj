@@ -51,6 +51,10 @@
     <ClInclude Include="Platform\OpenGL\FrameBuffer\GLFrameBuffer.h" />
     <ClInclude Include="Platform\OpenGL\RenderBuffer\GLRenderBuffer.h" />
     <ClInclude Include="Utilities\LODGenerator\LODGenerator.h" />
+    <ClInclude Include="Utilities\Memory\LinearAllocator.h" />
+    <ClInclude Include="Utilities\Memory\Memory.h" />
+    <ClInclude Include="Utilities\Memory\PoolAllocator.h" />
+    <ClInclude Include="Utilities\Memory\StackAllocator.h" />
     <ClInclude Include="Utilities\ResourceStorage\ResourceStorage.h" />
     <ClInclude Include="Core\Scene\Scene.h" />
     <ClInclude Include="Library\Scripting\Script\Script.h" />
@@ -119,13 +123,13 @@
     <ClInclude Include="Utilities\LifetimeManager\LifetimeManager.h" />
     <ClInclude Include="Utilities\Logger\Logger.h" />
     <ClInclude Include="Utilities\Math\Math.h" />
-    <ClInclude Include="Utilities\Memory\Memory.h" />
     <ClInclude Include="Utilities\ObjectLoader\ObjectLoader.h" />
     <ClInclude Include="Utilities\Profiler\Profiler.h" />
     <ClInclude Include="Utilities\Random\Random.h" />
     <ClInclude Include="Utilities\SingletonHolder\CreationPolicy.h" />
     <ClInclude Include="Utilities\SingletonHolder\LifetimePolicy.h" />
     <ClInclude Include="Utilities\SingletonHolder\SingletonHolder.h" />
+    <ClInclude Include="Utilities\String\String.h" />
     <ClInclude Include="Utilities\Threading\ThreadingModel.h" />
     <ClInclude Include="Utilities\Time\Time.h" />
     <ClInclude Include="Vendors\fmt\chrono.h" />

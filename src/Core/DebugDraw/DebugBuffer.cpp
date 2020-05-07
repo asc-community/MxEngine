@@ -143,7 +143,7 @@ namespace MxEngine
 
     void DebugBuffer::SubmitBuffer()
     {
-        size_t size = this->GetSize();
+        size_t size = this->GetSize() * sizeof(Point) / sizeof(float);
         if (size <= this->VBO->GetSize())
             this->VBO->BufferSubData((float*)this->storage.data(), size);
         else
@@ -152,7 +152,7 @@ namespace MxEngine
 
     size_t DebugBuffer::GetSize() const
     {
-        return this->storage.size() * sizeof(Point) / sizeof(float);
+        return this->storage.size();
     }
 
     const VertexArray& DebugBuffer::GetVAO() const

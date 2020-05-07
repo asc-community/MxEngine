@@ -185,7 +185,6 @@ namespace MxEngine
 		}
 		else
 		{
-			scene->GetEventDispatcher() = this->GetEventDispatcher().Clone();
 			scenes.Add(name, std::move(scene));
 			scenes.Get(name)->OnCreate();
 		}

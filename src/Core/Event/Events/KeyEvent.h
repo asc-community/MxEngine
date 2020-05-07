@@ -161,7 +161,7 @@ namespace MxEngine
 
 	class KeyEvent : public IEvent
 	{
-		MAKE_EVENT;
+		MAKE_EVENT(KeyEvent);
 
 		using KeyVectorPointer = const std::bitset<350>*;
 

@@ -7,7 +7,7 @@ namespace MxEngine
 {
 	class MouseMoveEvent : public IEvent
 	{
-		MAKE_EVENT;
+		MAKE_EVENT(MouseMoveEvent);
 	public:
 		const Vector2 position;
 

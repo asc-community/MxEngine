@@ -35,7 +35,7 @@ namespace MxEngine
 {
 	class UpdateEvent : public IEvent
 	{
-		MAKE_EVENT;
+		MAKE_EVENT(UpdateEvent);
 	public:
 		const TimeStep TimeDelta;
 		UpdateEvent(TimeStep time)

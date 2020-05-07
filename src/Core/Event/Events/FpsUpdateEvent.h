@@ -34,7 +34,7 @@ namespace MxEngine
 {
 	class FpsUpdateEvent : public IEvent
 	{
-		MAKE_EVENT;
+		MAKE_EVENT(FpsUpdateEvent);
 	public:
 		const int FPS;
 		inline FpsUpdateEvent(int fps)

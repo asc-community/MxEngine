@@ -34,7 +34,7 @@
 
 namespace MxEngine
 {
-	static Instancing<MxObject>::InstanceList DefaultInstancing { MxInstance() };
+	static Instancing<MxObject>::InstanceList DefaultInstancing{ };
 
 	void MxObject::AddInstancedBuffer(ArrayBufferType buffer, size_t count, size_t components, size_t perComponentFloats, UsageType type)
 	{

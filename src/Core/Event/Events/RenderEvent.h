@@ -34,6 +34,6 @@ namespace MxEngine
 {
 	class RenderEvent : public IEvent
 	{
-		MAKE_EVENT;
+		MAKE_EVENT(RenderEvent);
 	};
 }

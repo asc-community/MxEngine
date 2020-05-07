@@ -35,7 +35,7 @@ namespace MxEngine
 {
 	class WindowResizeEvent : public IEvent
 	{
-		MAKE_EVENT;
+		MAKE_EVENT(WindowResizeEvent);
 	public:
 		Vector2 Old, New;
 
