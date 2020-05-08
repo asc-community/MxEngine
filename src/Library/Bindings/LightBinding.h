@@ -46,9 +46,6 @@ namespace MxEngine
 			: container(container), id(id)
 		{
 			this->ObjectTransform.Scale(0.25f);
-			auto& material = this->GetMesh()->GetRenderObjects().front().GetMaterial();
-			material.f_Ka = 0.0f;
-			material.f_Kd = 0.0f;
 		}
 
 		inline virtual void OnUpdate() override

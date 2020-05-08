@@ -332,13 +332,15 @@ namespace MxEngine
 		this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, *this->MSAAShader);
 	}
 
-	void RenderController::DrawPostProcessImage(const Texture& hdrTexture, const Texture& bloomTexture, float hdrExposure, int bloomIters)
+	void RenderController::DrawPostProcessImage(const Texture& hdrTexture, const Texture& bloomTexture, float hdrExposure, int bloomIters, float bloomWeight)
 	{
 		bool horizontalKernel = false;
 		bool noIterations = true;
 		auto& rectangle = this->GetRectangle();
 
 		bloomIters = bloomIters + bloomIters % 2;
+
+		this->BloomShader->SetUniformInt("BloomTexture", 0);
 		for (int i = 0; i < bloomIters; i++)
 		{
 			this->BloomBuffers[(size_t)horizontalKernel]->Bind();
@@ -350,7 +352,6 @@ namespace MxEngine
 			{
 				this->BloomBuffers[(size_t)!horizontalKernel]->GetAttachedTexture()->Bind(0);
 			}
-			this->BloomShader->SetUniformInt("BloomTexture", 0);
 			this->BloomShader->SetUniformInt("horizontalKernel", (int)horizontalKernel);
 
 			this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, *this->BloomShader);
@@ -361,8 +362,12 @@ namespace MxEngine
 
 		hdrTexture.Bind(0);
 		this->HDRShader->SetUniformInt("HDRtexture", 0);
+		this->HDRShader->SetUniformFloat("bloomWeight", bloomWeight);
 		if (noIterations)
-			bloomTexture.Bind(1); // if no bloom was performed, use bloomTexture
+		{
+			hdrTexture.Bind(1); // if no bloom was performed, use hdrTexture
+			hdrExposure *= 0.5f;
+		}
 		else
 			this->BloomBuffers[1]->GetAttachedTexture()->Bind(1);
 		this->HDRShader->SetUniformInt("BloomTexture", 1);
@@ -399,6 +404,16 @@ namespace MxEngine
 	int RenderController::GetBloomIterations() const
 	{
 		return this->bloomIterations;
+	}
+
+	void RenderController::SetBloomWeight(float weight)
+	{
+		this->bloomWeight = Clamp(weight, 0.0f, 1.0f);
+	}
+
+	float RenderController::GetBloomWeight()
+	{
+		return this->bloomWeight;
 	}
 
 	void RenderController::SetMSAASampling(size_t samples, TextureFormat format, int viewportWidth, int viewportHeight)
@@ -474,7 +489,7 @@ namespace MxEngine
 			this->Clear();
 			this->DrawHDRTexture(*this->MSAABuffer->GetAttachedTexture(), this->samples);
 			this->HDRBuffer->Unbind();
-			this->DrawPostProcessImage(*this->hdrTexture, *this->bloomTexture, this->exposure, this->bloomIterations);
+			this->DrawPostProcessImage(*this->hdrTexture, *this->bloomTexture, this->exposure, this->bloomIterations, this->bloomWeight);
 		}
 	}
 

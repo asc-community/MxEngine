@@ -63,6 +63,7 @@ namespace MxEngine
 		int bloomIterations = 0;
 		int samples = 1;
 		float exposure = 1.0f;
+		float bloomWeight = 1.0f;
 
 		VectorInt2 viewportSize{ 0, 0 };
 		UniqueRef<FrameBuffer> MSAABuffer;		
@@ -102,13 +103,15 @@ namespace MxEngine
 		void DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights, const Skybox* skybox) const;
 		void DrawSkybox(const Skybox& skybox, const CameraController& viewport);
 		void DrawHDRTexture(const Texture& texture, int MSAAsamples);
-		void DrawPostProcessImage(const Texture& hdrTexture, const Texture& bloomTexture, float hdrExposure, int bloomIters);
+		void DrawPostProcessImage(const Texture& hdrTexture, const Texture& bloomTexture, float hdrExposure, int bloomIters, float bloomWeight);
 		void SetPCFDistance(int value);
 		int GetPCFDIstance() const;
 		void SetHDRExposure(float value);
 		float GetHDRExposure() const;
 		void SetBloomIterations(int iterations);
 		int GetBloomIterations() const;
+		void SetBloomWeight(float weight);
+		float GetBloomWeight();
 		template<typename LightSource>
 		void DrawDepthTexture(const IDrawable& object, const LightSource& light) const;
 		template<typename PositionedLightSource>

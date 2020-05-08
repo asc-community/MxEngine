@@ -623,14 +623,14 @@ namespace MxEngine
 			.UseDepthBuffer()
 			.UseLineWidth(3)
 			.UseReversedDepth(false)
-			.UseClearColor(0.0f, 0.0f, 0.0f)
+			.UseClearColor(0.0f, 0.0f, 0.0f, 1.0f)
 			.UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA)
 			.UseAnisotropicFiltering(renderingEngine.GetLargestAnisotropicFactor())
 			;
 
 		this->CreateConsoleBindings(this->GetConsole());
 		this->SetMSAASampling(4);
-		this->renderer.SetBloomIterations(10);
+		this->renderer.SetBloomIterations(5);
 	}
 
 	DeveloperConsole& Application::GetConsole()

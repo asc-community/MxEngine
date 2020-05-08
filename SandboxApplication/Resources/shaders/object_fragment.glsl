@@ -139,7 +139,7 @@ vec3 calcDirLight(vec3 ambient, vec3 diffuse, vec3 specular, DirLight light, vec
 	float shadowFactor = CalcShadowFactor2D(fragLightSpace, map_shadow);
 
 	float diffuseFactor = max(dot(lightDir, normal), 0.0f);
-	float specularFactor = pow(max(dot(Hdir, normal), 0.0f), material.Ns);
+	float specularFactor = min(pow(max(dot(Hdir, normal), 0.0f), material.Ns), 0.5f);
 	vec3 diffuseObject = diffuse * diffuseFactor;
 
 	ambient = ambient * light.ambient;
@@ -166,7 +166,7 @@ vec3 calcPointLight(vec3 ambient, vec3 diffuse, vec3 specular, PointLight light,
 		light.Kquadratic * (lightDistance * lightDistance));
 
 	float diffuseFactor = max(dot(lightDir, normal), 0.0f);
-	float specularFactor = pow(max(dot(Hdir, normal), 0.0f), material.Ns);
+	float specularFactor = min(pow(max(dot(Hdir, normal), 0.0f), material.Ns), 0.5f);
 
 	ambient = ambient * attenuation * light.ambient;
 	diffuse = diffuse * attenuation * light.diffuse * diffuseFactor;
@@ -186,7 +186,7 @@ vec3 calcSpotLight(vec3 ambient, vec3 diffuse, vec3 specular, SpotLight light, v
 	float intensity = clamp((fragAngle - light.outerAngle) / epsilon, 0.0f, 1.0f);
 
 	float diffuseFactor = max(dot(lightDir, normal), 0.0f);
-	float specularFactor = pow(max(dot(Hdir, normal), 0.0f), material.Ns);
+	float specularFactor = min(pow(max(dot(Hdir, normal), 0.0f), material.Ns), 0.5f);
 
 	ambient = ambient * intensity * light.ambient;
 	diffuse = diffuse * intensity * light.diffuse * diffuseFactor;
@@ -238,7 +238,7 @@ void main()
 	}
 	float dissolve = material.d; // * texture(map_d, fsin.TexCoord).x * material.d;
 	// emmisive light
-	color += emmisive;
+	color += 5.0f * emmisive;
 
 	color *= fsin.RenderColor.rgb;
 	dissolve *= fsin.RenderColor.a;

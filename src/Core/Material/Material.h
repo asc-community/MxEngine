@@ -57,8 +57,8 @@ namespace MxEngine
 		Vector3 Ke{ 0.0f };
 		int illum = 0;
 
-		float f_Ka = 1.0f;
-		float f_Kd = 1.0f;
+		float f_Ka = 0.4f;
+		float f_Kd = 0.6f;
 		float reflection = 0.1f;
 	};
 }

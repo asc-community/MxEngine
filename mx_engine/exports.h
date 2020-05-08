@@ -1381,6 +1381,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("bloom_iters", &RenderController::GetBloomIterations, &RenderController::SetBloomIterations)
         .add_property("pcf", &RenderController::GetPCFDIstance, &RenderController::SetPCFDistance)
         .add_property("exposure", &RenderController::GetHDRExposure, &RenderController::SetHDRExposure)
+        .add_property("bloom", &RenderController::GetBloomWeight, &RenderController::SetBloomWeight)
         .add_property("dir_depth_size",
             &RenderController::GetDepthBufferSize<DirectionalLight>, 
             &RenderController::SetDepthBufferSize<DirectionalLight>)

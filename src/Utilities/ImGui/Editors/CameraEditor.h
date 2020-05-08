@@ -62,12 +62,15 @@ namespace MxEngine::GUI
 		float zoom = camera.GetZoom();
 		Vector3 pos = camera.GetPosition();
 		float exposure = context->GetRenderer().GetHDRExposure();
+		float bloomWeight = context->GetRenderer().GetBloomWeight();
 		int bloomIters = context->GetRenderer().GetBloomIterations();
 
 		DrawDebugMeshes();
 
-		if (ImGui::DragFloat("HDR exposure", &exposure, 0.01f, 0.00001f, std::numeric_limits<float>::max()))
+		if (ImGui::DragFloat("HDR exposure", &exposure, 0.01f, 0.0f, std::numeric_limits<float>::max()))
 			context->GetRenderer().SetHDRExposure(exposure);
+		if (ImGui::DragFloat("bloom weight", &bloomWeight, 0.01f, 0.0f, std::numeric_limits<float>::max()))
+			context->GetRenderer().SetBloomWeight(bloomWeight);
 		if (ImGui::DragInt("bloom iterations", &bloomIters, 0.1f, 0, 100))
 			context->GetRenderer().SetBloomIterations(bloomIters);
 

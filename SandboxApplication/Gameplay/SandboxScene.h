@@ -15,7 +15,7 @@ class SandboxScene : public Scene
 
         this->AddObject("Cube", MakeUnique<CubeObject>());
         this->AddObject("Sphere", MakeUnique<SphereObject>());
-        // this->AddObject("Arc170", MakeUnique<Arc170Object>());
+        this->AddObject("Arc170", MakeUnique<Arc170Object>());
         // this->AddObject("Destroyer", MakeUnique<DestroyerObject>());
         // this->AddObject("DeathStar", MakeUnique<DeathStarObject>());
 		
@@ -55,9 +55,9 @@ class SandboxScene : public Scene
 		this->PointLights[0].SpecularColor = { 1.0f, 0.3f, 0.0f };
 		this->PointLights[0].UsePosition({ -3.0f, 2.0f, -3.0f });
 		
-		this->SpotLights[0].AmbientColor  = { 0.2f, 0.2f, 0.2f };
-		this->SpotLights[0].DiffuseColor  = { 0.5f, 0.5f, 0.5f };
-		this->SpotLights[0].SpecularColor = { 0.5f, 0.5f, 0.5f };
+		this->SpotLights[0].AmbientColor  = { 1.0f, 1.0f, 1.0f };
+		this->SpotLights[0].DiffuseColor  = { 1.0f, 1.0f, 1.0f };
+		this->SpotLights[0].SpecularColor = { 1.0f, 1.0f, 1.0f };
 		this->SpotLights[0].UsePosition({ -15.0f, 3.0f, 0.0f });
 		this->SpotLights[0].UseDirection({ -1.0f, 1.3f, -1.0f });
 		this->SpotLights[0].UseOuterAngle(35.0f);

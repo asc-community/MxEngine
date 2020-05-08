@@ -25,7 +25,7 @@ void main()
 
     Color = color;
 
-    float brightness = (color.r + color.g + color.b) * 0.4f;
+    float brightness = dot(vec3(color), vec3(0.2f));
     if (brightness > 1.0f)
         Bloom = vec4(color.rgb, 1.0f);
     else
