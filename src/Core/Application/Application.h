@@ -64,7 +64,6 @@ namespace MxEngine
 		TimeStep timeDelta;
 		Scene* currentScene = nullptr;
 		int counterFPS;
-		size_t MSAAfactor;
 		Vector4 debugColor = MakeVector4(1.0f, 0.0f, 0.0f, 1.0f);
 		bool drawBoxes     = false;
 		bool drawSpheres   = false;
@@ -112,7 +111,6 @@ namespace MxEngine
 		float GetTimeDelta() const;
 		int GetCurrentFPS() const;
 		void SetMSAASampling(size_t samples);
-		size_t GetMSAASampling() const;
 		void Run();
 		bool IsRunning() const;
 		void CloseApplication();

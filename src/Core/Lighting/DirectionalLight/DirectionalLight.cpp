@@ -47,39 +47,6 @@ namespace MxEngine
         this->texture = std::move(texture);
     }
 
-    DirectionalLight& DirectionalLight::UseAmbientColor(const Vector3& ambient)
-    {
-        this->ambientColor = Clamp(ambient, MakeVector3(0.0f), MakeVector3(1.0f));
-        return *this;
-    }
-
-    DirectionalLight& DirectionalLight::UseDiffuseColor(const Vector3& diffuse)
-    {
-        this->diffuseColor = Clamp(diffuse, MakeVector3(0.0f), MakeVector3(1.0f));
-        return *this;
-    }
-
-    DirectionalLight& DirectionalLight::UseSpecularColor(const Vector3& specular)
-    {
-        this->specularColor = Clamp(specular, MakeVector3(0.0f), MakeVector3(1.0f));
-        return *this;
-    }
-
-    const Vector3& DirectionalLight::GetAmbientColor() const
-    {
-        return this->ambientColor;
-    }
-
-    const Vector3& DirectionalLight::GetDiffuseColor() const
-    {
-        return this->diffuseColor;
-    }
-
-    const Vector3& DirectionalLight::GetSpecularColor() const
-    {
-        return this->specularColor;
-    }
-
     Matrix4x4 DirectionalLight::GetMatrix() const
     {
         Vector3 Low  = MakeVector3(-this->ProjectionSize);

@@ -37,6 +37,7 @@
 #include "Core/Lighting/PointLight/PointLight.h"
 #include "Core/Lighting/SpotLight/SpotLight.h"
 #include "Core/Skybox/Skybox.h"
+#include "Core/DebugDraw/Rectangle.h"
 #include "Core/DebugDraw/DebugBuffer.h"
 
 #include <array>
@@ -59,11 +60,19 @@ namespace MxEngine
 		size_t directionalDepthSize = 4096;
 		size_t spotDepthSize = 512;
 		size_t pointDepthSize = 512;
+		int bloomIterations = 0;
+		int samples = 1;
+		float exposure = 1.0f;
 
 		VectorInt2 viewportSize{ 0, 0 };
-		UniqueRef<FrameBuffer> MSAABuffer;
-		UniqueRef<RenderBuffer> renderBuffer;
+		UniqueRef<FrameBuffer> MSAABuffer;		
+		UniqueRef<FrameBuffer> HDRBuffer;
+		UniqueRef<FrameBuffer> BloomBuffers[2];
+		UniqueRef<RenderBuffer> MSAARenderBuffer;
+		UniqueRef<Texture> hdrTexture;
+		UniqueRef<Texture> bloomTexture;
 		UniqueRef<DebugBuffer> debugBuffer;
+		UniqueRef<Rectangle> rectangle;
 	public:
 		RenderController(Renderer& renderer);
 
@@ -71,6 +80,9 @@ namespace MxEngine
 		Shader* ObjectShader = nullptr;
 		Shader* DepthTextureShader = nullptr;
 		Shader* DepthCubeMapShader = nullptr;
+		Shader* MSAAShader = nullptr;
+		Shader* HDRShader = nullptr;
+		Shader* BloomShader = nullptr;
 		Texture* DefaultTexture = nullptr;
 		Texture* DefaultNormal = nullptr;
 		FrameBuffer* DepthBuffer = nullptr;
@@ -89,7 +101,14 @@ namespace MxEngine
 		void DrawObject(const IDrawable& object, const CameraController& viewport) const;
 		void DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights, const Skybox* skybox) const;
 		void DrawSkybox(const Skybox& skybox, const CameraController& viewport);
+		void DrawHDRTexture(const Texture& texture, int MSAAsamples);
+		void DrawPostProcessImage(const Texture& hdrTexture, const Texture& bloomTexture, float hdrExposure, int bloomIters);
 		void SetPCFDistance(int value);
+		int GetPCFDIstance() const;
+		void SetHDRExposure(float value);
+		float GetHDRExposure() const;
+		void SetBloomIterations(int iterations);
+		int GetBloomIterations() const;
 		template<typename LightSource>
 		void DrawDepthTexture(const IDrawable& object, const LightSource& light) const;
 		template<typename PositionedLightSource>
@@ -98,10 +117,12 @@ namespace MxEngine
 		size_t GetDepthBufferSize() const;
 		template<typename LightSource>
 		void SetDepthBufferSize(size_t size);
-		void SetMSAASampling(size_t samples, int viewportWidth, int viewportHeight);
+		void SetMSAASampling(size_t samples, TextureFormat format, int viewportWidth, int viewportHeight);
+		int getMSAASamples() const;
 		void AttachDrawBuffer();
 		void DetachDrawBuffer();
 		DebugBuffer& GetDebugBuffer();
+		Rectangle& GetRectangle();
 		void DrawDebugBuffer(const CameraController& viewport, bool overlay = false) const;
 	};
 

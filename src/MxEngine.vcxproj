@@ -27,6 +27,7 @@
     <ClInclude Include="Core\Components\Instancing\Instancing.h" />
     <ClInclude Include="Core\Components\Transform\Transform.h" />
     <ClInclude Include="Core\DebugDraw\DebugBuffer.h" />
+    <ClInclude Include="Core\DebugDraw\Rectangle.h" />
     <ClInclude Include="Core\DeveloperConsole\DeveloperConsole.h" />
     <ClInclude Include="Core\Event\Events\AppDestroyEvent.h" />
     <ClInclude Include="Core\Event\Event.h" />
@@ -38,7 +39,6 @@
     <ClInclude Include="Core\Interfaces\GraphicAPI\FrameBuffer.h" />
     <ClInclude Include="Core\Interfaces\GraphicAPI\RenderBuffer.h" />
     <ClInclude Include="Core\Interfaces\IComponent.h" />
-    <ClInclude Include="Core\Lighting\LightSource.h" />
     <ClInclude Include="Core\Lighting\DirectionalLight\DirectionalLight.h" />
     <ClInclude Include="Core\Lighting\PointLight\PointLight.h" />
     <ClInclude Include="Core\Lighting\SpotLight\SpotLight.h" />
@@ -193,6 +193,7 @@
     <ClCompile Include="Core\Application\Application.cpp" />
     <ClCompile Include="Core\Components\Transform\Transform.cpp" />
     <ClCompile Include="Core\DebugDraw\DebugBuffer.cpp" />
+    <ClCompile Include="Core\DebugDraw\Rectangle.cpp" />
     <ClCompile Include="Core\DeveloperConsole\DeveloperConsole.cpp" />
     <ClCompile Include="Core\Lighting\DirectionalLight\DirectionalLight.cpp" />
     <ClCompile Include="Core\Lighting\PointLight\PointLight.cpp" />
@@ -237,6 +238,7 @@
     <ClCompile Include="Vendors\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Platform\OpenGL\Shaders\bloom_fragment.glsl" />
     <None Include="Platform\OpenGL\Shaders\depthcubemap_fragment.glsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ExcludedFromBuild>
@@ -250,6 +252,9 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
     </None>
     <None Include="Platform\OpenGL\Shaders\debug_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\hdr_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\msaa_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\rect_vertex.glsl" />
     <None Include="Platform\OpenGL\Shaders\object_fragment.glsl" />
     <None Include="Platform\OpenGL\Shaders\nolight_object_fragment.glsl" />
     <None Include="Platform\OpenGL\Shaders\object_vertex.glsl" />

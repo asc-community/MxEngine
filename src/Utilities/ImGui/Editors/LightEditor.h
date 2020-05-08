@@ -53,18 +53,16 @@ namespace MxEngine::GUI
 			}
 			ImGui::InputInt("PCF distance", &context->GetRenderer().PCFdistance);
 
-			auto ambient = globalLight.GetAmbientColor();
-			auto diffuse = globalLight.GetDiffuseColor();
-			auto specular = globalLight.GetSpecularColor();
 			ImGui::InputFloat3("direction", &globalLight.Direction[0]);
 			ImGui::DragFloat("projection size", &globalLight.ProjectionSize, 10.0f, 50.0f, 5000.0f);
 
-			if (ImGui::ColorEdit3("ambient color", &ambient[0]))
-				globalLight.UseAmbientColor(ambient);
-			if (ImGui::ColorEdit3("diffuse color", &diffuse[0]))
-				globalLight.UseDiffuseColor(diffuse);
-			if (ImGui::ColorEdit3("specular color", &specular[0]))
-				globalLight.UseSpecularColor(specular);
+			ImGui::ColorEdit3("ambient color", &globalLight.AmbientColor[0],   ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
+			ImGui::ColorEdit3("diffuse color", &globalLight.DiffuseColor[0],   ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
+			ImGui::ColorEdit3("specular color", &globalLight.SpecularColor[0], ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
+
+			globalLight.AmbientColor  = VectorMax(globalLight.AmbientColor,  MakeVector3(0.0f));
+			globalLight.DiffuseColor  = VectorMax(globalLight.DiffuseColor,  MakeVector3(0.0f));
+			globalLight.SpecularColor = VectorMax(globalLight.SpecularColor, MakeVector3(0.0f));
 
 			ImGui::PopID();
 		}
@@ -86,21 +84,19 @@ namespace MxEngine::GUI
 				}
 
 				auto& pointLight = scene.PointLights[i];
-				auto ambientPoint = pointLight.GetAmbientColor();
-				auto diffusePoint = pointLight.GetDiffuseColor();
-				auto specularPoint = pointLight.GetSpecularColor();
 				auto factors = pointLight.GetFactors();
 
 				ImGui::DragFloat3("position", &pointLight.Position[0], 0.5f);
+				ImGui::ColorEdit3("ambient color", &pointLight.AmbientColor[0],   ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
+				ImGui::ColorEdit3("diffuse color", &pointLight.DiffuseColor[0],   ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
+				ImGui::ColorEdit3("specular color", &pointLight.SpecularColor[0], ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
+
+				pointLight.AmbientColor  = VectorMax(pointLight.AmbientColor,  MakeVector3(0.0f));
+				pointLight.DiffuseColor  = VectorMax(pointLight.DiffuseColor,  MakeVector3(0.0f));
+				pointLight.SpecularColor = VectorMax(pointLight.SpecularColor, MakeVector3(0.0f));
 
 				if (ImGui::InputFloat3("K factors", &factors[0]))
 					pointLight.UseFactors(factors);
-				if (ImGui::ColorEdit3("ambient color", &ambientPoint[0]))
-					pointLight.UseAmbientColor(ambientPoint);
-				if (ImGui::ColorEdit3("diffuse color", &diffusePoint[0]))
-					pointLight.UseDiffuseColor(diffusePoint);
-				if (ImGui::ColorEdit3("specular color", &specularPoint[0]))
-					pointLight.UseSpecularColor(specularPoint);
 
 				ImGui::PopID();
 			}
@@ -125,9 +121,6 @@ namespace MxEngine::GUI
 				auto& spotLight = scene.SpotLights[i];
 				auto innerAngle = spotLight.GetInnerAngle();
 				auto outerAngle = spotLight.GetOuterAngle();
-				auto ambientSpot = spotLight.GetAmbientColor();
-				auto diffuseSpot = spotLight.GetDiffuseColor();
-				auto specularSpot = spotLight.GetSpecularColor();
 
 				ImGui::DragFloat3("position", &spotLight.Position[0], 0.5f);
 				ImGui::InputFloat3("direction", &spotLight.Direction[0]);
@@ -137,12 +130,13 @@ namespace MxEngine::GUI
 				if (ImGui::DragFloat("inner angle", &innerAngle, 1.0f, 0.0f, 90.0f))
 					spotLight.UseInnerAngle(innerAngle);
 
-				if (ImGui::ColorEdit3("ambient color", &ambientSpot[0]))
-					spotLight.UseAmbientColor(ambientSpot);
-				if (ImGui::ColorEdit3("diffuse color", &diffuseSpot[0]))
-					spotLight.UseDiffuseColor(diffuseSpot);
-				if (ImGui::ColorEdit3("specular color", &specularSpot[0]))
-					spotLight.UseSpecularColor(specularSpot);
+				ImGui::ColorEdit3("ambient color", &spotLight.AmbientColor[0],   ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
+				ImGui::ColorEdit3("diffuse color", &spotLight.DiffuseColor[0],   ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
+				ImGui::ColorEdit3("specular color", &spotLight.SpecularColor[0], ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
+
+				spotLight.AmbientColor  = VectorMax(spotLight.AmbientColor,  MakeVector3(0.0f));
+				spotLight.DiffuseColor  = VectorMax(spotLight.DiffuseColor,  MakeVector3(0.0f));
+				spotLight.SpecularColor = VectorMax(spotLight.SpecularColor, MakeVector3(0.0f));
 
 				ImGui::PopID();
 			}

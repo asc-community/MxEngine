@@ -60,7 +60,7 @@ namespace MxEngine
 				this->ObjectTransform.SetTranslation(light.Position);
 
 				auto& material = this->GetMesh()->GetRenderObjects().front().GetMaterial();
-				material.Ke = Clamp(light.GetAmbientColor() + light.GetDiffuseColor(), MakeVector3(0.0f), MakeVector3(1.0f));
+				material.Ke = light.AmbientColor + light.DiffuseColor;
 			}
 			else
 			{

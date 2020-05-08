@@ -151,6 +151,13 @@ namespace MxEngine
         GLCALL(glBlitFramebuffer(0, 0, this->width, this->height, 0, 0, screenWidth, screenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST));
     }
 
+    void GLFrameBuffer::Validate() const
+    {
+        this->Bind();
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            Logger::Instance().Error("OpenGL::FrameBuffer", "framebuffer validation failed: incomplete");
+    }
+
     Texture* GLFrameBuffer::GetAttachedTexture()
     {
         return this->texture.get();
@@ -169,6 +176,12 @@ namespace MxEngine
     const CubeMap* GLFrameBuffer::GetAttachedCubeMap() const
     {
         return this->cubemap.get();
+    }
+
+    void GLFrameBuffer::UseDrawBuffers(size_t count) const
+    {
+        this->Bind();
+        GLCALL(glDrawBuffers((GLsizei)count, AttachmentTable));
     }
 
     int GLFrameBuffer::GetWidth() const

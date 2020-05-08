@@ -50,10 +50,10 @@ namespace MxEngine
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 		virtual void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = true) override;
-		virtual void Load(Texture::RawDataPointer data, int width, int height, bool genMipmaps = true) override;
+		virtual void Load(Texture::RawDataPointer data, int width, int height, TextureFormat format = TextureFormat::RGBA, bool genMipmaps = true) override;
 		virtual void LoadMipmaps(Texture::RawDataPointer* data, size_t mipmaps, int biggestWidth, int biggestHeight) override;
 		virtual void LoadDepth(int width, int height) override;
-		virtual void LoadMultisample(int width, int height, int samples) override;
+		virtual void LoadMultisample(int width, int height, TextureFormat format, int samples) override;
 		virtual void Bind(IBindable::IdType id) const override;
 		virtual const std::string& GetPath() const override;
 		virtual unsigned int GetTextureType() const override;

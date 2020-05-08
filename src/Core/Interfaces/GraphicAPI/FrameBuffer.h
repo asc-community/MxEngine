@@ -70,7 +70,9 @@ namespace MxEngine
         virtual const Texture* GetAttachedTexture() const = 0;
         virtual CubeMap* GetAttachedCubeMap() = 0;
         virtual const CubeMap* GetAttachedCubeMap() const = 0;
+        virtual void UseDrawBuffers(size_t count) const = 0;
         virtual void CopyFrameBufferContents(const FrameBuffer& framebuffer) const = 0;
         virtual void CopyFrameBufferContents(int screenWidth, int screenHeight) const = 0;
+        virtual void Validate() const = 0;
     };
 }

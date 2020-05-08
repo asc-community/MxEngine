@@ -33,16 +33,28 @@
 
 namespace MxEngine
 {
+	enum class TextureFormat
+	{
+		RGB,
+		RGBA,
+		RGB16,
+		RGB16F,
+		RGBA16,
+		RGBA16F,
+		RGB32F,
+		RGBA32F,
+	};
+
 	struct Texture : IBindable
 	{
 		using RawDataPointer = const uint8_t*;
 		using IdType = IBindable::IdType;
 
 		virtual void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = true) = 0;
-		virtual void Load(RawDataPointer data, int width, int height, bool genMipmaps = true) = 0;
+		virtual void Load(RawDataPointer data, int width, int height, TextureFormat format = TextureFormat::RGBA, bool genMipmaps = true) = 0;
 		virtual void LoadMipmaps(RawDataPointer* textures, size_t mipmapCount, int biggestWidth, int biggestHeight) = 0;
 		virtual void LoadDepth(int width, int height) = 0;
-		virtual void LoadMultisample(int width, int height, int samples) = 0;
+		virtual void LoadMultisample(int width, int height, TextureFormat format, int samples) = 0;
 		virtual void Bind(IdType id) const = 0;
 		virtual const std::string& GetPath() const = 0;
 		virtual unsigned int GetTextureType() const = 0;

@@ -188,9 +188,9 @@ namespace MxEngine
 
 		// set direction light
 		shader.SetUniformVec3("dirLight.direction", lights.Global->Direction);
-		shader.SetUniformVec3("dirLight.ambient", lights.Global->GetAmbientColor());
-		shader.SetUniformVec3("dirLight.diffuse", lights.Global->GetDiffuseColor());
-		shader.SetUniformVec3("dirLight.specular", lights.Global->GetSpecularColor());
+		shader.SetUniformVec3("dirLight.ambient", lights.Global->AmbientColor);
+		shader.SetUniformVec3("dirLight.diffuse", lights.Global->DiffuseColor);
+		shader.SetUniformVec3("dirLight.specular", lights.Global->SpecularColor);
 
 		// set point lights
 		shader.SetUniformInt("pointLightCount", (int)lights.Point.size());
@@ -199,9 +199,9 @@ namespace MxEngine
 			shader.SetUniformVec3(Format(FMT_STRING("pointLight[{0}].position"), i), lights.Point[i].Position);
 			shader.SetUniformFloat(Format(FMT_STRING("pointLight[{0}].zfar"), i), lights.Point[i].FarDistance);
 			shader.SetUniformVec3(Format(FMT_STRING("pointLight[{0}].K"), i), lights.Point[i].GetFactors());
-			shader.SetUniformVec3(Format(FMT_STRING("pointLight[{0}].ambient"), i), lights.Point[i].GetAmbientColor());
-			shader.SetUniformVec3(Format(FMT_STRING("pointLight[{0}].diffuse"), i), lights.Point[i].GetDiffuseColor());
-			shader.SetUniformVec3(Format(FMT_STRING("pointLight[{0}].specular"), i), lights.Point[i].GetSpecularColor());
+			shader.SetUniformVec3(Format(FMT_STRING("pointLight[{0}].ambient"), i), lights.Point[i].AmbientColor);
+			shader.SetUniformVec3(Format(FMT_STRING("pointLight[{0}].diffuse"), i), lights.Point[i].DiffuseColor);
+			shader.SetUniformVec3(Format(FMT_STRING("pointLight[{0}].specular"), i), lights.Point[i].SpecularColor);
 		}
 
 		// set spot lights
@@ -209,10 +209,10 @@ namespace MxEngine
 		for (size_t i = 0; i < lights.Spot.size(); i++)
 		{
 			shader.SetUniformVec3(Format(FMT_STRING("spotLight[{0}].position"), i), lights.Spot[i].Position);
+			shader.SetUniformVec3(Format(FMT_STRING("spotLight[{0}].ambient"), i), lights.Spot[i].AmbientColor);
+			shader.SetUniformVec3(Format(FMT_STRING("spotLight[{0}].diffuse"), i), lights.Spot[i].DiffuseColor);
+			shader.SetUniformVec3(Format(FMT_STRING("spotLight[{0}].specular"), i), lights.Spot[i].SpecularColor);
 			shader.SetUniformVec3(Format(FMT_STRING("spotLight[{0}].direction"), i), lights.Spot[i].GetDirection());
-			shader.SetUniformVec3(Format(FMT_STRING("spotLight[{0}].ambient"), i), lights.Spot[i].GetAmbientColor());
-			shader.SetUniformVec3(Format(FMT_STRING("spotLight[{0}].diffuse"), i), lights.Spot[i].GetDiffuseColor());
-			shader.SetUniformVec3(Format(FMT_STRING("spotLight[{0}].specular"), i), lights.Spot[i].GetSpecularColor());
 			shader.SetUniformFloat(Format(FMT_STRING("spotLight[{0}].innerAngle"), i), lights.Spot[i].GetInnerCos());
 			shader.SetUniformFloat(Format(FMT_STRING("spotLight[{0}].outerAngle"), i), lights.Spot[i].GetOuterCos());
 		}
@@ -322,34 +322,137 @@ namespace MxEngine
 		this->GetRenderEngine().DrawTriangles(skybox.GetVAO(), skybox.GetVBO().GetSize(), shader);
 	}
 
+	void RenderController::DrawHDRTexture(const Texture& texture, int MSAAsamples)
+	{
+		texture.Bind(0); // bind hdr texture
+		this->MSAAShader->SetUniformInt("HDRtexture", 0);
+		this->MSAAShader->SetUniformInt("msaa_samples", MSAAsamples);
+		auto& rectangle = this->GetRectangle();
+
+		this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, *this->MSAAShader);
+	}
+
+	void RenderController::DrawPostProcessImage(const Texture& hdrTexture, const Texture& bloomTexture, float hdrExposure, int bloomIters)
+	{
+		bool horizontalKernel = false;
+		bool noIterations = true;
+		auto& rectangle = this->GetRectangle();
+
+		bloomIters = bloomIters + bloomIters % 2;
+		for (int i = 0; i < bloomIters; i++)
+		{
+			this->BloomBuffers[(size_t)horizontalKernel]->Bind();
+			if (noIterations)
+			{
+				bloomTexture.Bind(0); noIterations = false;
+			}
+			else
+			{
+				this->BloomBuffers[(size_t)!horizontalKernel]->GetAttachedTexture()->Bind(0);
+			}
+			this->BloomShader->SetUniformInt("BloomTexture", 0);
+			this->BloomShader->SetUniformInt("horizontalKernel", (int)horizontalKernel);
+
+			this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, *this->BloomShader);
+
+			horizontalKernel = !horizontalKernel;
+		}
+		this->BloomBuffers[1]->Unbind();
+
+		hdrTexture.Bind(0);
+		this->HDRShader->SetUniformInt("HDRtexture", 0);
+		if (noIterations)
+			bloomTexture.Bind(1); // if no bloom was performed, use bloomTexture
+		else
+			this->BloomBuffers[1]->GetAttachedTexture()->Bind(1);
+		this->HDRShader->SetUniformInt("BloomTexture", 1);
+		this->HDRShader->SetUniformFloat("exposure", hdrExposure);
+
+		this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, *this->HDRShader);
+	}
+
 	void RenderController::SetPCFDistance(int value)
 	{
 		this->PCFdistance = value;
 	}
 
-	void RenderController::SetMSAASampling(size_t samples, int viewportWidth, int viewportHeight)
+	int RenderController::GetPCFDIstance() const
 	{
-		if (samples == 0)
-		{
-			this->GetRenderEngine().UseSampling(false);
-			this->MSAABuffer.reset();
-			this->renderBuffer.reset();
-			return;
-		}
-		else
-		{
-			this->GetRenderEngine().UseSampling(true);
+		return this->PCFdistance;
+	}
 
-			auto MSAATexture = Graphics::Instance()->CreateTexture();
-			MSAATexture->LoadMultisample(viewportWidth, viewportHeight, (int)samples);
+	void RenderController::SetHDRExposure(float value)
+	{
+		this->exposure = Max(value, 0.0f);
+	}
 
+	float RenderController::GetHDRExposure() const
+	{
+		return this->exposure;
+	}
+
+	void RenderController::SetBloomIterations(int iterations)
+	{
+		this->bloomIterations = Max(0, iterations);
+	}
+
+	int RenderController::GetBloomIterations() const
+	{
+		return this->bloomIterations;
+	}
+
+	void RenderController::SetMSAASampling(size_t samples, TextureFormat format, int viewportWidth, int viewportHeight)
+	{
+		this->GetRenderEngine().UseSampling(true);
+		this->samples = (int)samples;
+
+		auto MSAATexture = Graphics::Instance()->CreateTexture();
+		MSAATexture->LoadMultisample(viewportWidth, viewportHeight, format, (int)samples);
+
+		if(this->MSAABuffer == nullptr)
 			this->MSAABuffer = Graphics::Instance()->CreateFrameBuffer();
-			this->MSAABuffer->AttachTexture(std::move(MSAATexture), Attachment::COLOR_ATTACHMENT0);
+		this->MSAABuffer->AttachTexture(std::move(MSAATexture), Attachment::COLOR_ATTACHMENT0);
 
-			this->renderBuffer = Graphics::Instance()->CreateRenderBuffer();
-			this->renderBuffer->InitStorage(viewportWidth, viewportHeight, (int)samples);
-			this->renderBuffer->LinkToFrameBuffer(*this->MSAABuffer);
+		if(this->MSAARenderBuffer == nullptr)
+			this->MSAARenderBuffer = Graphics::Instance()->CreateRenderBuffer();
+		this->MSAARenderBuffer->InitStorage(viewportWidth, viewportHeight, (int)samples);
+		this->MSAARenderBuffer->LinkToFrameBuffer(*this->MSAABuffer);
+
+		if(this->hdrTexture == nullptr) 
+			this->hdrTexture = Graphics::Instance()->CreateTexture();
+		this->hdrTexture->Load(nullptr, viewportWidth, viewportHeight, format);
+
+		if (this->bloomTexture == nullptr)
+			this->bloomTexture = Graphics::Instance()->CreateTexture();
+		this->bloomTexture->Load(nullptr, viewportWidth, viewportHeight, format);
+			
+		if(this->HDRBuffer == nullptr)
+			this->HDRBuffer = Graphics::Instance()->CreateFrameBuffer();
+		this->HDRBuffer->AttachTexture(*this->hdrTexture, Attachment::COLOR_ATTACHMENT0);
+		this->HDRBuffer->AttachTexture(*this->bloomTexture, Attachment::COLOR_ATTACHMENT1);
+
+		this->HDRBuffer->UseDrawBuffers(2);
+		this->HDRBuffer->Validate();
+
+		for (size_t i = 0; i < 2; i++)
+		{
+			if (BloomBuffers[i] == nullptr)
+			{
+				BloomBuffers[i] = Graphics::Instance()->CreateFrameBuffer();
+				auto texture = Graphics::Instance()->CreateTexture();
+				texture->Load(nullptr, viewportWidth, viewportHeight, format);
+				BloomBuffers[i]->AttachTexture(std::move(texture), Attachment::COLOR_ATTACHMENT0);
+			}
+			else
+			{
+				BloomBuffers[i]->GetAttachedTexture()->Load(nullptr, viewportWidth, viewportHeight, format);
+			}
 		}
+	}
+
+	int RenderController::getMSAASamples() const
+	{
+		return this->samples;
 	}
 
 	void RenderController::AttachDrawBuffer()
@@ -367,8 +470,11 @@ namespace MxEngine
 		if (this->MSAABuffer != nullptr &&
 			this->MSAABuffer->GetWidth() == this->viewportSize.x && this->MSAABuffer->GetHeight() == this->viewportSize.y)
 		{
-			this->MSAABuffer->CopyFrameBufferContents(this->MSAABuffer->GetWidth(), this->MSAABuffer->GetHeight());
-			this->MSAABuffer->Unbind();
+			this->HDRBuffer->Bind();
+			this->Clear();
+			this->DrawHDRTexture(*this->MSAABuffer->GetAttachedTexture(), this->samples);
+			this->HDRBuffer->Unbind();
+			this->DrawPostProcessImage(*this->hdrTexture, *this->bloomTexture, this->exposure, this->bloomIterations);
 		}
 	}
 
@@ -377,6 +483,13 @@ namespace MxEngine
 		if (this->debugBuffer == nullptr)
 			this->debugBuffer = MakeUnique<DebugBuffer>();
 		return *this->debugBuffer;
+	}
+
+	Rectangle& RenderController::GetRectangle()
+	{
+		if (this->rectangle == nullptr)
+			this->rectangle = MakeUnique<Rectangle>(1.0f);
+		return *this->rectangle;
 	}
 
 	void RenderController::DrawDebugBuffer(const CameraController& viewport, bool overlay) const

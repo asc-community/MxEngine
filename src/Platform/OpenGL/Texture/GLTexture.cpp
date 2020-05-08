@@ -34,6 +34,18 @@
 
 namespace MxEngine
 {
+	GLenum formatTable[] =
+	{
+		GL_RGB,
+		GL_RGBA,
+		GL_RGB16,
+		GL_RGB16F,
+		GL_RGBA16,
+		GL_RGBA16F,
+		GL_RGB32F,
+		GL_RGBA32F,
+	};
+
 	void GLTexture::FreeTexture()
 	{
 		if (id != 0)
@@ -101,7 +113,7 @@ namespace MxEngine
 		ImageLoader::FreeImage(image);
 	}
 
-	void GLTexture::Load(RawDataPointer data, int width, int height, bool genMipmaps)
+	void GLTexture::Load(RawDataPointer data, int width, int height, TextureFormat format, bool genMipmaps)
 	{
 		this->filepath = "[[raw data]]";
 		this->width = width;
@@ -109,15 +121,18 @@ namespace MxEngine
 		this->channels = 3;
 		this->textureType = GL_TEXTURE_2D;
 
-		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
-		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
+		GLenum type = (format == TextureFormat::RGB16F || format == TextureFormat::RGB32F ||
+			format == TextureFormat::RGBA16F) ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
+		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)format], (GLsizei)width, (GLsizei)height, 0, GL_RGB, type, data));
+
 		if (genMipmaps)
 		{
+			GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+			GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+			GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+			GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
 			GLCALL(glGenerateMipmap(GL_TEXTURE_2D));
 		}
 	}
@@ -167,7 +182,7 @@ namespace MxEngine
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 	}
 
-    void GLTexture::LoadMultisample(int width, int height, int samples)
+    void GLTexture::LoadMultisample(int width, int height, TextureFormat format, int samples)
     {
 		this->filepath = "[[multisample]]";
 		this->width = width;
@@ -176,7 +191,9 @@ namespace MxEngine
 
 		this->Bind();
 
-		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGB, width, height, GL_TRUE);
+		GLenum glFormat = formatTable[(int)format];
+
+		GLCALL(glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, glFormat, width, height, GL_TRUE));
     }
 
 	void GLTexture::Bind() const

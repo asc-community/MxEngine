@@ -66,11 +66,10 @@ void SnakePath3D::OnCreate()
 
 	auto& scene = this->GetCurrentScene();
 	
-	scene.GlobalLight
-		.UseAmbientColor ({ 0.3f, 0.3f, 0.3f })
-		.UseDiffuseColor ({ 0.8f, 0.8f, 0.8f })
-		.UseSpecularColor({ 1.0f, 1.0f, 1.0f })
-		.Direction = { 0.7f, 1.0f, 0.7f };
+	scene.GlobalLight.AmbientColor  = { 0.3f, 0.3f, 0.3f };
+	scene.GlobalLight.DiffuseColor  = { 0.8f, 0.8f, 0.8f };
+	scene.GlobalLight.SpecularColor = { 1.0f, 1.0f, 1.0f };
+	scene.GlobalLight.Direction     = { 0.7f, 1.0f, 0.7f };
 	
 	auto camera = MakeUnique<PerspectiveCamera>();
 	camera->SetZFar(1000.0f);

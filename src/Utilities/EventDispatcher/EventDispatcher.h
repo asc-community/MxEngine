@@ -131,11 +131,16 @@ namespace MxEngine
 		{
 			this->toRemoveCache.push_back(name);
 		}
-
-		void Invoke(EventBase& event)
+		
+		template<typename Event>
+		void Invoke(Event& event)
 		{
 			this->RemoveQueuedEvents();
-			this->ProcessEvent(event);
+			auto& eventCallbacks = this->callbacks[event.GetEventType()];
+			for (const auto& [name, callback] : eventCallbacks)
+			{
+				callback(event);
+			}
 		}
 
 		void AddEvent(UniqueRef<EventBase> event)

@@ -98,39 +98,6 @@ namespace MxEngine
         this->texture = std::move(texture);
     }
 
-    SpotLight& SpotLight::UseAmbientColor(const Vector3& ambient)
-    {
-        this->ambientColor = Clamp(ambient, MakeVector3(0.0f), MakeVector3(1.0f));
-        return *this;
-    }
-
-    SpotLight& SpotLight::UseDiffuseColor(const Vector3& diffuse)
-    {
-        this->diffuseColor = Clamp(diffuse, MakeVector3(0.0f), MakeVector3(1.0f));
-        return *this;
-    }
-
-    SpotLight& SpotLight::UseSpecularColor(const Vector3& specular)
-    {
-        this->specularColor = Clamp(specular, MakeVector3(0.0f), MakeVector3(1.0f));
-        return *this;
-    }
-
-    const Vector3& SpotLight::GetAmbientColor() const
-    {
-        return this->ambientColor;
-    }
-
-    const Vector3& SpotLight::GetDiffuseColor() const
-    {
-        return this->diffuseColor;
-    }
-
-    const Vector3& SpotLight::GetSpecularColor() const
-    {
-        return this->specularColor;
-    }
-
     Matrix4x4 SpotLight::GetMatrix() const
     {
         auto Projection = MakePerspectiveMatrix(Radians(2.0f * this->outerAngle), 1.0f, 1.1f, 1000.0f);

@@ -89,7 +89,7 @@ namespace MxEngine
 
 	Application::Application()
 		: manager(this), window(Graphics::Instance()->CreateWindow(1600, 900, "MxEngine Application")),
-		timeDelta(0), counterFPS(0), MSAAfactor(0), renderer(Graphics::Instance()->GetRenderer())
+		timeDelta(0), counterFPS(0), renderer(Graphics::Instance()->GetRenderer())
 	{
 		this->GetWindow().UseEventDispatcher(&this->dispatcher);
 		this->CreateScene("Global", MakeUnique<Scene>("Global", "Resources/"));
@@ -219,13 +219,12 @@ namespace MxEngine
 
 	void Application::SetMSAASampling(size_t samples)
 	{
-		this->MSAAfactor = samples;
 		this->GetEventDispatcher().AddEventListener("MSAAfactorTrack", [](WindowResizeEvent& e)
 			{
-				size_t samples = Application::Get()->GetMSAASampling();
-				Application::Get()->GetRenderer().SetMSAASampling(samples, (int)e.New.x, (int)e.New.y);
+				auto& renderer = Application::Get()->GetRenderer();
+				renderer.SetMSAASampling(renderer.getMSAASamples(), TextureFormat::RGBA16F, (int)e.New.x, (int)e.New.y);
 			});
-		this->GetRenderer().SetMSAASampling(samples, this->GetWindow().GetWidth(), this->GetWindow().GetHeight());
+		this->GetRenderer().SetMSAASampling(Max(1, samples), TextureFormat::RGBA16F, this->GetWindow().GetWidth(), this->GetWindow().GetHeight());
 	}
 
 	AppEventDispatcher& Application::GetEventDispatcher()
@@ -511,6 +510,36 @@ namespace MxEngine
 				#include MAKE_PLATFORM_SHADER(depthcubemap_fragment)
 			);
 		}
+		if (Renderer.MSAAShader == nullptr)
+		{
+			Renderer.MSAAShader = GlobalScene.GetResourceManager<Shader>().Add(
+				"MxMSAAShader", Graphics::Instance()->CreateShader());
+			Renderer.MSAAShader->LoadFromString(
+				#include MAKE_PLATFORM_SHADER(rect_vertex)
+				,
+				#include MAKE_PLATFORM_SHADER(msaa_fragment)
+			);
+		}
+		if (Renderer.HDRShader == nullptr)
+		{
+			Renderer.HDRShader = GlobalScene.GetResourceManager<Shader>().Add(
+				"MxHDRShader", Graphics::Instance()->CreateShader());
+			Renderer.HDRShader->LoadFromString(
+				#include MAKE_PLATFORM_SHADER(rect_vertex)
+				,
+				#include MAKE_PLATFORM_SHADER(hdr_fragment)
+			);
+		}
+		if (Renderer.BloomShader == nullptr)
+		{
+			Renderer.BloomShader = GlobalScene.GetResourceManager<Shader>().Add(
+				"MxBloomShader", Graphics::Instance()->CreateShader());
+			Renderer.BloomShader->LoadFromString(
+				#include MAKE_PLATFORM_SHADER(rect_vertex)
+				,
+				#include MAKE_PLATFORM_SHADER(bloom_fragment)
+			);
+		}
 
 		auto& skybox = this->GetCurrentScene().SceneSkybox;
 		if (skybox == nullptr) skybox = MakeUnique<Skybox>();
@@ -601,16 +630,12 @@ namespace MxEngine
 
 		this->CreateConsoleBindings(this->GetConsole());
 		this->SetMSAASampling(4);
+		this->renderer.SetBloomIterations(10);
 	}
 
 	DeveloperConsole& Application::GetConsole()
 	{
 		return this->console;
-	}
-
-	size_t Application::GetMSAASampling() const
-	{
-		return this->MSAAfactor;
 	}
 
 	void Application::Run()

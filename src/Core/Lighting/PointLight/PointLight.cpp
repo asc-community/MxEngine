@@ -97,37 +97,4 @@ namespace MxEngine
         );
         return Projection * View;
     }
-
-    PointLight& PointLight::UseAmbientColor(const Vector3& ambient)
-    {
-        this->ambientColor = Clamp(ambient, MakeVector3(0.0f), MakeVector3(1.0f));
-        return *this;
-    }
-
-    PointLight& PointLight::UseDiffuseColor(const Vector3& diffuse)
-    {
-        this->diffuseColor = Clamp(diffuse, MakeVector3(0.0f), MakeVector3(1.0f));
-        return *this;
-    }
-
-    PointLight& PointLight::UseSpecularColor(const Vector3& specular)
-    {
-        this->specularColor = Clamp(specular, MakeVector3(0.0f), MakeVector3(1.0f));
-        return *this;
-    }
-
-    const Vector3& PointLight::GetAmbientColor() const
-    {
-        return this->ambientColor;
-    }
-
-    const Vector3& PointLight::GetDiffuseColor() const
-    {
-        return this->diffuseColor;
-    }
-
-    const Vector3& PointLight::GetSpecularColor() const
-    {
-        return this->specularColor;
-    }
 }

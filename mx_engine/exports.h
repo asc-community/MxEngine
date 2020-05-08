@@ -403,14 +403,14 @@ class TextureWrapper : public Texture, public py::wrapper<Texture>
         this->get_override("load_depth")(width, height);
     }
 
-    virtual void LoadMultisample(int width, int height, int samples) override
+    virtual void LoadMultisample(int width, int height, TextureFormat format, int samples) override
     {
-        this->get_override("load_multisample")(width, height, samples);
+        this->get_override("load_multisample")(width, height, format, samples);
     }
 
-    virtual void Load(RawDataPointer data, int width, int height, bool genMipmaps = true) override
+    virtual void Load(RawDataPointer data, int width, int height, TextureFormat format = TextureFormat::RGBA, bool genMipmaps = true) override
     {
-        this->get_override("load_raw")(data, width, height, genMipmaps);
+        this->get_override("load_raw")(data, width, height, format, genMipmaps);
     }
 
     virtual void Bind(IBindable::IdType id) const override
@@ -903,7 +903,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("listen_resize", AddEventListenerWrapper<WindowResizeEvent>)
         .def("use_lighting", &Application::ToggleLighting)
         .def("use_debug_meshes", &Application::ToggleDebugDraw)
-        .add_property("msaa", &Application::GetMSAASampling, &Application::SetMSAASampling)
+        .add_property("set_msaa", &Application::SetMSAASampling)
         .add_property("global", RefGetter(&Application::GetGlobalScene))
         .add_property("is_running", &Application::IsRunning)
         .add_property("scene", RefGetter(&Application::GetCurrentScene))
@@ -996,6 +996,17 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("rotation", RefGetter(&Skybox::GetRotation))
         .add_property("matrix", RefGetter(&Skybox::GetRotationMatrix))
         .add_property("shader", RefGetter(&Skybox::GetShader))
+        ;
+
+    py::enum_<TextureFormat>("tex_format")
+        .value("RGB", TextureFormat::RGB)
+        .value("RGBA", TextureFormat::RGBA)
+        .value("RGB16", TextureFormat::RGB16)
+        .value("RGBA16", TextureFormat::RGBA16)
+        .value("RGB16F", TextureFormat::RGB16F)
+        .value("RGBA16F", TextureFormat::RGBA16F)
+        .value("RGBA32F", TextureFormat::RGBA32F)
+        .value("RGB32F", TextureFormat::RGB32F)
         ;
 
     py::enum_<KeyCode>("keycode")
@@ -1289,7 +1300,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         ;
 
     using LoadTextureFile = void(Texture::*)(const std::string&, bool, bool);
-    using LoadTextureRaw = void(Texture::*)(Texture::RawDataPointer, int, int, bool);
+    using LoadTextureRaw = void(Texture::*)(Texture::RawDataPointer, int, int, TextureFormat, bool);
     using BindTextureId = void(Texture::*)(Texture::IdType);
 
     py::class_<TextureWrapper, py::bases<IBindable>, boost::noncopyable>("texture", py::init())
@@ -1361,14 +1372,15 @@ BOOST_PYTHON_MODULE(mx_engine)
 
     py::class_<RenderController, boost::noncopyable>("render_controller", py::no_init)
         .def("set_viewport", &RenderController::SetViewport)
-        .def("set_pcf", &RenderController::SetPCFDistance)
-        .def("use_culling", &RenderController::ToggleFaceCulling)
         .def("use_reversed_depth", &RenderController::ToggleReversedDepth)
         .def("set_anisotropic", &RenderController::SetAnisotropicFiltering)
         .def_readwrite("object_shader", &RenderController::ObjectShader)
         .def_readwrite("depth_texture_shader", &RenderController::DepthTextureShader)
         .def_readwrite("depth_cubemap_shader", &RenderController::DepthCubeMapShader)
         .def_readwrite("default_texture", &RenderController::DefaultTexture)
+        .add_property("bloom_iters", &RenderController::GetBloomIterations, &RenderController::SetBloomIterations)
+        .add_property("pcf", &RenderController::GetPCFDIstance, &RenderController::SetPCFDistance)
+        .add_property("exposure", &RenderController::GetHDRExposure, &RenderController::SetHDRExposure)
         .add_property("dir_depth_size",
             &RenderController::GetDepthBufferSize<DirectionalLight>, 
             &RenderController::SetDepthBufferSize<DirectionalLight>)
@@ -1378,27 +1390,27 @@ BOOST_PYTHON_MODULE(mx_engine)
         ;
 
     py::class_<DirectionalLight, boost::noncopyable>("dir_light", py::init())
-        .add_property("ambient", RefGetter(&DirectionalLight::GetAmbientColor), RefGetter(&DirectionalLight::UseAmbientColor))
-        .add_property("diffuse", RefGetter(&DirectionalLight::GetDiffuseColor), RefGetter(&DirectionalLight::UseDiffuseColor))
-        .add_property("specular", RefGetter(&DirectionalLight::GetSpecularColor), RefGetter(&DirectionalLight::UseSpecularColor))
+        .def_readwrite("ambient", &DirectionalLight::AmbientColor)
+        .def_readwrite("diffuse", &DirectionalLight::DiffuseColor)
+        .def_readwrite("specular", &DirectionalLight::SpecularColor)
         .def_readwrite("direction", &DirectionalLight::Direction)
         .def_readwrite("projection_size", &DirectionalLight::ProjectionSize)
         ;
 
     py::class_<PointLight, boost::noncopyable>("point_light", py::init())
-        .add_property("ambient", RefGetter(&PointLight::GetAmbientColor), RefGetter(&PointLight::UseAmbientColor))
-        .add_property("diffuse", RefGetter(&PointLight::GetDiffuseColor), RefGetter(&PointLight::UseDiffuseColor))
-        .add_property("specular", RefGetter(&PointLight::GetSpecularColor), RefGetter(&PointLight::UseSpecularColor))
+        .def_readwrite("ambient", &PointLight::AmbientColor)
+        .def_readwrite("diffuse", &PointLight::DiffuseColor)
+        .def_readwrite("specular", &PointLight::SpecularColor)
         .add_property("factors", RefGetter(&PointLight::GetFactors), RefGetter(&PointLight::UseFactors))
         .def_readwrite("position", &PointLight::Position)
         ;
 
     py::class_<SpotLight, boost::noncopyable>("spot_light", py::init())
-        .add_property("ambient", RefGetter(&SpotLight::GetAmbientColor), RefGetter(&SpotLight::UseAmbientColor))
-        .add_property("diffuse", RefGetter(&SpotLight::GetDiffuseColor), RefGetter(&SpotLight::UseDiffuseColor))
-        .add_property("specular", RefGetter(&SpotLight::GetSpecularColor), RefGetter(&SpotLight::UseSpecularColor))
         .add_property("outer_angle", &SpotLight::GetOuterAngle, RefGetter(&SpotLight::UseOuterAngle))
         .add_property("inner_angle", &SpotLight::GetInnerAngle, RefGetter(&SpotLight::UseInnerAngle))
+        .def_readwrite("ambient", &SpotLight::AmbientColor)
+        .def_readwrite("diffuse", &SpotLight::DiffuseColor)
+        .def_readwrite("specular", &SpotLight::SpecularColor)
         .def_readwrite("direction", &SpotLight::Direction)
         .def_readwrite("position", &SpotLight::Position)
         ;

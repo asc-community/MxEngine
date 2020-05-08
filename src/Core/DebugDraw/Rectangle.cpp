@@ -26,28 +26,31 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Core/Interfaces/GraphicAPI/Texture.h"
-#include "Utilities/Memory/Memory.h"
-#include "Utilities/Math/Math.h"
+#include "Rectangle.h"
 
 namespace MxEngine
 {
-    class DirectionalLight
+    Rectangle::Rectangle(float halfSize)
     {
-        UniqueRef<Texture> texture;
-    public:
-        Vector3 AmbientColor  = MakeVector3(1.0f);
-        Vector3 DiffuseColor  = MakeVector3(1.0f);
-        Vector3 SpecularColor = MakeVector3(1.0f);
-        Vector3 Direction     = MakeVector3(0.0f, 1.0f, 0.0f);
-        float ProjectionSize = 50.0f;
-        Vector3 ProjectionCenter = MakeVector3(0.0f);
+        std::array vertecies =
+        {
+            Vector4(-halfSize, -halfSize, 0.5f, 1.0f),
+            Vector4( halfSize, -halfSize, 0.5f, 1.0f),
+            Vector4(-halfSize,  halfSize, 0.5f, 1.0f),
+            Vector4(-halfSize,  halfSize, 0.5f, 1.0f),
+            Vector4( halfSize, -halfSize, 0.5f, 1.0f),
+            Vector4( halfSize,  halfSize, 0.5f, 1.0f),
+        };
 
-        const Texture* GetDepthTexture() const;
-        Texture* GetDepthTexture();
-        void AttachDepthTexture(UniqueRef<Texture> texture);
-        Matrix4x4 GetMatrix() const;
-    };
+        this->VBO = Graphics::Instance()->CreateVertexBuffer((float*)vertecies.data(), vertecies.size() * sizeof(float), UsageType::STATIC_DRAW);
+        auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
+        VBL->PushFloat(4);
+        this->VAO = Graphics::Instance()->CreateVertexArray();
+        VAO->AddBuffer(*VBO, *VBL);
+    }
+    
+    const VertexArray& MxEngine::Rectangle::GetVAO() const
+    {
+        return *this->VAO;
+    }
 }

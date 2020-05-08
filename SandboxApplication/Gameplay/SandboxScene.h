@@ -45,26 +45,23 @@ class SandboxScene : public Scene
 		this->PointLights.SetCount(1);
 		this->SpotLights.SetCount(1);
 
-		this->GlobalLight
-			.UseAmbientColor({ 0.3f, 0.3f, 0.3f })
-			.UseDiffuseColor({ 0.3f, 0.3f, 0.3f })
-			.UseSpecularColor({ 1.0f, 1.0f, 1.0f })
-			;
-
-		this->PointLights[0]
-			.UseAmbientColor({ 1.0f, 0.3f, 0.0f })
-			.UseDiffuseColor({ 1.0f, 0.3f, 0.0f })
-			.UseSpecularColor({ 1.0f, 0.3f, 0.0f })
-			.UsePosition({ -3.0f, 2.0f, -3.0f });
 		
-		this->SpotLights[0]
-			.UseAmbientColor({ 0.2f, 0.2f, 0.2f })
-			.UseDiffuseColor({ 0.5f, 0.5f, 0.5f })
-			.UseSpecularColor({ 0.5f, 0.5f, 0.5f })
-			.UsePosition({ -15.0f, 3.0f, 0.0f })
-			.UseDirection({ -1.0f, 1.3f, -1.0f })
-			.UseOuterAngle(35.0f)
-			.UseInnerAngle(15.0f);
+		this->GlobalLight.AmbientColor  = { 0.3f, 0.3f, 0.3f };
+		this->GlobalLight.DiffuseColor  = { 0.3f, 0.3f, 0.3f };
+		this->GlobalLight.SpecularColor = { 1.0f, 1.0f, 1.0f };
+
+		this->PointLights[0].AmbientColor  = { 1.0f, 0.3f, 0.0f };
+		this->PointLights[0].DiffuseColor  = { 1.0f, 0.3f, 0.0f };
+		this->PointLights[0].SpecularColor = { 1.0f, 0.3f, 0.0f };
+		this->PointLights[0].UsePosition({ -3.0f, 2.0f, -3.0f });
+		
+		this->SpotLights[0].AmbientColor  = { 0.2f, 0.2f, 0.2f };
+		this->SpotLights[0].DiffuseColor  = { 0.5f, 0.5f, 0.5f };
+		this->SpotLights[0].SpecularColor = { 0.5f, 0.5f, 0.5f };
+		this->SpotLights[0].UsePosition({ -15.0f, 3.0f, 0.0f });
+		this->SpotLights[0].UseDirection({ -1.0f, 1.3f, -1.0f });
+		this->SpotLights[0].UseOuterAngle(35.0f);
+		this->SpotLights[0].UseInnerAngle(15.0f);
 
 		auto camera = MakeUnique<PerspectiveCamera>();
 		// auto camera = MakeUnique<OrthographicCamera>();

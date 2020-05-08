@@ -28,22 +28,19 @@
 
 #pragma once
 
-#include "Utilities/Math/Math.h"
 #include "Utilities/Memory/Memory.h"
+#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 
 namespace MxEngine
 {
-    template<typename T>
-    class LightSource
-    {
-    protected:
-        inline T& UseAmbientColorImpl(const Vector3& ambient) { return static_cast<T*>(this)->UseAmbientColor(ambient); }
-        inline T& UseDiffuseColorImpl(const Vector3& diffuse) { return static_cast<T*>(this)->UseDiffuseColor(diffuse); }
-        inline T& UseSpecularColorImpl(const Vector3& specular) { return static_cast<T*>(this)->UseSpecularColor(specular); }
-        inline const Vector3& GetAmbientColorImpl() const { return static_cast<T*>(this)->GetAmbientColor(); }
-        inline const Vector3& GetDiffuseColorImpl() const { return static_cast<T*>(this)->GetDiffuseColor(); }
-        inline const Vector3& GetSpecularColorImpl() const { return static_cast<T*>(this)->GetSpecularColor(); }
+	class Rectangle
+	{
+		UniqueRef<VertexBuffer> VBO;
+		UniqueRef<VertexArray> VAO;
+	public:
+		static constexpr size_t VertexCount = 3 * 6;
 
-        virtual ~LightSource() = default;
-    };
+		Rectangle(float halfSize);
+		const VertexArray& GetVAO() const;
+	};
 }

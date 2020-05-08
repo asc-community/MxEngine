@@ -52,10 +52,12 @@ namespace MxEngine
         virtual void AttachCubeMap(UniqueRef<CubeMap> cubemap, Attachment attachment) override;
         virtual void CopyFrameBufferContents(const FrameBuffer& framebuffer) const override;
         virtual void CopyFrameBufferContents(int screenWidth, int screenHeight) const override;
+        virtual void Validate() const override;
         virtual Texture* GetAttachedTexture() override;
         virtual const Texture* GetAttachedTexture() const override;
         virtual CubeMap* GetAttachedCubeMap() override;
         virtual const CubeMap* GetAttachedCubeMap() const override;
+        virtual void UseDrawBuffers(size_t count) const override;
         virtual int GetWidth() const override;
         virtual int GetHeight() const override;
         virtual void Bind() const override;
