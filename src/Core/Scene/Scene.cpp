@@ -194,10 +194,10 @@ namespace MxEngine
         return this->GetResourceManager<Shader>().Add(name, std::move(shader));
     }
 
-    Texture* Scene::LoadTexture(const std::string& name, const FilePath& texture, bool genMipmaps, bool flipImage)
+    Texture* Scene::LoadTexture(const std::string& name, const FilePath& texture, TextureWrap wrap, bool genMipmaps, bool flipImage)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadTexture");
-        auto textureObject = Graphics::Instance()->CreateTexture(this->scenePath / texture, genMipmaps, flipImage);
+        auto textureObject = Graphics::Instance()->CreateTexture(this->scenePath / texture, wrap, genMipmaps, flipImage);
         return this->GetResourceManager<Texture>().Add(name, std::move(textureObject));
     }
 

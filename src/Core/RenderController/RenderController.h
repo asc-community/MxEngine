@@ -74,6 +74,8 @@ namespace MxEngine
 		UniqueRef<Texture> bloomTexture;
 		UniqueRef<DebugBuffer> debugBuffer;
 		UniqueRef<Rectangle> rectangle;
+
+		static constexpr TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;
 	public:
 		RenderController(Renderer& renderer);
 
@@ -85,6 +87,7 @@ namespace MxEngine
 		Shader* HDRShader = nullptr;
 		Shader* BloomShader = nullptr;
 		Texture* DefaultTexture = nullptr;
+		Texture* DefaultHeight = nullptr;
 		Texture* DefaultNormal = nullptr;
 		FrameBuffer* DepthBuffer = nullptr;
 
@@ -120,7 +123,7 @@ namespace MxEngine
 		size_t GetDepthBufferSize() const;
 		template<typename LightSource>
 		void SetDepthBufferSize(size_t size);
-		void SetMSAASampling(size_t samples, TextureFormat format, int viewportWidth, int viewportHeight);
+		void SetMSAASampling(size_t samples, int viewportWidth, int viewportHeight);
 		int getMSAASamples() const;
 		void AttachDrawBuffer();
 		void DetachDrawBuffer();

@@ -244,7 +244,13 @@ namespace MxEngine
 					this->DefaultNormal->Bind(4);
 				shader.SetUniformInt("map_normal", 4);
 
-				int shadowMapsStartIdx = 5;
+				if (material.map_height != nullptr)
+					material.map_height->Bind(5);
+				else
+					this->DefaultHeight->Bind(5);
+				shader.SetUniformInt("map_height", 5);
+
+				int shadowMapsStartIdx = 6;
 				lights.Global->GetDepthTexture()->Bind(shadowMapsStartIdx);
 				shader.SetUniformInt("map_dirLight_shadow", shadowMapsStartIdx);
 
@@ -287,6 +293,7 @@ namespace MxEngine
 
 				shader.SetUniformFloat("Ka", material.f_Ka);
 				shader.SetUniformFloat("Kd", material.f_Kd);
+				shader.SetUniformFloat("displacement", material.displacement);
 
 				this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetMatrix());
 				this->GetRenderEngine().SetDefaultVertexAttribute(9, NormalMatrix * renderObject.GetNormalMatrix());
@@ -346,7 +353,8 @@ namespace MxEngine
 			this->BloomBuffers[(size_t)horizontalKernel]->Bind();
 			if (noIterations)
 			{
-				bloomTexture.Bind(0); noIterations = false;
+				bloomTexture.Bind(0); 
+				noIterations = false;
 			}
 			else
 			{
@@ -359,6 +367,7 @@ namespace MxEngine
 			horizontalKernel = !horizontalKernel;
 		}
 		this->BloomBuffers[1]->Unbind();
+		this->GetRenderEngine().SetViewport(0, 0, viewportSize.x, viewportSize.y);
 
 		hdrTexture.Bind(0);
 		this->HDRShader->SetUniformInt("HDRtexture", 0);
@@ -416,13 +425,13 @@ namespace MxEngine
 		return this->bloomWeight;
 	}
 
-	void RenderController::SetMSAASampling(size_t samples, TextureFormat format, int viewportWidth, int viewportHeight)
+	void RenderController::SetMSAASampling(size_t samples, int viewportWidth, int viewportHeight)
 	{
-		this->GetRenderEngine().UseSampling(true);
+		if(this->samples == 1 && samples != 1) this->GetRenderEngine().UseSampling(true);
 		this->samples = (int)samples;
 
 		auto MSAATexture = Graphics::Instance()->CreateTexture();
-		MSAATexture->LoadMultisample(viewportWidth, viewportHeight, format, (int)samples);
+		MSAATexture->LoadMultisample(viewportWidth, viewportHeight, HDRTextureFormat, (int)samples, TextureWrap::CLAMP_TO_EDGE);
 
 		if(this->MSAABuffer == nullptr)
 			this->MSAABuffer = Graphics::Instance()->CreateFrameBuffer();
@@ -435,11 +444,11 @@ namespace MxEngine
 
 		if(this->hdrTexture == nullptr) 
 			this->hdrTexture = Graphics::Instance()->CreateTexture();
-		this->hdrTexture->Load(nullptr, viewportWidth, viewportHeight, format);
+		this->hdrTexture->Load(nullptr, viewportWidth, viewportHeight, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
 
 		if (this->bloomTexture == nullptr)
 			this->bloomTexture = Graphics::Instance()->CreateTexture();
-		this->bloomTexture->Load(nullptr, viewportWidth, viewportHeight, format);
+		this->bloomTexture->Load(nullptr, viewportWidth, viewportHeight, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
 			
 		if(this->HDRBuffer == nullptr)
 			this->HDRBuffer = Graphics::Instance()->CreateFrameBuffer();
@@ -452,16 +461,10 @@ namespace MxEngine
 		for (size_t i = 0; i < 2; i++)
 		{
 			if (BloomBuffers[i] == nullptr)
-			{
 				BloomBuffers[i] = Graphics::Instance()->CreateFrameBuffer();
-				auto texture = Graphics::Instance()->CreateTexture();
-				texture->Load(nullptr, viewportWidth, viewportHeight, format);
-				BloomBuffers[i]->AttachTexture(std::move(texture), Attachment::COLOR_ATTACHMENT0);
-			}
-			else
-			{
-				BloomBuffers[i]->GetAttachedTexture()->Load(nullptr, viewportWidth, viewportHeight, format);
-			}
+			auto texture = Graphics::Instance()->CreateTexture();
+			texture->Load(nullptr, viewportWidth, viewportHeight, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+			BloomBuffers[i]->AttachTexture(std::move(texture), Attachment::COLOR_ATTACHMENT0);
 		}
 	}
 

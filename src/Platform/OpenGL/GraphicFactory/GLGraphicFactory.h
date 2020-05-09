@@ -137,10 +137,10 @@ namespace MxEngine
 			return std::move(shader);
 		}
 
-		inline virtual UniqueRef<Texture> CreateTexture(const FilePath& texture, bool genMipmaps = true, bool flipImage = true) override
+		inline virtual UniqueRef<Texture> CreateTexture(const FilePath& texture, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true) override
 		{
 			auto textureObject = this->CreateTexture();
-			textureObject->Load(texture.string(), genMipmaps, flipImage);
+			textureObject->Load(texture.string(), wrap, genMipmaps, flipImage);
 			return std::move(textureObject);
 		}
 

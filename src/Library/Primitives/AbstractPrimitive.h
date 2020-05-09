@@ -32,6 +32,7 @@
 #include "Core/MxObject/MxObject.h"
 #include "Utilities/Array/ArrayView.h"
 #include "Utilities/Logger/Logger.h"
+#include "Core/Application/Application.h"
 
 namespace MxEngine
 {

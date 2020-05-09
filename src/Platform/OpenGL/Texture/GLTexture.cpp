@@ -46,6 +46,13 @@ namespace MxEngine
 		GL_RGBA32F,
 	};
 
+	GLenum wrapTable[] =
+	{
+		GL_CLAMP_TO_EDGE,
+		GL_MIRRORED_REPEAT,
+		GL_REPEAT,
+	};
+
 	void GLTexture::FreeTexture()
 	{
 		if (id != 0)
@@ -73,9 +80,9 @@ namespace MxEngine
 		texture.channels = 0;
 	}
 
-	GLTexture::GLTexture(const std::string& filepath, bool genMipmaps, bool flipImage)
+	GLTexture::GLTexture(const std::string& filepath, TextureWrap wrap, bool genMipmaps, bool flipImage)
 	{
-		Load(filepath, genMipmaps, flipImage);
+		Load(filepath, wrap, genMipmaps, flipImage);
 	}
 
 	GLTexture::~GLTexture()
@@ -83,7 +90,7 @@ namespace MxEngine
 		this->FreeTexture();
 	}
 
-	void GLTexture::Load(const std::string& filepath, bool genMipmaps, bool flipImage)
+	void GLTexture::Load(const std::string& filepath, TextureWrap wrap, bool genMipmaps, bool flipImage)
 	{
 		Image image = ImageLoader::LoadImage(filepath, flipImage);
 		this->filepath = filepath;
@@ -102,8 +109,8 @@ namespace MxEngine
 		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data));
 
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)wrap]));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)wrap]));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST));
 		if (genMipmaps)
 		{
@@ -113,7 +120,7 @@ namespace MxEngine
 		ImageLoader::FreeImage(image);
 	}
 
-	void GLTexture::Load(RawDataPointer data, int width, int height, TextureFormat format, bool genMipmaps)
+	void GLTexture::Load(RawDataPointer data, int width, int height, TextureFormat format, TextureWrap wrap, bool genMipmaps)
 	{
 		this->filepath = "[[raw data]]";
 		this->width = width;
@@ -131,13 +138,13 @@ namespace MxEngine
 		{
 			GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 			GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-			GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
-			GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+			GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)wrap]));
+			GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)wrap]));
 			GLCALL(glGenerateMipmap(GL_TEXTURE_2D));
 		}
 	}
 
-	void GLTexture::LoadMipmaps(Texture::RawDataPointer* data, size_t mipmaps, int biggestWidth, int biggestHeight)
+	void GLTexture::LoadMipmaps(Texture::RawDataPointer* data, size_t mipmaps, int biggestWidth, int biggestHeight, TextureWrap wrap)
 	{
 		this->filepath = "[[raw data]]";
 		this->width = biggestWidth;
@@ -162,11 +169,11 @@ namespace MxEngine
 
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)wrap]));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)wrap]));
 	}
 
-	void GLTexture::LoadDepth(int width, int height)
+	void GLTexture::LoadDepth(int width, int height, TextureWrap wrap)
 	{
 		this->filepath = "[[depth]]";
 		this->width = width;
@@ -178,11 +185,11 @@ namespace MxEngine
 		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)wrap]));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)wrap]));
 	}
 
-    void GLTexture::LoadMultisample(int width, int height, TextureFormat format, int samples)
+    void GLTexture::LoadMultisample(int width, int height, TextureFormat format, int samples, TextureWrap wrap)
     {
 		this->filepath = "[[multisample]]";
 		this->width = width;

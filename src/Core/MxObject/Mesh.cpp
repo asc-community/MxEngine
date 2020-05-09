@@ -49,7 +49,7 @@ namespace MxEngine
 		MAKE_TEX(map_Ks);
 		MAKE_TEX(map_Ke);
 		MAKE_TEX(map_d);
-		MAKE_TEX(map_bump);
+		MAKE_TEX(map_height);
 		MAKE_TEX(bump);
 
 		material.Tf    = mat.Tf;

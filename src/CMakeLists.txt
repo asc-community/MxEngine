@@ -65,6 +65,8 @@ set(project_files_group
     "Core/Skybox/Skybox.h"
     "Core/DebugDraw/DebugBuffer.h"
     "Core/DebugDraw/DebugBuffer.cpp"
+    "Core/DebugDraw/Rectangle.h"
+    "Core/DebugDraw/Rectangle.cpp"
     "Core/BoundingObjects/AABB.h"
     "Core/BoundingObjects/BoundingSphere.h"
     "Library/Bindings/AppCloseBinding.h"

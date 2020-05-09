@@ -222,9 +222,9 @@ namespace MxEngine
 		this->GetEventDispatcher().AddEventListener("MSAAfactorTrack", [](WindowResizeEvent& e)
 			{
 				auto& renderer = Application::Get()->GetRenderer();
-				renderer.SetMSAASampling(renderer.getMSAASamples(), TextureFormat::RGBA16F, (int)e.New.x, (int)e.New.y);
+				renderer.SetMSAASampling(renderer.getMSAASamples(), (int)e.New.x, (int)e.New.y);
 			});
-		this->GetRenderer().SetMSAASampling(Max(1, samples), TextureFormat::RGBA16F, this->GetWindow().GetWidth(), this->GetWindow().GetHeight());
+		this->GetRenderer().SetMSAASampling(Max(1, samples), this->GetWindow().GetWidth(), this->GetWindow().GetHeight());
 	}
 
 	AppEventDispatcher& Application::GetEventDispatcher()
@@ -464,6 +464,10 @@ namespace MxEngine
 		if (Renderer.DefaultNormal == nullptr)
 		{
 			Renderer.DefaultNormal = Colors::MakeTexture(Colors::FLAT_NORMAL);
+		}
+		if (Renderer.DefaultHeight == nullptr)
+		{
+			Renderer.DefaultHeight = Colors::MakeTexture(Colors::GREY);
 		}
 		if (Renderer.ObjectShader == nullptr)
 		{

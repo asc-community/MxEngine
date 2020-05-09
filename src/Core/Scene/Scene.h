@@ -111,7 +111,7 @@ namespace MxEngine
         Script* LoadScript(const std::string& name, const FilePath& path);
         Shader* LoadShader(const std::string& name, const FilePath& vertex, const FilePath& fragment);
         Shader* LoadShader(const std::string& name, const FilePath& vertex, const FilePath& geometry, const FilePath& fragment);
-        Texture* LoadTexture(const std::string& name, const FilePath& texture, bool genMipmaps = true, bool flipImage = true);
+        Texture* LoadTexture(const std::string& name, const FilePath& texture, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
         CubeMap* LoadCubeMap(const std::string& name, const FilePath& texture, bool genMipmaps = true, bool flipImage = false);
     
         void SetDirectory(const FilePath& path);

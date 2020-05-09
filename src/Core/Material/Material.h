@@ -43,7 +43,7 @@ namespace MxEngine
 		Ref<Texture> map_Ke;
 		Ref<Texture> map_d;
 		Ref<Texture> map_normal;
-		Ref<Texture> map_bump;
+		Ref<Texture> map_height;
 		Ref<Texture> bump;
 
 		float Ns = 128.0f;
@@ -60,5 +60,6 @@ namespace MxEngine
 		float f_Ka = 0.4f;
 		float f_Kd = 0.6f;
 		float reflection = 0.1f;
+		float displacement = 0.025f;
 	};
 }

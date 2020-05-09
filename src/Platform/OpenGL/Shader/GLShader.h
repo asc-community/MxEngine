@@ -67,6 +67,7 @@ namespace MxEngine
 		virtual void LoadFromString(const std::string& vertex, const std::string& fragment) override;
 		virtual void LoadFromString(const std::string& vertex, const std::string& geometry, const std::string& fragment) override;
 		virtual void SetUniformFloat(const std::string& name, float f) const override;
+		virtual void SetUniformVec2(const std::string& name, const Vector2& vec) const override;
 		virtual void SetUniformVec3(const std::string& name, const Vector3& vec) const override;
 		virtual void SetUniformVec4(const std::string& name, const Vector4& vec) const override;
 		virtual void SetUniformMat4(const std::string& name, const Matrix4x4& matrix) const override;

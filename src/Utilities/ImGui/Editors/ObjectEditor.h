@@ -45,6 +45,7 @@ namespace MxEngine::GUI
 		ImGui::DragFloat("specular exponent", &material.Ns, 1.0f, 1.0f, 512.0f);
 		ImGui::DragFloat("transparency", &material.d, 0.01f, 0.0f, 1.0f);
 		ImGui::DragFloat("reflection", &material.reflection, 0.01f, 0.0f, 1.0f);
+		ImGui::DragFloat("displacement", &material.displacement, 0.001f, 0.0f, std::numeric_limits<float>::max());
 
 		static std::string normapMapPath(128, '\0');
 		if (GUI::InputTextOnClick("normal map", normapMapPath.data(), normapMapPath.size()))
@@ -52,6 +53,13 @@ namespace MxEngine::GUI
 			auto context = Application::Get();
 			material.map_normal = Graphics::Instance()->CreateTexture(
 				context->GetCurrentScene().GetDirectory() / normapMapPath);
+		}
+		static std::string heightMapPath(128, '\0');
+		if (GUI::InputTextOnClick("height map", heightMapPath.data(), heightMapPath.size()))
+		{
+			auto context = Application::Get();
+			material.map_height = Graphics::Instance()->CreateTexture(
+				context->GetCurrentScene().GetDirectory() / heightMapPath);
 		}
 	}
 

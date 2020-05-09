@@ -43,17 +43,17 @@ namespace MxEngine
 		GLTexture();
 		GLTexture(const GLTexture&) = delete;
 		GLTexture(GLTexture&& texture) noexcept;
-		GLTexture(const std::string& filepath, bool genMipmaps = true, bool flipImage = true);
+		GLTexture(const std::string& filepath, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
 		~GLTexture();
 
 		// Inherited via ITexture
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
-		virtual void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = true) override;
-		virtual void Load(Texture::RawDataPointer data, int width, int height, TextureFormat format = TextureFormat::RGBA, bool genMipmaps = true) override;
-		virtual void LoadMipmaps(Texture::RawDataPointer* data, size_t mipmaps, int biggestWidth, int biggestHeight) override;
-		virtual void LoadDepth(int width, int height) override;
-		virtual void LoadMultisample(int width, int height, TextureFormat format, int samples) override;
+		virtual void Load(const std::string& filepath, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true) override;
+		virtual void Load(Texture::RawDataPointer data, int width, int height, TextureFormat format = TextureFormat::RGBA, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true) override;
+		virtual void LoadMipmaps(Texture::RawDataPointer* data, size_t mipmaps, int biggestWidth, int biggestHeight, TextureWrap wrap = TextureWrap::REPEAT) override;
+		virtual void LoadDepth(int width, int height, TextureWrap wrap = TextureWrap::CLAMP_TO_EDGE) override;
+		virtual void LoadMultisample(int width, int height, TextureFormat format, int samples, TextureWrap wrap = TextureWrap::REPEAT) override;
 		virtual void Bind(IBindable::IdType id) const override;
 		virtual const std::string& GetPath() const override;
 		virtual unsigned int GetTextureType() const override;

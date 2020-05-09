@@ -388,29 +388,29 @@ public:
 
 class TextureWrapper : public Texture, public py::wrapper<Texture>
 {
-    virtual void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = true) override
+    virtual void Load(const std::string& filepath, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true) override
     {
-        this->get_override("load")(filepath, genMipmaps, flipImage);
+        this->get_override("load")(filepath, wrap, genMipmaps, flipImage);
     }
 
-    virtual void LoadMipmaps(RawDataPointer* data, size_t mipmaps, int width, int height) override
+    virtual void LoadMipmaps(RawDataPointer* data, size_t mipmaps, int width, int height, TextureWrap wrap = TextureWrap::REPEAT) override
     {
-        this->get_override("load_mipmaps")(data, mipmaps, width, height);
+        this->get_override("load_mipmaps")(data, mipmaps, width, height, wrap);
     }
 
-    virtual void LoadDepth(int width, int height) override
+    virtual void LoadDepth(int width, int height, TextureWrap wrap = TextureWrap::CLAMP_TO_EDGE) override
     {
-        this->get_override("load_depth")(width, height);
+        this->get_override("load_depth")(width, height, wrap);
     }
 
-    virtual void LoadMultisample(int width, int height, TextureFormat format, int samples) override
+    virtual void LoadMultisample(int width, int height, TextureFormat format, int samples, TextureWrap wrap = TextureWrap::REPEAT) override
     {
-        this->get_override("load_multisample")(width, height, format, samples);
+        this->get_override("load_multisample")(width, height, format, samples, wrap);
     }
 
-    virtual void Load(RawDataPointer data, int width, int height, TextureFormat format = TextureFormat::RGBA, bool genMipmaps = true) override
+    virtual void Load(RawDataPointer data, int width, int height, TextureFormat format = TextureFormat::RGBA, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true) override
     {
-        this->get_override("load_raw")(data, width, height, format, genMipmaps);
+        this->get_override("load_raw")(data, width, height, format, wrap, genMipmaps);
     }
 
     virtual void Bind(IBindable::IdType id) const override
@@ -480,6 +480,11 @@ public:
     virtual void SetUniformFloat(const std::string& name, float f) const override
     {
         this->get_override("set_float")(name, f);
+    }
+
+    virtual void SetUniformVec2(const std::string& name, const Vector2& vec) const override
+    {
+        this->get_override("set_vec2")(name, vec);
     }
 
     virtual void SetUniformVec3(const std::string& name, const Vector3& vec) const override
@@ -1009,6 +1014,12 @@ BOOST_PYTHON_MODULE(mx_engine)
         .value("RGB32F", TextureFormat::RGB32F)
         ;
 
+    py::enum_<TextureWrap>("tex_wrap")
+        .value("MIRRORED_REPEAT", TextureWrap::MIRRORED_REPEAT)
+        .value("CLAMP_TO_EDGE", TextureWrap::CLAMP_TO_EDGE)
+        .value("REPEAT", TextureWrap::REPEAT)
+        ;
+
     py::enum_<KeyCode>("keycode")
         .value("UNKNOWN", KeyCode::UNKNOWN)
         .value("SPACE", KeyCode::SPACE)
@@ -1293,14 +1304,15 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("load_source", py::pure_virtual((LoadVsGsFs)&Shader::LoadFromString))
         .def("set_int", py::pure_virtual(&Shader::SetUniformInt))
         .def("set_float", py::pure_virtual(&Shader::SetUniformFloat))
+        .def("set_vec2", py::pure_virtual(&Shader::SetUniformVec2))
         .def("set_vec3", py::pure_virtual(&Shader::SetUniformVec3))
         .def("set_vec4", py::pure_virtual(&Shader::SetUniformVec4))
         .def("set_mat3", py::pure_virtual(&Shader::SetUniformMat3))
         .def("set_mat4", py::pure_virtual(&Shader::SetUniformMat4))
         ;
 
-    using LoadTextureFile = void(Texture::*)(const std::string&, bool, bool);
-    using LoadTextureRaw = void(Texture::*)(Texture::RawDataPointer, int, int, TextureFormat, bool);
+    using LoadTextureFile = void(Texture::*)(const std::string&, TextureWrap, bool, bool);
+    using LoadTextureRaw = void(Texture::*)(Texture::RawDataPointer, int, int, TextureFormat, TextureWrap, bool);
     using BindTextureId = void(Texture::*)(Texture::IdType);
 
     py::class_<TextureWrapper, py::bases<IBindable>, boost::noncopyable>("texture", py::init())

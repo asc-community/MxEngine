@@ -203,6 +203,7 @@
     <ClCompile Include="Core\RenderController\RenderController.cpp" />
     <ClCompile Include="Core\Scene\Scene.cpp" />
     <ClCompile Include="Core\Skybox\Skybox.cpp" />
+    <ClCompile Include="Library\Primitives\Sphere.cpp" />
     <ClCompile Include="Library\Scripting\Python\PythonEngine.cpp" />
     <ClCompile Include="Library\Scripting\Script\Script.cpp" />
     <ClCompile Include="Platform\OpenGL\CubeMap\GLCubeMap.cpp" />

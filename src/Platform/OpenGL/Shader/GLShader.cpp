@@ -168,6 +168,14 @@ namespace MxEngine
 		GLCALL(glUniform1f(location, f));
 	}
 
+    void GLShader::SetUniformVec2(const std::string& name, const Vector2& vec) const
+    {
+		int location = GetUniformLocation(name);
+		if (location == -1) return;
+		Bind();
+		GLCALL(glUniform2f(location, vec.x, vec.y));
+    }
+
 	void GLShader::SetUniformVec3(const std::string& name, const Vector3& vec) const
 	{
 		int location = GetUniformLocation(name);

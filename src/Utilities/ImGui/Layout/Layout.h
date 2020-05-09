@@ -71,22 +71,31 @@ namespace MxEngine::GUI
 
     inline bool InputIntOnClick(const char* title, int* v)
     {
+        ImGui::PushID(title);
         ImGui::InputInt(title, v); 
         ImGui::SameLine();
-        return ImGui::Button("apply");
+        bool result = ImGui::Button("apply");
+        ImGui::PopID();
+        return result;
     }
 
     inline bool InputFloatOnClick(const char* title, float* v)
     {
+        ImGui::PushID(title);
         ImGui::InputFloat(title, v);
         ImGui::SameLine();
-        return ImGui::Button("apply");
+        bool result = ImGui::Button("apply");
+        ImGui::PopID();
+        return result;
     }
 
     inline bool InputTextOnClick(const char* title, char* v, size_t size)
     {
+        ImGui::PushID(title);
         ImGui::InputText(title, v, size);
         ImGui::SameLine();
-        return ImGui::Button("apply");
+        bool result = ImGui::Button("apply");
+        ImGui::PopID();
+        return result;
     }
 }

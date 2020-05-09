@@ -16,6 +16,8 @@ uniform mat4 DirLightProjMatrix;
 uniform mat4 SpotLightProjMatrix[MAX_SPOT_LIGHTS];
 uniform int pointLightCount;
 uniform int spotLightCount;
+uniform float displacement;
+uniform sampler2D map_height;
 
 out VSout
 {
@@ -31,8 +33,6 @@ out VSout
 void main()
 {
 	vec4 modelPos = model * position;
-	gl_Position = ViewProjMatrix * modelPos;
-
 	vec3 T = normalize(vec3(normalMatrix * tangent));
 	vec3 B = normalize(vec3(normalMatrix * bitangent));
 	vec3 N = normalize(vec3(normalMatrix * normal));
@@ -40,6 +40,7 @@ void main()
 	vsout.TBN = mat3(T, B, N);
 	vsout.TexCoord = texCoord;
 	vsout.Normal = normalMatrix * normal;
+
 	vsout.FragPosWorld = vec3(modelPos);
 	vsout.RenderColor = renderColor;
 	vsout.FragPosDirLight = DirLightProjMatrix * modelPos;
@@ -48,4 +49,8 @@ void main()
 	{
 		vsout.FragPosSpotLight[i] = SpotLightProjMatrix[i] * modelPos;
 	}
+
+	modelPos.xyz += displacement * vsout.Normal * (texture(map_height, texCoord).rgb - vec3(0.5f)) * 2.0f;
+
+	gl_Position = ViewProjMatrix * modelPos;
 }

@@ -42,6 +42,7 @@ namespace MxEngine
 		virtual void LoadFromString(const std::string& vertex, const std::string& geometry, const std::string& fragment) = 0;
 
 		virtual void SetUniformFloat(const std::string& name, float f) const = 0;
+		virtual void SetUniformVec2(const std::string& name, const Vector2& vec) const = 0;
 		virtual void SetUniformVec3(const std::string& name, const Vector3& vec) const = 0;
 		virtual void SetUniformVec4(const std::string& name, const Vector4& vec) const = 0;
 		virtual void SetUniformMat4(const std::string& name, const Matrix4x4& matrix) const = 0;
