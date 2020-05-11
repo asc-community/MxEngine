@@ -345,15 +345,10 @@ namespace MxEngine
 		return this->GetMesh()->GetRenderObjects()[iterator];
 	}
 
-	const Matrix4x4& MxObject::GetModelMatrix() const
-	{
-		return this->ObjectTransform.GetMatrix();
-	}
-
-	const Matrix3x3& MxObject::GetNormalMatrix() const
-	{
-		return this->ObjectTransform.GetNormalMatrix();
-	}
+    const Transform& MxObject::GetTransform() const
+    {
+		return this->ObjectTransform;
+    }
 
 	bool MxObject::HasShader() const
 	{

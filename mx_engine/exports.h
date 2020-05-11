@@ -1496,6 +1496,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def_readwrite("f_Ka", &Material::f_Ka)
         .def_readwrite("f_Kd", &Material::f_Kd)
         .def_readwrite("refl", &Material::reflection)
+        .def_readwrite("disp", &Material::displacement)
         ;
 
     using CameraFunc = ICamera & (CameraController::*)();

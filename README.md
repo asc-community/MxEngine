@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-6.3.0-red)
+![](https://img.shields.io/badge/version-6.4.0-red)
 ![](https://img.shields.io/badge/license-bsd--3-yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
 

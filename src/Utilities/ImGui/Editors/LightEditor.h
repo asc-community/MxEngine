@@ -47,7 +47,7 @@ namespace MxEngine::GUI
 			static int bufferSize = (int)context->GetRenderer().GetDepthBufferSize<DirectionalLight>();
 			if (GUI::InputIntOnClick("depth buffer size", &bufferSize))
 			{
-				bufferSize = (int)FloorToLog2((size_t)Clamp(bufferSize, 1, 1 << 16));
+				bufferSize = (int)ToNearestPowTwo((size_t)Clamp(bufferSize, 1, 1 << 16));
 				context->GetRenderer().SetDepthBufferSize<DirectionalLight>(bufferSize);
 				bufferSize = (int)context->GetRenderer().GetDepthBufferSize<DirectionalLight>();
 			}
@@ -78,7 +78,7 @@ namespace MxEngine::GUI
 				static int bufferSize = (int)context->GetRenderer().GetDepthBufferSize<PointLight>();
 				if (GUI::InputIntOnClick("depth buffer size", &bufferSize))
 				{
-					bufferSize = (int)FloorToLog2((size_t)Clamp(bufferSize, 1, 1 << 16));
+					bufferSize = (int)ToNearestPowTwo((size_t)Clamp(bufferSize, 1, 1 << 16));
 					context->GetRenderer().SetDepthBufferSize<PointLight>(bufferSize);
 					int bufferSize = (int)context->GetRenderer().GetDepthBufferSize<PointLight>();
 				}
@@ -113,7 +113,7 @@ namespace MxEngine::GUI
 				static int bufferSize = (int)context->GetRenderer().GetDepthBufferSize<SpotLight>();
 				if (GUI::InputIntOnClick("depth buffer size", &bufferSize))
 				{
-					bufferSize = (int)FloorToLog2((size_t)Clamp(bufferSize, 1, 1 << 16));
+					bufferSize = (int)ToNearestPowTwo((size_t)Clamp(bufferSize, 1, 1 << 16));
 					context->GetRenderer().SetDepthBufferSize<SpotLight>(bufferSize);
 					bufferSize = (int)context->GetRenderer().GetDepthBufferSize<SpotLight>();
 				}

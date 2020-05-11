@@ -63,13 +63,14 @@ namespace MxEngine
 		int bloomIterations = 0;
 		int samples = 1;
 		float exposure = 1.0f;
-		float bloomWeight = 1.0f;
+		float bloomWeight = 100.0f;
 
 		VectorInt2 viewportSize{ 0, 0 };
 		UniqueRef<FrameBuffer> MSAABuffer;		
 		UniqueRef<FrameBuffer> HDRBuffer;
 		UniqueRef<FrameBuffer> BloomBuffers[2];
 		UniqueRef<RenderBuffer> MSAARenderBuffer;
+		std::array<UniqueRef<FrameBuffer>, 4> upscaleBuffers;
 		UniqueRef<Texture> hdrTexture;
 		UniqueRef<Texture> bloomTexture;
 		UniqueRef<DebugBuffer> debugBuffer;
@@ -86,6 +87,7 @@ namespace MxEngine
 		Shader* MSAAShader = nullptr;
 		Shader* HDRShader = nullptr;
 		Shader* BloomShader = nullptr;
+		Shader* UpscaleShader = nullptr;
 		Texture* DefaultTexture = nullptr;
 		Texture* DefaultHeight = nullptr;
 		Texture* DefaultNormal = nullptr;
@@ -107,6 +109,7 @@ namespace MxEngine
 		void DrawSkybox(const Skybox& skybox, const CameraController& viewport);
 		void DrawHDRTexture(const Texture& texture, int MSAAsamples);
 		void DrawPostProcessImage(const Texture& hdrTexture, const Texture& bloomTexture, float hdrExposure, int bloomIters, float bloomWeight);
+		const Texture& UpscaleTexture(const Texture& texture, const VectorInt2& dist);
 		void SetPCFDistance(int value);
 		int GetPCFDIstance() const;
 		void SetHDRExposure(float value);
@@ -140,13 +143,13 @@ namespace MxEngine
 		this->DepthTextureShader->SetUniformMat4("LightProjMatrix", light.GetMatrix());
 		size_t iterator = object.GetIterator();
 
-		auto& ModelMatrix = object.GetModelMatrix();
+		auto& ModelMatrix = object.GetTransform().GetMatrix();
 
 		while (!object.IsLast(iterator))
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
 
-			this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetMatrix());
+			this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetTransform().GetMatrix());
 
 			if (object.GetInstanceCount() == 0)
 			{
@@ -177,13 +180,13 @@ namespace MxEngine
 
 		size_t iterator = object.GetIterator();
 		
-		auto& ModelMatrix  = object.GetModelMatrix();
+		auto& ModelMatrix  = object.GetTransform().GetMatrix();
 
 		while (!object.IsLast(iterator))
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
 
-			this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetMatrix());
+			this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetTransform().GetMatrix());
 
 			if (object.GetInstanceCount() == 0)
 			{

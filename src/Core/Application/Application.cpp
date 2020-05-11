@@ -300,11 +300,19 @@ namespace MxEngine
 			// compute LOD for each object
 			for (const auto& [name, object] : this->currentScene->GetObjectList())
 			{
+				if (object->GetMesh() != nullptr && object->UseLOD && object->GetInstanceCount() == 0)
+				{
+					object->GetMesh()->SetLOD(std::numeric_limits<size_t>::max()); // set lowest LOD firstly
+				}
+			}
+			for (const auto& [name, object] : this->currentScene->GetObjectList())
+			{
 				// we do not try to compute LOD for instanced objects, as it is potentially more resource-demanding, then rendering
 				// better to let user himself specify desired LOD. TODO: consider optimizing LOD computing for instances
 				if (object->GetMesh() != nullptr && object->UseLOD && object->GetInstanceCount() == 0)
 				{
-					object->GetMesh()->SetLOD(ComputeLODLevel(*object, viewport));
+					// as objects can use same mesh, find best LOD for all of them. TODO: compute LOD per object, but only once per frame
+					object->GetMesh()->SetLOD(Min(object->GetMesh()->GetLOD(), ComputeLODLevel(*object, viewport)));
 				}
 			}
 
@@ -542,6 +550,16 @@ namespace MxEngine
 				#include MAKE_PLATFORM_SHADER(rect_vertex)
 				,
 				#include MAKE_PLATFORM_SHADER(bloom_fragment)
+			);
+		}
+		if (Renderer.UpscaleShader == nullptr)
+		{
+			Renderer.UpscaleShader = GlobalScene.GetResourceManager<Shader>().Add(
+				"MxUpscaleShader", Graphics::Instance()->CreateShader());
+			Renderer.UpscaleShader->LoadFromString(
+				#include MAKE_PLATFORM_SHADER(rect_vertex)
+				,
+				#include MAKE_PLATFORM_SHADER(upscale_fragment)
 			);
 		}
 

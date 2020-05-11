@@ -81,7 +81,7 @@ namespace MxEngine
 		if (image.width / 4 != image.height / 3)
 		{
 			Logger::Instance().Warning("MxEngine::ImageLoader", "image size is invalid, it will be reduced to fit skybox cubemap");
-			width = height = FloorToLog2(std::min(image.width / 4, image.height / 3));
+			width = height = ToNearestPowTwo(std::min(image.width / 4, image.height / 3));
 		}
 		for (auto& arr : result)
 		{

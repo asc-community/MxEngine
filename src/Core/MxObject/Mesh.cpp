@@ -303,16 +303,6 @@ namespace MxEngine
 		return *this->transform;
 	}
 
-    const Matrix4x4& SubMesh::GetMatrix() const
-    {
-		return this->transform->GetMatrix();
-    }
-
-    const Matrix3x3& SubMesh::GetNormalMatrix() const
-    {
-		return this->transform->GetNormalMatrix();
-    }
-
     const Vector4& SubMesh::GetRenderColor() const
     {
 		return *this->renderColor;

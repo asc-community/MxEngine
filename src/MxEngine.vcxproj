@@ -264,6 +264,7 @@
     <None Include="Platform\OpenGL\Shaders\nolight_object_vertex.glsl" />
     <None Include="Platform\OpenGL\Shaders\skybox_fragment.glsl" />
     <None Include="Platform\OpenGL\Shaders\skybox_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\upscale_fragment.glsl" />
     <None Include="Resources\shaders\object_fragment.glsl" />
     <None Include="Resources\shaders\object_vertex.glsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

@@ -97,8 +97,7 @@ namespace MxEngine
 		virtual bool IsLast(size_t iterator) const override;
 		virtual size_t GetNext(size_t iterator) const override;
 		virtual const IRenderable& GetCurrent(size_t iterator) const override;
-		virtual const Matrix4x4& GetModelMatrix() const override;
-		virtual const Matrix3x3& GetNormalMatrix() const override;
+		virtual const Transform& GetTransform() const override;
 		virtual bool HasShader() const override;
 		virtual const Vector4& GetRenderColor() const override;
 		virtual const Shader& GetShader() const override;

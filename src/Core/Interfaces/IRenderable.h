@@ -32,6 +32,7 @@
 #include "Core/Interfaces/GraphicAPI/VertexBuffer.h"
 #include "Core/Interfaces/GraphicAPI/IndexBuffer.h"
 #include "Core/Material/Material.h"
+#include "Core/Components/Transform/Transform.h"
 
 namespace MxEngine
 {
@@ -43,8 +44,7 @@ namespace MxEngine
 		virtual const Material& GetMaterial() const = 0;
 		virtual bool HasMaterial() const = 0;
 		virtual size_t GetVertexBufferSize() const = 0;
-		virtual const Matrix4x4& GetMatrix() const = 0;
-		virtual const Matrix3x3& GetNormalMatrix() const = 0;
+		virtual const Transform& GetTransform() const = 0;
 		virtual const Vector4& GetRenderColor() const = 0;
 
 		virtual ~IRenderable() = default;

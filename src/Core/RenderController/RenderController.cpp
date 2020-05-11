@@ -113,7 +113,7 @@ namespace MxEngine
 		// choosing shader and setting up data per object
 		const Shader& shader = object.HasShader() ? object.GetShader() : *this->ObjectShader;
 
-		auto& ModelMatrix  = object.GetModelMatrix();
+		auto& ModelMatrix  = object.GetTransform().GetMatrix();
 		auto& renderColor  = object.GetRenderColor();
 
 		shader.SetUniformMat4("ViewProjMatrix", ViewProjection);
@@ -140,7 +140,7 @@ namespace MxEngine
 				// setting materials
 				shader.SetUniformFloat("material.d", material.d);
 				
-				this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetMatrix());
+				this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetTransform().GetMatrix());
 				this->GetRenderEngine().SetDefaultVertexAttribute(12, renderColor * renderObject.GetRenderColor());
 
 				if (object.GetInstanceCount() == 0)
@@ -170,8 +170,8 @@ namespace MxEngine
 		// choosing shader and setting up data per object
 		const Shader& shader = object.HasShader() ? object.GetShader() : *this->ObjectShader;
 
-		auto& ModelMatrix = object.GetModelMatrix();
-		auto& NormalMatrix = object.GetNormalMatrix();
+		auto& ModelMatrix = object.GetTransform().GetMatrix();
+		auto& NormalMatrix = object.GetTransform().GetNormalMatrix();
 		auto& renderColor = object.GetRenderColor();
 
 		shader.SetUniformMat4("ViewProjMatrix", ViewProjection);
@@ -293,10 +293,10 @@ namespace MxEngine
 
 				shader.SetUniformFloat("Ka", material.f_Ka);
 				shader.SetUniformFloat("Kd", material.f_Kd);
-				shader.SetUniformFloat("displacement", material.displacement);
+				shader.SetUniformVec3("displacement", object.GetTransform().GetScale() * renderObject.GetTransform().GetScale() * material.displacement);
 
-				this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetMatrix());
-				this->GetRenderEngine().SetDefaultVertexAttribute(9, NormalMatrix * renderObject.GetNormalMatrix());
+				this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetTransform().GetMatrix());
+				this->GetRenderEngine().SetDefaultVertexAttribute(9, NormalMatrix * renderObject.GetTransform().GetNormalMatrix());
 				this->GetRenderEngine().SetDefaultVertexAttribute(12, renderColor * renderObject.GetRenderColor());
 
 				if (object.GetInstanceCount() == 0)
@@ -347,6 +347,7 @@ namespace MxEngine
 
 		bloomIters = bloomIters + bloomIters % 2;
 
+		this->GetRenderEngine().SetViewport(0, 0, this->BloomBuffers[0]->GetAttachedTexture()->GetWidth(), this->BloomBuffers[0]->GetAttachedTexture()->GetHeight());
 		this->BloomShader->SetUniformInt("BloomTexture", 0);
 		for (int i = 0; i < bloomIters; i++)
 		{
@@ -367,22 +368,73 @@ namespace MxEngine
 			horizontalKernel = !horizontalKernel;
 		}
 		this->BloomBuffers[1]->Unbind();
-		this->GetRenderEngine().SetViewport(0, 0, viewportSize.x, viewportSize.y);
 
-		hdrTexture.Bind(0);
-		this->HDRShader->SetUniformInt("HDRtexture", 0);
-		this->HDRShader->SetUniformFloat("bloomWeight", bloomWeight);
-		if (noIterations)
+
+		if (bloomIters > 0)
+		{
+			//auto& bloomTexture = this->UpscaleTexture(*this->BloomBuffers[1]->GetAttachedTexture(), viewportSize);
+			this->BloomBuffers[1]->GetAttachedTexture()->Bind(1);
+		}
+		else
 		{
 			hdrTexture.Bind(1); // if no bloom was performed, use hdrTexture
 			hdrExposure *= 0.5f;
 		}
-		else
-			this->BloomBuffers[1]->GetAttachedTexture()->Bind(1);
+		this->GetRenderEngine().SetViewport(0, 0, viewportSize.x, viewportSize.y);
+		hdrTexture.Bind(0);
+		this->HDRShader->SetUniformInt("HDRtexture", 0);
+		this->HDRShader->SetUniformFloat("bloomWeight", bloomWeight);
 		this->HDRShader->SetUniformInt("BloomTexture", 1);
 		this->HDRShader->SetUniformFloat("exposure", hdrExposure);
 
 		this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, *this->HDRShader);
+	}
+
+	/*!
+	upscales texture to fit desired size (less than 2x times smaller than dist constaints)
+	\param texture texture to scale (its width and height are pulled using GetWidth() and GetHeight()
+	\param dist required scale. dist.x and dist.y must be positive numbers
+	\returns texture itself, if not scale is needed, upscaled texture reference from upscaleBuffer, if it was scaled
+	\warning TODO: I do not know why, but upscaling not works as desired. Something with OpenGL, but idk what exactly
+	*/
+	const Texture& RenderController::UpscaleTexture(const Texture& texture, const VectorInt2& dist)
+	{
+		VectorInt2 from2(ToNearestPowTwo(texture.GetWidth()), ToNearestPowTwo(texture.GetHeight()));
+		VectorInt2 dist2(ToNearestPowTwo(dist.x), ToNearestPowTwo(dist.y));
+
+		constexpr auto get_index = [](const VectorInt2& v)
+		{
+			switch (Min(v.x, v.y))
+			{
+			case 256:
+				return 0;
+			case 512:
+				return 1;
+			case 1024:
+				return 2;
+			case 2048:
+				return 3;
+			default:
+				return 4;
+			}
+		};
+		size_t fromIdx = get_index(from2) + 1;
+		size_t toIdx = Min(4, get_index(dist2) + 2);
+		if (fromIdx >= toIdx)
+			return texture;
+
+		auto& rectangle = this->GetRectangle();
+		this->UpscaleShader->SetUniformInt("Texture", 0);
+		for (size_t i = fromIdx; i < toIdx; i++)
+		{
+			this->GetRenderEngine().SetViewport(0, 0, 256 << i, 256 << i);
+			this->upscaleBuffers[i]->Bind();
+			if (i == fromIdx) texture.Bind(0);
+			else this->upscaleBuffers[i - 1]->GetAttachedTexture()->Bind(0);
+			this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, *this->UpscaleShader);
+		}
+		this->upscaleBuffers[3]->Unbind();
+		return *this->upscaleBuffers[toIdx - 1]->GetAttachedTexture();
 	}
 
 	void RenderController::SetPCFDistance(int value)
@@ -417,7 +469,7 @@ namespace MxEngine
 
 	void RenderController::SetBloomWeight(float weight)
 	{
-		this->bloomWeight = Clamp(weight, 0.0f, 1.0f);
+		this->bloomWeight = Max(0.0f, weight);
 	}
 
 	float RenderController::GetBloomWeight()
@@ -442,6 +494,17 @@ namespace MxEngine
 		this->MSAARenderBuffer->InitStorage(viewportWidth, viewportHeight, (int)samples);
 		this->MSAARenderBuffer->LinkToFrameBuffer(*this->MSAABuffer);
 
+		//  for (size_t i = 0; i < upscaleBuffers.size(); i++)
+		//  {
+		//  	if (this->upscaleBuffers[i] == nullptr)
+		//  	{
+		//  		this->upscaleBuffers[i] = Graphics::Instance()->CreateFrameBuffer();
+		//  		auto upscaleTexture = Graphics::Instance()->CreateTexture();
+		//  		upscaleTexture->Load(nullptr, 256 << i, 256 << i, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+		//  		this->upscaleBuffers[i]->AttachTexture(std::move(upscaleTexture), Attachment::COLOR_ATTACHMENT0);
+		//  	}
+		//  }
+
 		if(this->hdrTexture == nullptr) 
 			this->hdrTexture = Graphics::Instance()->CreateTexture();
 		this->hdrTexture->Load(nullptr, viewportWidth, viewportHeight, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
@@ -463,7 +526,9 @@ namespace MxEngine
 			if (BloomBuffers[i] == nullptr)
 				BloomBuffers[i] = Graphics::Instance()->CreateFrameBuffer();
 			auto texture = Graphics::Instance()->CreateTexture();
-			texture->Load(nullptr, viewportWidth, viewportHeight, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+			size_t width = (viewportWidth + 3) / 2 + ((viewportWidth + 1) / 2) % 2;
+			size_t height = (viewportHeight + 3) / 2 + ((viewportHeight + 1) / 2) % 2;
+			texture->Load(nullptr, width, height, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
 			BloomBuffers[i]->AttachTexture(std::move(texture), Attachment::COLOR_ATTACHMENT0);
 		}
 	}

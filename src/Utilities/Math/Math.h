@@ -456,7 +456,7 @@ namespace MxEngine
 		return ((n <= 2) ? 1 : 1 + Log2(n / 2));
 	}
 
-	inline constexpr size_t FloorToLog2(size_t n)
+	inline constexpr size_t ToNearestPowTwo(size_t n)
 	{
 		return static_cast<size_t>(1) << Log2(n);
 	}

@@ -98,3 +98,9 @@
 - added per-submesh transformations and color (first step in animations)
 - added MSAA support (default to 4x)
 - other performance improvements and profile-logging
+### 6.4.0
+- normal & height mapping (per material)
+- debug draw - AABB boxes and bounding spheres
+- HDR rendering support
+- customizable bloom effect
+- some new MxEngine library utilities

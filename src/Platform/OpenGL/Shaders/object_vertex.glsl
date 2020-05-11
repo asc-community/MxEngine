@@ -20,7 +20,7 @@ uniform mat4 DirLightProjMatrix;
 uniform mat4 SpotLightProjMatrix[MAX_SPOT_LIGHTS];
 uniform int pointLightCount;
 uniform int spotLightCount;
-uniform float displacement;
+uniform vec3 displacement;
 uniform sampler2D map_height;
 
 out VSout

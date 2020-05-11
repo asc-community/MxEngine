@@ -67,11 +67,9 @@ namespace MxEngine
 		bool UsesTexture() const;
 		bool UsesNormals() const;
 		void SetRenderColor(const Vector4& color);
-		const Transform& GetTransform() const;
 		Transform& GetTransform();
 
-		virtual const Matrix4x4& GetMatrix() const override;
-		virtual const Matrix3x3& GetNormalMatrix() const override;
+		virtual const Transform& GetTransform() const override;
 		virtual const Vector4& GetRenderColor() const override;
 		virtual const VertexArray& GetVAO() const override;
 		virtual IndexBuffer& GetIBO() const override;
