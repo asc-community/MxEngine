@@ -34,7 +34,11 @@
 
 namespace MxEngine
 {
-    // in C++20 std::span will be added. Till that times, MxEngine provides ArrayView with simular functionality
+    /*!
+    class with behave line STL container, but just holds pointer and size of data. Can be used as same as string view for strings
+    note that in C++20 std::span is introduced, so array_view will no longer will be needed
+    detailed documentation is not provided for this class, as it is quite obvious
+    */
     template<typename T>
     class array_view
     {
@@ -209,7 +213,12 @@ namespace MxEngine
         this->_data = begin;
         this->_size = end - begin;
     }
-
+    
+    /*!
+    constructs array view from one value
+    \param value element which will be inside array_view
+    \returns array_view of value
+    */
     template<typename T>
     inline array_view<T> make_view(T& value)
     {

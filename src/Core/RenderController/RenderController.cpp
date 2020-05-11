@@ -394,7 +394,7 @@ namespace MxEngine
 	upscales texture to fit desired size (less than 2x times smaller than dist constaints)
 	\param texture texture to scale (its width and height are pulled using GetWidth() and GetHeight()
 	\param dist required scale. dist.x and dist.y must be positive numbers
-	\returns texture itself, if not scale is needed, upscaled texture reference from upscaleBuffer, if it was scaled
+	\returns texture itself, if no scale is needed, upscaled texture reference from upscaleBuffer, if it was scaled
 	\warning TODO: I do not know why, but upscaling not works as desired. Something with OpenGL, but idk what exactly
 	*/
 	const Texture& RenderController::UpscaleTexture(const Texture& texture, const VectorInt2& dist)

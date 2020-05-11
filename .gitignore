@@ -49,4 +49,5 @@ compile_commands.json
 external_libraries/*.lib
 python
 boost_headers
+Vendors
 Debug

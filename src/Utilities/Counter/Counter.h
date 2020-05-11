@@ -32,9 +32,10 @@
 
 namespace MxEngine
 {
-    // TODO: consider atomic counter as an optional policy
-
-    // Counter class is used when there is a desire to create a value which increases over time
+    /*!
+    Counter is a special object which is used now in MxEngine to generate unique Ids of uint64_t type.
+    \warning TODO: consider atomic counter as an optional policy (now Counter is not thread-safe)
+    */
     class Counter
     {
     public:

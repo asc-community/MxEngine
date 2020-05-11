@@ -30,29 +30,53 @@
 
 namespace MxEngine
 {
+    /*!
+    constructs new Counter object
+    \param first initial value of counter. Defaults to 0
+    */
     Counter::Counter(Counter::CounterType first)
         : counter(first) {  }
 
+    /*!
+    this function does not affect Counter object in any way
+    \returns current value of Counter
+    */
     Counter::CounterType Counter::Get() const
     {
         return this->counter;
     }
 
+    /*!
+    increments inner counter by one
+    \returns value after increment
+    */
     Counter::CounterType Counter::operator++()
     {
         return ++this->counter;
     }
 
+    /*!
+    increments inner counter by one
+    \returns value before increment
+    */
     Counter::CounterType Counter::operator++(int)
     {
         return this->counter++;
     }
 
+    /*!
+    increment counter by a specific value
+    \param value value to increment counter by
+    */
     void Counter::Add(Counter::CounterType value)
     {
         this->counter += value;
     }
 
+    /*!
+    sets inner counter to some value.
+    \param first value to set. Defaults to 0
+    */
     void Counter::Reset(Counter::CounterType first)
     {
         this->counter = first;

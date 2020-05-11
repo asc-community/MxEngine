@@ -38,11 +38,13 @@ MxEngine can be built from sources using Visual Studio or CMake. Note that by no
 1. clone the repository via `git clone https://github.com/MomoDeve/MxEngine`
 2. unzip precompiled libraries located in folder `MxEngine/external_libraries`
 3. unzip python.zib (python 3.6 build) and boost_headers.zip (Boost lib) into root project directory
-4. open MxEngine.sln in Visual Studio. Select `Release`/`Debug` configuration and press "`build solution`"
+4. unzip Vendors.zib located in folder `MxEngine/src` 
+5. open MxEngine.sln in Visual Studio. Select `Release`/`Debug` configuration and press "`build solution`"
 ### Building with CMake
 1. clone the repository via `git clone https://github.com/MomoDeve/MxEngine`
 2. unzip precompiled libraries located in folder `MxEngine/external_libraries`
 3. unzip python.zib (python 3.6 build) and boost_headers.zip (Boost lib) into root project directory
-4. open `CMakeLists.txt` located in project root directory and set it up for your system (CMake project can be built through Visual Studio without editing)
+4. unzip Vendors.zib located in folder `MxEngine/src` 
+5. open `CMakeLists.txt` located in project root directory and set it up for your system (CMake project can be built through Visual Studio without editing)
 
 If you have free time and you are interested in this project, I will really appreciate your help with porting library on other systems. If you would like to help, please contact me via github or create a pull request.
