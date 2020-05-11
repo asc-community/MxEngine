@@ -47,4 +47,6 @@ imgui.ini
 profile_log.json
 compile_commands.json
 external_libraries/*.lib
+python
+boost_headers
 Debug
