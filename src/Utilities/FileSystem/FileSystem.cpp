@@ -86,6 +86,11 @@ namespace MxEngine
         this->fileStream.open(path, FileModeTable[mode]);
     }
 
+    void File::Close()
+    {
+        this->fileStream.close();
+    }
+
     File::FileData File::ReadAllText()
     {
         std::string content;
@@ -97,7 +102,7 @@ namespace MxEngine
         return content;
     }
 
-    FilePath File::GetPath() const
+    const FilePath& File::GetPath() const
     {
         return this->filePath;
     }

@@ -30,7 +30,7 @@
 #include <string>
 
 #include "Utilities/Memory/Memory.h"
-#include "Core/Interfaces/GraphicAPI/Texture.h"
+#include "Platform/GraphicAPI.h"
 #include "Utilities/Math/Math.h"
 
 namespace MxEngine

@@ -27,30 +27,29 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "RenderController.h"
-#include "Core/Interfaces/GraphicAPI/FrameBuffer.h"
 #include "Utilities/Format/Format.h"
 
 namespace MxEngine
 {
-	RenderController::RenderController(Renderer& renderer)
-		: renderer(renderer)
+	RenderController::RenderController(UniqueRef<Renderer> renderer)
+		: renderer(std::move(renderer))
 	{
 
 	}
 
 	Renderer& RenderController::GetRenderEngine() const
 	{
-		return this->renderer;
+		return *this->renderer;
 	}
 
 	void RenderController::Render() const
 	{
-		this->renderer.Finish();
+		this->GetRenderEngine().Finish();
 	}
 
 	void RenderController::Clear() const
 	{
-		this->renderer.Clear();
+		this->GetRenderEngine().Clear();
 	}
 
 	void RenderController::AttachDepthTexture(const Texture& texture)
@@ -81,7 +80,7 @@ namespace MxEngine
 
 	void RenderController::ToggleReversedDepth(bool value) const
 	{
-		this->renderer.UseReversedDepth(value);
+		this->GetRenderEngine().UseReversedDepth(value);
 	}
 
 	void RenderController::ToggleFaceCulling(bool value, bool counterClockWise, bool cullBack) const
@@ -96,7 +95,7 @@ namespace MxEngine
 
 	void RenderController::SetViewport(int x, int y, int width, int height)
 	{
-		this->renderer.SetViewport(x, y, width, height);
+		this->GetRenderEngine().SetViewport(x, y, width, height);
 		this->viewportSize = VectorInt2(width, height);
 	}
 
@@ -347,7 +346,7 @@ namespace MxEngine
 
 		bloomIters = bloomIters + bloomIters % 2;
 
-		this->GetRenderEngine().SetViewport(0, 0, this->BloomBuffers[0]->GetAttachedTexture()->GetWidth(), this->BloomBuffers[0]->GetAttachedTexture()->GetHeight());
+		this->GetRenderEngine().SetViewport(0, 0, (int)this->BloomBuffers[0]->GetAttachedTexture()->GetWidth(), (int)this->BloomBuffers[0]->GetAttachedTexture()->GetHeight());
 		this->BloomShader->SetUniformInt("BloomTexture", 0);
 		for (int i = 0; i < bloomIters; i++)
 		{
@@ -378,7 +377,7 @@ namespace MxEngine
 		else
 		{
 			hdrTexture.Bind(1); // if no bloom was performed, use hdrTexture
-			hdrExposure *= 0.5f;
+			bloomWeight = 0.0f;
 		}
 		this->GetRenderEngine().SetViewport(0, 0, viewportSize.x, viewportSize.y);
 		hdrTexture.Bind(0);
@@ -399,8 +398,8 @@ namespace MxEngine
 	*/
 	const Texture& RenderController::UpscaleTexture(const Texture& texture, const VectorInt2& dist)
 	{
-		VectorInt2 from2(ToNearestPowTwo(texture.GetWidth()), ToNearestPowTwo(texture.GetHeight()));
-		VectorInt2 dist2(ToNearestPowTwo(dist.x), ToNearestPowTwo(dist.y));
+		VectorInt2 from2(FloorToPow2(texture.GetWidth()), FloorToPow2(texture.GetHeight()));
+		VectorInt2 dist2(FloorToPow2(dist.x), FloorToPow2(dist.y));
 
 		constexpr auto get_index = [](const VectorInt2& v)
 		{
@@ -482,15 +481,15 @@ namespace MxEngine
 		if(this->samples == 1 && samples != 1) this->GetRenderEngine().UseSampling(true);
 		this->samples = (int)samples;
 
-		auto MSAATexture = Graphics::Instance()->CreateTexture();
+		auto MSAATexture = MakeUnique<Texture>();
 		MSAATexture->LoadMultisample(viewportWidth, viewportHeight, HDRTextureFormat, (int)samples, TextureWrap::CLAMP_TO_EDGE);
 
 		if(this->MSAABuffer == nullptr)
-			this->MSAABuffer = Graphics::Instance()->CreateFrameBuffer();
+			this->MSAABuffer = MakeUnique<FrameBuffer>();
 		this->MSAABuffer->AttachTexture(std::move(MSAATexture), Attachment::COLOR_ATTACHMENT0);
 
 		if(this->MSAARenderBuffer == nullptr)
-			this->MSAARenderBuffer = Graphics::Instance()->CreateRenderBuffer();
+			this->MSAARenderBuffer = MakeUnique<RenderBuffer>();
 		this->MSAARenderBuffer->InitStorage(viewportWidth, viewportHeight, (int)samples);
 		this->MSAARenderBuffer->LinkToFrameBuffer(*this->MSAABuffer);
 
@@ -498,23 +497,23 @@ namespace MxEngine
 		//  {
 		//  	if (this->upscaleBuffers[i] == nullptr)
 		//  	{
-		//  		this->upscaleBuffers[i] = Graphics::Instance()->CreateFrameBuffer();
-		//  		auto upscaleTexture = Graphics::Instance()->CreateTexture();
+		//  		this->upscaleBuffers[i] = MakeUnique<FrameBuffer>();
+		//  		auto upscaleTexture = MakeUnique<Texture>();
 		//  		upscaleTexture->Load(nullptr, 256 << i, 256 << i, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
 		//  		this->upscaleBuffers[i]->AttachTexture(std::move(upscaleTexture), Attachment::COLOR_ATTACHMENT0);
 		//  	}
 		//  }
 
 		if(this->hdrTexture == nullptr) 
-			this->hdrTexture = Graphics::Instance()->CreateTexture();
+			this->hdrTexture = MakeUnique<Texture>();
 		this->hdrTexture->Load(nullptr, viewportWidth, viewportHeight, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
 
 		if (this->bloomTexture == nullptr)
-			this->bloomTexture = Graphics::Instance()->CreateTexture();
+			this->bloomTexture = MakeUnique<Texture>();
 		this->bloomTexture->Load(nullptr, viewportWidth, viewportHeight, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
 			
 		if(this->HDRBuffer == nullptr)
-			this->HDRBuffer = Graphics::Instance()->CreateFrameBuffer();
+			this->HDRBuffer = MakeUnique<FrameBuffer>();
 		this->HDRBuffer->AttachTexture(*this->hdrTexture, Attachment::COLOR_ATTACHMENT0);
 		this->HDRBuffer->AttachTexture(*this->bloomTexture, Attachment::COLOR_ATTACHMENT1);
 
@@ -524,11 +523,11 @@ namespace MxEngine
 		for (size_t i = 0; i < 2; i++)
 		{
 			if (BloomBuffers[i] == nullptr)
-				BloomBuffers[i] = Graphics::Instance()->CreateFrameBuffer();
-			auto texture = Graphics::Instance()->CreateTexture();
+				BloomBuffers[i] = MakeUnique<FrameBuffer>();
+			auto texture = MakeUnique<Texture>();
 			size_t width = (viewportWidth + 3) / 2 + ((viewportWidth + 1) / 2) % 2;
 			size_t height = (viewportHeight + 3) / 2 + ((viewportHeight + 1) / 2) % 2;
-			texture->Load(nullptr, width, height, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+			texture->Load(nullptr, (int)width, (int)height, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
 			BloomBuffers[i]->AttachTexture(std::move(texture), Attachment::COLOR_ATTACHMENT0);
 		}
 	}

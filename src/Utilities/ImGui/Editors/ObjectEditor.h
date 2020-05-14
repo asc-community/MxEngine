@@ -34,6 +34,10 @@
 
 namespace MxEngine::GUI
 {
+	/*!
+	draws material editor in currently opened GUI window
+	\param material material to draw and edit
+	*/
 	inline void DrawMaterial(Material& material)
 	{
 		ImGui::ColorEdit3("ambient color", &material.Ka[0]);
@@ -51,18 +55,22 @@ namespace MxEngine::GUI
 		if (GUI::InputTextOnClick("normal map", normapMapPath.data(), normapMapPath.size()))
 		{
 			auto context = Application::Get();
-			material.map_normal = Graphics::Instance()->CreateTexture(
-				context->GetCurrentScene().GetDirectory() / normapMapPath);
+			material.map_normal = MakeUnique<Texture>(
+				(context->GetCurrentScene().GetDirectory() / normapMapPath).string());
 		}
 		static std::string heightMapPath(128, '\0');
 		if (GUI::InputTextOnClick("height map", heightMapPath.data(), heightMapPath.size()))
 		{
 			auto context = Application::Get();
-			material.map_height = Graphics::Instance()->CreateTexture(
-				context->GetCurrentScene().GetDirectory() / heightMapPath);
+			material.map_height = MakeUnique<Texture>(
+				(context->GetCurrentScene().GetDirectory() / heightMapPath).string());
 		}
 	}
 
+	/*!
+	draws transform editor in currently opened GUI window
+	\param transform transform to draw and edit
+	*/
 	inline void DrawTransform(Transform& transform)
 	{
 		// translation
@@ -86,6 +94,13 @@ namespace MxEngine::GUI
 			transform.SetScale(scale);
 	}
 
+	/*!
+	gets object list from currently active scene and draws them in GUI window, including
+	- object instances
+	- object meshes
+	- object directional vectors
+	- object transform
+	*/
 	inline void DrawObjectEditor()
 	{
 		auto context = Application::Get();

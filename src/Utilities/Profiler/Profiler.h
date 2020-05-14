@@ -37,17 +37,51 @@
 
 namespace MxEngine
 {
+	/*!
+	profile session is a special singleton object which periodically writes log to a json file
+	it is used inside ScopeProfiler to write time measurements. After application exit log can be viewed at chrome://tracing page
+	*/
 	class ProfileSession
 	{
+		/*!
+		json file to which profile log is outputted
+		*/
 		std::ofstream stream;
-		size_t count = 0;
+		/*!
+		count of json log entries (is used internally to create json file)
+		*/
+		size_t entriesCount = 0;
 
+		/*!
+		writes header of json file, i.e "{ traceEvents: [ ..."
+		*/
 		void WriteJsonHeader();
+		/*!
+		writes footer of json file, i.e "] }"
+		*/
 		void WriteJsonFooter();
 	public:
+		/*!
+		checks if json file is opened
+		\returns true if json file can be written to, false either
+		*/
 		bool IsValid() const;
+		/*!
+		getter for entriesCount
+		\returns number of json entries
+		*/
 		size_t GetEntryCount() const;
+		/*!
+		creates json file or clears it if it exists and writes json header to it
+		\param filename file to output json to
+		*/
 		void StartSession(const std::string& filename);
+		/*!
+		writes json entry, consisting of process id, start/end time, function name
+		\param function called function name 
+		\param begin start timepoint of function execution
+		\param delta duration of function execution
+		*/
 		void WriteJsonEntry(const char* function, TimeStep begin, TimeStep delta);
 		void EndSession();
 	};
@@ -90,8 +124,6 @@ namespace MxEngine
 		}
 	};
 
-#define CONCAT_IMPL(x, y) x##y
-#define CONCAT(x, y) CONCAT_IMPL(x, y)
-#define MAKE_SCOPE_PROFILER(function) ScopeProfiler CONCAT(_profiler, __LINE__)(Profiler::Instance(), function)
-#define MAKE_SCOPE_TIMER(invoker, function) ScopeTimer CONCAT(_timer, __LINE__)(invoker, function)
+#define MAKE_SCOPE_PROFILER(function) ScopeProfiler MXENGINE_CONCAT(_profiler, __LINE__)(Profiler::Instance(), function)
+#define MAKE_SCOPE_TIMER(invoker, function) ScopeTimer MXENGINE_CONCAT(_timer, __LINE__)(invoker, function)
 }

@@ -28,14 +28,15 @@
 
 #pragma once
 
-#include "Core/Interfaces/GraphicAPI/VertexArray.h"
-#include "Core/Interfaces/GraphicAPI/VertexBuffer.h"
-#include "Core/Interfaces/GraphicAPI/IndexBuffer.h"
 #include "Core/Material/Material.h"
 #include "Core/Components/Transform/Transform.h"
 
 namespace MxEngine
 {
+	class VertexArray;
+	class VertexBuffer;
+	class IndexBuffer;
+
 	struct IRenderable
 	{
 		virtual const VertexArray& GetVAO() const = 0;

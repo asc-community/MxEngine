@@ -51,7 +51,7 @@ namespace MxEngine
 
 	size_t ProfileSession::GetEntryCount() const
 	{
-		return this->count;
+		return this->entriesCount;
 	}
 
 	void ProfileSession::StartSession(const std::string& filename)
@@ -69,7 +69,7 @@ namespace MxEngine
 		{
 			stream << ",\n";
 		}
-		this->count++;
+		this->entriesCount++;
 
 		stream << "	{";
 		stream << "\"pid\": 0, ";

@@ -28,9 +28,6 @@
 
 #pragma once
 
-#include "Core/Interfaces/GraphicAPI/Texture.h"
-#include "Core/Interfaces/GraphicAPI/Shader.h"
-#include "Core/Interfaces/GraphicAPI/IndexBuffer.h"
 #include "Core/Material/Material.h"
 #include "Core/Interfaces/IRenderable.h"
 #include "Utilities/Math/Math.h"
@@ -39,6 +36,9 @@
 
 namespace MxEngine
 {
+	class Texture;
+	class Shader;
+
 	struct IDrawable
 	{
 		virtual size_t GetIterator() const = 0;

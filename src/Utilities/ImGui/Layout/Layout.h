@@ -33,24 +33,41 @@
 
 namespace MxEngine::GUI
 {
+    /*!
+    Indent is a special object which is created on stack to push extra element offset
+    on its destruction offset is popped, resulting in a tree-like structure of GUI elements
+    */
     struct Indent
     {
+        /*!
+        offset to be popped on destruction
+        */
         float indent;
 
+        /*!
+        construct Indent object, adding indent to GUI elements
+        */
         inline Indent(float indent) 
             : indent(indent)
         {
             ImGui::Indent(indent);
         }
 
+        /*!
+        destroys Indent object, removing indent from GUI elements
+        */
         inline ~Indent()
         {
             ImGui::Unindent(indent);
         }
     };
 
+    // GUI_TREE_NODE is a special macro to create tree nodes with offset all code of node must be places after its name as argument, i.e. GUI_TREE_NODE(NAME, CODE);
     #define GUI_TREE_NODE(name, ...) if(ImGui::CollapsingHeader(name)) { GUI::Indent _(5.0f); __VA_ARGS__; }
 
+    /*!
+    Setting next drawn window position to be in the right from graphic console of Application (see GraphicConsole for more info)
+    */
     inline void RightFromConsole()
     {
         auto context = Application::Get();
@@ -60,6 +77,9 @@ namespace MxEngine::GUI
         ImGui::SetNextWindowSize({ context->GetWindow().GetWidth() - context->GetConsole().GetSize().x - 150.0f, 0.0f });
     }
 
+    /*!
+    Setting next drawn window position to be in the under graphic console of Application (see GraphicConsole for more info)
+    */
     inline void UnderConsole()
     {
         auto context = Application::Get();
@@ -69,6 +89,12 @@ namespace MxEngine::GUI
         ImGui::SetNextWindowSize({ context->GetConsole().GetSize().x, 0.0f });
     }
 
+    /*!
+    creates input field for an int and "apply" button next to it
+    \param title input field title
+    \param v value in which input will be stored
+    \returns true if "apply" button was pressed, false either
+    */
     inline bool InputIntOnClick(const char* title, int* v)
     {
         ImGui::PushID(title);
@@ -79,6 +105,12 @@ namespace MxEngine::GUI
         return result;
     }
 
+    /*!
+    creates input field for a float and "apply" button next to it
+    \param title input field title
+    \param v value in which input will be stored
+    \returns true if "apply" button was pressed, false either
+    */
     inline bool InputFloatOnClick(const char* title, float* v)
     {
         ImGui::PushID(title);
@@ -89,6 +121,13 @@ namespace MxEngine::GUI
         return result;
     }
 
+    /*!
+    creates input field for a char string and "apply" button next to it
+    \param title input field title
+    \param v value in which input will be stored
+    \param size maximal size of v to limit user input
+    \returns true if "apply" button was pressed, false either
+    */
     inline bool InputTextOnClick(const char* title, char* v, size_t size)
     {
         ImGui::PushID(title);

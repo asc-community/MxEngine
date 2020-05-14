@@ -32,9 +32,11 @@
 
 #include <functional>
 
-// modified console from ImGui example
 namespace MxEngine
 {
+	/*!
+	graphic console is modified console from ImGui demo example. It features text input, search, history and logging
+	*/
 	class GraphicConsole
 	{
 		char               InputBuf[256];
@@ -46,23 +48,67 @@ namespace MxEngine
 		bool			   AutoScroll;
 		bool			   ScrollToBottom;
 
-		void ExecCommand(const char* command_line);
+		/*!
+		called internally by console. Executes command, forwarding it to the current script interpreter (see eventCallback documentation)
+		\param command script to execute
+		*/
+		void ExecCommand(const char* command);
+		/*!
+		called internally by console. Executes callback code on text input
+		\param data ImGui event data
+		*/
 		int TextEditCallback(ImGuiInputTextCallbackData* data);
 		using EventCallback = std::function<void(const char*)>;
+		/*!
+		interpeter callback, called internally by ExecCommand function (is set by DeveloperConsole class)
+		*/
 		EventCallback eventCallback = nullptr;
 
+		/*!
+		called internally by console. this function is callback forwarder (acquires console object to forward event)
+		*/
 		friend int TextEditCallbackStub(ImGuiInputTextCallbackData*);
 	public:
+		/*!
+		Constructs default console sized (450, 500)
+		*/
 		GraphicConsole();
 		GraphicConsole(const GraphicConsole&) = delete;
 		~GraphicConsole();
 
-		void SetEventCallback(EventCallback callback);
+		/*!
+		sets event callback which activates when text line is submitted by user
+		\param callback functor to call on line input
+		*/
+		void SetEventCallback(EventCallback&& callback);
+		/*!
+		prints all unique lines inputted by user to console
+		*/
 		void PrintHistory();
+		/*!
+		clears console
+		*/
 		void ClearLog();
+		/*!
+		prints message in a C-style to a console windows
+		\param fmt C-style formatting string
+		\param args variadic argument list
+		*/
 		void PrintLog(const char* fmt, ...);
+		/*!
+		calls ImGui code to draw console in a new personal window
+		\param title title of window in which console is drawn
+		*/
 		void Draw(const char* title);
+		/*!
+		size getter
+		\returns console size in pixels
+		*/
 		ImVec2 GetSize() const;
+		/*!
+		size setter
+		\param size new console size in pixels
+		*/
 		void SetSize(ImVec2 size);
 	};
 }

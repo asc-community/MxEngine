@@ -32,13 +32,13 @@
 #include "Utilities/Array/ArrayView.h"
 #include "Core/Interfaces/IDrawable.h"
 #include "Core/Camera/CameraController.h"
-#include "Core/Interfaces/GraphicAPI/Renderer.h"
 #include "Core/Lighting/DirectionalLight/DirectionalLight.h"
 #include "Core/Lighting/PointLight/PointLight.h"
 #include "Core/Lighting/SpotLight/SpotLight.h"
 #include "Core/Skybox/Skybox.h"
 #include "Core/DebugDraw/Rectangle.h"
 #include "Core/DebugDraw/DebugBuffer.h"
+#include "Platform/OpenGL/Renderer.h"
 
 #include <array>
 
@@ -51,11 +51,12 @@ namespace MxEngine
 		ArrayView<SpotLight> Spot;
 	};
 
-	struct FrameBuffer;
+	class FrameBuffer;
+	class Renderer;
 
 	class RenderController
 	{
-		Renderer& renderer;
+		UniqueRef<Renderer> renderer;
 
 		size_t directionalDepthSize = 4096;
 		size_t spotDepthSize = 512;
@@ -78,7 +79,7 @@ namespace MxEngine
 
 		static constexpr TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;
 	public:
-		RenderController(Renderer& renderer);
+		RenderController(UniqueRef<Renderer> renderer);
 
 		int PCFdistance = 1;
 		Shader* ObjectShader = nullptr;

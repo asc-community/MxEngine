@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
+#include "Platform/GraphicAPI.h"
 
 namespace MxEngine
 {

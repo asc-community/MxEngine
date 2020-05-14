@@ -30,7 +30,6 @@
 #if defined(MXENGINE_USE_PYTHON)
 
 #include "Core/Application/Application.h"
-#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 
 namespace MxEngine
 {
@@ -65,8 +64,7 @@ class MxEngineIOHandler:
         this->MirrorErrorStream(false);
 
         auto ctxPtr = reinterpret_cast<uintptr_t>(Application::Get());
-        auto grfPtr = reinterpret_cast<uintptr_t>(Graphics::Instance());
-        auto contextInitScript = Format("mx_engine.MxEngineSetContextPointers({0}, {1})", ctxPtr, grfPtr);
+        auto contextInitScript = Format("mx_engine.MxEngineSetContextPointer({0})", ctxPtr);
         this->Execute(contextInitScript.c_str());
         this->Execute("mx = mx_engine.get_context()");
     }

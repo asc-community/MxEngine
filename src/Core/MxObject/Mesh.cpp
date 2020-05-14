@@ -29,7 +29,7 @@
 #include "Mesh.h"
 #include "Utilities/ObjectLoader/ObjectLoader.h"
 #include "Utilities/Profiler/Profiler.h"
-#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
+#include "Platform/GraphicAPI.h"
 #include "Utilities/LODGenerator/LODGenerator.h"
 #include "Utilities/Format/Format.h"
 
@@ -41,7 +41,7 @@ namespace MxEngine
 	{
 		#define MAKE_TEX(tex) if(!mat.tex.empty()) {\
 			if(textures.find(mat.tex) == textures.end())\
-				textures[mat.tex] = Graphics::Instance()->CreateTexture(mat.tex);\
+				textures[mat.tex] = MakeUnique<Texture>(mat.tex);\
 			material.tex = textures[mat.tex];}
 
 		MAKE_TEX(map_Ka);
@@ -50,7 +50,7 @@ namespace MxEngine
 		MAKE_TEX(map_Ke);
 		MAKE_TEX(map_d);
 		MAKE_TEX(map_height);
-		MAKE_TEX(bump);
+		MAKE_TEX(map_normal);
 
 		material.Tf    = mat.Tf;
 		material.Ka    = mat.Ka;
@@ -125,10 +125,10 @@ namespace MxEngine
 				auto& color = submeshColors[i];
 				auto& transform = submeshTransforms[i];
 
-				auto VBO = Graphics::Instance()->CreateVertexBuffer(mesh.buffer.data(), mesh.buffer.size(), UsageType::STATIC_DRAW);
-				auto IBO = Graphics::Instance()->CreateIndexBuffer(mesh.faces.data(), mesh.faces.size());
-				auto VAO = Graphics::Instance()->CreateVertexArray();
-				auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
+				auto VBO = MakeUnique<VertexBuffer>(mesh.buffer.data(), mesh.buffer.size(), UsageType::STATIC_DRAW);
+				auto IBO = MakeUnique<IndexBuffer>(mesh.faces.data(), mesh.faces.size());
+				auto VAO = MakeUnique<VertexArray>();
+				auto VBL = MakeUnique<VertexBufferLayout>();
 
 				VBL->PushFloat(3);
 				if (mesh.useTexture)
@@ -227,7 +227,7 @@ namespace MxEngine
 			indicies.push_back(i + 2);
 			indicies.push_back(i + 0);
 		}
-		this->meshIBO = Graphics::Instance()->CreateIndexBuffer(indicies.data(), indicies.size());
+		this->meshIBO = MakeUnique<IndexBuffer>(indicies.data(), indicies.size());
 		this->meshGenerated = true;
 	}
 

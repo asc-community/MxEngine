@@ -34,8 +34,15 @@
 
 namespace MxEngine
 {
+    /*!
+    TODO: make comparator thread-safe
+    this class is used to generate object LODs by comparing vertecies. It is passed as set comparator to filter unique vertecies with some threshold
+    */
     struct Vector3Cmp
     {
+        /*!
+        threshold which sets epsilon to ignore. If vec_abs(v1 - v2) == vec(threshold), v1 considered equal to v2
+        */
         inline static float Threshold = 100.0f;
 
         static bool EqF(float x, float y)
@@ -60,20 +67,54 @@ namespace MxEngine
         }
     };
 
+    /*!
+    LODGenerator is a special class which encapsulates mesh LOD generation algorithm
+    The idea is quite simple, fast and straightforward (but rather inaccurate) - we try to delete vertecies which are close to each other and then reconstruct the mesh
+    Ofc this results in slight holes in mesh or its deformation, but corretcly selected distance for LODs will hide such errors
+    */
     class LODGenerator
     {
+        /*!
+        initial object reference. Used to generate LODs and does not changed by LODGenerator
+        */
         const ObjectInfo& objectLOD;
 
         using ProjectionTable = std::vector<size_t>;
         using WeightList = std::map<size_t, size_t>;
+        /*!
+        table, mapping existing object vertex indicies onto new ones (for example v1->v1, v2->v2, v3->v3 can be transformed to v1->v2, v2->v2, v3->v2)
+        */
         std::vector<ProjectionTable> projection;
+        /*!
+        table, mapping each vertex index to vertex indicies list and its count (to collapse vertecies we do weighted average of their parameters)
+        */
         std::vector<std::vector<WeightList>> weights;
 
+        /*!
+        this function decies whether we should collapse vertex (f) with other already existed in mesh, or add it unaltered
+        \param vertecies mesh data for part of already generated mesh LOD
+        \param meshId current id of submesh of currently generated object
+        \param f face (vertex) index to test for (collapse or not)
+        \returns mapping of vertex to itself or other existing vertex in submesh
+        */
         size_t CollapseDublicate(std::map<Vector3, size_t, Vector3Cmp>& vertecies, size_t meshId, size_t f);
+        /*
+        generates submesh projection and weight tables, collapses vertex duplicates which are close enough to each other
+        \param threshold minimal value in vertecies components from which vertecies are considered equal (see Vector3Cmp comparator)
+        */
         void PrepareIndexData(float threshold);
     public:
+        /*!
+        construct LODGenerator object. Calls PrepareIndexData() method. Note that objectInfo must not be destroyed till LODGenerator is used
+        \param objectInfo mesh of object from which LODs will be generated
+        */
         LODGenerator(const ObjectInfo& objectInfo);
-        // fow now this function can be called only from a single thread!
+        /*!
+        creates new LOD in a form of ObjectInfo. All other parameters (settings, name, material) are copied from objectInfo provided in class constructor
+        \param threshold minimal value in vertecies components from which vertecies are considered equal (see Vector3Cmp comparator)
+        \returns mesh LOD in a form of ObjectInfo
+        \warning this function is not Thread-safe even across multiple LODGenerator instances, as Vector3Cmp uses static field (TODO fix this)
+        */
         ObjectInfo CreateObject(float threshold);
     };
 }

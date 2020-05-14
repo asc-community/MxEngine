@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
+#include "Platform/GraphicAPI.h"
 #include "Core/MxObject/MxObject.h"
 #include "Utilities/Array/ArrayView.h"
 #include "Utilities/Logger/Logger.h"
@@ -69,15 +69,15 @@ namespace MxEngine
             for (size_t lod = 0; lod < lodCount; lod++)
             {
                 // first we create VBO + VAO with data
-                auto VBO = Graphics::Instance()->CreateVertexBuffer(vbos[lod].data(), vbos[lod].size(), UsageType::STATIC_DRAW);
-                auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
-                auto IBO = Graphics::Instance()->CreateIndexBuffer(ibos[lod].data(), ibos[lod].size());
+                auto VBO = MakeUnique<VertexBuffer>(vbos[lod].data(), vbos[lod].size(), UsageType::STATIC_DRAW);
+                auto VBL = MakeUnique<VertexBufferLayout>();
+                auto IBO = MakeUnique<IndexBuffer>(ibos[lod].data(), ibos[lod].size());
                 VBL->PushFloat(3);
                 VBL->PushFloat(2);
                 VBL->PushFloat(3);
                 VBL->PushFloat(3);
                 VBL->PushFloat(3);
-                auto VAO = Graphics::Instance()->CreateVertexArray();
+                auto VAO = MakeUnique<VertexArray>();
                 VAO->AddBuffer(*VBO, *VBL);
 
                 this->GetMesh()->SetLOD(lod);

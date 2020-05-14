@@ -32,7 +32,7 @@
 #include <chrono>
 #include "Core/Macro/Macro.h"
 #if defined(MXENGINE_USE_OPENGL)
-#include "Platform/OpenGL/GLUtilities/GLUtilities.h"
+#include "Platform/OpenGL/GLUtilities.h"
 
 MxEngine::TimeStep MxEngine::Time::Current()
 {

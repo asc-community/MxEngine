@@ -69,13 +69,13 @@ namespace MxEngine
             data[3 * i + 2] = v.z;
         }
 
-        this->VBO = Graphics::Instance()->CreateVertexBuffer(data.data(), data.size(), UsageType::STATIC_DRAW);
-        auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
+        this->VBO = MakeUnique<VertexBuffer>(data.data(), data.size(), UsageType::STATIC_DRAW);
+        auto VBL = MakeUnique<VertexBufferLayout>();
         VBL->PushFloat(3);
-        this->VAO = Graphics::Instance()->CreateVertexArray();
+        this->VAO = MakeUnique<VertexArray>();
         VAO->AddBuffer(*VBO, *VBL);
         
-        this->shader = Graphics::Instance()->CreateShader();
+        this->shader = MakeUnique<Shader>();
         this->shader->LoadFromString(
             #include MAKE_PLATFORM_SHADER(skybox_vertex)
             ,

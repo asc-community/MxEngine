@@ -28,7 +28,7 @@
 
 #include "Scene.h"
 #include "Utilities/Profiler/Profiler.h"
-#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
+#include "Platform/GraphicAPI.h"
 
 namespace MxEngine
 {
@@ -77,12 +77,12 @@ namespace MxEngine
     const Scene::ObjectManager::Storage& Scene::GetObjectList() const
     {
         this->objectManager.Update();
-        return this->objectManager.Get();
+        return this->objectManager.GetElements();
     }
 
     void Scene::PrepareRender()
     {
-        for (auto& object : this->objectManager.Get())
+        for (auto& object : this->objectManager.GetElements())
         {
             object.second->OnRenderDraw();
         }
@@ -95,14 +95,14 @@ namespace MxEngine
 
     void Scene::Clear()
     {
-        this->objectManager.Get().clear();
+        this->objectManager.GetElements().clear();
         this->resourceManager.Clear();
     }
 
     MxObject& Scene::CreateObject(const std::string& name, const FilePath& path)
     {
         MAKE_SCOPE_PROFILER("Scene::CreateObject");
-        if (this->objectManager.Get().find(name) != this->objectManager.Get().end())
+        if (this->objectManager.GetElements().find(name) != this->objectManager.GetElements().end())
         {
             Logger::Instance().Warning("MxEngine::Scene", "overriding already existing object: " + name);
             this->DestroyObject(name);
@@ -141,18 +141,18 @@ namespace MxEngine
     MxObject& Scene::GetObject(const std::string& name) const
     {
         this->objectManager.Update();
-        if (this->objectManager.Get().find(name) == this->objectManager.Get().end())
+        if (this->objectManager.GetElements().find(name) == this->objectManager.GetElements().end())
         {
             static MxObject defaultObject;
             Logger::Instance().Warning("MxEngine::Scene", "object was not found: " + name);
             return defaultObject;
         }
-        return *this->objectManager.Get()[name];
+        return *this->objectManager.GetElements()[name];
     }
 
     void Scene::DestroyObject(const std::string& name)
     {
-        if (this->objectManager.Get().find(name) == this->objectManager.Get().end())
+        if (this->objectManager.GetElements().find(name) == this->objectManager.GetElements().end())
         {
             Logger::Instance().Warning("MxEngine::Scene", "trying to destroy object which not exists: " + name);
             return;
@@ -183,28 +183,28 @@ namespace MxEngine
     Shader* Scene::LoadShader(const std::string& name, const FilePath& vertex, const FilePath& fragment)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadShader");
-        auto shader = Graphics::Instance()->CreateShader(this->scenePath / vertex, this->scenePath / fragment);
+        auto shader = MakeUnique<Shader>((this->scenePath / vertex).string(), (this->scenePath / fragment).string());
         return this->GetResourceManager<Shader>().Add(name, std::move(shader));
     }
 
     Shader* Scene::LoadShader(const std::string& name, const FilePath& vertex, const FilePath& geometry, const FilePath& fragment)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadShader");
-        auto shader = Graphics::Instance()->CreateShader(this->scenePath / vertex, this->scenePath / geometry, this->scenePath / fragment);
+        auto shader = MakeUnique<Shader>((this->scenePath / vertex).string(), (this->scenePath / geometry).string(), (this->scenePath / fragment).string());
         return this->GetResourceManager<Shader>().Add(name, std::move(shader));
     }
 
     Texture* Scene::LoadTexture(const std::string& name, const FilePath& texture, TextureWrap wrap, bool genMipmaps, bool flipImage)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadTexture");
-        auto textureObject = Graphics::Instance()->CreateTexture(this->scenePath / texture, wrap, genMipmaps, flipImage);
+        auto textureObject = MakeUnique<Texture>((this->scenePath / texture).string(), wrap, genMipmaps, flipImage);
         return this->GetResourceManager<Texture>().Add(name, std::move(textureObject));
     }
 
     CubeMap* Scene::LoadCubeMap(const std::string& name, const FilePath& texture, bool genMipmaps, bool flipImage)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadCubeMap");
-        auto cubemapObject = Graphics::Instance()->CreateCubeMap(this->scenePath / texture, genMipmaps, flipImage);
+        auto cubemapObject = MakeUnique<CubeMap>((this->scenePath / texture).string(), genMipmaps, flipImage);
         return this->GetResourceManager<CubeMap>().Add(name, std::move(cubemapObject));
     }
 

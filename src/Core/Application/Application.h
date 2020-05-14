@@ -32,13 +32,14 @@
 #include "Utilities/GenericStorage/GenericStorage.h"
 #include "Core/Interfaces/IEvent.h"
 #include "Core/DeveloperConsole/DeveloperConsole.h"
-#include "Core/Interfaces/GraphicAPI/Window.h"
 #include "Core/RenderController/RenderController.h"
 #include "Core/MxObject/MxObject.h"
 #include "Utilities/Counter/Counter.h"
 #include "Utilities/FileSystem/FileSystem.h"
 #include "Library/Scripting/Script/Script.h"
 #include "Core/Scene/Scene.h"
+
+#include "Platform/Window/Window.h"
 
 
 namespace MxEngine
@@ -71,6 +72,7 @@ namespace MxEngine
 		bool shouldClose   = false;
 		bool isRunning     = false;
 		bool drawLighting  = true;
+		bool skyboxEnabled = true;
 
 		void CreateConsoleBindings(DeveloperConsole& console);
 		void DrawObjects();
@@ -92,6 +94,7 @@ namespace MxEngine
 		void ExecuteScript(const char* script);
 
 		void ToggleDeveloperConsole(bool isVisible);
+		void ToggleSkybox(bool state = true);
 		void ToggleLighting(bool state = true);
 		void ToggleDebugDraw(bool aabb, bool spheres, const Vector4& color,  bool overlay = false);
 

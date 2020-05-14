@@ -26,9 +26,10 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 #include "Core/BoundingObjects/AABB.h"
 #include "Core/BoundingObjects/BoundingSphere.h"
+
+#include "Platform/GraphicAPI.h"
 
 #pragma once
 

@@ -72,7 +72,7 @@ namespace MxEngine
 		result[4] = front
 		result[5] = back
 	*/
-	ImageLoader::ImageArray ImageLoader::CreateFromSingle(const Image& image)
+	ImageLoader::ImageArray ImageLoader::CreateCubemap(const Image& image)
 	{
 		ImageArray result;
 		size_t channels = 3; 
@@ -81,13 +81,14 @@ namespace MxEngine
 		if (image.width / 4 != image.height / 3)
 		{
 			Logger::Instance().Warning("MxEngine::ImageLoader", "image size is invalid, it will be reduced to fit skybox cubemap");
-			width = height = ToNearestPowTwo(std::min(image.width / 4, image.height / 3));
+			width = height = FloorToPow2(std::min(image.width / 4, image.height / 3));
 		}
 		for (auto& arr : result)
 		{
 			arr.resize(height, width * channels, 0);
 		}
 
+		// TODO: use memcpy to increase performance
 		auto copySide = [&image, &width, &height, &channels](Array2D<unsigned char>& dst, size_t sliceX, size_t sliceY)
 		{
 			for (size_t i = 0; i < height; i++)

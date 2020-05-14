@@ -30,7 +30,8 @@
 #include "Utilities/Logger/Logger.h"
 #include "Utilities/Math/Math.h"
 #include "Utilities/Profiler/Profiler.h"
-#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
+#include "Platform/GraphicAPI.h"
+#include "Platform/Modules/GraphicModule.h"
 #include "Core/Event/Event.h"
 #include "Core/Camera/PerspectiveCamera.h"
 #include "Core/Camera/OrthographicCamera.h"
@@ -38,7 +39,6 @@
 // conditional includes
 #include "Core/Macro/Macro.h"
 
-#include "Platform/OpenGL/GraphicFactory/GLGraphicFactory.h"
 #include "Library/Scripting/Python/PythonEngine.h"
 #include "Library/Primitives/Colors.h"
 #include "Utilities/Format/Format.h"
@@ -88,8 +88,8 @@ namespace MxEngine
 	}
 
 	Application::Application()
-		: manager(this), window(Graphics::Instance()->CreateWindow(1600, 900, "MxEngine Application")),
-		timeDelta(0), counterFPS(0), renderer(Graphics::Instance()->GetRenderer())
+		: manager(this), window(MakeUnique<Window>(1600, 900, "MxEngine Application")),
+		timeDelta(0), counterFPS(0), renderer(MakeUnique<Renderer>())
 	{
 		this->GetWindow().UseEventDispatcher(&this->dispatcher);
 		this->CreateScene("Global", MakeUnique<Scene>("Global", "Resources/"));
@@ -270,6 +270,11 @@ namespace MxEngine
 		this->GetWindow().UseEventDispatcher(isVisible ? nullptr : &this->dispatcher);
 	}
 
+	void Application::ToggleSkybox(bool state)
+	{
+		this->skyboxEnabled = state;
+	}
+
 	void Application::ToggleLighting(bool state)
 	{
 		if (state != this->drawLighting)
@@ -355,7 +360,6 @@ namespace MxEngine
 		}
 
 		this->renderer.ToggleDepthOnlyMode(false);
-		this->renderer.Clear();
 		this->renderer.AttachDrawBuffer();
 
 		if (this->drawLighting)
@@ -378,10 +382,11 @@ namespace MxEngine
 			}
 		}
 
+		if(this->skyboxEnabled)
 		{
 			MAKE_SCOPE_PROFILER("Renderer::DrawSkybox");
 			auto& skybox = this->GetCurrentScene().SceneSkybox;
-			if (skybox != nullptr) this->renderer.DrawSkybox(*skybox, viewport);
+			this->renderer.DrawSkybox(*skybox, viewport);
 		}
 
 		if (this->drawBoxes | this->drawSpheres)
@@ -482,7 +487,7 @@ namespace MxEngine
 			if (this->drawLighting)
 			{
 				Renderer.ObjectShader = GlobalScene.GetResourceManager<Shader>().Add(
-					"MxObjectShader", Graphics::Instance()->CreateShader());
+					"MxObjectShader", MakeUnique<Shader>());
 				Renderer.ObjectShader->LoadFromString(
 					#include MAKE_PLATFORM_SHADER(object_vertex)
 					,
@@ -492,7 +497,7 @@ namespace MxEngine
 			else
 			{
 				Renderer.ObjectShader = GlobalScene.GetResourceManager<Shader>().Add(
-					"MxNoLightShader", Graphics::Instance()->CreateShader());
+					"MxNoLightShader", MakeUnique<Shader>());
 				Renderer.ObjectShader->LoadFromString(
 					#include MAKE_PLATFORM_SHADER(nolight_object_vertex)
 					,
@@ -503,7 +508,7 @@ namespace MxEngine
 		if (Renderer.DepthTextureShader == nullptr)
 		{
 			Renderer.DepthTextureShader = GlobalScene.GetResourceManager<Shader>().Add(
-				"MxDepthTextureShader", Graphics::Instance()->CreateShader());
+				"MxDepthTextureShader", MakeUnique<Shader>());
 			Renderer.DepthTextureShader->LoadFromString(
 				#include MAKE_PLATFORM_SHADER(depthtexture_vertex)
 				,
@@ -513,7 +518,7 @@ namespace MxEngine
 		if (Renderer.DepthCubeMapShader == nullptr)
 		{
 			Renderer.DepthCubeMapShader = GlobalScene.GetResourceManager<Shader>().Add(
-				"MxDepthCubeMapShader", Graphics::Instance()->CreateShader());
+				"MxDepthCubeMapShader", MakeUnique<Shader>());
 			Renderer.DepthCubeMapShader->LoadFromString(
 				#include MAKE_PLATFORM_SHADER(depthcubemap_vertex)
 				,
@@ -525,7 +530,7 @@ namespace MxEngine
 		if (Renderer.MSAAShader == nullptr)
 		{
 			Renderer.MSAAShader = GlobalScene.GetResourceManager<Shader>().Add(
-				"MxMSAAShader", Graphics::Instance()->CreateShader());
+				"MxMSAAShader", MakeUnique<Shader>());
 			Renderer.MSAAShader->LoadFromString(
 				#include MAKE_PLATFORM_SHADER(rect_vertex)
 				,
@@ -535,7 +540,7 @@ namespace MxEngine
 		if (Renderer.HDRShader == nullptr)
 		{
 			Renderer.HDRShader = GlobalScene.GetResourceManager<Shader>().Add(
-				"MxHDRShader", Graphics::Instance()->CreateShader());
+				"MxHDRShader", MakeUnique<Shader>());
 			Renderer.HDRShader->LoadFromString(
 				#include MAKE_PLATFORM_SHADER(rect_vertex)
 				,
@@ -545,7 +550,7 @@ namespace MxEngine
 		if (Renderer.BloomShader == nullptr)
 		{
 			Renderer.BloomShader = GlobalScene.GetResourceManager<Shader>().Add(
-				"MxBloomShader", Graphics::Instance()->CreateShader());
+				"MxBloomShader", MakeUnique<Shader>());
 			Renderer.BloomShader->LoadFromString(
 				#include MAKE_PLATFORM_SHADER(rect_vertex)
 				,
@@ -555,7 +560,7 @@ namespace MxEngine
 		if (Renderer.UpscaleShader == nullptr)
 		{
 			Renderer.UpscaleShader = GlobalScene.GetResourceManager<Shader>().Add(
-				"MxUpscaleShader", Graphics::Instance()->CreateShader());
+				"MxUpscaleShader", MakeUnique<Shader>());
 			Renderer.UpscaleShader->LoadFromString(
 				#include MAKE_PLATFORM_SHADER(rect_vertex)
 				,
@@ -569,7 +574,7 @@ namespace MxEngine
 		if (Renderer.DepthBuffer == nullptr)
 		{
 			Renderer.DepthBuffer = GlobalScene.GetResourceManager<FrameBuffer>().Add(
-				"MxDepthBuffer", Graphics::Instance()->CreateFrameBuffer());
+				"MxDepthBuffer", MakeUnique<FrameBuffer>());
 		}
 	}
 
@@ -582,7 +587,7 @@ namespace MxEngine
 		if (lights.Global->GetDepthTexture() == nullptr ||
 			lights.Global->GetDepthTexture()->GetWidth() != dirBufferSize)
 		{
-			auto depthTexture = Graphics::Instance()->CreateTexture();
+			auto depthTexture = MakeUnique<Texture>();
 			depthTexture->LoadDepth(dirBufferSize, dirBufferSize);
 			lights.Global->AttachDepthTexture(std::move(depthTexture));
 		}
@@ -592,7 +597,7 @@ namespace MxEngine
 			if (spotLight.GetDepthTexture() == nullptr ||
 				spotLight.GetDepthTexture()->GetWidth() != spotBufferSize)
 			{
-				auto depthTexture = Graphics::Instance()->CreateTexture();
+				auto depthTexture = MakeUnique<Texture>();
 				depthTexture->LoadDepth(spotBufferSize, spotBufferSize);
 				spotLight.AttachDepthTexture(std::move(depthTexture));
 			}
@@ -603,7 +608,7 @@ namespace MxEngine
 			if (pointLight.GetDepthCubeMap() == nullptr ||
 				pointLight.GetDepthCubeMap()->GetWidth() != pointBufferSize)
 			{
-				auto depthCubeMap = Graphics::Instance()->CreateCubeMap();
+				auto depthCubeMap = MakeUnique<CubeMap>();
 				depthCubeMap->LoadDepth(pointBufferSize, pointBufferSize);
 				pointLight.AttachDepthCubeMap(std::move(depthCubeMap));
 			}
@@ -665,13 +670,11 @@ namespace MxEngine
 		if (!VerifyApplicationState()) return;
 		this->isRunning = true;
 
-		if (this->GetConsole().IsToggled())
-		{
-			this->GetConsole().Log("Welcome to MxEngine developer console!");
-			#if defined(MXENGINE_USE_PYTHON)
-			this->GetConsole().Log("This console is powered by Python: https://www.python.org");
-			#endif
-		}
+		this->GetConsole().Log("Welcome to MxEngine developer console!");
+		#if defined(MXENGINE_USE_PYTHON)
+		this->GetConsole().Log("This console is powered by Python: https://www.python.org");
+		this->GetConsole().GetEngine().Execute("InitializeOpenGL()");
+		#endif
 
 		{
 			MAKE_SCOPE_PROFILER("Application::OnCreate");
@@ -771,22 +774,15 @@ namespace MxEngine
 		MX_ASSERT(Application::Get() == nullptr);
 		Application::Set(app);
 
-		#if defined(MXENGINE_USE_OPENGL)
-		Graphics::Instance() = Alloc<GLGraphicFactory>();
-		#else
-		Graphics::Instance() = nullptr;
-		Logger::Instance().Error("MxEngine::Application", "No Rendering Engine was provided");
-		return;
-		#endif
-		Graphics::Instance()->GetGraphicModule().Init();
+		GraphicModule::Init();
 	}
 
 	Application::ModuleManager::~ModuleManager()
 	{
-		Graphics::Instance()->GetGraphicModule().Destroy();
-#if defined(MXENGINE_DEBUG)
+		GraphicModule::Destroy();
+		#if defined(MXENGINE_DEBUG)
 		Profiler::Instance().EndSession();
-#endif
+		#endif
 	}
 
 #if defined(MXENGINE_USE_PYTHON)

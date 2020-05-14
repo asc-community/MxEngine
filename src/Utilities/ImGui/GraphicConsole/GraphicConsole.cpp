@@ -176,7 +176,7 @@ namespace MxEngine
 		ScrollToBottom = true;
 	}
 
-	void GraphicConsole::SetEventCallback(EventCallback callback)
+	void GraphicConsole::SetEventCallback(EventCallback&& callback)
 	{
 		this->eventCallback = callback;
 	}

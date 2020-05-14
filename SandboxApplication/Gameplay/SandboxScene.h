@@ -31,7 +31,7 @@ class SandboxScene : public Scene
 		grid.Scale(3.0f, 3.0f, 3.0f);
 		grid.ObjectTexture = this->LoadTexture("Bricks", "textures/brick.jpg");
 		auto& material = grid.GetMesh()->GetRenderObjects()[0].GetMaterial();
-		material.map_normal = Graphics::Instance()->CreateTexture(GetDirectory() / "textures/brick_normal.jpg");
+		material.map_normal = MakeUnique<Texture>((GetDirectory() / "textures/brick_normal.jpg").string());
 		
         this->LoadScript("init", "scripts/init.py");
         this->LoadScript("update", "scripts/update.py");

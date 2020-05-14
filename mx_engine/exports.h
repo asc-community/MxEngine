@@ -32,6 +32,8 @@
 #include <Library/Scripting/Python/PythonEngine.h>
 #include <Library/Primitives/Primitives.h>
 #include <Library/Bindings/Bindings.h>
+#include <Vendors/glew/glew.h>
+#include <Vendors/GLFW/glfw3.h>
 
 #define BOOST_PYTHON_STATIC_LIB
 #include <boost/python.hpp>
@@ -277,263 +279,6 @@ public:
     {
         if (this->destroyCallback)
             this->destroyCallback();
-    }
-};
-
-class VertexBufferWrapper : public VertexBuffer, public py::wrapper<VertexBuffer>
-{
-public:
-    virtual void Bind() const override
-    {
-        this->get_override("bind")();
-    }
-
-    virtual void Unbind() const override
-    {
-        this->get_override("unbind")();
-    }
-
-    virtual void Load(BufferData data, size_t count, UsageType type) override
-    {
-        this->get_override("load")(data, count, type);
-    }
-
-    virtual void BufferSubData(BufferData data, size_t count, size_t offset = 0) override
-    {
-        this->get_override("buffer")(data, count, offset);
-    }
-
-    virtual size_t GetSize() const override
-    {
-        return this->get_override("size")();
-    }
-};
-
-class VertexArrayWrapper : public VertexArray, public py::wrapper<VertexArray>
-{
-public:
-    virtual void Bind() const override
-    {
-        this->get_override("bind")();
-    }
-
-    virtual void Unbind() const override
-    {
-        this->get_override("unbind")();
-    }
-
-    virtual void AddBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout)
-    {
-        this->get_override("add_buffer")(buffer, layout);
-    }
-
-    virtual void AddInstancedBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout)
-    {
-        this->get_override("add_instanced_buffer")(buffer, layout);
-    }
-
-    virtual int GetAttributeCount() const override
-    {
-        return this->get_override("attribute_count")();
-    }
-};
-
-class VertexBufferLayoutWrapper : public VertexBufferLayout, public py::wrapper<VertexBufferLayout>
-{
-public:
-    virtual const ElementBuffer& GetElements() const override
-    {
-        return this->get_override("elements")();
-    }
-
-    virtual StrideType GetStride() const override
-    {
-        return this->get_override("stride")();
-    }
-
-    virtual void PushFloat(size_t count) override
-    {
-        this->get_override("push")(count);
-    }
-};
-
-class IndexBufferWrapper : public IndexBuffer, public py::wrapper<IndexBuffer>
-{
-public:
-    virtual void Bind() const override
-    {
-        this->get_override("bind")();
-    }
-
-    virtual void Unbind() const override
-    {
-        this->get_override("unbind")();
-    }
-
-    virtual void Load(IndexData data, size_t count) override
-    {
-        this->get_override("load")(data, count);
-    }
-
-    virtual size_t GetCount() const override
-    {
-        return this->get_override("count")();
-    }
-
-    virtual size_t GetIndexTypeId() const override
-    {
-        return this->get_override("type_id")();
-    }
-};
-
-class TextureWrapper : public Texture, public py::wrapper<Texture>
-{
-    virtual void Load(const std::string& filepath, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true) override
-    {
-        this->get_override("load")(filepath, wrap, genMipmaps, flipImage);
-    }
-
-    virtual void LoadMipmaps(RawDataPointer* data, size_t mipmaps, int width, int height, TextureWrap wrap = TextureWrap::REPEAT) override
-    {
-        this->get_override("load_mipmaps")(data, mipmaps, width, height, wrap);
-    }
-
-    virtual void LoadDepth(int width, int height, TextureWrap wrap = TextureWrap::CLAMP_TO_EDGE) override
-    {
-        this->get_override("load_depth")(width, height, wrap);
-    }
-
-    virtual void LoadMultisample(int width, int height, TextureFormat format, int samples, TextureWrap wrap = TextureWrap::REPEAT) override
-    {
-        this->get_override("load_multisample")(width, height, format, samples, wrap);
-    }
-
-    virtual void Load(RawDataPointer data, int width, int height, TextureFormat format = TextureFormat::RGBA, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true) override
-    {
-        this->get_override("load_raw")(data, width, height, format, wrap, genMipmaps);
-    }
-
-    virtual void Bind(IBindable::IdType id) const override
-    {
-        this->get_override("bind")(id);
-    }
-
-    virtual const std::string& GetPath() const override
-    {
-        return this->get_override("path")();
-    }
-
-    virtual size_t GetWidth() const override
-    {
-        return this->get_override("width")();
-    }
-
-    virtual size_t GetHeight() const override
-    {
-        return this->get_override("height")();
-    }
-
-    virtual size_t GetChannelCount() const override
-    {
-        return this->get_override("channels")();
-    }
-
-    virtual unsigned int GetTextureType() const override
-    {
-        return this->get_override("type")();
-    }
-
-    virtual void Bind() const override
-    {
-        this->get_override("bind")();
-    }
-
-    virtual void Unbind() const override
-    {
-        this->get_override("unbind")();
-    }
-};
-
-class ShaderWrapper : public Shader, public py::wrapper<Shader>
-{
-public:
-    virtual void Load(const std::string& vertex, const std::string& geometry, const std::string& fragment) override
-    {
-        this->get_override("load")(vertex, geometry, fragment);
-    }
-
-    virtual void Load(const std::string& vertex, const std::string& fragment) override
-    {
-        this->get_override("load")(vertex, fragment);
-    }
-
-    virtual void LoadFromString(const std::string& vertex, const std::string& geometry, const std::string& fragment) override
-    {
-        this->get_override("load_source")(vertex, geometry, fragment);
-    }
-
-    virtual void LoadFromString(const std::string& vertex, const std::string& fragment) override
-    {
-        this->get_override("load_source")(vertex, fragment);
-    }
-
-    virtual void SetUniformFloat(const std::string& name, float f) const override
-    {
-        this->get_override("set_float")(name, f);
-    }
-
-    virtual void SetUniformVec2(const std::string& name, const Vector2& vec) const override
-    {
-        this->get_override("set_vec2")(name, vec);
-    }
-
-    virtual void SetUniformVec3(const std::string& name, const Vector3& vec) const override
-    {
-        this->get_override("set_vec3")(name, vec);
-    }
-
-    virtual void SetUniformVec4(const std::string& name, const Vector4& vec) const override
-    {
-        this->get_override("set_vec4")(name, vec);
-    }
-
-    virtual void SetUniformMat4(const std::string& name, const Matrix4x4& matrix) const override
-    {
-        this->get_override("set_mat4")(name, matrix);
-    }
-
-    virtual void SetUniformMat3(const std::string& name, const Matrix3x3& matrix) const override
-    {
-        this->get_override("set_mat3")(name, matrix);
-    }
-
-    virtual void SetUniformInt(const std::string& name, int i) const override
-    {
-        this->get_override("set_int")(name, i);
-    }
-
-    virtual void Bind() const override
-    {
-        this->get_override("bind")();
-    }
-
-    virtual void Unbind() const override
-    {
-        this->get_override("unbind")();
-    }
-};
-
-class IBindableWrapper : public IBindable, public py::wrapper<IBindable>
-{
-public:
-    virtual void Bind() const override
-    {
-        this->get_override("bind")();
-    }
-
-    virtual void Unbind() const override
-    {
-        this->get_override("unbind")();
     }
 };
 
@@ -840,10 +585,26 @@ void AddEventListenerWrapper(Application& app, const std::string& name, py::obje
         });
 }
 
-void SetContextPointersWrapper(uint64_t applicationPointer, uint64_t graphicFactoryPointer)
+void SetContextPointerWrapper(uint64_t applicationPointer)
 {
     Application::Set(reinterpret_cast<Application*>(applicationPointer));
-    Graphics::Instance() = reinterpret_cast<GraphicFactory*>(graphicFactoryPointer);
+}
+
+void InitializeOpenGL()
+{
+    auto context = Application::Get();
+    context->GetLogger().Debug("MxEngine::PythonModule", "creating OpenGL context for python dll...");
+    glfwInit();
+    glfwMakeContextCurrent(context->GetWindow().GetNativeHandle());
+    GLenum result = glewInit();
+    if (result == GLEW_OK)
+    {
+        context->GetLogger().Debug("MxEngine::PythonModule", "successfully initialized OpenGL context");
+    }
+    else
+    {
+        context->GetLogger().Error("MxEngine::PythonModule", "failed initializing OpenGL context: " + (std::string)(const char*)glewGetErrorString(result));
+    }
 }
 
 UniqueRef<PyApplication>& StaticAppWrapper()
@@ -877,7 +638,8 @@ BOOST_PYTHON_MODULE(mx_engine)
 {
     InitFilePathWrapper();
 
-    py::def("MxEngineSetContextPointers", SetContextPointersWrapper);
+    py::def("MxEngineSetContextPointer", SetContextPointerWrapper);
+    py::def("InitializeOpenGL", InitializeOpenGL);
     py::def("get_context", StaticVar(Application::Get));
     py::def("create_application", StaticVar(CreatePyApplication));
     py::def("destroy_application", DestroyPyApplication);
@@ -908,6 +670,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("listen_resize", AddEventListenerWrapper<WindowResizeEvent>)
         .def("use_lighting", &Application::ToggleLighting)
         .def("use_debug_meshes", &Application::ToggleDebugDraw)
+        .def("use_skybox", &Application::ToggleSkybox)
         .add_property("set_msaa", &Application::SetMSAASampling)
         .add_property("global", RefGetter(&Application::GetGlobalScene))
         .add_property("is_running", &Application::IsRunning)
@@ -1288,39 +1051,33 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("size", &std::vector<float>::size)
         ;
 
-    py::class_<IBindableWrapper, boost::noncopyable>("bindable", py::no_init)
-        .def("bind", py::pure_virtual(&IBindable::Bind))
-        .def("unbind", py::pure_virtual(&IBindable::Unbind))
-        .add_property("handle", &IBindable::GetNativeHandler)
-        ;
-
     using LoadVsFs = void(Shader::*)(const std::string&, const std::string&);
     using LoadVsGsFs = void(Shader::*)(const std::string&, const std::string&, const std::string&);
 
-    py::class_<ShaderWrapper, py::bases<IBindable>, boost::noncopyable>("shader", py::init())
-        .def("load", py::pure_virtual((LoadVsFs)&Shader::Load))
-        .def("load", py::pure_virtual((LoadVsGsFs)&Shader::Load))
-        .def("load_source", py::pure_virtual((LoadVsFs)&Shader::LoadFromString))
-        .def("load_source", py::pure_virtual((LoadVsGsFs)&Shader::LoadFromString))
-        .def("set_int", py::pure_virtual(&Shader::SetUniformInt))
-        .def("set_float", py::pure_virtual(&Shader::SetUniformFloat))
-        .def("set_vec2", py::pure_virtual(&Shader::SetUniformVec2))
-        .def("set_vec3", py::pure_virtual(&Shader::SetUniformVec3))
-        .def("set_vec4", py::pure_virtual(&Shader::SetUniformVec4))
-        .def("set_mat3", py::pure_virtual(&Shader::SetUniformMat3))
-        .def("set_mat4", py::pure_virtual(&Shader::SetUniformMat4))
+    py::class_<Shader, boost::noncopyable>("shader", py::init())
+        .def("load", (LoadVsFs)&Shader::Load)
+        .def("load", (LoadVsGsFs)&Shader::Load)
+        .def("load_source", (LoadVsFs)&Shader::LoadFromString)
+        .def("load_source", (LoadVsGsFs)&Shader::LoadFromString)
+        .def("set_int", &Shader::SetUniformInt)
+        .def("set_float", &Shader::SetUniformFloat)
+        .def("set_vec2", &Shader::SetUniformVec2)
+        .def("set_vec3", &Shader::SetUniformVec3)
+        .def("set_vec4", &Shader::SetUniformVec4)
+        .def("set_mat3", &Shader::SetUniformMat3)
+        .def("set_mat4", &Shader::SetUniformMat4)
         ;
 
     using LoadTextureFile = void(Texture::*)(const std::string&, TextureWrap, bool, bool);
     using LoadTextureRaw = void(Texture::*)(Texture::RawDataPointer, int, int, TextureFormat, TextureWrap, bool);
-    using BindTextureId = void(Texture::*)(Texture::IdType);
+    using BindTextureId = void(Texture::*)(Texture::TextureBindId) const;
 
-    py::class_<TextureWrapper, py::bases<IBindable>, boost::noncopyable>("texture", py::init())
-        .def("load", py::pure_virtual((LoadTextureFile)&Texture::Load))
-        .def("load_raw", py::pure_virtual((LoadTextureRaw)&Texture::Load))
-        .def("load_depth", py::pure_virtual(&Texture::LoadDepth))
-        .def("load_multisample", py::pure_virtual(&Texture::LoadMultisample))
-        .def("bind", py::pure_virtual((BindTextureId)&Texture::Bind))
+    py::class_<Texture, boost::noncopyable>("texture", py::init())
+        .def("load", (LoadTextureFile)&Texture::Load)
+        .def("load_raw", (LoadTextureRaw)&Texture::Load)
+        .def("load_depth", &Texture::LoadDepth)
+        .def("load_multisample", &Texture::LoadMultisample)
+        .def("bind", (BindTextureId)&Texture::Bind)
         .add_property("width", &Texture::GetWidth)
         .add_property("height", &Texture::GetHeight)
         .add_property("path", RefGetter(&Texture::GetPath))
@@ -1328,26 +1085,26 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("type", &Texture::GetTextureType)
         ;
 
-    py::class_<VertexBufferWrapper, py::bases<IBindable>, boost::noncopyable>("vertex_buffer", py::init())
-        .def("load", py::pure_virtual(&VertexBuffer::Load))
-        .def("buffer", py::pure_virtual(&VertexBuffer::BufferSubData))
+    py::class_<VertexBuffer, boost::noncopyable>("vertex_buffer", py::init())
+        .def("load", &VertexBuffer::Load)
+        .def("buffer", &VertexBuffer::BufferSubData)
         .add_property("size", &VertexBuffer::GetSize)
         ;
 
-    py::class_<VertexBufferLayoutWrapper, boost::noncopyable>("vertex_buffer_layout", py::init())
-        .def("push", py::pure_virtual(&VertexBufferLayout::PushFloat))
+    py::class_<VertexBufferLayout, boost::noncopyable>("vertex_buffer_layout", py::init())
+        .def("push", &VertexBufferLayout::PushFloat)
         .add_property("stride", &VertexBufferLayout::GetStride)
         .add_property("elements", RefGetter(&VertexBufferLayout::GetElements))
         ;
 
-    py::class_<VertexArrayWrapper, py::bases<IBindable>, boost::noncopyable>("vertex_array", py::init())
-        .def("add_buffer", py::pure_virtual(&VertexArray::AddBuffer))
-        .def("add_instanced_buffer", py::pure_virtual(&VertexArray::AddInstancedBuffer))
+    py::class_<VertexArray, boost::noncopyable>("vertex_array", py::init())
+        .def("add_buffer", &VertexArray::AddBuffer)
+        .def("add_instanced_buffer", &VertexArray::AddInstancedBuffer)
         .add_property("attribute_count", &VertexArray::GetAttributeCount)
         ;
 
-    py::class_<IndexBufferWrapper, py::bases<IBindable>, boost::noncopyable>("index_buffer", py::init())
-        .def("load", py::pure_virtual(&IndexBuffer::Load))
+    py::class_<IndexBuffer, boost::noncopyable>("index_buffer", py::init())
+        .def("load", &IndexBuffer::Load)
         .add_property("count", &IndexBuffer::GetCount)
         .add_property("type_id", &IndexBuffer::GetIndexTypeId)
         ;

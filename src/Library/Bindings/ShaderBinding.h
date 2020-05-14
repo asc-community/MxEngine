@@ -30,7 +30,6 @@
 
 #include "Core/Application/Application.h"
 #include "Core/Event/Events/FpsUpdateEvent.h"
-#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 
 namespace MxEngine
 {

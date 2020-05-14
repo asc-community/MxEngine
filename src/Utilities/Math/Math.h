@@ -434,12 +434,23 @@ namespace MxEngine
 		return glm::golden_ratio<T>();
 	}
 
+	/*!
+	computes safe sqrt for any floating point value
+	\param x value from which sqrt(x) is computed
+	\returns sqrt(x) if x >= 0.0f, -sqrt(-x) if x < 0.0f
+	*/
 	inline constexpr float SignedSqrt(float x)
 	{
 		if (x < 0.0f) return -std::sqrt(-x);
 		else return std::sqrt(x);
 	}
 
+	/*!
+	computes angle in radians between two vectors
+	\param v1 first  vector (can be not normalized)
+	\param v2 second vector (can be not normalized)
+	\returns angle between vectors in range [-pi/2; pi/2]
+	*/
 	template<typename Vector>
 	inline float Angle(const Vector& v1, const Vector& v2)
 	{
@@ -451,16 +462,41 @@ namespace MxEngine
 		return x * x;
 	}
 
+	/*!
+	computes log2 of integer value at compile time
+	\param n value from which log2(n) is computed
+	\returns log2(n), floored to nearest value, i.e. pow(2, log2(n)) <= n
+	*/
 	inline constexpr size_t Log2(size_t n)
 	{
-		return ((n <= 2) ? 1 : 1 + Log2(n / 2));
+		return ((n == 1) ? 0 : 1 + Log2(n / 2));
 	}
 
-	inline constexpr size_t ToNearestPowTwo(size_t n)
+	/*!
+	returns nearest power of two which is less or equal to input (1024 -> 1024, 1023 -> 512, 1025 -> 1024)
+	\param n value to floor from
+	\returns power of two not greater than n
+	*/
+	inline constexpr size_t FloorToPow2(size_t n)
 	{
 		return static_cast<size_t>(1) << Log2(n);
 	}
 
+	/*!
+	returns nearest power of two which is greater or equal to input (1024 -> 1024, 1023 -> 1024, 1025 -> 2048)
+	\param n value to ceil from
+	\returns power of two not less than n
+	*/
+	inline constexpr size_t CeilToPow2(size_t n)
+	{
+		return static_cast<size_t>(1) << Log2(n * 2 - 1);
+	}
+
+	/*!
+	applies radians->degrees transformation for each element of vector
+	\param vec vector of radians values
+	\returns vector of degrees values
+	*/
 	template<typename T>
 	inline auto DegreesVec(T vec)
 		-> decltype(vec.length(), vec[0], vec)
@@ -471,6 +507,11 @@ namespace MxEngine
 		return result;
 	}
 
+	/*!
+	applies degrees->radians transformation for each element of vector
+	\param vec vector of degrees values
+	\returns vector of radians values
+	*/
 	template<typename T>
 	inline auto RadiansVec(T vec)
 		-> decltype(vec.length(), vec[0], vec)
@@ -481,6 +522,12 @@ namespace MxEngine
 		return result;
 	}
 
+	/*!
+	computes max components of two vectors
+	\param v1 first  vector
+	\param v2 second vector
+	\returns vector of max components from v1 and v2
+	*/
 	template<typename T>
 	inline T VectorMax(const T& v1, const T& v2)
 	{
@@ -492,6 +539,12 @@ namespace MxEngine
 		return result;
 	}
 
+	/*!
+	computes min components of two vectors
+	\param v1 first  vector
+	\param v2 second vector
+	\returns vector of min components from v1 and v2
+	*/
 	template<typename T>
 	inline T VectorMin(const T& v1, const T& v2)
 	{
@@ -503,6 +556,12 @@ namespace MxEngine
 		return result;
 	}
 
+	/*!
+	computes pair of vectors with min and max coords inside verteces array
+	\param verteces pointer to an array of Vector3
+	\param size number of verteces to compute
+	\returns (min components, max components) vector pair
+	*/
 	inline std::pair<Vector3, Vector3>MinMaxComponents(Vector3* verteces, size_t size)
 	{
 		Vector3 maxCoords(-1.0f * std::numeric_limits<float>::max());
@@ -515,6 +574,16 @@ namespace MxEngine
 		return { minCoords, maxCoords };
 	}
 
+	/*!
+	compute (Tangent, Bitangent) vector pair using vertex positions and uv-coords
+	\param v1 first  vertex position
+	\param v2 second vertex position
+	\param v3 third  vertex position
+	\param t1 first  uv-coords
+	\param t2 second uv-coords
+	\param t3 third  uv-coords
+	\returns (Tangent, Bitangent) pair in a form of array with size = 2
+	*/
 	inline constexpr std::array<Vector3, 2> ComputeTangentSpace(
 		const Vector3& v1, const Vector3& v2, const Vector3& v3,
 		const Vector2& t1, const Vector2& t2, const Vector2& t3
@@ -535,6 +604,13 @@ namespace MxEngine
 		return { tangent, bitangent };
 	}
 
+	/*!
+	creates rotation matrix from rottion angles applied as one-by-one
+	\param xRot first  rotation applied around x-axis
+	\param yRot second rotation applied around y-axis
+	\param zRot third  rotation applied around z-axis
+	\returns rotation matrix 3x3
+	*/
 	inline Matrix3x3 RotateAngles(float xRot, float yRot, float zRot)
 	{
 		Matrix3x3 ret;

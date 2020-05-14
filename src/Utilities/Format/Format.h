@@ -32,6 +32,12 @@
 
 namespace MxEngine
 {
+    /*!
+    formats string. for more info see https://github.com/fmtlib/fmt documentation
+    \param formatStr formatting string
+    \param args variadic argument list
+    \returns formatted string object
+    */
     template<typename S, typename... Args, typename Char = fmt::char_t<S>>
     inline std::basic_string<Char> Format(const S& formatStr, Args&&... args)
     {

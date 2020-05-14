@@ -41,13 +41,23 @@
 
 namespace MxEngine
 {
+	/*
+	creates base event class and adds GetEventType() pure virtual method. Used for EventDispatcher class
+	*/
 	#define MAKE_EVENT_BASE(name) struct name { inline virtual uint32_t GetEventType() const = 0; virtual ~name() = default; }
 
+	/*
+	inserted into class body of derived classes from base event. Using compile-time hash from class name to generate type id
+	*/
 	#define MAKE_EVENT(class_name) \
 	template<typename T> friend class EventDispatcher;\
 	public: inline virtual uint32_t GetEventType() const override { return eventType; } private:\
 	constexpr static uint32_t eventType = STRING_ID(#class_name)
 
+	/*!
+	EventDispatcher class is used to handle all events inside MxEngine. Events can either be dispatch for Application (global) or
+	for currently active scene. Note that events are NOT dispatched when developer console is opened and instead sheduled until it close
+	*/
 	template<typename EventBase>
 	class EventDispatcher
 	{
@@ -57,28 +67,54 @@ namespace MxEngine
 		using EventList = std::vector<UniqueRef<EventBase>>;
 		using EventTypeIndex = uint32_t;
 
+		/*!
+		list of sheduled all events (executed once per frame by Application class)
+		*/
 		EventList events;
+		/*!
+		maps event id to list of event listeners of that id 
+		*/
 		std::unordered_map<EventTypeIndex, CallbackList> callbacks;
+		/*!
+		shedules listeners which will be added next frame. 
+		This cache exists because sometimes user wants to add new listener inside other listener callback, which may result in crash.
+		*/
 		std::unordered_map<EventTypeIndex, CallbackList> toAddCache;
+		/*!
+		shedules listeners which will be removed next frame. 
+		This cache exists because sometimes user wants to remove event listener inside other listener callback (or even perform self-removal), which may result in crash.
+		*/
 		std::vector<std::string> toRemoveCache;
 
+		/*!
+		immediately invokes all listeners of event, if any exists
+		\param event event to dispatch
+		*/
 		inline void ProcessEvent(EventBase& event)
 		{
-			for (const auto& [typeIndex, eventCallbacks] : this->callbacks)
+			auto& eventCallbacks = this->callbacks[event.GetEventType()];
+			for (const auto& [name, callback] : eventCallbacks)
 			{
-				for (const auto& [name, callback] : eventCallbacks)
-				{
-					callback(event);
-				}
+				callback(event);
 			}
 		}
 
+		/*!
+		adds new listener callback to cache queue
+		\param name callback name (used for removal)
+		\param func callback functor
+		*/
 		template<typename EventType>
-		inline void AddCallbackImpl(std::string name, CallbackBaseFunction func)
+		inline void AddCallbackImpl(std::string name, CallbackBaseFunction&& func)
 		{
 			this->toAddCache[EventType::eventType].emplace_back(std::move(name), std::move(func));
 		}
 
+		/*!
+		immediately removes all listeners with same name from list
+		\param callbacks list of listeners callbacks
+		\param name name of listeners to search for
+		*/
 		inline void RemoveEventByName(CallbackList& callbacks, const std::string& name)
 		{
 			auto it = std::remove_if(callbacks.begin(), callbacks.end(), [&name](const auto& p)
@@ -88,6 +124,9 @@ namespace MxEngine
 			callbacks.resize(it - callbacks.begin());
 		}
 
+		/*!
+		performs cache update, removing events from toRemoveCache list and adding events from toAddCache list
+		*/
 		inline void RemoveQueuedEvents()
 		{
 			for (auto it = this->toRemoveCache.begin(); it != this->toRemoveCache.end(); it++)
@@ -111,6 +150,12 @@ namespace MxEngine
 		}
 
 	public:
+		/*!
+		adds new event listener to dispatcher (listener placed in waiting queue until next frame).
+		Note that multiple listeners may have same name. If so, deleting by name will result in removing all of them
+		\param name name of listener (used for deleting listener)
+		\param func listener callback functor
+		*/
 		template<typename EventType>
 		void AddEventListener(const std::string& name, std::function<void(EventType&)> func)
 		{
@@ -121,17 +166,31 @@ namespace MxEngine
 			});
 		}
 
+		/*!
+		adds new event listener to dispatcher (listener is placed in waiting queue until next frame).
+		Note that multiple listeners may have same name. If so, deleting by name will result in removing all of them
+		\param name name of listener (used for deleting listener)
+		\param func listener callback functor
+		*/
 		template<typename FunctionType>
 		void AddEventListener(const std::string& name, FunctionType&& func)
 		{
 			this->AddEventListener(name, std::function(std::forward<FunctionType>(func)));
 		}
 
+		/*!
+		removes all event listeners by their names (action is placed in waiting queue until next frame)
+		\param name name of listeners to be deleted
+		*/
 		void RemoveEventListener(const std::string& name)
 		{
 			this->toRemoveCache.push_back(name);
 		}
 		
+		/*!
+		Immediately invokes event of specific type. Note that invokation also forces queues to be invalidated
+		\param event event to dispatch
+		*/
 		template<typename Event>
 		void Invoke(Event& event)
 		{
@@ -143,11 +202,18 @@ namespace MxEngine
 			}
 		}
 
+		/*!
+		Adds event to event queue. All such events will be dispatched in next frames in the order they were added
+		\param event event to shedule dispatch
+		*/
 		void AddEvent(UniqueRef<EventBase> event)
 		{
 			this->events.push_back(std::move(event));
 		}
 
+		/*!
+		Invokes all shedules events in the order they were added. Note that invokation also forces queues to be invalidated
+		*/
 		void InvokeAll()
 		{
 			this->RemoveQueuedEvents();

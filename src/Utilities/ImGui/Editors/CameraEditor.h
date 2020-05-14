@@ -34,6 +34,10 @@
 
 namespace MxEngine::GUI
 {
+	/*!
+	gets application debug settings and draws them in GUI window
+	includes debug AABB and bounding spheres, settings for overlays
+	*/
 	inline void DrawDebugMeshes()
 	{
 		auto context = Application::Get();
@@ -41,16 +45,26 @@ namespace MxEngine::GUI
 		static bool boundingBoxes = false;
 		static bool boundingSpheres = false;
 		static bool debugOverlay = false;
+		static bool skyboxDraw = true;
 		static Vector4 debugColor = MakeVector4(1.0f, 0.0f, 0.0f, 1.0f);
 
 		ImGui::Checkbox("display AABB", &boundingBoxes);
 		ImGui::SameLine();  ImGui::Checkbox("display spheres", &boundingSpheres);
 		ImGui::SameLine(); ImGui::Checkbox("overlay debug meshes", &debugOverlay);
+		ImGui::SameLine(); ImGui::Checkbox("draw skybox", &skyboxDraw);
 		ImGui::ColorEdit4("debug mesh color", &debugColor[0]);
 
 		context->ToggleDebugDraw(boundingBoxes, boundingSpheres, debugColor, debugOverlay);
+		context->ToggleSkybox(skyboxDraw);
 	}
 
+	/*!
+	gets camera information from currenly active scene and draws it in GUI window
+	- camera position, aspect, speed and fov
+	- HDR settings: bloom effect, exposure, bloom iterations
+	- debug draw utilities
+	- skybox settings
+	*/
 	inline void DrawCameraEditor()
 	{
 		auto context = Application::Get();
@@ -69,7 +83,7 @@ namespace MxEngine::GUI
 
 		if (ImGui::DragFloat("HDR exposure", &exposure, 0.01f, 0.0f, std::numeric_limits<float>::max()))
 			context->GetRenderer().SetHDRExposure(exposure);
-		if (ImGui::DragFloat("bloom weight", &bloomWeight, 0.01f, 0.0f, std::numeric_limits<float>::max()))
+		if (ImGui::DragFloat("bloom weight", &bloomWeight, 1.0f, 0.0f, std::numeric_limits<float>::max()))
 			context->GetRenderer().SetBloomWeight(bloomWeight);
 		if (ImGui::DragInt("bloom iterations", &bloomIters, 0.1f, 0, 100))
 			context->GetRenderer().SetBloomIterations(bloomIters);

@@ -42,10 +42,10 @@ namespace MxEngine
             Vector4( halfSize,  halfSize, 0.5f, 1.0f),
         };
 
-        this->VBO = Graphics::Instance()->CreateVertexBuffer((float*)vertecies.data(), vertecies.size() * sizeof(float), UsageType::STATIC_DRAW);
-        auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
+        this->VBO = MakeUnique<VertexBuffer>((float*)vertecies.data(), vertecies.size() * sizeof(float), UsageType::STATIC_DRAW);
+        auto VBL = MakeUnique<VertexBufferLayout>();
         VBL->PushFloat(4);
-        this->VAO = Graphics::Instance()->CreateVertexArray();
+        this->VAO = MakeUnique<VertexArray>();
         VAO->AddBuffer(*VBO, *VBL);
     }
     

@@ -37,7 +37,6 @@
 #include "Core/Lighting/DirectionalLight/DirectionalLight.h"
 #include "Core/Lighting/PointLight/PointLight.h"
 #include "Core/Lighting/SpotLight/SpotLight.h"
-#include "Core/Interfaces/GraphicAPI/FrameBuffer.h"
 #include "Core/MxObject/MxObject.h"
 #include "Core/Interfaces/IEvent.h"
 #include "Core/Skybox/Skybox.h"
@@ -51,7 +50,7 @@ namespace MxEngine
     class Scene
     {
     public:
-        using ResourceManager = GenericStorage<ResourceStorage, Texture, CubeMap, Mesh, Shader, Script, FrameBuffer>;
+        using ResourceManager = MultiStorage<ResourceStorage, Texture, CubeMap, Mesh, Shader, Script, FrameBuffer>;
         using ObjectManager = LifetimeManager<UniqueRef<MxObject>>;
         template<typename LightType>
         class LightContainer

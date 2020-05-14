@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Utilities/Memory/Memory.h"
-#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
+#include "Platform/GraphicAPI.h"
 
 namespace MxEngine
 {

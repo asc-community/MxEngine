@@ -34,42 +34,54 @@
 
 namespace MxEngine
 {
+    /*!
+    multi storage is a template class which is used to store objects of different types
+    usually you want to write something like GenericStorage<std::vector, int, char, float>,
+    which results in object which contains std::vector<int>, std::vector<float>, std::vector<char>
+    */
     template<template<typename> typename Storage, typename... Args>
-    class GenericStorage;
+    class MultiStorage;
 
     template<template<typename> typename Storage>
-    class GenericStorage<Storage>
+    class MultiStorage<Storage>
     {
     public:
         template<typename Type, typename U>
-        U Get() { static_assert(false, "no suitable type in generic storage"); }
+        U& Get() { static_assert(false, "no suitable type in generic storage"); }
 
         void Clear() { }
     };
 
     template<template<typename> typename Storage, typename T, typename... Args>
-    class GenericStorage<Storage, T, Args...> : public GenericStorage<Storage, Args...>
+    class MultiStorage<Storage, T, Args...> : public MultiStorage<Storage, Args...>
     {
-        using Base = GenericStorage<Storage, Args...>;
+        using Base = MultiStorage<Storage, Args...>;
 
+        /*!
+        underlying storage. use Get() method to retrieve it
+        */
         Storage<T> resources;
 
     public:
         template<typename Resource>
         using ConcreteStorage = Storage<Resource>;
 
+        /*!
+        returns storage of objects with type = Type
+        if it is not in MultiStorage, static_assert is triggered
+        */
         template<typename Type>
-        auto Get() -> typename std::enable_if<std::is_same<T, Type>::value, Storage<Type>&>::type
+        auto& Get()
         {
-            return resources;
+            if constexpr (std::is_same<Type, T>::value)
+                return this->resources;
+            else
+                return static_cast<Base*>(this)->Get<Type>();
         }
 
-        template<typename Type>
-        auto Get() -> typename std::enable_if<!std::is_same<T, Type>::value, Storage<Type>&>::type
-        {
-            return static_cast<Base*>(this)->Get<Type>();
-        }
-
+        /*!
+        clears all underlying storages of multi storage
+        */
         void Clear()
         {
             this->resources.Clear();

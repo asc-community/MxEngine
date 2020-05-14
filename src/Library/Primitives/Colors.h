@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
+#include "Platform/GraphicAPI.h"
 #include "Core/Application/Application.h"
 #include "Core/Macro/Macro.h"
 #include "Utilities/Format/Format.h"
@@ -67,7 +67,7 @@ namespace MxEngine
             
             if (!manager.Exists(name))
             {
-                auto texture = Graphics::Instance()->CreateTexture();
+                auto texture = MakeUnique<Texture>();
                 uint8_t buffer[3];
                 buffer[0] = r;
                 buffer[1] = g;

@@ -34,6 +34,9 @@
 
 namespace MxEngine
 {
+	/*!
+	Image class is a POD type which contains reference to an existing image
+	*/
 	struct Image
 	{
 		int width;
@@ -42,14 +45,39 @@ namespace MxEngine
 		unsigned char* data;
 	};
 
+	/*!
+	ImageLoader class is used to load images from disk. Also it contains methods to create cubemaps from their scans
+	*/
 	class ImageLoader
 	{
 	public:
+		/*!
+		loads image from disk. As OpenGL treats images differently as expected, all images are flipped automatically
+		\param filepath path to an image on disk
+		\param flipImage should the image be vertically flipped. As MxEngine uses primarily OpenGL, usually you want to do this
+		\returns Image object if image file exists or nullptr data and width = height = channels = 0 if not
+		*/
 		static Image LoadImage(const std::string& filepath, bool flipImage = true);
+		/*!
+		destroys image object. Must be called to clear allocated data
+		\param image Image to destroy
+		*/
 		static void FreeImage(Image image);
+		/*!
+		destroys image object. Must be called to clear allocated data
+		\param imageData raw image data of Image to destroy
+		*/
 		static void FreeImage(unsigned char* imageData);
 
 		using ImageArray = std::array<Array2D<unsigned char>, 6>;
-		static ImageArray CreateFromSingle(const Image& image);
+		/*!
+		creates cubemap projections from its scan:
+		 X
+		XXXX
+		 X
+		\param image image from which cubemap will be created
+		\returns 6 2d arrays of raw image data (can be passed as individual images to OpenGL)
+		*/
+		static ImageArray CreateCubemap(const Image& image);
 	};
 }

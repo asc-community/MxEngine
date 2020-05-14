@@ -45,6 +45,10 @@ namespace MxEngine
         CounterType counter;
 
     public:
+        /*!
+        constructs new Counter object
+        \param first initial value of counter. Defaults to 0
+        */
         Counter(CounterType first = 0);
         ~Counter() = default;
         Counter(const Counter&) = delete;
@@ -52,10 +56,30 @@ namespace MxEngine
         Counter& operator=(const Counter&) = delete;
         Counter& operator=(Counter&&) = default;
 
+        /*!
+        this function does not affect Counter object in any way
+        \returns current value of Counter
+        */
         CounterType Get() const;
+        /*!
+        increments inner counter by one
+        \returns value after increment
+        */
         CounterType operator++();
+        /*!
+        increments inner counter by one
+        \returns value before increment
+        */
         CounterType operator++(int);
+        /*!
+        increment counter by a specific value
+        \param value value to increment counter by
+        */
         void Add(CounterType value);
+        /*!
+        sets inner counter to some value.
+        \param first value to set. Defaults to 0
+        */
         void Reset(CounterType first = 0);
     };
 }

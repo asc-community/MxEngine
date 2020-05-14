@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Core/Interfaces/GraphicAPI/Texture.h"
+#include "Platform/GraphicAPI.h"
 #include "Utilities/Memory/Memory.h"
 #include "Utilities/Math/Math.h"
 

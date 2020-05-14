@@ -28,7 +28,7 @@
 
 #include "MxObject.h"
 #include "Utilities/ObjectLoader/ObjectLoader.h"
-#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
+#include "Platform/GraphicAPI.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/Format/Format.h"
 
@@ -56,8 +56,8 @@ namespace MxEngine
 			}
 		}
 
-		auto VBO = Graphics::Instance()->CreateVertexBuffer(buffer, count * components, type);
-		auto VBL = Graphics::Instance()->CreateVertexBufferLayout();
+		auto VBO = MakeUnique<VertexBuffer>(buffer, count * components, type);
+		auto VBL = MakeUnique<VertexBufferLayout>();
 		while (components > perComponentFloats)
 		{
 			VBL->PushFloat(perComponentFloats);

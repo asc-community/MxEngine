@@ -35,6 +35,10 @@
 
 namespace MxEngine
 {
+	/*!
+	Logger class is a singleton which is used by whole engine to output warnings, info, debug messages and errors
+	it provides output stream forwarding and ignoring, colored output on some platforms and stacktrace for errors
+	*/
 	class LoggerImpl
 	{
 		std::ostream* error   = &std::cout;
@@ -49,20 +53,64 @@ namespace MxEngine
 		LoggerImpl(const LoggerImpl&) = delete;
 		LoggerImpl(LoggerImpl&&) = delete;
 
+		/*!
+		prints error to an error stream (defaults to std::cout). Error is coloured red. By default stacktrace is also printed (may cause performance issues on some platforms)
+		\param invoker name of module which invokes the error
+		\param message error message
+		*/
 		void Error  (const std::string& invoker, const std::string& message) const;
+		/*!
+		prints debug info to an debug stream (defaults to std::cout). Debug message is coloured light-grey. Stacktrace is not printed
+		\param invoker name of module which invokes the debug message
+		\param message debug message
+		*/
 		void Debug  (const std::string& invoker, const std::string& message) const;
+		/*!
+		prints warning to an warning stream (defaults to std::cout). Warning is coloured yellow. Stacktrace is not printed
+		\param invoker name of module which invokes the warning
+		\param message warning message
+		*/
 		void Warning(const std::string& invoker, const std::string& message) const;
+		/*!
+		prints stacktrace to error stream if stacktracing is enabled (defaults std::cout). 
+		Logger function itself, CRT functions or other system functions are ignored and not printed
+		*/
 		void StackTrace() const;
+		/*!
+		sets error stream. nullptr as parameter disables error output
+		\param error new stream pointer
+		*/
 		LoggerImpl& UseErrorStream(std::ostream* error);
+		/*!
+		sets warning stream. nullptr as parameter disables warning output
+		\param error new stream pointer
+		*/
 		LoggerImpl& UseWarningStream(std::ostream* warning);
+		/*!
+		sets debug stream. nullptr as parameter disables debug output
+		\param error new stream pointer
+		*/
 		LoggerImpl& UseDebugStream(std::ostream* debug);
+		/*!
+		enables / disables debug stream output
+		*/
 		LoggerImpl& UseDebug(bool value = true);
+		/*!
+		enables / disables warning stream output
+		*/
 		LoggerImpl& UseWarning(bool value = true);
+		/*!
+		enables / disables error stream output
+		*/
 		LoggerImpl& UseError(bool value = true);
+		/*!
+		enables / disables stacktrace output (see StackTrace() function)
+		*/
 		LoggerImpl& UseStackTrace(bool value = true);
 	};
 
 	using Logger = SingletonHolder<LoggerImpl>;
 
+	// macro for fast debug messages insert. Prints warnings in format [MX_DBG Warning]: { your message }
 	#define MX_DBG(msg) Logger::Instance().Warning("MX_DBG", msg)
 }

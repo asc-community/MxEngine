@@ -31,7 +31,6 @@
 #include "Library/Primitives/AbstractPrimitive.h"
 #include "Core/Macro/Macro.h"
 #include "Core/Application/Application.h"
-#include "Core/Interfaces/GraphicAPI/GraphicFactory.h"
 #include "Core/Event/Events/AppDestroyEvent.h"
 #include <array>
 
@@ -146,7 +145,7 @@ namespace MxEngine
                 data.resize(size * size * 3, 255);
                 DrawBorder(data.data(), size, 6);
            
-                auto texture = Graphics::Instance()->CreateTexture();
+                auto texture = MakeUnique<Texture>();
                 texture->Load(data.data(), size, size);
                 manager.Add(textureName, std::move(texture));
             }

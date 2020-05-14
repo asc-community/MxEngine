@@ -34,6 +34,10 @@
 
 namespace MxEngine::GUI
 {
+	/*!
+	draws fps graph in currenly active window. Listens to FpsUpdateEvent in global (Application) context
+	\param graphRecordSize how many fps updates to track before refreshing (clearing). Each update happens each second.
+	*/
 	inline void DrawProfiler(size_t graphRecordSize = 128)
 	{
 		static std::vector<float> fpsData;
