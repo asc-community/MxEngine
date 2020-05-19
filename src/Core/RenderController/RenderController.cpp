@@ -31,15 +31,14 @@
 
 namespace MxEngine
 {
-	RenderController::RenderController(UniqueRef<Renderer> renderer)
-		: renderer(std::move(renderer))
+	const Renderer& RenderController::GetRenderEngine() const
 	{
-
+		return this->renderer;
 	}
 
-	Renderer& RenderController::GetRenderEngine() const
+	Renderer& RenderController::GetRenderEngine()
 	{
-		return *this->renderer;
+		return this->renderer;
 	}
 
 	void RenderController::Render() const
@@ -72,23 +71,23 @@ namespace MxEngine
 		this->DepthBuffer->Unbind();
 	}
 
-    void RenderController::ToggleDepthOnlyMode(bool value) const
+    void RenderController::ToggleDepthOnlyMode(bool value)
     {
 		bool useColor = !value;
 		this->GetRenderEngine().UseColorMask(useColor, useColor, useColor, useColor);
     }
 
-	void RenderController::ToggleReversedDepth(bool value) const
+	void RenderController::ToggleReversedDepth(bool value)
 	{
 		this->GetRenderEngine().UseReversedDepth(value);
 	}
 
-	void RenderController::ToggleFaceCulling(bool value, bool counterClockWise, bool cullBack) const
+	void RenderController::ToggleFaceCulling(bool value, bool counterClockWise, bool cullBack)
 	{
 		this->GetRenderEngine().UseCulling(value, counterClockWise, cullBack);
 	}
 
-	void RenderController::SetAnisotropicFiltering(float value) const
+	void RenderController::SetAnisotropicFiltering(float value)
 	{
 		this->GetRenderEngine().UseAnisotropicFiltering(value);
 	}
@@ -155,7 +154,7 @@ namespace MxEngine
 		}
 	}
 
-	void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights, const Skybox* skybox) const
+	void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights, const FogInformation& fog, const Skybox* skybox) const
 	{
 		// probably nothing to do at all
 		if (!viewport.HasCamera()) return;
@@ -176,6 +175,11 @@ namespace MxEngine
 		shader.SetUniformMat4("ViewProjMatrix", ViewProjection);
 		shader.SetUniformMat3("skyboxModelMatrix", Transpose(skybox->GetRotationMatrix()));
 		shader.SetUniformVec3("viewPos", cameraPos);
+		
+		// fog parameters
+		shader.SetUniformVec3 ("fogColor", fog.Color);
+		shader.SetUniformFloat("fogDistance", fog.Distance);
+		shader.SetUniformFloat("fogDensity", fog.Density);
 
 		// set shadow mapping
 		shader.SetUniformInt("PCFdistance", this->PCFdistance);
@@ -311,7 +315,7 @@ namespace MxEngine
 		}
 	}
 
-	void RenderController::DrawSkybox(const Skybox& skybox, const CameraController& viewport)
+	void RenderController::DrawSkybox(const Skybox& skybox, const CameraController& viewport, const FogInformation& fog)
 	{
 		if (!viewport.HasCamera()) return;
 		if (skybox.SkyboxTexture == nullptr) return;
@@ -321,6 +325,9 @@ namespace MxEngine
 		auto Projection = viewport.GetCamera().GetProjectionMatrix();
 		shader.SetUniformMat4("ViewProjection", Projection * (Matrix4x4)View);
 		shader.SetUniformMat3("Rotation", skybox.GetRotationMatrix());
+		shader.SetUniformVec3("fogColor", fog.Color);
+		shader.SetUniformFloat("fogDistance", fog.Distance);
+		shader.SetUniformFloat("fogDensity", fog.Density);
 
 		skybox.SkyboxTexture->Bind(0);
 		shader.SetUniformInt("skybox", 0);
@@ -574,7 +581,7 @@ namespace MxEngine
 		return *this->rectangle;
 	}
 
-	void RenderController::DrawDebugBuffer(const CameraController& viewport, bool overlay) const
+	void RenderController::DrawDebugBuffer(const CameraController& viewport, bool overlay)
 	{
 		this->debugBuffer->SubmitBuffer();
 

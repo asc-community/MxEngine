@@ -77,19 +77,19 @@ namespace MxEngine
 		*/
 		std::string map_normal;
 
-		/*
+		/*!
 		specular power value
 		*/
 		float Ns = 0.0f;
-		/*
+		/*!
 		specular intensity value
 		*/
 		float Ni = 0.0f;
-		/*
+		/*!
 		transparency value
 		*/
 		float d = 0.0f;
-		/*
+		/*!
 		height displacement value
 		*/
 		float displacement = 0.0f;

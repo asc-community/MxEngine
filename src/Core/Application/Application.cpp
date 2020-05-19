@@ -27,9 +27,6 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Application.h"
-#include "Utilities/Logger/Logger.h"
-#include "Utilities/Math/Math.h"
-#include "Utilities/Profiler/Profiler.h"
 #include "Platform/GraphicAPI.h"
 #include "Platform/Modules/GraphicModule.h"
 #include "Core/Event/Event.h"
@@ -41,7 +38,13 @@
 
 #include "Library/Scripting/Python/PythonEngine.h"
 #include "Library/Primitives/Colors.h"
-#include "Utilities/Format/Format.h"
+
+#include "Utilities/Logger/Logger.h"
+#include "Utilities/Math/Math.h"
+#include "Utilities/Profiler/Profiler.h"
+#include "Utilities/FileSystem/FileManager.h"
+#include "Utilities/UUID/UUID.h"
+#include "Utilities/Json/Json.h"
 
 namespace MxEngine
 {
@@ -89,7 +92,7 @@ namespace MxEngine
 
 	Application::Application()
 		: manager(this), window(MakeUnique<Window>(1600, 900, "MxEngine Application")),
-		timeDelta(0), counterFPS(0), renderer(MakeUnique<Renderer>())
+		timeDelta(0), counterFPS(0)
 	{
 		this->GetWindow().UseEventDispatcher(&this->dispatcher);
 		this->CreateScene("Global", MakeUnique<Scene>("Global", "Resources/"));
@@ -354,7 +357,7 @@ namespace MxEngine
 				}
 			}
 
-			this->renderer.SetViewport(0, 0, this->window->GetWidth(), this->window->GetHeight());
+			this->renderer.SetViewport(0, 0, this->GetWindow().GetWidth(), this->GetWindow().GetHeight());
 			this->renderer.DetachDepthBuffer();
 			this->renderer.ToggleReversedDepth(true);
 		}
@@ -369,7 +372,7 @@ namespace MxEngine
 				MAKE_SCOPE_PROFILER("Renderer::DrawScene");
 				for (const auto& [name, object] : this->currentScene->GetObjectList())
 				{
-					this->renderer.DrawObject(*object, viewport, lights, this->currentScene->SceneSkybox.get());
+					this->renderer.DrawObject(*object, viewport, lights, this->renderer.Fog, this->currentScene->SceneSkybox.get());
 				}
 			}
 		}
@@ -386,7 +389,7 @@ namespace MxEngine
 		{
 			MAKE_SCOPE_PROFILER("Renderer::DrawSkybox");
 			auto& skybox = this->GetCurrentScene().SceneSkybox;
-			this->renderer.DrawSkybox(*skybox, viewport);
+			this->renderer.DrawSkybox(*skybox, viewport, renderer.Fog);
 		}
 
 		if (this->drawBoxes | this->drawSpheres)
@@ -450,7 +453,7 @@ namespace MxEngine
 	{
 		if (!this->GetWindow().IsCreated())
 		{
-			Logger::Instance().Error("MxEngine::Application", "window was not created, aborting...");
+			Logger::Instance().Error("MxEngine::Application", "window was not created, probably CreateContext() was not called");
 			return false;
 		}
 		if (this->isRunning)
@@ -622,42 +625,97 @@ namespace MxEngine
 
 	void Application::CreateContext()
 	{
-		#if defined(MXENGINE_DEBUG)
-		bool useDebugging = true;
-		#else
-		bool useDebugging = false;
-		#endif
-
-
 		if (this->GetWindow().IsCreated())
 		{
 			Logger::Instance().Warning("MxEngine::Application", "CreateContext() called when window was already created");
 			return;
 		}
 		MAKE_SCOPE_PROFILER("Application::CreateContext");
+
+		#if defined(MXENGINE_DEBUG)
+		bool useDebugging = true;
+		#else
+		bool useDebugging = false;
+		#endif
+
+		JsonFile config;
+
+		auto configPathHash = STRING_ID("engine_config.json");
+		if (FileModule::FileExists(configPathHash))
+		{
+			Logger::Instance().Debug("Application::CreateContext", "using engine config file to set up context...");
+			File configFile(FileModule::GetFilePath(configPathHash));
+			config = LoadJson(configFile);
+		}
+		else
+		{
+			Logger::Instance().Warning("Application::CreateContext", "engine config file was not provided, using default settings...");
+			config["renderer"]["opengl-profile"] = "core";
+			config["renderer"]["opengl-major-version"] = 4;
+			config["renderer"]["opengl-minor-version"] = 0;
+			config["renderer"]["msaa-samples"] = 4;
+			config["renderer"]["anisothropic-filtering"] = 16;
+			config["renderer"]["debug-line-width"] = 3;
+
+			config["window"]["title"] = "MxEngine Application";
+			config["window"]["double-buffering"] = false;
+			config["window"]["position"] = std::array<int, 2> { 300, 150 };
+			config["window"]["size"] = std::array<int, 2> { 1600, 900 };
+			config["window"]["cursor-mode"] = "disabled";
+		}
+
+		auto profileType  = config["renderer"]["opengl-profile"].get<std::string>();
+		auto profileMajor = config["renderer"]["opengl-major-version"].get<int>();
+		auto profileMinor = config["renderer"]["opengl-minor-version"].get<int>();
+		auto msaaSamples  = config["renderer"]["msaa-samples"].get<int>();
+		auto anisothropic = config["renderer"]["anisothropic-filtering"].get<int>();
+		auto lineWidth    = config["renderer"]["debug-line-width"].get<int>();
+
+		auto title        = config["window"]["title"].get<std::string>();
+		auto doubleBuffer = config["window"]["double-buffering"].get<bool>();
+		auto position     = config["window"]["position"].get<std::array<int, 2>>();
+		auto size         = config["window"]["size"].get<std::array<int, 2>>();
+		auto cursorMode   = config["window"]["cursor-mode"].get<std::string>();
+
+		Profile enumProfile;
+		if (profileType == "core")
+			enumProfile = Profile::CORE;
+		else if (profileType == "compat")
+			enumProfile = Profile::COMPAT;
+		else
+			enumProfile = Profile::ANY;
+
+		CursorMode enumCursor;
+		if (cursorMode == "disabled")
+			enumCursor = CursorMode::DISABLED;
+		else if (cursorMode == "hidden")
+			enumCursor = CursorMode::HIDDEN;
+		else
+			enumCursor = CursorMode::DISABLED;
+
 		this->GetWindow()
-			.UseProfile(4, 0, Profile::CORE)
+			.UseProfile(profileMajor, profileMinor, enumProfile)
 			.UseCursorMode(CursorMode::DISABLED)
-			.UseDoubleBuffering(false)
-			.UseTitle("MxEngine Project")
+			.UseDoubleBuffering(doubleBuffer)
+			.UseTitle(title)
 			.UseDebugging(useDebugging)
-			.UsePosition(300, 150)
+			.UsePosition(position[0], position[1])
+			.UseSize(size[0], size[1])
 			.Create();
 
 		auto& renderingEngine = this->renderer.GetRenderEngine();
 		renderingEngine
 			.UseCulling()
 			.UseDepthBuffer()
-			.UseLineWidth(3)
+			.UseLineWidth(lineWidth)
 			.UseReversedDepth(false)
 			.UseClearColor(0.0f, 0.0f, 0.0f, 1.0f)
 			.UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA)
-			.UseAnisotropicFiltering(renderingEngine.GetLargestAnisotropicFactor())
+			.UseAnisotropicFiltering((float)anisothropic)
 			;
 
-		this->CreateConsoleBindings(this->GetConsole());
-		this->SetMSAASampling(4);
-		this->renderer.SetBloomIterations(5);
+		this->AddConsoleEventListener(this->GetConsole());
+		this->SetMSAASampling(msaaSamples);
 	}
 
 	DeveloperConsole& Application::GetConsole()
@@ -774,7 +832,9 @@ namespace MxEngine
 		MX_ASSERT(Application::Get() == nullptr);
 		Application::Set(app);
 
+		FileModule::Init("Resources");
 		GraphicModule::Init();
+		UUIDGenerator::Init();
 	}
 
 	Application::ModuleManager::~ModuleManager()
@@ -786,7 +846,7 @@ namespace MxEngine
 	}
 
 #if defined(MXENGINE_USE_PYTHON)
-	void Application::CreateConsoleBindings(DeveloperConsole& console)
+	void Application::AddConsoleEventListener(DeveloperConsole& console)
 	{
 		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });
 		this->GetEventDispatcher().AddEventListener("DeveloperConsole",

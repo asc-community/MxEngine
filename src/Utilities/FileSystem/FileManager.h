@@ -28,58 +28,31 @@
 
 #pragma once
 
-// Andrei's Alexandrescu SingletonHolder (see "Modern C++ Design" ch. 6)
+#include "File.h"
+#include "Utilities/String/String.h"
+
+#include <Vendors/eastl/EASTL/hash_map.h>
+#include <Vendors/eastl/EASTL/hash_set.h>
 
 namespace MxEngine
 {
-	using AtExitFunctionPointer = void (*)();
+    struct FileManagerImpl
+    {
+        eastl::hash_map<StringId, FilePath> filetable;
+        std::string root;
+    };
 
-	/*!
-	lifetime policy of singleton which shedules destruction function call at program exit
-	*/
-	template <class T>
-	class DefaultLifetime
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer func)
-		{
-			std::atexit(func);
-		}
+    class FileModule
+    {
+        inline static FileManagerImpl* manager = nullptr;
+    public:
+        static void Init(const FilePath& rootPath);
+        static void AddFile(const FilePath& file);
+        static void AddDirectory(const FilePath& directory);
+        static const FilePath& GetFilePath(StringId filename);
+        static bool FileExists(StringId filename);
 
-		static inline void OnDeadReference() { }
-	};
-
-	/*!
-	lifetime policy of singleton which does not destroy an object
-	*/
-	template <class T>
-	class NoDestroy
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer) { }
-
-		static inline void OnDeadReference() { }
-	};
-
-	/*!
-	lifetime policy of singleton which shedules object destruction, but allow it be recreated many times
-	*/
-	template <class T>
-	class PhoenixSingleton
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer func)
-		{
-			if (!destroyedOnce)
-				std::atexit(func);
-		}
-
-		static inline void OnDeadReference()
-		{
-			destroyedOnce = true;
-		}
-
-	private:
-		inline static bool destroyedOnce = false;
-	};
+        static void Clone(FileManagerImpl* other);
+        static FileManagerImpl* GetImpl();
+    };
 }

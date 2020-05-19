@@ -30,6 +30,10 @@
 
 namespace MxEngine
 {
+	/*!
+	threading policy. Provides easy way to replace multi-threading programs with single-threaded and visa versa.
+	For now, MxEngine supports only single-threaded execution, so this is just a stub policy
+	*/
 	template<typename T>
 	class SingleThreaded
 	{

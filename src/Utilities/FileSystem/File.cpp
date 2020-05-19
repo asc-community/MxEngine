@@ -26,7 +26,7 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "FileSystem.h"
+#include "File.h"
 #include "Utilities/Logger/Logger.h"
 
 #include <map>
@@ -93,7 +93,7 @@ namespace MxEngine
 
     File::FileData File::ReadAllText()
     {
-        std::string content;
+        FileData content;
         if (!this->IsOpen())
         {
             Logger::Instance().Error("MxEngine::File", "file was not opened before reading: " + this->filePath.string());

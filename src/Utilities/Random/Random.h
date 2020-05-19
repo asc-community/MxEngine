@@ -32,27 +32,62 @@
 
 namespace MxEngine
 {
-    // static thread-safe random generator based on Mersenne's twist algorithm
+    /*!
+    random generator is a small utility class which uses mersenne twister generator to produce random number
+    it is global thread-safe class, which allows you to generate integer numbers with int64 precision
+    */
     class Random
     {
     public:
         using RandomReturnType = std::uint_fast64_t;
 
+        /*!
+        Random generator inner type. Numbers are used from cppreference wiki page
+        */
         using Generator = std::mersenne_twister_engine<RandomReturnType, 64, 312, 156, 31,
             0xb5026f5aa96619e9, 29,
             0x5555555555555555, 17,
             0x71d67fffeda60000, 37,
             0xfff7eee000000000, 43, 6364136223846793005>;
     private:
+        /*!
+        generator instance. One per each thread. Use seed to initialize it to some value (maybe use thread id for that)
+        */
         static thread_local inline Generator mersenne64;
     public:
+        /*!
+        max value which random generator can produce
+        */
         static constexpr RandomReturnType Max = Generator::max();
+        /*!
+        min value which random generator can produce
+        */
         static constexpr RandomReturnType Min = Generator::min();
 
+        /*!
+        sets seed for generator. Affects only current thread of execution
+        \param seed new initial seed for generator
+        */
         static void SetSeed(RandomReturnType seed);
+        /*!
+        generates random float
+        \returns float in interval [0; 1]
+        */
         static float GetFloat();
+        /*!
+        generates random int64 value
+        \returns int64 in interval [lower; upper]
+        */
         static int64_t Get(int64_t lower, int64_t upper);
+        /*!
+        generates random int32 value
+        \returns int32 in interval [lower; upper]
+        */
         static int32_t Get(int32_t lower, int32_t upper);
+        /*!
+        generates random float value
+        \returns float in interval [lower; upper]
+        */
         static float Get(float lower, float upper);
     };
 }

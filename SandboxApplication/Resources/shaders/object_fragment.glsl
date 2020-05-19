@@ -77,6 +77,9 @@ uniform float Kd;
 uniform int pointLightCount;
 uniform int spotLightCount;
 uniform int PCFdistance;
+uniform vec3 fogColor;
+uniform float fogDensity;
+uniform float fogDistance;
 uniform mat3 skyboxModelMatrix;
 uniform Material material;
 uniform vec3 viewPos;
@@ -211,6 +214,14 @@ vec3 calcNormal(vec2 texcoord, mat3 TBN)
 	return TBN * normal;
 }
 
+vec3 applyFog(vec3 color, float distance, vec3 viewDir, DirLight dirLight)
+{
+	float sunFactor = max(dot(viewDir, dirLight.direction), 0.0f);
+	float fogFactor = 1.0f - fogDistance * exp(-distance * fogDensity);
+	vec3 blendFogColor = mix(fogColor, dirLight.diffuse, sunFactor);
+	return mix(color, blendFogColor, clamp(fogFactor, 0.0f, 1.0f));
+}
+
 void main()
 {
 	vec3 normal = calcNormal(fsin.TexCoord, fsin.TBN);
@@ -237,10 +248,13 @@ void main()
 		color += calcSpotLight(ambient, diffuse, specular, spotLight[i], normal, viewDir, fsin.FragPosSpotLight[i], map_spotLight_shadow[i]);
 	}
 	float dissolve = material.d; // * texture(map_d, fsin.TexCoord).x * material.d;
+
+	color = applyFog(color, length(viewDist), viewDir, dirLight);
+
 	// emmisive light
 	color += 5.0f * emmisive;
-
 	color *= fsin.RenderColor.rgb;
+
 	dissolve *= fsin.RenderColor.a;
 
 	Color = vec4(color, dissolve);

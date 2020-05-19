@@ -30,6 +30,7 @@
 #if defined(MXENGINE_USE_PYTHON)
 
 #include "Core/Application/Application.h"
+#include "Utilities/FileSystem/FileManager.h"
 
 namespace MxEngine
 {
@@ -64,7 +65,8 @@ class MxEngineIOHandler:
         this->MirrorErrorStream(false);
 
         auto ctxPtr = reinterpret_cast<uintptr_t>(Application::Get());
-        auto contextInitScript = Format("mx_engine.MxEngineSetContextPointer({0})", ctxPtr);
+        auto fileManagerPtr = reinterpret_cast<uintptr_t>(FileModule::GetImpl());
+        auto contextInitScript = Format("mx_engine.MxEngineSetContextPointer({0}, {1})", ctxPtr, fileManagerPtr);
         this->Execute(contextInitScript.c_str());
         this->Execute("mx = mx_engine.get_context()");
     }

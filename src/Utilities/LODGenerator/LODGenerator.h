@@ -35,8 +35,8 @@
 namespace MxEngine
 {
     /*!
-    TODO: make comparator thread-safe
-    this class is used to generate object LODs by comparing vertecies. It is passed as set comparator to filter unique vertecies with some threshold
+    This class is used to generate object LODs by comparing vertecies. It is passed as set comparator to filter unique vertecies with some threshold
+    \warning TODO: make this class thread-safe and non-static
     */
     struct Vector3Cmp
     {

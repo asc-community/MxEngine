@@ -29,6 +29,8 @@
 #include "Scene.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Platform/GraphicAPI.h"
+#include "Utilities/FileSystem/FileManager.h"
+#include "Utilities/String/String.h"
 
 namespace MxEngine
 {
@@ -99,7 +101,7 @@ namespace MxEngine
         this->resourceManager.Clear();
     }
 
-    MxObject& Scene::CreateObject(const std::string& name, const FilePath& path)
+    MxObject& Scene::CreateObject(const std::string& name, const std::string& file)
     {
         MAKE_SCOPE_PROFILER("Scene::CreateObject");
         if (this->objectManager.GetElements().find(name) != this->objectManager.GetElements().end())
@@ -108,7 +110,7 @@ namespace MxEngine
             this->DestroyObject(name);
         }
         // using Scene::LoadMesh -> path provided without scenePath
-        auto ptr = MakeUnique<MxObject>(this->LoadMesh(name + "Mesh", path));
+        auto ptr = MakeUnique<MxObject>(this->LoadMesh(file));
         auto& object = *ptr;
         this->objectManager.Add(name, std::move(ptr));
         return object;
@@ -166,45 +168,52 @@ namespace MxEngine
         return this->objectManager.Exists(name);
     }
 
-    Mesh* Scene::LoadMesh(const std::string& name, const FilePath& path)
+    Mesh* Scene::LoadMesh(const std::string& name)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadMesh");
-        auto mesh = MakeUnique<Mesh>((this->scenePath / path).string());
+        auto mesh = MakeUnique<Mesh>(FileModule::GetFilePath(MakeStringId(name)).string());
         return this->GetResourceManager<Mesh>().Add(name, std::move(mesh));
     }
 
-    Script* Scene::LoadScript(const std::string& name, const FilePath& path)
+    Script* Scene::LoadScript(const std::string& name)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadScript");
-        auto script = MakeUnique<Script>((this->scenePath / path).string());
+        auto script = MakeUnique<Script>(FileModule::GetFilePath(MakeStringId(name)).string());
         return this->GetResourceManager<Script>().Add(name, std::move(script));
     }
 
-    Shader* Scene::LoadShader(const std::string& name, const FilePath& vertex, const FilePath& fragment)
+    Shader* Scene::LoadShader(const std::string& name, const std::string& vertex, const std::string& fragment)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadShader");
-        auto shader = MakeUnique<Shader>((this->scenePath / vertex).string(), (this->scenePath / fragment).string());
+        auto shader = MakeUnique<Shader>(
+            FileModule::GetFilePath(MakeStringId(vertex)).string(),
+            FileModule::GetFilePath(MakeStringId(fragment)).string()
+            );
         return this->GetResourceManager<Shader>().Add(name, std::move(shader));
     }
 
-    Shader* Scene::LoadShader(const std::string& name, const FilePath& vertex, const FilePath& geometry, const FilePath& fragment)
+    Shader* Scene::LoadShader(const std::string& name, const std::string& vertex, const std::string& geometry, const std::string& fragment)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadShader");
-        auto shader = MakeUnique<Shader>((this->scenePath / vertex).string(), (this->scenePath / geometry).string(), (this->scenePath / fragment).string());
+        auto shader = MakeUnique<Shader>(
+            FileModule::GetFilePath(MakeStringId(vertex)).string(),
+            FileModule::GetFilePath(MakeStringId(geometry)).string(),
+            FileModule::GetFilePath(MakeStringId(fragment)).string()
+        );
         return this->GetResourceManager<Shader>().Add(name, std::move(shader));
     }
 
-    Texture* Scene::LoadTexture(const std::string& name, const FilePath& texture, TextureWrap wrap, bool genMipmaps, bool flipImage)
+    Texture* Scene::LoadTexture(const std::string& name, TextureWrap wrap, bool genMipmaps, bool flipImage)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadTexture");
-        auto textureObject = MakeUnique<Texture>((this->scenePath / texture).string(), wrap, genMipmaps, flipImage);
+        auto textureObject = MakeUnique<Texture>(FileModule::GetFilePath(MakeStringId(name)).string(), wrap, genMipmaps, flipImage);
         return this->GetResourceManager<Texture>().Add(name, std::move(textureObject));
     }
 
-    CubeMap* Scene::LoadCubeMap(const std::string& name, const FilePath& texture, bool genMipmaps, bool flipImage)
+    CubeMap* Scene::LoadCubeMap(const std::string& name, bool genMipmaps, bool flipImage)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadCubeMap");
-        auto cubemapObject = MakeUnique<CubeMap>((this->scenePath / texture).string(), genMipmaps, flipImage);
+        auto cubemapObject = MakeUnique<CubeMap>(FileModule::GetFilePath(MakeStringId(name)).string(), genMipmaps, flipImage);
         return this->GetResourceManager<CubeMap>().Add(name, std::move(cubemapObject));
     }
 

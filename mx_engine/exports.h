@@ -28,16 +28,17 @@
 
 #pragma once
 
+#define BOOST_PYTHON_STATIC_LIB
+#include <boost/python.hpp>
+#include <sstream>
+
 #include <MxEngine.h>
 #include <Library/Scripting/Python/PythonEngine.h>
 #include <Library/Primitives/Primitives.h>
 #include <Library/Bindings/Bindings.h>
+
 #include <Vendors/glew/glew.h>
 #include <Vendors/GLFW/glfw3.h>
-
-#define BOOST_PYTHON_STATIC_LIB
-#include <boost/python.hpp>
-#include <sstream>
 
 namespace py = boost::python;
 
@@ -454,16 +455,14 @@ void RemoveEventWrapper(Application& app, const std::string& name)
     app.GetEventDispatcher().RemoveEventListener(name);
 }
 
-Mesh* LoadMeshWrapper(Scene& scene, const std::string& path)
+Mesh* LoadMeshWrapper(Scene& scene, const std::string& file)
 {
-    std::string name = Format(FMT_STRING("pyMesh_{0}"), Application::Get()->GenerateResourceId());
-    return scene.LoadMesh(name, path);
+    return scene.LoadMesh(file);
 }
 
-Script* LoadScriptWrapper(Scene& scene, const std::string& path)
+Script* LoadScriptWrapper(Scene& scene, const std::string& file)
 {
-    std::string name = Format(FMT_STRING("pyScript_{0}"), Application::Get()->GenerateResourceId());
-    return scene.LoadScript(name, path);
+    return scene.LoadScript(file);
 }
 
 Shader* LoadShaderWrapper2(Scene& scene, const std::string& vertex, const std::string& fragment)
@@ -478,10 +477,9 @@ Shader* LoadShaderWrapper3(Scene& scene, const std::string& vertex, const std::s
     return scene.LoadShader(name, vertex, geometry, fragment);
 }
 
-Texture* LoadTextureWrapper(Scene& scene, const std::string& path)
+Texture* LoadTextureWrapper(Scene& scene, const std::string& file)
 {
-    std::string name = Format(FMT_STRING("pyTexture_{0}"), Application::Get()->GenerateResourceId());
-    return scene.LoadTexture(name, path);
+    return scene.LoadTexture(file);
 }
 
 void SetShaderWrapper(MxObject& object, const std::string& vertex, const std::string& fragment)
@@ -585,9 +583,13 @@ void AddEventListenerWrapper(Application& app, const std::string& name, py::obje
         });
 }
 
-void SetContextPointerWrapper(uint64_t applicationPointer)
+void SetContextPointerWrapper(
+    uint64_t applicationPointer, 
+    uint64_t filemanagerPointer
+)
 {
     Application::Set(reinterpret_cast<Application*>(applicationPointer));
+    FileModule::Clone(reinterpret_cast<FileManagerImpl*>(filemanagerPointer));
 }
 
 void InitializeOpenGL()

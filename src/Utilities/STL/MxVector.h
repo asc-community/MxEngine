@@ -28,58 +28,14 @@
 
 #pragma once
 
-// Andrei's Alexandrescu SingletonHolder (see "Modern C++ Design" ch. 6)
+#include <Vendors/eastl/EASTL/vector.h>
+#include <Vendors/eastl/EASTL/fixed_vector.h>
 
 namespace MxEngine
 {
-	using AtExitFunctionPointer = void (*)();
+    template<typename T, typename Allocator = EASTLAllocatorType>
+    using MxVector = eastl::vector<T, Allocator>;
 
-	/*!
-	lifetime policy of singleton which shedules destruction function call at program exit
-	*/
-	template <class T>
-	class DefaultLifetime
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer func)
-		{
-			std::atexit(func);
-		}
-
-		static inline void OnDeadReference() { }
-	};
-
-	/*!
-	lifetime policy of singleton which does not destroy an object
-	*/
-	template <class T>
-	class NoDestroy
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer) { }
-
-		static inline void OnDeadReference() { }
-	};
-
-	/*!
-	lifetime policy of singleton which shedules object destruction, but allow it be recreated many times
-	*/
-	template <class T>
-	class PhoenixSingleton
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer func)
-		{
-			if (!destroyedOnce)
-				std::atexit(func);
-		}
-
-		static inline void OnDeadReference()
-		{
-			destroyedOnce = true;
-		}
-
-	private:
-		inline static bool destroyedOnce = false;
-	};
+    template<typename T, size_t Nodes, bool overflow = true, typename Allocator = EASTLAllocatorType>
+    using MxFixedVector = eastl::fixed_vector<T, Nodes, overflow, Allocator>;
 }

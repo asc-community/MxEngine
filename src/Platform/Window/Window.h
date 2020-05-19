@@ -66,6 +66,7 @@ namespace MxEngine
 		mutable std::bitset<350> keyPressed;
 		mutable std::bitset<350> keyReleased;
 		CursorMode cursorMode = CursorMode::NORMAL;
+		bool doubleBuffer = false;
 		Vector2 windowPosition{ 0.0f, 0.0f };
 		Vector2 cursorPosition{ 0.0f, 0.0f };
 
@@ -102,7 +103,7 @@ namespace MxEngine
 		Window& UseCursorMode(CursorMode cursor);
 		Window& UseCursorPos(const Vector2& pos);
 		Window& UseTitle(const std::string& title);
-		Window& UsePosition(float xpos, float ypos);
+		Window& UsePosition(int xpos, int ypos);
 		Window& UseSize(int width, int height);
 		Window& UseEventDispatcher(AppEventDispatcher* dispatcher);
 		Window& UseProfile(int majorVersion, int minorVersion, Profile profile);

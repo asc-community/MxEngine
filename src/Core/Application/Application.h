@@ -35,7 +35,7 @@
 #include "Core/RenderController/RenderController.h"
 #include "Core/MxObject/MxObject.h"
 #include "Utilities/Counter/Counter.h"
-#include "Utilities/FileSystem/FileSystem.h"
+#include "Utilities/FileSystem/File.h"
 #include "Library/Scripting/Script/Script.h"
 #include "Core/Scene/Scene.h"
 
@@ -66,15 +66,15 @@ namespace MxEngine
 		Scene* currentScene = nullptr;
 		int counterFPS;
 		Vector4 debugColor = MakeVector4(1.0f, 0.0f, 0.0f, 1.0f);
-		bool drawBoxes     = false;
-		bool drawSpheres   = false;
-		bool overlayDebug  = false;
-		bool shouldClose   = false;
-		bool isRunning     = false;
-		bool drawLighting  = true;
+		bool drawBoxes = false;
+		bool drawSpheres = false;
+		bool overlayDebug = false;
+		bool shouldClose = false;
+		bool isRunning = false;
+		bool drawLighting = true;
 		bool skyboxEnabled = true;
 
-		void CreateConsoleBindings(DeveloperConsole& console);
+		void AddConsoleEventListener(DeveloperConsole& console);
 		void DrawObjects();
 		void InvokeUpdate();
 		bool VerifyApplicationState();
@@ -88,7 +88,6 @@ namespace MxEngine
 		virtual void OnUpdate();
 		virtual void OnDestroy();
 	public:
-		void CreateContext();
 		void ExecuteScript(Script& script);
 		void ExecuteScript(const std::string& script);
 		void ExecuteScript(const char* script);
@@ -117,6 +116,7 @@ namespace MxEngine
 		void Run();
 		bool IsRunning() const;
 		void CloseApplication();
+		void CreateContext();
 		virtual ~Application();
 
 		static Application* Get();

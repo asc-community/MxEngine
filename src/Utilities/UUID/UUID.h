@@ -28,58 +28,64 @@
 
 #pragma once
 
-// Andrei's Alexandrescu SingletonHolder (see "Modern C++ Design" ch. 6)
+#include <utility>
+
+namespace boost::uuids
+{
+    struct uuid;
+    class random_generator_pure;
+}
 
 namespace MxEngine
 {
-	using AtExitFunctionPointer = void (*)();
+    class UUID
+    {
+        std::aligned_storage_t<16> uuidImpl;
 
-	/*!
-	lifetime policy of singleton which shedules destruction function call at program exit
-	*/
-	template <class T>
-	class DefaultLifetime
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer func)
-		{
-			std::atexit(func);
-		}
+        friend class UUIDGenerator;
+    public:
+        boost::uuids::uuid& GetImpl();
+        const boost::uuids::uuid& GetImpl() const;
+        size_t GetHashCode() const;
+        bool operator==(const UUID& other) const;
+        bool operator< (const UUID& other) const;
+        bool operator!=(const UUID& other) const;
+        bool operator> (const UUID& other) const;
+        bool operator<=(const UUID& other) const;
+        bool operator>=(const UUID& other) const;
+    };
 
-		static inline void OnDeadReference() { }
-	};
+    struct UUIDGeneratorImpl
+    {
+        std::aligned_storage_t<8> generator;
+        boost::uuids::random_generator_pure& GetGeneratorImpl();
+    };
 
-	/*!
-	lifetime policy of singleton which does not destroy an object
-	*/
-	template <class T>
-	class NoDestroy
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer) { }
-
-		static inline void OnDeadReference() { }
-	};
-
-	/*!
-	lifetime policy of singleton which shedules object destruction, but allow it be recreated many times
-	*/
-	template <class T>
-	class PhoenixSingleton
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer func)
-		{
-			if (!destroyedOnce)
-				std::atexit(func);
-		}
-
-		static inline void OnDeadReference()
-		{
-			destroyedOnce = true;
-		}
-
-	private:
-		inline static bool destroyedOnce = false;
-	};
+    class UUIDGenerator
+    {
+        static inline UUIDGeneratorImpl* storage;
+    public:
+        static void Init();
+        static UUID Get();
+        static UUID GetNull();
+        static void Clone(UUIDGeneratorImpl* other);
+    };
 }
+
+#define HASH_ALGORITHM(NAMESPACE)\
+namespace NAMESPACE\
+{\
+    template<typename T> struct hash;\
+    template <>\
+    struct hash<MxEngine::UUID>\
+    {\
+        std::size_t operator()(const MxEngine::UUID& uuid) const\
+        {\
+            return uuid.GetHashCode();\
+        }\
+    };\
+}
+
+HASH_ALGORITHM(std)
+HASH_ALGORITHM(eastl)
+#undef HASH_ALGORITHM

@@ -28,12 +28,15 @@
 
 #pragma once
 
-#include <cstdlib>
+#include <memory>
 
 // Andrei's Alexandrescu SingletonHolder (see "Modern C++ Design" ch. 6)
 
 namespace MxEngine
 {
+	/*!
+	policy class which allocates singleton object using new operator
+	*/
 	template<typename T>
 	class CreateWithNew
 	{
@@ -49,6 +52,9 @@ namespace MxEngine
 		}
 	};
 
+	/*!
+	policy class which allocates singleton object using malloc function
+	*/
 	template<typename T>
 	class CreateWithMalloc
 	{
@@ -68,6 +74,9 @@ namespace MxEngine
 		}
 	};
 
+	/*!
+	policy class which allocates singleton object using inplace new operator
+	*/
 	template<typename T>
 	class CreateStatic
 	{

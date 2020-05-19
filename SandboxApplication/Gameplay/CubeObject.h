@@ -12,7 +12,7 @@ public:
 	inline CubeObject()
 	{
 		auto context = Application::Get();
-		this->ObjectTexture = context->GetCurrentScene().LoadTexture("CrateTexture", "objects/crate/crate.jpg");
+		this->ObjectTexture = context->GetCurrentScene().LoadTexture("objects/crate/crate.jpg");
 		this->MakeInstanced(cubeCount);
 
 		this->Translate(0.5f, 0.0f, 0.5f);

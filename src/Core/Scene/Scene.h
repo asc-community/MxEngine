@@ -99,19 +99,19 @@ namespace MxEngine
         AppEventDispatcher& GetEventDispatcher();
         void Clear();
 
-        MxObject& CreateObject(const std::string& name, const FilePath& path);
+        MxObject& CreateObject(const std::string& name, const std::string& filename);
         MxObject& AddObject(const std::string& name, UniqueRef<MxObject> object);
         MxObject& CopyObject(const std::string& name, const std::string& existingObject);
         MxObject& GetObject(const std::string& name) const;
         void DestroyObject(const std::string& name);
         bool HasObject(const std::string& name) const;
 
-        Mesh* LoadMesh(const std::string& name, const FilePath& filepath);
-        Script* LoadScript(const std::string& name, const FilePath& path);
-        Shader* LoadShader(const std::string& name, const FilePath& vertex, const FilePath& fragment);
-        Shader* LoadShader(const std::string& name, const FilePath& vertex, const FilePath& geometry, const FilePath& fragment);
-        Texture* LoadTexture(const std::string& name, const FilePath& texture, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
-        CubeMap* LoadCubeMap(const std::string& name, const FilePath& texture, bool genMipmaps = true, bool flipImage = false);
+        Mesh* LoadMesh(const std::string& name);
+        Script* LoadScript(const std::string& name);
+        Shader* LoadShader(const std::string& name, const std::string& vertex, const std::string& fragment);
+        Shader* LoadShader(const std::string& name, const std::string& vertex, const std::string& geometry, const std::string& fragment);
+        Texture* LoadTexture(const std::string& name, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
+        CubeMap* LoadCubeMap(const std::string& name, bool genMipmaps = true, bool flipImage = false);
     
         void SetDirectory(const FilePath& path);
         const FilePath& GetDirectory() const;

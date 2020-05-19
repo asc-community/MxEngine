@@ -133,6 +133,9 @@ namespace MxEngine
 
 		glfwPollEvents();
 
+		if (this->doubleBuffer)
+			glfwSwapBuffers(this->window);
+
 		if (this->dispatcher != nullptr)
 		{
 			auto keyEvent = MakeUnique<KeyEvent>(&this->keyHeld, &this->keyPressed, &this->keyReleased);
@@ -242,7 +245,7 @@ namespace MxEngine
 
 		UseTitle(this->title);
 		UseCursorMode(this->cursorMode);
-		UsePosition(this->windowPosition.x, this->windowPosition.y);
+		UsePosition((int)this->windowPosition.x, (int)this->windowPosition.y);
 		UseCursorPos(this->cursorPosition);
 		Logger::Instance().Debug("MxEngine::Window", "window initialized");
 		return *this;
@@ -278,6 +281,7 @@ namespace MxEngine
 
 	Window& Window::UseDoubleBuffering(bool value)
 	{
+		this->doubleBuffer = value;
 		glfwWindowHint(GLFW_DOUBLEBUFFER, value);
 		Logger::Instance().Debug("OpenGL::Window", "doublebuffering was set to: " + (std::string)BOOL_STRING(value));
 		return *this;
@@ -316,11 +320,11 @@ namespace MxEngine
 		return *this;
 	}
 
-	Window& Window::UsePosition(float xpos, float ypos)
+	Window& Window::UsePosition(int xpos, int ypos)
 	{
-		this->windowPosition = { xpos, ypos };
+		this->windowPosition = { (float)xpos, (float)ypos };
 		if(window != nullptr)
-			glfwSetWindowPos(window, int(xpos), int(ypos));
+			glfwSetWindowPos(window, xpos, ypos);
 		return *this;
 	}
 

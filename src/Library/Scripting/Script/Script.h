@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Utilities/FileSystem/FileSystem.h"
+#include "Utilities/FileSystem/File.h"
 #include "Utilities/Time/Time.h"
 
 namespace MxEngine

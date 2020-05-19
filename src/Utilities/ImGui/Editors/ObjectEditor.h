@@ -31,6 +31,7 @@
 #include "Utilities/ImGui/ImGuiBase.h"
 #include "Core/Application/Application.h"
 #include "Utilities/Format/Format.h"
+#include "Utilities/FileSystem/FileManager.h"
 
 namespace MxEngine::GUI
 {
@@ -56,14 +57,14 @@ namespace MxEngine::GUI
 		{
 			auto context = Application::Get();
 			material.map_normal = MakeUnique<Texture>(
-				(context->GetCurrentScene().GetDirectory() / normapMapPath).string());
+				FileModule::GetFilePath(MakeStringId(normapMapPath)).string());
 		}
 		static std::string heightMapPath(128, '\0');
 		if (GUI::InputTextOnClick("height map", heightMapPath.data(), heightMapPath.size()))
 		{
 			auto context = Application::Get();
 			material.map_height = MakeUnique<Texture>(
-				(context->GetCurrentScene().GetDirectory() / heightMapPath).string());
+				FileModule::GetFilePath(MakeStringId(heightMapPath)).string());
 		}
 	}
 
@@ -145,9 +146,7 @@ namespace MxEngine::GUI
 				static std::string texturePath(128, '\0');
 				if(GUI::InputTextOnClick("texture", texturePath.data(), texturePath.size()))
 				{
-					object.ObjectTexture = context->GetCurrentScene().LoadTexture(
-						Format(FMT_STRING("MxRuntimeTex_{0}"), context->GenerateResourceId()),
-						texturePath);
+					object.ObjectTexture = context->GetCurrentScene().LoadTexture(texturePath);
 				}
 
 				if (object.GetMesh() != nullptr)

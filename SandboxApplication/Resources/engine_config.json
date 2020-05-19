@@ -1,0 +1,17 @@
+{
+	"window": {
+		"title": "Sandbox Application",
+		"double-buffering": false,
+		"position": [300, 150],
+		"size": [1600, 900],
+		"cursor-mode": "disabled"
+	},
+	"renderer": {
+		"opengl-profile": "core",
+		"opengl-major-version": 4,
+		"opengl-minor-version": 0,
+		"msaa-samples": 4,
+		"anisothropic-filtering": 16,
+		"debug-line-width": 3
+	}
+}

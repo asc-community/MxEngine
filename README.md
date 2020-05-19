@@ -2,6 +2,7 @@
 ![](https://img.shields.io/badge/version-6.4.0-red)
 ![](https://img.shields.io/badge/license-bsd--3-yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
+[![Documentation](https://codedocs.xyz/MomoDeve/MxEngine.svg)](https://codedocs.xyz/MomoDeve/MxEngine/)
 
 MxEngine is a modern C++ general-purpose 3D game engine aiming to bring easy game & graphic application development into C++. 
 Right now MxEngine is developed only by me, #Momo, but any contributions are welcome and will be reviewed.

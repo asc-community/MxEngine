@@ -31,5 +31,5 @@ void SandboxApp::OnDestroy()
 
 SandboxApp::SandboxApp()
 {
-	this->CreateContext();
+	CreateContext();
 }

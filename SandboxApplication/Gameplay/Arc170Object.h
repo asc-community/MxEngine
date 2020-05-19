@@ -10,8 +10,8 @@ public:
 	inline Arc170Object()
 	{
 		auto context = Application::Get();
-		this->SetMesh(context->GetCurrentScene().LoadMesh("Arc170Mesh", "objects/arc170/arc170.obj"));
-		this->ObjectTexture = context->GetCurrentScene().LoadTexture("Arc170Texture", "objects/arc170/arc170.jpg");
+		this->SetMesh(context->GetCurrentScene().LoadMesh("objects/arc170/arc170.obj"));
+		this->ObjectTexture = context->GetCurrentScene().LoadTexture("objects/arc170/arc170.jpg");
 
 		this->ObjectTransform.Scale(0.005f);
 		this->Translate(10.0f, 1.0f, -10.0f);

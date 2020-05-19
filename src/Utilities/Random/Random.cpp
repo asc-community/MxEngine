@@ -36,7 +36,7 @@ namespace MxEngine
     {
         MX_ASSERT(lower <= upper);
         auto period = upper - lower + 1; // Get(..., 3, 3) -> 3
-        auto number = gen();
+        auto number = (T)gen();
         return lower + number % period;
     }
 

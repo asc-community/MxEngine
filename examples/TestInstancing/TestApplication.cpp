@@ -116,5 +116,5 @@ void SnakePath3D::OnDestroy()
 
 SnakePath3D::SnakePath3D()
 {
-	this->CreateContext();
+	CreateContext();
 }

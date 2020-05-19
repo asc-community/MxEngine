@@ -44,6 +44,13 @@
 
 namespace MxEngine
 {
+	struct FogInformation
+	{
+		Vector3 Color = MakeVector3(0.5f, 0.6f, 0.7f);
+		float Distance = 1.0f;
+		float Density = 0.01f;
+	};
+
 	struct LightSystem
 	{
 		DirectionalLight* Global = nullptr;
@@ -56,12 +63,12 @@ namespace MxEngine
 
 	class RenderController
 	{
-		UniqueRef<Renderer> renderer;
+		Renderer renderer;
 
 		size_t directionalDepthSize = 4096;
 		size_t spotDepthSize = 512;
 		size_t pointDepthSize = 512;
-		int bloomIterations = 0;
+		int bloomIterations = 5;
 		int samples = 1;
 		float exposure = 1.0f;
 		float bloomWeight = 100.0f;
@@ -79,7 +86,8 @@ namespace MxEngine
 
 		static constexpr TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;
 	public:
-		RenderController(UniqueRef<Renderer> renderer);
+		RenderController() = default;
+		RenderController(const RenderController&) = delete;
 
 		int PCFdistance = 1;
 		Shader* ObjectShader = nullptr;
@@ -93,21 +101,23 @@ namespace MxEngine
 		Texture* DefaultHeight = nullptr;
 		Texture* DefaultNormal = nullptr;
 		FrameBuffer* DepthBuffer = nullptr;
+		FogInformation Fog;
 
-		Renderer& GetRenderEngine() const;
+		const Renderer& GetRenderEngine() const;
+		Renderer& GetRenderEngine();
 		void Render() const;
 		void Clear() const;
 		void AttachDepthTexture(const Texture& texture);
 		void AttachDepthCubeMap(const CubeMap& cubemap);
 		void DetachDepthBuffer();
-		void ToggleDepthOnlyMode(bool value) const;
-		void ToggleReversedDepth(bool value) const;
-		void ToggleFaceCulling(bool value, bool counterClockWise = true, bool cullBack = true) const;
-		void SetAnisotropicFiltering(float value) const;
+		void ToggleDepthOnlyMode(bool value);
+		void ToggleReversedDepth(bool value);
+		void ToggleFaceCulling(bool value, bool counterClockWise = true, bool cullBack = true);
+		void SetAnisotropicFiltering(float value);
 		void SetViewport(int x, int y, int width, int height);
 		void DrawObject(const IDrawable& object, const CameraController& viewport) const;
-		void DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights, const Skybox* skybox) const;
-		void DrawSkybox(const Skybox& skybox, const CameraController& viewport);
+		void DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights, const FogInformation& fog, const Skybox* skybox) const;
+		void DrawSkybox(const Skybox& skybox, const CameraController& viewport, const FogInformation& fog);
 		void DrawHDRTexture(const Texture& texture, int MSAAsamples);
 		void DrawPostProcessImage(const Texture& hdrTexture, const Texture& bloomTexture, float hdrExposure, int bloomIters, float bloomWeight);
 		const Texture& UpscaleTexture(const Texture& texture, const VectorInt2& dist);
@@ -133,7 +143,7 @@ namespace MxEngine
 		void DetachDrawBuffer();
 		DebugBuffer& GetDebugBuffer();
 		Rectangle& GetRectangle();
-		void DrawDebugBuffer(const CameraController& viewport, bool overlay = false) const;
+		void DrawDebugBuffer(const CameraController& viewport, bool overlay = false);
 	};
 
 	template<typename LightSource>

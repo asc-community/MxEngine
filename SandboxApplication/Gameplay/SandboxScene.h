@@ -15,7 +15,7 @@ class SandboxScene : public Scene
 
         this->AddObject("Cube", MakeUnique<CubeObject>());
         this->AddObject("Sphere", MakeUnique<SphereObject>());
-        this->AddObject("Arc170", MakeUnique<Arc170Object>());
+        // this->AddObject("Arc170", MakeUnique<Arc170Object>());
         // this->AddObject("Destroyer", MakeUnique<DestroyerObject>());
         // this->AddObject("DeathStar", MakeUnique<DeathStarObject>());
 		
@@ -29,18 +29,18 @@ class SandboxScene : public Scene
 
 		auto& grid = this->AddObject("Grid", MakeUnique<Grid>(2000));
 		grid.Scale(3.0f, 3.0f, 3.0f);
-		grid.ObjectTexture = this->LoadTexture("Bricks", "textures/brick.jpg");
+		grid.ObjectTexture = this->LoadTexture("textures/brick.jpg");
 		auto& material = grid.GetMesh()->GetRenderObjects()[0].GetMaterial();
-		material.map_normal = MakeUnique<Texture>((GetDirectory() / "textures/brick_normal.jpg").string());
+		material.map_normal = MakeUnique<Texture>(FileModule::GetFilePath("textures/brick_normal.jpg"_id).string());
 		
-        this->LoadScript("init", "scripts/init.py");
-        this->LoadScript("update", "scripts/update.py");
-        this->LoadScript("load", "scripts/load.py");
+        this->LoadScript("scripts/init.py");
+        this->LoadScript("scripts/update.py");
+        this->LoadScript("scripts/load.py");
 
-        Application::Get()->ExecuteScript(*this->GetResource<Script>("init"));
+        Application::Get()->ExecuteScript(*this->GetResource<Script>("scripts/init.py"));
 
 		this->SceneSkybox = MakeUnique<Skybox>();
-		this->SceneSkybox->SkyboxTexture = this->LoadCubeMap("Skybox", "textures/dawn.jpg");
+		this->SceneSkybox->SkyboxTexture = this->LoadCubeMap("textures/dawn.jpg");
 
 		this->PointLights.SetCount(1);
 		this->SpotLights.SetCount(1);
@@ -86,7 +86,7 @@ class SandboxScene : public Scene
 			.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT)
 			.BindRotation();
 
-		Application::Get()->ExecuteScript(*this->GetResource<Script>("load"));
+		Application::Get()->ExecuteScript(*this->GetResource<Script>("scripts/load.py"));
 		LightBinding(this->PointLights).BindAll();
 		LightBinding(this->SpotLights).BindAll();
 	}
@@ -98,6 +98,6 @@ class SandboxScene : public Scene
 
     virtual void OnUpdate() override
     {
-		Application::Get()->ExecuteScript(*this->GetResource<Script>("update"));
+		Application::Get()->ExecuteScript(*this->GetResource<Script>("scripts/update.py"));
     }
 };

@@ -58,6 +58,29 @@ namespace MxEngine::GUI
 		context->ToggleSkybox(skyboxDraw);
 	}
 
+	inline void DrawPostEffects()
+	{
+		auto& renderer = Application::Get()->GetRenderer();
+
+		float exposure = renderer.GetHDRExposure();
+		float bloomWeight = renderer.GetBloomWeight();
+		int bloomIters = renderer.GetBloomIterations();
+
+		GUI_TREE_NODE("post effects",
+			if (ImGui::DragFloat("HDR exposure", &exposure, 0.01f, 0.0f, std::numeric_limits<float>::max()))
+				renderer.SetHDRExposure(exposure);
+			if (ImGui::DragFloat("bloom weight", &bloomWeight, 1.0f, 0.0f, std::numeric_limits<float>::max()))
+				renderer.SetBloomWeight(bloomWeight);
+			if (ImGui::DragInt("bloom iterations", &bloomIters, 0.1f, 0, 100))
+				renderer.SetBloomIterations(bloomIters);
+
+			// fog editor
+			ImGui::ColorEdit3("fog color", &renderer.Fog.Color[0]);
+			ImGui::DragFloat("fog density", &renderer.Fog.Density, 0.001f, 0.0f, std::numeric_limits<float>::max());
+			ImGui::DragFloat("fog distance", &renderer.Fog.Distance, 0.01f, 0.0f, 1.0f);
+		);
+	}
+
 	/*!
 	gets camera information from currenly active scene and draws it in GUI window
 	- camera position, aspect, speed and fov
@@ -75,18 +98,10 @@ namespace MxEngine::GUI
 		float sensitivity = camera.GetRotateSpeed();
 		float zoom = camera.GetZoom();
 		Vector3 pos = camera.GetPosition();
-		float exposure = context->GetRenderer().GetHDRExposure();
-		float bloomWeight = context->GetRenderer().GetBloomWeight();
-		int bloomIters = context->GetRenderer().GetBloomIterations();
 
 		DrawDebugMeshes();
 
-		if (ImGui::DragFloat("HDR exposure", &exposure, 0.01f, 0.0f, std::numeric_limits<float>::max()))
-			context->GetRenderer().SetHDRExposure(exposure);
-		if (ImGui::DragFloat("bloom weight", &bloomWeight, 1.0f, 0.0f, std::numeric_limits<float>::max()))
-			context->GetRenderer().SetBloomWeight(bloomWeight);
-		if (ImGui::DragInt("bloom iterations", &bloomIters, 0.1f, 0, 100))
-			context->GetRenderer().SetBloomIterations(bloomIters);
+		DrawPostEffects();
 
 		ImGui::Text("position: (%f, %f, %f)", pos.x, pos.y, pos.z);
 

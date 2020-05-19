@@ -35,11 +35,27 @@ namespace MxEngine
 	using TimeStep = float;
 	using SystemTime = time_t;
 
+	/*!
+	creates human-readable time string (10ms, 1.3s and etc.)
+	\param time timestep to convert to string
+	\returns string object with beautifies timestep
+	*/
 	std::string BeautifyTime(TimeStep time);
 
+	/*!
+	time is a small utility class which uses application window timer to retrieve timestep since engine start
+	*/
 	struct Time
 	{
+		/*!
+		gets current time since engine start
+		\returns timestep measured in 1/100 of millisecond (depends on GLFW implementation)
+		*/
 		static TimeStep Current();
+		/*!
+		gets current system time (may not be fast, try avoiding calling it each frame)
+		/returns system time (uses chrono std library)
+		*/
 		static SystemTime System();
 	};
 }

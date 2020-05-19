@@ -28,58 +28,20 @@
 
 #pragma once
 
-// Andrei's Alexandrescu SingletonHolder (see "Modern C++ Design" ch. 6)
+#include <Vendors/eastl/EASTL/hash_map.h>
+#include <Vendors/eastl/EASTL/fixed_hash_map.h>
 
 namespace MxEngine
 {
-	using AtExitFunctionPointer = void (*)();
+    template<typename T, typename U, typename Hash = eastl::hash<T>, typename Predicate = eastl::equal_to<T>, typename Allocator = EASTLAllocatorType >
+    using MxHashMap = eastl::hash_map<T, U, Hash, Allocator>;
 
-	/*!
-	lifetime policy of singleton which shedules destruction function call at program exit
-	*/
-	template <class T>
-	class DefaultLifetime
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer func)
-		{
-			std::atexit(func);
-		}
+    template<typename T, typename U, size_t Nodes, bool overflow = true, typename Allocator = EASTLAllocatorType, typename Hash = eastl::hash<T>, typename Predicate = eastl::equal_to<T>>
+    using MxFixedHashMap = eastl::fixed_hash_map<T, U, Nodes, Nodes + 1, overflow, Hash, Predicate, false, Allocator>;
 
-		static inline void OnDeadReference() { }
-	};
+    template<typename T, typename U, typename Hash = eastl::hash<T>, typename Predicate = eastl::equal_to<T>, typename Allocator = EASTLAllocatorType >
+    using MxHashMultiMap = eastl::hash_multimap<T, U, Hash, Allocator>;
 
-	/*!
-	lifetime policy of singleton which does not destroy an object
-	*/
-	template <class T>
-	class NoDestroy
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer) { }
-
-		static inline void OnDeadReference() { }
-	};
-
-	/*!
-	lifetime policy of singleton which shedules object destruction, but allow it be recreated many times
-	*/
-	template <class T>
-	class PhoenixSingleton
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer func)
-		{
-			if (!destroyedOnce)
-				std::atexit(func);
-		}
-
-		static inline void OnDeadReference()
-		{
-			destroyedOnce = true;
-		}
-
-	private:
-		inline static bool destroyedOnce = false;
-	};
+    template<typename T, typename U, size_t Nodes, bool overflow = true, typename Allocator = EASTLAllocatorType, typename Hash = eastl::hash<T>, typename Predicate = eastl::equal_to<T>>
+    using MxFixedHashMultiMap = eastl::fixed_hash_multimap<T, U, Nodes, Nodes + 1, overflow, Hash, Predicate, false, Allocator>;
 }

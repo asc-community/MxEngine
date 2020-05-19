@@ -30,6 +30,7 @@
 
 #include "Core/Application/Application.h"
 #include "Core/Event/Events/FpsUpdateEvent.h"
+#include "Utilities/FileSystem/FileManager.h"
 
 namespace MxEngine
 {
@@ -44,31 +45,29 @@ namespace MxEngine
 			
 		}
 
-		inline void Bind(const FilePath& vertex, const FilePath& fragment)
+		inline void Bind(const std::string& vertex, const std::string& fragment)
 		{
-			auto& directory = Application::Get()->GetCurrentScene().GetDirectory();
+			auto vertexhash = MakeStringId(vertex);
+			auto fragmenthash = MakeStringId(fragment);
 			if (shader == nullptr) return;
-			auto vt = directory / vertex;
-			auto fr = directory / fragment;
-			if (!File::Exists(vt))
+			if (!FileModule::FileExists(vertexhash))
 			{
-				Logger::Instance().Warning("MxEngine::ShaderBinding", "file does not exists: " + vt.string());
+				Logger::Instance().Error("MxEngine::ShaderBinding", "file does not exists: " + vertex);
 				return;
 			}
-			if (!File::Exists(fr))
+			if (!FileModule::FileExists(fragmenthash))
 			{
-				Logger::Instance().Warning("MxEngine::ShaderBinding", "file does not exists: " + fr.string());
+				Logger::Instance().Error("MxEngine::ShaderBinding", "file does not exists: " + fragment);
 				return;
 			}
 
 			auto context = Application::Get();
 			context->GetEventDispatcher().AddEventListener(handle, 
-			[shader = shader, name = "MxShader" + handle, vertex = vertex, fragment = fragment, 
-				absVertex = std::move(vt), absFragment = std::move(fr),
+			[shader = shader, name = "MxShader" + handle, vertex = vertex, fragment = fragment,
 				vertexTime = FileSystemTime(), fragmentTime = FileSystemTime()] (FpsUpdateEvent& e) mutable
 			{
-				auto newVertexTime   = File::LastModifiedTime(absVertex);
-				auto newFragmentTime = File::LastModifiedTime(absFragment);
+				auto newVertexTime   = File::LastModifiedTime(FileModule::GetFilePath(MakeStringId(vertex)));
+				auto newFragmentTime = File::LastModifiedTime(FileModule::GetFilePath(MakeStringId(fragment)));
 				if (vertexTime < newVertexTime || fragmentTime < newFragmentTime)
 				{
 					*shader = Application::Get()->GetCurrentScene().LoadShader(name, vertex, fragment);
@@ -80,38 +79,37 @@ namespace MxEngine
 			});
 		}
 
-		inline void Bind(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment)
+		inline void Bind(const std::string& vertex, const std::string& geometry, const std::string& fragment)
 		{
 			auto& directory = Application::Get()->GetCurrentScene().GetDirectory();
 			if (shader == nullptr) return;
-			auto vt = directory / vertex;
-			auto gm = directory / geometry;
-			auto fr = directory / fragment;
-			if (!File::Exists(vt))
+			auto vertexhash = MakeStringId(vertex);
+			auto geometryhash = MakeStringId(geometry);
+			auto fragmenthash = MakeStringId(fragment);
+			if (!FileModule::FileExists(vertexhash))
 			{
-				Logger::Instance().Warning("MxEngine::ShaderBinding", "file does not exists: " + vt.string());
+				Logger::Instance().Error("MxEngine::ShaderBinding", "file does not exists: " + vertex);
 				return;
 			}
-			if (!File::Exists(gm))
+			if (!FileModule::FileExists(geometryhash))
 			{
-				Logger::Instance().Warning("MxEngine::ShaderBinding", "file does not exists: " + gm.string());
+				Logger::Instance().Error("MxEngine::ShaderBinding", "file does not exists: " + geometry);
 				return;
 			}
-			if (!File::Exists(fr))
+			if (!FileModule::FileExists(fragmenthash))
 			{
-				Logger::Instance().Warning("MxEngine::ShaderBinding", "file does not exists: " + fr.string());
+				Logger::Instance().Error("MxEngine::ShaderBinding", "file does not exists: " + fragment);
 				return;
 			}
 
 			auto context = Application::Get();
 			context->GetEventDispatcher().AddEventListener(handle,
 				[shader = shader, name = "MxShader" + handle, vertex = vertex, fragment = fragment, geometry = geometry,
-				absVertex = std::move(vt), absGeometry = std::move(gm), absFragment = std::move(fr),
 				vertexTime = FileSystemTime(), geometryTime = FileSystemTime(), fragmentTime = FileSystemTime()](FpsUpdateEvent& e) mutable
 			{
-				auto newVertexTime   = File::LastModifiedTime(absVertex);
-				auto newGeometryTime = File::LastModifiedTime(absGeometry);
-				auto newFragmentTime = File::LastModifiedTime(absFragment);
+				auto newVertexTime   = File::LastModifiedTime(FileModule::GetFilePath(MakeStringId(vertex)));
+				auto newGeometryTime = File::LastModifiedTime(FileModule::GetFilePath(MakeStringId(geometry)));
+				auto newFragmentTime = File::LastModifiedTime(FileModule::GetFilePath(MakeStringId(fragment)));
 				if (vertexTime < newVertexTime || geometryTime < newGeometryTime || fragmentTime < newFragmentTime)
 				{
 					*shader = Application::Get()->GetCurrentScene().LoadShader(name, vertex, geometry, fragment);

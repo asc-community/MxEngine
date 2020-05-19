@@ -28,58 +28,15 @@
 
 #pragma once
 
-// Andrei's Alexandrescu SingletonHolder (see "Modern C++ Design" ch. 6)
+#include "Utilities/FileSystem/File.h"
+#include "Vendors/json/json.hpp"
 
 namespace MxEngine
 {
-	using AtExitFunctionPointer = void (*)();
+    using JsonFile = nlohmann::json;
 
-	/*!
-	lifetime policy of singleton which shedules destruction function call at program exit
-	*/
-	template <class T>
-	class DefaultLifetime
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer func)
-		{
-			std::atexit(func);
-		}
-
-		static inline void OnDeadReference() { }
-	};
-
-	/*!
-	lifetime policy of singleton which does not destroy an object
-	*/
-	template <class T>
-	class NoDestroy
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer) { }
-
-		static inline void OnDeadReference() { }
-	};
-
-	/*!
-	lifetime policy of singleton which shedules object destruction, but allow it be recreated many times
-	*/
-	template <class T>
-	class PhoenixSingleton
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer func)
-		{
-			if (!destroyedOnce)
-				std::atexit(func);
-		}
-
-		static inline void OnDeadReference()
-		{
-			destroyedOnce = true;
-		}
-
-	private:
-		inline static bool destroyedOnce = false;
-	};
+    inline JsonFile LoadJson(File& file)
+    {
+        return nlohmann::json::parse(file.ReadAllText());
+    }
 }

@@ -32,6 +32,7 @@
 #include <string>
 
 #include "Utilities/SingletonHolder/SingletonHolder.h"
+#include "Utilities/Format/Format.h"
 
 namespace MxEngine
 {
