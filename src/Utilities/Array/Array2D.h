@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include <vector>
+#include "Utilities/STL/MxVector.h"
 #include "Utilities/Array/ArrayView.h"
 
 namespace MxEngine
@@ -37,7 +37,7 @@ namespace MxEngine
     Rectangular array sized [width * height] where all elements are fitted into one contiguous memory block
     Each element is accessed as Array[width_idx][height_idx], indexing Array[width_idx] requires one multiplication operation
     */
-    template<typename T, template<typename> typename Base = std::vector>
+    template<typename T, template<typename> typename Base = MxVector>
     class Array2D
     {
     public:

@@ -29,6 +29,8 @@
 #pragma once
 
 #include <utility>
+#include <ostream>
+#include <istream>
 
 namespace boost::uuids
 {
@@ -54,6 +56,9 @@ namespace MxEngine
         bool operator<=(const UUID& other) const;
         bool operator>=(const UUID& other) const;
     };
+
+    std::ostream& operator<<(std::ostream& out, const UUID& uuid);
+    std::istream& operator>>(std::istream& in, UUID& uuid);
 
     struct UUIDGeneratorImpl
     {

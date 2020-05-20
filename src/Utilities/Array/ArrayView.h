@@ -31,6 +31,7 @@
 #include <array>
 #include <vector>
 #include "Core/Macro/Macro.h"
+#include "Utilities/STL/MxVector.h"
 
 namespace MxEngine
 {
@@ -57,6 +58,7 @@ namespace MxEngine
         template<size_t N>
         array_view(std::array<T, N>& array);
         array_view(std::vector<T>& vec);
+        array_view(MxVector<T>& vec);
         template<typename RandomIt>
         array_view(RandomIt begin, RandomIt end);
         size_t size() const;
@@ -95,6 +97,13 @@ namespace MxEngine
 
     template<typename T>
     inline array_view<T>::array_view(std::vector<T>& vec)
+    {
+        this->_data = vec.data();
+        this->_size = vec.size();
+    }
+
+    template<typename T>
+    inline array_view<T>::array_view(MxVector<T>& vec)
     {
         this->_data = vec.data();
         this->_size = vec.size();

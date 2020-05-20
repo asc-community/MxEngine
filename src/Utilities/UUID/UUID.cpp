@@ -30,6 +30,7 @@
 #include "Utilities/Memory/Memory.h"
 
 #include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/nil_generator.hpp>
 
@@ -115,4 +116,13 @@ namespace MxEngine
         return *reinterpret_cast<boost::uuids::random_generator*>(&generator);
     }
 
+    std::ostream& operator<<(std::ostream& out, const UUID& uuid)
+    {
+        return out << uuid.GetImpl();
+    }
+
+    std::istream& operator>>(std::istream& in, UUID& uuid)
+    {
+        return in >> uuid.GetImpl();
+    }
 }

@@ -75,6 +75,7 @@ namespace MxEngine
 		this->height = texture.height;
 		this->channels = texture.channels;
 		this->textureType = texture.textureType;
+		this->filepath = std::move(texture.filepath);
 		this->id = texture.id;
 
 		texture.id = 0;
@@ -82,6 +83,7 @@ namespace MxEngine
 		texture.width = 0;
 		texture.height = 0;
 		texture.channels = 0;
+		texture.filepath = "[[deleted]]";
 	}
 
 	Texture& Texture::operator=(Texture&& texture) noexcept
@@ -90,6 +92,7 @@ namespace MxEngine
 		this->height = texture.height;
 		this->channels = texture.channels;
 		this->textureType = texture.textureType;
+		this->filepath = std::move(texture.filepath);
 		this->id = texture.id;
 		
 		texture.id = 0;
@@ -97,6 +100,7 @@ namespace MxEngine
 		texture.width = 0;
 		texture.height = 0;
 		texture.channels = 0;
+		texture.filepath = "[[deleted]]";
 		return *this;
 	}
 

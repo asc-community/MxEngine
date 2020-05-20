@@ -18,6 +18,7 @@ namespace MxEngine
     template<typename T>
     class PoolAllocator
     {
+    public:
         /*!
         block inner structure. Just holds object and offset in memory to next block
         */
@@ -28,11 +29,24 @@ namespace MxEngine
             */
             T data;
             /*!
-            offset in memory of next block (counted in blocks)
+            offset in memory of next block (counted in blocks). Stores
             */
             size_t next;
+
+            static constexpr size_t LastBit = 1ULL << (8 * sizeof(size_t) - 1);
+
+            void MarkBusy()
+            {
+                next |= LastBit;
+            }
+
+            bool IsFree()
+            {
+                return !(next & LastBit);
+            }
         };
 
+    private:
         /*!
         begin of memory chunk in use
         */
@@ -47,9 +61,9 @@ namespace MxEngine
         size_t count = 0;
 
         /*!
-        max value of size_t is too much for allocator, so we use it as invalid offset when all blocks are allocated
+        such value of size_t is too much for allocator, so we use it as invalid offset when all blocks are allocated
         */
-        constexpr static size_t InvalidOffset = std::numeric_limits<size_t>::max();
+        constexpr static size_t InvalidOffset = std::numeric_limits<size_t>::max() - Block::LastBit;
     public:
         using DataPointer = uint8_t*;
 
@@ -89,6 +103,37 @@ namespace MxEngine
                 begin->next = offset;
             }
             last->next = InvalidOffset;
+        }
+
+        /*!
+        transfers blocks from one memory chunk to another
+        \param newData begin of new memory chunk
+        \param newBytes size of new memory chunk (must be not less than old size)
+        \warning during transfer all pointers to allocated objects are invalidated
+        */
+        void Transfer(DataPointer newData, size_t newBytes)
+        {
+            if (this->storage == nullptr)
+            {
+                this->Init(newData, newBytes);
+                return;
+            }
+
+            size_t newCount = newBytes / sizeof(Block); // calc new number of blocks
+            MX_ASSERT(newData != nullptr);
+            MX_ASSERT(this->count <= newCount);
+            
+            std::memcpy(newData, this->storage, this->count * sizeof(Block)); // copy old blocks to new memory chunk
+            this->storage = (Block*)newData;
+            Block* last = this->storage + newCount - 1; // calculate last block to chain new ones
+            size_t offset = this->count + 1;
+            for(Block* begin = this->storage + this->count; begin != last; begin++, offset++)
+            {
+                begin->next = offset;
+            }
+            last->next = this->free; // make last of new blocks point to the first free block of old
+            this->free = this->count; // chain all new blocks to the free list
+            this->count = newCount;
         }
 
         /*!
@@ -134,6 +179,7 @@ namespace MxEngine
             Block* res = this->storage + this->free;
             T* ptr = &res->data;
             this->free = res->next;
+            res->MarkBusy();
             return new (ptr) T(std::forward<Args>(args)...);
         }
 

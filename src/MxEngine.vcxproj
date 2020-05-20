@@ -48,6 +48,8 @@
     <ClInclude Include="Platform\OpenGL\CubeMap.h" />
     <ClInclude Include="Platform\OpenGL\FrameBuffer.h" />
     <ClInclude Include="Platform\OpenGL\RenderBuffer.h" />
+    <ClInclude Include="Utilities\AbstractFactory\AbstractFactory.h" />
+    <ClInclude Include="Utilities\ECS\Component.h" />
     <ClInclude Include="Utilities\FileSystem\FileManager.h" />
     <ClInclude Include="Utilities\Json\Json.h" />
     <ClInclude Include="Utilities\LODGenerator\LODGenerator.h" />
@@ -129,6 +131,7 @@
     <ClInclude Include="Utilities\String\String.h" />
     <ClInclude Include="Utilities\Threading\ThreadingModel.h" />
     <ClInclude Include="Utilities\Time\Time.h" />
+    <ClInclude Include="Utilities\VectorPool\VectorPool.h" />
     <ClInclude Include="Vendors\eastl\EABase\config\eacompiler.h" />
     <ClInclude Include="Vendors\eastl\EABase\config\eacompilertraits.h" />
     <ClInclude Include="Vendors\eastl\EABase\config\eaplatform.h" />
@@ -472,6 +475,10 @@
   <ItemGroup>
     <Text Include="Vendors\glm\copying.txt" />
     <Text Include="Vendors\imgui\LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="MxEngine.natvis" />
+    <Natvis Include="EASTL.natvis" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

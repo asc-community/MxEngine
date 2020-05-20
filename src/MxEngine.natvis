@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 
+     This is a Microsoft natvis file, which allows visualization of complex variables in the
+     Microsoft debugger starting with VS2012. It's a successor to the AutoExp.dat file format. 
+
+     This file needs to go into your C:\Users\<user>\Documents\Visual Studio XXXX\Visualizers\
+     folder.
+
+     You don't need to restart Visual Studio to use it, you just need to restart the debug 
+     session. You can have multiple .natvis files and they will all be used.
+
+	 VS2017 natvis documentation:
+	https://docs.microsoft.com/en-us/visualstudio/debugger/create-custom-views-of-native-objects
+-->
+
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+<Type Name="MxEngine::UUID">
+  <DisplayString>{{ uuid={*(boost::uuids::uuid*)&amp;uuidImpl} }}</DisplayString>
+  <Expand>
+    <Item Name="[uuid]">*(boost::uuids::uuid*)&amp;uuidImpl</Item>
+  </Expand>
+</Type>
+  
+<Type Name="MxEngine::PoolAllocator&lt;*&gt;::Block">
+	<DisplayString Condition="(next &amp; ~LastBit) == InvalidOffset">{{ data={data}, next=-1, free={!(bool)(next &amp; LastBit)} }}</DisplayString>
+	<DisplayString Condition="(next &amp; ~LastBit) != InvalidOffset">{{ data={data}, next={next &amp; ~LastBit}, free={!(bool)(next &amp; LastBit)} }}</DisplayString>
+	<Expand>
+		<Item Name="[data]">data</Item>
+		<Item Condition="(next &amp; ~LastBit) == InvalidOffset" Name="[next]">-1</Item>
+		<Item Condition="(next &amp; ~LastBit) != InvalidOffset" Name="[next]">next &amp; ~LastBit</Item>
+		<Item Name="[free]">!(bool)(next &amp; LastBit)</Item>
+	</Expand>
+</Type>
+
+<!-- VectorPool default specialization (Container is eastl::vector<T>)-->
+<Type Name="MxEngine::VectorPool&lt;*,*&gt;">
+	<DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin == 0">{{ }}</DisplayString>
+	<DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin == sizeof(Block)">{{ {*(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin} }}</DisplayString>
+	<DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin == 2 * sizeof(Block)">{{ {*(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 1)} }}</DisplayString>
+	<DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin == 3 * sizeof(Block)">{{ {*(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 1)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 2)} }}</DisplayString>
+	<DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin == 4 * sizeof(Block)">{{ {*(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 1)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 2)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 3)} }}</DisplayString>
+	<DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin &gt; 4 * sizeof(Block)">{{ {*(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 1)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 2)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 3)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 4)}, ... }}</DisplayString>
+	<Expand>
+        <Item Name="[size]">allocated</Item>
+        <Item Name="[capacity]">(memoryStorage.mpEnd - memoryStorage.mpBegin) / sizeof(Block)</Item>
+        <Item Name="[allocator]">allocator</Item>
+		<ArrayItems>
+            <Size>(memoryStorage.mpEnd - memoryStorage.mpBegin) / sizeof(Block)</Size>
+            <ValuePointer>(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin</ValuePointer>
+        </ArrayItems>
+    </Expand>
+</Type>
+
+<Type Name="MxEngine::array_view&lt;*&gt;">
+  <DisplayString Condition="_size == 0">{{ }}</DisplayString>
+  <DisplayString Condition="_size == 1">{{ {*_data} }}</DisplayString>
+  <DisplayString Condition="_size == 2">{{ {*_data}, {*(_data + 1)} }}</DisplayString>
+  <DisplayString Condition="_size == 3">{{ {*_data}, {*(_data + 1)}, {*(_data + 2)} }}</DisplayString>
+  <DisplayString Condition="_size == 4">{{ {*_data}, {*(_data + 1)}, {*(_data + 2)}, {*(_data + 3)} }}</DisplayString>
+  <DisplayString Condition="_size >= 5">{{ {*_data}, {*(_data + 1)}, {*(_data + 2)}, {*(_data + 3)}, {*(_data + 4)}, ... }}</DisplayString>
+  <Expand>
+    <Item Name="[size]">_size</Item>
+    <Item Name="[ptr]">_data</Item>
+    <ArrayItems>
+      <Size>_size</Size>
+      <ValuePointer>_data</ValuePointer>
+    </ArrayItems>
+  </Expand>
+</Type>
+  
+<!--Array2D default specialization (Container is eastl::vector<T>)-->
+<Type Name="MxEngine::Array2D&lt;*&gt;">
+  <DisplayString Condition="_height != 0">extent = ({(_vec.mpEnd - _vec.mpBegin) / _height}, {_height})</DisplayString>
+  <DisplayString Condition="_height == 0">extent = (0, 0)</DisplayString>
+  <Expand>
+    <Item Condition="_height == 0" Name="[width]">0</Item>
+    <Item Condition="_height == 0" Name="[height]">0</Item>
+    <ArrayItems Condition="_height != 0">
+      <Direction>Forward</Direction>
+      <Rank>2</Rank>
+      <Size>_height</Size>
+      <ValuePointer>_vec.mpBegin</ValuePointer>
+    </ArrayItems>
+  </Expand>
+</Type>
+
+
+</AutoVisualizer>
