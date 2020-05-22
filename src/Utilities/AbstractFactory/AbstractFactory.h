@@ -41,8 +41,9 @@ namespace MxEngine
         T value;
         size_t refCount = 0;
 
-        ManagedResource(UUID uuid, T&& value)
-            : uuid(uuid), value(std::move(value))
+        template<typename... Args>
+        ManagedResource(UUID uuid, Args&&... value)
+            : uuid(uuid), value(std::forward<Args>(value)...)
         {
         }
 
@@ -254,14 +255,8 @@ namespace MxEngine
         {
             UUID uuid = UUIDGenerator::Get();
             auto& pool = factory->GetPool<T>();
-            size_t index = pool.Allocate(uuid, T(std::forward<ConstructArgs>(args)...));
+            size_t index = pool.Allocate(uuid, std::forward<ConstructArgs>(args)...);
             return Resource<T, AbstractFactoryImpl<Args...>>(uuid, index);
-        }
-
-        template<typename T, typename... ConstructArgs>
-        static auto CreateT(T*, ConstructArgs&&... args)
-        {
-            return Create<T>(std::forward<ConstructArgs>(args)...);
         }
 
         template<typename T>

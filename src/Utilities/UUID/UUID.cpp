@@ -65,6 +65,11 @@ namespace MxEngine
         storage = other;
     }
 
+    UUIDGeneratorImpl* UUIDGenerator::GetImpl()
+    {
+        return storage;
+    }
+
 
     boost::uuids::uuid& UUID::GetImpl()
     {

@@ -5,6 +5,8 @@
 #include <Library/Bindings/Bindings.h>
 #include "UserObjects.h"
 
+#include <Library/Scripting/Python/PythonEngine.h>
+
 using namespace MxEngine;
 
 class SandboxScene : public Scene
@@ -77,7 +79,6 @@ class SandboxScene : public Scene
 		this->Viewport.Translate(1.0f, 3.0f, 0.0f);
 		this->Viewport.SetMoveSpeed(5.0f);
 		this->Viewport.SetRotateSpeed(0.75f);
-
     }
 
 	virtual void OnLoad() override

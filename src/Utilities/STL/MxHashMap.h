@@ -34,13 +34,13 @@
 namespace MxEngine
 {
     template<typename T, typename U, typename Hash = eastl::hash<T>, typename Predicate = eastl::equal_to<T>, typename Allocator = EASTLAllocatorType >
-    using MxHashMap = eastl::hash_map<T, U, Hash, Allocator>;
+    using MxHashMap = eastl::hash_map<T, U, Hash, Predicate, Allocator>;
 
     template<typename T, typename U, size_t Nodes, bool overflow = true, typename Allocator = EASTLAllocatorType, typename Hash = eastl::hash<T>, typename Predicate = eastl::equal_to<T>>
     using MxFixedHashMap = eastl::fixed_hash_map<T, U, Nodes, Nodes + 1, overflow, Hash, Predicate, false, Allocator>;
 
     template<typename T, typename U, typename Hash = eastl::hash<T>, typename Predicate = eastl::equal_to<T>, typename Allocator = EASTLAllocatorType >
-    using MxHashMultiMap = eastl::hash_multimap<T, U, Hash, Allocator>;
+    using MxHashMultiMap = eastl::hash_multimap<T, U, Hash, Predicate, Allocator>;
 
     template<typename T, typename U, size_t Nodes, bool overflow = true, typename Allocator = EASTLAllocatorType, typename Hash = eastl::hash<T>, typename Predicate = eastl::equal_to<T>>
     using MxFixedHashMultiMap = eastl::fixed_hash_multimap<T, U, Nodes, Nodes + 1, overflow, Hash, Predicate, false, Allocator>;

@@ -45,6 +45,7 @@
 #include "Utilities/FileSystem/FileManager.h"
 #include "Utilities/UUID/UUID.h"
 #include "Utilities/Json/Json.h"
+#include "Utilities/ECS/ComponentFactory.h"
 
 namespace MxEngine
 {
@@ -731,7 +732,6 @@ namespace MxEngine
 		this->GetConsole().Log("Welcome to MxEngine developer console!");
 		#if defined(MXENGINE_USE_PYTHON)
 		this->GetConsole().Log("This console is powered by Python: https://www.python.org");
-		this->GetConsole().GetEngine().Execute("InitializeOpenGL()");
 		#endif
 
 		{
@@ -835,6 +835,8 @@ namespace MxEngine
 		FileModule::Init("Resources");
 		GraphicModule::Init();
 		UUIDGenerator::Init();
+		GraphicFactory::Init();
+		ComponentFactory::Init();
 	}
 
 	Application::ModuleManager::~ModuleManager()
@@ -851,6 +853,7 @@ namespace MxEngine
 		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });
 		this->GetEventDispatcher().AddEventListener("DeveloperConsole",
 			[this](RenderEvent&) { this->GetConsole().OnRender(); });
+		this->GetConsole().GetEngine().Execute("InitializeOpenGL()");
 	}
 #else
 	void Application::CreateConsoleBindings(DeveloperConsole& console)

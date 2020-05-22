@@ -585,11 +585,17 @@ void AddEventListenerWrapper(Application& app, const std::string& name, py::obje
 
 void SetContextPointerWrapper(
     uint64_t applicationPointer, 
-    uint64_t filemanagerPointer
+    uint64_t filemanagerPointer,
+    uint64_t uuidGenPointer,
+    uint64_t graphicPointer,
+    uint64_t componentPointer
 )
 {
     Application::Set(reinterpret_cast<Application*>(applicationPointer));
     FileModule::Clone(reinterpret_cast<FileManagerImpl*>(filemanagerPointer));
+    UUIDGenerator::Clone(reinterpret_cast<UUIDGeneratorImpl*>(filemanagerPointer));
+    GraphicFactory::Clone(reinterpret_cast<decltype(GraphicFactory::GetImpl())>(graphicPointer));
+    ComponentFactory::Clone(reinterpret_cast<ComponentFactory::FactoryMap*>(componentPointer));
 }
 
 void InitializeOpenGL()

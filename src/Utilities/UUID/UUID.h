@@ -74,6 +74,7 @@ namespace MxEngine
         static UUID Get();
         static UUID GetNull();
         static void Clone(UUIDGeneratorImpl* other);
+        static UUIDGeneratorImpl* GetImpl();
     };
 }
 

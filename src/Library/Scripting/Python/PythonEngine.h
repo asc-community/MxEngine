@@ -54,6 +54,8 @@ namespace MxEngine
 
         PythonEngine();
         BoxedValue Execute(const char* code);
+        PythonModule& GetModule();
+        PythonNamespace& GetNamespace();
         void MirrorOutStream(bool value);
         void MirrorErrorStream(bool value);
         

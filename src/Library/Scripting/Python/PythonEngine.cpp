@@ -31,6 +31,7 @@
 
 #include "Core/Application/Application.h"
 #include "Utilities/FileSystem/FileManager.h"
+#include "Utilities/ECS/ComponentFactory.h"
 
 namespace MxEngine
 {
@@ -66,7 +67,10 @@ class MxEngineIOHandler:
 
         auto ctxPtr = reinterpret_cast<uintptr_t>(Application::Get());
         auto fileManagerPtr = reinterpret_cast<uintptr_t>(FileModule::GetImpl());
-        auto contextInitScript = Format("mx_engine.MxEngineSetContextPointer({0}, {1})", ctxPtr, fileManagerPtr);
+        auto uuidGenPtr = reinterpret_cast<uintptr_t>(UUIDGenerator::GetImpl());
+        auto graphicPtr = reinterpret_cast<uintptr_t>(GraphicFactory::GetImpl());
+        auto componentPtr = reinterpret_cast<uintptr_t>(ComponentFactory::GetImpl());
+        auto contextInitScript = Format("mx_engine.MxEngineSetContextPointer({}, {}, {}, {}, {})", ctxPtr, fileManagerPtr, uuidGenPtr, graphicPtr, componentPtr);
         this->Execute(contextInitScript.c_str());
         this->Execute("mx = mx_engine.get_context()");
     }
@@ -131,6 +135,16 @@ class MxEngineIOHandler:
             this->Execute("errorHandler = MxEngineIOHandler(None)");
 
         this->Execute("sys.stderr = errorHandler");
+    }
+
+    PythonEngine::PythonModule& PythonEngine::GetModule()
+    {
+        return this->pythonModule;
+    }
+
+    PythonEngine::PythonNamespace& PythonEngine::GetNamespace()
+    {
+        return this->pythonNamespace;
     }
 
     const std::string& PythonEngine::GetErrorMessage() const

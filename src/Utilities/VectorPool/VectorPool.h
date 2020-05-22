@@ -41,9 +41,136 @@ namespace MxEngine
     template<typename T, template<typename> typename Container = MxVector>
     class VectorPool
     {
+    public:
+        /*!
+        iterator for VectorPool class. supports increment, compare and decrement.
+        Ignores not allocated objects, allowing user to iterate over all objects in pool without check for IsAllocated(index)
+        */
+        class PoolIterator
+        {
+            /*!
+            current index of object in vector pool
+            */
+            size_t index = 0;
+            /*!
+            reference to vector pool. This means that vector pool must not be moved/deleted until iterator exists
+            */
+            VectorPool<T, Container>& poolRef;
+        public:
+            /*!
+            construtc new iterator of vector pool
+            \param index to the element of vector pool (0 for begin(), Capacity() for end() methods)
+            \param poolRef reference to vector pool
+            */
+            PoolIterator(size_t index, VectorPool<T, Container>& ref)
+                : index(index), poolRef(ref)
+            {
+                while (index < poolRef.Capacity() && !poolRef.IsAllocated(index))
+                {
+                    index++; // 0 element may not exists, so we should skip it until find any allocated
+                }
+            }
+
+            /*!
+            increments iterator until reaches end or finds next allocated object
+            \returns iterator to the object before increment
+            */
+            PoolIterator operator++(int)
+            {
+                PoolIterator copy = *this;
+                ++(*this);
+                return copy;
+            }
+
+            /*!
+            increments iterator until reaches end or finds next allocated object
+            \return iterator to the object after increment
+            */
+            PoolIterator operator++()
+            {
+                do { index++; } while (index < poolRef.Capacity() && !poolRef.IsAllocated(index));
+                return *this;
+            }
+
+            /*!
+            decrements iterator until reaches begin or finds previous allocated object
+            \returns iterator to the object before increment
+            */
+            PoolIterator operator--(int)
+            {
+                PoolIterator copy = *this;
+                --(*this);
+                return copy;
+            }
+
+            /*!
+            decrements iterator until reaches begin or finds previous allocated object
+            \return iterator to the object after increment
+            */
+            PoolIterator operator--()
+            {
+                do { index--; } while (index < poolRef.Capacity() && !poolRef.IsAllocated(index));
+                return *this;
+            }
+
+            /*!
+            dereferences iterator, accessing vector pool
+            \returns pointer to vector pool element
+            */
+            T* operator->()
+            {
+                return &poolRef[index];
+            }
+
+            /*!
+            dereferences iterator, accessing vector pool
+            \returns const pointer to vector pool element
+            */
+            const T* operator->() const
+            {
+                return &poolRef[index];
+            }
+
+            /*!
+            dereferences iterator, accessing vector pool
+            \returns reference to vector pool element
+            */
+            T& operator*()
+            {
+                return poolRef[index];
+            }
+
+            /*!
+            dereferences iterator, accessing vector pool
+            \returns const reference to vector pool element
+            */
+            const T& operator*() const
+            {
+                return poolRef[index];
+            }
+
+            /*!
+            compares two iterator for equality, returns false if they point to different vector pools
+            \returns true if iterators point to same object, false either
+            */
+            bool operator==(const PoolIterator& it) const
+            {
+                return (index == it.index) && (&poolRef == &it.poolRef);
+            }
+
+            /*!
+            compares wto iterator for inequality, returns true if they point to different vector pools
+            \returns false if iterators point to same object, true either
+            */
+            bool operator!=(const PoolIterator& it) const
+            {
+                return !(*this == it);
+            }
+        };
+
         using Allocator = PoolAllocator<T>;
         using Block = typename Allocator::Block;
-
+    private:
         /*!
         storage for allocator memory. Unluckly, not debuggable
         */
@@ -102,7 +229,7 @@ namespace MxEngine
         gets how many elements are in use (constructed)
         \returns count of currently allocated elements
         */
-        size_t Size() const
+        size_t Allocated() const
         {
             return this->allocated;
         }
@@ -197,6 +324,42 @@ namespace MxEngine
             const uint8_t* ptr = (uint8_t*)&obj - offsetof(Block, data);
             MX_ASSERT(memoryStorage.data() <= ptr && ptr < memoryStorage.data() + memoryStorage.size());
             return (Block*)ptr - (Block*)memoryStorage.data();
+        }
+
+        /*!
+        begin of vector pool container
+        \returns iterator to first allocated element or end iterator
+        */
+        PoolIterator begin()
+        {
+            return PoolIterator{ 0, *this };
+        }
+
+        /*!
+        begin of vector pool container
+        \returns const iterator to first allocated element or const end iterator
+        */
+        const PoolIterator begin() const
+        {
+            return PoolIterator{ 0, *this };
+        }
+
+        /*!
+        end of vector pool container
+        \returns iterator to the end of vector container
+        */
+        PoolIterator end()
+        {
+            return PoolIterator{ this->Capacity(), *this };
+        }
+
+        /*!
+        end of vector pool container
+        \returns const iterator to the end of vector container
+        */
+        const PoolIterator end() const
+        {
+            return PoolIterator{ this->Capacity(), *this };
         }
     };
 }

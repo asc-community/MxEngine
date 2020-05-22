@@ -28,26 +28,26 @@
 
 #pragma once
 
-#include "Utilities/AbstractFactory/AbstractFactory.h"
+#include "Utilities/ECS/ComponentFactory.h"
 
 namespace MxEngine
 {
     struct Component
     {
-        static constexpr size_t ResourceSize = sizeof(Resource<char, AbstractFactoryImpl<char>>);
+        static constexpr size_t ResourceSize = sizeof(Resource<char, ComponentFactory>);
         using Deleter = void (*)(void*);
         std::aligned_storage_t<ResourceSize> resource;
         size_t type;
         Deleter deleter;
 
         template<typename T>
-        Component(size_t type, Resource<T, AbstractFactoryImpl<T>>&& component)
+        Component(size_t type, Resource<T, ComponentFactory>&& component)
         {
-            using ComponentType = Resource<T, AbstractFactoryImpl<T>>;
+            using ComponentType = Resource<T, ComponentFactory>;
             static_assert(sizeof(ComponentType) == sizeof(Component::resource), "storage must fit resource size");
 
             this->type = type;
-            this->deleter = [](void* ptr) { AbstractFactoryImpl<T>::Destroy(*(ComponentType*)ptr); };
+            this->deleter = [](void* ptr) { ComponentFactory::Destroy(*(ComponentType*)ptr); };
             auto* replace = new (&resource) ComponentType();
             *replace = std::move(component);
         }
@@ -61,10 +61,7 @@ namespace MxEngine
         void AddComponent(Args&&... args)
         {
             if (this->HasComponent<T>()) return;
-
-            using Factory = AbstractFactoryImpl<T>;
-            Factory::Init(); // ok if was already inited
-            auto component = Factory::CreateT((T*)nullptr, std::forward<Args>(args)...);
+            auto component = ComponentFactory::CreateT((T*)nullptr, std::forward<Args>(args)...);
             components.emplace_back();
             auto* _ = new (&components.back()) Component(T::ComponentId, std::move(component));
         }
@@ -72,7 +69,7 @@ namespace MxEngine
         template<typename T>
         auto GetComponent()
         {
-            using ResourceT = Resource<T, AbstractFactoryImpl<T>>;
+            using ResourceT = Resource<T, ComponentFactory>;
             for (auto& component : components)
             {
                 auto& componentRef = *reinterpret_cast<Component*>(&component);
@@ -88,7 +85,7 @@ namespace MxEngine
         template<typename T>
         void RemoveComponent()
         {
-            using ResourceT = Resource<T, AbstractFactoryImpl<T>>;
+            using ResourceT = Resource<T, ComponentFactory>;
             for (auto it = components.begin(); it != components.end(); it++)
             {
                 auto& componentRef = *reinterpret_cast<Component*>(&*it);
@@ -97,8 +94,7 @@ namespace MxEngine
                     auto& resource = *reinterpret_cast<ResourceT*>(&componentRef.resource);
                     if (resource.IsValid())
                     {
-                        using Factory = AbstractFactoryImpl<T>;
-                        Factory::Destroy(resource);
+                        ComponentFactory::Destroy(resource);
                     }
                     components.erase(it);
                 }
