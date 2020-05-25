@@ -49,9 +49,9 @@ namespace MxEngine
 
 		FrontendStorage storage;
 
-		UniqueRef<VertexBuffer> VBO;
-		UniqueRef<VertexArray> VAO;
-		UniqueRef<Shader> shader;
+		GResource<VertexBuffer> VBO;
+		GResource<VertexArray> VAO;
+		GResource<Shader> shader;
 	public:
 		DebugBuffer();
 		void SubmitAABB(const AABB& box, const Vector4& color);

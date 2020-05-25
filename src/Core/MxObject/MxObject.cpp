@@ -135,7 +135,7 @@ namespace MxEngine
 
 	void MxObject::ReserveInstances(size_t count, UsageType usage)
 	{
-		Logger::Instance().Debug("MxEngine::MxObject", Format("making object instanced with reserved count: {0}", count));
+		Logger::Instance().Debug("MxEngine::MxObject", MxFormat("making object instanced with reserved count: {0}", count));
 		assert(this->instances == nullptr);
 
 		if (this->ObjectMesh != nullptr && this->ObjectMesh->RefCounter > 1)

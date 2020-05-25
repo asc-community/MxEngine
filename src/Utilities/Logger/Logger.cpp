@@ -40,7 +40,7 @@
 
 namespace MxEngine
 {
-	void LoggerImpl::Error(const std::string& invoker, const std::string& message) const
+	void LoggerImpl::Error(const MxString& invoker, const MxString& message) const
 	{
 		if (error != nullptr && useError)
 		{
@@ -49,7 +49,7 @@ namespace MxEngine
 			::SetConsoleTextAttribute(handle, FOREGROUND_RED | FOREGROUND_INTENSITY);
 			#endif
 
-			* error << '[' << invoker << " error]: " << message << '\n';
+			* error << '[' << invoker.c_str() << " error]: " << message.c_str() << '\n';
 
 			#if defined(MXENGINE_WINDOWS)
 			::SetConsoleTextAttribute(handle, 7); // default
@@ -58,15 +58,15 @@ namespace MxEngine
 		}
 	}
 
-	void LoggerImpl::Debug(const std::string& invoker, const std::string& message) const
+	void LoggerImpl::Debug(const MxString& invoker, const MxString& message) const
 	{
 		if (debug != nullptr && useDebug)
 		{
-			*debug << '[' << invoker << " debug]: " << message << '\n';
+			*debug << '[' << invoker.c_str() << " debug]: " << message.c_str() << '\n';
 		}
 	}
 
-	void LoggerImpl::Warning(const std::string& invoker, const std::string& message) const
+	void LoggerImpl::Warning(const MxString& invoker, const MxString& message) const
 	{
 		#if defined(MXENGINE_WINDOWS)
 		auto handle = ::GetStdHandle(STD_OUTPUT_HANDLE);
@@ -75,7 +75,7 @@ namespace MxEngine
 
 		if (warning != nullptr && useWarning)
 		{
-			*warning << '[' << invoker << " warning]: " << message << '\n';
+			*warning << '[' << invoker.c_str() << " warning]: " << message.c_str() << '\n';
 		}
 
 		#if defined(MXENGINE_WINDOWS)

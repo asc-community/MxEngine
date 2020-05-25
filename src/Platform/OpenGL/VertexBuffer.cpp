@@ -87,7 +87,7 @@ namespace MxEngine
 		if (id == 0)
 		{
 			GLCALL(glGenBuffers(1, &id));
-			Logger::Instance().Debug("OpenGL::VertexBuffer", "created vertex buffer with id = " + std::to_string(id));
+			Logger::Instance().Debug("OpenGL::VertexBuffer", "created vertex buffer with id = " + ToMxString(id));
 		}
 		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, id));
 		GLCALL(glBufferData(GL_ARRAY_BUFFER, count * sizeof(float), data, DataType[(int)type]));

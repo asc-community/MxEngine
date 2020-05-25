@@ -66,7 +66,7 @@ namespace MxEngine
 			}
 			else
 			{
-				Logger::Instance().Debug("OpenGL::InitGLEW", "OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
+				Logger::Instance().Debug("OpenGL::InitGLEW", "OpenGL version: " + MxString((char*)glGetString(GL_VERSION)));
 			}
 		}
 
@@ -80,7 +80,7 @@ namespace MxEngine
 
 			ImGui_ImplGlfw_InitForOpenGL(reinterpret_cast<GLFWwindow*>(window), true);
 
-			GLCALL(std::string shaderVersion = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+			GLCALL(MxString shaderVersion = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
 			auto idx = shaderVersion.find('.');
 			if (idx != shaderVersion.npos)
 			{

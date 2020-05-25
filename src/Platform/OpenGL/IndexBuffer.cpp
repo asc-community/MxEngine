@@ -74,7 +74,7 @@ namespace MxEngine
 		if (id == 0)
 		{
 			GLCALL(glGenBuffers(1, &id));
-			Logger::Instance().Debug("OpenGL::IndexBuffer", "created index buffer with id = " + std::to_string(id));
+			Logger::Instance().Debug("OpenGL::IndexBuffer", "created index buffer with id = " + ToMxString(id));
 		}
 		this->Bind();
 		GLCALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(IndexType), data, GL_STATIC_DRAW));

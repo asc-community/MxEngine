@@ -31,6 +31,8 @@
 #include <filesystem>
 #include <fstream>
 
+#include "Utilities/STL/MxString.h"
+
 namespace MxEngine
 {
     using FilePath = std::filesystem::path;
@@ -62,7 +64,7 @@ namespace MxEngine
             WRITE = 0x2, // open for writing
             BINARY = 0x4, // open as binary
         };
-        using FileData = std::string;
+        using FileData = MxString;
 
         /*!
         creates empty file object (empty stream, empty path)
@@ -79,7 +81,7 @@ namespace MxEngine
         \param path path to a file (absolute or relative to executable directory)
         \param mode how to treat file (see FileMode documentation)
         */
-        File(const std::string& path, FileMode mode = FileMode::READ);
+        File(const MxString& path, FileMode mode = FileMode::READ);
         File(File&) = default;
         File(File&&) = default;
         File& operator=(const File&) = default;
@@ -106,7 +108,7 @@ namespace MxEngine
         \param path path to a file (absolute or relative to executable directory)
         \param mode how to treat file (see FileMode documentation)
         */
-        void Open(const std::string& path, FileMode mode = FileMode::READ);
+        void Open(const MxString& path, FileMode mode = FileMode::READ);
         /*
         closes currently opened std::fstream object (file)
         */
@@ -146,7 +148,7 @@ namespace MxEngine
         \param path path to a file (absolute or relative to executable directory)
         \returns file contents as string. If file is not opened / not exists returns empty string
         */
-        static FileData ReadAllText(const std::string& path);
+        static FileData ReadAllText(const MxString& path);
         /*!
         checks if file exists
         \param path path of file to search for
@@ -173,5 +175,10 @@ namespace MxEngine
     {
         this->fileStream << value;
         return *this;
+    }
+
+    inline auto ToMxString(const FilePath& path)
+    {
+        return ToMxString(path.string());
     }
 }

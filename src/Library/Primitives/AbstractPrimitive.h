@@ -42,7 +42,7 @@ namespace MxEngine
         static constexpr size_t VertexSize = (3 + 2 + 3 + 3 + 3);
 
         // submits vertex data of different LODs in format [v3 (pos), v2 (tex), v3 (norm), v3(tan), v3(bitan)] into first RenderObject on MxObject (creates or replaces existing VBO)
-        inline void SubmitData(const std::string& resourceName, const AABB& boundingBox, ArrayView<std::vector<float>> vbos, ArrayView<std::vector<unsigned int>> ibos)
+        inline void SubmitData(const MxString& resourceName, const AABB& boundingBox, ArrayView<std::vector<float>> vbos, ArrayView<std::vector<unsigned int>> ibos)
         {
             MX_ASSERT(vbos.size() == ibos.size());
 

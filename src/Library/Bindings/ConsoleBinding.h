@@ -36,14 +36,14 @@ namespace MxEngine
 {
 	class ConsoleBinding
 	{
-		std::string handle;
+		MxString handle;
 	public:
-		inline ConsoleBinding(const std::string& eventHandle) noexcept
+		inline ConsoleBinding(const MxString& eventHandle) noexcept
 			: handle(eventHandle) { }
 
 		inline ConsoleBinding& Bind(KeyCode activateKey)
 		{
-			Logger::Instance().Debug("MxEngine::ConsoleBinding", Format("bound console to keycode: {0}", int(activateKey)));
+			Logger::Instance().Debug("MxEngine::ConsoleBinding", MxFormat("bound console to keycode: {0}", int(activateKey)));
 			Application::Get()->GetEventDispatcher().AddEventListener(this->handle,
 				[cursorPos = Vector2(), key = activateKey](UpdateEvent& event) mutable
 				{

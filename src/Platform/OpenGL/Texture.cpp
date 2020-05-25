@@ -66,7 +66,7 @@ namespace MxEngine
 	Texture::Texture()
 	{
 		GLCALL(glGenTextures(1, &id));
-		Logger::Instance().Debug("OpenGL::Texture", "created texture with id = " + std::to_string(id));
+		Logger::Instance().Debug("OpenGL::Texture", "created texture with id = " + ToMxString(id));
 	}
 
 	Texture::Texture(Texture&& texture) noexcept
@@ -104,7 +104,7 @@ namespace MxEngine
 		return *this;
 	}
 
-	Texture::Texture(const std::string& filepath, TextureWrap wrap, bool genMipmaps, bool flipImage)
+	Texture::Texture(const MxString& filepath, TextureWrap wrap, bool genMipmaps, bool flipImage)
 		: Texture()
 	{
 		this->Load(filepath, wrap, genMipmaps, flipImage);
@@ -115,7 +115,7 @@ namespace MxEngine
 		this->FreeTexture();
 	}
 
-	void Texture::Load(const std::string& filepath, TextureWrap wrap, bool genMipmaps, bool flipImage)
+	void Texture::Load(const MxString& filepath, TextureWrap wrap, bool genMipmaps, bool flipImage)
 	{
 		Image image = ImageLoader::LoadImage(filepath, flipImage);
 		this->filepath = filepath;
@@ -251,7 +251,7 @@ namespace MxEngine
 		this->Bind();
 	}
 
-	const std::string& Texture::GetPath() const
+	const MxString& Texture::GetPath() const
 	{
 		return this->filepath;
 	}

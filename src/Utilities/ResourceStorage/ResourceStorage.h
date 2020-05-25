@@ -28,9 +28,7 @@
 
 #pragma once
 
-#include <unordered_map>
-#include <string>
-
+#include "Utilities/STL/MxHashMap.h"
 #include "Utilities/Memory/Memory.h"
 #include "Utilities/Logger/Logger.h"
 
@@ -40,10 +38,10 @@ namespace MxEngine
     ResourceStorage is a small generic wrapper around STL container which replace iterator compares to human-readable functions.
     To use it, you probably would like to write something like ResourceStorage<MxObject, ID>, where MxObject is value and ID is a key.
     */
-    template<typename T, typename Key = std::string>
+    template<typename T, typename Key = MxString>
     class ResourceStorage
     {
-        using BaseStorage = std::unordered_map<Key, UniqueRef<T>>;
+        using BaseStorage = MxHashMap<Key, UniqueRef<T>>;
 
         /*!
         inner STL container that stores objects
@@ -115,7 +113,7 @@ namespace MxEngine
         */
         void Clear()
         {
-            Logger::Instance().Debug("MxEngine::ResourceStorage", "deleting all associated resources: " + (std::string)typeid(T).name());
+            Logger::Instance().Debug("MxEngine::ResourceStorage", "deleting all associated resources: " + (MxString)typeid(T).name());
             this->storage.clear();
         }
     };

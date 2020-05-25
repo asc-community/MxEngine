@@ -10,7 +10,7 @@ namespace MxEngine
 
     void Sphere::Resize(size_t polygons)
     {
-        auto resourceName = Format(FMT_STRING("Sphere_{0}"), Application::Get()->GenerateResourceId());
+        auto resourceName = MxFormat(FMT_STRING("Sphere_{0}"), Application::Get()->GenerateResourceId());
 
         std::vector<decltype(Sphere::GetSphereData(polygons).first)> vbos;
         std::vector<decltype(Sphere::GetSphereData(polygons).second)> ibos;

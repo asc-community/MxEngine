@@ -36,7 +36,7 @@ namespace MxEngine
     class Script
     {
     public:
-        using ScriptData = std::string;
+        using ScriptData = MxString;
     private:
         FilePath path;
         ScriptData data;

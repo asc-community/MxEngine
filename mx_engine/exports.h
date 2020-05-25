@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -195,12 +195,12 @@ void InvokePythonFunction(const py::object& func, Args&&... args)
     catch (py::error_already_set&)
     {
         ::PyErr_Print();
-        std::string error;
+        MxString error;
         try
         {
             auto dict = py::import("__main__").attr("__dict__");
             py::object msg = dict["errorHandler"].attr("value");
-            error = py::extract<std::string>(msg);
+            error = ToMxString((std::string)py::extract<std::string>(msg));
         }
         catch (python::error_already_set&)
         {
@@ -244,7 +244,7 @@ public:
     py::object createCallback, loadCallback, unloadCallback, updateCallback, renderCallback, destroyCallback;
 
     PyScene(const std::string& name, const std::string& directory)
-        : Scene(name, directory) { }
+        : Scene(ToMxString(name), directory.c_str()) { }
 
     virtual void OnCreate() override
     {
@@ -397,6 +397,11 @@ struct FilePathToPyString
     {
         return ::PyUnicode_FromString(path.string().c_str());
     }
+
+    static std::string to_std_string(FilePath& path)
+    {
+        return path.string();
+    }
 };
 
 struct StringToPyString
@@ -437,11 +442,54 @@ struct FilePathFromPyString
     }
 };
 
+struct MxStringToPyString
+{
+    static PyObject* convert(const MxString& path)
+    {
+        return ::PyUnicode_FromString(path.c_str());
+    }
+
+    static std::string to_std_string(MxString& path)
+    {
+        return std::string{ path.c_str() };
+    }
+};
+
+struct MxStringFromPyString
+{
+    MxStringFromPyString()
+    {
+        py::converter::registry::push_back(
+            &convertible,
+            &construct,
+            py::type_id<MxString>());
+    }
+
+    static void* convertible(PyObject* obj_ptr)
+    {
+        if (!PyUnicode_Check(obj_ptr)) return nullptr;
+        return obj_ptr;
+    }
+
+    static void construct(
+        PyObject* obj_ptr,
+        py::converter::rvalue_from_python_stage1_data* data)
+    {
+        const char* value = ::_PyUnicode_AsString(obj_ptr);
+        if (value == 0) py::throw_error_already_set();
+        void* storage = (
+            (py::converter::rvalue_from_python_storage<FilePath>*)
+            data)->storage.bytes;
+        new (storage) MxString(value);
+        data->convertible = storage;
+    }
+};
+
 void InitFilePathWrapper()
 {
-    py::to_python_converter<
-        FilePath,
-        FilePathToPyString>();
+    //py::to_python_converter<
+    //    FilePath,
+    //    FilePathToPyString>();
 
     py::to_python_converter<
         std::string,
@@ -450,36 +498,45 @@ void InitFilePathWrapper()
     FilePathFromPyString();
 }
 
+void InitMxStringWrapper()
+{
+    //py::to_python_converter<
+    //    MxString,
+    //    MxStringToPyString>();
+
+    MxStringFromPyString();
+}
+
 void RemoveEventWrapper(Application& app, const std::string& name)
 {
-    app.GetEventDispatcher().RemoveEventListener(name);
+    app.GetEventDispatcher().RemoveEventListener(ToMxString(name));
 }
 
 Mesh* LoadMeshWrapper(Scene& scene, const std::string& file)
 {
-    return scene.LoadMesh(file);
+    return scene.LoadMesh(ToMxString(file));
 }
 
 Script* LoadScriptWrapper(Scene& scene, const std::string& file)
 {
-    return scene.LoadScript(file);
+    return scene.LoadScript(ToMxString(file));
 }
 
 Shader* LoadShaderWrapper2(Scene& scene, const std::string& vertex, const std::string& fragment)
 {
-    std::string name = Format(FMT_STRING("pyShader_{0}"), Application::Get()->GenerateResourceId());
-    return scene.LoadShader(name, vertex, fragment);
+    auto name = MxFormat(FMT_STRING("pyShader_{0}"), Application::Get()->GenerateResourceId());
+    return scene.LoadShader(name, ToMxString(vertex), ToMxString(fragment));
 }
 
 Shader* LoadShaderWrapper3(Scene& scene, const std::string& vertex, const std::string& geometry, const std::string& fragment)
 {
-    std::string name = Format(FMT_STRING("pyShader_{0}"), Application::Get()->GenerateResourceId());
-    return scene.LoadShader(name, vertex, geometry, fragment);
+    auto name = MxFormat(FMT_STRING("pyShader_{0}"), Application::Get()->GenerateResourceId());
+    return scene.LoadShader(name, ToMxString(vertex), ToMxString(geometry), ToMxString(fragment));
 }
 
 Texture* LoadTextureWrapper(Scene& scene, const std::string& file)
 {
-    return scene.LoadTexture(file);
+    return scene.LoadTexture(ToMxString(file));
 }
 
 void SetShaderWrapper(MxObject& object, const std::string& vertex, const std::string& fragment)
@@ -495,7 +552,7 @@ void SetTextureWrapper(MxObject& object, const std::string& texture)
 template<typename T, typename... Args>
 MxObject& AddPrimitiveWrapper(Scene& scene, const std::string& name, Args... args)
 {
-    return scene.AddObject(name, MakeUnique<T>(args...));
+    return scene.AddObject(ToMxString(name), MakeUnique<T>(args...));
 }
 
 Texture* MakeTextureIntWrapper(int r, int g, int b)
@@ -513,11 +570,6 @@ std::string GetDirectoryWrapper(Scene& scene)
     return scene.GetDirectory().string();
 }
 
-std::string GetNameWrapper(Scene& scene)
-{
-    return scene.GetName();
-}
-
 void AspectRatioWrapper(ICamera& camera, float aspect)
 {
     camera.SetAspectRatio(aspect);
@@ -525,17 +577,17 @@ void AspectRatioWrapper(ICamera& camera, float aspect)
 
 Scene& CreatePySceneWrapper(Application& app, const std::string& name, const std::string& directory)
 {
-    return app.CreateScene(name, MakeUnique<PyScene>(name, directory));
+    return app.CreateScene(ToMxString(name), MakeUnique<PyScene>(name, directory));
 }
 
 void ConsoleBindWrapper(const std::string& handle, KeyCode key)
 {
-    ConsoleBinding(handle).Bind(key);
+    ConsoleBinding(ToMxString(handle)).Bind(key);
 }
 
 void AppCloseBindWrapper(const std::string& handle, KeyCode key)
 {
-    AppCloseBinding(handle).Bind(key);
+    AppCloseBinding(ToMxString(handle)).Bind(key);
 }
 
 void SetSurfaceWrapper(Surface& surface, py::object func, float xsize, float ysize, float step)
@@ -561,22 +613,27 @@ Skybox* GetSkyboxWrapper(Scene& scene)
     return scene.SceneSkybox.get();
 }
 
+Scene& GetSceneWrapper(Application& app, const std::string& name)
+{
+    return app.GetScene(ToMxString(name));
+}
+
 void ShaderVertFragWrapper(const std::string& vertex, const std::string& fragment)
 {
     Shader** shader = &Application::Get()->GetRenderer().ObjectShader;
-    ShaderBinding("PyShaderBinding", shader).Bind(vertex, fragment);
+    ShaderBinding("PyShaderBinding", shader).Bind(ToMxString(vertex), ToMxString(fragment));
 }
 
 void ShaderVertGeomFragWrapper(const std::string& vertex, const std::string& geometry, const std::string& fragment)
 {
     Shader** shader = &Application::Get()->GetRenderer().ObjectShader;
-    ShaderBinding("PyShaderBinding", shader).Bind(vertex, geometry, fragment);
+    ShaderBinding("PyShaderBinding", shader).Bind(ToMxString(vertex), ToMxString(geometry), ToMxString(fragment));
 }
 
 template<typename Event>
 void AddEventListenerWrapper(Application& app, const std::string& name, py::object callback)
 {
-    app.GetEventDispatcher().AddEventListener<Event>(name, 
+    app.GetEventDispatcher().AddEventListener<Event>(ToMxString(name), 
         [name, callback = std::move(callback)](Event& e)
         {
             InvokePythonFunction(callback, e);
@@ -593,7 +650,7 @@ void SetContextPointerWrapper(
 {
     Application::Set(reinterpret_cast<Application*>(applicationPointer));
     FileModule::Clone(reinterpret_cast<FileManagerImpl*>(filemanagerPointer));
-    UUIDGenerator::Clone(reinterpret_cast<UUIDGeneratorImpl*>(filemanagerPointer));
+    UUIDGenerator::Clone(reinterpret_cast<UUIDGeneratorImpl*>(uuidGenPointer));
     GraphicFactory::Clone(reinterpret_cast<decltype(GraphicFactory::GetImpl())>(graphicPointer));
     ComponentFactory::Clone(reinterpret_cast<ComponentFactory::FactoryMap*>(componentPointer));
 }
@@ -611,7 +668,7 @@ void InitializeOpenGL()
     }
     else
     {
-        context->GetLogger().Error("MxEngine::PythonModule", "failed initializing OpenGL context: " + (std::string)(const char*)glewGetErrorString(result));
+        context->GetLogger().Error("MxEngine::PythonModule", "failed initializing OpenGL context: " + MxString{ (const char*)glewGetErrorString(result) });
     }
 }
 
@@ -645,6 +702,15 @@ void DestroyPyApplication()
 BOOST_PYTHON_MODULE(mx_engine)
 {
     InitFilePathWrapper();
+    InitMxStringWrapper();
+
+    py::class_<MxString>("mx_string")
+        .def("__str__", MxStringToPyString::to_std_string)
+        ;
+    
+    py::class_<FilePath>("mx_string")
+        .def("__str__", FilePathToPyString::to_std_string)
+        ;
 
     py::def("MxEngineSetContextPointer", SetContextPointerWrapper);
     py::def("InitializeOpenGL", InitializeOpenGL);
@@ -659,10 +725,8 @@ BOOST_PYTHON_MODULE(mx_engine)
     py::class_<Application, boost::noncopyable>("application", py::no_init)
         .def("create_context", &Application::CreateContext)
         .def("create_scene", RefGetter(CreatePySceneWrapper))
-        .def("execute", (ExecuteScriptFileFunc)&Application::ExecuteScript)
-        .def("execute", (ExecuteScriptStrFunc)&Application::ExecuteScript)
         .def("load_scene", &Application::LoadScene)
-        .def("get_scene", RefGetter(&Application::GetScene))
+        .def("get_scene", RefGetter(GetSceneWrapper))
         .def("scene_exists", &Application::SceneExists)
         .def("delete_scene", &Application::DestroyScene)
         .def("run", &Application::Run)
@@ -752,7 +816,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def_readonly("skybox", RefGetter(GetSkyboxWrapper))
         .def_readonly("viewport", &Scene::Viewport)
         .add_property("directory", GetDirectoryWrapper, &Scene::SetDirectory)
-        .add_property("name", GetNameWrapper)
+        .add_property("name", RefGetter(&Scene::GetName))
         ;
 
     py::class_<PyScene, boost::noncopyable, py::bases<Scene>>("pyscene", py::no_init)
@@ -1059,14 +1123,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("size", &std::vector<float>::size)
         ;
 
-    using LoadVsFs = void(Shader::*)(const std::string&, const std::string&);
-    using LoadVsGsFs = void(Shader::*)(const std::string&, const std::string&, const std::string&);
-
     py::class_<Shader, boost::noncopyable>("shader", py::init())
-        .def("load", (LoadVsFs)&Shader::Load)
-        .def("load", (LoadVsGsFs)&Shader::Load)
-        .def("load_source", (LoadVsFs)&Shader::LoadFromString)
-        .def("load_source", (LoadVsGsFs)&Shader::LoadFromString)
         .def("set_int", &Shader::SetUniformInt)
         .def("set_float", &Shader::SetUniformFloat)
         .def("set_vec2", &Shader::SetUniformVec2)
@@ -1081,7 +1138,6 @@ BOOST_PYTHON_MODULE(mx_engine)
     using BindTextureId = void(Texture::*)(Texture::TextureBindId) const;
 
     py::class_<Texture, boost::noncopyable>("texture", py::init())
-        .def("load", (LoadTextureFile)&Texture::Load)
         .def("load_raw", (LoadTextureRaw)&Texture::Load)
         .def("load_depth", &Texture::LoadDepth)
         .def("load_multisample", &Texture::LoadMultisample)
@@ -1387,17 +1443,6 @@ BOOST_PYTHON_MODULE(mx_engine)
     py::def("bind_close", AppCloseBindWrapper);
     py::def("bind_shader", ShaderVertFragWrapper);
     py::def("bind_shader", ShaderVertGeomFragWrapper);
-
-    using Move4Func = InputControlBinding & (InputControlBinding::*)(KeyCode, KeyCode, KeyCode, KeyCode);
-    using Move6Func = InputControlBinding & (InputControlBinding::*)(KeyCode, KeyCode, KeyCode, KeyCode, KeyCode, KeyCode);
-
-    py::class_<InputControlBinding>("control_binder", py::init<std::string, IMovable&>())
-        .def("bind_move", RefGetter((Move4Func)&InputControlBinding::BindMovement))
-        .def("bind_move", RefGetter((Move6Func)&InputControlBinding::BindMovement))
-        .def("bind_rotate", RefGetter(&InputControlBinding::BindRotation))
-        .def("bind_rotate_vert", RefGetter(&InputControlBinding::BindVerticalRotation))
-        .def("bind_rotate_horz", RefGetter(&InputControlBinding::BindHorizontalRotation))
-        ;
 
     py::class_<LightBinding<SpotLight>>("spot_lights_binder", py::init<Scene::LightContainer<SpotLight>&>())
         .def("bind", &LightBinding<SpotLight>::BindAll)

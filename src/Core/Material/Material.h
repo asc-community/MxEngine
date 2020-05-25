@@ -37,14 +37,14 @@ namespace MxEngine
 {
 	struct Material
 	{
-		Ref<Texture> map_Ka;
-		Ref<Texture> map_Kd;
-		Ref<Texture> map_Ks;
-		Ref<Texture> map_Ke;
-		Ref<Texture> map_d;
-		Ref<Texture> map_normal;
-		Ref<Texture> map_height;
-		Ref<Texture> bump;
+		GResource<Texture> map_Ka;
+		GResource<Texture> map_Kd;
+		GResource<Texture> map_Ks;
+		GResource<Texture> map_Ke;
+		GResource<Texture> map_d;
+		GResource<Texture> map_normal;
+		GResource<Texture> map_height;
+		GResource<Texture> bump;
 
 		float Ns = 128.0f;
 		float Ni = 0.0f;

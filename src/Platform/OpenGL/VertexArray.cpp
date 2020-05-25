@@ -83,7 +83,7 @@ namespace MxEngine
 		if (id == 0)
 		{
 			GLCALL(glGenVertexArrays(1, &id));
-			Logger::Instance().Debug("OpenGL::VertexArray", "created vertex array with id = " + std::to_string(id));
+			Logger::Instance().Debug("OpenGL::VertexArray", "created vertex array with id = " + ToMxString(id));
 		}
 		Bind();
 		buffer.Bind();

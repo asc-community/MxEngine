@@ -40,7 +40,7 @@ namespace MxEngine
 		Free(this->console);
 	}
 
-	void DeveloperConsole::Log(const std::string& message)
+	void DeveloperConsole::Log(const MxString& message)
 	{
 		this->console->PrintLog("%s", message.c_str());
 	}

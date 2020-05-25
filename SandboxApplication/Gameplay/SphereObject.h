@@ -15,7 +15,7 @@ public:
         auto& scene = Application::Get()->GetCurrentScene();
         auto& material = this->GetMesh()->GetRenderObjects()[0].GetMaterial();
         this->ObjectTexture = scene.LoadTexture("textures/planet_texture.png");
-        material.map_height = MakeUnique<Texture>(FileModule::GetFilePath("textures/planet_height.png"_id).string());
-        material.map_normal = MakeUnique<Texture>(FileModule::GetFilePath("textures/planet_normal.png"_id).string());
+        material.map_height = GraphicFactory::Create<Texture>(ToMxString(FileModule::GetFilePath("textures/planet_height.png"_id)));
+        material.map_normal = GraphicFactory::Create<Texture>(ToMxString(FileModule::GetFilePath("textures/planet_normal.png"_id)));
     }
 };

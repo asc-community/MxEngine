@@ -48,10 +48,10 @@ namespace MxEngine
 	CubeMap::CubeMap()
 	{
 		GLCALL(glGenTextures(1, &id));
-		Logger::Instance().Debug("OpenGL::CubeMap", "created cubemap with id = " + std::to_string(id));
+		Logger::Instance().Debug("OpenGL::CubeMap", "created cubemap with id = " + ToMxString(id));
 	}
 
-    CubeMap::CubeMap(const std::string filepath, bool genMipmaps, bool flipImage)
+    CubeMap::CubeMap(const MxString filepath, bool genMipmaps, bool flipImage)
 		: CubeMap()
     {
 		this->Load(filepath, genMipmaps, flipImage);
@@ -116,7 +116,7 @@ namespace MxEngine
 		this->Bind();
 	}
 
-	void CubeMap::Load(const std::string& filepath, bool genMipmaps, bool flipImage)
+	void CubeMap::Load(const MxString& filepath, bool genMipmaps, bool flipImage)
 	{
 		Image img = ImageLoader::LoadImage(filepath, flipImage);
 		if (img.data == nullptr)
@@ -194,7 +194,7 @@ namespace MxEngine
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER));
 	}
 
-	const std::string& CubeMap::GetPath() const
+	const MxString& CubeMap::GetPath() const
 	{
 		return this->filepath;
 	}

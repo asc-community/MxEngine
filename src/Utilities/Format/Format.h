@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Vendors/fmt/format.h"
+#include "Utilities/STL/MxString.h"
 
 namespace MxEngine
 {
@@ -43,4 +44,20 @@ namespace MxEngine
     {
         return fmt::format(formatStr, std::forward<Args>(args)...);
     }
+
+    template<typename S, typename... Args, typename Char = fmt::char_t<S>>
+    inline MxString MxFormat(const S& formatStr, Args&&... args)
+    {
+        return MxString { Format(formatStr, std::forward<Args>(args)...).c_str() };
+    }
 }
+
+template <>
+struct fmt::formatter<MxEngine::MxString> : formatter<string_view>
+{
+    template <typename FormatContext>
+    auto format(MxEngine::MxString str, FormatContext& ctx)
+    {
+        return formatter<string_view>::format(str.c_str(), ctx);
+    }
+};

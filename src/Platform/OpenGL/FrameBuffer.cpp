@@ -59,7 +59,7 @@ namespace MxEngine
     FrameBuffer::FrameBuffer()
     {
         GLCALL(glGenFramebuffers(1, &id));
-        Logger::Instance().Debug("OpenGL::FrameBuffer", "created framebuffer with id = " + std::to_string(id));
+        Logger::Instance().Debug("OpenGL::FrameBuffer", "created framebuffer with id = " + ToMxString(id));
     }
 
     void FrameBuffer::AttachTexture(Attachment attachment, int width, int height)

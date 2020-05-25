@@ -54,10 +54,10 @@ namespace MxEngine
 		return this->entriesCount;
 	}
 
-	void ProfileSession::StartSession(const std::string& filename)
+	void ProfileSession::StartSession(const MxString& filename)
 	{
 		if (stream.is_open()) stream.close();
-		stream.open(filename);
+		stream.open(filename.c_str());
 		this->WriteJsonHeader();
 	}
 

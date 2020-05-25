@@ -30,32 +30,32 @@
 
 #include "Utilities/Math/Math.h"
 #include "core/Macro/Macro.h"
-
-#include <unordered_map>
+#include "Utilities/STL/MxString.h"
+#include "Utilities/STL/MxHashMap.h"
 
 namespace MxEngine
 {
 	class Shader
 	{
 		#if defined(MXENGINE_DEBUG)
-		std::string vertexShaderPath, geometryShaderPath, fragmentShaderPath;
+		MxString vertexShaderPath, geometryShaderPath, fragmentShaderPath;
 		#endif
 		using UniformType = int;
-		using UniformCache = std::unordered_map<std::string, UniformType>;
+		using UniformCache = MxHashMap<MxString, UniformType>;
 		using ShaderId = unsigned int;
 		using BindableId = unsigned int;
 
 		BindableId id = 0;
 		mutable UniformCache uniformCache;
 
-		ShaderId CompileShader(unsigned int type, const std::string& source, const std::string& name) const;
+		ShaderId CompileShader(unsigned int type, const MxString& source, const MxString& name) const;
 		BindableId CreateProgram(ShaderId vertexShader, ShaderId fragmentShader) const;
 		BindableId CreateProgram(ShaderId vertexShader, ShaderId geometryShader, ShaderId fragmentShader) const;
-		UniformType GetUniformLocation(const std::string& uniformName) const;
+		UniformType GetUniformLocation(const MxString& uniformName) const;
 	public:
 		Shader();
-		Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
-		Shader(const std::string& vertexShaderPath, const std::string& geometryShaderPath, const std::string& fragmentShaderPath);
+		Shader(const MxString& vertexShaderPath, const MxString& fragmentShaderPath);
+		Shader(const MxString& vertexShaderPath, const MxString& geometryShaderPath, const MxString& fragmentShaderPath);
 		Shader(const Shader&) = delete;
 		Shader(Shader&& shader) noexcept;
 		Shader& operator=(const Shader&) = delete;
@@ -65,16 +65,16 @@ namespace MxEngine
 		void Bind() const;
 		void Unbind() const;
 		BindableId GetNativeHandle() const;
-		void Load(const std::string& vertex, const std::string& fragment);
-		void Load(const std::string& vertex, const std::string& geometry, const std::string& fragment);
-		void LoadFromString(const std::string& vertex, const std::string& fragment);
-		void LoadFromString(const std::string& vertex, const std::string& geometry, const std::string& fragment);
-		void SetUniformFloat(const std::string& name, float f) const;
-		void SetUniformVec2(const std::string& name, const Vector2& vec) const;
-		void SetUniformVec3(const std::string& name, const Vector3& vec) const;
-		void SetUniformVec4(const std::string& name, const Vector4& vec) const;
-		void SetUniformMat4(const std::string& name, const Matrix4x4& matrix) const;
-		void SetUniformMat3(const std::string& name, const Matrix3x3& matrix) const;
-		void SetUniformInt(const std::string& name, int i) const;
+		void Load(const MxString& vertex, const MxString& fragment);
+		void Load(const MxString& vertex, const MxString& geometry, const MxString& fragment);
+		void LoadFromString(const MxString& vertex, const MxString& fragment);
+		void LoadFromString(const MxString& vertex, const MxString& geometry, const MxString& fragment);
+		void SetUniformFloat(const MxString& name, float f) const;
+		void SetUniformVec2(const MxString& name, const Vector2& vec) const;
+		void SetUniformVec3(const MxString& name, const Vector3& vec) const;
+		void SetUniformVec4(const MxString& name, const Vector4& vec) const;
+		void SetUniformMat4(const MxString& name, const Matrix4x4& matrix) const;
+		void SetUniformMat3(const MxString& name, const Matrix3x3& matrix) const;
+		void SetUniformInt(const MxString& name, int i) const;
 	};
 }

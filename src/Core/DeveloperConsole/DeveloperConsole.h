@@ -28,8 +28,7 @@
 
 #pragma once
 
-#include <string>
-
+#include "Utilities/STL/MxString.h"
 #include "Core/Macro/Macro.h"
 #include "Utilities/Memory/Memory.h"
 #include "Utilities/Math/Math.h"
@@ -60,7 +59,7 @@ namespace MxEngine
 		DeveloperConsole(DeveloperConsole&&) = default;
 		~DeveloperConsole();
 
-		void Log(const std::string& message);
+		void Log(const MxString& message);
 		void ClearLog();
 		void PrintHistory();
 		void OnRender();

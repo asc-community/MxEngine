@@ -76,7 +76,11 @@ namespace MxEngine
         void DecRef()
         {
             if (this->IsValid())
-                this->DereferenceHandle(handle).refCount--;
+            {
+                auto& resource = this->DereferenceHandle(handle);
+                if ((--resource.refCount) == 0)
+                    Factory::Destroy(*this);
+            }
         }
 
         ManagedResource<T>& DereferenceHandle(size_t handle) const
@@ -146,6 +150,18 @@ namespace MxEngine
             MX_ASSERT(this->IsValid());
             if (!this->IsValid()) return nullptr;
             return this->GetUnchecked();
+        }
+
+        T& operator*()
+        {
+            MX_ASSERT(this->IsValid());
+            return *this->GetUnchecked();
+        }
+
+        const T& operator*() const
+        {
+            MX_ASSERT(this->IsValid());
+            return *this->GetUnchecked();
         }
 
         const T* operator->() const

@@ -89,7 +89,7 @@ namespace MxEngine
 		virtual void OnDestroy();
 	public:
 		void ExecuteScript(Script& script);
-		void ExecuteScript(const std::string& script);
+		void ExecuteScript(const MxString& script);
 		void ExecuteScript(const char* script);
 
 		void ToggleDeveloperConsole(bool isVisible);
@@ -104,11 +104,11 @@ namespace MxEngine
 		Window& GetWindow();
 		Scene& GetCurrentScene();
 		Scene& GetGlobalScene();
-		void LoadScene(const std::string& name);
-		Scene& CreateScene(const std::string& name, UniqueRef<Scene> scene);
-		Scene& GetScene(const std::string& name);
-		bool SceneExists(const std::string& name);
-		void DestroyScene(const std::string& name);
+		void LoadScene(const MxString& name);
+		Scene& CreateScene(const MxString& name, UniqueRef<Scene> scene);
+		Scene& GetScene(const MxString& name);
+		bool SceneExists(const MxString& name);
+		void DestroyScene(const MxString& name);
 		Counter::CounterType GenerateResourceId();
 		float GetTimeDelta() const;
 		int GetCurrentFPS() const;

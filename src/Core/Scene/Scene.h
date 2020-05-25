@@ -65,14 +65,14 @@ namespace MxEngine
             ArrayView<LightType> GetView();
         };
     private:
-        std::string name;
+        MxString name;
         FilePath scenePath;
         ResourceManager resourceManager;
         mutable ObjectManager objectManager;
         AppEventDispatcher dispatcher;
     public:
         Scene();
-        Scene(const std::string& name, const FilePath& directory);
+        Scene(const MxString& name, const FilePath& directory);
         Scene(Scene&&) = default;
         Scene& operator=(Scene&&) = default;
         virtual ~Scene() = default;
@@ -93,29 +93,29 @@ namespace MxEngine
         template<typename Resource>
         ResourceManager::ConcreteStorage<Resource>& GetResourceManager();
         template<typename Resource>
-        Resource* GetResource(const std::string& name);
+        Resource* GetResource(const MxString& name);
         const ObjectManager::Storage& GetObjectList() const;
         void PrepareRender();
         AppEventDispatcher& GetEventDispatcher();
         void Clear();
 
-        MxObject& CreateObject(const std::string& name, const std::string& filename);
-        MxObject& AddObject(const std::string& name, UniqueRef<MxObject> object);
-        MxObject& CopyObject(const std::string& name, const std::string& existingObject);
-        MxObject& GetObject(const std::string& name) const;
-        void DestroyObject(const std::string& name);
-        bool HasObject(const std::string& name) const;
+        MxObject& CreateObject(const MxString& name, const MxString& filename);
+        MxObject& AddObject(const MxString& name, UniqueRef<MxObject> object);
+        MxObject& CopyObject(const MxString& name, const MxString& existingObject);
+        MxObject& GetObject(const MxString& name) const;
+        void DestroyObject(const MxString& name);
+        bool HasObject(const MxString& name) const;
 
-        Mesh* LoadMesh(const std::string& name);
-        Script* LoadScript(const std::string& name);
-        Shader* LoadShader(const std::string& name, const std::string& vertex, const std::string& fragment);
-        Shader* LoadShader(const std::string& name, const std::string& vertex, const std::string& geometry, const std::string& fragment);
-        Texture* LoadTexture(const std::string& name, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
-        CubeMap* LoadCubeMap(const std::string& name, bool genMipmaps = true, bool flipImage = false);
+        Mesh* LoadMesh(const MxString& name);
+        Script* LoadScript(const MxString& name);
+        Shader* LoadShader(const MxString& name, const MxString& vertex, const MxString& fragment);
+        Shader* LoadShader(const MxString& name, const MxString& vertex, const MxString& geometry, const MxString& fragment);
+        Texture* LoadTexture(const MxString& name, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
+        CubeMap* LoadCubeMap(const MxString& name, bool genMipmaps = true, bool flipImage = false);
     
         void SetDirectory(const FilePath& path);
         const FilePath& GetDirectory() const;
-        const std::string& GetName() const;
+        const MxString& GetName() const;
     };
 
     template<typename Resource>
@@ -125,7 +125,7 @@ namespace MxEngine
     }
 
     template<typename Resource>
-    inline Resource* Scene::GetResource(const std::string& name)
+    inline Resource* Scene::GetResource(const MxString& name)
     {
         MX_ASSERT(this->GetResourceManager<Resource>().Exists(name));
         return this->GetResourceManager<Resource>().Get(name);

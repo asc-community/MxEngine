@@ -55,23 +55,23 @@ namespace MxEngine
 		LoggerImpl(LoggerImpl&&) = delete;
 
 		/*!
-		prints error to an error stream (defaults to std::cout). Error is coloured red. By default stacktrace is also printed (may cause performance issues on some platforms)
+		prints error to an error stream (defaults to std::cout). Error is colored red. By default stacktrace is also printed (may cause performance issues on some platforms)
 		\param invoker name of module which invokes the error
 		\param message error message
 		*/
-		void Error  (const std::string& invoker, const std::string& message) const;
+		void Error  (const MxString& invoker, const MxString& message) const;
 		/*!
-		prints debug info to an debug stream (defaults to std::cout). Debug message is coloured light-grey. Stacktrace is not printed
+		prints debug info to an debug stream (defaults to std::cout). Debug message is colored light-grey. Stacktrace is not printed
 		\param invoker name of module which invokes the debug message
 		\param message debug message
 		*/
-		void Debug  (const std::string& invoker, const std::string& message) const;
+		void Debug  (const MxString& invoker, const MxString& message) const;
 		/*!
-		prints warning to an warning stream (defaults to std::cout). Warning is coloured yellow. Stacktrace is not printed
+		prints warning to an warning stream (defaults to std::cout). Warning is colored yellow. Stacktrace is not printed
 		\param invoker name of module which invokes the warning
 		\param message warning message
 		*/
-		void Warning(const std::string& invoker, const std::string& message) const;
+		void Warning(const MxString& invoker, const MxString& message) const;
 		/*!
 		prints stacktrace to error stream if stacktracing is enabled (defaults std::cout). 
 		Logger function itself, CRT functions or other system functions are ignored and not printed

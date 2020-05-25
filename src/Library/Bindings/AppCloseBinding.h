@@ -35,14 +35,14 @@ namespace MxEngine
 {   
 	class AppCloseBinding
 	{
-		std::string handle;
+		MxString handle;
 	public:
-		inline AppCloseBinding(const std::string& eventHandle) noexcept
+		inline AppCloseBinding(const MxString& eventHandle) noexcept
 			: handle(eventHandle) { }
 		
 		inline AppCloseBinding& Bind(KeyCode activateKey)
 		{
-			Logger::Instance().Debug("MxEngine::AppCloseBinding", Format("bound app close to keycode: {0}", int(activateKey)));
+			Logger::Instance().Debug("MxEngine::AppCloseBinding", MxFormat("bound app close to keycode: {0}", int(activateKey)));
 			Application::Get()->GetEventDispatcher().AddEventListener(this->handle,
 				[key = activateKey](KeyEvent& event)
 				{

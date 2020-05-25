@@ -31,7 +31,7 @@
 #include "Core/Macro/Macro.h"
 
 #if defined(MXENGINE_DEBUG)
-#include <string>
+#include "Utilities/STL/MxString.h"
 #endif
 
 #include <vector>
@@ -51,7 +51,7 @@ namespace MxEngine
 		using ElementBuffer = std::vector<VertexBufferElement>;
 
 		#if defined(MXENGINE_DEBUG)
-		std::string layoutString;
+		MxString layoutString;
 		#endif
 
 		ElementBuffer elements;

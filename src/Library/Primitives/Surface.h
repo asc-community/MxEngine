@@ -37,11 +37,11 @@ namespace MxEngine
     class Surface : public AbstractPrimitive
     {
         Array2D<Vector3> surface;
-        std::string name;
+        MxString name;
     public:
         Surface()
         {
-            name = Format(FMT_STRING("MxSurface_{0}"), Application::Get()->GenerateResourceId());
+            name = MxFormat(FMT_STRING("MxSurface_{0}"), Application::Get()->GenerateResourceId());
         }
 
         template<typename Func>

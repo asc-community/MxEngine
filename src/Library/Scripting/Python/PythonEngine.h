@@ -34,7 +34,8 @@
 
 #define BOOST_PYTHON_STATIC_LIB
 #include <boost/python.hpp>
-#include <string>
+
+#include "Utilities/STL/MxString.h"
 
 namespace MxEngine
 {
@@ -47,8 +48,8 @@ namespace MxEngine
 
         PythonModule pythonModule;
         PythonNamespace pythonNamespace;
-        std::string lastError;
-        std::string lastOutput;
+        MxString lastError;
+        MxString lastOutput;
     public:
         using BoxedValue = python::api::object;
 
@@ -60,8 +61,8 @@ namespace MxEngine
         void MirrorErrorStream(bool value);
         
         bool HasErrors() const;
-        const std::string& GetErrorMessage() const;
-        const std::string& GetOutput() const;
+        const MxString& GetErrorMessage() const;
+        const MxString& GetOutput() const;
     };
 }
 #endif

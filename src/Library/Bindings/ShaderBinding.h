@@ -36,16 +36,16 @@ namespace MxEngine
 {
 	class ShaderBinding
 	{
-		std::string handle;
+		MxString handle;
 		Shader** shader;
 	public:
-		ShaderBinding(const std::string& eventHandle, Shader** shader = nullptr)
+		ShaderBinding(const MxString& eventHandle, Shader** shader = nullptr)
 			: handle(eventHandle), shader(shader)
 		{
 			
 		}
 
-		inline void Bind(const std::string& vertex, const std::string& fragment)
+		inline void Bind(const MxString& vertex, const MxString& fragment)
 		{
 			auto vertexhash = MakeStringId(vertex);
 			auto fragmenthash = MakeStringId(fragment);
@@ -79,7 +79,7 @@ namespace MxEngine
 			});
 		}
 
-		inline void Bind(const std::string& vertex, const std::string& geometry, const std::string& fragment)
+		inline void Bind(const MxString& vertex, const MxString& geometry, const MxString& fragment)
 		{
 			auto& directory = Application::Get()->GetCurrentScene().GetDirectory();
 			if (shader == nullptr) return;

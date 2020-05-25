@@ -48,7 +48,7 @@ namespace MxEngine
                 auto systemFileTime = File::LastModifiedTime(this->path);
                 if (this->fileUpdate < systemFileTime)
                 {
-                    Logger::Instance().Debug("MxEngine::Script", "updated script: " + this->path.string());
+                    Logger::Instance().Debug("MxEngine::Script", "updated script: " + ToMxString(this->path));
                     this->data = File(this->path).ReadAllText();
                 }
 

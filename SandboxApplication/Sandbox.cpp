@@ -15,7 +15,7 @@ void SandboxApp::OnCreate()
 	this->GetEventDispatcher().AddEventListener("CountFPS",
 		[this](FpsUpdateEvent& e)
 		{
-			this->GetWindow().UseTitle(Format("Sandbox App {0} FPS", e.FPS));
+			this->GetWindow().UseTitle(MxFormat("Sandbox App {0} FPS", e.FPS));
 		});
 }
 

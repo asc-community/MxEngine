@@ -39,7 +39,7 @@ namespace MxEngine
     struct FileManagerImpl
     {
         eastl::hash_map<StringId, FilePath> filetable;
-        std::string root;
+        MxString root;
     };
 
     class FileModule

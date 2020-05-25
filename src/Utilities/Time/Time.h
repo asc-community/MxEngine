@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include <string>
+#include "Utilities/STL/MxString.h"
 
 namespace MxEngine
 {
@@ -40,7 +40,7 @@ namespace MxEngine
 	\param time timestep to convert to string
 	\returns string object with beautifies timestep
 	*/
-	std::string BeautifyTime(TimeStep time);
+	MxString BeautifyTime(TimeStep time);
 
 	/*!
 	time is a small utility class which uses application window timer to retrieve timestep since engine start

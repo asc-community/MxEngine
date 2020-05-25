@@ -49,7 +49,7 @@ namespace MxEngine::GUI
 		static Vector4 debugColor = MakeVector4(1.0f, 0.0f, 0.0f, 1.0f);
 
 		ImGui::Checkbox("display AABB", &boundingBoxes);
-		ImGui::SameLine();  ImGui::Checkbox("display spheres", &boundingSpheres);
+		ImGui::SameLine(); ImGui::Checkbox("display spheres", &boundingSpheres);
 		ImGui::SameLine(); ImGui::Checkbox("overlay debug meshes", &debugOverlay);
 		ImGui::SameLine(); ImGui::Checkbox("draw skybox", &skyboxDraw);
 		ImGui::ColorEdit4("debug mesh color", &debugColor[0]);

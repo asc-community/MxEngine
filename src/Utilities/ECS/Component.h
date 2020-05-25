@@ -97,6 +97,7 @@ namespace MxEngine
                         ComponentFactory::Destroy(resource);
                     }
                     components.erase(it);
+                    return;
                 }
             }
         }

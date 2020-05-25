@@ -70,7 +70,7 @@ namespace MxEngine
         
     }
 
-    Scene::Scene(const std::string& name, const FilePath& directory)
+    Scene::Scene(const MxString& name, const FilePath& directory)
         : name(name)
     {
         this->SetDirectory(directory);
@@ -101,7 +101,7 @@ namespace MxEngine
         this->resourceManager.Clear();
     }
 
-    MxObject& Scene::CreateObject(const std::string& name, const std::string& file)
+    MxObject& Scene::CreateObject(const MxString& name, const MxString& file)
     {
         MAKE_SCOPE_PROFILER("Scene::CreateObject");
         if (this->objectManager.GetElements().find(name) != this->objectManager.GetElements().end())
@@ -116,7 +116,7 @@ namespace MxEngine
         return object;
     }
 
-    MxObject& Scene::AddObject(const std::string& name, UniqueRef<MxObject> object)
+    MxObject& Scene::AddObject(const MxString& name, UniqueRef<MxObject> object)
     {
         if (this->objectManager.Exists(name))
         {
@@ -129,7 +129,7 @@ namespace MxEngine
         return value;
     }
 
-    MxObject& Scene::CopyObject(const std::string& name, const std::string& existingObject)
+    MxObject& Scene::CopyObject(const MxString& name, const MxString& existingObject)
     {
         auto& object = GetObject(existingObject);
         if (object.GetInstanceCount() > 0)
@@ -140,7 +140,7 @@ namespace MxEngine
         return AddObject(name, MakeUnique<MxObject>(object.GetMesh()));
     }
 
-    MxObject& Scene::GetObject(const std::string& name) const
+    MxObject& Scene::GetObject(const MxString& name) const
     {
         this->objectManager.Update();
         if (this->objectManager.GetElements().find(name) == this->objectManager.GetElements().end())
@@ -152,7 +152,7 @@ namespace MxEngine
         return *this->objectManager.GetElements()[name];
     }
 
-    void Scene::DestroyObject(const std::string& name)
+    void Scene::DestroyObject(const MxString& name)
     {
         if (this->objectManager.GetElements().find(name) == this->objectManager.GetElements().end())
         {
@@ -162,64 +162,64 @@ namespace MxEngine
         this->objectManager.Remove(name);
     }
 
-    bool Scene::HasObject(const std::string& name) const
+    bool Scene::HasObject(const MxString& name) const
     {
         this->objectManager.Update();
         return this->objectManager.Exists(name);
     }
 
-    Mesh* Scene::LoadMesh(const std::string& name)
+    Mesh* Scene::LoadMesh(const MxString& name)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadMesh");
-        auto mesh = MakeUnique<Mesh>(FileModule::GetFilePath(MakeStringId(name)).string());
+        auto mesh = MakeUnique<Mesh>(ToMxString(FileModule::GetFilePath(MakeStringId(name))));
         return this->GetResourceManager<Mesh>().Add(name, std::move(mesh));
     }
 
-    Script* Scene::LoadScript(const std::string& name)
+    Script* Scene::LoadScript(const MxString& name)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadScript");
-        auto script = MakeUnique<Script>(FileModule::GetFilePath(MakeStringId(name)).string());
+        auto script = MakeUnique<Script>(FileModule::GetFilePath(MakeStringId(name)));
         return this->GetResourceManager<Script>().Add(name, std::move(script));
     }
 
-    Shader* Scene::LoadShader(const std::string& name, const std::string& vertex, const std::string& fragment)
+    Shader* Scene::LoadShader(const MxString& name, const MxString& vertex, const MxString& fragment)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadShader");
         auto shader = MakeUnique<Shader>(
-            FileModule::GetFilePath(MakeStringId(vertex)).string(),
-            FileModule::GetFilePath(MakeStringId(fragment)).string()
+            ToMxString(FileModule::GetFilePath(MakeStringId(vertex))),
+            ToMxString(FileModule::GetFilePath(MakeStringId(fragment)))
             );
         return this->GetResourceManager<Shader>().Add(name, std::move(shader));
     }
 
-    Shader* Scene::LoadShader(const std::string& name, const std::string& vertex, const std::string& geometry, const std::string& fragment)
+    Shader* Scene::LoadShader(const MxString& name, const MxString& vertex, const MxString& geometry, const MxString& fragment)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadShader");
         auto shader = MakeUnique<Shader>(
-            FileModule::GetFilePath(MakeStringId(vertex)).string(),
-            FileModule::GetFilePath(MakeStringId(geometry)).string(),
-            FileModule::GetFilePath(MakeStringId(fragment)).string()
+            ToMxString(FileModule::GetFilePath(MakeStringId(vertex))),
+            ToMxString(FileModule::GetFilePath(MakeStringId(geometry))),
+            ToMxString(FileModule::GetFilePath(MakeStringId(fragment)))
         );
         return this->GetResourceManager<Shader>().Add(name, std::move(shader));
     }
 
-    Texture* Scene::LoadTexture(const std::string& name, TextureWrap wrap, bool genMipmaps, bool flipImage)
+    Texture* Scene::LoadTexture(const MxString& name, TextureWrap wrap, bool genMipmaps, bool flipImage)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadTexture");
-        auto textureObject = MakeUnique<Texture>(FileModule::GetFilePath(MakeStringId(name)).string(), wrap, genMipmaps, flipImage);
+        auto textureObject = MakeUnique<Texture>(ToMxString(FileModule::GetFilePath(MakeStringId(name))), wrap, genMipmaps, flipImage);
         return this->GetResourceManager<Texture>().Add(name, std::move(textureObject));
     }
 
-    CubeMap* Scene::LoadCubeMap(const std::string& name, bool genMipmaps, bool flipImage)
+    CubeMap* Scene::LoadCubeMap(const MxString& name, bool genMipmaps, bool flipImage)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadCubeMap");
-        auto cubemapObject = MakeUnique<CubeMap>(FileModule::GetFilePath(MakeStringId(name)).string(), genMipmaps, flipImage);
+        auto cubemapObject = MakeUnique<CubeMap>(ToMxString(FileModule::GetFilePath(MakeStringId(name))), genMipmaps, flipImage);
         return this->GetResourceManager<CubeMap>().Add(name, std::move(cubemapObject));
     }
 
     void Scene::SetDirectory(const FilePath& path)
     {
-        Logger::Instance().Debug("MxEngine::Scene", "setting " + this->name + " scene directory to: " + path.string());
+        Logger::Instance().Debug("MxEngine::Scene", "setting " + this->name + " scene directory to: " + ToMxString(path));
         this->scenePath = path;
     }
 
@@ -228,7 +228,7 @@ namespace MxEngine
         return this->scenePath;
     }
 
-    const std::string& Scene::GetName() const
+    const MxString& Scene::GetName() const
     {
         return this->name;
     }

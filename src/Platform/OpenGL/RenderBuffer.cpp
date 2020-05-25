@@ -36,7 +36,7 @@ namespace MxEngine
     RenderBuffer::RenderBuffer()
     {
         GLCALL(glGenRenderbuffers(1, &this->id));
-        Logger::Instance().Debug("OpenGL::RenderBuffer", "created renderbuffer with id = " + std::to_string(this->id));
+        Logger::Instance().Debug("OpenGL::RenderBuffer", "created renderbuffer with id = " + ToMxString(this->id));
     }
 
     RenderBuffer::~RenderBuffer()

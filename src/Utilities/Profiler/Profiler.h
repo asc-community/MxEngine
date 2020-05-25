@@ -75,7 +75,7 @@ namespace MxEngine
 		creates json file or clears it if it exists and writes json header to it
 		\param filename file to output json to
 		*/
-		void StartSession(const std::string& filename);
+		void StartSession(const MxString& filename);
 		/*!
 		writes json entry, consisting of process id, start/end time, function name
 		\param function called function name 
@@ -141,7 +141,7 @@ namespace MxEngine
 		/*!
 		function name. Is string, because when calling Logger::Debug it is appended to "calling" string
 		*/
-		std::string function;
+		MxString function;
 		/*!
 		invoker of function. Can be class, object or namespace which called the function
 		*/
@@ -153,7 +153,7 @@ namespace MxEngine
 		\param function function name which is executed
 		*/
 		inline ScopeTimer(std::string_view invoker, std::string_view function)
-			: start(Time::Current()), invoker(invoker), function(function)
+			: start(Time::Current()), invoker(invoker), function(function.data())
 		{
 			Logger::Instance().Debug(this->invoker.data(), "calling " + this->function);
 		}
@@ -164,7 +164,7 @@ namespace MxEngine
 		inline ~ScopeTimer()
 		{
 			TimeStep end = Time::Current();
-			std::string delta = BeautifyTime(end - start);
+			MxString delta = BeautifyTime(end - start);
 			Logger::Instance().Debug(this->invoker.data(), this->function + " finished in " + delta);
 		}
 	};

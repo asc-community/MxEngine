@@ -31,6 +31,7 @@
 #include "Core/Interfaces/IRenderable.h"
 #include "Core/BoundingObjects/AABB.h"
 #include "Core/Components/Transform/Transform.h"
+#include "Utilities/String/String.h"
 
 #include <filesystem>
 
@@ -48,22 +49,22 @@ namespace MxEngine
 		Ref<Material> material;
 		Ref<Vector4> renderColor;
 		Ref<Transform> transform;
-		std::string name;
+		MxString name;
 
 		void GenerateMeshIndicies() const;
 		friend class Mesh;
 	public:
-		SubMesh(std::string name, UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<IndexBuffer> IBO, 
+		SubMesh(MxString name, UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<IndexBuffer> IBO, 
 			Ref<Material> material, Ref<Vector4> color, Ref<Transform> transform,
 			bool useTexture, bool useNormal, size_t sizeInFloats);
 
 		SubMesh(const SubMesh&) = delete;
-		SubMesh(SubMesh&&) noexcept = default;
+		SubMesh(SubMesh&&) noexcept;
 		SubMesh& operator=(const SubMesh&) = delete;
-		SubMesh& operator=(SubMesh&&) noexcept = default;
+		SubMesh& operator=(SubMesh&&) noexcept;
 
 		Material& GetMaterial();
-		const std::string& GetName() const;
+		const MxString& GetName() const;
 		bool UsesTexture() const;
 		bool UsesNormals() const;
 		void SetRenderColor(const Vector4& color);
@@ -77,11 +78,6 @@ namespace MxEngine
 		virtual const Material& GetMaterial() const override;
 		virtual size_t GetVertexBufferSize() const override;
 		virtual bool HasMaterial() const override;
-	};
-
-	class SubMeshLOD
-	{
-
 	};
 
 	class Mesh
@@ -98,18 +94,18 @@ namespace MxEngine
 		std::vector<UniqueRef<VertexBuffer>> VBOs;
 		std::vector<UniqueRef<VertexBufferLayout>> VBLs;
 
-		void LoadFromFile(const std::string& filepath);
+		void LoadFromFile(const MxString& filepath);
 	public:
 		size_t RefCounter = 0;
 
 		explicit Mesh() = default;
-		explicit Mesh(const std::string& filepath);
+		explicit Mesh(const MxString& filepath);
 		Mesh(Mesh&) = delete;
 		Mesh(Mesh&&) = default;
 		Mesh& operator=(const Mesh&) = delete;
 		Mesh& operator=(Mesh&&) = default;
 		
-		void Load(const std::string& filepath);
+		void Load(const MxString& filepath);
 		std::vector<SubMesh>& GetRenderObjects();
 		const std::vector<SubMesh>& GetRenderObjects() const;
 		void PushEmptyLOD();

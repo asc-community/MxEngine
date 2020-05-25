@@ -58,7 +58,7 @@ namespace MxEngine
 	{
 		using WindowHandle = GLFWwindow*;
 	private:
-		std::string title;
+		MxString title;
 		GLFWwindow* window = nullptr;
 		int width = 0, height = 0;
 		AppEventDispatcher* dispatcher = nullptr;
@@ -74,7 +74,7 @@ namespace MxEngine
 		void Move(Window&& window);
 	public:
 		Window() = default;
-		Window(int width, int height, const std::string& title);
+		Window(int width, int height, const MxString& title);
 		Window(const Window&) = delete;
 		Window(Window&& other) noexcept;
 		Window& operator=(const Window&) = delete;
@@ -102,7 +102,7 @@ namespace MxEngine
 		Window& UseDoubleBuffering(bool value = true);
 		Window& UseCursorMode(CursorMode cursor);
 		Window& UseCursorPos(const Vector2& pos);
-		Window& UseTitle(const std::string& title);
+		Window& UseTitle(const MxString& title);
 		Window& UsePosition(int xpos, int ypos);
 		Window& UseSize(int width, int height);
 		Window& UseEventDispatcher(AppEventDispatcher* dispatcher);

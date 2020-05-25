@@ -36,7 +36,7 @@
 
 namespace MxEngine
 {
-	Image ImageLoader::LoadImage(const std::string& filepath, bool flipImage)
+	Image ImageLoader::LoadImage(const MxString& filepath, bool flipImage)
 	{
 		MAKE_SCOPE_PROFILER("ImageLoader::LoadImage");
 		MAKE_SCOPE_TIMER("MxEngine::ImageLoader", "ImageLoader::LoadImage()");

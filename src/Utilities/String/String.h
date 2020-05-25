@@ -1,6 +1,36 @@
+// Copyright(c) 2019 - 2020, #Momo
+// All rights reserved.
+// 
+// Redistributionand use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met :
+// 
+// 1. Redistributions of source code must retain the above copyright notice, this
+// list of conditionsand the following disclaimer.
+// 
+// 2. Redistributions in binary form must reproduce the above copyright notice,
+// this list of conditionsand the following disclaimer in the documentation
+// and /or other materials provided with the distribution.
+// 
+// 3. Neither the name of the copyright holder nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED.IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #pragma once
 
 #include <cstdint>
+#include <type_traits>
+
 #include "Utilities/STL/MxString.h"
 
 namespace MxEngine
@@ -74,18 +104,23 @@ namespace MxEngine
 	}
 
 	// computed hash of string literal at compile time
-	#define STRING_ID(x) (crc32(x, sizeof(x) - 1))
+	#define STRING_ID(x) std::integral_constant<MxEngine::StringId, MxEngine::crc32(x, sizeof(x) - 1)>::value
 
+	/*!
+	generates string id hash at runtime
+	\param str string object from which hash is taken
+	\returns string id hash
+	*/
 	template<typename StringClass>
 	StringId MakeStringId(const StringClass& str)
 	{
 		return crc32(&str[0], str.size());
 	}
-	
+
 	/*!
-	transforms string literal into hash by appending _id suffix ("str"_id)
+	transforms string literal into hash by appending _id suffix ("str"_id) at runtime
 	*/
-	constexpr StringId operator"" _id(char const* s, size_t size)
+	constexpr StringId operator ""_id(const char* s, size_t size)
 	{
 		return crc32(s, size);
 	}

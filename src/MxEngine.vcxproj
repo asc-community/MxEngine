@@ -396,6 +396,7 @@
     <ClCompile Include="Utilities\ObjectLoader\ObjectLoader.cpp" />
     <ClCompile Include="Utilities\Profiler\Profiler.cpp" />
     <ClCompile Include="Utilities\Random\Random.cpp" />
+    <ClCompile Include="Utilities\STL\Vsnprintf.cpp" />
     <ClCompile Include="Utilities\UUID\UUID.cpp" />
     <ClCompile Include="Utilities\Time\Time.cpp" />
     <ClCompile Include="Vendors\eastl\source\allocator_eastl.cpp" />

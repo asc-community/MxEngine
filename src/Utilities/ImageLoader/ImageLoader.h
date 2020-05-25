@@ -28,9 +28,9 @@
 
 #pragma once
 
-#include <string>
 #include <array>
 #include "Utilities/Array/Array2D.h"
+#include "Utilities/STL/MxString.h"
 
 namespace MxEngine
 {
@@ -57,7 +57,7 @@ namespace MxEngine
 		\param flipImage should the image be vertically flipped. As MxEngine uses primarily OpenGL, usually you want to do this
 		\returns Image object if image file exists or nullptr data and width = height = channels = 0 if not
 		*/
-		static Image LoadImage(const std::string& filepath, bool flipImage = true);
+		static Image LoadImage(const MxString& filepath, bool flipImage = true);
 		/*!
 		destroys image object. Must be called to clear allocated data
 		\param image Image to destroy

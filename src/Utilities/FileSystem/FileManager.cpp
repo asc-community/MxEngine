@@ -71,11 +71,11 @@ namespace MxEngine
         if (manager->filetable.find(filehash) != manager->filetable.end())
         {
             Logger::Instance().Warning("MxEngine::FileManager", 
-                Format("hash of file \"{0}\" conflicts with other one in the project: {1}", filename, manager->filetable[filehash].string()));
+                MxFormat("hash of file \"{0}\" conflicts with other one in the project: {1}", filename, manager->filetable[filehash].string()));
         }
         else
         {
-            Logger::Instance().Debug("MxEngine::FileManager", Format("file added to the project: {0}", filename));
+            Logger::Instance().Debug("MxEngine::FileManager", MxFormat("file added to the project: {0}", filename));
         }
         manager->filetable.emplace(filehash, file);
     }
@@ -86,7 +86,7 @@ namespace MxEngine
         MAKE_SCOPE_TIMER("MxEngine::FileManager", "FileManager::Init()");
         MAKE_SCOPE_PROFILER("FileManager::Init()");
 
-        manager->root = rootPath.string();
+        manager->root = ToMxString(rootPath);
         FileModule::AddDirectory(rootPath);
     }
 

@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include <string>
+#include "Utilities/STL/MxString.h"
 
 namespace MxEngine
 {
@@ -36,14 +36,14 @@ namespace MxEngine
     {
         using BindableId = unsigned int;
         using CubeMapId = BindableId;
-        std::string filepath;
+        MxString filepath;
         size_t width = 0, height = 0, channels = 0;
         BindableId id = 0;
         mutable CubeMapId activeId = 0;
         void FreeCubeMap();
     public:
         CubeMap();
-        CubeMap(const std::string filepath, bool genMipmaps = true, bool flipImage = false);
+        CubeMap(const MxString filepath, bool genMipmaps = true, bool flipImage = false);
         CubeMap(const CubeMap&) = delete;
         CubeMap& operator=(const CubeMap&) = delete;
         CubeMap(CubeMap&&) noexcept;
@@ -54,10 +54,10 @@ namespace MxEngine
        void Unbind() const;
        BindableId GetNativeHandle() const;
        void Bind(CubeMapId id) const;
-       void Load(const std::string& filepath, bool genMipmaps = true, bool flipImage = false);
+       void Load(const MxString& filepath, bool genMipmaps = true, bool flipImage = false);
        void Load(std::array<uint8_t*, 6> data, int width, int height, bool genMipmaps = true);
        void LoadDepth(int width, int height);
-       const std::string& GetPath() const;
+       const MxString& GetPath() const;
        size_t GetWidth() const;
        size_t GetHeight() const;
        size_t GetChannelCount() const;

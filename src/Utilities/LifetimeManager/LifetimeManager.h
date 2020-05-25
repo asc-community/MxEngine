@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <string>
-#include <unordered_map>
-#include <vector>
+#include "Utilities/STL/MxHashMap.h"
+#include "Utilities/STL/MxVector.h"
+#include "Utilities/STL/MxString.h"
 
 #include "Utilities/Logger/Logger.h"
 #include "Utilities/Format/Format.h"
@@ -47,9 +47,9 @@ namespace MxEngine
     */
     template<
         typename ValueType, 
-        typename Id = std::string, 
-        typename ValueStorage = std::unordered_map<Id, ValueType>,
-        typename IdStorage = std::vector<Id>
+        typename Id = MxString, 
+        typename ValueStorage = MxHashMap<Id, ValueType>,
+        typename IdStorage = MxVector<Id>
         >
     class LifetimeManager
     {
@@ -134,7 +134,7 @@ namespace MxEngine
         {
             for (const auto& id : this->toRemove)
             {
-                Logger::Instance().Debug("MxEngine::LifetimeManager", Format(FMT_STRING("deleting object: {0}"), id));
+                Logger::Instance().Debug("MxEngine::LifetimeManager", MxFormat("deleting object: {0}", id));
                 this->storage.erase(id);
             }
             this->toRemove.clear();

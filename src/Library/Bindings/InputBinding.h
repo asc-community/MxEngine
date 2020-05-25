@@ -37,10 +37,10 @@ namespace MxEngine
 {
 	class InputControlBinding
 	{
-		std::string handle;
+		MxString handle;
 		IMovable& object;
 	public:
-		inline InputControlBinding(const std::string& eventHandle, IMovable& object) noexcept
+		inline InputControlBinding(const MxString& eventHandle, IMovable& object) noexcept
 			: handle(eventHandle), object(object) { }
 
 		inline InputControlBinding& Unbind()

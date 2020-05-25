@@ -28,13 +28,13 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
 #include <sstream>
-#include <unordered_map>
 
 #include "Utilities/Math/Math.h"
 #include "Core/BoundingObjects/AABB.h"
+#include "Utilities/STL/MxHashMap.h"
+#include "Utilities/STL/MxString.h"
+#include "Utilities/STL/MxVector.h"
 
 namespace MxEngine
 {
@@ -46,36 +46,36 @@ namespace MxEngine
 		/*!
 		name of material
 		*/
-		std::string name;
+		MxString name;
 
 		/*!
 		ambient texture path
 		*/
-		std::string map_Ka;
+		MxString map_Ka;
 		/*!
 		diffuse texture path
 		*/
-		std::string map_Kd;
+		MxString map_Kd;
 		/*!
 		specular texture path
 		*/
-		std::string map_Ks;
+		MxString map_Ks;
 		/*!
 		emmisive texture path
 		*/
-		std::string map_Ke;
+		MxString map_Ke;
 		/*!
 		transparency texture path
 		*/
-		std::string map_d;
+		MxString map_d;
 		/*!
 		height texture path
 		*/
-		std::string map_height;
+		MxString map_height;
 		/*!
 		normal texture path
 		*/
-		std::string map_normal;
+		MxString map_normal;
 
 		/*!
 		specular power value
@@ -128,15 +128,15 @@ namespace MxEngine
 		/*!
 		name of mesh
 		*/
-		std::string name;
+		MxString name;
 		/*!
 		buffer containing all vertex data (use faces[i] * VertexSize as index to access each vertex in buffer)
 		*/
-		std::vector<float> buffer;
+		MxVector<float> buffer;
 		/*
 		face indicies to access buffer of verteces
 		*/
-		std::vector<unsigned int> faces;		
+		MxVector<unsigned int> faces;		
 		/*!
 		mesh material pointer (to external table passed with MeshInfo inside ObjectInfo)
 		*/
@@ -160,7 +160,7 @@ namespace MxEngine
 		size_t GetVertexCount() const { return this->buffer.size() / VertexSize; }
 	};
 
-	using MaterialLibrary = std::vector<MaterialInfo>;
+	using MaterialLibrary = MxVector<MaterialInfo>;
 
 	/*!
 	object info a special class which contains all data from which in-game object can be constructed
@@ -175,7 +175,7 @@ namespace MxEngine
 		/*!
 		list of all object meshes. For more info see MeshInfo documentation
 		*/
-		std::vector<MeshInfo> meshes;
+		MxVector<MeshInfo> meshes;
 		/*!
 		precomputed bounding box of whole object. TODO: compute bounding boxes for each submesh
 		*/
@@ -194,6 +194,6 @@ namespace MxEngine
 		\param path absoulute or relative to executable folder path to a file to load
 		\returns ObjectInfo instance
 		*/
-		static ObjectInfo Load(std::string path);
+		static ObjectInfo Load(const MxString& path);
 	};
 }

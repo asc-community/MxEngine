@@ -73,7 +73,7 @@ namespace MxEngine
 		template<typename T>
 		using Container = Scene::LightContainer<T>;
 
-		std::string name;
+		MxString name;
 		const Container<LightType>& container;
 		size_t id;
 	public:
@@ -103,14 +103,14 @@ namespace MxEngine
 		inline void Bind()
 		{
 			auto& scene = Application::Get()->GetCurrentScene();
-			std::string objectName = this->name + std::to_string(this->id);
+			MxString objectName = this->name + ToMxString(this->id);
 			if (scene.HasObject(objectName)) scene.DestroyObject(objectName);
 			scene.AddObject(objectName, MakeUnique<LightObject<LightType>>(this->container, this->id));
 		}
 
 		inline void Unbind()
 		{
-			std::string objectName = this->name + std::to_string(this->id);
+			MxString objectName = this->name + ToMxString(this->id);
 			Application::Get()->GetCurrentScene().DestroyObject(objectName);
 		}
 

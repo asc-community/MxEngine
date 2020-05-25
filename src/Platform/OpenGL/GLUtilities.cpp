@@ -56,7 +56,7 @@ namespace MxEngine
 			const char* message = (const char*)gluErrorString(error);
 			if (message == nullptr) message = "unknown";
 			setlocale(LC_ALL, "");
-			Logger::Instance().Error("OpenGL::ErrorHandler", Format(FMT_STRING("{0}\n  {1} in file: {2}, line: {3}"), message, function, file, line));
+			Logger::Instance().Error("OpenGL::ErrorHandler", MxFormat(FMT_STRING("{0}\n  {1} in file: {2}, line: {3}"), message, function, file, line));
 		}
 		return success;
 	}
@@ -115,23 +115,23 @@ namespace MxEngine
 		case GL_DEBUG_SEVERITY_NOTIFICATION: out << "Severity: notification"; break;
 		}
 
-		Logger::Instance().Error("OpenGL", out.str());
+		Logger::Instance().Error("OpenGL", ToMxString(out.str()));
 	}
 
 	template<>
-	std::string TypeToString<unsigned char>()
+	const char* TypeToString<unsigned char>()
 	{
 		return "ubyte";
 	}
 
 	template<>
-	std::string TypeToString<unsigned int>()
+	const char* TypeToString<unsigned int>()
 	{
 		return "uint";
 	}
 
 	template<>
-	std::string TypeToString<float>()
+	const char* TypeToString<float>()
 	{
 		return "float";
 	}

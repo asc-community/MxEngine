@@ -50,7 +50,7 @@ namespace MxEngine
 	size_t GetGLTypeSize(unsigned int type);
 
 	template<typename T>
-	std::string TypeToString();
+	const char* TypeToString();
 
 	template<typename T>
 	unsigned int GetGLType();

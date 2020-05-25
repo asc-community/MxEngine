@@ -32,15 +32,15 @@ namespace MxEngine
 {
     DebugBuffer::DebugBuffer()
     {
-        auto VBL = MakeUnique<VertexBufferLayout>();
+        auto VBL = GraphicFactory::Create<VertexBufferLayout>();
         VBL->PushFloat(3); // position
         VBL->PushFloat(4); // color
 
-        this->VBO = MakeUnique<VertexBuffer>(nullptr, 0, UsageType::DYNAMIC_DRAW);
-        this->VAO = MakeUnique<VertexArray>();
+        this->VBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::DYNAMIC_DRAW);
+        this->VAO = GraphicFactory::Create<VertexArray>();
         VAO->AddBuffer(*this->VBO, *VBL);
 
-        this->shader = MakeUnique<Shader>();
+        this->shader = GraphicFactory::Create<Shader>();
         this->shader->LoadFromString(
             #include MAKE_PLATFORM_SHADER(debug_vertex)
             ,

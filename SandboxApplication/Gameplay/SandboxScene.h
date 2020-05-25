@@ -1,11 +1,9 @@
 #pragma once
 
 #include <MxEngine.h>
+#include "UserObjects.h"
 #include <Library/Primitives/Primitives.h>
 #include <Library/Bindings/Bindings.h>
-#include "UserObjects.h"
-
-#include <Library/Scripting/Python/PythonEngine.h>
 
 using namespace MxEngine;
 
@@ -17,7 +15,7 @@ class SandboxScene : public Scene
 
         this->AddObject("Cube", MakeUnique<CubeObject>());
         this->AddObject("Sphere", MakeUnique<SphereObject>());
-        // this->AddObject("Arc170", MakeUnique<Arc170Object>());
+        this->AddObject("Arc170", MakeUnique<Arc170Object>());
         // this->AddObject("Destroyer", MakeUnique<DestroyerObject>());
         // this->AddObject("DeathStar", MakeUnique<DeathStarObject>());
 		
@@ -33,7 +31,7 @@ class SandboxScene : public Scene
 		grid.Scale(3.0f, 3.0f, 3.0f);
 		grid.ObjectTexture = this->LoadTexture("textures/brick.jpg");
 		auto& material = grid.GetMesh()->GetRenderObjects()[0].GetMaterial();
-		material.map_normal = MakeUnique<Texture>(FileModule::GetFilePath("textures/brick_normal.jpg"_id).string());
+		material.map_normal = GraphicFactory::Create<Texture>(ToMxString(FileModule::GetFilePath("textures/brick_normal.jpg"_id)));
 		
         this->LoadScript("scripts/init.py");
         this->LoadScript("scripts/update.py");
@@ -94,7 +92,7 @@ class SandboxScene : public Scene
 
 	virtual void OnUnload() override
 	{
-
+		
 	}
 
     virtual void OnUpdate() override

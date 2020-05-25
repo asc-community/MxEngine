@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include <string>
+#include "Utilities/STL/MxString.h"
 
 namespace MxEngine
 {
@@ -55,7 +55,7 @@ namespace MxEngine
 	{
 		using BindableId = unsigned int;
 
-		std::string filepath;
+		MxString filepath;
 		size_t width = 0, height = 0, channels = 0;
 		BindableId id = 0;
 		mutable BindableId activeId = 0;
@@ -70,19 +70,19 @@ namespace MxEngine
 		Texture(Texture&& texture) noexcept;
 		Texture& operator=(const Texture& texture) = delete;
 		Texture& operator=(Texture&& texture) noexcept;
-		Texture(const std::string& filepath, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
+		Texture(const MxString& filepath, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
 		~Texture();
 
 		void Bind() const;
 		void Unbind() const;
 		BindableId GetNativeHandle() const;
-		void Load(const std::string& filepath, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
+		void Load(const MxString& filepath, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
 		void Load(RawDataPointer data, int width, int height, TextureFormat format = TextureFormat::RGBA, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true);
 		void LoadMipmaps(RawDataPointer* data, size_t mipmaps, int biggestWidth, int biggestHeight, TextureWrap wrap = TextureWrap::REPEAT);
 		void LoadDepth(int width, int height, TextureWrap wrap = TextureWrap::CLAMP_TO_EDGE);
 		void LoadMultisample(int width, int height, TextureFormat format, int samples, TextureWrap wrap = TextureWrap::REPEAT);
 		void Bind(TextureBindId id) const;
-		const std::string& GetPath() const;
+		const MxString& GetPath() const;
 		unsigned int GetTextureType() const;
 		size_t GetWidth() const;
 		size_t GetHeight() const;

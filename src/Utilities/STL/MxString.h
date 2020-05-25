@@ -30,12 +30,28 @@
 
 #include <Vendors/eastl/EASTL/string.h>
 #include <Vendors/eastl/EASTL/fixed_string.h>
+#include <string>
 
 namespace MxEngine
 {
-    template<typename Allocator = EASTLAllocatorType>
-    using MxString = eastl::basic_string<char, Allocator>;
+    using MxString = eastl::basic_string<char>;
 
     template<size_t Nodes, bool overflow = true, typename Allocator = EASTLAllocatorType>
     using MxFixedString = eastl::basic_string<char, eastl::fixed_vector_allocator<sizeof(char), Nodes, EASTL_ALIGN_OF(char), 0, overflow, Allocator>>;
+
+    template<typename T>
+    inline auto ToMxString(const T& value)
+    {
+        return eastl::to_string(value);
+    }
+
+    inline auto ToMxString(const std::string& value)
+    {
+        return MxString{ value.c_str() };
+    }
+}
+
+namespace EA::StdC
+{
+     int Vsnprintf(char* s, std::size_t n, char const* format, char* args);
 }

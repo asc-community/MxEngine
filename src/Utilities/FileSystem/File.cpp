@@ -49,7 +49,7 @@ namespace MxEngine
         this->Open(path, mode);
     }
 
-    File::File(const std::string& path, FileMode mode)
+    File::File(const MxString& path, FileMode mode)
     {
         this->Open(path, mode);
     }
@@ -69,21 +69,21 @@ namespace MxEngine
         this->filePath = std::move(path);
         if (!File::Exists(this->filePath))
         {
-            Logger::Instance().Error("MxEngine::File", "file was not found: " + this->filePath.string());
+            Logger::Instance().Error("MxEngine::File", "file was not found: " + ToMxString(this->filePath));
             return;
         }
         this->fileStream.open(this->filePath, FileModeTable[mode]);
     }
 
-    void File::Open(const std::string& path, FileMode mode)
+    void File::Open(const MxString& path, FileMode mode)
     {
-        this->filePath = path;
+        this->filePath = path.c_str();
         if (!File::Exists(this->filePath))
         {
             Logger::Instance().Error("MxEngine::File", "file was not found: " + path);
             return;
         }
-        this->fileStream.open(path, FileModeTable[mode]);
+        this->fileStream.open(path.c_str(), FileModeTable[mode]);
     }
 
     void File::Close()
@@ -93,13 +93,13 @@ namespace MxEngine
 
     File::FileData File::ReadAllText()
     {
-        FileData content;
+        std::string content;
         if (!this->IsOpen())
         {
-            Logger::Instance().Error("MxEngine::File", "file was not opened before reading: " + this->filePath.string());
+            Logger::Instance().Error("MxEngine::File", "file was not opened before reading: " + ToMxString(this->filePath));
         }
         content.assign(std::istreambuf_iterator<char>(this->fileStream), std::istreambuf_iterator<char>());
-        return content;
+        return ToMxString(content);
     }
 
     const FilePath& File::GetPath() const
@@ -112,7 +112,7 @@ namespace MxEngine
         return File(path, FileMode::READ).ReadAllText();
     }
 
-    File::FileData File::ReadAllText(const std::string& path)
+    File::FileData File::ReadAllText(const MxString& path)
     {
         return File(path, FileMode::READ).ReadAllText();
     }
@@ -126,7 +126,7 @@ namespace MxEngine
     {
         if (!File::Exists(path))
         {
-            Logger::Instance().Warning("MxEngine::File", "file was not found: " + path.string());
+            Logger::Instance().Warning("MxEngine::File", "file was not found: " + ToMxString(path));
             return FileSystemTime();
         }
         return std::filesystem::last_write_time(path);

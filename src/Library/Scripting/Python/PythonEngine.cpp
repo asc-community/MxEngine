@@ -88,7 +88,7 @@ class MxEngineIOHandler:
             if (this->pythonNamespace.contains("outputHandler"))
             {
                 python::object output = this->pythonNamespace["outputHandler"].attr("value");
-                this->lastOutput = python::extract<std::string>(output);
+                this->lastOutput = ToMxString((std::string)python::extract<std::string>(output));
                 if(!this->lastOutput.empty())
                     this->lastOutput.pop_back(); // delete last '\n'
 
@@ -102,7 +102,7 @@ class MxEngineIOHandler:
             try
             {
                 python::object msg = this->pythonNamespace["errorHandler"].attr("value");
-                this->lastError = python::extract<std::string>(msg);
+                this->lastError = ToMxString((std::string)python::extract<std::string>(msg));
             }
             catch (python::error_already_set&)
             {
@@ -147,7 +147,7 @@ class MxEngineIOHandler:
         return this->pythonNamespace;
     }
 
-    const std::string& PythonEngine::GetErrorMessage() const
+    const MxString& PythonEngine::GetErrorMessage() const
     {
         return this->lastError;
     }
@@ -157,7 +157,7 @@ class MxEngineIOHandler:
         return !this->lastError.empty();
     }
 
-    const std::string& PythonEngine::GetOutput() const
+    const MxString& PythonEngine::GetOutput() const
     {
         return this->lastOutput;
     }

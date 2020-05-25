@@ -45,7 +45,7 @@ namespace MxEngine
 	void VertexBufferLayout::PushFloat(size_t count)
 	{
 		#if defined(MXENGINE_DEBUG)
-		this->layoutString += TypeToString<float>() + std::to_string(count) + ", ";
+		this->layoutString += TypeToString<float>() + ToMxString(count) + ", ";
 		#endif
 		this->elements.push_back({ (unsigned int)count, GetGLType<float>(), false });
 		this->stride += unsigned int(sizeof(float) * count);

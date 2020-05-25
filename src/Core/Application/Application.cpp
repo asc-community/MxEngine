@@ -50,7 +50,7 @@
 namespace MxEngine
 {
 	template<typename EventType>
-	void ForwardEvent(const std::string& name)
+	void ForwardEvent(const MxString& name)
 	{
 		Application::Get()->GetEventDispatcher().AddEventListener(name, [](EventType& e)
 		{
@@ -141,7 +141,7 @@ namespace MxEngine
 		return *this->scenes.Get("Global");
 	}
 
-	void Application::LoadScene(const std::string& name)
+	void Application::LoadScene(const MxString& name)
 	{
 		if (name == this->GetGlobalScene().GetName())
 		{
@@ -161,7 +161,7 @@ namespace MxEngine
 		this->currentScene->OnLoad();
 	}
 
-	void Application::DestroyScene(const std::string& name)
+	void Application::DestroyScene(const MxString& name)
 	{
 		if (name == this->GetGlobalScene().GetName())
 		{
@@ -181,7 +181,7 @@ namespace MxEngine
 		this->scenes.Delete(name);
 	}
 
-	Scene& Application::CreateScene(const std::string& name, UniqueRef<Scene> scene)
+	Scene& Application::CreateScene(const MxString& name, UniqueRef<Scene> scene)
 	{
 		if (scenes.Exists(name))
 		{
@@ -195,13 +195,13 @@ namespace MxEngine
 		return *scenes.Get(name);
 	}
 
-	Scene& Application::GetScene(const std::string& name)
+	Scene& Application::GetScene(const MxString& name)
 	{
 		MX_ASSERT(this->scenes.Exists(name));
 		return *this->scenes.Get(name);
 	}
 
-	bool Application::SceneExists(const std::string& name)
+	bool Application::SceneExists(const MxString& name)
 	{
 		return this->scenes.Exists(name);
 	}
@@ -252,7 +252,7 @@ namespace MxEngine
 		this->ExecuteScript(script.GetContent());
 	}
 
-	void Application::ExecuteScript(const std::string& script)
+	void Application::ExecuteScript(const MxString& script)
 	{
 		this->ExecuteScript(script.c_str());
 	}
@@ -665,18 +665,18 @@ namespace MxEngine
 			config["window"]["cursor-mode"] = "disabled";
 		}
 
-		auto profileType  = config["renderer"]["opengl-profile"].get<std::string>();
+		auto profileType  = config["renderer"]["opengl-profile"].get<MxString>();
 		auto profileMajor = config["renderer"]["opengl-major-version"].get<int>();
 		auto profileMinor = config["renderer"]["opengl-minor-version"].get<int>();
 		auto msaaSamples  = config["renderer"]["msaa-samples"].get<int>();
 		auto anisothropic = config["renderer"]["anisothropic-filtering"].get<int>();
 		auto lineWidth    = config["renderer"]["debug-line-width"].get<int>();
 
-		auto title        = config["window"]["title"].get<std::string>();
+		auto title        = config["window"]["title"].get<MxString>();
 		auto doubleBuffer = config["window"]["double-buffering"].get<bool>();
 		auto position     = config["window"]["position"].get<std::array<int, 2>>();
 		auto size         = config["window"]["size"].get<std::array<int, 2>>();
-		auto cursorMode   = config["window"]["cursor-mode"].get<std::string>();
+		auto cursorMode   = config["window"]["cursor-mode"].get<MxString>();
 
 		Profile enumProfile;
 		if (profileType == "core")

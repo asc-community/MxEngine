@@ -53,10 +53,10 @@ namespace MxEngine
 
             size_t vertexCount = mesh.GetVertexCount();
             meshProjection.resize(vertexCount, std::numeric_limits<size_t>::max());
-            meshWeights.resize(vertexCount, { });
+            meshWeights.resize(vertexCount);
 
             Vector3Cmp::Threshold = threshold;
-            std::map<Vector3, size_t, Vector3Cmp> vertecies;
+            MxMap<Vector3, size_t, Vector3Cmp> vertecies;
         
             for (size_t i = 0; i < mesh.faces.size(); i += 3)
             {
@@ -76,7 +76,7 @@ namespace MxEngine
         }
     }
 
-    size_t LODGenerator::CollapseDublicate(std::map<Vector3, size_t, Vector3Cmp>& vertecies, size_t meshId, size_t f)
+    size_t LODGenerator::CollapseDublicate(MxMap<Vector3, size_t, Vector3Cmp>& vertecies, size_t meshId, size_t f)
     {
         const auto& mesh = this->objectLOD.meshes[meshId];
         const Vector3& Vf = *reinterpret_cast<const Vector3*>(mesh.buffer.data() + f * mesh.VertexSize + 0);

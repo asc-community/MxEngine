@@ -49,7 +49,7 @@ namespace MxEngine
         {
             auto data = Grid::GetGridData(size);
             AABB aabb{ MakeVector3(-(float)size, -0.0001f, -(float)size), MakeVector3((float)size, 0.0001f, (float)size) };
-            this->SubmitData(Format(FMT_STRING("MxGrid_{0}"), size), aabb, make_view(data.first), make_view(data.second));
+            this->SubmitData(MxFormat("MxGrid_{0}", size), aabb, make_view(data.first), make_view(data.second));
         }
     private:
         inline static std::pair<std::vector<float>, std::vector<unsigned int>> GetGridData(size_t size)
@@ -137,7 +137,7 @@ namespace MxEngine
         inline static Texture* GetGridTexture()
         {
             auto& manager = Application::Get()->GetCurrentScene().GetResourceManager<Texture>();
-            static std::string textureName = "MxTexGrid";
+            static MxString textureName = "MxTexGrid";
             if (!manager.Exists(textureName))
             {
                 constexpr size_t size = 512;

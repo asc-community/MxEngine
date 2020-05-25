@@ -46,12 +46,12 @@ namespace MxEngine
 		this->id = 0;
 	}
 
-	Shader::Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath)
+	Shader::Shader(const MxString& vertexShaderPath, const MxString& fragmentShaderPath)
 	{
 		this->Load(vertexShaderPath, fragmentShaderPath);
 	}
 
-	Shader::Shader(const std::string& vertexShaderPath, const std::string& geometryShaderPath, const std::string& fragmentShaderPath)
+	Shader::Shader(const MxString& vertexShaderPath, const MxString& geometryShaderPath, const MxString& fragmentShaderPath)
 	{
 		this->Load(vertexShaderPath, geometryShaderPath, fragmentShaderPath);
 	}
@@ -104,14 +104,14 @@ namespace MxEngine
 		}
 	}
 
-	void Shader::Load(const std::string& vertex, const std::string& fragment)
+	void Shader::Load(const MxString& vertex, const MxString& fragment)
 	{
 		#if defined(MXENGINE_DEBUG)
 		this->vertexShaderPath = vertex;
 		this->fragmentShaderPath = fragment;
 		#endif
-		std::string vs = File::ReadAllText(vertex);
-		std::string fs = File::ReadAllText(fragment);
+		MxString vs = File::ReadAllText(vertex);
+		MxString fs = File::ReadAllText(fragment);
 
 		if (fs.empty())
 			Logger::Instance().Warning("OpenGL::Shader", "fragment shader is empty: " + fragment);
@@ -124,19 +124,19 @@ namespace MxEngine
 		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fs, fragment);
 
 		id = CreateProgram(vertexShader, fragmentShader);
-		Logger::Instance().Debug("OpenGL::Shader", "shader program created with id = " + std::to_string(id));
+		Logger::Instance().Debug("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
 	}
 
-	void Shader::Load(const std::string& vertex, const std::string& geometry, const std::string& fragment)
+	void Shader::Load(const MxString& vertex, const MxString& geometry, const MxString& fragment)
 	{
 		#if defined(MXENGINE_DEBUG)
 		this->vertexShaderPath = vertex;
 		this->geometryShaderPath = geometry;
 		this->fragmentShaderPath = fragment;
 		#endif
-		std::string vs = File::ReadAllText(vertex);
-		std::string gs = File::ReadAllText(geometry);
-		std::string fs = File::ReadAllText(fragment);
+		MxString vs = File::ReadAllText(vertex);
+		MxString gs = File::ReadAllText(geometry);
+		MxString fs = File::ReadAllText(fragment);
 
 		if (fs.empty())
 			Logger::Instance().Warning("OpenGL::Shader", "fragment shader is empty: " + fragment);
@@ -153,10 +153,10 @@ namespace MxEngine
 		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fs, fragment);
 
 		id = CreateProgram(vertexShader, geometryShader, fragmentShader);
-		Logger::Instance().Debug("OpenGL::Shader", "shader program created with id = " + std::to_string(id));
+		Logger::Instance().Debug("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
 	}
 
-    void Shader::LoadFromString(const std::string& vertex, const std::string& fragment)
+    void Shader::LoadFromString(const MxString& vertex, const MxString& fragment)
     {
 		Logger::Instance().Debug("OpenGL::Shader", "compiling vertex shader: [[raw source]]");
 		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, "[[raw source]]");
@@ -164,10 +164,10 @@ namespace MxEngine
 		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fragment, "[[raw source]]");
 
 		id = CreateProgram(vertexShader, fragmentShader);
-		Logger::Instance().Debug("OpenGL::Shader", "shader program created with id = " + std::to_string(id));
+		Logger::Instance().Debug("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
     }
 
-	void Shader::LoadFromString(const std::string& vertex, const std::string& geometry, const std::string& fragment)
+	void Shader::LoadFromString(const MxString& vertex, const MxString& geometry, const MxString& fragment)
 	{
 		Logger::Instance().Debug("OpenGL::Shader", "compiling vertex shader: [[raw source]]");
 		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, "[[raw source]]");
@@ -177,10 +177,10 @@ namespace MxEngine
 		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fragment, "[[raw source]]");
 
 		id = CreateProgram(vertexShader, geometryShader, fragmentShader);
-		Logger::Instance().Debug("OpenGL::Shader", "shader program created with id = " + std::to_string(id));
+		Logger::Instance().Debug("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
 	}
 
-	void Shader::SetUniformFloat(const std::string& name, float f) const
+	void Shader::SetUniformFloat(const MxString& name, float f) const
 	{
 		int location = GetUniformLocation(name);
 		if (location == -1) return;
@@ -188,7 +188,7 @@ namespace MxEngine
 		GLCALL(glUniform1f(location, f));
 	}
 
-    void Shader::SetUniformVec2(const std::string& name, const Vector2& vec) const
+    void Shader::SetUniformVec2(const MxString& name, const Vector2& vec) const
     {
 		int location = GetUniformLocation(name);
 		if (location == -1) return;
@@ -196,7 +196,7 @@ namespace MxEngine
 		GLCALL(glUniform2f(location, vec.x, vec.y));
     }
 
-	void Shader::SetUniformVec3(const std::string& name, const Vector3& vec) const
+	void Shader::SetUniformVec3(const MxString& name, const Vector3& vec) const
 	{
 		int location = GetUniformLocation(name);
 		if (location == -1) return;
@@ -204,7 +204,7 @@ namespace MxEngine
 		GLCALL(glUniform3f(location, vec.x, vec.y, vec.z));
 	}
 
-	void Shader::SetUniformVec4(const std::string& name, const Vector4& vec) const
+	void Shader::SetUniformVec4(const MxString& name, const Vector4& vec) const
 	{
 		int location = GetUniformLocation(name);
 		if (location == -1) return;
@@ -212,7 +212,7 @@ namespace MxEngine
 		GLCALL(glUniform4f(location, vec.x, vec.y, vec.z, vec.w));
 	}
 
-	void Shader::SetUniformMat4(const std::string& name, const Matrix4x4& matrix) const
+	void Shader::SetUniformMat4(const MxString& name, const Matrix4x4& matrix) const
 	{
 		int location = GetUniformLocation(name);
 		if (location == -1) return;
@@ -220,7 +220,7 @@ namespace MxEngine
 		GLCALL(glUniformMatrix4fv(location, 1, false, &matrix[0][0]));
 	}
 
-	void Shader::SetUniformMat3(const std::string& name, const Matrix3x3& matrix) const
+	void Shader::SetUniformMat3(const MxString& name, const Matrix3x3& matrix) const
 	{
 		int location = GetUniformLocation(name);
 		if (location == -1) return;
@@ -228,7 +228,7 @@ namespace MxEngine
 		GLCALL(glUniformMatrix3fv(location, 1, false, &matrix[0][0]));
 	}
 
-	void Shader::SetUniformInt(const std::string& name, int i) const
+	void Shader::SetUniformInt(const MxString& name, int i) const
 	{
 		int location = GetUniformLocation(name);
 		if (location == -1) return;
@@ -236,7 +236,7 @@ namespace MxEngine
 		GLCALL(glUniform1i(location, i));
 	}
 
-	Shader::ShaderId Shader::CompileShader(unsigned int type, const std::string& source, const std::string& name) const
+	Shader::ShaderId Shader::CompileShader(unsigned int type, const MxString& source, const MxString& name) const
 	{
 		GLCALL(GLuint shaderId = glCreateShader((GLenum)type));
 		const char* src = source.c_str();
@@ -249,11 +249,11 @@ namespace MxEngine
 		{
 			GLint length;
 			GLCALL(glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &length));
-			std::string msg;
+			MxString msg;
 			msg.resize(length);
 			GLCALL(glGetShaderInfoLog(shaderId, length, &length, &msg[0]));
 			msg.pop_back(); // extra \n character
-			std::string typeName;
+			MxString typeName;
 			switch ((ShaderType)type)
 			{
 			case ShaderType::VERTEX_SHADER:
@@ -305,7 +305,7 @@ namespace MxEngine
 		return program;
 	}
 
-	int Shader::GetUniformLocation(const std::string& uniformName) const
+	int Shader::GetUniformLocation(const MxString& uniformName) const
 	{
 		if (uniformCache.find(uniformName) != uniformCache.end())
 			return uniformCache[uniformName];

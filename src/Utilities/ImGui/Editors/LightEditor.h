@@ -75,8 +75,8 @@ namespace MxEngine::GUI
 
 		for (size_t i = 0; i < scene.PointLights.GetCount(); i++)
 		{
-			static std::string strLight;
-			strLight = "point light #" + std::to_string(i);
+			static MxString strLight;
+			strLight = "point light #" + ToMxString(i);
 			if (ImGui::CollapsingHeader(strLight.c_str(), ImGuiTreeNodeFlags_None))
 			{
 				ImGui::PushID((int)i);
@@ -110,8 +110,8 @@ namespace MxEngine::GUI
 
 		for (size_t i = 0; i < scene.SpotLights.GetCount(); i++)
 		{
-			static std::string strLight;
-			strLight = "spot light #" + std::to_string(i);
+			static MxString strLight;
+			strLight = "spot light #" + ToMxString(i);
 			if (ImGui::CollapsingHeader(strLight.c_str(), ImGuiTreeNodeFlags_None))
 			{
 				ImGui::PushID(int(i + scene.PointLights.GetCount()));

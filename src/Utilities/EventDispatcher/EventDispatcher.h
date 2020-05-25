@@ -62,7 +62,7 @@ namespace MxEngine
 	class EventDispatcher
 	{
 		using CallbackBaseFunction = std::function<void(EventBase&)>;
-		using NamedCallback = std::pair<std::string, CallbackBaseFunction>;
+		using NamedCallback = std::pair<MxString, CallbackBaseFunction>;
 		using CallbackList = std::vector<NamedCallback>;
 		using EventList = std::vector<UniqueRef<EventBase>>;
 		using EventTypeIndex = uint32_t;
@@ -84,7 +84,7 @@ namespace MxEngine
 		shedules listeners which will be removed next frame. 
 		This cache exists because sometimes user wants to remove event listener inside other listener callback (or even perform self-removal), which may result in crash.
 		*/
-		std::vector<std::string> toRemoveCache;
+		std::vector<MxString> toRemoveCache;
 
 		/*!
 		immediately invokes all listeners of event, if any exists
@@ -105,7 +105,7 @@ namespace MxEngine
 		\param func callback functor
 		*/
 		template<typename EventType>
-		inline void AddCallbackImpl(std::string name, CallbackBaseFunction&& func)
+		inline void AddCallbackImpl(MxString name, CallbackBaseFunction&& func)
 		{
 			this->toAddCache[EventType::eventType].emplace_back(std::move(name), std::move(func));
 		}
@@ -115,7 +115,7 @@ namespace MxEngine
 		\param callbacks list of listeners callbacks
 		\param name name of listeners to search for
 		*/
-		inline void RemoveEventByName(CallbackList& callbacks, const std::string& name)
+		inline void RemoveEventByName(CallbackList& callbacks, const MxString& name)
 		{
 			auto it = std::remove_if(callbacks.begin(), callbacks.end(), [&name](const auto& p)
 			{
@@ -157,7 +157,7 @@ namespace MxEngine
 		\param func listener callback functor
 		*/
 		template<typename EventType>
-		void AddEventListener(const std::string& name, std::function<void(EventType&)> func)
+		void AddEventListener(const MxString& name, std::function<void(EventType&)> func)
 		{
 			this->AddCallbackImpl<EventType>(name, [func = std::move(func)](EventBase& e)
 			{
@@ -173,7 +173,7 @@ namespace MxEngine
 		\param func listener callback functor
 		*/
 		template<typename FunctionType>
-		void AddEventListener(const std::string& name, FunctionType&& func)
+		void AddEventListener(const MxString& name, FunctionType&& func)
 		{
 			this->AddEventListener(name, std::function(std::forward<FunctionType>(func)));
 		}
@@ -182,7 +182,7 @@ namespace MxEngine
 		removes all event listeners by their names (action is placed in waiting queue until next frame)
 		\param name name of listeners to be deleted
 		*/
-		void RemoveEventListener(const std::string& name)
+		void RemoveEventListener(const MxString& name)
 		{
 			this->toRemoveCache.push_back(name);
 		}

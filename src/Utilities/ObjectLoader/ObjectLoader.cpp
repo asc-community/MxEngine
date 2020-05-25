@@ -43,15 +43,15 @@
 
 namespace MxEngine
 {
-	ObjectInfo ObjectLoader::Load(std::string filename)
+	ObjectInfo ObjectLoader::Load(const MxString& filename)
 	{
-		auto directory = FilePath(filename).parent_path();
+		auto directory = FilePath(filename.c_str()).parent_path();
 		ObjectInfo object;
 		MAKE_SCOPE_PROFILER("ObjectLoader::LoadObject");
 		MAKE_SCOPE_TIMER("MxEngine::ObjectLoader", "ObjectLoader::LoadObject");
-		Logger::Instance().Debug("Assimp::Importer", "loading object from file: " + filename);
+		Logger::Instance().Debug("Assimp::Importer", MxFormat("loading object from file: {}", filename));
 		static Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices 
+		const aiScene* scene = importer.ReadFile(filename.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices 
 			| aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_ImproveCacheLocality | aiProcess_GenUVCoords | aiProcess_CalcTangentSpace);
 		if (scene == nullptr)
 		{
@@ -99,7 +99,7 @@ namespace MxEngine
 				aiString path;\
 				if (material->GetTexture(type, 0, &path) == aiReturn_SUCCESS)\
 				{\
-					materialInfo.field = (directory / path.C_Str()).string(); \
+					materialInfo.field = MxString((directory / path.C_Str()).string().c_str());\
 				}\
 			}
 			GET_TEXTURE(aiTextureType_AMBIENT, map_Ka);
@@ -136,7 +136,7 @@ namespace MxEngine
 			MX_ASSERT(mesh->mNumFaces > 0);
 			constexpr size_t VertexSize = (3 + 2 + 3 + 3 + 3);
 
-			std::vector<float> vertex;
+			MxVector<float> vertex; // TODO: use stack allocator
 			vertex.reserve(VertexSize * (size_t)mesh->mNumVertices);
 			for (size_t i = 0; i < (size_t)mesh->mNumVertices; i++)
 			{
@@ -177,7 +177,7 @@ namespace MxEngine
 				meshInfo.faces[3 * i + 2] = mesh->mFaces[i].mIndices[2];
 			}
 			if (meshInfo.name.empty()) 
-				meshInfo.name = Format(FMT_STRING("unnamed_hash_{0}"), Random::Get(0LL, Random::Max));
+				meshInfo.name = Format("unnamed_hash_{0}", Random::Get(0LL, Random::Max)).c_str();
 			meshInfo.useTexture = true;
 			meshInfo.buffer = std::move(vertex);
 		}
@@ -188,7 +188,7 @@ namespace MxEngine
 
 namespace MxEngine
 {
-	ObjectInfo ObjectLoader::Load(std::string path)
+	ObjectInfo ObjectLoader::Load(MxString path)
 	{
 		Logger::Instance().Error("MxEngine::ObjectLoader", "object cannot be loaded as Assimp library was turned off in engine settings");
 		ObjectInfo object;

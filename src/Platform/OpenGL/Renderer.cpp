@@ -260,7 +260,7 @@ namespace MxEngine
 		else
 		{
 			GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, factor));
-			Logger::Instance().Debug("OpenGL::Renderer", "set anisotropic filtering factor to " + std::to_string((int)factor) + "x");
+			Logger::Instance().Debug("OpenGL::Renderer", "set anisotropic filtering factor to " + ToMxString((int)factor) + "x");
 		}
 		return *this;
 	}

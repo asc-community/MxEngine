@@ -37,12 +37,13 @@
 
 namespace MxEngine
 {
-	void CopyMaterial(Material& material, const MaterialInfo& mat, std::unordered_map<std::string, Ref<Texture>>& textures)
+	void CopyMaterial(Material& material, const MaterialInfo& mat, MxHashMap<StringId, GResource<Texture>>& textures)
 	{
 		#define MAKE_TEX(tex) if(!mat.tex.empty()) {\
-			if(textures.find(mat.tex) == textures.end())\
-				textures[mat.tex] = MakeUnique<Texture>(mat.tex);\
-			material.tex = textures[mat.tex];}
+			auto id = MakeStringId(mat.tex);\
+			if(textures.find(id) == textures.end())\
+				textures[id] = GraphicFactory::Create<Texture>(mat.tex);\
+			material.tex = textures[id];}
 
 		MAKE_TEX(map_Ka);
 		MAKE_TEX(map_Kd);
@@ -65,15 +66,15 @@ namespace MxEngine
 		if (material.Ns == 0.0f) material.Ns = 128.0f; // bad as pow(0.0, 0.0) -> NaN
 	}
 
-	void Mesh::LoadFromFile(const std::string& filepath)
+	void Mesh::LoadFromFile(const MxString& filepath)
 	{
 		ObjectInfo objectInfo = ObjectLoader::Load(filepath);
 		this->boundingBox = objectInfo.boundingBox;
 
-		std::unordered_map<std::string, Ref<Texture>> textures;
-		std::unordered_map<uintptr_t, Ref<Material>> materials;
-		std::vector<Ref<Vector4>> submeshColors;
-		std::vector<Ref<Transform>> submeshTransforms;
+		MxHashMap<StringId, GResource<Texture>> textures;
+		MxHashMap<uintptr_t, Ref<Material>> materials;
+		MxVector<Ref<Vector4>> submeshColors;
+		MxVector<Ref<Transform>> submeshTransforms;
 		for (const auto& group : objectInfo.meshes)
 		{
 			submeshColors.push_back(MakeRef<Vector4>(1.0f));
@@ -107,7 +108,7 @@ namespace MxEngine
 				{
 					vertecies += mesh.faces.size();
 				}
-				Logger::Instance().Debug("MxEngine::LODGenerator", Format("LOD[{0}]: vertecies = {1}", factor + 1, vertecies));
+				Logger::Instance().Debug("MxEngine::LODGenerator", MxFormat("LOD[{0}]: vertecies = {1}", factor + 1, vertecies));
 				#endif
 			}
 		}
@@ -159,12 +160,12 @@ namespace MxEngine
 		}
 	}
 
-	Mesh::Mesh(const std::string& filepath)
+	Mesh::Mesh(const MxString& filepath)
 	{
 		LoadFromFile(filepath);
 	}
 
-	void Mesh::Load(const std::string& filepath)
+	void Mesh::Load(const MxString& filepath)
 	{
 		LoadFromFile(filepath);
 	}
@@ -231,7 +232,7 @@ namespace MxEngine
 		this->meshGenerated = true;
 	}
 
-    SubMesh::SubMesh(std::string name, UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<IndexBuffer> IBO, Ref<Material> material, Ref<Vector4> color, Ref<Transform> transform, bool useTexture, bool useNormal, size_t sizeInFloats)
+    SubMesh::SubMesh(MxString name, UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<IndexBuffer> IBO, Ref<Material> material, Ref<Vector4> color, Ref<Transform> transform, bool useTexture, bool useNormal, size_t sizeInFloats)
     {
 		this->name = std::move(name);
 		this->VBO = std::move(VBO);
@@ -244,6 +245,40 @@ namespace MxEngine
 		this->useNormal = useTexture;
 		this->vertexBufferSize = sizeInFloats;
     }
+
+    SubMesh::SubMesh(SubMesh&& other) noexcept
+    {
+		this->useTexture = other.useTexture;
+		this->useNormal = other.useNormal;
+		this->meshGenerated = other.meshGenerated;
+		this->meshIBO = std::move(other.meshIBO);
+		this->VBO = std::move(other.VBO);
+		this->VAO = std::move(other.VAO);
+		this->IBO = std::move(other.IBO);
+		this-> vertexBufferSize = other.vertexBufferSize;
+		this->material = std::move(other.material);
+		this->renderColor = std::move(other.renderColor);
+		this->transform = std::move(other.transform);
+		this->name = std::move(other.name);
+    }
+
+	SubMesh& SubMesh::operator=(SubMesh&& other) noexcept
+	{
+		this->useTexture = other.useTexture;
+		this->useNormal = other.useNormal;
+		this->meshGenerated = other.meshGenerated;
+		this->meshIBO = std::move(other.meshIBO);
+		this->VBO = std::move(other.VBO);
+		this->VAO = std::move(other.VAO);
+		this->IBO = std::move(other.IBO);
+		this->vertexBufferSize = other.vertexBufferSize;
+		this->material = std::move(other.material);
+		this->renderColor = std::move(other.renderColor);
+		this->transform = std::move(other.transform);
+		this->name = std::move(other.name);
+
+		return *this;
+	}
 
 	const VertexArray& SubMesh::GetVAO() const
 	{
@@ -273,7 +308,7 @@ namespace MxEngine
 		return *this->material;
 	}
 
-	const std::string& SubMesh::GetName() const
+	const MxString& SubMesh::GetName() const
 	{
 		return name;
 	}

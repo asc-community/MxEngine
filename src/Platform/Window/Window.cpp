@@ -77,7 +77,7 @@ namespace MxEngine
 		other.keyPressed.reset();
 	}
 
-	Window::Window(int width, int height, const std::string& title)
+	Window::Window(int width, int height, const MxString& title)
 		: title(title), width(width), height(height)
 	{		
 		Logger::Instance().Debug("MxEngine::Window", "window object created");
@@ -275,7 +275,7 @@ namespace MxEngine
 	Window& Window::UseDebugging(bool value)
 	{
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, value);
-		Logger::Instance().Debug("OpenGL::Window", "debug context was set to: " + (std::string)BOOL_STRING(value));
+		Logger::Instance().Debug("OpenGL::Window", "debug context was set to: " + (MxString)BOOL_STRING(value));
 		return *this;
 	}
 
@@ -283,7 +283,7 @@ namespace MxEngine
 	{
 		this->doubleBuffer = value;
 		glfwWindowHint(GLFW_DOUBLEBUFFER, value);
-		Logger::Instance().Debug("OpenGL::Window", "doublebuffering was set to: " + (std::string)BOOL_STRING(value));
+		Logger::Instance().Debug("OpenGL::Window", "doublebuffering was set to: " + (MxString)BOOL_STRING(value));
 		return *this;
 	}
 
@@ -312,7 +312,7 @@ namespace MxEngine
 		return *this;
 	}
 
-	Window& Window::UseTitle(const std::string& title)
+	Window& Window::UseTitle(const MxString& title)
 	{
 		this->title = title;
 		if (this->window != nullptr)

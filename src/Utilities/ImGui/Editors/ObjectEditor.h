@@ -52,19 +52,19 @@ namespace MxEngine::GUI
 		ImGui::DragFloat("reflection", &material.reflection, 0.01f, 0.0f, 1.0f);
 		ImGui::DragFloat("displacement", &material.displacement, 0.001f, 0.0f, std::numeric_limits<float>::max());
 
-		static std::string normapMapPath(128, '\0');
+		static MxString normapMapPath(128, '\0');
 		if (GUI::InputTextOnClick("normal map", normapMapPath.data(), normapMapPath.size()))
 		{
 			auto context = Application::Get();
-			material.map_normal = MakeUnique<Texture>(
-				FileModule::GetFilePath(MakeStringId(normapMapPath)).string());
+			material.map_normal = GraphicFactory::Create<Texture>(
+				ToMxString(FileModule::GetFilePath(MakeStringId(normapMapPath))));
 		}
-		static std::string heightMapPath(128, '\0');
+		static MxString heightMapPath(128, '\0');
 		if (GUI::InputTextOnClick("height map", heightMapPath.data(), heightMapPath.size()))
 		{
 			auto context = Application::Get();
-			material.map_height = MakeUnique<Texture>(
-				FileModule::GetFilePath(MakeStringId(heightMapPath)).string());
+			material.map_height = GraphicFactory::Create<Texture>(
+				ToMxString(FileModule::GetFilePath(MakeStringId(heightMapPath))));
 		}
 	}
 
@@ -128,7 +128,7 @@ namespace MxEngine::GUI
 				ImGui::SameLine(); ImGui::Checkbox("use LOD", &object.UseLOD);
 
 				// current texture path
-				ImGui::Text((std::string("texture: ") + (object.ObjectTexture ? object.GetTexture().GetPath() : std::string("none"))).c_str());
+				ImGui::Text((MxString("texture: ") + (object.ObjectTexture ? object.GetTexture().GetPath() : MxString("none"))).c_str());
 
 				auto renderColor = object.GetRenderColor();
 				if (ImGui::ColorEdit4("render color", &renderColor[0]))
@@ -143,7 +143,7 @@ namespace MxEngine::GUI
 				ImGui::InputFloat("scale speed", &object.ScaleSpeed);
 
 				// object texture (loads from file)
-				static std::string texturePath(128, '\0');
+				static MxString texturePath(128, '\0');
 				if(GUI::InputTextOnClick("texture", texturePath.data(), texturePath.size()))
 				{
 					object.ObjectTexture = context->GetCurrentScene().LoadTexture(texturePath);
