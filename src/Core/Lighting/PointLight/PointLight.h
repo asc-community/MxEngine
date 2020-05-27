@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -36,7 +36,7 @@ namespace MxEngine
 {
     class PointLight
     {
-        UniqueRef<CubeMap> cubemap;
+        GResource<CubeMap> cubemap;
         Vector3 factors       = MakeVector3(1.0f, 0.009f, 0.032f);
     public:
         float FarDistance = 1000.0f;
@@ -52,11 +52,10 @@ namespace MxEngine
 
         PointLight& UsePosition(const Vector3& position);
         PointLight& UseFactors(const Vector3& factors);
-        const Vector3& GetFactors() const;
+        [[nodiscard]] const Vector3& GetFactors() const;
 
-        const CubeMap* GetDepthCubeMap() const;
-        CubeMap* GetDepthCubeMap();
-        void AttachDepthCubeMap(UniqueRef<CubeMap> cubemap);
-        Matrix4x4 GetMatrix(size_t index) const;
+        [[nodiscard]] GResource<CubeMap> GetDepthCubeMap() const;
+        void AttachDepthCubeMap(const GResource<CubeMap>& cubemap);
+        [[nodiscard]] Matrix4x4 GetMatrix(size_t index) const;
     };
 }

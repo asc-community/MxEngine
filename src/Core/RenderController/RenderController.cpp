@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -281,7 +281,7 @@ namespace MxEngine
 				}
 
 				int bindIndex = int(6 + lights.Spot.size() + MAX_POINT_SOURCES);
-				if (skybox->SkyboxTexture != nullptr) // TODO: what should we do if no skybox exists for scene?
+				if (skybox->SkyboxTexture.IsValid()) // TODO: what should we do if no skybox exists for scene?
 					skybox->SkyboxTexture->Bind(bindIndex);
 				shader.SetUniformInt("map_skybox", bindIndex);
 
@@ -318,7 +318,7 @@ namespace MxEngine
 	void RenderController::DrawSkybox(const Skybox& skybox, const CameraController& viewport, const FogInformation& fog)
 	{
 		if (!viewport.HasCamera()) return;
-		if (skybox.SkyboxTexture == nullptr) return;
+		if (!skybox.SkyboxTexture.IsValid()) return;
 
 		auto& shader = skybox.GetShader();
 		auto View = (Matrix3x3)viewport.GetCamera().GetViewMatrix();
@@ -353,7 +353,7 @@ namespace MxEngine
 
 		bloomIters = bloomIters + bloomIters % 2;
 
-		this->GetRenderEngine().SetViewport(0, 0, (int)this->BloomBuffers[0]->GetAttachedTexture()->GetWidth(), (int)this->BloomBuffers[0]->GetAttachedTexture()->GetHeight());
+		this->GetRenderEngine().SetViewport(0, 0, (int)this->BloomBuffers[0]->GetAttachedTexture().GetWidth(), (int)this->BloomBuffers[0]->GetAttachedTexture().GetHeight());
 		this->BloomShader->SetUniformInt("BloomTexture", 0);
 		for (int i = 0; i < bloomIters; i++)
 		{
@@ -365,7 +365,7 @@ namespace MxEngine
 			}
 			else
 			{
-				this->BloomBuffers[(size_t)!horizontalKernel]->GetAttachedTexture()->Bind(0);
+				this->BloomBuffers[(size_t)!horizontalKernel]->GetAttachedTexture().Bind(0);
 			}
 			this->BloomShader->SetUniformInt("horizontalKernel", (int)horizontalKernel);
 
@@ -379,7 +379,7 @@ namespace MxEngine
 		if (bloomIters > 0)
 		{
 			//auto& bloomTexture = this->UpscaleTexture(*this->BloomBuffers[1]->GetAttachedTexture(), viewportSize);
-			this->BloomBuffers[1]->GetAttachedTexture()->Bind(1);
+			this->BloomBuffers[1]->GetAttachedTexture().Bind(1);
 		}
 		else
 		{
@@ -394,53 +394,6 @@ namespace MxEngine
 		this->HDRShader->SetUniformFloat("exposure", hdrExposure);
 
 		this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, *this->HDRShader);
-	}
-
-	/*!
-	upscales texture to fit desired size (less than 2x times smaller than dist constaints)
-	\param texture texture to scale (its width and height are pulled using GetWidth() and GetHeight()
-	\param dist required scale. dist.x and dist.y must be positive numbers
-	\returns texture itself, if no scale is needed, upscaled texture reference from upscaleBuffer, if it was scaled
-	\warning TODO: I do not know why, but upscaling not works as desired. Something with OpenGL, but idk what exactly
-	*/
-	const Texture& RenderController::UpscaleTexture(const Texture& texture, const VectorInt2& dist)
-	{
-		VectorInt2 from2(FloorToPow2(texture.GetWidth()), FloorToPow2(texture.GetHeight()));
-		VectorInt2 dist2(FloorToPow2(dist.x), FloorToPow2(dist.y));
-
-		constexpr auto get_index = [](const VectorInt2& v)
-		{
-			switch (Min(v.x, v.y))
-			{
-			case 256:
-				return 0;
-			case 512:
-				return 1;
-			case 1024:
-				return 2;
-			case 2048:
-				return 3;
-			default:
-				return 4;
-			}
-		};
-		size_t fromIdx = get_index(from2) + 1;
-		size_t toIdx = Min(4, get_index(dist2) + 2);
-		if (fromIdx >= toIdx)
-			return texture;
-
-		auto& rectangle = this->GetRectangle();
-		this->UpscaleShader->SetUniformInt("Texture", 0);
-		for (size_t i = fromIdx; i < toIdx; i++)
-		{
-			this->GetRenderEngine().SetViewport(0, 0, 256 << i, 256 << i);
-			this->upscaleBuffers[i]->Bind();
-			if (i == fromIdx) texture.Bind(0);
-			else this->upscaleBuffers[i - 1]->GetAttachedTexture()->Bind(0);
-			this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, *this->UpscaleShader);
-		}
-		this->upscaleBuffers[3]->Unbind();
-		return *this->upscaleBuffers[toIdx - 1]->GetAttachedTexture();
 	}
 
 	void RenderController::SetPCFDistance(int value)
@@ -488,39 +441,28 @@ namespace MxEngine
 		if(this->samples == 1 && samples != 1) this->GetRenderEngine().UseSampling(true);
 		this->samples = (int)samples;
 
-		auto MSAATexture = MakeUnique<Texture>();
-		MSAATexture->LoadMultisample(viewportWidth, viewportHeight, HDRTextureFormat, (int)samples, TextureWrap::CLAMP_TO_EDGE);
+		Texture MSAATexture;
+		MSAATexture.LoadMultisample(viewportWidth, viewportHeight, HDRTextureFormat, (int)samples, TextureWrap::CLAMP_TO_EDGE);
 
-		if(this->MSAABuffer == nullptr)
-			this->MSAABuffer = MakeUnique<FrameBuffer>();
+		if (!this->MSAABuffer.IsValid())
+			this->MSAABuffer = GraphicFactory::Create<FrameBuffer>();
 		this->MSAABuffer->AttachTexture(std::move(MSAATexture), Attachment::COLOR_ATTACHMENT0);
 
-		if(this->MSAARenderBuffer == nullptr)
-			this->MSAARenderBuffer = MakeUnique<RenderBuffer>();
+		if(!this->MSAARenderBuffer.IsValid())
+			this->MSAARenderBuffer = GraphicFactory::Create<RenderBuffer>();
 		this->MSAARenderBuffer->InitStorage(viewportWidth, viewportHeight, (int)samples);
 		this->MSAARenderBuffer->LinkToFrameBuffer(*this->MSAABuffer);
 
-		//  for (size_t i = 0; i < upscaleBuffers.size(); i++)
-		//  {
-		//  	if (this->upscaleBuffers[i] == nullptr)
-		//  	{
-		//  		this->upscaleBuffers[i] = MakeUnique<FrameBuffer>();
-		//  		auto upscaleTexture = MakeUnique<Texture>();
-		//  		upscaleTexture->Load(nullptr, 256 << i, 256 << i, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
-		//  		this->upscaleBuffers[i]->AttachTexture(std::move(upscaleTexture), Attachment::COLOR_ATTACHMENT0);
-		//  	}
-		//  }
-
-		if(this->hdrTexture == nullptr) 
-			this->hdrTexture = MakeUnique<Texture>();
+		if(!this->hdrTexture.IsValid()) 
+			this->hdrTexture = GraphicFactory::Create<Texture>();
 		this->hdrTexture->Load(nullptr, viewportWidth, viewportHeight, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
 
-		if (this->bloomTexture == nullptr)
-			this->bloomTexture = MakeUnique<Texture>();
+		if (!this->bloomTexture.IsValid())
+			this->bloomTexture = GraphicFactory::Create<Texture>();
 		this->bloomTexture->Load(nullptr, viewportWidth, viewportHeight, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
 			
-		if(this->HDRBuffer == nullptr)
-			this->HDRBuffer = MakeUnique<FrameBuffer>();
+		if(!this->HDRBuffer.IsValid())
+			this->HDRBuffer = GraphicFactory::Create<FrameBuffer>();
 		this->HDRBuffer->AttachTexture(*this->hdrTexture, Attachment::COLOR_ATTACHMENT0);
 		this->HDRBuffer->AttachTexture(*this->bloomTexture, Attachment::COLOR_ATTACHMENT1);
 
@@ -529,12 +471,12 @@ namespace MxEngine
 
 		for (size_t i = 0; i < 2; i++)
 		{
-			if (BloomBuffers[i] == nullptr)
-				BloomBuffers[i] = MakeUnique<FrameBuffer>();
-			auto texture = MakeUnique<Texture>();
+			if (!BloomBuffers[i].IsValid())
+				BloomBuffers[i] = GraphicFactory::Create<FrameBuffer>();
+			Texture texture;
 			size_t width = (viewportWidth + 3) / 2 + ((viewportWidth + 1) / 2) % 2;
 			size_t height = (viewportHeight + 3) / 2 + ((viewportHeight + 1) / 2) % 2;
-			texture->Load(nullptr, (int)width, (int)height, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+			texture.Load(nullptr, (int)width, (int)height, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
 			BloomBuffers[i]->AttachTexture(std::move(texture), Attachment::COLOR_ATTACHMENT0);
 		}
 	}
@@ -546,7 +488,7 @@ namespace MxEngine
 
 	void RenderController::AttachDrawBuffer()
 	{
-		if (this->MSAABuffer != nullptr &&
+		if (this->MSAABuffer.IsValid() &&
 			this->MSAABuffer->GetWidth() == this->viewportSize.x && this->MSAABuffer->GetHeight() == this->viewportSize.y)
 		{
 			this->MSAABuffer->Bind();
@@ -556,12 +498,12 @@ namespace MxEngine
 
 	void RenderController::DetachDrawBuffer()
 	{
-		if (this->MSAABuffer != nullptr &&
+		if (this->MSAABuffer.IsValid() &&
 			this->MSAABuffer->GetWidth() == this->viewportSize.x && this->MSAABuffer->GetHeight() == this->viewportSize.y)
 		{
 			this->HDRBuffer->Bind();
 			this->Clear();
-			this->DrawHDRTexture(*this->MSAABuffer->GetAttachedTexture(), this->samples);
+			this->DrawHDRTexture(this->MSAABuffer->GetAttachedTexture(), this->samples);
 			this->HDRBuffer->Unbind();
 			this->DrawPostProcessImage(*this->hdrTexture, *this->bloomTexture, this->exposure, this->bloomIterations, this->bloomWeight);
 		}

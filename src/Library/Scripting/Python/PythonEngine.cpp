@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -50,10 +50,10 @@ namespace MxEngine
         const char* IOHandler = R"(
 class MxEngineIOHandler:
     def __init__(self, std_stream):
-        self.value = ''
+        self.Value = ''
         self.std = std_stream
     def write(self, txt):
-        self.value += txt
+        self.Value += txt
         if self.std is not None:
             self.std.write(txt)
     def flush(self):
@@ -82,17 +82,17 @@ class MxEngineIOHandler:
             BoxedValue result = python::exec(code, this->pythonNamespace);
             // clear all errors (stderr)
             if(this->pythonNamespace.contains("errorHandler"))
-                this->pythonNamespace["errorHandler"].attr("value") = "";
+                this->pythonNamespace["errorHandler"].attr("Value") = "";
             this->lastError.clear();
             // get output (stdout)
             if (this->pythonNamespace.contains("outputHandler"))
             {
-                python::object output = this->pythonNamespace["outputHandler"].attr("value");
+                python::object output = this->pythonNamespace["outputHandler"].attr("Value");
                 this->lastOutput = ToMxString((std::string)python::extract<std::string>(output));
                 if(!this->lastOutput.empty())
                     this->lastOutput.pop_back(); // delete last '\n'
 
-                this->pythonNamespace["outputHandler"].attr("value") = "";
+                this->pythonNamespace["outputHandler"].attr("Value") = "";
             }
             return result;
         }
@@ -101,7 +101,7 @@ class MxEngineIOHandler:
             ::PyErr_Print();
             try
             {
-                python::object msg = this->pythonNamespace["errorHandler"].attr("value");
+                python::object msg = this->pythonNamespace["errorHandler"].attr("Value");
                 this->lastError = ToMxString((std::string)python::extract<std::string>(msg));
             }
             catch (python::error_already_set&)

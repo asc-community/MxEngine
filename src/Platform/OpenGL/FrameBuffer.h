@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -28,41 +28,40 @@
 
 #pragma once
 
-#include "Platform/OpenGL/CubeMap.h"
 #include "Platform/OpenGL/Texture.h"
-#include "Utilities/Memory/Memory.h"
-
-enum class Attachment
-{
-    COLOR_ATTACHMENT0,
-    COLOR_ATTACHMENT1,
-    COLOR_ATTACHMENT2,
-    COLOR_ATTACHMENT3,
-    COLOR_ATTACHMENT4,
-    COLOR_ATTACHMENT5,
-    COLOR_ATTACHMENT6,
-    COLOR_ATTACHMENT9,
-    COLOR_ATTACHMENT10,
-    COLOR_ATTACHMENT11,
-    COLOR_ATTACHMENT12,
-    COLOR_ATTACHMENT13,
-    COLOR_ATTACHMENT14,
-    COLOR_ATTACHMENT15,
-    DEPTH_ATTACHMENT,
-    STENCIL_ATTACHMENT,
-    DEPTH_STENCIL_ATTACHMENT,
-};
+#include "Platform/OpenGL/CubeMap.h"
 
 namespace MxEngine
 {
+    enum class Attachment
+    {
+        COLOR_ATTACHMENT0,
+        COLOR_ATTACHMENT1,
+        COLOR_ATTACHMENT2,
+        COLOR_ATTACHMENT3,
+        COLOR_ATTACHMENT4,
+        COLOR_ATTACHMENT5,
+        COLOR_ATTACHMENT6,
+        COLOR_ATTACHMENT9,
+        COLOR_ATTACHMENT10,
+        COLOR_ATTACHMENT11,
+        COLOR_ATTACHMENT12,
+        COLOR_ATTACHMENT13,
+        COLOR_ATTACHMENT14,
+        COLOR_ATTACHMENT15,
+        DEPTH_ATTACHMENT,
+        STENCIL_ATTACHMENT,
+        DEPTH_STENCIL_ATTACHMENT,
+    };
+
     class FrameBuffer
     {
         using BindableId = unsigned int;
 
         BindableId id = 0;
         int width = 0, height = 0;
-        UniqueRef<Texture> texture;
-        UniqueRef<CubeMap> cubemap;
+        Texture texture;
+        CubeMap cubemap;
     public:
         FrameBuffer();
         ~FrameBuffer();
@@ -73,17 +72,17 @@ namespace MxEngine
 
         void AttachTexture(Attachment attachment, int width, int height);
         void AttachTexture(const Texture& texture, Attachment attachment);
-        void AttachTexture(UniqueRef<Texture> texture, Attachment attachment);
+        void AttachTexture(Texture&& texture, Attachment attachment);
         void AttachCubeMap(Attachment attachment, int width, int height);
         void AttachCubeMap(const CubeMap& cubemap, Attachment attachment);
-        void AttachCubeMap(UniqueRef<CubeMap> cubemap, Attachment attachment);
+        void AttachCubeMap(CubeMap&& cubemap, Attachment attachment);
         void CopyFrameBufferContents(const FrameBuffer& framebuffer) const;
         void CopyFrameBufferContents(int screenWidth, int screenHeight) const;
         void Validate() const;
-        Texture* GetAttachedTexture();
-        const Texture* GetAttachedTexture() const;
-        CubeMap* GetAttachedCubeMap();
-        const CubeMap* GetAttachedCubeMap() const;
+        Texture& GetAttachedTexture();
+        const Texture& GetAttachedTexture() const;
+        CubeMap& GetAttachedCubeMap();
+        const CubeMap& GetAttachedCubeMap() const;
         void UseDrawBuffers(size_t count) const;
         int GetWidth() const;
         int GetHeight() const;

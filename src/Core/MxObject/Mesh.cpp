@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -122,14 +122,14 @@ namespace MxEngine
 			auto& meshes = this->LODs.emplace_back();
 			for (size_t i = 0; i < lod.meshes.size(); i++)
 			{
-				auto& mesh = lod.meshes[i];
+				const auto& mesh = lod.meshes[i];
 				auto& color = submeshColors[i];
 				auto& transform = submeshTransforms[i];
 
-				auto VBO = MakeUnique<VertexBuffer>(mesh.buffer.data(), mesh.buffer.size(), UsageType::STATIC_DRAW);
-				auto IBO = MakeUnique<IndexBuffer>(mesh.faces.data(), mesh.faces.size());
-				auto VAO = MakeUnique<VertexArray>();
-				auto VBL = MakeUnique<VertexBufferLayout>();
+				auto VBO = GraphicFactory::Create<VertexBuffer>(mesh.buffer.data(), mesh.buffer.size(), UsageType::STATIC_DRAW);
+				auto IBO = GraphicFactory::Create<IndexBuffer>(mesh.faces.data(), mesh.faces.size());
+				auto VAO = GraphicFactory::Create<VertexArray>();
+				auto VBL = GraphicFactory::Create<VertexBufferLayout>();
 
 				VBL->PushFloat(3);
 				if (mesh.useTexture)
@@ -228,11 +228,11 @@ namespace MxEngine
 			indicies.push_back(i + 2);
 			indicies.push_back(i + 0);
 		}
-		this->meshIBO = MakeUnique<IndexBuffer>(indicies.data(), indicies.size());
+		this->meshIBO = GraphicFactory::Create<IndexBuffer>(indicies.data(), indicies.size());
 		this->meshGenerated = true;
 	}
 
-    SubMesh::SubMesh(MxString name, UniqueRef<VertexBuffer> VBO, UniqueRef<VertexArray> VAO, UniqueRef<IndexBuffer> IBO, Ref<Material> material, Ref<Vector4> color, Ref<Transform> transform, bool useTexture, bool useNormal, size_t sizeInFloats)
+    SubMesh::SubMesh(MxString name, GResource<VertexBuffer> VBO, GResource<VertexArray> VAO, GResource<IndexBuffer> IBO, Ref<Material> material, Ref<Vector4> color, Ref<Transform> transform, bool useTexture, bool useNormal, size_t sizeInFloats)
     {
 		this->name = std::move(name);
 		this->VBO = std::move(VBO);
@@ -282,13 +282,13 @@ namespace MxEngine
 
 	const VertexArray& SubMesh::GetVAO() const
 	{
-		MX_ASSERT(this->VBO != nullptr);
+		MX_ASSERT(this->VBO.IsValid());
 		return *this->VAO;
 	}
 
-	IndexBuffer& SubMesh::GetIBO() const
+	const IndexBuffer& SubMesh::GetIBO() const
 	{
-		MX_ASSERT(this->IBO != nullptr);
+		MX_ASSERT(this->IBO.IsValid());
 		return *this->IBO;
 	}
 
@@ -357,9 +357,9 @@ namespace MxEngine
 	{
 		this->VBOs.push_back(std::move(vbo));
 		this->VBLs.push_back(std::move(vbl));
-		for (const auto& meshes : this->LODs)
+		for (auto& meshes : this->LODs)
 		{
-			for (const auto& mesh : meshes)
+			for (auto& mesh : meshes)
 			{
 				mesh.VAO->AddInstancedBuffer(*this->VBOs.back(), *this->VBLs.back());
 			}

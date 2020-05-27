@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -34,15 +34,15 @@ namespace MxEngine
 {
     class Skybox
     {
-        Vector3 rotation;
-        mutable Matrix3x3 cachedRotation;
+        Vector3 rotation {0};
+        mutable Matrix3x3 cachedRotation {0};
         mutable bool needUpdate = true;
 
-        UniqueRef<Shader> shader;
-        UniqueRef<VertexBuffer> VBO;
-        UniqueRef<VertexArray> VAO;
+        GResource<Shader> shader;
+        GResource<VertexBuffer> VBO;
+        GResource<VertexArray> VAO;
     public:
-        CubeMap* SkyboxTexture;
+        GResource<CubeMap> SkyboxTexture;
 
         Skybox();
 

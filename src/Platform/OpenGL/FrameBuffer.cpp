@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -65,21 +65,20 @@ namespace MxEngine
     void FrameBuffer::AttachTexture(Attachment attachment, int width, int height)
     {
         this->width = width, this->height = height;
-        this->texture = MakeUnique<Texture>();
-        this->cubemap = nullptr;
+        this->cubemap = { };
         GLenum mode = AttachmentTable[int(attachment)];
         this->Bind();
 
         if (mode == GL_DEPTH_ATTACHMENT)
         {
-            this->texture->LoadDepth(width, height);
+            this->texture.LoadDepth(width, height);
             GLCALL(glDrawBuffer(GL_NONE));
         }
         else
         {
-            this->texture->Load(nullptr, width, height);
+            this->texture.Load(nullptr, width, height);
         }
-        GLint textureId = this->texture->GetNativeHandle();
+        GLint textureId = this->texture.GetNativeHandle();
         GLCALL(glFramebufferTexture2D(GL_FRAMEBUFFER, mode, GL_TEXTURE_2D, textureId, 0));
     }
 
@@ -98,30 +97,29 @@ namespace MxEngine
         }
     }
 
-    void FrameBuffer::AttachTexture(UniqueRef<Texture> texture, Attachment attachment)
+    void FrameBuffer::AttachTexture(Texture&& texture, Attachment attachment)
     {
         this->texture = std::move(texture);
-        this->AttachTexture(*this->texture, attachment);
+        this->AttachTexture(this->texture, attachment);
     }
 
     void FrameBuffer::AttachCubeMap(Attachment attachment, int width, int height)
     {
         this->width = width, this->height = height;
-        this->cubemap = MakeUnique<CubeMap>();
-        this->texture = nullptr;
+        this->texture = { };
         GLenum mode = AttachmentTable[int(attachment)];
         this->Bind();
 
         if (mode == GL_DEPTH_ATTACHMENT)
         {
-            this->cubemap->LoadDepth(width, height);
+            this->cubemap.LoadDepth(width, height);
             GLCALL(glDrawBuffer(GL_NONE));
         }
         else
         {
-            this->cubemap->Load(std::array<uint8_t*, 6>{ nullptr, nullptr, nullptr, nullptr, nullptr, nullptr }, width, height);
+            this->cubemap.Load(std::array<uint8_t*, 6>{ nullptr, nullptr, nullptr, nullptr, nullptr, nullptr }, width, height);
         }
-        GLint cubemapId = this->cubemap->GetNativeHandle();
+        GLint cubemapId = this->cubemap.GetNativeHandle();
         GLCALL(glFramebufferTexture(GL_FRAMEBUFFER, mode, cubemapId, 0));
     }
 
@@ -140,10 +138,10 @@ namespace MxEngine
         }
     }
 
-    void FrameBuffer::AttachCubeMap(UniqueRef<CubeMap> cubemap, Attachment attachment)
+    void FrameBuffer::AttachCubeMap(CubeMap&& cubemap, Attachment attachment)
     {
         this->cubemap = std::move(cubemap);
-        this->AttachCubeMap(*this->cubemap, attachment);
+        this->AttachCubeMap(this->cubemap, attachment);
     }
 
     void FrameBuffer::CopyFrameBufferContents(int screenWidth, int screenHeight) const
@@ -160,24 +158,24 @@ namespace MxEngine
             Logger::Instance().Error("OpenGL::FrameBuffer", "framebuffer validation failed: incomplete");
     }
 
-    Texture* FrameBuffer::GetAttachedTexture()
+    Texture& FrameBuffer::GetAttachedTexture()
     {
-        return this->texture.get();
+        return this->texture;
     }
 
-    const Texture* FrameBuffer::GetAttachedTexture() const
+    CubeMap& FrameBuffer::GetAttachedCubeMap()
     {
-        return this->texture.get();
+        return this->cubemap;
     }
 
-    CubeMap* FrameBuffer::GetAttachedCubeMap()
+    const Texture& FrameBuffer::GetAttachedTexture() const
     {
-        return this->cubemap.get();
+        return this->texture;
     }
 
-    const CubeMap* FrameBuffer::GetAttachedCubeMap() const
+    const CubeMap& FrameBuffer::GetAttachedCubeMap() const
     {
-        return this->cubemap.get();
+        return this->cubemap;
     }
 
     void FrameBuffer::UseDrawBuffers(size_t count) const

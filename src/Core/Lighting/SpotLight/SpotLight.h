@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -36,7 +36,7 @@ namespace MxEngine
 {
     class SpotLight
     {
-        UniqueRef<Texture> texture;
+        GResource<Texture> texture;
         float innerAngle      = 35.0f;
         float innerCos        = std::cos(Radians(innerAngle));
         float outerAngle      = 45.0f;
@@ -48,19 +48,18 @@ namespace MxEngine
         Vector3 Position      = MakeVector3(0.0f);
         Vector3 Direction     = MakeVector3(0.0f, 1.0f, 0.0f);
 
-        float GetInnerAngle() const;
-        float GetOuterAngle() const;
-        float GetInnerCos() const;
-        float GetOuterCos() const;
+        [[nodiscard]] float GetInnerAngle() const;
+        [[nodiscard]] float GetOuterAngle() const;
+        [[nodiscard]] float GetInnerCos() const;
+        [[nodiscard]] float GetOuterCos() const;
         SpotLight& UseInnerAngle(float angle);
         SpotLight& UseOuterAngle(float angle);
         SpotLight& UsePosition(const Vector3& position);
         SpotLight& UseDirection(const Vector3& direction);
-        const Vector3& GetDirection() const;
+        [[nodiscard]] const Vector3& GetDirection() const;
 
-        const Texture* GetDepthTexture() const;
-        Texture* GetDepthTexture();
-        void AttachDepthTexture(UniqueRef<Texture> texture);
-        Matrix4x4 GetMatrix() const;
+        [[nodiscard]] GResource<Texture> GetDepthTexture() const;
+        void AttachDepthTexture(const GResource<Texture>& texture);
+        [[nodiscard]] Matrix4x4 GetMatrix() const;
     };
 }

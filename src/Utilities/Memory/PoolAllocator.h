@@ -56,7 +56,7 @@ namespace MxEngine
         */
         size_t free = InvalidOffset;
         /*!
-        total objects fitted inside pool allocator
+        total objects fitted inside Pool allocator
         */
         size_t count = 0;
 
@@ -68,12 +68,12 @@ namespace MxEngine
         using DataPointer = uint8_t*;
 
         /*!
-        creates empty pool allocator (nullptr chunk pointer, count = 0)
+        creates empty Pool allocator (nullptr chunk pointer, count = 0)
         */
         PoolAllocator() {};
 
         /*!
-        constructs pool allocator, assigning it memory chunk
+        constructs Pool allocator, assigning it memory chunk
         \param data begin of memory chunk
         \param bytes size in bytes of memory chunk
         */
@@ -83,7 +83,7 @@ namespace MxEngine
         }
 
         /*!
-        assigns new memory chunk to pool allocator
+        assigns new memory chunk to Pool allocator
         \param data begin of memory chunk
         \param bytes size in bytes of memory chunk
         */
@@ -137,7 +137,7 @@ namespace MxEngine
         }
 
         /*!
-        destroys pool allocator and all objects stored in it
+        destroys Pool allocator and all objects stored in it
         */
         ~PoolAllocator()
         {

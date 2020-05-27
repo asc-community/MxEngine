@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -36,8 +36,9 @@
 #include <algorithm>
 
 #include "Utilities/Profiler/Profiler.h"
-#include "Utilities/String/String.h"
 #include "Utilities/Memory/Memory.h"
+#include "Utilities/String/String.h" // is used in macro, so analyzer may say it is unused, but its not
+#include "Utilities/STL/MxVector.h"
 
 namespace MxEngine
 {
@@ -63,12 +64,12 @@ namespace MxEngine
 	{
 		using CallbackBaseFunction = std::function<void(EventBase&)>;
 		using NamedCallback = std::pair<MxString, CallbackBaseFunction>;
-		using CallbackList = std::vector<NamedCallback>;
-		using EventList = std::vector<UniqueRef<EventBase>>;
+		using CallbackList = MxVector<NamedCallback>;
+		using EventList = MxVector<UniqueRef<EventBase>>;
 		using EventTypeIndex = uint32_t;
 
 		/*!
-		list of sheduled all events (executed once per frame by Application class)
+		list of scheduled all events (executed once per frame by Application class)
 		*/
 		EventList events;
 		/*!
@@ -76,7 +77,7 @@ namespace MxEngine
 		*/
 		std::unordered_map<EventTypeIndex, CallbackList> callbacks;
 		/*!
-		shedules listeners which will be added next frame. 
+		schedules listeners which will be added next frame. 
 		This cache exists because sometimes user wants to add new listener inside other listener callback, which may result in crash.
 		*/
 		std::unordered_map<EventTypeIndex, CallbackList> toAddCache;
@@ -84,7 +85,7 @@ namespace MxEngine
 		shedules listeners which will be removed next frame. 
 		This cache exists because sometimes user wants to remove event listener inside other listener callback (or even perform self-removal), which may result in crash.
 		*/
-		std::vector<MxString> toRemoveCache;
+		MxVector<MxString> toRemoveCache;
 
 		/*!
 		immediately invokes all listeners of event, if any exists
@@ -159,10 +160,10 @@ namespace MxEngine
 		template<typename EventType>
 		void AddEventListener(const MxString& name, std::function<void(EventType&)> func)
 		{
-			this->AddCallbackImpl<EventType>(name, [func = std::move(func)](EventBase& e)
+			this->template AddCallbackImpl<EventType>(name, [func = std::move(func)](EventBase& e)
 			{
 				if (e.GetEventType() == EventType::eventType)
-					func((EventType&)e);
+					func(static_cast<EventType&>(e));
 			});
 		}
 
@@ -212,7 +213,7 @@ namespace MxEngine
 		}
 
 		/*!
-		Invokes all shedules events in the order they were added. Note that invokation also forces queues to be invalidated
+		Invokes all shedules events in the order they were added. Note that invoke also forces queues to be invalidated
 		*/
 		void InvokeAll()
 		{

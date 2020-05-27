@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -51,19 +51,14 @@ namespace MxEngine
         return this->factors;
     }
 
-    const CubeMap* PointLight::GetDepthCubeMap() const
+    GResource<CubeMap> PointLight::GetDepthCubeMap() const
     {
-        return this->cubemap.get();
+        return this->cubemap;
     }
 
-    CubeMap* PointLight::GetDepthCubeMap()
+    void PointLight::AttachDepthCubeMap(const GResource<CubeMap>& cubemap)
     {
-        return this->cubemap.get();
-    }
-
-    void PointLight::AttachDepthCubeMap(UniqueRef<CubeMap> cubemap)
-    {
-        this->cubemap = std::move(cubemap);
+        this->cubemap = cubemap;
     }
 
     Vector3 DirectionTable[] =

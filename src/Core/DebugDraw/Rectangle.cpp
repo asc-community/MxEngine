@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -42,10 +42,10 @@ namespace MxEngine
             Vector4( halfSize,  halfSize, 0.5f, 1.0f),
         };
 
-        this->VBO = MakeUnique<VertexBuffer>((float*)vertecies.data(), vertecies.size() * sizeof(float), UsageType::STATIC_DRAW);
-        auto VBL = MakeUnique<VertexBufferLayout>();
+        this->VBO = GraphicFactory::Create<VertexBuffer>((float*)vertecies.data(), vertecies.size() * sizeof(float), UsageType::STATIC_DRAW);
+        auto VBL = GraphicFactory::Create<VertexBufferLayout>();
         VBL->PushFloat(4);
-        this->VAO = MakeUnique<VertexArray>();
+        this->VAO = GraphicFactory::Create<VertexArray>();
         VAO->AddBuffer(*VBO, *VBL);
     }
     

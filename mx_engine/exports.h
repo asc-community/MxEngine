@@ -199,7 +199,7 @@ void InvokePythonFunction(const py::object& func, Args&&... args)
         try
         {
             auto dict = py::import("__main__").attr("__dict__");
-            py::object msg = dict["errorHandler"].attr("value");
+            py::object msg = dict["errorHandler"].attr("Value");
             error = ToMxString((std::string)py::extract<std::string>(msg));
         }
         catch (python::error_already_set&)
@@ -555,11 +555,6 @@ MxObject& AddPrimitiveWrapper(Scene& scene, const std::string& name, Args... arg
     return scene.AddObject(ToMxString(name), MakeUnique<T>(args...));
 }
 
-Texture* MakeTextureIntWrapper(int r, int g, int b)
-{
-    return Colors::MakeTexture((uint8_t)Clamp(r, 0, 255), Clamp(g, 0, 255), Clamp(b, 0, 255));
-}
-
 void MakeInstancedWrapper(MxObject& object, size_t count)
 {
     object.MakeInstanced(count);
@@ -620,13 +615,13 @@ Scene& GetSceneWrapper(Application& app, const std::string& name)
 
 void ShaderVertFragWrapper(const std::string& vertex, const std::string& fragment)
 {
-    Shader** shader = &Application::Get()->GetRenderer().ObjectShader;
+    auto shader = Application::Get()->GetRenderer().ObjectShader;
     ShaderBinding("PyShaderBinding", shader).Bind(ToMxString(vertex), ToMxString(fragment));
 }
 
 void ShaderVertGeomFragWrapper(const std::string& vertex, const std::string& geometry, const std::string& fragment)
 {
-    Shader** shader = &Application::Get()->GetRenderer().ObjectShader;
+    auto shader = Application::Get()->GetRenderer().ObjectShader;
     ShaderBinding("PyShaderBinding", shader).Bind(ToMxString(vertex), ToMxString(geometry), ToMxString(fragment));
 }
 
@@ -1190,15 +1185,6 @@ BOOST_PYTHON_MODULE(mx_engine)
         .value("spring", Colors::SPRING)
         .value("grey", Colors::GREY)
         ;
-
-    using TextureFloat = Texture* (*)(float, float, float);
-    using TextureColor = Texture* (*)(Colors::Palette);
-    using TextureVec3 = Texture* (*)(const Vector3&);
-
-    py::def("make_texture", RefGetter(MakeTextureIntWrapper));
-    py::def("make_texture", RefGetter((TextureFloat)Colors::MakeTexture));
-    py::def("make_texture", RefGetter((TextureColor)Colors::MakeTexture));
-    py::def("make_texture", RefGetter((TextureVec3)Colors::MakeTexture));
 
     using TranslateFunc3F = CameraController & (CameraController::*)(float, float, float);
     using TranslateFunc3V = CameraController & (CameraController::*)(const Vector3&);

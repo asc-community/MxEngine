@@ -86,8 +86,8 @@ namespace MxEngine
 		// Display every line as a separate entry so we can change their color or add custom widgets. If you only want raw text you can use ImGui::TextUnformatted(log.begin(), log.end());
 		// NB- if you have thousands of entries this approach may be too inefficient and may require user-side clipping to only process visible items.
 		// You can seek and display only the lines that are visible using the ImGuiListClipper helper, if your elements are evenly spaced and you have cheap random access to the elements.
-		// To use the clipper we could replace the 'for (int i = 0; i < Items.Size; i++)' loop with:
-		//	 ImGuiListClipper clipper(Items.Size);
+		// To use the clipper we could replace the 'for (int i = 0; i < Items.size; i++)' loop with:
+		//	 ImGuiListClipper clipper(Items.size);
 		//	 while (clipper.Step())
 		//		 for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
 		// However, note that you can not use this code as is if a filter is active because it breaks the 'cheap random-access' property. We would need random-access on the post-filtered list.

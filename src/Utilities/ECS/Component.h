@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -32,10 +32,13 @@
 
 namespace MxEngine
 {
+    class ComponentManager;
+
     struct Component
     {
         static constexpr size_t ResourceSize = sizeof(Resource<char, ComponentFactory>);
         using Deleter = void (*)(void*);
+
         std::aligned_storage_t<ResourceSize> resource;
         size_t type;
         Deleter deleter;
@@ -47,7 +50,7 @@ namespace MxEngine
             static_assert(sizeof(ComponentType) == sizeof(Component::resource), "storage must fit resource size");
 
             this->type = type;
-            this->deleter = [](void* ptr) { ComponentFactory::Destroy(*(ComponentType*)ptr); };
+            this->deleter = [](void* ptr) { ComponentFactory::Destroy(*static_cast<ComponentType*>(ptr)); };
             auto* replace = new (&resource) ComponentType();
             *replace = std::move(component);
         }
@@ -55,13 +58,22 @@ namespace MxEngine
 
     class ComponentManager
     {
-        MxVector<std::aligned_storage_t<sizeof(Component)>> components;
+        template<typename T>
+        using ComponentList = MxVector<T>;
+
+        ComponentList<std::aligned_storage_t<sizeof(Component)>> components;
     public:
+        ComponentManager(const ComponentManager&) = delete;
+        ComponentManager(ComponentManager&&) noexcept = default;
+        ComponentManager& operator=(const ComponentManager&) = delete;
+        ComponentManager& operator=(ComponentManager&&) noexcept = default;
+
         template<typename T, typename... Args>
         void AddComponent(Args&&... args)
         {
             if (this->HasComponent<T>()) return;
-            auto component = ComponentFactory::CreateT((T*)nullptr, std::forward<Args>(args)...);
+            auto component = ComponentFactory::CreateComponent<T>(std::forward<Args>(args)...);
+            component->parent = this;
             components.emplace_back();
             auto* _ = new (&components.back()) Component(T::ComponentId, std::move(component));
         }
@@ -113,8 +125,16 @@ namespace MxEngine
             for (auto& component : components)
             {
                 auto& componentRef = *reinterpret_cast<Component*>(&component);
-                componentRef.deleter((void*)&componentRef.resource);
+                componentRef.deleter(static_cast<void*>(&componentRef.resource));
             }
         }
     };
+
+#define MAKE_COMPONENT(class_name)\
+        friend class MxEngine::ComponentManager;\
+        friend class MxEngine::ComponentFactory;\
+        public: auto& GetParent() { return *parent; }\
+                const auto& GetParent() const { return *parent; }\
+        private: static constexpr MxEngine::StringId ComponentId = STRING_ID(#class_name);\
+                 MxEngine::ComponentManager* parent = nullptr
 }

@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -34,18 +34,18 @@
 namespace MxEngine
 {
     /*!
-    component view class is used as a wrapper for vector pool container.
-    It was created because vector pool contains ManagedResource<T> objects,
-    but we want to see only T when iterating over components in a pool
+    component view class is used as a wrapper for vector Pool container.
+    It was created because vector Pool contains ManagedResource<T> objects,
+    but we want to see only T when iterating over components in a Pool
     */
     template<typename T>
     class ComponentView
     {
     public:
-        using Pool = typename VectorPool<ManagedResource<T>>;
+        using Pool = VectorPool<ManagedResource<T>>;
 
         /*!
-        wrapper around vector pool iterator. Actually does nothing more than forwards all methods to wrapped iterator
+        wrapper around vector Pool iterator. Actually does nothing more than forwards all methods to wrapped iterator
         */
         class ComponentIterator
         {
@@ -59,7 +59,7 @@ namespace MxEngine
         public:
             /*!
             constructs component iterator object
-            \param it wrapped iterator of vector pool of components
+            \param it wrapped iterator of vector Pool of components
             */
             ComponentIterator(PoolIterator it) : it(it) {}
 
@@ -106,7 +106,7 @@ namespace MxEngine
             }
 
             /*!
-            getter for component through vector pool iterator
+            getter for component through vector Pool iterator
             \returns pointer to T, instread of ManagedResource<T>*
             */
             T* operator->()
@@ -115,7 +115,7 @@ namespace MxEngine
             }
 
             /*!
-            getter for component through vector pool iterator
+            getter for component through vector Pool iterator
             \returns const pointer to T, instread of const ManagedResource<T>*
             */
             const T* operator->() const
@@ -124,7 +124,7 @@ namespace MxEngine
             }
 
             /*!
-            getter for component through vector pool iterator
+            getter for component through vector Pool iterator
             \returns reference to T, instread of ManagedResource<T>&
             */
             T& operator*()
@@ -133,7 +133,7 @@ namespace MxEngine
             }
 
             /*!
-            getter for component through vector pool iterator
+            getter for component through vector Pool iterator
             \returns const reference to T, instread of const ManagedResource<T>&
             */
             const T& operator*() const
@@ -142,8 +142,8 @@ namespace MxEngine
             }
 
             /*!
-            compares two component iterators, forwards comparison to vector pool iterators
-            \returns true if vector pool iterators are equal, false either
+            compares two component iterators, forwards comparison to vector Pool iterators
+            \returns true if vector Pool iterators are equal, false either
             */
             bool operator==(const ComponentIterator& other) const
             {
@@ -151,8 +151,8 @@ namespace MxEngine
             }
 
             /*!
-            compares two component iterators, forwards comparison to vector pool iterators
-            \returns true if vector pool iterators are not equal, false either
+            compares two component iterators, forwards comparison to vector Pool iterators
+            \returns true if vector Pool iterators are not equal, false either
             */
             bool operator!=(const ComponentIterator& other) const
             {
@@ -161,19 +161,19 @@ namespace MxEngine
         };
     private:
         /*!
-        reference to vector pool object
+        reference to vector Pool object
         */
         Pool& ref;
     public:
         /*!
-        constructs wrapper around vector pool
-        \param ref reference to wrapped vector pool
+        constructs wrapper around vector Pool
+        \param ref reference to wrapped vector Pool
         */
-        ComponentView(Pool& ref) : ref(ref) {}
+        explicit ComponentView(Pool& ref) : ref(ref) {}
 
         /*!
-        begin of vector pool
-        \returns component iterator, pointing to the first element of vector pool
+        begin of vector Pool
+        \returns component iterator, pointing to the first element of vector Pool
         */
         ComponentIterator begin()
         {
@@ -181,8 +181,8 @@ namespace MxEngine
         }
 
         /*!
-        begin of vector pool
-        \returns const component iterator, pointing to the first element of vector pool
+        begin of vector Pool
+        \returns const component iterator, pointing to the first element of vector Pool
         */
         const ComponentIterator begin() const
         {
@@ -190,8 +190,8 @@ namespace MxEngine
         }
 
         /*!
-        end of vector pool
-        \returns component iterator, pointing to the end of vector pool
+        end of vector Pool
+        \returns component iterator, pointing to the end of vector Pool
         */
         ComponentIterator end()
         {
@@ -199,8 +199,8 @@ namespace MxEngine
         }
 
         /*!
-        end of vector pool
-        \returns const component iterator, pointing to the end of vector pool
+        end of vector Pool
+        \returns const component iterator, pointing to the end of vector Pool
         */
         const ComponentIterator end() const
         {

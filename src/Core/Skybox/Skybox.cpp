@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -60,7 +60,7 @@ namespace MxEngine
             3, 6, 7,
         };
         constexpr size_t dataSize = face.size() * 3;
-        std::array<float, dataSize> data;
+        std::array<float, dataSize> data = {0};
         for (size_t i = 0; i < face.size(); i++)
         {
             const Vector3& v = vertex[face[i]];
@@ -69,13 +69,13 @@ namespace MxEngine
             data[3 * i + 2] = v.z;
         }
 
-        this->VBO = MakeUnique<VertexBuffer>(data.data(), data.size(), UsageType::STATIC_DRAW);
-        auto VBL = MakeUnique<VertexBufferLayout>();
+        this->VBO = GraphicFactory::Create<VertexBuffer>(data.data(), data.size(), UsageType::STATIC_DRAW);
+        auto VBL = GraphicFactory::Create<VertexBufferLayout>();
         VBL->PushFloat(3);
-        this->VAO = MakeUnique<VertexArray>();
+        this->VAO = GraphicFactory::Create<VertexArray>();
         VAO->AddBuffer(*VBO, *VBL);
         
-        this->shader = MakeUnique<Shader>();
+        this->shader = GraphicFactory::Create<Shader>();
         this->shader->LoadFromString(
             #include MAKE_PLATFORM_SHADER(skybox_vertex)
             ,

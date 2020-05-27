@@ -1,7 +1,7 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
@@ -284,7 +284,7 @@ namespace MxEngine
 		if (state != this->drawLighting)
 		{
 			this->drawLighting = state;
-			this->renderer.ObjectShader = nullptr;
+			this->renderer.ObjectShader = { }; // force default shader init (TODO: do something better
 			this->VerifyRendererState();
 		}
 	}
@@ -474,24 +474,23 @@ namespace MxEngine
 	{
 		auto& Renderer = this->GetRenderer();
 		auto& GlobalScene = this->GetGlobalScene();
-		if (Renderer.DefaultTexture == nullptr)
+		if (!Renderer.DefaultTexture.IsValid())
 		{
 			Renderer.DefaultTexture = Colors::MakeTexture(Colors::WHITE);
 		}
-		if (Renderer.DefaultNormal == nullptr)
+		if (!Renderer.DefaultNormal.IsValid())
 		{
 			Renderer.DefaultNormal = Colors::MakeTexture(Colors::FLAT_NORMAL);
 		}
-		if (Renderer.DefaultHeight == nullptr)
+		if (!Renderer.DefaultHeight.IsValid())
 		{
 			Renderer.DefaultHeight = Colors::MakeTexture(Colors::GREY);
 		}
-		if (Renderer.ObjectShader == nullptr)
+		if (!Renderer.ObjectShader.IsValid())
 		{
 			if (this->drawLighting)
 			{
-				Renderer.ObjectShader = GlobalScene.GetResourceManager<Shader>().Add(
-					"MxObjectShader", MakeUnique<Shader>());
+				Renderer.ObjectShader = GraphicFactory::Create<Shader>();
 				Renderer.ObjectShader->LoadFromString(
 					#include MAKE_PLATFORM_SHADER(object_vertex)
 					,
@@ -500,8 +499,7 @@ namespace MxEngine
 			}
 			else
 			{
-				Renderer.ObjectShader = GlobalScene.GetResourceManager<Shader>().Add(
-					"MxNoLightShader", MakeUnique<Shader>());
+				Renderer.ObjectShader = GraphicFactory::Create<Shader>();
 				Renderer.ObjectShader->LoadFromString(
 					#include MAKE_PLATFORM_SHADER(nolight_object_vertex)
 					,
@@ -509,20 +507,18 @@ namespace MxEngine
 				);
 			}
 		}
-		if (Renderer.DepthTextureShader == nullptr)
+		if (!Renderer.DepthTextureShader.IsValid())
 		{
-			Renderer.DepthTextureShader = GlobalScene.GetResourceManager<Shader>().Add(
-				"MxDepthTextureShader", MakeUnique<Shader>());
+			Renderer.DepthTextureShader = GraphicFactory::Create<Shader>();
 			Renderer.DepthTextureShader->LoadFromString(
 				#include MAKE_PLATFORM_SHADER(depthtexture_vertex)
 				,
 				#include MAKE_PLATFORM_SHADER(depthtexture_fragment)
 			);
 		}
-		if (Renderer.DepthCubeMapShader == nullptr)
+		if (!Renderer.DepthCubeMapShader.IsValid())
 		{
-			Renderer.DepthCubeMapShader = GlobalScene.GetResourceManager<Shader>().Add(
-				"MxDepthCubeMapShader", MakeUnique<Shader>());
+			Renderer.DepthCubeMapShader = GraphicFactory::Create<Shader>();
 			Renderer.DepthCubeMapShader->LoadFromString(
 				#include MAKE_PLATFORM_SHADER(depthcubemap_vertex)
 				,
@@ -531,40 +527,36 @@ namespace MxEngine
 				#include MAKE_PLATFORM_SHADER(depthcubemap_fragment)
 			);
 		}
-		if (Renderer.MSAAShader == nullptr)
+		if (!Renderer.MSAAShader.IsValid())
 		{
-			Renderer.MSAAShader = GlobalScene.GetResourceManager<Shader>().Add(
-				"MxMSAAShader", MakeUnique<Shader>());
+			Renderer.MSAAShader = GraphicFactory::Create<Shader>();
 			Renderer.MSAAShader->LoadFromString(
 				#include MAKE_PLATFORM_SHADER(rect_vertex)
 				,
 				#include MAKE_PLATFORM_SHADER(msaa_fragment)
 			);
 		}
-		if (Renderer.HDRShader == nullptr)
+		if (!Renderer.HDRShader.IsValid())
 		{
-			Renderer.HDRShader = GlobalScene.GetResourceManager<Shader>().Add(
-				"MxHDRShader", MakeUnique<Shader>());
+			Renderer.HDRShader = GraphicFactory::Create<Shader>();
 			Renderer.HDRShader->LoadFromString(
 				#include MAKE_PLATFORM_SHADER(rect_vertex)
 				,
 				#include MAKE_PLATFORM_SHADER(hdr_fragment)
 			);
 		}
-		if (Renderer.BloomShader == nullptr)
+		if (!Renderer.BloomShader.IsValid())
 		{
-			Renderer.BloomShader = GlobalScene.GetResourceManager<Shader>().Add(
-				"MxBloomShader", MakeUnique<Shader>());
+			Renderer.BloomShader = GraphicFactory::Create<Shader>();
 			Renderer.BloomShader->LoadFromString(
 				#include MAKE_PLATFORM_SHADER(rect_vertex)
 				,
 				#include MAKE_PLATFORM_SHADER(bloom_fragment)
 			);
 		}
-		if (Renderer.UpscaleShader == nullptr)
+		if (!Renderer.UpscaleShader.IsValid())
 		{
-			Renderer.UpscaleShader = GlobalScene.GetResourceManager<Shader>().Add(
-				"MxUpscaleShader", MakeUnique<Shader>());
+			Renderer.UpscaleShader = GraphicFactory::Create<Shader>();
 			Renderer.UpscaleShader->LoadFromString(
 				#include MAKE_PLATFORM_SHADER(rect_vertex)
 				,
@@ -575,46 +567,45 @@ namespace MxEngine
 		auto& skybox = this->GetCurrentScene().SceneSkybox;
 		if (skybox == nullptr) skybox = MakeUnique<Skybox>();
 
-		if (Renderer.DepthBuffer == nullptr)
+		if (!Renderer.DepthBuffer.IsValid())
 		{
-			Renderer.DepthBuffer = GlobalScene.GetResourceManager<FrameBuffer>().Add(
-				"MxDepthBuffer", MakeUnique<FrameBuffer>());
+			Renderer.DepthBuffer = GraphicFactory::Create<FrameBuffer>();
 		}
 	}
 
 	void Application::VerifyLightSystem(LightSystem& lights)
 	{
-		auto dirBufferSize = (int)this->renderer.GetDepthBufferSize<DirectionalLight>();
-		auto spotBufferSize = (int)this->renderer.GetDepthBufferSize<SpotLight>();
-		auto pointBufferSize = (int)this->renderer.GetDepthBufferSize<PointLight>();
+		const auto dirBufferSize = (int)this->renderer.GetDepthBufferSize<DirectionalLight>();
+		const auto spotBufferSize = (int)this->renderer.GetDepthBufferSize<SpotLight>();
+		const auto pointBufferSize = (int)this->renderer.GetDepthBufferSize<PointLight>();
 
-		if (lights.Global->GetDepthTexture() == nullptr ||
+		if (!lights.Global->GetDepthTexture().IsValid() ||
 			lights.Global->GetDepthTexture()->GetWidth() != dirBufferSize)
 		{
-			auto depthTexture = MakeUnique<Texture>();
+			auto depthTexture = GraphicFactory::Create<Texture>();
 			depthTexture->LoadDepth(dirBufferSize, dirBufferSize);
-			lights.Global->AttachDepthTexture(std::move(depthTexture));
+			lights.Global->AttachDepthTexture(depthTexture);
 		}
 
 		for (auto& spotLight : lights.Spot)
 		{
-			if (spotLight.GetDepthTexture() == nullptr ||
+			if (!spotLight.GetDepthTexture().IsValid() ||
 				spotLight.GetDepthTexture()->GetWidth() != spotBufferSize)
 			{
-				auto depthTexture = MakeUnique<Texture>();
+				auto depthTexture = GraphicFactory::Create<Texture>();
 				depthTexture->LoadDepth(spotBufferSize, spotBufferSize);
-				spotLight.AttachDepthTexture(std::move(depthTexture));
+				spotLight.AttachDepthTexture(depthTexture);
 			}
 		}
 
 		for (auto& pointLight : lights.Point)
 		{
-			if (pointLight.GetDepthCubeMap() == nullptr ||
+			if (!pointLight.GetDepthCubeMap().IsValid() ||
 				pointLight.GetDepthCubeMap()->GetWidth() != pointBufferSize)
 			{
-				auto depthCubeMap = MakeUnique<CubeMap>();
+				auto depthCubeMap = GraphicFactory::Create<CubeMap>();
 				depthCubeMap->LoadDepth(pointBufferSize, pointBufferSize);
-				pointLight.AttachDepthCubeMap(std::move(depthCubeMap));
+				pointLight.AttachDepthCubeMap(depthCubeMap);
 			}
 		}
 	}
@@ -661,22 +652,22 @@ namespace MxEngine
 			config["window"]["title"] = "MxEngine Application";
 			config["window"]["double-buffering"] = false;
 			config["window"]["position"] = std::array<int, 2> { 300, 150 };
-			config["window"]["size"] = std::array<int, 2> { 1600, 900 };
+			config["window"]["Size"] = std::array<int, 2> { 1600, 900 };
 			config["window"]["cursor-mode"] = "disabled";
 		}
 
-		auto profileType  = config["renderer"]["opengl-profile"].get<MxString>();
+		auto profileType  = config["renderer"]["opengl-profile"].get<std::string>();
 		auto profileMajor = config["renderer"]["opengl-major-version"].get<int>();
 		auto profileMinor = config["renderer"]["opengl-minor-version"].get<int>();
 		auto msaaSamples  = config["renderer"]["msaa-samples"].get<int>();
 		auto anisothropic = config["renderer"]["anisothropic-filtering"].get<int>();
 		auto lineWidth    = config["renderer"]["debug-line-width"].get<int>();
 
-		auto title        = config["window"]["title"].get<MxString>();
+		auto title        = config["window"]["title"].get<std::string>();
 		auto doubleBuffer = config["window"]["double-buffering"].get<bool>();
 		auto position     = config["window"]["position"].get<std::array<int, 2>>();
 		auto size         = config["window"]["size"].get<std::array<int, 2>>();
-		auto cursorMode   = config["window"]["cursor-mode"].get<MxString>();
+		auto cursorMode   = config["window"]["cursor-mode"].get<std::string>();
 
 		Profile enumProfile;
 		if (profileType == "core")
@@ -686,19 +677,17 @@ namespace MxEngine
 		else
 			enumProfile = Profile::ANY;
 
-		CursorMode enumCursor;
+		auto enumCursor = CursorMode::DISABLED;
 		if (cursorMode == "disabled")
 			enumCursor = CursorMode::DISABLED;
 		else if (cursorMode == "hidden")
 			enumCursor = CursorMode::HIDDEN;
-		else
-			enumCursor = CursorMode::DISABLED;
 
 		this->GetWindow()
 			.UseProfile(profileMajor, profileMinor, enumProfile)
 			.UseCursorMode(CursorMode::DISABLED)
 			.UseDoubleBuffering(doubleBuffer)
-			.UseTitle(title)
+			.UseTitle(ToMxString(title))
 			.UseDebugging(useDebugging)
 			.UsePosition(position[0], position[1])
 			.UseSize(size[0], size[1])
@@ -712,7 +701,7 @@ namespace MxEngine
 			.UseReversedDepth(false)
 			.UseClearColor(0.0f, 0.0f, 0.0f, 1.0f)
 			.UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA)
-			.UseAnisotropicFiltering((float)anisothropic)
+			.UseAnisotropicFiltering(static_cast<float>(anisothropic))
 			;
 
 		this->AddConsoleEventListener(this->GetConsole());
@@ -750,7 +739,7 @@ namespace MxEngine
 			while (this->GetWindow().IsOpen())
 			{
 				fpsCounter++;
-				float now = Time::Current();
+				const float now = Time::Current();
 				if (now - secondEnd >= 1.0f)
 				{
 					this->counterFPS = fpsCounter;
@@ -850,7 +839,9 @@ namespace MxEngine
 #if defined(MXENGINE_USE_PYTHON)
 	void Application::AddConsoleEventListener(DeveloperConsole& console)
 	{
-		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });
+		console.SetSize({ 
+			static_cast<float>(this->GetWindow().GetWidth()) / 2.5f, 
+			static_cast<float>(this->GetWindow().GetHeight()) / 2.0f });
 		this->GetEventDispatcher().AddEventListener("DeveloperConsole",
 			[this](RenderEvent&) { this->GetConsole().OnRender(); });
 		this->GetConsole().GetEngine().Execute("InitializeOpenGL()");

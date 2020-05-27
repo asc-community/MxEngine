@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -60,30 +60,23 @@ namespace MxEngine
             GREY,
         };
 
-        static inline Texture* MakeTexture(uint8_t r, uint8_t g, uint8_t b)
+        static inline GResource<Texture> MakeTexture(uint8_t r, uint8_t g, uint8_t b)
         {
-            auto& manager = Application::Get()->GetGlobalScene().GetResourceManager<Texture>();
-            auto name = MxFormat(FMT_STRING("MxColor{0}_{1}_{2}"), r, g, b);
-            
-            if (!manager.Exists(name))
-            {
-                auto texture = MakeUnique<Texture>();
-                uint8_t buffer[3];
-                buffer[0] = r;
-                buffer[1] = g;
-                buffer[2] = b;
-                texture->Load(buffer, 1, 1);
-                manager.Add(name, std::move(texture));
-            }                
-            return manager.Get(name);
+            auto texture = GraphicFactory::Create<Texture>();
+            uint8_t buffer[3];
+            buffer[0] = r;
+            buffer[1] = g;
+            buffer[2] = b;
+            texture->Load(buffer, 1, 1);
+            return texture;
         }
 
-        static inline Texture* MakeTexture(float r, float g, float b)
+        static inline GResource<Texture> MakeTexture(float r, float g, float b)
         {
             return MakeTexture(MakeVector3(r, g, b));
         }
 
-        static inline Texture* MakeTexture(const Vector3& color)
+        static inline GResource<Texture> MakeTexture(const Vector3& color)
         {
             uint8_t r = static_cast<uint8_t>(Clamp(color.r, 0.0f, 1.0f) * 255.0f);
             uint8_t g = static_cast<uint8_t>(Clamp(color.g, 0.0f, 1.0f) * 255.0f);
@@ -91,7 +84,7 @@ namespace MxEngine
             return MakeTexture(r, g, b);
         }
 
-        static Texture* MakeTexture(Palette color)
+        static GResource<Texture> MakeTexture(Palette color)
         {
             switch (color)
             {
@@ -132,7 +125,7 @@ namespace MxEngine
             case Colors::GREY:
                 return MakeTexture((uint8_t)127, 127, 127);
             default:
-                return nullptr;
+                return GResource<Texture>{ };
             }
         }
     };

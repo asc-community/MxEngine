@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -31,7 +31,6 @@
 #include "Platform/GraphicAPI.h"
 #include "Core/MxObject/MxObject.h"
 #include "Utilities/Array/ArrayView.h"
-#include "Utilities/Logger/Logger.h"
 #include "Core/Application/Application.h"
 
 namespace MxEngine
@@ -69,15 +68,15 @@ namespace MxEngine
             for (size_t lod = 0; lod < lodCount; lod++)
             {
                 // first we create VBO + VAO with data
-                auto VBO = MakeUnique<VertexBuffer>(vbos[lod].data(), vbos[lod].size(), UsageType::STATIC_DRAW);
-                auto VBL = MakeUnique<VertexBufferLayout>();
-                auto IBO = MakeUnique<IndexBuffer>(ibos[lod].data(), ibos[lod].size());
+                auto VBO = GraphicFactory::Create<VertexBuffer>(vbos[lod].data(), vbos[lod].size(), UsageType::STATIC_DRAW);
+                auto VBL = GraphicFactory::Create<VertexBufferLayout>();
+                auto IBO = GraphicFactory::Create<IndexBuffer>(ibos[lod].data(), ibos[lod].size());
                 VBL->PushFloat(3);
                 VBL->PushFloat(2);
                 VBL->PushFloat(3);
                 VBL->PushFloat(3);
                 VBL->PushFloat(3);
-                auto VAO = MakeUnique<VertexArray>();
+                auto VAO = GraphicFactory::Create<VertexArray>();
                 VAO->AddBuffer(*VBO, *VBL);
 
                 this->GetMesh()->SetLOD(lod);

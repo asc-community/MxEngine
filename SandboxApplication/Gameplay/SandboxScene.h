@@ -15,7 +15,7 @@ class SandboxScene : public Scene
 
         this->AddObject("Cube", MakeUnique<CubeObject>());
         this->AddObject("Sphere", MakeUnique<SphereObject>());
-        this->AddObject("Arc170", MakeUnique<Arc170Object>());
+        // this->AddObject("Arc170", MakeUnique<Arc170Object>());
         // this->AddObject("Destroyer", MakeUnique<DestroyerObject>());
         // this->AddObject("DeathStar", MakeUnique<DeathStarObject>());
 		
@@ -40,7 +40,7 @@ class SandboxScene : public Scene
         Application::Get()->ExecuteScript(*this->GetResource<Script>("scripts/init.py"));
 
 		this->SceneSkybox = MakeUnique<Skybox>();
-		this->SceneSkybox->SkyboxTexture = this->LoadCubeMap("textures/dawn.jpg");
+		this->SceneSkybox->SkyboxTexture = GraphicFactory::Create<CubeMap>(ToMxString(FileModule::GetFilePath("textures/dawn.jpg"_id)));
 
 		this->PointLights.SetCount(1);
 		this->SpotLights.SetCount(1);

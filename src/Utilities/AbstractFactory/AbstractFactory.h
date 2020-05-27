@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -30,28 +30,30 @@
 
 #include "Utilities/UUID/UUID.h"
 #include "Utilities/VectorPool/VectorPool.h"
-#include "Utilities/Memory/Memory.h"
 
 namespace MxEngine
 {
     template<typename T>
     struct ManagedResource
     {
-        UUID uuid;
+        UUID Id;
         T value;
-        size_t refCount = 0;
+        size_t RefCount = 0;
 
         template<typename... Args>
         ManagedResource(UUID uuid, Args&&... value)
-            : uuid(uuid), value(std::forward<Args>(value)...)
+            : Id(uuid), value(std::forward<Args>(value)...)
         {
         }
 
         ManagedResource(const ManagedResource&) = delete;
+        ManagedResource(ManagedResource&&) = delete;
+        ManagedResource& operator=(const ManagedResource&) = delete;
+        ManagedResource& operator=(ManagedResource&&) = delete;
 
         ~ManagedResource()
         {
-            uuid = UUIDGenerator::GetNull();
+            Id = UUIDGenerator::GetNull();
         }
     };
 
@@ -70,7 +72,7 @@ namespace MxEngine
         void IncRef()
         {
             if (this->IsValid())
-                this->DereferenceHandle(handle).refCount++;
+                ++this->DereferenceHandle(handle).RefCount;
         }
 
         void DecRef()
@@ -78,14 +80,14 @@ namespace MxEngine
             if (this->IsValid())
             {
                 auto& resource = this->DereferenceHandle(handle);
-                if ((--resource.refCount) == 0)
+                if ((--resource.RefCount) == 0)
                     Factory::Destroy(*this);
             }
         }
 
-        ManagedResource<T>& DereferenceHandle(size_t handle) const
+        [[nodiscard]] ManagedResource<T>& DereferenceHandle(size_t handle) const
         {
-            auto& pool = Factory::Get((T*)nullptr);
+            auto& pool = Factory::template Get<T>();
             auto& resource = pool[handle];
 
             #if defined(MXENGINE_DEBUG)
@@ -140,9 +142,9 @@ namespace MxEngine
             return *this;
         }
 
-        bool IsValid() const
+        [[nodiscard]] bool IsValid() const
         {
-            return handle != InvalidHandle && DereferenceHandle(handle).uuid == uuid;
+            return handle != InvalidHandle && DereferenceHandle(handle).Id == uuid;
         }
 
         T* operator->()
@@ -152,36 +154,36 @@ namespace MxEngine
             return this->GetUnchecked();
         }
 
-        T& operator*()
-        {
-            MX_ASSERT(this->IsValid());
-            return *this->GetUnchecked();
-        }
-
-        const T& operator*() const
-        {
-            MX_ASSERT(this->IsValid());
-            return *this->GetUnchecked();
-        }
-
-        const T* operator->() const
+        [[nodiscard]] const T* operator->() const
         {
             MX_ASSERT(this->IsValid());
             if (!this->IsValid()) return nullptr;
             return this->GetUnchecked();
         }
 
-        T* GetUnchecked()
+        [[nodiscard]] T& operator*()
+        {
+            MX_ASSERT(this->IsValid());
+            return *this->GetUnchecked();
+        }
+
+        [[nodiscard]] const T& operator*() const
+        {
+            MX_ASSERT(this->IsValid());
+            return *this->GetUnchecked();
+        }
+
+        [[nodiscard]] T* GetUnchecked()
         {
             return &this->DereferenceHandle(handle).value;
         }
 
-        const T* GetUnchecked() const
+        [[nodiscard]] const T* GetUnchecked() const
         {
             return &this->DereferenceHandle(handle).value;
         }
 
-        auto GetHandle()
+        [[nodiscard]] auto GetHandle()
         {
             return this->handle;
         }
@@ -205,34 +207,34 @@ namespace MxEngine
             if constexpr (std::is_same<T, U>::value)
                 return this->pool;
             else
-                return ((Base*)this)->GetPool<U>();
+                return static_cast<Base*>(this)->template GetPool<U>();
         }
 
         template<typename F>
         void ForEach(F&& func)
         {
             func(this->pool);
-            ((Base*)this)->ForEach(std::forward<F>(func));
+            static_cast<Base*>(this)->ForEach(std::forward<F>(func));
         }
     };
 
     template<typename T>
     struct FactoryImpl<T>
     {
-        using Pool = VectorPool<ManagedResource<T>>;
-        Pool pool;
+        using FactoryPool = VectorPool<ManagedResource<T>>;
+        FactoryPool Pool;
 
         template<typename U>
         auto& GetPool()
         {
             static_assert(std::is_same<T, U>::value, "cannot find appropriate Factory<T>");
-            return this->pool;
+            return this->Pool;
         }
 
         template<typename F>
         void ForEach(F&& func)
         {
-            func(this->pool);
+            func(this->Pool);
         }
     };
 
@@ -252,7 +254,7 @@ namespace MxEngine
         static void Init()
         {
             if (factory == nullptr)
-                factory = Alloc<Factory>();
+                factory = new Factory(); // not deleted, but its static member, so it does not matter
         }
 
         static void Clone(Factory* other)
@@ -261,16 +263,16 @@ namespace MxEngine
         }
 
         template<typename U>
-        static auto& Get(U* = nullptr)
+        static auto& Get()
         {
-            return factory->GetPool<U>();
+            return factory->template GetPool<U>();
         }
 
         template<typename T, typename... ConstructArgs>
         static Resource<T, AbstractFactoryImpl<Args...>> Create(ConstructArgs&&... args)
         {
             UUID uuid = UUIDGenerator::Get();
-            auto& pool = factory->GetPool<T>();
+            auto& pool = factory->template GetPool<T>();
             size_t index = pool.Allocate(uuid, std::forward<ConstructArgs>(args)...);
             return Resource<T, AbstractFactoryImpl<Args...>>(uuid, index);
         }
@@ -278,7 +280,7 @@ namespace MxEngine
         template<typename T>
         static void Destroy(Resource<T, AbstractFactoryImpl<Args...>>& resource)
         {
-            factory->GetPool<T>().Deallocate(resource.GetHandle());
+            factory->template GetPool<T>().Deallocate(resource.GetHandle());
         }
     };
 }

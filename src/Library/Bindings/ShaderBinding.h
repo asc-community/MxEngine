@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -37,9 +37,9 @@ namespace MxEngine
 	class ShaderBinding
 	{
 		MxString handle;
-		Shader** shader;
+		GResource<Shader> shader;
 	public:
-		ShaderBinding(const MxString& eventHandle, Shader** shader = nullptr)
+		ShaderBinding(const MxString& eventHandle, GResource<Shader> shader = GResource<Shader>{ })
 			: handle(eventHandle), shader(shader)
 		{
 			
@@ -49,7 +49,7 @@ namespace MxEngine
 		{
 			auto vertexhash = MakeStringId(vertex);
 			auto fragmenthash = MakeStringId(fragment);
-			if (shader == nullptr) return;
+			if (!shader.IsValid()) return;
 			if (!FileModule::FileExists(vertexhash))
 			{
 				Logger::Instance().Error("MxEngine::ShaderBinding", "file does not exists: " + vertex);
@@ -70,7 +70,8 @@ namespace MxEngine
 				auto newFragmentTime = File::LastModifiedTime(FileModule::GetFilePath(MakeStringId(fragment)));
 				if (vertexTime < newVertexTime || fragmentTime < newFragmentTime)
 				{
-					*shader = Application::Get()->GetCurrentScene().LoadShader(name, vertex, fragment);
+					shader = GraphicFactory::Create<Shader>();
+					shader->Load(vertex, fragment);
 					Logger::Instance().Debug("MxEngine::ShaderBinding", "updated shader: " + name);
 
 					vertexTime   = std::move(newVertexTime);
@@ -82,7 +83,7 @@ namespace MxEngine
 		inline void Bind(const MxString& vertex, const MxString& geometry, const MxString& fragment)
 		{
 			auto& directory = Application::Get()->GetCurrentScene().GetDirectory();
-			if (shader == nullptr) return;
+			if (!shader.IsValid()) return;
 			auto vertexhash = MakeStringId(vertex);
 			auto geometryhash = MakeStringId(geometry);
 			auto fragmenthash = MakeStringId(fragment);
@@ -112,7 +113,8 @@ namespace MxEngine
 				auto newFragmentTime = File::LastModifiedTime(FileModule::GetFilePath(MakeStringId(fragment)));
 				if (vertexTime < newVertexTime || geometryTime < newGeometryTime || fragmentTime < newFragmentTime)
 				{
-					*shader = Application::Get()->GetCurrentScene().LoadShader(name, vertex, geometry, fragment);
+					shader = GraphicFactory::Create<Shader>();
+					shader->Load(vertex, geometry, fragment);
 					Logger::Instance().Debug("MxEngine::ShaderBinding", "updated shader: " + name);
 
 					vertexTime   = std::move(newVertexTime);

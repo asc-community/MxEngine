@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -74,13 +74,13 @@ namespace MxEngine
 		float bloomWeight = 100.0f;
 
 		VectorInt2 viewportSize{ 0, 0 };
-		UniqueRef<FrameBuffer> MSAABuffer;		
-		UniqueRef<FrameBuffer> HDRBuffer;
-		UniqueRef<FrameBuffer> BloomBuffers[2];
-		UniqueRef<RenderBuffer> MSAARenderBuffer;
-		std::array<UniqueRef<FrameBuffer>, 4> upscaleBuffers;
-		UniqueRef<Texture> hdrTexture;
-		UniqueRef<Texture> bloomTexture;
+		GResource<FrameBuffer> MSAABuffer;		
+		GResource<FrameBuffer> HDRBuffer;
+		GResource<FrameBuffer> BloomBuffers[2];
+		GResource<RenderBuffer> MSAARenderBuffer;
+		std::array<GResource<FrameBuffer>, 4> upscaleBuffers;
+		GResource<Texture> hdrTexture;
+		GResource<Texture> bloomTexture;
 		UniqueRef<DebugBuffer> debugBuffer;
 		UniqueRef<Rectangle> rectangle;
 
@@ -90,17 +90,17 @@ namespace MxEngine
 		RenderController(const RenderController&) = delete;
 
 		int PCFdistance = 1;
-		Shader* ObjectShader = nullptr;
-		Shader* DepthTextureShader = nullptr;
-		Shader* DepthCubeMapShader = nullptr;
-		Shader* MSAAShader = nullptr;
-		Shader* HDRShader = nullptr;
-		Shader* BloomShader = nullptr;
-		Shader* UpscaleShader = nullptr;
-		Texture* DefaultTexture = nullptr;
-		Texture* DefaultHeight = nullptr;
-		Texture* DefaultNormal = nullptr;
-		FrameBuffer* DepthBuffer = nullptr;
+		GResource<Shader> ObjectShader;
+		GResource<Shader> DepthTextureShader;
+		GResource<Shader> DepthCubeMapShader;
+		GResource<Shader> MSAAShader;
+		GResource<Shader> HDRShader;
+		GResource<Shader> BloomShader;
+		GResource<Shader> UpscaleShader;
+		GResource<Texture> DefaultTexture;
+		GResource<Texture> DefaultHeight;
+		GResource<Texture> DefaultNormal;
+		GResource<FrameBuffer> DepthBuffer;
 		FogInformation Fog;
 
 		const Renderer& GetRenderEngine() const;

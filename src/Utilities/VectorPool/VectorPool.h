@@ -1,14 +1,14 @@
 // Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
-// Redistributionand use in source and binary forms, with or without
+// Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met :
 // 
 // 1. Redistributions of source code must retain the above copyright notice, this
-// list of conditionsand the following disclaimer.
+// list of conditions and the following disclaimer.
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
-// this list of conditionsand the following disclaimer in the documentation
+// this list of conditions and the following disclaimer in the documentation
 // and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
@@ -34,7 +34,7 @@
 namespace MxEngine
 {
     /*!
-    VectorPool is an object pool class which is used for fast allocations/deallocations of objects of type T
+    VectorPool is an object Pool class which is used for fast allocations/deallocations of objects of type T
     objects are accessed by index in array and references should not be stored (as any allocation can potentially invalidate them)
     to check if object is allocated before access, use IsAllocated(index). To allocate use Allocate(args), to deallocate - Deallocate(index)
     */
@@ -44,23 +44,23 @@ namespace MxEngine
     public:
         /*!
         iterator for VectorPool class. supports increment, compare and decrement.
-        Ignores not allocated objects, allowing user to iterate over all objects in pool without check for IsAllocated(index)
+        Ignores not allocated objects, allowing user to iterate over all objects in Pool without check for IsAllocated(index)
         */
         class PoolIterator
         {
             /*!
-            current index of object in vector pool
+            current index of object in vector Pool
             */
             size_t index = 0;
             /*!
-            reference to vector pool. This means that vector pool must not be moved/deleted until iterator exists
+            reference to vector Pool. This means that vector Pool must not be moved/deleted until iterator exists
             */
             VectorPool<T, Container>& poolRef;
         public:
             /*!
-            construtc new iterator of vector pool
-            \param index to the element of vector pool (0 for begin(), Capacity() for end() methods)
-            \param poolRef reference to vector pool
+            construtc new iterator of vector Pool
+            \param index to the element of vector Pool (0 for begin(), Capacity() for end() methods)
+            \param poolRef reference to vector Pool
             */
             PoolIterator(size_t index, VectorPool<T, Container>& ref)
                 : index(index), poolRef(ref)
@@ -114,8 +114,8 @@ namespace MxEngine
             }
 
             /*!
-            dereferences iterator, accessing vector pool
-            \returns pointer to vector pool element
+            dereferences iterator, accessing vector Pool
+            \returns pointer to vector Pool element
             */
             T* operator->()
             {
@@ -123,8 +123,8 @@ namespace MxEngine
             }
 
             /*!
-            dereferences iterator, accessing vector pool
-            \returns const pointer to vector pool element
+            dereferences iterator, accessing vector Pool
+            \returns const pointer to vector Pool element
             */
             const T* operator->() const
             {
@@ -132,8 +132,8 @@ namespace MxEngine
             }
 
             /*!
-            dereferences iterator, accessing vector pool
-            \returns reference to vector pool element
+            dereferences iterator, accessing vector Pool
+            \returns reference to vector Pool element
             */
             T& operator*()
             {
@@ -141,8 +141,8 @@ namespace MxEngine
             }
 
             /*!
-            dereferences iterator, accessing vector pool
-            \returns const reference to vector pool element
+            dereferences iterator, accessing vector Pool
+            \returns const reference to vector Pool element
             */
             const T& operator*() const
             {
@@ -176,7 +176,7 @@ namespace MxEngine
         */
         Container<uint8_t> memoryStorage;
         /*!
-        pool allocator, used with memoryStorage to allocate objects
+        Pool allocator, used with memoryStorage to allocate objects
         */
         Allocator allocator;
         /*!
@@ -199,12 +199,12 @@ namespace MxEngine
         }
     public:
         /*!
-        constructs default vector pool with zero capacity (no memory request to inner container)
+        constructs default vector Pool with zero capacity (no memory request to inner container)
         */
         VectorPool() = default;
 
         /*!
-        constructs vector pool with count elements as capacity
+        constructs vector Pool with count elements as capacity
         \count number of preallocated elements (not constructed)
         */
         VectorPool(size_t count)
@@ -236,7 +236,7 @@ namespace MxEngine
 
         /*!
         gets total number of elements in the container
-        \returns how many elements can potentially be stored in vector pool
+        \returns how many elements can potentially be stored in vector Pool
         */
         size_t Capacity() const
         {
@@ -245,7 +245,7 @@ namespace MxEngine
 
         /*!
         reference getter for element. Element must be contructed before call
-        \returns reference to element in vector pool
+        \returns reference to element in vector Pool
         */
         T& operator[] (size_t index)
         {
@@ -254,7 +254,7 @@ namespace MxEngine
 
         /*!
         const reference getter for element. Element must be contructed before call
-        \returns const reference to element in vector pool
+        \returns const reference to element in vector Pool
         */
         const T& operator[] (size_t index) const
         {
@@ -272,7 +272,7 @@ namespace MxEngine
 
         /*!
         checks if element is constructed
-        \param index index of element in vector pool
+        \param index index of element in vector Pool
         \returns true if element is constructed, false either
         */
         bool IsAllocated(size_t index)
@@ -281,7 +281,7 @@ namespace MxEngine
         }
 
         /*!
-        destroys element in vector pool
+        destroys element in vector Pool
         \param index index of element to destroy
         */
         void Deallocate(size_t index)
@@ -295,9 +295,9 @@ namespace MxEngine
         }
 
         /*!
-        constructs element in vector pool. If it has not enough space - Resize(bigger size) is called
+        constructs element in vector Pool. If it has not enough space - Resize(bigger size) is called
         \param args arguments for element constructor
-        \returns index of element in vector pool
+        \returns index of element in vector Pool
         */
         template<typename... Args>
         size_t Allocate(Args&&... args)
@@ -314,9 +314,9 @@ namespace MxEngine
         }
 
         /*!
-        retrieves index of element in vector pool by reference
-        \param obj element of vector pool
-        \returns index of element in vector pool
+        retrieves index of element in vector Pool by reference
+        \param obj element of vector Pool
+        \returns index of element in vector Pool
         \warning behaviour is undefined if Allocate() or Resize() were called between reference construction and IndexOf() call
         */
         size_t IndexOf(const T& obj)
@@ -327,7 +327,7 @@ namespace MxEngine
         }
 
         /*!
-        begin of vector pool container
+        begin of vector Pool container
         \returns iterator to first allocated element or end iterator
         */
         PoolIterator begin()
@@ -336,7 +336,7 @@ namespace MxEngine
         }
 
         /*!
-        begin of vector pool container
+        begin of vector Pool container
         \returns const iterator to first allocated element or const end iterator
         */
         const PoolIterator begin() const
@@ -345,7 +345,7 @@ namespace MxEngine
         }
 
         /*!
-        end of vector pool container
+        end of vector Pool container
         \returns iterator to the end of vector container
         */
         PoolIterator end()
@@ -354,7 +354,7 @@ namespace MxEngine
         }
 
         /*!
-        end of vector pool container
+        end of vector Pool container
         \returns const iterator to the end of vector container
         */
         const PoolIterator end() const
