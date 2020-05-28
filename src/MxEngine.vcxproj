@@ -25,7 +25,10 @@
     <ClInclude Include="Core\Camera\OrthographicCamera.h" />
     <ClInclude Include="Core\Camera\PerspectiveCamera.h" />
     <ClInclude Include="Core\Components\Instancing\Instancing.h" />
+    <ClInclude Include="Core\Components\MeshRenderer.h" />
+    <ClInclude Include="Core\Components\MeshSource.h" />
     <ClInclude Include="Core\Components\Transform\Transform.h" />
+    <ClInclude Include="Core\Components\Update.h" />
     <ClInclude Include="Core\DebugDraw\DebugBuffer.h" />
     <ClInclude Include="Core\DebugDraw\Rectangle.h" />
     <ClInclude Include="Core\DeveloperConsole\DeveloperConsole.h" />
@@ -120,6 +123,7 @@
     <ClInclude Include="Utilities\ObjectLoader\ObjectLoader.h" />
     <ClInclude Include="Utilities\Profiler\Profiler.h" />
     <ClInclude Include="Utilities\Random\Random.h" />
+    <ClInclude Include="Utilities\STL\MxFunction.h" />
     <ClInclude Include="Utilities\STL\MxHashMap.h" />
     <ClInclude Include="Utilities\STL\MxHashSet.h" />
     <ClInclude Include="Utilities\STL\MxMap.h" />
@@ -385,7 +389,12 @@
     <ClCompile Include="Platform\OpenGL\VertexBuffer.cpp" />
     <ClCompile Include="Platform\OpenGL\Renderer.cpp" />
     <ClCompile Include="Platform\Window\Window.cpp" />
-    <ClCompile Include="Utilities\Counter\Counter.cpp" />
+    <ClCompile Include="Utilities\Counter\Counter.cpp">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+    </ClCompile>
     <ClCompile Include="Utilities\FileSystem\File.cpp" />
     <ClCompile Include="Utilities\FileSystem\FileManager.cpp" />
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />

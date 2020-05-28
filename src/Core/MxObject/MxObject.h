@@ -32,14 +32,14 @@
 #include "Core/MxObject/Mesh.h"
 #include "Core/Components/Transform/Transform.h"
 #include "Core/Components/Instancing/Instancing.h"
+#include "Utilities/ECS/Component.h"
 
 namespace MxEngine
 {
 	class MxObject : public IDrawable, public IMovable
 	{		
-	protected:
+		ComponentManager components;
 		Mesh* ObjectMesh = nullptr;
-	private:
 		Vector3 forwardVec{ 0.0f, 0.0f, 1.0f }, upVec{ 0.0f, 1.0f, 0.0f }, rightVec{ 1.0f, 0.0f, 0.0f };
 		Vector4 renderColor{ 1.0f, 1.0f, 1.0f, 1.0f };
 		UniqueRef<Instancing<MxObject>> instances;
@@ -49,6 +49,19 @@ namespace MxEngine
 
 		void ReserveInstances(size_t count, UsageType usage);
 	public:
+		using Factory = AbstractFactoryImpl<MxObject>;
+		using MxObjectHandle = Resource<MxObject, Factory>;
+
+		static MxObjectHandle Create();
+		static void Destroy(Resource<MxObject, Factory>& object);
+
+		template<typename T>
+		static MxObject& GetByComponent(T& component)
+		{
+			auto& manager = component.GetParent();
+			return *reinterpret_cast<MxObject*>((uint8_t*)&manager - offsetof(MxObject, components));
+		}
+
 		using ArrayBufferType = const float*;
 		bool UseLOD = true;
 
@@ -56,8 +69,8 @@ namespace MxEngine
 		float RotateSpeed = 1.0f;
 		float ScaleSpeed = 1.0f;
 		Transform ObjectTransform;
-		Shader* ObjectShader = nullptr;
-		Texture* ObjectTexture = nullptr;
+		GResource<Shader> ObjectShader;
+		GResource<Texture> ObjectTexture;
 		MxObject() = default;
 		MxObject(Mesh* mesh);
 		MxObject(const MxObject&) = delete;
@@ -115,5 +128,29 @@ namespace MxEngine
 		virtual const Vector3& GetForwardVector() const override;
 		virtual const Vector3& GetUpVector() const override;
 		virtual const Vector3& GetRightVector() const override;
+
+		template<typename T, typename... Args>
+		auto AddComponent(Args&&... args)
+		{
+			return this->components.AddComponent<T>(std::forward<Args>(args)...);
+		}
+
+		template<typename T>
+		auto GetComponent()
+		{
+			return this->components.GetComponent<T>();
+		}
+
+		template<typename T>
+		void RemoveComponent()
+		{
+			this->components.RemoveComponent<T>();
+		}
+
+		template<typename T>
+		bool HasComponent()
+		{
+			return this->HasComponent<T>();
+		}
 	};
 }

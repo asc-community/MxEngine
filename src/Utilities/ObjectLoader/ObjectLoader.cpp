@@ -50,7 +50,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("ObjectLoader::LoadObject");
 		MAKE_SCOPE_TIMER("MxEngine::ObjectLoader", "ObjectLoader::LoadObject");
 		Logger::Instance().Debug("Assimp::Importer", MxFormat("loading object from file: {}", filename));
-		static Assimp::Importer importer;
+		static Assimp::Importer importer; // not thread safe
 		const aiScene* scene = importer.ReadFile(filename.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices 
 			| aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_ImproveCacheLocality | aiProcess_GenUVCoords | aiProcess_CalcTangentSpace);
 		if (scene == nullptr)
@@ -181,6 +181,8 @@ namespace MxEngine
 			meshInfo.useTexture = true;
 			meshInfo.buffer = std::move(vertex);
 		}
+		importer.FreeScene();
+
 		return object;
 	}
 }

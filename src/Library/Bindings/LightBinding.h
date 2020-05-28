@@ -33,6 +33,8 @@
 #include "Core/Lighting/SpotLight/SpotLight.h"
 #include "Library/Primitives/Cube.h"
 
+#include "Core/Components/Update.h"
+
 namespace MxEngine
 {
 	template<typename LightType>
@@ -46,23 +48,24 @@ namespace MxEngine
 			: container(container), id(id)
 		{
 			this->ObjectTransform.Scale(0.25f);
-		}
 
-		inline virtual void OnUpdate() override
-		{
-			if (this->id < this->container.GetCount())
+			this->AddComponent<Update>([](auto& self, float dt)
 			{
-				this->Show();
-				const auto& light = this->container[this->id];
-				this->ObjectTransform.SetTranslation(light.Position);
+				auto& object = (LightObject<LightType>&)MxObject::GetByComponent(self);
+				if (object.id < object.container.GetCount())
+				{
+					object.Show();
+					const auto& light = object.container[object.id];
+					object.ObjectTransform.SetTranslation(light.Position);
 
-				auto& material = this->GetMesh()->GetRenderObjects().front().GetMaterial();
-				material.Ke = light.AmbientColor + light.DiffuseColor;
-			}
-			else
-			{
-				this->Hide();
-			}
+					auto& material = object.GetComponent<MeshRenderer>()->GetMaterial();
+					material.Ke = light.AmbientColor + light.DiffuseColor;
+				}
+				else
+				{
+					object.Hide();
+				}
+			});
 		}
 	};
 

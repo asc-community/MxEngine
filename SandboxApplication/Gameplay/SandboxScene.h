@@ -13,9 +13,15 @@ class SandboxScene : public Scene
     {
         this->SetDirectory("Resources/");
 
-        this->AddObject("Cube", MakeUnique<CubeObject>());
-        this->AddObject("Sphere", MakeUnique<SphereObject>());
-        // this->AddObject("Arc170", MakeUnique<Arc170Object>());
+        auto& cube = this->AddObject("Cube", MakeUnique<CubeObject>());
+		InitCube(cube);
+
+        auto& sphere = this->AddObject("Sphere", MakeUnique<SphereObject>());
+		auto& grid = this->AddObject("Grid", MakeUnique<Grid>(2000));
+
+        auto& arc = this->AddObject("Arc170", MakeUnique<Arc170Object>());
+		InitArc(arc);
+
         // this->AddObject("Destroyer", MakeUnique<DestroyerObject>());
         // this->AddObject("DeathStar", MakeUnique<DeathStarObject>());
 		
@@ -27,11 +33,10 @@ class SandboxScene : public Scene
 		surface.Scale(10.0f, 2.0f, 10.0f);
 		surface.Translate(10.0f, 3.0f, 10.0f);
 
-		auto& grid = this->AddObject("Grid", MakeUnique<Grid>(2000));
 		grid.Scale(3.0f, 3.0f, 3.0f);
-		grid.ObjectTexture = this->LoadTexture("textures/brick.jpg");
-		auto& material = grid.GetMesh()->GetRenderObjects()[0].GetMaterial();
-		material.map_normal = GraphicFactory::Create<Texture>(ToMxString(FileModule::GetFilePath("textures/brick_normal.jpg"_id)));
+		grid.ObjectTexture = GraphicFactory::Create<Texture>(ToMxString(FileManager::GetFilePath("textures/brick.jpg"_id)));
+		auto& material = grid.GetComponent<MeshRenderer>()->GetMaterial();
+		material.map_normal = GraphicFactory::Create<Texture>(ToMxString(FileManager::GetFilePath("textures/brick_normal.jpg"_id)));
 		
         this->LoadScript("scripts/init.py");
         this->LoadScript("scripts/update.py");
@@ -40,11 +45,10 @@ class SandboxScene : public Scene
         Application::Get()->ExecuteScript(*this->GetResource<Script>("scripts/init.py"));
 
 		this->SceneSkybox = MakeUnique<Skybox>();
-		this->SceneSkybox->SkyboxTexture = GraphicFactory::Create<CubeMap>(ToMxString(FileModule::GetFilePath("textures/dawn.jpg"_id)));
+		this->SceneSkybox->SkyboxTexture = GraphicFactory::Create<CubeMap>(ToMxString(FileManager::GetFilePath("textures/dawn.jpg"_id)));
 
 		this->PointLights.SetCount(1);
 		this->SpotLights.SetCount(1);
-
 		
 		this->GlobalLight.AmbientColor  = { 0.3f, 0.3f, 0.3f };
 		this->GlobalLight.DiffuseColor  = { 0.3f, 0.3f, 0.3f };

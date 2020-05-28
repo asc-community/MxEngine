@@ -37,8 +37,10 @@
 
 namespace MxEngine
 {
-	void CopyMaterial(Material& material, const MaterialInfo& mat, MxHashMap<StringId, GResource<Texture>>& textures)
+	Material ConvertMaterial(const MaterialInfo& mat, MxHashMap<StringId, GResource<Texture>>& textures)
 	{
+		Material material;
+
 		#define MAKE_TEX(tex) if(!mat.tex.empty()) {\
 			auto id = MakeStringId(mat.tex);\
 			if(textures.find(id) == textures.end())\
@@ -64,29 +66,40 @@ namespace MxEngine
 		material.d     = mat.d;
 
 		if (material.Ns == 0.0f) material.Ns = 128.0f; // bad as pow(0.0, 0.0) -> NaN
+
+		return material;
 	}
 
-	void Mesh::LoadFromFile(const MxString& filepath)
+	void Mesh::LoadFromFile(const MxString& filepath, MeshRenderer* meshRenderer)
 	{
 		ObjectInfo objectInfo = ObjectLoader::Load(filepath);
 		this->boundingBox = objectInfo.boundingBox;
 
-		MxHashMap<StringId, GResource<Texture>> textures;
-		MxHashMap<uintptr_t, Ref<Material>> materials;
-		MxVector<Ref<Vector4>> submeshColors;
 		MxVector<Ref<Transform>> submeshTransforms;
+		MxVector<size_t> materialIds(objectInfo.meshes.size(), 0);
+
 		for (const auto& group : objectInfo.meshes)
 		{
-			submeshColors.push_back(MakeRef<Vector4>(1.0f));
 			submeshTransforms.push_back(MakeRef<Transform>());
+		}
 
-			if (group.useTexture)
+		if (meshRenderer != nullptr)
+		{
+			MxHashMap<StringId, GResource<Texture>> textures;
+			materialIds.resize(0); // clear ids to fill them with meaningful values
+			meshRenderer->Materials.reserve(objectInfo.materials.size());
+
+			for (const auto& material : objectInfo.materials)
 			{
-				if (group.material != nullptr)
+				meshRenderer->Materials.push_back(ConvertMaterial(material, textures));
+			}
+
+			for (const auto& group : objectInfo.meshes)
+			{
+				if(group.useTexture&& group.material != nullptr)
 				{
-					auto material = MakeRef<Material>();
-					CopyMaterial(*material, *group.material, textures);
-					materials[(uintptr_t)group.material] = material;
+					size_t offset = size_t(group.material - objectInfo.materials.data());
+					materialIds.push_back(offset);
 				}
 			}
 		}
@@ -123,7 +136,7 @@ namespace MxEngine
 			for (size_t i = 0; i < lod.meshes.size(); i++)
 			{
 				const auto& mesh = lod.meshes[i];
-				auto& color = submeshColors[i];
+				auto materialId = materialIds[i];
 				auto& transform = submeshTransforms[i];
 
 				auto VBO = GraphicFactory::Create<VertexBuffer>(mesh.buffer.data(), mesh.buffer.size(), UsageType::STATIC_DRAW);
@@ -145,7 +158,7 @@ namespace MxEngine
 				VAO->AddBuffer(*VBO, *VBL);
 
 				SubMesh object(std::move(mesh.name), std::move(VBO), std::move(VAO), std::move(IBO), 
-					materials[(uintptr_t)mesh.material], color, transform,
+					materialId, transform,
 					mesh.useTexture, mesh.useNormal, mesh.buffer.size());
 				meshes.push_back(std::move(object));
 				if (!mesh.useTexture)
@@ -160,14 +173,9 @@ namespace MxEngine
 		}
 	}
 
-	Mesh::Mesh(const MxString& filepath)
+	void Mesh::Load(const MxString& filepath, MeshRenderer* meshRenderer)
 	{
-		LoadFromFile(filepath);
-	}
-
-	void Mesh::Load(const MxString& filepath)
-	{
-		LoadFromFile(filepath);
+		this->LoadFromFile(filepath, meshRenderer);
 	}
 
 	std::vector<SubMesh>& Mesh::GetRenderObjects()
@@ -232,14 +240,13 @@ namespace MxEngine
 		this->meshGenerated = true;
 	}
 
-    SubMesh::SubMesh(MxString name, GResource<VertexBuffer> VBO, GResource<VertexArray> VAO, GResource<IndexBuffer> IBO, Ref<Material> material, Ref<Vector4> color, Ref<Transform> transform, bool useTexture, bool useNormal, size_t sizeInFloats)
+    SubMesh::SubMesh(MxString name, GResource<VertexBuffer> VBO, GResource<VertexArray> VAO, GResource<IndexBuffer> IBO, size_t materialId, Ref<Transform> transform, bool useTexture, bool useNormal, size_t sizeInFloats)
     {
 		this->name = std::move(name);
 		this->VBO = std::move(VBO);
 		this->VAO = std::move(VAO);
 		this->IBO = std::move(IBO);
-		this->material = std::move(material);
-		this->renderColor = std::move(color);
+		this->materialId = materialId;
 		this->transform = std::move(transform);
 		this->useTexture = useTexture;
 		this->useNormal = useTexture;
@@ -256,8 +263,7 @@ namespace MxEngine
 		this->VAO = std::move(other.VAO);
 		this->IBO = std::move(other.IBO);
 		this-> vertexBufferSize = other.vertexBufferSize;
-		this->material = std::move(other.material);
-		this->renderColor = std::move(other.renderColor);
+		this->materialId = other.materialId;
 		this->transform = std::move(other.transform);
 		this->name = std::move(other.name);
     }
@@ -272,8 +278,7 @@ namespace MxEngine
 		this->VAO = std::move(other.VAO);
 		this->IBO = std::move(other.IBO);
 		this->vertexBufferSize = other.vertexBufferSize;
-		this->material = std::move(other.material);
-		this->renderColor = std::move(other.renderColor);
+		this->materialId = other.materialId;
 		this->transform = std::move(other.transform);
 		this->name = std::move(other.name);
 
@@ -298,14 +303,9 @@ namespace MxEngine
 		return *this->meshIBO;
 	}
 
-	const Material& SubMesh::GetMaterial() const
+	size_t SubMesh::GetMaterialId() const
 	{
-		return *this->material;
-	}
-
-	Material& SubMesh::GetMaterial()
-	{
-		return *this->material;
+		return this->materialId;
 	}
 
 	const MxString& SubMesh::GetName() const
@@ -323,11 +323,6 @@ namespace MxEngine
 		return this->useNormal;
 	}
 
-    void SubMesh::SetRenderColor(const Vector4& color)
-    {
-		*this->renderColor = Clamp(color, MakeVector4(0.0f), MakeVector4(1.0f));
-    }
-
 	const Transform& SubMesh::GetTransform() const
 	{
 		return *this->transform;
@@ -338,19 +333,9 @@ namespace MxEngine
 		return *this->transform;
 	}
 
-    const Vector4& SubMesh::GetRenderColor() const
-    {
-		return *this->renderColor;
-    }
-
 	size_t SubMesh::GetVertexBufferSize() const
 	{
 		return this->vertexBufferSize;
-	}
-
-	bool SubMesh::HasMaterial() const
-	{
-		return this->material != nullptr;
 	}
 
 	void Mesh::AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl)

@@ -52,19 +52,17 @@ namespace MxEngine::GUI
 		ImGui::DragFloat("reflection", &material.reflection, 0.01f, 0.0f, 1.0f);
 		ImGui::DragFloat("displacement", &material.displacement, 0.001f, 0.0f, std::numeric_limits<float>::max());
 
-		static MxString normapMapPath(128, '\0');
-		if (GUI::InputTextOnClick("normal map", normapMapPath.data(), normapMapPath.size()))
+		static MxString normapMapPath;
+		if (GUI::InputTextOnClick("normal map", normapMapPath, 127))
 		{
-			auto context = Application::Get();
 			material.map_normal = GraphicFactory::Create<Texture>(
-				ToMxString(FileModule::GetFilePath(MakeStringId(normapMapPath))));
+				ToMxString(FileManager::GetFilePath(MakeStringId(normapMapPath))));
 		}
-		static MxString heightMapPath(128, '\0');
-		if (GUI::InputTextOnClick("height map", heightMapPath.data(), heightMapPath.size()))
+		static MxString heightMapPath;
+		if (GUI::InputTextOnClick("height map", heightMapPath, 127))
 		{
-			auto context = Application::Get();
 			material.map_height = GraphicFactory::Create<Texture>(
-				ToMxString(FileModule::GetFilePath(MakeStringId(heightMapPath))));
+				ToMxString(FileManager::GetFilePath(MakeStringId(heightMapPath))));
 		}
 	}
 
@@ -128,7 +126,7 @@ namespace MxEngine::GUI
 				ImGui::SameLine(); ImGui::Checkbox("use LOD", &object.UseLOD);
 
 				// current texture path
-				ImGui::Text((MxString("texture: ") + (object.ObjectTexture ? object.GetTexture().GetPath() : MxString("none"))).c_str());
+				ImGui::Text((MxString("texture: ") + (object.ObjectTexture.IsValid() ? object.GetTexture().GetPath() : MxString("none"))).c_str());
 
 				auto renderColor = object.GetRenderColor();
 				if (ImGui::ColorEdit4("render color", &renderColor[0]))
@@ -143,10 +141,11 @@ namespace MxEngine::GUI
 				ImGui::InputFloat("scale speed", &object.ScaleSpeed);
 
 				// object texture (loads from file)
-				static MxString texturePath(128, '\0');
-				if(GUI::InputTextOnClick("texture", texturePath.data(), texturePath.size()))
+				static MxString texturePath;
+				if(GUI::InputTextOnClick("texture", texturePath, 127))
 				{
-					object.ObjectTexture = context->GetCurrentScene().LoadTexture(texturePath);
+					object.ObjectTexture = GraphicFactory::Create<Texture>(
+						ToMxString(FileManager::GetFilePath(MakeStringId(texturePath))));
 				}
 
 				if (object.GetMesh() != nullptr)
@@ -159,22 +158,23 @@ namespace MxEngine::GUI
 						int meshIdx = 0;
 						for (auto& submesh : object.GetMesh()->GetRenderObjects())
 						{
-							GUI_TREE_NODE(submesh.GetName().c_str(),
-								ImGui::PushID(meshIdx++);
-								if (submesh.HasMaterial())
-								{
-									GUI_TREE_NODE("material",
-										DrawMaterial(submesh.GetMaterial());
-										auto renderColor = submesh.GetRenderColor();
-										if (ImGui::ColorEdit4("render color", &renderColor[0]))
-											submesh.SetRenderColor(renderColor);
-									);
-									GUI_TREE_NODE("transform",
-										DrawTransform(submesh.GetTransform());
-									);
-								}
-								ImGui::PopID();
-							);
+							// TODO: add material viewer
+							//  GUI_TREE_NODE(submesh.GetName().c_str(),
+							//  	ImGui::PushID(meshIdx++);
+							//  	if (submesh.HasMaterial())
+							//  	{
+							//  		GUI_TREE_NODE("material",
+							//  			DrawMaterial(submesh.GetMaterial());
+							//  			auto renderColor = submesh.GetRenderColor();
+							//  			if (ImGui::ColorEdit4("render color", &renderColor[0]))
+							//  				submesh.SetRenderColor(renderColor);
+							//  		);
+							//  		GUI_TREE_NODE("transform",
+							//  			DrawTransform(submesh.GetTransform());
+							//  		);
+							//  	}
+							//  	ImGui::PopID();
+							//  );
 						}
 					);
 				}

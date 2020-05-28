@@ -115,12 +115,11 @@ namespace MxEngine
 		void ToggleFaceCulling(bool value, bool counterClockWise = true, bool cullBack = true);
 		void SetAnisotropicFiltering(float value);
 		void SetViewport(int x, int y, int width, int height);
-		void DrawObject(const IDrawable& object, const CameraController& viewport) const;
-		void DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights, const FogInformation& fog, const Skybox* skybox) const;
+		void DrawObject(const IDrawable& object, const CameraController& viewport, MeshRenderer* meshRenderer) const;
+		void DrawObject(const IDrawable& object, const CameraController& viewport, MeshRenderer* meshRenderer, const LightSystem& lights, const FogInformation& fog, const Skybox* skybox) const;
 		void DrawSkybox(const Skybox& skybox, const CameraController& viewport, const FogInformation& fog);
 		void DrawHDRTexture(const Texture& texture, int MSAAsamples);
 		void DrawPostProcessImage(const Texture& hdrTexture, const Texture& bloomTexture, float hdrExposure, int bloomIters, float bloomWeight);
-		const Texture& UpscaleTexture(const Texture& texture, const VectorInt2& dist);
 		void SetPCFDistance(int value);
 		int GetPCFDIstance() const;
 		void SetHDRExposure(float value);

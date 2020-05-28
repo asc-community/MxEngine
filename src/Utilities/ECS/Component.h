@@ -63,19 +63,25 @@ namespace MxEngine
 
         ComponentList<std::aligned_storage_t<sizeof(Component)>> components;
     public:
+        ComponentManager() = default;
         ComponentManager(const ComponentManager&) = delete;
         ComponentManager(ComponentManager&&) noexcept = default;
         ComponentManager& operator=(const ComponentManager&) = delete;
         ComponentManager& operator=(ComponentManager&&) noexcept = default;
 
         template<typename T, typename... Args>
-        void AddComponent(Args&&... args)
+        auto AddComponent(Args&&... args)
         {
-            if (this->HasComponent<T>()) return;
+            using ResourceT = Resource<T, ComponentFactory>;
+
+            auto existing = this->GetComponent<T>();
+            if (existing.IsValid()) return existing;
+            
             auto component = ComponentFactory::CreateComponent<T>(std::forward<Args>(args)...);
             component->parent = this;
             components.emplace_back();
-            auto* _ = new (&components.back()) Component(T::ComponentId, std::move(component));
+            auto* result = new (&components.back()) Component(T::ComponentId, std::move(component));
+            return *reinterpret_cast<ResourceT*>(&result->resource);
         }
 
         template<typename T>

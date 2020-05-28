@@ -222,7 +222,7 @@ namespace MxEngine
 
             Container<uint8_t> newMemory(count * sizeof(Block));
             allocator.Transfer(newMemory.data(), newMemory.size());
-            newMemory.swap(memoryStorage);
+            memoryStorage = std::move(newMemory);
         }
 
         /*!

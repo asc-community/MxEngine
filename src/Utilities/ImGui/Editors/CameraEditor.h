@@ -31,6 +31,7 @@
 #include "Utilities/ImGui/ImGuiBase.h"
 #include "Core/Application/Application.h"
 #include "Utilities/ImGui/Layout/Layout.h"
+#include "Utilities/FileSystem/FileManager.h"
 
 namespace MxEngine::GUI
 {
@@ -131,10 +132,11 @@ namespace MxEngine::GUI
 				if (ImGui::DragFloat("skybox rotate z", &newRotation.z))
 					skybox->RotateZ(newRotation.z - rotation.z);
 
-				static MxString buf(128, '\0');
-				if (GUI::InputTextOnClick("skybox texture", buf.data(), 128))
+				static MxString skyboxPath;
+				if (GUI::InputTextOnClick("skybox texture", skyboxPath, 127))
 				{
-					skybox->SkyboxTexture = GraphicFactory::Create<CubeMap>(buf);
+					skybox->SkyboxTexture = GraphicFactory::Create<CubeMap>(
+						ToMxString(FileManager::GetFilePath(MakeStringId(skyboxPath))));
 				}
 			}
 		);

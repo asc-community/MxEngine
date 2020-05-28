@@ -50,12 +50,12 @@ namespace MxEngine
 			auto vertexhash = MakeStringId(vertex);
 			auto fragmenthash = MakeStringId(fragment);
 			if (!shader.IsValid()) return;
-			if (!FileModule::FileExists(vertexhash))
+			if (!FileManager::FileExists(vertexhash))
 			{
 				Logger::Instance().Error("MxEngine::ShaderBinding", "file does not exists: " + vertex);
 				return;
 			}
-			if (!FileModule::FileExists(fragmenthash))
+			if (!FileManager::FileExists(fragmenthash))
 			{
 				Logger::Instance().Error("MxEngine::ShaderBinding", "file does not exists: " + fragment);
 				return;
@@ -66,8 +66,8 @@ namespace MxEngine
 			[shader = shader, name = "MxShader" + handle, vertex = vertex, fragment = fragment,
 				vertexTime = FileSystemTime(), fragmentTime = FileSystemTime()] (FpsUpdateEvent& e) mutable
 			{
-				auto newVertexTime   = File::LastModifiedTime(FileModule::GetFilePath(MakeStringId(vertex)));
-				auto newFragmentTime = File::LastModifiedTime(FileModule::GetFilePath(MakeStringId(fragment)));
+				auto newVertexTime   = File::LastModifiedTime(FileManager::GetFilePath(MakeStringId(vertex)));
+				auto newFragmentTime = File::LastModifiedTime(FileManager::GetFilePath(MakeStringId(fragment)));
 				if (vertexTime < newVertexTime || fragmentTime < newFragmentTime)
 				{
 					shader = GraphicFactory::Create<Shader>();
@@ -87,17 +87,17 @@ namespace MxEngine
 			auto vertexhash = MakeStringId(vertex);
 			auto geometryhash = MakeStringId(geometry);
 			auto fragmenthash = MakeStringId(fragment);
-			if (!FileModule::FileExists(vertexhash))
+			if (!FileManager::FileExists(vertexhash))
 			{
 				Logger::Instance().Error("MxEngine::ShaderBinding", "file does not exists: " + vertex);
 				return;
 			}
-			if (!FileModule::FileExists(geometryhash))
+			if (!FileManager::FileExists(geometryhash))
 			{
 				Logger::Instance().Error("MxEngine::ShaderBinding", "file does not exists: " + geometry);
 				return;
 			}
-			if (!FileModule::FileExists(fragmenthash))
+			if (!FileManager::FileExists(fragmenthash))
 			{
 				Logger::Instance().Error("MxEngine::ShaderBinding", "file does not exists: " + fragment);
 				return;
@@ -108,9 +108,9 @@ namespace MxEngine
 				[shader = shader, name = "MxShader" + handle, vertex = vertex, fragment = fragment, geometry = geometry,
 				vertexTime = FileSystemTime(), geometryTime = FileSystemTime(), fragmentTime = FileSystemTime()](FpsUpdateEvent& e) mutable
 			{
-				auto newVertexTime   = File::LastModifiedTime(FileModule::GetFilePath(MakeStringId(vertex)));
-				auto newGeometryTime = File::LastModifiedTime(FileModule::GetFilePath(MakeStringId(geometry)));
-				auto newFragmentTime = File::LastModifiedTime(FileModule::GetFilePath(MakeStringId(fragment)));
+				auto newVertexTime   = File::LastModifiedTime(FileManager::GetFilePath(MakeStringId(vertex)));
+				auto newGeometryTime = File::LastModifiedTime(FileManager::GetFilePath(MakeStringId(geometry)));
+				auto newFragmentTime = File::LastModifiedTime(FileManager::GetFilePath(MakeStringId(fragment)));
 				if (vertexTime < newVertexTime || geometryTime < newGeometryTime || fragmentTime < newFragmentTime)
 				{
 					shader = GraphicFactory::Create<Shader>();

@@ -98,7 +98,7 @@ namespace MxEngine
 		this->viewportSize = VectorInt2(width, height);
 	}
 
-	void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport) const
+	void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport, MeshRenderer* meshRenderer) const
 	{
 		// probably nothing to do at all
 		if (!viewport.HasCamera()) return;
@@ -119,9 +119,14 @@ namespace MxEngine
 		while (!object.IsLast(iterator))
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
-			if (renderObject.HasMaterial())
+			size_t materialId = renderObject.GetMaterialId();
+			if (meshRenderer != nullptr && materialId < meshRenderer->Materials.size())
 			{
-				const Material& material = renderObject.GetMaterial();
+				const Material& material = meshRenderer->Materials[materialId];
+
+				Vector4 submeshRenderColor = MakeVector4(1.0f);
+				if (materialId < meshRenderer->RenderColors.size())
+					submeshRenderColor = meshRenderer->RenderColors[materialId];
 
 				#define BIND_TEX(NAME, SLOT)         \
 				if (material.NAME.IsValid())        \
@@ -139,7 +144,7 @@ namespace MxEngine
 				shader.SetUniformFloat("material.d", material.d);
 				
 				this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetTransform().GetMatrix());
-				this->GetRenderEngine().SetDefaultVertexAttribute(12, renderColor * renderObject.GetRenderColor());
+				this->GetRenderEngine().SetDefaultVertexAttribute(12, submeshRenderColor);
 
 				if (object.GetInstanceCount() == 0)
 				{
@@ -154,7 +159,7 @@ namespace MxEngine
 		}
 	}
 
-	void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport, const LightSystem& lights, const FogInformation& fog, const Skybox* skybox) const
+	void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport, MeshRenderer* meshRenderer, const LightSystem& lights, const FogInformation& fog, const Skybox* skybox) const
 	{
 		// probably nothing to do at all
 		if (!viewport.HasCamera()) return;
@@ -223,9 +228,14 @@ namespace MxEngine
 		while (!object.IsLast(iterator))
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
-			if (renderObject.HasMaterial())
+			size_t materialId = renderObject.GetMaterialId();
+			if (meshRenderer != nullptr && materialId < meshRenderer->Materials.size())
 			{
-				const Material& material = renderObject.GetMaterial();
+				const Material& material = meshRenderer->Materials[materialId];
+
+				Vector4 submeshRenderColor = renderColor;
+				if(materialId < meshRenderer->RenderColors.size())
+					submeshRenderColor *= meshRenderer->RenderColors[materialId];
 
 				#define BIND_TEX(NAME, SLOT)\
 				if (material.NAME.IsValid())            \
@@ -300,7 +310,7 @@ namespace MxEngine
 
 				this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetTransform().GetMatrix());
 				this->GetRenderEngine().SetDefaultVertexAttribute(9, NormalMatrix * renderObject.GetTransform().GetNormalMatrix());
-				this->GetRenderEngine().SetDefaultVertexAttribute(12, renderColor * renderObject.GetRenderColor());
+				this->GetRenderEngine().SetDefaultVertexAttribute(12, submeshRenderColor);
 
 				if (object.GetInstanceCount() == 0)
 				{

@@ -28,31 +28,23 @@
 
 #pragma once
 
-#include "File.h"
-#include "Utilities/String/String.h"
-
-#include <Vendors/eastl/EASTL/hash_map.h>
-#include <Vendors/eastl/EASTL/hash_set.h>
+#include "Utilities/ECS/Component.h"
+#include "Utilities/STL/MxFunction.h"
 
 namespace MxEngine
 {
-    struct FileManagerImpl
+    class Update
     {
-        eastl::hash_map<StringId, FilePath> filetable;
-        MxString root;
-    };
+        MAKE_COMPONENT(Update);
 
-    class FileManager
-    {
-        inline static FileManagerImpl* manager = nullptr;
+        using TimeDelta = float;
+        using CallbackFunction = MxFunction<void(Update&, TimeDelta)>::type;
     public:
-        static void Init(const FilePath& rootPath);
-        static void AddFile(const FilePath& file);
-        static void AddDirectory(const FilePath& directory);
-        static const FilePath& GetFilePath(StringId filename);
-        static bool FileExists(StringId filename);
+        CallbackFunction Callback;
 
-        static void Clone(FileManagerImpl* other);
-        static FileManagerImpl* GetImpl();
+        template<typename Func>
+        Update(Func&& func) { Callback = std::forward<Func>(func); }
+
+        void Invoke(float dt) { Callback(*this, dt); }
     };
 }

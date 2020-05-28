@@ -128,13 +128,18 @@ namespace MxEngine::GUI
     \param size maximal size of v to limit user input
     \returns true if "apply" button was pressed, false either
     */
-    inline bool InputTextOnClick(const char* title, char* v, size_t size)
+    inline bool InputTextOnClick(const char* text, MxString& str, size_t sizeRequired)
     {
-        ImGui::PushID(title);
-        ImGui::InputText(title, v, size);
+        str.resize(sizeRequired, '\0');
+        ImGui::PushID(text);
+        ImGui::InputText(text, str.data(), sizeRequired);
         ImGui::SameLine();
         bool result = ImGui::Button("apply");
         ImGui::PopID();
+    
+        while (result && str.size() > 0 && str.back() == '\0')
+            str.pop_back(); // remove extra null terminators from string
+
         return result;
     }
 }

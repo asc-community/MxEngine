@@ -134,22 +134,18 @@ namespace MxEngine
             }
         }
 
-        inline static Texture* GetGridTexture()
+        inline static GResource<Texture> GetGridTexture()
         {
-            auto& manager = Application::Get()->GetCurrentScene().GetResourceManager<Texture>();
-            static MxString textureName = "MxTexGrid";
-            if (!manager.Exists(textureName))
-            {
-                constexpr size_t size = 512;
-                std::vector<uint8_t> data;
-                data.resize(size * size * 3, 255);
-                DrawBorder(data.data(), size, 6);
-           
-                auto texture = MakeUnique<Texture>();
-                texture->Load(data.data(), size, size);
-                manager.Add(textureName, std::move(texture));
-            }
-            return manager.Get(textureName);
+            GResource<Texture> result;
+
+            constexpr size_t size = 512;
+            std::vector<uint8_t> data;
+            data.resize(size * size * 3, 255);
+            DrawBorder(data.data(), size, 6);
+            
+            result = GraphicFactory::Create<Texture>();
+            result->Load(data.data(), size, size);
+            return result;
         }
     };
 }

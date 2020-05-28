@@ -28,31 +28,12 @@
 
 #pragma once
 
-#include "File.h"
-#include "Utilities/String/String.h"
-
-#include <Vendors/eastl/EASTL/hash_map.h>
-#include <Vendors/eastl/EASTL/hash_set.h>
+#include "Utilities/ECS/Component.h"
 
 namespace MxEngine
 {
-    struct FileManagerImpl
+    class MeshSource
     {
-        eastl::hash_map<StringId, FilePath> filetable;
-        MxString root;
-    };
-
-    class FileManager
-    {
-        inline static FileManagerImpl* manager = nullptr;
-    public:
-        static void Init(const FilePath& rootPath);
-        static void AddFile(const FilePath& file);
-        static void AddDirectory(const FilePath& directory);
-        static const FilePath& GetFilePath(StringId filename);
-        static bool FileExists(StringId filename);
-
-        static void Clone(FileManagerImpl* other);
-        static FileManagerImpl* GetImpl();
+        MAKE_COMPONENT(MeshSource);
     };
 }

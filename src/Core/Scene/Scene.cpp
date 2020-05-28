@@ -137,7 +137,13 @@ namespace MxEngine
             Logger::Instance().Error("MxEngine::Scene", "instanced objects cannot be copied: " + existingObject);
             return object;
         }
-        return AddObject(name, MakeUnique<MxObject>(object.GetMesh()));
+        auto newObject = MakeUnique<MxObject>();
+        auto meshRenderer = object.GetComponent<MeshRenderer>();
+        if (meshRenderer.IsValid())
+            newObject->AddComponent<MeshRenderer>(meshRenderer->Materials, meshRenderer->RenderColors);
+        newObject->SetMesh(object.GetMesh());
+       
+        return this->AddObject(name, std::move(newObject));
     }
 
     MxObject& Scene::GetObject(const MxString& name) const
@@ -168,17 +174,18 @@ namespace MxEngine
         return this->objectManager.Exists(name);
     }
 
-    Mesh* Scene::LoadMesh(const MxString& name)
+    Mesh* Scene::LoadMesh(const MxString& name, MeshRenderer* meshRenderer)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadMesh");
-        auto mesh = MakeUnique<Mesh>(ToMxString(FileModule::GetFilePath(MakeStringId(name))));
+        auto mesh = MakeUnique<Mesh>();
+        mesh->Load(ToMxString(FileManager::GetFilePath(MakeStringId(name))), meshRenderer);
         return this->GetResourceManager<Mesh>().Add(name, std::move(mesh));
     }
 
     Script* Scene::LoadScript(const MxString& name)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadScript");
-        auto script = MakeUnique<Script>(FileModule::GetFilePath(MakeStringId(name)));
+        auto script = MakeUnique<Script>(FileManager::GetFilePath(MakeStringId(name)));
         return this->GetResourceManager<Script>().Add(name, std::move(script));
     }
 
@@ -186,8 +193,8 @@ namespace MxEngine
     {
         MAKE_SCOPE_PROFILER("Scene::LoadShader");
         auto shader = MakeUnique<Shader>(
-            ToMxString(FileModule::GetFilePath(MakeStringId(vertex))),
-            ToMxString(FileModule::GetFilePath(MakeStringId(fragment)))
+            ToMxString(FileManager::GetFilePath(MakeStringId(vertex))),
+            ToMxString(FileManager::GetFilePath(MakeStringId(fragment)))
             );
         return this->GetResourceManager<Shader>().Add(name, std::move(shader));
     }
@@ -196,9 +203,9 @@ namespace MxEngine
     {
         MAKE_SCOPE_PROFILER("Scene::LoadShader");
         auto shader = MakeUnique<Shader>(
-            ToMxString(FileModule::GetFilePath(MakeStringId(vertex))),
-            ToMxString(FileModule::GetFilePath(MakeStringId(geometry))),
-            ToMxString(FileModule::GetFilePath(MakeStringId(fragment)))
+            ToMxString(FileManager::GetFilePath(MakeStringId(vertex))),
+            ToMxString(FileManager::GetFilePath(MakeStringId(geometry))),
+            ToMxString(FileManager::GetFilePath(MakeStringId(fragment)))
         );
         return this->GetResourceManager<Shader>().Add(name, std::move(shader));
     }
@@ -206,14 +213,14 @@ namespace MxEngine
     Texture* Scene::LoadTexture(const MxString& name, TextureWrap wrap, bool genMipmaps, bool flipImage)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadTexture");
-        auto textureObject = MakeUnique<Texture>(ToMxString(FileModule::GetFilePath(MakeStringId(name))), wrap, genMipmaps, flipImage);
+        auto textureObject = MakeUnique<Texture>(ToMxString(FileManager::GetFilePath(MakeStringId(name))), wrap, genMipmaps, flipImage);
         return this->GetResourceManager<Texture>().Add(name, std::move(textureObject));
     }
 
     CubeMap* Scene::LoadCubeMap(const MxString& name, bool genMipmaps, bool flipImage)
     {
         MAKE_SCOPE_PROFILER("Scene::LoadCubeMap");
-        auto cubemapObject = MakeUnique<CubeMap>(ToMxString(FileModule::GetFilePath(MakeStringId(name))), genMipmaps, flipImage);
+        auto cubemapObject = MakeUnique<CubeMap>(ToMxString(FileManager::GetFilePath(MakeStringId(name))), genMipmaps, flipImage);
         return this->GetResourceManager<CubeMap>().Add(name, std::move(cubemapObject));
     }
 

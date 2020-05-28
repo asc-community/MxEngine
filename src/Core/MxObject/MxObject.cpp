@@ -154,6 +154,16 @@ namespace MxEngine
 		this->AddInstancedBuffer(nullptr, count, sizeof(Vector4) / sizeof(float), 4, usage);
 	}
 
+    MxObject::MxObjectHandle MxObject::Create()
+    {
+		return Factory::Create<MxObject>();
+    }
+
+	void MxObject::Destroy(Resource<MxObject, Factory>& object)
+	{
+		Factory::Destroy(object);
+	}
+
 	void MxObject::MakeInstanced(size_t instances, UsageType usage)
 	{
 		this->ReserveInstances(instances, usage);
@@ -217,8 +227,16 @@ namespace MxEngine
 			this->ObjectMesh->RefCounter--;
 
 		this->ObjectMesh = mesh;
-		if(mesh != nullptr)
+		if (mesh != nullptr)
+		{
 			this->ObjectMesh->RefCounter++;
+			auto meshRenderer = this->GetComponent<MeshRenderer>();
+			if (!meshRenderer.IsValid()) this->AddComponent<MeshRenderer>(Material(), MakeVector4(1.0f));
+			#if defined(MXENGINE_DEBUG)
+			meshRenderer = this->GetComponent<MeshRenderer>();
+			auto _ = meshRenderer.GetUnchecked();
+			#endif
+		}
 	}
 
 	Mesh* MxObject::GetMesh()
@@ -352,7 +370,7 @@ namespace MxEngine
 
 	bool MxObject::HasShader() const
 	{
-		return this->ObjectShader != nullptr;
+		return this->ObjectShader.IsValid();
 	}
 
 	const Shader& MxObject::GetShader() const
@@ -367,7 +385,7 @@ namespace MxEngine
 
 	bool MxObject::HasTexture() const
 	{
-		return this->ObjectTexture != nullptr;
+		return this->ObjectTexture.IsValid();
 	}
 
 	const Texture& MxObject::GetTexture() const

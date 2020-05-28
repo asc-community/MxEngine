@@ -106,7 +106,7 @@ namespace MxEngine
         void DestroyObject(const MxString& name);
         bool HasObject(const MxString& name) const;
 
-        Mesh* LoadMesh(const MxString& name);
+        Mesh* LoadMesh(const MxString& name, MeshRenderer* meshRenderer = nullptr);
         Script* LoadScript(const MxString& name);
         Shader* LoadShader(const MxString& name, const MxString& vertex, const MxString& fragment);
         Shader* LoadShader(const MxString& name, const MxString& vertex, const MxString& geometry, const MxString& fragment);

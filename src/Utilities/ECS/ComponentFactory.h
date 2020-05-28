@@ -82,7 +82,7 @@ namespace MxEngine
 
         static void Init()
         {
-            factories = Alloc<FactoryMap>();
+            factories = new FactoryMap(); // static data, so dont care about freeing
         }
 
         static FactoryMap* GetImpl()

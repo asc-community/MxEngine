@@ -28,31 +28,28 @@
 
 #pragma once
 
-#include "File.h"
-#include "Utilities/String/String.h"
-
-#include <Vendors/eastl/EASTL/hash_map.h>
-#include <Vendors/eastl/EASTL/hash_set.h>
+#include "Utilities/ECS/Component.h"
+#include "Core/Material/Material.h"
 
 namespace MxEngine
 {
-    struct FileManagerImpl
+    class MeshRenderer
     {
-        eastl::hash_map<StringId, FilePath> filetable;
-        MxString root;
-    };
-
-    class FileManager
-    {
-        inline static FileManagerImpl* manager = nullptr;
+        MAKE_COMPONENT(MeshRenderer);
     public:
-        static void Init(const FilePath& rootPath);
-        static void AddFile(const FilePath& file);
-        static void AddDirectory(const FilePath& directory);
-        static const FilePath& GetFilePath(StringId filename);
-        static bool FileExists(StringId filename);
+        using MaterialArray = MxVector<Material>;
+        using ColorArray = MxVector<Vector4>;
 
-        static void Clone(FileManagerImpl* other);
-        static FileManagerImpl* GetImpl();
+        MaterialArray Materials;
+        ColorArray RenderColors;
+
+        MeshRenderer() = default;
+        MeshRenderer(const Vector4& renderColor) : RenderColors(1, renderColor) { };
+        MeshRenderer(Material material) : Materials(1, std::move(material)) { };
+        MeshRenderer(Material material, const Vector4& renderColor) : Materials(1, std::move(material)), RenderColors(1, renderColor) { };
+        MeshRenderer(MaterialArray materials, ColorArray renderColors) : Materials(std::move(materials)), RenderColors(std::move(renderColors)) { };
+
+        Material& GetMaterial() { return this->Materials[0]; }
+        const Material& GetMaterial() const { return this->Materials[0]; }
     };
 }

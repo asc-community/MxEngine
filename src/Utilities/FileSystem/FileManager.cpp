@@ -33,7 +33,7 @@
 
 namespace MxEngine
 {
-    void FileModule::AddDirectory(const FilePath& directory)
+    void FileManager::AddDirectory(const FilePath& directory)
     {
         namespace fs = std::filesystem;
         auto it = fs::recursive_directory_iterator(directory, fs::directory_options::skip_permission_denied);
@@ -41,14 +41,14 @@ namespace MxEngine
         {
             if (entry.is_regular_file())
             {
-                FileModule::AddFile(entry.path());
+                FileManager::AddFile(entry.path());
             }
         }
     }
 
-    const FilePath& FileModule::GetFilePath(StringId filename)
+    const FilePath& FileManager::GetFilePath(StringId filename)
     {
-        if (!FileModule::FileExists(filename))
+        if (!FileManager::FileExists(filename))
         {
             static FilePath empty;
             return empty;
@@ -56,12 +56,12 @@ namespace MxEngine
         return manager->filetable[filename];
     }
 
-    bool FileModule::FileExists(StringId filename)
+    bool FileManager::FileExists(StringId filename)
     {
         return manager->filetable.find(filename) != manager->filetable.end();
     }
 
-    void FileModule::AddFile(const FilePath& file)
+    void FileManager::AddFile(const FilePath& file)
     {
         auto filename = file.string(); // we need to transform Resources\path\to.something -> path/to.something
         std::replace_if(filename.begin(), filename.end(), [](char c) { return c == FilePath::preferred_separator; }, '/');
@@ -80,22 +80,22 @@ namespace MxEngine
         manager->filetable.emplace(filehash, file);
     }
 
-    void FileModule::Init(const FilePath& rootPath)
+    void FileManager::Init(const FilePath& rootPath)
     {
         manager = Alloc<FileManagerImpl>();
         MAKE_SCOPE_TIMER("MxEngine::FileManager", "FileManager::Init()");
         MAKE_SCOPE_PROFILER("FileManager::Init()");
 
         manager->root = ToMxString(rootPath);
-        FileModule::AddDirectory(rootPath);
+        FileManager::AddDirectory(rootPath);
     }
 
-    void FileModule::Clone(FileManagerImpl* other)
+    void FileManager::Clone(FileManagerImpl* other)
     {
         manager = other;
     }
 
-    FileManagerImpl* FileModule::GetImpl()
+    FileManagerImpl* FileManager::GetImpl()
     {
         return manager;
     }

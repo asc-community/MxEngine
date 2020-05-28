@@ -193,6 +193,7 @@ namespace MxEngine
 		loads object from disk by its file path
 		\param path absoulute or relative to executable folder path to a file to load
 		\returns ObjectInfo instance
+		\warning this function is not thread safe
 		*/
 		static ObjectInfo Load(const MxString& path);
 	};

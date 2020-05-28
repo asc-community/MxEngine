@@ -47,6 +47,8 @@
 #include "Utilities/Json/Json.h"
 #include "Utilities/ECS/ComponentFactory.h"
 
+#include "Core/Components/Update.h"
+
 namespace MxEngine
 {
 	template<typename EventType>
@@ -373,7 +375,9 @@ namespace MxEngine
 				MAKE_SCOPE_PROFILER("Renderer::DrawScene");
 				for (const auto& [name, object] : this->currentScene->GetObjectList())
 				{
-					this->renderer.DrawObject(*object, viewport, lights, this->renderer.Fog, this->currentScene->SceneSkybox.get());
+					auto meshRenderer = object->GetComponent<MeshRenderer>();
+					MeshRenderer* meshPtr = meshRenderer.IsValid() ? meshRenderer.GetUnchecked() : nullptr;
+					this->renderer.DrawObject(*object, viewport, meshPtr, lights, this->renderer.Fog, this->currentScene->SceneSkybox.get());
 				}
 			}
 		}
@@ -382,7 +386,9 @@ namespace MxEngine
 			MAKE_SCOPE_PROFILER("Renderer::DrawScene");
 			for (const auto& [name, object] : this->currentScene->GetObjectList())
 			{
-				this->renderer.DrawObject(*object, viewport);
+				auto meshRenderer = object->GetComponent<MeshRenderer>();
+				MeshRenderer* meshPtr = meshRenderer.IsValid() ? meshRenderer.GetUnchecked() : nullptr;
+				this->renderer.DrawObject(*object, viewport, meshPtr);
 			}
 		}
 
@@ -435,7 +441,8 @@ namespace MxEngine
 			MAKE_SCOPE_PROFILER("Scene::OnUpdate");
 			for (auto& [_, object] : this->currentScene->GetObjectList())
 			{
-				object->OnUpdate();
+				auto component = object->GetComponent<Update>();
+				if (component.IsValid()) component.GetUnchecked()->Invoke(timeDelta);
 			}
 			this->currentScene->OnUpdate();
 		}
@@ -633,10 +640,10 @@ namespace MxEngine
 		JsonFile config;
 
 		auto configPathHash = STRING_ID("engine_config.json");
-		if (FileModule::FileExists(configPathHash))
+		if (FileManager::FileExists(configPathHash))
 		{
 			Logger::Instance().Debug("Application::CreateContext", "using engine config file to set up context...");
-			File configFile(FileModule::GetFilePath(configPathHash));
+			File configFile(FileManager::GetFilePath(configPathHash));
 			config = LoadJson(configFile);
 		}
 		else
@@ -821,11 +828,12 @@ namespace MxEngine
 		MX_ASSERT(Application::Get() == nullptr);
 		Application::Set(app);
 
-		FileModule::Init("Resources");
+		FileManager::Init("Resources");
 		GraphicModule::Init();
 		UUIDGenerator::Init();
 		GraphicFactory::Init();
 		ComponentFactory::Init();
+		MxObject::Factory::Init();
 	}
 
 	Application::ModuleManager::~ModuleManager()

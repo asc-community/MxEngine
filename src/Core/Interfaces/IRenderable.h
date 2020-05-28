@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "Core/Material/Material.h"
 #include "Core/Components/Transform/Transform.h"
 
 namespace MxEngine
@@ -42,11 +41,9 @@ namespace MxEngine
 		virtual const VertexArray& GetVAO() const = 0;
 		virtual const IndexBuffer& GetIBO() const = 0;
 		virtual const IndexBuffer& GetMeshIBO() const = 0;
-		virtual const Material& GetMaterial() const = 0;
-		virtual bool HasMaterial() const = 0;
+		virtual size_t GetMaterialId() const = 0;
 		virtual size_t GetVertexBufferSize() const = 0;
 		virtual const Transform& GetTransform() const = 0;
-		virtual const Vector4& GetRenderColor() const = 0;
 
 		virtual ~IRenderable() = default;
 	};

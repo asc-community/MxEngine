@@ -50,10 +50,10 @@ namespace MxEngine
         const char* IOHandler = R"(
 class MxEngineIOHandler:
     def __init__(self, std_stream):
-        self.Value = ''
+        self.value = ''
         self.std = std_stream
     def write(self, txt):
-        self.Value += txt
+        self.value += txt
         if self.std is not None:
             self.std.write(txt)
     def flush(self):
@@ -66,11 +66,12 @@ class MxEngineIOHandler:
         this->MirrorErrorStream(false);
 
         auto ctxPtr = reinterpret_cast<uintptr_t>(Application::Get());
-        auto fileManagerPtr = reinterpret_cast<uintptr_t>(FileModule::GetImpl());
+        auto fileManagerPtr = reinterpret_cast<uintptr_t>(FileManager::GetImpl());
         auto uuidGenPtr = reinterpret_cast<uintptr_t>(UUIDGenerator::GetImpl());
         auto graphicPtr = reinterpret_cast<uintptr_t>(GraphicFactory::GetImpl());
         auto componentPtr = reinterpret_cast<uintptr_t>(ComponentFactory::GetImpl());
-        auto contextInitScript = Format("mx_engine.MxEngineSetContextPointer({}, {}, {}, {}, {})", ctxPtr, fileManagerPtr, uuidGenPtr, graphicPtr, componentPtr);
+        auto mxobjectPtr = reinterpret_cast<uintptr_t>(MxObject::Factory::GetImpl());
+        auto contextInitScript = Format("mx_engine.MxEngineSetContextPointer({}, {}, {}, {}, {}, {})", ctxPtr, fileManagerPtr, uuidGenPtr, graphicPtr, componentPtr, mxobjectPtr);
         this->Execute(contextInitScript.c_str());
         this->Execute("mx = mx_engine.get_context()");
     }
@@ -82,12 +83,12 @@ class MxEngineIOHandler:
             BoxedValue result = python::exec(code, this->pythonNamespace);
             // clear all errors (stderr)
             if(this->pythonNamespace.contains("errorHandler"))
-                this->pythonNamespace["errorHandler"].attr("Value") = "";
+                this->pythonNamespace["errorHandler"].attr("value") = "";
             this->lastError.clear();
             // get output (stdout)
             if (this->pythonNamespace.contains("outputHandler"))
             {
-                python::object output = this->pythonNamespace["outputHandler"].attr("Value");
+                python::object output = this->pythonNamespace["outputHandler"].attr("value");
                 this->lastOutput = ToMxString((std::string)python::extract<std::string>(output));
                 if(!this->lastOutput.empty())
                     this->lastOutput.pop_back(); // delete last '\n'
@@ -101,7 +102,7 @@ class MxEngineIOHandler:
             ::PyErr_Print();
             try
             {
-                python::object msg = this->pythonNamespace["errorHandler"].attr("Value");
+                python::object msg = this->pythonNamespace["errorHandler"].attr("value");
                 this->lastError = ToMxString((std::string)python::extract<std::string>(msg));
             }
             catch (python::error_already_set&)

@@ -2,34 +2,26 @@
 
 #include <MxEngine.h>
 #include <Library/Primitives/Cube.h>
+#include <Core/Components/Update.h>
 
 using namespace MxEngine;
 
-class CubeObject : public Cube
+void InitCube(MxObject& cube)
 {
-	int cubeCount = 100;
-public:
-	inline CubeObject()
-	{
-		auto context = Application::Get();
-		this->ObjectTexture = context->GetCurrentScene().LoadTexture("objects/crate/crate.jpg");
-		this->MakeInstanced(cubeCount);
-
-		this->Translate(0.5f, 0.0f, 0.5f);
-	}
-
-	inline virtual void OnUpdate() override
+	cube.AddComponent<Update>([](auto& self, float dt)
 	{
 		static float counter = 1.0f;
 		static size_t offset = 0;
-		static float maxHeight = 0.5f * (cubeCount - 1);
 
-		auto& instances = this->GetInstances();
+		auto& object = MxObject::GetByComponent(self);
+		auto& instances = object.GetInstances();
 
-		for(size_t idx = 0; idx < instances.size(); idx++)
+		float maxHeight = 0.5f * (object.GetInstances().size() - 1);
+
+		for (size_t idx = 0; idx < instances.size(); idx++)
 		{
 			int id = int(idx - offset);
-			counter += 0.0005f * Application::Get()->GetTimeDelta();
+			counter += 0.0005f * dt;
 
 			Vector3 position;
 			position.x = 5.0f * std::sin(0.2f * id + counter);
@@ -40,5 +32,19 @@ public:
 
 			instances[idx].Model.SetTranslation(position);
 		}
+	});
+}
+
+class CubeObject : public Cube
+{
+	int cubeCount = 100;
+public:
+	inline CubeObject()
+	{
+		auto context = Application::Get();
+		this->ObjectTexture = GraphicFactory::Create<Texture>(ToMxString(FileManager::GetFilePath("objects/crate/crate.jpg"_id)));
+		this->MakeInstanced(cubeCount);
+
+		this->Translate(0.5f, 0.0f, 0.5f);
 	}
 };

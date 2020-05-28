@@ -522,31 +522,17 @@ Script* LoadScriptWrapper(Scene& scene, const std::string& file)
     return scene.LoadScript(ToMxString(file));
 }
 
-Shader* LoadShaderWrapper2(Scene& scene, const std::string& vertex, const std::string& fragment)
-{
-    auto name = MxFormat(FMT_STRING("pyShader_{0}"), Application::Get()->GenerateResourceId());
-    return scene.LoadShader(name, ToMxString(vertex), ToMxString(fragment));
-}
-
-Shader* LoadShaderWrapper3(Scene& scene, const std::string& vertex, const std::string& geometry, const std::string& fragment)
-{
-    auto name = MxFormat(FMT_STRING("pyShader_{0}"), Application::Get()->GenerateResourceId());
-    return scene.LoadShader(name, ToMxString(vertex), ToMxString(geometry), ToMxString(fragment));
-}
-
-Texture* LoadTextureWrapper(Scene& scene, const std::string& file)
-{
-    return scene.LoadTexture(ToMxString(file));
-}
-
 void SetShaderWrapper(MxObject& object, const std::string& vertex, const std::string& fragment)
 {
-    object.ObjectShader = LoadShaderWrapper2(Application::Get()->GetCurrentScene(), vertex, fragment);
+    object.ObjectShader = GraphicFactory::Create<Shader>(
+        ToMxString(FileManager::GetFilePath(MakeStringId(vertex))),
+        ToMxString(FileManager::GetFilePath(MakeStringId(fragment)))
+        );
 }
 
 void SetTextureWrapper(MxObject& object, const std::string& texture)
 {
-    object.ObjectTexture = LoadTextureWrapper(Application::Get()->GetCurrentScene(), texture);
+    object.ObjectTexture = GraphicFactory::Create<Texture>(ToMxString(FileManager::GetFilePath(MakeStringId(texture))));
 }
 
 template<typename T, typename... Args>
@@ -640,14 +626,16 @@ void SetContextPointerWrapper(
     uint64_t filemanagerPointer,
     uint64_t uuidGenPointer,
     uint64_t graphicPointer,
-    uint64_t componentPointer
+    uint64_t componentPointer,
+    uint64_t mxobjectPointer
 )
 {
     Application::Set(reinterpret_cast<Application*>(applicationPointer));
-    FileModule::Clone(reinterpret_cast<FileManagerImpl*>(filemanagerPointer));
+    FileManager::Clone(reinterpret_cast<FileManagerImpl*>(filemanagerPointer));
     UUIDGenerator::Clone(reinterpret_cast<UUIDGeneratorImpl*>(uuidGenPointer));
     GraphicFactory::Clone(reinterpret_cast<decltype(GraphicFactory::GetImpl())>(graphicPointer));
     ComponentFactory::Clone(reinterpret_cast<ComponentFactory::FactoryMap*>(componentPointer));
+    MxObject::Factory::Clone(reinterpret_cast<decltype(MxObject::Factory::GetImpl())>(mxobjectPointer));
 }
 
 void InitializeOpenGL()
@@ -790,9 +778,6 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("clear", &Scene::Clear)
         .def("load_mesh", RefGetter(LoadMeshWrapper))
         .def("load_script", RefGetter(LoadScriptWrapper))
-        .def("load_shader", RefGetter(LoadShaderWrapper2))
-        .def("load_shader", RefGetter(LoadShaderWrapper3))
-        .def("load_texture", RefGetter(LoadTextureWrapper))
         .def("load_object", RefGetter(&Scene::CreateObject))
         .def("copy_object", RefGetter(&Scene::CopyObject))
         .def("get_object", RefGetter(&Scene::GetObject))
@@ -1278,12 +1263,10 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("__len__", &std::vector<SubMesh>::size)
         ;
 
-    using GetMaterialFunc = Material& (SubMesh::*)();
     using GetTransformFunc = Transform& (SubMesh::*)();
     py::class_<SubMesh, boost::noncopyable>("submesh", py::no_init)
-        .add_property("material", RefGetter((GetMaterialFunc)&SubMesh::GetMaterial))
+        .add_property("material_id", &SubMesh::GetMaterialId)
         .add_property("transform", RefGetter((GetTransformFunc)&SubMesh::GetTransform))
-        .add_property("color", RefGetter(&SubMesh::GetRenderColor), &SubMesh::SetRenderColor)
         .add_property("name", RefGetter(&SubMesh::GetName))
         .add_property("has_texture", &SubMesh::UsesTexture)
         .add_property("has_normals", &SubMesh::UsesNormals)
