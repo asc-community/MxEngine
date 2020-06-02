@@ -52,7 +52,7 @@ namespace MxEngine
 		size_t size;
 	public:
 		explicit VertexBuffer();
-		explicit VertexBuffer(BufferData data, size_t count, UsageType type);
+		explicit VertexBuffer(BufferData data, size_t sizeInFloats, UsageType type);
 		~VertexBuffer();
 		VertexBuffer(const VertexBuffer&) = delete;
 		VertexBuffer(VertexBuffer&& vbo) noexcept;
@@ -62,8 +62,8 @@ namespace MxEngine
 		BindableId GetNativeHandle() const;
 		void Bind() const;
 		void Unbind() const;
-		void Load(BufferData data, size_t count, UsageType type);
-		void BufferSubData(BufferData data, size_t count, size_t offset = 0);
+		void Load(BufferData data, size_t sizeInFloats, UsageType type);
+		void BufferSubData(BufferData data, size_t sizeInFloats, size_t offsetInFloats = 0);
 		size_t GetSize() const;
 	};
 }

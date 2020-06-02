@@ -39,7 +39,8 @@ namespace MxEngine
     struct FileManagerImpl
     {
         eastl::hash_map<StringId, FilePath> filetable;
-        MxString root;
+        FilePath root;
+        size_t rootPathSize;
     };
 
     class FileManager
@@ -54,5 +55,6 @@ namespace MxEngine
 
         static void Clone(FileManagerImpl* other);
         static FileManagerImpl* GetImpl();
+        static FilePath& GetRoot();
     };
 }

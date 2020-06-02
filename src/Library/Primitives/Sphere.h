@@ -39,6 +39,6 @@ namespace MxEngine
         Sphere(size_t polygons = 30);
         void Resize(size_t polygons);
     private:
-        static std::pair<std::vector<float>, std::vector<unsigned int>> GetSphereData(size_t polygons);
+        static MeshData GetSphereData(size_t polygons);
     };
 }

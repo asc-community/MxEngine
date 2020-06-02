@@ -83,7 +83,7 @@ T StdVectorGetWrapper(std::vector<T>& v, int index)
 }
 
 template <typename T>
-T& StdVectorGetRefWrapper(std::vector<T>& v, int index)
+auto& StdVectorGetRefWrapper(T& v, int index)
 {
     if (index >= 0 && index < v.size()) {
         return v[index];
@@ -512,16 +512,6 @@ void RemoveEventWrapper(Application& app, const std::string& name)
     app.GetEventDispatcher().RemoveEventListener(ToMxString(name));
 }
 
-Mesh* LoadMeshWrapper(Scene& scene, const std::string& file)
-{
-    return scene.LoadMesh(ToMxString(file));
-}
-
-Script* LoadScriptWrapper(Scene& scene, const std::string& file)
-{
-    return scene.LoadScript(ToMxString(file));
-}
-
 void SetShaderWrapper(MxObject& object, const std::string& vertex, const std::string& fragment)
 {
     object.ObjectShader = GraphicFactory::Create<Shader>(
@@ -533,12 +523,6 @@ void SetShaderWrapper(MxObject& object, const std::string& vertex, const std::st
 void SetTextureWrapper(MxObject& object, const std::string& texture)
 {
     object.ObjectTexture = GraphicFactory::Create<Texture>(ToMxString(FileManager::GetFilePath(MakeStringId(texture))));
-}
-
-template<typename T, typename... Args>
-MxObject& AddPrimitiveWrapper(Scene& scene, const std::string& name, Args... args)
-{
-    return scene.AddObject(ToMxString(name), MakeUnique<T>(args...));
 }
 
 void MakeInstancedWrapper(MxObject& object, size_t count)
@@ -627,7 +611,8 @@ void SetContextPointerWrapper(
     uint64_t uuidGenPointer,
     uint64_t graphicPointer,
     uint64_t componentPointer,
-    uint64_t mxobjectPointer
+    uint64_t mxobjectPointer,
+    uint64_t resourcePointer
 )
 {
     Application::Set(reinterpret_cast<Application*>(applicationPointer));
@@ -636,6 +621,7 @@ void SetContextPointerWrapper(
     GraphicFactory::Clone(reinterpret_cast<decltype(GraphicFactory::GetImpl())>(graphicPointer));
     ComponentFactory::Clone(reinterpret_cast<ComponentFactory::FactoryMap*>(componentPointer));
     MxObject::Factory::Clone(reinterpret_cast<decltype(MxObject::Factory::GetImpl())>(mxobjectPointer));
+    ResourceFactory::Clone(reinterpret_cast<decltype(ResourceFactory::GetImpl())>(resourcePointer));
 }
 
 void InitializeOpenGL()
@@ -776,9 +762,6 @@ BOOST_PYTHON_MODULE(mx_engine)
 
     py::class_<Scene, boost::noncopyable>("scene", py::no_init)
         .def("clear", &Scene::Clear)
-        .def("load_mesh", RefGetter(LoadMeshWrapper))
-        .def("load_script", RefGetter(LoadScriptWrapper))
-        .def("load_object", RefGetter(&Scene::CreateObject))
         .def("copy_object", RefGetter(&Scene::CopyObject))
         .def("get_object", RefGetter(&Scene::GetObject))
         .def("has_object", &Scene::HasObject)
@@ -787,9 +770,6 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("get_shader", RefGetter(&Scene::GetResource<Shader>))
         .def("get_texture", RefGetter(&Scene::GetResource<Texture>))
         .def("delete_object", RefGetter(&Scene::DestroyObject))
-        .def("add_cube", RefGetter(AddPrimitiveWrapper<Cube>))
-        .def("add_sphere", RefGetter(AddPrimitiveWrapper<Sphere, size_t>))
-        .def("add_grid", RefGetter(AddPrimitiveWrapper<Grid, size_t>))
         .def_readonly("global_light", &Scene::GlobalLight)
         .def_readonly("point_lights", &Scene::PointLights)
         .def_readonly("spot_lights", &Scene::SpotLights)
@@ -1250,26 +1230,23 @@ BOOST_PYTHON_MODULE(mx_engine)
         .add_property("length", &AABB::Length)
         ;
 
-    using SubMeshesGetFunc = std::vector<SubMesh>& (Mesh::*)();
+    using SubMeshesGetFunc = MxVector<SubMesh>& (Mesh::*)();
     py::class_<Mesh, boost::noncopyable>("mesh", py::no_init)
         .add_property("AABB", RefGetter(&Mesh::GetAABB))
-        .add_property("submeshes", RefGetter((SubMeshesGetFunc)&Mesh::GetRenderObjects))
+        .add_property("submeshes", RefGetter((SubMeshesGetFunc)&Mesh::GetSubmeshes))
         .add_property("lod", &Mesh::GetLOD, &Mesh::SetLOD)
         ;
 
-    using SubMeshesGetMeshFunc = SubMesh& (std::vector<SubMesh>::*)(size_t);
-    py::class_<std::vector<SubMesh>, boost::noncopyable>("submesh_list", py::no_init)
-        .def("__getitem__", RefGetter(StdVectorGetRefWrapper<SubMesh>))
-        .def("__len__", &std::vector<SubMesh>::size)
+    using SubMeshesGetMeshFunc = SubMesh& (MxVector<SubMesh>::*)(size_t);
+    py::class_<MxVector<SubMesh>, boost::noncopyable>("submesh_list", py::no_init)
+        .def("__getitem__", RefGetter(StdVectorGetRefWrapper<MxVector<SubMesh>>))
+        .def("__len__", &MxVector<SubMesh>::size)
         ;
 
     using GetTransformFunc = Transform& (SubMesh::*)();
     py::class_<SubMesh, boost::noncopyable>("submesh", py::no_init)
         .add_property("material_id", &SubMesh::GetMaterialId)
         .add_property("transform", RefGetter((GetTransformFunc)&SubMesh::GetTransform))
-        .add_property("name", RefGetter(&SubMesh::GetName))
-        .add_property("has_texture", &SubMesh::UsesTexture)
-        .add_property("has_normals", &SubMesh::UsesNormals)
         ;
 
     py::class_<Material, boost::noncopyable>("material", py::no_init)
@@ -1287,6 +1264,7 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def_readwrite("f_Kd", &Material::f_Kd)
         .def_readwrite("refl", &Material::reflection)
         .def_readwrite("disp", &Material::displacement)
+        .def_readwrite("color", &Material::baseColor)
         ;
 
     using CameraFunc = ICamera & (CameraController::*)();
@@ -1361,11 +1339,11 @@ BOOST_PYTHON_MODULE(mx_engine)
     using ScaleFunc1F = MxObject & (MxObject::*)(float);
     using ScaleFuncVec = MxObject & (MxObject::*)(const Vector3&);
     using TranslateFunc3 = MxObject & (MxObject::*)(float, float, float);
-    using RotateMoveFunc = MxObject & (MxObject::*)(float);
-    using InstanceListFunc = Instancing<MxObject>::InstanceList & (MxObject::*)();
+    using RotateMoveFunc = MxObject & (MxObject::*)(float, float);
     using MeshFunc = Mesh* (MxObject::*)();
+    using TransformGetter = Transform & (MxObject::*)();
 
-    py::class_<MxObject, py::bases<IMovable>, boost::noncopyable>("mx_object")
+    py::class_<MxObject, boost::noncopyable>("mx_object")
         .def("instanciate", &MxObject::Instanciate)
         .def("scale", RefGetter(&MxObject::Scale))
         .def("hide", &MxObject::Hide)
@@ -1377,35 +1355,33 @@ BOOST_PYTHON_MODULE(mx_engine)
         .def("set_autobuffering", &MxObject::SetAutoBuffering)
         .def("buffer_instances", &MxObject::BufferInstances)
         .def_readwrite("use_lod", &MxObject::UseLOD)
-        .def_readwrite("transform", &MxObject::ObjectTransform)
         .def_readwrite("texture", &MxObject::ObjectTexture)
         .def_readwrite("shader", &MxObject::ObjectShader)
         .def_readwrite("move_speed", &MxObject::TranslateSpeed)
         .def_readwrite("rotate_speed", &MxObject::RotateSpeed)
         .def_readwrite("scale_speed", &MxObject::ScaleSpeed)
+        .add_property("transform", RefGetter((TransformGetter)&MxObject::GetTransform))
         .add_property("buffer_count", &MxObject::GetBufferCount)
         .add_property("AABB", RefGetter(&MxObject::GetAABB))
-        .add_property("mesh", RefGetter((MeshFunc)&MxObject::GetMesh), &MxObject::SetMesh)
-        .add_property("instances", RefGetter((InstanceListFunc)&MxObject::GetInstances))
+        .add_property("mesh", RefGetter((MeshFunc)&MxObject::GetMesh))
         .add_property("render_color", RefGetter(&MxObject::GetRenderColor), &MxObject::SetRenderColor)
+        .def("move", RefGetter(&MxObject::Translate))
+        .def("move_forward", RefGetter(&MxObject::TranslateForward))
+        .def("move_right", RefGetter(&MxObject::TranslateRight))
+        .def("move_up", RefGetter(&MxObject::TranslateUp))
+        .def("rotate", RefGetter((RotateMoveFunc)&MxObject::Rotate))
+        .add_property("vec_forward", RefGetter(&MxObject::GetForwardVector))
+        .add_property("vec_right", RefGetter(&MxObject::GetRightVector))
+        .add_property("vec_up", RefGetter(&MxObject::GetUpVector))
         ;
 
     py::class_<Surface, py::bases<MxObject>, boost::noncopyable>("surface", py::no_init)
         .def("set", SetSurfaceWrapper)
         ;
 
-    py::class_<MxInstance, boost::noncopyable>("mx_instance", py::no_init)
-        .def_readwrite("transform", &MxInstance::Model)
-        .add_property("color", RefGetter(&MxInstance::GetColor), &MxInstance::SetColor)
-        .def("hide", &MxInstance::Hide)
-        .def("show", &MxInstance::Show)
-        ;
-
-    py::class_<std::vector<MxInstance>, boost::noncopyable>("instance_list", py::no_init)
-        .def("__getitem__", RefGetter(StdVectorGetRefWrapper<MxInstance>))
-        .def("__setitem__", StdVectorSetWrapper<MxInstance>)
-        .def("__len__", &std::vector<MxInstance>::size)
-        .def("size", &std::vector<MxInstance>::size)
+    py::class_<MxInstanceImpl, boost::noncopyable>("mx_instance", py::no_init)
+        .def_readwrite("transform", &MxInstanceImpl::Model)
+        .add_property("color", RefGetter(&MxInstanceImpl::GetColor), &MxInstanceImpl::SetColor)
         ;
 
     py::def("bind_console", ConsoleBindWrapper);

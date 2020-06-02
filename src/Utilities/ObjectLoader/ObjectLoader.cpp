@@ -131,55 +131,37 @@ namespace MxEngine
 			meshInfo.material = object.materials.data() + mesh->mMaterialIndex;
 
 			MX_ASSERT(mesh->mNormals != nullptr);
-			MX_ASSERT(mesh->mTextureCoords != nullptr);
 			MX_ASSERT(mesh->mVertices != nullptr);
 			MX_ASSERT(mesh->mNumFaces > 0);
 			constexpr size_t VertexSize = (3 + 2 + 3 + 3 + 3);
 
-			MxVector<float> vertex; // TODO: use stack allocator
-			vertex.reserve(VertexSize * (size_t)mesh->mNumVertices);
+			MxVector<Vertex> vertex;
+			vertex.resize((size_t)mesh->mNumVertices);
 			for (size_t i = 0; i < (size_t)mesh->mNumVertices; i++)
 			{
-				((Vector3*)mesh->mVertices)[i] -= objectCenter;
-				vertex.push_back(mesh->mVertices[i].x);
-				vertex.push_back(mesh->mVertices[i].y);
-				vertex.push_back(mesh->mVertices[i].z);
+				vertex[i].Position = ((Vector3*)mesh->mVertices)[i];
+				vertex[i].Position -= objectCenter;
+
 				if (meshInfo.useTexture)
-				{
-					vertex.push_back(mesh->mTextureCoords[0][i].x);
-					vertex.push_back(mesh->mTextureCoords[0][i].y);
-				}
-				else
-				{
-					vertex.push_back(0.0f);
-					vertex.push_back(0.0f);
-				}
+					vertex[i].TexCoord = MakeVector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 
-				vertex.push_back(mesh->mNormals[i].x);
-				vertex.push_back(mesh->mNormals[i].y);
-				vertex.push_back(mesh->mNormals[i].z);
-
-				vertex.push_back(mesh->mTangents[i].x);
-				vertex.push_back(mesh->mTangents[i].y);
-				vertex.push_back(mesh->mTangents[i].z);
-
-				vertex.push_back(mesh->mBitangents[i].x);
-				vertex.push_back(mesh->mBitangents[i].y);
-				vertex.push_back(mesh->mBitangents[i].z);
+				vertex[i].Normal    = ((Vector3*)mesh->mNormals)[i];
+				vertex[i].Tangent   = ((Vector3*)mesh->mTangents)[i];
+				vertex[i].Bitangent = ((Vector3*)mesh->mBitangents)[i];
 			}
 
-			meshInfo.faces.resize((size_t)mesh->mNumFaces * 3);
+			meshInfo.indicies.resize((size_t)mesh->mNumFaces * 3);
 			for (size_t i = 0; i < (size_t)mesh->mNumFaces; i++)
 			{
 				MX_ASSERT(mesh->mFaces[i].mNumIndices == 3);
-				meshInfo.faces[3 * i + 0] = mesh->mFaces[i].mIndices[0];
-				meshInfo.faces[3 * i + 1] = mesh->mFaces[i].mIndices[1];
-				meshInfo.faces[3 * i + 2] = mesh->mFaces[i].mIndices[2];
+				meshInfo.indicies[3 * i + 0] = mesh->mFaces[i].mIndices[0];
+				meshInfo.indicies[3 * i + 1] = mesh->mFaces[i].mIndices[1];
+				meshInfo.indicies[3 * i + 2] = mesh->mFaces[i].mIndices[2];
 			}
-			if (meshInfo.name.empty()) 
-				meshInfo.name = Format("unnamed_hash_{0}", Random::Get(0LL, Random::Max)).c_str();
+			if (meshInfo.name.empty())
+				meshInfo.name = MxFormat("unnamed_hash_{0}", Random::Get(0LL, Random::Max));
 			meshInfo.useTexture = true;
-			meshInfo.buffer = std::move(vertex);
+			meshInfo.vertecies = std::move(vertex);
 		}
 		importer.FreeScene();
 

@@ -26,21 +26,15 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Utilities/ECS/Component.h"
-#include "Core/Resources/ResourceFactory.h"
+#include "MeshLOD.h"
+#include "Utilities/LODGenerator/LODGenerator.h"
 
 namespace MxEngine
 {
-    class MeshSource
-    {
-        MAKE_COMPONENT(MeshSource);
-        Resource<Mesh, ResourceFactory> mesh;
-    public:
-        MeshSource() = default;
-        MeshSource(Resource<Mesh, ResourceFactory> mesh) : mesh(mesh) { }
-
-        auto GetMesh() const { return this->mesh; }
-    };
+    //MeshLOD::MeshLOD(MeshSourceRef meshSource, LODConfig config)
+    //{
+    //    if (!meshSource.IsValid()) return;
+    //
+    //    LODGenerator generator = LODGenerator()
+    //}
 }

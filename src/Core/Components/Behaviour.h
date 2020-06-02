@@ -29,18 +29,28 @@
 #pragma once
 
 #include "Utilities/ECS/Component.h"
-#include "Core/Resources/ResourceFactory.h"
+#include "Utilities/STL/MxFunction.h"
 
 namespace MxEngine
 {
-    class MeshSource
-    {
-        MAKE_COMPONENT(MeshSource);
-        Resource<Mesh, ResourceFactory> mesh;
-    public:
-        MeshSource() = default;
-        MeshSource(Resource<Mesh, ResourceFactory> mesh) : mesh(mesh) { }
+    class MxObject;
 
-        auto GetMesh() const { return this->mesh; }
+    class Behaviour
+    {
+        MAKE_COMPONENT(Behaviour);
+
+        using TimeDelta = float;
+        using UpdateCallbackType = MxFunction<void(MxObject&, TimeDelta)>::type;
+    public:
+        UpdateCallbackType UpdateCallback;
+
+        template<typename T>
+        Behaviour(T&& object)
+        {
+            static_assert(!std::is_reference_v<T>, "passing reference to object as callback is prohibited");
+            UpdateCallback = [object = std::move(object)] (MxObject& self, TimeDelta dt) mutable { object.OnUpdate(self, dt); };
+        }
+
+        void InvokeUpdate(TimeDelta dt);
     };
 }

@@ -61,5 +61,6 @@ namespace MxEngine
 		float f_Kd = 0.6f;
 		float reflection = 0.1f;
 		float displacement = 0.025f;
+		Vector4 baseColor{ 1.0f };
 	};
 }

@@ -115,8 +115,8 @@ namespace MxEngine
 		void ToggleFaceCulling(bool value, bool counterClockWise = true, bool cullBack = true);
 		void SetAnisotropicFiltering(float value);
 		void SetViewport(int x, int y, int width, int height);
-		void DrawObject(const IDrawable& object, const CameraController& viewport, MeshRenderer* meshRenderer) const;
-		void DrawObject(const IDrawable& object, const CameraController& viewport, MeshRenderer* meshRenderer, const LightSystem& lights, const FogInformation& fog, const Skybox* skybox) const;
+		void DrawObject(const MxObject& object, const CameraController& viewport, MeshRenderer* meshRenderer) const;
+		void DrawObject(const MxObject& object, const CameraController& viewport, MeshRenderer* meshRenderer, const LightSystem& lights, const FogInformation& fog, const Skybox* skybox) const;
 		void DrawSkybox(const Skybox& skybox, const CameraController& viewport, const FogInformation& fog);
 		void DrawHDRTexture(const Texture& texture, int MSAAsamples);
 		void DrawPostProcessImage(const Texture& hdrTexture, const Texture& bloomTexture, float hdrExposure, int bloomIters, float bloomWeight);
@@ -129,9 +129,9 @@ namespace MxEngine
 		void SetBloomWeight(float weight);
 		float GetBloomWeight();
 		template<typename LightSource>
-		void DrawDepthTexture(const IDrawable& object, const LightSource& light) const;
+		void DrawDepthTexture(const MxObject& object, const LightSource& light) const;
 		template<typename PositionedLightSource>
-		void DrawDepthCubeMap(const IDrawable& object, const PositionedLightSource& light, float distance) const;
+		void DrawDepthCubeMap(const MxObject& object, const PositionedLightSource& light, float distance) const;
 		template<typename LightSource>
 		size_t GetDepthBufferSize() const;
 		template<typename LightSource>
@@ -146,7 +146,7 @@ namespace MxEngine
 	};
 
 	template<typename LightSource>
-	inline void RenderController::DrawDepthTexture(const IDrawable& object, const LightSource& light) const
+	inline void RenderController::DrawDepthTexture(const MxObject& object, const LightSource& light) const
 	{
 		if (!object.IsDrawable()) return;
 
@@ -159,22 +159,22 @@ namespace MxEngine
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
 
-			this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetTransform().GetMatrix());
+			this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetTransform()->GetMatrix());
 
 			if (object.GetInstanceCount() == 0)
 			{
-				this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetIBO(), *this->DepthTextureShader);
+				this->GetRenderEngine().DrawTriangles(renderObject.MeshData.GetVAO(), renderObject.MeshData.GetIBO(), *this->DepthTextureShader);
 			}
 			else
 			{
-				this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetIBO(), *this->DepthTextureShader, object.GetInstanceCount());
+				this->GetRenderEngine().DrawTrianglesInstanced(renderObject.MeshData.GetVAO(), renderObject.MeshData.GetIBO(), *this->DepthTextureShader, object.GetInstanceCount());
 			}
 			iterator = object.GetNext(iterator);
 		}
 	}
 
 	template<typename PositionedLightSource>
-	inline void RenderController::DrawDepthCubeMap(const IDrawable& object, const PositionedLightSource& light, float distance) const
+	inline void RenderController::DrawDepthCubeMap(const MxObject& object, const PositionedLightSource& light, float distance) const
 	{
 		if (!object.IsDrawable()) return;
 
@@ -196,15 +196,15 @@ namespace MxEngine
 		{
 			const auto& renderObject = object.GetCurrent(iterator);
 
-			this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetTransform().GetMatrix());
+			this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetTransform()->GetMatrix());
 
 			if (object.GetInstanceCount() == 0)
 			{
-				this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetIBO(), *this->DepthCubeMapShader);
+				this->GetRenderEngine().DrawTriangles(renderObject.MeshData.GetVAO(), renderObject.MeshData.GetIBO(), *this->DepthCubeMapShader);
 			}
 			else
 			{
-				this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetIBO(), *this->DepthCubeMapShader, object.GetInstanceCount());
+				this->GetRenderEngine().DrawTrianglesInstanced(renderObject.MeshData.GetVAO(), renderObject.MeshData.GetIBO(), *this->DepthCubeMapShader, object.GetInstanceCount());
 			}
 			iterator = object.GetNext(iterator);
 		}

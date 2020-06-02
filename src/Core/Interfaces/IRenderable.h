@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Core/Components/Transform/Transform.h"
+#include "Core/Components/Transform.h"
 
 namespace MxEngine
 {

@@ -49,11 +49,15 @@ namespace MxEngine
         {
             auto data = Grid::GetGridData(size);
             AABB aabb{ MakeVector3(-(float)size, -0.0001f, -(float)size), MakeVector3((float)size, 0.0001f, (float)size) };
-            this->SubmitData(MxFormat("MxGrid_{0}", size), aabb, make_view(data.first), make_view(data.second));
+            this->SubmitData(aabb, make_view(data));
         }
     private:
-        inline static std::pair<std::vector<float>, std::vector<unsigned int>> GetGridData(size_t size)
+        inline static MeshData GetGridData(size_t size)
         {
+            MeshData meshData;
+            auto& indicies = meshData.GetIndicies();
+            auto& vertecies = meshData.GetVertecies();
+
             float gridSize = float(size) / 2.0f;
             std::array vertex =
             {
@@ -69,52 +73,25 @@ namespace MxEngine
                 Vector2(size * 1.0f,        0.0f),
                 Vector2(size * 1.0f, size * 1.0f),
             };
-            constexpr std::array normal =
-            {
-                Vector3(0.0f, 1.0f, 0.0f)
-            };
             constexpr std::array face =
             {
-                VectorInt3(0, 0, 0), VectorInt3(1, 1, 0), VectorInt3(2, 2, 0),
-                VectorInt3(2, 2, 0), VectorInt3(1, 1, 0), VectorInt3(3, 3, 0),
-                VectorInt3(0, 0, 0), VectorInt3(2, 2, 0), VectorInt3(1, 1, 0),
-                VectorInt3(1, 1, 0), VectorInt3(2, 2, 0), VectorInt3(3, 3, 0),
+                VectorInt2(0, 0), VectorInt2(1, 1), VectorInt2(2, 2),
+                VectorInt2(2, 2), VectorInt2(1, 1), VectorInt2(3, 3),
+                VectorInt2(0, 0), VectorInt2(2, 2), VectorInt2(1, 1),
+                VectorInt2(1, 1), VectorInt2(2, 2), VectorInt2(3, 3),
             };
-            constexpr size_t dataSize = face.size() * AbstractPrimitive::VertexSize;
-            std::vector<float> data(dataSize);
-            std::vector<unsigned int> indicies(face.size());
 
+            indicies.resize(face.size());
+            vertecies.resize(face.size());
             for (size_t i = 0; i < face.size(); i++)
             {
-                indicies[i] = (unsigned int)i;
+                indicies[i] = static_cast<uint32_t>(i);
 
-                const Vector3& v = vertex[face[i].x];
-                data[VertexSize * i + 0] = v.x;
-                data[VertexSize * i + 1] = v.y;
-                data[VertexSize * i + 2] = v.z;
-
-                const Vector2& vt = texture[face[i].y];
-                data[VertexSize * i + 3] = vt.x;
-                data[VertexSize * i + 4] = vt.y;
-
-                const Vector3& vn = normal[face[i].z];
-                data[VertexSize * i + 5] = vn.x;
-                data[VertexSize * i + 6] = vn.y;
-                data[VertexSize * i + 7] = vn.z;
-
-                size_t tanIndex = i - i % 3;
-                auto tanbitan = ComputeTangentSpace(
-                    vertex[face[tanIndex].x],  vertex[face[tanIndex + 1].x],  vertex[face[tanIndex + 2].x],
-                    texture[face[tanIndex].y], texture[face[tanIndex + 1].y], texture[face[tanIndex + 2].y]
-                );
-                data[VertexSize * i + 8 ] = tanbitan[0].x;
-                data[VertexSize * i + 9 ] = tanbitan[0].y;
-                data[VertexSize * i + 10] = tanbitan[0].z;
-                data[VertexSize * i + 11] = tanbitan[1].x;
-                data[VertexSize * i + 12] = tanbitan[1].y;
-                data[VertexSize * i + 13] = tanbitan[1].z;
+                vertecies[i].Position = vertex[face[i].x];
+                vertecies[i].TexCoord = texture[face[i].y];
             }
-            return std::make_pair(std::move(data), std::move(indicies));
+            meshData.RegenerateNormals();
+            return meshData;
         }
 
         inline static void DrawBorder(uint8_t* data, size_t size, size_t borderSize)

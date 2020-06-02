@@ -35,6 +35,7 @@
 #include "Utilities/STL/MxHashMap.h"
 #include "Utilities/STL/MxString.h"
 #include "Utilities/STL/MxVector.h"
+#include "Core/Resources/MeshData.h"
 
 namespace MxEngine
 {
@@ -130,13 +131,13 @@ namespace MxEngine
 		*/
 		MxString name;
 		/*!
-		buffer containing all vertex data (use faces[i] * VertexSize as index to access each vertex in buffer)
+		buffer containing all vertex data
 		*/
-		MxVector<float> buffer;
+		MxVector<Vertex> vertecies;
 		/*
 		face indicies to access buffer of verteces
 		*/
-		MxVector<unsigned int> faces;		
+		MxVector<uint32_t> indicies;		
 		/*!
 		mesh material pointer (to external table passed with MeshInfo inside ObjectInfo)
 		*/
@@ -149,15 +150,11 @@ namespace MxEngine
 		has the mesh normal data (and tangent space) or not
 		*/
 		bool useNormal = false;
-		/*!
-		size of each vertex: (vec3 position, vec2 uv-coords, vec3 normal, vec3 tangent, vec3 bitangent)
-		*/
-		constexpr static size_t VertexSize = (3 + 2 + 3 + 3 + 3);
 
 		/*!
 		returns count of verteces in buffer
 		*/
-		size_t GetVertexCount() const { return this->buffer.size() / VertexSize; }
+		size_t GetVertexCount() const { return this->vertecies.size(); }
 	};
 
 	using MaterialLibrary = MxVector<MaterialInfo>;

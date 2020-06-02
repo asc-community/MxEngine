@@ -32,6 +32,7 @@
 #include "Core/Application/Application.h"
 #include "Utilities/FileSystem/FileManager.h"
 #include "Utilities/ECS/ComponentFactory.h"
+#include "Core/Resources/ResourceFactory.h"
 
 namespace MxEngine
 {
@@ -71,7 +72,9 @@ class MxEngineIOHandler:
         auto graphicPtr = reinterpret_cast<uintptr_t>(GraphicFactory::GetImpl());
         auto componentPtr = reinterpret_cast<uintptr_t>(ComponentFactory::GetImpl());
         auto mxobjectPtr = reinterpret_cast<uintptr_t>(MxObject::Factory::GetImpl());
-        auto contextInitScript = Format("mx_engine.MxEngineSetContextPointer({}, {}, {}, {}, {}, {})", ctxPtr, fileManagerPtr, uuidGenPtr, graphicPtr, componentPtr, mxobjectPtr);
+        auto resourcePtr = reinterpret_cast<uintptr_t>(ResourceFactory::GetImpl());
+        auto contextInitScript = Format("mx_engine.MxEngineSetContextPointer({}, {}, {}, {}, {}, {}, {})", 
+            ctxPtr, fileManagerPtr, uuidGenPtr, graphicPtr, componentPtr, mxobjectPtr, resourcePtr);
         this->Execute(contextInitScript.c_str());
         this->Execute("mx = mx_engine.get_context()");
     }

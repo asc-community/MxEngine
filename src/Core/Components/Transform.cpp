@@ -96,7 +96,7 @@ namespace MxEngine
         return this->eulerRotation;
     }
 
-    const Vector3& Transform::GetPosition() const
+    const Vector3& Transform::GetPosition() const //-V524
     {
         return this->translation;
     }
@@ -128,7 +128,7 @@ namespace MxEngine
         return *this;
     }
 
-    Transform& Transform::SetScale(float scale)
+    Transform& Transform::SetScale(float scale) 
     {
         return this->SetScale(MakeVector3(scale));
     }
@@ -138,7 +138,7 @@ namespace MxEngine
         return this->SetTranslation(position);
     }
 
-    Transform& Transform::Scale(float scale)
+    Transform& Transform::Scale(float scale) 
     {
         return this->Scale(MakeVector3(scale));
     }
@@ -150,17 +150,17 @@ namespace MxEngine
         return *this;
     }
 
-    Transform& Transform::ScaleX(float scale)
+    Transform& Transform::ScaleX(float scale) 
     {
         return this->Scale(MakeVector3(scale, 0.0f, 0.0f));
     }
 
-    Transform& Transform::ScaleY(float scale)
+    Transform& Transform::ScaleY(float scale) 
     {
         return this->Scale(MakeVector3(0.0f, scale, 0.0f));
     }
 
-    Transform& Transform::ScaleZ(float scale)
+    Transform& Transform::ScaleZ(float scale) 
     {
         return this->Scale(MakeVector3(0.0f, 0.0f, scale));
     }

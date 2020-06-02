@@ -28,19 +28,25 @@
 
 #pragma once
 
-#include "Utilities/ECS/Component.h"
-#include "Core/Resources/ResourceFactory.h"
+#include "MeshData.h"
 
 namespace MxEngine
 {
-    class MeshSource
-    {
-        MAKE_COMPONENT(MeshSource);
-        Resource<Mesh, ResourceFactory> mesh;
-    public:
-        MeshSource() = default;
-        MeshSource(Resource<Mesh, ResourceFactory> mesh) : mesh(mesh) { }
+	class SubMesh
+	{
+	public:
+		using MaterialId = size_t;
+		using TransformHandle = Resource<Transform, ComponentFactory>;
+	private:
+		MaterialId materialId;
+		TransformHandle transform;
+	public:
+		MeshData MeshData;
+		StringId Name = 0;
 
-        auto GetMesh() const { return this->mesh; }
-    };
+		SubMesh(size_t materiaId, const TransformHandle& transform);
+
+		TransformHandle GetTransform() const;
+		MaterialId GetMaterialId() const;
+	};
 }

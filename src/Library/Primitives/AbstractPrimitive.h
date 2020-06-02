@@ -32,78 +32,35 @@
 #include "Core/MxObject/MxObject.h"
 #include "Utilities/Array/ArrayView.h"
 #include "Core/Application/Application.h"
+#include "Core/Components/MeshSource.h"
 
 namespace MxEngine
 {
     class AbstractPrimitive : public MxObject
     {
     protected:
-        static constexpr size_t VertexSize = (3 + 2 + 3 + 3 + 3);
-
-        // submits vertex data of different LODs in format [v3 (pos), v2 (tex), v3 (norm), v3(tan), v3(bitan)] into first RenderObject on MxObject (creates or replaces existing VBO)
-        inline void SubmitData(const MxString& resourceName, const AABB& boundingBox, ArrayView<std::vector<float>> vbos, ArrayView<std::vector<unsigned int>> ibos)
+        inline void SubmitData(const AABB& boundingBox, ArrayView<MeshData> meshLODs)
         {
-            MX_ASSERT(vbos.size() == ibos.size());
+            SubMesh::MaterialId materialId = 0;
+            auto transform = ComponentFactory::CreateComponent<Transform>();
 
-            size_t lodCount = vbos.size();
-            auto materialId = 0;
-            auto transform = MakeRef<Transform>();
-            auto color = MakeRef<Vector4>(MakeVector4(1.0f));
+            auto& object = *this;
 
-            if (this->GetMesh() == nullptr)
+            auto mesh = ResourceFactory::Create<Mesh>();
+            mesh->SetAABB(boundingBox);
+            mesh->PopLastLOD();
+            for (auto& lod : meshLODs)
             {
-                auto& meshManager = Application::Get()->GetCurrentScene().GetResourceManager<Mesh>();
-                this->SetMesh(meshManager.Add(resourceName, MakeUnique<Mesh>()));
-            }
-            this->GetMesh()->SetAABB(boundingBox);
-
-            size_t lods = this->GetMesh()->GetLODCount();
-            MX_ASSERT(lods <= lodCount);
-            while (lods < lodCount)
-            {
-                this->GetMesh()->PushEmptyLOD();
-                lods++;
+                mesh->PushEmptyLOD();
+                mesh->SetLOD(mesh->GetLODCount() - 1);
+                auto& submeshes = mesh->GetSubmeshes();
+                auto& submesh = submeshes.emplace_back(materialId, transform);
+                submesh.MeshData = std::move(lod);
+                submesh.MeshData.BufferVertecies();
+                submesh.MeshData.BufferIndicies();
             }
 
-            for (size_t lod = 0; lod < lodCount; lod++)
-            {
-                // first we create VBO + VAO with data
-                auto VBO = GraphicFactory::Create<VertexBuffer>(vbos[lod].data(), vbos[lod].size(), UsageType::STATIC_DRAW);
-                auto VBL = GraphicFactory::Create<VertexBufferLayout>();
-                auto IBO = GraphicFactory::Create<IndexBuffer>(ibos[lod].data(), ibos[lod].size());
-                VBL->PushFloat(3);
-                VBL->PushFloat(2);
-                VBL->PushFloat(3);
-                VBL->PushFloat(3);
-                VBL->PushFloat(3);
-                auto VAO = GraphicFactory::Create<VertexArray>();
-                VAO->AddBuffer(*VBO, *VBL);
-
-                this->GetMesh()->SetLOD(lod);
-
-                // check if object already has mesh.If so - replace first render object VAO
-                if (!this->GetMesh()->GetRenderObjects().empty())
-                {
-                    size_t buffers = GetMesh()->GetBufferCount();
-                    for (size_t i = 0; i < buffers; i++)
-                    {
-                        VAO->AddInstancedBuffer(GetMesh()->GetBufferByIndex(i), GetMesh()->GetBufferLayoutByIndex(i));
-                    }
-                    // Note that we replace only first render object as we are working with AbstractPrimitive
-                    auto& base = this->GetMesh()->GetRenderObjects().front();
-
-                    SubMesh newBase(base.GetName(), std::move(VBO), std::move(VAO), std::move(IBO),
-                        base.GetMaterialId(), MakeRef<Transform>(base.GetTransform()), 
-                        base.UsesTexture(), base.UsesNormals(), vbos[lod].size() / VertexSize);
-                    base = std::move(newBase);
-                }
-                else
-                {
-                    SubMesh object("main", std::move(VBO), std::move(VAO), std::move(IBO),
-                        materialId, transform, true, true, vbos[lod].size() / VertexSize);
-                    this->GetMesh()->GetRenderObjects().push_back(std::move(object));
-                }
-            }
+            auto meshSource = object.AddComponent<MeshSource>(mesh);
         }
     };
 }

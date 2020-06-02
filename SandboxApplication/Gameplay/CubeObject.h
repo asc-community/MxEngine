@@ -2,23 +2,24 @@
 
 #include <MxEngine.h>
 #include <Library/Primitives/Cube.h>
-#include <Core/Components/Update.h>
+#include <Core/Components/Behaviour.h>
 
 using namespace MxEngine;
 
-void InitCube(MxObject& cube)
+struct CubeBehaviour
 {
-	cube.AddComponent<Update>([](auto& self, float dt)
+	std::vector<InstanceFactory::MxInstance> instances;
+
+	void OnUpdate(MxObject& object, float dt)
 	{
 		static float counter = 1.0f;
 		static size_t offset = 0;
+		size_t idx = 0;
 
-		auto& object = MxObject::GetByComponent(self);
-		auto& instances = object.GetInstances();
+		float maxHeight = 0.5f * (object.GetInstanceCount() - 1);
 
-		float maxHeight = 0.5f * (object.GetInstances().size() - 1);
-
-		for (size_t idx = 0; idx < instances.size(); idx++)
+		auto instances = object.GetInstances();
+		for (auto it = instances.begin(); it != instances.end(); it++, idx++)
 		{
 			int id = int(idx - offset);
 			counter += 0.0005f * dt;
@@ -30,9 +31,22 @@ void InitCube(MxObject& cube)
 
 			if (position.y > maxHeight) offset++;
 
-			instances[idx].Model.SetTranslation(position);
+			it->Model.SetTranslation(position);
 		}
-	});
+	}
+};
+
+void InitCube(MxObject& cube)
+{
+	cube.GetComponent<Transform>()->Translate(MakeVector3(0.5f, 0.0f, 0.5f));
+
+	size_t cubeCount = 100;
+	CubeBehaviour behaviour;
+	for (size_t i = 0; i < cubeCount; i++)
+	{
+		behaviour.instances.push_back(cube.Instanciate());
+	}
+	cube.AddComponent<Behaviour>(std::move(behaviour));
 }
 
 class CubeObject : public Cube
@@ -44,7 +58,5 @@ public:
 		auto context = Application::Get();
 		this->ObjectTexture = GraphicFactory::Create<Texture>(ToMxString(FileManager::GetFilePath("objects/crate/crate.jpg"_id)));
 		this->MakeInstanced(cubeCount);
-
-		this->Translate(0.5f, 0.0f, 0.5f);
 	}
 };

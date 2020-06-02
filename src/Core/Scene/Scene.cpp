@@ -29,8 +29,10 @@
 #include "Scene.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Platform/GraphicAPI.h"
+#include "Core/Components/MeshRenderer.h"
 #include "Utilities/FileSystem/FileManager.h"
 #include "Utilities/String/String.h"
+#include "Core/Components/MeshSource.h"
 
 namespace MxEngine
 {
@@ -101,21 +103,6 @@ namespace MxEngine
         this->resourceManager.Clear();
     }
 
-    MxObject& Scene::CreateObject(const MxString& name, const MxString& file)
-    {
-        MAKE_SCOPE_PROFILER("Scene::CreateObject");
-        if (this->objectManager.GetElements().find(name) != this->objectManager.GetElements().end())
-        {
-            Logger::Instance().Warning("MxEngine::Scene", "overriding already existing object: " + name);
-            this->DestroyObject(name);
-        }
-        // using Scene::LoadMesh -> path provided without scenePath
-        auto ptr = MakeUnique<MxObject>(this->LoadMesh(file));
-        auto& object = *ptr;
-        this->objectManager.Add(name, std::move(ptr));
-        return object;
-    }
-
     MxObject& Scene::AddObject(const MxString& name, UniqueRef<MxObject> object)
     {
         if (this->objectManager.Exists(name))
@@ -138,11 +125,16 @@ namespace MxEngine
             return object;
         }
         auto newObject = MakeUnique<MxObject>();
+
         auto meshRenderer = object.GetComponent<MeshRenderer>();
         if (meshRenderer.IsValid())
-            newObject->AddComponent<MeshRenderer>(meshRenderer->Materials, meshRenderer->RenderColors);
-        newObject->SetMesh(object.GetMesh());
-       
+            newObject->GetComponent<MeshRenderer>()->Materials = meshRenderer->Materials;
+
+        auto meshSource = object.GetComponent<MeshSource>();
+        if (meshSource.IsValid())
+        {
+            newObject->AddComponent<MeshSource>(meshSource->GetMesh());
+        }
         return this->AddObject(name, std::move(newObject));
     }
 

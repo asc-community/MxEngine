@@ -43,6 +43,7 @@
 #include "Utilities/Random/Random.h"
 #include "Utilities/Array/Array2D.h"
 #include "Utilities/ECS/ComponentFactory.h"
+#include "Core/Components/Components.h"
 
 /*!
 Main namespace of MxEngine framework. All classes are located here or in nested namespaces

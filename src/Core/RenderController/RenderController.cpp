@@ -28,6 +28,7 @@
 
 #include "RenderController.h"
 #include "Utilities/Format/Format.h"
+#include "Core/Components/MeshRenderer.h"
 
 namespace MxEngine
 {
@@ -98,7 +99,7 @@ namespace MxEngine
 		this->viewportSize = VectorInt2(width, height);
 	}
 
-	void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport, MeshRenderer* meshRenderer) const
+	void RenderController::DrawObject(const MxObject& object, const CameraController& viewport, MeshRenderer* meshRenderer) const
 	{
 		// probably nothing to do at all
 		if (!viewport.HasCamera()) return;
@@ -122,14 +123,10 @@ namespace MxEngine
 			size_t materialId = renderObject.GetMaterialId();
 			if (meshRenderer != nullptr && materialId < meshRenderer->Materials.size())
 			{
-				const Material& material = meshRenderer->Materials[materialId];
-
-				Vector4 submeshRenderColor = MakeVector4(1.0f);
-				if (materialId < meshRenderer->RenderColors.size())
-					submeshRenderColor = meshRenderer->RenderColors[materialId];
+				const Material& material = *meshRenderer->Materials[materialId];
 
 				#define BIND_TEX(NAME, SLOT)         \
-				if (material.NAME.IsValid())        \
+				if (material.NAME.IsValid())         \
 					material.NAME->Bind(SLOT);       \
 				else if (object.HasTexture())        \
 					object.GetTexture().Bind(SLOT);  \
@@ -143,23 +140,23 @@ namespace MxEngine
 				// setting materials
 				shader.SetUniformFloat("material.d", material.d);
 				
-				this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetTransform().GetMatrix());
-				this->GetRenderEngine().SetDefaultVertexAttribute(12, submeshRenderColor);
+				this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetTransform()->GetMatrix());
+				this->GetRenderEngine().SetDefaultVertexAttribute(12, renderColor * material.baseColor);
 
 				if (object.GetInstanceCount() == 0)
 				{
-					this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetIBO(), shader);
+					this->GetRenderEngine().DrawTriangles(renderObject.MeshData.GetVAO(), renderObject.MeshData.GetIBO(), shader);
 				}
 				else
 				{
-					this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetIBO(), shader, object.GetInstanceCount());
+					this->GetRenderEngine().DrawTrianglesInstanced(renderObject.MeshData.GetVAO(), renderObject.MeshData.GetIBO(), shader, object.GetInstanceCount());
 				}
 			}
 			iterator = object.GetNext(iterator);
 		}
 	}
 
-	void RenderController::DrawObject(const IDrawable& object, const CameraController& viewport, MeshRenderer* meshRenderer, const LightSystem& lights, const FogInformation& fog, const Skybox* skybox) const
+	void RenderController::DrawObject(const MxObject& object, const CameraController& viewport, MeshRenderer* meshRenderer, const LightSystem& lights, const FogInformation& fog, const Skybox* skybox) const
 	{
 		// probably nothing to do at all
 		if (!viewport.HasCamera()) return;
@@ -231,11 +228,7 @@ namespace MxEngine
 			size_t materialId = renderObject.GetMaterialId();
 			if (meshRenderer != nullptr && materialId < meshRenderer->Materials.size())
 			{
-				const Material& material = meshRenderer->Materials[materialId];
-
-				Vector4 submeshRenderColor = renderColor;
-				if(materialId < meshRenderer->RenderColors.size())
-					submeshRenderColor *= meshRenderer->RenderColors[materialId];
+				const Material& material = *meshRenderer->Materials[materialId];
 
 				#define BIND_TEX(NAME, SLOT)\
 				if (material.NAME.IsValid())            \
@@ -306,19 +299,19 @@ namespace MxEngine
 
 				shader.SetUniformFloat("Ka", material.f_Ka);
 				shader.SetUniformFloat("Kd", material.f_Kd);
-				shader.SetUniformVec3("displacement", object.GetTransform().GetScale() * renderObject.GetTransform().GetScale() * material.displacement);
+				shader.SetUniformVec3("displacement", object.GetTransform().GetScale() * renderObject.GetTransform()->GetScale() * material.displacement);
 
-				this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetTransform().GetMatrix());
-				this->GetRenderEngine().SetDefaultVertexAttribute(9, NormalMatrix * renderObject.GetTransform().GetNormalMatrix());
-				this->GetRenderEngine().SetDefaultVertexAttribute(12, submeshRenderColor);
+				this->GetRenderEngine().SetDefaultVertexAttribute(5, ModelMatrix * renderObject.GetTransform()->GetMatrix());
+				this->GetRenderEngine().SetDefaultVertexAttribute(9, NormalMatrix * renderObject.GetTransform()->GetNormalMatrix());
+				this->GetRenderEngine().SetDefaultVertexAttribute(12, renderColor* material.baseColor);
 
 				if (object.GetInstanceCount() == 0)
 				{
-					this->GetRenderEngine().DrawTriangles(renderObject.GetVAO(), renderObject.GetIBO(), shader);
+					this->GetRenderEngine().DrawTriangles(renderObject.MeshData.GetVAO(), renderObject.MeshData.GetIBO(), shader);
 				}
 				else
 				{
-					this->GetRenderEngine().DrawTrianglesInstanced(renderObject.GetVAO(), renderObject.GetIBO(), shader, object.GetInstanceCount());
+					this->GetRenderEngine().DrawTrianglesInstanced(renderObject.MeshData.GetVAO(), renderObject.MeshData.GetIBO(), shader, object.GetInstanceCount());
 				}
 			}
 			iterator = object.GetNext(iterator);

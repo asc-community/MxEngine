@@ -65,7 +65,7 @@ namespace MxEngine
     {
         auto filename = file.string(); // we need to transform Resources\path\to.something -> path/to.something
         std::replace_if(filename.begin(), filename.end(), [](char c) { return c == FilePath::preferred_separator; }, '/');
-        filename.erase(filename.begin(), filename.begin() + manager->root.size() + 1);
+        filename.erase(filename.begin(), filename.begin() + manager->rootPathSize + 1);
 
         auto filehash = MakeStringId(filename);
         if (manager->filetable.find(filehash) != manager->filetable.end())
@@ -86,7 +86,8 @@ namespace MxEngine
         MAKE_SCOPE_TIMER("MxEngine::FileManager", "FileManager::Init()");
         MAKE_SCOPE_PROFILER("FileManager::Init()");
 
-        manager->root = ToMxString(rootPath);
+        manager->root = rootPath;
+        manager->rootPathSize = rootPath.string().size();
         FileManager::AddDirectory(rootPath);
     }
 
@@ -98,5 +99,10 @@ namespace MxEngine
     FileManagerImpl* FileManager::GetImpl()
     {
         return manager;
+    }
+
+    FilePath& FileManager::GetRoot()
+    {
+        return manager->root;
     }
 }

@@ -41,7 +41,7 @@
 #include "Core/Interfaces/IEvent.h"
 #include "Core/Skybox/Skybox.h"
 
-#include "Library/Scripting/Script/Script.h"
+#include "Core/Components/Script.h"
 
 namespace MxEngine
 {
@@ -99,7 +99,6 @@ namespace MxEngine
         AppEventDispatcher& GetEventDispatcher();
         void Clear();
 
-        MxObject& CreateObject(const MxString& name, const MxString& filename);
         MxObject& AddObject(const MxString& name, UniqueRef<MxObject> object);
         MxObject& CopyObject(const MxString& name, const MxString& existingObject);
         MxObject& GetObject(const MxString& name) const;

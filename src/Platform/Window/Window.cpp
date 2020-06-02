@@ -168,7 +168,7 @@ namespace MxEngine
 		{
 			GraphicModule::OnWindowDestroy(this->GetNativeHandle());
 
-			glfwSetWindowShouldClose(this->window, true);
+			glfwSetWindowShouldClose(this->window, (int)true);
 			Logger::Instance().Debug("MxEngine::Window", "window closed");
 		}
 		return *this;

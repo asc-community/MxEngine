@@ -24,11 +24,16 @@
     <ClInclude Include="Core\Camera\CameraController.h" />
     <ClInclude Include="Core\Camera\OrthographicCamera.h" />
     <ClInclude Include="Core\Camera\PerspectiveCamera.h" />
-    <ClInclude Include="Core\Components\Instancing\Instancing.h" />
+    <ClInclude Include="Core\Components\Components.h" />
+    <ClInclude Include="Core\Components\InstanceFactory.h" />
+    <ClInclude Include="Core\Components\MeshLOD.h" />
     <ClInclude Include="Core\Components\MeshRenderer.h" />
     <ClInclude Include="Core\Components\MeshSource.h" />
-    <ClInclude Include="Core\Components\Transform\Transform.h" />
-    <ClInclude Include="Core\Components\Update.h" />
+    <ClInclude Include="Core\Components\Script.h" />
+    <ClInclude Include="Core\Components\Transform.h">
+      <DeploymentContent>true</DeploymentContent>
+    </ClInclude>
+    <ClInclude Include="Core\Components\Behaviour.h" />
     <ClInclude Include="Core\DebugDraw\DebugBuffer.h" />
     <ClInclude Include="Core\DebugDraw\Rectangle.h" />
     <ClInclude Include="Core\DeveloperConsole\DeveloperConsole.h" />
@@ -38,12 +43,14 @@
     <ClInclude Include="Core\Event\Events\FpsUpdateEvent.h" />
     <ClInclude Include="Core\Event\Events\UpdateEvent.h" />
     <ClInclude Include="Core\Event\Events\WindowResizeEvent.h" />
-    <ClInclude Include="Core\Interfaces\IComponent.h" />
     <ClInclude Include="Core\Lighting\DirectionalLight\DirectionalLight.h" />
     <ClInclude Include="Core\Lighting\PointLight\PointLight.h" />
     <ClInclude Include="Core\Lighting\SpotLight\SpotLight.h" />
     <ClInclude Include="Core\Macro\Macro.h" />
     <ClInclude Include="Core\MxObject\Mesh.h" />
+    <ClInclude Include="Core\Resources\MeshData.h" />
+    <ClInclude Include="Core\Resources\ResourceFactory.h" />
+    <ClInclude Include="Core\Resources\SubMesh.h" />
     <ClInclude Include="Core\Skybox\Skybox.h" />
     <ClInclude Include="Library\Bindings\ShaderBinding.h" />
     <ClInclude Include="Library\Primitives\Surface.h" />
@@ -66,7 +73,6 @@
     <ClInclude Include="Utilities\Memory\StackAllocator.h" />
     <ClInclude Include="Utilities\ResourceStorage\ResourceStorage.h" />
     <ClInclude Include="Core\Scene\Scene.h" />
-    <ClInclude Include="Library\Scripting\Script\Script.h" />
     <ClInclude Include="Utilities\Array\Array2D.h" />
     <ClInclude Include="Utilities\Array\ArrayView.h" />
     <ClInclude Include="Utilities\Counter\Counter.h" />
@@ -361,7 +367,10 @@
     <ClCompile Include="Core\Camera\OrthographicCamera.cpp" />
     <ClCompile Include="Core\Camera\PerspectiveCamera.cpp" />
     <ClCompile Include="Core\Application\Application.cpp" />
-    <ClCompile Include="Core\Components\Transform\Transform.cpp" />
+    <ClCompile Include="Core\Components\MeshLOD.cpp" />
+    <ClCompile Include="Core\Components\Script.cpp" />
+    <ClCompile Include="Core\Components\Transform.cpp" />
+    <ClCompile Include="Core\Components\Behaviour.cpp" />
     <ClCompile Include="Core\DebugDraw\DebugBuffer.cpp" />
     <ClCompile Include="Core\DebugDraw\Rectangle.cpp" />
     <ClCompile Include="Core\DeveloperConsole\DeveloperConsole.cpp" />
@@ -371,11 +380,12 @@
     <ClCompile Include="Core\MxObject\MxObject.cpp" />
     <ClCompile Include="Core\MxObject\Mesh.cpp" />
     <ClCompile Include="Core\RenderController\RenderController.cpp" />
+    <ClCompile Include="Core\Resources\MeshData.cpp" />
+    <ClCompile Include="Core\Resources\SubMesh.cpp" />
     <ClCompile Include="Core\Scene\Scene.cpp" />
     <ClCompile Include="Core\Skybox\Skybox.cpp" />
     <ClCompile Include="Library\Primitives\Sphere.cpp" />
     <ClCompile Include="Library\Scripting\Python\PythonEngine.cpp" />
-    <ClCompile Include="Library\Scripting\Script\Script.cpp" />
     <ClCompile Include="Platform\OpenGL\CubeMap.cpp" />
     <ClCompile Include="Platform\OpenGL\FrameBuffer.cpp" />
     <ClCompile Include="Platform\Modules\GraphicModule.cpp" />

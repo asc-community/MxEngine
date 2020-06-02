@@ -22,6 +22,17 @@
     <Item Name="[uuid]">*(boost::uuids::uuid*)&amp;uuidImpl</Item>
   </Expand>
 </Type>
+
+<Type Name="MxEngine::Resource&lt;*, *&gt;">
+<DisplayString Condition="handle == InvalidHandle">[empty]</DisplayString>
+<DisplayString Condition="handle != InvalidHandle">{{ resource={_resourcePtr->value} }}</DisplayString>
+  <Expand>
+    <Item Name="[uuid]">uuid</Item>
+    <Item Name="[handle]">handle</Item>
+    <Item Name="[value]">_resourcePtr->value</Item>
+    <Item Name="[free]">handle == InvalidHandle</Item>
+  </Expand>
+</Type>
   
 <Type Name="MxEngine::PoolAllocator&lt;*&gt;::Block">
 	<DisplayString Condition="(next &amp; ~LastBit) == InvalidOffset">{{ data={data}, next=-1, free={!(bool)(next &amp; LastBit)} }}</DisplayString>

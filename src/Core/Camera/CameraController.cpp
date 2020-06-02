@@ -117,7 +117,7 @@ namespace MxEngine
 		this->rotateSpeed = speed;
 	}
 
-	void CameraController::SetZoom(float zoom)
+	void CameraController::SetZoom(float zoom) 
 	{
 		this->camera->SetZoom(zoom);
 	}
@@ -223,7 +223,7 @@ namespace MxEngine
 		return this->forward;
 	}
 
-	const Vector3& CameraController::GetUpVector() const
+	const Vector3& CameraController::GetUpVector() const //-V524
 	{
 		return this->up;
 	}

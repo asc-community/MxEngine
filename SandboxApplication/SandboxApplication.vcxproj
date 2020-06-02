@@ -188,6 +188,7 @@
   <ItemGroup>
     <ClCompile Include="Sandbox.cpp" />
     <ClInclude Include="Gameplay\CubeObject.h" />
+    <ClInclude Include="Gameplay\GridObject.h" />
     <ClInclude Include="Gameplay\SandboxScene.h" />
     <ClInclude Include="Gameplay\SphereObject.h" />
     <ClInclude Include="Sandbox.h" />
@@ -216,7 +217,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\scripts\init.py" />
-    <None Include="Resources\scripts\load.py" />
     <None Include="Resources\scripts\update.py" />
   </ItemGroup>
   <ItemGroup>

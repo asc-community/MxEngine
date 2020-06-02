@@ -33,7 +33,7 @@
 #include "Core/Lighting/SpotLight/SpotLight.h"
 #include "Library/Primitives/Cube.h"
 
-#include "Core/Components/Update.h"
+#include "Core/Components/Behaviour.h"
 
 namespace MxEngine
 {
@@ -47,25 +47,30 @@ namespace MxEngine
 		inline LightObject(const Container& container, size_t id)
 			: container(container), id(id)
 		{
-			this->ObjectTransform.Scale(0.25f);
+			this->GetTransform().Scale(0.25f);
 
-			this->AddComponent<Update>([](auto& self, float dt)
+			struct LightBehaviour
 			{
-				auto& object = (LightObject<LightType>&)MxObject::GetByComponent(self);
-				if (object.id < object.container.GetCount())
+				void OnUpdate(MxObject& self, float dt)
 				{
-					object.Show();
-					const auto& light = object.container[object.id];
-					object.ObjectTransform.SetTranslation(light.Position);
+					auto& object = (LightObject<LightType>&)self;
+					if (object.id < object.container.GetCount())
+					{
+						object.Show();
+						const auto& light = object.container[object.id];
+						object.GetTransform().SetTranslation(light.Position);
 
-					auto& material = object.GetComponent<MeshRenderer>()->GetMaterial();
-					material.Ke = light.AmbientColor + light.DiffuseColor;
+						auto material = object.GetComponent<MeshRenderer>()->GetMaterial();
+						material->Ke = light.AmbientColor + light.DiffuseColor;
+					}
+					else
+					{
+						object.Hide();
+					}
 				}
-				else
-				{
-					object.Hide();
-				}
-			});
+			};
+
+			this->AddComponent<Behaviour>(LightBehaviour{ });
 		}
 	};
 

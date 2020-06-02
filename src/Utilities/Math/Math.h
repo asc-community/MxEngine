@@ -604,6 +604,14 @@ namespace MxEngine
 		return { tangent, bitangent };
 	}
 
+	inline Vector3 ComputeNormal(const Vector3& v1, const Vector3& v2, const Vector3& v3)
+	{
+		auto deltaPos1 = v2 - v1;
+		auto deltaPos2 = v3 - v1;
+
+		return Normalize(Cross(deltaPos1, deltaPos2));
+	}
+
 	/*!
 	creates rotation matrix from rottion angles applied as one-by-one
 	\param xRot first  rotation applied around x-axis

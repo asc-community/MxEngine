@@ -58,12 +58,12 @@ namespace MxEngine
             Vector3Cmp::Threshold = threshold;
             MxMap<Vector3, size_t, Vector3Cmp> vertecies;
         
-            for (size_t i = 0; i < mesh.faces.size(); i += 3)
+            for (size_t i = 0; i < mesh.indicies.size(); i += 3)
             {
                 std::array<size_t, 3> triangle = {
-                    mesh.faces[i + 0],
-                    mesh.faces[i + 1],
-                    mesh.faces[i + 2],
+                    mesh.indicies[i + 0],
+                    mesh.indicies[i + 1],
+                    mesh.indicies[i + 2],
                 };
 
                 for (size_t I = 0; I < 3; I++)
@@ -79,7 +79,7 @@ namespace MxEngine
     size_t LODGenerator::CollapseDublicate(MxMap<Vector3, size_t, Vector3Cmp>& vertecies, size_t meshId, size_t f)
     {
         const auto& mesh = this->objectLOD.meshes[meshId];
-        const Vector3& Vf = *reinterpret_cast<const Vector3*>(mesh.buffer.data() + f * mesh.VertexSize + 0);
+        const Vector3& Vf = mesh.vertecies[f].Position;
 
         auto it = vertecies.find(Vf);
         if (it == vertecies.end())
@@ -98,7 +98,7 @@ namespace MxEngine
         ObjectInfo result;
 
         threshold = Clamp(threshold, 0.0f, 1.0f);
-        if (threshold == 0.0f)
+        if (threshold == 0.0f) //-V550
         {
             result = this->objectLOD;
             return std::move(result);
@@ -125,20 +125,20 @@ namespace MxEngine
 
             constexpr size_t Invalid = std::numeric_limits<size_t>::max();
             // collapse vertecies. If triangle has pair of equal verticies - ignore it
-            mesh.faces.reserve(oldMesh.faces.size());
-            for (size_t f = 0; f < oldMesh.faces.size(); f += 3)
+            mesh.indicies.reserve(oldMesh.indicies.size());
+            for (size_t f = 0; f < oldMesh.indicies.size(); f += 3)
             {
                 size_t triangle[] = 
                 {
-                    meshProjection[oldMesh.faces[f + 0]],
-                    meshProjection[oldMesh.faces[f + 1]],
-                    meshProjection[oldMesh.faces[f + 2]],
+                    meshProjection[oldMesh.indicies[f + 0]],
+                    meshProjection[oldMesh.indicies[f + 1]],
+                    meshProjection[oldMesh.indicies[f + 2]],
                 };
                 if (((triangle[0] != triangle[1]) && (triangle[1] != triangle[2]) && (triangle[2] != triangle[0]))
                     && (triangle[0] != Invalid && triangle[1] != Invalid && triangle[2] != Invalid))
                 {
                     for (size_t F = 0; F < 3; F++) 
-                        mesh.faces.push_back((unsigned int)triangle[F]);
+                        mesh.indicies.push_back((unsigned int)triangle[F]);
                 }
             }       
 
@@ -147,16 +147,12 @@ namespace MxEngine
             std::vector<size_t> indexTable;
             indexTable.assign(meshProjection.size(), NotExists);
             size_t lastId = 0;
-            mesh.buffer.reserve(oldMesh.buffer.size());
-            for(auto& f : mesh.faces)
+            mesh.vertecies.reserve(oldMesh.vertecies.size());
+            for(auto& f : mesh.indicies)
             {
                 if (indexTable[f] == NotExists)
                 {
-                    auto V = MakeVector3(0.0f);
-                    auto T = MakeVector2(0.0f);
-                    auto N = MakeVector3(0.0f);
-                    auto U = MakeVector3(0.0f);
-                    auto B = MakeVector3(0.0f);
+                    auto& newVertex = mesh.vertecies.emplace_back();
 
                     size_t total = 0;
                     for (const auto& [face, count] : meshWeights[f])
@@ -165,39 +161,20 @@ namespace MxEngine
                     for (const auto& [face, count] : meshWeights[f])
                     {
                         float weight = (float)count / (float)total;
-                        const Vector3& Vf = *reinterpret_cast<const Vector3*>(oldMesh.buffer.data() + face * oldMesh.VertexSize + 0);
-                        const Vector2& Tf = *reinterpret_cast<const Vector3*>(oldMesh.buffer.data() + face * oldMesh.VertexSize + 3);
-                        const Vector3& Nf = *reinterpret_cast<const Vector3*>(oldMesh.buffer.data() + face * oldMesh.VertexSize + 5);
-                        const Vector3& Uf = *reinterpret_cast<const Vector3*>(oldMesh.buffer.data() + face * oldMesh.VertexSize + 8);
-                        const Vector3& Bf = *reinterpret_cast<const Vector3*>(oldMesh.buffer.data() + face * oldMesh.VertexSize + 11);
-                        V += weight * Vf;
-                        T += weight * Tf;
-                        N += weight * Nf;
-                        U += weight * Uf;
-                        B += weight * Bf;
-                    }
-
-                    mesh.buffer.push_back(V.x);
-                    mesh.buffer.push_back(V.y);
-                    mesh.buffer.push_back(V.z);
-                    mesh.buffer.push_back(T.x);
-                    mesh.buffer.push_back(T.y);
-                    mesh.buffer.push_back(N.x);
-                    mesh.buffer.push_back(N.y);
-                    mesh.buffer.push_back(N.z);
-                    mesh.buffer.push_back(U.x);
-                    mesh.buffer.push_back(U.y);
-                    mesh.buffer.push_back(U.z);
-                    mesh.buffer.push_back(B.x);
-                    mesh.buffer.push_back(B.y);
-                    mesh.buffer.push_back(B.z);
+                        const auto& oldVertex = oldMesh.vertecies[face];
+                        newVertex.Position   += weight * oldVertex.Position;
+                        newVertex.TexCoord   += weight * oldVertex.TexCoord;
+                        newVertex.Normal     += weight * oldVertex.Normal;
+                        newVertex.Tangent    += weight * oldVertex.Tangent;
+                        newVertex.Bitangent  += weight * oldVertex.Bitangent;
+                    }                        
                     indexTable[f] = lastId++;
                 }
                 f = (unsigned int)indexTable[f];
             }
 
-            mesh.faces.shrink_to_fit();
-            mesh.buffer.shrink_to_fit();
+            mesh.indicies.shrink_to_fit();
+            mesh.vertecies.shrink_to_fit();
         }
         return std::move(result);
     }

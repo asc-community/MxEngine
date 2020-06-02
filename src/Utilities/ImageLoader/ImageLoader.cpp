@@ -77,8 +77,8 @@ namespace MxEngine
 		ImageArray result;
 		size_t channels = 3; 
 		size_t width = image.width / 4;
-		size_t height = width;
-		if (image.width / 4 != image.height / 3)
+		size_t height = image.height / 3;
+		if (width != height)
 		{
 			Logger::Instance().Warning("MxEngine::ImageLoader", "image size is invalid, it will be reduced to fit skybox cubemap");
 			width = height = FloorToPow2(std::min(image.width / 4, image.height / 3));

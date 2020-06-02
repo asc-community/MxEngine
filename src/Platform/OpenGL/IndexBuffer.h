@@ -51,7 +51,7 @@ namespace MxEngine
 		BindableId GetNativeHandle() const;
 		void Bind() const;
 		void Unbind() const;
-		void Load(const IndexType* data, size_t count);
+		void Load(const IndexType* data, size_t sizeInInts);
 		size_t GetCount() const;
 		size_t GetIndexTypeId() const;
 	};

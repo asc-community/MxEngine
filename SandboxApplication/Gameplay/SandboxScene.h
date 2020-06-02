@@ -17,13 +17,19 @@ class SandboxScene : public Scene
 		InitCube(cube);
 
         auto& sphere = this->AddObject("Sphere", MakeUnique<SphereObject>());
+		InitSphere(sphere);
+
 		auto& grid = this->AddObject("Grid", MakeUnique<Grid>(2000));
+		InitGrid(grid);
 
-        auto& arc = this->AddObject("Arc170", MakeUnique<Arc170Object>());
-		InitArc(arc);
+        //auto& arc = this->AddObject("Arc170", MakeUnique<MxObject>());
+		//InitArc(arc);
 
-        // this->AddObject("Destroyer", MakeUnique<DestroyerObject>());
-        // this->AddObject("DeathStar", MakeUnique<DeathStarObject>());
+		// auto& deathStar = this->AddObject("DeathStar", MakeUnique<MxObject>());
+		// InitDeathStar(deathStar);
+
+		// auto& destroyer = this->AddObject("Destroyer", MakeUnique<MxObject>());
+		// InitDestroyer(destroyer);
 		
 		auto& surface = (Surface&)this->AddObject("Surface", MakeUnique<Surface>());
 		surface.SetSurface([](float x, float y) 
@@ -33,16 +39,8 @@ class SandboxScene : public Scene
 		surface.Scale(10.0f, 2.0f, 10.0f);
 		surface.Translate(10.0f, 3.0f, 10.0f);
 
-		grid.Scale(3.0f, 3.0f, 3.0f);
-		grid.ObjectTexture = GraphicFactory::Create<Texture>(ToMxString(FileManager::GetFilePath("textures/brick.jpg"_id)));
-		auto& material = grid.GetComponent<MeshRenderer>()->GetMaterial();
-		material.map_normal = GraphicFactory::Create<Texture>(ToMxString(FileManager::GetFilePath("textures/brick_normal.jpg"_id)));
-		
-        this->LoadScript("scripts/init.py");
-        this->LoadScript("scripts/update.py");
-        this->LoadScript("scripts/load.py");
-
-        Application::Get()->ExecuteScript(*this->GetResource<Script>("scripts/init.py"));
+		Script initScript(FileManager::GetFilePath("scripts/init.py"_id));
+        Application::Get()->ExecuteScript(initScript);
 
 		this->SceneSkybox = MakeUnique<Skybox>();
 		this->SceneSkybox->SkyboxTexture = GraphicFactory::Create<CubeMap>(ToMxString(FileManager::GetFilePath("textures/dawn.jpg"_id)));
@@ -89,7 +87,6 @@ class SandboxScene : public Scene
 			.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT)
 			.BindRotation();
 
-		Application::Get()->ExecuteScript(*this->GetResource<Script>("scripts/load.py"));
 		LightBinding(this->PointLights).BindAll();
 		LightBinding(this->SpotLights).BindAll();
 	}
@@ -101,6 +98,6 @@ class SandboxScene : public Scene
 
     virtual void OnUpdate() override
     {
-		Application::Get()->ExecuteScript(*this->GetResource<Script>("scripts/update.py"));
+		
     }
 };

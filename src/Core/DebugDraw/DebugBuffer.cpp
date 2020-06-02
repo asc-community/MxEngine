@@ -104,7 +104,7 @@ namespace MxEngine
             {
                 if (i != 0)
                 {
-                    linesData.push_back(vertecies[idx1]);
+                    linesData.push_back(vertecies[idx1]); //-V525
                     linesData.push_back(vertecies[idx2]);
                     linesData.push_back(vertecies[idx2]);
                     linesData.push_back(vertecies[idx1 + 1]);
@@ -116,7 +116,7 @@ namespace MxEngine
                     linesData.push_back(vertecies[idx1 + 1]);
                     linesData.push_back(vertecies[idx2]);
                     linesData.push_back(vertecies[idx2]);
-                    linesData.push_back(vertecies[idx2 + 1]);
+                    linesData.push_back(vertecies[idx2 + 1]); //-V525
                     linesData.push_back(vertecies[idx2 + 1]);
                     linesData.push_back(vertecies[idx1 + 1]);
                 }

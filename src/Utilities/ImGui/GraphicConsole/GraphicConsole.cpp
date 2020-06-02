@@ -178,7 +178,7 @@ namespace MxEngine
 
 	void GraphicConsole::SetEventCallback(EventCallback&& callback)
 	{
-		this->eventCallback = callback;
+		this->eventCallback = std::forward<EventCallback>(callback);
 	}
 
 	void GraphicConsole::PrintHistory()

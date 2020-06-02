@@ -40,16 +40,16 @@ namespace MxEngine
 
         inline Cube()
         {
-            auto resourceName = MxFormat(FMT_STRING("MxCube_{0}"), Application::Get()->GenerateResourceId());
             auto data = Cube::GetCubeData();
             AABB aabb { MakeVector3(-0.5f), MakeVector3(0.5f) };
-            this->SubmitData(std::move(resourceName), aabb, make_view(data.first), make_view(data.second));
+            this->SubmitData(aabb, make_view(data));
         }
 
     private:
-        static std::pair<std::vector<float>, std::vector<unsigned int>> GetCubeData()
+        static MeshData GetCubeData()
         {
-            constexpr std::array vertex =
+            MeshData meshData;
+            constexpr std::array position =
             {
                 Vector3(-0.5f, -0.5f, -0.5f),
                 Vector3(-0.5f, -0.5f,  0.5f),
@@ -91,41 +91,30 @@ namespace MxEngine
                 VectorInt3(6, 0, 5), VectorInt3(2, 2, 5), VectorInt3(3, 3, 5),
                 VectorInt3(3, 3, 5), VectorInt3(7, 1, 5), VectorInt3(6, 0, 5),
             };
-            constexpr size_t dataSize = face.size() * AbstractPrimitive::VertexSize;
-            std::vector<float> data(dataSize); 
-            std::vector<unsigned int> indicies(face.size()); 
+            
+            auto& indicies = meshData.GetIndicies();
+            auto& vertecies = meshData.GetVertecies();
 
+            indicies.resize(face.size());
             for (size_t i = 0; i < face.size(); i++)
             {
                 indicies[i] = (unsigned int)i;
+                
+                auto& vertex = vertecies.emplace_back();
 
-                const Vector3& v = vertex[face[i].x];
-                data[VertexSize * i + 0] = v.x;
-                data[VertexSize * i + 1] = v.y;
-                data[VertexSize * i + 2] = v.z;
-
-                const Vector2& vt = texture[face[i].y];
-                data[VertexSize * i + 3] = vt.x;
-                data[VertexSize * i + 4] = vt.y;
-
-                const Vector3& vn = normal[face[i].z];
-                data[VertexSize * i + 5] = vn.x;
-                data[VertexSize * i + 6] = vn.y;
-                data[VertexSize * i + 7] = vn.z;
+                vertex.Position = position[face[i].x];
+                vertex.TexCoord = texture[face[i].y];
+                vertex.Normal   = normal[face[i].z];
 
                 size_t tanIndex = i - i % 3;
                 auto tanbitan = ComputeTangentSpace(
-                    vertex[face[tanIndex].x],  vertex[face[tanIndex + 1].x],  vertex[face[tanIndex + 2].x],
-                    texture[face[tanIndex].y], texture[face[tanIndex + 1].y], texture[face[tanIndex + 2].y]
+                    position[face[tanIndex].x], position[face[tanIndex + 1].x], position[face[tanIndex + 2].x],
+                     texture[face[tanIndex].y],  texture[face[tanIndex + 1].y],  texture[face[tanIndex + 2].y]
                 );
-                data[VertexSize * i +  8] = tanbitan[0].x;
-                data[VertexSize * i +  9] = tanbitan[0].y;
-                data[VertexSize * i + 10] = tanbitan[0].z;
-                data[VertexSize * i + 11] = tanbitan[1].x;
-                data[VertexSize * i + 12] = tanbitan[1].y;
-                data[VertexSize * i + 13] = tanbitan[1].z;
+                vertex.Tangent   = tanbitan[0];
+                vertex.Bitangent = tanbitan[1];
             }
-            return std::make_pair(std::move(data), std::move(indicies));
+            return meshData;
         }
     };
 }

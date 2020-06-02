@@ -86,7 +86,7 @@ namespace MxEngine::GUI
 				{
 					bufferSize = (int)FloorToPow2((size_t)Clamp(bufferSize, 1, 1 << 16));
 					context->GetRenderer().SetDepthBufferSize<PointLight>(bufferSize);
-					int bufferSize = (int)context->GetRenderer().GetDepthBufferSize<PointLight>();
+					bufferSize = (int)context->GetRenderer().GetDepthBufferSize<PointLight>();
 				}
 
 				auto& pointLight = scene.PointLights[i];

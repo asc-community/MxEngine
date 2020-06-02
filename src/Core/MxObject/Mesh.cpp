@@ -32,14 +32,17 @@
 #include "Platform/GraphicAPI.h"
 #include "Utilities/LODGenerator/LODGenerator.h"
 #include "Utilities/Format/Format.h"
+#include "Core/Resources/ResourceFactory.h"
+#include "Core/Components/MeshRenderer.h"
 
 #include <algorithm>
 
 namespace MxEngine
 {
-	Material ConvertMaterial(const MaterialInfo& mat, MxHashMap<StringId, GResource<Texture>>& textures)
+	Resource<Material, ResourceFactory> ConvertMaterial(const MaterialInfo& mat, MxHashMap<StringId, GResource<Texture>>& textures)
 	{
-		Material material;
+		auto materialResource = ResourceFactory::Create<Material>();
+		auto& material = *materialResource;
 
 		#define MAKE_TEX(tex) if(!mat.tex.empty()) {\
 			auto id = MakeStringId(mat.tex);\
@@ -65,9 +68,9 @@ namespace MxEngine
 		material.Ni    = mat.Ni;
 		material.d     = mat.d;
 
-		if (material.Ns == 0.0f) material.Ns = 128.0f; // bad as pow(0.0, 0.0) -> NaN
+		if (material.Ns == 0.0f) material.Ns = 128.0f; // bad as pow(0.0, 0.0) -> NaN //-V550
 
-		return material;
+		return materialResource;
 	}
 
 	void Mesh::LoadFromFile(const MxString& filepath, MeshRenderer* meshRenderer)
@@ -75,23 +78,23 @@ namespace MxEngine
 		ObjectInfo objectInfo = ObjectLoader::Load(filepath);
 		this->boundingBox = objectInfo.boundingBox;
 
-		MxVector<Ref<Transform>> submeshTransforms;
+		MxVector<SubMesh::TransformHandle> submeshTransforms;
 		MxVector<size_t> materialIds(objectInfo.meshes.size(), 0);
 
 		for (const auto& group : objectInfo.meshes)
 		{
-			submeshTransforms.push_back(MakeRef<Transform>());
+			submeshTransforms.push_back(ComponentFactory::CreateComponent<Transform>());
 		}
 
 		if (meshRenderer != nullptr)
 		{
 			MxHashMap<StringId, GResource<Texture>> textures;
 			materialIds.resize(0); // clear ids to fill them with meaningful values
-			meshRenderer->Materials.reserve(objectInfo.materials.size());
+			meshRenderer->Materials.resize(objectInfo.materials.size());
 
-			for (const auto& material : objectInfo.materials)
+			for (size_t i = 0; i < objectInfo.materials.size(); i++)
 			{
-				meshRenderer->Materials.push_back(ConvertMaterial(material, textures));
+				meshRenderer->Materials[i] = ConvertMaterial(objectInfo.materials[i], textures);
 			}
 
 			for (const auto& group : objectInfo.meshes)
@@ -119,7 +122,7 @@ namespace MxEngine
 				size_t vertecies = 0;
 				for (const auto& mesh : LODdata.back().meshes)
 				{
-					vertecies += mesh.faces.size();
+					vertecies += mesh.indicies.size();
 				}
 				Logger::Instance().Debug("MxEngine::LODGenerator", MxFormat("LOD[{0}]: vertecies = {1}", factor + 1, vertecies));
 				#endif
@@ -135,55 +138,38 @@ namespace MxEngine
 			auto& meshes = this->LODs.emplace_back();
 			for (size_t i = 0; i < lod.meshes.size(); i++)
 			{
-				const auto& mesh = lod.meshes[i];
-				auto materialId = materialIds[i];
+				auto& meshData = lod.meshes[i];
+				auto& materialId = materialIds[i];
 				auto& transform = submeshTransforms[i];
 
-				auto VBO = GraphicFactory::Create<VertexBuffer>(mesh.buffer.data(), mesh.buffer.size(), UsageType::STATIC_DRAW);
-				auto IBO = GraphicFactory::Create<IndexBuffer>(mesh.faces.data(), mesh.faces.size());
-				auto VAO = GraphicFactory::Create<VertexArray>();
-				auto VBL = GraphicFactory::Create<VertexBufferLayout>();
+				SubMesh submesh(materialId, transform);
+				submesh.MeshData.GetVertecies() = std::move(meshData.vertecies);
+				submesh.MeshData.GetIndicies() = std::move(meshData.indicies);
+				submesh.MeshData.BufferVertecies();
+				submesh.MeshData.BufferIndicies();
+				submesh.Name = MakeStringId(meshData.name);
 
-				VBL->PushFloat(3);
-				if (mesh.useTexture)
-				{
-					VBL->PushFloat(2);
-				}
-				if (mesh.useNormal)
-				{
-					VBL->PushFloat(3); // normal
-					VBL->PushFloat(3); // tangent
-					VBL->PushFloat(3); // bitangent
-				}
-				VAO->AddBuffer(*VBO, *VBL);
-
-				SubMesh object(std::move(mesh.name), std::move(VBO), std::move(VAO), std::move(IBO), 
-					materialId, transform,
-					mesh.useTexture, mesh.useNormal, mesh.buffer.size());
-				meshes.push_back(std::move(object));
-				if (!mesh.useTexture)
-				{
-					Logger::Instance().Warning("MxEngine::MxObject", "object file does not have texture data: " + filepath);
-				}
-				if (!mesh.useNormal)
-				{
-					Logger::Instance().Warning("MxEngine::MxObject", "object file does not have normal data: " + filepath);
-				}
+				meshes.push_back(std::move(submesh));
 			}
 		}
 	}
+
+    Mesh::Mesh(const FilePath& path, MeshRenderer* meshRenderer)
+    {
+		this->LoadFromFile(ToMxString(path), meshRenderer);
+    }
 
 	void Mesh::Load(const MxString& filepath, MeshRenderer* meshRenderer)
 	{
 		this->LoadFromFile(filepath, meshRenderer);
 	}
 
-	std::vector<SubMesh>& Mesh::GetRenderObjects()
+	Mesh::LOD& Mesh::GetSubmeshes()
 	{
 		return this->LODs[this->currentLOD];
 	}
 
-	const std::vector<SubMesh>& Mesh::GetRenderObjects() const
+	const Mesh::LOD& Mesh::GetSubmeshes() const
 	{
 		return this->LODs[this->currentLOD];
 	}
@@ -195,7 +181,8 @@ namespace MxEngine
 
 	void Mesh::PopLastLOD()
 	{
-		this->LODs.pop_back();
+		if(!this->LODs.empty())
+			this->LODs.pop_back();
 	}
 
 	void Mesh::SetLOD(size_t LOD)
@@ -223,121 +210,6 @@ namespace MxEngine
 		this->boundingBox = boundingBox;
 	}
 
-	void SubMesh::GenerateMeshIndicies() const
-	{
-		std::vector<IndexBuffer::IndexType> indicies;
-		indicies.reserve(this->vertexBufferSize * 3);
-		for (int i = 0; i < this->vertexBufferSize; i += 3)
-		{
-			indicies.push_back(i + 0);
-			indicies.push_back(i + 1);
-			indicies.push_back(i + 1);
-			indicies.push_back(i + 2);
-			indicies.push_back(i + 2);
-			indicies.push_back(i + 0);
-		}
-		this->meshIBO = GraphicFactory::Create<IndexBuffer>(indicies.data(), indicies.size());
-		this->meshGenerated = true;
-	}
-
-    SubMesh::SubMesh(MxString name, GResource<VertexBuffer> VBO, GResource<VertexArray> VAO, GResource<IndexBuffer> IBO, size_t materialId, Ref<Transform> transform, bool useTexture, bool useNormal, size_t sizeInFloats)
-    {
-		this->name = std::move(name);
-		this->VBO = std::move(VBO);
-		this->VAO = std::move(VAO);
-		this->IBO = std::move(IBO);
-		this->materialId = materialId;
-		this->transform = std::move(transform);
-		this->useTexture = useTexture;
-		this->useNormal = useTexture;
-		this->vertexBufferSize = sizeInFloats;
-    }
-
-    SubMesh::SubMesh(SubMesh&& other) noexcept
-    {
-		this->useTexture = other.useTexture;
-		this->useNormal = other.useNormal;
-		this->meshGenerated = other.meshGenerated;
-		this->meshIBO = std::move(other.meshIBO);
-		this->VBO = std::move(other.VBO);
-		this->VAO = std::move(other.VAO);
-		this->IBO = std::move(other.IBO);
-		this-> vertexBufferSize = other.vertexBufferSize;
-		this->materialId = other.materialId;
-		this->transform = std::move(other.transform);
-		this->name = std::move(other.name);
-    }
-
-	SubMesh& SubMesh::operator=(SubMesh&& other) noexcept
-	{
-		this->useTexture = other.useTexture;
-		this->useNormal = other.useNormal;
-		this->meshGenerated = other.meshGenerated;
-		this->meshIBO = std::move(other.meshIBO);
-		this->VBO = std::move(other.VBO);
-		this->VAO = std::move(other.VAO);
-		this->IBO = std::move(other.IBO);
-		this->vertexBufferSize = other.vertexBufferSize;
-		this->materialId = other.materialId;
-		this->transform = std::move(other.transform);
-		this->name = std::move(other.name);
-
-		return *this;
-	}
-
-	const VertexArray& SubMesh::GetVAO() const
-	{
-		MX_ASSERT(this->VBO.IsValid());
-		return *this->VAO;
-	}
-
-	const IndexBuffer& SubMesh::GetIBO() const
-	{
-		MX_ASSERT(this->IBO.IsValid());
-		return *this->IBO;
-	}
-
-	const IndexBuffer& SubMesh::GetMeshIBO() const
-	{
-		if (!this->meshGenerated) GenerateMeshIndicies();
-		return *this->meshIBO;
-	}
-
-	size_t SubMesh::GetMaterialId() const
-	{
-		return this->materialId;
-	}
-
-	const MxString& SubMesh::GetName() const
-	{
-		return name;
-	}
-
-    bool SubMesh::UsesTexture() const
-    {
-		return this->useTexture;
-    }
-
-	bool SubMesh::UsesNormals() const
-	{
-		return this->useNormal;
-	}
-
-	const Transform& SubMesh::GetTransform() const
-	{
-		return *this->transform;
-	}
-
-	Transform& SubMesh::GetTransform()
-	{
-		return *this->transform;
-	}
-
-	size_t SubMesh::GetVertexBufferSize() const
-	{
-		return this->vertexBufferSize;
-	}
-
 	void Mesh::AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl)
 	{
 		this->VBOs.push_back(std::move(vbo));
@@ -346,7 +218,7 @@ namespace MxEngine
 		{
 			for (auto& mesh : meshes)
 			{
-				mesh.VAO->AddInstancedBuffer(*this->VBOs.back(), *this->VBLs.back());
+				mesh.MeshData.GetVAO().AddInstancedBuffer(*this->VBOs.back(), *this->VBLs.back());
 			}
 		}
 	}

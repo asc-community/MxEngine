@@ -18,10 +18,10 @@ public:
 		this->ObjectTexture = Colors::MakeTexture(Colors::RED);
 		this->MakeInstanced(count);
 
-		auto& instances = this->GetInstances();
-		for (size_t i = 0; i < instances.size(); i++)
+		auto instances = this->GetInstances();
+		for (auto it = instances.begin(); it != instances.end(); it++)
 		{
-			auto& instance = instances[i];
+			auto& instance = *it;
 			instance.Model.SetPosition({
 				Random::Get(-range, range),
 				Random::Get(5.0f, 2.0f * range + 5.0f),
@@ -36,10 +36,11 @@ public:
 		auto ctx = Application::Get();
 		auto& camera = ctx->GetCurrentScene().Viewport;
 		Vector3 cameraPos = camera.GetPosition();
-		auto& instances = this->GetInstances();
-		for (size_t i = 0; i < count; i++)
+		auto instances = this->GetInstances();
+		size_t i = 0;
+		for (auto it = instances.begin(); it != instances.end(); it++, i++)
 		{
-			const auto& model = instances[i].Model;
+			const auto& model = it->Model;
 			if (Length(cameraPos - model.GetPosition()) < 3.0f * Length(model.GetScale()))
 			{
 				impulse[i] += 10.0f * camera.GetMoveSpeed() / model.GetScale() * Normalize(model.GetPosition() - cameraPos);

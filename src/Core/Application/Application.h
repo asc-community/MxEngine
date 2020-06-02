@@ -36,7 +36,6 @@
 #include "Core/MxObject/MxObject.h"
 #include "Utilities/Counter/Counter.h"
 #include "Utilities/FileSystem/File.h"
-#include "Library/Scripting/Script/Script.h"
 #include "Core/Scene/Scene.h"
 
 #include "Platform/Window/Window.h"

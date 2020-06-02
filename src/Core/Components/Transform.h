@@ -28,13 +28,15 @@
 
 #pragma once
 
-#include "Core/Interfaces/IComponent.h"
+#include "Utilities/ECS/Component.h"
 #include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-	class Transform final : public IComponent
+	class Transform
 	{
+		MAKE_COMPONENT(Transform);
+
 		Vector3 translation = MakeVector3(0.0f);
 		Vector3 scale = MakeVector3(1.0f);
 		Quaternion rotation{ 1.0f, 0.0f, 0.0f, 0.0f };

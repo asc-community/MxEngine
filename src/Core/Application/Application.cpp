@@ -47,7 +47,8 @@
 #include "Utilities/Json/Json.h"
 #include "Utilities/ECS/ComponentFactory.h"
 
-#include "Core/Components/Update.h"
+#include "Core/Components/Behaviour.h"
+#include "Core/Components/MeshRenderer.h"
 
 namespace MxEngine
 {
@@ -140,7 +141,7 @@ namespace MxEngine
 	Scene& Application::GetGlobalScene()
 	{
 		MX_ASSERT(this->scenes.Exists("Global"));
-		return *this->scenes.Get("Global");
+		return *this->scenes.Get("Global"); //-V522
 	}
 
 	void Application::LoadScene(const MxString& name)
@@ -192,7 +193,7 @@ namespace MxEngine
 		else
 		{
 			scenes.Add(name, std::move(scene));
-			scenes.Get(name)->OnCreate();
+			scenes.Get(name)->OnCreate(); //-V522
 		}
 		return *scenes.Get(name);
 	}
@@ -200,7 +201,7 @@ namespace MxEngine
 	Scene& Application::GetScene(const MxString& name)
 	{
 		MX_ASSERT(this->scenes.Exists(name));
-		return *this->scenes.Get(name);
+		return *this->scenes.Get(name); //-V522
 	}
 
 	bool Application::SceneExists(const MxString& name)
@@ -377,7 +378,7 @@ namespace MxEngine
 				{
 					auto meshRenderer = object->GetComponent<MeshRenderer>();
 					MeshRenderer* meshPtr = meshRenderer.IsValid() ? meshRenderer.GetUnchecked() : nullptr;
-					this->renderer.DrawObject(*object, viewport, meshPtr, lights, this->renderer.Fog, this->currentScene->SceneSkybox.get());
+ 					this->renderer.DrawObject(*object, viewport, meshPtr, lights, this->renderer.Fog, this->currentScene->SceneSkybox.get());
 				}
 			}
 		}
@@ -441,8 +442,8 @@ namespace MxEngine
 			MAKE_SCOPE_PROFILER("Scene::OnUpdate");
 			for (auto& [_, object] : this->currentScene->GetObjectList())
 			{
-				auto component = object->GetComponent<Update>();
-				if (component.IsValid()) component.GetUnchecked()->Invoke(timeDelta);
+				auto component = object->GetComponent<Behaviour>();
+				if (component.IsValid()) component.GetUnchecked()->InvokeUpdate(timeDelta);
 			}
 			this->currentScene->OnUpdate();
 		}
@@ -686,7 +687,7 @@ namespace MxEngine
 
 		auto enumCursor = CursorMode::DISABLED;
 		if (cursorMode == "disabled")
-			enumCursor = CursorMode::DISABLED;
+			enumCursor = CursorMode::DISABLED; //-V1048
 		else if (cursorMode == "hidden")
 			enumCursor = CursorMode::HIDDEN;
 
@@ -736,7 +737,8 @@ namespace MxEngine
 			this->LoadScene("Default");
 			this->OnCreate();
 		}
-		float secondEnd = Time::Current(), frameEnd = Time::Current();
+
+		float secondEnd = Time::Current(), frameEnd = secondEnd;
 		int fpsCounter = 0;
 		VerifyRendererState();
 		{
@@ -833,6 +835,7 @@ namespace MxEngine
 		UUIDGenerator::Init();
 		GraphicFactory::Init();
 		ComponentFactory::Init();
+		ResourceFactory::Init();
 		MxObject::Factory::Init();
 	}
 

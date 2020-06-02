@@ -85,42 +85,22 @@ namespace MxEngine
 
         void Apply()
         {
+            MeshData meshData;
+
             MAKE_SCOPE_PROFILER("Surface::GenerateVertexData");
 
-            struct NormalSpace
-            {
-                Vector3 normal = MakeVector3(0.0f);
-                Vector3 tangent = MakeVector3(0.0f);
-                Vector3 bitangent = MakeVector3(0.0f);
-            };
-
-            std::vector<float> buffer;
-            std::vector<unsigned int> indicies;
-            Array2D<NormalSpace> normalSpace;
             size_t xsize = surface.width();
             size_t ysize = surface.height();
             size_t triangleCount = 2 * (xsize - 1) * (ysize - 1);
-            buffer.reserve(2 * triangleCount * 3 * VertexSize);
-            indicies.reserve(2 * triangleCount * 3);
-            normalSpace.resize(xsize, ysize);
 
-            AABB boundingBox{ this->surface[0][0], this->surface[0][0] };
-            for (const auto& v : this->surface)
-            {
-                boundingBox.Min = VectorMin(boundingBox.Min, v);
-                boundingBox.Max = VectorMax(boundingBox.Max, v);
-            }
+            auto& vertecies = meshData.GetVertecies();
+            auto& indicies = meshData.GetIndicies();
+
+            auto minmax = MinMaxComponents(this->surface.begin(), this->surface.size());
+            AABB boundingBox{ minmax.first, minmax.second };
             auto center = boundingBox.GetCenter();
             boundingBox = boundingBox - center;
 
-            struct Vertex
-            {
-                Vector3 position;
-                Vector2 texture;
-                Vector3 normal;
-                Vector3 tangent;
-                Vector3 bitangent;
-            };
             using Triangle = std::array<Vertex, 3>;
 
             std::vector<Triangle> triangles;
@@ -134,134 +114,48 @@ namespace MxEngine
                     Triangle& up = triangles.back();
                     triangles.emplace_back();
                     Triangle& down = triangles.back();
-                    up[0].position   = surface[x + 0][y + 0] - center;
-                    up[1].position   = surface[x + 0][y + 1] - center;
-                    up[2].position   = surface[x + 1][y + 0] - center;
-                    down[0].position = surface[x + 1][y + 1] - center;
-                    down[1].position = surface[x + 1][y + 0] - center;
-                    down[2].position = surface[x + 0][y + 1] - center;
+                    up[0].Position   = surface[x + 0][y + 0] - center;
+                    up[1].Position   = surface[x + 0][y + 1] - center;
+                    up[2].Position   = surface[x + 1][y + 0] - center;
+                    down[0].Position = surface[x + 1][y + 1] - center;
+                    down[1].Position = surface[x + 1][y + 0] - center;
+                    down[2].Position = surface[x + 0][y + 1] - center;
 
                     float x1 = float(x + 0) / (float)xsize;
                     float y1 = float(y + 0) / (float)ysize;
                     float x2 = float(x + 1) / (float)ysize;
                     float y2 = float(y + 1) / (float)ysize;
-                    up[0].texture   = MakeVector2(x1, y1);
-                    up[1].texture   = MakeVector2(x1, y2);
-                    up[2].texture   = MakeVector2(x2, y1);
-                    down[0].texture = MakeVector2(x2, y2);
-                    down[1].texture = MakeVector2(x2, y1);
-                    down[2].texture = MakeVector2(x1, y2);
-
-                    Vector3 v1, v2, n;
-
-                    v1 = up[1].position - up[0].position;
-                    v2 = up[2].position - up[0].position;
-                    n =  Normalize(Cross(v1, v2));
-                    auto tanbitan = ComputeTangentSpace(
-                        up[0].position, up[1].position, up[2].position,
-                        up[0].texture,  up[1].texture,  up[2].texture
-                    );
-
-                    normalSpace[x + 0][y + 0].normal += n;
-                    normalSpace[x + 1][y + 0].normal += n;
-                    normalSpace[x + 0][y + 1].normal += n;
-                    normalSpace[x + 0][y + 0].tangent += tanbitan[0];
-                    normalSpace[x + 1][y + 0].tangent += tanbitan[0];
-                    normalSpace[x + 0][y + 1].tangent += tanbitan[0];
-                    normalSpace[x + 0][y + 0].bitangent += tanbitan[1];
-                    normalSpace[x + 1][y + 0].bitangent += tanbitan[1];
-                    normalSpace[x + 0][y + 1].bitangent += tanbitan[1];
-
-                    v1 = down[1].position - down[0].position;
-                    v2 = down[2].position - down[0].position;
-                    n =  Normalize(Cross(v1, v2));
-                    tanbitan = ComputeTangentSpace(
-                        down[0].position, down[1].position, down[2].position,
-                        down[0].texture,  down[1].texture,  down[2].texture
-                    );
-
-                    normalSpace[x + 1][y + 1].normal += n;
-                    normalSpace[x + 0][y + 1].normal += n;
-                    normalSpace[x + 1][y + 0].normal += n;
-                    normalSpace[x + 1][y + 1].tangent += tanbitan[0];
-                    normalSpace[x + 0][y + 1].tangent += tanbitan[0];
-                    normalSpace[x + 1][y + 0].tangent += tanbitan[0];
-                    normalSpace[x + 1][y + 1].bitangent += tanbitan[1];
-                    normalSpace[x + 0][y + 1].bitangent += tanbitan[1];
-                    normalSpace[x + 1][y + 0].bitangent += tanbitan[1];
+                    up[0].TexCoord   = MakeVector2(x1, y1);
+                    up[1].TexCoord   = MakeVector2(x1, y2);
+                    up[2].TexCoord   = MakeVector2(x2, y1);
+                    down[0].TexCoord = MakeVector2(x2, y2);
+                    down[1].TexCoord = MakeVector2(x2, y1);
+                    down[2].TexCoord = MakeVector2(x1, y2);
                 }
             }
 
-            for (size_t x = 0; x < xsize - 1; x++)
-            {
-                for (size_t y = 0; y < ysize - 1; y++)
-                {
-                    auto normalize = [](auto& p)
-                    {
-                        return p / 6.0f;
-                    };
+            indicies.reserve(triangles.size() * 3);
+            vertecies.reserve(triangles.size() * 2);
 
-                    auto& up          = triangles[2 * (x * (ysize - 1) + y) + 0];
-                    auto& down        = triangles[2 * (x * (ysize - 1) + y) + 1];
-                    up[0].normal      = normalSpace[x + 0][y + 0].normal;
-                    up[1].normal      = normalSpace[x + 0][y + 1].normal;
-                    up[2].normal      = normalSpace[x + 1][y + 0].normal;
-                    up[0].tangent     = normalSpace[x + 0][y + 0].tangent;
-                    up[1].tangent     = normalSpace[x + 0][y + 1].tangent;
-                    up[2].tangent     = normalSpace[x + 1][y + 0].tangent;
-                    up[0].bitangent   = normalSpace[x + 0][y + 0].bitangent;
-                    up[1].bitangent   = normalSpace[x + 0][y + 1].bitangent;
-                    up[2].bitangent   = normalSpace[x + 1][y + 0].bitangent;
-                    down[0].normal    = normalSpace[x + 1][y + 1].normal;
-                    down[1].normal    = normalSpace[x + 1][y + 0].normal;
-                    down[2].normal    = normalSpace[x + 0][y + 1].normal;
-                    down[0].tangent   = normalSpace[x + 1][y + 1].tangent;
-                    down[1].tangent   = normalSpace[x + 1][y + 0].tangent;
-                    down[2].tangent   = normalSpace[x + 0][y + 1].tangent;
-                    down[0].bitangent = normalSpace[x + 1][y + 1].bitangent;
-                    down[1].bitangent = normalSpace[x + 1][y + 0].bitangent;
-                    down[2].bitangent = normalSpace[x + 0][y + 1].bitangent;
-                }
-            }
-
-            unsigned int indexCounter = 0;
             for(size_t i = 0; i < triangles.size(); i += 2)
             {
                 auto& up = triangles[i];
                 auto& down = triangles[i + 1];
 
-                constexpr auto add_vertex = [](auto& buffer, auto& vertex)
-                {
-                    buffer.push_back(vertex.position.x);
-                    buffer.push_back(vertex.position.y);
-                    buffer.push_back(vertex.position.z);
-                    buffer.push_back(vertex.texture.x);
-                    buffer.push_back(vertex.texture.y);
-                    buffer.push_back(vertex.normal.x);
-                    buffer.push_back(vertex.normal.y);
-                    buffer.push_back(vertex.normal.z);
-                    buffer.push_back(vertex.tangent.x);
-                    buffer.push_back(vertex.tangent.y);
-                    buffer.push_back(vertex.tangent.z);
-                    buffer.push_back(vertex.bitangent.x);
-                    buffer.push_back(vertex.bitangent.y);
-                    buffer.push_back(vertex.bitangent.z);
-                };
-
-                add_vertex(buffer,   up[0]);
-                add_vertex(buffer,   up[1]);
-                add_vertex(buffer,   up[2]);
-                add_vertex(buffer, down[0]);
+                vertecies.push_back(up[0]);
+                vertecies.push_back(up[1]);
+                vertecies.push_back(up[2]);
+                vertecies.push_back(down[0]);
                 
-                indicies.push_back(2 * (unsigned int)i + 0);
+                indicies.push_back(2 * (unsigned int)i + 0); //-V525
                 indicies.push_back(2 * (unsigned int)i + 1);
                 indicies.push_back(2 * (unsigned int)i + 2);
                 indicies.push_back(2 * (unsigned int)i + 3);
                 indicies.push_back(2 * (unsigned int)i + 2);
                 indicies.push_back(2 * (unsigned int)i + 1);
             }
-
-            this->SubmitData(name, boundingBox, make_view(buffer), make_view(indicies));
+            meshData.RegenerateNormals();
+            this->SubmitData(boundingBox, make_view(meshData));
         }
     };
 }

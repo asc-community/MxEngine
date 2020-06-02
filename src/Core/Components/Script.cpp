@@ -31,14 +31,14 @@
 
 namespace MxEngine
 {
-    Script::Script(FilePath path)
+    Script::Script(const FilePath& path)
     {
         this->path = std::move(path);
         this->UpdateContents();
     }
 
     void Script::UpdateContents()
-    { 
+    {
         auto currentTime = Time::Current();
         if (currentTime - this->lastUpdate > 1.0f)
         {

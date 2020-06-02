@@ -36,13 +36,13 @@ namespace MxEngine
     template<typename T>
     struct ManagedResource
     {
-        UUID Id;
+        UUID uuid;
         T value;
-        size_t RefCount = 0;
+        size_t refCount = 0;
 
         template<typename... Args>
         ManagedResource(UUID uuid, Args&&... value)
-            : Id(uuid), value(std::forward<Args>(value)...)
+            : uuid(uuid), value(std::forward<Args>(value)...)
         {
         }
 
@@ -53,7 +53,7 @@ namespace MxEngine
 
         ~ManagedResource()
         {
-            Id = UUIDGenerator::GetNull();
+            uuid = UUIDGenerator::GetNull();
         }
     };
 
@@ -72,29 +72,38 @@ namespace MxEngine
         void IncRef()
         {
             if (this->IsValid())
-                ++this->DereferenceHandle(handle).RefCount;
+                ++this->Dereference().refCount;
         }
-
+    
         void DecRef()
         {
             if (this->IsValid())
             {
-                auto& resource = this->DereferenceHandle(handle);
-                if ((--resource.RefCount) == 0)
-                    Factory::Destroy(*this);
+                auto& resource = this->Dereference();
+                if ((--resource.refCount) == 0)
+                    DestroyThis(*this);
             }
         }
 
-        [[nodiscard]] ManagedResource<T>& DereferenceHandle(size_t handle) const
+        [[nodiscard]] ManagedResource<T>& Dereference() const 
         {
-            auto& pool = Factory::template Get<T>();
-            auto& resource = pool[handle];
+            auto& resource = AccessThis(this->handle);
 
             #if defined(MXENGINE_DEBUG)
             this->_resourcePtr = &resource;
             #endif
 
             return resource;
+        }
+
+        void DestroyThis(Resource<T, Factory>& resource)
+        {
+            Factory::Destroy(resource);
+        }
+
+        ManagedResource<T>& AccessThis(size_t handle) const
+        {
+            return Factory::template Get<T>()[handle];
         }
     public:
         Resource()
@@ -113,11 +122,18 @@ namespace MxEngine
             : uuid(wrapper.uuid), handle(wrapper.handle)
         {
             this->IncRef();
+            #if defined(MXENGINE_DEBUG)
+            this->_resourcePtr = wrapper._resourcePtr;
+            #endif
         }
 
         Resource& operator=(const Resource& wrapper)
         {
             this->DecRef();
+
+            #if defined(MXENGINE_DEBUG)
+            this->_resourcePtr = wrapper._resourcePtr;
+            #endif
 
             this->uuid = wrapper.uuid;
             this->handle = wrapper.handle;
@@ -129,6 +145,9 @@ namespace MxEngine
         Resource(Resource&& wrapper) noexcept
             : uuid(wrapper.uuid), handle(wrapper.handle)
         {
+            #if defined(MXENGINE_DEBUG)
+            this->_resourcePtr = wrapper._resourcePtr;
+            #endif
             wrapper.handle = InvalidHandle;
         }
 
@@ -139,12 +158,15 @@ namespace MxEngine
             this->handle = wrapper.handle;
             wrapper.handle = InvalidHandle;
 
+            #if defined(MXENGINE_DEBUG)
+            this->_resourcePtr = wrapper._resourcePtr;
+            #endif
             return *this;
         }
 
         [[nodiscard]] bool IsValid() const
         {
-            return handle != InvalidHandle && DereferenceHandle(handle).Id == uuid;
+            return handle != InvalidHandle && Dereference().uuid == uuid;
         }
 
         T* operator->()
@@ -175,12 +197,12 @@ namespace MxEngine
 
         [[nodiscard]] T* GetUnchecked()
         {
-            return &this->DereferenceHandle(handle).value;
+            return &this->Dereference().value;
         }
 
         [[nodiscard]] const T* GetUnchecked() const
         {
-            return &this->DereferenceHandle(handle).value;
+            return &this->Dereference().value;
         }
 
         [[nodiscard]] auto GetHandle()
@@ -189,6 +211,155 @@ namespace MxEngine
         }
 
         ~Resource()
+        {
+            this->DecRef();
+        }
+    };
+
+    template<typename T, typename Factory>
+    class LocalResource
+    {
+        UUID uuid;
+        size_t handle;
+        mutable Factory* factory;
+
+        #if defined(MXENGINE_DEBUG)
+        mutable ManagedResource<T>* _resourcePtr = nullptr;
+        #endif
+
+        static constexpr size_t InvalidHandle = std::numeric_limits<size_t>::max();
+
+        void IncRef()
+        {
+            if (this->IsValid())
+                ++this->Dereference().refCount;
+        }
+
+        void DecRef()
+        {
+            if (this->IsValid())
+            {
+                auto& resource = this->Dereference();
+                if ((--resource.refCount) == 0)
+                    DestroyThis(*this);
+            }
+        }
+
+        [[nodiscard]] ManagedResource<T>& Dereference() const
+        {
+            auto& resource = AccessThis(this->handle);
+
+            #if defined(MXENGINE_DEBUG)
+            this->_resourcePtr = &resource;
+            #endif
+
+            return resource;
+        }
+
+        void DestroyThis(LocalResource<T, Factory>& resource)
+        {
+            this->factory->Destroy(resource);
+        }
+
+        ManagedResource<T>& AccessThis(size_t handle) const
+        {
+            return this->factory->template Get<T>()[handle];
+        }
+    public:
+        LocalResource()
+            : uuid(UUIDGenerator::GetNull()), handle(InvalidHandle), factory(nullptr)
+        {
+
+        }
+
+        LocalResource(UUID uuid, size_t handle, Factory* factory)
+            : uuid(uuid), handle(handle), factory(factory)
+        {
+            this->IncRef();
+        }
+
+        LocalResource(const LocalResource& wrapper)
+            : uuid(wrapper.uuid), handle(wrapper.handle), factory(wrapper.factory)
+        {
+            this->IncRef();
+        }
+
+        LocalResource& operator=(const LocalResource& wrapper)
+        {
+            this->DecRef();
+
+            this->uuid = wrapper.uuid;
+            this->handle = wrapper.handle;
+            this->factory = wrapper.factory;
+            this->IncRef();
+
+            return *this;
+        }
+
+        LocalResource(LocalResource&& wrapper) noexcept
+            : uuid(wrapper.uuid), handle(wrapper.handle), factory(wrapper.factory)
+        {
+            wrapper.handle = InvalidHandle;
+        }
+
+        LocalResource& operator=(LocalResource&& wrapper) noexcept
+        {
+            this->DecRef();
+            this->uuid = wrapper.uuid;
+            this->handle = wrapper.handle;
+            this->factory = wrapper.factory;
+            wrapper.handle = InvalidHandle;
+
+            return *this;
+        }
+
+        [[nodiscard]] bool IsValid() const
+        {
+            return handle != InvalidHandle && Dereference().uuid == uuid;
+        }
+
+        T* operator->()
+        {
+            MX_ASSERT(this->IsValid());
+            if (!this->IsValid()) return nullptr;
+            return this->GetUnchecked();
+        }
+
+        [[nodiscard]] const T* operator->() const
+        {
+            MX_ASSERT(this->IsValid());
+            if (!this->IsValid()) return nullptr;
+            return this->GetUnchecked();
+        }
+
+        [[nodiscard]] T& operator*()
+        {
+            MX_ASSERT(this->IsValid());
+            return *this->GetUnchecked();
+        }
+
+        [[nodiscard]] const T& operator*() const
+        {
+            MX_ASSERT(this->IsValid());
+            return *this->GetUnchecked();
+        }
+
+        [[nodiscard]] T* GetUnchecked()
+        {
+            return &this->Dereference().value;
+        }
+
+        [[nodiscard]] const T* GetUnchecked() const
+        {
+            return &this->Dereference().value;
+        }
+
+        [[nodiscard]] auto GetHandle()
+        {
+            return this->handle;
+        }
+
+        ~LocalResource()
         {
             this->DecRef();
         }
@@ -243,9 +414,11 @@ namespace MxEngine
     {
     public:
         using Factory = FactoryImpl<Args...>;
+        using ThisType = AbstractFactoryImpl<Args...>;
     private:
         inline static Factory* factory = nullptr;
     public:
+
         static Factory* GetImpl()
         {
             return factory;
@@ -269,16 +442,17 @@ namespace MxEngine
         }
 
         template<typename T, typename... ConstructArgs>
-        static Resource<T, AbstractFactoryImpl<Args...>> Create(ConstructArgs&&... args)
+        static Resource<T, ThisType> Create(ConstructArgs&&... args)
         {
+            MX_ASSERT(factory != nullptr);
             UUID uuid = UUIDGenerator::Get();
             auto& pool = factory->template GetPool<T>();
             size_t index = pool.Allocate(uuid, std::forward<ConstructArgs>(args)...);
-            return Resource<T, AbstractFactoryImpl<Args...>>(uuid, index);
+            return Resource<T, ThisType>(uuid, index);
         }
 
         template<typename T>
-        static void Destroy(Resource<T, AbstractFactoryImpl<Args...>>& resource)
+        static void Destroy(Resource<T, ThisType>& resource)
         {
             factory->template GetPool<T>().Deallocate(resource.GetHandle());
         }

@@ -87,7 +87,7 @@ public:
 		{
 			for (size_t y = 0; y < size; y++)
 			{
-				cells[x][y] = (Cell*)&ctx->GetCurrentScene().AddObject(Format("Cube({0}, {1})", x, y),
+				cells[x][y] = (Cell*)&ctx->GetCurrentScene().AddObject(MxFormat("Cube({0}, {1})", x, y),
 					MakeUnique<Cell>(cellSize, cellMargin, (float)x, (float)y, cellOffset));
 
 			}

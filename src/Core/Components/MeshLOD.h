@@ -30,17 +30,23 @@
 
 #include "Utilities/ECS/Component.h"
 #include "Core/Resources/ResourceFactory.h"
+#include "Core/Components/MeshSource.h"
 
 namespace MxEngine
 {
-    class MeshSource
+    struct LODConfig
     {
-        MAKE_COMPONENT(MeshSource);
-        Resource<Mesh, ResourceFactory> mesh;
-    public:
-        MeshSource() = default;
-        MeshSource(Resource<Mesh, ResourceFactory> mesh) : mesh(mesh) { }
+        std::array<float, 5> Factors{ 0.001f, 0.01f, 0.05f, 0.15f, 0.3f };
+    };
 
-        auto GetMesh() const { return this->mesh; }
+    class MeshLOD
+    {
+        MAKE_COMPONENT(MeshLOD);
+    public:
+        using LODInstance = Resource<Mesh, ResourceFactory>;
+
+        MxVector<LODInstance> LODs;
+        
+        //MeshLOD(MeshSourceRef meshSource, LODConfig config = LODConfig{ });
     };
 }

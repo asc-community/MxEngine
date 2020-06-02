@@ -28,19 +28,11 @@
 
 #pragma once
 
-#include "Utilities/ECS/Component.h"
-#include "Core/Resources/ResourceFactory.h"
+#include "Utilities/AbstractFactory/AbstractFactory.h"
+#include "Core/MxObject/Mesh.h"
+#include "Core/Material/Material.h"
 
 namespace MxEngine
 {
-    class MeshSource
-    {
-        MAKE_COMPONENT(MeshSource);
-        Resource<Mesh, ResourceFactory> mesh;
-    public:
-        MeshSource() = default;
-        MeshSource(Resource<Mesh, ResourceFactory> mesh) : mesh(mesh) { }
-
-        auto GetMesh() const { return this->mesh; }
-    };
+    using ResourceFactory = AbstractFactoryImpl<Material, Mesh>;
 }

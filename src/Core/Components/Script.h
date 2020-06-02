@@ -29,22 +29,25 @@
 #pragma once
 
 #include "Utilities/ECS/Component.h"
-#include "Utilities/STL/MxFunction.h"
+#include "Utilities/FileSystem/File.h"
+#include "Utilities/Time/Time.h"
 
 namespace MxEngine
 {
-    class Update
+    class Script
     {
-        MAKE_COMPONENT(Update);
-
-        using TimeDelta = float;
-        using CallbackFunction = MxFunction<void(Update&, TimeDelta)>::type;
+        MAKE_COMPONENT(Script);
     public:
-        CallbackFunction Callback;
+        using ScriptData = MxString;
+    private:
+        FilePath path;
+        ScriptData data;
+        TimeStep lastUpdate = 0.0f;
+        FileSystemTime fileUpdate = FileSystemTime();
+    public:
+        Script(const FilePath& path);
 
-        template<typename Func>
-        Update(Func&& func) { Callback = std::forward<Func>(func); }
-
-        void Invoke(float dt) { Callback(*this, dt); }
+        void UpdateContents();
+        const ScriptData& GetContent() const;
     };
 }

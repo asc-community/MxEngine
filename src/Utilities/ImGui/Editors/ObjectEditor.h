@@ -30,6 +30,7 @@
 
 #include "Utilities/ImGui/ImGuiBase.h"
 #include "Core/Application/Application.h"
+#include "Core/Components/Components.h"
 #include "Utilities/Format/Format.h"
 #include "Utilities/FileSystem/FileManager.h"
 
@@ -45,6 +46,7 @@ namespace MxEngine::GUI
 		ImGui::ColorEdit3("diffuse color", &material.Kd[0]);
 		ImGui::ColorEdit3("specular color", &material.Ks[0]);
 		ImGui::ColorEdit3("emmisive color", &material.Ke[0]);
+		ImGui::ColorEdit4("base color", &material.baseColor[0]);
 		ImGui::DragFloat("ambient factor", &material.f_Ka, 0.01f, 0.0f, 1.0f);
 		ImGui::DragFloat("diffuse factor", &material.f_Kd, 0.01f, 0.0f, 1.0f);
 		ImGui::DragFloat("specular exponent", &material.Ns, 1.0f, 1.0f, 512.0f);
@@ -133,7 +135,7 @@ namespace MxEngine::GUI
 					object.SetRenderColor(renderColor);
 
 				GUI_TREE_NODE("transform",
-					DrawTransform(object.ObjectTransform);
+					DrawTransform(object.GetTransform());
 				);
 
 				ImGui::InputFloat("translate speed", &object.TranslateSpeed);
@@ -156,25 +158,23 @@ namespace MxEngine::GUI
 
 					GUI_TREE_NODE("mesh list",
 						int meshIdx = 0;
-						for (auto& submesh : object.GetMesh()->GetRenderObjects())
+						auto meshRenderer = object.GetComponent<MeshRenderer>();
+						for (auto& submesh : object.GetMesh()->GetSubmeshes())
 						{
-							// TODO: add material viewer
-							//  GUI_TREE_NODE(submesh.GetName().c_str(),
-							//  	ImGui::PushID(meshIdx++);
-							//  	if (submesh.HasMaterial())
-							//  	{
-							//  		GUI_TREE_NODE("material",
-							//  			DrawMaterial(submesh.GetMaterial());
-							//  			auto renderColor = submesh.GetRenderColor();
-							//  			if (ImGui::ColorEdit4("render color", &renderColor[0]))
-							//  				submesh.SetRenderColor(renderColor);
-							//  		);
-							//  		GUI_TREE_NODE("transform",
-							//  			DrawTransform(submesh.GetTransform());
-							//  		);
-							//  	}
-							//  	ImGui::PopID();
-							//  );
+							MxString submeshName = ToMxString(submesh.Name);
+							GUI_TREE_NODE(submeshName.c_str(),
+								ImGui::PushID(meshIdx++);
+								if (submesh.GetMaterialId() < meshRenderer->Materials.size())
+								{
+									GUI_TREE_NODE("material",
+										DrawMaterial(*meshRenderer->Materials[submesh.GetMaterialId()]);
+									);
+									GUI_TREE_NODE("transform",
+										DrawTransform(*submesh.GetTransform());
+									);
+								}
+								ImGui::PopID();
+							);
 						}
 					);
 				}
@@ -191,18 +191,9 @@ namespace MxEngine::GUI
 								ImGui::PushID(idx);
 
 								DrawTransform(instance.Model);
-								bool draw = instance.IsDrawn();
 								auto color = instance.GetColor();
 								if (ImGui::ColorEdit4("color", &color[0]))
 									instance.SetColor(color);
-								if (ImGui::Checkbox("visible", &draw))
-								{
-									if (draw)
-										instance.Show();
-									else
-										instance.Hide();
-								}
-
 								ImGui::PopID();
 							}
 							idx++;

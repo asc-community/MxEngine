@@ -47,11 +47,13 @@ namespace MxEngine
 
 	VertexBuffer::VertexBuffer()
 	{
-		this->id = 0;
 		this->size = 0;
+		GLCALL(glGenBuffers(1, &id));
+		Logger::Instance().Debug("OpenGL::VertexBuffer", "created vertex buffer with id = " + ToMxString(id));
 	}
 
-	VertexBuffer::VertexBuffer(BufferData data, size_t count, UsageType type)
+	VertexBuffer::VertexBuffer(BufferData data, size_t count, UsageType type) 
+		: VertexBuffer()
 	{
 		Load(data, count, type);
 	}
@@ -84,11 +86,6 @@ namespace MxEngine
 	void VertexBuffer::Load(BufferData data, size_t count, UsageType type)
 	{
 		this->size = count;
-		if (id == 0)
-		{
-			GLCALL(glGenBuffers(1, &id));
-			Logger::Instance().Debug("OpenGL::VertexBuffer", "created vertex buffer with id = " + ToMxString(id));
-		}
 		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, id));
 		GLCALL(glBufferData(GL_ARRAY_BUFFER, count * sizeof(float), data, DataType[(int)type]));
 	}

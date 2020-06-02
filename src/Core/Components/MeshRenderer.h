@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Utilities/ECS/Component.h"
-#include "Core/Material/Material.h"
+#include "Core/Resources/ResourceFactory.h"
 
 namespace MxEngine
 {
@@ -37,19 +37,15 @@ namespace MxEngine
     {
         MAKE_COMPONENT(MeshRenderer);
     public:
-        using MaterialArray = MxVector<Material>;
-        using ColorArray = MxVector<Vector4>;
+        using MaterialRef = Resource<Material, ResourceFactory>;
+        using MaterialArray = MxVector<MaterialRef>;
 
         MaterialArray Materials;
-        ColorArray RenderColors;
 
-        MeshRenderer() = default;
-        MeshRenderer(const Vector4& renderColor) : RenderColors(1, renderColor) { };
-        MeshRenderer(Material material) : Materials(1, std::move(material)) { };
-        MeshRenderer(Material material, const Vector4& renderColor) : Materials(1, std::move(material)), RenderColors(1, renderColor) { };
-        MeshRenderer(MaterialArray materials, ColorArray renderColors) : Materials(std::move(materials)), RenderColors(std::move(renderColors)) { };
+        MeshRenderer() : MeshRenderer(ResourceFactory::Create<Material>()) { }
+        MeshRenderer(MaterialRef material) : Materials(1, std::move(material)) { }
+        MeshRenderer(MaterialArray materials) : Materials(std::move(materials)) { }
 
-        Material& GetMaterial() { return this->Materials[0]; }
-        const Material& GetMaterial() const { return this->Materials[0]; }
+        MaterialRef GetMaterial() const { MX_ASSERT(!Materials.empty()); return this->Materials[0]; }
     };
 }

@@ -70,34 +70,29 @@ namespace MxEngine
         ComponentManager& operator=(ComponentManager&&) noexcept = default;
 
         template<typename T, typename... Args>
-        auto AddComponent(Args&&... args)
+        Resource<T, ComponentFactory> AddComponent(Args&&... args)
         {
-            using ResourceT = Resource<T, ComponentFactory>;
-
-            auto existing = this->GetComponent<T>();
-            if (existing.IsValid()) return existing;
+            this->RemoveComponent<T>();
             
             auto component = ComponentFactory::CreateComponent<T>(std::forward<Args>(args)...);
             component->parent = this;
             components.emplace_back();
-            auto* result = new (&components.back()) Component(T::ComponentId, std::move(component));
-            return *reinterpret_cast<ResourceT*>(&result->resource);
+            Component* result = new (&components.back()) Component(T::ComponentId, std::move(component));
+            return *reinterpret_cast<Resource<T, ComponentFactory>*>(&result->resource);
         }
 
         template<typename T>
-        auto GetComponent()
+        Resource<T, ComponentFactory> GetComponent() const
         {
-            using ResourceT = Resource<T, ComponentFactory>;
-            for (auto& component : components)
+            for (const auto& component : components)
             {
-                auto& componentRef = *reinterpret_cast<Component*>(&component);
+                const auto& componentRef = *reinterpret_cast<const Component*>(&component);
                 if (componentRef.type == T::ComponentId)
                 {
-                    auto& result = *reinterpret_cast<ResourceT*>(&componentRef.resource);
-                    return result;
+                    return *reinterpret_cast<const Resource<T, ComponentFactory>*>(&componentRef.resource);
                 }
             }
-            return ResourceT{ };
+            return Resource<T, ComponentFactory>{ };
         }
 
         template<typename T>
@@ -121,7 +116,7 @@ namespace MxEngine
         }
 
         template<typename T>
-        bool HasComponent()
+        bool HasComponent() const
         {
             return this->GetComponent<T>().IsValid();
         }

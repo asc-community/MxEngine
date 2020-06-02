@@ -26,31 +26,21 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Utilities/FileSystem/File.h"
-#include "Utilities/Time/Time.h"
+#include "SubMesh.h"
 
 namespace MxEngine
 {
-    class Script
-    {
-    public:
-        using ScriptData = MxString;
-    private:
-        FilePath path;
-        ScriptData data;
-        TimeStep lastUpdate = 0.0f;
-        FileSystemTime fileUpdate = FileSystemTime();
-    public:
-        Script(FilePath path);
-        Script(const Script&) = delete;
-        Script(Script&&) = default;
-        Script& operator=(const Script&) = delete;
-        Script& operator=(Script&&) = default;
-        ~Script() = default;
+    SubMesh::SubMesh(size_t materiaId, const TransformHandle& transform)
+        :  materialId(materiaId), transform(transform) { }
 
-        void UpdateContents();
-        const ScriptData& GetContent() const;
-    };
+    size_t SubMesh::GetMaterialId() const
+    {
+        return this->materialId;
+    }
+
+    SubMesh::TransformHandle SubMesh::GetTransform() const
+    {
+        return this->transform;
+    }
+
 }

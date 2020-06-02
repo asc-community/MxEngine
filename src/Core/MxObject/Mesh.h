@@ -30,79 +30,45 @@
 
 #include "Core/Interfaces/IRenderable.h"
 #include "Core/BoundingObjects/AABB.h"
-#include "Core/Components/Transform/Transform.h"
+#include "Core/Components/Transform.h"
 #include "Utilities/String/String.h"
-#include "Core/Components/MeshRenderer.h"
-
-#include <filesystem>
+#include "Utilities/FileSystem/File.h"
+#include "Utilities/Memory/Memory.h"
+#include "Platform/GraphicAPI.h"
+#include "Core/Resources/SubMesh.h"
 
 namespace MxEngine
 {
-	class SubMesh : public IRenderable
-	{
-		bool useTexture = false, useNormal = false;
-		mutable bool meshGenerated = false;
-		mutable GResource<IndexBuffer> meshIBO;		
-		GResource<VertexBuffer> VBO;
-		GResource<VertexArray> VAO;
-		GResource<IndexBuffer> IBO;
-		size_t vertexBufferSize = 0;
-		size_t materialId = 0;
-		Ref<Transform> transform;
-		MxString name;
-
-		void GenerateMeshIndicies() const;
-		friend class Mesh;
-	public:
-		SubMesh(MxString name, GResource<VertexBuffer> VBO, GResource<VertexArray> VAO, GResource<IndexBuffer> IBO,
-			size_t materialId, Ref<Transform> transform,
-			bool useTexture, bool useNormal, size_t sizeInFloats);
-
-		SubMesh(const SubMesh&) = delete;
-		SubMesh(SubMesh&&) noexcept;
-		SubMesh& operator=(const SubMesh&) = delete;
-		SubMesh& operator=(SubMesh&&) noexcept;
-
-		const MxString& GetName() const;
-		bool UsesTexture() const;
-		bool UsesNormals() const;
-		Transform& GetTransform();
-
-		virtual const Transform& GetTransform() const override;
-		virtual const VertexArray& GetVAO() const override;
-		virtual const IndexBuffer& GetIBO() const override;
-		virtual const IndexBuffer& GetMeshIBO() const override;
-		virtual size_t GetMaterialId() const override;
-		virtual size_t GetVertexBufferSize() const override;
-	};
+	class MeshRenderer;
 
 	class Mesh
 	{
 		typedef unsigned int GLuint;
 		typedef float GLfloat;
 
-		using LOD = std::vector<SubMesh>;
+		using LOD = MxVector<SubMesh>;
 
 		AABB boundingBox;
 		size_t currentLOD = 0;
 		
-		std::vector<LOD> LODs = std::vector<LOD>(1);
-		std::vector<UniqueRef<VertexBuffer>> VBOs;
-		std::vector<UniqueRef<VertexBufferLayout>> VBLs;
+		MxVector<LOD> LODs = MxVector<LOD>(1);
+		MxVector<UniqueRef<VertexBuffer>> VBOs;
+		MxVector<UniqueRef<VertexBufferLayout>> VBLs;
 
 		void LoadFromFile(const MxString& filepath, MeshRenderer* meshRenderer);
 	public:
 		size_t RefCounter = 0;
 
 		explicit Mesh() = default;
+		Mesh(const FilePath& path, MeshRenderer* meshRenderer = nullptr);
 		Mesh(Mesh&) = delete;
 		Mesh(Mesh&&) = default;
 		Mesh& operator=(const Mesh&) = delete;
 		Mesh& operator=(Mesh&&) = default;
 		
 		void Load(const MxString& filepath, MeshRenderer* meshRenderer = nullptr);
-		std::vector<SubMesh>& GetRenderObjects();
-		const std::vector<SubMesh>& GetRenderObjects() const;
+		MxVector<SubMesh>& GetSubmeshes();
+		const MxVector<SubMesh>& GetSubmeshes() const;
 		void PushEmptyLOD();
 		void PopLastLOD();
 		void SetLOD(size_t LOD);

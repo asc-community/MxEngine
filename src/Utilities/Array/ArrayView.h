@@ -176,7 +176,7 @@ namespace MxEngine
     }
 
     template<typename T>
-    inline T* array_view<T>::begin()
+    inline T* array_view<T>::begin() //-V524
     {
         return this->_data;
     }
@@ -188,7 +188,7 @@ namespace MxEngine
     }
 
     template<typename T>
-    inline const T* array_view<T>::begin() const
+    inline const T* array_view<T>::begin() const //-V524
     {
         return this->_data;
     }

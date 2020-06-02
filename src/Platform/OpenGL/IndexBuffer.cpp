@@ -35,10 +35,12 @@ namespace MxEngine
 {
 	IndexBuffer::IndexBuffer()
 	{
-		this->id = 0;
+		GLCALL(glGenBuffers(1, &id));
+		Logger::Instance().Debug("OpenGL::IndexBuffer", "created index buffer with id = " + ToMxString(id));
 	}
 
 	IndexBuffer::IndexBuffer(const IndexType* data, size_t count)
+		: IndexBuffer()
 	{
 		Load(data, count);
 	}
@@ -71,11 +73,6 @@ namespace MxEngine
 	void IndexBuffer::Load(const IndexType* data, size_t count)
 	{
 		this->count = count;
-		if (id == 0)
-		{
-			GLCALL(glGenBuffers(1, &id));
-			Logger::Instance().Debug("OpenGL::IndexBuffer", "created index buffer with id = " + ToMxString(id));
-		}
 		this->Bind();
 		GLCALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(IndexType), data, GL_STATIC_DRAW));
 	}

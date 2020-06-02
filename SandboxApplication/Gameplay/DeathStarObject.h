@@ -4,27 +4,24 @@
 
 using namespace MxEngine;
 
-class DeathStarObject : public MxObject
+void InitDeathStar(MxObject& object)
 {
-public:
-	inline DeathStarObject()
+	auto transform = object.GetComponent<Transform>();
+	auto meshRenderer = object.GetComponent<MeshRenderer>();
+
+	transform->Scale(0.00005f);
+	transform->RotateX(-90.0f);
+	transform->RotateZ(-90.0f);
+	transform->Translate({ -10.0f, 10.0f, 10.0f });
+
+	struct DeathStarBehaviour
 	{
-		auto context = Application::Get();
-
-		auto meshRenderer = this->AddComponent<MeshRenderer>();
-
-		this->SetMesh(context->GetCurrentScene().LoadMesh("objects/death_star/death_star.obj", meshRenderer.GetUnchecked()));
-		this->ObjectTexture = GraphicFactory::Create<Texture>(ToMxString(FileManager::GetFilePath("objects/death_star/texture.jpg"_id)));
-
-		this->ObjectTransform.Scale(0.00005f);
-		this->ObjectTransform.RotateX(-90.0f);
-		this->ObjectTransform.RotateZ(-90.0f);
-		this->ObjectTransform.Translate({ -10.0f, 10.0f, 10.0f });
-	}
-
-	inline virtual void OnUpdate() override
-	{
-		float dt = Application::Get()->GetTimeDelta();
-		this->ObjectTransform.RotateZ(2.0f * dt);
-	}
-};
+		void OnUpdate(MxObject& object, float dt)
+		{
+			object.GetTransform().RotateY(2.0f * dt);
+		}
+	};
+	object.AddComponent<Behaviour>(DeathStarBehaviour{ });
+	object.AddComponent<MeshSource>(ResourceFactory::Create<Mesh>(FileManager::GetFilePath("objects/death_star/death_star.obj"_id), meshRenderer.GetUnchecked()));
+	object.ObjectTexture = GraphicFactory::Create<Texture>(ToMxString(FileManager::GetFilePath("objects/death_star/texture.jpg"_id)));
+}

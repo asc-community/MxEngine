@@ -4,20 +4,15 @@
 
 using namespace MxEngine;
 
-class DestroyerObject : public MxObject
+void InitDestroyer(MxObject& object)
 {
-public:
-	inline DestroyerObject()
-	{
-		auto context = Application::Get();
+	auto transform = object.GetComponent<Transform>();
+	auto meshRenderer = object.GetComponent<MeshRenderer>();
 
-		auto meshRenderer = this->AddComponent<MeshRenderer>();
+	object.AddComponent<MeshSource>(ResourceFactory::Create<Mesh>(FileManager::GetFilePath("objects/destroyer/destroyer.obj"_id), meshRenderer.GetUnchecked()));
+	object.ObjectTexture = GraphicFactory::Create<Texture>(ToMxString(FileManager::GetFilePath("objects/destroyer/Aluminm5.jpg"_id)));
 
-		this->SetMesh(context->GetCurrentScene().LoadMesh("objects/destroyer/destroyer.obj", meshRenderer.GetUnchecked()));
-		this->ObjectTexture = GraphicFactory::Create<Texture>(ToMxString(FileManager::GetFilePath("objects/destroyer/Aluminm5.jpg"_id)));
-
-		this->Translate(3.0f, 1.0f, 2.0f);
-		this->Translate(-5, 0.0f, 5.0f);
-		this->ObjectTransform.Scale(0.0005f);
-	}
-};
+	transform->Translate(MakeVector3(3.0f, 1.0f, 2.0f));
+	transform->Translate(MakeVector3(-5, 0.0f, 5.0f));
+	transform->Scale(0.0005f);
+}
