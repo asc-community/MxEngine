@@ -35,8 +35,25 @@ namespace MxEngine
 {
     using JsonFile = nlohmann::json;
 
-    inline JsonFile LoadJson(File& file)
+    namespace Json
     {
-        return nlohmann::json::parse(file.ReadAllText());
+        inline JsonFile LoadJson(File& file)
+        {
+            return nlohmann::json::parse(file.ReadAllText());
+        }
     }
+}
+
+#include "Utilities/Math/Math.h"
+
+namespace nlohmann
+{
+    using namespace MxEngine;
+
+    void to_json(JsonFile& j, const Vector3& v);
+    void from_json(const JsonFile& j, Vector3& v);
+    void to_json(JsonFile& j, const Vector2& v);
+    void from_json(const JsonFile& j, Vector2& v);
+    void to_json(JsonFile& j, const MxString& str);
+    void from_json(const JsonFile& j, MxString& str);
 }

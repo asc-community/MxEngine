@@ -32,6 +32,8 @@
 #include <ostream>
 #include <istream>
 
+#include "Utilities/STL/MxString.h"
+
 namespace boost::uuids
 {
     struct uuid;
@@ -55,6 +57,8 @@ namespace MxEngine
         bool operator> (const UUID& other) const;
         bool operator<=(const UUID& other) const;
         bool operator>=(const UUID& other) const;
+
+        operator MxString() const;
     };
 
     std::ostream& operator<<(std::ostream& out, const UUID& uuid);

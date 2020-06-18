@@ -30,8 +30,6 @@
 #include "Platform/GraphicAPI.h"
 #include "Platform/Modules/GraphicModule.h"
 #include "Core/Event/Event.h"
-#include "Core/Camera/PerspectiveCamera.h"
-#include "Core/Camera/OrthographicCamera.h"
 
 // conditional includes
 #include "Core/Macro/Macro.h"
@@ -48,69 +46,16 @@
 #include "Utilities/ECS/ComponentFactory.h"
 
 #include "Core/Components/Behaviour.h"
-#include "Core/Components/MeshRenderer.h"
+#include "Core/Components/Rendering/MeshRenderer.h"
+#include "Core/Components/Rendering/MeshSource.h"
+#include "Core/Components/Rendering/MeshLOD.h"
 
 namespace MxEngine
 {
-	template<typename EventType>
-	void ForwardEvent(const MxString& name)
-	{
-		Application::Get()->GetEventDispatcher().AddEventListener(name, [](EventType& e)
-		{
-			Application::Get()->GetCurrentScene().GetEventDispatcher().Invoke(e);
-		});
-	}
-
-	void InitEventDispatcher()
-	{
-		ForwardEvent<AppDestroyEvent>  ("MxAppDestroyEvent");
-		ForwardEvent<FpsUpdateEvent>   ("MxFpsUpdateEvent");
-		ForwardEvent<WindowResizeEvent>("MxWindowResizeEvent");
-		ForwardEvent<MouseMoveEvent>   ("MxMouseMoveEvent");
-		ForwardEvent<RenderEvent>      ("MxRenderEvent"); 
-		ForwardEvent<UpdateEvent>      ("MxUpdateEvent"); 
-		ForwardEvent<KeyEvent>         ("MxKeyEvent");
-	}
-
-	size_t ComputeLODLevel(const MxObject& object, const CameraController& camera)
-	{
-		const auto& box = object.GetAABB();
-		float distance  = Length(box.GetCenter() - camera.GetPosition());
-		Vector3 length = box.Length();
-		float maxLength = Max(length.x, length.y, length.z);
-		float scaledDistance = maxLength / distance / camera.GetZoom();
-
-		constexpr static std::array lodDistance = {
-				0.21f,
-				0.15f,
-				0.10f,
-				0.06f,
-				0.03f,
-		};
-		size_t lod = 0;
-		while (lod < lodDistance.size() && scaledDistance < lodDistance[lod]) 
-			lod++;
-
-		return lod;
-	}
-
 	Application::Application()
-		: manager(this), window(MakeUnique<Window>(1600, 900, "MxEngine Application")),
-		timeDelta(0), counterFPS(0)
+		: manager(this), window(MakeUnique<Window>(1600, 900, "MxEngine Application"))
 	{
 		this->GetWindow().UseEventDispatcher(&this->dispatcher);
-		this->CreateScene("Global", MakeUnique<Scene>("Global", "Resources/"));
-		this->CreateScene("Default", MakeUnique<Scene>("Default", "Resources/"));
-
-		InitEventDispatcher();
-	}
-
-	void Application::ToggleDebugDraw(bool aabb, bool spheres, const Vector4& color, bool overlay)
-	{
-		this->debugColor = color;
-		this->drawBoxes = aabb;
-		this->drawSpheres = spheres;
-		this->overlayDebug = overlay;
 	}
 
 	void Application::OnCreate()
@@ -133,87 +78,6 @@ namespace MxEngine
 		return *this->window;
 	}
 
-	Scene& Application::GetCurrentScene()
-	{
-		return *this->currentScene;
-	}
-
-	Scene& Application::GetGlobalScene()
-	{
-		MX_ASSERT(this->scenes.Exists("Global"));
-		return *this->scenes.Get("Global"); //-V522
-	}
-
-	void Application::LoadScene(const MxString& name)
-	{
-		if (name == this->GetGlobalScene().GetName())
-		{
-			Logger::Instance().Error("MxEngine::Application", "global scene cannot be loaded: " + name);
-			return;
-		}
-		if (!this->scenes.Exists(name))
-		{
-			Logger::Instance().Error("MxEngine::Application", "cannot load scene as it does not exist: " + name);
-			return;
-		}
-		// unload previous scene if it exists
-		if (this->currentScene != nullptr)
-			this->currentScene->OnUnload();
-
-		this->currentScene = this->scenes.Get(name);
-		this->currentScene->OnLoad();
-	}
-
-	void Application::DestroyScene(const MxString& name)
-	{
-		if (name == this->GetGlobalScene().GetName())
-		{
-			Logger::Instance().Error("MxEngine::Application", "trying to destroy global scene: " + name);
-			return;
-		}
-		if (!this->scenes.Exists(name))
-		{
-			Logger::Instance().Warning("MxEngine::Application", "trying to destroy not existing scene: " + name);
-			return;
-		}
-		if (this->scenes.Get(name) == this->currentScene)
-		{
-			Logger::Instance().Error("MxEngine::Application", "cannot destroy scene which is used: " + name);
-			return;
-		}
-		this->scenes.Delete(name);
-	}
-
-	Scene& Application::CreateScene(const MxString& name, UniqueRef<Scene> scene)
-	{
-		if (scenes.Exists(name))
-		{
-			Logger::Instance().Error("MxEngine::Application", "scene with such name already exists: " + name);
-		}
-		else
-		{
-			scenes.Add(name, std::move(scene));
-			scenes.Get(name)->OnCreate(); //-V522
-		}
-		return *scenes.Get(name);
-	}
-
-	Scene& Application::GetScene(const MxString& name)
-	{
-		MX_ASSERT(this->scenes.Exists(name));
-		return *this->scenes.Get(name); //-V522
-	}
-
-	bool Application::SceneExists(const MxString& name)
-	{
-		return this->scenes.Exists(name);
-	}
-
-	Counter::CounterType Application::GenerateResourceId()
-	{
-		return this->resourceIdCounter++;
-	}
-
 	float Application::GetTimeDelta() const
 	{
 		return this->timeDelta;
@@ -224,24 +88,14 @@ namespace MxEngine
 		return this->counterFPS;
 	}
 
-	void Application::SetMSAASampling(size_t samples)
-	{
-		this->GetEventDispatcher().AddEventListener("MSAAfactorTrack", [](WindowResizeEvent& e)
-			{
-				auto& renderer = Application::Get()->GetRenderer();
-				renderer.SetMSAASampling(renderer.getMSAASamples(), (int)e.New.x, (int)e.New.y);
-			});
-		this->GetRenderer().SetMSAASampling(Max(1, samples), this->GetWindow().GetWidth(), this->GetWindow().GetHeight());
-	}
-
 	AppEventDispatcher& Application::GetEventDispatcher()
 	{
 		return this->dispatcher;
 	}
 
-	RenderController& Application::GetRenderer()
+	RenderAdaptor& Application::GetRenderAdaptor()
 	{
-		return this->renderer;
+		return this->renderAdaptor;
 	}
 
 	LoggerImpl& Application::GetLogger()
@@ -277,159 +131,10 @@ namespace MxEngine
 		this->GetWindow().UseEventDispatcher(isVisible ? nullptr : &this->dispatcher);
 	}
 
-	void Application::ToggleSkybox(bool state)
-	{
-		this->skyboxEnabled = state;
-	}
-
-	void Application::ToggleLighting(bool state)
-	{
-		if (state != this->drawLighting)
-		{
-			this->drawLighting = state;
-			this->renderer.ObjectShader = { }; // force default shader init (TODO: do something better
-			this->VerifyRendererState();
-		}
-	}
-
 	void Application::DrawObjects()
 	{
 		MAKE_SCOPE_PROFILER("Application::DrawObjects");
-		const auto& viewport = this->currentScene->Viewport;
-
-		LightSystem lights;
-		if (this->drawLighting)
-		{
-			lights.Global = &this->currentScene->GlobalLight;
-			lights.Point = this->currentScene->PointLights.GetView();
-			lights.Spot = this->currentScene->SpotLights.GetView();
-
-			VerifyLightSystem(lights);
-
-			this->renderer.ToggleReversedDepth(false);
-			this->renderer.ToggleDepthOnlyMode(true);
-
-			// compute LOD for each object
-			for (const auto& [name, object] : this->currentScene->GetObjectList())
-			{
-				if (object->GetMesh() != nullptr && object->UseLOD && object->GetInstanceCount() == 0)
-				{
-					object->GetMesh()->SetLOD(std::numeric_limits<size_t>::max()); // set lowest LOD firstly
-				}
-			}
-			for (const auto& [name, object] : this->currentScene->GetObjectList())
-			{
-				// we do not try to compute LOD for instanced objects, as it is potentially more resource-demanding, then rendering
-				// better to let user himself specify desired LOD. TODO: consider optimizing LOD computing for instances
-				if (object->GetMesh() != nullptr && object->UseLOD && object->GetInstanceCount() == 0)
-				{
-					// as objects can use same mesh, find best LOD for all of them. TODO: compute LOD per object, but only once per frame
-					object->GetMesh()->SetLOD(Min(object->GetMesh()->GetLOD(), ComputeLODLevel(*object, viewport)));
-				}
-			}
-
-			// first draw global directional light
-			{
-				lights.Global->ProjectionCenter = viewport.GetPosition();
-				this->renderer.AttachDepthTexture(*lights.Global->GetDepthTexture());
-				MAKE_SCOPE_PROFILER("Renderer::DrawGlobalLightDepthTexture");
-				for (const auto& [name, object] : this->currentScene->GetObjectList())
-				{
-					this->renderer.DrawDepthTexture(*object, *lights.Global);
-				}
-			}
-
-			// then draw spot lights
-			for (const auto& spotLight : lights.Spot)
-			{
-				MAKE_SCOPE_PROFILER("Renderer::DrawSpotLightDepthTexture");
-				this->renderer.AttachDepthTexture(*spotLight.GetDepthTexture());
-				for (const auto& object : this->currentScene->GetObjectList())
-				{
-					this->renderer.DrawDepthTexture(*object.second, spotLight);
-				}
-			}
-
-			// after draw point lights
-			for (const auto& pointLight : lights.Point)
-			{
-				MAKE_SCOPE_PROFILER("Renderer::DrawPointLightDepthCubeMap");
-				this->renderer.AttachDepthCubeMap(*pointLight.GetDepthCubeMap());
-				for (const auto& object : this->currentScene->GetObjectList())
-				{
-					this->renderer.DrawDepthCubeMap(*object.second, pointLight, pointLight.FarDistance);
-				}
-			}
-
-			this->renderer.SetViewport(0, 0, this->GetWindow().GetWidth(), this->GetWindow().GetHeight());
-			this->renderer.DetachDepthBuffer();
-			this->renderer.ToggleReversedDepth(true);
-		}
-
-		this->renderer.ToggleDepthOnlyMode(false);
-		this->renderer.AttachDrawBuffer();
-
-		if (this->drawLighting)
-		{
-			// now draw the scene as usual (with all framebuffers)
-			{
-				MAKE_SCOPE_PROFILER("Renderer::DrawScene");
-				for (const auto& [name, object] : this->currentScene->GetObjectList())
-				{
-					auto meshRenderer = object->GetComponent<MeshRenderer>();
-					MeshRenderer* meshPtr = meshRenderer.IsValid() ? meshRenderer.GetUnchecked() : nullptr;
- 					this->renderer.DrawObject(*object, viewport, meshPtr, lights, this->renderer.Fog, this->currentScene->SceneSkybox.get());
-				}
-			}
-		}
-		else // no lighting, no shadows
-		{
-			MAKE_SCOPE_PROFILER("Renderer::DrawScene");
-			for (const auto& [name, object] : this->currentScene->GetObjectList())
-			{
-				auto meshRenderer = object->GetComponent<MeshRenderer>();
-				MeshRenderer* meshPtr = meshRenderer.IsValid() ? meshRenderer.GetUnchecked() : nullptr;
-				this->renderer.DrawObject(*object, viewport, meshPtr);
-			}
-		}
-
-		if(this->skyboxEnabled)
-		{
-			MAKE_SCOPE_PROFILER("Renderer::DrawSkybox");
-			auto& skybox = this->GetCurrentScene().SceneSkybox;
-			this->renderer.DrawSkybox(*skybox, viewport, renderer.Fog);
-		}
-
-		if (this->drawBoxes | this->drawSpheres)
-		{
-			auto& buffer = this->renderer.GetDebugBuffer();
-			for (const auto& [name, object] : this->currentScene->GetObjectList())
-			{
-				AABB box;
-				if (object->GetInstanceCount() > 0 && object->GetMesh() != nullptr)
-				{
-					for (const auto& instance : object->GetInstances())
-					{
-						box = object->GetMesh()->GetAABB() * instance.Model.GetMatrix();
-						if (this->drawBoxes) 
-							buffer.SubmitAABB(box, debugColor);
-						if (this->drawSpheres) 
-							buffer.SubmitSphere(ToSphere(box), debugColor);
-					}
-				}
-				else
-				{
-					box = object->GetAABB();
-					if (this->drawBoxes) 
-						buffer.SubmitAABB(box, debugColor);
-					if (this->drawSpheres) 
-						buffer.SubmitSphere(ToSphere(box), debugColor);
-				}
-			}
-			this->renderer.DrawDebugBuffer(viewport, this->overlayDebug);
-		}
-
-		this->renderer.DetachDrawBuffer();
+		this->GetRenderAdaptor().PerformRenderIteration();
 	}
 
 	void Application::InvokeUpdate()
@@ -439,22 +144,19 @@ namespace MxEngine
 		UpdateEvent updateEvent(this->timeDelta);
 		this->GetEventDispatcher().Invoke(updateEvent);
 		{
-			MAKE_SCOPE_PROFILER("Scene::OnUpdate");
-			for (auto& [_, object] : this->currentScene->GetObjectList())
+			MAKE_SCOPE_PROFILER("MxObjects::OnUpdate");
+			auto objects = MxObject::GetObjects();
+			for (auto& object : objects)
 			{
-				auto component = object->GetComponent<Behaviour>();
-				if (component.IsValid()) component.GetUnchecked()->InvokeUpdate(timeDelta);
+				auto behaviour = object.GetComponent<Behaviour>();
+				if (behaviour.IsValid()) behaviour.GetUnchecked()->InvokeUpdate(timeDelta);
+				auto instances = object.GetComponent<InstanceFactory>();
+				if (instances.IsValid()) object.BufferInstances();
 			}
-			this->currentScene->OnUpdate();
 		}
 		{
 			MAKE_SCOPE_PROFILER("Application::OnUpdate");
 			this->OnUpdate();
-		}
-		{
-			MAKE_SCOPE_PROFILER("Scene::PrepareRender");
-			this->currentScene->OnRender();
-			this->currentScene->PrepareRender();
 		}
 	}
 
@@ -476,146 +178,6 @@ namespace MxEngine
 			return false;
 		}
 		return true; // verified!
-	}
-
-	void Application::VerifyRendererState()
-	{
-		auto& Renderer = this->GetRenderer();
-		auto& GlobalScene = this->GetGlobalScene();
-		if (!Renderer.DefaultTexture.IsValid())
-		{
-			Renderer.DefaultTexture = Colors::MakeTexture(Colors::WHITE);
-		}
-		if (!Renderer.DefaultNormal.IsValid())
-		{
-			Renderer.DefaultNormal = Colors::MakeTexture(Colors::FLAT_NORMAL);
-		}
-		if (!Renderer.DefaultHeight.IsValid())
-		{
-			Renderer.DefaultHeight = Colors::MakeTexture(Colors::GREY);
-		}
-		if (!Renderer.ObjectShader.IsValid())
-		{
-			if (this->drawLighting)
-			{
-				Renderer.ObjectShader = GraphicFactory::Create<Shader>();
-				Renderer.ObjectShader->LoadFromString(
-					#include MAKE_PLATFORM_SHADER(object_vertex)
-					,
-					#include MAKE_PLATFORM_SHADER(object_fragment)
-				);
-			}
-			else
-			{
-				Renderer.ObjectShader = GraphicFactory::Create<Shader>();
-				Renderer.ObjectShader->LoadFromString(
-					#include MAKE_PLATFORM_SHADER(nolight_object_vertex)
-					,
-					#include MAKE_PLATFORM_SHADER(nolight_object_fragment)
-				);
-			}
-		}
-		if (!Renderer.DepthTextureShader.IsValid())
-		{
-			Renderer.DepthTextureShader = GraphicFactory::Create<Shader>();
-			Renderer.DepthTextureShader->LoadFromString(
-				#include MAKE_PLATFORM_SHADER(depthtexture_vertex)
-				,
-				#include MAKE_PLATFORM_SHADER(depthtexture_fragment)
-			);
-		}
-		if (!Renderer.DepthCubeMapShader.IsValid())
-		{
-			Renderer.DepthCubeMapShader = GraphicFactory::Create<Shader>();
-			Renderer.DepthCubeMapShader->LoadFromString(
-				#include MAKE_PLATFORM_SHADER(depthcubemap_vertex)
-				,
-				#include MAKE_PLATFORM_SHADER(depthcubemap_geometry)
-				,
-				#include MAKE_PLATFORM_SHADER(depthcubemap_fragment)
-			);
-		}
-		if (!Renderer.MSAAShader.IsValid())
-		{
-			Renderer.MSAAShader = GraphicFactory::Create<Shader>();
-			Renderer.MSAAShader->LoadFromString(
-				#include MAKE_PLATFORM_SHADER(rect_vertex)
-				,
-				#include MAKE_PLATFORM_SHADER(msaa_fragment)
-			);
-		}
-		if (!Renderer.HDRShader.IsValid())
-		{
-			Renderer.HDRShader = GraphicFactory::Create<Shader>();
-			Renderer.HDRShader->LoadFromString(
-				#include MAKE_PLATFORM_SHADER(rect_vertex)
-				,
-				#include MAKE_PLATFORM_SHADER(hdr_fragment)
-			);
-		}
-		if (!Renderer.BloomShader.IsValid())
-		{
-			Renderer.BloomShader = GraphicFactory::Create<Shader>();
-			Renderer.BloomShader->LoadFromString(
-				#include MAKE_PLATFORM_SHADER(rect_vertex)
-				,
-				#include MAKE_PLATFORM_SHADER(bloom_fragment)
-			);
-		}
-		if (!Renderer.UpscaleShader.IsValid())
-		{
-			Renderer.UpscaleShader = GraphicFactory::Create<Shader>();
-			Renderer.UpscaleShader->LoadFromString(
-				#include MAKE_PLATFORM_SHADER(rect_vertex)
-				,
-				#include MAKE_PLATFORM_SHADER(upscale_fragment)
-			);
-		}
-
-		auto& skybox = this->GetCurrentScene().SceneSkybox;
-		if (skybox == nullptr) skybox = MakeUnique<Skybox>();
-
-		if (!Renderer.DepthBuffer.IsValid())
-		{
-			Renderer.DepthBuffer = GraphicFactory::Create<FrameBuffer>();
-		}
-	}
-
-	void Application::VerifyLightSystem(LightSystem& lights)
-	{
-		const auto dirBufferSize = (int)this->renderer.GetDepthBufferSize<DirectionalLight>();
-		const auto spotBufferSize = (int)this->renderer.GetDepthBufferSize<SpotLight>();
-		const auto pointBufferSize = (int)this->renderer.GetDepthBufferSize<PointLight>();
-
-		if (!lights.Global->GetDepthTexture().IsValid() ||
-			lights.Global->GetDepthTexture()->GetWidth() != dirBufferSize)
-		{
-			auto depthTexture = GraphicFactory::Create<Texture>();
-			depthTexture->LoadDepth(dirBufferSize, dirBufferSize);
-			lights.Global->AttachDepthTexture(depthTexture);
-		}
-
-		for (auto& spotLight : lights.Spot)
-		{
-			if (!spotLight.GetDepthTexture().IsValid() ||
-				spotLight.GetDepthTexture()->GetWidth() != spotBufferSize)
-			{
-				auto depthTexture = GraphicFactory::Create<Texture>();
-				depthTexture->LoadDepth(spotBufferSize, spotBufferSize);
-				spotLight.AttachDepthTexture(depthTexture);
-			}
-		}
-
-		for (auto& pointLight : lights.Point)
-		{
-			if (!pointLight.GetDepthCubeMap().IsValid() ||
-				pointLight.GetDepthCubeMap()->GetWidth() != pointBufferSize)
-			{
-				auto depthCubeMap = GraphicFactory::Create<CubeMap>();
-				depthCubeMap->LoadDepth(pointBufferSize, pointBufferSize);
-				pointLight.AttachDepthCubeMap(depthCubeMap);
-			}
-		}
 	}
 
 	void Application::CloseApplication()
@@ -643,13 +205,13 @@ namespace MxEngine
 		auto configPathHash = STRING_ID("engine_config.json");
 		if (FileManager::FileExists(configPathHash))
 		{
-			Logger::Instance().Debug("Application::CreateContext", "using engine config file to set up context...");
+			Logger::Instance().Debug("Application::CreateContext", "Using engine config file to set up context...");
 			File configFile(FileManager::GetFilePath(configPathHash));
-			config = LoadJson(configFile);
+			config = Json::LoadJson(configFile);
 		}
 		else
 		{
-			Logger::Instance().Warning("Application::CreateContext", "engine config file was not provided, using default settings...");
+			Logger::Instance().Warning("Application::CreateContext", "Engine config file was not provided, using default settings...");
 			config["renderer"]["opengl-profile"] = "core";
 			config["renderer"]["opengl-major-version"] = 4;
 			config["renderer"]["opengl-minor-version"] = 0;
@@ -701,7 +263,7 @@ namespace MxEngine
 			.UseSize(size[0], size[1])
 			.Create();
 
-		auto& renderingEngine = this->renderer.GetRenderEngine();
+		auto& renderingEngine = this->GetRenderAdaptor().Renderer.GetRenderEngine();
 		renderingEngine
 			.UseCulling()
 			.UseDepthBuffer()
@@ -712,8 +274,8 @@ namespace MxEngine
 			.UseAnisotropicFiltering(static_cast<float>(anisothropic))
 			;
 
-		this->AddConsoleEventListener(this->GetConsole());
-		this->SetMSAASampling(msaaSamples);
+		this->InitializeDeveloperConsole(this->GetConsole());
+		this->InitializeRenderAdaptor(this->GetRenderAdaptor());
 	}
 
 	DeveloperConsole& Application::GetConsole()
@@ -734,13 +296,11 @@ namespace MxEngine
 		{
 			MAKE_SCOPE_PROFILER("Application::OnCreate");
 			MAKE_SCOPE_TIMER("MxEngine::Application", "Application::OnCreate()");
-			this->LoadScene("Default");
 			this->OnCreate();
 		}
 
 		float secondEnd = Time::Current(), frameEnd = secondEnd;
 		int fpsCounter = 0;
-		VerifyRendererState();
 		{
 			MAKE_SCOPE_PROFILER("Application::Run");
 			MAKE_SCOPE_TIMER("MxEngine::Application", "Application::Run()");
@@ -763,7 +323,6 @@ namespace MxEngine
 				{
 					MAKE_SCOPE_PROFILER("Application::ProcessEvents");
 					this->GetEventDispatcher().InvokeAll();
-					this->currentScene->GetEventDispatcher().InvokeAll();
 					if (this->shouldClose) break;
 				}
 
@@ -772,7 +331,7 @@ namespace MxEngine
 
 				RenderEvent renderEvent;
 				this->GetEventDispatcher().Invoke(renderEvent);
-				this->renderer.Render();
+				this->GetRenderAdaptor().Renderer.Render();
 				this->GetWindow().PullEvents();
 				if (this->shouldClose) break;
 			}
@@ -781,7 +340,6 @@ namespace MxEngine
 			{
 				MAKE_SCOPE_PROFILER("Application::CloseApplication");
 				MAKE_SCOPE_TIMER("MxEngine::Application", "Application::CloseApplication()");
-				this->currentScene->OnUnload();
 				AppDestroyEvent appDestroyEvent;
 				this->GetEventDispatcher().Invoke(appDestroyEvent);
 				this->OnDestroy();
@@ -798,16 +356,6 @@ namespace MxEngine
 
 	Application::~Application()
 	{
-		{
-			MAKE_SCOPE_PROFILER("Application::DestroyObjects");
-			MAKE_SCOPE_TIMER("MxEngine::Application", "Application::DestroyObjects");
-
-			for (auto& scene : this->scenes.GetStorage())
-			{
-				scene.second->OnDestroy();
-			}
-			this->scenes.Clear();
-		}
 		Logger::Instance().Debug("MxEngine::Application", "application destroyed");
 	}
 
@@ -847,8 +395,18 @@ namespace MxEngine
 		#endif
 	}
 
+	void Application::InitializeRenderAdaptor(RenderAdaptor& adaptor)
+	{
+		adaptor.InitRendererEnvironment();
+		this->GetRenderAdaptor().OnWindowResize({ this->GetWindow().GetWidth(), this->GetWindow().GetHeight() });
+		this->GetEventDispatcher().AddEventListener("RenderAdaptorOnResize", [this](WindowResizeEvent& e)
+		{
+			this->GetRenderAdaptor().OnWindowResize(e.New);
+		});
+	}
+
 #if defined(MXENGINE_USE_PYTHON)
-	void Application::AddConsoleEventListener(DeveloperConsole& console)
+	void Application::InitializeDeveloperConsole(DeveloperConsole& console)
 	{
 		console.SetSize({ 
 			static_cast<float>(this->GetWindow().GetWidth()) / 2.5f, 
@@ -858,7 +416,7 @@ namespace MxEngine
 		this->GetConsole().GetEngine().Execute("InitializeOpenGL()");
 	}
 #else
-	void Application::CreateConsoleBindings(DeveloperConsole& console)
+	void Application::InitializeDeveloperConsole(DeveloperConsole& console)
 	{
 		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });
 		this->GetEventDispatcher().AddEventListener("DeveloperConsole",

@@ -604,6 +604,13 @@ namespace MxEngine
 		return { tangent, bitangent };
 	}
 
+	/*!
+	compute normal vector pair using triangle vertecies
+	\param v1 first  vertex position of vertecies
+	\param v2 second vertex position of vertecies
+	\param v3 third  vertex position of vertecies
+	\returns normalized normal vector
+	*/
 	inline Vector3 ComputeNormal(const Vector3& v1, const Vector3& v2, const Vector3& v3)
 	{
 		auto deltaPos1 = v2 - v1;

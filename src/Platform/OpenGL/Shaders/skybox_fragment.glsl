@@ -5,7 +5,9 @@ R"(
 MAKE_STRING(
 
 out vec4 Color;
+
 in vec3 TexCoords;
+
 uniform samplerCube skybox;
 uniform vec3 fogColor;
 uniform float fogDistance;

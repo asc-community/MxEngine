@@ -7,7 +7,10 @@ using namespace MxEngine;
 void InitDeathStar(MxObject& object)
 {
 	auto transform = object.GetComponent<Transform>();
-	auto meshRenderer = object.GetComponent<MeshRenderer>();
+	auto objectPath = "objects/death_star/death_star.obj"_id;
+
+	object.AddComponent<MeshSource>(AssetManager::LoadMesh(objectPath));
+	object.AddComponent<MeshRenderer>(AssetManager::LoadMaterials(objectPath));
 
 	transform->Scale(0.00005f);
 	transform->RotateX(-90.0f);
@@ -22,6 +25,4 @@ void InitDeathStar(MxObject& object)
 		}
 	};
 	object.AddComponent<Behaviour>(DeathStarBehaviour{ });
-	object.AddComponent<MeshSource>(ResourceFactory::Create<Mesh>(FileManager::GetFilePath("objects/death_star/death_star.obj"_id), meshRenderer.GetUnchecked()));
-	object.ObjectTexture = GraphicFactory::Create<Texture>(ToMxString(FileManager::GetFilePath("objects/death_star/texture.jpg"_id)));
 }

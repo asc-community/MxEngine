@@ -6,3 +6,6 @@
 #include "DeathStarObject.h"
 #include "SphereObject.h"
 #include "GridObject.h"
+#include "SurfaceObject.h"
+#include "CameraObject.h"
+#include "Lights.h"

@@ -18,22 +18,24 @@ namespace MxEngine
         this->VAO->AddBuffer(*this->VBO, *VBL);
     }
 
-    VertexArray& MeshData::GetVAO() const
+    GResource<VertexArray> MeshData::GetVAO() const
     {
-        auto copy = this->VAO;
-        return *copy;
+        return this->VAO;
     }
 
-    VertexBuffer& MeshData::GetVBO() const
+    GResource<VertexBuffer> MeshData::GetVBO() const
     {
-        auto copy = this->VBO;
-        return *copy;
+        return this->VBO;
     }
 
-    IndexBuffer& MeshData::GetIBO() const
+    GResource<IndexBuffer> MeshData::GetIBO() const
     {
-        auto copy = this->IBO;
-        return *copy;
+        return this->IBO;
+    }
+
+    const AABB& MeshData::GetAABB() const
+    {
+        return this->boundingBox;
     }
 
     MeshData::VertexData& MeshData::GetVertecies()
@@ -67,21 +69,28 @@ namespace MxEngine
         this->IBO->Load(data, this->indicies.size());
     }
 
+    void MeshData::UpdateBoundingBox()
+    {
+        this->boundingBox = { MakeVector3(0.0f), MakeVector3(0.0f) };
+        if (vertecies.size() > 0)
+        {
+            this->boundingBox = { vertecies[0].Position, vertecies[0].Position };
+            for (const auto& vertex : vertecies)
+            {
+                this->boundingBox.Min = VectorMin(this->boundingBox.Min, vertex.Position);
+                this->boundingBox.Max = VectorMax(this->boundingBox.Max, vertex.Position);
+            }
+        }
+    }
+
     void MeshData::RegenerateNormals()
     {
-        MxVector<uint16_t> weights(vertecies.size(), 0);
         // first set all normal-space vectors to 0
         for (auto& vertex : vertecies)
         {
             vertex.Normal    = MakeVector3(0.0f);
             vertex.Tangent   = MakeVector3(0.0f);
             vertex.Bitangent = MakeVector3(0.0f);
-        }
-
-        // then count weights for each vertex
-        for (const auto& index : indicies)
-        {
-            weights[index]++;
         }
 
         // then compute normal space vectors for each triangle
@@ -115,9 +124,9 @@ namespace MxEngine
         // at the end normalize all normal-space vectors using vertex weights
         for (size_t i = 0; i < vertecies.size(); i++)
         {
-            vertecies[i].Normal    /= weights[i];
-            vertecies[i].Tangent   /= weights[i];
-            vertecies[i].Bitangent /= weights[i];
+            vertecies[i].Normal    = Normalize(vertecies[i].Normal);
+            vertecies[i].Tangent   = Normalize(vertecies[i].Tangent);
+            vertecies[i].Bitangent = Normalize(vertecies[i].Bitangent);
         }
     }
 }

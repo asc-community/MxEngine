@@ -28,11 +28,6 @@
 
 #pragma once
 
-#include "Core/MxObject/MxObject.h"
-#include "Utilities/SingletonHolder/SingletonHolder.h"
-#include "Core/Interfaces/IDrawable.h"
-#include "Core/Camera/CameraController.h"
-
 #include "Platform/GraphicAPI.h"
 
 enum class BlendFactor

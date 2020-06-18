@@ -1,8 +1,9 @@
 #define MAKE_STRING(...) #__VA_ARGS__
 R"(
 #version 400 core
-#define MAX_POINT_LIGHTS 2
-#define MAX_SPOT_LIGHTS 8
+#define MAX_POINT_LIGHTS 1
+#define MAX_SPOT_LIGHTS 1
+#define MAX_DIR_LIGHTS 1
 )" \
 MAKE_STRING(
 
@@ -16,11 +17,12 @@ layout(location = 9)  in mat3 normalMatrix;
 layout(location = 12) in vec4 renderColor;
 
 uniform mat4 ViewProjMatrix;
-uniform mat4 DirLightProjMatrix;
+uniform mat4 DirLightProjMatrix[MAX_DIR_LIGHTS];
 uniform mat4 SpotLightProjMatrix[MAX_SPOT_LIGHTS];
 uniform int pointLightCount;
 uniform int spotLightCount;
-uniform vec3 displacement;
+uniform int dirLightCount;
+uniform float displacement;
 uniform sampler2D map_height;
 
 out VSout
@@ -29,7 +31,7 @@ out VSout
 	vec3 Normal;
 	vec3 FragPosWorld;
 	vec4 RenderColor;
-	vec4 FragPosDirLight;
+	vec4 FragPosDirLight[MAX_DIR_LIGHTS];
 	vec4 FragPosSpotLight[MAX_SPOT_LIGHTS];
 	mat3 TBN;
 } vsout;
@@ -47,7 +49,11 @@ void main()
 
 	vsout.FragPosWorld = vec3(modelPos);
 	vsout.RenderColor = renderColor;
-	vsout.FragPosDirLight = DirLightProjMatrix * modelPos;
+
+	for (int i = 0; i < dirLightCount; i++)
+	{
+		vsout.FragPosDirLight[i] = DirLightProjMatrix[i] * modelPos;
+	}
 
 	for (int i = 0; i < spotLightCount; i++)
 	{

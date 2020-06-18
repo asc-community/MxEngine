@@ -81,6 +81,8 @@ namespace MxEngine
 
 	void Renderer::DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const
 	{
+		if (count == 0) { this->DrawLines(vao, ibo, shader); return; }
+
 		vao.Bind();
 		ibo.Bind();
 		shader.Bind();
@@ -89,6 +91,8 @@ namespace MxEngine
 
 	void Renderer::DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const
 	{
+		if (count == 0) { this->DrawLines(vao, vertexCount, shader); return; }
+
 		vao.Bind();
 		shader.Bind();
 		GLCALL(glDrawArraysInstanced(GL_LINES, 0, (GLsizei)vertexCount, (GLsizei)count));
@@ -96,6 +100,8 @@ namespace MxEngine
 
 	void Renderer::DrawTrianglesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const
 	{
+		if (count == 0) { this->DrawTriangles(vao, ibo, shader); return; }
+
 		vao.Bind();
 		ibo.Bind();
 		shader.Bind();
@@ -104,6 +110,8 @@ namespace MxEngine
 
 	void Renderer::DrawTrianglesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const
 	{
+		if (count == 0) { this->DrawTriangles(vao, vertexCount, shader); return; }
+
 		vao.Bind();
 		shader.Bind();
 		GLCALL(glDrawArraysInstanced(GL_TRIANGLES, 0, (GLsizei)vertexCount, (GLsizei)count));

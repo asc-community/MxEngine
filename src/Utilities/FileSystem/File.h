@@ -129,22 +129,22 @@ namespace MxEngine
         \param value value to read to
         */
         template<typename T>
-        File& operator>>(T& value);
+        File& operator>>(T&& value);
         /*!
         writes data of type T to a file
         \param value value to write to
         */
         template<typename T>
-        File& operator<<(T& value);
+        File& operator<<(T&& value);
 
         /*!
-        creates temporary File object and reads its data into  string.
+        creates temporary File object and reads its data into string.
         \param path path to a file
         \returns file contents as string. If file is not opened / not exists returns empty string
         */
         static FileData ReadAllText(const FilePath& path);
         /*!
-        creates temporary File object and reads its data into  string.
+        creates temporary File object and reads its data into string.
         \param path path to a file (absolute or relative to executable directory)
         \returns file contents as string. If file is not opened / not exists returns empty string
         */
@@ -156,24 +156,36 @@ namespace MxEngine
         */
         static bool Exists(const FilePath& path);
         /*!
+        checks if file exists
+        \param path path of file to search for
+        \returns true if file exists, false either
+        */
+        static bool Exists(const MxString& path);
+        /*!
         gets file last modified time
         \param path path to a file to check for
         \returns platform-dependent time point of last file modification
         */
         static FileSystemTime LastModifiedTime(const FilePath& path);
+        /*!
+        gets file last modified time
+        \param path path to a file to check for
+        \returns platform-dependent time point of last file modification
+        */
+        static FileSystemTime LastModifiedTime(const MxString& path);
     };
 
     template<typename T>
-    inline File& File::operator>>(T& value)
+    inline File& File::operator>>(T&& value)
     {
-        this->fileStream >> value;
+        this->fileStream >> std::forward<T>(value);
         return *this;
     }
 
     template<typename T>
-    inline File& File::operator<<(T& value)
+    inline File& File::operator<<(T&& value)
     {
-        this->fileStream << value;
+        this->fileStream << std::forward<T>(value);
         return *this;
     }
 

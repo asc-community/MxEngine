@@ -29,17 +29,14 @@
 #pragma once
 
 #include "Utilities/Time/Time.h"
-#include "Utilities/GenericStorage/GenericStorage.h"
 #include "Core/Interfaces/IEvent.h"
 #include "Core/DeveloperConsole/DeveloperConsole.h"
-#include "Core/RenderController/RenderController.h"
+#include "Core/RenderController/RenderAdaptor.h"
 #include "Core/MxObject/MxObject.h"
-#include "Utilities/Counter/Counter.h"
 #include "Utilities/FileSystem/File.h"
-#include "Core/Scene/Scene.h"
+#include "Core/Components/Script.h"
 
 #include "Platform/Window/Window.h"
-
 
 namespace MxEngine
 {
@@ -54,31 +51,20 @@ namespace MxEngine
 		} manager;
 	private:
 		static inline Application* Current = nullptr;
-
-		ResourceStorage<Scene> scenes;
 		UniqueRef<Window> window;
-		RenderController renderer;
+		RenderAdaptor renderAdaptor;
 		AppEventDispatcher dispatcher;
 		DeveloperConsole console;
-		Counter resourceIdCounter;
-		TimeStep timeDelta;
-		Scene* currentScene = nullptr;
-		int counterFPS;
-		Vector4 debugColor = MakeVector4(1.0f, 0.0f, 0.0f, 1.0f);
-		bool drawBoxes = false;
-		bool drawSpheres = false;
-		bool overlayDebug = false;
+		TimeStep timeDelta = 0.0f;
+		int counterFPS = 0;
 		bool shouldClose = false;
 		bool isRunning = false;
-		bool drawLighting = true;
-		bool skyboxEnabled = true;
 
-		void AddConsoleEventListener(DeveloperConsole& console);
+		void InitializeDeveloperConsole(DeveloperConsole& console);
+		void InitializeRenderAdaptor(RenderAdaptor& adaptor);
 		void DrawObjects();
 		void InvokeUpdate();
 		bool VerifyApplicationState();
-		void VerifyRendererState();
-		void VerifyLightSystem(LightSystem& lights);
 	protected:
 
 		Application();
@@ -92,26 +78,14 @@ namespace MxEngine
 		void ExecuteScript(const char* script);
 
 		void ToggleDeveloperConsole(bool isVisible);
-		void ToggleSkybox(bool state = true);
-		void ToggleLighting(bool state = true);
-		void ToggleDebugDraw(bool aabb, bool spheres, const Vector4& color,  bool overlay = false);
 
 		AppEventDispatcher& GetEventDispatcher();
-		RenderController& GetRenderer();
+		RenderAdaptor& GetRenderAdaptor();
 		LoggerImpl& GetLogger();
 		DeveloperConsole& GetConsole();
 		Window& GetWindow();
-		Scene& GetCurrentScene();
-		Scene& GetGlobalScene();
-		void LoadScene(const MxString& name);
-		Scene& CreateScene(const MxString& name, UniqueRef<Scene> scene);
-		Scene& GetScene(const MxString& name);
-		bool SceneExists(const MxString& name);
-		void DestroyScene(const MxString& name);
-		Counter::CounterType GenerateResourceId();
 		float GetTimeDelta() const;
 		int GetCurrentFPS() const;
-		void SetMSAASampling(size_t samples);
 		void Run();
 		bool IsRunning() const;
 		void CloseApplication();

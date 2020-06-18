@@ -47,78 +47,66 @@ namespace MxEngine
 		/*!
 		name of material
 		*/
-		MxString name;
+		MxString Name;
 
 		/*!
 		ambient texture path
 		*/
-		MxString map_Ka;
+		MxString AmbientMap;
 		/*!
 		diffuse texture path
 		*/
-		MxString map_Kd;
+		MxString DiffuseMap;
 		/*!
 		specular texture path
 		*/
-		MxString map_Ks;
+		MxString SpecularMap;
 		/*!
 		emmisive texture path
 		*/
-		MxString map_Ke;
+		MxString EmmisiveMap;
 		/*!
 		transparency texture path
 		*/
-		MxString map_d;
+		MxString TransparencyMap;
 		/*!
 		height texture path
 		*/
-		MxString map_height;
+		MxString HeightMap;
 		/*!
 		normal texture path
 		*/
-		MxString map_normal;
+		MxString NormalMap;
 
 		/*!
 		specular power value
 		*/
-		float Ns = 0.0f;
-		/*!
-		specular intensity value
-		*/
-		float Ni = 0.0f;
+		float SpecularExponent = 0.0f;
 		/*!
 		transparency value
 		*/
-		float d = 0.0f;
+		float Transparency = 0.0f;
 		/*!
 		height displacement value
 		*/
-		float displacement = 0.0f;
+		float Displacement = 0.0f;
 		
-		/*!
-		transmission color
-		*/
-		Vector3 Tf{ 0.0f };
 		/*!
 		ambient color
 		*/
-		Vector3 Ka{ 0.0f };
+		Vector3 AmbientColor{ 0.0f };
 		/*!
 		diffuse color
 		*/
-		Vector3 Kd{ 0.0f };
+		Vector3 DiffuseColor{ 0.0f };
 		/*!
 		specular color
 		*/
-		Vector3 Ks{ 0.0f };
+		Vector3 SpecularColor{ 0.0f };
 		/*!
 		emmisive color
 		*/
-		Vector3 Ke{ 0.0f };
-		/*!
-		illumination type
-		*/
-		int illum = 0;
+		Vector3 EmmisiveColor{ 0.0f };
 	};
 
 	/*!
@@ -173,10 +161,6 @@ namespace MxEngine
 		list of all object meshes. For more info see MeshInfo documentation
 		*/
 		MxVector<MeshInfo> meshes;
-		/*!
-		precomputed bounding box of whole object. TODO: compute bounding boxes for each submesh
-		*/
-		AABB boundingBox;
 	};
 
 	/*!
@@ -193,5 +177,7 @@ namespace MxEngine
 		\warning this function is not thread safe
 		*/
 		static ObjectInfo Load(const MxString& path);
+		static MaterialLibrary LoadMaterials(const MxString& path);
+		static void DumpMaterials(const MaterialLibrary& materials, const MxString& path);
 	};
 }

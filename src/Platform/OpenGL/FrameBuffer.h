@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "Core/Macro/Macro.h"
 #include "Platform/OpenGL/Texture.h"
 #include "Platform/OpenGL/CubeMap.h"
 
@@ -56,12 +57,26 @@ namespace MxEngine
 
     class FrameBuffer
     {
+        enum class AttachmentType : uint8_t
+        {
+            NONE,
+            TEXTURE,
+            CUBEMAP,
+        };
+
         using BindableId = unsigned int;
 
         BindableId id = 0;
-        int width = 0, height = 0;
-        Texture texture;
-        CubeMap cubemap;
+        AttachmentType currentAttachment = AttachmentType::NONE;
+        std::aligned_storage_t<32> attachmentStorage;
+
+        #if defined(MXENGINE_DEBUG)
+        mutable const Texture* _texturePtr = nullptr;
+        mutable const CubeMap* _cubemapPtr = nullptr;
+        #endif
+
+        void OnTextureAttach(const Texture& texture, Attachment attachment);
+        void OnCubeMapAttach(const CubeMap& cubemap, Attachment attachment);
     public:
         FrameBuffer();
         ~FrameBuffer();
@@ -69,25 +84,93 @@ namespace MxEngine
         FrameBuffer(FrameBuffer&&) noexcept;
         FrameBuffer& operator=(const FrameBuffer&) = delete;
         FrameBuffer& operator=(FrameBuffer&&) noexcept;
-
-        void AttachTexture(Attachment attachment, int width, int height);
-        void AttachTexture(const Texture& texture, Attachment attachment);
-        void AttachTexture(Texture&& texture, Attachment attachment);
-        void AttachCubeMap(Attachment attachment, int width, int height);
-        void AttachCubeMap(const CubeMap& cubemap, Attachment attachment);
-        void AttachCubeMap(CubeMap&& cubemap, Attachment attachment);
         void CopyFrameBufferContents(const FrameBuffer& framebuffer) const;
         void CopyFrameBufferContents(int screenWidth, int screenHeight) const;
         void Validate() const;
-        Texture& GetAttachedTexture();
-        const Texture& GetAttachedTexture() const;
-        CubeMap& GetAttachedCubeMap();
-        const CubeMap& GetAttachedCubeMap() const;
+        void DetachRenderTarget();
+        bool HasTextureAttached() const;
+        bool HasCubeMapAttached() const;
         void UseDrawBuffers(size_t count) const;
-        int GetWidth() const;
-        int GetHeight() const;
+        size_t GetWidth() const;
+        size_t GetHeight() const;
         void Bind() const;
         void Unbind() const;
         BindableId GetNativeHandle() const;
+
+        template<template<typename, typename> typename Resource, typename Factory>
+        void AttachTexture(const Resource<Texture, Factory>& texture, Attachment attachment = Attachment::COLOR_ATTACHMENT0)
+        {
+            static_assert(sizeof(this->attachmentStorage) == sizeof(Resource<Texture, Factory>), "storage size must match object size");
+
+            this->DetachRenderTarget();
+            auto* attachedTexture = new(&this->attachmentStorage) Resource<Texture, Factory>(texture);
+            this->currentAttachment = AttachmentType::TEXTURE;
+            this->OnTextureAttach(**attachedTexture, attachment);
+
+            #if defined(MXENGINE_DEBUG)
+            this->_texturePtr = attachedTexture->GetUnchecked();
+            this->_cubemapPtr = nullptr;
+            #endif
+        }
+
+        template<template<typename, typename> typename Resource, typename Factory>
+        void AttachTextureExtra(const Resource<Texture, Factory>& texture, Attachment attachment)
+        {
+            MX_ASSERT(this->currentAttachment != AttachmentType::NONE);
+            this->OnTextureAttach(*texture, attachment);
+        }
+
+        template<template<typename, typename> typename Resource, typename Factory>
+        void AttachCubeMapExtra(const Resource<CubeMap, Factory>& cubemap, Attachment attachment)
+        {
+            MX_ASSERT(this->currentAttachment != AttachmentType::NONE);
+            this->OnCubeMapAttach(*cubemap, attachment);
+        }
+
+        template<template<typename, typename> typename Resource, typename Factory>
+        void AttachCubeMap(const Resource<CubeMap, Factory>& cubemap, Attachment attachment = Attachment::COLOR_ATTACHMENT0)
+        {
+            static_assert(sizeof(this->attachmentStorage) == sizeof(Resource<CubeMap, Factory>), "storage size must match object size");
+
+            this->DetachRenderTarget();
+            auto* attachedCubeMap = new(&this->attachmentStorage) Resource<CubeMap, Factory>(cubemap);
+            this->currentAttachment = AttachmentType::CUBEMAP;
+            this->OnCubeMapAttach(**attachedCubeMap, attachment);
+
+            #if defined(MXENGINE_DEBUG)
+            this->_cubemapPtr = attachedCubeMap->GetUnchecked();
+            this->_texturePtr = nullptr;
+            #endif
+        }
+
+        template<template<typename, typename> typename Resource, typename Factory>
+        Resource<Texture, Factory> GetAttachedTexture() const
+        {
+            if (!this->HasTextureAttached())
+                return Resource<Texture, Factory>{ };
+
+            const auto& texture = *reinterpret_cast<const Resource<Texture, Factory>*>(&this->attachmentStorage);
+
+            #if defined(MXENGINE_DEBUG)
+            this->_texturePtr = texture.GetUnchecked();
+            #endif
+
+            return texture;
+        }
+
+        template<template<typename, typename> typename Resource, typename Factory>
+        Resource<CubeMap, Factory> GetAttachedCubeMap() const
+        {
+            if (!this->HasCubeMapAttached())
+                return Resource<CubeMap, Factory>{ };
+
+            const auto& cubemap = *reinterpret_cast<const Resource<CubeMap, Factory>*>(&this->attachmentStorage);
+
+            #if defined(MXENGINE_DEBUG)
+            this->_cubemapPtr = cubemap.GetUnchecked();
+            #endif
+
+            return cubemap;
+        }
     };
 }

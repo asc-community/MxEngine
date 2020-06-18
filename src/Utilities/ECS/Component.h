@@ -75,9 +75,8 @@ namespace MxEngine
             this->RemoveComponent<T>();
             
             auto component = ComponentFactory::CreateComponent<T>(std::forward<Args>(args)...);
-            component->parent = this;
-            components.emplace_back();
-            Component* result = new (&components.back()) Component(T::ComponentId, std::move(component));
+            auto& data = components.emplace_back();
+            Component* result = new (&data) Component(T::ComponentId, std::move(component));
             return *reinterpret_cast<Resource<T, ComponentFactory>*>(&result->resource);
         }
 
@@ -132,10 +131,9 @@ namespace MxEngine
     };
 
 #define MAKE_COMPONENT(class_name)\
-        friend class MxEngine::ComponentManager;\
-        friend class MxEngine::ComponentFactory;\
-        public: auto& GetParent() { return *parent; }\
-                const auto& GetParent() const { return *parent; }\
-        private: static constexpr MxEngine::StringId ComponentId = STRING_ID(#class_name);\
-                 MxEngine::ComponentManager* parent = nullptr
+        public: static constexpr MxEngine::StringId ComponentId = STRING_ID(#class_name);\
+                void* UserData = nullptr;\
+        private:\
+                friend class MxEngine::ComponentManager; \
+                friend class MxEngine::ComponentFactory
 }

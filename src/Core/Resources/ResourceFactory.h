@@ -31,8 +31,29 @@
 #include "Utilities/AbstractFactory/AbstractFactory.h"
 #include "Core/MxObject/Mesh.h"
 #include "Core/Material/Material.h"
+#include "Platform/GraphicAPI.h"
 
 namespace MxEngine
 {
     using ResourceFactory = AbstractFactoryImpl<Material, Mesh>;
+
+    class AssetManager
+    {
+    public:
+        static GResource<CubeMap> LoadCubeMap(StringId hash);
+        static GResource<CubeMap> LoadCubeMap(const FilePath& path);
+        static GResource<CubeMap> LoadCubeMap(const MxString& path);
+
+        static GResource<Texture> LoadTexture(StringId hash);
+        static GResource<Texture> LoadTexture(const FilePath& path);
+        static GResource<Texture> LoadTexture(const MxString& path);
+
+        static Resource<Mesh, ResourceFactory> LoadMesh(StringId hash);
+        static Resource<Mesh, ResourceFactory> LoadMesh(const FilePath& path);
+        static Resource<Mesh, ResourceFactory> LoadMesh(const MxString& path);
+
+        static MxVector<Resource<Material, ResourceFactory>> LoadMaterials(StringId hash);
+        static MxVector<Resource<Material, ResourceFactory>> LoadMaterials(const FilePath& path);
+        static MxVector<Resource<Material, ResourceFactory>> LoadMaterials(const MxString& path);
+    };
 }

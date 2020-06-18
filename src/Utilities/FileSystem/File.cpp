@@ -67,7 +67,7 @@ namespace MxEngine
     void File::Open(FilePath path, FileMode mode)
     {
         this->filePath = std::move(path);
-        if (!File::Exists(this->filePath))
+        if ((mode & File::WRITE) == 0 && !File::Exists(this->filePath))
         {
             Logger::Instance().Error("MxEngine::File", "file was not found: " + ToMxString(this->filePath));
             return;
@@ -77,13 +77,8 @@ namespace MxEngine
 
     void File::Open(const MxString& path, FileMode mode)
     {
-        this->filePath = path.c_str();
-        if (!File::Exists(this->filePath))
-        {
-            Logger::Instance().Error("MxEngine::File", "file was not found: " + path);
-            return;
-        }
-        this->fileStream.open(path.c_str(), FileModeTable[mode]);
+        FilePath filepath = path.c_str();
+        this->Open(std::move(filepath), mode);
     }
 
     void File::Close()
@@ -122,6 +117,11 @@ namespace MxEngine
         return std::filesystem::exists(path);
     }
 
+    bool File::Exists(const MxString& path)
+    {
+        return std::filesystem::exists(path.c_str());
+    }
+
     FileSystemTime File::LastModifiedTime(const FilePath& path)
     {
         if (!File::Exists(path))
@@ -130,5 +130,15 @@ namespace MxEngine
             return FileSystemTime();
         }
         return std::filesystem::last_write_time(path);
+    }
+
+    FileSystemTime File::LastModifiedTime(const MxString& path)
+    {
+        if (!File::Exists(path))
+        {
+            Logger::Instance().Warning("MxEngine::File", "file was not found: " + path);
+            return FileSystemTime();
+        }
+        return std::filesystem::last_write_time(path.c_str());
     }
 }

@@ -34,8 +34,10 @@
 #include "Core/MxObject/MxObject.h"
 #include "Platform/GraphicAPI.h"
 #include "Utilities/Logger/Logger.h"
-#include "Core/Camera/PerspectiveCamera.h"
-#include "Core/Camera/OrthographicCamera.h"
+#include "Core/Components/Camera/PerspectiveCamera.h"
+#include "Core/Components/Camera/OrthographicCamera.h"
+#include "Core/Components/Camera/CameraController.h"
+#include "Utilities/FileSystem/FileManager.h"
 #include "Core/Event/Event.h"
 #include "Utilities/Math/Math.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
@@ -44,6 +46,7 @@
 #include "Utilities/Array/Array2D.h"
 #include "Utilities/ECS/ComponentFactory.h"
 #include "Core/Components/Components.h"
+#include "Library/Primitives/Primitives.h"
 
 /*!
 Main namespace of MxEngine framework. All classes are located here or in nested namespaces

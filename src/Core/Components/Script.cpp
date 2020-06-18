@@ -28,12 +28,19 @@
 
 #include "Script.h"
 #include "Utilities/Logger/Logger.h"
+#include "Utilities/FileSystem/FileManager.h"
 
 namespace MxEngine
 {
+    Script::Script(StringId hash)
+        : Script(FileManager::GetFilePath(hash)) { }
+
     Script::Script(const FilePath& path)
+        : Script(ToMxString(path)) { }
+
+    Script::Script(const MxString& path)
     {
-        this->path = std::move(path);
+        this->path = path;
         this->UpdateContents();
     }
 
@@ -48,7 +55,7 @@ namespace MxEngine
                 auto systemFileTime = File::LastModifiedTime(this->path);
                 if (this->fileUpdate < systemFileTime)
                 {
-                    Logger::Instance().Debug("MxEngine::Script", "updated script: " + ToMxString(this->path));
+                    Logger::Instance().Debug("MxEngine::Script", "updated script: " + this->path);
                     this->data = File(this->path).ReadAllText();
                 }
 

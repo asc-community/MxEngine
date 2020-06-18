@@ -116,6 +116,27 @@ namespace MxEngine
         return this->GetImpl() >= other.GetImpl();
     }
 
+    UUID::operator MxString() const
+    {
+        // copied from boost::uuids::to_string
+        MxString result;
+        result.reserve(36);
+
+        std::size_t i = 0;
+        for (auto it = this->GetImpl().begin(); it != this->GetImpl().end(); ++it, ++i) {
+            const size_t hi = ((*it) >> 4) & 0x0F;
+            result += boost::uuids::detail::to_char(hi);
+
+            const size_t lo = (*it) & 0x0F;
+            result += boost::uuids::detail::to_char(lo);
+
+            if (i == 3 || i == 5 || i == 7 || i == 9) {
+                result += '-';
+            }
+        }
+        return result;
+    }
+
     boost::uuids::random_generator_pure& UUIDGeneratorImpl::GetGeneratorImpl()
     {
         return *reinterpret_cast<boost::uuids::random_generator*>(&generator);

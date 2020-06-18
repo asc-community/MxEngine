@@ -78,3 +78,8 @@
 #else
     #define MX_ASSERT(expr)
 #endif
+
+#define GENERATE_METHOD_CHECK(NAME, ...) namespace MxEngine { template<typename T> class has_method_##NAME {\
+    template<typename U> constexpr static auto check(int) -> decltype(std::declval<U>().__VA_ARGS__, bool()) { return true; }\
+    template<typename> constexpr static bool check(...) { return false; } public:\
+    static constexpr bool value = check<T>(0); }; }

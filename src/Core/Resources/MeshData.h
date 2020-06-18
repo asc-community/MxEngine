@@ -2,6 +2,7 @@
 
 #include "Core/Components/Transform.h"
 #include "Platform/GraphicAPI.h"
+#include "Core/BoundingObjects/AABB.h"
 
 namespace MxEngine
 {
@@ -22,6 +23,7 @@ namespace MxEngine
         using IndexData = MxVector<uint32_t>;
         VertexData vertecies;
         IndexData indicies;
+        AABB boundingBox;
 
         GResource<VertexBuffer> VBO;
         GResource<VertexArray> VAO;
@@ -29,9 +31,10 @@ namespace MxEngine
     public:
         MeshData();
 
-        VertexArray& GetVAO() const;
-        VertexBuffer& GetVBO() const;
-        IndexBuffer& GetIBO() const;
+        GResource<VertexArray> GetVAO() const;
+        GResource<VertexBuffer> GetVBO() const;
+        GResource<IndexBuffer> GetIBO() const;
+        const AABB& GetAABB() const;
 
         VertexData& GetVertecies();
         const VertexData& GetVertecies() const;
@@ -40,6 +43,7 @@ namespace MxEngine
         
         void BufferVertecies(UsageType usageType = UsageType::STATIC_DRAW);
         void BufferIndicies();
+        void UpdateBoundingBox();
         void RegenerateNormals();
     };
 }

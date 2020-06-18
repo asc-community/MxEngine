@@ -22,6 +22,16 @@
     <Item Name="[uuid]">*(boost::uuids::uuid*)&amp;uuidImpl</Item>
   </Expand>
 </Type>
+  
+<Type Name="MxEngine::FrameBuffer">
+  <DisplayString>{{ id={id}, attachment={currentAttachment} }}</DisplayString>
+  <Expand>
+    <Item Name="[id]">id</Item>
+    <Item Name="[attachment]">currentAttachment</Item>
+    <Item Condition="currentAttachment == MxEngine::FrameBuffer::AttachmentType::TEXTURE" Name="[texture]">*_texturePtr</Item>
+    <Item Condition="currentAttachment == MxEngine::FrameBuffer::AttachmentType::CUBEMAP" Name="[cubemap]">*_cubemapPtr</Item>
+  </Expand>
+</Type>
 
 <Type Name="MxEngine::Resource&lt;*, *&gt;">
 <DisplayString Condition="handle == InvalidHandle">[empty]</DisplayString>

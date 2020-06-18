@@ -37,30 +37,23 @@ namespace MxEngine
 {
 	struct Material
 	{
-		GResource<Texture> map_Ka;
-		GResource<Texture> map_Kd;
-		GResource<Texture> map_Ks;
-		GResource<Texture> map_Ke;
-		GResource<Texture> map_d;
-		GResource<Texture> map_normal;
-		GResource<Texture> map_height;
-		GResource<Texture> bump;
+		GResource<Texture> AmbientMap;
+		GResource<Texture> DiffuseMap;
+		GResource<Texture> SpecularMap;
+		GResource<Texture> EmmisiveMap;
+		GResource<Texture> TransparencyMap;
+		GResource<Texture> NormalMap;
+		GResource<Texture> HeightMap;
 
-		float Ns = 128.0f;
-		float Ni = 0.0f;
-		float d = 1.0f;
-		float Tr = 0.0f;
-		Vector3 Tf{ 0.0f };
-		Vector3 Ka{ 0.0f };
-		Vector3 Kd{ 0.0f };
-		Vector3 Ks{ 0.0f };
-		Vector3 Ke{ 0.0f };
-		int illum = 0;
+		float SpecularExponent = 128.0f;
+		float Transparency = 1.0f;
+		Vector3 AmbientColor{ 0.4f };
+		Vector3 DiffuseColor{ 0.6f };
+		Vector3 SpecularColor{ 0.2f };
+		Vector3 EmmisiveColor{ 0.0f };
 
-		float f_Ka = 0.4f;
-		float f_Kd = 0.6f;
-		float reflection = 0.1f;
-		float displacement = 0.025f;
-		Vector4 baseColor{ 1.0f };
+		float Displacement = 0.025f;
+		float Reflection = 0.1f;
+		Vector4 BaseColor{ 1.0f };
 	};
 }

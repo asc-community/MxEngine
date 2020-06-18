@@ -104,7 +104,7 @@ namespace MxEngine
 					)
 				{
 					*error << "  at " << function;
-					*error << " in " << filename << ':' << st[i].source_line() - 1;
+					*error << " in " << filename << ':' << st[i].source_line();
 					*error << " | " << st[i].address() << '\n';
 				}
 			}

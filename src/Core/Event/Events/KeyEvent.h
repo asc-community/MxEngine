@@ -173,8 +173,8 @@ namespace MxEngine
 		inline KeyEvent(KeyVectorPointer held, KeyVectorPointer pressed, KeyVectorPointer released) noexcept
 			: keyHeld(held), keyPressed(pressed), keyReleased(released) { }
 
-		inline bool IsHeld(KeyCode key) const { return (*keyHeld)[size_t(key)]; }
-		inline bool IsPressed(KeyCode key) const { return (*keyPressed)[size_t(key)]; }
-		inline bool IsReleased(KeyCode key) const { return (*keyReleased)[size_t(key)]; }
+		inline bool IsHeld(KeyCode key)     const { return (key != KeyCode::UNKNOWN) && (*keyHeld)[size_t(key)]; }
+		inline bool IsPressed(KeyCode key)  const { return (key != KeyCode::UNKNOWN) && (*keyPressed)[size_t(key)]; }
+		inline bool IsReleased(KeyCode key) const { return (key != KeyCode::UNKNOWN) && (*keyReleased)[size_t(key)]; }
 	};
 }

@@ -27,11 +27,12 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include "Core/Interfaces/IDrawable.h"
-#include "Core/Interfaces/IMovable.h"
+
 #include "Core/MxObject/Mesh.h"
 #include "Core/Components/Transform.h"
 #include "Core/Components/InstanceFactory.h"
+
+GENERATE_METHOD_CHECK(Init, Init())
 
 namespace MxEngine
 {
@@ -44,6 +45,10 @@ namespace MxEngine
 		bool instanceUpdate = true;
 		mutable AABB boundingBox;
 
+		using EngineHandle = size_t;
+		constexpr static EngineHandle InvalidHandle = std::numeric_limits<EngineHandle>::max();
+		EngineHandle Handle = InvalidHandle;
+
 		void ReserveInstances(size_t count, UsageType usage);
 	public:
 		using Factory = AbstractFactoryImpl<MxObject>;
@@ -51,31 +56,35 @@ namespace MxEngine
 
 		static MxObjectHandle Create();
 		static void Destroy(MxObjectHandle& object);
+		static void Destroy(MxObject& object);
+
+		static ComponentView<MxObject> GetObjects();
 
 		template<typename T>
 		static MxObject& GetByComponent(T& component)
 		{
-			auto& manager = component.GetParent();
-			return *reinterpret_cast<MxObject*>((uint8_t*)&manager - offsetof(MxObject, components));
+			return *MxObject::GetHandleByComponent(component);
+		}
+
+		template<typename T>
+		static MxObjectHandle GetHandleByComponent(T& component)
+		{
+			auto handle = reinterpret_cast<EngineHandle>(component.UserData);
+			MX_ASSERT(handle != InvalidHandle);
+			return MxObjectHandle(Factory::Get<MxObject>()[handle].uuid, handle);
 		}
 
 		using ArrayBufferType = const float*;
 		bool UseLOD = true;
 
+		MxString Name = UUIDGenerator::Get();
 		float TranslateSpeed = 1.0f;
 		float RotateSpeed = 1.0f;
 		float ScaleSpeed = 1.0f;
-		GResource<Shader> ObjectShader;
-		GResource<Texture> ObjectTexture;
 		MxObject();
-		MxObject(Mesh* mesh);
 		MxObject(const MxObject&) = delete;
 		MxObject(MxObject&&) = default;
 
-		virtual void OnUpdate();
-		virtual void OnRenderDraw();
-
-		void SetMesh(Mesh* mesh);
 		Mesh* GetMesh() const;
 		void Hide();
 		void Show();
@@ -100,17 +109,8 @@ namespace MxEngine
 		const AABB& GetAABB() const;
 		Transform& GetTransform();
 
-		size_t GetIterator() const;
-		bool IsLast(size_t iterator) const;
-		size_t GetNext(size_t iterator) const;
-		const SubMesh& GetCurrent(size_t iterator) const;
 		const Transform& GetTransform() const;
-		bool HasShader() const;
 		const Vector4& GetRenderColor() const;
-		const Shader& GetShader() const;
-		bool IsDrawable() const;
-		bool HasTexture() const;
-		const Texture& GetTexture() const;
 		size_t GetInstanceCount() const;
 
 		MxObject& Translate(float x, float y, float z);
@@ -125,7 +125,10 @@ namespace MxEngine
 		template<typename T, typename... Args>
 		auto AddComponent(Args&&... args)
 		{
-			return this->components.AddComponent<T>(std::forward<Args>(args)...);
+			auto component = this->components.AddComponent<T>(std::forward<Args>(args)...);
+			component->UserData = reinterpret_cast<void*>(this->Handle);
+			if constexpr (has_method_Init<T>::value) component->Init();
+			return component;
 		}
 
 		template<typename T>

@@ -66,10 +66,10 @@ namespace MxEngine
 			{
 				GUI::RightFromConsole();
 				ImGui::Begin("Debug Tools");
-				GUI_TREE_NODE("Camera Editor",  GUI::DrawCameraEditor());
-				GUI_TREE_NODE("Objects Editor", GUI::DrawObjectEditor());
+				//GUI_TREE_NODE("Camera Editor",  GUI::DrawCameraEditor());
+				//GUI_TREE_NODE("Objects Editor", GUI::DrawObjectEditor());
 				GUI_TREE_NODE("Profiler",       GUI::DrawProfiler());
-				GUI_TREE_NODE("Light Editor",   GUI::DrawLightEditor());
+				//GUI_TREE_NODE("Light Editor",   GUI::DrawLightEditor());
 				ImGui::End();
 			}
 		}

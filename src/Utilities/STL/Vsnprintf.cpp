@@ -1,4 +1,4 @@
-#include "Vendors/eastl/EASTL/string.h"
+#include <Vendors/eastl/EASTL/string.h>
 #include <cstdio>
 
 namespace EA::StdC

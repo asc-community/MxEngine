@@ -123,7 +123,15 @@ namespace MxEngine
             MX_ASSERT(newData != nullptr);
             MX_ASSERT(this->count <= newCount);
             
-            std::memcpy(newData, this->storage, this->count * sizeof(Block)); // copy old blocks to new memory chunk
+            // std::memcpy(newData, this->storage, this->count * sizeof(Block)); // copy old blocks to new memory chunk
+
+            for (size_t i = 0; i < this->count; i++)
+            {
+                auto& oldBlock = *(this->storage + i);
+                auto* _ = new((Block*)newData + i) Block(std::move(oldBlock)); //-V799
+                oldBlock.~Block();
+            }
+
             this->storage = (Block*)newData;
             Block* last = this->storage + newCount - 1; // calculate last block to chain new ones
             size_t offset = this->count + 1;

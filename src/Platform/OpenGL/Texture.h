@@ -32,7 +32,7 @@
 
 namespace MxEngine
 {
-	enum class TextureFormat
+	enum class TextureFormat : uint8_t
 	{
 		RGB,
 		RGBA,
@@ -42,9 +42,10 @@ namespace MxEngine
 		RGBA16F,
 		RGB32F,
 		RGBA32F,
+		DEPTH,
 	};
 
-	enum class TextureWrap
+	enum class TextureWrap : uint8_t
 	{
 		CLAMP_TO_EDGE,
 		MIRRORED_REPEAT,
@@ -60,6 +61,10 @@ namespace MxEngine
 		BindableId id = 0;
 		mutable BindableId activeId = 0;
 		unsigned int textureType = 0;
+		TextureFormat format = TextureFormat::RGBA;
+		TextureWrap wrapType = TextureWrap::REPEAT;
+		uint8_t samples = 0;
+
 		void FreeTexture();
 	public:
 		using RawDataPointer = uint8_t*;
@@ -81,6 +86,11 @@ namespace MxEngine
 		void LoadMipmaps(RawDataPointer* data, size_t mipmaps, int biggestWidth, int biggestHeight, TextureWrap wrap = TextureWrap::REPEAT);
 		void LoadDepth(int width, int height, TextureWrap wrap = TextureWrap::CLAMP_TO_EDGE);
 		void LoadMultisample(int width, int height, TextureFormat format, int samples, TextureWrap wrap = TextureWrap::REPEAT);
+		bool IsMultisampled() const;
+		bool IsDepthOnly() const;
+		int GetSampleCount() const;
+		TextureFormat GetFormat() const;
+		TextureWrap GetWrapType() const;
 		void Bind(TextureBindId id) const;
 		const MxString& GetPath() const;
 		unsigned int GetTextureType() const;

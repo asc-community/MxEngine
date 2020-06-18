@@ -40,12 +40,14 @@ namespace MxEngine
     public:
         using ScriptData = MxString;
     private:
-        FilePath path;
+        MxString path;
         ScriptData data;
         TimeStep lastUpdate = 0.0f;
         FileSystemTime fileUpdate = FileSystemTime();
     public:
+        Script(StringId hash);
         Script(const FilePath& path);
+        Script(const MxString& path);
 
         void UpdateContents();
         const ScriptData& GetContent() const;

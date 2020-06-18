@@ -5,10 +5,6 @@
 
 void SandboxApp::OnCreate()
 {
-	auto scene = MakeUnique<SandboxScene>();
-	this->CreateScene("Sandbox", std::move(scene));
-	this->LoadScene("Sandbox");
-
 	ConsoleBinding("Console").Bind(KeyCode::GRAVE_ACCENT);
 	AppCloseBinding("AppClose").Bind(KeyCode::ESCAPE);
 
@@ -21,7 +17,11 @@ void SandboxApp::OnCreate()
 
 void SandboxApp::OnUpdate()
 {
-
+	static SandboxScene scene;
+	INVOKE_ONCE(
+		scene.OnCreate();
+		scene.OnLoad();
+	);
 }
 
 void SandboxApp::OnDestroy()

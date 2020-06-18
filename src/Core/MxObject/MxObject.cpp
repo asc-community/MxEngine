@@ -31,8 +31,8 @@
 #include "Platform/GraphicAPI.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/Format/Format.h"
-#include "Core/Components/MeshSource.h"
-#include "Core/Components/MeshRenderer.h"
+#include "Core/Components/Rendering/MeshSource.h"
+#include "Core/Components/Rendering/MeshRenderer.h"
 
 namespace MxEngine
 {
@@ -131,12 +131,6 @@ namespace MxEngine
 		Logger::Instance().Debug("MxEngine::MxObject", MxFormat("making object instanced with reserved count: {0}", count));
 		MX_ASSERT(!this->HasComponent<InstanceFactory>());
 
-		if (this->GetMesh() != nullptr && this->GetMesh()->RefCounter > 1)
-		{
-			Logger::Instance().Error("MxEngine::MxObject", "object which has copies cannot be instanced");
-			return;
-		}
-
 		auto instances = this->AddComponent<InstanceFactory>();
 		instances->InstanceDataIndex = this->GetBufferCount();
 		// add model matrix buffer
@@ -149,13 +143,26 @@ namespace MxEngine
 
     MxObject::MxObjectHandle MxObject::Create()
     {
-		return Factory::Create<MxObject>();
+		auto object = Factory::Create<MxObject>();
+		object->Handle = object.GetHandle();
+		return object;
     }
 
 	void MxObject::Destroy(MxObject::MxObjectHandle& object)
 	{
 		Factory::Destroy(object);
 	}
+
+    void MxObject::Destroy(MxObject& object)
+    {
+		MX_ASSERT(object.Handle != InvalidHandle);
+		Factory::Get<MxObject>().Deallocate(object.Handle);
+    }
+
+    ComponentView<MxObject> MxObject::GetObjects()
+    {
+		return ComponentView<MxObject>{ Factory::Get<MxObject>() };
+    }
 
 	void MxObject::MakeInstanced(size_t instances, UsageType usage) 
 	{
@@ -216,11 +223,6 @@ namespace MxEngine
 		auto meshRenderer = this->AddComponent<MeshRenderer>();
 		auto transform = this->AddComponent<Transform>();
     }
-
-	void MxObject::OnUpdate()
-	{
-		// this method is overloaded in derived class
-	}
 
 	Mesh* MxObject::GetMesh() const
 	{
@@ -326,67 +328,15 @@ namespace MxEngine
 		return this->rightVec;
 	}
 
-	size_t MxObject::GetIterator() const
-	{
-		return 0;
-	}
-
-	bool MxObject::IsLast(size_t iterator) const
-	{
-		return this->GetMesh()->GetSubmeshes().size() == iterator;
-	}
-
-	size_t MxObject::GetNext(size_t iterator) const
-	{
-		return iterator + 1;
-	}
-
-	const SubMesh& MxObject::GetCurrent(size_t iterator) const
-	{
-		return this->GetMesh()->GetSubmeshes()[iterator];
-	}
-
     const Transform& MxObject::GetTransform() const
     {
 		return *this->GetComponent<Transform>();
     }
-
-	bool MxObject::HasShader() const
-	{
-		return this->ObjectShader.IsValid();
-	}
-
-	const Shader& MxObject::GetShader() const
-	{
-		return *this->ObjectShader;
-	}
-
-	bool MxObject::IsDrawable() const
-	{
-		return this->shouldRender && this->GetMesh() != nullptr;
-	}
-
-	bool MxObject::HasTexture() const
-	{
-		return this->ObjectTexture.IsValid();
-	}
-
-	const Texture& MxObject::GetTexture() const
-	{
-		return *this->ObjectTexture;
-	}
 
 	size_t MxObject::GetInstanceCount() const
 	{
 		auto instances = this->GetComponent<InstanceFactory>();
 		if (!instances.IsValid()) return 0;
 		return instances->GetCount();
-	}
-
-	void MxObject::OnRenderDraw()
-	{
-		if (!this->HasComponent<InstanceFactory>() || !this->instanceUpdate) return;
-		MX_ASSERT(this->GetComponent<InstanceFactory>()->InstanceDataIndex != InstanceFactory::Undefined);
-		this->BufferInstances();
 	}
 }

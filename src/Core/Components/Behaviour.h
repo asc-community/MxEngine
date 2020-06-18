@@ -45,10 +45,10 @@ namespace MxEngine
         UpdateCallbackType UpdateCallback;
 
         template<typename T>
-        Behaviour(T&& object)
+        Behaviour(T&& customBehaviour)
         {
             static_assert(!std::is_reference_v<T>, "passing reference to object as callback is prohibited");
-            UpdateCallback = [object = std::move(object)] (MxObject& self, TimeDelta dt) mutable { object.OnUpdate(self, dt); };
+            UpdateCallback = [object = std::move(customBehaviour)] (MxObject& self, TimeDelta dt) mutable { object.OnUpdate(self, dt); };
         }
 
         void InvokeUpdate(TimeDelta dt);

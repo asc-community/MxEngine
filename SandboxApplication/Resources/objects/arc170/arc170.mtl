@@ -9,3 +9,6 @@ newmtl main
 	Kd 0.6000 0.6000 0.6000
 	Ks 0.8000 0.8000 0.8000
 	Ke 0.0000 0.0000 0.0000
+	map_Ka arc170.jpg
+	map_Kd arc170.jpg
+	map_Ks arc170.jpg

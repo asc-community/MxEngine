@@ -47,9 +47,9 @@ namespace MxEngine
         }
 
         ManagedResource(const ManagedResource&) = delete;
-        ManagedResource(ManagedResource&&) = delete;
+        ManagedResource(ManagedResource&&) = default;
         ManagedResource& operator=(const ManagedResource&) = delete;
-        ManagedResource& operator=(ManagedResource&&) = delete;
+        ManagedResource& operator=(ManagedResource&&) = default;
 
         ~ManagedResource()
         {
@@ -169,6 +169,11 @@ namespace MxEngine
             return handle != InvalidHandle && Dereference().uuid == uuid;
         }
 
+        void MakeStatic()
+        {
+            this->IncRef();
+        }
+
         T* operator->()
         {
             MX_ASSERT(this->IsValid());
@@ -205,9 +210,24 @@ namespace MxEngine
             return &this->Dereference().value;
         }
 
-        [[nodiscard]] auto GetHandle()
+        [[nodiscard]] auto GetHandle() const
         {
             return this->handle;
+        }
+
+        [[nodiscard]] const auto& GetUUID() const
+        {
+            return this->uuid;
+        }
+
+        [[nodiscard]] bool operator==(const Resource& wrapper) const
+        {
+            return this->handle == wrapper.handle && this->uuid == wrapper.uuid;
+        }
+
+        [[nodiscard]] bool operator!=(const Resource& wrapper) const
+        {
+            return !(*this == wrapper);
         }
 
         ~Resource()
@@ -318,6 +338,11 @@ namespace MxEngine
             return handle != InvalidHandle && Dereference().uuid == uuid;
         }
 
+        void MakeStatic()
+        {
+            this->IncRef();
+        }
+
         T* operator->()
         {
             MX_ASSERT(this->IsValid());
@@ -354,9 +379,14 @@ namespace MxEngine
             return &this->Dereference().value;
         }
 
-        [[nodiscard]] auto GetHandle()
+        [[nodiscard]] auto GetHandle() const
         {
             return this->handle;
+        }
+
+        [[nodiscard]] const auto& GetUUID() const
+        {
+            return this->uuid;
         }
 
         ~LocalResource()

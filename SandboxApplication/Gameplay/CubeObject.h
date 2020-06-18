@@ -1,7 +1,6 @@
 #pragma once
 
 #include <MxEngine.h>
-#include <Library/Primitives/Cube.h>
 #include <Core/Components/Behaviour.h>
 
 using namespace MxEngine;
@@ -38,7 +37,13 @@ struct CubeBehaviour
 
 void InitCube(MxObject& cube)
 {
-	cube.GetComponent<Transform>()->Translate(MakeVector3(0.5f, 0.0f, 0.5f));
+	auto transform = cube.GetComponent<Transform>();
+	auto meshRenderer = cube.GetComponent<MeshRenderer>();
+
+	transform->Translate(MakeVector3(0.5f, 0.0f, 0.5f));
+
+	cube.Name = "Crate";
+	cube.AddComponent<MeshSource>(Primitives::CreateCube());
 
 	size_t cubeCount = 100;
 	CubeBehaviour behaviour;
@@ -46,17 +51,10 @@ void InitCube(MxObject& cube)
 	{
 		behaviour.instances.push_back(cube.Instanciate());
 	}
-	cube.AddComponent<Behaviour>(std::move(behaviour));
-}
 
-class CubeObject : public Cube
-{
-	int cubeCount = 100;
-public:
-	inline CubeObject()
-	{
-		auto context = Application::Get();
-		this->ObjectTexture = GraphicFactory::Create<Texture>(ToMxString(FileManager::GetFilePath("objects/crate/crate.jpg"_id)));
-		this->MakeInstanced(cubeCount);
-	}
-};
+	cube.AddComponent<Behaviour>(std::move(behaviour));
+
+	auto cubeTexture = AssetManager::LoadTexture("objects/crate/crate.jpg"_id);
+	meshRenderer->GetMaterial()->AmbientMap = cubeTexture;
+	meshRenderer->GetMaterial()->DiffuseMap = cubeTexture;
+}

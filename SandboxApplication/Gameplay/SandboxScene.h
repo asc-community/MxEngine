@@ -7,97 +7,67 @@
 
 using namespace MxEngine;
 
-class SandboxScene : public Scene
+class SandboxScene
 {
-    virtual void OnCreate() override
+public:
+    void OnCreate()
     {
-        this->SetDirectory("Resources/");
+		auto cube = MxObject::Create();
+		InitCube(*cube);
+		cube.MakeStatic();
+		
+		auto sphere = MxObject::Create();
+		InitSphere(*sphere);
+		sphere.MakeStatic();
+		
+		auto grid = MxObject::Create();
+		InitGrid(*grid);
+		grid.MakeStatic();
+		
+		auto surface = MxObject::Create();
+		InitSurface(*surface);
+		surface.MakeStatic();
 
-        auto& cube = this->AddObject("Cube", MakeUnique<CubeObject>());
-		InitCube(cube);
-
-        auto& sphere = this->AddObject("Sphere", MakeUnique<SphereObject>());
-		InitSphere(sphere);
-
-		auto& grid = this->AddObject("Grid", MakeUnique<Grid>(2000));
-		InitGrid(grid);
-
-        //auto& arc = this->AddObject("Arc170", MakeUnique<MxObject>());
-		//InitArc(arc);
+        // auto arc = MxObject::Create();
+		// InitArc(*arc);
+		// arc.MakeStatic();
 
 		// auto& deathStar = this->AddObject("DeathStar", MakeUnique<MxObject>());
 		// InitDeathStar(deathStar);
 
 		// auto& destroyer = this->AddObject("Destroyer", MakeUnique<MxObject>());
 		// InitDestroyer(destroyer);
-		
-		auto& surface = (Surface&)this->AddObject("Surface", MakeUnique<Surface>());
-		surface.SetSurface([](float x, float y) 
-			{ 
-				return std::sin(10.0f * x) * std::sin(10.0f * y);
-			}, 1.0f, 1.0f, 0.01f);
-		surface.Scale(10.0f, 2.0f, 10.0f);
-		surface.Translate(10.0f, 3.0f, 10.0f);
+
+		//auto& object = this->AddObject("Sponza", MakeUnique<MxObject>());
+		//auto meshRenderer = object.GetComponent<MeshRenderer>();
+		//object.AddComponent<MeshSource>(ResourceFactory::Create<Mesh>("D:/repos/glTF-Sample-Models/2.0/Sponza/glTF/Sponza.gltf", meshRenderer.GetUnchecked()));
 
 		Script initScript(FileManager::GetFilePath("scripts/init.py"_id));
         Application::Get()->ExecuteScript(initScript);
-
-		this->SceneSkybox = MakeUnique<Skybox>();
-		this->SceneSkybox->SkyboxTexture = GraphicFactory::Create<CubeMap>(ToMxString(FileManager::GetFilePath("textures/dawn.jpg"_id)));
-
-		this->PointLights.SetCount(1);
-		this->SpotLights.SetCount(1);
 		
-		this->GlobalLight.AmbientColor  = { 0.3f, 0.3f, 0.3f };
-		this->GlobalLight.DiffuseColor  = { 0.3f, 0.3f, 0.3f };
-		this->GlobalLight.SpecularColor = { 1.0f, 1.0f, 1.0f };
+		auto dirLight = MxObject::Create();
+		InitDirLight(*dirLight);
+		dirLight.MakeStatic();
 
-		this->PointLights[0].AmbientColor  = { 1.0f, 0.3f, 0.0f };
-		this->PointLights[0].DiffuseColor  = { 1.0f, 0.3f, 0.0f };
-		this->PointLights[0].SpecularColor = { 1.0f, 0.3f, 0.0f };
-		this->PointLights[0].UsePosition({ -3.0f, 2.0f, -3.0f });
+		auto pointLight = MxObject::Create();
+		InitPointLight(*pointLight);
+		pointLight.MakeStatic();
 		
-		this->SpotLights[0].AmbientColor  = { 1.0f, 1.0f, 1.0f };
-		this->SpotLights[0].DiffuseColor  = { 1.0f, 1.0f, 1.0f };
-		this->SpotLights[0].SpecularColor = { 1.0f, 1.0f, 1.0f };
-		this->SpotLights[0].UsePosition({ -15.0f, 3.0f, 0.0f });
-		this->SpotLights[0].UseDirection({ -1.0f, 1.3f, -1.0f });
-		this->SpotLights[0].UseOuterAngle(35.0f);
-		this->SpotLights[0].UseInnerAngle(15.0f);
+		auto spotLight = MxObject::Create();
+		InitSpotLight(*spotLight);
+		spotLight.MakeStatic();
 
-		auto camera = MakeUnique<PerspectiveCamera>();
-		// auto camera = MakeUnique<OrthographicCamera>();
-		// Application::Get()->GetRenderer().ToggleReversedDepth(false);
+		auto camera = MxObject::Create();
+		InitCamera(*camera);
+		camera.MakeStatic();
 
-		// this->PointLights.SetCount(0);
-
-		const auto& window = Application::Get()->GetWindow();
-		camera->SetZFar(100000.0f);
-		camera->SetAspectRatio((float)window.GetWidth(), (float)window.GetHeight());
-
-		this->Viewport.SetCamera(std::move(camera));
-		this->Viewport.Translate(1.0f, 3.0f, 0.0f);
-		this->Viewport.SetMoveSpeed(5.0f);
-		this->Viewport.SetRotateSpeed(0.75f);
+		Application::Get()->GetRenderAdaptor().Viewport = camera->GetComponent<CameraController>();
     }
 
-	virtual void OnLoad() override
+	void OnLoad()
 	{
-		InputControlBinding("CameraControl", this->Viewport)
+		InputControlBinding(Application::Get()->GetRenderAdaptor().Viewport)
 			.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT)
 			.BindRotation();
-
-		LightBinding(this->PointLights).BindAll();
-		LightBinding(this->SpotLights).BindAll();
 	}
-
-	virtual void OnUnload() override
-	{
-		
-	}
-
-    virtual void OnUpdate() override
-    {
-		
-    }
 };

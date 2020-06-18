@@ -30,6 +30,7 @@
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Utilities/Logger/Logger.h"
 #include "Core/Macro/Macro.h"
+#include "Platform/GraphicAPI.h"
 
 #include <array>
 
@@ -62,30 +63,8 @@ namespace MxEngine
         Logger::Instance().Debug("OpenGL::FrameBuffer", "created framebuffer with id = " + ToMxString(id));
     }
 
-    void FrameBuffer::AttachTexture(Attachment attachment, int width, int height)
+    void FrameBuffer::OnTextureAttach(const Texture& texture, Attachment attachment)
     {
-        this->width = width, this->height = height;
-        this->cubemap = { };
-        GLenum mode = AttachmentTable[int(attachment)];
-        this->Bind();
-
-        if (mode == GL_DEPTH_ATTACHMENT)
-        {
-            this->texture.LoadDepth(width, height);
-            GLCALL(glDrawBuffer(GL_NONE));
-        }
-        else
-        {
-            this->texture.Load(nullptr, width, height);
-        }
-        GLint textureId = this->texture.GetNativeHandle();
-        GLCALL(glFramebufferTexture2D(GL_FRAMEBUFFER, mode, GL_TEXTURE_2D, textureId, 0));
-    }
-
-    void FrameBuffer::AttachTexture(const Texture& texture, Attachment attachment)
-    {
-        this->width  = (int)texture.GetWidth();
-        this->height = (int)texture.GetHeight();
         GLenum mode = AttachmentTable[int(attachment)];
         GLint textureId = texture.GetNativeHandle();
 
@@ -97,36 +76,8 @@ namespace MxEngine
         }
     }
 
-    void FrameBuffer::AttachTexture(Texture&& texture, Attachment attachment)
+    void FrameBuffer::OnCubeMapAttach(const CubeMap& cubemap, Attachment attachment)
     {
-        this->texture = std::move(texture);
-        this->AttachTexture(this->texture, attachment);
-    }
-
-    void FrameBuffer::AttachCubeMap(Attachment attachment, int width, int height)
-    {
-        this->width = width, this->height = height;
-        this->texture = { };
-        GLenum mode = AttachmentTable[int(attachment)];
-        this->Bind();
-
-        if (mode == GL_DEPTH_ATTACHMENT)
-        {
-            this->cubemap.LoadDepth(width, height);
-            GLCALL(glDrawBuffer(GL_NONE));
-        }
-        else
-        {
-            this->cubemap.Load(std::array<uint8_t*, 6>{ nullptr, nullptr, nullptr, nullptr, nullptr, nullptr }, width, height);
-        }
-        GLint cubemapId = this->cubemap.GetNativeHandle();
-        GLCALL(glFramebufferTexture(GL_FRAMEBUFFER, mode, cubemapId, 0));
-    }
-
-    void FrameBuffer::AttachCubeMap(const CubeMap& cubemap, Attachment attachment)
-    {
-        this->width = (int)cubemap.GetWidth();
-        this->height = (int)cubemap.GetHeight();
         GLenum mode = AttachmentTable[int(attachment)];
         GLint cubemapId = cubemap.GetNativeHandle();
 
@@ -138,17 +89,11 @@ namespace MxEngine
         }
     }
 
-    void FrameBuffer::AttachCubeMap(CubeMap&& cubemap, Attachment attachment)
-    {
-        this->cubemap = std::move(cubemap);
-        this->AttachCubeMap(this->cubemap, attachment);
-    }
-
     void FrameBuffer::CopyFrameBufferContents(int screenWidth, int screenHeight) const
     {
         GLCALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, this->id));
         GLCALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0));
-        GLCALL(glBlitFramebuffer(0, 0, this->width, this->height, 0, 0, screenWidth, screenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST));
+        GLCALL(glBlitFramebuffer(0, 0, (GLint)this->GetWidth(), (GLint)this->GetHeight(), 0, 0, screenWidth, screenHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST));
     }
 
     void FrameBuffer::Validate() const
@@ -158,24 +103,29 @@ namespace MxEngine
             Logger::Instance().Error("OpenGL::FrameBuffer", "framebuffer validation failed: incomplete");
     }
 
-    Texture& FrameBuffer::GetAttachedTexture()
+    void FrameBuffer::DetachRenderTarget()
     {
-        return this->texture;
+        if (this->currentAttachment == AttachmentType::TEXTURE)
+            reinterpret_cast<GResource<Texture>*>(&this->attachmentStorage)->~Resource();
+        else if (this->currentAttachment == AttachmentType::CUBEMAP)
+            reinterpret_cast<GResource<CubeMap>*>(&this->attachmentStorage)->~Resource();
+
+        this->currentAttachment = AttachmentType::NONE;
+
+        #if defined(MXENGINE_DEBUG)
+        this->_texturePtr = nullptr;
+        this->_cubemapPtr = nullptr;
+        #endif
     }
 
-    CubeMap& FrameBuffer::GetAttachedCubeMap()
+    bool FrameBuffer::HasTextureAttached() const
     {
-        return this->cubemap;
+        return this->currentAttachment == AttachmentType::TEXTURE;
     }
 
-    const Texture& FrameBuffer::GetAttachedTexture() const
+    bool FrameBuffer::HasCubeMapAttached() const
     {
-        return this->texture;
-    }
-
-    const CubeMap& FrameBuffer::GetAttachedCubeMap() const
-    {
-        return this->cubemap;
+        return this->currentAttachment == AttachmentType::CUBEMAP;
     }
 
     void FrameBuffer::UseDrawBuffers(size_t count) const
@@ -184,43 +134,54 @@ namespace MxEngine
         GLCALL(glDrawBuffers((GLsizei)count, AttachmentTable));
     }
 
-    int FrameBuffer::GetWidth() const
+    size_t FrameBuffer::GetWidth() const
     {
-        return this->width;
+        auto* texture = reinterpret_cast<const Resource<Texture, GraphicFactory>*>(&this->attachmentStorage);
+        auto* cubemap = reinterpret_cast<const Resource<CubeMap, GraphicFactory>*>(&this->attachmentStorage);
+
+        if (this->currentAttachment == AttachmentType::TEXTURE && texture->IsValid())
+            return (*texture)->GetWidth();
+        if (this->currentAttachment == AttachmentType::CUBEMAP && cubemap->IsValid())
+            return (*cubemap)->GetWidth();
+
+        return 0;
     }
 
-    int FrameBuffer::GetHeight() const
+    size_t FrameBuffer::GetHeight() const
     {
-        return this->height;
+        auto* texture = reinterpret_cast<const Resource<Texture, GraphicFactory>*>(&this->attachmentStorage);
+        auto* cubemap = reinterpret_cast<const Resource<CubeMap, GraphicFactory>*>(&this->attachmentStorage);
+
+        if (this->currentAttachment == AttachmentType::TEXTURE && texture->IsValid())
+            return (*texture)->GetHeight();
+        if (this->currentAttachment == AttachmentType::CUBEMAP && cubemap->IsValid())
+            return (*cubemap)->GetHeight();
+
+        return 0;
     }
 
     FrameBuffer::~FrameBuffer()
     {
+        this->DetachRenderTarget();
         GLCALL(glDeleteFramebuffers(1, &id));
     }
 
     FrameBuffer::FrameBuffer(FrameBuffer&& framebuffer) noexcept
     {
         this->id = framebuffer.id;
-        this->width = framebuffer.width;
-        this->height = framebuffer.height;
-        this->texture = std::move(framebuffer.texture);
-        this->cubemap = std::move(framebuffer.cubemap);
+        this->currentAttachment = framebuffer.currentAttachment;
+        this->attachmentStorage = framebuffer.attachmentStorage;
+        framebuffer.currentAttachment = AttachmentType::NONE;
         framebuffer.id = 0;
-        framebuffer.width = 0;
-        framebuffer.height = 0;
     }
 
     FrameBuffer& FrameBuffer::operator=(FrameBuffer&& framebuffer) noexcept
     {
         this->id = framebuffer.id;
-        this->width = framebuffer.width;
-        this->height = framebuffer.height;
-        this->texture = std::move(framebuffer.texture);
-        this->cubemap = std::move(framebuffer.cubemap);
+        this->currentAttachment = framebuffer.currentAttachment;
+        this->attachmentStorage = framebuffer.attachmentStorage;
+        framebuffer.currentAttachment = AttachmentType::NONE;
         framebuffer.id = 0;
-        framebuffer.width = 0;
-        framebuffer.height = 0;
         return *this;
     }
 
@@ -243,6 +204,6 @@ namespace MxEngine
     {
         GLCALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, this->id));
         GLCALL(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer.GetNativeHandle()));
-        GLCALL(glBlitFramebuffer(0, 0, this->width, this->height, 0, 0, framebuffer.GetWidth(), framebuffer.GetHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST));
+        GLCALL(glBlitFramebuffer(0, 0, (GLint)this->GetWidth(), (GLint)this->GetHeight(), 0, 0, (GLint)framebuffer.GetWidth(), (GLint)framebuffer.GetHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST));
     }
 }

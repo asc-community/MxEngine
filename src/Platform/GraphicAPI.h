@@ -60,4 +60,24 @@ namespace MxEngine
 
     template<typename T>
     using GResource = Resource<T, GraphicFactory>;
+
+    inline auto GetAttachedTexture(const FrameBuffer& framebuffer)
+    {
+        return framebuffer.GetAttachedTexture<Resource, GraphicFactory>();
+    }
+
+    inline auto GetAttachedTexture(const GResource<FrameBuffer>& framebuffer)
+    {
+        return GetAttachedTexture(*framebuffer);
+    }
+
+    inline auto GetAttachedCubeMap(const FrameBuffer& framebuffer)
+    {
+        return framebuffer.GetAttachedCubeMap<Resource, GraphicFactory>();
+    }
+
+    inline auto GetAttachedCubeMap(const GResource<FrameBuffer>& framebuffer)
+    {
+        return GetAttachedCubeMap(*framebuffer);
+    }
 }

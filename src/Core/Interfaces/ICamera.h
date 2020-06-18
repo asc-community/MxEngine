@@ -46,7 +46,9 @@ namespace MxEngine
 		virtual float GetZFar() const = 0;
 		virtual void SetZoom(float zoom) = 0;
 		virtual float GetZoom() const = 0;
-
+		virtual bool IsPerspective() const = 0;
+		virtual bool IsOrthographic() const = 0;
+		
 		virtual ~ICamera() = default;
 	};
 }

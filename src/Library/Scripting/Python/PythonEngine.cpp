@@ -81,6 +81,7 @@ class MxEngineIOHandler:
 
     PythonEngine::BoxedValue PythonEngine::Execute(const char* code)
     {
+        return BoxedValue{ };
         try
         {
             BoxedValue result = python::exec(code, this->pythonNamespace);

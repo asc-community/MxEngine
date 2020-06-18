@@ -33,171 +33,79 @@
 #include "Utilities/LODGenerator/LODGenerator.h"
 #include "Utilities/Format/Format.h"
 #include "Core/Resources/ResourceFactory.h"
-#include "Core/Components/MeshRenderer.h"
+#include "Core/Components/Rendering/MeshRenderer.h"
 
 #include <algorithm>
 
 namespace MxEngine
 {
-	Resource<Material, ResourceFactory> ConvertMaterial(const MaterialInfo& mat, MxHashMap<StringId, GResource<Texture>>& textures)
-	{
-		auto materialResource = ResourceFactory::Create<Material>();
-		auto& material = *materialResource;
-
-		#define MAKE_TEX(tex) if(!mat.tex.empty()) {\
-			auto id = MakeStringId(mat.tex);\
-			if(textures.find(id) == textures.end())\
-				textures[id] = GraphicFactory::Create<Texture>(mat.tex);\
-			material.tex = textures[id];}
-
-		MAKE_TEX(map_Ka);
-		MAKE_TEX(map_Kd);
-		MAKE_TEX(map_Ks);
-		MAKE_TEX(map_Ke);
-		MAKE_TEX(map_d);
-		MAKE_TEX(map_height);
-		MAKE_TEX(map_normal);
-
-		material.Tf    = mat.Tf;
-		material.Ka    = mat.Ka;
-		material.Kd    = mat.Kd;
-		material.Ke    = mat.Ke;
-		material.Ks    = mat.Ks;
-		material.illum = mat.illum;
-		material.Ns    = mat.Ns;
-		material.Ni    = mat.Ni;
-		material.d     = mat.d;
-
-		if (material.Ns == 0.0f) material.Ns = 128.0f; // bad as pow(0.0, 0.0) -> NaN //-V550
-
-		return materialResource;
-	}
-
-	void Mesh::LoadFromFile(const MxString& filepath, MeshRenderer* meshRenderer)
+	void Mesh::LoadFromFile(const MxString& filepath)
 	{
 		ObjectInfo objectInfo = ObjectLoader::Load(filepath);
-		this->boundingBox = objectInfo.boundingBox;
-
 		MxVector<SubMesh::TransformHandle> submeshTransforms;
-		MxVector<size_t> materialIds(objectInfo.meshes.size(), 0);
 
 		for (const auto& group : objectInfo.meshes)
 		{
 			submeshTransforms.push_back(ComponentFactory::CreateComponent<Transform>());
 		}
 
-		if (meshRenderer != nullptr)
+		MxVector<SubMesh::MaterialId> materialIds;
+		materialIds.reserve(objectInfo.meshes.size());
+		for (const auto& group : objectInfo.meshes)
 		{
-			MxHashMap<StringId, GResource<Texture>> textures;
-			materialIds.resize(0); // clear ids to fill them with meaningful values
-			meshRenderer->Materials.resize(objectInfo.materials.size());
-
-			for (size_t i = 0; i < objectInfo.materials.size(); i++)
+			if (group.useTexture && group.material != nullptr)
 			{
-				meshRenderer->Materials[i] = ConvertMaterial(objectInfo.materials[i], textures);
+				auto offset = size_t(group.material - objectInfo.materials.data());
+				materialIds.push_back(offset);
 			}
-
-			for (const auto& group : objectInfo.meshes)
+			else
 			{
-				if(group.useTexture&& group.material != nullptr)
-				{
-					size_t offset = size_t(group.material - objectInfo.materials.data());
-					materialIds.push_back(offset);
-				}
+				materialIds.push_back(std::numeric_limits<SubMesh::MaterialId>::max());
 			}
 		}
 
-		std::vector<ObjectInfo> LODdata;
+		// dump all material to let user retrieve them for MeshRenderer component
+		auto materialLibPath = filepath + MeshRenderer::GetMaterialFileSuffix();
+		if(!File::Exists(materialLibPath))
+			ObjectLoader::DumpMaterials(objectInfo.materials, materialLibPath);
+		
+		for (size_t i = 0; i < objectInfo.meshes.size(); i++)
 		{
-			MAKE_SCOPE_TIMER("MxEngine::LODGenerator", "GenerateLODs");
-			MAKE_SCOPE_PROFILER("LODGenerator::GenerareLODs");
+			auto& meshData = objectInfo.meshes[i];
+			auto& materialId = materialIds[i];
+			auto& transform = submeshTransforms[i];
 
-			LODGenerator lod(objectInfo);
-			std::array LODfactors = { 0.001f, 0.01f, 0.05f, 0.15f, 0.3f };
-			for (size_t factor = 0; factor < LODfactors.size(); factor++)
-			{
-				LODdata.push_back(lod.CreateObject(LODfactors[factor]));
+			SubMesh submesh(materialId, transform);
+			submesh.MeshData.GetVertecies() = std::move(meshData.vertecies);
+			submesh.MeshData.GetIndicies() = std::move(meshData.indicies);
+			submesh.MeshData.BufferVertecies();
+			submesh.MeshData.BufferIndicies();
+			submesh.MeshData.UpdateBoundingBox();
+			submesh.Name = MakeStringId(meshData.name);
 
-				#if defined(MXENGINE_DEBUG)
-				size_t vertecies = 0;
-				for (const auto& mesh : LODdata.back().meshes)
-				{
-					vertecies += mesh.indicies.size();
-				}
-				Logger::Instance().Debug("MxEngine::LODGenerator", MxFormat("LOD[{0}]: vertecies = {1}", factor + 1, vertecies));
-				#endif
-			}
+			submeshes.push_back(std::move(submesh));
 		}
-		LODdata.insert(LODdata.begin(), std::move(objectInfo));
-
-		MAKE_SCOPE_TIMER("MxEngine::Mesh", "GenerateBuffers");
-		MAKE_SCOPE_PROFILER("Mesh::GenerateBuffers"); 
-		this->LODs.clear();
-		for(const auto& lod : LODdata)
-		{
-			auto& meshes = this->LODs.emplace_back();
-			for (size_t i = 0; i < lod.meshes.size(); i++)
-			{
-				auto& meshData = lod.meshes[i];
-				auto& materialId = materialIds[i];
-				auto& transform = submeshTransforms[i];
-
-				SubMesh submesh(materialId, transform);
-				submesh.MeshData.GetVertecies() = std::move(meshData.vertecies);
-				submesh.MeshData.GetIndicies() = std::move(meshData.indicies);
-				submesh.MeshData.BufferVertecies();
-				submesh.MeshData.BufferIndicies();
-				submesh.Name = MakeStringId(meshData.name);
-
-				meshes.push_back(std::move(submesh));
-			}
-		}
+		this->UpdateAABB(); // use submeshes AABB to update mesh bounding box
 	}
 
-    Mesh::Mesh(const FilePath& path, MeshRenderer* meshRenderer)
+    Mesh::Mesh(const MxString& path)
     {
-		this->LoadFromFile(ToMxString(path), meshRenderer);
+		this->LoadFromFile(path);
     }
 
-	void Mesh::Load(const MxString& filepath, MeshRenderer* meshRenderer)
+	void Mesh::Load(const MxString& filepath)
 	{
-		this->LoadFromFile(filepath, meshRenderer);
+		this->LoadFromFile(filepath);
 	}
 
-	Mesh::LOD& Mesh::GetSubmeshes()
+	Mesh::SubmeshList& Mesh::GetSubmeshes()
 	{
-		return this->LODs[this->currentLOD];
+		return this->submeshes;
 	}
 
-	const Mesh::LOD& Mesh::GetSubmeshes() const
+	const Mesh::SubmeshList& Mesh::GetSubmeshes() const
 	{
-		return this->LODs[this->currentLOD];
-	}
-
-    void Mesh::PushEmptyLOD()
-    {
-		this->LODs.emplace_back();
-    }
-
-	void Mesh::PopLastLOD()
-	{
-		if(!this->LODs.empty())
-			this->LODs.pop_back();
-	}
-
-	void Mesh::SetLOD(size_t LOD)
-	{
-		this->currentLOD = Min(LOD, (int)this->LODs.size() - 1);
-	}
-
-    size_t Mesh::GetLOD() const
-    {
-		return this->currentLOD;
-    }
-
-	size_t Mesh::GetLODCount() const
-	{
-		return this->LODs.size();
+		return this->submeshes;
 	}
 
 	const AABB& Mesh::GetAABB() const
@@ -210,16 +118,27 @@ namespace MxEngine
 		this->boundingBox = boundingBox;
 	}
 
+	void Mesh::UpdateAABB()
+	{
+		this->boundingBox = { MakeVector3(0.0f), MakeVector3(0.0f) };
+		if (!this->submeshes.empty()) 
+			this->boundingBox = this->submeshes.front().MeshData.GetAABB();
+
+		for (const auto& submesh : this->submeshes)
+		{
+			this->boundingBox.Min = VectorMin(this->boundingBox.Min, submesh.MeshData.GetAABB().Min);
+			this->boundingBox.Max = VectorMax(this->boundingBox.Max, submesh.MeshData.GetAABB().Max);
+		}
+	}
+
 	void Mesh::AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl)
 	{
 		this->VBOs.push_back(std::move(vbo));
 		this->VBLs.push_back(std::move(vbl));
-		for (auto& meshes : this->LODs)
+		// TODO: do same for LOD component
+		for (auto& mesh : submeshes)
 		{
-			for (auto& mesh : meshes)
-			{
-				mesh.MeshData.GetVAO().AddInstancedBuffer(*this->VBOs.back(), *this->VBLs.back());
-			}
+			mesh.MeshData.GetVAO()->AddInstancedBuffer(*this->VBOs.back(), *this->VBLs.back());
 		}
 	}
 

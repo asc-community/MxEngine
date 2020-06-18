@@ -44,6 +44,7 @@ namespace MxEngine
 		GL_RGBA16F,
 		GL_RGB32F,
 		GL_RGBA32F,
+		GL_DEPTH_COMPONENT
 	};
 
 	GLenum wrapTable[] =
@@ -76,6 +77,9 @@ namespace MxEngine
 		this->channels = texture.channels;
 		this->textureType = texture.textureType;
 		this->filepath = std::move(texture.filepath);
+		this->wrapType = texture.wrapType;
+		this->samples = texture.samples;
+		this->format = texture.format;
 		this->id = texture.id;
 
 		texture.id = 0;
@@ -84,6 +88,7 @@ namespace MxEngine
 		texture.height = 0;
 		texture.channels = 0;
 		texture.filepath = "[[deleted]]";
+		texture.samples = 0;
 	}
 
 	Texture& Texture::operator=(Texture&& texture) noexcept
@@ -93,6 +98,9 @@ namespace MxEngine
 		this->channels = texture.channels;
 		this->textureType = texture.textureType;
 		this->filepath = std::move(texture.filepath);
+		this->wrapType = texture.wrapType;
+		this->samples = texture.samples;
+		this->format = texture.format;
 		this->id = texture.id;
 		
 		texture.id = 0;
@@ -101,6 +109,8 @@ namespace MxEngine
 		texture.height = 0;
 		texture.channels = 0;
 		texture.filepath = "[[deleted]]";
+		texture.samples = 0;
+
 		return *this;
 	}
 
@@ -119,6 +129,8 @@ namespace MxEngine
 	{
 		Image image = ImageLoader::LoadImage(filepath, flipImage);
 		this->filepath = filepath;
+		this->wrapType = wrap;
+		this->format = TextureFormat::RGBA;
 
 		if (image.data == nullptr)
 		{
@@ -131,11 +143,11 @@ namespace MxEngine
 		this->textureType = GL_TEXTURE_2D;
 
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
-		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data));
+		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data));
 
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)wrap]));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)wrap]));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST));
 		if (genMipmaps)
 		{
@@ -152,19 +164,21 @@ namespace MxEngine
 		this->height = height;
 		this->channels = 3;
 		this->textureType = GL_TEXTURE_2D;
+		this->format = format;
+		this->wrapType = wrap;
 
 		GLenum type = (format == TextureFormat::RGB16F || format == TextureFormat::RGB32F ||
 			format == TextureFormat::RGBA16F) ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
-		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)format], (GLsizei)width, (GLsizei)height, 0, GL_RGB, type, data));
+		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, GL_RGB, type, data));
 
 		if (genMipmaps)
 		{
 			GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 			GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-			GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)wrap]));
-			GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)wrap]));
+			GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
+			GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
 			GLCALL(glGenerateMipmap(GL_TEXTURE_2D));
 		}
 	}
@@ -176,6 +190,8 @@ namespace MxEngine
 		this->height = biggestHeight;
 		this->channels = 3;
 		this->textureType = GL_TEXTURE_2D;
+		this->wrapType = wrapType;
+		this->format = TextureFormat::RGBA;
 
 		GLint level = 0;
 		GLsizei width = biggestWidth;
@@ -186,7 +202,7 @@ namespace MxEngine
 		while (width > 0 && height > 0)
 		{
 			MX_ASSERT(level < mipmaps);
-			GLCALL(glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data[level]));
+			GLCALL(glTexImage2D(GL_TEXTURE_2D, level, formatTable[(int)this->format], width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data[level]));
 			height /= 2;
 			width /= 2;
 			level++;
@@ -194,8 +210,8 @@ namespace MxEngine
 
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)wrap]));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)wrap]));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
 	}
 
 	void Texture::LoadDepth(int width, int height, TextureWrap wrap)
@@ -204,14 +220,16 @@ namespace MxEngine
 		this->width = width;
 		this->height = height;
 		this->textureType = GL_TEXTURE_2D;
+		this->format = TextureFormat::DEPTH;
+		this->wrapType = wrap;
 	
 		this->Bind();
 
-		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr));
+		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)wrap]));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)wrap]));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
 	}
 
     void Texture::LoadMultisample(int width, int height, TextureFormat format, int samples, TextureWrap wrap)
@@ -220,13 +238,41 @@ namespace MxEngine
 		this->width = width;
 		this->height = height;
 		this->textureType = GL_TEXTURE_2D_MULTISAMPLE;
+		this->format = format;
+		this->wrapType = wrap;
+		this->samples = samples;
 
 		this->Bind();
 
-		GLenum glFormat = formatTable[(int)format];
+		GLenum glFormat = formatTable[(int)this->format];
 
 		GLCALL(glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, glFormat, width, height, GL_TRUE));
     }
+
+    bool Texture::IsMultisampled() const
+    {
+		return this->textureType == GL_TEXTURE_2D_MULTISAMPLE;
+    }
+
+	bool Texture::IsDepthOnly() const
+	{
+		return this->format == TextureFormat::DEPTH;
+	}
+
+    int Texture::GetSampleCount() const
+    {
+		return (int)this->samples;
+    }
+
+	TextureFormat Texture::GetFormat() const
+	{
+		return this->format;
+	}
+
+	TextureWrap Texture::GetWrapType() const
+	{
+		return this->wrapType;
+	}
 
 	void Texture::Bind() const
 	{

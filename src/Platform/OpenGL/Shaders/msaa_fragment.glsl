@@ -22,7 +22,6 @@ void main()
         color += texelFetch(HDRtexture, texCoord, i);
     }
     color /= float(msaa_samples);
-
     Color = color;
 
     float brightness = dot(vec3(color), vec3(0.2f));

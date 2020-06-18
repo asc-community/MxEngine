@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "Core/Interfaces/IRenderable.h"
 #include "Core/BoundingObjects/AABB.h"
 #include "Core/Components/Transform.h"
 #include "Utilities/String/String.h"
@@ -40,42 +39,35 @@
 namespace MxEngine
 {
 	class MeshRenderer;
-
+	
 	class Mesh
 	{
 		typedef unsigned int GLuint;
 		typedef float GLfloat;
 
-		using LOD = MxVector<SubMesh>;
+		using SubmeshList = MxVector<SubMesh>;
 
 		AABB boundingBox;
-		size_t currentLOD = 0;
 		
-		MxVector<LOD> LODs = MxVector<LOD>(1);
+		SubmeshList submeshes;
 		MxVector<UniqueRef<VertexBuffer>> VBOs;
 		MxVector<UniqueRef<VertexBufferLayout>> VBLs;
 
-		void LoadFromFile(const MxString& filepath, MeshRenderer* meshRenderer);
+		void LoadFromFile(const MxString& filepath);
 	public:
-		size_t RefCounter = 0;
-
 		explicit Mesh() = default;
-		Mesh(const FilePath& path, MeshRenderer* meshRenderer = nullptr);
+		Mesh(const MxString& path);
 		Mesh(Mesh&) = delete;
 		Mesh(Mesh&&) = default;
 		Mesh& operator=(const Mesh&) = delete;
 		Mesh& operator=(Mesh&&) = default;
 		
-		void Load(const MxString& filepath, MeshRenderer* meshRenderer = nullptr);
-		MxVector<SubMesh>& GetSubmeshes();
-		const MxVector<SubMesh>& GetSubmeshes() const;
-		void PushEmptyLOD();
-		void PopLastLOD();
-		void SetLOD(size_t LOD);
-		size_t GetLOD() const;
-		size_t GetLODCount() const;
+		void Load(const MxString& filepath);
+		SubmeshList& GetSubmeshes();
+		const SubmeshList& GetSubmeshes() const;
 		const AABB& GetAABB() const;
 		void SetAABB(const AABB& boundingBox);
+		void UpdateAABB();
 		void AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl);
 		VertexBuffer& GetBufferByIndex(size_t index); 
 		VertexBufferLayout& GetBufferLayoutByIndex(size_t index);

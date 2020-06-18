@@ -28,8 +28,48 @@
 
 #pragma once
 
-#include "Library/Primitives/Colors.h"
-#include "Library/Primitives/Sphere.h"
-#include "Library/Primitives/Cube.h"
-#include "Library/Primitives/Grid.h"
-#include "Library/Primitives/Surface.h"
+#include "Utilities/Array/ArrayView.h"
+#include "Core/Resources/ResourceFactory.h"
+#include "Utilities/Array/Array2D.h"
+
+namespace MxEngine
+{
+    class Primitives
+    {
+    public:
+        using MeshHandle = Resource<Mesh, ResourceFactory>;
+        using TextureHandle = GResource<Texture>;
+
+        static MeshHandle CreateMesh(const AABB& boundingBox, MeshData meshData);
+        static MeshHandle CreateCube();
+        static MeshHandle CreatePlane(size_t UVrepeats = 1);
+        static MeshHandle CreateSphere(size_t polygons = 30);
+        static MeshHandle CreateSurface(const Array2D<float>& heights);
+        static TextureHandle CreateGridTexture(size_t textureSize = 512, float borderScale = 0.01f);
+
+        template<typename Func>
+        static MeshHandle CreateSurface(Func&& f, float xsize, float ysize, float step)
+        {
+            static_assert(std::is_same<float, decltype(f(0.0f, 0.0f))>::value, "Func must accept two floats and output one float");
+            MX_ASSERT(step > 0.0f);
+            MX_ASSERT(xsize > 0.0f);
+            MX_ASSERT(ysize > 0.0f);
+
+            size_t intxsize = static_cast<size_t>(xsize / step);
+            size_t intysize = static_cast<size_t>(ysize / step);
+            Array2D<float> heights;
+            heights.resize(intxsize, intysize);
+
+            for (size_t x = 0; x < intxsize; x++)
+            {
+                for (size_t y = 0; y < intysize; y++)
+                {
+                    float fx = x * step;
+                    float fy = y * step;
+                    heights[x][y] = f(fx, fy);
+                }
+            }
+            return Primitives::CreateSurface(heights);
+        }
+    };
+}
