@@ -95,4 +95,7 @@ namespace MxEngine
             factories = other;
         }
     };
+
+    template<typename T>
+    using CResource = Resource<T, ComponentFactory>;
 }

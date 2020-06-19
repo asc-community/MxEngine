@@ -38,9 +38,9 @@ namespace MxEngine
 {
 	void MxObject::AddInstancedBuffer(ArrayBufferType buffer, size_t count, size_t components, size_t perComponentFloats, UsageType type)
 	{
-		if (this->GetMesh() == nullptr)
+		if (!this->GetComponent<MeshSource>().IsValid())
 		{
-			Logger::Instance().Warning("MxEngine::MxObject", "trying to add buffer to not existing object");
+			Logger::Instance().Warning("MxEngine::MxObject", "trying to add buffer to object with no mesh");
 			return;
 		}
 
@@ -66,12 +66,12 @@ namespace MxEngine
 			components -= perComponentFloats;
 		}
 		VBL->PushFloat(components);
-		this->GetMesh()->AddInstancedBuffer(std::move(VBO), std::move(VBL));
+		this->GetComponent<MeshSource>()->GetMesh()->AddInstancedBuffer(std::move(VBO), std::move(VBL));
 	}
 
 	void MxObject::BufferDataByIndex(size_t index, ArrayBufferType buffer, size_t count, size_t offset)
 	{
-		VertexBuffer& VBO = this->GetMesh()->GetBufferByIndex(index);
+		VertexBuffer& VBO = this->GetComponent<MeshSource>()->GetMesh()->GetBufferByIndex(index);
 		if (count <= VBO.GetSize()) // replace data if VBO size is big enough
 		{
 			MX_ASSERT(offset + count <= VBO.GetSize());
@@ -99,8 +99,7 @@ namespace MxEngine
 			instances = this->GetComponent<InstanceFactory>();
 		}
 		auto instance = instances->MakeInstance();
-		instance->Model = this->GetTransform();
-		instance->SetColor(this->renderColor);
+		instance->Model = *this->GetComponent<MxEngine::Transform>();
 		return instance;
 	}
 
@@ -118,12 +117,12 @@ namespace MxEngine
 
 	size_t MxObject::GetBufferCount() const
 	{
-		if (this->GetMesh() == nullptr)
+		if (!this->GetComponent<MeshSource>().IsValid())
 		{
-			Logger::Instance().Warning("MxEngine::MxObject", "GetBufferCount() is called on null render object");
+			Logger::Instance().Warning("MxEngine::MxObject", "GetBufferCount() is called for object with no mesh");
 			return 0;
 		}
-		return this->GetMesh()->GetBufferCount();
+		return this->GetComponent<MeshSource>()->GetMesh()->GetBufferCount();
 	}
 
 	void MxObject::ReserveInstances(size_t count, UsageType usage)
@@ -206,131 +205,17 @@ namespace MxEngine
 
     const AABB& MxObject::GetAABB() const
     {
-		if (this->GetMesh() != nullptr)
-			this->boundingBox = this->GetMesh()->GetAABB() * this->GetTransform().GetMatrix();
+		if (this->GetComponent<MeshSource>().IsValid())
+			this->boundingBox = this->GetComponent<MeshSource>()->GetMesh()->GetAABB() * this->GetComponent<MxEngine::Transform>()->GetMatrix();
 		else
 			this->boundingBox = AABB{ };
 		return this->boundingBox;
 	}
 
-	Transform& MxObject::GetTransform()
-	{
-		return *this->GetComponent<Transform>();
-	}
-
     MxObject::MxObject()
     {
-		auto meshRenderer = this->AddComponent<MeshRenderer>();
-		auto transform = this->AddComponent<Transform>();
-    }
-
-	Mesh* MxObject::GetMesh() const
-	{
-		auto mesh = this->GetComponent<MeshSource>();
-		return mesh.IsValid() ? mesh.GetUnchecked()->GetMesh().GetUnchecked() : nullptr;
-	}
-
-	void MxObject::Hide()
-	{
-		this->shouldRender = false;
-	}
-
-	void MxObject::Show()
-	{
-		this->shouldRender = true;
-	}
-
-	MxObject& MxObject::Translate(float x, float y, float z)
-	{
-		this->GetTransform().Translate(MakeVector3(x, y, z) * this->TranslateSpeed);
-		return *this;
-	}
-
-	MxObject& MxObject::TranslateForward(float dist)
-	{
-		auto& transform = this->GetTransform();
-		transform.Translate(transform.GetRotation() * this->forwardVec * dist * this->TranslateSpeed);
-		return *this;
-	}
-
-	MxObject& MxObject::TranslateRight(float dist)
-	{
-		auto& transform = this->GetTransform();
-		transform.Translate(transform.GetRotation() * this->rightVec * dist * this->TranslateSpeed);
-		return *this;
-	}
-
-	MxObject& MxObject::TranslateUp(float dist)
-	{
-		auto& transform = this->GetTransform();
-		transform.Translate(transform.GetRotation() * this->upVec * dist * this->TranslateSpeed);
-		return *this;
-	}
-
-	MxObject& MxObject::Rotate(float horz, float vert)
-	{
-		auto& transform = this->GetTransform();
-		transform.Rotate(this->RotateSpeed * horz, transform.GetRotation() * this->upVec);
-		transform.Rotate(this->RotateSpeed * vert, transform.GetRotation() * this->rightVec);
-		
-		return *this;
-	}
-
-	void MxObject::SetForwardVector(const Vector3& forward)
-	{
-		this->forwardVec = forward;
-	}
-
-	void MxObject::SetUpVector(const Vector3& up)
-	{
-		this->upVec = up;
-	}
-
-	void MxObject::SetRightVector(const Vector3& right)
-	{
-		this->rightVec = right;
-	}
-
-	MxObject& MxObject::Scale(float x, float y, float z)
-	{
-		this->GetTransform().Scale(MakeVector3(x, y, z) * this->ScaleSpeed);
-		return *this;
-	}
-
-	MxObject& MxObject::Rotate(float x, float y, float z)
-	{
-		this->GetTransform().Rotate(this->RotateSpeed, MakeVector3(x, y, z));
-		return *this;
-	}
-
-    void MxObject::SetRenderColor(const Vector4& color)
-    {
-		this->renderColor = Clamp(color, MakeVector4(0.0f), MakeVector4(1.0f));
-    }
-
-	const Vector4& MxObject::GetRenderColor() const
-	{
-		return this->renderColor;
-	}
-
-	const Vector3& MxObject::GetForwardVector() const
-	{
-		return this->forwardVec;
-	}
-
-	const Vector3& MxObject::GetUpVector() const
-	{
-		return this->upVec;
-	}
-
-	const Vector3& MxObject::GetRightVector() const
-	{
-		return this->rightVec;
-	}
-
-    const Transform& MxObject::GetTransform() const
-    {
-		return *this->GetComponent<Transform>();
+		this->MeshRenderer = this->AddComponent<MxEngine::MeshRenderer>();
+		this->Transform = this->AddComponent<MxEngine::Transform>();
     }
 
 	size_t MxObject::GetInstanceCount() const

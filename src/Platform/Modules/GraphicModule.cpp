@@ -78,6 +78,10 @@ namespace MxEngine
 			ImGui::SetCurrentContext(context);
 			ImGui::StyleColorsDark();
 
+			auto& imguiIO = ImGui::GetIO();
+			imguiIO.ConfigFlags |= ImGuiConfigFlags_::ImGuiConfigFlags_DockingEnable;
+			imguiIO.ConfigDockingAlwaysTabBar = true;
+
 			ImGui_ImplGlfw_InitForOpenGL(reinterpret_cast<GLFWwindow*>(window), true);
 
 			GLCALL(MxString shaderVersion = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));

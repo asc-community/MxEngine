@@ -45,12 +45,17 @@ namespace MxEngine
 		DEPTH,
 	};
 
+
 	enum class TextureWrap : uint8_t
 	{
 		CLAMP_TO_EDGE,
+		CLAMP_TO_BORDER,
 		MIRRORED_REPEAT,
 		REPEAT,
 	};
+
+	const char* EnumToString(TextureFormat format);
+	const char* EnumToString(TextureWrap wrap);
 
 	class Texture
 	{
@@ -84,7 +89,7 @@ namespace MxEngine
 		void Load(const MxString& filepath, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
 		void Load(RawDataPointer data, int width, int height, TextureFormat format = TextureFormat::RGBA, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true);
 		void LoadMipmaps(RawDataPointer* data, size_t mipmaps, int biggestWidth, int biggestHeight, TextureWrap wrap = TextureWrap::REPEAT);
-		void LoadDepth(int width, int height, TextureWrap wrap = TextureWrap::CLAMP_TO_EDGE);
+		void LoadDepth(int width, int height, TextureWrap wrap = TextureWrap::CLAMP_TO_BORDER);
 		void LoadMultisample(int width, int height, TextureFormat format, int samples, TextureWrap wrap = TextureWrap::REPEAT);
 		bool IsMultisampled() const;
 		bool IsDepthOnly() const;

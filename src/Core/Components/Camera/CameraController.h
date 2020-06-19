@@ -47,10 +47,10 @@ namespace MxEngine
 		float verticalAngle = 0.0f;
 		float horizontalAngle = 0.0f;
 		float zoom = 1.0f;
-		float moveSpeed = 1.0f;
-		float rotateSpeed = 1.0f;
 		float exposure = 1.0f;
 		float bloomWeight = 100.0f;
+		float moveSpeed = 1.0f;
+		float rotateSpeed = 1.0f;
 		mutable bool updateCamera = true;
 		uint8_t bloomIterations = 6;
 
@@ -58,6 +58,7 @@ namespace MxEngine
 		GResource<RenderBuffer> renderbuffer;
 		GResource<Texture> texture;
 	public:
+
 		CameraController();
 		~CameraController();
 		CameraController(CameraController&&) noexcept = default;
@@ -73,12 +74,8 @@ namespace MxEngine
 		GResource<Texture> GetTexture() const;
 		void FitScreenViewport();
 
-		float GetMoveSpeed() const;
-		float GetRotateSpeed() const;
 		const Vector3& GetDirection() const;
 		void SetDirection(const Vector3& direction);
-		void SetMoveSpeed(float speed);
-		void SetRotateSpeed(float speed);
 		void SetZoom(float zoom);
 		float GetHorizontalAngle() const;
 		float GetVerticalAngle() const;
@@ -89,6 +86,10 @@ namespace MxEngine
 		void SetBloomIterations(size_t iterCount);
 		float GetExposure() const;
 		void SetExposure(float exp);
+		float GetMoveSpeed() const;
+		void SetMoveSpeed(float speed);
+		float GetRotateSpeed() const;
+		void SetRotateSpeed(float speed);
 
 		void SetForwardVector(const Vector3& forward);
 		void SetUpVector(const Vector3& up);

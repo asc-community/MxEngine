@@ -50,6 +50,7 @@ namespace MxEngine
         Script(const MxString& path);
 
         void UpdateContents();
+        const MxString& GetFilePath() const;
         const ScriptData& GetContent() const;
     };
 }

@@ -30,7 +30,7 @@
 
 #include "Utilities/Time/Time.h"
 #include "Core/Interfaces/IEvent.h"
-#include "Core/DeveloperConsole/DeveloperConsole.h"
+#include "Core/Runtime/RuntimeEditor.h"
 #include "Core/RenderController/RenderAdaptor.h"
 #include "Core/MxObject/MxObject.h"
 #include "Utilities/FileSystem/File.h"
@@ -54,13 +54,13 @@ namespace MxEngine
 		UniqueRef<Window> window;
 		RenderAdaptor renderAdaptor;
 		AppEventDispatcher dispatcher;
-		DeveloperConsole console;
+		RuntimeEditor console;
 		TimeStep timeDelta = 0.0f;
 		int counterFPS = 0;
 		bool shouldClose = false;
 		bool isRunning = false;
 
-		void InitializeDeveloperConsole(DeveloperConsole& console);
+		void InitializeRuntimeEditor(RuntimeEditor& console);
 		void InitializeRenderAdaptor(RenderAdaptor& adaptor);
 		void DrawObjects();
 		void InvokeUpdate();
@@ -82,7 +82,7 @@ namespace MxEngine
 		AppEventDispatcher& GetEventDispatcher();
 		RenderAdaptor& GetRenderAdaptor();
 		LoggerImpl& GetLogger();
-		DeveloperConsole& GetConsole();
+		RuntimeEditor& GetConsole();
 		Window& GetWindow();
 		float GetTimeDelta() const;
 		int GetCurrentFPS() const;

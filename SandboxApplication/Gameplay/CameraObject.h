@@ -5,7 +5,8 @@ void InitCamera(MxObject& object)
 	auto camera = MakeUnique<PerspectiveCamera>();
 	// auto camera = MakeUnique<OrthographicCamera>();
 	
-	auto transform = object.GetComponent<Transform>();
+	object.Name = "Camera";
+
 	auto controller = object.AddComponent<CameraController>();
 	auto skybox = object.AddComponent<Skybox>();
 	skybox->Texture = AssetManager::LoadCubeMap("textures/dawn.jpg"_id);
@@ -19,5 +20,5 @@ void InitCamera(MxObject& object)
 	controller->SetRotateSpeed(0.75f);
 	controller->FitScreenViewport();
 
-	transform->Translate(MakeVector3(1.0f, 3.0f, 0.0f));
+	object.Transform->Translate(MakeVector3(1.0f, 3.0f, 0.0f));
 }

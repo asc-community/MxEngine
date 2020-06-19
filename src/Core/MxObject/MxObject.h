@@ -28,9 +28,10 @@
 
 #pragma once
 
-#include "Core/MxObject/Mesh.h"
+#include "Core/Resources/Mesh.h"
 #include "Core/Components/Transform.h"
 #include "Core/Components/InstanceFactory.h"
+#include "Core/Components/Rendering/MeshRenderer.h"
 
 GENERATE_METHOD_CHECK(Init, Init())
 
@@ -39,9 +40,6 @@ namespace MxEngine
 	class MxObject
 	{		
 		ComponentManager components;
-		Vector3 forwardVec{ 0.0f, 0.0f, 1.0f }, upVec{ 0.0f, 1.0f, 0.0f }, rightVec{ 1.0f, 0.0f, 0.0f };
-		Vector4 renderColor{ 1.0f, 1.0f, 1.0f, 1.0f };
-		bool shouldRender = true;
 		bool instanceUpdate = true;
 		mutable AABB boundingBox;
 
@@ -81,20 +79,13 @@ namespace MxEngine
 		float TranslateSpeed = 1.0f;
 		float RotateSpeed = 1.0f;
 		float ScaleSpeed = 1.0f;
+
+		CResource<Transform> Transform;
+		CResource<MeshRenderer> MeshRenderer;
+
 		MxObject();
 		MxObject(const MxObject&) = delete;
 		MxObject(MxObject&&) = default;
-
-		Mesh* GetMesh() const;
-		void Hide();
-		void Show();
-
-		void SetForwardVector(const Vector3& forward);
-		void SetUpVector(const Vector3& up);
-		void SetRightVector(const Vector3& right);
-		MxObject& Scale(float x, float y, float z);
-		MxObject& Rotate(float x, float y, float z);
-		void SetRenderColor(const Vector4& color);
 
 		void AddInstancedBuffer(ArrayBufferType buffer, size_t count, size_t components, size_t perComponentFloats = 4, UsageType type = UsageType::DYNAMIC_DRAW);
 		void BufferDataByIndex(size_t index, ArrayBufferType buffer, size_t count, size_t offset = 0);
@@ -107,20 +98,7 @@ namespace MxEngine
 		void BufferInstances();
 
 		const AABB& GetAABB() const;
-		Transform& GetTransform();
-
-		const Transform& GetTransform() const;
-		const Vector4& GetRenderColor() const;
 		size_t GetInstanceCount() const;
-
-		MxObject& Translate(float x, float y, float z);
-		MxObject& TranslateForward(float dist);
-		MxObject& TranslateRight(float dist);
-		MxObject& TranslateUp(float dist);
-		MxObject& Rotate(float horz, float vert);
-		const Vector3& GetForwardVector() const;
-		const Vector3& GetUpVector() const;
-		const Vector3& GetRightVector() const;
 
 		template<typename T, typename... Args>
 		auto AddComponent(Args&&... args)

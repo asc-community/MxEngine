@@ -28,25 +28,16 @@
 
 #pragma once
 
-#include "MeshData.h"
+#include "Core/Resources/ResourceFactory.h"
+#include "Core/Components/Lighting/LightBase.h"
 
-namespace MxEngine
+namespace MxEngine::GUI
 {
-	class SubMesh
-	{
-	public:
-		using MaterialId = size_t;
-		using TransformHandle = CResource<Transform>;
-	private:
-		MaterialId materialId;
-		TransformHandle transform;
-	public:
-		MeshData MeshData;
-		StringId Name = 0;
-
-		SubMesh(size_t materiaId, const TransformHandle& transform);
-
-		TransformHandle GetTransform() const;
-		MaterialId GetMaterialId() const;
-	};
+	void DrawTextureEditor(const char* name, GResource<Texture>& texture);
+	void DrawCubeMapEditor(const char* name, GResource<CubeMap>& cubemap);
+	void DrawMeshEditor(const char* name, Resource<Mesh, ResourceFactory>& mesh);
+	void DrawAABBEditor(const char* name, AABB& aabb);
+	void DrawLightBaseEditor(LightBase& base);
+	void DrawMaterialEditor(Resource<Material, ResourceFactory>& material);
+	void DrawVertexEditor(Vertex& vertex);
 }

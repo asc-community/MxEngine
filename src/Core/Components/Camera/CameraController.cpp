@@ -46,7 +46,7 @@ namespace MxEngine
 		this->renderbuffer->LinkToFrameBuffer(*this->framebuffer);
 		this->framebuffer->Validate();
 
-		this->texture->Load(nullptr, viewport.x, viewport.y, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
+		this->texture->Load(nullptr, viewport.x, viewport.y, TextureFormat::RGB16F, TextureWrap::CLAMP_TO_EDGE);
 	}
 
 	CameraController::~CameraController()
@@ -107,10 +107,11 @@ namespace MxEngine
 
 	void CameraController::FitScreenViewport()
 	{
+		Application::Get()->GetEventDispatcher().RemoveEventListener(this->framebuffer.GetUUID());
+
 		Application::Get()->GetEventDispatcher().AddEventListener<WindowResizeEvent>(this->framebuffer.GetUUID(),
 		[framebufferTexture = GetAttachedTexture(this->framebuffer), renderbuffer = this->renderbuffer, outputTexture = this->texture](WindowResizeEvent& e) mutable
 		{
-			// TODO: update texture (replace texture->framebufferTexture) 
 			if (e.Old != e.New)
 			{
 				auto width = (int)e.New.x;
@@ -123,7 +124,7 @@ namespace MxEngine
 					framebufferTexture->Load(nullptr, width, height, framebufferTexture->GetFormat(), framebufferTexture->GetWrapType());
 
 				renderbuffer->InitStorage((int)framebufferTexture->GetWidth(), (int)framebufferTexture->GetHeight(), framebufferTexture->GetSampleCount());
-				outputTexture->Load(nullptr, width, height, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
+				outputTexture->Load(nullptr, width, height, TextureFormat::RGB, TextureWrap::CLAMP_TO_EDGE);
 			}
 		});
 	}
@@ -133,30 +134,10 @@ namespace MxEngine
 		return this->direction;
 	}
 
-	float CameraController::GetMoveSpeed() const
-	{
-		return this->moveSpeed;
-	}
-
-	float CameraController::GetRotateSpeed() const
-	{
-		return this->rotateSpeed;
-	}
-
 	void CameraController::SetDirection(const Vector3& direction)
 	{
 		this->direction = direction;
 		this->updateCamera = true;
-	}
-
-	void CameraController::SetMoveSpeed(float speed)
-	{
-		this->moveSpeed = speed;
-	}
-
-	void CameraController::SetRotateSpeed(float speed)
-	{
-		this->rotateSpeed = speed;
 	}
 
 	void CameraController::SetZoom(float zoom) 
@@ -196,7 +177,7 @@ namespace MxEngine
 
 	void CameraController::SetBloomIterations(size_t iterCount)
 	{
-		this->bloomIterations = (uint8_t)Min(iterCount + iterCount % 2, std::numeric_limits<decltype(this->bloomIterations)>::max());
+		this->bloomIterations = (uint8_t)Min(iterCount + iterCount % 2, std::numeric_limits<decltype(this->bloomIterations)>::max() - 1);
 	}
 
 	float CameraController::GetExposure() const
@@ -207,6 +188,26 @@ namespace MxEngine
 	void CameraController::SetExposure(float exp)
 	{
 		this->exposure = Max(0.0f, exp);
+	}
+
+	float CameraController::GetMoveSpeed() const
+	{
+		return this->moveSpeed;
+	}
+
+	void CameraController::SetMoveSpeed(float speed)
+	{
+		this->moveSpeed = Max(speed, 0.0f);
+	}
+
+	float CameraController::GetRotateSpeed() const
+	{
+		return this->rotateSpeed;
+	}
+
+	void CameraController::SetRotateSpeed(float speed)
+	{
+		this->rotateSpeed = Max(speed, 0.0f);
 	}
 
 	CameraController& CameraController::Rotate(float horizontal, float vertical)

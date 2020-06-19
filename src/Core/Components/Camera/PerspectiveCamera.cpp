@@ -97,7 +97,7 @@ namespace MxEngine
 	{
 		updateMatrix = true;
 		updateProjection = true;
-		this->zFar = zFar;
+		this->zFar = Max(zNear, zFar);
 	}
 	
 	float PerspectiveCamera::GetZNear() const
@@ -109,7 +109,7 @@ namespace MxEngine
 	{
 		updateMatrix = true;
 		updateProjection = true;
-		this->zNear = zNear;
+		this->zNear = Min(zNear, zFar);
 	}
 
 	float PerspectiveCamera::GetZoom() const

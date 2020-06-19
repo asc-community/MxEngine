@@ -118,24 +118,17 @@ namespace MxEngine
             Vector2(size * 1.0f,        0.0f),
             Vector2(size * 1.0f, size * 1.0f),
         };
-        constexpr std::array face =
-        {
-            VectorInt2(0, 0), VectorInt2(1, 1), VectorInt2(2, 2),
-            VectorInt2(2, 2), VectorInt2(1, 1), VectorInt2(3, 3),
-            VectorInt2(0, 0), VectorInt2(2, 2), VectorInt2(1, 1),
-            VectorInt2(1, 1), VectorInt2(2, 2), VectorInt2(3, 3),
-        };
 
-        indicies.resize(face.size());
-        vertecies.resize(face.size());
-        for (size_t i = 0; i < face.size(); i++)
+        vertecies.resize(vertex.size());
+        for (size_t i = 0; i < vertecies.size(); i++)
         {
-            indicies[i] = static_cast<uint32_t>(i);
-
-            vertecies[i].Position = vertex[face[i].x];
-            vertecies[i].TexCoord = texture[face[i].y];
+            vertecies[i].Position = vertex[i];
+            vertecies[i].TexCoord = texture[i];
+            vertecies[i].Normal = MakeVector3(0.0f, 1.0f, 0.0f);
+            vertecies[i].Tangent = MakeVector3(1.0f, 0.0f, 0.0f);
+            vertecies[i].Bitangent  = MakeVector3(0.0f, 0.0f, 1.0f);
         }
-        meshData.RegenerateNormals();
+        indicies = { 0, 1, 2, 2, 1, 3, 0, 2, 1, 1, 2, 3 };
         return Primitives::CreateMesh(aabb, std::move(meshData));
     }
 

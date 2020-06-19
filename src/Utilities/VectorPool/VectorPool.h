@@ -65,9 +65,9 @@ namespace MxEngine
             PoolIterator(size_t index, VectorPool<T, Container>& ref)
                 : index(index), poolRef(ref)
             {
-                while (index < poolRef.Capacity() && !poolRef.IsAllocated(index))
+                while (this->index < this->poolRef.Capacity() && !poolRef.IsAllocated(this->index))
                 {
-                    index++; // 0 element may not exists, so we should skip it until find any allocated
+                    this->index++; // 0 element may not exists, so we should skip it until find any allocated
                 }
             }
 

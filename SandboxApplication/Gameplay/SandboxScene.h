@@ -62,12 +62,13 @@ public:
 		camera.MakeStatic();
 
 		Application::Get()->GetRenderAdaptor().Viewport = camera->GetComponent<CameraController>();
-    }
 
-	void OnLoad()
-	{
 		InputControlBinding(Application::Get()->GetRenderAdaptor().Viewport)
 			.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT)
 			.BindRotation();
+    }
+
+	void OnUpdate()
+	{
 	}
 };

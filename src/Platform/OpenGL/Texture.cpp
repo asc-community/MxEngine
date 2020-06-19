@@ -50,6 +50,7 @@ namespace MxEngine
 	GLenum wrapTable[] =
 	{
 		GL_CLAMP_TO_EDGE,
+		GL_CLAMP_TO_BORDER,
 		GL_MIRRORED_REPEAT,
 		GL_REPEAT,
 	};
@@ -230,6 +231,9 @@ namespace MxEngine
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
+
+		float border[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		GLCALL(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border));
 	}
 
     void Texture::LoadMultisample(int width, int height, TextureFormat format, int samples, TextureWrap wrap)
@@ -321,4 +325,37 @@ namespace MxEngine
 	{
 		return channels;
 	}
+
+    const char* EnumToString(TextureFormat format)
+    {
+		#define TEX_FMT_STR(val) case TextureFormat::val: return #val
+		switch (format)
+		{
+			TEX_FMT_STR(RGB);
+			TEX_FMT_STR(RGBA);
+			TEX_FMT_STR(RGB16);
+			TEX_FMT_STR(RGB16F);
+			TEX_FMT_STR(RGBA16);
+			TEX_FMT_STR(RGBA16F);
+			TEX_FMT_STR(RGB32F);
+			TEX_FMT_STR(RGBA32F);
+			TEX_FMT_STR(DEPTH);
+		default:
+			return "INVALID_FORMAT";
+		}
+    }
+
+    const char* EnumToString(TextureWrap wrap)
+    {
+		#define TEX_WRAP_STR(val) case TextureWrap::val: return #val
+		switch (wrap)
+		{
+			TEX_WRAP_STR(CLAMP_TO_EDGE);
+			TEX_WRAP_STR(CLAMP_TO_BORDER);
+			TEX_WRAP_STR(MIRRORED_REPEAT);
+			TEX_WRAP_STR(REPEAT);
+		default:
+			return "INVALID_WRAPTYPE";
+		}
+    }
 }

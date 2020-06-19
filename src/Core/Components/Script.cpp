@@ -64,6 +64,11 @@ namespace MxEngine
         }
     }
 
+    const MxString& Script::GetFilePath() const
+    {
+        return this->path;
+    }
+
     const Script::ScriptData& Script::GetContent() const
     {
         return this->data;

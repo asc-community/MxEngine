@@ -61,7 +61,7 @@
 
 #define INVOKE_ONCE(...) static char MXENGINE_CONCAT(unused, __LINE__) = [&](){ __VA_ARGS__; return '\0'; }()
 
-#define BOOL_STRING(b) ((b) ? "true" : "false")
+#define BOOL_STRING(b) (bool(b) ? "true" : "false")
 
 #define MXENGINE_STRING_IMPL(x) #x
 #define MXENGINE_STRING(x) MXENGINE_STRING_IMPL(x)

@@ -2,6 +2,8 @@
 
 void InitDirLight(MxObject& object)
 {
+    object.Name = "Directional Light";
+
     auto light = object.AddComponent<DirectionalLight>();
     light->AmbientColor  = { 0.3f, 0.3f, 0.3f };
     light->DiffuseColor  = { 0.3f, 0.3f, 0.3f };
@@ -11,6 +13,8 @@ void InitDirLight(MxObject& object)
 
 void InitPointLight(MxObject& object)
 {
+    object.Name = "Point Light";
+
     auto light = object.AddComponent<PointLight>();
     light->AmbientColor  = {  1.0f, 0.3f,  0.0f };
     light->DiffuseColor  = {  1.0f, 0.3f,  0.0f };
@@ -18,13 +22,15 @@ void InitPointLight(MxObject& object)
 
     object.AddComponent<MeshSource>(Primitives::CreateCube());
     object.GetComponent<MeshRenderer>()->GetMaterial()->EmmisiveColor = light->AmbientColor + light->DiffuseColor;
-    object.GetComponent<Transform>()
+    object.Transform
         ->SetPosition(MakeVector3(-3.0f, 2.0f, -3.0f))
-            .SetScale(MakeVector3(1.0f / 3.0f));
+            .SetScale(MakeVector3(0.3f));
 }
 
 void InitSpotLight(MxObject& object)
 {
+    object.Name = "Spot Light";
+
     auto light = object.AddComponent<SpotLight>();
     light->AmbientColor  = {   1.0f, 1.0f,  1.0f };
     light->DiffuseColor  = {   1.0f, 1.0f,  1.0f };
@@ -35,7 +41,7 @@ void InitSpotLight(MxObject& object)
 
     object.AddComponent<MeshSource>(Primitives::CreateCube());
     object.GetComponent<MeshRenderer>()->GetMaterial()->EmmisiveColor = light->AmbientColor + light->DiffuseColor;
-    object.GetComponent<Transform>()
+    object.Transform
         ->SetPosition(MakeVector3(-15.0f, 3.0f,  0.0f))
-            .SetScale(MakeVector3(1.0f / 3.0f));
+            .SetScale(MakeVector3(0.3f));
 }

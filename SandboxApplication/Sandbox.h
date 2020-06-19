@@ -2,8 +2,11 @@
 
 using namespace MxEngine;
 
+class SandboxScene;
+
 class SandboxApp : public Application
 {
+	SandboxScene* scene;
 public:
 	virtual void OnCreate () override;
 	virtual void OnUpdate () override;

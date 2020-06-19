@@ -36,7 +36,7 @@
 #include "Core/Components/Lighting/SpotLight.h"
 #include "Core/Components/Rendering/Skybox.h"
 #include "Core/Components/Rendering/MeshSource.h"
-#include "Core/Material/Material.h"
+#include "Core/Resources/Material.h"
 #include "Platform/OpenGL/Renderer.h"
 #include "DebugBuffer.h"
 #include "RenderPipeline.h"
@@ -49,8 +49,6 @@ namespace MxEngine
 	{
 		Renderer renderer;
 		RenderPipeline Pipeline;
-
-		UniqueRef<DebugBuffer> debugBuffer; // TODO: consider removal
 
 		void PrepareShadowMaps();
 		void DrawSkybox(const CameraUnit& camera);
@@ -76,7 +74,6 @@ namespace MxEngine
 		void ToggleFaceCulling(bool value, bool counterClockWise = true, bool cullBack = true);
 		void SetAnisotropicFiltering(float value);
 		void SetViewport(int x, int y, int width, int height);
-		DebugBuffer& GetDebugBuffer();
 		
 		EnvironmentUnit& GetEnvironment();
 		const EnvironmentUnit& GetEnvironment() const;

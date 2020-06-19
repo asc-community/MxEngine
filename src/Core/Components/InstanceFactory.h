@@ -95,7 +95,6 @@ namespace MxEngine
 
 		auto MakeInstance()
 		{
-
 			auto uuid = UUIDGenerator::Get();
 			size_t index = this->GetInstancePool().Allocate(uuid);
 			auto instance = MxInstance(uuid, index, &this->factory);

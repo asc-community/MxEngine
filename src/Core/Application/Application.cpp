@@ -34,7 +34,6 @@
 // conditional includes
 #include "Core/Macro/Macro.h"
 
-#include "Library/Scripting/Python/PythonEngine.h"
 #include "Library/Primitives/Colors.h"
 
 #include "Utilities/Logger/Logger.h"
@@ -44,16 +43,12 @@
 #include "Utilities/UUID/UUID.h"
 #include "Utilities/Json/Json.h"
 #include "Utilities/ECS/ComponentFactory.h"
-
-#include "Core/Components/Behaviour.h"
-#include "Core/Components/Rendering/MeshRenderer.h"
-#include "Core/Components/Rendering/MeshSource.h"
-#include "Core/Components/Rendering/MeshLOD.h"
+#include "Utilities/ImGui/ComponentEditor.h"
 
 namespace MxEngine
 {
 	Application::Application()
-		: manager(this), window(MakeUnique<Window>(1600, 900, "MxEngine Application"))
+		: manager(this), window(MakeUnique<Window>(1600, 900, "MxEngine Application")), renderAdaptor()
 	{
 		this->GetWindow().UseEventDispatcher(&this->dispatcher);
 	}
@@ -117,11 +112,10 @@ namespace MxEngine
 	void Application::ExecuteScript(const char* script)
 	{
 		MAKE_SCOPE_PROFILER("Application::ExecuteScript");
-		auto& engine = this->GetConsole().GetEngine();
-		engine.Execute(script);
-		if (engine.HasErrors())
+		this->GetConsole().Execute(script);
+		if (this->GetConsole().HasErrorsInExecution())
 		{
-			Logger::Instance().Error("Application::ExecuteScript", engine.GetErrorMessage());
+			Logger::Instance().Error("Application::ExecuteScript", this->GetConsole().GetLastErrorMessage());
 		}
 	}
 
@@ -274,11 +268,11 @@ namespace MxEngine
 			.UseAnisotropicFiltering(static_cast<float>(anisothropic))
 			;
 
-		this->InitializeDeveloperConsole(this->GetConsole());
+		this->InitializeRuntimeEditor(this->GetConsole());
 		this->InitializeRenderAdaptor(this->GetRenderAdaptor());
 	}
 
-	DeveloperConsole& Application::GetConsole()
+	RuntimeEditor& Application::GetConsole()
 	{
 		return this->console;
 	}
@@ -406,21 +400,33 @@ namespace MxEngine
 	}
 
 #if defined(MXENGINE_USE_PYTHON)
-	void Application::InitializeDeveloperConsole(DeveloperConsole& console)
+	void Application::InitializeRuntimeEditor(RuntimeEditor& console)
 	{
 		console.SetSize({ 
 			static_cast<float>(this->GetWindow().GetWidth()) / 2.5f, 
 			static_cast<float>(this->GetWindow().GetHeight()) / 2.0f });
 		this->GetEventDispatcher().AddEventListener("DeveloperConsole",
-			[this](RenderEvent&) { this->GetConsole().OnRender(); });
-		this->GetConsole().GetEngine().Execute("InitializeOpenGL()");
+			[this](UpdateEvent&) { this->GetConsole().OnRender(); });
+		this->GetConsole().Execute("InitializeOpenGL()");
+
+		this->GetConsole().RegisterComponentEditor(GUI::TransformEditor);
+		this->GetConsole().RegisterComponentEditor(GUI::BehaviourEditor);
+		this->GetConsole().RegisterComponentEditor(GUI::ScriptEditor);
+		this->GetConsole().RegisterComponentEditor(GUI::SkyboxEditor);
+		this->GetConsole().RegisterComponentEditor(GUI::MeshRendererEditor);
+		this->GetConsole().RegisterComponentEditor(GUI::MeshSourceEditor);
+		this->GetConsole().RegisterComponentEditor(GUI::MeshLODEditor);
+		this->GetConsole().RegisterComponentEditor(GUI::DirectionalLightEditor);
+		this->GetConsole().RegisterComponentEditor(GUI::PointLightEditor);
+		this->GetConsole().RegisterComponentEditor(GUI::SpotLightEditor);
+		this->GetConsole().RegisterComponentEditor(GUI::CameraControllerEditor);
 	}
 #else
 	void Application::InitializeDeveloperConsole(DeveloperConsole& console)
 	{
 		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });
 		this->GetEventDispatcher().AddEventListener("DeveloperConsole",
-			[this](RenderEvent&) { this->GetConsole().OnRender(); });
+			[this](UpdateEvent&) { this->GetConsole().OnRender(); });
 	}
 #endif
 }

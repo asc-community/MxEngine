@@ -71,9 +71,13 @@ namespace MxEngine
 
     void DirectionalLight::FollowViewport()
     {
+
         auto& object = MxObject::GetByComponent(*this);
         auto dirLight = object.GetComponent<DirectionalLight>();
         auto transform = object.GetComponent<Transform>();
+
+        Application::Get()->GetEventDispatcher().RemoveEventListener(dirLight.GetUUID());
+
         Application::Get()->GetEventDispatcher().AddEventListener(dirLight.GetUUID(), [tr = std::move(transform)](UpdateEvent& e) mutable
         {
             auto& viewport = Application::Get()->GetRenderAdaptor().Viewport;

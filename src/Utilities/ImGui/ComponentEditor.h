@@ -28,47 +28,29 @@
 
 #pragma once
 
-#include "Utilities/STL/MxString.h"
-#include "Core/Macro/Macro.h"
-#include "Utilities/Memory/Memory.h"
-#include "Utilities/Math/Math.h"
+#include "Core/Components/Transform.h"
+#include "Core/Components/Behaviour.h"
+#include "Core/Components/Script.h"
+#include "Core/Components/Rendering/Skybox.h"
+#include "Core/Components/Rendering/MeshRenderer.h"
+#include "Core/Components/Rendering/MeshSource.h"
+#include "Core/Components/Rendering/MeshLOD.h"
+#include "Core/Components/Lighting/DirectionalLight.h"
+#include "Core/Components/Lighting/PointLight.h"
+#include "Core/Components/Lighting/SpotLight.h"
+#include "Core/Components/Camera/CameraController.h"
 
-namespace MxEngine
+namespace MxEngine::GUI
 {
-	class GraphicConsole;
-
-	#if defined(MXENGINE_USE_PYTHON)
-	class PythonEngine;
-	#endif
-
-	class DeveloperConsole
-	{
-		#if defined(MXENGINE_USE_PYTHON)
-		using ScriptEngine = PythonEngine;
-		#else
-		using ScriptEngine = int; // stub
-		#endif
-
-		ScriptEngine* engine;
-		GraphicConsole* console;
-		bool shouldRender = false;
-		bool debugTools = true;
-	public:
-		DeveloperConsole();
-		DeveloperConsole(const DeveloperConsole&) = delete;
-		DeveloperConsole(DeveloperConsole&&) = default;
-		~DeveloperConsole();
-
-		void Log(const MxString& message);
-		void ClearLog();
-		void PrintHistory();
-		void OnRender();
-		void SetSize(const Vector2& size);
-		void Toggle(bool isVisible = true);
-		void UseDebugTools(bool value = true);
-
-		ScriptEngine& GetEngine();
-		Vector2 GetSize() const;
-		bool IsToggled() const;
-	};
+	void TransformEditor(Transform& transform);
+	void BehaviourEditor(Behaviour& behaviour);
+	void ScriptEditor(Script& script);
+	void SkyboxEditor(Skybox& skybox);
+	void MeshRendererEditor(MeshRenderer& meshRenderer);
+	void MeshSourceEditor(MeshSource& meshSource);
+	void MeshLODEditor(MeshLOD& meshLOD);
+	void DirectionalLightEditor(DirectionalLight& dirLight);
+	void PointLightEditor(PointLight& pointLight);
+	void SpotLightEditor(SpotLight& spotLight);
+	void CameraControllerEditor(CameraController& camera);
 }

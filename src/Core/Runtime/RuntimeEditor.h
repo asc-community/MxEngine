@@ -27,33 +27,76 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <string>
 
+#include "Utilities/STL/MxString.h"
+#include "Core/Macro/Macro.h"
 #include "Utilities/Memory/Memory.h"
-#include "Platform/GraphicAPI.h"
 #include "Utilities/Math/Math.h"
+#include "Utilities/STL/MxVector.h"
+#include "Core/MxObject/MxObject.h"
+#include <functional>
 
 namespace MxEngine
 {
-	struct Material
+	class GraphicConsole;
+
+	#if defined(MXENGINE_USE_PYTHON)
+	class PythonEngine;
+	#endif
+
+
+	class RuntimeEditor
 	{
-		GResource<Texture> AmbientMap;
-		GResource<Texture> DiffuseMap;
-		GResource<Texture> SpecularMap;
-		GResource<Texture> EmmisiveMap;
-		GResource<Texture> TransparencyMap;
-		GResource<Texture> NormalMap;
-		GResource<Texture> HeightMap;
+		#if defined(MXENGINE_USE_PYTHON)
+		using ScriptEngine = PythonEngine;
+		#else
+		using ScriptEngine = int; // stub
+		#endif
 
-		float SpecularExponent = 128.0f;
-		float Transparency = 1.0f;
-		Vector3 AmbientColor{ 0.4f };
-		Vector3 DiffuseColor{ 0.6f };
-		Vector3 SpecularColor{ 0.2f };
-		Vector3 EmmisiveColor{ 0.0f };
+		ScriptEngine* engine;
+		GraphicConsole* console;
+		Vector2 cachedWindowSize{ 0.0f };
+		bool shouldRender = false;
+		bool debugTools = true;
 
-		float Displacement = 0.025f;
-		float Reflection = 0.1f;
-		Vector4 BaseColor{ 1.0f };
+		MxVector<std::function<void(MxObject&)>> componentEditorCallbacks;
+	public:
+		RuntimeEditor();
+		RuntimeEditor(const RuntimeEditor&) = delete;
+		RuntimeEditor(RuntimeEditor&&) = default;
+		~RuntimeEditor();
+
+		void Log(const MxString& message);
+		void ClearLog();
+		void PrintHistory();
+		void OnRender();
+		void SetSize(const Vector2& size);
+		void Toggle(bool isVisible = true);
+		void UseDebugTools(bool value = true);
+
+		ScriptEngine& GetEngine();
+		Vector2 GetSize() const;
+		bool IsToggled() const;
+
+		void Execute(const MxString& code);
+		bool HasErrorsInExecution() const;
+		const MxString& GetLastErrorMessage() const;
+
+		template<typename T>
+		void RegisterComponentEditor(std::function<void(T&)> callback)
+		{
+			this->componentEditorCallbacks.push_back([func = std::move(callback)](MxObject& object)
+			{
+				auto component = object.GetComponent<T>();
+				if (component.IsValid())
+					func(*component);
+			});
+		}
+
+		template<typename Func>
+		void RegisterComponentEditor(Func&& callback)
+		{
+			this->RegisterComponentEditor(std::function{ std::forward<Func>(callback) });
+		}
 	};
 }

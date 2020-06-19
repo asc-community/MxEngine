@@ -27,26 +27,34 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+#include <string>
 
-#include "MeshData.h"
+#include "Utilities/Memory/Memory.h"
+#include "Platform/GraphicAPI.h"
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-	class SubMesh
+	struct Material
 	{
-	public:
-		using MaterialId = size_t;
-		using TransformHandle = CResource<Transform>;
-	private:
-		MaterialId materialId;
-		TransformHandle transform;
-	public:
-		MeshData MeshData;
-		StringId Name = 0;
+		GResource<Texture> AmbientMap;
+		GResource<Texture> DiffuseMap;
+		GResource<Texture> SpecularMap;
+		GResource<Texture> EmmisiveMap;
+		GResource<Texture> TransparencyMap;
+		GResource<Texture> NormalMap;
+		GResource<Texture> HeightMap;
 
-		SubMesh(size_t materiaId, const TransformHandle& transform);
+		float SpecularExponent = 128.0f;
+		float Transparency = 1.0f;
+		Vector3 AmbientColor{ 0.4f };
+		Vector3 DiffuseColor{ 0.6f };
+		Vector3 SpecularColor{ 0.2f };
+		Vector3 EmmisiveColor{ 0.0f };
 
-		TransformHandle GetTransform() const;
-		MaterialId GetMaterialId() const;
+		float Displacement = 0.025f;
+		float Reflection = 0.1f;
+		Vector4 BaseColor{ 1.0f };
+		MxString Name = "Default";
 	};
 }

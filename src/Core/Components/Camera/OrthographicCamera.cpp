@@ -96,14 +96,14 @@ namespace MxEngine
 
 	void OrthographicCamera::SetZNear(float zNear)
 	{
-		this->zNear = zNear;
+		this->zNear = Min(zNear, zFar);
 		this->updateProjection = true;
 		this->updateMatrix = true;
 	}
 
 	void OrthographicCamera::SetZFar(float zFar)
 	{
-		this->zFar = zFar;
+		this->zFar = Max(zNear, zFar);
 		this->updateProjection = true;
 		this->updateMatrix = true;
 	}

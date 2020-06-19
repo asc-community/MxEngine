@@ -26,46 +26,30 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Skybox.h"
+#pragma once
 
-namespace MxEngine
+#include "Utilities/ImGui/ImGuiBase.h"
+#include "Core/Application/Application.h"
+#include "Core/Event/Events/WindowResizeEvent.h"
+
+namespace MxEngine::GUI
 {
-    void Skybox::RotateZ(float angle)
-    {
-        this->needUpdate = true;
-        this->rotation.z += Radians(angle);
-        while (this->rotation.z > 2.0f * Pi<float>()) this->rotation.z -= 2 * Pi<float>();
-        while (this->rotation.z < 0.0f) this->rotation.z += 2 * Pi<float>();
-    }
+	inline void DrawViewportWindow(Vector2& viewportSize)
+	{
+		ImGui::Begin("Viewport", nullptr);
+		auto& viewport = Application::Get()->GetRenderAdaptor().Viewport;
 
-    void Skybox::RotateY(float angle)
-    {
-        this->needUpdate = true;
-        this->rotation.y += Radians(angle);
-        while (this->rotation.y > 2.0f * Pi<float>()) this->rotation.y -= 2 * Pi<float>();
-        while (this->rotation.y < 0.0f) this->rotation.y += 2 * Pi<float>();
-    }
+		if (viewport.IsValid() && viewport->GetTexture().IsValid())
+		{
+			Vector2 newWindowSize = ImGui::GetWindowSize();
+			if (newWindowSize != viewportSize) // notify application that viewport size has been changed
+			{
+				Application::Get()->GetEventDispatcher().AddEvent(MakeUnique<WindowResizeEvent>(viewportSize, newWindowSize));
+				viewportSize = newWindowSize;
+			}
 
-    void Skybox::RotateX(float angle)
-    {
-        this->needUpdate = true;
-        this->rotation.x += Radians(angle);
-        while (this->rotation.x > 2.0f * Pi<float>()) this->rotation.x -= 2 * Pi<float>();
-        while (this->rotation.x < 0.0f) this->rotation.x += 2 * Pi<float>();
-    }
-
-    const Vector3& Skybox::GetRotation() const
-    {
-        return this->rotation;
-    }
-
-    const Matrix3x3& Skybox::GetRotationMatrix() const
-    {
-        if (needUpdate)
-        {
-            this->cachedRotation = RotateAngles(this->rotation.x, this->rotation.y, this->rotation.z);
-            this->needUpdate = false;
-        }
-        return this->cachedRotation;
-    }
+			ImGui::Image((void*)(uintptr_t)viewport->GetTexture()->GetNativeHandle(), ImGui::GetWindowSize(), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+		}
+		ImGui::End();
+	}
 }

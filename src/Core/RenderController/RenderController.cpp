@@ -401,13 +401,6 @@ namespace MxEngine
 		this->GetRenderEngine().DrawTriangles(skybox.GetVAO(), skybox.VertexCount, shader);
 	}
 
-	DebugBuffer& RenderController::GetDebugBuffer()
-	{
-		if (this->debugBuffer == nullptr)
-			this->debugBuffer = MakeUnique<DebugBuffer>();
-		return *this->debugBuffer;
-	}
-
 	void RenderController::DrawDebugBuffer(const CameraUnit& camera)
 	{
 		if (this->Pipeline.Environment.DebugBufferObject.VertexCount == 0)return;
@@ -500,7 +493,7 @@ namespace MxEngine
 		camera.Exposure = controller.GetExposure();
 		camera.SkyboxMap = skybox.Texture;
 		camera.HasSkybox = skybox.Texture.IsValid();
-		camera.InversedSkyboxRotation = Transpose(skybox.GetRotationMatrix());
+		camera.InversedSkyboxRotation = Transpose(ToMatrix(parentTransform.GetRotation()));
 		camera.OutputTexture = controller.GetTexture();
 	}
 
@@ -528,7 +521,6 @@ namespace MxEngine
 
 	void RenderController::SubmitFinalImage(const GResource<Texture>& texture)
 	{
-		this->AttachDefaultFrameBuffer();
 		auto& finalShader = *this->Pipeline.Environment.ImageForwardShader;
 		auto& rectangle = this->Pipeline.Environment.RectangularObject;
 
@@ -540,7 +532,12 @@ namespace MxEngine
 
 	void RenderController::StartPipeline()
 	{
-		if (this->Pipeline.Cameras.empty()) return;
+		if (this->Pipeline.Cameras.empty())
+		{
+			this->AttachDefaultFrameBuffer();
+			return;
+		}
+
 		MX_ASSERT(this->Pipeline.Environment.MainCameraIndex < this->Pipeline.Cameras.size());
 
 		this->PrepareShadowMaps();
@@ -557,8 +554,12 @@ namespace MxEngine
 			this->PostProcessImage(camera);
 		}
 		
-		const auto& mainCamera = this->Pipeline.Cameras[this->Pipeline.Environment.MainCameraIndex];
-		MX_ASSERT(mainCamera.OutputTexture.IsValid());
-		this->SubmitFinalImage(mainCamera.OutputTexture);
+		this->AttachDefaultFrameBuffer();
+		if (this->Pipeline.Environment.RenderToDefaultFrameBuffer)
+		{
+			const auto& mainCamera = this->Pipeline.Cameras[this->Pipeline.Environment.MainCameraIndex];
+			MX_ASSERT(mainCamera.OutputTexture.IsValid());
+			this->SubmitFinalImage(mainCamera.OutputTexture);
+		}
 	}
 }

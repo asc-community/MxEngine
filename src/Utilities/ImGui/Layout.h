@@ -64,30 +64,7 @@ namespace MxEngine::GUI
 
     // GUI_TREE_NODE is a special macro to create tree nodes with offset all code of node must be places after its name as argument, i.e. GUI_TREE_NODE(NAME, CODE);
     #define GUI_TREE_NODE(name, ...) if(ImGui::CollapsingHeader(name)) { GUI::Indent _(5.0f); __VA_ARGS__; }
-
-    /*!
-    Setting next drawn window position to be in the right from graphic console of Application (see GraphicConsole for more info)
-    */
-    inline void RightFromConsole()
-    {
-        auto context = Application::Get();
-        // Set next window to be right from console
-        ImGui::SetNextWindowPos({ context->GetConsole().GetSize().x, 0.0f });
-        // Also limit its size according to environment
-        ImGui::SetNextWindowSize({ context->GetWindow().GetWidth() - context->GetConsole().GetSize().x - 150.0f, 0.0f });
-    }
-
-    /*!
-    Setting next drawn window position to be in the under graphic console of Application (see GraphicConsole for more info)
-    */
-    inline void UnderConsole()
-    {
-        auto context = Application::Get();
-        // Set next window to be under console
-        ImGui::SetNextWindowPos({ 0.0f, context->GetConsole().GetSize().y });
-        // Also limit its size according to environment
-        ImGui::SetNextWindowSize({ context->GetConsole().GetSize().x, 0.0f });
-    }
+    #define SCOPE_TREE_NODE(name) if (!ImGui::CollapsingHeader(name)) return; GUI::Indent _(5.0f)
 
     /*!
     creates input field for an int and "apply" button next to it

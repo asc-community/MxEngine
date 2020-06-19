@@ -57,6 +57,7 @@ namespace MxEngine
 		material.SpecularColor = mat.SpecularColor;
 		material.SpecularExponent = mat.SpecularExponent;
 		material.Transparency = mat.Transparency;
+		material.Name = mat.Name;
 
 		if (material.SpecularExponent == 0.0f) material.SpecularExponent = 128.0f; // bad as pow(0.0, 0.0) -> NaN //-V550
 

@@ -56,7 +56,7 @@ namespace MxEngine
 	void GraphicConsole::Draw(const char* title)
 	{
 		ImGui::SetNextWindowSize(this->size);
-		ImGui::Begin(title, nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
+		ImGui::Begin(title);
 
 		if (ImGui::SmallButton("Clear")) { ClearLog(); } ImGui::SameLine();
 		bool copy_to_clipboard = ImGui::SmallButton("Copy"); ImGui::SameLine();

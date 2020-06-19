@@ -80,5 +80,9 @@ namespace MxEngine
 		Transform& TranslateX(float x);
 		Transform& TranslateY(float y);
 		Transform& TranslateZ(float z);
+
+		Transform& TranslateForward(float dist);
+		Transform& TranslateRight(float dist);
+		Transform& TranslateUp(float dist);
 	};
 }

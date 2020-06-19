@@ -13,15 +13,12 @@ void SandboxApp::OnCreate()
 		{
 			this->GetWindow().UseTitle(MxFormat("Sandbox App {0} FPS", e.FPS));
 		});
+	scene->OnCreate();
 }
 
 void SandboxApp::OnUpdate()
 {
-	static SandboxScene scene;
-	INVOKE_ONCE(
-		scene.OnCreate();
-		scene.OnLoad();
-	);
+	scene->OnUpdate();
 }
 
 void SandboxApp::OnDestroy()
@@ -31,5 +28,6 @@ void SandboxApp::OnDestroy()
 
 SandboxApp::SandboxApp()
 {
+	scene = new SandboxScene();
 	CreateContext();
 }

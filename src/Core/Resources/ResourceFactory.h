@@ -29,8 +29,8 @@
 #pragma once
 
 #include "Utilities/AbstractFactory/AbstractFactory.h"
-#include "Core/MxObject/Mesh.h"
-#include "Core/Material/Material.h"
+#include "Core/Resources/Mesh.h"
+#include "Core/Resources/Material.h"
 #include "Platform/GraphicAPI.h"
 
 namespace MxEngine

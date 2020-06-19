@@ -36,22 +36,20 @@ namespace MxEngine
 
     struct Component
     {
-        static constexpr size_t ResourceSize = sizeof(Resource<char, ComponentFactory>);
         using Deleter = void (*)(void*);
 
-        std::aligned_storage_t<ResourceSize> resource;
+        std::aligned_storage_t<sizeof(CResource<char>)> resource;
         size_t type;
         Deleter deleter;
 
         template<typename T>
-        Component(size_t type, Resource<T, ComponentFactory>&& component)
+        Component(size_t type, CResource<T>&& component)
         {
-            using ComponentType = Resource<T, ComponentFactory>;
-            static_assert(sizeof(ComponentType) == sizeof(Component::resource), "storage must fit resource size");
+            static_assert(sizeof(CResource<T>) == sizeof(Component::resource), "storage must fit resource size");
 
             this->type = type;
-            this->deleter = [](void* ptr) { ComponentFactory::Destroy(*static_cast<ComponentType*>(ptr)); };
-            auto* replace = new (&resource) ComponentType();
+            this->deleter = [](void* ptr) { ComponentFactory::Destroy(*static_cast<CResource<T>*>(ptr)); };
+            auto* replace = new (&resource) CResource<T>();
             *replace = std::move(component);
         }
     };
@@ -70,40 +68,39 @@ namespace MxEngine
         ComponentManager& operator=(ComponentManager&&) noexcept = default;
 
         template<typename T, typename... Args>
-        Resource<T, ComponentFactory> AddComponent(Args&&... args)
+        CResource<T> AddComponent(Args&&... args)
         {
             this->RemoveComponent<T>();
             
             auto component = ComponentFactory::CreateComponent<T>(std::forward<Args>(args)...);
             auto& data = components.emplace_back();
             Component* result = new (&data) Component(T::ComponentId, std::move(component));
-            return *reinterpret_cast<Resource<T, ComponentFactory>*>(&result->resource);
+            return *reinterpret_cast<CResource<T>*>(&result->resource);
         }
 
         template<typename T>
-        Resource<T, ComponentFactory> GetComponent() const
+        CResource<T> GetComponent() const
         {
             for (const auto& component : components)
             {
                 const auto& componentRef = *reinterpret_cast<const Component*>(&component);
                 if (componentRef.type == T::ComponentId)
                 {
-                    return *reinterpret_cast<const Resource<T, ComponentFactory>*>(&componentRef.resource);
+                    return *reinterpret_cast<const CResource<T>*>(&componentRef.resource);
                 }
             }
-            return Resource<T, ComponentFactory>{ };
+            return CResource<T>{ };
         }
 
         template<typename T>
         void RemoveComponent()
         {
-            using ResourceT = Resource<T, ComponentFactory>;
             for (auto it = components.begin(); it != components.end(); it++)
             {
                 auto& componentRef = *reinterpret_cast<Component*>(&*it);
                 if (componentRef.type == T::ComponentId)
                 {
-                    auto& resource = *reinterpret_cast<ResourceT*>(&componentRef.resource);
+                    auto& resource = *reinterpret_cast<CResource<T>*>(&componentRef.resource);
                     if (resource.IsValid())
                     {
                         ComponentFactory::Destroy(resource);

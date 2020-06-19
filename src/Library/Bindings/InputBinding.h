@@ -36,9 +36,9 @@ namespace MxEngine
 {
 	class InputControlBinding
 	{
-		Resource<CameraController, ComponentFactory> camera;
+		CResource<CameraController> camera;
 	public:
-		InputControlBinding(const Resource<CameraController, ComponentFactory>& camera) noexcept
+		InputControlBinding(const CResource<CameraController>& camera) noexcept
 			: camera(camera) { }
 
 		InputControlBinding& Unbind()
@@ -65,6 +65,8 @@ namespace MxEngine
 			dispatcher.AddEventListener(MxFormat("Input_{0}", (MxString)camera.GetUUID()),
 				[forward, back, right, left, up, down, camera = this->camera, transform = std::move(transform)](KeyEvent& event) mutable
 				{
+					if (!camera.IsValid()) { InputControlBinding(camera).Unbind(); return; }
+
 					auto dt = Application::Get()->GetTimeDelta();
 					if (event.IsHeld(forward))
 					{
@@ -101,6 +103,8 @@ namespace MxEngine
 			dispatcher.AddEventListener(MxFormat("Input_{0}", (MxString)camera.GetUUID()),
 				[camera = this->camera](MouseMoveEvent& event) mutable
 				{
+					if (!camera.IsValid()) { InputControlBinding(camera).Unbind(); return; }
+
 					static Vector2 oldPos = event.position;
 					auto dt = Application::Get()->GetTimeDelta();
 					camera->Rotate(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
@@ -116,6 +120,8 @@ namespace MxEngine
 			dispatcher.AddEventListener(MxFormat("Input_{0}", (MxString)camera.GetUUID()),
 				[camera = this->camera](MouseMoveEvent& event) mutable
 				{
+					if (!camera.IsValid()) { InputControlBinding(camera).Unbind(); return; }
+
 					static Vector2 oldPos = event.position;
 					auto dt = Application::Get()->GetTimeDelta();
 					camera->Rotate(dt * (oldPos.x - event.position.x), 0.0f);
@@ -131,6 +137,8 @@ namespace MxEngine
 			dispatcher.AddEventListener(MxFormat("Input_{0}", (MxString)camera.GetUUID()),
 				[camera = this->camera](MouseMoveEvent& event) mutable
 				{
+					if (!camera.IsValid()) { InputControlBinding(camera).Unbind(); return; }
+
 					static Vector2 oldPos = event.position;
 					auto dt = Application::Get()->GetTimeDelta();
 					camera->Rotate(0.0f, dt * (oldPos.y - event.position.y));

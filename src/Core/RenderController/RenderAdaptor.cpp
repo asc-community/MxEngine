@@ -1,3 +1,31 @@
+// Copyright(c) 2019 - 2020, #Momo
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met :
+// 
+// 1. Redistributions of source code must retain the above copyright notice, this
+// list of conditions and the following disclaimer.
+// 
+// 2. Redistributions in binary form must reproduce the above copyright notice,
+// this list of conditions and the following disclaimer in the documentation
+// and /or other materials provided with the distribution.
+// 
+// 3. Neither the name of the copyright holder nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED.IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #include "RenderAdaptor.h"
 #include "Library/Primitives/Colors.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
@@ -10,7 +38,7 @@ namespace MxEngine
     {
         auto& environment = this->Renderer.GetEnvironment();
 
-        // shadows
+        this->SetRenderToDefaultFrameBuffer();
         this->SetShadowBlurIterations(1);
         
         // fog
@@ -126,12 +154,14 @@ namespace MxEngine
         environment.Viewport = newViewport;
 
         GetAttachedTexture(environment.HDRFrameBuffer)->Load(nullptr, newViewport.x, newViewport.y, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
-    	environment.BloomHDRMap->Load(nullptr, newViewport.x, newViewport.y, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+    	if((environment.BloomHDRMap->GetWidth() != newViewport.x) || (environment.BloomHDRMap->GetHeight() != newViewport.y))
+            environment.BloomHDRMap->Load(nullptr, newViewport.x, newViewport.y, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
     
         VectorInt2 bloomTextureSize = newViewport;
         bloomTextureSize = (bloomTextureSize + 3) / 2 + ((bloomTextureSize + 3) / 2) % 2;
         for (auto& bloomBuffer : environment.BloomBuffers)
         {
+            auto texture = GetAttachedTexture(bloomBuffer);
             GetAttachedTexture(bloomBuffer)->Load(nullptr, bloomTextureSize.x, bloomTextureSize.y, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
         }
     }
@@ -162,7 +192,9 @@ namespace MxEngine
 
         auto& environment = this->Renderer.GetEnvironment();
         environment.MainCameraIndex = std::numeric_limits<decltype(environment.MainCameraIndex)>::max();
-        auto viewportPosition = MxObject::GetByComponent(*this->Viewport).GetComponent<Transform>()->GetPosition();
+        auto viewportPosition = MakeVector3(0.0f);
+        if(this->Viewport.IsValid())
+            viewportPosition = MxObject::GetByComponent(*this->Viewport).GetComponent<Transform>()->GetPosition();
 
         auto TrackMainCameraIndex = [this, mainCameraIndex = 0, &environment](const CameraController& camera) mutable
         {
@@ -201,6 +233,8 @@ namespace MxEngine
         auto cameraView = ComponentFactory::GetView<CameraController>();
         for (const auto& camera : cameraView)
         {
+            if (!camera.HasCamera()) continue;
+
             auto& object = MxObject::GetByComponent(camera);
             auto transform = object.GetComponent<Transform>();
             auto skyboxComponent = object.GetComponent<Skybox>();
@@ -274,11 +308,11 @@ namespace MxEngine
             {
                 auto& object = MxObject::GetByComponent(meshSource);
                 AABB box;
-                if (object.GetInstanceCount() > 0 && object.GetMesh() != nullptr)
+                if (object.GetInstanceCount() > 0 && object.GetComponent<MeshSource>().IsValid())
                 {
                     for (const auto& instance : object.GetInstances())
                     {
-                        box = object.GetMesh()->GetAABB() * instance.Model.GetMatrix();
+                        box = object.GetComponent<MeshSource>()->GetMesh()->GetAABB() * instance.Model.GetMatrix();
                         if (this->DebugDraw.DrawAxisBoundingBoxes)
                             this->DebugDraw.SubmitAABB(box, debugColor);
                         if (this->DebugDraw.DrawBoundingSpheres)
@@ -300,6 +334,11 @@ namespace MxEngine
         }
 
         this->Renderer.StartPipeline();
+    }
+
+    void RenderAdaptor::SetRenderToDefaultFrameBuffer(bool value)
+    {
+        this->Renderer.GetEnvironment().RenderToDefaultFrameBuffer = value;
     }
         
     void RenderAdaptor::SetFogColor(const Vector3& color)
