@@ -28,9 +28,9 @@ public:
 		InitSurface(*surface);
 		surface.MakeStatic();
 
-        // auto arc = MxObject::Create();
-		// InitArc(*arc);
-		// arc.MakeStatic();
+        auto arc = MxObject::Create();
+		InitArc(*arc);
+		arc.MakeStatic();
 
 		// auto& deathStar = this->AddObject("DeathStar", MakeUnique<MxObject>());
 		// InitDeathStar(deathStar);

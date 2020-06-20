@@ -96,6 +96,14 @@ namespace MxEngine
 		GLCALL(glBufferSubData(GL_ARRAY_BUFFER, sizeof(float) * offset, count * sizeof(float), data));
     }
 
+    void VertexBuffer::BufferDataWithResize(BufferData data, size_t sizeInFloats)
+    {
+		if (this->GetSize() < sizeInFloats)
+			this->Load(data, sizeInFloats, UsageType::DYNAMIC_DRAW);
+		else
+			this->BufferSubData(data, sizeInFloats);
+    }
+
     size_t VertexBuffer::GetSize() const
     {
 		return this->size;

@@ -96,7 +96,10 @@ namespace MxEngine
 			auto& eventCallbacks = this->callbacks[event.GetEventType()];
 			for (const auto& [name, callback] : eventCallbacks)
 			{
-				callback(event);
+				if (std::find(this->toRemoveCache.begin(), this->toRemoveCache.end(), name) == this->toRemoveCache.end())
+				{
+					callback(event);
+				}
 			}
 		}
 
@@ -196,11 +199,7 @@ namespace MxEngine
 		void Invoke(Event& event)
 		{
 			this->RemoveQueuedEvents();
-			auto& eventCallbacks = this->callbacks[event.GetEventType()];
-			for (const auto& [name, callback] : eventCallbacks)
-			{
-				callback(event);
-			}
+			this->ProcessEvent(event);
 		}
 
 		/*!

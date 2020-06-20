@@ -158,6 +158,8 @@ namespace MxEngine
 
         indicies.shrink_to_fit();
         vertecies.shrink_to_fit();
+        result.BufferIndicies();
+        result.BufferVertecies();
         return result;
     }
 }

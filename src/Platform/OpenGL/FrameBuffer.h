@@ -68,7 +68,11 @@ namespace MxEngine
 
         BindableId id = 0;
         AttachmentType currentAttachment = AttachmentType::NONE;
+        #if defined(MXENGINE_DEBUG)
         std::aligned_storage_t<32> attachmentStorage;
+        #else
+        std::aligned_storage_t<24> attachmentStorage;
+        #endif
 
         #if defined(MXENGINE_DEBUG)
         mutable const Texture* _texturePtr = nullptr;

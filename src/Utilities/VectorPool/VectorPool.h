@@ -57,6 +57,16 @@ namespace MxEngine
             */
             VectorPool<T, Container>& poolRef;
         public:
+            size_t GetBase() const
+            {
+                return index;
+            }
+
+            VectorPool<T, Container>& GetPoolRef()
+            {
+                return poolRef;
+            }
+
             /*!
             construtc new iterator of vector Pool
             \param index to the element of vector Pool (0 for begin(), Capacity() for end() methods)
@@ -292,6 +302,11 @@ namespace MxEngine
                 allocator.Free(&ptr);
                 this->allocated--;
             }
+        }
+
+        void Deallocate(const PoolIterator& it)
+        {
+            this->Deallocate(it.GetBase());
         }
 
         /*!

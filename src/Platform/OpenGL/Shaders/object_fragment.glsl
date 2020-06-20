@@ -4,9 +4,9 @@ R"(
 #define Kconstant  K[0]
 #define Klinear    K[1]
 #define Kquadratic K[2]
-#define MAX_POINT_LIGHTS 1
-#define MAX_SPOT_LIGHTS 1
-#define MAX_DIR_LIGHTS 1
+#define MAX_POINT_LIGHTS 2
+#define MAX_SPOT_LIGHTS 8
+#define MAX_DIR_LIGHTS 2
 #define POINT_LIGHT_SAMPLES 20
 )" \
 MAKE_STRING(

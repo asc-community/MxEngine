@@ -80,6 +80,46 @@ namespace MxEngine::GUI
 		ImGui::LabelText("contents", script.GetContent().c_str());
 	}
 
+	void InstanceFactoryEditor(InstanceFactory& instanceFactory)
+	{
+		SCOPE_TREE_NODE("InstanceFactory");
+		REMOVE_COMPONENT_BUTTON(instanceFactory);
+		
+		ImGui::Text("instance count: %d", (int)instanceFactory.GetCount());
+		ImGui::SameLine();
+		if (ImGui::Button("instanciate"))
+			instanceFactory.MakeInstance().MakeStatic();
+
+		int id = 0;
+		auto begin = instanceFactory.GetInstancePool().begin();
+		auto end = instanceFactory.GetInstancePool().end();
+		for (auto it = begin; it != end; it++)
+		{
+			ImGui::PushID(id);
+			if (ImGui::Button("-"))
+			{
+				instanceFactory.GetInstancePool().Deallocate(it);
+			}
+			else
+			{
+				MxString nodeName = MxFormat("instance #{0}", id++);
+				ImGui::SameLine();
+				if (ImGui::CollapsingHeader(nodeName.c_str()))
+				{
+					GUI::Indent _(30.0f);
+
+					auto& instance = it->value;
+					auto color = instance.GetColor();
+
+					TransformEditor(instance.Transform);
+					if (ImGui::ColorEdit4("base color", &color[0]))
+						instance.SetColor(color);
+				}
+			}
+			ImGui::PopID();
+		}
+	}
+
 	void SkyboxEditor(Skybox& skybox)
 	{
 		SCOPE_TREE_NODE("Skybox");
@@ -123,12 +163,19 @@ namespace MxEngine::GUI
 		}
 
 		if(ImGui::Button("generate LODs"))
-			meshLOD.Generate();
+			meshLOD.Generate(config);
+
+		ImGui::SameLine();
+		ImGui::Checkbox("auto LOD selection", &meshLOD.AutoLODSelection);
+
+		int currentLOD = (int)meshLOD.CurrentLOD;
+		if (ImGui::DragInt("current LOD", &currentLOD, 0.1f, 0, (int)meshLOD.LODs.size()))
+			meshLOD.CurrentLOD = (uint16_t)currentLOD;
 
 		for (auto& lod : meshLOD.LODs)
 		{
-			auto name = MxFormat("lod #{0}", id);
 			ImGui::PushID(id++);
+			auto name = MxFormat("lod #{0}", id);
 			DrawMeshEditor(name.c_str(), lod);
 			ImGui::PopID();
 		}

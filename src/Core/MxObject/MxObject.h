@@ -40,14 +40,11 @@ namespace MxEngine
 	class MxObject
 	{		
 		ComponentManager components;
-		bool instanceUpdate = true;
 		mutable AABB boundingBox;
 
 		using EngineHandle = size_t;
 		constexpr static EngineHandle InvalidHandle = std::numeric_limits<EngineHandle>::max();
 		EngineHandle Handle = InvalidHandle;
-
-		void ReserveInstances(size_t count, UsageType usage);
 	public:
 		using Factory = AbstractFactoryImpl<MxObject>;
 		using MxObjectHandle = Resource<MxObject, Factory>;
@@ -72,14 +69,10 @@ namespace MxEngine
 			return MxObjectHandle(Factory::Get<MxObject>()[handle].uuid, handle);
 		}
 
-		using ArrayBufferType = const float*;
-		bool UseLOD = true;
-
 		MxString Name = UUIDGenerator::Get();
 		float TranslateSpeed = 1.0f;
 		float RotateSpeed = 1.0f;
 		float ScaleSpeed = 1.0f;
-
 		CResource<Transform> Transform;
 		CResource<MeshRenderer> MeshRenderer;
 
@@ -87,18 +80,7 @@ namespace MxEngine
 		MxObject(const MxObject&) = delete;
 		MxObject(MxObject&&) = default;
 
-		void AddInstancedBuffer(ArrayBufferType buffer, size_t count, size_t components, size_t perComponentFloats = 4, UsageType type = UsageType::DYNAMIC_DRAW);
-		void BufferDataByIndex(size_t index, ArrayBufferType buffer, size_t count, size_t offset = 0);
-		size_t GetBufferCount() const;
-		InstanceFactory::MxInstance Instanciate();
-		ComponentView<MxInstanceImpl> GetInstances() const;
-		void MakeInstanced(size_t instanced, UsageType usage = UsageType::DYNAMIC_DRAW);
-		void DestroyInstances();
-		void SetAutoBuffering(bool value = true);
-		void BufferInstances();
-
 		const AABB& GetAABB() const;
-		size_t GetInstanceCount() const;
 
 		template<typename T, typename... Args>
 		auto AddComponent(Args&&... args)

@@ -145,7 +145,7 @@ namespace MxEngine
 				auto behaviour = object.GetComponent<Behaviour>();
 				if (behaviour.IsValid()) behaviour.GetUnchecked()->InvokeUpdate(timeDelta);
 				auto instances = object.GetComponent<InstanceFactory>();
-				if (instances.IsValid()) object.BufferInstances();
+				if (instances.IsValid()) instances->SubmitInstances();
 			}
 		}
 		{
@@ -412,6 +412,7 @@ namespace MxEngine
 		this->GetConsole().RegisterComponentEditor(GUI::TransformEditor);
 		this->GetConsole().RegisterComponentEditor(GUI::BehaviourEditor);
 		this->GetConsole().RegisterComponentEditor(GUI::ScriptEditor);
+		this->GetConsole().RegisterComponentEditor(GUI::InstanceFactoryEditor);
 		this->GetConsole().RegisterComponentEditor(GUI::SkyboxEditor);
 		this->GetConsole().RegisterComponentEditor(GUI::MeshRendererEditor);
 		this->GetConsole().RegisterComponentEditor(GUI::MeshSourceEditor);

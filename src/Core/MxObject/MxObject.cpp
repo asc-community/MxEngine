@@ -36,110 +36,6 @@
 
 namespace MxEngine
 {
-	void MxObject::AddInstancedBuffer(ArrayBufferType buffer, size_t count, size_t components, size_t perComponentFloats, UsageType type)
-	{
-		if (!this->GetComponent<MeshSource>().IsValid())
-		{
-			Logger::Instance().Warning("MxEngine::MxObject", "trying to add buffer to object with no mesh");
-			return;
-		}
-
-		auto instances = this->GetComponent<InstanceFactory>();
-
-		if (instances.IsValid() && instances->GetCount() > 0)
-		{
-			if (instances->GetCount() > count)
-			{
-				Logger::Instance().Warning("MxEngine::MxObject", "instance buffer has less size than object instances count");
-			}
-			else if (instances->GetCount() < count)
-			{
-				Logger::Instance().Warning("MxEngine::MxObject", "instance buffer contains more data than instances count");
-			}
-		}
-
-		auto VBO = MakeUnique<VertexBuffer>(buffer, count * components, type);
-		auto VBL = MakeUnique<VertexBufferLayout>();
-		while (components > perComponentFloats)
-		{
-			VBL->PushFloat(perComponentFloats);
-			components -= perComponentFloats;
-		}
-		VBL->PushFloat(components);
-		this->GetComponent<MeshSource>()->GetMesh()->AddInstancedBuffer(std::move(VBO), std::move(VBL));
-	}
-
-	void MxObject::BufferDataByIndex(size_t index, ArrayBufferType buffer, size_t count, size_t offset)
-	{
-		VertexBuffer& VBO = this->GetComponent<MeshSource>()->GetMesh()->GetBufferByIndex(index);
-		if (count <= VBO.GetSize()) // replace data if VBO size is big enough
-		{
-			MX_ASSERT(offset + count <= VBO.GetSize());
-			VBO.BufferSubData(buffer, count, offset);
-		}
-		else // allocate new buffer (VBO handle remains the same)
-		{
-			MX_ASSERT(offset == 0);
-			VBO.Load(buffer, count, UsageType::DYNAMIC_DRAW);
-		}
-	}
-
-	InstanceFactory::MxInstance MxObject::Instanciate()
-	{
-		auto instances = this->GetComponent<InstanceFactory>();
-		if (!instances.IsValid())
-		{
-			constexpr size_t baseSize = 8;
-			this->ReserveInstances(baseSize, UsageType::DYNAMIC_DRAW);
-
-			if (!this->HasComponent<InstanceFactory>()) // something went wrong, so we cannot call MakeInstance
-			{
-				return InstanceFactory::MxInstance{ };
-			}
-			instances = this->GetComponent<InstanceFactory>();
-		}
-		auto instance = instances->MakeInstance();
-		instance->Model = *this->GetComponent<MxEngine::Transform>();
-		return instance;
-	}
-
-	ComponentView<MxInstanceImpl> MxObject::GetInstances() const
-	{
-		auto instances = this->GetComponent<InstanceFactory>();
-		if (!instances.IsValid())
-		{
-			Logger::Instance().Warning("MxEngine::MxObject", "object has not been instanced");
-			static std::remove_reference<decltype(instances->GetInstancePool())>::type emptyPool;
-			return ComponentView { emptyPool };
-		}
-		return ComponentView{ instances->GetInstancePool() };
-	}
-
-	size_t MxObject::GetBufferCount() const
-	{
-		if (!this->GetComponent<MeshSource>().IsValid())
-		{
-			Logger::Instance().Warning("MxEngine::MxObject", "GetBufferCount() is called for object with no mesh");
-			return 0;
-		}
-		return this->GetComponent<MeshSource>()->GetMesh()->GetBufferCount();
-	}
-
-	void MxObject::ReserveInstances(size_t count, UsageType usage)
-	{
-		Logger::Instance().Debug("MxEngine::MxObject", MxFormat("making object instanced with reserved count: {0}", count));
-		MX_ASSERT(!this->HasComponent<InstanceFactory>());
-
-		auto instances = this->AddComponent<InstanceFactory>();
-		instances->InstanceDataIndex = this->GetBufferCount();
-		// add model matrix buffer
-		this->AddInstancedBuffer(nullptr, count, sizeof(Matrix4x4) / sizeof(float), 4, usage);
-		// add normal matrix buffer
-		this->AddInstancedBuffer(nullptr, count, sizeof(Matrix3x3) / sizeof(float), 3, usage);
-		// add color vector buffer
-		this->AddInstancedBuffer(nullptr, count, sizeof(Vector4) / sizeof(float), 4, usage);
-	}
-
     MxObject::MxObjectHandle MxObject::Create()
     {
 		auto object = Factory::Create<MxObject>();
@@ -163,48 +59,9 @@ namespace MxEngine
 		return ComponentView<MxObject>{ Factory::Get<MxObject>() };
     }
 
-	void MxObject::MakeInstanced(size_t instances, UsageType usage) 
-	{
-		this->ReserveInstances(instances, usage);
-		for (size_t i = 0; i < instances; i++)
-			this->Instanciate();
-	}
-
-	void MxObject::DestroyInstances()
-	{
-		this->RemoveComponent<InstanceFactory>();
-	}
-
-    void MxObject::SetAutoBuffering(bool value)
-    {
-		this->instanceUpdate = value;
-    }
-
-    void MxObject::BufferInstances()
-    {
-		MX_ASSERT(this->HasComponent<InstanceFactory>());
-		MX_ASSERT(this->GetComponent<InstanceFactory>()->InstanceDataIndex != InstanceFactory::Undefined);
-		constexpr size_t modelMatrixSize  = sizeof(Matrix4x4) / sizeof(float);
-		constexpr size_t normalMatrixSize = sizeof(Matrix3x3) / sizeof(float);
-		constexpr size_t colorVectorSize  = sizeof(Vector4) / sizeof(float);
-
-		auto instances = this->GetComponent<InstanceFactory>();
-
-		size_t index  = instances->InstanceDataIndex;
-		size_t count  = instances->GetCount();
-		auto& models  = instances->GetModelData();
-		auto& normals = instances->GetNormalData();
-		auto& colors  = instances->GetColorData();
-		{
-			MAKE_SCOPE_PROFILER("MxObject::BufferInstancesToGPU");
-			this->BufferDataByIndex(index, reinterpret_cast<float*>(models.data()), count * modelMatrixSize);
-			this->BufferDataByIndex(index + 1, reinterpret_cast<float*>(normals.data()), count * normalMatrixSize);
-			this->BufferDataByIndex(index + 2, reinterpret_cast<float*>(colors.data()), count * colorVectorSize);
-		}
-    }
-
     const AABB& MxObject::GetAABB() const
     {
+		// TODO: do not dublicate Mesh::GetAABB() behaviour with transform multiply
 		if (this->GetComponent<MeshSource>().IsValid())
 			this->boundingBox = this->GetComponent<MeshSource>()->GetMesh()->GetAABB() * this->GetComponent<MxEngine::Transform>()->GetMatrix();
 		else
@@ -217,11 +74,4 @@ namespace MxEngine
 		this->MeshRenderer = this->AddComponent<MxEngine::MeshRenderer>();
 		this->Transform = this->AddComponent<MxEngine::Transform>();
     }
-
-	size_t MxObject::GetInstanceCount() const
-	{
-		auto instances = this->GetComponent<InstanceFactory>();
-		if (!instances.IsValid()) return 0;
-		return instances->GetCount();
-	}
 }

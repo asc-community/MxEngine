@@ -31,6 +31,7 @@
 #include "Core/Components/Transform.h"
 #include "Core/Components/Behaviour.h"
 #include "Core/Components/Script.h"
+#include "Core/Components/InstanceFactory.h"
 #include "Core/Components/Rendering/Skybox.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
 #include "Core/Components/Rendering/MeshSource.h"
@@ -45,6 +46,7 @@ namespace MxEngine::GUI
 	void TransformEditor(Transform& transform);
 	void BehaviourEditor(Behaviour& behaviour);
 	void ScriptEditor(Script& script);
+	void InstanceFactoryEditor(InstanceFactory& instanceFactory);
 	void SkyboxEditor(Skybox& skybox);
 	void MeshRendererEditor(MeshRenderer& meshRenderer);
 	void MeshSourceEditor(MeshSource& meshSource);

@@ -29,6 +29,7 @@
 #include "VertexBufferLayout.h"
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Core/Macro/Macro.h"
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
@@ -49,5 +50,40 @@ namespace MxEngine
 		#endif
 		this->elements.push_back({ (unsigned int)count, GetGLType<float>(), false });
 		this->stride += unsigned int(sizeof(float) * count);
+	}
+
+	template<>
+	void VertexBufferLayout::Push<Vector2>()
+	{
+		this->PushFloat(2);
+	}
+
+	template<>
+	void VertexBufferLayout::Push<Vector3>()
+	{
+		this->PushFloat(3);
+	}
+
+	template<>
+	void VertexBufferLayout::Push<Vector4>()
+	{
+		this->PushFloat(4);
+	}
+
+	template<>
+	void VertexBufferLayout::Push<Matrix3x3>()
+	{
+		this->PushFloat(3);
+		this->PushFloat(3);
+		this->PushFloat(3);
+	}
+
+	template<>
+	void VertexBufferLayout::Push<Matrix4x4>()
+	{
+		this->PushFloat(4);
+		this->PushFloat(4);
+		this->PushFloat(4);
+		this->PushFloat(4);
 	}
 }

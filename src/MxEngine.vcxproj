@@ -357,6 +357,7 @@
     <ClCompile Include="Core\Components\Camera\OrthographicCamera.cpp" />
     <ClCompile Include="Core\Components\Camera\PerspectiveCamera.cpp" />
     <ClCompile Include="Core\Application\Application.cpp" />
+    <ClCompile Include="Core\Components\InstanceFactory.cpp" />
     <ClCompile Include="Core\Components\Rendering\MeshLOD.cpp" />
     <ClCompile Include="Core\Components\Rendering\MeshRenderer.cpp" />
     <ClCompile Include="Core\Components\Script.cpp" />

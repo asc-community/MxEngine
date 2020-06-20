@@ -42,7 +42,7 @@ namespace MxEngine
 		TransformHandle transform;
 	public:
 		MeshData MeshData;
-		StringId Name = 0;
+		MxString Name = "Main";
 
 		SubMesh(size_t materiaId, const TransformHandle& transform);
 

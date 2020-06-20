@@ -1,0 +1,68 @@
+[
+  {
+    "AmbientColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.6000000238418579,
+      0.6000000238418579,
+      0.6000000238418579
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "DefaultMaterial",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "SpecularExponent": 0.0,
+    "SpecularMap": "",
+    "Transparency": 1.0,
+    "TransparencyMap": ""
+  },
+  {
+    "AmbientColor": [
+      0.4000000059604645,
+      0.4000000059604645,
+      0.4000000059604645
+    ],
+    "AmbientMap": "Resources\\objects\\arc170\\arc170.jpg",
+    "DiffuseColor": [
+      0.6000000238418579,
+      0.6000000238418579,
+      0.6000000238418579
+    ],
+    "DiffuseMap": "Resources\\objects\\arc170\\arc170.jpg",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "main",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.800000011920929,
+      0.800000011920929,
+      0.800000011920929
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "Resources\\objects\\arc170\\arc170.jpg",
+    "Transparency": 1.0,
+    "TransparencyMap": ""
+  }
+]

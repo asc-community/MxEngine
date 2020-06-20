@@ -44,6 +44,8 @@ namespace MxEngine
         MAKE_COMPONENT(MeshLOD);
     public:
         using LODInstance = Resource<Mesh, ResourceFactory>;
+        bool AutoLODSelection = true;
+        uint16_t CurrentLOD = 0;
 
         MxVector<LODInstance> LODs;
         void Generate(LODConfig config = LODConfig{ });

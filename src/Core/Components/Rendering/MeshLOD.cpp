@@ -38,26 +38,30 @@ namespace MxEngine
         auto meshSource = object.GetComponent<MeshSource>();
         if (!meshSource.IsValid() || !meshSource->GetMesh().IsValid())
         {
-            Logger::Instance().Warning("MxEngine::meshLOD", "LODs are not generated as object has no mesh: " + object.Name);
+            Logger::Instance().Warning("MxEngine::MeshLOD", "LODs are not generated as object has no mesh: " + object.Name);
             return;
         }
 
-        const auto& mesh = *meshSource.GetUnchecked()->GetMesh().GetUnchecked();
+        auto mesh = meshSource.GetUnchecked()->GetMesh();
+        this->LODs.clear();
         this->LODs.reserve(config.Factors.size());
 
         for (auto factor : config.Factors)
         {
             auto meshLODhandle = this->LODs.emplace_back(ResourceFactory::Create<Mesh>());
             auto& meshLODsubmeshes = meshLODhandle->GetSubmeshes();
-            meshLODsubmeshes.reserve(mesh.GetSubmeshes().size());
+            meshLODsubmeshes.reserve(mesh->GetSubmeshes().size());
 
-            for (const auto& submesh : mesh.GetSubmeshes())
+            size_t totalIndicies = 0;
+            for (const auto& submesh : mesh->GetSubmeshes())
             {
                 LODGenerator lod(submesh.MeshData);
                 auto& submeshLOD = meshLODsubmeshes.emplace_back(submesh.GetMaterialId(), submesh.GetTransform());
                 submeshLOD.Name = submesh.Name;
                 submeshLOD.MeshData = lod.CreateObject(factor);
+                totalIndicies += submeshLOD.MeshData.GetIndicies().size();
             }
+            Logger::Instance().Debug("MxEngine::MeshLOD", MxFormat("generated LOD with {0} indicies for object: {1}", totalIndicies, object.Name.c_str()));
         }
     }
 }

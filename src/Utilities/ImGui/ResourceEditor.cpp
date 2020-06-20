@@ -42,7 +42,6 @@ namespace MxEngine::GUI
             return;
         }
 
-
         ImGui::Text("path: %s", texture->GetPath().c_str());
         ImGui::Text("width: %d", (int)texture->GetWidth());
         ImGui::Text("height: %d", (int)texture->GetHeight());
@@ -162,11 +161,13 @@ namespace MxEngine::GUI
         int id = 0;
         for (auto& submesh : mesh->GetSubmeshes())
         {
-            submeshName = ToMxString(submesh.Name);
-            SCOPE_TREE_NODE(submeshName.c_str());
+            SCOPE_TREE_NODE(submesh.Name.c_str());
             ImGui::PushID(id++);
 
+            ImGui::Text("vertex count: %d", (int)submesh.MeshData.GetVertecies().size());
+            ImGui::Text("index count: %d", (int)submesh.MeshData.GetIndicies().size());
             ImGui::Text("material id: %d", (int)submesh.GetMaterialId());
+
             TransformEditor(*submesh.GetTransform());
 
             if (ImGui::Button("update submesh AABB"))

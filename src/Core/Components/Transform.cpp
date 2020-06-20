@@ -217,13 +217,13 @@ namespace MxEngine
 
     Transform& Transform::TranslateForward(float dist)
     {
-        this->Translate(this->rotation * MakeVector3(1.0f, 0.0f, 0.0f) * dist);
+        this->Translate(this->rotation * MakeVector3(0.0f, 0.0f, 1.0f) * dist);
         return *this;
     }
 
     Transform& Transform::TranslateRight(float dist)
     {
-        this->Translate(this->rotation * MakeVector3(0.0f, 0.0f, 1.0f) * dist);
+        this->Translate(this->rotation * MakeVector3(1.0f, 0.0f, 0.0f) * dist);
         return *this;
     }
 

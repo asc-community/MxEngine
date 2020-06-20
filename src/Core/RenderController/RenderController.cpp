@@ -29,135 +29,164 @@
 #include "RenderController.h"
 #include "Utilities/Format/Format.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
+#include "Utilities/Profiler/Profiler.h"
 
 namespace MxEngine
 {
 	void RenderController::PrepareShadowMaps()
 	{
+		MAKE_SCOPE_PROFILER("RenderController::PrepareShadowMaps()");
+
 		this->ToggleReversedDepth(false);
 		this->ToggleDepthOnlyMode(true);
 
-		const auto& directionalLightShader = this->Pipeline.Environment.ShadowMapShader;
-		for (const auto& directionalLight : this->Pipeline.Lighting.DirectionalLights)
 		{
-			this->AttachDepthMap(directionalLight.ShadowMap);
-			for (const auto& renderUnit : this->Pipeline.RenderUnits)
+			MAKE_SCOPE_PROFILER("RenderController::PrepareDirectionalLightMaps()");
+			const auto& directionalLightShader = this->Pipeline.Environment.ShadowMapShader;
+			for (const auto& directionalLight : this->Pipeline.Lighting.DirectionalLights)
 			{
-				this->DrawShadowMap(renderUnit, directionalLight, *directionalLightShader);
+				this->AttachDepthMap(directionalLight.ShadowMap);
+				for (const auto& renderUnit : this->Pipeline.RenderUnits)
+				{
+					this->DrawShadowMap(renderUnit, directionalLight, *directionalLightShader);
+				}
 			}
 		}
 
-		const auto& spotLightShader = this->Pipeline.Environment.ShadowMapShader;
-		for (const auto& spotLight : this->Pipeline.Lighting.SpotLights)
 		{
-			this->AttachDepthMap(spotLight.ShadowMap);
-			for (const auto& renderUnit : this->Pipeline.RenderUnits)
+			MAKE_SCOPE_PROFILER("RenderController::PrepareSpotLightMaps()");
+			const auto& spotLightShader = this->Pipeline.Environment.ShadowMapShader;
+			for (const auto& spotLight : this->Pipeline.Lighting.SpotLights)
 			{
-				this->DrawShadowMap(renderUnit, spotLight, *spotLightShader);
+				this->AttachDepthMap(spotLight.ShadowMap);
+				for (const auto& renderUnit : this->Pipeline.RenderUnits)
+				{
+					this->DrawShadowMap(renderUnit, spotLight, *spotLightShader);
+				}
 			}
 		}
 
-		const auto& pointLightShader = this->Pipeline.Environment.ShadowCubeMapShader;
-		for (const auto& pointLight : this->Pipeline.Lighting.PointLights)
 		{
-			this->AttachDepthMap(pointLight.ShadowMap);
-			for (const auto& renderUnit : this->Pipeline.RenderUnits)
+			MAKE_SCOPE_PROFILER("RenderController::PreparePointLightMaps()");
+			const auto& pointLightShader = this->Pipeline.Environment.ShadowCubeMapShader;
+			for (const auto& pointLight : this->Pipeline.Lighting.PointLights)
 			{
-				this->DrawShadowMap(renderUnit, pointLight, *pointLightShader);
+				this->AttachDepthMap(pointLight.ShadowMap);
+				for (const auto& renderUnit : this->Pipeline.RenderUnits)
+				{
+					this->DrawShadowMap(renderUnit, pointLight, *pointLightShader);
+				}
 			}
 		}
-
-		this->ToggleReversedDepth(true);
 		this->ToggleDepthOnlyMode(false);
 	}
 
 	void RenderController::DrawObjects(const CameraUnit& camera)
 	{
-		// TODO: set up shader, render texture, viewport size and etc
+		MAKE_SCOPE_PROFILER("RenderController::DrawObjects()");
 
 		auto& shader = *this->Pipeline.Environment.MainShader;
 		Texture::TextureBindId textureBindIndex = 0;
 
-		// camera parameters
-		shader.SetUniformMat4("ViewProjMatrix", camera.ViewProjMatrix);
-		shader.SetUniformVec3("viewPos", camera.ViewportPosition);
-
-		// fog parameters
-		shader.SetUniformVec3("fogColor", this->Pipeline.Environment.FogColor);
-		shader.SetUniformFloat("fogDistance", this->Pipeline.Environment.FogDistance);
-		shader.SetUniformFloat("fogDensity", this->Pipeline.Environment.FogDensity);
-
-		// shadow smoothing
-		shader.SetUniformInt("PCFdistance", this->Pipeline.Environment.ShadowBlurIterations);
-
-		// skybox parameters
-		shader.SetUniformMat3("skyboxModelMatrix", camera.InversedSkyboxRotation);
-		camera.SkyboxMap->Bind(textureBindIndex);
-		shader.SetUniformInt("map_skybox", textureBindIndex);
-		textureBindIndex++;
-
-		// directional lights
-		shader.SetUniformInt("dirLightCount", (int)this->Pipeline.Lighting.DirectionalLights.size());
-		for (size_t i = 0; i < this->Pipeline.Lighting.DirectionalLights.size(); i++)
 		{
-			const auto& directionalLight = this->Pipeline.Lighting.DirectionalLights[i];
-			
-			shader.SetUniformMat4(MxFormat("DirLightProjMatrix[{0}]", i), directionalLight.BiasedProjectionMatrix);
-			shader.SetUniformVec3(MxFormat("dirLight[{0}].direction", i), directionalLight.Direction);
-			shader.SetUniformVec3(MxFormat("dirLight[{0}].ambient",   i), directionalLight.AmbientColor);
-			shader.SetUniformVec3(MxFormat("dirLight[{0}].diffuse",   i), directionalLight.DiffuseColor);
-			shader.SetUniformVec3(MxFormat("dirLight[{0}].specular",  i), directionalLight.SpecularColor);
+			MAKE_SCOPE_PROFILER("RenderController::SubmitShaderGlobalUniforms()");
+			// camera parameters
+			shader.SetUniformMat4("ViewProjMatrix", camera.ViewProjMatrix);
+			shader.SetUniformVec3("viewPos", camera.ViewportPosition);
 
-			directionalLight.ShadowMap->Bind(textureBindIndex);
-			shader.SetUniformInt(MxFormat("map_dirLight_shadow[{0}]", i), textureBindIndex);
+			// fog parameters
+			shader.SetUniformVec3("fogColor", this->Pipeline.Environment.FogColor);
+			shader.SetUniformFloat("fogDistance", this->Pipeline.Environment.FogDistance);
+			shader.SetUniformFloat("fogDensity", this->Pipeline.Environment.FogDensity);
+
+			// shadow smoothing
+			shader.SetUniformInt("PCFdistance", this->Pipeline.Environment.ShadowBlurIterations);
+
+			// skybox parameters
+			shader.SetUniformMat3("skyboxModelMatrix", camera.InversedSkyboxRotation);
+			camera.SkyboxMap->Bind(textureBindIndex);
+			shader.SetUniformInt("map_skybox", textureBindIndex);
 			textureBindIndex++;
+
+			// directional lights
+			{
+				MAKE_SCOPE_PROFILER("RenderController::SubmitShaderDirectionalLightUniforms()");
+				shader.SetUniformInt("dirLightCount", (int)this->Pipeline.Lighting.DirectionalLights.size());
+				for (size_t i = 0; i < this->Pipeline.Lighting.DirectionalLights.size(); i++)
+				{
+					const auto& directionalLight = this->Pipeline.Lighting.DirectionalLights[i];
+
+					shader.SetUniformMat4(MxFormat("DirLightProjMatrix[{0}]", i), directionalLight.BiasedProjectionMatrix);
+					shader.SetUniformVec3(MxFormat("dirLight[{0}].direction", i), directionalLight.Direction);
+					shader.SetUniformVec3(MxFormat("dirLight[{0}].ambient", i), directionalLight.AmbientColor);
+					shader.SetUniformVec3(MxFormat("dirLight[{0}].diffuse", i), directionalLight.DiffuseColor);
+					shader.SetUniformVec3(MxFormat("dirLight[{0}].specular", i), directionalLight.SpecularColor);
+
+					directionalLight.ShadowMap->Bind(textureBindIndex);
+					shader.SetUniformInt(MxFormat("map_dirLight_shadow[{0}]", i), textureBindIndex);
+					textureBindIndex++;
+				}
+			}
+
+			// spot lights
+			{
+				MAKE_SCOPE_PROFILER("RenderController::SubmitShaderSpotLightUniforms()");
+				shader.SetUniformInt("spotLightCount", (int)this->Pipeline.Lighting.SpotLights.size());
+				for (size_t i = 0; i < this->Pipeline.Lighting.SpotLights.size(); i++)
+				{
+					const auto& spotLight = this->Pipeline.Lighting.SpotLights[i];
+
+					shader.SetUniformMat4(MxFormat("SpotLightProjMatrix[{0}]", i), spotLight.BiasedProjectionMatrix);
+					shader.SetUniformVec3(MxFormat("spotLight[{0}].position", i), spotLight.Position);
+					shader.SetUniformVec3(MxFormat("spotLight[{0}].ambient", i), spotLight.AmbientColor);
+					shader.SetUniformVec3(MxFormat("spotLight[{0}].diffuse", i), spotLight.DiffuseColor);
+					shader.SetUniformVec3(MxFormat("spotLight[{0}].specular", i), spotLight.SpecularColor);
+					shader.SetUniformVec3(MxFormat("spotLight[{0}].direction", i), spotLight.Direction);
+					shader.SetUniformFloat(MxFormat("spotLight[{0}].innerAngle", i), spotLight.InnerAngleCos);
+					shader.SetUniformFloat(MxFormat("spotLight[{0}].outerAngle", i), spotLight.OuterAngleCos);
+
+					spotLight.ShadowMap->Bind(textureBindIndex);
+					shader.SetUniformInt(MxFormat("map_spotLight_shadow[{0}]", i), textureBindIndex);
+					textureBindIndex++;
+				}
+			}
+
+			// point lights
+			{
+				MAKE_SCOPE_PROFILER("RenderController::SubmitShaderPointLightUniforms()");
+				shader.SetUniformInt("pointLightCount", (int)this->Pipeline.Lighting.PointLights.size());
+				for (size_t i = 0; i < this->Pipeline.Lighting.PointLights.size(); i++)
+				{
+					const auto& pointLight = this->Pipeline.Lighting.PointLights[i];
+
+					shader.SetUniformVec3(MxFormat("pointLight[{0}].position", i), pointLight.Position);
+					shader.SetUniformFloat(MxFormat("pointLight[{0}].zfar", i), pointLight.FarDistance);
+					shader.SetUniformVec3(MxFormat("pointLight[{0}].K", i), pointLight.Factors);
+					shader.SetUniformVec3(MxFormat("pointLight[{0}].ambient", i), pointLight.AmbientColor);
+					shader.SetUniformVec3(MxFormat("pointLight[{0}].diffuse", i), pointLight.DiffuseColor);
+					shader.SetUniformVec3(MxFormat("pointLight[{0}].specular", i), pointLight.SpecularColor);
+
+					pointLight.ShadowMap->Bind(textureBindIndex);
+					shader.SetUniformInt(MxFormat("map_pointLight_shadow[{0}]", i), textureBindIndex);
+					textureBindIndex++;
+				}
+			}
+
+			// OpenGL requires all texture units to be bound, even if they are never accessed
+			constexpr size_t MAX_DIR_SOURCES = 2;
+			constexpr size_t MAX_SPOT_SOURCES = 8;
+			constexpr size_t MAX_POINT_SOURCES = 2;
+			for (int i = (int)this->Pipeline.Lighting.DirectionalLights.size(); i < MAX_DIR_SOURCES; i++)
+				shader.SetUniformInt(MxFormat("map_dirLight_shadow[{0}]", i), textureBindIndex - 1);
+
+			for (int i = (int)this->Pipeline.Lighting.SpotLights.size(); i < MAX_SPOT_SOURCES; i++)
+				shader.SetUniformInt(MxFormat("map_spotLight_shadow[{0}]", i), textureBindIndex - 1);
+
+			for (int i = (int)this->Pipeline.Lighting.PointLights.size(); i < MAX_POINT_SOURCES; i++)
+				shader.SetUniformInt(MxFormat("map_pointLight_shadow[{0}]", i), textureBindIndex - 1);
 		}
 
-		// spot lights
-		shader.SetUniformInt("spotLightCount", (int)this->Pipeline.Lighting.SpotLights.size());
-		for (size_t i = 0; i < this->Pipeline.Lighting.SpotLights.size(); i++)
-		{
-			const auto& spotLight = this->Pipeline.Lighting.SpotLights[i];
-
-			shader.SetUniformMat4 (MxFormat("SpotLightProjMatrix[{0}]",  i), spotLight.BiasedProjectionMatrix);
-			shader.SetUniformVec3 (MxFormat("spotLight[{0}].position",   i), spotLight.Position);
-			shader.SetUniformVec3 (MxFormat("spotLight[{0}].ambient",    i), spotLight.AmbientColor);
-			shader.SetUniformVec3 (MxFormat("spotLight[{0}].diffuse",    i), spotLight.DiffuseColor);
-			shader.SetUniformVec3 (MxFormat("spotLight[{0}].specular",   i), spotLight.SpecularColor);
-			shader.SetUniformVec3 (MxFormat("spotLight[{0}].direction",  i), spotLight.Direction);
-			shader.SetUniformFloat(MxFormat("spotLight[{0}].innerAngle", i), spotLight.InnerAngleCos);
-			shader.SetUniformFloat(MxFormat("spotLight[{0}].outerAngle", i), spotLight.OuterAngleCos);
-
-			spotLight.ShadowMap->Bind(textureBindIndex);
-			shader.SetUniformInt(MxFormat("map_spotLight_shadow[{0}]", i), textureBindIndex);
-			textureBindIndex++;
-		}
-
-		// point lights
-		shader.SetUniformInt("pointLightCount", (int)this->Pipeline.Lighting.PointLights.size());
-		for (size_t i = 0; i < this->Pipeline.Lighting.PointLights.size(); i++)
-		{
-			const auto& pointLight = this->Pipeline.Lighting.PointLights[i];
-
-			shader.SetUniformVec3 (MxFormat("pointLight[{0}].position", i),  pointLight.Position);
-			shader.SetUniformFloat(MxFormat("pointLight[{0}].zfar",     i),  pointLight.FarDistance);
-			shader.SetUniformVec3 (MxFormat("pointLight[{0}].K",        i),  pointLight.Factors);
-			shader.SetUniformVec3 (MxFormat("pointLight[{0}].ambient",  i),  pointLight.AmbientColor);
-			shader.SetUniformVec3 (MxFormat("pointLight[{0}].diffuse",  i),  pointLight.DiffuseColor);
-			shader.SetUniformVec3 (MxFormat("pointLight[{0}].specular", i),  pointLight.SpecularColor);
-
-			pointLight.ShadowMap->Bind(textureBindIndex);
-			shader.SetUniformInt(MxFormat("map_pointLight_shadow[{0}]", i), textureBindIndex);
-			textureBindIndex++;
-		}
-
-		//// TODO: fix this shit. OpenGL requires all samplerCubes to be bound, even if they are never accessed
-		//constexpr size_t MAX_POINT_SOURCES = 2;
-		//for (int i = (int)this->Pipeline.Lighting.PointLights.size(); i < MAX_POINT_SOURCES; i++)
-		//{
-		//	shader.SetUniformInt(MxFormat("map_pointLight_shadow[{0}]", i), textureBindIndex - 1);
-		//}
-
+		MAKE_SCOPE_PROFILER("RenderController::DrawMeshPrimitives()");
 		for (const auto& unit : this->Pipeline.RenderUnits)
 		{
 			this->DrawObject(unit, textureBindIndex, shader);
@@ -166,42 +195,45 @@ namespace MxEngine
 
 	void RenderController::DrawObject(const RenderUnit& unit, Texture::TextureBindId textureBindIndex, const Shader& shader)
 	{
-		unit.RenderMaterial.AmbientMap->Bind(textureBindIndex);
-		shader.SetUniformInt("map_Ka", textureBindIndex);
-		textureBindIndex++;
+		{
+			MAKE_SCOPE_PROFILER("RenderController::SubmitShaderRenderPrimitiveUniforms()");
+			unit.RenderMaterial.AmbientMap->Bind(textureBindIndex);
+			shader.SetUniformInt("map_Ka", textureBindIndex);
+			textureBindIndex++;
 
-		unit.RenderMaterial.DiffuseMap->Bind(textureBindIndex);
-		shader.SetUniformInt("map_Kd", textureBindIndex);
-		textureBindIndex++;
+			unit.RenderMaterial.DiffuseMap->Bind(textureBindIndex);
+			shader.SetUniformInt("map_Kd", textureBindIndex);
+			textureBindIndex++;
 
-		unit.RenderMaterial.SpecularMap->Bind(textureBindIndex);
-		shader.SetUniformInt("map_Ks", textureBindIndex);
-		textureBindIndex++;
+			unit.RenderMaterial.SpecularMap->Bind(textureBindIndex);
+			shader.SetUniformInt("map_Ks", textureBindIndex);
+			textureBindIndex++;
 
-		unit.RenderMaterial.EmmisiveMap->Bind(textureBindIndex);
-		shader.SetUniformInt("map_Ke", textureBindIndex);
-		textureBindIndex++;
+			unit.RenderMaterial.EmmisiveMap->Bind(textureBindIndex);
+			shader.SetUniformInt("map_Ke", textureBindIndex);
+			textureBindIndex++;
 
-		unit.RenderMaterial.NormalMap->Bind(textureBindIndex);
-		shader.SetUniformInt("map_normal", textureBindIndex);
-		textureBindIndex++;
+			unit.RenderMaterial.NormalMap->Bind(textureBindIndex);
+			shader.SetUniformInt("map_normal", textureBindIndex);
+			textureBindIndex++;
 
-		unit.RenderMaterial.HeightMap->Bind(textureBindIndex);
-		shader.SetUniformInt("map_height", textureBindIndex);
-		textureBindIndex++;
+			unit.RenderMaterial.HeightMap->Bind(textureBindIndex);
+			shader.SetUniformInt("map_height", textureBindIndex);
+			textureBindIndex++;
 
-		shader.SetUniformVec3 ("material.Ka",   unit.RenderMaterial.AmbientColor);
-		shader.SetUniformVec3 ("material.Kd",   unit.RenderMaterial.DiffuseColor);
-		shader.SetUniformVec3 ("material.Ks",   unit.RenderMaterial.SpecularColor);
-		shader.SetUniformVec3 ("material.Ke",   unit.RenderMaterial.EmmisiveColor);
-		shader.SetUniformFloat("material.Ns",   unit.RenderMaterial.SpecularExponent);
-		shader.SetUniformFloat("material.d",    unit.RenderMaterial.Transparency);
-		shader.SetUniformFloat("material.refl", unit.RenderMaterial.Reflection);
-		shader.SetUniformFloat("displacement",   unit.RenderMaterial.Displacement);
+			shader.SetUniformVec3("material.Ka", unit.RenderMaterial.AmbientColor);
+			shader.SetUniformVec3("material.Kd", unit.RenderMaterial.DiffuseColor);
+			shader.SetUniformVec3("material.Ks", unit.RenderMaterial.SpecularColor);
+			shader.SetUniformVec3("material.Ke", unit.RenderMaterial.EmmisiveColor);
+			shader.SetUniformFloat("material.Ns", unit.RenderMaterial.SpecularExponent);
+			shader.SetUniformFloat("material.d", unit.RenderMaterial.Transparency);
+			shader.SetUniformFloat("material.refl", unit.RenderMaterial.Reflection);
+			shader.SetUniformFloat("displacement", unit.RenderMaterial.Displacement);
 
-		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix);
-		this->GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
-		this->GetRenderEngine().SetDefaultVertexAttribute(12, unit.RenderMaterial.BaseColor);
+			this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix);
+			this->GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
+			this->GetRenderEngine().SetDefaultVertexAttribute(12, unit.RenderMaterial.BaseColor);
+		}
 		
 		this->GetRenderEngine().DrawTrianglesInstanced(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
 	}
@@ -240,6 +272,7 @@ namespace MxEngine
 	GResource<Texture> RenderController::PerformBloomIterations(const GResource<Texture>& inputBloom, uint8_t iterations)
 	{
 		if (iterations == 0) return this->Pipeline.Environment.DefaultBlackMap;
+		MAKE_SCOPE_PROFILER("RenderController::PerformBloomIterarations()");
 
 		auto& bloomBuffers = this->Pipeline.Environment.BloomBuffers;
 
@@ -308,9 +341,6 @@ namespace MxEngine
 	void RenderController::AttachFrameBuffer(const GResource<FrameBuffer>& framebuffer)
 	{
 		framebuffer->Bind();
-		#if defined(MXENGINE_DEBUG)
-		framebuffer->Validate();
-		#endif
 		this->SetViewport(0, 0, (int)framebuffer->GetWidth(), (int)framebuffer->GetHeight());
 		this->Clear();
 	}
@@ -326,20 +356,25 @@ namespace MxEngine
 
 	void RenderController::PostProcessImage(CameraUnit& camera)
 	{
-		MX_ASSERT(camera.AttachedFrameBuffer->HasTextureAttached()); // TODO: think what to do with cubemap
-		const auto& inputTexture = *GetAttachedTexture(camera.AttachedFrameBuffer);
-		this->AttachFrameBuffer(this->Pipeline.Environment.HDRFrameBuffer);
+		MAKE_SCOPE_PROFILER("RenderController::PostProcessImage()");
 
-		MX_ASSERT(inputTexture.IsMultisampled()); // TODO: handle case when texture is not multisampled - other shader should be used to split it
-		
-		// here we take HDR MSAA image from camera and split it into to HDR images - one with base color, other with bloom
-		inputTexture.Bind(0);
-		auto& msaaShader = *this->Pipeline.Environment.MSAAHDRSplitShader;
-		msaaShader.SetUniformInt("HDRtexture", 0);
-		msaaShader.SetUniformInt("msaa_samples", inputTexture.GetSampleCount());
 		auto& rectangle = this->Pipeline.Environment.RectangularObject;
+		{
+			MAKE_SCOPE_PROFILER("RenderController::SplitCameraHDRTexture()");
+			MX_ASSERT(camera.AttachedFrameBuffer->HasTextureAttached()); // TODO: think what to do with cubemap
+			const auto& inputTexture = *GetAttachedTexture(camera.AttachedFrameBuffer);
+			this->AttachFrameBuffer(this->Pipeline.Environment.HDRFrameBuffer);
 
-		this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, msaaShader);
+			MX_ASSERT(inputTexture.IsMultisampled()); // TODO: handle case when texture is not multisampled - other shader should be used to split it
+
+			// here we take HDR MSAA image from camera and split it into to HDR images - one with base color, other with bloom
+			inputTexture.Bind(0);
+			auto& msaaShader = *this->Pipeline.Environment.MSAAHDRSplitShader;
+			msaaShader.SetUniformInt("HDRtexture", 0);
+			msaaShader.SetUniformInt("msaa_samples", inputTexture.GetSampleCount());
+
+			this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, msaaShader);
+		}
 
 		// here we use bloom enhanced texture and hdr texture obtained from HDRFrameBuffer to combine them into final image
 		auto& bloomEnhancedTexture = *PerformBloomIterations(this->Pipeline.Environment.BloomHDRMap, camera.BloomIterations);
@@ -356,6 +391,9 @@ namespace MxEngine
 		bloomEnhancedTexture.Bind(1);
 
 		this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, combineShader);
+
+		MAKE_SCOPE_PROFILER("CameraTexture::GenerateMipmaps()");
+		camera.OutputTexture->GenerateMipmaps();
 	}
 
     void RenderController::ToggleDepthOnlyMode(bool value)
@@ -386,6 +424,7 @@ namespace MxEngine
 
 	void RenderController::DrawSkybox(const CameraUnit& camera)
 	{
+		MAKE_SCOPE_PROFILER("RenderController::DrawSkybox()");
 		auto& shader = *this->Pipeline.Environment.SkyboxShader;
 		auto& skybox = this->Pipeline.Environment.SkyboxCubeObject;
 
@@ -403,7 +442,8 @@ namespace MxEngine
 
 	void RenderController::DrawDebugBuffer(const CameraUnit& camera)
 	{
-		if (this->Pipeline.Environment.DebugBufferObject.VertexCount == 0)return;
+		if (this->Pipeline.Environment.DebugBufferObject.VertexCount == 0) return;
+		MAKE_SCOPE_PROFILER("RenderController::DrawDebugBuffer()");
 
 		this->GetRenderEngine().UseDepthBuffer(!this->Pipeline.Environment.OverlayDebugDraws);
 
@@ -532,6 +572,7 @@ namespace MxEngine
 
 	void RenderController::StartPipeline()
 	{
+		MAKE_SCOPE_PROFILER("RenderController::StartPipeline()");
 		if (this->Pipeline.Cameras.empty())
 		{
 			this->AttachDefaultFrameBuffer();
@@ -554,6 +595,7 @@ namespace MxEngine
 			this->PostProcessImage(camera);
 		}
 		
+		MAKE_SCOPE_PROFILER("RenderController::SubmitFinalImage");
 		this->AttachDefaultFrameBuffer();
 		if (this->Pipeline.Environment.RenderToDefaultFrameBuffer)
 		{

@@ -36,6 +36,7 @@ namespace MxEngine
 {
     void RenderAdaptor::InitRendererEnvironment()
     {
+        MAKE_SCOPE_PROFILER("RenderAdaptor::InitEnvironment()");
         auto& environment = this->Renderer.GetEnvironment();
 
         this->SetRenderToDefaultFrameBuffer();
@@ -150,6 +151,8 @@ namespace MxEngine
 
     void RenderAdaptor::OnWindowResize(const VectorInt2& newViewport)
     {
+        MAKE_SCOPE_PROFILER("RenderAdaptor::OnWindowResize()");
+
         auto& environment = this->Renderer.GetEnvironment();
         environment.Viewport = newViewport;
 
@@ -193,8 +196,12 @@ namespace MxEngine
         auto& environment = this->Renderer.GetEnvironment();
         environment.MainCameraIndex = std::numeric_limits<decltype(environment.MainCameraIndex)>::max();
         auto viewportPosition = MakeVector3(0.0f);
-        if(this->Viewport.IsValid())
+        float viewportZoom = 0.0f;
+        if (this->Viewport.IsValid())
+        {
             viewportPosition = MxObject::GetByComponent(*this->Viewport).GetComponent<Transform>()->GetPosition();
+            viewportZoom = this->Viewport->GetZoom();
+        }
 
         auto TrackMainCameraIndex = [this, mainCameraIndex = 0, &environment](const CameraController& camera) mutable
         {
@@ -209,12 +216,12 @@ namespace MxEngine
             }
         };
 
-        auto ComputeLODLevel = [this](const AABB& box, const Vector3& viewportPosition)
+        constexpr auto ComputeLODLevel = [](const AABB& box, const Vector3& viewportPosition, float viewportZoom)
         {
             float distance = Length(box.GetCenter() - viewportPosition);
             Vector3 length = box.Length();
             float maxLength = Max(length.x, length.y, length.z);
-            float scaledDistance = maxLength / distance / this->Viewport->GetZoom();
+            float scaledDistance = maxLength / distance / viewportZoom;
 
             constexpr static std::array lodDistance = {
                     0.21f,
@@ -230,107 +237,126 @@ namespace MxEngine
             return lod;
         };
 
-        auto cameraView = ComponentFactory::GetView<CameraController>();
-        for (const auto& camera : cameraView)
         {
-            if (!camera.HasCamera()) continue;
+            MAKE_SCOPE_PROFILER("RenderAdaptor::SubmitCameras()");
+            auto cameraView = ComponentFactory::GetView<CameraController>();
+            for (const auto& camera : cameraView)
+            {
+                if (!camera.HasCamera()) continue;
 
-            auto& object = MxObject::GetByComponent(camera);
-            auto transform = object.GetComponent<Transform>();
-            auto skyboxComponent = object.GetComponent<Skybox>();
-            Skybox skybox = skyboxComponent.IsValid() ? *skyboxComponent.GetUnchecked() : Skybox();
-            this->Renderer.SubmitCamera(camera, *transform, skybox);
-            TrackMainCameraIndex(camera);
+                auto& object = MxObject::GetByComponent(camera);
+                auto transform = object.GetComponent<Transform>();
+                auto skyboxComponent = object.GetComponent<Skybox>();
+                Skybox skybox = skyboxComponent.IsValid() ? *skyboxComponent.GetUnchecked() : Skybox();
+                this->Renderer.SubmitCamera(camera, *transform, skybox);
+                TrackMainCameraIndex(camera);
+            }
         }
 
         // submit render units
         auto meshSourceView = ComponentFactory::GetView<MeshSource>();
-        for (const auto& meshSource : meshSourceView)
         {
-            auto& object = MxObject::GetByComponent(meshSource);
-
-            auto meshRenderer = object.GetComponent<MeshRenderer>();
-            auto meshLOD = object.GetComponent<MeshLOD>();
-            auto transform = object.GetComponent<Transform>();
-            auto instances = object.GetComponent<InstanceFactory>();
-
-            if (!meshRenderer.IsValid() || !transform.IsValid()) continue;
-
-            size_t instanceCount = 0;
-            if (instances.IsValid()) instanceCount = instances->GetCount();
-
-            auto mesh = meshSource.GetMesh();
-
-            // we do not try to use LODs for instanced objects, as its quite hard and time consuming. TODO: fix this
-            if (meshLOD.IsValid() && !meshLOD->LODs.empty() && instanceCount > 0)
-            {
-                size_t lod = ComputeLODLevel(mesh->GetAABB(), viewportPosition);
-                lod = Min(lod, meshLOD->LODs.size());
-                mesh = meshLOD->LODs[lod]; // use LOD of original mesh as render target
-            }
-
-            auto& submeshes = mesh->GetSubmeshes();
-            for (const auto& submesh : submeshes)
-            {
-                auto materialId = submesh.GetMaterialId() < meshRenderer->Materials.size() ? submesh.GetMaterialId() : 0;
-                auto material = meshRenderer->Materials[materialId];
-
-                this->Renderer.SubmitPrimitive(submesh, *material, *transform, instanceCount);
-            }
-        }
-
-        auto dirLightView = ComponentFactory::GetView<DirectionalLight>();
-        for (auto& dirLight : dirLightView)
-        {
-            auto transform = MxObject::GetByComponent(dirLight).GetComponent<Transform>();
-            this->Renderer.SubmitLightSource(dirLight, *transform);
-        }
-
-        auto spotLightView = ComponentFactory::GetView<SpotLight>();
-        for (const auto& spotLight : spotLightView)
-        {
-            auto transform = MxObject::GetByComponent(spotLight).GetComponent<Transform>();
-            this->Renderer.SubmitLightSource(spotLight, *transform);
-        }
-
-        auto pointLightView = ComponentFactory::GetView<PointLight>();
-        for (const auto& pointLight : pointLightView)
-        {
-            auto transform = MxObject::GetByComponent(pointLight).GetComponent<Transform>();
-            this->Renderer.SubmitLightSource(pointLight, *transform);
-        }
-
-        this->DebugDraw.ClearBuffer();
-        auto debugColor = MakeVector4(1.0f, 0.0f, 0.0f, 1.0f);
-        if (this->DebugDraw.DrawAxisBoundingBoxes | this->DebugDraw.DrawBoundingSpheres)
-        {
-            for (auto& meshSource : meshSourceView)
+            MAKE_SCOPE_PROFILER("RenderAdaptor::SubmitMeshPrimitives()");
+            for (const auto& meshSource : meshSourceView)
             {
                 auto& object = MxObject::GetByComponent(meshSource);
-                AABB box;
-                if (object.GetInstanceCount() > 0 && object.GetComponent<MeshSource>().IsValid())
+
+                auto meshRenderer = object.GetComponent<MeshRenderer>();
+                auto meshLOD = object.GetComponent<MeshLOD>();
+                auto transform = object.GetComponent<Transform>();
+                auto instances = object.GetComponent<InstanceFactory>();
+
+                if (!meshRenderer.IsValid() || !transform.IsValid()) continue;
+
+                size_t instanceCount = 0;
+                if (instances.IsValid()) instanceCount = instances->GetCount();
+
+                auto mesh = meshSource.GetMesh();
+
+                // we do not try to use LODs for instanced objects, as its quite hard and time consuming. TODO: fix this
+                if (meshLOD.IsValid() && !meshLOD->LODs.empty() && instanceCount == 0)
                 {
-                    for (const auto& instance : object.GetInstances())
+                    auto& currentLOD = meshLOD->CurrentLOD;
+                    if(meshLOD->AutoLODSelection) 
+                        currentLOD = (uint16_t)ComputeLODLevel(object.GetAABB(), viewportPosition, viewportZoom);
+
+                    if (currentLOD > 0)
                     {
-                        box = object.GetComponent<MeshSource>()->GetMesh()->GetAABB() * instance.Model.GetMatrix();
+                        size_t lod = Min(currentLOD - 1, meshLOD->LODs.size() - 1);
+                        mesh = meshLOD->LODs[lod]; // use LOD of original mesh as render target
+                    }
+                }
+
+                auto& submeshes = mesh->GetSubmeshes();
+                for (const auto& submesh : submeshes)
+                {
+                    auto materialId = submesh.GetMaterialId() < meshRenderer->Materials.size() ? submesh.GetMaterialId() : 0;
+                    auto material = meshRenderer->Materials[materialId];
+
+                    this->Renderer.SubmitPrimitive(submesh, *material, *transform, instanceCount);
+                }
+            }
+        }
+
+        {
+            MAKE_SCOPE_PROFILER("RenderAdaptor::SubmitLightSources()");
+            auto dirLightView = ComponentFactory::GetView<DirectionalLight>();
+            for (const auto& dirLight : dirLightView)
+            {
+                auto transform = MxObject::GetByComponent(dirLight).GetComponent<Transform>();
+                this->Renderer.SubmitLightSource(dirLight, *transform);
+            }
+
+            auto spotLightView = ComponentFactory::GetView<SpotLight>();
+            for (const auto& spotLight : spotLightView)
+            {
+                auto transform = MxObject::GetByComponent(spotLight).GetComponent<Transform>();
+                this->Renderer.SubmitLightSource(spotLight, *transform);
+            }
+
+            auto pointLightView = ComponentFactory::GetView<PointLight>();
+            for (const auto& pointLight : pointLightView)
+            {
+                auto transform = MxObject::GetByComponent(pointLight).GetComponent<Transform>();
+                this->Renderer.SubmitLightSource(pointLight, *transform);
+            }
+        }
+
+        {
+            MAKE_SCOPE_PROFILER("RenderAdaptor::SubmitDebugData()");
+            this->DebugDraw.ClearBuffer();
+            auto debugColor = MakeVector4(1.0f, 0.0f, 0.0f, 1.0f);
+            if (this->DebugDraw.DrawAxisBoundingBoxes | this->DebugDraw.DrawBoundingSpheres)
+            {
+                for (auto& meshSource : meshSourceView)
+                {
+                    auto& object = MxObject::GetByComponent(meshSource);
+                    auto instances = object.GetComponent<InstanceFactory>();
+                    AABB box;
+                    if (instances.IsValid() && object.GetComponent<MeshSource>().IsValid())
+                    {
+                        for (const auto& instance : instances->GetInstances())
+                        {
+                            box = object.GetComponent<MeshSource>()->GetMesh()->GetAABB() * instance.Transform.GetMatrix();
+                            if (this->DebugDraw.DrawAxisBoundingBoxes)
+                                this->DebugDraw.SubmitAABB(box, debugColor);
+                            if (this->DebugDraw.DrawBoundingSpheres)
+                                this->DebugDraw.SubmitSphere(ToSphere(box), debugColor);
+                        }
+                    }
+                    else
+                    {
+                        box = object.GetAABB();
                         if (this->DebugDraw.DrawAxisBoundingBoxes)
                             this->DebugDraw.SubmitAABB(box, debugColor);
                         if (this->DebugDraw.DrawBoundingSpheres)
                             this->DebugDraw.SubmitSphere(ToSphere(box), debugColor);
                     }
                 }
-                else
-                {
-                    box = object.GetAABB();
-                    if (this->DebugDraw.DrawAxisBoundingBoxes)
-                        this->DebugDraw.SubmitAABB(box, debugColor);
-                    if (this->DebugDraw.DrawBoundingSpheres)
-                        this->DebugDraw.SubmitSphere(ToSphere(box), debugColor);
-                }
+                this->DebugDraw.SubmitBuffer();
+                environment.DebugBufferObject.VertexCount = this->DebugDraw.GetSize();
+                environment.OverlayDebugDraws = this->DebugDraw.DrawAsScreenOverlay;
             }
-            this->DebugDraw.SubmitBuffer();
-            environment.DebugBufferObject.VertexCount = this->DebugDraw.GetSize();
-            environment.OverlayDebugDraws = this->DebugDraw.DrawAsScreenOverlay;
         }
 
         this->Renderer.StartPipeline();

@@ -81,7 +81,7 @@ namespace MxEngine
 			submesh.MeshData.BufferVertecies();
 			submesh.MeshData.BufferIndicies();
 			submesh.MeshData.UpdateBoundingBox();
-			submesh.Name = MakeStringId(meshData.name);
+			submesh.Name = std::move(meshData.name);
 
 			submeshes.push_back(std::move(submesh));
 		}
@@ -131,7 +131,7 @@ namespace MxEngine
 		}
 	}
 
-	void Mesh::AddInstancedBuffer(UniqueRef<VertexBuffer> vbo, UniqueRef<VertexBufferLayout> vbl)
+	size_t Mesh::AddInstancedBuffer(GResource<VertexBuffer> vbo, GResource<VertexBufferLayout> vbl)
 	{
 		this->VBOs.push_back(std::move(vbo));
 		this->VBLs.push_back(std::move(vbl));
@@ -140,18 +140,19 @@ namespace MxEngine
 		{
 			mesh.MeshData.GetVAO()->AddInstancedBuffer(*this->VBOs.back(), *this->VBLs.back());
 		}
+		return this->VBOs.size() - 1;
 	}
 
-	VertexBuffer& Mesh::GetBufferByIndex(size_t index)
+	GResource<VertexBuffer> Mesh::GetBufferByIndex(size_t index) const
 	{
 		assert(index < this->VBOs.size());
-		return *this->VBOs[index];
+		return this->VBOs[index];
 	}
 
-	VertexBufferLayout& Mesh::GetBufferLayoutByIndex(size_t index)
+	GResource<VertexBufferLayout> Mesh::GetBufferLayoutByIndex(size_t index) const
 	{
 		assert(index < this->VBLs.size());
-		return *this->VBLs[index];
+		return this->VBLs[index];
 	}
 
     size_t Mesh::GetBufferCount() const

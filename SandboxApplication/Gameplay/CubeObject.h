@@ -15,12 +15,15 @@ struct CubeBehaviour
 		static size_t offset = 0;
 		size_t idx = 0;
 
-		float maxHeight = 0.5f * (object.GetInstanceCount() - 1);
+		auto instances = object.GetComponent<InstanceFactory>();
+		if (!instances.IsValid()) return;
+		float maxHeight = 0.5f * (instances->GetCount() - 1);
 
-		auto instances = object.GetInstances();
-		for (auto it = instances.begin(); it != instances.end(); it++, idx++)
+		auto view = instances->GetInstances();
+		for (auto& instance : view)
 		{
 			int id = int(idx - offset);
+			idx++;
 			counter += 0.0005f * dt;
 
 			Vector3 position;
@@ -30,7 +33,7 @@ struct CubeBehaviour
 
 			if (position.y > maxHeight) offset++;
 
-			it->Model.SetTranslation(position);
+			instance.Transform.SetPosition(position);
 		}
 	}
 };
@@ -41,11 +44,12 @@ void InitCube(MxObject& cube)
 
 	cube.Name = "Crate";
 	cube.AddComponent<MeshSource>(Primitives::CreateCube());
+	auto instances = cube.AddComponent<InstanceFactory>();
 
 	CubeBehaviour behaviour;
 	for (size_t i = 0; i < 100; i++)
 	{
-		cube.Instanciate().MakeStatic();
+		instances->MakeInstance().MakeStatic();
 	}
 
 	cube.AddComponent<Behaviour>(std::move(behaviour));
