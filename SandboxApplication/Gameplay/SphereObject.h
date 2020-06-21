@@ -12,7 +12,7 @@ void InitSphere(MxObject& sphere)
     auto sphereTexture = AssetManager::LoadTexture("textures/planet_texture.png"_id);
     sphere.AddComponent<MeshSource>(Primitives::CreateSphere());
     
-    auto material = sphere.MeshRenderer->GetMaterial();
+    auto material = sphere.GetOrAddComponent<MeshRenderer>()->GetMaterial();
     material->AmbientMap = sphereTexture;
     material->DiffuseMap = sphereTexture;
     material->HeightMap = AssetManager::LoadTexture("textures/planet_height.png"_id);

@@ -45,12 +45,18 @@ namespace MxEngine
         TimeStep lastUpdate = 0.0f;
         FileSystemTime fileUpdate = FileSystemTime();
     public:
+        Script() = default;
         Script(StringId hash);
         Script(const FilePath& path);
         Script(const MxString& path);
 
+        void Load(StringId hash);
+        void Load(const FilePath& path);
+        void Load(const MxString& path);
+
         void UpdateContents();
         const MxString& GetFilePath() const;
         const ScriptData& GetContent() const;
+        ScriptData& GetContent();
     };
 }

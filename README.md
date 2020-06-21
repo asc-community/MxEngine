@@ -12,7 +12,7 @@ Fow now MxEngine supports OpenGL as graphic API and targeting x64 only. My plans
 
 ## Additional dependencies
 MxEngine is not a huge framework so multiple third-party libraries are used. Here is the full list of dependencies for last MxEngine release version:
-- [EASTL](https://github.com/electronicarts/EASTL) - EA standart library which is used in engine core as STL alternative
+- [EASTL](https://github.com/electronicarts/EASTL) - EA standard library which is used in engine core as STL alternative
 - [stbimage](https://github.com/nothings/stb/blob/master/stb_image.h) - header-only one-file library to load images from disk
 - [GLEW](http://glew.sourceforge.net/) - OpenGL C/C++ extension loading library
 - [GLFW](https://www.glfw.org/) - multi-platform library for OpenGL providing API for creating windows, receiving input and events

@@ -36,54 +36,60 @@ namespace MxEngine::GUI
     {
         SCOPE_TREE_NODE(name);
 
-        if (!texture.IsValid())
+        if (texture.IsValid())
+        {
+            ImGui::Text("path: %s", texture->GetPath().c_str());
+            ImGui::Text("width: %d", (int)texture->GetWidth());
+            ImGui::Text("height: %d", (int)texture->GetHeight());
+            ImGui::Text("channels: %d", (int)texture->GetChannelCount());
+            ImGui::Text("samples: %d", (int)texture->GetSampleCount());
+            ImGui::Text("format: %s", EnumToString(texture->GetFormat()));
+            ImGui::Text("wrap type: %s", EnumToString(texture->GetWrapType()));
+            ImGui::Text("native render type: %d", (int)texture->GetTextureType());
+            ImGui::Text("native handle: %d", (int)texture->GetNativeHandle());
+            ImGui::Text("is depth-only: %s", BOOL_STRING(texture->IsDepthOnly()));
+            ImGui::Text("is multisampled: %s", BOOL_STRING(texture->IsMultisampled()));
+        }
+        else
         {
             ImGui::Text("empty resource");
-            return;
         }
-
-        ImGui::Text("path: %s", texture->GetPath().c_str());
-        ImGui::Text("width: %d", (int)texture->GetWidth());
-        ImGui::Text("height: %d", (int)texture->GetHeight());
-        ImGui::Text("channels: %d", (int)texture->GetChannelCount());
-        ImGui::Text("samples: %d", (int)texture->GetSampleCount());
-        ImGui::Text("format: %s", EnumToString(texture->GetFormat()));
-        ImGui::Text("wrap type: %s", EnumToString(texture->GetWrapType()));
-        ImGui::Text("native render type: %d", (int)texture->GetTextureType());
-        ImGui::Text("native handle: %d", (int)texture->GetNativeHandle());
-        ImGui::Text("is depth-only: %s", BOOL_STRING(texture->IsDepthOnly()));
-        ImGui::Text("is multisampled: %s", BOOL_STRING(texture->IsMultisampled()));
 
         static MxString path;
         if (GUI::InputTextOnClick("load texture", path, 128))
             texture = AssetManager::LoadTexture(path);
+        // TODO: support textures from Colors class
 
-        static float scale = 1.0f;
-        ImGui::DragFloat("texture preview scale", &scale, 0.01f, 0.0f, 1.0f);
+        if (texture.IsValid())
+        {
+            static float scale = 1.0f;
+            ImGui::DragFloat("texture preview scale", &scale, 0.01f, 0.0f, 1.0f);
 
-        auto nativeHeight = texture->GetHeight();
-        auto nativeWidth = texture->GetWidth();
+            auto nativeHeight = texture->GetHeight();
+            auto nativeWidth = texture->GetWidth();
 
-        auto width = ImGui::GetWindowSize().x * 0.9f * scale;
-        auto height = width * nativeHeight / nativeWidth;
-        ImGui::Image((void*)(uintptr_t)texture->GetNativeHandle(), ImVec2(width, height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+            auto width = ImGui::GetWindowSize().x * 0.9f * scale;
+            auto height = width * nativeHeight / nativeWidth;
+            ImGui::Image((void*)(uintptr_t)texture->GetNativeHandle(), ImVec2(width, height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+        }
     }
 
     void DrawCubeMapEditor(const char* name, GResource<CubeMap>& cubemap)
     {
         SCOPE_TREE_NODE(name);
 
-        if (!cubemap.IsValid())
+        if (cubemap.IsValid())
+        {
+            ImGui::Text("path: %s", cubemap->GetPath().c_str());
+            ImGui::Text("width: %d", (int)cubemap->GetWidth());
+            ImGui::Text("height: %d", (int)cubemap->GetHeight());
+            ImGui::Text("channels: %d", (int)cubemap->GetChannelCount());
+            ImGui::Text("native handle: %d", (int)cubemap->GetNativeHandle());
+        }
+        else
         {
             ImGui::Text("empty resource");
-            return;
         }
-
-        ImGui::Text("path: %s", cubemap->GetPath().c_str());
-        ImGui::Text("width: %d", (int)cubemap->GetWidth());
-        ImGui::Text("height: %d", (int)cubemap->GetHeight());
-        ImGui::Text("channels: %d", (int)cubemap->GetChannelCount());
-        ImGui::Text("native handle: %d", (int)cubemap->GetNativeHandle());
         
         static MxString path;
         if (GUI::InputTextOnClick("load cubemap", path, 128))
@@ -160,11 +166,17 @@ namespace MxEngine::GUI
         if (ImGui::Button("update mesh AABB"))
             mesh->UpdateAABB();
 
+        static MxString path;
+        if (GUI::InputTextOnClick("load mesh", path, 128))
+            mesh = AssetManager::LoadMesh(path);
+        // TODO: support meshes from Primitives class
+
         static MxString submeshName;
         int id = 0;
         for (auto& submesh : mesh->GetSubmeshes())
         {
-            SCOPE_TREE_NODE(submesh.Name.c_str());
+            if (!ImGui::CollapsingHeader(submesh.Name.c_str())) continue;
+            GUI::Indent _(5.0f);
             ImGui::PushID(id++);
 
             ImGui::Text("vertex count: %d", (int)submesh.MeshData.GetVertecies().size());
@@ -184,7 +196,9 @@ namespace MxEngine::GUI
 
             // TODO: maybe add indicies editor?
             {
-                GUI_TREE_NODE("vertecies",
+                if (ImGui::CollapsingHeader("vertecies"))
+                {
+                    GUI::Indent _(5.0f);
                     int id = 0;
                     for (auto& vertex : submesh.MeshData.GetVertecies())
                     {
@@ -193,7 +207,7 @@ namespace MxEngine::GUI
                         ImGui::Separator();
                         ImGui::PopID();
                     }
-                );
+                }
             }
             ImGui::PopID();
         }

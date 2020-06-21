@@ -33,6 +33,7 @@ namespace MxEngine
 {
     void Behaviour::InvokeUpdate(Behaviour::TimeDelta dt)
     {
-        this->UpdateCallback(MxObject::GetByComponent(*this), dt);
+        if(this->UpdateCallback)
+            this->UpdateCallback(MxObject::GetByComponent(*this), dt);
     }
 }

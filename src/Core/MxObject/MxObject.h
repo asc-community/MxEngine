@@ -74,7 +74,6 @@ namespace MxEngine
 		float RotateSpeed = 1.0f;
 		float ScaleSpeed = 1.0f;
 		CResource<Transform> Transform;
-		CResource<MeshRenderer> MeshRenderer;
 
 		MxObject();
 		MxObject(const MxObject&) = delete;
@@ -98,8 +97,18 @@ namespace MxEngine
 		}
 
 		template<typename T>
+		auto GetOrAddComponent()
+		{
+			if (!this->HasComponent<T>())
+				return this->AddComponent<T>();
+			else
+				return this->GetComponent<T>();
+		}
+
+		template<typename T>
 		void RemoveComponent()
 		{
+			static_assert(!std::is_same_v<T, MxEngine::Transform>, "Transform component cannot be deleted");
 			this->components.RemoveComponent<T>();
 		}
 

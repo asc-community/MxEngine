@@ -122,6 +122,26 @@ namespace MxEngine
         return std::filesystem::exists(path.c_str());
     }
 
+    bool File::IsFile(const MxString& path)
+    {
+        return std::filesystem::is_regular_file(path.c_str());
+    }
+
+    bool File::IsFile(const FilePath& path)
+    {
+        return std::filesystem::is_regular_file(path);
+    }
+
+    bool File::IsDirectory(const MxString& path)
+    {
+        return std::filesystem::is_directory(path.c_str());
+    }
+
+    bool File::IsDirectory(const FilePath& path)
+    {
+        return std::filesystem::is_directory(path.c_str());
+    }
+
     FileSystemTime File::LastModifiedTime(const FilePath& path)
     {
         if (!File::Exists(path))

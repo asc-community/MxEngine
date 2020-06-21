@@ -36,11 +36,11 @@ namespace MxEngine
     class MeshSource
     {
         MAKE_COMPONENT(MeshSource);
-        Resource<Mesh, ResourceFactory> mesh;
     public:
-        MeshSource() = default;
-        MeshSource(Resource<Mesh, ResourceFactory> mesh) : mesh(mesh) { }
+        Resource<Mesh, ResourceFactory> Mesh;
+        bool IsDrawn = true;
 
-        auto GetMesh() const { return this->mesh; }
+        MeshSource() : Mesh(ResourceFactory::Create<MxEngine::Mesh>()) { }
+        MeshSource(Resource<MxEngine::Mesh, ResourceFactory> mesh) : Mesh(mesh) { }
     };
 }

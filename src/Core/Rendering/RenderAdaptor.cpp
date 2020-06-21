@@ -199,7 +199,7 @@ namespace MxEngine
         float viewportZoom = 0.0f;
         if (this->Viewport.IsValid())
         {
-            viewportPosition = MxObject::GetByComponent(*this->Viewport).GetComponent<Transform>()->GetPosition();
+            viewportPosition = MxObject::GetByComponent(*this->Viewport).Transform->GetPosition();
             viewportZoom = this->Viewport->Camera.GetZoom();
         }
 
@@ -243,7 +243,7 @@ namespace MxEngine
             for (const auto& camera : cameraView)
             {
                 auto& object = MxObject::GetByComponent(camera);
-                auto transform = object.GetComponent<Transform>();
+                auto& transform = object.Transform;
                 auto skyboxComponent = object.GetComponent<Skybox>();
                 Skybox skybox = skyboxComponent.IsValid() ? *skyboxComponent.GetUnchecked() : Skybox();
                 this->Renderer.SubmitCamera(camera, *transform, skybox);
@@ -258,18 +258,16 @@ namespace MxEngine
             for (const auto& meshSource : meshSourceView)
             {
                 auto& object = MxObject::GetByComponent(meshSource);
-
+                auto& transform = object.Transform;
                 auto meshRenderer = object.GetComponent<MeshRenderer>();
                 auto meshLOD = object.GetComponent<MeshLOD>();
-                auto transform = object.GetComponent<Transform>();
                 auto instances = object.GetComponent<InstanceFactory>();
-
-                if (!meshRenderer.IsValid() || !transform.IsValid()) continue;
 
                 size_t instanceCount = 0;
                 if (instances.IsValid()) instanceCount = instances->GetCount();
+                auto mesh = meshSource.Mesh;
 
-                auto mesh = meshSource.GetMesh();
+                if (!meshSource.IsDrawn || !meshRenderer.IsValid()) continue;
 
                 // we do not try to use LODs for instanced objects, as its quite hard and time consuming. TODO: fix this
                 if (meshLOD.IsValid() && !meshLOD->LODs.empty() && instanceCount == 0)
@@ -301,21 +299,21 @@ namespace MxEngine
             auto dirLightView = ComponentFactory::GetView<DirectionalLight>();
             for (const auto& dirLight : dirLightView)
             {
-                auto transform = MxObject::GetByComponent(dirLight).GetComponent<Transform>();
+                auto& transform = MxObject::GetByComponent(dirLight).Transform;
                 this->Renderer.SubmitLightSource(dirLight, *transform);
             }
 
             auto spotLightView = ComponentFactory::GetView<SpotLight>();
             for (const auto& spotLight : spotLightView)
             {
-                auto transform = MxObject::GetByComponent(spotLight).GetComponent<Transform>();
+                auto& transform = MxObject::GetByComponent(spotLight).Transform;
                 this->Renderer.SubmitLightSource(spotLight, *transform);
             }
 
             auto pointLightView = ComponentFactory::GetView<PointLight>();
             for (const auto& pointLight : pointLightView)
             {
-                auto transform = MxObject::GetByComponent(pointLight).GetComponent<Transform>();
+                auto& transform = MxObject::GetByComponent(pointLight).Transform;
                 this->Renderer.SubmitLightSource(pointLight, *transform);
             }
         }
@@ -335,7 +333,7 @@ namespace MxEngine
                     {
                         for (const auto& instance : instances->GetInstances())
                         {
-                            box = object.GetComponent<MeshSource>()->GetMesh()->GetAABB() * instance.Transform.GetMatrix();
+                            box = object.GetComponent<MeshSource>()->Mesh->GetAABB() * instance.Transform.GetMatrix();
                             if (this->DebugDraw.DrawAxisBoundingBoxes)
                                 this->DebugDraw.SubmitAABB(box, debugColor);
                             if (this->DebugDraw.DrawBoundingSpheres)

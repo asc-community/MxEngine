@@ -409,18 +409,18 @@ namespace MxEngine
 			[this](UpdateEvent&) { this->GetConsole().OnRender(); });
 		this->GetConsole().Execute("InitializeOpenGL()");
 
-		this->GetConsole().RegisterComponentEditor(GUI::TransformEditor);
-		this->GetConsole().RegisterComponentEditor(GUI::BehaviourEditor);
-		this->GetConsole().RegisterComponentEditor(GUI::ScriptEditor);
-		this->GetConsole().RegisterComponentEditor(GUI::InstanceFactoryEditor);
-		this->GetConsole().RegisterComponentEditor(GUI::SkyboxEditor);
-		this->GetConsole().RegisterComponentEditor(GUI::MeshRendererEditor);
-		this->GetConsole().RegisterComponentEditor(GUI::MeshSourceEditor);
-		this->GetConsole().RegisterComponentEditor(GUI::MeshLODEditor);
-		this->GetConsole().RegisterComponentEditor(GUI::DirectionalLightEditor);
-		this->GetConsole().RegisterComponentEditor(GUI::PointLightEditor);
-		this->GetConsole().RegisterComponentEditor(GUI::SpotLightEditor);
-		this->GetConsole().RegisterComponentEditor(GUI::CameraControllerEditor);
+		this->GetConsole().RegisterComponentEditor("Transform",        GUI::TransformEditor);
+		this->GetConsole().RegisterComponentEditor("Behaviour",        GUI::BehaviourEditor);
+		this->GetConsole().RegisterComponentEditor("Script",           GUI::ScriptEditor);
+		this->GetConsole().RegisterComponentEditor("InstanceFactory",  GUI::InstanceFactoryEditor);
+		this->GetConsole().RegisterComponentEditor("Skybox",           GUI::SkyboxEditor);
+		this->GetConsole().RegisterComponentEditor("MeshRenderer",     GUI::MeshRendererEditor);
+		this->GetConsole().RegisterComponentEditor("MeshSource",       GUI::MeshSourceEditor);
+		this->GetConsole().RegisterComponentEditor("MeshLOD",          GUI::MeshLODEditor);
+		this->GetConsole().RegisterComponentEditor("DirectionalLight", GUI::DirectionalLightEditor);
+		this->GetConsole().RegisterComponentEditor("PointLight",       GUI::PointLightEditor);
+		this->GetConsole().RegisterComponentEditor("SpotLight",        GUI::SpotLightEditor);
+		this->GetConsole().RegisterComponentEditor("CameraController", GUI::CameraControllerEditor);
 	}
 #else
 	void Application::InitializeDeveloperConsole(DeveloperConsole& console)

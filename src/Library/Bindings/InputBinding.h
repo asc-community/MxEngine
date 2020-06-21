@@ -60,10 +60,9 @@ namespace MxEngine
 			auto& dispatcher = Application::Get()->GetEventDispatcher();
 
 			auto& object = MxObject::GetByComponent(*this->camera);
-			auto transform = object.GetComponent<Transform>();
 
 			dispatcher.AddEventListener(MxFormat("Input_{0}", (MxString)camera.GetUUID()),
-				[forward, back, right, left, up, down, camera = this->camera, transform = std::move(transform)](KeyEvent& event) mutable
+				[forward, back, right, left, up, down, camera = this->camera, transform = object.Transform](KeyEvent& event) mutable
 				{
 					if (!camera.IsValid()) { InputControlBinding(camera).Unbind(); return; }
 

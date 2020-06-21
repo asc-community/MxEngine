@@ -14,10 +14,10 @@ namespace MxEngine
         }
         else
         {
-            auto& mesh = *meshSource->GetMesh();
-            auto modelBufferIndex  = this->AddInstancedBuffer(mesh, this->models);
-            auto normalBufferIndex = this->AddInstancedBuffer(mesh, this->normals);
-            auto colorBufferIndex  = this->AddInstancedBuffer(mesh, this->colors);
+            auto& mesh = *meshSource->Mesh;
+            auto modelBufferIndex  = this->AddInstancedBuffer(mesh, this->GetModelData());
+            auto normalBufferIndex = this->AddInstancedBuffer(mesh, this->GetNormalData());
+            auto colorBufferIndex  = this->AddInstancedBuffer(mesh, this->GetColorData());
             this->bufferIndex = modelBufferIndex; // others will be `bufferIndex + 1`, `bufferIndex + 2`
         }
     }
@@ -83,10 +83,18 @@ namespace MxEngine
         auto meshSource = object.GetComponent<MeshSource>();
         if (meshSource.IsValid())
         {
-            auto& mesh = *meshSource->GetMesh();
-            this->BufferDataByIndex(mesh, this->bufferIndex + 0, this->GetModelData());
-            this->BufferDataByIndex(mesh, this->bufferIndex + 1, this->GetNormalData());
-            this->BufferDataByIndex(mesh, this->bufferIndex + 2, this->GetColorData());
+            auto& mesh = *meshSource->Mesh;
+
+            if (mesh.GetBufferCount() < this->bufferIndex + 2)
+            {
+                this->Init(); // MeshSource was updated, re-init mesh
+            }
+            else
+            {
+                this->BufferDataByIndex(mesh, this->bufferIndex + 0, this->GetModelData());
+                this->BufferDataByIndex(mesh, this->bufferIndex + 1, this->GetNormalData());
+                this->BufferDataByIndex(mesh, this->bufferIndex + 2, this->GetColorData());
+            }
         }
     }
 }

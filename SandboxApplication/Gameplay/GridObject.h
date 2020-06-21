@@ -12,7 +12,7 @@ void InitGrid(MxObject& object)
 	object.AddComponent<MeshSource>(Primitives::CreatePlane(1000));
 
 	auto gridTexture = AssetManager::LoadTexture("textures/brick.jpg"_id);
-	auto material = object.MeshRenderer->GetMaterial();
+	auto material = object.GetOrAddComponent<MeshRenderer>()->GetMaterial();
 	material->AmbientMap = gridTexture;
 	material->DiffuseMap = gridTexture;
 	material->NormalMap = AssetManager::LoadTexture("textures/brick_normal.jpg"_id);

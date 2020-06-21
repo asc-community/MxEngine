@@ -95,23 +95,31 @@ namespace MxEngine
 			for (auto& object : objects)
 			{
 				ImGui::PushID(object.Name.c_str());
-				if (ImGui::TreeNode(object.Name.c_str()))
+				if (ImGui::CollapsingHeader(object.Name.c_str()))
 				{
 					GUI::Indent _(5.0f);
 					ImGui::PushID(id++);
 
-					if (ImGui::Button("Destroy"))
+					if (ImGui::Button("Destroy object"))
 					{
 						MxObject::Destroy(object);
 					}
 					else
 					{
-						for (const auto& callback : this->componentEditorCallbacks)
+						static int currentItem = 0;
+						ImGui::SameLine();
+						ImGui::Combo("", &currentItem, this->componentNames.data(), (int)this->componentNames.size());
+						ImGui::SameLine();
+						if (ImGui::Button("add component"))
+						{
+							this->componentAdderCallbacks[(size_t)currentItem](object);
+						}
+						for (auto& callback : this->componentEditorCallbacks)
+						{
 							callback(object);
+						}
 					}
-
 					ImGui::PopID();
-					ImGui::TreePop();
 				}
 				ImGui::PopID();
 			}

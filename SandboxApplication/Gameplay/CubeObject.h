@@ -41,20 +41,19 @@ struct CubeBehaviour
 void InitCube(MxObject& cube)
 {
 	cube.Transform->Translate(MakeVector3(0.5f, 0.0f, 0.5f));
-
 	cube.Name = "Crate";
-	cube.AddComponent<MeshSource>(Primitives::CreateCube());
-	auto instances = cube.AddComponent<InstanceFactory>();
 
-	CubeBehaviour behaviour;
+	auto meshSource = cube.AddComponent<MeshSource>(Primitives::CreateCube());
+	auto meshRenderer = cube.AddComponent<MeshRenderer>();
+	auto instances = cube.AddComponent<InstanceFactory>();
+	auto behaviour = cube.AddComponent<Behaviour>(CubeBehaviour{ });
+
 	for (size_t i = 0; i < 100; i++)
 	{
 		instances->MakeInstance().MakeStatic();
 	}
 
-	cube.AddComponent<Behaviour>(std::move(behaviour));
-
 	auto cubeTexture = AssetManager::LoadTexture("objects/crate/crate.jpg"_id);
-	cube.MeshRenderer->GetMaterial()->AmbientMap = cubeTexture;
-	cube.MeshRenderer->GetMaterial()->DiffuseMap = cubeTexture;
+	meshRenderer->GetMaterial()->AmbientMap = cubeTexture;
+	meshRenderer->GetMaterial()->DiffuseMap = cubeTexture;
 }

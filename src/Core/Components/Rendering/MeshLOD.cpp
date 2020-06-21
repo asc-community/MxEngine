@@ -36,13 +36,13 @@ namespace MxEngine
     {
         auto& object = MxObject::GetByComponent(*this);
         auto meshSource = object.GetComponent<MeshSource>();
-        if (!meshSource.IsValid() || !meshSource->GetMesh().IsValid())
+        if (!meshSource.IsValid() || !meshSource->Mesh.IsValid())
         {
             Logger::Instance().Warning("MxEngine::MeshLOD", "LODs are not generated as object has no mesh: " + object.Name);
             return;
         }
 
-        auto mesh = meshSource.GetUnchecked()->GetMesh();
+        auto mesh = meshSource.GetUnchecked()->Mesh;
         this->LODs.clear();
         this->LODs.reserve(config.Factors.size());
 

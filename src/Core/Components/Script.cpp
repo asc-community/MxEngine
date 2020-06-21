@@ -40,7 +40,25 @@ namespace MxEngine
 
     Script::Script(const MxString& path)
     {
+        this->Load(path);
+    }
+
+    void Script::Load(StringId hash)
+    {
+        this->Load(FileManager::GetFilePath(hash));
+    }
+
+    void Script::Load(const FilePath& path)
+    {
+        this->Load(ToMxString(path));
+    }
+
+    void Script::Load(const MxString& path)
+    {
         this->path = path;
+        if (!File::Exists(this->path))
+            Logger::Instance().Warning("MxEngine::Script", "script is not loaded, file was not found: " + path);
+
         this->UpdateContents();
     }
 
@@ -70,6 +88,11 @@ namespace MxEngine
     }
 
     const Script::ScriptData& Script::GetContent() const
+    {
+        return this->data;
+    }
+
+    Script::ScriptData& Script::GetContent()
     {
         return this->data;
     }

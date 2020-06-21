@@ -46,8 +46,16 @@ namespace MxEngine
 {
 	ObjectInfo ObjectLoader::Load(const MxString& filename)
 	{
-		auto directory = FilePath(filename.c_str()).parent_path();
+		auto filepath = FilePath(filename.c_str());
+		auto directory = filepath.parent_path();
 		ObjectInfo object;
+
+		if (!File::Exists(filepath) || !File::IsFile(filepath))
+		{
+			MxEngine::Logger::Instance().Error("Assimp::Importer", "file does not exist: " + filename);
+			return object;
+		}
+
 		MAKE_SCOPE_PROFILER("ObjectLoader::LoadObject");
 		MAKE_SCOPE_TIMER("MxEngine::ObjectLoader", "ObjectLoader::LoadObject");
 		Logger::Instance().Debug("Assimp::Importer", MxFormat("loading object from file: {}", filename));

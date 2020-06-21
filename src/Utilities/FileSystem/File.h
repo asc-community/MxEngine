@@ -162,6 +162,30 @@ namespace MxEngine
         */
         static bool Exists(const MxString& path);
         /*!
+        checks if path is regular file
+        \param path path of file to search for
+        \returns true if path is regular file, false either
+        */
+        static bool IsFile(const MxString& path);
+        /*!
+        checks if path is regular file
+        \param path path of file to search for
+        \returns true if path is regular file, false either
+        */
+        static bool IsFile(const FilePath& path);
+        /*!
+        checks if path is directory
+        \param path path to search for
+        \returns true if path is directory, false either
+        */
+        static bool IsDirectory(const MxString& path);
+        /*!
+        checks if path is directory
+        \param path path to search for
+        \returns true if path is directory, false either
+        */
+        static bool IsDirectory(const FilePath& path);
+        /*!
         gets file last modified time
         \param path path to a file to check for
         \returns platform-dependent time point of last file modification

@@ -42,39 +42,52 @@ namespace MxEngine
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PrepareDirectionalLightMaps()");
-			const auto& directionalLightShader = this->Pipeline.Environment.ShadowMapShader;
+			const auto& directionalLightShader = *this->Pipeline.Environment.ShadowMapShader;
 			for (const auto& directionalLight : this->Pipeline.Lighting.DirectionalLights)
 			{
 				this->AttachDepthMap(directionalLight.ShadowMap);
+				directionalLightShader.SetUniformMat4("LightProjMatrix", directionalLight.ProjectionMatrix);
+
 				for (const auto& renderUnit : this->Pipeline.RenderUnits)
 				{
-					this->DrawShadowMap(renderUnit, directionalLight, *directionalLightShader);
+					this->DrawShadowMap(renderUnit, directionalLight, directionalLightShader);
 				}
 			}
 		}
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PrepareSpotLightMaps()");
-			const auto& spotLightShader = this->Pipeline.Environment.ShadowMapShader;
+			const auto& spotLightShader = *this->Pipeline.Environment.ShadowMapShader;
 			for (const auto& spotLight : this->Pipeline.Lighting.SpotLights)
 			{
 				this->AttachDepthMap(spotLight.ShadowMap);
+				spotLightShader.SetUniformMat4("LightProjMatrix", spotLight.ProjectionMatrix);
+
 				for (const auto& renderUnit : this->Pipeline.RenderUnits)
 				{
-					this->DrawShadowMap(renderUnit, spotLight, *spotLightShader);
+					this->DrawShadowMap(renderUnit, spotLight, spotLightShader);
 				}
 			}
 		}
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PreparePointLightMaps()");
-			const auto& pointLightShader = this->Pipeline.Environment.ShadowCubeMapShader;
+			const auto& pointLightShader = *this->Pipeline.Environment.ShadowCubeMapShader;
 			for (const auto& pointLight : this->Pipeline.Lighting.PointLights)
 			{
 				this->AttachDepthMap(pointLight.ShadowMap);
+				pointLightShader.SetUniformMat4("LightProjMatrix[0]", pointLight.ProjectionMatrices[0]);
+				pointLightShader.SetUniformMat4("LightProjMatrix[1]", pointLight.ProjectionMatrices[1]);
+				pointLightShader.SetUniformMat4("LightProjMatrix[2]", pointLight.ProjectionMatrices[2]);
+				pointLightShader.SetUniformMat4("LightProjMatrix[3]", pointLight.ProjectionMatrices[3]);
+				pointLightShader.SetUniformMat4("LightProjMatrix[4]", pointLight.ProjectionMatrices[4]);
+				pointLightShader.SetUniformMat4("LightProjMatrix[5]", pointLight.ProjectionMatrices[5]);
+				pointLightShader.SetUniformFloat("zFar", pointLight.FarDistance);
+				pointLightShader.SetUniformVec3("lightPos", pointLight.Position);
+
 				for (const auto& renderUnit : this->Pipeline.RenderUnits)
 				{
-					this->DrawShadowMap(renderUnit, pointLight, *pointLightShader);
+					this->DrawShadowMap(renderUnit, pointLight, pointLightShader);
 				}
 			}
 		}
@@ -241,30 +254,31 @@ namespace MxEngine
 
 	void RenderController::DrawShadowMap(const RenderUnit& unit, const DirectionalLigthUnit& dirLight, const Shader& shader)
 	{
-		shader.SetUniformMat4("LightProjMatrix", dirLight.ProjectionMatrix);
+		shader.SetUniformFloat("displacement", unit.RenderMaterial.Displacement);
+		unit.RenderMaterial.HeightMap->Bind(0);
+		shader.SetUniformInt("map_height", 0);
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix);
+		this->GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
 		this->GetRenderEngine().DrawTrianglesInstanced(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
 	}
 
 	void RenderController::DrawShadowMap(const RenderUnit& unit, const SpotLightUnit& spotLight, const Shader& shader)
 	{
-		shader.SetUniformMat4("LightProjMatrix", spotLight.ProjectionMatrix);
+		shader.SetUniformFloat("displacement", unit.RenderMaterial.Displacement);
+		unit.RenderMaterial.HeightMap->Bind(0);
+		shader.SetUniformInt("map_height", 0);
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix);
+		this->GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
 		this->GetRenderEngine().DrawTrianglesInstanced(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
 	}
 
 	void RenderController::DrawShadowMap(const RenderUnit& unit, const PointLightUnit& pointLight, const Shader& shader)
 	{
-		shader.SetUniformMat4("LightProjMatrix[0]", pointLight.ProjectionMatrices[0]);
-		shader.SetUniformMat4("LightProjMatrix[1]", pointLight.ProjectionMatrices[1]);
-		shader.SetUniformMat4("LightProjMatrix[2]", pointLight.ProjectionMatrices[2]);
-		shader.SetUniformMat4("LightProjMatrix[3]", pointLight.ProjectionMatrices[3]);
-		shader.SetUniformMat4("LightProjMatrix[4]", pointLight.ProjectionMatrices[4]);
-		shader.SetUniformMat4("LightProjMatrix[5]", pointLight.ProjectionMatrices[5]);
-		shader.SetUniformFloat("zFar", pointLight.FarDistance);
-		shader.SetUniformVec3("lightPos", pointLight.Position);
+		shader.SetUniformFloat("displacement", unit.RenderMaterial.Displacement);
+		unit.RenderMaterial.HeightMap->Bind(0);
+		shader.SetUniformInt("map_height", 0);
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix);
 		this->GetRenderEngine().DrawTrianglesInstanced(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);

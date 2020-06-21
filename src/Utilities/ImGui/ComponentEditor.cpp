@@ -36,10 +36,13 @@ namespace MxEngine::GUI
 	#define REMOVE_COMPONENT_BUTTON(comp) \
 	if(ImGui::Button("remove component")) {\
 		MxObject::GetByComponent(comp).RemoveComponent<std::remove_reference_t<decltype(comp)>>(); return; }
+	
+	struct TreeNodeAutoPop { ~TreeNodeAutoPop() { ImGui::TreePop(); } };
+	#define TREE_NODE_PUSH(name) if(!ImGui::TreeNode(name)) return; TreeNodeAutoPop _pop_
 
     void TransformEditor(Transform& transform)
     {
-		SCOPE_TREE_NODE("Transform");
+		TREE_NODE_PUSH("Transform");
 		// note that Transform component cannot be removed
 
 		// position
@@ -65,7 +68,7 @@ namespace MxEngine::GUI
 
 	void BehaviourEditor(Behaviour& behaviour)
 	{
-		SCOPE_TREE_NODE("Behaviour");
+		TREE_NODE_PUSH("Behaviour");
 		REMOVE_COMPONENT_BUTTON(behaviour);
 		ImGui::Text("has update callback: %s", BOOL_STRING(behaviour.UpdateCallback));
 	}
@@ -74,7 +77,7 @@ namespace MxEngine::GUI
 	// TODO: last time of file editing
 	void ScriptEditor(Script& script)
 	{
-		SCOPE_TREE_NODE("Script");
+		TREE_NODE_PUSH("Script");
 		REMOVE_COMPONENT_BUTTON(script);
 		ImGui::Text("path: %s", script.GetFilePath().c_str());
 		ImGui::LabelText("contents", script.GetContent().c_str());
@@ -82,13 +85,17 @@ namespace MxEngine::GUI
 
 	void InstanceFactoryEditor(InstanceFactory& instanceFactory)
 	{
-		SCOPE_TREE_NODE("InstanceFactory");
+		TREE_NODE_PUSH("InstanceFactory");
 		REMOVE_COMPONENT_BUTTON(instanceFactory);
 		
 		ImGui::Text("instance count: %d", (int)instanceFactory.GetCount());
+		
 		ImGui::SameLine();
 		if (ImGui::Button("instanciate"))
 			instanceFactory.MakeInstance().MakeStatic();
+		ImGui::SameLine();
+		if (ImGui::Button("destroy all"))
+			instanceFactory.GetInstancePool() = { };
 
 		int id = 0;
 		auto begin = instanceFactory.GetInstancePool().begin();
@@ -122,15 +129,15 @@ namespace MxEngine::GUI
 
 	void SkyboxEditor(Skybox& skybox)
 	{
-		SCOPE_TREE_NODE("Skybox");
+		TREE_NODE_PUSH("Skybox");
 		REMOVE_COMPONENT_BUTTON(skybox);
 		DrawCubeMapEditor("cubemap", skybox.Texture);
 	}
 
     void MeshRendererEditor(MeshRenderer& meshRenderer)
     {
-		SCOPE_TREE_NODE("MeshRenderer");
-		// note that MeshRenderer component cannot be removed
+		TREE_NODE_PUSH("MeshRenderer");
+		REMOVE_COMPONENT_BUTTON(meshRenderer);
 
 		int id = 0;
 		for (auto& material : meshRenderer.Materials)
@@ -143,15 +150,16 @@ namespace MxEngine::GUI
 
 	void MeshSourceEditor(MeshSource& meshSource)
 	{
-		SCOPE_TREE_NODE("MeshSource");
+		TREE_NODE_PUSH("MeshSource");
 		REMOVE_COMPONENT_BUTTON(meshSource);
-		auto mesh = meshSource.GetMesh();
-		DrawMeshEditor("mesh", mesh);
+
+		ImGui::Checkbox("is drawn", &meshSource.IsDrawn);
+		DrawMeshEditor("mesh", meshSource.Mesh);
 	}
 
 	void MeshLODEditor(MeshLOD& meshLOD)
 	{
-		SCOPE_TREE_NODE("MeshLOD");
+		TREE_NODE_PUSH("MeshLOD");
 		REMOVE_COMPONENT_BUTTON(meshLOD);
 		int id = 0;
 		static LODConfig config;
@@ -183,7 +191,7 @@ namespace MxEngine::GUI
 
 	void DirectionalLightEditor(DirectionalLight& dirLight)
 	{
-		SCOPE_TREE_NODE("Directional Light");
+		TREE_NODE_PUSH("DirectionalLight");
 		REMOVE_COMPONENT_BUTTON(dirLight);
 
 		DrawLightBaseEditor(dirLight);
@@ -202,7 +210,7 @@ namespace MxEngine::GUI
 
 	void PointLightEditor(PointLight& pointLight)
 	{
-		SCOPE_TREE_NODE("Point Ligth");
+		TREE_NODE_PUSH("PointLight");
 		REMOVE_COMPONENT_BUTTON(pointLight);
 
 		DrawLightBaseEditor(pointLight);
@@ -220,7 +228,7 @@ namespace MxEngine::GUI
 
 	void SpotLightEditor(SpotLight& spotLight)
 	{
-		SCOPE_TREE_NODE("Spot Ligth");
+		TREE_NODE_PUSH("SpotLight");
 		REMOVE_COMPONENT_BUTTON(spotLight);
 
 		DrawLightBaseEditor(spotLight);
@@ -245,7 +253,7 @@ namespace MxEngine::GUI
 
 	void CameraControllerEditor(CameraController& cameraController)
 	{
-		SCOPE_TREE_NODE("Camera Controller");
+		TREE_NODE_PUSH("CameraController");
 		REMOVE_COMPONENT_BUTTON(cameraController);
 
 		ImGui::Text((cameraController.GetCameraType() == CameraType::PERSPECTIVE ? "camera type: perspective" : "camera type: orthographic"));

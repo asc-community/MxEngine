@@ -58,6 +58,8 @@ namespace MxEngine
 		bool debugTools = true;
 
 		MxVector<std::function<void(MxObject&)>> componentEditorCallbacks;
+		MxVector<std::function<void(MxObject&)>> componentAdderCallbacks;
+		MxVector<const char*> componentNames;
 	public:
 		RuntimeEditor();
 		RuntimeEditor(const RuntimeEditor&) = delete;
@@ -81,7 +83,7 @@ namespace MxEngine
 		const MxString& GetLastErrorMessage() const;
 
 		template<typename T>
-		void RegisterComponentEditor(std::function<void(T&)> callback)
+		void RegisterComponentEditor(const char* name, std::function<void(T&)> callback)
 		{
 			this->componentEditorCallbacks.push_back([func = std::move(callback)](MxObject& object)
 			{
@@ -89,12 +91,21 @@ namespace MxEngine
 				if (component.IsValid())
 					func(*component);
 			});
+			if constexpr (std::is_default_constructible_v<T>)
+			{
+				this->componentNames.push_back(name);
+				this->componentAdderCallbacks.push_back([](MxObject& object)
+				{
+					if(!object.HasComponent<T>())
+						object.AddComponent<T>();
+				});
+			}
 		}
 
 		template<typename Func>
-		void RegisterComponentEditor(Func&& callback)
+		void RegisterComponentEditor(const char* name, Func&& callback)
 		{
-			this->RegisterComponentEditor(std::function{ std::forward<Func>(callback) });
+			this->RegisterComponentEditor(name, std::function{ std::forward<Func>(callback) });
 		}
 	};
 }

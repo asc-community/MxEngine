@@ -74,15 +74,14 @@ namespace MxEngine
     {
         auto& object = MxObject::GetByComponent(*this);
         auto dirLight = object.GetComponent<DirectionalLight>();
-        auto transform = object.GetComponent<Transform>();
 
         EventManager::RemoveEventListener(dirLight.GetUUID());
 
-        EventManager::AddEventListener(dirLight.GetUUID(), [tr = std::move(transform)](UpdateEvent& e) mutable
+        EventManager::AddEventListener(dirLight.GetUUID(), [tr = object.Transform](UpdateEvent& e) mutable
         {
             auto& viewport = RenderManager::GetViewport();
             if (viewport.IsValid()) 
-                tr->SetPosition(MxObject::GetByComponent(*viewport).GetComponent<Transform>()->GetPosition());
+                tr->SetPosition(MxObject::GetByComponent(*viewport).Transform->GetPosition());
         });
     }
 }
