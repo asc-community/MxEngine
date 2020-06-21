@@ -28,31 +28,36 @@
 
 #pragma once
 
-#include "Core/RenderController/RenderController.h"
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-    struct RenderAdaptor
+    class CameraBase
     {
-        RenderController Renderer;
-        DebugBuffer DebugDraw;
-        CResource<CameraController> Viewport;
+    private:
+        float aspectRatio = 1.777f;
+        float zNear = 0.1f;
+        float zFar = 100.0f;
+        float zoom = 1.0f;
+        Matrix4x4 view;
+        Matrix4x4 projection;
+        mutable Matrix4x4 matrix;
+        mutable bool updateMatrix = false;
+    public:
+        mutable bool UpdateProjection = false;
 
-        constexpr static TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;
-
-        void InitRendererEnvironment();
-        void OnWindowResize(const VectorInt2& newViewport);
-        void LoadMainShader(bool useLighting = true);
-        void PerformRenderIteration();
-        void SetRenderToDefaultFrameBuffer(bool value = true);
-
-        void SetFogColor(const Vector3& color);
-        const Vector3& GetFogColor() const;
-        void SetFogDensity(float density);
-        float GetFogDensity() const;
-        void SetFogDistance(float distance);
-        float GetFogDistance() const;
-        void SetShadowBlurIterations(size_t iterations);
-        size_t getShadowBlurIterations() const;
+        const Matrix4x4& GetMatrix() const;
+        const Matrix4x4& GetProjectionMatrix() const;
+        const Matrix4x4& GetViewMatrix() const;
+        void SetProjectionMatrix(const Matrix4x4& projection);
+        void SetViewMatrix(const Matrix4x4& view);
+        float GetZoom() const;
+        void SetZoom(float zoom);
+        void SetAspectRatio(float w, float h = 1.0f);
+        float GetAspectRatio() const;
+        float GetZFar() const;
+        void SetZFar(float zFar);
+        float GetZNear() const;
+        void SetZNear(float zNear);
     };
 }

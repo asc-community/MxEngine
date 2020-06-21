@@ -28,18 +28,7 @@
 
 #pragma once
 
-#include "Core/Components/Transform.h"
-#include "Core/Components/Behaviour.h"
-#include "Core/Components/Script.h"
-#include "Core/Components/InstanceFactory.h"
-#include "Core/Components/Rendering/Skybox.h"
-#include "Core/Components/Rendering/MeshRenderer.h"
-#include "Core/Components/Rendering/MeshSource.h"
-#include "Core/Components/Rendering/MeshLOD.h"
-#include "Core/Components/Lighting/DirectionalLight.h"
-#include "Core/Components/Lighting/PointLight.h"
-#include "Core/Components/Lighting/SpotLight.h"
-#include "Core/Components/Camera/CameraController.h"
+#include "Core/Components/Components.h"
 
 namespace MxEngine::GUI
 {

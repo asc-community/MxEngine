@@ -85,6 +85,7 @@ namespace MxEngine
 	{
 		MAKE_SCOPE_PROFILER("RenderController::DrawObjects()");
 
+		if (this->Pipeline.RenderUnits.empty()) return;
 		auto& shader = *this->Pipeline.Environment.MainShader;
 		Texture::TextureBindId textureBindIndex = 0;
 
@@ -282,7 +283,6 @@ namespace MxEngine
 		MX_ASSERT(bloomBuffers[1]->HasTextureAttached());
 		MX_ASSERT(iterations % 2 == 0);
 
-		auto& rectangle = this->Pipeline.Environment.RectangularObject;
 		auto& shader = *this->Pipeline.Environment.BloomShader;
 
 		shader.SetUniformInt("BloomTexture", 0);
@@ -290,7 +290,6 @@ namespace MxEngine
 		{
 			auto& target = bloomBuffers[ (i & 1)];
 			auto& source = bloomBuffers[!(i & 1)];
-			this->AttachFrameBuffer(target);
 			shader.SetUniformInt("horizontalKernel", int(i & 1));
 
 			if (i == 0)
@@ -298,7 +297,7 @@ namespace MxEngine
 			else
 				GetAttachedTexture(source)->Bind(0);
 
-			this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, shader);
+			this->RenderToFrameBuffer(target, shader);
 		}
 
 		return GetAttachedTexture(bloomBuffers.back());
@@ -354,16 +353,27 @@ namespace MxEngine
 		this->Clear();
 	}
 
+	void RenderController::RenderToFrameBuffer(const GResource<FrameBuffer>& framebuffer, const Shader& shader)
+	{
+		this->AttachFrameBuffer(framebuffer);
+		auto& rectangle = this->Pipeline.Environment.RectangularObject;
+		this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, shader);
+	}
+
+	void RenderController::RenderToTexture(const GResource<Texture>& texture, const Shader& shader, Attachment attachment)
+	{
+		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(texture, attachment);
+		this->RenderToFrameBuffer(this->Pipeline.Environment.PostProcessFrameBuffer, shader);
+	}
+
 	void RenderController::PostProcessImage(CameraUnit& camera)
 	{
 		MAKE_SCOPE_PROFILER("RenderController::PostProcessImage()");
 
-		auto& rectangle = this->Pipeline.Environment.RectangularObject;
 		{
 			MAKE_SCOPE_PROFILER("RenderController::SplitCameraHDRTexture()");
 			MX_ASSERT(camera.AttachedFrameBuffer->HasTextureAttached()); // TODO: think what to do with cubemap
 			const auto& inputTexture = *GetAttachedTexture(camera.AttachedFrameBuffer);
-			this->AttachFrameBuffer(this->Pipeline.Environment.HDRFrameBuffer);
 
 			MX_ASSERT(inputTexture.IsMultisampled()); // TODO: handle case when texture is not multisampled - other shader should be used to split it
 
@@ -373,14 +383,13 @@ namespace MxEngine
 			msaaShader.SetUniformInt("HDRtexture", 0);
 			msaaShader.SetUniformInt("msaa_samples", inputTexture.GetSampleCount());
 
-			this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, msaaShader);
+			this->RenderToFrameBuffer(this->Pipeline.Environment.HDRFrameBuffer, msaaShader);
 		}
 
 		// here we use bloom enhanced texture and hdr texture obtained from HDRFrameBuffer to combine them into final image
 		auto& bloomEnhancedTexture = *PerformBloomIterations(this->Pipeline.Environment.BloomHDRMap, camera.BloomIterations);
 		auto& combineShader = *this->Pipeline.Environment.HDRBloomCombineHDRShader;
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.OutputTexture);
-		this->AttachFrameBuffer(this->Pipeline.Environment.PostProcessFrameBuffer);
 		auto& mainTexture = *GetAttachedTexture(this->Pipeline.Environment.HDRFrameBuffer);
 
 		combineShader.SetUniformInt("HDRtexture", 0);
@@ -390,7 +399,7 @@ namespace MxEngine
 		mainTexture.Bind(0);
 		bloomEnhancedTexture.Bind(1);
 
-		this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, combineShader);
+		this->RenderToFrameBuffer(this->Pipeline.Environment.PostProcessFrameBuffer, combineShader);
 
 		MAKE_SCOPE_PROFILER("CameraTexture::GenerateMipmaps()");
 		camera.OutputTexture->GenerateMipmaps();
@@ -425,6 +434,8 @@ namespace MxEngine
 	void RenderController::DrawSkybox(const CameraUnit& camera)
 	{
 		MAKE_SCOPE_PROFILER("RenderController::DrawSkybox()");
+		if (!camera.HasSkybox) return;
+
 		auto& shader = *this->Pipeline.Environment.SkyboxShader;
 		auto& skybox = this->Pipeline.Environment.SkyboxCubeObject;
 
@@ -526,7 +537,7 @@ namespace MxEngine
 		camera.ViewportPosition = parentTransform.GetPosition();
 		camera.ViewProjMatrix = controller.GetMatrix(parentTransform.GetPosition());
 		camera.StaticViewProjMatrix = controller.GetStaticMatrix();
-		camera.IsPerspective = controller.GetCamera().IsPerspective();
+		camera.IsPerspective = controller.GetCameraType() == CameraType::PERSPECTIVE;
 		camera.AttachedFrameBuffer = controller.GetFrameBuffer();
 		camera.BloomIterations = (uint8_t)controller.GetBloomIterations();
 		camera.BloomWeight = controller.GetBloomWeight();
@@ -589,9 +600,8 @@ namespace MxEngine
 			this->AttachFrameBuffer(camera.AttachedFrameBuffer);
 
 			this->DrawObjects(camera);
-			if(camera.HasSkybox) this->DrawSkybox(camera);
+			this->DrawSkybox(camera);
 			this->DrawDebugBuffer(camera);
-
 			this->PostProcessImage(camera);
 		}
 		

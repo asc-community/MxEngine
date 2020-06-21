@@ -58,10 +58,13 @@ namespace MxEngine::GUI
         if (GUI::InputTextOnClick("load texture", path, 128))
             texture = AssetManager::LoadTexture(path);
 
+        static float scale = 1.0f;
+        ImGui::DragFloat("texture preview scale", &scale, 0.01f, 0.0f, 1.0f);
+
         auto nativeHeight = texture->GetHeight();
         auto nativeWidth = texture->GetWidth();
 
-        auto width = ImGui::GetWindowSize().x * 0.9f;
+        auto width = ImGui::GetWindowSize().x * 0.9f * scale;
         auto height = width * nativeHeight / nativeWidth;
         ImGui::Image((void*)(uintptr_t)texture->GetNativeHandle(), ImVec2(width, height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
     }

@@ -29,9 +29,9 @@
 #pragma once
 
 #include "Utilities/Time/Time.h"
-#include "Core/Interfaces/IEvent.h"
+#include "Core/Event/IEvent.h"
 #include "Core/Runtime/RuntimeEditor.h"
-#include "Core/RenderController/RenderAdaptor.h"
+#include "Core/Rendering/RenderAdaptor.h"
 #include "Core/MxObject/MxObject.h"
 #include "Utilities/FileSystem/File.h"
 #include "Core/Components/Script.h"

@@ -243,92 +243,96 @@ namespace MxEngine::GUI
 		DrawTextureEditor("depth map", texture);
 	}
 
-	void CameraControllerEditor(CameraController& camera)
+	void CameraControllerEditor(CameraController& cameraController)
 	{
 		SCOPE_TREE_NODE("Camera Controller");
-		REMOVE_COMPONENT_BUTTON(camera);
+		REMOVE_COMPONENT_BUTTON(cameraController);
 
-		if (!camera.HasCamera())
+		ImGui::Text((cameraController.GetCameraType() == CameraType::PERSPECTIVE ? "camera type: perspective" : "camera type: orthographic"));
+		if (cameraController.GetCameraType() == CameraType::PERSPECTIVE)
 		{
-			ImGui::Text("no camera attached");
-			if (ImGui::Button("attach perspective camera"))
-				camera.SetCamera(MakeUnique<PerspectiveCamera>());
-
 			ImGui::SameLine();
+			if (ImGui::Button("switch"))
+			{
+				cameraController.SetCameraType(CameraType::ORTHOGRAPHIC);
+				return;
+			}
 
-			if (ImGui::Button("attach orthographic camera"))
-				camera.SetCamera(MakeUnique<OrthographicCamera>());
+			float fov = cameraController.GetCamera<PerspectiveCamera>().GetFOV();
+			if (ImGui::DragFloat("fov", &fov, 0.3f, 1.0f, 179.0f))
+				cameraController.GetCamera<PerspectiveCamera>().SetFOV(fov);
+		}
+		else if (cameraController.GetCameraType() == CameraType::ORTHOGRAPHIC)
+		{
+			ImGui::SameLine();
+			if (ImGui::Button("switch"))
+			{
+				cameraController.SetCameraType(CameraType::PERSPECTIVE);
+				return;
+			}
 
-			return;
+			auto size = cameraController.GetCamera<OrthographicCamera>().GetSize();
+			if (ImGui::DragFloat("size", &size, 0.3f, 0.01f, 10000.0f))
+				cameraController.GetCamera<OrthographicCamera>().SetSize(size);
 		}
 
-		int bloomIterations = (int)camera.GetBloomIterations();
-		float exposure = camera.GetExposure();
-		float bloomWeight = camera.GetBloomWeight();
-		auto direction = camera.GetDirection();
-		float moveSpeed = camera.GetMoveSpeed();
-		float rotateSpeed = camera.GetRotateSpeed();
-		float zoom = camera.GetZoom();
+		int bloomIterations = (int)cameraController.GetBloomIterations();
+		float exposure = cameraController.GetExposure();
+		float bloomWeight = cameraController.GetBloomWeight();
+		auto direction = cameraController.GetDirection();
+		float moveSpeed = cameraController.GetMoveSpeed();
+		float rotateSpeed = cameraController.GetRotateSpeed();
 
 		if (ImGui::DragFloat("move speed", &moveSpeed))
-			camera.SetMoveSpeed(moveSpeed);
+			cameraController.SetMoveSpeed(moveSpeed);
 		if(ImGui::DragFloat("rotate speed", &rotateSpeed, 0.01f))
-			camera.SetRotateSpeed(rotateSpeed);
-		if (ImGui::DragFloat("zoom", &zoom, 0.01f))
-			camera.SetZoom(zoom);
+			cameraController.SetRotateSpeed(rotateSpeed);
+
 		if (ImGui::DragFloat3("direction", &direction[0], 0.01f))
-			camera.SetDirection(direction);
+			cameraController.SetDirection(direction);
 		if (ImGui::DragFloat("exposure", &exposure, 0.1f))
-			camera.SetExposure(exposure);
+			cameraController.SetExposure(exposure);
 		if (ImGui::DragFloat("bloom weight", &bloomWeight, 0.1f))
-			camera.SetBloomWeight(bloomWeight);
+			cameraController.SetBloomWeight(bloomWeight);
 		if (ImGui::DragInt("bloom iterations", &bloomIterations))
-			camera.SetBloomIterations((size_t)Max(0, bloomIterations));
+			cameraController.SetBloomIterations((size_t)Max(0, bloomIterations));
 
 		if (ImGui::Button("auto-resize viewport"))
-			camera.FitScreenViewport();
+			cameraController.FitScreenViewport();
 
-		ImGui::SameLine();
-		if (ImGui::Button("detach camera"))
-		{
-			camera.SetCamera(nullptr);
-			return;
-		}
-
-		auto texture = camera.GetTexture();
+		auto texture = cameraController.GetTexture();
 		DrawTextureEditor("output texture", texture);
 
 		{
 			SCOPE_TREE_NODE("attached camera");
 			ImGui::PushID(0xFFFF);
 
-			auto forward = camera.GetForwardVector();
-			auto right = camera.GetRightVector();
-			auto up = camera.GetUpVector();
+			auto forward = cameraController.GetForwardVector();
+			auto right = cameraController.GetRightVector();
+			auto up = cameraController.GetUpVector();
 
 			if (ImGui::DragFloat3("forward vec", &forward[0], 0.01f))
-				camera.SetForwardVector(forward);
+				cameraController.SetForwardVector(forward);
 			if (ImGui::DragFloat3("right vec", &right[0], 0.01f))
-				camera.SetRightVector(right);
+				cameraController.SetRightVector(right);
 			if (ImGui::DragFloat3("up vec", &up[0], 0.01f))
-				camera.SetUpVector(up);
+				cameraController.SetUpVector(up);
 
-			auto& attachedCamera = camera.GetCamera();
-			float aspect = attachedCamera.GetAspectRatio();
-			float zfar = attachedCamera.GetZFar();
-			float znear = attachedCamera.GetZNear();
-			float zoom = attachedCamera.GetZoom();
+			float aspect = cameraController.Camera.GetAspectRatio();
+			float zfar = cameraController.Camera.GetZFar();
+			float znear = cameraController.Camera.GetZNear();
+			float zoom = cameraController.Camera.GetZoom();
 
-			ImGui::Text((attachedCamera.IsPerspective() ? "camera type: perspective" : "camera type: orthographic"));
+			ImGui::Separator();
+			if (ImGui::DragFloat("aspect ratio", &aspect, 0.01f, 0.01f, 10.0f))
+				cameraController.Camera.SetAspectRatio(aspect);
+			if (ImGui::DragFloat("Z far", &zfar, 1.0f, 0.01f, std::numeric_limits<float>::max()))
+				cameraController.Camera.SetZFar(zfar);
+			if (ImGui::DragFloat("Z near", &znear, 0.001f, 0.001f, 10000.0f))
+				cameraController.Camera.SetZNear(znear);
+			if (ImGui::DragFloat("zoom", &zoom, 0.01f, 0.01f, 10000.0f))
+				cameraController.Camera.SetZoom(zoom);
 
-			if (ImGui::DragFloat("aspect ratio", &aspect, 0.01f))
-				attachedCamera.SetAspectRatio(aspect);
-			if (ImGui::DragFloat("Z far", &zfar))
-				attachedCamera.SetZFar(zfar);
-			if (ImGui::DragFloat("Z near", &znear, 0.001f))
-				attachedCamera.SetZNear(znear);
-			if (ImGui::DragFloat("zoom", &zoom, 0.01f))
-				attachedCamera.SetZoom(zoom);
 
 			ImGui::PopID();
 		}

@@ -60,8 +60,6 @@ namespace MxEngine
 		void DrawShadowMap(const RenderUnit& unit, const PointLightUnit& pointLight, const Shader& shader);
 		void AttachDepthMap(const GResource<Texture>& texture);
 		void AttachDepthMap(const GResource<CubeMap>& cubemap);
-		void AttachFrameBuffer(const GResource<FrameBuffer>& framebuffer);
-		void AttachDefaultFrameBuffer();
 		void PostProcessImage(CameraUnit& camera);
 		GResource<Texture> PerformBloomIterations(const GResource<Texture>& inputBloom, uint8_t iterations);
 	public:
@@ -74,6 +72,10 @@ namespace MxEngine
 		void ToggleFaceCulling(bool value, bool counterClockWise = true, bool cullBack = true);
 		void SetAnisotropicFiltering(float value);
 		void SetViewport(int x, int y, int width, int height);
+		void AttachFrameBuffer(const GResource<FrameBuffer>& framebuffer);
+		void AttachDefaultFrameBuffer();
+		void RenderToFrameBuffer(const GResource<FrameBuffer>& framebuffer, const Shader& shader);
+		void RenderToTexture(const GResource<Texture>& texture, const Shader& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
 		
 		EnvironmentUnit& GetEnvironment();
 		const EnvironmentUnit& GetEnvironment() const;

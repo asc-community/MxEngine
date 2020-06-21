@@ -2,7 +2,7 @@
 ![](https://img.shields.io/badge/version-6.4.0-red)
 ![](https://img.shields.io/badge/license-bsd--3-yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
-[![Documentation](https://codedocs.xyz/MomoDeve/MxEngine.svg)](https://codedocs.xyz/MomoDeve/MxEngine/)
+<!-- soon! [![Documentation](https://codedocs.xyz/MomoDeve/MxEngine.svg)](https://codedocs.xyz/MomoDeve/MxEngine/) -->
 
 MxEngine is a modern C++ general-purpose 3D game engine aiming to bring easy game & graphic application development into C++. 
 Right now MxEngine is developed only by me, #Momo, but any contributions are welcome and will be reviewed.
@@ -12,6 +12,7 @@ Fow now MxEngine supports OpenGL as graphic API and targeting x64 only. My plans
 
 ## Additional dependencies
 MxEngine is not a huge framework so multiple third-party libraries are used. Here is the full list of dependencies for last MxEngine release version:
+- [EASTL](https://github.com/electronicarts/EASTL) - EA standart library which is used in engine core as STL alternative
 - [stbimage](https://github.com/nothings/stb/blob/master/stb_image.h) - header-only one-file library to load images from disk
 - [GLEW](http://glew.sourceforge.net/) - OpenGL C/C++ extension loading library
 - [GLFW](https://www.glfw.org/) - multi-platform library for OpenGL providing API for creating windows, receiving input and events
@@ -20,6 +21,7 @@ MxEngine is not a huge framework so multiple third-party libraries are used. Her
 - [Boost](https://www.boost.org) - large C++ library that you should already know about
 - [Assimp](http://www.assimp.org/) - portable Open Source library to import various well-known 3D model formats
 - [fmt](https://github.com/fmtlib/fmt) - formatting library for modern C++
+- [json](https://github.com/nlohmann/json) - nlohmann's json library for modern C++
 
 Note that MxEngine may include more additional libraries in further releases. It also uses [Boost library](https://www.boost.org) in its core. Engine requires at least C++17 as it depends on some new STL features. All source files are compiled using MSVC through VS2019 and are not guaranteed to be compiled by GCC/clang (at least for now).
 
@@ -45,7 +47,7 @@ MxEngine can be built from sources using Visual Studio or CMake. Note that by no
 1. clone the repository via `git clone https://github.com/MomoDeve/MxEngine`
 2. unzip precompiled libraries located in folder `MxEngine/external_libraries`
 3. unzip python.zib (python 3.6 build) and boost_headers.zip (Boost lib) into root project directory
-4. unzip Vendors.zib located in folder `MxEngine/src` 
+4. unzip Vendors.zib located in folder `MxEngine/src/Vendors` 
 5. open `CMakeLists.txt` located in project root directory and set it up for your system (CMake project can be built through Visual Studio without editing)
 
 If you have free time and you are interested in this project, I will really appreciate your help with porting library on other systems. If you would like to help, please contact me via github or create a pull request.

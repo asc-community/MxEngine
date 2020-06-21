@@ -8,7 +8,7 @@ void SandboxApp::OnCreate()
 	ConsoleBinding("Console").Bind(KeyCode::GRAVE_ACCENT);
 	AppCloseBinding("AppClose").Bind(KeyCode::ESCAPE);
 
-	this->GetEventDispatcher().AddEventListener("CountFPS",
+	EventManager::AddEventListener("CountFPS",
 		[this](FpsUpdateEvent& e)
 		{
 			this->GetWindow().UseTitle(MxFormat("Sandbox App {0} FPS", e.FPS));

@@ -26,14 +26,30 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+#include "Viewport.h"
+#include "Utilities/ImGui/ImGuiBase.h"
+#include "Core/Application/RenderManager.h"
+#include "Core/Event/Events/WindowResizeEvent.h"
+#include "Core/Application/EventManager.h"
 
-#include "Core/Event/IEvent.h"
-
-namespace MxEngine
+namespace MxEngine::GUI
 {
-	class RenderEvent : public IEvent
+	void DrawViewportWindow(Vector2& viewportSize)
 	{
-		MAKE_EVENT(RenderEvent);
-	};
+		ImGui::Begin("Viewport", nullptr);
+		auto& viewport = RenderManager::GetViewport();
+
+		if (viewport.IsValid() && viewport->GetTexture().IsValid())
+		{
+			Vector2 newWindowSize = ImGui::GetWindowSize();
+			if (newWindowSize != viewportSize) // notify application that viewport size has been changed
+			{
+				EventManager::AddEvent(MakeUnique<WindowResizeEvent>(viewportSize, newWindowSize));
+				viewportSize = newWindowSize;
+			}
+
+			ImGui::Image((void*)(uintptr_t)viewport->GetTexture()->GetNativeHandle(), { viewportSize.x * 0.98f, viewportSize.y * 0.93f }, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+		}
+		ImGui::End();
+	}
 }

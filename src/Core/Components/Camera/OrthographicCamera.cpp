@@ -31,109 +31,16 @@
 
 namespace MxEngine
 {
-	void OrthographicCamera::SetProjection(float left, float right, float bottom, float top)
+	void OrthographicCamera::SetSize(float size)
 	{
-		this->updateProjection = true;
-		this->updateMatrix = true;
-		this->projectLimits = { left, right, bottom, top };
+		this->SetZoom(size);
+		this->SetProjectionMatrix(MakeOrthographicMatrix(
+			-this->GetAspectRatio() * size, this->GetAspectRatio() * size, -size, size, this->GetZNear(), this->GetZFar()
+		));
 	}
 
-	const Matrix4x4& OrthographicCamera::GetMatrix() const
+	float OrthographicCamera::GetSize() const
 	{
-		if (this->updateMatrix)
-		{
-			if (this->updateProjection)
-			{
-				float left = this->projectLimits.x;
-				float right = this->projectLimits.y;
-				float bottom = this->projectLimits.z;
-				float top = this->projectLimits.w;
-				this->projection = MakeOrthographicMatrix(
-					left * this->aspectRatio,
-					right * this->aspectRatio,
-					bottom,
-					top,
-					this->zNear,
-					this->zFar
-				);
-				this->updateProjection = false;
-			}
-			this->matrix = this->projection * this->view;
-			this->updateMatrix = false;
-		}
-		return this->matrix;
-	}
-
-	const Matrix4x4& OrthographicCamera::GetViewMatrix() const
-	{
-		const auto& _ = GetMatrix();
-		return this->view;
-	}
-
-	const Matrix4x4& OrthographicCamera::GetProjectionMatrix() const
-	{
-		const auto& _ = GetMatrix();
-		return this->projection;
-	}
-
-	void OrthographicCamera::SetViewMatrix(const Matrix4x4& view)
-	{
-		this->view = view;
-		this->updateMatrix = true;
-	}
-
-	void OrthographicCamera::SetAspectRatio(float w, float h)
-	{
-		updateMatrix = true;
-		updateProjection = true;
-		this->aspectRatio = w / h;
-	}
-
-	float OrthographicCamera::GetAspectRatio() const
-	{
-		return this->aspectRatio;
-	}
-
-	void OrthographicCamera::SetZNear(float zNear)
-	{
-		this->zNear = Min(zNear, zFar);
-		this->updateProjection = true;
-		this->updateMatrix = true;
-	}
-
-	void OrthographicCamera::SetZFar(float zFar)
-	{
-		this->zFar = Max(zNear, zFar);
-		this->updateProjection = true;
-		this->updateMatrix = true;
-	}
-
-	float OrthographicCamera::GetZNear() const
-	{
-		return this->zNear;
-	}
-
-	float OrthographicCamera::GetZFar() const
-	{
-		return this->zFar;
-	}
-	void OrthographicCamera::SetZoom(float zoom)
-	{
-		this->SetProjection(-zoom, zoom, -zoom, zoom);
-	}
-
-	float OrthographicCamera::GetZoom() const
-	{
-		return this->projectLimits.y; // y, w possible as they are 1 * zoom
-	}
-
-    bool OrthographicCamera::IsPerspective() const
-    {
-        return false;
-    }
-
-	bool OrthographicCamera::IsOrthographic() const
-	{
-		return true;
+		return this->GetZoom();
 	}
 }

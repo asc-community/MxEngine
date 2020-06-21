@@ -27,7 +27,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "DirectionalLight.h"
-#include "Core/Application/Application.h"
+#include "Core/Application/RenderManager.h"
+#include "Core/Application/EventManager.h"
 #include "Core/Event/Events/UpdateEvent.h"
 
 namespace MxEngine
@@ -42,7 +43,7 @@ namespace MxEngine
     DirectionalLight::~DirectionalLight()
     {
         MxString eventName = MxObject::GetByComponent(*this).GetComponent<DirectionalLight>().GetUUID();
-        Application::Get()->GetEventDispatcher().RemoveEventListener(eventName);
+        EventManager::RemoveEventListener(eventName);
     }
 
     GResource<Texture> DirectionalLight::GetDepthTexture() const
@@ -71,16 +72,15 @@ namespace MxEngine
 
     void DirectionalLight::FollowViewport()
     {
-
         auto& object = MxObject::GetByComponent(*this);
         auto dirLight = object.GetComponent<DirectionalLight>();
         auto transform = object.GetComponent<Transform>();
 
-        Application::Get()->GetEventDispatcher().RemoveEventListener(dirLight.GetUUID());
+        EventManager::RemoveEventListener(dirLight.GetUUID());
 
-        Application::Get()->GetEventDispatcher().AddEventListener(dirLight.GetUUID(), [tr = std::move(transform)](UpdateEvent& e) mutable
+        EventManager::AddEventListener(dirLight.GetUUID(), [tr = std::move(transform)](UpdateEvent& e) mutable
         {
-            auto& viewport = Application::Get()->GetRenderAdaptor().Viewport;
+            auto& viewport = RenderManager::GetViewport();
             if (viewport.IsValid()) 
                 tr->SetPosition(MxObject::GetByComponent(*viewport).GetComponent<Transform>()->GetPosition());
         });

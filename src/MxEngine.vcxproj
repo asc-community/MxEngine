@@ -19,8 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\Application\EventManager.h" />
+    <ClInclude Include="Core\Application\RenderManager.h" />
     <ClInclude Include="Core\BoundingObjects\AABB.h" />
     <ClInclude Include="Core\BoundingObjects\BoundingSphere.h" />
+    <ClInclude Include="Core\Components\Camera\CameraBase.h" />
     <ClInclude Include="Core\Components\Camera\CameraController.h" />
     <ClInclude Include="Core\Components\Camera\OrthographicCamera.h" />
     <ClInclude Include="Core\Components\Camera\PerspectiveCamera.h" />
@@ -36,8 +39,8 @@
       <DeploymentContent>true</DeploymentContent>
     </ClInclude>
     <ClInclude Include="Core\Components\Behaviour.h" />
-    <ClInclude Include="Core\RenderController\DebugBuffer.h" />
-    <ClInclude Include="Core\RenderController\Rectangle.h" />
+    <ClInclude Include="Core\Rendering\DebugBuffer.h" />
+    <ClInclude Include="Core\Rendering\Rectangle.h" />
     <ClInclude Include="Core\Runtime\RuntimeEditor.h" />
     <ClInclude Include="Core\Event\Events\AppDestroyEvent.h" />
     <ClInclude Include="Core\Event\Event.h" />
@@ -50,12 +53,12 @@
     <ClInclude Include="Core\Components\Lighting\SpotLight.h" />
     <ClInclude Include="Core\Macro\Macro.h" />
     <ClInclude Include="Core\Resources\Mesh.h" />
-    <ClInclude Include="Core\RenderController\RenderAdaptor.h" />
-    <ClInclude Include="Core\RenderController\RenderPipeline.h" />
+    <ClInclude Include="Core\Rendering\RenderAdaptor.h" />
+    <ClInclude Include="Core\Rendering\RenderPipeline.h" />
     <ClInclude Include="Core\Resources\MeshData.h" />
     <ClInclude Include="Core\Resources\ResourceFactory.h" />
     <ClInclude Include="Core\Resources\SubMesh.h" />
-    <ClInclude Include="Core\RenderController\SkyboxObject.h" />
+    <ClInclude Include="Core\Rendering\SkyboxObject.h" />
     <ClInclude Include="Platform\GraphicAPI.h" />
     <ClInclude Include="Platform\OpenGL\CubeMap.h" />
     <ClInclude Include="Platform\OpenGL\FrameBuffer.h" />
@@ -87,10 +90,9 @@
     <ClInclude Include="Core\Event\Events\KeyEvent.h" />
     <ClInclude Include="Core\Event\Events\MouseEvent.h" />
     <ClInclude Include="Core\Application\Application.h" />
-    <ClInclude Include="Core\Interfaces\ICamera.h" />
-    <ClInclude Include="Core\Interfaces\IEvent.h" />
+    <ClInclude Include="Core\Event\IEvent.h" />
     <ClInclude Include="Core\Resources\Material.h" />
-    <ClInclude Include="Core\RenderController\RenderController.h" />
+    <ClInclude Include="Core\Rendering\RenderController.h" />
     <ClInclude Include="Library\Scripting\Python\PythonEngine.h" />
     <ClInclude Include="MxEngine.h" />
     <ClInclude Include="Core\MxObject\MxObject.h" />
@@ -353,6 +355,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Core\Application\RenderManager.cpp" />
+    <ClCompile Include="Core\Components\Camera\CameraBase.cpp" />
     <ClCompile Include="Core\Components\Camera\CameraController.cpp" />
     <ClCompile Include="Core\Components\Camera\OrthographicCamera.cpp" />
     <ClCompile Include="Core\Components\Camera\PerspectiveCamera.cpp" />
@@ -363,20 +367,20 @@
     <ClCompile Include="Core\Components\Script.cpp" />
     <ClCompile Include="Core\Components\Transform.cpp" />
     <ClCompile Include="Core\Components\Behaviour.cpp" />
-    <ClCompile Include="Core\RenderController\DebugBuffer.cpp" />
-    <ClCompile Include="Core\RenderController\Rectangle.cpp" />
+    <ClCompile Include="Core\Rendering\DebugBuffer.cpp" />
+    <ClCompile Include="Core\Rendering\Rectangle.cpp" />
     <ClCompile Include="Core\Runtime\RuntimeEditor.cpp" />
     <ClCompile Include="Core\Components\Lighting\DirectionalLight.cpp" />
     <ClCompile Include="Core\Components\Lighting\PointLight.cpp" />
     <ClCompile Include="Core\Components\Lighting\SpotLight.cpp" />
     <ClCompile Include="Core\MxObject\MxObject.cpp" />
     <ClCompile Include="Core\Resources\Mesh.cpp" />
-    <ClCompile Include="Core\RenderController\RenderAdaptor.cpp" />
-    <ClCompile Include="Core\RenderController\RenderController.cpp" />
+    <ClCompile Include="Core\Rendering\RenderAdaptor.cpp" />
+    <ClCompile Include="Core\Rendering\RenderController.cpp" />
     <ClCompile Include="Core\Resources\MeshData.cpp" />
     <ClCompile Include="Core\Resources\ResourceFactory.cpp" />
     <ClCompile Include="Core\Resources\SubMesh.cpp" />
-    <ClCompile Include="Core\RenderController\SkyboxObject.cpp" />
+    <ClCompile Include="Core\Rendering\SkyboxObject.cpp" />
     <ClCompile Include="Library\Primitives\Primitives.cpp" />
     <ClCompile Include="Library\Scripting\Python\PythonEngine.cpp" />
     <ClCompile Include="Platform\OpenGL\CubeMap.cpp" />
@@ -398,6 +402,7 @@
     <ClCompile Include="Utilities\ImGui\ComponentEditor.cpp" />
     <ClCompile Include="Utilities\ImGui\GraphicConsole.cpp" />
     <ClCompile Include="Utilities\ImGui\ResourceEditor.cpp" />
+    <ClCompile Include="Utilities\ImGui\Viewport.cpp" />
     <ClCompile Include="Utilities\Json\Json.cpp" />
     <ClCompile Include="Utilities\LODGenerator\LODGenerator.cpp" />
     <ClCompile Include="Utilities\Logger\Logger.cpp" />

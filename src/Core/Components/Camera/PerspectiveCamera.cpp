@@ -30,107 +30,16 @@
 
 namespace MxEngine
 {
-	const Matrix4x4& PerspectiveCamera::GetMatrix() const
-	{
-		if (this->updateMatrix)
-		{
-			if (this->updateProjection)
-			{
-				const float fov = Clamp(zoom * FOV, Radians(10.0f), Radians(150.0f));
-				this->projection = MakeReversedPerspectiveMatrix(fov, aspectRatio, zNear, zFar);
-				this->updateProjection = false;
-			}
-			this->matrix = this->projection * this->view;
-			this->updateMatrix = false;
-		}
-		return this->matrix;
-	}
-
-	const Matrix4x4& PerspectiveCamera::GetViewMatrix() const
-	{
-		const auto& _ = GetMatrix();
-		return this->view;
-	}
-
-	const Matrix4x4& PerspectiveCamera::GetProjectionMatrix() const
-	{
-		const auto& _ = GetMatrix();
-		return this->projection;
-	}
-
-	void PerspectiveCamera::SetViewMatrix(const Matrix4x4& view)
-	{
-		this->view = view;
-		this->updateMatrix = true;
-	}
-
 	void PerspectiveCamera::SetFOV(float angle)
 	{
-		updateMatrix = true;
-		updateProjection = true;
-		this->FOV = Radians(angle);
+		this->SetZoom(angle / DefaultFOV);
+		this->SetProjectionMatrix(MakeReversedPerspectiveMatrix(
+			Radians(this->GetFOV()), this->GetAspectRatio(), this->GetZNear(), this->GetZFar()
+		));
 	}
 
 	float PerspectiveCamera::GetFOV() const
 	{
-		return Degrees(this->FOV);
-	}
-
-	void PerspectiveCamera::SetAspectRatio(float w, float h)
-	{
-		updateMatrix = true;
-		updateProjection = true;
-		this->aspectRatio = w / h;
-	}
-
-	float PerspectiveCamera::GetAspectRatio() const
-	{
-		return this->aspectRatio;
-	}
-
-	float PerspectiveCamera::GetZFar() const
-	{
-		return this->zFar;
-	}
-
-	void PerspectiveCamera::SetZFar(float zFar)
-	{
-		updateMatrix = true;
-		updateProjection = true;
-		this->zFar = Max(zNear, zFar);
-	}
-	
-	float PerspectiveCamera::GetZNear() const
-	{
-		return this->zNear;
-	}
-
-	void PerspectiveCamera::SetZNear(float zNear)
-	{
-		updateMatrix = true;
-		updateProjection = true;
-		this->zNear = Min(zNear, zFar);
-	}
-
-	float PerspectiveCamera::GetZoom() const
-	{
-		return this->zoom;
-	}
-
-    bool PerspectiveCamera::IsPerspective() const
-    {
-        return true;
-    }
-
-	bool PerspectiveCamera::IsOrthographic() const
-	{
-		return false;
-	}
-
-	void PerspectiveCamera::SetZoom(float zoom)
-	{
-		this->zoom = zoom;
-		this->updateProjection = true;
-		this->updateMatrix = true;
+		return this->GetZoom() * DefaultFOV;
 	}
 }

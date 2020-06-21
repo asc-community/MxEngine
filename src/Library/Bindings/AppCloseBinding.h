@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Core/Application/Application.h"
+#include "Core/Application/EventManager.h"
 #include "Core/Event/Events/KeyEvent.h"
 
 namespace MxEngine
@@ -43,7 +43,7 @@ namespace MxEngine
 		inline AppCloseBinding& Bind(KeyCode activateKey)
 		{
 			Logger::Instance().Debug("MxEngine::AppCloseBinding", MxFormat("bound app close to keycode: {0}", int(activateKey)));
-			Application::Get()->GetEventDispatcher().AddEventListener(this->handle,
+			EventManager::AddEventListener(this->handle,
 				[key = activateKey](KeyEvent& event)
 				{
 					auto context = Application::Get();

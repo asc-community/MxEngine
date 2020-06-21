@@ -30,6 +30,7 @@
 
 #include "Core/Macro/Macro.h"
 #include "Core/Application/Application.h"
+#include "Core/Application/RenderManager.h"
 #include "Utilities/Memory/Memory.h"
 #include "Core/MxObject/MxObject.h"
 #include "Platform/GraphicAPI.h"
@@ -37,7 +38,7 @@
 #include "Core/Components/Camera/PerspectiveCamera.h"
 #include "Core/Components/Camera/OrthographicCamera.h"
 #include "Core/Components/Camera/CameraController.h"
-#include "Core/Components/Rendering/MeshLOD.h"
+#include "Core/Components/Components.h"
 #include "Utilities/FileSystem/FileManager.h"
 #include "Core/Event/Event.h"
 #include "Utilities/Math/Math.h"

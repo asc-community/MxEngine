@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Core/Interfaces/IEvent.h"
+#include "Core/Event/IEvent.h"
 #include <bitset>
 
 namespace MxEngine

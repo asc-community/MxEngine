@@ -28,9 +28,9 @@ public:
 		InitSurface(*surface);
 		surface.MakeStatic();
 
-        auto arc = MxObject::Create();
-		InitArc(*arc);
-		arc.MakeStatic();
+        //auto arc = MxObject::Create();
+		//InitArc(*arc);
+		//arc.MakeStatic();
 
 		// auto& deathStar = this->AddObject("DeathStar", MakeUnique<MxObject>());
 		// InitDeathStar(deathStar);
@@ -38,9 +38,8 @@ public:
 		// auto& destroyer = this->AddObject("Destroyer", MakeUnique<MxObject>());
 		// InitDestroyer(destroyer);
 
-		//auto& object = this->AddObject("Sponza", MakeUnique<MxObject>());
-		//auto meshRenderer = object.GetComponent<MeshRenderer>();
-		//object.AddComponent<MeshSource>(ResourceFactory::Create<Mesh>("D:/repos/glTF-Sample-Models/2.0/Sponza/glTF/Sponza.gltf", meshRenderer.GetUnchecked()));
+		// auto object = MxObject::Create();
+		// object->AddComponent<MeshSource>(AssetManager::LoadMesh("D:/repos/glTF-Sample-Models/2.0/Sponza/glTF/Sponza.gltf"));
 
 		Script initScript(FileManager::GetFilePath("scripts/init.py"_id));
         Application::Get()->ExecuteScript(initScript);
@@ -61,9 +60,12 @@ public:
 		InitCamera(*camera);
 		camera.MakeStatic();
 
-		Application::Get()->GetRenderAdaptor().Viewport = camera->GetComponent<CameraController>();
+		// TODO: add debug draw component 
+		// TODO: move LOD compute logic to MeshLOD component
 
-		InputControlBinding(Application::Get()->GetRenderAdaptor().Viewport)
+		RenderManager::SetViewport(camera->GetComponent<CameraController>());
+
+		InputControlBinding(RenderManager::GetViewport())
 			.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT)
 			.BindRotation();
     }

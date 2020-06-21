@@ -200,7 +200,7 @@ namespace MxEngine
         if (this->Viewport.IsValid())
         {
             viewportPosition = MxObject::GetByComponent(*this->Viewport).GetComponent<Transform>()->GetPosition();
-            viewportZoom = this->Viewport->GetZoom();
+            viewportZoom = this->Viewport->Camera.GetZoom();
         }
 
         auto TrackMainCameraIndex = [this, mainCameraIndex = 0, &environment](const CameraController& camera) mutable
@@ -242,8 +242,6 @@ namespace MxEngine
             auto cameraView = ComponentFactory::GetView<CameraController>();
             for (const auto& camera : cameraView)
             {
-                if (!camera.HasCamera()) continue;
-
                 auto& object = MxObject::GetByComponent(camera);
                 auto transform = object.GetComponent<Transform>();
                 auto skyboxComponent = object.GetComponent<Skybox>();
@@ -366,6 +364,11 @@ namespace MxEngine
     {
         this->Renderer.GetEnvironment().RenderToDefaultFrameBuffer = value;
     }
+
+    bool RenderAdaptor::IsRenderedToDefaultFrameBuffer() const
+    {
+        return this->Renderer.GetEnvironment().RenderToDefaultFrameBuffer;
+    }
         
     void RenderAdaptor::SetFogColor(const Vector3& color)
     {
@@ -405,7 +408,7 @@ namespace MxEngine
         environment.ShadowBlurIterations = (BlutIterType)Min(iterations, maxIterations);
     }
 
-    size_t RenderAdaptor::getShadowBlurIterations() const
+    size_t RenderAdaptor::GetShadowBlurIterations() const
     {
         return (size_t)this->Renderer.GetEnvironment().ShadowBlurIterations;
     }

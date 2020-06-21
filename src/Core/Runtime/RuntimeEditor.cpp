@@ -31,7 +31,8 @@
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Library/Scripting/Python/PythonEngine.h"
-#include "Core/MxObject/MxObject.h"
+#include "Core/Event/Events/WindowResizeEvent.h"
+#include "Core/Application/EventManager.h"
 
 namespace MxEngine
 {
@@ -126,14 +127,19 @@ namespace MxEngine
 	void RuntimeEditor::Toggle(bool isVisible)
 	{
 		this->shouldRender = isVisible;
-		// turn off rendering to default framebuffer while in developer environment
-		Application::Get()->GetRenderAdaptor().SetRenderToDefaultFrameBuffer(!this->shouldRender);
+		auto& render = Application::Get()->GetRenderAdaptor();
 
 		if (!this->shouldRender) // if developer environment was turned off, we should notify application that viewport returned to normal
 		{
+			render.SetRenderToDefaultFrameBuffer(this->useDefaultFrameBufferCached);
 			auto windowSize = MakeVector2((float)Application::Get()->GetWindow().GetWidth(), (float)Application::Get()->GetWindow().GetHeight());
-			Application::Get()->GetEventDispatcher().AddEvent(MakeUnique<WindowResizeEvent>(this->cachedWindowSize, windowSize));
+			EventManager::AddEvent(MakeUnique<WindowResizeEvent>(this->cachedWindowSize, windowSize));
 			this->cachedWindowSize = windowSize;
+		}
+		else
+		{
+			this->useDefaultFrameBufferCached = render.IsRenderedToDefaultFrameBuffer();
+			render.SetRenderToDefaultFrameBuffer(false);
 		}
 	}
 

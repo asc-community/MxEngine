@@ -28,18 +28,28 @@
 
 #pragma once
 
-#include "Core/Interfaces/ICamera.h"
 #include "Utilities/Memory/Memory.h"
 #include "Utilities/ECS/Component.h"
 #include "Platform/GraphicAPI.h"
+#include "CameraBase.h"
 
 namespace MxEngine
 {
+	enum class CameraType : uint8_t
+	{
+		INVALID,
+		PERSPECTIVE,
+		ORTHOGRAPHIC,
+	};
+
 	class CameraController
 	{
 		MAKE_COMPONENT(CameraController);
 
-		UniqueRef<ICamera> camera;
+		GResource<FrameBuffer> framebuffer;
+		GResource<RenderBuffer> renderbuffer;
+		GResource<Texture> texture;
+
 		Vector3 direction = { 1.0f, 0.0f, 0.0f };
 		Vector3 up = { 0.0f, 1.0f, 0.0f };
 		Vector3 forward{ 1.0f, 0.0f, 0.0f };
@@ -51,23 +61,27 @@ namespace MxEngine
 		float bloomWeight = 100.0f;
 		float moveSpeed = 1.0f;
 		float rotateSpeed = 1.0f;
+
+		void SubmitMatrixProjectionChanges() const;
+
 		mutable bool updateCamera = true;
 		uint8_t bloomIterations = 6;
-
-		GResource<FrameBuffer> framebuffer;
-		GResource<RenderBuffer> renderbuffer;
-		GResource<Texture> texture;
+		CameraType cameraType = CameraType::PERSPECTIVE;
 	public:
+		mutable CameraBase Camera;
 
 		CameraController();
 		~CameraController();
 		CameraController(CameraController&&) noexcept = default;
 		CameraController& operator=(CameraController&&) noexcept = default;
 
-		bool HasCamera() const;
-		void SetCamera(UniqueRef<ICamera> camera);
-		ICamera& GetCamera();
-		const ICamera& GetCamera() const;
+		template<typename T>
+		T& GetCamera();
+		template<typename T>
+		const T& GetCamera() const;
+		void SetCameraType(CameraType type);
+		CameraType GetCameraType() const;
+
 		const Matrix4x4& GetMatrix(const Vector3& position) const;
 		Matrix4x4 GetStaticMatrix() const;
 		GResource<FrameBuffer> GetFrameBuffer() const;
@@ -76,10 +90,8 @@ namespace MxEngine
 
 		const Vector3& GetDirection() const;
 		void SetDirection(const Vector3& direction);
-		void SetZoom(float zoom);
 		float GetHorizontalAngle() const;
 		float GetVerticalAngle() const;
-		float GetZoom() const;
 		void SetBloomWeight(float weight);
 		float GetBloomWeight() const;
 		size_t GetBloomIterations() const;

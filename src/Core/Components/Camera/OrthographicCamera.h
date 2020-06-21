@@ -28,37 +28,14 @@
 
 #pragma once
 
-#include "Core/Interfaces/ICamera.h"
+#include "CameraBase.h"
 
 namespace MxEngine
 {
-	class OrthographicCamera : public ICamera
+	class OrthographicCamera : public CameraBase
 	{
-		mutable Matrix4x4 matrix;
-		mutable Matrix4x4 view;
-		mutable Matrix4x4 projection;
-		Vector4 projectLimits = { -1.0f, 1.0f, -1.0f, 1.0f };
-		float aspectRatio = 1.777f;
-		float zNear = 0.1f, zFar = 100.0f;
-		mutable bool updateMatrix = true;
-		mutable bool updateProjection = true;
 	public:
-		void SetProjection(float left, float right, float bottom, float top);
-		
-		// Inherited via ICamera
-		virtual const Matrix4x4& GetMatrix() const override;
-		virtual const Matrix4x4& GetViewMatrix() const override;
-		virtual const Matrix4x4& GetProjectionMatrix() const override;
-		virtual void SetViewMatrix(const Matrix4x4& view) override;
-		virtual void SetAspectRatio(float w, float h = 1.0f) override;
-		virtual float GetAspectRatio() const override;
-		virtual void SetZNear(float zNear) override;
-		virtual void SetZFar(float zFar) override;
-		virtual float GetZNear() const override;
-		virtual float GetZFar() const override;
-		virtual void SetZoom(float zoom) override;
-		virtual float GetZoom() const override;
-		virtual bool IsPerspective() const override;
-		virtual bool IsOrthographic() const override;
+		void SetSize(float size);
+		float GetSize() const;
 	};
 }

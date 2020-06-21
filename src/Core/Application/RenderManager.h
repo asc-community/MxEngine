@@ -28,27 +28,26 @@
 
 #pragma once
 
-#include "Utilities/Math/Math.h"
+#include "Core/Rendering/RenderController.h"
 
 namespace MxEngine
 {
-	struct ICamera
+	class RenderManager
 	{
-		virtual const Matrix4x4& GetMatrix() const = 0;
-		virtual const Matrix4x4& GetViewMatrix() const = 0;
-		virtual const Matrix4x4& GetProjectionMatrix() const = 0;
-		virtual void SetViewMatrix(const Matrix4x4& view) = 0;
-		virtual void SetAspectRatio(float w, float h = 1.0f) = 0;
-		virtual float GetAspectRatio() const = 0;
-		virtual void SetZNear(float zNear) = 0;
-		virtual void SetZFar(float zFar) = 0;
-		virtual float GetZNear() const = 0;
-		virtual float GetZFar() const = 0;
-		virtual void SetZoom(float zoom) = 0;
-		virtual float GetZoom() const = 0;
-		virtual bool IsPerspective() const = 0;
-		virtual bool IsOrthographic() const = 0;
-		
-		virtual ~ICamera() = default;
+    public:
+		static const CResource<CameraController>& GetViewport();
+		static void SetViewport(const CResource<CameraController>& viewport);
+		static RenderController& GetController();
+		static DebugBuffer& GetDebugDrawer();
+        static void LoadMainShader(bool useLighting = true);
+        static void SetRenderToDefaultFrameBuffer(bool value = true);
+        static void SetFogColor(const Vector3& color);
+        static const Vector3& GetFogColor();
+        static void SetFogDensity(float density);
+        static float GetFogDensity();
+        static void SetFogDistance(float distance);
+        static float GetFogDistance();
+        static void SetShadowBlurIterations(size_t iterations);
+        static size_t GetShadowBlurIterations();
 	};
 }

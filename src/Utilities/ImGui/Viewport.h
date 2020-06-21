@@ -28,28 +28,9 @@
 
 #pragma once
 
-#include "Utilities/ImGui/ImGuiBase.h"
-#include "Core/Application/Application.h"
-#include "Core/Event/Events/WindowResizeEvent.h"
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine::GUI
 {
-	inline void DrawViewportWindow(Vector2& viewportSize)
-	{
-		ImGui::Begin("Viewport", nullptr);
-		auto& viewport = Application::Get()->GetRenderAdaptor().Viewport;
-
-		if (viewport.IsValid() && viewport->GetTexture().IsValid())
-		{
-			Vector2 newWindowSize = ImGui::GetWindowSize();
-			if (newWindowSize != viewportSize) // notify application that viewport size has been changed
-			{
-				Application::Get()->GetEventDispatcher().AddEvent(MakeUnique<WindowResizeEvent>(viewportSize, newWindowSize));
-				viewportSize = newWindowSize;
-			}
-
-			ImGui::Image((void*)(uintptr_t)viewport->GetTexture()->GetNativeHandle(), ImGui::GetWindowSize(), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-		}
-		ImGui::End();
-	}
+	void DrawViewportWindow(Vector2& viewportSize);
 }

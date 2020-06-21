@@ -27,11 +27,45 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "CameraController.h"
-#include "Core/Application/Application.h"
+#include "Core/Application/EventManager.h"
 #include "Core/Event/Events/WindowResizeEvent.h"
+#include "OrthographicCamera.h"
+#include "PerspectiveCamera.h"
 
 namespace MxEngine
 {
+	template<>
+	PerspectiveCamera& CameraController::GetCamera<PerspectiveCamera>()
+	{
+		MX_ASSERT(this->GetCameraType() == CameraType::PERSPECTIVE);
+		static_assert(sizeof(PerspectiveCamera) == sizeof(this->Camera), "camera byte storage size mismatch");
+		return *reinterpret_cast<PerspectiveCamera*>(&this->Camera); //-V717
+	}
+
+	template<>
+	const PerspectiveCamera& CameraController::GetCamera<PerspectiveCamera>() const
+	{
+		MX_ASSERT(this->GetCameraType() == CameraType::PERSPECTIVE);
+		static_assert(sizeof(PerspectiveCamera) == sizeof(this->Camera), "camera byte storage size mismatch");
+		return *reinterpret_cast<const PerspectiveCamera*>(&this->Camera); //-V717
+	}
+
+	template<>
+	OrthographicCamera& CameraController::GetCamera<OrthographicCamera>()
+	{
+		MX_ASSERT(this->GetCameraType() == CameraType::ORTHOGRAPHIC);
+		static_assert(sizeof(OrthographicCamera) == sizeof(this->Camera), "camera byte storage size mismatch");
+		return *reinterpret_cast<OrthographicCamera*>(&this->Camera); //-V717
+	}
+
+	template<>
+	const OrthographicCamera& CameraController::GetCamera<OrthographicCamera>() const
+	{
+		MX_ASSERT(this->GetCameraType() == CameraType::ORTHOGRAPHIC);
+		static_assert(sizeof(OrthographicCamera) == sizeof(this->Camera), "camera byte storage size mismatch");
+		return *reinterpret_cast<const OrthographicCamera*>(&this->Camera); //-V717
+	}
+
 	CameraController::CameraController()
 		: framebuffer(GraphicFactory::Create<FrameBuffer>()), renderbuffer(GraphicFactory::Create<RenderBuffer>()), texture(GraphicFactory::Create<Texture>())
 	{
@@ -51,47 +85,44 @@ namespace MxEngine
 
 	CameraController::~CameraController()
 	{
-		Application::Get()->GetEventDispatcher().RemoveEventListener(this->framebuffer.GetUUID());
+		EventManager::RemoveEventListener(this->framebuffer.GetUUID());
 	}
 
-	bool CameraController::HasCamera() const
+	void CameraController::SetCameraType(CameraType type)
 	{
-		return this->camera != nullptr;
+		this->cameraType = type;
+		this->Camera.SetZoom(1.0f);
 	}
 
-	void CameraController::SetCamera(UniqueRef<ICamera> camera)
+	CameraType CameraController::GetCameraType() const
 	{
-		this->camera = std::move(camera);
-		this->updateCamera = true;
-	}
-
-	ICamera& CameraController::GetCamera()
-	{
-		return *this->camera;
-	}
-
-	const ICamera& CameraController::GetCamera() const
-	{
-		return *this->camera;
+		return this->cameraType;
 	}
 
 	const Matrix4x4& CameraController::GetMatrix(const Vector3& position) const
 	{
-		static Matrix4x4 defaultMatrix(0.0f);
-		if (!this->HasCamera()) return defaultMatrix;
+		if (this->Camera.UpdateProjection) this->SubmitMatrixProjectionChanges();
+		if (updateCamera)
+		{
+			auto view = MakeViewMatrix(position, position + direction, up);
+			this->Camera.SetViewMatrix(view);
+			this->updateCamera = false;
+		}
 
-		auto view = MakeViewMatrix(position, position + direction, up);
-		this->camera->SetViewMatrix(view);
-		this->updateCamera = false;
-
-		return this->camera->GetMatrix();
+		return this->Camera.GetMatrix();
 	}
 
     Matrix4x4 CameraController::GetStaticMatrix() const
     {
-		if (!this->HasCamera()) return Matrix4x4(0.0f);
-		auto ViewMatrix = (Matrix3x3)this->GetCamera().GetViewMatrix();
-		const Matrix4x4& ProjectionMatrix = this->GetCamera().GetProjectionMatrix();
+		if (this->Camera.UpdateProjection) this->SubmitMatrixProjectionChanges();
+		if (updateCamera)
+		{
+			auto view = MakeViewMatrix(MakeVector3(0.0f), direction, up);
+			this->Camera.SetViewMatrix(view);
+			this->updateCamera = false;
+		}
+		auto ViewMatrix = (Matrix3x3)this->Camera.GetViewMatrix();
+		const Matrix4x4& ProjectionMatrix = this->Camera.GetProjectionMatrix();
 		return ProjectionMatrix * (Matrix4x4)ViewMatrix;
     }
 
@@ -107,9 +138,9 @@ namespace MxEngine
 
 	void CameraController::FitScreenViewport()
 	{
-		Application::Get()->GetEventDispatcher().RemoveEventListener(this->framebuffer.GetUUID());
+		EventManager::RemoveEventListener(this->framebuffer.GetUUID());
 
-		Application::Get()->GetEventDispatcher().AddEventListener<WindowResizeEvent>(this->framebuffer.GetUUID(),
+		EventManager::AddEventListener<WindowResizeEvent>(this->framebuffer.GetUUID(),
 		[framebufferTexture = GetAttachedTexture(this->framebuffer), renderbuffer = this->renderbuffer, outputTexture = this->texture](WindowResizeEvent& e) mutable
 		{
 			if (e.Old != e.New)
@@ -129,6 +160,22 @@ namespace MxEngine
 		});
 	}
 
+    void CameraController::SubmitMatrixProjectionChanges() const
+    {
+		if (this->GetCameraType() == CameraType::PERSPECTIVE)
+		{
+			auto* cam = reinterpret_cast<PerspectiveCamera*>(&this->Camera); //-V717
+			auto fov = cam->GetFOV();
+			cam->SetFOV(fov);
+		}
+		else if (this->GetCameraType() == CameraType::ORTHOGRAPHIC)
+		{
+			auto* cam = reinterpret_cast<OrthographicCamera*>(&this->Camera); //-V717
+			auto size = cam->GetSize();
+			cam->SetSize(size);
+		}
+    }
+
 	const Vector3& CameraController::GetDirection() const
 	{
 		return this->direction;
@@ -140,11 +187,6 @@ namespace MxEngine
 		this->updateCamera = true;
 	}
 
-	void CameraController::SetZoom(float zoom) 
-	{
-		this->camera->SetZoom(zoom);
-	}
-
 	float CameraController::GetHorizontalAngle() const
 	{
 		return this->horizontalAngle;
@@ -153,11 +195,6 @@ namespace MxEngine
 	float CameraController::GetVerticalAngle() const
 	{
 		return this->verticalAngle;
-	}
-
-	float CameraController::GetZoom() const
-	{
-		return this->camera->GetZoom();
 	}
 
     void CameraController::SetBloomWeight(float weight)

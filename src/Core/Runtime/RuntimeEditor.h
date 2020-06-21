@@ -29,10 +29,7 @@
 #pragma once
 
 #include "Utilities/STL/MxString.h"
-#include "Core/Macro/Macro.h"
 #include "Utilities/Memory/Memory.h"
-#include "Utilities/Math/Math.h"
-#include "Utilities/STL/MxVector.h"
 #include "Core/MxObject/MxObject.h"
 #include <functional>
 
@@ -57,6 +54,7 @@ namespace MxEngine
 		GraphicConsole* console;
 		Vector2 cachedWindowSize{ 0.0f };
 		bool shouldRender = false;
+		bool useDefaultFrameBufferCached = false;
 		bool debugTools = true;
 
 		MxVector<std::function<void(MxObject&)>> componentEditorCallbacks;

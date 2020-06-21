@@ -32,7 +32,6 @@
 #include <bitset>
 
 #include "Utilities/Time/Time.h"
-#include "Core/Interfaces/IEvent.h"
 #include "Utilities/Math/Math.h"
 #include "Core/Event/Events/KeyEvent.h"
 
