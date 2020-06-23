@@ -40,6 +40,7 @@
 #include "Core/Components/Camera/CameraController.h"
 #include "Core/Components/Components.h"
 #include "Utilities/FileSystem/FileManager.h"
+#include "Core/Application/EventManager.h"
 #include "Core/Event/Event.h"
 #include "Utilities/Math/Math.h"
 #include "Utilities/ImGui/ImGuiUtils.h"

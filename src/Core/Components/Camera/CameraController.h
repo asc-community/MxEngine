@@ -31,13 +31,13 @@
 #include "Utilities/Memory/Memory.h"
 #include "Utilities/ECS/Component.h"
 #include "Platform/GraphicAPI.h"
+#include "Core/Event/Events/KeyEvent.h"
 #include "CameraBase.h"
 
 namespace MxEngine
 {
 	enum class CameraType : uint8_t
 	{
-		INVALID,
 		PERSPECTIVE,
 		ORTHOGRAPHIC,
 	};
@@ -68,6 +68,7 @@ namespace MxEngine
 		uint8_t bloomIterations = 6;
 		CameraType cameraType = CameraType::PERSPECTIVE;
 	public:
+		bool RenderingEnabled = true;
 		mutable CameraBase Camera;
 
 		CameraController();
@@ -86,7 +87,7 @@ namespace MxEngine
 		Matrix4x4 GetStaticMatrix() const;
 		GResource<FrameBuffer> GetFrameBuffer() const;
 		GResource<Texture> GetTexture() const;
-		void FitScreenViewport();
+		void ListenWindowResizeEvent();
 
 		const Vector3& GetDirection() const;
 		void SetDirection(const Vector3& direction);
@@ -111,5 +112,11 @@ namespace MxEngine
 		const Vector3& GetForwardVector() const;
 		const Vector3& GetUpVector() const;
 		const Vector3& GetRightVector() const;
+
+		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right);
+		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down);
+		void BindRotation();
+		void BindHorizontalRotation();
+		void BindVerticalRotation();
 	};
 }

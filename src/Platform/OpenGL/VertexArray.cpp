@@ -85,7 +85,7 @@ namespace MxEngine
 			GLCALL(glGenVertexArrays(1, &id));
 			Logger::Instance().Debug("OpenGL::VertexArray", "created vertex array with id = " + ToMxString(id));
 		}
-		Bind();
+		this->Bind();
 		buffer.Bind();
 		const auto& elements = layout.GetElements();
 		size_t offset = 0;
@@ -104,7 +104,7 @@ namespace MxEngine
 		{
 			GLCALL(glGenVertexArrays(1, &id));
 		}
-		Bind();
+		this->Bind();
 		buffer.Bind();
 		const auto& elements = layout.GetElements();
 		size_t offset = 0;
@@ -115,6 +115,19 @@ namespace MxEngine
 			GLCALL(glVertexAttribDivisor(this->attributeIndex, 1));
 			offset += element.count * GetGLTypeSize(element.type);
 			this->attributeIndex++;
+		}
+	}
+
+	void VertexArray::PopBuffer(const VertexBufferLayout& vbl)
+	{
+		this->Bind();
+		const auto& elements = vbl.GetElements();
+		size_t offset = 0;
+		for (const auto& element : elements)
+		{
+			this->attributeIndex--;
+			GLCALL(glDisableVertexAttribArray(this->attributeIndex));
+			offset -= element.count * GetGLTypeSize(element.type);
 		}
 	}
 

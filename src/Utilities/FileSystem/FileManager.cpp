@@ -35,6 +35,12 @@ namespace MxEngine
 {
     void FileManager::AddDirectory(const FilePath& directory)
     {
+        if (!File::Exists(directory))
+        {
+            File::CreateDirectory(directory);
+            Logger::Instance().Debug("MxEngine::FileManager", "creating directory: " + ToMxString(directory));
+        }
+
         namespace fs = std::filesystem;
         auto it = fs::recursive_directory_iterator(directory, fs::directory_options::skip_permission_denied);
         for (const auto& entry : it)

@@ -52,6 +52,7 @@ namespace MxEngine
 		void Unbind() const;
 		void AddBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout);
 		void AddInstancedBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout);
+		void PopBuffer(const VertexBufferLayout& vbl);
 		int GetAttributeCount() const;
 	};
 }

@@ -63,10 +63,7 @@ namespace MxEngine
         static inline GResource<Texture> MakeTexture(uint8_t r, uint8_t g, uint8_t b)
         {
             auto texture = GraphicFactory::Create<Texture>();
-            uint8_t buffer[3];
-            buffer[0] = r;
-            buffer[1] = g;
-            buffer[2] = b;
+            uint8_t buffer[] = { r, g, b };
             texture->Load(buffer, 1, 1);
             return texture;
         }
@@ -86,46 +83,78 @@ namespace MxEngine
 
         static GResource<Texture> MakeTexture(Palette color)
         {
+            return MakeTexture(ColorPaletteToVector3(color));
+        }
+
+        static inline GResource<CubeMap> MakeCubeMap(uint8_t r, uint8_t g, uint8_t b)
+        {
+            auto cubemap = GraphicFactory::Create<CubeMap>();
+            uint8_t buffer[] = { r, g, b };
+            std::array<uint8_t*, 6> sides = { buffer, buffer, buffer, buffer, buffer, buffer };
+            cubemap->Load(sides, 1, 1);
+            return cubemap;
+        }
+
+        static inline GResource<CubeMap> MakeCubeMap(float r, float g, float b)
+        {
+            return MakeCubeMap(MakeVector3(r, g, b));
+        }
+
+        static inline GResource<CubeMap> MakeCubeMap(const Vector3& color)
+        {
+            uint8_t r = static_cast<uint8_t>(Clamp(color.r, 0.0f, 1.0f) * 255.0f);
+            uint8_t g = static_cast<uint8_t>(Clamp(color.g, 0.0f, 1.0f) * 255.0f);
+            uint8_t b = static_cast<uint8_t>(Clamp(color.b, 0.0f, 1.0f) * 255.0f);
+            return MakeCubeMap(r, g, b);
+        }
+
+        static GResource<CubeMap> MakeCubeMap(Palette color)
+        {
+            return MakeCubeMap(ColorPaletteToVector3(color));
+        }
+
+        static Vector3 ColorPaletteToVector3(Palette color)
+        {
             switch (color)
             {
             case Colors::RED:
-                return MakeTexture((uint8_t)255, 0,   0  );
+                return MakeVector3(1.0f, 0.0f, 0.0f);
             case Colors::GREEN:
-                return MakeTexture((uint8_t)0,   255, 0  );
+                return MakeVector3(0.0f, 1.0f, 0.0f);
             case Colors::BLUE:
-                return MakeTexture((uint8_t)0,   0,   255);
+                return MakeVector3(0.0f, 0.0f, 1.0f);
             case Colors::YELLOW:
-                return MakeTexture((uint8_t)255, 255, 0  );
+                return MakeVector3(1.0f, 1.0f, 0.0f);
             case Colors::AQUA:
-                return MakeTexture((uint8_t)0,   255, 255);
+                return MakeVector3(0.0f, 1.0f, 1.0f);
             case Colors::PURPLE:
-                return MakeTexture((uint8_t)255, 0,   255);
+                return MakeVector3(1.0f, 0.0f, 1.0f);
             case Colors::BLACK:
-                return MakeTexture((uint8_t)0,   0,   0  );
+                return MakeVector3(0.0f, 0.0f, 0.0f);
             case Colors::WHITE:
-                return MakeTexture((uint8_t)255, 255, 255);
+                return MakeVector3(1.0f, 1.0f, 1.0f);
             case Colors::ORANGE:
-                return MakeTexture((uint8_t)255, 127, 0  );
+                return MakeVector3(1.0f, 0.5f, 0.0f);
             case Colors::LIME:
-                return MakeTexture((uint8_t)127, 255, 0  );
+                return MakeVector3(0.5f, 1.0f, 0.0f);
             case Colors::MAGENTA:
-                return MakeTexture((uint8_t)255, 0,   127);
+                return MakeVector3(1.0f, 0.0f, 0.5f);
             case Colors::VIOLET:
-                return MakeTexture((uint8_t)127, 0,   255);
+                return MakeVector3(0.5f, 0.0f, 1.0f);
             case Colors::SKYBLUE:
-                return MakeTexture((uint8_t)0,   127, 255);
+                return MakeVector3(0.0f, 0.5f, 1.0f);
             case Colors::SPRING:
-                return MakeTexture((uint8_t)0,   255, 127);
+                return MakeVector3(0.0f, 1.0f, 0.5f);
             case Colors::FLAT_NORMAL:
-                return MakeTexture((uint8_t)127, 127, 255);
+                return MakeVector3(0.5f, 0.5f, 1.0f);
             case Colors::PINK:
-                return MakeTexture((uint8_t)255, 127, 127);
+                return MakeVector3(1.0f, 0.5f, 0.5f);
             case Colors::SALAD:
-                return MakeTexture((uint8_t)127, 255, 127);
+                return MakeVector3(0.5f, 1.0f, 0.5f);
             case Colors::GREY:
-                return MakeTexture((uint8_t)127, 127, 127);
+                return MakeVector3(0.5f, 0.5f, 0.5f);
             default:
-                return GResource<Texture>{ };
+                return MakeVector3(0.0f);
             }
         }
     };

@@ -127,17 +127,17 @@ namespace MxEngine
 			});
 			callbacks.resize(it - callbacks.begin());
 		}
-
+	public:
 		/*!
 		performs cache update, removing events from toRemoveCache list and adding events from toAddCache list
 		*/
-		inline void RemoveQueuedEvents()
+		inline void FlushEvents()
 		{
 			for (auto it = this->toRemoveCache.begin(); it != this->toRemoveCache.end(); it++)
 			{
 				for (auto& [event, callbacks] : this->callbacks)
 				{
-					RemoveEventByName(callbacks, *it); 
+					RemoveEventByName(callbacks, *it);
 				}
 			}
 			this->toRemoveCache.clear();
@@ -153,7 +153,6 @@ namespace MxEngine
 			for (auto& list : this->toAddCache) list.second.clear();
 		}
 
-	public:
 		/*!
 		adds new event listener to dispatcher (listener placed in waiting queue until next frame).
 		Note that multiple listeners may have same name. If so, deleting by name will result in removing all of them
@@ -198,7 +197,7 @@ namespace MxEngine
 		template<typename Event>
 		void Invoke(Event& event)
 		{
-			this->RemoveQueuedEvents();
+			this->FlushEvents();
 			this->ProcessEvent(event);
 		}
 
@@ -216,7 +215,7 @@ namespace MxEngine
 		*/
 		void InvokeAll()
 		{
-			this->RemoveQueuedEvents();
+			this->FlushEvents();
 
 			for (size_t i = 0; i < this->events.size(); i++)
 			{

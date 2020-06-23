@@ -148,18 +148,29 @@ namespace MxEngine
 
 	GResource<VertexBuffer> Mesh::GetBufferByIndex(size_t index) const
 	{
-		assert(index < this->VBOs.size());
+		MX_ASSERT(index < this->VBOs.size());
 		return this->VBOs[index];
 	}
 
 	GResource<VertexBufferLayout> Mesh::GetBufferLayoutByIndex(size_t index) const
 	{
-		assert(index < this->VBLs.size());
+		MX_ASSERT(index < this->VBLs.size());
 		return this->VBLs[index];
 	}
 
     size_t Mesh::GetBufferCount() const
     {
 		return this->VBOs.size();
+    }
+
+    void Mesh::PopInstancedBuffer()
+    {
+		MX_ASSERT(!this->VBOs.empty());
+		for (auto& mesh : submeshes)
+		{
+			mesh.MeshData.GetVAO()->PopBuffer(*this->VBLs.back());
+		}
+		this->VBOs.pop_back();
+		this->VBLs.pop_back();
     }
 }

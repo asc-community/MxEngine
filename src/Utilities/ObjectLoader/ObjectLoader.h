@@ -66,10 +66,6 @@ namespace MxEngine
 		*/
 		MxString EmmisiveMap;
 		/*!
-		transparency texture path
-		*/
-		MxString TransparencyMap;
-		/*!
 		height texture path
 		*/
 		MxString HeightMap;

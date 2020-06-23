@@ -1,0 +1,35 @@
+[
+  {
+    "AmbientColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "New Material",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "SpecularExponent": 88.0,
+    "SpecularMap": "",
+    "Transparency": 1.0,
+    "TransparencyMap": ""
+  }
+]

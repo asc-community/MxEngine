@@ -51,6 +51,7 @@ namespace MxEngine
 		: manager(this), window(MakeUnique<Window>(1600, 900, "MxEngine Application")), renderAdaptor()
 	{
 		this->GetWindow().UseEventDispatcher(&this->dispatcher);
+		this->CreateContext();
 	}
 
 	void Application::OnCreate()
@@ -112,17 +113,31 @@ namespace MxEngine
 	void Application::ExecuteScript(const char* script)
 	{
 		MAKE_SCOPE_PROFILER("Application::ExecuteScript");
-		this->GetConsole().Execute(script);
-		if (this->GetConsole().HasErrorsInExecution())
+		this->GetRuntimeEditor().Execute(script);
+		if (this->GetRuntimeEditor().HasErrorsInExecution())
 		{
-			Logger::Instance().Error("Application::ExecuteScript", this->GetConsole().GetLastErrorMessage());
+			Logger::Instance().Error("Application::ExecuteScript", this->GetRuntimeEditor().GetLastErrorMessage());
 		}
 	}
 
-	void Application::ToggleDeveloperConsole(bool isVisible)
+	void Application::ToggleRuntimeEditor(bool isVisible)
 	{
-		this->GetConsole().Toggle(isVisible);
+		this->GetRuntimeEditor().Toggle(isVisible);
 		this->GetWindow().UseEventDispatcher(isVisible ? nullptr : &this->dispatcher);
+	}
+
+	void Application::CloseOnKeyPress(KeyCode key)
+	{
+		Logger::Instance().Debug("MxEngine::AppCloseBinding", MxFormat("bound app close to keycode: {0}", EnumToString(key)));
+		this->GetEventDispatcher().AddEventListener("AppCloseEvent",
+			[key](KeyEvent& event)
+			{
+				auto context = Application::Get();
+				if (event.IsHeld(key))
+				{
+					context->CloseApplication();
+				}
+			});
 	}
 
 	void Application::DrawObjects()
@@ -197,6 +212,7 @@ namespace MxEngine
 		JsonFile config;
 
 		auto configPathHash = STRING_ID("engine_config.json");
+		const char* configFileName = "engine_config.json";
 		if (FileManager::FileExists(configPathHash))
 		{
 			Logger::Instance().Debug("Application::CreateContext", "Using engine config file to set up context...");
@@ -205,7 +221,6 @@ namespace MxEngine
 		}
 		else
 		{
-			Logger::Instance().Warning("Application::CreateContext", "Engine config file was not provided, using default settings...");
 			config["renderer"]["opengl-profile"] = "core";
 			config["renderer"]["opengl-major-version"] = 4;
 			config["renderer"]["opengl-minor-version"] = 0;
@@ -216,8 +231,14 @@ namespace MxEngine
 			config["window"]["title"] = "MxEngine Application";
 			config["window"]["double-buffering"] = false;
 			config["window"]["position"] = std::array<int, 2> { 300, 150 };
-			config["window"]["Size"] = std::array<int, 2> { 1600, 900 };
+			config["window"]["size"] = std::array<int, 2> { 1600, 900 };
 			config["window"]["cursor-mode"] = "disabled";
+
+			config["debug-build"]["app-close-key"] = KeyCode::ESCAPE;
+			config["debug-build"]["editor-key"] = KeyCode::GRAVE_ACCENT;
+
+			File configFile(FileManager::GetRoot() / configFileName, File::WRITE);
+			Json::SaveJson(configFile, config);
 		}
 
 		auto profileType  = config["renderer"]["opengl-profile"].get<std::string>();
@@ -247,6 +268,14 @@ namespace MxEngine
 		else if (cursorMode == "hidden")
 			enumCursor = CursorMode::HIDDEN;
 
+		#if defined(MXENGINE_DEBUG)
+		auto editorKey   = config["debug-build"]["editor-key"   ].get<KeyCode>();
+		auto appCloseKey = config["debug-build"]["app-close-key"].get<KeyCode>();
+
+		this->GetRuntimeEditor().AddKeyBinding(editorKey);
+		this->CloseOnKeyPress(appCloseKey);
+		#endif
+
 		this->GetWindow()
 			.UseProfile(profileMajor, profileMinor, enumProfile)
 			.UseCursorMode(CursorMode::DISABLED)
@@ -268,11 +297,11 @@ namespace MxEngine
 			.UseAnisotropicFiltering(static_cast<float>(anisothropic))
 			;
 
-		this->InitializeRuntimeEditor(this->GetConsole());
+		this->InitializeRuntimeEditor(this->GetRuntimeEditor());
 		this->InitializeRenderAdaptor(this->GetRenderAdaptor());
 	}
 
-	RuntimeEditor& Application::GetConsole()
+	RuntimeEditor& Application::GetRuntimeEditor()
 	{
 		return this->console;
 	}
@@ -282,9 +311,9 @@ namespace MxEngine
 		if (!VerifyApplicationState()) return;
 		this->isRunning = true;
 
-		this->GetConsole().Log("Welcome to MxEngine developer console!");
+		this->GetRuntimeEditor().Log("Welcome to MxEngine developer console!");
 		#if defined(MXENGINE_USE_PYTHON)
-		this->GetConsole().Log("This console is powered by Python: https://www.python.org");
+		this->GetRuntimeEditor().Log("This console is powered by Python: https://www.python.org");
 		#endif
 
 		{
@@ -406,21 +435,21 @@ namespace MxEngine
 			static_cast<float>(this->GetWindow().GetWidth()) / 2.5f, 
 			static_cast<float>(this->GetWindow().GetHeight()) / 2.0f });
 		this->GetEventDispatcher().AddEventListener("DeveloperConsole",
-			[this](UpdateEvent&) { this->GetConsole().OnRender(); });
-		this->GetConsole().Execute("InitializeOpenGL()");
+			[this](UpdateEvent&) { this->GetRuntimeEditor().OnRender(); });
+		this->GetRuntimeEditor().Execute("InitializeOpenGL()");
 
-		this->GetConsole().RegisterComponentEditor("Transform",        GUI::TransformEditor);
-		this->GetConsole().RegisterComponentEditor("Behaviour",        GUI::BehaviourEditor);
-		this->GetConsole().RegisterComponentEditor("Script",           GUI::ScriptEditor);
-		this->GetConsole().RegisterComponentEditor("InstanceFactory",  GUI::InstanceFactoryEditor);
-		this->GetConsole().RegisterComponentEditor("Skybox",           GUI::SkyboxEditor);
-		this->GetConsole().RegisterComponentEditor("MeshRenderer",     GUI::MeshRendererEditor);
-		this->GetConsole().RegisterComponentEditor("MeshSource",       GUI::MeshSourceEditor);
-		this->GetConsole().RegisterComponentEditor("MeshLOD",          GUI::MeshLODEditor);
-		this->GetConsole().RegisterComponentEditor("DirectionalLight", GUI::DirectionalLightEditor);
-		this->GetConsole().RegisterComponentEditor("PointLight",       GUI::PointLightEditor);
-		this->GetConsole().RegisterComponentEditor("SpotLight",        GUI::SpotLightEditor);
-		this->GetConsole().RegisterComponentEditor("CameraController", GUI::CameraControllerEditor);
+		this->GetRuntimeEditor().RegisterComponentEditor("Transform",        GUI::TransformEditor);
+		this->GetRuntimeEditor().RegisterComponentEditor("Behaviour",        GUI::BehaviourEditor);
+		this->GetRuntimeEditor().RegisterComponentEditor("Script",           GUI::ScriptEditor);
+		this->GetRuntimeEditor().RegisterComponentEditor("InstanceFactory",  GUI::InstanceFactoryEditor);
+		this->GetRuntimeEditor().RegisterComponentEditor("Skybox",           GUI::SkyboxEditor);
+		this->GetRuntimeEditor().RegisterComponentEditor("MeshRenderer",     GUI::MeshRendererEditor);
+		this->GetRuntimeEditor().RegisterComponentEditor("MeshSource",       GUI::MeshSourceEditor);
+		this->GetRuntimeEditor().RegisterComponentEditor("MeshLOD",          GUI::MeshLODEditor);
+		this->GetRuntimeEditor().RegisterComponentEditor("DirectionalLight", GUI::DirectionalLightEditor);
+		this->GetRuntimeEditor().RegisterComponentEditor("PointLight",       GUI::PointLightEditor);
+		this->GetRuntimeEditor().RegisterComponentEditor("SpotLight",        GUI::SpotLightEditor);
+		this->GetRuntimeEditor().RegisterComponentEditor("CameraController", GUI::CameraControllerEditor);
 	}
 #else
 	void Application::InitializeDeveloperConsole(DeveloperConsole& console)

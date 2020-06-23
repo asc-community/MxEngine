@@ -7,7 +7,7 @@ MAKE_STRING(
 in VSout
 {
 	vec2 TexCoord;
-	vec4 RenderColor;
+	vec3 RenderColor;
 } fsin;
 
 out vec4 Color;
@@ -29,11 +29,7 @@ void main()
 
 	vec3 color = 0.3 * ambient + 0.7 * diffuse;
 
-	color    *= fsin.RenderColor.rgb;
-	dissolve *= fsin.RenderColor.a;
-
-	const vec3 gamma = vec3(1.0f / 2.2f);
-	// color = pow(color, gamma);
+	color *= fsin.RenderColor;
 
 	Color = vec4(color, dissolve);
 }

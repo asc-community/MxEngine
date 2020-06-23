@@ -157,4 +157,48 @@ namespace MxEngine
             vertecies[i].Bitangent = Normalize(vertecies[i].Bitangent);
         }
     }
+
+    // TODO: remove code dublication (see RegenerateNormals())
+    void MeshData::RegenerateTangentSpace()
+    {
+        // first set all normal-space vectors to 0
+        for (auto& vertex : vertecies)
+        {
+            vertex.Tangent = MakeVector3(0.0f);
+            vertex.Bitangent = MakeVector3(0.0f);
+        }
+
+        // then compute normal space vectors for each triangle
+        for (size_t i = 0; i < indicies.size() / 3; i++)
+        {
+            std::array triangle = { // copy 3 vertecies
+                vertecies[indicies[3 * i + 0]],
+                vertecies[indicies[3 * i + 1]],
+                vertecies[indicies[3 * i + 2]],
+            };
+
+            auto tanbitan = ComputeTangentSpace(
+                triangle[0].Position, triangle[1].Position, triangle[2].Position,
+                triangle[0].TexCoord, triangle[1].TexCoord, triangle[2].TexCoord
+            );
+
+            for (auto& vertex : triangle)
+            {
+                vertex.Tangent += tanbitan[0];
+                vertex.Bitangent += tanbitan[1];
+            }
+
+            for (size_t j = 0; j < triangle.size(); j++)
+            {
+                vertecies[indicies[3 * i + j]] = triangle[j]; // reassign copied vertecies
+            }
+        }
+
+        // at the end normalize all normal-space vectors using vertex weights
+        for (size_t i = 0; i < vertecies.size(); i++)
+        {
+            vertecies[i].Tangent = Normalize(vertecies[i].Tangent);
+            vertecies[i].Bitangent = Normalize(vertecies[i].Bitangent);
+        }
+    }
 }

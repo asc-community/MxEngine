@@ -52,6 +52,17 @@ namespace MxEngine
 		this->stride += unsigned int(sizeof(float) * count);
 	}
 
+	void VertexBufferLayout::PopFloat(size_t count)
+	{
+		MX_ASSERT(!this->elements.empty());
+		#if defined(MXENGINE_DEBUG)
+		auto str = TypeToString<float>() + ToMxString(count) + ", ";
+		this->layoutString.erase(this->layoutString.end() - str.size() - 1, this->layoutString.end());
+		#endif
+		this->elements.pop_back();
+		this->stride -= unsigned int(sizeof(float) * count);
+	}
+
 	template<>
 	void VertexBufferLayout::Push<Vector2>()
 	{
@@ -85,5 +96,40 @@ namespace MxEngine
 		this->PushFloat(4);
 		this->PushFloat(4);
 		this->PushFloat(4);
+	}
+
+	template<>
+	void VertexBufferLayout::Pop<Vector2>()
+	{
+		this->PopFloat(2);
+	}
+
+	template<>
+	void VertexBufferLayout::Pop<Vector3>()
+	{
+		this->PopFloat(3);
+	}
+
+	template<>
+	void VertexBufferLayout::Pop<Vector4>()
+	{
+		this->PopFloat(4);
+	}
+
+	template<>
+	void VertexBufferLayout::Pop<Matrix3x3>()
+	{
+		this->PopFloat(3);
+		this->PopFloat(3);
+		this->PopFloat(3);
+	}
+
+	template<>
+	void VertexBufferLayout::Pop<Matrix4x4>()
+	{
+		this->PopFloat(4);
+		this->PopFloat(4);
+		this->PopFloat(4);
+		this->PopFloat(4);
 	}
 }

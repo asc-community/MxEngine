@@ -52,7 +52,7 @@ namespace MxEngine
 
 		void PrepareShadowMaps();
 		void DrawSkybox(const CameraUnit& camera);
-		void DrawObjects(const CameraUnit& camera);
+		void DrawObjects(const CameraUnit& camera, const MxVector<RenderUnit>& objects);
 		void DrawDebugBuffer(const CameraUnit& camera);
 		void DrawObject(const RenderUnit& unit, Texture::TextureBindId textureBindIndex, const Shader& shader);
 		void DrawShadowMap(const RenderUnit& unit, const DirectionalLigthUnit& dirLight, const Shader& shader);

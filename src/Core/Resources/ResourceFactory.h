@@ -48,6 +48,13 @@ namespace MxEngine
         static GResource<Texture> LoadTexture(const FilePath& path);
         static GResource<Texture> LoadTexture(const MxString& path);
 
+        static GResource<Shader> LoadShader(StringId vertex, StringId fragment);
+        static GResource<Shader> LoadShader(const FilePath& vertex, const FilePath& fragment);
+        static GResource<Shader> LoadShader(const MxString& vertex, const MxString& fragment);
+        static GResource<Shader> LoadShader(StringId vertex, StringId geometry, StringId fragment);
+        static GResource<Shader> LoadShader(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment);
+        static GResource<Shader> LoadShader(const MxString& vertex, const MxString& geometry, const MxString& fragment);
+
         static Resource<Mesh, ResourceFactory> LoadMesh(StringId hash);
         static Resource<Mesh, ResourceFactory> LoadMesh(const FilePath& path);
         static Resource<Mesh, ResourceFactory> LoadMesh(const MxString& path);

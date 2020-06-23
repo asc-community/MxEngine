@@ -152,13 +152,14 @@ namespace MxEngine
 			{
 				vertex[i].Position = ((Vector3*)mesh->mVertices)[i];
 				vertex[i].Position -= objectCenter;
+				vertex[i].Normal    = ((Vector3*)mesh->mNormals)[i];
 
 				if (meshInfo.useTexture)
+				{
 					vertex[i].TexCoord = MakeVector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-
-				vertex[i].Normal    = ((Vector3*)mesh->mNormals)[i];
-				vertex[i].Tangent   = ((Vector3*)mesh->mTangents)[i];
-				vertex[i].Bitangent = ((Vector3*)mesh->mBitangents)[i];
+					vertex[i].Tangent = ((Vector3*)mesh->mTangents)[i];
+					vertex[i].Bitangent = ((Vector3*)mesh->mBitangents)[i];
+				}
 			}
 
 			meshInfo.indicies.resize((size_t)mesh->mNumFaces * 3);
@@ -209,7 +210,6 @@ namespace MxEngine
 			material.SpecularColor = json["SpecularColor"].get<Vector3>();
 			material.EmmisiveColor = json["EmmisiveColor"].get<Vector3>();
 
-			material.TransparencyMap  = json["TransparencyMap"].get<MxString>();
 			material.AmbientMap       = json["AmbientMap"     ].get<MxString>();
 			material.DiffuseMap       = json["DiffuseMap"     ].get<MxString>();
 			material.SpecularMap      = json["SpecularMap"    ].get<MxString>();
@@ -241,7 +241,6 @@ namespace MxEngine
 			DUMP(i, SpecularColor);
 			DUMP(i, EmmisiveColor);
 
-			DUMP(i, TransparencyMap);
 			DUMP(i, AmbientMap);
 			DUMP(i, DiffuseMap);
 			DUMP(i, SpecularMap);
@@ -251,7 +250,7 @@ namespace MxEngine
 			DUMP(i, Name);
 		}
 
-		file << std::setw(2) << json;
+		Json::SaveJson(file, json);
 	}
 }
 #else

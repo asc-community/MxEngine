@@ -41,10 +41,16 @@ namespace MxEngine
         {
             return nlohmann::json::parse(file.ReadAllText());
         }
+
+        inline void SaveJson(File& file, const JsonFile& json)
+        {
+            file << std::setw(2) << json;
+        }
     }
 }
 
 #include "Utilities/Math/Math.h"
+#include "Core/Event/Events/KeyEvent.h"
 
 namespace nlohmann
 {
@@ -56,4 +62,6 @@ namespace nlohmann
     void from_json(const JsonFile& j, Vector2& v);
     void to_json(JsonFile& j, const MxString& str);
     void from_json(const JsonFile& j, MxString& str);
+    void to_json(JsonFile& j, KeyCode key);
+    void from_json(const JsonFile& j, KeyCode& key);
 }

@@ -4,15 +4,30 @@
 
 namespace MxEngine
 {
+    void InstanceFactory::RemoveInstancedBuffer(Mesh& mesh, size_t index)
+    {
+        MX_ASSERT(mesh.GetBufferCount() == index + 1);
+        mesh.PopInstancedBuffer();
+    }
+
+    void InstanceFactory::Destroy()
+    {
+        auto& object = MxObject::GetByComponent(*this);
+        auto meshSource = object.GetComponent<MeshSource>();
+        if (meshSource.IsValid())
+        {
+            auto& mesh = *meshSource->Mesh;
+            this->RemoveInstancedBuffer(mesh, this->bufferIndex + 2);
+            this->RemoveInstancedBuffer(mesh, this->bufferIndex + 1);
+            this->RemoveInstancedBuffer(mesh, this->bufferIndex + 0);
+        }
+    }
+
     void InstanceFactory::Init()
     {
         auto& object = MxObject::GetByComponent(*this);
         auto meshSource = object.GetComponent<MeshSource>();
-        if (!meshSource.IsValid())
-        {
-            Logger::Instance().Warning("MxEngine::InstanceFactory", "InstanceFactory component is added for object with no mesh: " + object.Name);
-        }
-        else
+        if (meshSource.IsValid())
         {
             auto& mesh = *meshSource->Mesh;
             auto modelBufferIndex  = this->AddInstancedBuffer(mesh, this->GetModelData());
@@ -30,6 +45,7 @@ namespace MxEngine
         size_t index = this->GetInstancePool().Allocate(uuid);
         auto instance = MxInstance(uuid, index, &this->factory);
         instance->Transform = *object.Transform;
+        instance.MakeStatic();
         return std::move(instance);
     }
 
@@ -44,6 +60,8 @@ namespace MxEngine
         {
             instance->value.Transform.GetMatrix(*model);
         }
+        if (this->models.empty()) this->models.emplace_back(0.0f);
+
         return this->models;
     }
 
@@ -55,10 +73,12 @@ namespace MxEngine
         auto normal = this->normals.begin();
         auto model = this->models.begin();
         auto instance = this->GetInstancePool().begin();
-        for (; model != this->models.end(); model++, normal++, instance++)
+        for (; normal != this->normals.end(); model++, normal++, instance++)
         {
             instance->value.Transform.GetNormalMatrix(*model, *normal);
         }
+        if (this->normals.empty()) this->normals.emplace_back(0.0f);
+
         return this->normals;
     }
 
@@ -72,7 +92,14 @@ namespace MxEngine
         {
             *it = instance->value.GetColor();
         }
+        if (this->colors.empty()) this->colors.emplace_back(0.0f);
+
         return this->colors;
+    }
+
+    InstanceFactory::~InstanceFactory()
+    {
+        this->Destroy();
     }
 
     void InstanceFactory::SubmitInstances()

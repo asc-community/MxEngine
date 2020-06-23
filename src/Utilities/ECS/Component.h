@@ -117,19 +117,25 @@ namespace MxEngine
             return this->GetComponent<T>().IsValid();
         }
 
-        ~ComponentManager()
+        void RemoveAllComponents()
         {
             for (auto& component : components)
             {
                 auto& componentRef = *reinterpret_cast<Component*>(&component);
                 componentRef.deleter(static_cast<void*>(&componentRef.resource));
             }
+            components.clear();
+        }
+
+        ~ComponentManager()
+        {
+            this->RemoveAllComponents();
         }
     };
 
 #define MAKE_COMPONENT(class_name)\
         public: static constexpr MxEngine::StringId ComponentId = STRING_ID(#class_name);\
-                void* UserData = nullptr;\
+                void* UserData = (void*)std::numeric_limits<uintptr_t>::max();\
         private:\
                 friend class MxEngine::ComponentManager; \
                 friend class MxEngine::ComponentFactory

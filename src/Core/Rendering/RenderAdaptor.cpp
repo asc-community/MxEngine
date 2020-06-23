@@ -58,6 +58,7 @@ namespace MxEngine
         environment.DefaultHeightMap = Colors::MakeTexture(Colors::GREY);
         environment.DefaultNormalMap = Colors::MakeTexture(Colors::FLAT_NORMAL);
         environment.DefaultMaterialMap = Colors::MakeTexture(Colors::WHITE);
+        environment.DefaultBlackCubeMap = Colors::MakeCubeMap(Colors::BLACK);
 
         // shaders
         environment.MainShader = GraphicFactory::Create<Shader>();

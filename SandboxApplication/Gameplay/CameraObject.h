@@ -14,7 +14,9 @@ void InitCamera(MxObject& object)
 
 	controller->SetMoveSpeed(5.0f);
 	controller->SetRotateSpeed(0.75f);
-	controller->FitScreenViewport();
+	controller->ListenWindowResizeEvent();
+	controller->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
+	controller->BindRotation();
 
 	object.Transform->Translate(MakeVector3(1.0f, 3.0f, 0.0f));
 }

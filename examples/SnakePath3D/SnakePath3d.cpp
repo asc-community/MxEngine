@@ -34,7 +34,7 @@ void SnakePath3D::OnCreate()
 	controller.SetMoveSpeed(5.0f);
 	controller.SetRotateSpeed(0.75f);
 
-	ConsoleBinding("Console").Bind(KeyCode::GRAVE_ACCENT);
+	RuntimeEditorBinding("Console").Bind(KeyCode::GRAVE_ACCENT);
 	AppCloseBinding("AppClose").Bind(KeyCode::ESCAPE);
 	InputControlBinding("CameraControl", scene.Viewport)
 		.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT)

@@ -17,7 +17,7 @@ in VSout
 	vec2 TexCoord;
 	vec3 Normal;
 	vec3 FragPosWorld;
-	vec4 RenderColor;
+	vec3 RenderColor;
 	vec4 FragPosDirLight[MAX_DIR_LIGHTS];
 	vec4 FragPosSpotLight[MAX_SPOT_LIGHTS];
 	mat3 TBN;
@@ -264,9 +264,7 @@ void main()
 
 	// emmisive light
 	color += 5.0f * emmisive;
-	color *= fsin.RenderColor.rgb;
-
-	dissolve *= fsin.RenderColor.a;
+	color *= fsin.RenderColor;
 	Color = vec4(color, dissolve);
 }
 

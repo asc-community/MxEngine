@@ -48,7 +48,7 @@ namespace MxEngine
 				this->AttachDepthMap(directionalLight.ShadowMap);
 				directionalLightShader.SetUniformMat4("LightProjMatrix", directionalLight.ProjectionMatrix);
 
-				for (const auto& renderUnit : this->Pipeline.RenderUnits)
+				for (const auto& renderUnit : this->Pipeline.OpaqueRenderUnits)
 				{
 					this->DrawShadowMap(renderUnit, directionalLight, directionalLightShader);
 				}
@@ -63,7 +63,7 @@ namespace MxEngine
 				this->AttachDepthMap(spotLight.ShadowMap);
 				spotLightShader.SetUniformMat4("LightProjMatrix", spotLight.ProjectionMatrix);
 
-				for (const auto& renderUnit : this->Pipeline.RenderUnits)
+				for (const auto& renderUnit : this->Pipeline.OpaqueRenderUnits)
 				{
 					this->DrawShadowMap(renderUnit, spotLight, spotLightShader);
 				}
@@ -85,7 +85,7 @@ namespace MxEngine
 				pointLightShader.SetUniformFloat("zFar", pointLight.FarDistance);
 				pointLightShader.SetUniformVec3("lightPos", pointLight.Position);
 
-				for (const auto& renderUnit : this->Pipeline.RenderUnits)
+				for (const auto& renderUnit : this->Pipeline.OpaqueRenderUnits)
 				{
 					this->DrawShadowMap(renderUnit, pointLight, pointLightShader);
 				}
@@ -94,11 +94,11 @@ namespace MxEngine
 		this->ToggleDepthOnlyMode(false);
 	}
 
-	void RenderController::DrawObjects(const CameraUnit& camera)
+	void RenderController::DrawObjects(const CameraUnit& camera, const MxVector<RenderUnit>& objects)
 	{
 		MAKE_SCOPE_PROFILER("RenderController::DrawObjects()");
 
-		if (this->Pipeline.RenderUnits.empty()) return;
+		if (objects.empty()) return;
 		auto& shader = *this->Pipeline.Environment.MainShader;
 		Texture::TextureBindId textureBindIndex = 0;
 
@@ -115,12 +115,6 @@ namespace MxEngine
 
 			// shadow smoothing
 			shader.SetUniformInt("PCFdistance", this->Pipeline.Environment.ShadowBlurIterations);
-
-			// skybox parameters
-			shader.SetUniformMat3("skyboxModelMatrix", camera.InversedSkyboxRotation);
-			camera.SkyboxMap->Bind(textureBindIndex);
-			shader.SetUniformInt("map_skybox", textureBindIndex);
-			textureBindIndex++;
 
 			// directional lights
 			{
@@ -190,18 +184,32 @@ namespace MxEngine
 			constexpr size_t MAX_DIR_SOURCES = 2;
 			constexpr size_t MAX_SPOT_SOURCES = 8;
 			constexpr size_t MAX_POINT_SOURCES = 2;
+
+			this->Pipeline.Environment.DefaultBlackMap->Bind(textureBindIndex);
+			textureBindIndex++;
+
 			for (int i = (int)this->Pipeline.Lighting.DirectionalLights.size(); i < MAX_DIR_SOURCES; i++)
 				shader.SetUniformInt(MxFormat("map_dirLight_shadow[{0}]", i), textureBindIndex - 1);
 
 			for (int i = (int)this->Pipeline.Lighting.SpotLights.size(); i < MAX_SPOT_SOURCES; i++)
 				shader.SetUniformInt(MxFormat("map_spotLight_shadow[{0}]", i), textureBindIndex - 1);
 
+			this->Pipeline.Environment.DefaultBlackCubeMap->Bind(textureBindIndex);
+			textureBindIndex++;
+
 			for (int i = (int)this->Pipeline.Lighting.PointLights.size(); i < MAX_POINT_SOURCES; i++)
 				shader.SetUniformInt(MxFormat("map_pointLight_shadow[{0}]", i), textureBindIndex - 1);
+
+			// skybox parameters
+			shader.SetUniformMat3("skyboxModelMatrix", camera.InversedSkyboxRotation);
+
+			camera.SkyboxMap->Bind(textureBindIndex);
+			shader.SetUniformInt("map_skybox", textureBindIndex);
+			textureBindIndex++;
 		}
 
 		MAKE_SCOPE_PROFILER("RenderController::DrawMeshPrimitives()");
-		for (const auto& unit : this->Pipeline.RenderUnits)
+		for (const auto& unit : objects)
 		{
 			this->DrawObject(unit, textureBindIndex, shader);
 		}
@@ -448,7 +456,6 @@ namespace MxEngine
 	void RenderController::DrawSkybox(const CameraUnit& camera)
 	{
 		MAKE_SCOPE_PROFILER("RenderController::DrawSkybox()");
-		if (!camera.HasSkybox) return;
 
 		auto& shader = *this->Pipeline.Environment.SkyboxShader;
 		auto& skybox = this->Pipeline.Environment.SkyboxCubeObject;
@@ -495,7 +502,8 @@ namespace MxEngine
 		this->Pipeline.Lighting.DirectionalLights.clear();
 		this->Pipeline.Lighting.PointLights.clear();
 		this->Pipeline.Lighting.SpotLights.clear();
-		this->Pipeline.RenderUnits.clear();
+		this->Pipeline.OpaqueRenderUnits.clear();
+		this->Pipeline.TransparentRenderUnits.clear();
 		this->Pipeline.Cameras.clear();
 	}
 
@@ -556,15 +564,20 @@ namespace MxEngine
 		camera.BloomIterations = (uint8_t)controller.GetBloomIterations();
 		camera.BloomWeight = controller.GetBloomWeight();
 		camera.Exposure = controller.GetExposure();
-		camera.SkyboxMap = skybox.Texture;
-		camera.HasSkybox = skybox.Texture.IsValid();
+		camera.SkyboxMap = skybox.Texture.IsValid() ? skybox.Texture : this->Pipeline.Environment.DefaultBlackCubeMap;
 		camera.InversedSkyboxRotation = Transpose(ToMatrix(parentTransform.GetRotation()));
 		camera.OutputTexture = controller.GetTexture();
+		camera.RenderToTexture = controller.RenderingEnabled;
 	}
 
     void RenderController::SubmitPrimitive(const SubMesh& object, const Material& material, const Transform& parentTransform, size_t instanceCount)
     {
-		auto& primitive = this->Pipeline.RenderUnits.emplace_back();
+		RenderUnit* primitivePtr = nullptr;
+		if (material.Transparency == 1.0f) // put object into separate list depending on its transparency
+			primitivePtr = &this->Pipeline.OpaqueRenderUnits.emplace_back();
+		else
+			primitivePtr = &this->Pipeline.TransparentRenderUnits.emplace_back();
+		auto& primitive = *primitivePtr;
 
 		primitive.VAO = object.MeshData.GetVAO();
 		primitive.IBO = object.MeshData.GetIBO();
@@ -604,24 +617,34 @@ namespace MxEngine
 			return;
 		}
 
-		MX_ASSERT(this->Pipeline.Environment.MainCameraIndex < this->Pipeline.Cameras.size());
-
 		this->PrepareShadowMaps();
 
 		for (auto& camera : this->Pipeline.Cameras)
 		{
+			if (!camera.RenderToTexture) continue;
+
 			this->ToggleReversedDepth(camera.IsPerspective);
 			this->AttachFrameBuffer(camera.AttachedFrameBuffer);
 
-			this->DrawObjects(camera);
+			this->DrawObjects(camera, this->Pipeline.OpaqueRenderUnits);
 			this->DrawSkybox(camera);
+
+			if (!this->Pipeline.TransparentRenderUnits.empty())
+			{
+				this->ToggleFaceCulling(false);
+				this->GetRenderEngine().UseDepthBuffer(false);
+				this->DrawObjects(camera, this->Pipeline.TransparentRenderUnits);
+				this->GetRenderEngine().UseDepthBuffer(true);
+				this->ToggleFaceCulling(true);
+			}
+
 			this->DrawDebugBuffer(camera);
 			this->PostProcessImage(camera);
 		}
 		
 		MAKE_SCOPE_PROFILER("RenderController::SubmitFinalImage");
 		this->AttachDefaultFrameBuffer();
-		if (this->Pipeline.Environment.RenderToDefaultFrameBuffer)
+		if (this->Pipeline.Environment.RenderToDefaultFrameBuffer && this->Pipeline.Environment.MainCameraIndex < this->Pipeline.Cameras.size())
 		{
 			const auto& mainCamera = this->Pipeline.Cameras[this->Pipeline.Environment.MainCameraIndex];
 			MX_ASSERT(mainCamera.OutputTexture.IsValid());

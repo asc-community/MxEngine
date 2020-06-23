@@ -62,8 +62,11 @@ namespace MxEngine
 		const ElementBuffer& GetElements() const;
 		StrideType GetStride() const;
 		void PushFloat(size_t count);
+		void PopFloat(size_t count);
 		
 		template<typename T>
 		void Push();
+		template<typename T>
+		void Pop();
 	};
 }

@@ -40,16 +40,16 @@ namespace MxEngine
 {
 	class MxInstanceImpl
 	{
-		Vector4 color{ 1.0f };
+		Vector3 color{ 1.0f };
 	public:
 		Transform Transform;
 
-		inline void SetColor(const Vector4& color)
+		inline void SetColor(const Vector3& color)
 		{
-			this->color = Clamp(color, MakeVector4(0.0f), MakeVector4(1.0f));
+			this->color = Clamp(color, MakeVector3(0.0f), MakeVector3(1.0f));
 		}
 
-		inline const Vector4& GetColor() const
+		inline const Vector3& GetColor() const
 		{
 			return this->color;
 		}
@@ -78,7 +78,7 @@ namespace MxEngine
 
 		using ModelData = MxVector<Matrix4x4>;
 		using NormalData = MxVector<Matrix3x3>;
-		using ColorData = MxVector<Vector4>;
+		using ColorData = MxVector<Vector3>;
 		using BufferIndex = size_t;
 
 		using MxInstance = LocalResource<MxInstanceImpl, Factory>;
@@ -105,6 +105,9 @@ namespace MxEngine
 			auto VBO = mesh.GetBufferByIndex(index);
 			VBO->BufferDataWithResize((float*)buffer.data(), buffer.size() * sizeof(T) / sizeof(float));
 		}
+
+		void RemoveInstancedBuffer(Mesh& mesh, size_t index);
+		void Destroy();
 	public:
 		const auto& GetInstancePool() const { return this->factory.inner.Pool; }
 		auto& GetInstancePool() { return this->factory.inner.Pool; };
@@ -118,5 +121,12 @@ namespace MxEngine
 		ModelData& GetModelData();
 		NormalData& GetNormalData();
 		ColorData& GetColorData();
+
+		InstanceFactory() = default;
+		InstanceFactory(const InstanceFactory&) = delete;
+		InstanceFactory(InstanceFactory&&) noexcept = default;
+		InstanceFactory& operator=(const InstanceFactory&) = delete;
+		InstanceFactory& operator=(InstanceFactory&&) noexcept = default;
+		~InstanceFactory();
 	};
 }

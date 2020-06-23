@@ -77,12 +77,13 @@ namespace MxEngine
 		void ExecuteScript(const MxString& script);
 		void ExecuteScript(const char* script);
 
-		void ToggleDeveloperConsole(bool isVisible);
+		void ToggleRuntimeEditor(bool isVisible);
+		void CloseOnKeyPress(KeyCode key);
 
 		AppEventDispatcher& GetEventDispatcher();
 		RenderAdaptor& GetRenderAdaptor();
 		LoggerImpl& GetLogger();
-		RuntimeEditor& GetConsole();
+		RuntimeEditor& GetRuntimeEditor();
 		Window& GetWindow();
 		float GetTimeDelta() const;
 		int GetCurrentFPS() const;

@@ -1,13 +1,9 @@
 #include "Sandbox.h"
 #include "Gameplay/SandboxScene.h"
-#include <Library/Bindings/Bindings.h>
 #include <Library/Primitives/Primitives.h>
 
 void SandboxApp::OnCreate()
 {
-	ConsoleBinding("Console").Bind(KeyCode::GRAVE_ACCENT);
-	AppCloseBinding("AppClose").Bind(KeyCode::ESCAPE);
-
 	EventManager::AddEventListener("CountFPS",
 		[this](FpsUpdateEvent& e)
 		{
@@ -29,5 +25,4 @@ void SandboxApp::OnDestroy()
 SandboxApp::SandboxApp()
 {
 	scene = new SandboxScene();
-	CreateContext();
 }

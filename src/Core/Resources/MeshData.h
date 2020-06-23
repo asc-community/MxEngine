@@ -73,5 +73,6 @@ namespace MxEngine
         void BufferIndicies();
         void UpdateBoundingBox();
         void RegenerateNormals();
+        void RegenerateTangentSpace();
     };
 }

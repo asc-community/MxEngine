@@ -21,6 +21,11 @@
     <DebugSymbols>true</DebugSymbols>
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Shipping' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <OutputPath>bin\Shipping\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="python_application.py" />
   </ItemGroup>

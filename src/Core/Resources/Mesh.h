@@ -72,5 +72,6 @@ namespace MxEngine
 		GResource<VertexBuffer> GetBufferByIndex(size_t index) const; 
 		GResource<VertexBufferLayout> GetBufferLayoutByIndex(size_t index) const;
 		size_t GetBufferCount() const;
+		void PopInstancedBuffer();
 	};
 }

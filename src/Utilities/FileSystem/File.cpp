@@ -67,10 +67,13 @@ namespace MxEngine
     void File::Open(FilePath path, FileMode mode)
     {
         this->filePath = std::move(path);
-        if ((mode & File::WRITE) == 0 && !File::Exists(this->filePath))
+        if (!File::Exists(this->filePath))
         {
-            Logger::Instance().Error("MxEngine::File", "file was not found: " + ToMxString(this->filePath));
-            return;
+            if ((mode & File::WRITE) == 0)
+            {
+                Logger::Instance().Error("MxEngine::File", "file was not found: " + ToMxString(this->filePath));
+                return;
+            }
         }
         this->fileStream.open(this->filePath, FileModeTable[mode]);
     }
@@ -160,5 +163,17 @@ namespace MxEngine
             return FileSystemTime();
         }
         return std::filesystem::last_write_time(path.c_str());
+    }
+
+    void File::CreateDirectory(const FilePath& path)
+    {
+        if (!File::Exists(path))
+            std::filesystem::create_directory(path);
+    }
+
+    void File::CreateDirectory(const MxString& path)
+    {
+        if (!File::Exists(path))
+            std::filesystem::create_directory(path.c_str());
     }
 }

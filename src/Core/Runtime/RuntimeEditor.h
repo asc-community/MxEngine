@@ -31,6 +31,7 @@
 #include "Utilities/STL/MxString.h"
 #include "Utilities/Memory/Memory.h"
 #include "Core/MxObject/MxObject.h"
+#include "Core/Event/Events/KeyEvent.h"
 #include <functional>
 
 namespace MxEngine
@@ -73,6 +74,7 @@ namespace MxEngine
 		void SetSize(const Vector2& size);
 		void Toggle(bool isVisible = true);
 		void UseDebugTools(bool value = true);
+		void AddKeyBinding(KeyCode openKey);
 
 		ScriptEngine& GetEngine();
 		Vector2 GetSize() const;

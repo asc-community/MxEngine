@@ -14,7 +14,7 @@ layout(location = 3)  in vec3 tangent;
 layout(location = 4)  in vec3 bitangent;
 layout(location = 5)  in mat4 model;
 layout(location = 9)  in mat3 normalMatrix;
-layout(location = 12) in vec4 renderColor;
+layout(location = 12) in vec3 renderColor;
 
 uniform mat4 ViewProjMatrix;
 uniform mat4 DirLightProjMatrix[MAX_DIR_LIGHTS];
@@ -30,7 +30,7 @@ out VSout
 	vec2 TexCoord;
 	vec3 Normal;
 	vec3 FragPosWorld;
-	vec4 RenderColor;
+	vec3 RenderColor;
 	vec4 FragPosDirLight[MAX_DIR_LIGHTS];
 	vec4 FragPosSpotLight[MAX_SPOT_LIGHTS];
 	mat3 TBN;

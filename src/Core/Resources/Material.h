@@ -41,7 +41,6 @@ namespace MxEngine
 		GResource<Texture> DiffuseMap;
 		GResource<Texture> SpecularMap;
 		GResource<Texture> EmmisiveMap;
-		GResource<Texture> TransparencyMap;
 		GResource<Texture> NormalMap;
 		GResource<Texture> HeightMap;
 
@@ -54,7 +53,7 @@ namespace MxEngine
 
 		float Displacement = 0.025f;
 		float Reflection = 0.1f;
-		Vector4 BaseColor{ 1.0f };
-		MxString Name = "Default";
+		Vector3 BaseColor{ 1.0f };
+		MxString Name = "DefaultMaterial";
 	};
 }

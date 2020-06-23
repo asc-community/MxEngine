@@ -136,7 +136,7 @@ namespace MxEngine
 		int glChannels = 3;
 		for (size_t i = 0; i < 6; i++)
 		{
-			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGBA, 
+			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGB, 
 				(GLsizei)images[i].width(), (GLsizei)images[i].height() / 3, 0, GL_RGB, GL_UNSIGNED_BYTE, images[i].data()));
 		}
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
@@ -161,7 +161,7 @@ namespace MxEngine
 		for (size_t i = 0; i < data.size(); i++)
 		{
 
-			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGBA,
+			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGB,
 				(GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, data[i]));
 		}
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));

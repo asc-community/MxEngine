@@ -534,8 +534,4 @@
     <DisplayString Condition="m_handler != nullptr">{m_storage.external_storage}</DisplayString>
   </Type>
 
-
-  <!-- TODO eastl::tuple -->
-
-
 </AutoVisualizer>

@@ -1,0 +1,35 @@
+[
+  {
+    "AmbientColor": [
+      0.7882353663444519,
+      0.8117647767066956,
+      0.6901960968971252
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.7882353663444519,
+      0.8117647767066956,
+      0.6901960968971252
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "default",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "SpecularExponent": 100.0,
+    "SpecularMap": "",
+    "Transparency": 1.0,
+    "TransparencyMap": ""
+  }
+]

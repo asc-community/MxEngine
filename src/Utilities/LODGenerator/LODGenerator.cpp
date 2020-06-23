@@ -97,6 +97,7 @@ namespace MxEngine
 
         Vector3 distance = mesh.GetAABB().Length();
         float averageDistance = Dot(distance, MakeVector3(1.0f / 3.0f));
+        if (averageDistance == 0.0f) averageDistance = 1.0f;
         this->PrepareIndexData(threshold * averageDistance);
 
         constexpr uint32_t Invalid = std::numeric_limits<uint32_t>::max();

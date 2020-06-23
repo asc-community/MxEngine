@@ -131,7 +131,7 @@ namespace MxEngine
 		Image image = ImageLoader::LoadImage(filepath, flipImage);
 		this->filepath = filepath;
 		this->wrapType = wrap;
-		this->format = TextureFormat::RGBA;
+		this->format = TextureFormat::RGB;
 
 		if (image.data == nullptr)
 		{
@@ -184,7 +184,7 @@ namespace MxEngine
 		this->channels = 3;
 		this->textureType = GL_TEXTURE_2D;
 		this->wrapType = wrapType;
-		this->format = TextureFormat::RGBA;
+		this->format = TextureFormat::RGB;
 
 		GLint level = 0;
 		GLsizei width = biggestWidth;
@@ -224,8 +224,7 @@ namespace MxEngine
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
 
-		float border[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-		GLCALL(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border));
+		this->SetBorderColor(MakeVector4(1.0f));
 	}
 
     void Texture::LoadMultisample(int width, int height, TextureFormat format, int samples, TextureWrap wrap)
@@ -252,6 +251,13 @@ namespace MxEngine
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 		GLCALL(glGenerateMipmap(GL_TEXTURE_2D));
 	}
+
+    void Texture::SetBorderColor(const Vector3& color)
+    {
+		this->Bind(0);
+		auto normalized = Clamp(color, MakeVector3(0.0f), MakeVector3(1.0f));
+		GLCALL(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &normalized[0]));
+    }
 
     bool Texture::IsMultisampled() const
     {

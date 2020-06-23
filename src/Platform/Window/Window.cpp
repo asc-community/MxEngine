@@ -194,17 +194,17 @@ namespace MxEngine
 
 	bool Window::IsKeyHeld(KeyCode key) const
 	{
-		return this->keyHeld[(size_t)key];
+		return key != KeyCode::UNKNOWN && this->keyHeld[(size_t)key];
 	}
 
 	bool Window::IsKeyPressed(KeyCode key) const
 	{
-		return this->keyPressed[(size_t)key];
+		return key != KeyCode::UNKNOWN && this->keyPressed[(size_t)key];
 	}
 
 	bool Window::IsKeyReleased(KeyCode key) const
 	{
-		return this->keyReleased[(size_t)key];
+		return key != KeyCode::UNKNOWN && this->keyReleased[(size_t)key];
 	}
 
 	Window& Window::Create()

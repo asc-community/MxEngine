@@ -68,6 +68,10 @@ namespace MxEngine::GUI
             auto nativeHeight = texture->GetHeight();
             auto nativeWidth = texture->GetWidth();
 
+            static Vector3 color{ 1.0f };
+            if (ImGui::ColorEdit3("border color", &color[0]))
+                texture->SetBorderColor(color);
+
             auto width = ImGui::GetWindowSize().x * 0.9f * scale;
             auto height = width * nativeHeight / nativeWidth;
             ImGui::Image((void*)(uintptr_t)texture->GetNativeHandle(), ImVec2(width, height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
@@ -111,19 +115,18 @@ namespace MxEngine::GUI
         DrawTextureEditor("diffuse map", material->DiffuseMap);
         DrawTextureEditor("specular map", material->SpecularMap);
         DrawTextureEditor("emmisive map", material->EmmisiveMap);
-        DrawTextureEditor("transparency map", material->TransparencyMap);
         DrawTextureEditor("normal map", material->NormalMap);
         DrawTextureEditor("height map", material->HeightMap);
 
         ImGui::DragFloat("specular exponent", &material->SpecularExponent, 1.0f, 1.0f, 10000.0f);
         ImGui::DragFloat("transparency", &material->Transparency, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("displacement", &material->Displacement, 0.01f);
-        ImGui::DragFloat("reflection", &material->Reflection, 0.01f);
+        ImGui::DragFloat("reflection", &material->Reflection, 0.01f, 0.0f, 1.0f);
         ImGui::ColorEdit3("ambient color", &material->AmbientColor[0]);
         ImGui::ColorEdit3("diffuse color", &material->DiffuseColor[0]);
         ImGui::ColorEdit3("specular color", &material->SpecularColor[0]);
         ImGui::ColorEdit3("emmisive color", &material->EmmisiveColor[0]);
-        ImGui::ColorEdit4("base color", &material->BaseColor[0]);
+        ImGui::ColorEdit3("base color", &material->BaseColor[0]);
     }
 
     void DrawAABBEditor(const char* name, AABB& aabb)
@@ -188,11 +191,14 @@ namespace MxEngine::GUI
             if (ImGui::Button("update submesh AABB"))
                 submesh.MeshData.UpdateBoundingBox();
             ImGui::SameLine();
+            if (ImGui::Button("buffer vertecies"))
+                submesh.MeshData.BufferVertecies();
+
             if (ImGui::Button("regenerate normals"))
                 submesh.MeshData.RegenerateNormals();
             ImGui::SameLine();
-            if (ImGui::Button("buffer vertecies"))
-                submesh.MeshData.BufferVertecies();
+            if (ImGui::Button("regenerate tangents"))
+                submesh.MeshData.RegenerateTangentSpace();
 
             // TODO: maybe add indicies editor?
             {

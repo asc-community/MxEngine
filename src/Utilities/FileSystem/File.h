@@ -197,6 +197,16 @@ namespace MxEngine
         \returns platform-dependent time point of last file modification
         */
         static FileSystemTime LastModifiedTime(const MxString& path);
+        /*
+        creates directory is it is not exist
+        \param path path to directory
+        */
+        static void CreateDirectory(const FilePath& path);
+        /*
+        creates directory is it is not exist
+        \param path path to directory
+        */
+        static void CreateDirectory(const MxString& path);
     };
 
     template<typename T>

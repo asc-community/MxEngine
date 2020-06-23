@@ -42,14 +42,14 @@ namespace MxEngine
 
         template<typename... Args>
         ManagedResource(UUID uuid, Args&&... value)
-            : uuid(uuid), value(std::forward<Args>(value)...)
+            : value(std::forward<Args>(value)...), uuid(uuid)
         {
         }
 
         ManagedResource(const ManagedResource&) = delete;
-        ManagedResource(ManagedResource&&) = default;
+        ManagedResource(ManagedResource&&) noexcept(std::is_nothrow_move_constructible_v<T>) = default;
         ManagedResource& operator=(const ManagedResource&) = delete;
-        ManagedResource& operator=(ManagedResource&&) = default;
+        ManagedResource& operator=(ManagedResource&&) noexcept(std::is_nothrow_move_assignable_v<T>) = default;
 
         ~ManagedResource()
         {

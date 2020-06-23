@@ -62,6 +62,36 @@ namespace MxEngine
         return GraphicFactory::Create<Texture>(path);
     }
 
+    GResource<Shader> AssetManager::LoadShader(StringId vertex, StringId fragment)
+    {
+        return AssetManager::LoadShader(FileManager::GetFilePath(vertex), FileManager::GetFilePath(fragment));
+    }
+
+    GResource<Shader> AssetManager::LoadShader(const FilePath& vertex, const FilePath& fragment)
+    {
+        return AssetManager::LoadShader(ToMxString(vertex), ToMxString(fragment));
+    }
+
+    GResource<Shader> AssetManager::LoadShader(const MxString& vertex, const MxString& fragment)
+    {
+        return GraphicFactory::Create<Shader>(vertex, fragment);
+    }
+
+    GResource<Shader> AssetManager::LoadShader(StringId vertex, StringId geometry, StringId fragment)
+    {
+        return AssetManager::LoadShader(FileManager::GetFilePath(vertex), FileManager::GetFilePath(geometry), FileManager::GetFilePath(fragment));
+    }
+
+    GResource<Shader> AssetManager::LoadShader(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment)
+    {
+        return AssetManager::LoadShader(ToMxString(vertex), ToMxString(geometry), ToMxString(fragment));
+    }
+
+    GResource<Shader> AssetManager::LoadShader(const MxString& vertex, const MxString& geometry, const MxString& fragment)
+    {
+        return GraphicFactory::Create<Shader>(vertex, geometry, fragment);
+    }
+
     Resource<Mesh, ResourceFactory> AssetManager::LoadMesh(StringId hash)
     {
         return AssetManager::LoadMesh(FileManager::GetFilePath(hash));

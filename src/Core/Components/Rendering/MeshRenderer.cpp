@@ -47,7 +47,6 @@ namespace MxEngine
 		MAKE_TEX(DiffuseMap);
 		MAKE_TEX(SpecularMap);
 		MAKE_TEX(EmmisiveMap);
-		MAKE_TEX(TransparencyMap);
 		MAKE_TEX(HeightMap);
 		MAKE_TEX(NormalMap);
 

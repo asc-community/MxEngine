@@ -86,7 +86,7 @@ void SnakePath3D::OnCreate()
 	GetCurrentScene().GlobalLight.ProjectionSize = 1000.0f;
 	GetRenderer().SetDepthBufferSize<DirectionalLight>(8192);
 
-	ConsoleBinding("Console").Bind(KeyCode::GRAVE_ACCENT);
+	RuntimeEditorBinding("Console").Bind(KeyCode::GRAVE_ACCENT);
 	AppCloseBinding("AppClose").Bind(KeyCode::ESCAPE);
 	InputControlBinding("CameraControl", scene.Viewport)
 		.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT)
@@ -95,7 +95,7 @@ void SnakePath3D::OnCreate()
 
 void SnakePath3D::OnUpdate()
 {
-	if (GetConsole().IsToggled())
+	if (GetRuntimeEditor().IsToggled())
 	{
 		GUI::UnderConsole();
 		ImGui::Begin("Instancing test window");

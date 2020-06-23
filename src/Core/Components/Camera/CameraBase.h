@@ -35,16 +35,16 @@ namespace MxEngine
     class CameraBase
     {
     private:
-        float aspectRatio = 1.777f;
+        float aspectRatio = 16.0f / 9.0f;
         float zNear = 0.1f;
         float zFar = 100.0f;
         float zoom = 1.0f;
         Matrix4x4 view;
         Matrix4x4 projection;
         mutable Matrix4x4 matrix;
-        mutable bool updateMatrix = false;
+        mutable bool updateMatrix = true;
     public:
-        mutable bool UpdateProjection = false;
+        mutable bool UpdateProjection = true;
 
         const Matrix4x4& GetMatrix() const;
         const Matrix4x4& GetProjectionMatrix() const;

@@ -38,13 +38,21 @@ GENERATE_METHOD_CHECK(Init, Init())
 namespace MxEngine
 {
 	class MxObject
-	{		
-		ComponentManager components;
+	{
 		mutable AABB boundingBox;
 
 		using EngineHandle = size_t;
 		constexpr static EngineHandle InvalidHandle = std::numeric_limits<EngineHandle>::max();
 		EngineHandle Handle = InvalidHandle;
+
+	public:
+		MxString Name = UUIDGenerator::Get();
+		float TranslateSpeed = 1.0f;
+		float RotateSpeed = 1.0f;
+		float ScaleSpeed = 1.0f;
+		CResource<Transform> Transform;
+	private:
+		ComponentManager components;
 	public:
 		using Factory = AbstractFactoryImpl<MxObject>;
 		using MxObjectHandle = Resource<MxObject, Factory>;
@@ -54,11 +62,15 @@ namespace MxEngine
 		static void Destroy(MxObject& object);
 
 		static ComponentView<MxObject> GetObjects();
+		static MxObjectHandle GetByName(const MxString& name);
 
 		template<typename T>
 		static MxObject& GetByComponent(T& component)
 		{
-			return *MxObject::GetHandleByComponent(component);
+			auto handle = reinterpret_cast<EngineHandle>(component.UserData);
+			MX_ASSERT(handle != InvalidHandle);
+			auto& managedObject = Factory::Get<MxObject>()[handle];
+			return managedObject.value;
 		}
 
 		template<typename T>
@@ -66,18 +78,17 @@ namespace MxEngine
 		{
 			auto handle = reinterpret_cast<EngineHandle>(component.UserData);
 			MX_ASSERT(handle != InvalidHandle);
-			return MxObjectHandle(Factory::Get<MxObject>()[handle].uuid, handle);
+			auto& managedObject = Factory::Get<MxObject>()[handle];
+			MX_ASSERT(managedObject.refCount > 0 && managedObject.uuid != UUIDGenerator::GetNull());
+			return MxObjectHandle(managedObject.uuid, handle);
 		}
-
-		MxString Name = UUIDGenerator::Get();
-		float TranslateSpeed = 1.0f;
-		float RotateSpeed = 1.0f;
-		float ScaleSpeed = 1.0f;
-		CResource<Transform> Transform;
 
 		MxObject();
 		MxObject(const MxObject&) = delete;
+		MxObject& operator=(const MxObject&) = delete;
 		MxObject(MxObject&&) = default;
+		MxObject& operator=(MxObject&&) = default;
+		~MxObject();
 
 		const AABB& GetAABB() const;
 

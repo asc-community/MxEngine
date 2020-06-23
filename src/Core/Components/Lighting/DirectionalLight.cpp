@@ -43,6 +43,7 @@ namespace MxEngine
     DirectionalLight::~DirectionalLight()
     {
         MxString eventName = MxObject::GetByComponent(*this).GetComponent<DirectionalLight>().GetUUID();
+        EventManager::FlushEvents(); // avoid problem with deleting event while its still in queue
         EventManager::RemoveEventListener(eventName);
     }
 
@@ -73,11 +74,11 @@ namespace MxEngine
     void DirectionalLight::FollowViewport()
     {
         auto& object = MxObject::GetByComponent(*this);
-        auto dirLight = object.GetComponent<DirectionalLight>();
+        MxString uuid = object.GetComponent<DirectionalLight>().GetUUID();
 
-        EventManager::RemoveEventListener(dirLight.GetUUID());
+        EventManager::RemoveEventListener(uuid);
 
-        EventManager::AddEventListener(dirLight.GetUUID(), [tr = object.Transform](UpdateEvent& e) mutable
+        EventManager::AddEventListener(uuid, [tr = object.Transform](UpdateEvent& e) mutable
         {
             auto& viewport = RenderManager::GetViewport();
             if (viewport.IsValid()) 

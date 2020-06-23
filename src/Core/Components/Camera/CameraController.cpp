@@ -29,6 +29,7 @@
 #include "CameraController.h"
 #include "Core/Application/EventManager.h"
 #include "Core/Event/Events/WindowResizeEvent.h"
+#include "Core/Event/Events/MouseEvent.h"
 #include "OrthographicCamera.h"
 #include "PerspectiveCamera.h"
 
@@ -69,6 +70,8 @@ namespace MxEngine
 	CameraController::CameraController()
 		: framebuffer(GraphicFactory::Create<FrameBuffer>()), renderbuffer(GraphicFactory::Create<RenderBuffer>()), texture(GraphicFactory::Create<Texture>())
 	{
+		this->SetCameraType(CameraType::PERSPECTIVE);
+
 		// TODO: let user create texture or do it here automatically?
 		VectorInt2 viewport{ Application::Get()->GetWindow().GetWidth(), Application::Get()->GetWindow().GetHeight() };
 		constexpr size_t samples = 4;
@@ -85,6 +88,7 @@ namespace MxEngine
 
 	CameraController::~CameraController()
 	{
+		EventManager::FlushEvents(); // avoid removing event while its still in queue
 		EventManager::RemoveEventListener(this->framebuffer.GetUUID());
 	}
 
@@ -136,7 +140,7 @@ namespace MxEngine
 		return this->texture;
 	}
 
-	void CameraController::FitScreenViewport()
+	void CameraController::ListenWindowResizeEvent()
 	{
 		EventManager::RemoveEventListener(this->framebuffer.GetUUID());
 
@@ -309,5 +313,93 @@ namespace MxEngine
 	const Vector3& CameraController::GetRightVector() const
 	{
 		return this->right;
+	}
+
+    void CameraController::BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right)
+    {
+		this->BindMovement(forward, left, back, right, KeyCode::UNKNOWN, KeyCode::UNKNOWN);
+    }
+
+    void CameraController::BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down)
+    {
+		Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object movement");
+		auto& object = MxObject::GetByComponent(*this);
+		auto camera = object.GetComponent<CameraController>();
+		MxString uuid = camera.GetUUID();
+
+		EventManager::AddEventListener(uuid,
+			[forward, back, right, left, up, down, camera, transform = object.Transform](KeyEvent& event) mutable
+		{
+			auto dt = Application::Get()->GetTimeDelta();
+			if (event.IsHeld(forward))
+			{
+				transform->Translate(camera->GetForwardVector() * camera->GetMoveSpeed() * dt);
+			}
+			if (event.IsHeld(back))
+			{
+				transform->Translate(-1.0f * camera->GetForwardVector() * camera->GetMoveSpeed() * dt);
+			}
+			if (event.IsHeld(right))
+			{
+				transform->Translate(camera->GetRightVector() * camera->GetMoveSpeed() * dt);
+			}
+			if (event.IsHeld(left))
+			{
+				transform->Translate(-1.0f * camera->GetRightVector() * camera->GetMoveSpeed() * dt);
+			}
+			if (event.IsHeld(up))
+			{
+				transform->Translate(camera->GetUpVector() * camera->GetMoveSpeed() * dt);
+			}
+			if (event.IsHeld(down))
+			{
+				transform->Translate(-1.0f * camera->GetUpVector() * camera->GetMoveSpeed() * dt);
+			}
+		});
+    }
+
+	void CameraController::BindRotation()
+	{
+		Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object rotation");
+		auto camera = MxObject::GetByComponent(*this).GetComponent<CameraController>();
+		MxString uuid = camera.GetUUID();
+
+		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
+		{
+			static Vector2 oldPos = event.position;
+			auto dt = Application::Get()->GetTimeDelta();
+			camera->Rotate(dt* (oldPos.x - event.position.x), dt* (oldPos.y - event.position.y));
+			oldPos = event.position;
+		});
+	}
+
+	void CameraController::BindHorizontalRotation()
+	{
+		Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object rotation");
+		auto camera = MxObject::GetByComponent(*this).GetComponent<CameraController>();
+		MxString uuid = camera.GetUUID();
+
+		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
+		{
+			static Vector2 oldPos = event.position;
+			auto dt = Application::Get()->GetTimeDelta();
+			camera->Rotate(dt* (oldPos.x - event.position.x), 0.0f);
+			oldPos = event.position;
+		});
+	}
+
+	void CameraController::BindVerticalRotation()
+	{
+		Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object rotation");
+		auto camera = MxObject::GetByComponent(*this).GetComponent<CameraController>();
+		MxString uuid = camera.GetUUID();
+
+		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
+		{
+			static Vector2 oldPos = event.position;
+			auto dt = Application::Get()->GetTimeDelta();
+			camera->Rotate(0.0f, dt* (oldPos.y - event.position.y));
+			oldPos = event.position;
+		});
 	}
 }

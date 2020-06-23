@@ -119,7 +119,7 @@ namespace MxEngine::GUI
 					auto color = instance.GetColor();
 
 					TransformEditor(instance.Transform);
-					if (ImGui::ColorEdit4("base color", &color[0]))
+					if (ImGui::ColorEdit3("base color", &color[0]))
 						instance.SetColor(color);
 				}
 			}
@@ -304,9 +304,11 @@ namespace MxEngine::GUI
 			cameraController.SetBloomWeight(bloomWeight);
 		if (ImGui::DragInt("bloom iterations", &bloomIterations))
 			cameraController.SetBloomIterations((size_t)Max(0, bloomIterations));
+		
+		ImGui::Checkbox("enable rendering", &cameraController.RenderingEnabled);
 
 		if (ImGui::Button("auto-resize viewport"))
-			cameraController.FitScreenViewport();
+			cameraController.ListenWindowResizeEvent();
 
 		auto texture = cameraController.GetTexture();
 		DrawTextureEditor("output texture", texture);

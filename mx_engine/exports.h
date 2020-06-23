@@ -36,7 +36,6 @@
 #include <Library/Scripting/Python/PythonEngine.h>
 #include <Library/Primitives/Primitives.h>
 #include <Library/Primitives/Colors.h>
-#include <Library/Bindings/Bindings.h>
 
 #include <Vendors/glew/glew.h>
 #include <Vendors/GLFW/glfw3.h>

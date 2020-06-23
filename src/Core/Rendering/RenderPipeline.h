@@ -53,7 +53,7 @@ namespace MxEngine
         float Exposure;
 
         bool IsPerspective;
-        bool HasSkybox;
+        bool RenderToTexture;
         uint8_t BloomIterations;
     };
 
@@ -74,6 +74,7 @@ namespace MxEngine
         GResource<Texture> DefaultHeightMap;
         GResource<Texture> DefaultBlackMap;
         GResource<Texture> BloomHDRMap;
+        GResource<CubeMap> DefaultBlackCubeMap;
 
         GResource<FrameBuffer> DepthFrameBuffer;
         GResource<FrameBuffer> HDRFrameBuffer;
@@ -156,7 +157,8 @@ namespace MxEngine
     {
         EnvironmentUnit Environment;
         LightingSystem Lighting;
-        MxVector<RenderUnit> RenderUnits;
+        MxVector<RenderUnit> OpaqueRenderUnits;
+        MxVector<RenderUnit> TransparentRenderUnits;
         MxVector<CameraUnit> Cameras;
     };
 }

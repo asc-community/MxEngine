@@ -33,6 +33,7 @@
 #include "Library/Scripting/Python/PythonEngine.h"
 #include "Core/Event/Events/WindowResizeEvent.h"
 #include "Core/Application/EventManager.h"
+#include "Core/Event/Events/UpdateEvent.h"
 
 namespace MxEngine
 {
@@ -90,6 +91,10 @@ namespace MxEngine
 			}
 
 			ImGui::Begin("Object Editor");
+
+			if (ImGui::Button("create new MxObject"))
+				MxObject::Create().MakeStatic();
+
 			auto objects = MxObject::GetObjects();
 			int id = 0;
 			for (auto& object : objects)
@@ -114,6 +119,14 @@ namespace MxEngine
 						{
 							this->componentAdderCallbacks[(size_t)currentItem](object);
 						}
+
+						static MxString objectName;
+						if (GUI::InputTextOnClick("object name", objectName, 48))
+						{
+							object.Name = objectName;
+							objectName.clear();
+						}
+
 						for (auto& callback : this->componentEditorCallbacks)
 						{
 							callback(object);
@@ -155,6 +168,33 @@ namespace MxEngine
     {
 		this->debugTools = value;
     }
+
+	void RuntimeEditor::AddKeyBinding(KeyCode openKey)
+	{
+		Logger::Instance().Debug("MxEngine::ConsoleBinding", MxFormat("bound console to keycode: {0}", EnumToString(openKey)));
+		EventManager::AddEventListener("RuntimeEditor", 
+		[cursorPos = Vector2(), cursorModeCached = CursorMode::DISABLED, openKey](UpdateEvent& event) mutable
+		{
+			auto& window = Application::Get()->GetWindow();
+			if (window.IsKeyPressed(openKey))
+			{
+				if (Application::Get()->GetRuntimeEditor().IsToggled())
+				{
+					window.UseCursorMode(cursorModeCached);
+					Application::Get()->ToggleRuntimeEditor(false);
+					window.UseCursorPos(cursorPos);
+				}
+				else
+				{
+					cursorPos = window.GetCursorPos();
+					cursorModeCached = window.GetCursorMode();
+					window.UseCursorMode(CursorMode::NORMAL);
+					Application::Get()->ToggleRuntimeEditor(true);
+					window.UseCursorPos({ window.GetWidth() / 4.0f, window.GetHeight() / 2.0f });
+				}
+			}
+		});
+	}
 
 	RuntimeEditor::ScriptEngine& RuntimeEditor::GetEngine()
 	{
