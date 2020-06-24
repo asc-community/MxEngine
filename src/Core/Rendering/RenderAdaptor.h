@@ -35,7 +35,7 @@ namespace MxEngine
     struct RenderAdaptor
     {
         RenderController Renderer;
-        DebugBuffer DebugDraw;
+        DebugBuffer DebugDrawer;
         CResource<CameraController> Viewport;
 
         constexpr static TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;

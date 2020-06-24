@@ -9,6 +9,8 @@
 #include "Rendering/MeshSource.h"
 #include "Rendering/MeshLOD.h"
 #include "Rendering/Skybox.h"
+#include "Rendering/DebugDraw.h"
 #include "Camera/CameraController.h"
+#include "Camera/InputControl.h"
 #include "Script.h"
 #include "Transform.h"

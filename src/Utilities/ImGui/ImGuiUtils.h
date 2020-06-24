@@ -32,6 +32,7 @@
 #include "Layout.h"
 #include "Viewport.h"
 #include "ResourceEditor.h"
+#include "RenderEditor.h"
 
 namespace MxEngine
 {

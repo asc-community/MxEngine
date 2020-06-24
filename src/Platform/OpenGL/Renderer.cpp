@@ -156,6 +156,12 @@ namespace MxEngine
 		return *this;
     }
 
+    Renderer& Renderer::UseDepthBufferMask(bool value)
+    {
+		GLCALL(glDepthMask(value));
+		return *this;
+    }
+
 	Renderer& Renderer::UseSampling(bool value)
 	{
 		if (value)

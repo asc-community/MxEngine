@@ -2,11 +2,11 @@
 
 void SnakePath3D::GenerateLevel()
 {
-	auto& camera = GetCurrentScene().Viewport;
+	auto& camera = RenderManager::GetViewport();
 	control->Reset();
 	cellCount = (int)control->GenerateLevel(600);
 	trace = stack<Cell*>();
-	camera.SetPosition(control->StartPosition - Vector3(0.5f, 0.0f, 0.5f));
+	MxObject::GetByComponent(*camera).Transform->SetPosition(control->StartPosition - Vector3(0.5f, 0.0f, 0.5f));
 }
 
 void SnakePath3D::OnCreate()
@@ -15,45 +15,39 @@ void SnakePath3D::OnCreate()
 	control = MakeUnique<GameController>(20, 1.0f, 0.05f, 1.0f);
 	GenerateLevel();
 	// add objects here
-	this->GetCurrentScene().SetDirectory("Resources/");
-	this->GetCurrentScene().AddObject("Grid", MakeUnique<Grid>());
 
-	auto& scene = this->GetCurrentScene();
+	auto lightObject = MxObject::Create();
+	auto globalLight = lightObject->GetComponent<DirectionalLight>();
 	
-	scene.GlobalLight.AmbientColor  = { 0.1f, 0.1f, 0.1f };
-	scene.GlobalLight.DiffuseColor  = { 0.5f, 0.5f, 0.5f };
-	scene.GlobalLight.SpecularColor = { 1.0f, 1.0f, 1.0f };
+	globalLight->AmbientColor  = { 0.1f, 0.1f, 0.1f };
+	globalLight->DiffuseColor  = { 0.5f, 0.5f, 0.5f };
+	globalLight->SpecularColor = { 1.0f, 1.0f, 1.0f };
 	
-	auto camera = MakeUnique<PerspectiveCamera>();
-	camera->SetZFar(1000.0f);
-	camera->SetAspectRatio((float)this->GetWindow().GetWidth(), (float)this->GetWindow().GetHeight());
-	
-	auto& controller = scene.Viewport;
-	controller.SetCamera(std::move(camera));
-	//controller.Translate(control->GetSize() / 2, 1.5f, control->GetSize() / 2);
-	controller.SetMoveSpeed(5.0f);
-	controller.SetRotateSpeed(0.75f);
+	auto cameraObject = MxObject::Create();
+	auto controller = cameraObject->AddComponent<CameraController>();
 
-	RuntimeEditorBinding("Console").Bind(KeyCode::GRAVE_ACCENT);
-	AppCloseBinding("AppClose").Bind(KeyCode::ESCAPE);
-	InputControlBinding("CameraControl", scene.Viewport)
-		.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT)
-		.BindRotation();
+	controller->SetMoveSpeed(5.0f);
+	controller->SetRotateSpeed(0.75f);
+	controller->ListenWindowResizeEvent();
+	auto input = cameraObject->AddComponent<InputControl>();
+	input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
+	input->BindRotation();
 }
 
 void SnakePath3D::OnUpdate()
 {
-	auto& camera = this->GetCurrentScene().Viewport;
-	static Vector3 lastPos = camera.GetPosition();
-	auto pos = camera.GetPosition();
-	this->GetCurrentScene().Viewport.SetPosition({ pos.x, 1.5f, pos.z });
+	auto& camera = RenderManager::GetViewport();
+	auto& transform = MxObject::GetByComponent(*camera).Transform;
+	static Vector3 lastPos = transform->GetPosition();
+	auto pos = transform->GetPosition();
+	transform->SetPosition({ pos.x, 1.5f, pos.z });
 	Cell* cell = control->GetCollidedCell(pos + Vector3(0.5f));
 
 	if (cell != nullptr)  
 	{
 		if (cell->GetState() == Cell::STATE::VOID)
 		{
-			camera.SetPosition(lastPos);
+			transform->SetPosition(lastPos);
 		}
 		else if (cell->GetState() == Cell::STATE::EMPTY)
 		{
@@ -76,12 +70,12 @@ void SnakePath3D::OnUpdate()
 	}
 	else
 	{
-		camera.SetPosition(lastPos);
+		transform->SetPosition(lastPos);
 	}
 	if (trace.size() >= cellCount)
 		GenerateLevel();
 
-	lastPos = camera.GetPosition();
+	lastPos = transform->GetPosition();
 }
 
 void SnakePath3D::OnDestroy()

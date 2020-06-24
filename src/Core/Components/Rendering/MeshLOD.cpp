@@ -64,4 +64,41 @@ namespace MxEngine
             Logger::Instance().Debug("MxEngine::MeshLOD", MxFormat("generated LOD with {0} indicies for object: {1}", totalIndicies, object.Name.c_str()));
         }
     }
+
+    void MeshLOD::FixBestLOD(const Vector3& viewportPosition, float viewportZoom)
+    {
+        if (!this->AutoLODSelection) return;
+        auto& object = MxObject::GetByComponent(*this);
+        auto meshSource = object.GetComponent<MeshSource>();
+        if (!meshSource.IsValid()) 
+        {
+            this->CurrentLOD = 0; 
+            return;
+        }
+
+        auto box = meshSource->Mesh->GetAABB() * object.Transform->GetMatrix();
+
+        float distance = Length(box.GetCenter() - viewportPosition);
+        Vector3 length = box.Length();
+        float maxLength = Max(length.x, length.y, length.z);
+        float scaledDistance = maxLength / (distance * viewportZoom);
+
+        // magic numbers which were measured in game to find best distance for each LOD peek
+        constexpr static std::array lodDistance = {
+            0.21f, 0.15f, 0.10f, 0.06f, 0.03f, 0.1f
+        };
+        this->CurrentLOD = 0;
+        while (this->CurrentLOD < lodDistance.size() && scaledDistance < lodDistance[this->CurrentLOD])
+            this->CurrentLOD++;
+
+        this->CurrentLOD = (LODIndex)Min(this->CurrentLOD, this->LODs.size());
+    }
+
+    MeshLOD::LODInstance MeshLOD::GetMeshLOD() const
+    {
+        if (this->CurrentLOD == 0 || this->CurrentLOD >= this->LODs.size())
+            return MxObject::GetByComponent(*this).GetComponent<MeshSource>()->Mesh;
+        else
+            return this->LODs[this->CurrentLOD - 1];
+    }
 }

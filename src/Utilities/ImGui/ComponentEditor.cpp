@@ -119,7 +119,7 @@ namespace MxEngine::GUI
 					auto color = instance.GetColor();
 
 					TransformEditor(instance.Transform);
-					if (ImGui::ColorEdit3("base color", &color[0]))
+					if (ImGui::ColorEdit3("base color", &color[0], ImGuiColorEditFlags_HDR))
 						instance.SetColor(color);
 				}
 			}
@@ -132,6 +132,15 @@ namespace MxEngine::GUI
 		TREE_NODE_PUSH("Skybox");
 		REMOVE_COMPONENT_BUTTON(skybox);
 		DrawCubeMapEditor("cubemap", skybox.Texture);
+	}
+
+	void DebugDrawEditor(DebugDraw& debugDraw)
+	{
+		TREE_NODE_PUSH("DebugDraw");
+		REMOVE_COMPONENT_BUTTON(debugDraw);
+		ImGui::Checkbox("draw bounding box (AABB)", &debugDraw.RenderBoundingBox);
+		ImGui::Checkbox("draw bounding sphere", &debugDraw.RenderBoundingSphere);
+		ImGui::ColorEdit4("render color", &debugDraw.Color[0], ImGuiColorEditFlags_AlphaBar);
 	}
 
     void MeshRendererEditor(MeshRenderer& meshRenderer)
@@ -178,7 +187,7 @@ namespace MxEngine::GUI
 
 		int currentLOD = (int)meshLOD.CurrentLOD;
 		if (ImGui::DragInt("current LOD", &currentLOD, 0.1f, 0, (int)meshLOD.LODs.size()))
-			meshLOD.CurrentLOD = (uint16_t)currentLOD;
+			meshLOD.CurrentLOD = (MeshLOD::LODIndex)Min(currentLOD, meshLOD.LODs.size());
 
 		for (auto& lod : meshLOD.LODs)
 		{
@@ -345,6 +354,47 @@ namespace MxEngine::GUI
 
 
 			ImGui::PopID();
+		}
+	}
+
+	void InputControlEditor(InputControl& inputControl)
+	{
+		TREE_NODE_PUSH("InputControl");
+		REMOVE_COMPONENT_BUTTON(inputControl);
+
+		// TODO: custom keys input
+		if (ImGui::Button("bind movement WASD"))
+			inputControl.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D);
+		ImGui::SameLine();
+		if (ImGui::Button("bind movement ESDF"))
+			inputControl.BindMovement(KeyCode::E, KeyCode::S, KeyCode::D, KeyCode::F);
+		ImGui::SameLine();
+		if (ImGui::Button("bind movement QWES"))
+			inputControl.BindMovement(KeyCode::Q, KeyCode::W, KeyCode::E, KeyCode::S);
+
+		if (ImGui::Button("bind rotation"))
+			inputControl.BindRotation();
+		ImGui::SameLine();
+		if (ImGui::Button("bind horizontal rotation"))
+			inputControl.BindHorizontalRotation();
+		ImGui::SameLine();
+		if (ImGui::Button("bind vertical rotation"))
+			inputControl.BindVerticalRotation();
+
+		if (ImGui::Button("bind movement WASD SPACE/LSHIFT"))
+			inputControl.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
+		ImGui::SameLine();
+		if (ImGui::Button("bind movement ESDF SPACE/LSHIFT"))
+			inputControl.BindMovement(KeyCode::E, KeyCode::S, KeyCode::D, KeyCode::F, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
+		ImGui::SameLine();
+		if (ImGui::Button("bind movement QWES SPACE/LSHIFT"))
+			inputControl.BindMovement(KeyCode::Q, KeyCode::W, KeyCode::E, KeyCode::S, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
+
+		if (ImGui::Button("unbind all"))
+		{
+			auto& object = MxObject::GetByComponent(inputControl);
+			object.RemoveComponent<InputControl>();
+			object.AddComponent<InputControl>();
 		}
 	}
 }

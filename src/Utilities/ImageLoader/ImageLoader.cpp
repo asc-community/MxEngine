@@ -88,20 +88,15 @@ namespace MxEngine
 			arr.resize(height, width * channels, 0);
 		}
 
-		// TODO: use memcpy to increase performance
 		auto copySide = [&image, &width, &height, &channels](Array2D<unsigned char>& dst, size_t sliceX, size_t sliceY)
 		{
 			for (size_t i = 0; i < height; i++)
 			{
-				for (size_t j = 0; j < width; j++)
-				{
-					size_t y = i + sliceY * height;
-					size_t x = j + sliceX * width;
-					for (size_t k = 0; k < channels; k++)
-					{
-						dst[i][j * channels + k] = image.data[(y * image.width + x) * channels + k];
-					}
-				}
+				size_t y = i + sliceY * height;
+				size_t x = sliceX * width;
+				size_t bytesInRow = width * channels;
+
+				std::memcpy(dst[i].data(), &image.data[(y * image.width + x) * channels], bytesInRow);
 			}
 		};
 

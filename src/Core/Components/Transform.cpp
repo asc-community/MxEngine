@@ -32,6 +32,10 @@ namespace MxEngine
 {
     static Matrix4x4 I(1.0f);
 
+    static Vector3 ForwardVec = MakeVector3( 0.0f, 0.0f, 1.0f);
+    static Vector3 RightVec   = MakeVector3(-1.0f, 0.0f, 0.0f);
+    static Vector3 UpVec      = MakeVector3( 0.0f, 1.0f, 0.0f);
+
     const Matrix4x4& Transform::GetMatrix() const
     {
         if (this->needTransformUpdate)
@@ -217,19 +221,19 @@ namespace MxEngine
 
     Transform& Transform::TranslateForward(float dist)
     {
-        this->Translate(this->rotation * MakeVector3(0.0f, 0.0f, 1.0f) * dist);
+        this->Translate(this->rotation * ForwardVec * dist);
         return *this;
     }
 
     Transform& Transform::TranslateRight(float dist)
     {
-        this->Translate(this->rotation * MakeVector3(1.0f, 0.0f, 0.0f) * dist);
+        this->Translate(this->rotation * RightVec * dist);
         return *this;
     }
 
     Transform& Transform::TranslateUp(float dist)
     {
-        this->Translate(this->rotation * MakeVector3(0.0f, 1.0f, 0.0f) * dist);
+        this->Translate(this->rotation * UpVec * dist);
         return *this;
     }
 }

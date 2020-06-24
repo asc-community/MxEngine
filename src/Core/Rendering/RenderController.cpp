@@ -181,7 +181,7 @@ namespace MxEngine
 			}
 
 			// OpenGL requires all texture units to be bound, even if they are never accessed
-			constexpr size_t MAX_DIR_SOURCES = 2;
+			constexpr size_t MAX_DIR_SOURCES = 2; //-V525
 			constexpr size_t MAX_SPOT_SOURCES = 8;
 			constexpr size_t MAX_POINT_SOURCES = 2;
 
@@ -573,7 +573,7 @@ namespace MxEngine
     void RenderController::SubmitPrimitive(const SubMesh& object, const Material& material, const Transform& parentTransform, size_t instanceCount)
     {
 		RenderUnit* primitivePtr = nullptr;
-		if (material.Transparency == 1.0f) // put object into separate list depending on its transparency
+		if (material.Transparency == 1.0f) // put object into separate list depending on its transparency //-V550
 			primitivePtr = &this->Pipeline.OpaqueRenderUnits.emplace_back();
 		else
 			primitivePtr = &this->Pipeline.TransparentRenderUnits.emplace_back();
@@ -631,11 +631,11 @@ namespace MxEngine
 
 			if (!this->Pipeline.TransparentRenderUnits.empty())
 			{
+				this->GetRenderEngine().UseDepthBufferMask(false);
 				this->ToggleFaceCulling(false);
-				this->GetRenderEngine().UseDepthBuffer(false);
 				this->DrawObjects(camera, this->Pipeline.TransparentRenderUnits);
-				this->GetRenderEngine().UseDepthBuffer(true);
 				this->ToggleFaceCulling(true);
+				this->GetRenderEngine().UseDepthBufferMask(true);
 			}
 
 			this->DrawDebugBuffer(camera);

@@ -29,6 +29,7 @@
 #include "Script.h"
 #include "Utilities/Logger/Logger.h"
 #include "Utilities/FileSystem/FileManager.h"
+#include "Core/Application/Application.h"
 
 namespace MxEngine
 {
@@ -79,6 +80,17 @@ namespace MxEngine
 
                 this->fileUpdate = std::move(systemFileTime);
             }
+        }
+    }
+
+    void Script::Execute()
+    {
+        auto& editor = Application::Get()->GetRuntimeEditor();
+        MAKE_SCOPE_PROFILER("Application::ExecuteScript");
+        editor.ExecuteScript(this->GetContent());
+        if (editor.HasErrorsInExecution())
+        {
+            Logger::Instance().Error("Application::ExecuteScript", editor.GetLastErrorMessage());
         }
     }
 

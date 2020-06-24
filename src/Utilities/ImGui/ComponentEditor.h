@@ -37,6 +37,7 @@ namespace MxEngine::GUI
 	void ScriptEditor(Script& script);
 	void InstanceFactoryEditor(InstanceFactory& instanceFactory);
 	void SkyboxEditor(Skybox& skybox);
+	void DebugDrawEditor(DebugDraw& debugDraw);
 	void MeshRendererEditor(MeshRenderer& meshRenderer);
 	void MeshSourceEditor(MeshSource& meshSource);
 	void MeshLODEditor(MeshLOD& meshLOD);
@@ -44,4 +45,5 @@ namespace MxEngine::GUI
 	void PointLightEditor(PointLight& pointLight);
 	void SpotLightEditor(SpotLight& spotLight);
 	void CameraControllerEditor(CameraController& camera);
+	void InputControlEditor(InputControl& inputControl);
 }

@@ -44,13 +44,11 @@ namespace MxEngine
 		};
 		using FrontendStorage = MxVector<Point>;
 
-		FrontendStorage storage;
-
 		GResource<VertexBuffer> VBO;
 		GResource<VertexArray> VAO;
+
+		FrontendStorage storage;
 	public:
-		bool DrawBoundingSpheres = false;
-		bool DrawAxisBoundingBoxes = false;
 		bool DrawAsScreenOverlay = false;
 
 		void Init();

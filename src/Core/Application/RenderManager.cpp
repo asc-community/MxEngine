@@ -48,7 +48,7 @@ namespace MxEngine
 
     DebugBuffer& RenderManager::GetDebugDrawer()
     {
-        return Application::Get()->GetRenderAdaptor().DebugDraw;
+        return Application::Get()->GetRenderAdaptor().DebugDrawer;
     }
 
     #define FWD(func_name, ...) Application::Get()->GetRenderAdaptor().func_name(__VA_ARGS__)
@@ -61,6 +61,11 @@ namespace MxEngine
     void RenderManager::SetRenderToDefaultFrameBuffer(bool value)
     {
         FWD(SetRenderToDefaultFrameBuffer, value);
+    }
+
+    bool RenderManager::IsRenderedToDefaultFrameBuffer()
+    {
+        return FWD(IsRenderedToDefaultFrameBuffer);
     }
 
     void RenderManager::SetFogColor(const Vector3& color)

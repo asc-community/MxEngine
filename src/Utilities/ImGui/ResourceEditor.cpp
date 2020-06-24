@@ -122,11 +122,11 @@ namespace MxEngine::GUI
         ImGui::DragFloat("transparency", &material->Transparency, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("displacement", &material->Displacement, 0.01f);
         ImGui::DragFloat("reflection", &material->Reflection, 0.01f, 0.0f, 1.0f);
-        ImGui::ColorEdit3("ambient color", &material->AmbientColor[0]);
-        ImGui::ColorEdit3("diffuse color", &material->DiffuseColor[0]);
-        ImGui::ColorEdit3("specular color", &material->SpecularColor[0]);
-        ImGui::ColorEdit3("emmisive color", &material->EmmisiveColor[0]);
-        ImGui::ColorEdit3("base color", &material->BaseColor[0]);
+        ImGui::ColorEdit3("ambient color", &material->AmbientColor[0], ImGuiColorEditFlags_HDR);
+        ImGui::ColorEdit3("diffuse color", &material->DiffuseColor[0], ImGuiColorEditFlags_HDR);
+        ImGui::ColorEdit3("specular color", &material->SpecularColor[0], ImGuiColorEditFlags_HDR);
+        ImGui::ColorEdit3("emmisive color", &material->EmmisiveColor[0], ImGuiColorEditFlags_HDR);
+        ImGui::ColorEdit3("base color", &material->BaseColor[0], ImGuiColorEditFlags_HDR);
     }
 
     void DrawAABBEditor(const char* name, AABB& aabb)
@@ -140,9 +140,9 @@ namespace MxEngine::GUI
 
     void DrawLightBaseEditor(LightBase& base)
     {
-        ImGui::ColorEdit3("ambient color",  &base.AmbientColor[0],  ImGuiColorEditFlags_::ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
-        ImGui::ColorEdit3("diffuse color",  &base.DiffuseColor[0],  ImGuiColorEditFlags_::ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
-        ImGui::ColorEdit3("specular color", &base.SpecularColor[0], ImGuiColorEditFlags_::ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
+        ImGui::ColorEdit3("ambient color",  &base.AmbientColor[0],  ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
+        ImGui::ColorEdit3("diffuse color",  &base.DiffuseColor[0],  ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
+        ImGui::ColorEdit3("specular color", &base.SpecularColor[0], ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
 
         base.AmbientColor  = VectorMax(MakeVector3(0.0f), base.AmbientColor );
         base.DiffuseColor  = VectorMax(MakeVector3(0.0f), base.DiffuseColor );

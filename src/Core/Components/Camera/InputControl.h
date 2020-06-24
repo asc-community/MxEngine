@@ -26,30 +26,23 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Viewport.h"
-#include "Utilities/ImGui/ImGuiBase.h"
-#include "Core/Application/RenderManager.h"
-#include "Core/Event/Events/WindowResizeEvent.h"
-#include "Core/Application/EventManager.h"
+#pragma once
 
-namespace MxEngine::GUI
+#include "Utilities/ECS/Component.h"
+#include "Core/Event/Events/KeyEvent.h"
+
+namespace MxEngine
 {
-	void DrawViewportWindow(Vector2& viewportSize)
+	class InputControl
 	{
-		ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-		auto& viewport = RenderManager::GetViewport();
+		MAKE_COMPONENT(InputControl);
+	public:
+		~InputControl();
 
-		if (viewport.IsValid() && viewport->GetTexture().IsValid())
-		{
-			Vector2 newWindowSize = ImGui::GetWindowSize();
-			if (newWindowSize != viewportSize) // notify application that viewport size has been changed
-			{
-				EventManager::AddEvent(MakeUnique<WindowResizeEvent>(viewportSize, newWindowSize));
-				viewportSize = newWindowSize;
-			}
-			ImGui::SetCursorPos((newWindowSize - viewportSize) * 0.5f);
-			ImGui::Image((void*)(uintptr_t)viewport->GetTexture()->GetNativeHandle(), viewportSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-		}
-		ImGui::End();
-	}
+		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right);
+		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down);
+		void BindRotation();
+		void BindHorizontalRotation();
+		void BindVerticalRotation();
+	};
 }

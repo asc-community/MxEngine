@@ -44,10 +44,14 @@ namespace MxEngine
         MAKE_COMPONENT(MeshLOD);
     public:
         using LODInstance = Resource<Mesh, ResourceFactory>;
+        using LODIndex = uint8_t;
+
         bool AutoLODSelection = true;
-        uint16_t CurrentLOD = 0;
+        LODIndex CurrentLOD = 0;
 
         MxVector<LODInstance> LODs;
         void Generate(LODConfig config = LODConfig{ });
+        void FixBestLOD(const Vector3& viewportPosition, float viewportZoom = 1.0f);
+        LODInstance GetMeshLOD() const;
     };
 }

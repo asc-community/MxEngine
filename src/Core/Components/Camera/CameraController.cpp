@@ -27,9 +27,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "CameraController.h"
-#include "Core/Application/EventManager.h"
 #include "Core/Event/Events/WindowResizeEvent.h"
-#include "Core/Event/Events/MouseEvent.h"
+#include "Core/Application/EventManager.h"
 #include "OrthographicCamera.h"
 #include "PerspectiveCamera.h"
 
@@ -106,12 +105,9 @@ namespace MxEngine
 	const Matrix4x4& CameraController::GetMatrix(const Vector3& position) const
 	{
 		if (this->Camera.UpdateProjection) this->SubmitMatrixProjectionChanges();
-		if (updateCamera)
-		{
-			auto view = MakeViewMatrix(position, position + direction, up);
-			this->Camera.SetViewMatrix(view);
-			this->updateCamera = false;
-		}
+		
+		auto view = MakeViewMatrix(position, position + direction, up);
+		this->Camera.SetViewMatrix(view);
 
 		return this->Camera.GetMatrix();
 	}
@@ -119,12 +115,10 @@ namespace MxEngine
     Matrix4x4 CameraController::GetStaticMatrix() const
     {
 		if (this->Camera.UpdateProjection) this->SubmitMatrixProjectionChanges();
-		if (updateCamera)
-		{
-			auto view = MakeViewMatrix(MakeVector3(0.0f), direction, up);
-			this->Camera.SetViewMatrix(view);
-			this->updateCamera = false;
-		}
+		
+		auto view = MakeViewMatrix(MakeVector3(0.0f), direction, up);
+		this->Camera.SetViewMatrix(view);
+
 		auto ViewMatrix = (Matrix3x3)this->Camera.GetViewMatrix();
 		const Matrix4x4& ProjectionMatrix = this->Camera.GetProjectionMatrix();
 		return ProjectionMatrix * (Matrix4x4)ViewMatrix;
@@ -187,8 +181,7 @@ namespace MxEngine
 
 	void CameraController::SetDirection(const Vector3& direction)
 	{
-		this->direction = direction;
-		this->updateCamera = true;
+		this->direction = direction + MakeVector3(0.0f, 0.0f, 0.00001f);
 	}
 
 	float CameraController::GetHorizontalAngle() const
@@ -280,7 +273,6 @@ namespace MxEngine
 			0.0f,
 			cos(horizontalAngle - HalfPi<float>())
 		);
-		this->updateCamera = true;
 		return *this;
 	}
 
@@ -292,7 +284,6 @@ namespace MxEngine
 	void CameraController::SetUpVector(const Vector3& up)
 	{
 		this->up = up;
-		this->updateCamera = true;
 	}
 
 	void CameraController::SetRightVector(const Vector3& right)
@@ -305,7 +296,7 @@ namespace MxEngine
 		return this->forward;
 	}
 
-	const Vector3& CameraController::GetUpVector() const //-V524
+	const Vector3& CameraController::GetUpVector() const
 	{
 		return this->up;
 	}
@@ -313,93 +304,5 @@ namespace MxEngine
 	const Vector3& CameraController::GetRightVector() const
 	{
 		return this->right;
-	}
-
-    void CameraController::BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right)
-    {
-		this->BindMovement(forward, left, back, right, KeyCode::UNKNOWN, KeyCode::UNKNOWN);
-    }
-
-    void CameraController::BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down)
-    {
-		Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object movement");
-		auto& object = MxObject::GetByComponent(*this);
-		auto camera = object.GetComponent<CameraController>();
-		MxString uuid = camera.GetUUID();
-
-		EventManager::AddEventListener(uuid,
-			[forward, back, right, left, up, down, camera, transform = object.Transform](KeyEvent& event) mutable
-		{
-			auto dt = Application::Get()->GetTimeDelta();
-			if (event.IsHeld(forward))
-			{
-				transform->Translate(camera->GetForwardVector() * camera->GetMoveSpeed() * dt);
-			}
-			if (event.IsHeld(back))
-			{
-				transform->Translate(-1.0f * camera->GetForwardVector() * camera->GetMoveSpeed() * dt);
-			}
-			if (event.IsHeld(right))
-			{
-				transform->Translate(camera->GetRightVector() * camera->GetMoveSpeed() * dt);
-			}
-			if (event.IsHeld(left))
-			{
-				transform->Translate(-1.0f * camera->GetRightVector() * camera->GetMoveSpeed() * dt);
-			}
-			if (event.IsHeld(up))
-			{
-				transform->Translate(camera->GetUpVector() * camera->GetMoveSpeed() * dt);
-			}
-			if (event.IsHeld(down))
-			{
-				transform->Translate(-1.0f * camera->GetUpVector() * camera->GetMoveSpeed() * dt);
-			}
-		});
-    }
-
-	void CameraController::BindRotation()
-	{
-		Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object rotation");
-		auto camera = MxObject::GetByComponent(*this).GetComponent<CameraController>();
-		MxString uuid = camera.GetUUID();
-
-		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
-		{
-			static Vector2 oldPos = event.position;
-			auto dt = Application::Get()->GetTimeDelta();
-			camera->Rotate(dt* (oldPos.x - event.position.x), dt* (oldPos.y - event.position.y));
-			oldPos = event.position;
-		});
-	}
-
-	void CameraController::BindHorizontalRotation()
-	{
-		Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object rotation");
-		auto camera = MxObject::GetByComponent(*this).GetComponent<CameraController>();
-		MxString uuid = camera.GetUUID();
-
-		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
-		{
-			static Vector2 oldPos = event.position;
-			auto dt = Application::Get()->GetTimeDelta();
-			camera->Rotate(dt* (oldPos.x - event.position.x), 0.0f);
-			oldPos = event.position;
-		});
-	}
-
-	void CameraController::BindVerticalRotation()
-	{
-		Logger::Instance().Debug("MxEngine::InputControlBinding", "bound object rotation");
-		auto camera = MxObject::GetByComponent(*this).GetComponent<CameraController>();
-		MxString uuid = camera.GetUUID();
-
-		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
-		{
-			static Vector2 oldPos = event.position;
-			auto dt = Application::Get()->GetTimeDelta();
-			camera->Rotate(0.0f, dt* (oldPos.y - event.position.y));
-			oldPos = event.position;
-		});
 	}
 }

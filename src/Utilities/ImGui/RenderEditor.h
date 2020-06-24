@@ -26,30 +26,11 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Viewport.h"
-#include "Utilities/ImGui/ImGuiBase.h"
-#include "Core/Application/RenderManager.h"
-#include "Core/Event/Events/WindowResizeEvent.h"
-#include "Core/Application/EventManager.h"
+#pragma once
+
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine::GUI
 {
-	void DrawViewportWindow(Vector2& viewportSize)
-	{
-		ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-		auto& viewport = RenderManager::GetViewport();
-
-		if (viewport.IsValid() && viewport->GetTexture().IsValid())
-		{
-			Vector2 newWindowSize = ImGui::GetWindowSize();
-			if (newWindowSize != viewportSize) // notify application that viewport size has been changed
-			{
-				EventManager::AddEvent(MakeUnique<WindowResizeEvent>(viewportSize, newWindowSize));
-				viewportSize = newWindowSize;
-			}
-			ImGui::SetCursorPos((newWindowSize - viewportSize) * 0.5f);
-			ImGui::Image((void*)(uintptr_t)viewport->GetTexture()->GetNativeHandle(), viewportSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-		}
-		ImGui::End();
-	}
+	void DrawRenderEditor();
 }

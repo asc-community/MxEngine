@@ -6,6 +6,7 @@ void InitCamera(MxObject& object)
 
 	auto controller = object.AddComponent<CameraController>();
 	auto skybox = object.AddComponent<Skybox>();
+	auto input = object.AddComponent<InputControl>();
 	skybox->Texture = AssetManager::LoadCubeMap("textures/dawn.jpg"_id);
 
 	const auto& window = Application::Get()->GetWindow();
@@ -15,8 +16,8 @@ void InitCamera(MxObject& object)
 	controller->SetMoveSpeed(5.0f);
 	controller->SetRotateSpeed(0.75f);
 	controller->ListenWindowResizeEvent();
-	controller->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
-	controller->BindRotation();
+	input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
+	input->BindRotation();
 
 	object.Transform->Translate(MakeVector3(1.0f, 3.0f, 0.0f));
 }

@@ -99,27 +99,6 @@ namespace MxEngine
 		return Logger::Instance();
 	}
 
-	void Application::ExecuteScript(Script& script)
-	{
-		script.UpdateContents();
-		this->ExecuteScript(script.GetContent());
-	}
-
-	void Application::ExecuteScript(const MxString& script)
-	{
-		this->ExecuteScript(script.c_str());
-	}
-
-	void Application::ExecuteScript(const char* script)
-	{
-		MAKE_SCOPE_PROFILER("Application::ExecuteScript");
-		this->GetRuntimeEditor().Execute(script);
-		if (this->GetRuntimeEditor().HasErrorsInExecution())
-		{
-			Logger::Instance().Error("Application::ExecuteScript", this->GetRuntimeEditor().GetLastErrorMessage());
-		}
-	}
-
 	void Application::ToggleRuntimeEditor(bool isVisible)
 	{
 		this->GetRuntimeEditor().Toggle(isVisible);
@@ -436,13 +415,14 @@ namespace MxEngine
 			static_cast<float>(this->GetWindow().GetHeight()) / 2.0f });
 		this->GetEventDispatcher().AddEventListener("DeveloperConsole",
 			[this](UpdateEvent&) { this->GetRuntimeEditor().OnRender(); });
-		this->GetRuntimeEditor().Execute("InitializeOpenGL()");
+		this->GetRuntimeEditor().ExecuteScript("InitializeOpenGL()");
 
 		this->GetRuntimeEditor().RegisterComponentEditor("Transform",        GUI::TransformEditor);
 		this->GetRuntimeEditor().RegisterComponentEditor("Behaviour",        GUI::BehaviourEditor);
 		this->GetRuntimeEditor().RegisterComponentEditor("Script",           GUI::ScriptEditor);
 		this->GetRuntimeEditor().RegisterComponentEditor("InstanceFactory",  GUI::InstanceFactoryEditor);
 		this->GetRuntimeEditor().RegisterComponentEditor("Skybox",           GUI::SkyboxEditor);
+		this->GetRuntimeEditor().RegisterComponentEditor("DebugDraw",        GUI::DebugDrawEditor);
 		this->GetRuntimeEditor().RegisterComponentEditor("MeshRenderer",     GUI::MeshRendererEditor);
 		this->GetRuntimeEditor().RegisterComponentEditor("MeshSource",       GUI::MeshSourceEditor);
 		this->GetRuntimeEditor().RegisterComponentEditor("MeshLOD",          GUI::MeshLODEditor);
@@ -450,6 +430,7 @@ namespace MxEngine
 		this->GetRuntimeEditor().RegisterComponentEditor("PointLight",       GUI::PointLightEditor);
 		this->GetRuntimeEditor().RegisterComponentEditor("SpotLight",        GUI::SpotLightEditor);
 		this->GetRuntimeEditor().RegisterComponentEditor("CameraController", GUI::CameraControllerEditor);
+		this->GetRuntimeEditor().RegisterComponentEditor("InputControl", GUI::InputControlEditor);
 	}
 #else
 	void Application::InitializeDeveloperConsole(DeveloperConsole& console)

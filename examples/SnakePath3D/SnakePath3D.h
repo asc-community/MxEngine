@@ -1,14 +1,16 @@
 #include <MxEngine.h>
-#include <Library/Bindings/Bindings.h>
 #include <Library/Primitives/Primitives.h>
+#include <Library/Primitives/Colors.h>
 
 using namespace MxEngine;
 
 using namespace std;
 
-class Cell : public Cube
+class Cell
 {
 public:
+	MxObject::MxObjectHandle object;
+
 	const VectorInt2 Coord;
 
 	enum class STATE
@@ -32,24 +34,24 @@ public:
 		// texture storage
 		float height = 3.0f;
 		this->state = state;
-		auto scale = this->ObjectTransform.GetScale();
+		auto scale = object->Transform->GetScale();
 		switch (state)
 		{
 		case Cell::STATE::VOID:
-			this->Scale(1.0f, height / scale.y, 1.0f);
-			this->ObjectTexture = Colors::MakeTexture(Colors::WHITE);
+			object->Transform->Scale(MakeVector3(1.0f, height / scale.y, 1.0f));
+			object->GetOrAddComponent<MeshRenderer>()->GetMaterial()->DiffuseMap = Colors::MakeTexture(Colors::WHITE);
 			break;
 		case Cell::STATE::EMPTY:
-			this->Scale(1.0f, 0.1f / scale.y, 1.0f);
-			this->ObjectTexture = Colors::MakeTexture(Colors::GREY);
+			object->Transform->Scale(MakeVector3(1.0f, 0.1f / scale.y, 1.0f));
+			object->GetOrAddComponent<MeshRenderer>()->GetMaterial()->DiffuseMap = Colors::MakeTexture(Colors::GREY);
 			break;
 		case Cell::STATE::MARKED:
-			this->Scale(1.0f, 0.1f / scale.y, 1.0f);
-			this->ObjectTexture = Colors::MakeTexture(Colors::RED);
+			object->Transform->Scale(MakeVector3(1.0f, 0.1f / scale.y, 1.0f));
+			object->GetOrAddComponent<MeshRenderer>()->GetMaterial()->DiffuseMap = Colors::MakeTexture(Colors::RED);
 			break;
 		case Cell::STATE::LAST:
-			this->Scale(1.0f, 0.1f / scale.y, 1.0f);
-			this->ObjectTexture = Colors::MakeTexture(Colors::YELLOW);
+			object->Transform->Scale(MakeVector3(1.0f, 0.1f / scale.y, 1.0f));
+			object->GetOrAddComponent<MeshRenderer>()->GetMaterial()->DiffuseMap = Colors::MakeTexture(Colors::YELLOW);
 			break;
 		default:
 			break;
@@ -59,9 +61,11 @@ public:
 	Cell(float size, float margin, float x, float y, float altitudeOffset)
 		: Coord(x, y)
 	{
-		this->Translate(-0.5f, -0.9f, -0.5f);
-		this->Scale(size - 2 * margin, size / 10, size - 2 * margin);
-		this->Translate(x * size, altitudeOffset, y * size);
+		this->object = MxObject::Create();
+		this->object->AddComponent<MeshSource>(Primitives::CreateCube());
+		object->Transform->Translate(MakeVector3(-0.5f, -0.9f, -0.5f));
+		object->Transform->Scale(MakeVector3(size - 2 * margin, size / 10, size - 2 * margin));
+		object->Transform->Translate(MakeVector3(x * size, altitudeOffset, y * size));
 	}
 
 	static bool CommonSide(VectorInt2 c1, VectorInt2 c2)
@@ -81,14 +85,18 @@ public:
 	GameController(size_t size, float cellSize, float cellMargin, float cellOffset)
 		: size(size), cellSize(cellSize)
 	{
+		auto object = MxObject::Create();
+		object->AddComponent<MeshSource>(Primitives::CreatePlane(1000));
+		auto material = object->AddComponent<MeshRenderer>()->GetMaterial();
+		material->DiffuseMap = Primitives::CreateGridTexture();
+
 		auto ctx = Application::Get();
 		cells.resize(size, size);
 		for (size_t x = 0; x < size; x++)
 		{
 			for (size_t y = 0; y < size; y++)
 			{
-				cells[x][y] = (Cell*)&ctx->GetCurrentScene().AddObject(MxFormat("Cube({0}, {1})", x, y),
-					MakeUnique<Cell>(cellSize, cellMargin, (float)x, (float)y, cellOffset));
+				cells[x][y] = new Cell(cellSize, cellMargin, (float)x, (float)y, cellOffset);
 
 			}
 		}

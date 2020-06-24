@@ -73,21 +73,11 @@ namespace MxEngine
 
     MxObject::MxObject()
     {
-		this->Transform = this->components.AddComponent<MxEngine::Transform>();
+		this->Transform = this->AddComponent<MxEngine::Transform>();
     }
 
     MxObject::~MxObject()
     {
 		this->components.RemoveAllComponents();
     }
-
-    const AABB& MxObject::GetAABB() const
-    {
-		// TODO: do not dublicate Mesh::GetAABB() behaviour with transform multiply
-		if (this->GetComponent<MeshSource>().IsValid())
-			this->boundingBox = this->GetComponent<MeshSource>()->Mesh->GetAABB() * this->Transform->GetMatrix();
-		else
-			this->boundingBox = AABB{ };
-		return this->boundingBox;
-	}
 }

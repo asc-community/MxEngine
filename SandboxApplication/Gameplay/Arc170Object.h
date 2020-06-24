@@ -11,9 +11,8 @@ void InitArc(MxObject& object)
 		void OnUpdate(MxObject& object, float dt)
 		{
 			auto script = object.GetComponent<Script>();
-			if(script.IsValid())
-				Application::Get()->ExecuteScript(*script);
-
+			if (script.IsValid()) script->Execute();
+			
 			object.Transform->RotateY(-10.0f * dt);
 			object.Transform->TranslateForward(2.0f * dt);
 		}

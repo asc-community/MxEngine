@@ -31,6 +31,7 @@
 #include "Core/Components/Rendering/MeshRenderer.h"
 #include "Core/Components/Rendering/MeshSource.h"
 #include "Core/Components/Rendering/MeshLOD.h"
+#include "Core/Components/Rendering/DebugDraw.h"
 
 namespace MxEngine
 {
@@ -50,8 +51,8 @@ namespace MxEngine
         // helper objects
         environment.RectangularObject.Init(1.0f);
         environment.SkyboxCubeObject.Init();
-        this->DebugDraw.Init();
-        environment.DebugBufferObject.VAO = this->DebugDraw.GetVAO();
+        this->DebugDrawer.Init();
+        environment.DebugBufferObject.VAO = this->DebugDrawer.GetVAO();
 
         // default textures
         environment.DefaultBlackMap = Colors::MakeTexture(Colors::BLACK);
@@ -271,17 +272,10 @@ namespace MxEngine
                 if (!meshSource.IsDrawn || !meshRenderer.IsValid()) continue;
 
                 // we do not try to use LODs for instanced objects, as its quite hard and time consuming. TODO: fix this
-                if (meshLOD.IsValid() && !meshLOD->LODs.empty() && instanceCount == 0)
+                if (meshLOD.IsValid() && instanceCount == 0)
                 {
-                    auto& currentLOD = meshLOD->CurrentLOD;
-                    if(meshLOD->AutoLODSelection) 
-                        currentLOD = (uint16_t)ComputeLODLevel(object.GetAABB(), viewportPosition, viewportZoom);
-
-                    if (currentLOD > 0)
-                    {
-                        size_t lod = Min(currentLOD - 1, meshLOD->LODs.size() - 1);
-                        mesh = meshLOD->LODs[lod]; // use LOD of original mesh as render target
-                    }
+                    meshLOD->FixBestLOD(viewportPosition, viewportZoom);
+                    mesh = meshLOD->GetMeshLOD();
                 }
 
                 auto& submeshes = mesh->GetSubmeshes();
@@ -321,39 +315,43 @@ namespace MxEngine
 
         {
             MAKE_SCOPE_PROFILER("RenderAdaptor::SubmitDebugData()");
-            this->DebugDraw.ClearBuffer();
-            auto debugColor = MakeVector4(1.0f, 0.0f, 0.0f, 1.0f);
-            if (this->DebugDraw.DrawAxisBoundingBoxes | this->DebugDraw.DrawBoundingSpheres)
+            this->DebugDrawer.ClearBuffer();
+
+            constexpr auto submitDebugData = [](DebugBuffer& drawer, DebugDraw& debugDraw, const AABB& box)
             {
-                for (auto& meshSource : meshSourceView)
+                if (debugDraw.RenderBoundingBox)
+                    drawer.SubmitAABB(box, debugDraw.Color);
+                if (debugDraw.RenderBoundingSphere)
+                    drawer.SubmitSphere(ToSphere(box), debugDraw.Color);
+            };
+
+            auto debugDrawView = ComponentFactory::GetView<DebugDraw>();
+            for (auto& debugDraw : debugDrawView)
+            {
+                auto& object = MxObject::GetByComponent(debugDraw);
+                auto instances = object.GetComponent<InstanceFactory>();
+                auto meshSource = object.GetComponent<MeshSource>();
+                AABB box;
+                if (meshSource.IsValid())
                 {
-                    auto& object = MxObject::GetByComponent(meshSource);
-                    auto instances = object.GetComponent<InstanceFactory>();
-                    AABB box;
-                    if (instances.IsValid() && object.GetComponent<MeshSource>().IsValid())
+                    if (instances.IsValid())
                     {
                         for (const auto& instance : instances->GetInstances())
                         {
-                            box = object.GetComponent<MeshSource>()->Mesh->GetAABB() * instance.Transform.GetMatrix();
-                            if (this->DebugDraw.DrawAxisBoundingBoxes)
-                                this->DebugDraw.SubmitAABB(box, debugColor);
-                            if (this->DebugDraw.DrawBoundingSpheres)
-                                this->DebugDraw.SubmitSphere(ToSphere(box), debugColor);
+                            box = meshSource->Mesh->GetAABB() * instance.Transform.GetMatrix();
+                            submitDebugData(this->DebugDrawer, debugDraw, box);
                         }
                     }
                     else
                     {
-                        box = object.GetAABB();
-                        if (this->DebugDraw.DrawAxisBoundingBoxes)
-                            this->DebugDraw.SubmitAABB(box, debugColor);
-                        if (this->DebugDraw.DrawBoundingSpheres)
-                            this->DebugDraw.SubmitSphere(ToSphere(box), debugColor);
+                        box = meshSource->Mesh->GetAABB() * object.Transform->GetMatrix();
+                        submitDebugData(this->DebugDrawer, debugDraw, box);
                     }
                 }
-                this->DebugDraw.SubmitBuffer();
-                environment.DebugBufferObject.VertexCount = this->DebugDraw.GetSize();
-                environment.OverlayDebugDraws = this->DebugDraw.DrawAsScreenOverlay;
             }
+            this->DebugDrawer.SubmitBuffer();
+            environment.DebugBufferObject.VertexCount = this->DebugDrawer.GetSize();
+            environment.OverlayDebugDraws = this->DebugDrawer.DrawAsScreenOverlay;
         }
 
         this->Renderer.StartPipeline();

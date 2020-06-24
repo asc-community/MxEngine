@@ -56,7 +56,6 @@ namespace MxEngine
 		Vector2 cachedWindowSize{ 0.0f };
 		bool shouldRender = false;
 		bool useDefaultFrameBufferCached = false;
-		bool debugTools = true;
 
 		MxVector<std::function<void(MxObject&)>> componentEditorCallbacks;
 		MxVector<std::function<void(MxObject&)>> componentAdderCallbacks;
@@ -73,14 +72,13 @@ namespace MxEngine
 		void OnRender();
 		void SetSize(const Vector2& size);
 		void Toggle(bool isVisible = true);
-		void UseDebugTools(bool value = true);
 		void AddKeyBinding(KeyCode openKey);
 
 		ScriptEngine& GetEngine();
 		Vector2 GetSize() const;
 		bool IsToggled() const;
 
-		void Execute(const MxString& code);
+		void ExecuteScript(const MxString& code);
 		bool HasErrorsInExecution() const;
 		const MxString& GetLastErrorMessage() const;
 

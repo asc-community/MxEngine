@@ -35,9 +35,6 @@ public:
 
 		// auto object = MxObject::Create();
 		// object->AddComponent<MeshSource>(AssetManager::LoadMesh("D:/repos/glTF-Sample-Models/2.0/Sponza/glTF/Sponza.gltf"));
-
-		Script initScript(FileManager::GetFilePath("scripts/init.py"_id));
-        Application::Get()->ExecuteScript(initScript);
 		
 		auto dirLight = MxObject::Create();
 		InitDirLight(*dirLight);
@@ -50,12 +47,6 @@ public:
 
 		auto camera = MxObject::Create();
 		InitCamera(*camera);
-
-		// TODO: add debug draw component 
-		// TODO: move LOD compute logic to MeshLOD component
-		// TODO: runtime editor settings
-		// TODO: remove AABB from MxObject
-		// TODO: update readme
 
 		RenderManager::SetViewport(camera->GetComponent<CameraController>());
     }

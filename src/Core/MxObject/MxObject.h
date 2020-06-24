@@ -90,8 +90,6 @@ namespace MxEngine
 		MxObject& operator=(MxObject&&) = default;
 		~MxObject();
 
-		const AABB& GetAABB() const;
-
 		template<typename T, typename... Args>
 		auto AddComponent(Args&&... args)
 		{

@@ -55,8 +55,10 @@ namespace MxEngine
         void Load(const MxString& path);
 
         void UpdateContents();
+        void Execute();
         const MxString& GetFilePath() const;
         const ScriptData& GetContent() const;
         ScriptData& GetContent();
+
     };
 }

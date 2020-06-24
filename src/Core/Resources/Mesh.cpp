@@ -138,7 +138,6 @@ namespace MxEngine
 	{
 		this->VBOs.push_back(std::move(vbo));
 		this->VBLs.push_back(std::move(vbl));
-		// TODO: do same for LOD component
 		for (auto& mesh : submeshes)
 		{
 			mesh.MeshData.GetVAO()->AddInstancedBuffer(*this->VBOs.back(), *this->VBLs.back());

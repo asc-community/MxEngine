@@ -33,11 +33,13 @@
     <ClInclude Include="Core\BoundingObjects\BoundingSphere.h" />
     <ClInclude Include="Core\Components\Camera\CameraBase.h" />
     <ClInclude Include="Core\Components\Camera\CameraController.h" />
+    <ClInclude Include="Core\Components\Camera\InputControl.h" />
     <ClInclude Include="Core\Components\Camera\OrthographicCamera.h" />
     <ClInclude Include="Core\Components\Camera\PerspectiveCamera.h" />
     <ClInclude Include="Core\Components\Components.h" />
     <ClInclude Include="Core\Components\InstanceFactory.h" />
     <ClInclude Include="Core\Components\Lighting\LightBase.h" />
+    <ClInclude Include="Core\Components\Rendering\DebugDraw.h" />
     <ClInclude Include="Core\Components\Rendering\MeshLOD.h" />
     <ClInclude Include="Core\Components\Rendering\MeshRenderer.h" />
     <ClInclude Include="Core\Components\Rendering\MeshSource.h" />
@@ -77,6 +79,7 @@
     <ClInclude Include="Utilities\ECS\ComponentView.h" />
     <ClInclude Include="Utilities\FileSystem\FileManager.h" />
     <ClInclude Include="Utilities\ImGui\ComponentEditor.h" />
+    <ClInclude Include="Utilities\ImGui\RenderEditor.h" />
     <ClInclude Include="Utilities\ImGui\ResourceEditor.h" />
     <ClInclude Include="Utilities\ImGui\Viewport.h" />
     <ClInclude Include="Utilities\Json\Json.h" />
@@ -363,6 +366,7 @@
     <ClCompile Include="Core\Application\RenderManager.cpp" />
     <ClCompile Include="Core\Components\Camera\CameraBase.cpp" />
     <ClCompile Include="Core\Components\Camera\CameraController.cpp" />
+    <ClCompile Include="Core\Components\Camera\InputControl.cpp" />
     <ClCompile Include="Core\Components\Camera\OrthographicCamera.cpp" />
     <ClCompile Include="Core\Components\Camera\PerspectiveCamera.cpp" />
     <ClCompile Include="Core\Application\Application.cpp" />
@@ -406,6 +410,7 @@
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
     <ClCompile Include="Utilities\ImGui\ComponentEditor.cpp" />
     <ClCompile Include="Utilities\ImGui\GraphicConsole.cpp" />
+    <ClCompile Include="Utilities\ImGui\RenderEditor.cpp" />
     <ClCompile Include="Utilities\ImGui\ResourceEditor.cpp" />
     <ClCompile Include="Utilities\ImGui\Viewport.cpp" />
     <ClCompile Include="Utilities\Json\Json.cpp" />

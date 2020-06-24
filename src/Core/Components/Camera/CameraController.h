@@ -28,10 +28,8 @@
 
 #pragma once
 
-#include "Utilities/Memory/Memory.h"
 #include "Utilities/ECS/Component.h"
 #include "Platform/GraphicAPI.h"
-#include "Core/Event/Events/KeyEvent.h"
 #include "CameraBase.h"
 
 namespace MxEngine
@@ -52,8 +50,8 @@ namespace MxEngine
 
 		Vector3 direction = { 1.0f, 0.0f, 0.0f };
 		Vector3 up = { 0.0f, 1.0f, 0.0f };
-		Vector3 forward{ 1.0f, 0.0f, 0.0f };
-		Vector3 right{ 0.0f, 0.0f, 1.0f };
+		Vector3 forward ={ 0.0f, 0.0f, 1.0f };
+		Vector3 right = { 1.0f, 0.0f, 0.0f };
 		float verticalAngle = 0.0f;
 		float horizontalAngle = 0.0f;
 		float zoom = 1.0f;
@@ -64,7 +62,6 @@ namespace MxEngine
 
 		void SubmitMatrixProjectionChanges() const;
 
-		mutable bool updateCamera = true;
 		uint8_t bloomIterations = 6;
 		CameraType cameraType = CameraType::PERSPECTIVE;
 	public:
@@ -112,11 +109,5 @@ namespace MxEngine
 		const Vector3& GetForwardVector() const;
 		const Vector3& GetUpVector() const;
 		const Vector3& GetRightVector() const;
-
-		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right);
-		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down);
-		void BindRotation();
-		void BindHorizontalRotation();
-		void BindVerticalRotation();
 	};
 }

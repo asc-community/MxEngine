@@ -73,10 +73,6 @@ namespace MxEngine
 		virtual void OnUpdate();
 		virtual void OnDestroy();
 	public:
-		void ExecuteScript(Script& script);
-		void ExecuteScript(const MxString& script);
-		void ExecuteScript(const char* script);
-
 		void ToggleRuntimeEditor(bool isVisible);
 		void CloseOnKeyPress(KeyCode key);
 

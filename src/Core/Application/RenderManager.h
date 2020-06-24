@@ -41,6 +41,7 @@ namespace MxEngine
 		static DebugBuffer& GetDebugDrawer();
         static void LoadMainShader(bool useLighting = true);
         static void SetRenderToDefaultFrameBuffer(bool value = true);
+        static bool IsRenderedToDefaultFrameBuffer();
         static void SetFogColor(const Vector3& color);
         static const Vector3& GetFogColor();
         static void SetFogDensity(float density);
