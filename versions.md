@@ -114,3 +114,7 @@
 - now engine support multiple camera rendering, custom behaviour component, and custom MeshLOD generation
 - EASTL library finally integrated, you can use it with aliases like MxVector<T>, MxString, MxHashMap<T>
 - due to massive API refactoring python scripting was removed, but do not worry! it will be returned in next releases
+### 7.0.1
+- fixed some bugs with camera and window resize
+- now displacement should work with shadows and without global light shader
+- now methods with paths have const char\* overload to avoid collisions with other methods

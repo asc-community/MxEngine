@@ -115,6 +115,7 @@ namespace MxEngine
 
 		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
 		{
+			if (!camera.IsValid()) return;
 			static Vector2 oldPos = event.position;
 			auto dt = Application::Get()->GetTimeDelta();
 			camera->Rotate(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
@@ -136,12 +137,13 @@ namespace MxEngine
 		MxString uuid = object.GetComponent<InputControl>().GetUUID();
 	
 		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
-			{
-				static Vector2 oldPos = event.position;
-				auto dt = Application::Get()->GetTimeDelta();
-				camera->Rotate(dt * (oldPos.x - event.position.x), 0.0f);
-				oldPos = event.position;
-			});
+		{
+			if (!camera.IsValid()) return;
+			static Vector2 oldPos = event.position;
+			auto dt = Application::Get()->GetTimeDelta();
+			camera->Rotate(dt * (oldPos.x - event.position.x), 0.0f);
+			oldPos = event.position;
+		});
 	}
 	
 	void InputControl::BindVerticalRotation()
@@ -158,11 +160,12 @@ namespace MxEngine
 		MxString uuid = object.GetComponent<InputControl>().GetUUID();
 	
 		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
-			{
-				static Vector2 oldPos = event.position;
-				auto dt = Application::Get()->GetTimeDelta();
-				camera->Rotate(0.0f, dt * (oldPos.y - event.position.y));
-				oldPos = event.position;
-			});
+		{
+			if (!camera.IsValid()) return;
+			static Vector2 oldPos = event.position;
+			auto dt = Application::Get()->GetTimeDelta();
+			camera->Rotate(0.0f, dt * (oldPos.y - event.position.y));
+			oldPos = event.position;
+		});
 	}
 }

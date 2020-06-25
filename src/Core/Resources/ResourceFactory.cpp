@@ -47,6 +47,11 @@ namespace MxEngine
         return GraphicFactory::Create<CubeMap>(path);
     }
 
+    GResource<CubeMap> AssetManager::LoadCubeMap(const char* path)
+    {
+        return AssetManager::LoadCubeMap(MxString(path));
+    }
+
     GResource<Texture> AssetManager::LoadTexture(StringId hash)
     {
         return AssetManager::LoadTexture(FileManager::GetFilePath(hash));
@@ -60,6 +65,11 @@ namespace MxEngine
     GResource<Texture> AssetManager::LoadTexture(const MxString& path)
     {
         return GraphicFactory::Create<Texture>(path);
+    }
+
+    GResource<Texture> AssetManager::LoadTexture(const char* path)
+    {
+        return AssetManager::LoadTexture(MxString(path));
     }
 
     GResource<Shader> AssetManager::LoadShader(StringId vertex, StringId fragment)
@@ -77,6 +87,11 @@ namespace MxEngine
         return GraphicFactory::Create<Shader>(vertex, fragment);
     }
 
+    GResource<Shader> AssetManager::LoadShader(const char* vertex, const char* fragment)
+    {
+        return AssetManager::LoadShader(MxString(vertex), MxString(fragment));
+    }
+
     GResource<Shader> AssetManager::LoadShader(StringId vertex, StringId geometry, StringId fragment)
     {
         return AssetManager::LoadShader(FileManager::GetFilePath(vertex), FileManager::GetFilePath(geometry), FileManager::GetFilePath(fragment));
@@ -90,6 +105,11 @@ namespace MxEngine
     GResource<Shader> AssetManager::LoadShader(const MxString& vertex, const MxString& geometry, const MxString& fragment)
     {
         return GraphicFactory::Create<Shader>(vertex, geometry, fragment);
+    }
+
+    GResource<Shader> AssetManager::LoadShader(const char* vertex, const char* geometry, const char* fragment)
+    {
+        return AssetManager::LoadShader(MxString(vertex), MxString(geometry), MxString(fragment));
     }
 
     Resource<Mesh, ResourceFactory> AssetManager::LoadMesh(StringId hash)
@@ -107,6 +127,11 @@ namespace MxEngine
         return ResourceFactory::Create<Mesh>(path);
     }
 
+    Resource<Mesh, ResourceFactory> AssetManager::LoadMesh(const char* path)
+    {
+        return AssetManager::LoadMesh(MxString(path));
+    }
+
     MxVector<Resource<Material, ResourceFactory>> AssetManager::LoadMaterials(StringId hash)
     {
         return AssetManager::LoadMaterials(FileManager::GetFilePath(hash));
@@ -120,5 +145,10 @@ namespace MxEngine
     MxVector<Resource<Material, ResourceFactory>> AssetManager::LoadMaterials(const MxString& path)
     {
         return MeshRenderer::LoadMaterials(path);
+    }
+
+    MxVector<Resource<Material, ResourceFactory>> AssetManager::LoadMaterials(const char* path)
+    {
+        return  AssetManager::LoadMaterials(MxString(path));
     }
 }

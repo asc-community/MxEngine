@@ -86,15 +86,9 @@ namespace MxEngine
         manager->filetable.emplace(filehash, file);
     }
 
-    void FileManager::Init(const FilePath& rootPath)
+    void FileManager::Init()
     {
         manager = Alloc<FileManagerImpl>();
-        MAKE_SCOPE_TIMER("MxEngine::FileManager", "FileManager::Init()");
-        MAKE_SCOPE_PROFILER("FileManager::Init()");
-
-        manager->root = rootPath;
-        manager->rootPathSize = rootPath.string().size();
-        FileManager::AddDirectory(rootPath);
     }
 
     void FileManager::Clone(FileManagerImpl* other)
@@ -110,5 +104,15 @@ namespace MxEngine
     FilePath& FileManager::GetRoot()
     {
         return manager->root;
+    }
+
+    void FileManager::SetRoot(const FilePath& rootPath)
+    {
+        MAKE_SCOPE_TIMER("MxEngine::FileManager", "FileManager::Init()");
+        MAKE_SCOPE_PROFILER("FileManager::Init()");
+
+        manager->root = rootPath;
+        manager->rootPathSize = rootPath.string().size();
+        FileManager::AddDirectory(rootPath);
     }
 }

@@ -190,12 +190,11 @@ namespace MxEngine
 
 		JsonFile config;
 
-		auto configPathHash = STRING_ID("engine_config.json");
-		const char* configFileName = "engine_config.json";
-		if (FileManager::FileExists(configPathHash))
+		MxString configPath = "engine_config.json";
+		if (File::Exists(configPath))
 		{
 			Logger::Instance().Debug("Application::CreateContext", "Using engine config file to set up context...");
-			File configFile(FileManager::GetFilePath(configPathHash));
+			File configFile(configPath);
 			config = Json::LoadJson(configFile);
 		}
 		else
@@ -216,22 +215,28 @@ namespace MxEngine
 			config["debug-build"]["app-close-key"] = KeyCode::ESCAPE;
 			config["debug-build"]["editor-key"] = KeyCode::GRAVE_ACCENT;
 
-			File configFile(FileManager::GetRoot() / configFileName, File::WRITE);
+			config["filesystem"]["root"] = "Resources";
+
+			File configFile(configPath, File::WRITE);
 			Json::SaveJson(configFile, config);
 		}
 
-		auto profileType  = config["renderer"]["opengl-profile"].get<std::string>();
+		auto profileType  = config["renderer"]["opengl-profile"].get<MxString>();
 		auto profileMajor = config["renderer"]["opengl-major-version"].get<int>();
 		auto profileMinor = config["renderer"]["opengl-minor-version"].get<int>();
 		auto msaaSamples  = config["renderer"]["msaa-samples"].get<int>();
 		auto anisothropic = config["renderer"]["anisothropic-filtering"].get<int>();
 		auto lineWidth    = config["renderer"]["debug-line-width"].get<int>();
 
-		auto title        = config["window"]["title"].get<std::string>();
+		auto title        = config["window"]["title"].get<MxString>();
 		auto doubleBuffer = config["window"]["double-buffering"].get<bool>();
 		auto position     = config["window"]["position"].get<std::array<int, 2>>();
 		auto size         = config["window"]["size"].get<std::array<int, 2>>();
-		auto cursorMode   = config["window"]["cursor-mode"].get<std::string>();
+		auto cursorMode   = config["window"]["cursor-mode"].get<MxString>();
+
+		auto rootPath = config["filesystem"]["root"].get<MxString>();
+
+		FileManager::SetRoot(ToFilePath(rootPath));
 
 		Profile enumProfile;
 		if (profileType == "core")
@@ -259,7 +264,7 @@ namespace MxEngine
 			.UseProfile(profileMajor, profileMinor, enumProfile)
 			.UseCursorMode(CursorMode::DISABLED)
 			.UseDoubleBuffering(doubleBuffer)
-			.UseTitle(ToMxString(title))
+			.UseTitle(title)
 			.UseDebugging(useDebugging)
 			.UsePosition(position[0], position[1])
 			.UseSize(size[0], size[1])
@@ -380,7 +385,7 @@ namespace MxEngine
 		MX_ASSERT(Application::Get() == nullptr);
 		Application::Set(app);
 
-		FileManager::Init("Resources");
+		FileManager::Init();
 		GraphicModule::Init();
 		UUIDGenerator::Init();
 		GraphicFactory::Init();

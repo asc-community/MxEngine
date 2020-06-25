@@ -54,6 +54,11 @@ namespace MxEngine
         this->Open(path, mode);
     }
 
+    File::File(const char* path, FileMode mode)
+    {
+        this->Open(path, mode);
+    }
+
     FileStream& File::GetStream()
     {
         return this->fileStream;
@@ -82,6 +87,11 @@ namespace MxEngine
     {
         FilePath filepath = path.c_str();
         this->Open(std::move(filepath), mode);
+    }
+
+    void File::Open(const char* path, FileMode mode)
+    {
+        this->Open((FilePath)path, mode);
     }
 
     void File::Close()
@@ -115,6 +125,11 @@ namespace MxEngine
         return File(path, FileMode::READ).ReadAllText();
     }
 
+    File::FileData File::ReadAllText(const char* path)
+    {
+        return File(path, FileMode::READ).ReadAllText();
+    }
+
     bool File::Exists(const FilePath& path)
     {
         return std::filesystem::exists(path);
@@ -123,6 +138,11 @@ namespace MxEngine
     bool File::Exists(const MxString& path)
     {
         return std::filesystem::exists(path.c_str());
+    }
+
+    bool File::Exists(const char* path)
+    {
+        return std::filesystem::exists(path);
     }
 
     bool File::IsFile(const MxString& path)
@@ -135,6 +155,11 @@ namespace MxEngine
         return std::filesystem::is_regular_file(path);
     }
 
+    bool File::IsFile(const char* path)
+    {
+        return std::filesystem::is_regular_file(path);
+    }
+
     bool File::IsDirectory(const MxString& path)
     {
         return std::filesystem::is_directory(path.c_str());
@@ -143,6 +168,11 @@ namespace MxEngine
     bool File::IsDirectory(const FilePath& path)
     {
         return std::filesystem::is_directory(path.c_str());
+    }
+
+    bool File::IsDirectory(const char* path)
+    {
+        return std::filesystem::is_directory(path);
     }
 
     FileSystemTime File::LastModifiedTime(const FilePath& path)
@@ -165,6 +195,16 @@ namespace MxEngine
         return std::filesystem::last_write_time(path.c_str());
     }
 
+    FileSystemTime File::LastModifiedTime(const char* path)
+    {
+        if (!File::Exists(path))
+        {
+            Logger::Instance().Warning("MxEngine::File", "file was not found: " + (MxString)path);
+            return FileSystemTime();
+        }
+        return std::filesystem::last_write_time(path);
+    }
+
     void File::CreateDirectory(const FilePath& path)
     {
         if (!File::Exists(path))
@@ -175,5 +215,11 @@ namespace MxEngine
     {
         if (!File::Exists(path))
             std::filesystem::create_directory(path.c_str());
+    }
+
+    void File::CreateDirectory(const char* path)
+    {
+        if (!File::Exists(path))
+            std::filesystem::create_directory(path);
     }
 }

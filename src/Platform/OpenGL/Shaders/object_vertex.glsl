@@ -45,7 +45,9 @@ void main()
 
 	vsout.TBN = mat3(T, B, N);
 	vsout.TexCoord = texCoord;
-	vsout.Normal = normalMatrix * normal;
+	vsout.Normal = N;
+
+	modelPos.xyz += displacement * vsout.Normal * (texture(map_height, texCoord).rgb - vec3(0.5f)) * 2.0f;
 
 	vsout.FragPosWorld = vec3(modelPos);
 	vsout.RenderColor = renderColor;
@@ -60,7 +62,6 @@ void main()
 		vsout.FragPosSpotLight[i] = SpotLightProjMatrix[i] * modelPos;
 	}
 
-	modelPos.xyz += displacement * vsout.Normal * (texture(map_height, texCoord).rgb - vec3(0.5f)) * 2.0f;
 
 	gl_Position = ViewProjMatrix * modelPos;
 }

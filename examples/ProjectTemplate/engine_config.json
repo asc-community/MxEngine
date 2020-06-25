@@ -3,6 +3,9 @@
     "app-close-key": "ESCAPE",
     "editor-key": "GRAVE_ACCENT"
   },
+  "filesystem": {
+    "root": "Resources"
+  },
   "renderer": {
     "anisothropic-filtering": 16,
     "debug-line-width": 3,

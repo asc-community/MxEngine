@@ -330,10 +330,14 @@ namespace MxEngine
 
 	Window& Window::UseSize(int width, int height)
 	{
+		if (window != nullptr)
+		{
+			glfwSetWindowSize(this->window, width, height);
+			if (this->dispatcher != nullptr)
+				this->dispatcher->AddEvent(MakeUnique<WindowResizeEvent>(MakeVector2(this->width, this->height), MakeVector2(width, height)));
+		}
 		this->width = width;
 		this->height = height;
-		if (window != nullptr)
-			glfwSetWindowSize(this->window, width, height);
 		return *this;
 	}
 

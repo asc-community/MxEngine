@@ -82,7 +82,13 @@ namespace MxEngine
         \param mode how to treat file (see FileMode documentation)
         */
         File(const MxString& path, FileMode mode = FileMode::READ);
-        File(File&) = default;
+        /*!
+        creates file object and opens fstream
+        \param path path to a file (absolute or relative to executable directory)
+        \param mode how to treat file (see FileMode documentation)
+        */
+        File(const char* path, FileMode mode = FileMode::READ);
+        File(const File&) = default;
         File(File&&) = default;
         File& operator=(const File&) = default;
         File& operator=(File&&) = default;
@@ -109,6 +115,12 @@ namespace MxEngine
         \param mode how to treat file (see FileMode documentation)
         */
         void Open(const MxString& path, FileMode mode = FileMode::READ);
+        /*!
+        opens new file, old file associated with File is closed automatically
+        \param path path to a file (absolute or relative to executable directory)
+        \param mode how to treat file (see FileMode documentation)
+        */
+        void Open(const char* path, FileMode mode = FileMode::READ);
         /*
         closes currently opened std::fstream object (file)
         */
@@ -150,6 +162,12 @@ namespace MxEngine
         */
         static FileData ReadAllText(const MxString& path);
         /*!
+        creates temporary File object and reads its data into string.
+        \param path path to a file (absolute or relative to executable directory)
+        \returns file contents as string. If file is not opened / not exists returns empty string
+        */
+        static FileData ReadAllText(const char* path);
+        /*!
         checks if file exists
         \param path path of file to search for
         \returns true if file exists, false either
@@ -161,6 +179,12 @@ namespace MxEngine
         \returns true if file exists, false either
         */
         static bool Exists(const MxString& path);
+        /*!
+        checks if file exists
+        \param path path of file to search for
+        \returns true if file exists, false either
+        */
+        static bool Exists(const char* path);
         /*!
         checks if path is regular file
         \param path path of file to search for
@@ -174,6 +198,12 @@ namespace MxEngine
         */
         static bool IsFile(const FilePath& path);
         /*!
+       checks if path is regular file
+       \param path path of file to search for
+       \returns true if path is regular file, false either
+       */
+        static bool IsFile(const char* path);
+        /*!
         checks if path is directory
         \param path path to search for
         \returns true if path is directory, false either
@@ -186,6 +216,12 @@ namespace MxEngine
         */
         static bool IsDirectory(const FilePath& path);
         /*!
+        checks if path is directory
+        \param path path to search for
+        \returns true if path is directory, false either
+        */
+        static bool IsDirectory(const char* path);
+        /*!
         gets file last modified time
         \param path path to a file to check for
         \returns platform-dependent time point of last file modification
@@ -197,6 +233,12 @@ namespace MxEngine
         \returns platform-dependent time point of last file modification
         */
         static FileSystemTime LastModifiedTime(const MxString& path);
+        /*!
+        gets file last modified time
+        \param path path to a file to check for
+        \returns platform-dependent time point of last file modification
+        */
+        static FileSystemTime LastModifiedTime(const char* path);
         /*
         creates directory is it is not exist
         \param path path to directory
@@ -207,6 +249,11 @@ namespace MxEngine
         \param path path to directory
         */
         static void CreateDirectory(const MxString& path);
+        /*
+        creates directory is it is not exist
+        \param path path to directory
+        */
+        static void CreateDirectory(const char* path);
     };
 
     template<typename T>
@@ -226,5 +273,10 @@ namespace MxEngine
     inline auto ToMxString(const FilePath& path)
     {
         return ToMxString(path.string());
+    }
+
+    inline auto ToFilePath(const MxString& str)
+    {
+        return FilePath(str.c_str());
     }
 }
