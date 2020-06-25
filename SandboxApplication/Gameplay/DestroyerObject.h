@@ -1,9 +1,5 @@
 #pragma once
 
-#include <MxEngine.h>
-
-using namespace MxEngine;
-
 void InitDestroyer(MxObject& object)
 {
 	auto objectPath = "objects/destroyer/destroyer.obj"_id;

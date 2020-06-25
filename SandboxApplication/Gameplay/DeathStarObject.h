@@ -1,9 +1,5 @@
 #pragma once
 
-#include <MxEngine.h>
-
-using namespace MxEngine;
-
 void InitDeathStar(MxObject& object)
 {
 	auto objectPath = "objects/death_star/death_star.obj"_id;

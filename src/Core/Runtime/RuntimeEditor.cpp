@@ -35,6 +35,8 @@
 #include "Core/Application/EventManager.h"
 #include "Core/Event/Events/UpdateEvent.h"
 #include "Core/Application/RenderManager.h"
+#include "Platform/Window/WindowManager.h"
+#include "Platform/Window/InputManager.h"
 
 namespace MxEngine
 {
@@ -111,19 +113,19 @@ namespace MxEngine
 						}
 						else
 						{
+							static MxString objectName;
+							if (GUI::InputTextOnClick("object name", objectName, 48))
+							{
+								if (!objectName.empty()) object.Name = objectName;
+								objectName.clear();
+							}
+
 							static int currentItem = 0;
 							ImGui::Combo("", &currentItem, this->componentNames.data(), (int)this->componentNames.size());
 							ImGui::SameLine();
 							if (ImGui::Button("add component"))
 							{
 								this->componentAdderCallbacks[(size_t)currentItem](object);
-							}
-
-							static MxString objectName;
-							if (GUI::InputTextOnClick("object name", objectName, 48))
-							{
-								if (!objectName.empty()) object.Name = objectName;
-								objectName.clear();
 							}
 
 							for (auto& callback : this->componentEditorCallbacks)
@@ -151,7 +153,7 @@ namespace MxEngine
 		if (!this->shouldRender) // if developer environment was turned off, we should notify application that viewport returned to normal
 		{
 			RenderManager::SetRenderToDefaultFrameBuffer(this->useDefaultFrameBufferCached);
-			auto windowSize = MakeVector2((float)Application::Get()->GetWindow().GetWidth(), (float)Application::Get()->GetWindow().GetHeight());
+			auto windowSize = WindowManager::GetSize();
 			EventManager::AddEvent(MakeUnique<WindowResizeEvent>(this->cachedWindowSize, windowSize));
 			this->cachedWindowSize = windowSize;
 		}
@@ -168,22 +170,21 @@ namespace MxEngine
 		EventManager::AddEventListener("RuntimeEditor", 
 		[cursorPos = Vector2(), cursorModeCached = CursorMode::DISABLED, openKey](UpdateEvent& event) mutable
 		{
-			auto& window = Application::Get()->GetWindow();
-			if (window.IsKeyPressed(openKey))
+			if (InputManager::IsKeyPressed(openKey))
 			{
 				if (Application::Get()->GetRuntimeEditor().IsToggled())
 				{
-					window.UseCursorMode(cursorModeCached);
+					InputManager::SetCursorMode(cursorModeCached);
 					Application::Get()->ToggleRuntimeEditor(false);
-					window.UseCursorPos(cursorPos);
+					InputManager::SetCursorPosition(cursorPos);
 				}
 				else
 				{
-					cursorPos = window.GetCursorPos();
-					cursorModeCached = window.GetCursorMode();
-					window.UseCursorMode(CursorMode::NORMAL);
+					cursorPos = InputManager::GetCursorPosition();
+					cursorModeCached = InputManager::GetCursorMode();
+					InputManager::SetCursorMode(CursorMode::NORMAL);
 					Application::Get()->ToggleRuntimeEditor(true);
-					window.UseCursorPos({ window.GetWidth() / 4.0f, window.GetHeight() / 2.0f });
+					InputManager::SetCursorPosition(WindowManager::GetSize() * 0.5f);
 				}
 			}
 		});

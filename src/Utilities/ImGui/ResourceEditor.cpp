@@ -56,7 +56,7 @@ namespace MxEngine::GUI
         }
 
         static MxString path;
-        if (GUI::InputTextOnClick("load texture", path, 128))
+        if (GUI::InputTextOnClick("", path, 128, "load texture"))
             texture = AssetManager::LoadTexture(path);
         // TODO: support textures from Colors class
 
@@ -96,7 +96,7 @@ namespace MxEngine::GUI
         }
         
         static MxString path;
-        if (GUI::InputTextOnClick("load cubemap", path, 128))
+        if (GUI::InputTextOnClick("", path, 128, "load cubemap"))
             cubemap = AssetManager::LoadCubeMap(path);
         // TODO: support cubemap preview
     }
@@ -170,7 +170,7 @@ namespace MxEngine::GUI
             mesh->UpdateAABB();
 
         static MxString path;
-        if (GUI::InputTextOnClick("load mesh", path, 128))
+        if (GUI::InputTextOnClick("", path, 128, "load mesh"))
             mesh = AssetManager::LoadMesh(path);
         // TODO: support meshes from Primitives class
 

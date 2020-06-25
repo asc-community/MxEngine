@@ -148,6 +148,10 @@ namespace MxEngine::GUI
 		TREE_NODE_PUSH("MeshRenderer");
 		REMOVE_COMPONENT_BUTTON(meshRenderer);
 
+		static MxString path;
+		if (GUI::InputTextOnClick("", path, 128, "load materials"))
+			meshRenderer.Materials = AssetManager::LoadMaterials(path);
+
 		int id = 0;
 		for (auto& material : meshRenderer.Materials)
 		{
@@ -264,30 +268,32 @@ namespace MxEngine::GUI
 	{
 		TREE_NODE_PUSH("CameraController");
 		REMOVE_COMPONENT_BUTTON(cameraController);
-
-		ImGui::Text((cameraController.GetCameraType() == CameraType::PERSPECTIVE ? "camera type: perspective" : "camera type: orthographic"));
-		if (cameraController.GetCameraType() == CameraType::PERSPECTIVE)
+			
+		if (ImGui::BeginCombo("camera type", "perspective"))
 		{
-			ImGui::SameLine();
-			if (ImGui::Button("switch"))
+			bool perspective = cameraController.GetCameraType() == CameraType::PERSPECTIVE;
+			bool orthographic = cameraController.GetCameraType() == CameraType::ORTHOGRAPHIC;
+			if (ImGui::Selectable("perspective", &perspective))
+			{
+				cameraController.SetCameraType(CameraType::PERSPECTIVE);
+				ImGui::SetItemDefaultFocus();
+			}
+			if (ImGui::Selectable("orthographic", &orthographic))
 			{
 				cameraController.SetCameraType(CameraType::ORTHOGRAPHIC);
-				return;
+				ImGui::SetItemDefaultFocus();
 			}
+			ImGui::EndCombo();
+		}
 
+		if (cameraController.GetCameraType() == CameraType::PERSPECTIVE)
+		{
 			float fov = cameraController.GetCamera<PerspectiveCamera>().GetFOV();
 			if (ImGui::DragFloat("fov", &fov, 0.3f, 1.0f, 179.0f))
 				cameraController.GetCamera<PerspectiveCamera>().SetFOV(fov);
 		}
 		else if (cameraController.GetCameraType() == CameraType::ORTHOGRAPHIC)
 		{
-			ImGui::SameLine();
-			if (ImGui::Button("switch"))
-			{
-				cameraController.SetCameraType(CameraType::PERSPECTIVE);
-				return;
-			}
-
 			auto size = cameraController.GetCamera<OrthographicCamera>().GetSize();
 			if (ImGui::DragFloat("size", &size, 0.3f, 0.01f, 10000.0f))
 				cameraController.GetCamera<OrthographicCamera>().SetSize(size);
@@ -316,6 +322,7 @@ namespace MxEngine::GUI
 		
 		ImGui::Checkbox("enable rendering", &cameraController.RenderingEnabled);
 
+		ImGui::SameLine();
 		if (ImGui::Button("auto-resize viewport"))
 			cameraController.ListenWindowResizeEvent();
 
@@ -365,28 +372,28 @@ namespace MxEngine::GUI
 		// TODO: custom keys input
 		if (ImGui::Button("bind movement WASD"))
 			inputControl.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D);
-		ImGui::SameLine();
+
 		if (ImGui::Button("bind movement ESDF"))
 			inputControl.BindMovement(KeyCode::E, KeyCode::S, KeyCode::D, KeyCode::F);
-		ImGui::SameLine();
+
 		if (ImGui::Button("bind movement QWES"))
 			inputControl.BindMovement(KeyCode::Q, KeyCode::W, KeyCode::E, KeyCode::S);
 
 		if (ImGui::Button("bind rotation"))
 			inputControl.BindRotation();
-		ImGui::SameLine();
+
 		if (ImGui::Button("bind horizontal rotation"))
 			inputControl.BindHorizontalRotation();
-		ImGui::SameLine();
+
 		if (ImGui::Button("bind vertical rotation"))
 			inputControl.BindVerticalRotation();
 
 		if (ImGui::Button("bind movement WASD SPACE/LSHIFT"))
 			inputControl.BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
-		ImGui::SameLine();
+
 		if (ImGui::Button("bind movement ESDF SPACE/LSHIFT"))
 			inputControl.BindMovement(KeyCode::E, KeyCode::S, KeyCode::D, KeyCode::F, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
-		ImGui::SameLine();
+
 		if (ImGui::Button("bind movement QWES SPACE/LSHIFT"))
 			inputControl.BindMovement(KeyCode::Q, KeyCode::W, KeyCode::E, KeyCode::S, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
 

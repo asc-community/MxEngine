@@ -44,6 +44,7 @@
 #include "Utilities/Json/Json.h"
 #include "Utilities/ECS/ComponentFactory.h"
 #include "Utilities/ImGui/ComponentEditor.h"
+#include "Core/Application/EventManager.h"
 
 namespace MxEngine
 {
@@ -108,15 +109,14 @@ namespace MxEngine
 	void Application::CloseOnKeyPress(KeyCode key)
 	{
 		Logger::Instance().Debug("MxEngine::AppCloseBinding", MxFormat("bound app close to keycode: {0}", EnumToString(key)));
-		this->GetEventDispatcher().AddEventListener("AppCloseEvent",
-			[key](KeyEvent& event)
+		EventManager::AddEventListener("AppCloseEvent", [key](KeyEvent& event)
+		{
+			auto context = Application::Get();
+			if (event.IsHeld(key))
 			{
-				auto context = Application::Get();
-				if (event.IsHeld(key))
-				{
-					context->CloseApplication();
-				}
-			});
+				context->CloseApplication();
+			}
+		});
 	}
 
 	void Application::DrawObjects()
@@ -130,7 +130,7 @@ namespace MxEngine
 		this->GetWindow().OnUpdate();
 		MAKE_SCOPE_PROFILER("MxEngine::OnUpdate");
 		UpdateEvent updateEvent(this->timeDelta);
-		this->GetEventDispatcher().Invoke(updateEvent);
+		EventManager::Invoke(updateEvent);
 		{
 			MAKE_SCOPE_PROFILER("MxObjects::OnUpdate");
 			auto objects = MxObject::GetObjects();
@@ -266,8 +266,8 @@ namespace MxEngine
 			.UseDoubleBuffering(doubleBuffer)
 			.UseTitle(title)
 			.UseDebugging(useDebugging)
-			.UsePosition(position[0], position[1])
-			.UseSize(size[0], size[1])
+			.UseWindowPosition(position[0], position[1])
+			.UseWindowSize(size[0], size[1])
 			.Create();
 
 		auto& renderingEngine = this->GetRenderAdaptor().Renderer.GetRenderEngine();
@@ -321,7 +321,7 @@ namespace MxEngine
 					this->counterFPS = fpsCounter;
 					fpsCounter = 0;
 					secondEnd = now;
-					this->GetEventDispatcher().AddEvent(MakeUnique<FpsUpdateEvent>(this->counterFPS));
+					EventManager::AddEvent(MakeUnique<FpsUpdateEvent>(this->counterFPS));
 				}
 				timeDelta = now - frameEnd;
 				frameEnd = now;
@@ -329,7 +329,7 @@ namespace MxEngine
 				// event phase
 				{
 					MAKE_SCOPE_PROFILER("Application::ProcessEvents");
-					this->GetEventDispatcher().InvokeAll();
+					EventManager::InvokeAll();
 					if (this->shouldClose) break;
 				}
 
@@ -337,7 +337,7 @@ namespace MxEngine
 				this->DrawObjects();
 
 				RenderEvent renderEvent;
-				this->GetEventDispatcher().Invoke(renderEvent);
+				EventManager::Invoke(renderEvent);
 				this->GetRenderAdaptor().Renderer.Render();
 				this->GetWindow().PullEvents();
 				if (this->shouldClose) break;
@@ -348,7 +348,7 @@ namespace MxEngine
 				MAKE_SCOPE_PROFILER("Application::CloseApplication");
 				MAKE_SCOPE_TIMER("MxEngine::Application", "Application::CloseApplication()");
 				AppDestroyEvent appDestroyEvent;
-				this->GetEventDispatcher().Invoke(appDestroyEvent);
+				EventManager::Invoke(appDestroyEvent);
 				this->OnDestroy();
 				this->GetWindow().Close();
 				this->isRunning = false;
@@ -406,7 +406,7 @@ namespace MxEngine
 	{
 		adaptor.InitRendererEnvironment();
 		this->GetRenderAdaptor().OnWindowResize({ this->GetWindow().GetWidth(), this->GetWindow().GetHeight() });
-		this->GetEventDispatcher().AddEventListener("RenderAdaptorOnResize", [this](WindowResizeEvent& e)
+		EventManager::AddEventListener("RenderAdaptorOnResize", [this](WindowResizeEvent& e)
 		{
 			this->GetRenderAdaptor().OnWindowResize(e.New);
 		});
@@ -415,11 +415,9 @@ namespace MxEngine
 #if defined(MXENGINE_USE_PYTHON)
 	void Application::InitializeRuntimeEditor(RuntimeEditor& console)
 	{
-		console.SetSize({ 
-			static_cast<float>(this->GetWindow().GetWidth()) / 2.5f, 
-			static_cast<float>(this->GetWindow().GetHeight()) / 2.0f });
-		this->GetEventDispatcher().AddEventListener("DeveloperConsole",
+		EventManager::AddEventListener("DeveloperConsole",
 			[this](UpdateEvent&) { this->GetRuntimeEditor().OnRender(); });
+
 		this->GetRuntimeEditor().ExecuteScript("InitializeOpenGL()");
 
 		this->GetRuntimeEditor().RegisterComponentEditor("Transform",        GUI::TransformEditor);
@@ -440,8 +438,7 @@ namespace MxEngine
 #else
 	void Application::InitializeDeveloperConsole(DeveloperConsole& console)
 	{
-		console.SetSize({ this->GetWindow().GetWidth() / 2.5f, this->GetWindow().GetHeight() / 2.0f });
-		this->GetEventDispatcher().AddEventListener("DeveloperConsole",
+		EventManager::AddEventListener("DeveloperConsole",
 			[this](UpdateEvent&) { this->GetConsole().OnRender(); });
 	}
 #endif

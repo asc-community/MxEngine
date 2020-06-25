@@ -29,6 +29,7 @@
 #include "CameraController.h"
 #include "Core/Event/Events/WindowResizeEvent.h"
 #include "Core/Application/EventManager.h"
+#include "Platform/Window/WindowManager.h"
 #include "OrthographicCamera.h"
 #include "PerspectiveCamera.h"
 
@@ -72,7 +73,7 @@ namespace MxEngine
 		this->SetCameraType(CameraType::PERSPECTIVE);
 
 		// TODO: let user create texture or do it here automatically?
-		VectorInt2 viewport{ Application::Get()->GetWindow().GetWidth(), Application::Get()->GetWindow().GetHeight() };
+		auto viewport = (VectorInt2)WindowManager::GetSize();
 		constexpr size_t samples = 4;
 		auto multisampledTexture = GraphicFactory::Create<Texture>();
 

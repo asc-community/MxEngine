@@ -9,9 +9,8 @@ void InitCamera(MxObject& object)
 	auto input = object.AddComponent<InputControl>();
 	skybox->Texture = AssetManager::LoadCubeMap("textures/dawn.jpg"_id);
 
-	const auto& window = Application::Get()->GetWindow();
 	controller->Camera.SetZFar(100000.0f);
-	controller->Camera.SetAspectRatio((float)window.GetWidth(), (float)window.GetHeight());
+	controller->Camera.SetAspectRatio(WindowManager::GetWidth(), WindowManager::GetHeight());
 
 	controller->SetMoveSpeed(5.0f);
 	controller->SetRotateSpeed(0.75f);

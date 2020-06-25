@@ -1,9 +1,5 @@
 #pragma once
 
-#include <MxEngine.h>
-
-using namespace MxEngine;
-
 void InitSphere(MxObject& sphere)
 {
     sphere.Transform->Translate(MakeVector3(-13.0f, 1.0f, 2.0f));

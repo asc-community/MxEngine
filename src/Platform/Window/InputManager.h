@@ -28,31 +28,19 @@
 
 #pragma once
 
-#include "Utilities/ImGui/ImGuiBase.h"
-#include "Core/Application/EventManager.h"
-#include "Core/Event/Events/FpsUpdateEvent.h"
+#include "Window.h"
 
-namespace MxEngine::GUI
+namespace MxEngine
 {
-	/*!
-	draws fps graph in currenly active window. Listens to FpsUpdateEvent in global (Application) context
-	\param graphRecordSize how many fps updates to track before refreshing (clearing). Each update happens each second.
-	*/
-	inline void DrawProfiler(size_t graphRecordSize = 128)
+	class InputManager
 	{
-		static std::vector<float> fpsData;
-		static size_t curPointer = 0;
-		fpsData.resize(graphRecordSize);
-		auto context = Application::Get();
-		
-		INVOKE_ONCE(EventManager::AddEventListener<FpsUpdateEvent>("FpsGraph", [graphRecordSize](FpsUpdateEvent& e)
-		{
-			fpsData[curPointer] = static_cast<float>(e.FPS);
-			curPointer = (curPointer + 1) % (int)graphRecordSize;
-			if (curPointer == 0) std::fill(fpsData.begin(), fpsData.end(), 0.0f);
-		}));
-
-		ImGui::PlotLines("", fpsData.data(), (int)graphRecordSize, 0, "FPS profiler", 
-			FLT_MAX, FLT_MAX, { ImGui::GetWindowWidth() - 15.0f, graphRecordSize + 15.0f });
-	}
+	public:
+		static Vector2 GetCursorPosition();
+		static void SetCursorPosition(const Vector2& pos);
+		static CursorMode GetCursorMode();
+		static void SetCursorMode(CursorMode mode);
+		static bool IsKeyHeld(KeyCode key);
+		static bool IsKeyPressed(KeyCode key);
+		static bool IsKeyReleased(KeyCode key);
+	};
 }

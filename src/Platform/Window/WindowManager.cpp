@@ -26,33 +26,62 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+#include "WindowManager.h"
+#include "Core/Application/Application.h"
 
-#include "Utilities/ImGui/ImGuiBase.h"
-#include "Core/Application/EventManager.h"
-#include "Core/Event/Events/FpsUpdateEvent.h"
+namespace MxEngine
+{   
+    #define WND(func, ...) Application::Get()->GetWindow().func(__VA_ARGS__)
 
-namespace MxEngine::GUI
-{
-	/*!
-	draws fps graph in currenly active window. Listens to FpsUpdateEvent in global (Application) context
-	\param graphRecordSize how many fps updates to track before refreshing (clearing). Each update happens each second.
-	*/
-	inline void DrawProfiler(size_t graphRecordSize = 128)
-	{
-		static std::vector<float> fpsData;
-		static size_t curPointer = 0;
-		fpsData.resize(graphRecordSize);
-		auto context = Application::Get();
-		
-		INVOKE_ONCE(EventManager::AddEventListener<FpsUpdateEvent>("FpsGraph", [graphRecordSize](FpsUpdateEvent& e)
-		{
-			fpsData[curPointer] = static_cast<float>(e.FPS);
-			curPointer = (curPointer + 1) % (int)graphRecordSize;
-			if (curPointer == 0) std::fill(fpsData.begin(), fpsData.end(), 0.0f);
-		}));
+    Vector2 WindowManager::GetSize()
+    {
+        auto width  = (float)WND(GetWidth);
+        auto height = (float)WND(GetHeight);
+        return MakeVector2(width, height);
+    }
 
-		ImGui::PlotLines("", fpsData.data(), (int)graphRecordSize, 0, "FPS profiler", 
-			FLT_MAX, FLT_MAX, { ImGui::GetWindowWidth() - 15.0f, graphRecordSize + 15.0f });
-	}
+    float WindowManager::GetWidth()
+    {
+        return (float)WND(GetWidth);
+    }
+
+    void WindowManager::SetWidth(float width)
+    {
+        WindowManager::SetSize(MakeVector2(width, WindowManager::GetHeight()));
+    }
+
+    void WindowManager::SetHeight(float height)
+    {
+        WindowManager::SetSize(MakeVector2(WindowManager::GetWidth(), height));
+    }
+
+    float WindowManager::GetHeight()
+    {
+        return (float)WND(GetHeight);
+    }
+
+    Vector2 WindowManager::GetPosition()
+    {
+        return WND(GetWindowPosition);
+    }
+
+    const MxString& WindowManager::GetTitle()
+    {
+        return WND(GetTitle);
+    }
+
+    void WindowManager::SetTitle(const MxString& title)
+    {
+        WND(UseTitle, title);
+    }
+
+    void WindowManager::SetPosition(const Vector2& pos)
+    {
+        WND(UseWindowPosition, (int)pos.x, (int)pos.y);
+    }
+
+    void WindowManager::SetSize(const Vector2& size)
+    {
+        WND(UseWindowSize, (int)size.x, (int)size.y);
+    }
 }

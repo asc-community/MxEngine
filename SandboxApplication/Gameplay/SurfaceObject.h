@@ -1,9 +1,5 @@
 #pragma once
 
-#include <MxEngine.h>
-
-using namespace MxEngine;
-
 void InitSurface(MxObject& surface)
 {
 	surface.Name = "Surface";

@@ -118,3 +118,6 @@
 - fixed some bugs with camera and window resize
 - now displacement should work with shadows and without global light shader
 - now methods with paths have const char\* overload to avoid collisions with other methods
+### 7.0.2
+- Render Editor window now has window settings (size, position, title)
+- InputManager and WindowManager classes with better API

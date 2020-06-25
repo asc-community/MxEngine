@@ -1,10 +1,5 @@
 #pragma once
 
-#include <MxEngine.h>
-#include <Core/Components/Behaviour.h>
-
-using namespace MxEngine;
-
 struct CubeBehaviour
 {
 	std::vector<InstanceFactory::MxInstance> instances;

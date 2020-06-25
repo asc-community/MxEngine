@@ -1,9 +1,5 @@
 #pragma once
 
-#include <MxEngine.h>
-
-using namespace MxEngine;
-
 void InitGrid(MxObject& object)
 {
 	object.Transform->Scale(3.0f);

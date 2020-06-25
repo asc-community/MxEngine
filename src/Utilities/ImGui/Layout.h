@@ -67,51 +67,63 @@ namespace MxEngine::GUI
     #define SCOPE_TREE_NODE(name) if (!ImGui::CollapsingHeader(name)) return; GUI::Indent _(5.0f)
 
     /*!
-    creates input field for an int and "apply" button next to it
+    creates input field for an int and apply-button next to it
     \param title input field title
     \param v value in which input will be stored
-    \returns true if "apply" button was pressed, false either
+    \param buttonText text of apply-button
+    \returns true if button was pressed, false either
     */
-    inline bool InputIntOnClick(const char* title, int* v)
+    inline bool InputIntOnClick(const char* title, int* v, const char* buttonText = "apply")
     {
         ImGui::PushID(title);
-        ImGui::InputInt(title, v); 
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text(title);
         ImGui::SameLine();
-        bool result = ImGui::Button("apply");
+        ImGui::InputInt("", v); 
+        ImGui::SameLine();
+        bool result = ImGui::Button(buttonText);
         ImGui::PopID();
         return result;
     }
 
     /*!
-    creates input field for a float and "apply" button next to it
+    creates input field for a float and apply-button next to it
     \param title input field title
     \param v value in which input will be stored
-    \returns true if "apply" button was pressed, false either
+    \param buttonText text of apply-button
+    \returns true if button was pressed, false either
     */
-    inline bool InputFloatOnClick(const char* title, float* v)
+    inline bool InputFloatOnClick(const char* title, float* v, const char* buttonText = "apply")
     {
         ImGui::PushID(title);
-        ImGui::InputFloat(title, v);
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text(title);
         ImGui::SameLine();
-        bool result = ImGui::Button("apply");
+        ImGui::InputFloat("", v);
+        ImGui::SameLine();
+        bool result = ImGui::Button(buttonText);
         ImGui::PopID();
         return result;
     }
 
     /*!
-    creates input field for a char string and "apply" button next to it
+    creates input field for a char string and a apply-button next to it
     \param title input field title
     \param v value in which input will be stored
     \param size maximal size of v to limit user input
-    \returns true if "apply" button was pressed, false either
+    \param buttonText text of apply-button 
+    \returns true if  button was pressed, false either
     */
-    inline bool InputTextOnClick(const char* text, MxString& str, size_t sizeRequired)
+    inline bool InputTextOnClick(const char* text, MxString& str, size_t sizeRequired, const char* buttonText = "apply")
     {
         str.resize(sizeRequired, '\0');
         ImGui::PushID(text);
-        ImGui::InputText(text, str.data(), sizeRequired);
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text(text);
         ImGui::SameLine();
-        bool result = ImGui::Button("apply");
+        ImGui::InputText("", str.data(), sizeRequired);
+        ImGui::SameLine();
+        bool result = ImGui::Button(buttonText);
         ImGui::PopID();
     
         while (result && str.size() > 0 && str.back() == '\0')

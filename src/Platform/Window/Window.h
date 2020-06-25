@@ -85,9 +85,10 @@ namespace MxEngine
 		bool IsOpen() const;
 		void PullEvents() const;
 		void OnUpdate();
-		Vector2 GetCursorPos() const;
-		Vector2 GetWindowPos() const;
+		Vector2 GetCursorPosition() const;
+		Vector2 GetWindowPosition() const;
 		CursorMode GetCursorMode() const;
+		const MxString& GetTitle() const;
 		bool IsKeyHeld(KeyCode key) const;
 		bool IsKeyPressed(KeyCode key) const;
 		bool IsKeyReleased(KeyCode key) const;
@@ -100,10 +101,10 @@ namespace MxEngine
 		Window& UseDebugging(bool value = true);
 		Window& UseDoubleBuffering(bool value = true);
 		Window& UseCursorMode(CursorMode cursor);
-		Window& UseCursorPos(const Vector2& pos);
+		Window& UseCursorPosition(const Vector2& pos);
 		Window& UseTitle(const MxString& title);
-		Window& UsePosition(int xpos, int ypos);
-		Window& UseSize(int width, int height);
+		Window& UseWindowPosition(int xpos, int ypos);
+		Window& UseWindowSize(int width, int height);
 		Window& UseEventDispatcher(AppEventDispatcher* dispatcher);
 		Window& UseProfile(int majorVersion, int minorVersion, Profile profile);
 	};

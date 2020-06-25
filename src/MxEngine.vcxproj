@@ -73,6 +73,8 @@
     <ClInclude Include="Platform\OpenGL\CubeMap.h" />
     <ClInclude Include="Platform\OpenGL\FrameBuffer.h" />
     <ClInclude Include="Platform\OpenGL\RenderBuffer.h" />
+    <ClInclude Include="Platform\Window\InputManager.h" />
+    <ClInclude Include="Platform\Window\WindowManager.h" />
     <ClInclude Include="Utilities\AbstractFactory\AbstractFactory.h" />
     <ClInclude Include="Utilities\ECS\Component.h" />
     <ClInclude Include="Utilities\ECS\ComponentFactory.h" />
@@ -404,7 +406,9 @@
     <ClCompile Include="Platform\OpenGL\VertexBufferLayout.cpp" />
     <ClCompile Include="Platform\OpenGL\VertexBuffer.cpp" />
     <ClCompile Include="Platform\OpenGL\Renderer.cpp" />
+    <ClCompile Include="Platform\Window\InputManager.cpp" />
     <ClCompile Include="Platform\Window\Window.cpp" />
+    <ClCompile Include="Platform\Window\WindowManager.cpp" />
     <ClCompile Include="Utilities\FileSystem\File.cpp" />
     <ClCompile Include="Utilities\FileSystem\FileManager.cpp" />
     <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />

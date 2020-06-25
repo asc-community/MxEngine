@@ -31,6 +31,7 @@
 
 #include "Core/Application/RenderManager.h"
 #include "ComponentEditor.h"
+#include "Platform/Window/WindowManager.h"
 
 namespace MxEngine
 {
@@ -47,7 +48,7 @@ namespace MxEngine
             if (ImGui::ColorEdit3("fog color", &fogColor[0]))
                 RenderManager::SetFogColor(fogColor);
 
-            if (ImGui::DragFloat("fog density", &fogDensity, 0.01f, 0.0f, 10000.0f))
+            if (ImGui::DragFloat("fog density", &fogDensity, 0.001f, 0.0f, 10000.0f))
                 RenderManager::SetFogDensity(fogDensity);
 
             if (ImGui::DragFloat("fog distance", &fogDistance, 0.01f, 0.0f, 1.0f))
@@ -65,6 +66,37 @@ namespace MxEngine
             static bool lightingEnabled = true;
             if (ImGui::Checkbox("toggle global lighting", &lightingEnabled))
                 RenderManager::LoadMainShader(lightingEnabled);
+
+            ImGui::TreePop();
+        }
+
+        if (ImGui::TreeNode("window settings"))
+        {
+            static MxString title;
+            static auto size = WindowManager::GetSize();
+            auto position = WindowManager::GetPosition();
+            title = WindowManager::GetTitle();
+
+            if (GUI::InputFloatOnClick("window width ", &size.x))
+            {
+                WindowManager::SetWidth(size.x);
+                size = WindowManager::GetSize();
+            }
+
+            if (GUI::InputFloatOnClick("window height", &size.y))
+            {
+                WindowManager::SetHeight(size.y);
+                size = WindowManager::GetSize();
+            }
+
+            if (GUI::InputTextOnClick("window title ", title, 48))
+                WindowManager::SetTitle(title);
+
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("window position");
+            ImGui::SameLine();
+            if (ImGui::InputFloat2("", &position[0]))
+                WindowManager::SetPosition(position);
 
             ImGui::TreePop();
         }

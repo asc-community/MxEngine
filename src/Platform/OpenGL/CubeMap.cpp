@@ -178,7 +178,7 @@ namespace MxEngine
 		this->width = width;
 		this->height = height;
 		this->filepath = "[[depth]]";
-		this->channels = 3;
+		this->channels = 1;
 		
 		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
 		for (size_t i = 0; i < 6; i++)

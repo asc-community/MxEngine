@@ -174,14 +174,14 @@ namespace MxEngine
 		return *this;
 	}
 
-	Vector2 Window::GetCursorPos() const
+	Vector2 Window::GetCursorPosition() const
 	{
 		double x, y;
 		glfwGetCursorPos(window, &x, &y);
 		return Vector2(float(x), float(y));
 	}
 
-	Vector2 Window::GetWindowPos() const
+	Vector2 Window::GetWindowPosition() const
 	{
 		if (this->window != nullptr)
 		{
@@ -245,8 +245,8 @@ namespace MxEngine
 
 		UseTitle(this->title);
 		UseCursorMode(this->cursorMode);
-		UsePosition((int)this->windowPosition.x, (int)this->windowPosition.y);
-		UseCursorPos(this->cursorPosition);
+		UseWindowPosition((int)this->windowPosition.x, (int)this->windowPosition.y);
+		UseCursorPosition(this->cursorPosition);
 		Logger::Instance().Debug("MxEngine::Window", "window initialized");
 		return *this;
 	}
@@ -302,7 +302,7 @@ namespace MxEngine
 		return *this;
 	}
 
-	Window& Window::UseCursorPos(const Vector2& pos)
+	Window& Window::UseCursorPosition(const Vector2& pos)
 	{
 		this->cursorPosition = pos;
 		if (this->window != nullptr)
@@ -320,7 +320,7 @@ namespace MxEngine
 		return *this;
 	}
 
-	Window& Window::UsePosition(int xpos, int ypos)
+	Window& Window::UseWindowPosition(int xpos, int ypos)
 	{
 		this->windowPosition = { (float)xpos, (float)ypos };
 		if(window != nullptr)
@@ -328,13 +328,14 @@ namespace MxEngine
 		return *this;
 	}
 
-	Window& Window::UseSize(int width, int height)
+	Window& Window::UseWindowSize(int width, int height)
 	{
 		if (window != nullptr)
 		{
 			glfwSetWindowSize(this->window, width, height);
 			if (this->dispatcher != nullptr)
-				this->dispatcher->AddEvent(MakeUnique<WindowResizeEvent>(MakeVector2(this->width, this->height), MakeVector2(width, height)));
+				this->dispatcher->AddEvent(
+					MakeUnique<WindowResizeEvent>(MakeVector2((float)this->width, (float)this->height), MakeVector2((float)width, (float)height)));
 		}
 		this->width = width;
 		this->height = height;
@@ -351,6 +352,11 @@ namespace MxEngine
 	{
 		return this->cursorMode;
 	}
+
+    const MxString& Window::GetTitle() const
+    {
+		return this->title;
+    }
 
 	Window& Window::operator=(Window&& other) noexcept
 	{
