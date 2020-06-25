@@ -18,6 +18,6 @@ print('unzipping compiled libraries...')
 extract_to('./external_libraries', 'external_libraries/compiled-libs.zip')
 
 print('unzipping vendors folder...')
-extract_to('./src/Vendors', 'src/Vendors/Vendors.zip')
+extract_to('./src', 'src/Vendors.zip')
 
 input('succeeded unzipping libraries, press any key to continue...')
