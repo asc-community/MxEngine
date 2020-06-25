@@ -36,7 +36,7 @@ namespace MxEngine
     {
         RenderController Renderer;
         DebugBuffer DebugDrawer;
-        CResource<CameraController> Viewport;
+        CameraController::Handle Viewport;
 
         constexpr static TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;
 

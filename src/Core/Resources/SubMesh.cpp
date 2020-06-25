@@ -30,7 +30,7 @@
 
 namespace MxEngine
 {
-    SubMesh::SubMesh(size_t materiaId, const TransformHandle& transform)
+    SubMesh::SubMesh(size_t materiaId, const Transform::Handle& transform)
         :  materialId(materiaId), transform(transform) { }
 
     size_t SubMesh::GetMaterialId() const
@@ -38,7 +38,7 @@ namespace MxEngine
         return this->materialId;
     }
 
-    SubMesh::TransformHandle SubMesh::GetTransform() const
+    Transform::Handle SubMesh::GetTransform() const
     {
         return this->transform;
     }

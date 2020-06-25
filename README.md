@@ -23,7 +23,8 @@ MxEngine is not a huge framework so multiple third-party libraries are used. Her
 - [fmt](https://github.com/fmtlib/fmt) - formatting library for modern C++
 - [json](https://github.com/nlohmann/json) - nlohmann's json library for modern C++
 
-Note that MxEngine may include more additional libraries in further releases. It also uses [Boost library](https://www.boost.org) in its core. Engine requires at least C++17 as it depends on some new STL features. All source files are compiled using MSVC through VS2019 and are not guaranteed to be compiled by GCC/clang (at least for now).
+All libraries are included in source code (which compiled automatically as part of engine) or compiled as static libraries and stored in zip folders inside engine repository. If you got troubles linking to libs, consider pulling submodule from github and building it yourself.
+Note that MxEngine may include more additional libraries in further releases. It also uses [Boost library](https://www.boost.org) in its core, but not exposes it to user-code. Engine requires at least C++17-compatable compiler as it depends on some new STL features. All source files are compiled using MSVC through VS2019, as I mainly use this IDE to develop the engine, but in future other compilers will be supported too.
 
 ## Versions & Releases
 MxEngine releases comes with version in format X.Y.Z where X stand for major release, Y for minor release and Z for bug fix or non-significant change. 
@@ -44,6 +45,10 @@ Right now MxEngine is distributed in source code as Visual Studio project which 
 
 ## Answers to some questions:
 - Is it possible to build MxEngine under Linux/MacOS/other system?
-	> Probably not in the current project state. There are some things which I still need to do before engine can be cross-platform at least on desktops. If you want to help with porting library to other systems, consider reading [CONTRIBUTING.md](https://github.com/MomoDeve/MxEngine/CONTRIBUTING.md).
+	> Probably not in the current project state. There are some things which I still need to do before engine can be cross-platform at least on desktops. If you want to help with porting library to other systems, consider reading [PR guideline](https://github.com/MomoDeve/MxEngine/issues/5).
 - Whats the roadmap for the engine? Which features can I expect to see, if I follow this repository?
-	> I put all features and not-fixed bugs to the public [Trello board](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine). If you want to see some specific feature in engine, which is not mentioned already, you can request it in `feature-request` issue
+	> I put all features and not-fixed bugs to the public [Trello board](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine). If you want to see some specific feature in engine, which is not mentioned already, you can request it in [feature request](https://github.com/MomoDeve/MxEngine/issues/4) issue
+- Why do you do this project? How long are you planning to develop the engine? Will it one day be better than UE/Unity/Godot?
+	> Initially this was an educational project (actually I still learn a lot of new things when developing it), where I learned about OpenGL, graphics, software engeneering and game development. I loved it and still love to spend my free time fixing some stuff or implementing new features. Thats really a great opportunity to have such cool project, even if it will never be any better than existing game engines like Unity or Unreal Engine
+- If I want to help you with development, how can I get into this project? Is there a documentation for it?
+	> Sadly there are too much things that I need to document and so much features which I need to implement, that I have almost no time for proper documentation. You can start with `ProjectTemplate` VS project, and try some things for yourself. I promise I will add more samples with each release to make usage of the engine easier. If you want to help me with developing, building on other systems or fixing bugs, first contact me personally (links to my social media can be found in [my profile](https://github.com/MomoDeve/) ). We can discuss what you may do and how can you help the engine to progress

@@ -37,6 +37,9 @@ namespace MxEngine
 {
     using ResourceFactory = AbstractFactoryImpl<Material, Mesh>;
 
+    using MaterialHandle = Resource<Material, ResourceFactory>;
+    using MeshHandle = Resource<Mesh, ResourceFactory>;
+
     class AssetManager
     {
     public:

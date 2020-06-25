@@ -36,17 +36,16 @@ namespace MxEngine
 	{
 	public:
 		using MaterialId = size_t;
-		using TransformHandle = CResource<Transform>;
 	private:
 		MaterialId materialId;
-		TransformHandle transform;
+		Transform::Handle transform;
 	public:
 		MeshData MeshData;
 		MxString Name = "Main";
 
-		SubMesh(size_t materiaId, const TransformHandle& transform);
+		SubMesh(size_t materiaId, const Transform::Handle& transform);
 
-		TransformHandle GetTransform() const;
+		Transform::Handle GetTransform() const;
 		MaterialId GetMaterialId() const;
 	};
 }

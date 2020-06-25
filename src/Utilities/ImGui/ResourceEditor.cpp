@@ -202,6 +202,9 @@ namespace MxEngine::GUI
             ImGui::SameLine();
             if (ImGui::Button("buffer vertecies"))
                 submesh.MeshData.BufferVertecies();
+            ImGui::SameLine();
+            if (ImGui::Button("free mesh data copy"))
+                submesh.MeshData.FreeMeshDataCopy();
 
             if (ImGui::Button("regenerate normals"))
                 submesh.MeshData.RegenerateNormals();

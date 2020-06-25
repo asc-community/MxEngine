@@ -134,9 +134,11 @@ namespace MxEngine
     };
 
 #define MAKE_COMPONENT(class_name)\
-        public: static constexpr MxEngine::StringId ComponentId = STRING_ID(#class_name);\
+        public:\
+                using Handle = CResource<class_name>;\
+        private: static constexpr MxEngine::StringId ComponentId = STRING_ID(#class_name);\
                 void* UserData = (void*)std::numeric_limits<uintptr_t>::max();\
-        private:\
+                friend class MxObject;\
                 friend class MxEngine::ComponentManager; \
                 friend class MxEngine::ComponentFactory
 }

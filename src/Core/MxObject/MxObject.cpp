@@ -36,23 +36,23 @@
 
 namespace MxEngine
 {
-    MxObject::MxObjectHandle MxObject::Create()
+    MxObject::Handle MxObject::Create()
     {
 		auto object = Factory::Create<MxObject>();
-		object->Handle = object.GetHandle();
+		object->handle = object.GetHandle();
 		object.MakeStatic();
 		return object;
     }
 
-	void MxObject::Destroy(MxObject::MxObjectHandle& object)
+	void MxObject::Destroy(MxObject::Handle& object)
 	{
 		Factory::Destroy(object);
 	}
 
     void MxObject::Destroy(MxObject& object)
     {
-		MX_ASSERT(object.Handle != InvalidHandle);
-		Factory::Get<MxObject>().Deallocate(object.Handle);
+		MX_ASSERT(object.handle != InvalidHandle);
+		Factory::Get<MxObject>().Deallocate(object.handle);
     }
 
     ComponentView<MxObject> MxObject::GetObjects()
@@ -60,15 +60,15 @@ namespace MxEngine
 		return ComponentView<MxObject>{ Factory::Get<MxObject>() };
     }
 
-	MxObject::MxObjectHandle MxObject::GetByName(const MxString& name)
+	MxObject::Handle MxObject::GetByName(const MxString& name)
 	{
 		auto& factory = Factory::Get<MxObject>();
 		for (auto& resource : factory)
 		{
 			if (resource.value.Name == name)
-				return MxObjectHandle{ resource.uuid, factory.IndexOf(resource) };
+				return MxObject::Handle{ resource.uuid, factory.IndexOf(resource) };
 		}
-		return MxObjectHandle{ };
+		return MxObject::Handle{ };
 	}
 
     MxObject::MxObject()

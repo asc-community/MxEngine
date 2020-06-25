@@ -31,12 +31,12 @@
 
 namespace MxEngine
 {
-    const CResource<CameraController>& MxEngine::RenderManager::GetViewport()
+    const CameraController::Handle& MxEngine::RenderManager::GetViewport()
     {
         return Application::Get()->GetRenderAdaptor().Viewport;
     }
 
-    void RenderManager::SetViewport(const CResource<CameraController>& viewport)
+    void RenderManager::SetViewport(const CameraController::Handle& viewport)
     {
         Application::Get()->GetRenderAdaptor().Viewport = viewport;
     }

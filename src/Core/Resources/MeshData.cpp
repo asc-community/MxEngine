@@ -91,7 +91,7 @@ namespace MxEngine
         this->VBO->Load(data, this->vertecies.size() * Vertex::Size, usageType);
     }
 
-    void MeshData::FreeBuffers()
+    void MeshData::FreeMeshDataCopy()
     {
         this->indicies.clear();
         this->vertecies.clear();

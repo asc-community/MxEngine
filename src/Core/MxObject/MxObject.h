@@ -43,26 +43,26 @@ namespace MxEngine
 
 		using EngineHandle = size_t;
 		constexpr static EngineHandle InvalidHandle = std::numeric_limits<EngineHandle>::max();
-		EngineHandle Handle = InvalidHandle;
+		EngineHandle handle = InvalidHandle;
 
 	public:
 		MxString Name = UUIDGenerator::Get();
 		float TranslateSpeed = 1.0f;
 		float RotateSpeed = 1.0f;
 		float ScaleSpeed = 1.0f;
-		CResource<Transform> Transform;
+		Transform::Handle Transform;
 	private:
 		ComponentManager components;
 	public:
 		using Factory = AbstractFactoryImpl<MxObject>;
-		using MxObjectHandle = Resource<MxObject, Factory>;
+		using Handle = Resource<MxObject, Factory>;
 
-		static MxObjectHandle Create();
-		static void Destroy(MxObjectHandle& object);
+		static Handle Create();
+		static void Destroy(Handle& object);
 		static void Destroy(MxObject& object);
 
 		static ComponentView<MxObject> GetObjects();
-		static MxObjectHandle GetByName(const MxString& name);
+		static Handle GetByName(const MxString& name);
 
 		template<typename T>
 		static MxObject& GetByComponent(T& component)
@@ -74,7 +74,7 @@ namespace MxEngine
 		}
 
 		template<typename T>
-		static MxObjectHandle GetHandleByComponent(T& component)
+		static Handle GetHandleByComponent(T& component)
 		{
 			auto handle = reinterpret_cast<EngineHandle>(component.UserData);
 			MX_ASSERT(handle != InvalidHandle);
@@ -94,7 +94,7 @@ namespace MxEngine
 		auto AddComponent(Args&&... args)
 		{
 			auto component = this->components.AddComponent<T>(std::forward<Args>(args)...);
-			component->UserData = reinterpret_cast<void*>(this->Handle);
+			component->UserData = reinterpret_cast<void*>(this->handle);
 			if constexpr (has_method_Init<T>::value) component->Init();
 			return component;
 		}

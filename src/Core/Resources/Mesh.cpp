@@ -42,7 +42,7 @@ namespace MxEngine
 	void Mesh::LoadFromFile(const MxString& filepath)
 	{
 		ObjectInfo objectInfo = ObjectLoader::Load(filepath);
-		MxVector<SubMesh::TransformHandle> submeshTransforms;
+		MxVector<Transform::Handle> submeshTransforms;
 
 		for (const auto& group : objectInfo.meshes)
 		{
