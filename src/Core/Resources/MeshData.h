@@ -70,6 +70,7 @@ namespace MxEngine
         const IndexData& GetIndicies() const;
         
         void BufferVertecies(UsageType usageType = UsageType::STATIC_DRAW);
+        void FreeBuffers();
         void BufferIndicies();
         void UpdateBoundingBox();
         void RegenerateNormals();

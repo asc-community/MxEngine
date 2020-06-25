@@ -64,6 +64,7 @@ namespace MxEngine
 
 		void Bind() const;
 		void Unbind() const;
+		void InvalidateUniformCache();
 		BindableId GetNativeHandle() const;
 		void Load(const MxString& vertex, const MxString& fragment);
 		void Load(const MxString& vertex, const MxString& geometry, const MxString& fragment);

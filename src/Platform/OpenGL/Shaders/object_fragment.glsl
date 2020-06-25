@@ -219,12 +219,10 @@ vec3 calcNormal(vec2 texcoord, mat3 TBN)
 	return TBN * normal;
 }
 
-vec3 applyFog(vec3 color, float distance, vec3 viewDir, DirLight dirLight)
+vec3 applyFog(vec3 color, float distance, vec3 viewDir)
 {
-	float sunFactor = max(dot(viewDir, dirLight.direction), 0.0f);
 	float fogFactor = 1.0f - fogDistance * exp(-distance * fogDensity);
-	vec3 blendFogColor = mix(fogColor, dirLight.diffuse, sunFactor);
-	return mix(color, blendFogColor, clamp(fogFactor, 0.0f, 1.0f));
+	return mix(color, fogColor, clamp(fogFactor, 0.0f, 1.0f));
 }
 
 void main()
@@ -255,12 +253,9 @@ void main()
 	{
 		color += calcSpotLight(ambient, diffuse, specular, spotLight[i], normal, viewDir, fsin.FragPosSpotLight[i], map_spotLight_shadow[i]);
 	}
-	float dissolve = material.d; // * texture(map_d, fsin.TexCoord).x * material.d;
+	float dissolve = material.d;
 
-	for (int i = 0; i < dirLightCount; i++)
-	{
-		color = applyFog(color, length(viewDist), viewDir, dirLight[i]);
-	}
+	color = applyFog(color, length(viewDist), viewDir);
 
 	// emmisive light
 	color += 5.0f * emmisive;

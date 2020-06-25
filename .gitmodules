@@ -19,3 +19,12 @@
 [submodule "submodules/imgui"]
 	path = submodules/imgui
 	url = https://github.com/ocornut/imgui
+[submodule "submodules/EASTL"]
+	path = submodules/EASTL
+	url = https://github.com/electronicarts/EASTL
+[submodule "submodules/json"]
+	path = submodules/json
+	url = https://github.com/nlohmann/json
+[submodule "submodules/EABase"]
+	path = submodules/EABase
+	url = https://github.com/electronicarts/EABase

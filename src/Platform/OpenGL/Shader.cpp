@@ -66,6 +66,11 @@ namespace MxEngine
 		GLCALL(glUseProgram(0));
 	}
 
+    void Shader::InvalidateUniformCache()
+    {
+		this->uniformCache.clear();
+    }
+
 	Shader::BindableId Shader::GetNativeHandle() const
     {
 		return id;
@@ -106,6 +111,7 @@ namespace MxEngine
 
 	void Shader::Load(const MxString& vertex, const MxString& fragment)
 	{
+		this->InvalidateUniformCache();
 		#if defined(MXENGINE_DEBUG)
 		this->vertexShaderPath = vertex;
 		this->fragmentShaderPath = fragment;
@@ -129,6 +135,7 @@ namespace MxEngine
 
 	void Shader::Load(const MxString& vertex, const MxString& geometry, const MxString& fragment)
 	{
+		this->InvalidateUniformCache();
 		#if defined(MXENGINE_DEBUG)
 		this->vertexShaderPath = vertex;
 		this->geometryShaderPath = geometry;
@@ -158,6 +165,8 @@ namespace MxEngine
 
     void Shader::LoadFromString(const MxString& vertex, const MxString& fragment)
     {
+		this->InvalidateUniformCache();
+
 		Logger::Instance().Debug("OpenGL::Shader", "compiling vertex shader: [[raw source]]");
 		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, "[[raw source]]");
 		Logger::Instance().Debug("OpenGL::Shader", "compiling fragment shader: [[raw source]]");
@@ -169,6 +178,8 @@ namespace MxEngine
 
 	void Shader::LoadFromString(const MxString& vertex, const MxString& geometry, const MxString& fragment)
 	{
+		this->InvalidateUniformCache();
+
 		Logger::Instance().Debug("OpenGL::Shader", "compiling vertex shader: [[raw source]]");
 		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, "[[raw source]]");
 		Logger::Instance().Debug("OpenGL::Shader", "compiling geometry shader: [[raw source]]");

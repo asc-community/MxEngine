@@ -175,6 +175,15 @@ namespace MxEngine::GUI
         // TODO: support meshes from Primitives class
 
         static MxString submeshName;
+        
+        size_t vertexCount = 0, indexCount = 0;
+        for (auto& submesh : mesh->GetSubmeshes())
+        {
+            vertexCount += submesh.MeshData.GetVertecies().size();
+            indexCount += submesh.MeshData.GetIndicies().size();
+        }
+        ImGui::Text("total vertex count: %d, total index count: %d", (int)vertexCount, (int)indexCount);
+
         int id = 0;
         for (auto& submesh : mesh->GetSubmeshes())
         {

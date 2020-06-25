@@ -1,0 +1,1826 @@
+[
+  {
+    "AmbientColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.6000000238418579,
+      0.6000000238418579,
+      0.6000000238418579
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "DefaultMaterial",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "SpecularExponent": 0.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "sml_lights",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "SpecularExponent": 0.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.8353000283241272,
+      0.6039000153541565,
+      0.8980000019073486
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.8353000283241272,
+      0.6039000153541565,
+      0.8980000019073486
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_213154229",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.03139999881386757,
+      0.23919999599456787,
+      0.5411999821662903
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.03139999881386757,
+      0.23919999599456787,
+      0.5411999821662903
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_008061138",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.3450999855995178,
+      0.694100022315979,
+      0.10199999809265137
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.3450999855995178,
+      0.694100022315979,
+      0.10199999809265137
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_088177026",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.4235000014305115,
+      0.03139999881386757,
+      0.53329998254776
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.4235000014305115,
+      0.03139999881386757,
+      0.53329998254776
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_108008136",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.023499999195337296,
+      0.5254999995231628,
+      0.4431000053882599
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.023499999195337296,
+      0.5254999995231628,
+      0.4431000053882599
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_006134113",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.6000000238418579,
+      0.89410001039505,
+      0.6000000238418579
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.6000000238418579,
+      0.89410001039505,
+      0.6000000238418579
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_153228153",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.023499999195337296,
+      0.5254999995231628,
+      0.023499999195337296
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.023499999195337296,
+      0.5254999995231628,
+      0.023499999195337296
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_006134006",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.6901999711990356,
+      0.10199999809265137,
+      0.10199999809265137
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.6901999711990356,
+      0.10199999809265137,
+      0.10199999809265137
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_176026026",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.03139999881386757,
+      0.03139999881386757,
+      0.53329998254776
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.03139999881386757,
+      0.03139999881386757,
+      0.53329998254776
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_008008136",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.10000000149011612,
+      0.10000000149011612,
+      0.10000000149011612
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "Material__1",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.414000004529953,
+      0.414000004529953,
+      0.414000004529953
+    ],
+    "SpecularExponent": 19.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.34119999408721924,
+      0.8784000277519226,
+      0.5608000159263611
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.34119999408721924,
+      0.8784000277519226,
+      0.5608000159263611
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_087224143",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "sml_lights_3",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "SpecularExponent": 0.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.34119999408721924,
+      0.8784000277519226,
+      0.7764999866485596
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.34119999408721924,
+      0.8784000277519226,
+      0.7764999866485596
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_087224198",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.3450999855995178,
+      0.3450999855995178,
+      0.8823999762535095
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.3450999855995178,
+      0.3450999855995178,
+      0.8823999762535095
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_088088225",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.8392000198364258,
+      0.89410001039505,
+      0.6000000238418579
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.8392000198364258,
+      0.89410001039505,
+      0.6000000238418579
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_214228153",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.6510000228881836,
+      0.8980000019073486,
+      0.8980000019073486
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.6510000228881836,
+      0.8980000019073486,
+      0.8980000019073486
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_166229229",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.06669999659061432,
+      0.1843000054359436,
+      0.058800000697374344
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      1.0,
+      0.007799999788403511,
+      0.007799999788403511
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      1.0,
+      0.007799999788403511,
+      0.007799999788403511
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "Lights_1a",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "SpecularExponent": 0.0,
+    "SpecularMap": "",
+    "Transparency": 0.8999999761581421
+  },
+  {
+    "AmbientColor": [
+      0.6039000153541565,
+      0.6039000153541565,
+      0.8980000019073486
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.6039000153541565,
+      0.6039000153541565,
+      0.8980000019073486
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_154154229",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.8980000019073486,
+      0.6510000228881836,
+      0.8431000113487244
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.8980000019073486,
+      0.6510000228881836,
+      0.8431000113487244
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_229166215",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.8784000277519226,
+      0.7764999866485596,
+      0.34119999408721924
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.8784000277519226,
+      0.7764999866485596,
+      0.34119999408721924
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_224198087",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "sml_lights_2",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "SpecularExponent": 0.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.694100022315979,
+      0.10980000346899033,
+      0.5842999815940857
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.694100022315979,
+      0.10980000346899033,
+      0.5842999815940857
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_177028149",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.23919999599456787,
+      0.5254999995231628,
+      0.023499999195337296
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.23919999599456787,
+      0.5254999995231628,
+      0.023499999195337296
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_061134006",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.023499999195337296,
+      0.5254999995231628,
+      0.22750000655651093
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.023499999195337296,
+      0.5254999995231628,
+      0.22750000655651093
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_006134058",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.694100022315979,
+      0.5803999900817871,
+      0.10199999809265137
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.694100022315979,
+      0.5803999900817871,
+      0.10199999809265137
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_177148026",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.7685999870300293,
+      0.3450999855995178,
+      0.8823999762535095
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.7685999870300293,
+      0.3450999855995178,
+      0.8823999762535095
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_196088225",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.8980000019073486,
+      0.6039000153541565,
+      0.8431000113487244
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.8980000019073486,
+      0.6039000153541565,
+      0.8431000113487244
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_229154215",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.6000000238418579,
+      0.89410001039505,
+      0.8392000198364258
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.6000000238418579,
+      0.89410001039505,
+      0.8392000198364258
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_153228214",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.10980000346899033,
+      0.5842999815940857,
+      0.694100022315979
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.10980000346899033,
+      0.5842999815940857,
+      0.694100022315979
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_028149177",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.8784000277519226,
+      0.33730000257492065,
+      0.33730000257492065
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.8784000277519226,
+      0.33730000257492065,
+      0.33730000257492065
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_224086086",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.22349999845027924,
+      0.03139999881386757,
+      0.53329998254776
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.22349999845027924,
+      0.03139999881386757,
+      0.53329998254776
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_057008136",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.5254999995231628,
+      0.2313999980688095,
+      0.03139999881386757
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.5254999995231628,
+      0.2313999980688095,
+      0.03139999881386757
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_134059008",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.694100022315979,
+      0.3450999855995178,
+      0.10199999809265137
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.694100022315979,
+      0.3450999855995178,
+      0.10199999809265137
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_177088026",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.89410001039505,
+      0.6000000238418579,
+      0.7215999960899353
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.89410001039505,
+      0.6000000238418579,
+      0.7215999960899353
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_228153184",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.5803999900817871,
+      0.694100022315979,
+      0.10199999809265137
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.5803999900817871,
+      0.694100022315979,
+      0.10199999809265137
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_148177026",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.7764999866485596,
+      0.8784000277519226,
+      0.34119999408721924
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.7764999866485596,
+      0.8784000277519226,
+      0.34119999408721924
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_198224087",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.5411999821662903,
+      0.03139999881386757,
+      0.43140000104904175
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.5411999821662903,
+      0.03139999881386757,
+      0.43140000104904175
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_138008110",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.89410001039505,
+      0.8392000198364258,
+      0.6000000238418579
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.89410001039505,
+      0.8392000198364258,
+      0.6000000238418579
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_228214153",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.5254999995231628,
+      0.43140000104904175,
+      0.03139999881386757
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.5254999995231628,
+      0.43140000104904175,
+      0.03139999881386757
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_134110008",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.3450999855995178,
+      0.5608000159263611,
+      0.8823999762535095
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.3450999855995178,
+      0.5608000159263611,
+      0.8823999762535095
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_088143225",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.8902000188827515,
+      0.5960999727249146,
+      0.5960999727249146
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.8902000188827515,
+      0.5960999727249146,
+      0.5960999727249146
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_227152152",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.10199999809265137,
+      0.694100022315979,
+      0.5803999900817871
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.10199999809265137,
+      0.694100022315979,
+      0.5803999900817871
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_026177148",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.694100022315979,
+      0.10199999809265137,
+      0.3450999855995178
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.694100022315979,
+      0.10199999809265137,
+      0.3450999855995178
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_177026088",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.0,
+      0.6626999974250793,
+      0.0
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.0,
+      0.6626999974250793,
+      0.0
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_000169000",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.10980000346899033,
+      0.10980000346899033,
+      0.694100022315979
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.10980000346899033,
+      0.10980000346899033,
+      0.694100022315979
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_028028177",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.5254999995231628,
+      0.023499999195337296,
+      0.023499999195337296
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.5254999995231628,
+      0.023499999195337296,
+      0.023499999195337296
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_134006006",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.6039000153541565,
+      0.7254999876022339,
+      0.8980000019073486
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.6039000153541565,
+      0.7254999876022339,
+      0.8980000019073486
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_154185229",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      1.0,
+      0.0,
+      0.4392000138759613
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      1.0,
+      0.0,
+      0.4392000138759613
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_255000112",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.5529000163078308,
+      0.027499999850988388,
+      0.22750000655651093
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.5529000163078308,
+      0.027499999850988388,
+      0.22750000655651093
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_141007058",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.89410001039505,
+      0.7215999960899353,
+      0.6000000238418579
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.89410001039505,
+      0.7215999960899353,
+      0.6000000238418579
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_228184153",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.6000000238418579,
+      0.89410001039505,
+      0.7215999960899353
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.6000000238418579,
+      0.89410001039505,
+      0.7215999960899353
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_153228184",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.9254999756813049,
+      1.0,
+      0.6626999974250793
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.9254999756813049,
+      1.0,
+      0.6626999974250793
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_236255169",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.0,
+      0.3255000114440918,
+      0.21570000052452087
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.0,
+      0.3255000114440918,
+      0.21570000052452087
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_000083055",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      1.0,
+      1.0,
+      0.6626999974250793
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      1.0,
+      1.0,
+      0.6626999974250793
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_255255169",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  },
+  {
+    "AmbientColor": [
+      0.6626999974250793,
+      0.0,
+      0.0
+    ],
+    "AmbientMap": "",
+    "DiffuseColor": [
+      0.6626999974250793,
+      0.0,
+      0.0
+    ],
+    "DiffuseMap": "",
+    "Displacement": 0.0,
+    "EmmisiveColor": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "EmmisiveMap": "",
+    "HeightMap": "",
+    "Name": "wire_169000000",
+    "NormalMap": "",
+    "SpecularColor": [
+      0.3499999940395355,
+      0.3499999940395355,
+      0.3499999940395355
+    ],
+    "SpecularExponent": 32.0,
+    "SpecularMap": "",
+    "Transparency": 1.0
+  }
+]

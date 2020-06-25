@@ -91,6 +91,12 @@ namespace MxEngine
         this->VBO->Load(data, this->vertecies.size() * Vertex::Size, usageType);
     }
 
+    void MeshData::FreeBuffers()
+    {
+        this->indicies.clear();
+        this->vertecies.clear();
+    }
+
     void MeshData::BufferIndicies()
     {
         auto data = reinterpret_cast<uint32_t*>(this->indicies.data());

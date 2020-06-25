@@ -182,10 +182,10 @@ namespace MxEngine
 		}
 		MAKE_SCOPE_PROFILER("Application::CreateContext");
 
-		#if defined(MXENGINE_DEBUG)
-		bool useDebugging = true;
-		#else
+		#if defined(MXENGINE_SHIPPING)
 		bool useDebugging = false;
+		#else
+		bool useDebugging = true;
 		#endif
 
 		JsonFile config;
@@ -247,7 +247,7 @@ namespace MxEngine
 		else if (cursorMode == "hidden")
 			enumCursor = CursorMode::HIDDEN;
 
-		#if defined(MXENGINE_DEBUG)
+		#if !defined(MXENGINE_SHIPPING)
 		auto editorKey   = config["debug-build"]["editor-key"   ].get<KeyCode>();
 		auto appCloseKey = config["debug-build"]["app-close-key"].get<KeyCode>();
 

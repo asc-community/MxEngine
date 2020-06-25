@@ -40,7 +40,7 @@ namespace MxEngine
         return lower + number % period;
     }
 
-    void Random::SetSeed(Random::RandomReturnType seed)
+    void Random::SetSeed(Generator::result_type seed)
     {
         Random::mersenne64.seed(seed);
     }

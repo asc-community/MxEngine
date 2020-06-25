@@ -1,10 +1,10 @@
 # MxEngine
-![](https://img.shields.io/badge/version-6.4.0-red)
+![](https://img.shields.io/badge/version-7.0.0-red)
 ![](https://img.shields.io/badge/license-bsd--3-yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
 <!-- soon! [![Documentation](https://codedocs.xyz/MomoDeve/MxEngine.svg)](https://codedocs.xyz/MomoDeve/MxEngine/) -->
 
-MxEngine is a modern C++ general-purpose 3D game engine aiming to bring easy game & graphic application development into C++. 
+MxEngine is an educational modern-C++ general-purpose 3D game engine. 
 Right now MxEngine is developed only by me, #Momo, but any contributions are welcome and will be reviewed.
 Fow now MxEngine supports OpenGL as graphic API and targeting x64 only. My plans include other graphic API support, but do not expect it in the near future, as there are still a lot of other stuff to do.
 
@@ -35,19 +35,15 @@ Minor releases may change API or add new features but usually user code can be e
 Bug fixes & improvements are just fixes to already existing code to reestablish initially planned behaviour. This fixes may also be merged into major or minor releases if they come in the same time.
 
 For full version list see versions.md file
-## Building from source
-MxEngine can be built from sources using Visual Studio or CMake. Note that by now this project was only tested on Windows platform, so I do not guarantee that it can be built on other OS. Also, MxEngine is distributed with precompiled libraries, so if you have other OS/CPU, you probably will need to compile them from sources too. All project dependencies are included in this repository as git submodules.
-### Building with Visual Studio
-1. clone the repository via `git clone https://github.com/MomoDeve/MxEngine`
-2. unzip precompiled libraries located in folder `MxEngine/external_libraries`
-3. unzip python.zib (python 3.6 build) and boost_headers.zip (Boost lib) into root project directory
-4. unzip Vendors.zib located in folder `MxEngine/src` 
-5. open MxEngine.sln in Visual Studio. Select `Release`/`Debug` configuration and press "`build solution`"
-### Building with CMake
-1. clone the repository via `git clone https://github.com/MomoDeve/MxEngine`
-2. unzip precompiled libraries located in folder `MxEngine/external_libraries`
-3. unzip python.zib (python 3.6 build) and boost_headers.zip (Boost lib) into root project directory
-4. unzip Vendors.zib located in folder `MxEngine/src/Vendors` 
-5. open `CMakeLists.txt` located in project root directory and set it up for your system (CMake project can be built through Visual Studio without editing)
+## Installing and running MxEngine
+Right now MxEngine is distributed in source code as Visual Studio project which can be runned under Windows. Here is the steps you need to do to compile and run test projects:
+1. clone this repo to your system using `git clone https://github.com/MomoDeve/MxEngine`
+2. run `install.py` file located in the project root directory (you need [python interpreter](https://www.python.org/) to do this)
+3. open `MxEngine.sln` located in the project root directory and set startup project to `ProjectTemplate` or `SandboxApplication`
+4. click `F5` button and wait until game is loaded (make sure you choose Debug/Release x64 build)
 
-If you have free time and you are interested in this project, I will really appreciate your help with porting library on other systems. If you would like to help, please contact me via github or create a pull request.
+## Answers to some questions:
+- Is it possible to build MxEngine under Linux/MacOS/other system?
+	> Probably not in the current project state. There are some things which I still need to do before engine can be cross-platform at least on desktops. If you want to help with porting library to other systems, consider reading [CONTRIBUTING.md](https://github.com/MomoDeve/MxEngine/CONTRIBUTING.md).
+- Whats the roadmap for the engine? Which features can I expect to see, if I follow this repository?
+	> I put all features and not-fixed bugs to the public [Trello board](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine). If you want to see some specific feature in engine, which is not mentioned already, you can request it in `feature-request` issue

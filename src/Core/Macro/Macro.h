@@ -6,15 +6,16 @@
         #define MXENGINE_WINDOWS64
     #else
         #define MXENGINE_WINDOWS32
+        #error MxEngine can target only x64 platform
     #endif
 #else
-#error MxEngine must be runned on Windows platform
+#warning MxEngine should be compiled under Windows platform
 #endif
 
-#if defined(_DEBUG) && !defined(NDEBUG)
-    #define MXENGINE_DEBUG
-#else 
+#if defined(NDEBUG) || !defined(_DEBUG)
     #define MXENGINE_RELEASE
+#else 
+    #define MXENGINE_DEBUG
 #endif
 
 // at least one must be defined:

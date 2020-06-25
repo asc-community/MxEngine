@@ -39,12 +39,12 @@ namespace MxEngine
     class Random
     {
     public:
-        using RandomReturnType = std::uint_fast64_t;
+        using RandomReturnType = std::int64_t;
 
         /*!
         Random generator inner type. Numbers are used from cppreference wiki page
         */
-        using Generator = std::mersenne_twister_engine<RandomReturnType, 64, 312, 156, 31,
+        using Generator = std::mersenne_twister_engine<std::uint_fast64_t, 64, 312, 156, 31,
             0xb5026f5aa96619e9, 29,
             0x5555555555555555, 17,
             0x71d67fffeda60000, 37,
@@ -58,17 +58,17 @@ namespace MxEngine
         /*!
         max value which random generator can produce
         */
-        static constexpr RandomReturnType Max = Generator::max();
+        static constexpr RandomReturnType Max = std::numeric_limits<RandomReturnType>::max();
         /*!
         min value which random generator can produce
         */
-        static constexpr RandomReturnType Min = Generator::min();
+        static constexpr RandomReturnType Min = std::numeric_limits<RandomReturnType>::min();
 
         /*!
         sets seed for generator. Affects only current thread of execution
         \param seed new initial seed for generator
         */
-        static void SetSeed(RandomReturnType seed);
+        static void SetSeed(Generator::result_type seed);
         /*!
         generates random float
         \returns float in interval [0; 1]

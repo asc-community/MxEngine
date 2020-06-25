@@ -183,7 +183,7 @@ namespace MxEngine
 		this->height = biggestHeight;
 		this->channels = 3;
 		this->textureType = GL_TEXTURE_2D;
-		this->wrapType = wrapType;
+		this->wrapType = wrap;
 		this->format = TextureFormat::RGB;
 
 		GLint level = 0;
@@ -212,6 +212,7 @@ namespace MxEngine
 		this->filepath = "[[depth]]";
 		this->width = width;
 		this->height = height;
+		this->channels = 1;
 		this->textureType = GL_TEXTURE_2D;
 		this->format = TextureFormat::DEPTH;
 		this->wrapType = wrap;
@@ -232,6 +233,7 @@ namespace MxEngine
 		this->filepath = "[[multisample]]";
 		this->width = width;
 		this->height = height;
+		this->channels = 3;
 		this->textureType = GL_TEXTURE_2D_MULTISAMPLE;
 		this->format = format;
 		this->wrapType = wrap;
