@@ -405,18 +405,16 @@ namespace MxEngine
 	void Application::InitializeRenderAdaptor(RenderAdaptor& adaptor)
 	{
 		adaptor.InitRendererEnvironment();
-		this->GetRenderAdaptor().OnWindowResize({ this->GetWindow().GetWidth(), this->GetWindow().GetHeight() });
-		EventManager::AddEventListener("RenderAdaptorOnResize", [this](WindowResizeEvent& e)
-		{
-			this->GetRenderAdaptor().OnWindowResize(e.New);
-		});
 	}
-
-#if defined(MXENGINE_USE_PYTHON)
 	void Application::InitializeRuntimeEditor(RuntimeEditor& console)
 	{
 		EventManager::AddEventListener("DeveloperConsole",
 			[this](UpdateEvent&) { this->GetRuntimeEditor().OnRender(); });
+
+		EventManager::AddEventListener("ViewportResize", [this](WindowResizeEvent& e)
+		{
+			this->GetRenderAdaptor().OnViewportResize(e.New);
+		});
 
 		this->GetRuntimeEditor().ExecuteScript("InitializeOpenGL()");
 
@@ -435,11 +433,4 @@ namespace MxEngine
 		this->GetRuntimeEditor().RegisterComponentEditor("CameraController", GUI::CameraControllerEditor);
 		this->GetRuntimeEditor().RegisterComponentEditor("InputControl", GUI::InputControlEditor);
 	}
-#else
-	void Application::InitializeDeveloperConsole(DeveloperConsole& console)
-	{
-		EventManager::AddEventListener("DeveloperConsole",
-			[this](UpdateEvent&) { this->GetConsole().OnRender(); });
-	}
-#endif
 }

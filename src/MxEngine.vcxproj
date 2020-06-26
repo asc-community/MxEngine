@@ -80,6 +80,8 @@
     <ClInclude Include="Utilities\ECS\ComponentFactory.h" />
     <ClInclude Include="Utilities\ECS\ComponentView.h" />
     <ClInclude Include="Utilities\FileSystem\FileManager.h" />
+    <ClInclude Include="Utilities\Image\ImageManager.h" />
+    <ClInclude Include="Utilities\Image\ImageConverter.h" />
     <ClInclude Include="Utilities\ImGui\ComponentEditor.h" />
     <ClInclude Include="Utilities\ImGui\RenderEditor.h" />
     <ClInclude Include="Utilities\ImGui\ResourceEditor.h" />
@@ -118,7 +120,7 @@
     <ClInclude Include="Platform\Window\Window.h" />
     <ClInclude Include="Utilities\EventDispatcher\EventDispatcher.h" />
     <ClInclude Include="Utilities\Format\Format.h" />
-    <ClInclude Include="Utilities\ImageLoader\ImageLoader.h" />
+    <ClInclude Include="Utilities\Image\ImageLoader.h" />
     <ClInclude Include="Utilities\ImGui\GraphicConsole.h" />
     <ClInclude Include="Utilities\ImGui\ImGuiBase.h" />
     <ClInclude Include="Utilities\ImGui\ImGuiUtils.h" />
@@ -359,6 +361,7 @@
     <ClInclude Include="Vendors\json\thirdparty\hedley\hedley.hpp" />
     <ClInclude Include="Vendors\json\thirdparty\hedley\hedley_undef.hpp" />
     <ClInclude Include="Vendors\stb\stb_image.h" />
+    <ClInclude Include="Vendors\stb\stb_image_write.h" />
     <ClInclude Include="Vendor\chaiscript_windows.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'">true</ExcludedFromBuild>
@@ -411,7 +414,9 @@
     <ClCompile Include="Platform\Window\WindowManager.cpp" />
     <ClCompile Include="Utilities\FileSystem\File.cpp" />
     <ClCompile Include="Utilities\FileSystem\FileManager.cpp" />
-    <ClCompile Include="Utilities\ImageLoader\ImageLoader.cpp" />
+    <ClCompile Include="Utilities\Image\ImageLoader.cpp" />
+    <ClCompile Include="Utilities\Image\ImageConverter.cpp" />
+    <ClCompile Include="Utilities\Image\ImageManager.cpp" />
     <ClCompile Include="Utilities\ImGui\ComponentEditor.cpp" />
     <ClCompile Include="Utilities\ImGui\GraphicConsole.cpp" />
     <ClCompile Include="Utilities\ImGui\RenderEditor.cpp" />

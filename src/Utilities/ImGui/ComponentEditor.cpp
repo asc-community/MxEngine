@@ -326,7 +326,7 @@ namespace MxEngine::GUI
 		if (ImGui::Button("auto-resize viewport"))
 			cameraController.ListenWindowResizeEvent();
 
-		auto texture = cameraController.GetTexture();
+		auto texture = cameraController.GetRenderTexture();
 		DrawTextureEditor("output texture", texture);
 
 		{

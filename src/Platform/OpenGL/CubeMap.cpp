@@ -30,7 +30,7 @@
 
 #include "CubeMap.h"
 #include "Platform/OpenGL/GLUtilities.h"
-#include "Utilities/ImageLoader/ImageLoader.h"
+#include "Utilities/Image/ImageLoader.h"
 #include "Utilities/Logger/Logger.h"
 
 namespace MxEngine

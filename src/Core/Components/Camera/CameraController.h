@@ -46,7 +46,7 @@ namespace MxEngine
 
 		GResource<FrameBuffer> framebuffer;
 		GResource<RenderBuffer> renderbuffer;
-		GResource<Texture> texture;
+		GResource<Texture> renderTexture;
 
 		Vector3 direction = { 1.0f, 0.0f, 0.0f };
 		Vector3 up = { 0.0f, 1.0f, 0.0f };
@@ -83,8 +83,9 @@ namespace MxEngine
 		const Matrix4x4& GetMatrix(const Vector3& position) const;
 		Matrix4x4 GetStaticMatrix() const;
 		GResource<FrameBuffer> GetFrameBuffer() const;
-		GResource<Texture> GetTexture() const;
+		GResource<Texture> GetRenderTexture() const;
 		void ListenWindowResizeEvent();
+		void ResizeRenderTexture(size_t width, size_t height);
 
 		const Vector3& GetDirection() const;
 		void SetDirection(const Vector3& direction);
@@ -100,12 +101,12 @@ namespace MxEngine
 		void SetMoveSpeed(float speed);
 		float GetRotateSpeed() const;
 		void SetRotateSpeed(float speed);
+		CameraController& Rotate(float horz, float vert);
 
 		void SetForwardVector(const Vector3& forward);
 		void SetUpVector(const Vector3& up);
 		void SetRightVector(const Vector3& right);
 
-		CameraController& Rotate(float horz, float vert);
 		const Vector3& GetForwardVector() const;
 		const Vector3& GetUpVector() const;
 		const Vector3& GetRightVector() const;

@@ -35,8 +35,9 @@ namespace MxEngine
 	class RenderManager
 	{
     public:
-		static const CameraController::Handle& GetViewport();
+		static CameraController::Handle GetViewport();
 		static void SetViewport(const CameraController::Handle& viewport);
+        static void ResizeViewport(size_t width, size_t height);
 		static RenderController& GetController();
 		static DebugBuffer& GetDebugDrawer();
         static void LoadMainShader(bool useLighting = true);

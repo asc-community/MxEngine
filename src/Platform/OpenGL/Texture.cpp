@@ -28,7 +28,7 @@
 
 #include "Texture.h"
 #include "Platform/OpenGL/GLUtilities.h"
-#include "Utilities/ImageLoader/ImageLoader.h"
+#include "Utilities/Image/ImageLoader.h"
 #include "Utilities/Logger/Logger.h"
 #include "Utilities/Time/Time.h"
 
@@ -164,8 +164,7 @@ namespace MxEngine
 		this->format = format;
 		this->wrapType = wrap;
 
-		GLenum type = (format == TextureFormat::RGB16F || format == TextureFormat::RGB32F ||
-			format == TextureFormat::RGBA16F) ? GL_FLOAT : GL_UNSIGNED_BYTE;
+		GLenum type = this->IsFloatingPoint() ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
 		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, GL_RGB, type, data));
@@ -246,6 +245,47 @@ namespace MxEngine
 		GLCALL(glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, glFormat, width, height, GL_TRUE));
     }
 
+    MxVector<Texture::RawData> Texture::GetRawTextureData() const
+    {
+		MxVector<RawData> result;
+		if (this->height == 0 || this->width == 0) 
+			return result;
+
+		GLenum type = this->IsFloatingPoint() ? GL_FLOAT : GL_UNSIGNED_BYTE;
+		size_t totalByteSize = this->width * this->height;
+		GLenum internalFormat = GL_RGBA;
+		switch (this->format)
+		{
+		case MxEngine::TextureFormat::RGB:
+		case MxEngine::TextureFormat::RGBA:
+		case MxEngine::TextureFormat::DEPTH:
+			totalByteSize *= 4 * sizeof(uint8_t);
+			internalFormat = GL_RGBA;
+			break;
+		case MxEngine::TextureFormat::RGB16:
+		case MxEngine::TextureFormat::RGBA16:
+			totalByteSize *= 4 * sizeof(uint16_t);
+			internalFormat = GL_RGBA16;
+			break;
+		case MxEngine::TextureFormat::RGB16F:
+		case MxEngine::TextureFormat::RGBA16F:
+			totalByteSize *= 4 * sizeof(uint16_t);
+			internalFormat = GL_RGBA16F;
+			break;
+		case MxEngine::TextureFormat::RGB32F:
+		case MxEngine::TextureFormat::RGBA32F:
+			totalByteSize *= 4 * sizeof(uint32_t);
+			internalFormat = GL_RGBA32F;
+		default:
+			MX_ASSERT(false);
+		}
+		result.resize(totalByteSize);
+
+		this->Bind(0);
+		GLCALL(glGetTexImage(this->textureType, 0, internalFormat, type, (void*)result.data()));
+		return result;
+    }
+
 	void Texture::GenerateMipmaps()
 	{
 		this->Bind(0);
@@ -266,6 +306,12 @@ namespace MxEngine
 		return this->textureType == GL_TEXTURE_2D_MULTISAMPLE;
     }
 
+	bool Texture::IsFloatingPoint() const
+	{
+		return (format == TextureFormat::RGB16F ) || (format == TextureFormat::RGB32F ) ||
+			   (format == TextureFormat::RGBA16F) || (format == TextureFormat::RGBA32F);
+	}
+
 	bool Texture::IsDepthOnly() const
 	{
 		return this->format == TextureFormat::DEPTH;
@@ -275,6 +321,33 @@ namespace MxEngine
     {
 		return (int)this->samples;
     }
+
+	size_t Texture::GetPixelSize() const
+	{
+		switch (this->format)
+		{
+		case MxEngine::TextureFormat::RGB:
+			return 3 * sizeof(uint8_t);
+		case MxEngine::TextureFormat::RGBA:
+			return 4 * sizeof(uint8_t);
+		case MxEngine::TextureFormat::RGB16:
+			return 3 * sizeof(uint16_t);
+		case MxEngine::TextureFormat::RGB16F:
+			return 3 * sizeof(uint16_t);
+		case MxEngine::TextureFormat::RGBA16:
+			return 4 * sizeof(uint16_t);
+		case MxEngine::TextureFormat::RGBA16F:
+			return 4 * sizeof(uint16_t);
+		case MxEngine::TextureFormat::RGB32F:
+			return 3 * sizeof(uint32_t);
+		case MxEngine::TextureFormat::RGBA32F:
+			return 4 * sizeof(uint32_t);
+		case MxEngine::TextureFormat::DEPTH:
+			return 1 * sizeof(uint8_t);
+		default:
+			return 0;
+		}
+	}
 
 	TextureFormat Texture::GetFormat() const
 	{

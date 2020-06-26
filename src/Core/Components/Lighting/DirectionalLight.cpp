@@ -80,7 +80,7 @@ namespace MxEngine
 
         EventManager::AddEventListener(uuid, [tr = object.Transform](UpdateEvent& e) mutable
         {
-            auto& viewport = RenderManager::GetViewport();
+            auto viewport = RenderManager::GetViewport();
             if (viewport.IsValid()) 
                 tr->SetPosition(MxObject::GetByComponent(*viewport).Transform->GetPosition());
         });

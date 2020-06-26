@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Utilities/STL/MxString.h"
+#include "Utilities/STL/MxVector.h"
 #include "Utilities/Math/Math.h"
 
 namespace MxEngine
@@ -67,13 +68,14 @@ namespace MxEngine
 		BindableId id = 0;
 		mutable BindableId activeId = 0;
 		unsigned int textureType = 0;
-		TextureFormat format = TextureFormat::RGBA;
+		TextureFormat format = TextureFormat::RGB;
 		TextureWrap wrapType = TextureWrap::REPEAT;
 		uint8_t samples = 0;
 
 		void FreeTexture();
 	public:
-		using RawDataPointer = uint8_t*;
+		using RawData = uint8_t;
+		using RawDataPointer = RawData*;
 		using TextureBindId = BindableId;
 
 		Texture();
@@ -92,11 +94,14 @@ namespace MxEngine
 		void LoadMipmaps(RawDataPointer* data, size_t mipmaps, int biggestWidth, int biggestHeight, TextureWrap wrap = TextureWrap::REPEAT);
 		void LoadDepth(int width, int height, TextureWrap wrap = TextureWrap::CLAMP_TO_BORDER);
 		void LoadMultisample(int width, int height, TextureFormat format, int samples, TextureWrap wrap = TextureWrap::REPEAT);
+		MxVector<RawData> GetRawTextureData() const;
 		void GenerateMipmaps();
 		void SetBorderColor(const Vector3& color);
 		bool IsMultisampled() const;
+		bool IsFloatingPoint() const;
 		bool IsDepthOnly() const;
 		int GetSampleCount() const;
+		size_t GetPixelSize() const;
 		TextureFormat GetFormat() const;
 		TextureWrap GetWrapType() const;
 		void Bind(TextureBindId id) const;

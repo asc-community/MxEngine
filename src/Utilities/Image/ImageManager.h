@@ -28,31 +28,32 @@
 
 #pragma once
 
-#include "Core/Rendering/RenderController.h"
+#include "Platform/GraphicAPI.h"
+#include "Utilities/FileSystem/File.h"
+#include "Utilities/String/String.h"
 
 namespace MxEngine
 {
-    struct RenderAdaptor
-    {
-        RenderController Renderer;
-        DebugBuffer DebugDrawer;
-        CameraController::Handle Viewport;
+	enum class ImageType
+	{
+		PNG,
+		BMP,
+		TGA,
+		JPG,
+		HDR,
+	};
 
-        constexpr static TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;
-        void InitRendererEnvironment();
-        void OnViewportResize(const VectorInt2& viewport);
-        void LoadMainShader(bool useLighting = true);
-        void PerformRenderIteration();
-        void SetRenderToDefaultFrameBuffer(bool value = true);
-        bool IsRenderedToDefaultFrameBuffer() const;
+	class ImageManager
+	{
+	public:
+		static void SaveTexture(StringId        fileHash, const GResource<Texture>& texture, ImageType type);
+		static void SaveTexture(const FilePath& filePath, const GResource<Texture>& texture, ImageType type);
+		static void SaveTexture(const MxString& filePath, const GResource<Texture>& texture, ImageType type);
+		static void SaveTexture(const char*     filePath, const GResource<Texture>& texture, ImageType type);
 
-        void SetFogColor(const Vector3& color);
-        const Vector3& GetFogColor() const;
-        void SetFogDensity(float density);
-        float GetFogDensity() const;
-        void SetFogDistance(float distance);
-        float GetFogDistance() const;
-        void SetShadowBlurIterations(size_t iterations);
-        size_t GetShadowBlurIterations() const;
-    };
+		static void TakeScreenShot(StringId        fileHash, ImageType type);
+		static void TakeScreenShot(const FilePath& filePath, ImageType type);
+		static void TakeScreenShot(const MxString& filePath, ImageType type);
+		static void TakeScreenShot(const char*     filePath, ImageType type);
+	};
 }

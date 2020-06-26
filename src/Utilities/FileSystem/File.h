@@ -75,19 +75,19 @@ namespace MxEngine
         \param path path to a file
         \param mode how to treat file (see FileMode documentation)
         */
-        File(const FilePath& path, FileMode mode = FileMode::READ);
+        File(const FilePath& path, int mode = FileMode::READ);
         /*!
         creates file object and opens fstream
         \param path path to a file (absolute or relative to executable directory)
         \param mode how to treat file (see FileMode documentation)
         */
-        File(const MxString& path, FileMode mode = FileMode::READ);
+        File(const MxString& path, int mode = FileMode::READ);
         /*!
         creates file object and opens fstream
         \param path path to a file (absolute or relative to executable directory)
         \param mode how to treat file (see FileMode documentation)
         */
-        File(const char* path, FileMode mode = FileMode::READ);
+        File(const char* path, int mode = FileMode::READ);
         File(const File&) = default;
         File(File&&) = default;
         File& operator=(const File&) = default;
@@ -108,19 +108,19 @@ namespace MxEngine
         \param path path to a file
         \param mode how to treat file (see FileMode documentation)
         */
-        void Open(FilePath path, FileMode mode = FileMode::READ);
+        void Open(FilePath path, int mode = FileMode::READ);
         /*!
         opens new file, old file associated with File is closed automatically
         \param path path to a file (absolute or relative to executable directory)
         \param mode how to treat file (see FileMode documentation)
         */
-        void Open(const MxString& path, FileMode mode = FileMode::READ);
+        void Open(const MxString& path, int mode = FileMode::READ);
         /*!
         opens new file, old file associated with File is closed automatically
         \param path path to a file (absolute or relative to executable directory)
         \param mode how to treat file (see FileMode documentation)
         */
-        void Open(const char* path, FileMode mode = FileMode::READ);
+        void Open(const char* path, int mode = FileMode::READ);
         /*
         closes currently opened std::fstream object (file)
         */
@@ -254,6 +254,12 @@ namespace MxEngine
         \param path path to directory
         */
         static void CreateDirectory(const char* path);
+        /*
+        writes bytes to a file. File must be opened with binary mode
+        \param bytes pointer to the first byte to write
+        \param size how many bytes to write
+        */
+        void WriteBytes(const uint8_t* bytes, size_t size);
     };
 
     template<typename T>

@@ -44,17 +44,17 @@ namespace MxEngine
         { File::READ | File::WRITE | File::BINARY, std::fstream::in | std::fstream::out | std::fstream::binary },
     };
 
-    File::File(const FilePath& path, FileMode mode)
+    File::File(const FilePath& path, int mode)
     {
         this->Open(path, mode);
     }
 
-    File::File(const MxString& path, FileMode mode)
+    File::File(const MxString& path, int mode)
     {
         this->Open(path, mode);
     }
 
-    File::File(const char* path, FileMode mode)
+    File::File(const char* path, int mode)
     {
         this->Open(path, mode);
     }
@@ -69,7 +69,7 @@ namespace MxEngine
         return this->fileStream.is_open() && this->fileStream.good();
     }
 
-    void File::Open(FilePath path, FileMode mode)
+    void File::Open(FilePath path, int mode)
     {
         this->filePath = std::move(path);
         if (!File::Exists(this->filePath))
@@ -83,13 +83,13 @@ namespace MxEngine
         this->fileStream.open(this->filePath, FileModeTable[mode]);
     }
 
-    void File::Open(const MxString& path, FileMode mode)
+    void File::Open(const MxString& path, int mode)
     {
         FilePath filepath = path.c_str();
         this->Open(std::move(filepath), mode);
     }
 
-    void File::Open(const char* path, FileMode mode)
+    void File::Open(const char* path, int mode)
     {
         this->Open((FilePath)path, mode);
     }
@@ -221,5 +221,10 @@ namespace MxEngine
     {
         if (!File::Exists(path))
             std::filesystem::create_directory(path);
+    }
+
+    void File::WriteBytes(const uint8_t* bytes, size_t size)
+    {
+        this->fileStream.write((const char*)bytes, size);
     }
 }

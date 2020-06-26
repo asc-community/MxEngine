@@ -53,5 +53,5 @@ namespace MxEngine
 
 namespace EA::StdC
 {
-     int Vsnprintf(char* s, std::size_t n, char const* format, char* args);
+     int Vsnprintf(char* EA_RESTRICT s, std::size_t n, char const* EA_RESTRICT format, char* args);
 }

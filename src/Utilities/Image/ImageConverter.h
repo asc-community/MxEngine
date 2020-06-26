@@ -28,31 +28,20 @@
 
 #pragma once
 
-#include "Core/Rendering/RenderController.h"
+#include "Utilities/STL/MxString.h"
+#include "Utilities/STL/MxVector.h"
 
 namespace MxEngine
 {
-    struct RenderAdaptor
-    {
-        RenderController Renderer;
-        DebugBuffer DebugDrawer;
-        CameraController::Handle Viewport;
+	class ImageConverter
+	{
+	public:
+		using RawImageData = MxVector<uint8_t>;
 
-        constexpr static TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;
-        void InitRendererEnvironment();
-        void OnViewportResize(const VectorInt2& viewport);
-        void LoadMainShader(bool useLighting = true);
-        void PerformRenderIteration();
-        void SetRenderToDefaultFrameBuffer(bool value = true);
-        bool IsRenderedToDefaultFrameBuffer() const;
-
-        void SetFogColor(const Vector3& color);
-        const Vector3& GetFogColor() const;
-        void SetFogDensity(float density);
-        float GetFogDensity() const;
-        void SetFogDistance(float distance);
-        float GetFogDistance() const;
-        void SetShadowBlurIterations(size_t iterations);
-        size_t GetShadowBlurIterations() const;
-    };
+		static RawImageData ConvertImagePNG(const uint8_t* imagedata, int width, int height, int channels = 4, bool flipOnSave = true);
+		static RawImageData ConvertImageBMP(const uint8_t* imagedata, int width, int height, int channels = 4, bool flipOnSave = true);
+		static RawImageData ConvertImageTGA(const uint8_t* imagedata, int width, int height, int channels = 4, bool flipOnSave = true);
+		static RawImageData ConvertImageJPG(const uint8_t* imagedata, int width, int height, int channels = 4, int  quality = 90, bool flipOnSave = true);
+		static RawImageData ConvertImageHDR(const uint8_t* imagedata, int width, int height, int channels = 4, bool flipOnSave = true);
+	};
 }

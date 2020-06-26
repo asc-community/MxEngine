@@ -121,3 +121,7 @@
 ### 7.0.2
 - Render Editor window now has window settings (size, position, title)
 - InputManager and WindowManager classes with better API
+### 7.0.3
+- textures now can be saved as image files (PNG, JPG, TGA, BMP, HDR are supported)
+- main viewport and camera render textures can be resized to extend even belong window limit
+- added offline rendering project to examples (show basics of viewport image capture and resize)

@@ -49,6 +49,7 @@
 #include "Utilities/Format/Format.h"
 #include "Utilities/Random/Random.h"
 #include "Utilities/Array/Array2D.h"
+#include "Utilities/Image/ImageManager.h"
 #include "Library/Primitives/Primitives.h"
 #include "Library/Primitives/Colors.h"
 

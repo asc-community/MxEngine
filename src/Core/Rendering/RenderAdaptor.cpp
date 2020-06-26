@@ -151,18 +151,18 @@ namespace MxEngine
         }
     }
 
-    void RenderAdaptor::OnWindowResize(const VectorInt2& newViewport)
+    void RenderAdaptor::OnViewportResize(const VectorInt2& viewportSize)
     {
         MAKE_SCOPE_PROFILER("RenderAdaptor::OnWindowResize()");
 
         auto& environment = this->Renderer.GetEnvironment();
-        environment.Viewport = newViewport;
+        environment.Viewport = viewportSize;
 
-        GetAttachedTexture(environment.HDRFrameBuffer)->Load(nullptr, newViewport.x, newViewport.y, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
-    	if((environment.BloomHDRMap->GetWidth() != newViewport.x) || (environment.BloomHDRMap->GetHeight() != newViewport.y))
-            environment.BloomHDRMap->Load(nullptr, newViewport.x, newViewport.y, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+        GetAttachedTexture(environment.HDRFrameBuffer)->Load(nullptr, viewportSize.x, viewportSize.y, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+    	if((environment.BloomHDRMap->GetWidth() != viewportSize.x) || (environment.BloomHDRMap->GetHeight() != viewportSize.y))
+            environment.BloomHDRMap->Load(nullptr, viewportSize.x, viewportSize.y, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
     
-        VectorInt2 bloomTextureSize = newViewport;
+        VectorInt2 bloomTextureSize = viewportSize;
         bloomTextureSize = (bloomTextureSize + 3) / 2 + ((bloomTextureSize + 3) / 2) % 2;
         for (auto& bloomBuffer : environment.BloomBuffers)
         {

@@ -29,10 +29,10 @@
 #include "ImageLoader.h"
 #include "Core/Macro/Macro.h"
 #include "Utilities/Profiler/Profiler.h"
+#include "Utilities/Math/Math.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "Vendors/stb/stb_image.h"
-#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
