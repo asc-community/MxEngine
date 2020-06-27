@@ -306,11 +306,11 @@ namespace MxEngine
 		case MxEngine::TextureFormat::RGBA:
 			return 4 * sizeof(uint8_t);
 		case MxEngine::TextureFormat::RGB16:
-			return 3 * sizeof(uint16_t);
+			return 3 * sizeof(uint16_t); //-V1037
 		case MxEngine::TextureFormat::RGB16F:
 			return 3 * sizeof(uint16_t);
 		case MxEngine::TextureFormat::RGBA16:
-			return 4 * sizeof(uint16_t);
+			return 4 * sizeof(uint16_t); //-V1037
 		case MxEngine::TextureFormat::RGBA16F:
 			return 4 * sizeof(uint16_t);
 		case MxEngine::TextureFormat::RGB32F:

@@ -28,23 +28,27 @@
 
 #pragma once
 
-#include "Core/Components/Components.h"
+#include "CameraController.h"
 
-namespace MxEngine::GUI
+namespace MxEngine
 {
-	void TransformEditor(Transform& transform);
-	void BehaviourEditor(Behaviour& behaviour);
-	void ScriptEditor(Script& script);
-	void InstanceFactoryEditor(InstanceFactory& instanceFactory);
-	void SkyboxEditor(Skybox& skybox);
-	void DebugDrawEditor(DebugDraw& debugDraw);
-	void MeshRendererEditor(MeshRenderer& meshRenderer);
-	void MeshSourceEditor(MeshSource& meshSource);
-	void MeshLODEditor(MeshLOD& meshLOD);
-	void DirectionalLightEditor(DirectionalLight& dirLight);
-	void PointLightEditor(PointLight& pointLight);
-	void SpotLightEditor(SpotLight& spotLight);
-	void CameraControllerEditor(CameraController& camera);
-	void VRCameraControllerEditor(VRCameraController& vrCameraController);
-	void InputControlEditor(InputControl& inputControl);
+	class VRCameraController
+	{
+		MAKE_COMPONENT(VRCameraController);
+
+		GResource<Shader> shaderVR;
+
+		void OnUpdate();
+		void UpdateEyes(CameraController::Handle& leftCamera, CameraController::Handle& rightCamera);
+		void Render(GResource<Texture>& target, const GResource<Texture>& leftEye, const GResource<Texture>& rightEye);
+	public:
+		CameraController::Handle LeftEye;
+		CameraController::Handle RightEye;
+		float EyeDistance = 0.1f;
+
+		VRCameraController() = default;
+		~VRCameraController();
+
+		void Init();
+	};
 }

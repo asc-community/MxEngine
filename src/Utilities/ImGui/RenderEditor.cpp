@@ -72,10 +72,9 @@ namespace MxEngine
 
         if (ImGui::TreeNode("window settings"))
         {
-            static MxString title;
+            static MxString title = WindowManager::GetTitle();;
             static auto size = WindowManager::GetSize();
             auto position = WindowManager::GetPosition();
-            title = WindowManager::GetTitle();
 
             if (GUI::InputFloatOnClick("window width ", &size.x))
             {
@@ -90,7 +89,10 @@ namespace MxEngine
             }
 
             if (GUI::InputTextOnClick("window title ", title, 48))
+            {
                 WindowManager::SetTitle(title);
+                title = WindowManager::GetTitle();
+            }
 
             ImGui::AlignTextToFramePadding();
             ImGui::Text("window position");
@@ -106,8 +108,8 @@ namespace MxEngine
             auto viewport = RenderManager::GetViewport();
             if (viewport.IsValid())
             {
-                GUI::CameraControllerEditor(*viewport);
                 GUI::DrawImageSaver(viewport->GetRenderTexture(), "take screenshot");
+                GUI::CameraControllerEditor(*viewport);
             }
             else
             {

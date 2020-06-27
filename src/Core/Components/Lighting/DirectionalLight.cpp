@@ -42,7 +42,7 @@ namespace MxEngine
 
     DirectionalLight::~DirectionalLight()
     {
-        MxString eventName = MxObject::GetByComponent(*this).GetComponent<DirectionalLight>().GetUUID();
+        MxString eventName = MxObject::GetComponentUUID(*this);
         EventManager::RemoveEventListener(eventName);
     }
 
