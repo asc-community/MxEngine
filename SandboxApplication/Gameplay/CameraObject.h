@@ -13,7 +13,7 @@ void InitCamera(MxObject& object)
 	controller->Camera.SetAspectRatio(WindowManager::GetWidth(), WindowManager::GetHeight());
 
 	controller->SetMoveSpeed(5.0f);
-	controller->SetRotateSpeed(0.75f);
+	controller->SetRotateSpeed(5.0f);
 	controller->ListenWindowResizeEvent();
 	input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
 	input->BindRotation();

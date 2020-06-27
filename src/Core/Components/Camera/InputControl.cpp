@@ -34,8 +34,7 @@ namespace MxEngine
 {
 	InputControl::~InputControl()
 	{	
-		MxString uuid = MxObject::GetByComponent(*this).GetComponent<InputControl>().GetUUID();
-		EventManager::FlushEvents();
+		MxString uuid = MxObject::GetComponentUUID(*this);
 		EventManager::RemoveEventListener(uuid);
 	}
 

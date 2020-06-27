@@ -345,7 +345,7 @@ namespace MxEngine::GUI
 		ImGui::SameLine();
 		if (ImGui::Button("set as main viewport"))
 		{
-			auto cameraComponent = MxObject::GetByComponent(cameraController).GetComponent<CameraController>();
+			auto cameraComponent = MxObject::GetComponentHandle(cameraController);
 			Application::Get()->GetRenderAdaptor().Viewport = cameraComponent;
 		}
 

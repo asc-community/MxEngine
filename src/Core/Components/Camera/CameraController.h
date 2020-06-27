@@ -47,7 +47,6 @@ namespace MxEngine
 		GResource<RenderBuffer> renderbufferMSAA;
 		GResource<FrameBuffer> framebufferHDR;
 		GResource<Texture> bloomTextureHDR;
-		GResource<Texture> renderTexture;
 
 		void Init(int width, int height);
 		void Resize(int width, int height);
@@ -58,6 +57,7 @@ namespace MxEngine
 		MAKE_COMPONENT(CameraController);
 
 		UniqueRef<CameraRender> renderBuffers = MakeUnique<CameraRender>();
+		GResource<Texture> renderTexture;
 
 		Vector3 direction = { 1.0f, 0.0f, 0.0f };
 		Vector3 up = { 0.0f, 1.0f, 0.0f };
@@ -99,6 +99,7 @@ namespace MxEngine
 		GResource<Texture> GetRenderTexture() const;
 		void ListenWindowResizeEvent();
 		void ResizeRenderTexture(size_t width, size_t height);
+		void SetRenderTexture(const GResource<Texture>& texture);
 
 		const Vector3& GetDirection() const;
 		void SetDirection(const Vector3& direction);

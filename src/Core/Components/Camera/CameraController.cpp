@@ -73,6 +73,9 @@ namespace MxEngine
 
 		auto viewport = (VectorInt2)WindowManager::GetSize();
 		this->renderBuffers->Init(viewport.x, viewport.y);
+
+		this->renderTexture = GraphicFactory::Create<Texture>();
+		this->renderTexture->Load(nullptr, viewport.x, viewport.y, TextureFormat::RGB, TextureWrap::CLAMP_TO_EDGE);
 	}
 
 	CameraController::~CameraController()
@@ -130,7 +133,7 @@ namespace MxEngine
 
 	GResource<Texture> CameraController::GetRenderTexture() const
 	{
-		return this->renderBuffers->renderTexture;
+		return this->renderTexture;
 	}
 
 	void CameraController::ListenWindowResizeEvent()
@@ -138,7 +141,7 @@ namespace MxEngine
 		EventManager::RemoveEventListener(this->GetFrameBufferMSAA().GetUUID());
 
 		EventManager::AddEventListener<WindowResizeEvent>(this->GetFrameBufferMSAA().GetUUID(),
-		[camera = MxObject::GetByComponent(*this).GetComponent<CameraController>()](WindowResizeEvent& e) mutable
+		[camera = MxObject::GetComponentHandle(*this)](WindowResizeEvent& e) mutable
 		{
 			if (camera.IsValid() && (e.Old != e.New))
 			{
@@ -150,6 +153,14 @@ namespace MxEngine
 	void CameraController::ResizeRenderTexture(size_t w, size_t h)
 	{
 		this->renderBuffers->Resize((int)w, (int)h);
+		this->renderTexture->Load(nullptr, (int)w, (int)h, this->renderTexture->GetFormat(), this->renderTexture->GetWrapType());
+	}
+
+	void CameraController::SetRenderTexture(const GResource<Texture>& texture)
+	{
+		MX_ASSERT(texture.IsValid());
+		this->renderBuffers->Resize((int)texture->GetWidth(), (int)texture->GetHeight());
+		this->renderTexture = texture;
 	}
 
     void CameraController::SubmitMatrixProjectionChanges() const
@@ -240,15 +251,16 @@ namespace MxEngine
 
 	CameraController& CameraController::Rotate(float horizontal, float vertical)
 	{
+		horizontal = Radians(horizontal);
+		vertical   = Radians(vertical);
 		this->horizontalAngle += this->rotateSpeed * horizontal;
-		this->verticalAngle += this->rotateSpeed * vertical;
+		this->verticalAngle   += this->rotateSpeed * vertical;
 
 		this->verticalAngle = Clamp(this->verticalAngle, 
 			-HalfPi<float>() + 0.001f, HalfPi<float>() - 0.001f);
-		while (this->horizontalAngle >= TwoPi<float>())
-			this->horizontalAngle -= TwoPi<float>();
-		while (this->horizontalAngle < 0)
-			this->horizontalAngle += TwoPi<float>();
+		
+		this->horizontalAngle = this->horizontalAngle - TwoPi<float>() * std::floor(this->horizontalAngle / TwoPi<float>());
+
 
 		this->SetDirection({
 			std::cos(verticalAngle) * std::sin(horizontalAngle),
@@ -310,7 +322,6 @@ namespace MxEngine
 		this->renderbufferMSAA = GraphicFactory::Create<RenderBuffer>();
 		this->framebufferHDR = GraphicFactory::Create<FrameBuffer>();
 		this->bloomTextureHDR = GraphicFactory::Create<Texture>();
-		this->renderTexture = GraphicFactory::Create<Texture>();
 
 		multisampledTexture->LoadMultisample(width, height, TextureFormat::RGBA16F, samples);
 		this->framebufferMSAA->AttachTexture(multisampledTexture);
@@ -324,8 +335,6 @@ namespace MxEngine
 		this->framebufferHDR->AttachTextureExtra(this->bloomTextureHDR, Attachment::COLOR_ATTACHMENT1);
 		this->framebufferHDR->UseDrawBuffers(2);
 		this->framebufferHDR->Validate();
-
-		this->renderTexture->Load(nullptr, width, height, TextureFormat::RGB, TextureWrap::CLAMP_TO_EDGE);
 	}
 
 	void CameraRender::Resize(int width, int height)
@@ -344,6 +353,5 @@ namespace MxEngine
 		this->bloomTextureHDR->Load(nullptr, width, height, this->bloomTextureHDR->GetFormat(), this->bloomTextureHDR->GetWrapType());
 
 		this->renderbufferMSAA->InitStorage((int)textureMSAA->GetWidth(), (int)textureMSAA->GetHeight(), textureMSAA->GetSampleCount());
-		this->renderTexture->Load(nullptr, width, height, this->renderTexture->GetFormat(), this->renderTexture->GetWrapType());
 	}
 }

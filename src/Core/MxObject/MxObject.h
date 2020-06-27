@@ -126,5 +126,17 @@ namespace MxEngine
 		{
 			return this->components.HasComponent<T>();
 		}
+
+		template<typename T>
+		static typename T::Handle GetComponentHandle(const T& component)
+		{
+			return MxObject::GetByComponent(component).GetComponent<T>();
+		}
+
+		template<typename T>
+		static UUID GetComponentUUID(const T& component)
+		{
+			return MxObject::GetComponentHandle(component).GetUUID();
+		}
 	};
 }
