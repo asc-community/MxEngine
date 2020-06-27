@@ -571,7 +571,7 @@ namespace MxEngine
 		camera.SkyboxMap              = skybox.Texture.IsValid() ? skybox.Texture : this->Pipeline.Environment.DefaultBlackCubeMap;
 		camera.InversedSkyboxRotation = Transpose(ToMatrix(parentTransform.GetRotation()));
 		camera.OutputTexture          = controller.GetRenderTexture();
-		camera.RenderToTexture        = controller.RenderingEnabled;
+		camera.RenderToTexture        = controller.IsRendered();
 	}
 
     void RenderController::SubmitPrimitive(const SubMesh& object, const Material& material, const Transform& parentTransform, size_t instanceCount)

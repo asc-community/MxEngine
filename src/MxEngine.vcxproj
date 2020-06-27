@@ -36,6 +36,7 @@
     <ClInclude Include="Core\Components\Camera\InputControl.h" />
     <ClInclude Include="Core\Components\Camera\OrthographicCamera.h" />
     <ClInclude Include="Core\Components\Camera\PerspectiveCamera.h" />
+    <ClInclude Include="Core\Components\Camera\VRCameraController.h" />
     <ClInclude Include="Core\Components\Components.h" />
     <ClInclude Include="Core\Components\InstanceFactory.h" />
     <ClInclude Include="Core\Components\Lighting\LightBase.h" />
@@ -375,6 +376,7 @@
     <ClCompile Include="Core\Components\Camera\OrthographicCamera.cpp" />
     <ClCompile Include="Core\Components\Camera\PerspectiveCamera.cpp" />
     <ClCompile Include="Core\Application\Application.cpp" />
+    <ClCompile Include="Core\Components\Camera\VRCameraController.cpp" />
     <ClCompile Include="Core\Components\InstanceFactory.cpp" />
     <ClCompile Include="Core\Components\Rendering\MeshLOD.cpp" />
     <ClCompile Include="Core\Components\Rendering\MeshRenderer.cpp" />
@@ -480,6 +482,7 @@
     <None Include="Platform\OpenGL\Shaders\nolight_object_vertex.glsl" />
     <None Include="Platform\OpenGL\Shaders\skybox_fragment.glsl" />
     <None Include="Platform\OpenGL\Shaders\skybox_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\vr_fragment.glsl" />
     <None Include="Resources\shaders\object_fragment.glsl" />
     <None Include="Resources\shaders\object_vertex.glsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

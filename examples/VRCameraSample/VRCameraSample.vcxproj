@@ -28,8 +28,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{35483f85-a2cd-4f6c-9877-62ea4b7433b1}</ProjectGuid>
-    <RootNamespace>TestScreenShotCapture</RootNamespace>
+    <ProjectGuid>{02c5ce5c-cc57-4a8a-b325-aee8d903af20}</ProjectGuid>
+    <RootNamespace>VRCameraSample</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -219,7 +219,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ImageCaptureApplication.cpp" />
+    <ClCompile Include="VRCameraApplication.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

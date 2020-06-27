@@ -50,6 +50,7 @@ namespace MxEngine
 
 		void Init(int width, int height);
 		void Resize(int width, int height);
+		void DeInit();
 	};
 
 	class CameraController
@@ -75,8 +76,8 @@ namespace MxEngine
 
 		uint8_t bloomIterations = 6;
 		CameraType cameraType = CameraType::PERSPECTIVE;
+		bool renderingEnabled = true;
 	public:
-		bool RenderingEnabled = true;
 		mutable CameraBase Camera;
 
 		CameraController();
@@ -100,6 +101,8 @@ namespace MxEngine
 		void ListenWindowResizeEvent();
 		void ResizeRenderTexture(size_t width, size_t height);
 		void SetRenderTexture(const GResource<Texture>& texture);
+		bool IsRendered() const;
+		void ToggleRendering(bool value);
 
 		const Vector3& GetDirection() const;
 		void SetDirection(const Vector3& direction);

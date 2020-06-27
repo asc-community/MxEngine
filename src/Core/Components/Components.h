@@ -12,5 +12,6 @@
 #include "Rendering/DebugDraw.h"
 #include "Camera/CameraController.h"
 #include "Camera/InputControl.h"
+#include "Camera/VRCameraController.h"
 #include "Script.h"
 #include "Transform.h"

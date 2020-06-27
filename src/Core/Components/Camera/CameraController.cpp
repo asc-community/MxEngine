@@ -152,15 +152,36 @@ namespace MxEngine
 
 	void CameraController::ResizeRenderTexture(size_t w, size_t h)
 	{
-		this->renderBuffers->Resize((int)w, (int)h);
 		this->renderTexture->Load(nullptr, (int)w, (int)h, this->renderTexture->GetFormat(), this->renderTexture->GetWrapType());
+		if(this->IsRendered())
+			this->renderBuffers->Resize((int)w, (int)h);
 	}
 
 	void CameraController::SetRenderTexture(const GResource<Texture>& texture)
 	{
 		MX_ASSERT(texture.IsValid());
-		this->renderBuffers->Resize((int)texture->GetWidth(), (int)texture->GetHeight());
 		this->renderTexture = texture;
+		if (this->IsRendered())
+		{
+			this->renderBuffers->Resize((int)texture->GetWidth(), (int)texture->GetHeight());
+		}
+	}
+
+    bool CameraController::IsRendered() const
+    {
+		return this->renderingEnabled;
+    }
+
+	void CameraController::ToggleRendering(bool value)
+	{
+		if (this->renderingEnabled != value)
+		{
+			if (value)
+				this->renderBuffers->Init((int)this->renderTexture->GetWidth(), (int)this->renderTexture->GetHeight());
+			else
+				this->renderBuffers->DeInit();
+		}
+		this->renderingEnabled = value;
 	}
 
     void CameraController::SubmitMatrixProjectionChanges() const
@@ -353,5 +374,13 @@ namespace MxEngine
 		this->bloomTextureHDR->Load(nullptr, width, height, this->bloomTextureHDR->GetFormat(), this->bloomTextureHDR->GetWrapType());
 
 		this->renderbufferMSAA->InitStorage((int)textureMSAA->GetWidth(), (int)textureMSAA->GetHeight(), textureMSAA->GetSampleCount());
+	}
+
+	void CameraRender::DeInit()
+	{
+		this->bloomTextureHDR  = GResource<Texture>      { };
+		this->framebufferHDR   = GResource<FrameBuffer>  { };
+		this->framebufferMSAA  = GResource<FrameBuffer>  { };
+		this->renderbufferMSAA = GResource<RenderBuffer> { };
 	}
 }

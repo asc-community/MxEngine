@@ -335,7 +335,9 @@ namespace MxEngine::GUI
 		if (ImGui::DragInt("bloom iterations", &bloomIterations))
 			cameraController.SetBloomIterations((size_t)Max(0, bloomIterations));
 		
-		ImGui::Checkbox("enable rendering", &cameraController.RenderingEnabled);
+		bool isRendered = cameraController.IsRendered();
+		if (ImGui::Checkbox("enable rendering", &isRendered))
+			cameraController.ToggleRendering(isRendered);
 
 		ImGui::SameLine();
 		if (ImGui::Button("listen window resize"))
@@ -386,6 +388,32 @@ namespace MxEngine::GUI
 			ImGui::PopID();
 		}
 	}
+
+    void VRCameraControllerEditor(VRCameraController& vrCameraController)
+    {
+		TREE_NODE_PUSH("VRCameraController");
+		REMOVE_COMPONENT_BUTTON(vrCameraController);
+
+		ImGui::DragFloat("eye distance", &vrCameraController.EyeDistance, 0.001f, 0.0f, 10.0f);
+
+		if (ImGui::TreeNode("left eye"))
+		{
+			if (vrCameraController.LeftEye.IsValid())
+				CameraControllerEditor(*vrCameraController.LeftEye);
+			else
+				ImGui::Text("- no camera attached");
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("right eye"))
+		{
+			if (vrCameraController.RightEye.IsValid())
+				CameraControllerEditor(*vrCameraController.RightEye);
+			else
+				ImGui::Text("- no camera attached");
+			ImGui::TreePop();
+		}
+    }
 
 	void InputControlEditor(InputControl& inputControl)
 	{

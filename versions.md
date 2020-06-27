@@ -129,3 +129,7 @@
 - textures now can be captured from runtime editor
 - add LookAt methods to Transform component
 - multiple bug fixes
+### 7.0.5
+- added VRCameraController component
+- optimized CameraController rendering
+- added VRCameraSample to example projects
