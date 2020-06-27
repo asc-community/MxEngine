@@ -125,3 +125,7 @@
 - textures now can be saved as image files (PNG, JPG, TGA, BMP, HDR are supported)
 - main viewport and camera render textures can be resized to extend even belong window limit
 - added offline rendering project to examples (show basics of viewport image capture and resize)
+### 7.0.4
+- textures now can be captured from runtime editor
+- add LookAt methods to Transform component
+- multiple bug fixes

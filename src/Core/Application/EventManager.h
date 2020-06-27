@@ -36,14 +36,6 @@ namespace MxEngine
     {
     public:
 		/*!
-		performs cache update, removing events from toRemoveCache list and adding events from toAddCache list
-		*/
-		static void FlushEvents()
-		{
-			Application::Get()->GetEventDispatcher().FlushEvents();
-		}
-
-		/*!
 		adds new event listener to dispatcher (listener placed in waiting queue until next frame).
 		Note that multiple listeners may have same name. If so, deleting by name will result in removing all of them
 		\param name name of listener (used for deleting listener)

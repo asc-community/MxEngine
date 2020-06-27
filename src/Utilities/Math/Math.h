@@ -102,6 +102,11 @@ namespace MxEngine
 		return glm::cross(v1, v2);
 	}
 
+	inline Quaternion LookAtRotation(const Vector3& direction, const Vector3& up)
+	{
+		return glm::quatLookAt(direction, up);
+	}
+
 	inline Matrix4x4 MakeViewMatrix(const Vector3& eye, const Vector3& center, const Vector3& up)
 	{
 		return glm::lookAt(eye, center, up);

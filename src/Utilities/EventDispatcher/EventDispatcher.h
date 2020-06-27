@@ -125,7 +125,7 @@ namespace MxEngine
 			{
 				return p.first == name;
 			});
-			callbacks.resize(it - callbacks.begin());
+			callbacks.erase(it, callbacks.end());
 		}
 	public:
 		/*!
@@ -188,6 +188,11 @@ namespace MxEngine
 		void RemoveEventListener(const MxString& name)
 		{
 			this->toRemoveCache.push_back(name);
+			
+			for (auto& [event, callbacks] : this->toAddCache)
+			{
+				RemoveEventByName(callbacks, name);
+			}
 		}
 		
 		/*!

@@ -84,5 +84,10 @@ namespace MxEngine
 		Transform& TranslateForward(float dist);
 		Transform& TranslateRight(float dist);
 		Transform& TranslateUp(float dist);
+
+		Transform& LookAt(const Vector3& point);
+		Transform& LookAtXY(const Vector3& point);
+		Transform& LookAtXZ(const Vector3& point);
+		Transform& LookAtYZ(const Vector3& point);
 	};
 }

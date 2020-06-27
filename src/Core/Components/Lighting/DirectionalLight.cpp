@@ -43,7 +43,6 @@ namespace MxEngine
     DirectionalLight::~DirectionalLight()
     {
         MxString eventName = MxObject::GetByComponent(*this).GetComponent<DirectionalLight>().GetUUID();
-        EventManager::FlushEvents(); // avoid problem with deleting event while its still in queue
         EventManager::RemoveEventListener(eventName);
     }
 

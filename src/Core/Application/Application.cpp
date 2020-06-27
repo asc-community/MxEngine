@@ -122,6 +122,7 @@ namespace MxEngine
 	void Application::DrawObjects()
 	{
 		MAKE_SCOPE_PROFILER("Application::DrawObjects");
+		this->GetRenderAdaptor().SetWindowSize({ this->GetWindow().GetWidth(), this->GetWindow().GetHeight() });
 		this->GetRenderAdaptor().PerformRenderIteration();
 	}
 
@@ -410,11 +411,6 @@ namespace MxEngine
 	{
 		EventManager::AddEventListener("DeveloperConsole",
 			[this](UpdateEvent&) { this->GetRuntimeEditor().OnRender(); });
-
-		EventManager::AddEventListener("ViewportResize", [this](WindowResizeEvent& e)
-		{
-			this->GetRenderAdaptor().OnViewportResize(e.New);
-		});
 
 		this->GetRuntimeEditor().ExecuteScript("InitializeOpenGL()");
 

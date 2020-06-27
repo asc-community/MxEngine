@@ -39,12 +39,6 @@ namespace MxEngine
     void RenderManager::SetViewport(const CameraController::Handle& viewport)
     {
         Application::Get()->GetRenderAdaptor().Viewport = viewport;
-        if (viewport.IsValid())
-        {
-            auto renderTexture = viewport->GetRenderTexture();
-            VectorInt2 viewportSize((int)renderTexture->GetWidth(), (int)renderTexture->GetHeight());
-            Application::Get()->GetRenderAdaptor().OnViewportResize(viewportSize);
-        }
     }
 
     void RenderManager::ResizeViewport(size_t width, size_t height)
@@ -54,7 +48,6 @@ namespace MxEngine
         {
             viewport->ResizeRenderTexture(width, height);
         }
-        Application::Get()->GetRenderAdaptor().OnViewportResize(VectorInt2((int)width, (int)height));
     }
 
     RenderController& RenderManager::GetController()

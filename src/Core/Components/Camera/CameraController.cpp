@@ -68,28 +68,16 @@ namespace MxEngine
 	}
 
 	CameraController::CameraController()
-		: framebuffer(GraphicFactory::Create<FrameBuffer>()), renderbuffer(GraphicFactory::Create<RenderBuffer>()), renderTexture(GraphicFactory::Create<Texture>())
 	{
 		this->SetCameraType(CameraType::PERSPECTIVE);
 
-		// TODO: let user create texture or do it here automatically?
 		auto viewport = (VectorInt2)WindowManager::GetSize();
-		constexpr size_t samples = 4;
-		auto multisampledTexture = GraphicFactory::Create<Texture>();
-
-		multisampledTexture->LoadMultisample(viewport.x, viewport.y, TextureFormat::RGBA16F, samples);
-		this->framebuffer->AttachTexture(multisampledTexture);
-		this->renderbuffer->InitStorage((int)multisampledTexture->GetWidth(), (int)multisampledTexture->GetHeight(), multisampledTexture->GetSampleCount());
-		this->renderbuffer->LinkToFrameBuffer(*this->framebuffer);
-		this->framebuffer->Validate();
-
-		this->renderTexture->Load(nullptr, viewport.x, viewport.y, TextureFormat::RGB, TextureWrap::CLAMP_TO_EDGE);
+		this->renderBuffers->Init(viewport.x, viewport.y);
 	}
 
 	CameraController::~CameraController()
 	{
-		EventManager::FlushEvents(); // avoid removing event while its still in queue
-		EventManager::RemoveEventListener(this->framebuffer.GetUUID());
+		EventManager::RemoveEventListener(this->GetFrameBufferMSAA().GetUUID());
 	}
 
 	void CameraController::SetCameraType(CameraType type)
@@ -125,21 +113,31 @@ namespace MxEngine
 		return ProjectionMatrix * (Matrix4x4)ViewMatrix;
     }
 
-	GResource<FrameBuffer> CameraController::GetFrameBuffer() const
+	GResource<FrameBuffer> CameraController::GetFrameBufferMSAA() const
 	{
-		return this->framebuffer;
+		return this->renderBuffers->framebufferMSAA;
+	}
+
+	GResource<FrameBuffer> CameraController::GetFrameBufferHDR() const
+	{
+		return this->renderBuffers->framebufferHDR;
+	}
+
+	GResource<Texture> CameraController::GetBloomTexture() const
+	{
+		return this->renderBuffers->bloomTextureHDR;
 	}
 
 	GResource<Texture> CameraController::GetRenderTexture() const
 	{
-		return this->renderTexture;
+		return this->renderBuffers->renderTexture;
 	}
 
 	void CameraController::ListenWindowResizeEvent()
 	{
-		EventManager::RemoveEventListener(this->framebuffer.GetUUID());
+		EventManager::RemoveEventListener(this->GetFrameBufferMSAA().GetUUID());
 
-		EventManager::AddEventListener<WindowResizeEvent>(this->framebuffer.GetUUID(),
+		EventManager::AddEventListener<WindowResizeEvent>(this->GetFrameBufferMSAA().GetUUID(),
 		[camera = MxObject::GetByComponent(*this).GetComponent<CameraController>()](WindowResizeEvent& e) mutable
 		{
 			if (camera.IsValid() && (e.Old != e.New))
@@ -151,19 +149,7 @@ namespace MxEngine
 
 	void CameraController::ResizeRenderTexture(size_t w, size_t h)
 	{
-		auto width = (int)w;
-		auto height = (int)h;
-		auto framebufferTexture = GetAttachedTexture(this->GetFrameBuffer());
-
-		if (framebufferTexture->IsMultisampled())
-			framebufferTexture->LoadMultisample(width, height, framebufferTexture->GetFormat(), framebufferTexture->GetSampleCount(), framebufferTexture->GetWrapType());
-		else if (framebufferTexture->IsDepthOnly())
-			framebufferTexture->LoadDepth(width, height, framebufferTexture->GetWrapType());
-		else
-			framebufferTexture->Load(nullptr, width, height, framebufferTexture->GetFormat(), framebufferTexture->GetWrapType());
-
-		this->renderbuffer->InitStorage((int)framebufferTexture->GetWidth(), (int)framebufferTexture->GetHeight(), framebufferTexture->GetSampleCount());
-		this->renderTexture->Load(nullptr, width, height, this->renderTexture->GetFormat(), this->renderTexture->GetWrapType());
+		this->renderBuffers->Resize((int)w, (int)h);
 	}
 
     void CameraController::SubmitMatrixProjectionChanges() const
@@ -312,5 +298,52 @@ namespace MxEngine
 	const Vector3& CameraController::GetRightVector() const
 	{
 		return this->right;
+	}
+
+	void CameraRender::Init(int width, int height)
+	{
+		constexpr size_t samples = 4;
+
+		auto multisampledTexture = GraphicFactory::Create<Texture>();
+		auto textureHDR = GraphicFactory::Create<Texture>();
+		this->framebufferMSAA = GraphicFactory::Create<FrameBuffer>();
+		this->renderbufferMSAA = GraphicFactory::Create<RenderBuffer>();
+		this->framebufferHDR = GraphicFactory::Create<FrameBuffer>();
+		this->bloomTextureHDR = GraphicFactory::Create<Texture>();
+		this->renderTexture = GraphicFactory::Create<Texture>();
+
+		multisampledTexture->LoadMultisample(width, height, TextureFormat::RGBA16F, samples);
+		this->framebufferMSAA->AttachTexture(multisampledTexture);
+		this->renderbufferMSAA->InitStorage((int)multisampledTexture->GetWidth(), (int)multisampledTexture->GetHeight(), multisampledTexture->GetSampleCount());
+		this->renderbufferMSAA->LinkToFrameBuffer(*this->framebufferMSAA);
+		this->framebufferMSAA->Validate();
+
+		textureHDR->Load(nullptr, width, height, TextureFormat::RGB16F, TextureWrap::CLAMP_TO_EDGE);
+		this->bloomTextureHDR->Load(nullptr, width, height, TextureFormat::RGB16F, TextureWrap::CLAMP_TO_EDGE);
+		this->framebufferHDR->AttachTexture(textureHDR, Attachment::COLOR_ATTACHMENT0);
+		this->framebufferHDR->AttachTextureExtra(this->bloomTextureHDR, Attachment::COLOR_ATTACHMENT1);
+		this->framebufferHDR->UseDrawBuffers(2);
+		this->framebufferHDR->Validate();
+
+		this->renderTexture->Load(nullptr, width, height, TextureFormat::RGB, TextureWrap::CLAMP_TO_EDGE);
+	}
+
+	void CameraRender::Resize(int width, int height)
+	{
+		auto textureMSAA = GetAttachedTexture(this->framebufferMSAA);
+
+		if (textureMSAA->IsMultisampled())
+			textureMSAA->LoadMultisample(width, height, textureMSAA->GetFormat(), textureMSAA->GetSampleCount(), textureMSAA->GetWrapType());
+		else if (textureMSAA->IsDepthOnly())
+			textureMSAA->LoadDepth(width, height, textureMSAA->GetWrapType());
+		else
+			textureMSAA->Load(nullptr, width, height, textureMSAA->GetFormat(), textureMSAA->GetWrapType());
+
+		auto textureHDR = GetAttachedTexture(this->framebufferHDR);
+		textureHDR->Load(nullptr, width, height, textureHDR->GetFormat(), textureHDR->GetWrapType());
+		this->bloomTextureHDR->Load(nullptr, width, height, this->bloomTextureHDR->GetFormat(), this->bloomTextureHDR->GetWrapType());
+
+		this->renderbufferMSAA->InitStorage((int)textureMSAA->GetWidth(), (int)textureMSAA->GetHeight(), textureMSAA->GetSampleCount());
+		this->renderTexture->Load(nullptr, width, height, this->renderTexture->GetFormat(), this->renderTexture->GetWrapType());
 	}
 }

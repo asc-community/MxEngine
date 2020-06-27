@@ -252,37 +252,12 @@ namespace MxEngine
 			return result;
 
 		GLenum type = this->IsFloatingPoint() ? GL_FLOAT : GL_UNSIGNED_BYTE;
-		size_t totalByteSize = this->width * this->height;
-		GLenum internalFormat = GL_RGBA;
-		switch (this->format)
-		{
-		case MxEngine::TextureFormat::RGB:
-		case MxEngine::TextureFormat::RGBA:
-		case MxEngine::TextureFormat::DEPTH:
-			totalByteSize *= 4 * sizeof(uint8_t);
-			internalFormat = GL_RGBA;
-			break;
-		case MxEngine::TextureFormat::RGB16:
-		case MxEngine::TextureFormat::RGBA16:
-			totalByteSize *= 4 * sizeof(uint16_t);
-			internalFormat = GL_RGBA16;
-			break;
-		case MxEngine::TextureFormat::RGB16F:
-		case MxEngine::TextureFormat::RGBA16F:
-			totalByteSize *= 4 * sizeof(uint16_t);
-			internalFormat = GL_RGBA16F;
-			break;
-		case MxEngine::TextureFormat::RGB32F:
-		case MxEngine::TextureFormat::RGBA32F:
-			totalByteSize *= 4 * sizeof(uint32_t);
-			internalFormat = GL_RGBA32F;
-		default:
-			MX_ASSERT(false);
-		}
+		size_t totalByteSize = this->width * this->height * this->GetPixelSize();
 		result.resize(totalByteSize);
 
 		this->Bind(0);
-		GLCALL(glGetTexImage(this->textureType, 0, internalFormat, type, (void*)result.data()));
+		GLCALL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
+		GLCALL(glGetTexImage(this->textureType, 0, formatTable[(int)this->format], type, (void*)result.data()));
 		return result;
     }
 

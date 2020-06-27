@@ -101,18 +101,19 @@ namespace MxEngine
             ImGui::TreePop();
         }
 
+        if (ImGui::TreeNode("renderer viewport"))
         {
-            GUI::Indent _(22.0f);
-            ImGui::Text("renderer viewport");
             auto viewport = RenderManager::GetViewport();
             if (viewport.IsValid())
             {
                 GUI::CameraControllerEditor(*viewport);
+                GUI::DrawImageSaver(viewport->GetRenderTexture(), "take screenshot");
             }
             else
             {
                 ImGui::Text("- no viewport provided");
             }
+            ImGui::TreePop();
         }
         // TODO: let user change viewport to other camera controller
 

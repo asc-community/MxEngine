@@ -321,8 +321,9 @@ namespace MxEngine
 
 			this->RenderToFrameBuffer(target, shader);
 		}
-
-		return GetAttachedTexture(bloomBuffers.back());
+		auto result = GetAttachedTexture(bloomBuffers.back());
+		result->GenerateMipmaps();
+		return result;
 	}
 
 	const Renderer& RenderController::GetRenderEngine() const
@@ -370,7 +371,7 @@ namespace MxEngine
 	{
 		// we can unbind any buffer to set target framebuffer to default one (id = 0)
 		// doing this allows us to render to application window
-		this->Pipeline.Environment.HDRFrameBuffer->Unbind();
+		this->Pipeline.Environment.DepthFrameBuffer->Unbind();
 		this->SetViewport(0, 0, this->Pipeline.Environment.Viewport.x, this->Pipeline.Environment.Viewport.y);
 		this->Clear();
 	}
@@ -394,8 +395,8 @@ namespace MxEngine
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::SplitCameraHDRTexture()");
-			MX_ASSERT(camera.AttachedFrameBuffer->HasTextureAttached()); // TODO: think what to do with cubemap
-			const auto& inputTexture = *GetAttachedTexture(camera.AttachedFrameBuffer);
+			MX_ASSERT(camera.FrameBufferMSAA->HasTextureAttached()); // TODO: think what to do with cubemap
+			const auto& inputTexture = *GetAttachedTexture(camera.FrameBufferMSAA);
 
 			MX_ASSERT(inputTexture.IsMultisampled()); // TODO: handle case when texture is not multisampled - other shader should be used to split it
 
@@ -405,14 +406,15 @@ namespace MxEngine
 			msaaShader.SetUniformInt("HDRtexture", 0);
 			msaaShader.SetUniformInt("msaa_samples", inputTexture.GetSampleCount());
 
-			this->RenderToFrameBuffer(this->Pipeline.Environment.HDRFrameBuffer, msaaShader);
+			this->RenderToFrameBuffer(camera.FrameBufferHDR, msaaShader);
 		}
+		camera.BloomTextureHDR->GenerateMipmaps();
 
 		// here we use bloom enhanced texture and hdr texture obtained from HDRFrameBuffer to combine them into final image
-		auto& bloomEnhancedTexture = *PerformBloomIterations(this->Pipeline.Environment.BloomHDRMap, camera.BloomIterations);
+		auto& bloomEnhancedTexture = *PerformBloomIterations(camera.BloomTextureHDR, camera.BloomIterations);
 		auto& combineShader = *this->Pipeline.Environment.HDRBloomCombineHDRShader;
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.OutputTexture);
-		auto& mainTexture = *GetAttachedTexture(this->Pipeline.Environment.HDRFrameBuffer);
+		auto& mainTexture = *GetAttachedTexture(camera.FrameBufferHDR);
 
 		combineShader.SetUniformInt("HDRtexture", 0);
 		combineShader.SetUniformFloat("bloomWeight", camera.BloomWeight);
@@ -556,18 +558,20 @@ namespace MxEngine
 	{
 		auto& camera = this->Pipeline.Cameras.emplace_back();
 
-		camera.ViewportPosition = parentTransform.GetPosition();
-		camera.ViewProjMatrix = controller.GetMatrix(parentTransform.GetPosition());
-		camera.StaticViewProjMatrix = controller.GetStaticMatrix();
-		camera.IsPerspective = controller.GetCameraType() == CameraType::PERSPECTIVE;
-		camera.AttachedFrameBuffer = controller.GetFrameBuffer();
-		camera.BloomIterations = (uint8_t)controller.GetBloomIterations();
-		camera.BloomWeight = controller.GetBloomWeight();
-		camera.Exposure = controller.GetExposure();
-		camera.SkyboxMap = skybox.Texture.IsValid() ? skybox.Texture : this->Pipeline.Environment.DefaultBlackCubeMap;
+		camera.ViewportPosition       = parentTransform.GetPosition();
+		camera.ViewProjMatrix         = controller.GetMatrix(parentTransform.GetPosition());
+		camera.StaticViewProjMatrix   = controller.GetStaticMatrix();
+		camera.IsPerspective          = controller.GetCameraType() == CameraType::PERSPECTIVE;
+		camera.FrameBufferMSAA        = controller.GetFrameBufferMSAA();
+		camera.FrameBufferHDR         = controller.GetFrameBufferHDR();
+		camera.BloomTextureHDR        = controller.GetBloomTexture();
+		camera.BloomIterations        = (uint8_t)controller.GetBloomIterations();
+		camera.BloomWeight            = controller.GetBloomWeight();
+		camera.Exposure               = controller.GetExposure();
+		camera.SkyboxMap              = skybox.Texture.IsValid() ? skybox.Texture : this->Pipeline.Environment.DefaultBlackCubeMap;
 		camera.InversedSkyboxRotation = Transpose(ToMatrix(parentTransform.GetRotation()));
-		camera.OutputTexture = controller.GetRenderTexture();
-		camera.RenderToTexture = controller.RenderingEnabled;
+		camera.OutputTexture          = controller.GetRenderTexture();
+		camera.RenderToTexture        = controller.RenderingEnabled;
 	}
 
     void RenderController::SubmitPrimitive(const SubMesh& object, const Material& material, const Transform& parentTransform, size_t instanceCount)
@@ -624,7 +628,7 @@ namespace MxEngine
 			if (!camera.RenderToTexture) continue;
 
 			this->ToggleReversedDepth(camera.IsPerspective);
-			this->AttachFrameBuffer(camera.AttachedFrameBuffer);
+			this->AttachFrameBuffer(camera.FrameBufferMSAA);
 
 			this->DrawObjects(camera, this->Pipeline.OpaqueRenderUnits);
 			this->DrawSkybox(camera);

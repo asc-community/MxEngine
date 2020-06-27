@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Utilities/ECS/Component.h"
+#include "Utilities/Memory/Memory.h"
 #include "Platform/GraphicAPI.h"
 #include "CameraBase.h"
 
@@ -40,13 +41,23 @@ namespace MxEngine
 		ORTHOGRAPHIC,
 	};
 
+	struct CameraRender
+	{
+		GResource<FrameBuffer> framebufferMSAA;
+		GResource<RenderBuffer> renderbufferMSAA;
+		GResource<FrameBuffer> framebufferHDR;
+		GResource<Texture> bloomTextureHDR;
+		GResource<Texture> renderTexture;
+
+		void Init(int width, int height);
+		void Resize(int width, int height);
+	};
+
 	class CameraController
 	{
 		MAKE_COMPONENT(CameraController);
 
-		GResource<FrameBuffer> framebuffer;
-		GResource<RenderBuffer> renderbuffer;
-		GResource<Texture> renderTexture;
+		UniqueRef<CameraRender> renderBuffers = MakeUnique<CameraRender>();
 
 		Vector3 direction = { 1.0f, 0.0f, 0.0f };
 		Vector3 up = { 0.0f, 1.0f, 0.0f };
@@ -56,7 +67,7 @@ namespace MxEngine
 		float horizontalAngle = 0.0f;
 		float zoom = 1.0f;
 		float exposure = 1.0f;
-		float bloomWeight = 100.0f;
+		float bloomWeight = 0.5f;
 		float moveSpeed = 1.0f;
 		float rotateSpeed = 1.0f;
 
@@ -82,7 +93,9 @@ namespace MxEngine
 
 		const Matrix4x4& GetMatrix(const Vector3& position) const;
 		Matrix4x4 GetStaticMatrix() const;
-		GResource<FrameBuffer> GetFrameBuffer() const;
+		GResource<FrameBuffer> GetFrameBufferMSAA() const;
+		GResource<FrameBuffer> GetFrameBufferHDR() const;
+		GResource<Texture> GetBloomTexture() const;
 		GResource<Texture> GetRenderTexture() const;
 		void ListenWindowResizeEvent();
 		void ResizeRenderTexture(size_t width, size_t height);

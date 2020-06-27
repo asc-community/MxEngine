@@ -236,4 +236,35 @@ namespace MxEngine
         this->Translate(this->rotation * UpVec * dist);
         return *this;
     }
+
+    Transform& Transform::LookAt(const Vector3& point)
+    {
+        auto q = LookAtRotation(Normalize(this->translation - point), MakeVector3(0.00001f, 1.0f, 0.0f));
+        this->SetRotation(q);
+        return *this;
+    }
+
+    Transform& Transform::LookAtXY(const Vector3& point)
+    {
+        auto v = this->translation - point;
+        auto q = LookAtRotation(Normalize(MakeVector3(v.x, v.y, 0.0f)), MakeVector3(0.00001f, 0.0f, 1.0f));
+        this->SetRotation(q);
+        return *this;
+    }
+
+    Transform& Transform::LookAtXZ(const Vector3& point)
+    {
+        auto v = this->translation - point;
+        auto q = LookAtRotation(Normalize(MakeVector3(v.x, 0.0f, v.z)), MakeVector3(0.00001f, 1.0f, 0.0f));
+        this->SetRotation(q);
+        return *this;
+    }
+
+    Transform& Transform::LookAtYZ(const Vector3& point)
+    {
+        auto v = this->translation - point;
+        auto q = LookAtRotation(Normalize(MakeVector3(0.0f, v.y, v.z)), MakeVector3(1.0f, 0.0f, 0.00001f));
+        this->SetRotation(q);
+        return *this;
+    }
 }

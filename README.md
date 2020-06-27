@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-7.0.3-red)
+![](https://img.shields.io/badge/version-7.0.4-red)
 ![](https://img.shields.io/badge/license-bsd--3-yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
 <!-- soon! [![Documentation](https://codedocs.xyz/MomoDeve/MxEngine.svg)](https://codedocs.xyz/MomoDeve/MxEngine/) -->
@@ -47,7 +47,7 @@ Right now MxEngine is distributed in source code as Visual Studio project which 
 - Is it possible to build MxEngine under Linux/MacOS/other system?
 	> Probably not in the current project state. There are some things which I still need to do before engine can be cross-platform at least on desktops. If you want to help with porting library to other systems, consider reading [PR guideline](https://github.com/MomoDeve/MxEngine/issues/5) .
 - Whats the roadmap for the engine? Which features can I expect to see, if I follow this repository?
-	> I put all features and not-fixed bugs to the [public trello board](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine) . If you want to see some specific feature in engine, which is not mentioned already, you can request it in [feature request](https://github.com/MomoDeve/MxEngine/issues/4) issue
+	> I put all features and not-fixed bugs to the public [trello board](https://trello.com/b/lfPsihUY/mxengine) . If you want to see some specific feature in engine, which is not mentioned already, you can request it in [feature request](https://github.com/MomoDeve/MxEngine/issues/4) issue
 - Why do you do this project? How long are you planning to develop the engine? Will it one day be better than UE/Unity/Godot?
 	> Initially this was an educational project (actually I still learn a lot of new things when developing it), where I learned about OpenGL, graphics, software engeneering and game development. I loved it and still love to spend my free time fixing some stuff or implementing new features. Thats really a great opportunity to have such cool project, even if it will never be any better than existing game engines like Unity or Unreal Engine
 - If I want to help you with development, how can I get into this project? Is there a documentation for it?

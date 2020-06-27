@@ -64,6 +64,21 @@ namespace MxEngine::GUI
 		auto scale = transform.GetScale();
 		if (ImGui::DragFloat3("scale", &scale[0], 0.01f, 0.01f, 1000.0f))
 			transform.SetScale(scale);
+
+		static auto lookPoint = MakeVector3(0.0f);
+		ImGui::DragFloat3("look at", &lookPoint[0], 0.01f);
+
+		if (ImGui::Button("look at xyz"))
+			transform.LookAt(lookPoint);
+		ImGui::SameLine();
+		if (ImGui::Button("look at xy"))
+			transform.LookAtXY(lookPoint);
+		ImGui::SameLine();
+		if (ImGui::Button("look at xz"))
+			transform.LookAtXZ(lookPoint);
+		ImGui::SameLine();
+		if (ImGui::Button("look at yz"))
+			transform.LookAtYZ(lookPoint);
     }
 
 	void BehaviourEditor(Behaviour& behaviour)
@@ -323,8 +338,16 @@ namespace MxEngine::GUI
 		ImGui::Checkbox("enable rendering", &cameraController.RenderingEnabled);
 
 		ImGui::SameLine();
-		if (ImGui::Button("auto-resize viewport"))
+		if (ImGui::Button("listen window resize"))
+		{
 			cameraController.ListenWindowResizeEvent();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("set as main viewport"))
+		{
+			auto cameraComponent = MxObject::GetByComponent(cameraController).GetComponent<CameraController>();
+			Application::Get()->GetRenderAdaptor().Viewport = cameraComponent;
+		}
 
 		auto texture = cameraController.GetRenderTexture();
 		DrawTextureEditor("output texture", texture);

@@ -117,10 +117,13 @@ namespace MxEngine::GUI
     inline bool InputTextOnClick(const char* text, MxString& str, size_t sizeRequired, const char* buttonText = "apply")
     {
         str.resize(sizeRequired, '\0');
-        ImGui::PushID(text);
-        ImGui::AlignTextToFramePadding();
-        ImGui::Text(text);
-        ImGui::SameLine();
+        ImGui::PushID((void*)&str);
+        if (text != nullptr)
+        {
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text(text);
+            ImGui::SameLine();
+        }
         ImGui::InputText("", str.data(), sizeRequired);
         ImGui::SameLine();
         bool result = ImGui::Button(buttonText);

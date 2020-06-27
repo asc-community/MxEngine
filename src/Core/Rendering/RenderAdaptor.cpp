@@ -125,49 +125,21 @@ namespace MxEngine
 
         // framebuffers
         environment.DepthFrameBuffer = GraphicFactory::Create<FrameBuffer>();
-
-        environment.BloomHDRMap = GraphicFactory::Create<Texture>();
-        environment.BloomHDRMap->Load(nullptr, 1, 1, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
-
-        auto hdrTexture = GraphicFactory::Create<Texture>();
-        hdrTexture->Load(nullptr, 1, 1, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
-
-        environment.HDRFrameBuffer = GraphicFactory::Create<FrameBuffer>();
-        environment.HDRFrameBuffer->AttachTexture(hdrTexture, Attachment::COLOR_ATTACHMENT0);
-        environment.HDRFrameBuffer->AttachTextureExtra(environment.BloomHDRMap, Attachment::COLOR_ATTACHMENT1);
-        environment.HDRFrameBuffer->UseDrawBuffers(2);
-        environment.HDRFrameBuffer->Validate();
-
         environment.PostProcessFrameBuffer = GraphicFactory::Create<FrameBuffer>();
 
         for (auto& bloomBuffer : environment.BloomBuffers)
         {
             auto bloomTexture = GraphicFactory::Create<Texture>();
-            bloomTexture->Load(nullptr, 1, 1, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+            constexpr size_t bloomBufferSize = 512;
+
+            for (auto& bloomBuffer : environment.BloomBuffers)
+            {
+                bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+            }
 
             bloomBuffer = GraphicFactory::Create<FrameBuffer>();
             bloomBuffer->AttachTexture(bloomTexture, Attachment::COLOR_ATTACHMENT0);
             bloomBuffer->Validate();
-        }
-    }
-
-    void RenderAdaptor::OnViewportResize(const VectorInt2& viewportSize)
-    {
-        MAKE_SCOPE_PROFILER("RenderAdaptor::OnWindowResize()");
-
-        auto& environment = this->Renderer.GetEnvironment();
-        environment.Viewport = viewportSize;
-
-        GetAttachedTexture(environment.HDRFrameBuffer)->Load(nullptr, viewportSize.x, viewportSize.y, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
-    	if((environment.BloomHDRMap->GetWidth() != viewportSize.x) || (environment.BloomHDRMap->GetHeight() != viewportSize.y))
-            environment.BloomHDRMap->Load(nullptr, viewportSize.x, viewportSize.y, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
-    
-        VectorInt2 bloomTextureSize = viewportSize;
-        bloomTextureSize = (bloomTextureSize + 3) / 2 + ((bloomTextureSize + 3) / 2) % 2;
-        for (auto& bloomBuffer : environment.BloomBuffers)
-        {
-            auto texture = GetAttachedTexture(bloomBuffer);
-            GetAttachedTexture(bloomBuffer)->Load(nullptr, bloomTextureSize.x, bloomTextureSize.y, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
         }
     }
 
@@ -355,6 +327,11 @@ namespace MxEngine
         }
 
         this->Renderer.StartPipeline();
+    }
+
+    void RenderAdaptor::SetWindowSize(const VectorInt2& size)
+    {
+        this->Renderer.GetEnvironment().Viewport = size;
     }
 
     void RenderAdaptor::SetRenderToDefaultFrameBuffer(bool value)

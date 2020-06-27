@@ -52,22 +52,21 @@ namespace MxEngine
         switch (type)
         {
         case ImageType::PNG:
-            imageByteData = ImageConverter::ConvertImagePNG(imageData.data(), (int)texture->GetWidth(), (int)texture->GetHeight());
-            break;                                                                                                               
-        case ImageType::BMP:                                                                                                     
-            imageByteData = ImageConverter::ConvertImageBMP(imageData.data(), (int)texture->GetWidth(), (int)texture->GetHeight());
-            break;                                                                                                               
-        case ImageType::TGA:                                                                                                     
-            imageByteData = ImageConverter::ConvertImageTGA(imageData.data(), (int)texture->GetWidth(), (int)texture->GetHeight());
-            break;                                                                                                               
-        case ImageType::JPG:                                                                                                     
-            imageByteData = ImageConverter::ConvertImageJPG(imageData.data(), (int)texture->GetWidth(), (int)texture->GetHeight());
-            break;                                                                                                               
-        case ImageType::HDR:                                                                                                     
-            imageByteData = ImageConverter::ConvertImageHDR(imageData.data(), (int)texture->GetWidth(), (int)texture->GetHeight());
+            imageByteData = ImageConverter::ConvertImagePNG(imageData.data(), (int)texture->GetWidth(), (int)texture->GetHeight(), (int)texture->GetChannelCount());
+            break;
+        case ImageType::BMP:
+            imageByteData = ImageConverter::ConvertImageBMP(imageData.data(), (int)texture->GetWidth(), (int)texture->GetHeight(), (int)texture->GetChannelCount());
+            break;
+        case ImageType::TGA:
+            imageByteData = ImageConverter::ConvertImageTGA(imageData.data(), (int)texture->GetWidth(), (int)texture->GetHeight(), (int)texture->GetChannelCount());
+            break;
+        case ImageType::JPG:
+            imageByteData = ImageConverter::ConvertImageJPG(imageData.data(), (int)texture->GetWidth(), (int)texture->GetHeight(), (int)texture->GetChannelCount());
+            break;
+        case ImageType::HDR:
+            Logger::Instance().Warning("MxEngine::ImageManager", "HDR texture format is not supported through ImageManager, use ImageConverter::ConvertImageHDR");
             break;
         }
-
         file.WriteBytes(imageByteData.data(), imageByteData.size());
     }
 

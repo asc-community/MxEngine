@@ -29,6 +29,7 @@
 #include "ResourceEditor.h"
 #include "ImGuiUtils.h"
 #include "ComponentEditor.h"
+#include "Utilities/Image/ImageManager.h"
 
 namespace MxEngine::GUI
 {
@@ -56,14 +57,13 @@ namespace MxEngine::GUI
         }
 
         static MxString path;
-        if (GUI::InputTextOnClick("", path, 128, "load texture"))
+        if (GUI::InputTextOnClick(nullptr, path, 128, "load texture"))
             texture = AssetManager::LoadTexture(path);
         // TODO: support textures from Colors class
 
         if (texture.IsValid())
-        {
-            static float scale = 1.0f;
-            ImGui::DragFloat("texture preview scale", &scale, 0.01f, 0.0f, 1.0f);
+        {   
+            DrawImageSaver(texture);
 
             auto nativeHeight = texture->GetHeight();
             auto nativeWidth = texture->GetWidth();
@@ -72,6 +72,8 @@ namespace MxEngine::GUI
             if (ImGui::ColorEdit3("border color", &color[0]))
                 texture->SetBorderColor(color);
 
+            static float scale = 1.0f;
+            ImGui::DragFloat("texture preview scale", &scale, 0.01f, 0.0f, 1.0f);
             auto width = ImGui::GetWindowSize().x * 0.9f * scale;
             auto height = width * nativeHeight / nativeWidth;
             ImGui::Image((void*)(uintptr_t)texture->GetNativeHandle(), ImVec2(width, height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
@@ -96,12 +98,12 @@ namespace MxEngine::GUI
         }
         
         static MxString path;
-        if (GUI::InputTextOnClick("", path, 128, "load cubemap"))
+        if (GUI::InputTextOnClick(nullptr, path, 128, "load cubemap"))
             cubemap = AssetManager::LoadCubeMap(path);
         // TODO: support cubemap preview
     }
 
-    void DrawMaterialEditor(Resource<Material, ResourceFactory>& material)
+    void DrawMaterialEditor(MaterialHandle& material)
     {
         if (!material.IsValid())
         {
@@ -158,7 +160,22 @@ namespace MxEngine::GUI
         ImGui::InputFloat3("bitangent", &vertex.Bitangent[0]);
     }
 
-    void DrawMeshEditor(const char* name, Resource<Mesh, ResourceFactory>& mesh)
+    void DrawImageSaver(const GResource<Texture>& texture, const char* name)
+    {
+        static MxString path(128, '\0');
+        ImGui::InputText("save path", path.data(), path.size());
+
+        const char* imageTypes[] = { "PNG", "BMP", "TGA", "JPG", "HDR", };
+        static int currentImageType = 0;
+        if (ImGui::Button("save image to disk"))
+            ImageManager::SaveTexture(path.c_str(), texture, (ImageType)currentImageType);
+        ImGui::SameLine();
+        ImGui::PushItemWidth(50.0f);
+        ImGui::Combo(" ", &currentImageType, imageTypes, (int)std::size(imageTypes));
+        ImGui::PopItemWidth();
+    }
+
+    void DrawMeshEditor(const char* name, MeshHandle& mesh)
     {
         SCOPE_TREE_NODE(name);
 

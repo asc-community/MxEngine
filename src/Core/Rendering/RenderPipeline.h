@@ -45,7 +45,9 @@ namespace MxEngine
         Matrix4x4 ViewProjMatrix;
         Matrix4x4 StaticViewProjMatrix;
         Vector3 ViewportPosition;
-        GResource<FrameBuffer> AttachedFrameBuffer;
+        GResource<FrameBuffer> FrameBufferMSAA;
+        GResource<FrameBuffer> FrameBufferHDR;
+        GResource<Texture> BloomTextureHDR;
         GResource<Texture> OutputTexture;
         Matrix3x3 InversedSkyboxRotation;
         GResource<CubeMap> SkyboxMap;
@@ -73,11 +75,9 @@ namespace MxEngine
         GResource<Texture> DefaultNormalMap;
         GResource<Texture> DefaultHeightMap;
         GResource<Texture> DefaultBlackMap;
-        GResource<Texture> BloomHDRMap;
         GResource<CubeMap> DefaultBlackCubeMap;
 
         GResource<FrameBuffer> DepthFrameBuffer;
-        GResource<FrameBuffer> HDRFrameBuffer;
         GResource<FrameBuffer> PostProcessFrameBuffer;
         std::array<GResource<FrameBuffer>, 2> BloomBuffers;
 
