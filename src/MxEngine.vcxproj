@@ -470,8 +470,9 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'">false</DeploymentContent>
     </None>
     <None Include="Platform\OpenGL\Shaders\debug_vertex.glsl" />
+    <None Include="Platform\OpenGL\Shaders\hdrsplit_fragment.glsl" />
     <None Include="Platform\OpenGL\Shaders\hdr_fragment.glsl" />
-    <None Include="Platform\OpenGL\Shaders\msaa_fragment.glsl" />
+    <None Include="Platform\OpenGL\Shaders\hdrsplitmsaa_fragment.glsl" />
     <None Include="Platform\OpenGL\Shaders\rect_fragment.glsl" />
     <None Include="Platform\OpenGL\Shaders\rect_vertex.glsl" />
     <None Include="Platform\OpenGL\Shaders\object_fragment.glsl" />

@@ -96,6 +96,7 @@ namespace MxEngine
 		Matrix4x4 GetStaticMatrix() const;
 		GResource<FrameBuffer> GetFrameBufferMSAA() const;
 		GResource<FrameBuffer> GetFrameBufferHDR() const;
+		GResource<RenderBuffer> GetRenderBufferMSAA() const;
 		GResource<Texture> GetBloomTexture() const;
 		GResource<Texture> GetRenderTexture() const;
 		void ListenWindowResizeEvent();

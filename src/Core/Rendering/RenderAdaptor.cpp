@@ -92,7 +92,13 @@ namespace MxEngine
         environment.MSAAHDRSplitShader->LoadFromString(
             #include MAKE_PLATFORM_SHADER(rect_vertex)
             ,
-            #include MAKE_PLATFORM_SHADER(msaa_fragment)
+            #include MAKE_PLATFORM_SHADER(hdrsplitmsaa_fragment)
+        );
+        environment.HDRSplitShader = GraphicFactory::Create<Shader>();
+        environment.HDRSplitShader->LoadFromString(
+            #include MAKE_PLATFORM_SHADER(rect_vertex)
+            ,
+            #include MAKE_PLATFORM_SHADER(hdrsplit_fragment)
         );
 
         environment.HDRBloomCombineHDRShader = GraphicFactory::Create<Shader>();

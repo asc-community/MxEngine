@@ -126,6 +126,11 @@ namespace MxEngine
 		return this->renderBuffers->framebufferHDR;
 	}
 
+    GResource<RenderBuffer> CameraController::GetRenderBufferMSAA() const
+    {
+		return this->renderBuffers->renderbufferMSAA;
+    }
+
 	GResource<Texture> CameraController::GetBloomTexture() const
 	{
 		return this->renderBuffers->bloomTextureHDR;

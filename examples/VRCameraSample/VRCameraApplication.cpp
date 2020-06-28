@@ -91,8 +91,6 @@ namespace ProjectTemplate
                 ImGui::Text(" left eye fov: %f",  vr.LeftEye->GetCamera<PerspectiveCamera>().GetFOV());
                 ImGui::Text("right eye fov: %f", vr.RightEye->GetCamera<PerspectiveCamera>().GetFOV());
                 ImGui::End();
-
-                vr.FocusDistance = Max(0.001f, std::fmod(vr.FocusDistance + 0.001f, 1.0f));
             }
         }
 

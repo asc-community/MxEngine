@@ -48,7 +48,7 @@ namespace ProjectTemplate
 
         virtual void OnUpdate() override
         {
-
+            
         }
 
         virtual void OnDestroy() override

@@ -398,15 +398,22 @@ namespace MxEngine
 			MX_ASSERT(camera.FrameBufferMSAA->HasTextureAttached()); // TODO: think what to do with cubemap
 			const auto& inputTexture = *GetAttachedTexture(camera.FrameBufferMSAA);
 
-			MX_ASSERT(inputTexture.IsMultisampled()); // TODO: handle case when texture is not multisampled - other shader should be used to split it
-
 			// here we take HDR MSAA image from camera and split it into to HDR images - one with base color, other with bloom
 			inputTexture.Bind(0);
-			auto& msaaShader = *this->Pipeline.Environment.MSAAHDRSplitShader;
-			msaaShader.SetUniformInt("HDRtexture", 0);
-			msaaShader.SetUniformInt("msaa_samples", inputTexture.GetSampleCount());
 
-			this->RenderToFrameBuffer(camera.FrameBufferHDR, msaaShader);
+			if (inputTexture.IsMultisampled())
+			{
+				auto& msaaShader = *this->Pipeline.Environment.MSAAHDRSplitShader;
+				msaaShader.SetUniformInt("HDRtexture", 0);
+				msaaShader.SetUniformInt("msaa_samples", inputTexture.GetSampleCount());
+				this->RenderToFrameBuffer(camera.FrameBufferHDR, msaaShader);
+			}
+			else
+			{
+				auto& msaaShader = *this->Pipeline.Environment.HDRSplitShader;
+				msaaShader.SetUniformInt("HDRtexture", 0);
+				this->RenderToFrameBuffer(camera.FrameBufferHDR, msaaShader);
+			}
 		}
 		camera.BloomTextureHDR->GenerateMipmaps();
 
