@@ -395,6 +395,7 @@ namespace MxEngine::GUI
 		REMOVE_COMPONENT_BUTTON(vrCameraController);
 
 		ImGui::DragFloat("eye distance", &vrCameraController.EyeDistance, 0.001f, 0.0f, 10.0f);
+		ImGui::DragFloat("eye focus distance", &vrCameraController.FocusDistance, 0.01f, 0.1f, 100.0f);
 
 		if (ImGui::TreeNode("left eye"))
 		{

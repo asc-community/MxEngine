@@ -66,10 +66,17 @@ namespace MxEngine
         
         auto& LEyeTransform = MxObject::GetByComponent(*cameraL).Transform;
         auto& REyeTransform = MxObject::GetByComponent(*cameraR).Transform;
-        LEyeTransform->SetPosition(position - this->EyeDistance * camera->GetRightVector());
-        REyeTransform->SetPosition(position + this->EyeDistance * camera->GetRightVector());
-        cameraL->SetDirection(camera->GetDirection());
-        cameraR->SetDirection(camera->GetDirection());
+
+        auto LEyeDistance = -this->EyeDistance * camera->GetRightVector();
+        auto REyeDistance = +this->EyeDistance * camera->GetRightVector();
+
+        LEyeTransform->SetPosition(position + LEyeDistance);
+        REyeTransform->SetPosition(position + REyeDistance);
+
+        auto LEyeDirection = this->FocusDistance * camera->GetDirection() - LEyeDistance;
+        auto REyeDirection = this->FocusDistance * camera->GetDirection() - REyeDistance;
+        cameraL->SetDirection(Normalize(LEyeDirection));
+        cameraR->SetDirection(Normalize(REyeDirection));
     }
 
     void VRCameraController::Render(GResource<Texture>& target, const GResource<Texture>& leftEye, const GResource<Texture>& rightEye)

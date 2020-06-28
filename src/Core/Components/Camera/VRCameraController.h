@@ -45,6 +45,7 @@ namespace MxEngine
 		CameraController::Handle LeftEye;
 		CameraController::Handle RightEye;
 		float EyeDistance = 0.1f;
+		float FocusDistance = 1.0f;
 
 		VRCameraController() = default;
 		~VRCameraController();
