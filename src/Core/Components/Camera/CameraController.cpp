@@ -32,6 +32,7 @@
 #include "Platform/Window/WindowManager.h"
 #include "OrthographicCamera.h"
 #include "PerspectiveCamera.h"
+#include "FrustrumCamera.h"
 
 namespace MxEngine
 {
@@ -49,6 +50,22 @@ namespace MxEngine
 		MX_ASSERT(this->GetCameraType() == CameraType::PERSPECTIVE);
 		static_assert(sizeof(PerspectiveCamera) == sizeof(this->Camera), "camera byte storage size mismatch");
 		return *reinterpret_cast<const PerspectiveCamera*>(&this->Camera); //-V717
+	}
+
+	template<>
+	FrustrumCamera& CameraController::GetCamera<FrustrumCamera>()
+	{
+		MX_ASSERT(this->GetCameraType() == CameraType::FRUSTRUM);
+		static_assert(sizeof(FrustrumCamera) == sizeof(this->Camera), "camera byte storage size mismatch");
+		return *reinterpret_cast<FrustrumCamera*>(&this->Camera); //-V717
+	}
+
+	template<>
+	const FrustrumCamera& CameraController::GetCamera<FrustrumCamera>() const
+	{
+		MX_ASSERT(this->GetCameraType() == CameraType::FRUSTRUM);
+		static_assert(sizeof(FrustrumCamera) == sizeof(this->Camera), "camera byte storage size mismatch");
+		return *reinterpret_cast<const FrustrumCamera*>(&this->Camera); //-V717
 	}
 
 	template<>
@@ -202,6 +219,13 @@ namespace MxEngine
 			auto* cam = reinterpret_cast<OrthographicCamera*>(&this->Camera); //-V717
 			auto size = cam->GetSize();
 			cam->SetSize(size);
+		}
+		else if (this->GetCameraType() == CameraType::FRUSTRUM)
+		{
+			auto* cam = reinterpret_cast<FrustrumCamera*>(&this->Camera); //-V717
+			auto zoom = cam->GetZoom();
+			auto center = cam->GetProjectionCenter();
+			cam->SetBounds(center.x, center.y, zoom);
 		}
     }
 

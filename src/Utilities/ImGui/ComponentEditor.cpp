@@ -30,6 +30,7 @@
 #include "ImGuiUtils.h"
 #include "Core/Components/Camera/PerspectiveCamera.h"
 #include "Core/Components/Camera/OrthographicCamera.h"
+#include "Core/Components/Camera/FrustrumCamera.h"
 
 namespace MxEngine::GUI
 {
@@ -288,6 +289,7 @@ namespace MxEngine::GUI
 		{
 			bool perspective = cameraController.GetCameraType() == CameraType::PERSPECTIVE;
 			bool orthographic = cameraController.GetCameraType() == CameraType::ORTHOGRAPHIC;
+			bool frustrum = cameraController.GetCameraType() == CameraType::FRUSTRUM;
 			if (ImGui::Selectable("perspective", &perspective))
 			{
 				cameraController.SetCameraType(CameraType::PERSPECTIVE);
@@ -296,6 +298,11 @@ namespace MxEngine::GUI
 			if (ImGui::Selectable("orthographic", &orthographic))
 			{
 				cameraController.SetCameraType(CameraType::ORTHOGRAPHIC);
+				ImGui::SetItemDefaultFocus();
+			}
+			if (ImGui::Selectable("frustrum", &frustrum))
+			{
+				cameraController.SetCameraType(CameraType::FRUSTRUM);
 				ImGui::SetItemDefaultFocus();
 			}
 			ImGui::EndCombo();
@@ -312,6 +319,14 @@ namespace MxEngine::GUI
 			auto size = cameraController.GetCamera<OrthographicCamera>().GetSize();
 			if (ImGui::DragFloat("size", &size, 0.3f, 0.01f, 10000.0f))
 				cameraController.GetCamera<OrthographicCamera>().SetSize(size);
+		}
+		else if (cameraController.GetCameraType() == CameraType::FRUSTRUM)
+		{
+			auto bounds = cameraController.GetCamera<FrustrumCamera>().GetBounds();
+			if (ImGui::DragFloat2("center", &bounds[0], 0.01f))
+				cameraController.GetCamera<FrustrumCamera>().SetBounds(bounds.x, bounds.y, bounds.z);
+			if (ImGui::DragFloat("size", &bounds.z, 0.01f))
+				cameraController.GetCamera<FrustrumCamera>().SetBounds(bounds.x, bounds.y, bounds.z);
 		}
 
 		int bloomIterations = (int)cameraController.GetBloomIterations();

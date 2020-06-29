@@ -26,38 +26,33 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include <array>
-#include "Utilities/Array/Array2D.h"
-#include "Utilities/STL/MxString.h"
-#include "Image.h"
+#include "FrustrumCamera.h"
 
 namespace MxEngine
 {
-	/*!
-	ImageLoader class is used to load images from disk. Also it contains methods to create cubemaps from their scans
-	*/
-	class ImageLoader
-	{
-	public:
-		/*!
-		loads image from disk. As OpenGL treats images differently as expected, all images are flipped automatically
-		\param filepath path to an image on disk
-		\param flipImage should the image be vertically flipped. As MxEngine uses primarily OpenGL, usually you want to do this
-		\returns Image object if image file exists or nullptr data and width = height = channels = 0 if not
-		*/
-		static Image LoadImage(const MxString& filepath, bool flipImage = true);
+    void FrustrumCamera::SetBounds(float x, float y, float size)
+    {
+        this->SetZoom(size);
+        this->SetProjectionCenter(MakeVector2(x, y));
+        this->SetProjectionMatrix(MakeFrustrumMatrix(
+            x * this->GetAspectRatio(), (x + size) * this->GetAspectRatio(),
+            y, (y + size), this->GetZNear(), this->GetZFar()));
+    }
 
-		using ImageArray = std::array<Array2D<unsigned char>, 6>;
-		/*!
-		creates cubemap projections from its scan:
-		 X
-		XXXX
-		 X
-		\param image image from which cubemap will be created
-		\returns 6 2d arrays of raw image data (can be passed as individual images to OpenGL)
-		*/
-		static ImageArray CreateCubemap(const Image& image);
-	};
+    Vector3 FrustrumCamera::GetBounds() const
+    {
+        auto v = this->GetProjectionCenter();
+        auto s = this->GetZoom();
+        return MakeVector3(v.x, v.y, s);
+    }
+
+    void FrustrumCamera::SetProjectionForTile(size_t xTile, size_t yTile, size_t tilesPerRaw, float totalImageSize)
+    {
+        float tileSize = totalImageSize / float(tilesPerRaw);
+        float initialOffsetX = -0.5f * tilesPerRaw * tileSize;
+        float initialOffsetY = -0.5f * tilesPerRaw * tileSize;
+        float x = initialOffsetX + xTile * tileSize;
+        float y = initialOffsetY + yTile * tileSize;
+        this->SetBounds(x, y, tileSize);
+    }
 }

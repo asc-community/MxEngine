@@ -26,10 +26,13 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="OfflineRendererApplication.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{35483f85-a2cd-4f6c-9877-62ea4b7433b1}</ProjectGuid>
-    <RootNamespace>TestScreenShotCapture</RootNamespace>
+    <RootNamespace>OfflineRendererSample</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -218,9 +221,6 @@
       <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)external_libraries;$(SolutionDir)python\libs;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="ImageCaptureApplication.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

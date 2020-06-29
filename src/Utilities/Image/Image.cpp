@@ -26,38 +26,60 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include <array>
-#include "Utilities/Array/Array2D.h"
-#include "Utilities/STL/MxString.h"
 #include "Image.h"
+#include <memory>
 
 namespace MxEngine
 {
-	/*!
-	ImageLoader class is used to load images from disk. Also it contains methods to create cubemaps from their scans
-	*/
-	class ImageLoader
+	Image::Image(uint8_t* data, size_t width, size_t height, size_t channels)
+		: data(data), width(width), height(height), channels(channels)
 	{
-	public:
-		/*!
-		loads image from disk. As OpenGL treats images differently as expected, all images are flipped automatically
-		\param filepath path to an image on disk
-		\param flipImage should the image be vertically flipped. As MxEngine uses primarily OpenGL, usually you want to do this
-		\returns Image object if image file exists or nullptr data and width = height = channels = 0 if not
-		*/
-		static Image LoadImage(const MxString& filepath, bool flipImage = true);
+	}
 
-		using ImageArray = std::array<Array2D<unsigned char>, 6>;
-		/*!
-		creates cubemap projections from its scan:
-		 X
-		XXXX
-		 X
-		\param image image from which cubemap will be created
-		\returns 6 2d arrays of raw image data (can be passed as individual images to OpenGL)
-		*/
-		static ImageArray CreateCubemap(const Image& image);
-	};
+	Image::~Image()
+	{
+		if (this->data != nullptr)
+			std::free(this->data);
+	}
+
+	Image::Image(Image&& other) noexcept
+	{
+		this->data = other.data;
+		this->width = other.width;
+		this->height = other.height;
+		this->channels = other.channels;
+		other.data = nullptr;
+		other.width = other.height = other.channels = 0;
+	}
+
+	Image& Image::operator=(Image&& other) noexcept
+	{
+		this->data = other.data;
+		this->width = other.width;
+		this->height = other.height;
+		this->channels = other.channels;
+		other.data = nullptr;
+		other.width = other.height = other.channels = 0;
+		return *this;
+	}
+
+	uint8_t* Image::GetRawData() const
+	{
+		return this->data;
+	}
+
+	size_t Image::GetWidth() const
+	{
+		return this->width;
+	}
+
+	size_t Image::GetHeight() const
+	{
+		return this->height;
+	}
+
+	size_t Image::GetChannels() const
+	{
+		return this->channels;
+	}
 }

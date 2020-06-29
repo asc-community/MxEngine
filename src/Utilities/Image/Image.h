@@ -28,36 +28,30 @@
 
 #pragma once
 
-#include <array>
-#include "Utilities/Array/Array2D.h"
-#include "Utilities/STL/MxString.h"
-#include "Image.h"
+#include <cstdint>
 
 namespace MxEngine
 {
 	/*!
-	ImageLoader class is used to load images from disk. Also it contains methods to create cubemaps from their scans
+	Image class is a POD type which contains reference to an existing image
 	*/
-	class ImageLoader
+	class Image
 	{
+		uint8_t* data;
+		size_t width;
+		size_t height;
+		size_t channels;
 	public:
-		/*!
-		loads image from disk. As OpenGL treats images differently as expected, all images are flipped automatically
-		\param filepath path to an image on disk
-		\param flipImage should the image be vertically flipped. As MxEngine uses primarily OpenGL, usually you want to do this
-		\returns Image object if image file exists or nullptr data and width = height = channels = 0 if not
-		*/
-		static Image LoadImage(const MxString& filepath, bool flipImage = true);
+		Image(uint8_t* data, size_t width, size_t height, size_t channels);
+		~Image();
+		Image(const Image&) = delete;
+		Image& operator=(const Image&) = delete;
+		Image(Image&&) noexcept;
+		Image& operator=(Image&&) noexcept;
 
-		using ImageArray = std::array<Array2D<unsigned char>, 6>;
-		/*!
-		creates cubemap projections from its scan:
-		 X
-		XXXX
-		 X
-		\param image image from which cubemap will be created
-		\returns 6 2d arrays of raw image data (can be passed as individual images to OpenGL)
-		*/
-		static ImageArray CreateCubemap(const Image& image);
+		uint8_t* GetRawData() const;
+		size_t GetWidth() const;
+		size_t GetHeight() const;
+		size_t GetChannels() const;
 	};
 }

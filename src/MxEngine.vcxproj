@@ -33,6 +33,7 @@
     <ClInclude Include="Core\BoundingObjects\BoundingSphere.h" />
     <ClInclude Include="Core\Components\Camera\CameraBase.h" />
     <ClInclude Include="Core\Components\Camera\CameraController.h" />
+    <ClInclude Include="Core\Components\Camera\FrustrumCamera.h" />
     <ClInclude Include="Core\Components\Camera\InputControl.h" />
     <ClInclude Include="Core\Components\Camera\OrthographicCamera.h" />
     <ClInclude Include="Core\Components\Camera\PerspectiveCamera.h" />
@@ -81,6 +82,7 @@
     <ClInclude Include="Utilities\ECS\ComponentFactory.h" />
     <ClInclude Include="Utilities\ECS\ComponentView.h" />
     <ClInclude Include="Utilities\FileSystem\FileManager.h" />
+    <ClInclude Include="Utilities\Image\Image.h" />
     <ClInclude Include="Utilities\Image\ImageManager.h" />
     <ClInclude Include="Utilities\Image\ImageConverter.h" />
     <ClInclude Include="Utilities\ImGui\ComponentEditor.h" />
@@ -372,6 +374,7 @@
     <ClCompile Include="Core\Application\RenderManager.cpp" />
     <ClCompile Include="Core\Components\Camera\CameraBase.cpp" />
     <ClCompile Include="Core\Components\Camera\CameraController.cpp" />
+    <ClCompile Include="Core\Components\Camera\FrustrumCamera.cpp" />
     <ClCompile Include="Core\Components\Camera\InputControl.cpp" />
     <ClCompile Include="Core\Components\Camera\OrthographicCamera.cpp" />
     <ClCompile Include="Core\Components\Camera\PerspectiveCamera.cpp" />
@@ -416,6 +419,7 @@
     <ClCompile Include="Platform\Window\WindowManager.cpp" />
     <ClCompile Include="Utilities\FileSystem\File.cpp" />
     <ClCompile Include="Utilities\FileSystem\FileManager.cpp" />
+    <ClCompile Include="Utilities\Image\Image.cpp" />
     <ClCompile Include="Utilities\Image\ImageLoader.cpp" />
     <ClCompile Include="Utilities\Image\ImageConverter.cpp" />
     <ClCompile Include="Utilities\Image\ImageManager.cpp" />

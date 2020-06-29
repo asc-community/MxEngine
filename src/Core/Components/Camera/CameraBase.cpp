@@ -47,6 +47,17 @@ namespace MxEngine
         return this->view;
     }
 
+    const Vector2& CameraBase::GetProjectionCenter() const
+    {
+        return this->projectionCenter;
+    }
+
+    void CameraBase::SetProjectionCenter(const Vector2& center)
+    {
+        this->projectionCenter = center;
+        this->UpdateProjection = true;
+    }
+
     void CameraBase::SetProjectionMatrix(const Matrix4x4& projection)
     {
         this->projection = projection;

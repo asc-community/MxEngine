@@ -52,16 +52,16 @@ namespace MxEngine
         switch (type)
         {
         case ImageType::PNG:
-            imageByteData = ImageConverter::ConvertImagePNG(imageData.data(), (int)texture->GetWidth(), (int)texture->GetHeight(), (int)texture->GetChannelCount());
+            imageByteData = ImageConverter::ConvertImagePNG(imageData);
             break;
         case ImageType::BMP:
-            imageByteData = ImageConverter::ConvertImageBMP(imageData.data(), (int)texture->GetWidth(), (int)texture->GetHeight(), (int)texture->GetChannelCount());
+            imageByteData = ImageConverter::ConvertImageBMP(imageData);
             break;
         case ImageType::TGA:
-            imageByteData = ImageConverter::ConvertImageTGA(imageData.data(), (int)texture->GetWidth(), (int)texture->GetHeight(), (int)texture->GetChannelCount());
+            imageByteData = ImageConverter::ConvertImageTGA(imageData);
             break;
         case ImageType::JPG:
-            imageByteData = ImageConverter::ConvertImageJPG(imageData.data(), (int)texture->GetWidth(), (int)texture->GetHeight(), (int)texture->GetChannelCount());
+            imageByteData = ImageConverter::ConvertImageJPG(imageData);
             break;
         case ImageType::HDR:
             Logger::Instance().Warning("MxEngine::ImageManager", "HDR texture format is not supported through ImageManager, use ImageConverter::ConvertImageHDR");
@@ -99,5 +99,48 @@ namespace MxEngine
     void ImageManager::TakeScreenShot(const char* filePath, ImageType type)
     {
         ImageManager::TakeScreenShot((MxString)filePath, type);
+    }
+
+    Image ImageManager::CombineImages(ArrayView<Image> images, size_t imagesPerRaw)
+    {
+        #if defined(MXENGINE_DEBUG)
+        for (size_t i = 1; i < images.size(); i++)
+        {
+            MX_ASSERT(images[i - 1].GetWidth()    == images[i].GetWidth());
+            MX_ASSERT(images[i - 1].GetHeight()   == images[i].GetHeight());
+            MX_ASSERT(images[i - 1].GetChannels() == images[i].GetChannels());
+        }
+        #endif
+        MX_ASSERT(images.size() > 1);
+
+        size_t width = images[0].GetWidth();
+        size_t height = images[0].GetHeight();
+        size_t channels = images[0].GetChannels();
+
+        auto result = (uint8_t*)std::malloc(width * height * channels * images.size());
+
+        const size_t imagesPerColumn = images.size() / imagesPerRaw;
+        const size_t rawWidth = width * channels;
+        size_t offset = 0;
+
+        for (size_t t1 = 0; t1 < imagesPerColumn; t1++)
+        {
+            for (size_t i = 0; i < height; i++)
+            {
+                for (size_t t2 = 0; t2 < imagesPerRaw; t2++)
+                {
+                    auto& tex = images[t1 * imagesPerRaw + t2];
+                    auto currentRaw = tex.GetRawData() + i * rawWidth;
+                    std::copy(currentRaw, currentRaw + rawWidth, result + offset);
+                    offset += rawWidth;
+                }
+            }
+        }
+        return Image(result, width * imagesPerRaw, height * imagesPerColumn, channels);
+    }
+
+    Image ImageManager::CombineImages(Array2D<Image>& images)
+    {
+        return ImageManager::CombineImages(ArrayView<Image>(images.data(), images.size()), images.width());
     }
 }

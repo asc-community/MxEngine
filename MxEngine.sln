@@ -15,7 +15,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectTemplate", "examples
 		{24ACBC28-FA4F-49D7-9D69-31F578294414} = {24ACBC28-FA4F-49D7-9D69-31F578294414}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestScreenShotCapture", "examples\TestScreenShotCapture\TestScreenShotCapture.vcxproj", "{35483F85-A2CD-4F6C-9877-62EA4B7433B1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfflineRendererSample", "examples\OfflineRendererSample\OfflineRendererSample.vcxproj", "{35483F85-A2CD-4F6C-9877-62EA4B7433B1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{24ACBC28-FA4F-49D7-9D69-31F578294414} = {24ACBC28-FA4F-49D7-9D69-31F578294414}
 	EndProjectSection

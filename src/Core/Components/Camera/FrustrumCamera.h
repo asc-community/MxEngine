@@ -28,36 +28,15 @@
 
 #pragma once
 
-#include <array>
-#include "Utilities/Array/Array2D.h"
-#include "Utilities/STL/MxString.h"
-#include "Image.h"
+#include "CameraBase.h"
 
 namespace MxEngine
 {
-	/*!
-	ImageLoader class is used to load images from disk. Also it contains methods to create cubemaps from their scans
-	*/
-	class ImageLoader
+	class FrustrumCamera : public CameraBase
 	{
 	public:
-		/*!
-		loads image from disk. As OpenGL treats images differently as expected, all images are flipped automatically
-		\param filepath path to an image on disk
-		\param flipImage should the image be vertically flipped. As MxEngine uses primarily OpenGL, usually you want to do this
-		\returns Image object if image file exists or nullptr data and width = height = channels = 0 if not
-		*/
-		static Image LoadImage(const MxString& filepath, bool flipImage = true);
-
-		using ImageArray = std::array<Array2D<unsigned char>, 6>;
-		/*!
-		creates cubemap projections from its scan:
-		 X
-		XXXX
-		 X
-		\param image image from which cubemap will be created
-		\returns 6 2d arrays of raw image data (can be passed as individual images to OpenGL)
-		*/
-		static ImageArray CreateCubemap(const Image& image);
+		void SetBounds(float x, float y, float size);
+		Vector3 GetBounds() const;
+		void SetProjectionForTile(size_t xTile, size_t yTile, size_t tilesPerRaw, float totalImageSize);
 	};
 }

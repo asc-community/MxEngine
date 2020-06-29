@@ -31,6 +31,7 @@
 #include "Platform/GraphicAPI.h"
 #include "Utilities/FileSystem/File.h"
 #include "Utilities/String/String.h"
+#include "Utilities/Array/Array2D.h"
 
 namespace MxEngine
 {
@@ -55,5 +56,12 @@ namespace MxEngine
 		static void TakeScreenShot(const FilePath& filePath, ImageType type);
 		static void TakeScreenShot(const MxString& filePath, ImageType type);
 		static void TakeScreenShot(const char*     filePath, ImageType type);
+
+		// write order:		
+		// 7 8 9
+		// 4 5 6
+		// 1 2 3
+		static Image CombineImages(ArrayView<Image> images, size_t imagesPerRaw);
+		static Image CombineImages(Array2D<Image>& images);
 	};
 }

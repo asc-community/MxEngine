@@ -39,6 +39,7 @@ namespace MxEngine
 	{
 		PERSPECTIVE,
 		ORTHOGRAPHIC,
+		FRUSTRUM,
 	};
 
 	struct CameraRender
