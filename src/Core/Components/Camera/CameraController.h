@@ -39,6 +39,7 @@ namespace MxEngine
 	{
 		PERSPECTIVE,
 		ORTHOGRAPHIC,
+		FRUSTRUM,
 	};
 
 	struct CameraRender
@@ -66,7 +67,6 @@ namespace MxEngine
 		Vector3 right = { 1.0f, 0.0f, 0.0f };
 		float verticalAngle = 0.0f;
 		float horizontalAngle = 0.0f;
-		float zoom = 1.0f;
 		float exposure = 1.0f;
 		float bloomWeight = 0.5f;
 		float moveSpeed = 1.0f;
@@ -96,6 +96,7 @@ namespace MxEngine
 		Matrix4x4 GetStaticMatrix() const;
 		GResource<FrameBuffer> GetFrameBufferMSAA() const;
 		GResource<FrameBuffer> GetFrameBufferHDR() const;
+		GResource<RenderBuffer> GetRenderBufferMSAA() const;
 		GResource<Texture> GetBloomTexture() const;
 		GResource<Texture> GetRenderTexture() const;
 		void ListenWindowResizeEvent();
@@ -106,6 +107,7 @@ namespace MxEngine
 
 		const Vector3& GetDirection() const;
 		void SetDirection(const Vector3& direction);
+		Vector3 GetDirectionUp() const;
 		float GetHorizontalAngle() const;
 		float GetVerticalAngle() const;
 		void SetBloomWeight(float weight);

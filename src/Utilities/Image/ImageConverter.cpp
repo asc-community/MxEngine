@@ -103,4 +103,29 @@ namespace MxEngine
         stbi_write_hdr_to_func(CopyImageData, (void*)&data, width, height, channels, (const float*)imagedata);
         return data;
     }
+
+    ImageConverter::RawImageData ImageConverter::ConvertImagePNG(const Image& image, bool flipOnSave)
+    {
+        return ImageConverter::ConvertImagePNG(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannels(), flipOnSave);
+    }
+
+    ImageConverter::RawImageData ImageConverter::ConvertImageBMP(const Image& image, bool flipOnSave)
+    {
+        return ImageConverter::ConvertImageBMP(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannels(), flipOnSave);
+    }
+
+    ImageConverter::RawImageData ImageConverter::ConvertImageTGA(const Image& image, bool flipOnSave)
+    {
+        return ImageConverter::ConvertImageTGA(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannels(), flipOnSave);
+    }
+
+    ImageConverter::RawImageData ImageConverter::ConvertImageJPG(const Image& image, int quality, bool flipOnSave)
+    {
+        return ImageConverter::ConvertImageJPG(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannels(), quality, flipOnSave);
+    }
+
+    ImageConverter::RawImageData ImageConverter::ConvertImageHDR(const Image& image, bool flipOnSave)
+    {
+        return ImageConverter::ConvertImageHDR(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannels(), flipOnSave);
+    }
 }

@@ -68,8 +68,7 @@ namespace MxEngine
 		{
 			// dump all material to let user retrieve them for MeshRenderer component
 			auto materialLibPath = filepath + MeshRenderer::GetMaterialFileSuffix();
-			if (!File::Exists(materialLibPath))
-				ObjectLoader::DumpMaterials(objectInfo.materials, materialLibPath);
+			ObjectLoader::DumpMaterials(objectInfo.materials, materialLibPath);
 		}
 		
 		for (size_t i = 0; i < objectInfo.meshes.size(); i++)

@@ -119,25 +119,23 @@ namespace MxEngine
 	void CubeMap::Load(const MxString& filepath, bool genMipmaps, bool flipImage)
 	{
 		Image img = ImageLoader::LoadImage(filepath, flipImage);
-		if (img.data == nullptr)
+		if (img.GetRawData() == nullptr)
 		{
 			Logger::Instance().Error("OpenGL::CubeMap", "file with name '" + filepath + "' was not found");
 			return;
 		}
 		auto images = ImageLoader::CreateCubemap(img);
-		MX_ASSERT(img.channels >= 3);
 		this->filepath = filepath;
-		this->channels = img.channels;
-		this->width = img.width;
-		this->height = img.height;
-		ImageLoader::FreeImage(img);
+		this->channels = img.GetChannels();
+		this->width = img.GetWidth();
+		this->height = img.GetHeight();
 
 		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
 		int glChannels = 3;
 		for (size_t i = 0; i < 6; i++)
 		{
 			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGB, 
-				(GLsizei)images[i].width(), (GLsizei)images[i].height() / 3, 0, GL_RGB, GL_UNSIGNED_BYTE, images[i].data()));
+				(GLsizei)images[i].width(), (GLsizei)images[i].height() / (GLsizei)this->channels, 0, GL_RGB, GL_UNSIGNED_BYTE, images[i].data()));
 		}
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));

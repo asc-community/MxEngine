@@ -43,19 +43,10 @@ namespace MxEngine
 		Logger::Instance().Debug("MxEngine::ImageLoader", "loading image from file: " + filepath);
 
 		stbi_set_flip_vertically_on_load(flipImage);
-		Image image;
-		image.data = stbi_load(filepath.c_str(), &image.width, &image.height, &image.channels, STBI_rgb);
-		return image;
-	}
-
-	void ImageLoader::FreeImage(Image image)
-	{
-		FreeImage(image.data);
-	}
-
-	void ImageLoader::FreeImage(unsigned char* imageData)
-	{
-		stbi_image_free(imageData);
+		int width, height, channels;
+		uint8_t* data = stbi_load(filepath.c_str(), &width, &height, &channels, STBI_rgb);
+		channels = 3;
+		return Image(data, width, height, channels);
 	}
 
 	/*
@@ -76,12 +67,12 @@ namespace MxEngine
 	{
 		ImageArray result;
 		size_t channels = 3; 
-		size_t width = image.width / 4;
-		size_t height = image.height / 3;
+		size_t width = image.GetWidth() / 4;
+		size_t height = image.GetHeight() / 3;
 		if (width != height)
 		{
 			Logger::Instance().Warning("MxEngine::ImageLoader", "image size is invalid, it will be reduced to fit skybox cubemap");
-			width = height = FloorToPow2(std::min(image.width / 4, image.height / 3));
+			width = height = FloorToPow2(Min(image.GetWidth() / 4, image.GetHeight() / 3));
 		}
 		for (auto& arr : result)
 		{
@@ -96,7 +87,7 @@ namespace MxEngine
 				size_t x = sliceX * width;
 				size_t bytesInRow = width * channels;
 
-				std::memcpy(dst[i].data(), &image.data[(y * image.width + x) * channels], bytesInRow);
+				std::memcpy(dst[i].data(), &image.GetRawData()[(y * image.GetWidth() + x) * channels], bytesInRow);
 			}
 		};
 

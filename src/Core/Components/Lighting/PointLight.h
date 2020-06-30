@@ -51,6 +51,7 @@ namespace MxEngine
 
         PointLight& UseFactors(const Vector3& factors);
         [[nodiscard]] const Vector3& GetFactors() const;
+        [[nodiscard]] float ComputeRadius() const;
 
         [[nodiscard]] GResource<CubeMap> GetDepthCubeMap() const;
         void AttachDepthCubeMap(const GResource<CubeMap>& cubemap);

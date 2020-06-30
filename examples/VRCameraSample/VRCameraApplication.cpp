@@ -9,6 +9,7 @@ namespace ProjectTemplate
 
     class MxApplication : public Application
     {
+        MxObject::Handle VRCamera;
     public:
         virtual void OnCreate() override
         {
@@ -28,18 +29,18 @@ namespace ProjectTemplate
             auto rightEye = rightEyeObject->AddComponent<CameraController>();
             rightEye->GetCamera<PerspectiveCamera>().SetFOV(90.0f);
 
-            auto cameraObject = MxObject::Create();
-            cameraObject->Name = "VR Camera";
+            VRCamera = MxObject::Create();
+            VRCamera->Name = "VR Camera";
 
-            auto controller = cameraObject->AddComponent<CameraController>();
+            auto controller = VRCamera->AddComponent<CameraController>();
             controller->SetMoveSpeed(5.0f);
             controller->SetRotateSpeed(5.0f);
 
-            auto input = cameraObject->AddComponent<InputControl>();
+            auto input = VRCamera->AddComponent<InputControl>();
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
 
-            auto VR = cameraObject->AddComponent<VRCameraController>();
+            auto VR = VRCamera->AddComponent<VRCameraController>();
             VR->LeftEye = leftEye;
             VR->RightEye = rightEye;
 
@@ -58,8 +59,19 @@ namespace ProjectTemplate
             sphereObject->Transform->Translate(MakeVector3(5.0f, 0.0f, 5.0f));
             sphereObject->AddComponent<MeshSource>(Primitives::CreateSphere());
             auto sphereMaterials = sphereObject->AddComponent<MeshRenderer>();
-            sphereMaterials->GetMaterial()->AmbientColor = MakeVector3(0.2f, 0.0f, 0.8f);
-            sphereMaterials->GetMaterial()->DiffuseColor = MakeVector3(0.2f, 0.0f, 0.8f);
+            auto instanceFactory = sphereObject->AddComponent<InstanceFactory>();
+            
+            for (size_t i = 0; i < 20; i++)
+            {
+                auto sphereInstance = instanceFactory->MakeInstance();
+
+                float rx = Random::GetFloat();
+                float ry = Random::GetFloat();
+                float rz = Random::GetFloat();
+
+                sphereInstance->Transform.Translate(20.0f * MakeVector3(rx, ry, rz) - 10.0f);
+                sphereInstance->SetColor(MakeVector3(rx, ry, rz));
+            }
 
             auto lightObject = MxObject::Create();
             lightObject->Name = "Global Light";
@@ -70,7 +82,16 @@ namespace ProjectTemplate
 
         virtual void OnUpdate() override
         {
-
+            if (this->VRCamera.IsValid() && this->VRCamera->HasComponent<VRCameraController>())
+            {
+                auto& vr = *VRCamera->GetComponent<VRCameraController>();
+                ImGui::Begin("VR info");
+                ImGui::Text("eye focus distance: %f", vr.FocusDistance);
+                ImGui::Text("eye distance: %f", vr.EyeDistance);
+                ImGui::Text(" left eye fov: %f",  vr.LeftEye->GetCamera<PerspectiveCamera>().GetFOV());
+                ImGui::Text("right eye fov: %f", vr.RightEye->GetCamera<PerspectiveCamera>().GetFOV());
+                ImGui::End();
+            }
         }
 
         virtual void OnDestroy() override

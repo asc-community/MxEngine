@@ -37,18 +37,23 @@ namespace MxEngine
     private:
         float aspectRatio = 16.0f / 9.0f;
         float zNear = 0.1f;
-        float zFar = 100.0f;
+        float zFar = 100000.0f;
         float zoom = 1.0f;
+        Vector2 projectionCenter{ -0.5f };
         Matrix4x4 view;
         Matrix4x4 projection;
         mutable Matrix4x4 matrix;
         mutable bool updateMatrix = true;
     public:
+        MXENGINE_MAKE_MOVEONLY(CameraBase);
+
         mutable bool UpdateProjection = true;
 
         const Matrix4x4& GetMatrix() const;
         const Matrix4x4& GetProjectionMatrix() const;
         const Matrix4x4& GetViewMatrix() const;
+        const Vector2& GetProjectionCenter() const;
+        void SetProjectionCenter(const Vector2& center);
         void SetProjectionMatrix(const Matrix4x4& projection);
         void SetViewMatrix(const Matrix4x4& view);
         float GetZoom() const;

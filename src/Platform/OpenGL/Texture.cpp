@@ -28,9 +28,9 @@
 
 #include "Texture.h"
 #include "Platform/OpenGL/GLUtilities.h"
-#include "Utilities/Image/ImageLoader.h"
 #include "Utilities/Logger/Logger.h"
 #include "Utilities/Time/Time.h"
+#include "Utilities/Image/ImageLoader.h"
 
 namespace MxEngine
 {
@@ -133,25 +133,23 @@ namespace MxEngine
 		this->wrapType = wrap;
 		this->format = TextureFormat::RGB;
 
-		if (image.data == nullptr)
+		if (image.GetRawData() == nullptr)
 		{
 			Logger::Instance().Error("Texture", "file with name '" + filepath + "' was not found");
 			return;
 		}
-		this->width = image.width;
-		this->height = image.height;
-		this->channels = 3;
+		this->width = image.GetWidth();
+		this->height = image.GetHeight();
+		this->channels = image.GetChannels();
 		this->textureType = GL_TEXTURE_2D;
 
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
-		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data));
+		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.GetRawData()));
 
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
 		
 		if (genMipmaps) this->GenerateMipmaps();
-
-		ImageLoader::FreeImage(image);
 	}
 
 	void Texture::Load(RawDataPointer data, int width, int height, TextureFormat format, TextureWrap wrap, bool genMipmaps)
@@ -245,20 +243,19 @@ namespace MxEngine
 		GLCALL(glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, glFormat, width, height, GL_TRUE));
     }
 
-    MxVector<Texture::RawData> Texture::GetRawTextureData() const
+    Image Texture::GetRawTextureData() const
     {
-		MxVector<RawData> result;
 		if (this->height == 0 || this->width == 0) 
-			return result;
+			return Image(nullptr, 0, 0, 0);
 
 		GLenum type = this->IsFloatingPoint() ? GL_FLOAT : GL_UNSIGNED_BYTE;
 		size_t totalByteSize = this->width * this->height * this->GetPixelSize();
-		result.resize(totalByteSize);
+		auto result = (uint8_t*)std::malloc(totalByteSize);
 
 		this->Bind(0);
 		GLCALL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
-		GLCALL(glGetTexImage(this->textureType, 0, formatTable[(int)this->format], type, (void*)result.data()));
-		return result;
+		GLCALL(glGetTexImage(this->textureType, 0, formatTable[(int)this->format], type, (void*)result));
+		return Image(result, this->width, this->height, this->channels);
     }
 
 	void Texture::GenerateMipmaps()

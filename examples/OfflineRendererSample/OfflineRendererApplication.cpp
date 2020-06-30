@@ -1,7 +1,6 @@
 #pragma once
 
 #include <MxEngine.h>
-#include <Library/Primitives/Colors.h>
 
 namespace ProjectTemplate
 {
@@ -9,16 +8,27 @@ namespace ProjectTemplate
 
     class MxApplication : public Application
     {
+        // Configure this parameters //
+        VectorInt2 viewportSize{ 7680, 4320 };
+        size_t texturesPerRaw = 4;
+        float imageSize = 0.2f;
+        ///////////////////////////////
+
+        using TextureArray = MxVector<Image>;
+        TextureArray textures;
+
     public:
         virtual void OnCreate() override
         {
             auto cameraObject = MxObject::Create();
             auto controller = cameraObject->AddComponent<CameraController>();
             controller->SetDirection(Vector3(0.0f, -0.333f, 1.0f));
+            controller->SetCameraType(CameraType::FRUSTRUM);
+            auto skybox = cameraObject->AddComponent<Skybox>();
+            skybox->Texture = AssetManager::LoadCubeMap("Resources/dawn.jpg");
 
-            // set viewport to 8K
             RenderManager::SetViewport(controller);
-            RenderManager::ResizeViewport(7680, 4320);
+            RenderManager::ResizeViewport(viewportSize.x, viewportSize.y);
 
             auto cubeObject = MxObject::Create();
             cubeObject->Transform->Translate(MakeVector3(0.0f, -1.0f, 3.0f));
@@ -39,16 +49,26 @@ namespace ProjectTemplate
 
         virtual void OnUpdate() override
         {
-            static bool firstFrame = true;
-            if (firstFrame)
+            static int frame_count = 0;
+            auto& viewport = *RenderManager::GetViewport();
+
+            auto& cam = viewport.GetCamera<FrustrumCamera>();
+            cam.SetProjectionForTile(frame_count % texturesPerRaw, frame_count / texturesPerRaw, texturesPerRaw, imageSize);
+
+            if (frame_count != 0)
             {
-                firstFrame = false;
+                auto texture = RenderManager::GetViewport()->GetRenderTexture();
+                textures.push_back(texture->GetRawTextureData());
             }
-            else
+            if (frame_count == texturesPerRaw * texturesPerRaw)
             {
-                ImageManager::TakeScreenShot("Resources/cube.png", ImageType::PNG);
+                auto result = ImageManager::CombineImages(textures, texturesPerRaw);
+                auto png = ImageConverter::ConvertImagePNG(result);
+                File file("Resources/scene.png", File::WRITE | File::BINARY);
+                file.WriteBytes(png.data(), png.size());
                 this->CloseApplication();
             }
+            frame_count++;
         }
 
         virtual void OnDestroy() override

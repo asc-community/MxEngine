@@ -30,6 +30,7 @@
 
 #include "Utilities/STL/MxString.h"
 #include "Utilities/STL/MxVector.h"
+#include "Image.h"
 
 namespace MxEngine
 {
@@ -38,10 +39,16 @@ namespace MxEngine
 	public:
 		using RawImageData = MxVector<uint8_t>;
 
-		static RawImageData ConvertImagePNG(const uint8_t* imagedata, int width, int height, int channels = 3, bool flipOnSave = true);
-		static RawImageData ConvertImageBMP(const uint8_t* imagedata, int width, int height, int channels = 3, bool flipOnSave = true);
-		static RawImageData ConvertImageTGA(const uint8_t* imagedata, int width, int height, int channels = 3, bool flipOnSave = true);
-		static RawImageData ConvertImageJPG(const uint8_t* imagedata, int width, int height, int channels = 3, int  quality = 90, bool flipOnSave = true);
-		static RawImageData ConvertImageHDR(const uint8_t* imagedata, int width, int height, int channels = 3, bool flipOnSave = true);
+		static RawImageData ConvertImagePNG(const uint8_t* imagedata, int width, int height, int channels, bool flipOnSave = true);
+		static RawImageData ConvertImageBMP(const uint8_t* imagedata, int width, int height, int channels, bool flipOnSave = true);
+		static RawImageData ConvertImageTGA(const uint8_t* imagedata, int width, int height, int channels, bool flipOnSave = true);
+		static RawImageData ConvertImageJPG(const uint8_t* imagedata, int width, int height, int channels, int  quality = 90, bool flipOnSave = true);
+		static RawImageData ConvertImageHDR(const uint8_t* imagedata, int width, int height, int channels, bool flipOnSave = true);
+
+		static RawImageData ConvertImagePNG(const Image& image, bool flipOnSave = true);
+		static RawImageData ConvertImageBMP(const Image& image, bool flipOnSave = true);
+		static RawImageData ConvertImageTGA(const Image& image, bool flipOnSave = true);
+		static RawImageData ConvertImageJPG(const Image& image, int  quality = 90, bool flipOnSave = true);
+		static RawImageData ConvertImageHDR(const Image& image, bool flipOnSave = true);
 	};
 }

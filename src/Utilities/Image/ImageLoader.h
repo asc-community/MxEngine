@@ -31,20 +31,10 @@
 #include <array>
 #include "Utilities/Array/Array2D.h"
 #include "Utilities/STL/MxString.h"
+#include "Image.h"
 
 namespace MxEngine
 {
-	/*!
-	Image class is a POD type which contains reference to an existing image
-	*/
-	struct Image
-	{
-		int width;
-		int height;
-		int channels;
-		unsigned char* data;
-	};
-
 	/*!
 	ImageLoader class is used to load images from disk. Also it contains methods to create cubemaps from their scans
 	*/
@@ -58,16 +48,6 @@ namespace MxEngine
 		\returns Image object if image file exists or nullptr data and width = height = channels = 0 if not
 		*/
 		static Image LoadImage(const MxString& filepath, bool flipImage = true);
-		/*!
-		destroys image object. Must be called to clear allocated data
-		\param image Image to destroy
-		*/
-		static void FreeImage(Image image);
-		/*!
-		destroys image object. Must be called to clear allocated data
-		\param imageData raw image data of Image to destroy
-		*/
-		static void FreeImage(unsigned char* imageData);
 
 		using ImageArray = std::array<Array2D<unsigned char>, 6>;
 		/*!

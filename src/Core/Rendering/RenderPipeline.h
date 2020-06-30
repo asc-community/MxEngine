@@ -66,6 +66,7 @@ namespace MxEngine
         GResource<Shader> ShadowMapShader;
         GResource<Shader> ShadowCubeMapShader;
         GResource<Shader> MSAAHDRSplitShader;
+        GResource<Shader> HDRSplitShader;
         GResource<Shader> BloomShader;
         GResource<Shader> HDRBloomCombineHDRShader;
         GResource<Shader> ImageForwardShader;

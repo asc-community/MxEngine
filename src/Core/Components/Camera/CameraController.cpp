@@ -32,6 +32,7 @@
 #include "Platform/Window/WindowManager.h"
 #include "OrthographicCamera.h"
 #include "PerspectiveCamera.h"
+#include "FrustrumCamera.h"
 
 namespace MxEngine
 {
@@ -49,6 +50,22 @@ namespace MxEngine
 		MX_ASSERT(this->GetCameraType() == CameraType::PERSPECTIVE);
 		static_assert(sizeof(PerspectiveCamera) == sizeof(this->Camera), "camera byte storage size mismatch");
 		return *reinterpret_cast<const PerspectiveCamera*>(&this->Camera); //-V717
+	}
+
+	template<>
+	FrustrumCamera& CameraController::GetCamera<FrustrumCamera>()
+	{
+		MX_ASSERT(this->GetCameraType() == CameraType::FRUSTRUM);
+		static_assert(sizeof(FrustrumCamera) == sizeof(this->Camera), "camera byte storage size mismatch");
+		return *reinterpret_cast<FrustrumCamera*>(&this->Camera); //-V717
+	}
+
+	template<>
+	const FrustrumCamera& CameraController::GetCamera<FrustrumCamera>() const
+	{
+		MX_ASSERT(this->GetCameraType() == CameraType::FRUSTRUM);
+		static_assert(sizeof(FrustrumCamera) == sizeof(this->Camera), "camera byte storage size mismatch");
+		return *reinterpret_cast<const FrustrumCamera*>(&this->Camera); //-V717
 	}
 
 	template<>
@@ -126,6 +143,11 @@ namespace MxEngine
 		return this->renderBuffers->framebufferHDR;
 	}
 
+    GResource<RenderBuffer> CameraController::GetRenderBufferMSAA() const
+    {
+		return this->renderBuffers->renderbufferMSAA;
+    }
+
 	GResource<Texture> CameraController::GetBloomTexture() const
 	{
 		return this->renderBuffers->bloomTextureHDR;
@@ -198,6 +220,13 @@ namespace MxEngine
 			auto size = cam->GetSize();
 			cam->SetSize(size);
 		}
+		else if (this->GetCameraType() == CameraType::FRUSTRUM)
+		{
+			auto* cam = reinterpret_cast<FrustrumCamera*>(&this->Camera); //-V717
+			auto zoom = cam->GetZoom();
+			auto center = cam->GetProjectionCenter();
+			cam->SetBounds(center.x, center.y, zoom);
+		}
     }
 
 	const Vector3& CameraController::GetDirection() const
@@ -208,6 +237,11 @@ namespace MxEngine
 	void CameraController::SetDirection(const Vector3& direction)
 	{
 		this->direction = direction + MakeVector3(0.0f, 0.0f, 0.00001f);
+	}
+
+	Vector3 CameraController::GetDirectionUp() const
+	{
+		return -Cross(this->GetDirection(), this->right);
 	}
 
 	float CameraController::GetHorizontalAngle() const
@@ -300,6 +334,7 @@ namespace MxEngine
 			0.0f,
 			cos(horizontalAngle - HalfPi<float>())
 		);
+
 		return *this;
 	}
 

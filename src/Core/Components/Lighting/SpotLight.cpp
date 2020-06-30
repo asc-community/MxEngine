@@ -39,12 +39,12 @@ namespace MxEngine
 
     float SpotLight::GetInnerAngle() const
     {
-        return this->innerAngle;
+        return this->innerAngle * 2.0f;
     }
 
     float SpotLight::GetOuterAngle() const
     {
-        return this->outerAngle;
+        return this->outerAngle * 2.0f;
     }
 
     float SpotLight::GetInnerCos() const
@@ -59,14 +59,14 @@ namespace MxEngine
 
     SpotLight& SpotLight::UseInnerAngle(float angle)
     {
-        this->innerAngle = Clamp(angle, 0.0f, this->outerAngle - 0.0001f);
+        this->innerAngle = Clamp(angle * 0.5f, 0.0f, this->outerAngle - 0.0001f);
         this->innerCos = std::cos(Radians(this->innerAngle));
         return *this;
     }
 
     SpotLight& SpotLight::UseOuterAngle(float angle)
     {
-        this->outerAngle = Clamp(angle, 0.0f, 90.0f);
+        this->outerAngle = Clamp(angle * 0.5f, 0.0f, 90.0f);
         this->outerCos = std::cos(Radians(this->outerAngle));
         // update inner as it can be larger than outer
         this->UseInnerAngle(this->GetInnerAngle()); 
@@ -92,8 +92,8 @@ namespace MxEngine
             this->Direction.z + 0.0001f
         ));
         auto View = MakeViewMatrix(
-            position + directionNorm,
             position,
+            position + directionNorm,
             MakeVector3(0.0f, 1.0f, 0.0f)
         );
         return Projection * View;

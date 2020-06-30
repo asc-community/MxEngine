@@ -36,8 +36,15 @@ namespace MxEngine
     {
         MAKE_COMPONENT(DebugDraw);
     public:
-        Vector4 Color = MakeVector4(1.0f, 0.0f, 0.0f, 1.0f);
+        Vector4 BoundingBoxColor    = MakeVector4(1.0f, 0.0f, 0.0f, 1.0f);
+        Vector4 BoundingSphereColor = MakeVector4(0.0f, 0.3f, 1.0f, 1.0f);
+        Vector4 LightSourceColor    = MakeVector4(1.0f, 1.0f, 0.0f, 1.0f);
+        Vector4 SoundSourceColor    = MakeVector4(0.0f, 1.0f, 0.0f, 1.0f);
+        Vector4 FrustrumColor       = MakeVector4(1.0f, 0.0f, 1.0f, 1.0f);
         bool RenderBoundingBox = false;
         bool RenderBoundingSphere = false;
+        bool RenderLightingBounds = false;
+        bool RenderSoundBounds = false;
+        bool RenderFrustrumBounds = false;
     };
 }

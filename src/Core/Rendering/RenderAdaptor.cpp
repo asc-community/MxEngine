@@ -92,7 +92,13 @@ namespace MxEngine
         environment.MSAAHDRSplitShader->LoadFromString(
             #include MAKE_PLATFORM_SHADER(rect_vertex)
             ,
-            #include MAKE_PLATFORM_SHADER(msaa_fragment)
+            #include MAKE_PLATFORM_SHADER(hdrsplitmsaa_fragment)
+        );
+        environment.HDRSplitShader = GraphicFactory::Create<Shader>();
+        environment.HDRSplitShader->LoadFromString(
+            #include MAKE_PLATFORM_SHADER(rect_vertex)
+            ,
+            #include MAKE_PLATFORM_SHADER(hdrsplit_fragment)
         );
 
         environment.HDRBloomCombineHDRShader = GraphicFactory::Create<Shader>();
@@ -287,14 +293,13 @@ namespace MxEngine
 
         {
             MAKE_SCOPE_PROFILER("RenderAdaptor::SubmitDebugData()");
-            this->DebugDrawer.ClearBuffer();
 
             constexpr auto submitDebugData = [](DebugBuffer& drawer, DebugDraw& debugDraw, const AABB& box)
             {
                 if (debugDraw.RenderBoundingBox)
-                    drawer.SubmitAABB(box, debugDraw.Color);
+                    drawer.Submit(box, debugDraw.BoundingBoxColor);
                 if (debugDraw.RenderBoundingSphere)
-                    drawer.SubmitSphere(ToSphere(box), debugDraw.Color);
+                    drawer.Submit(ToSphere(box), debugDraw.BoundingSphereColor);
             };
 
             auto debugDrawView = ComponentFactory::GetView<DebugDraw>();
@@ -303,6 +308,9 @@ namespace MxEngine
                 auto& object = MxObject::GetByComponent(debugDraw);
                 auto instances = object.GetComponent<InstanceFactory>();
                 auto meshSource = object.GetComponent<MeshSource>();
+                auto spotLight = object.GetComponent<SpotLight>();
+                auto pointLight = object.GetComponent<PointLight>();
+                auto cameraController = object.GetComponent<CameraController>();
                 AABB box;
                 if (meshSource.IsValid())
                 {
@@ -320,10 +328,30 @@ namespace MxEngine
                         submitDebugData(this->DebugDrawer, debugDraw, box);
                     }
                 }
+                if (debugDraw.RenderLightingBounds && pointLight.IsValid())
+                {
+                    BoundingSphere sphere(object.Transform->GetPosition(), 3.0f);
+                    this->DebugDrawer.Submit(sphere, debugDraw.LightSourceColor);
+                }
+                if (debugDraw.RenderLightingBounds && spotLight.IsValid())
+                {
+                    Cone cone(object.Transform->GetPosition(), spotLight->Direction, 3.0f, spotLight->GetOuterAngle());
+                    this->DebugDrawer.Submit(cone, debugDraw.LightSourceColor);
+                }
+                if (debugDraw.RenderFrustrumBounds && cameraController.IsValid())
+                {
+                    auto direction = cameraController->GetDirection();
+                    auto up = cameraController->GetDirectionUp();
+                    auto aspect = cameraController->Camera.GetAspectRatio();
+                    auto zoom = cameraController->Camera.GetZoom() * 65.0f;
+                    Frustrum frustrum(object.Transform->GetPosition() + Normalize(direction), direction, up, zoom, aspect);
+                    this->DebugDrawer.Submit(frustrum, debugDraw.FrustrumColor);
+                }
             }
-            this->DebugDrawer.SubmitBuffer();
             environment.DebugBufferObject.VertexCount = this->DebugDrawer.GetSize();
             environment.OverlayDebugDraws = this->DebugDrawer.DrawAsScreenOverlay;
+            this->DebugDrawer.SubmitBuffer();
+            this->DebugDrawer.ClearBuffer();
         }
 
         this->Renderer.StartPipeline();

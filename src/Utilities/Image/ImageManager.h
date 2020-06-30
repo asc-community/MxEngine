@@ -31,6 +31,7 @@
 #include "Platform/GraphicAPI.h"
 #include "Utilities/FileSystem/File.h"
 #include "Utilities/String/String.h"
+#include "Utilities/Array/Array2D.h"
 
 namespace MxEngine
 {
@@ -51,9 +52,26 @@ namespace MxEngine
 		static void SaveTexture(const MxString& filePath, const GResource<Texture>& texture, ImageType type);
 		static void SaveTexture(const char*     filePath, const GResource<Texture>& texture, ImageType type);
 
+		static void SaveTexture(StringId        fileHash, const GResource<Texture>& texture);
+		static void SaveTexture(const FilePath& filePath, const GResource<Texture>& texture);
+		static void SaveTexture(const MxString& filePath, const GResource<Texture>& texture);
+		static void SaveTexture(const char* filePath,     const GResource<Texture>& texture);
+
 		static void TakeScreenShot(StringId        fileHash, ImageType type);
 		static void TakeScreenShot(const FilePath& filePath, ImageType type);
 		static void TakeScreenShot(const MxString& filePath, ImageType type);
 		static void TakeScreenShot(const char*     filePath, ImageType type);
+
+		static void TakeScreenShot(StringId        fileHash);
+		static void TakeScreenShot(const FilePath& filePath);
+		static void TakeScreenShot(const MxString& filePath);
+		static void TakeScreenShot(const char*     filePath);
+
+		// write order:		
+		// 7 8 9
+		// 4 5 6
+		// 1 2 3
+		static Image CombineImages(ArrayView<Image> images, size_t imagesPerRaw);
+		static Image CombineImages(Array2D<Image>& images);
 	};
 }

@@ -133,3 +133,8 @@
 - added VRCameraController component
 - optimized CameraController rendering
 - added VRCameraSample to example projects
+### 7.1.0
+- improved VR toolkit - now camera has focus distance and there is good sample
+- added new debug draw utilities (frustrum for cameras, cones and spheres for light objects)
+- added Frustrum camera for tiled rendering (alternative to Perspective and Orthographic)
+- added offline renderer sample, showing how to render large image with offline tile rendering

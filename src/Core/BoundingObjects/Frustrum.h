@@ -28,28 +28,30 @@
 
 #pragma once
 
-#include "CameraController.h"
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-	class VRCameraController
-	{
-		MAKE_COMPONENT(VRCameraController);
+    class Frustrum
+    {
+        Vector3 direction;
+        float angle;
+    public:
+        Vector3 Origin;
+        Vector3 Direction;
+        Vector3 Up;
+        float AspectRatio;
 
-		GResource<Shader> shaderVR;
+        Frustrum(const Vector3& origin, const Vector3& direction, const Vector3& up, float angle, float aspect)
+        {
+            this->Origin = origin;
+            this->Direction = direction;
+            this->Up = up;
+            this->AspectRatio = aspect;
+            this->SetAngle(angle);
+        }
 
-		void OnUpdate();
-		void UpdateEyes(CameraController::Handle& leftCamera, CameraController::Handle& rightCamera);
-		void Render(GResource<Texture>& target, const GResource<Texture>& leftEye, const GResource<Texture>& rightEye);
-	public:
-		CameraController::Handle LeftEye;
-		CameraController::Handle RightEye;
-		float EyeDistance = 0.1f;
-		float FocusDistance = 10.0f;
-
-		VRCameraController() = default;
-		~VRCameraController();
-
-		void Init();
-	};
+        void SetAngle(float angle) { this->angle = Clamp(angle, 0.0f, 180.0f); }
+        float GetAngle() const { return this->angle; }
+    };
 }

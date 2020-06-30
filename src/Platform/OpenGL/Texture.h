@@ -31,6 +31,7 @@
 #include "Utilities/STL/MxString.h"
 #include "Utilities/STL/MxVector.h"
 #include "Utilities/Math/Math.h"
+#include "Utilities/Image/Image.h"
 
 namespace MxEngine
 {
@@ -47,7 +48,6 @@ namespace MxEngine
 		DEPTH,
 	};
 
-
 	enum class TextureWrap : uint8_t
 	{
 		CLAMP_TO_EDGE,
@@ -58,6 +58,11 @@ namespace MxEngine
 
 	const char* EnumToString(TextureFormat format);
 	const char* EnumToString(TextureWrap wrap);
+
+	class ImageData
+	{
+		uint8_t* data;
+	};
 
 	class Texture
 	{
@@ -94,7 +99,7 @@ namespace MxEngine
 		void LoadMipmaps(RawDataPointer* data, size_t mipmaps, int biggestWidth, int biggestHeight, TextureWrap wrap = TextureWrap::REPEAT);
 		void LoadDepth(int width, int height, TextureWrap wrap = TextureWrap::CLAMP_TO_BORDER);
 		void LoadMultisample(int width, int height, TextureFormat format, int samples, TextureWrap wrap = TextureWrap::REPEAT);
-		MxVector<RawData> GetRawTextureData() const;
+		Image GetRawTextureData() const;
 		void GenerateMipmaps();
 		void SetBorderColor(const Vector3& color);
 		bool IsMultisampled() const;

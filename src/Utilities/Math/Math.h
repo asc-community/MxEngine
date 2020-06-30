@@ -117,6 +117,11 @@ namespace MxEngine
 		return glm::perspective(fov, aspect, znear, zfar);
 	}
 
+	inline Matrix4x4 MakeFrustrumMatrix(float left, float right, float bottom, float top, float znear, float zfar)
+	{
+		return glm::frustum(left, right, bottom, top, znear, zfar);
+	}
+
 	inline Matrix4x4 MakeReversedPerspectiveMatrix(float fov, float aspect, float znear, float zfar)
 	{
 		MX_ASSERT(std::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);

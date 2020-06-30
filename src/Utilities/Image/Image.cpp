@@ -26,30 +26,60 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "CameraController.h"
+#include "Image.h"
+#include <memory>
 
 namespace MxEngine
 {
-	class VRCameraController
+	Image::Image(uint8_t* data, size_t width, size_t height, size_t channels)
+		: data(data), width(width), height(height), channels(channels)
 	{
-		MAKE_COMPONENT(VRCameraController);
+	}
 
-		GResource<Shader> shaderVR;
+	Image::~Image()
+	{
+		if (this->data != nullptr)
+			std::free(this->data);
+	}
 
-		void OnUpdate();
-		void UpdateEyes(CameraController::Handle& leftCamera, CameraController::Handle& rightCamera);
-		void Render(GResource<Texture>& target, const GResource<Texture>& leftEye, const GResource<Texture>& rightEye);
-	public:
-		CameraController::Handle LeftEye;
-		CameraController::Handle RightEye;
-		float EyeDistance = 0.1f;
-		float FocusDistance = 10.0f;
+	Image::Image(Image&& other) noexcept
+	{
+		this->data = other.data;
+		this->width = other.width;
+		this->height = other.height;
+		this->channels = other.channels;
+		other.data = nullptr;
+		other.width = other.height = other.channels = 0;
+	}
 
-		VRCameraController() = default;
-		~VRCameraController();
+	Image& Image::operator=(Image&& other) noexcept
+	{
+		this->data = other.data;
+		this->width = other.width;
+		this->height = other.height;
+		this->channels = other.channels;
+		other.data = nullptr;
+		other.width = other.height = other.channels = 0;
+		return *this;
+	}
 
-		void Init();
-	};
+	uint8_t* Image::GetRawData() const
+	{
+		return this->data;
+	}
+
+	size_t Image::GetWidth() const
+	{
+		return this->width;
+	}
+
+	size_t Image::GetHeight() const
+	{
+		return this->height;
+	}
+
+	size_t Image::GetChannels() const
+	{
+		return this->channels;
+	}
 }

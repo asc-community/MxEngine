@@ -68,6 +68,9 @@
 #define MXENGINE_STRING(x) MXENGINE_STRING_IMPL(x)
 #define MAKE_PLATFORM_SHADER(name) MXENGINE_STRING(MXENGINE_CONCAT(MXENGINE_CONCAT(PLATFORM_SHADER_PATH, name), PLATFORM_SHADER_EXTENSION))
 
+#define MXENGINE_MAKE_MOVEONLY(class_name) class_name() = default; class_name(const class_name&) = delete; class_name& operator=(const class_name&) = delete;\
+        class_name(class_name&&) noexcept = default; class_name& operator=(class_name&&) noexcept = default
+
 #if defined(MXENGINE_DEBUG)
     #if defined(MX_ASSERT_EXCEPTION)
             #include <exception>

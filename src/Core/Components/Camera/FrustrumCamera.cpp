@@ -26,30 +26,33 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "CameraController.h"
+#include "FrustrumCamera.h"
 
 namespace MxEngine
 {
-	class VRCameraController
-	{
-		MAKE_COMPONENT(VRCameraController);
+    void FrustrumCamera::SetBounds(float x, float y, float size)
+    {
+        this->SetZoom(size);
+        this->SetProjectionCenter(MakeVector2(x, y));
+        this->SetProjectionMatrix(MakeFrustrumMatrix(
+            x * this->GetAspectRatio(), (x + size) * this->GetAspectRatio(),
+            y, (y + size), this->GetZNear(), this->GetZFar()));
+    }
 
-		GResource<Shader> shaderVR;
+    Vector3 FrustrumCamera::GetBounds() const
+    {
+        auto v = this->GetProjectionCenter();
+        auto s = this->GetZoom();
+        return MakeVector3(v.x, v.y, s);
+    }
 
-		void OnUpdate();
-		void UpdateEyes(CameraController::Handle& leftCamera, CameraController::Handle& rightCamera);
-		void Render(GResource<Texture>& target, const GResource<Texture>& leftEye, const GResource<Texture>& rightEye);
-	public:
-		CameraController::Handle LeftEye;
-		CameraController::Handle RightEye;
-		float EyeDistance = 0.1f;
-		float FocusDistance = 10.0f;
-
-		VRCameraController() = default;
-		~VRCameraController();
-
-		void Init();
-	};
+    void FrustrumCamera::SetProjectionForTile(size_t xTile, size_t yTile, size_t tilesPerRaw, float totalImageSize)
+    {
+        float tileSize = totalImageSize / float(tilesPerRaw);
+        float initialOffsetX = -0.5f * tilesPerRaw * tileSize;
+        float initialOffsetY = -0.5f * tilesPerRaw * tileSize;
+        float x = initialOffsetX + xTile * tileSize;
+        float y = initialOffsetY + yTile * tileSize;
+        this->SetBounds(x, y, tileSize);
+    }
 }

@@ -28,28 +28,30 @@
 
 #pragma once
 
-#include "CameraController.h"
+#include <cstdint>
 
 namespace MxEngine
 {
-	class VRCameraController
+	/*!
+	Image class is a POD type which contains reference to an existing image
+	*/
+	class Image
 	{
-		MAKE_COMPONENT(VRCameraController);
-
-		GResource<Shader> shaderVR;
-
-		void OnUpdate();
-		void UpdateEyes(CameraController::Handle& leftCamera, CameraController::Handle& rightCamera);
-		void Render(GResource<Texture>& target, const GResource<Texture>& leftEye, const GResource<Texture>& rightEye);
+		uint8_t* data;
+		size_t width;
+		size_t height;
+		size_t channels;
 	public:
-		CameraController::Handle LeftEye;
-		CameraController::Handle RightEye;
-		float EyeDistance = 0.1f;
-		float FocusDistance = 10.0f;
+		Image(uint8_t* data, size_t width, size_t height, size_t channels);
+		~Image();
+		Image(const Image&) = delete;
+		Image& operator=(const Image&) = delete;
+		Image(Image&&) noexcept;
+		Image& operator=(Image&&) noexcept;
 
-		VRCameraController() = default;
-		~VRCameraController();
-
-		void Init();
+		uint8_t* GetRawData() const;
+		size_t GetWidth() const;
+		size_t GetHeight() const;
+		size_t GetChannels() const;
 	};
 }

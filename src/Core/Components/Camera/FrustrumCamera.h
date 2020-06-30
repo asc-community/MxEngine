@@ -28,28 +28,15 @@
 
 #pragma once
 
-#include "CameraController.h"
+#include "CameraBase.h"
 
 namespace MxEngine
 {
-	class VRCameraController
+	class FrustrumCamera : public CameraBase
 	{
-		MAKE_COMPONENT(VRCameraController);
-
-		GResource<Shader> shaderVR;
-
-		void OnUpdate();
-		void UpdateEyes(CameraController::Handle& leftCamera, CameraController::Handle& rightCamera);
-		void Render(GResource<Texture>& target, const GResource<Texture>& leftEye, const GResource<Texture>& rightEye);
 	public:
-		CameraController::Handle LeftEye;
-		CameraController::Handle RightEye;
-		float EyeDistance = 0.1f;
-		float FocusDistance = 10.0f;
-
-		VRCameraController() = default;
-		~VRCameraController();
-
-		void Init();
+		void SetBounds(float x, float y, float size);
+		Vector3 GetBounds() const;
+		void SetProjectionForTile(size_t xTile, size_t yTile, size_t tilesPerRaw, float totalImageSize);
 	};
 }
