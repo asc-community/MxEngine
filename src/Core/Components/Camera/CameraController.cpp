@@ -239,6 +239,11 @@ namespace MxEngine
 		this->direction = direction + MakeVector3(0.0f, 0.0f, 0.00001f);
 	}
 
+	Vector3 CameraController::GetDirectionUp() const
+	{
+		return -Cross(this->GetDirection(), this->right);
+	}
+
 	float CameraController::GetHorizontalAngle() const
 	{
 		return this->horizontalAngle;
@@ -329,6 +334,7 @@ namespace MxEngine
 			0.0f,
 			cos(horizontalAngle - HalfPi<float>())
 		);
+
 		return *this;
 	}
 

@@ -31,6 +31,8 @@
     <ClInclude Include="Core\Application\RenderManager.h" />
     <ClInclude Include="Core\BoundingObjects\AABB.h" />
     <ClInclude Include="Core\BoundingObjects\BoundingSphere.h" />
+    <ClInclude Include="Core\BoundingObjects\Cone.h" />
+    <ClInclude Include="Core\BoundingObjects\Frustrum.h" />
     <ClInclude Include="Core\Components\Camera\CameraBase.h" />
     <ClInclude Include="Core\Components\Camera\CameraController.h" />
     <ClInclude Include="Core\Components\Camera\FrustrumCamera.h" />

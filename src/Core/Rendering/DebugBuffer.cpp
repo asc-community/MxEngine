@@ -41,7 +41,7 @@ namespace MxEngine
         VAO->AddBuffer(*this->VBO, *VBL);
     }
 
-    void DebugBuffer::SubmitAABB(const AABB& box, const Vector4& color)
+    void DebugBuffer::Submit(const AABB& box, const Vector4& color)
     {
         this->storage.push_back({ MakeVector3(box.Min.x, box.Min.y, box.Min.z), color });
         this->storage.push_back({ MakeVector3(box.Max.x, box.Min.y, box.Min.z), color });
@@ -119,7 +119,7 @@ namespace MxEngine
         return linesData;
     }
 
-    void DebugBuffer::SubmitSphere(const BoundingSphere& sphere, const Vector4 color)
+    void DebugBuffer::Submit(const BoundingSphere& sphere, const Vector4 color)
     {
         static const auto sphereData = InitializeSphere();
 
@@ -127,6 +127,88 @@ namespace MxEngine
         {
             this->storage.push_back({ sphere.GetRedius() * v * RootThree<float>() + sphere.Center, color });
         }
+    }
+
+    void DebugBuffer::Submit(const Cone& cone, const Vector4& color)
+    {
+        auto normDir = Normalize(cone.Direction);
+        auto direction = normDir * cone.GetLength();
+        auto radius = std::tan(Radians(cone.GetAngle() * 0.5f)) * cone.GetLength();
+
+        Vector3 v{ 0.0f };
+        Vector3 u{ 0.0f };
+        if (direction.y != 0.0f)
+            v = MakeVector3(-normDir.y, normDir.x, 0.0f);
+        else if (direction.z != 0.0f)
+            v = MakeVector3(0.0f, -normDir.z, normDir.y);
+        else
+            v = MakeVector3(-normDir.z, 0.0f, normDir.x);
+
+        v = Normalize(v);
+        u = Normalize(Cross(normDir, v));
+
+        std::array circle = {
+             v,
+             Normalize(2.0f * v / 3.0f + u / 3.0f),
+             Normalize(v / 3.0f + 2.0f * u / 3.0f),
+             u,
+             Normalize(2.0f * u / 3.0f - v / 3.0f),
+             Normalize(u / 3.0f - 2.0f * v / 3.0f),
+             -v,
+             Normalize(-2.0f * v / 3.0f - u / 3.0f),
+             Normalize(-v / 3.0f - 2.0f * u / 3.0f),
+             -u,
+             Normalize(v / 3.0f - 2.0f * u / 3.0f),
+             Normalize(2.0f * v / 3.0f - u / 3.0f),
+        };
+
+        for (auto& point : circle)
+        {
+            point = radius * point + direction + cone.Origin;
+        }
+
+        for (size_t i = 0; i < circle.size(); i += 2)
+        {
+            this->storage.push_back({ cone.Origin, color });
+            this->storage.push_back({ circle[i],   color });
+        }
+        for (size_t i = 1; i < circle.size(); i++)
+        {
+            this->storage.push_back({circle[i - 1], color});
+            this->storage.push_back({circle[i],     color});
+        }
+        this->storage.push_back({ circle.back(),  color });
+        this->storage.push_back({ circle.front(), color });
+    }
+
+    void DebugBuffer::Submit(const Frustrum& frustrum, const Vector4& color)
+    {
+        auto normDir = Normalize(frustrum.Direction);
+        auto normUp = Normalize(frustrum.Up);
+
+        auto normRight = Normalize(Cross(normDir, normUp));
+        auto right = normRight * frustrum.AspectRatio;
+        auto scale = 2.0f;
+
+        std::array plane = {
+           scale * (std::tan(Radians(frustrum.GetAngle() * 0.5f)) * ( 2.0f * right + 2.0f * normUp) + normDir) + frustrum.Origin,
+           scale * (std::tan(Radians(frustrum.GetAngle() * 0.5f)) * ( 2.0f * right - 2.0f * normUp) + normDir) + frustrum.Origin,
+           scale * (std::tan(Radians(frustrum.GetAngle() * 0.5f)) * (-2.0f * right - 2.0f * normUp) + normDir) + frustrum.Origin,
+           scale * (std::tan(Radians(frustrum.GetAngle() * 0.5f)) * (-2.0f * right + 2.0f * normUp) + normDir) + frustrum.Origin,
+        };
+
+        for (size_t i = 0; i < plane.size(); i++)
+        {
+            this->storage.push_back({ frustrum.Origin, color });
+            this->storage.push_back({ plane[i],   color });
+        }
+        for (size_t i = 1; i < plane.size(); i++)
+        {
+            this->storage.push_back({ plane[i - 1], color });
+            this->storage.push_back({ plane[i],     color });
+        }
+        this->storage.push_back({ plane.back(),  color });
+        this->storage.push_back({ plane.front(), color });
     }
 
     void DebugBuffer::ClearBuffer()

@@ -28,6 +28,8 @@
 
 #include "Core/BoundingObjects/AABB.h"
 #include "Core/BoundingObjects/BoundingSphere.h"
+#include "Core/BoundingObjects/Cone.h"
+#include "Core/BoundingObjects/Frustrum.h"
 
 #include "Platform/GraphicAPI.h"
 
@@ -52,8 +54,10 @@ namespace MxEngine
 		bool DrawAsScreenOverlay = false;
 
 		void Init();
-		void SubmitAABB(const AABB& box, const Vector4& color);
-		void SubmitSphere(const BoundingSphere& sphere, const Vector4 color);
+		void Submit(const AABB& box, const Vector4& color);
+		void Submit(const BoundingSphere& sphere, const Vector4 color);
+		void Submit(const Cone& cone, const Vector4& color);
+		void Submit(const Frustrum& frustrum, const Vector4& color);
 		void ClearBuffer(); 
 		void SubmitBuffer();
 		size_t GetSize() const;

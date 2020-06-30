@@ -32,37 +32,26 @@
 
 namespace MxEngine
 {
-    class CameraBase
+    class Frustrum
     {
-    private:
-        float aspectRatio = 16.0f / 9.0f;
-        float zNear = 0.1f;
-        float zFar = 100000.0f;
-        float zoom = 1.0f;
-        Vector2 projectionCenter{ -0.5f };
-        Matrix4x4 view;
-        Matrix4x4 projection;
-        mutable Matrix4x4 matrix;
-        mutable bool updateMatrix = true;
+        Vector3 direction;
+        float angle;
     public:
-        MXENGINE_MAKE_MOVEONLY(CameraBase);
+        Vector3 Origin;
+        Vector3 Direction;
+        Vector3 Up;
+        float AspectRatio;
 
-        mutable bool UpdateProjection = true;
+        Frustrum(const Vector3& origin, const Vector3& direction, const Vector3& up, float angle, float aspect)
+        {
+            this->Origin = origin;
+            this->Direction = direction;
+            this->Up = up;
+            this->AspectRatio = aspect;
+            this->SetAngle(angle);
+        }
 
-        const Matrix4x4& GetMatrix() const;
-        const Matrix4x4& GetProjectionMatrix() const;
-        const Matrix4x4& GetViewMatrix() const;
-        const Vector2& GetProjectionCenter() const;
-        void SetProjectionCenter(const Vector2& center);
-        void SetProjectionMatrix(const Matrix4x4& projection);
-        void SetViewMatrix(const Matrix4x4& view);
-        float GetZoom() const;
-        void SetZoom(float zoom);
-        void SetAspectRatio(float w, float h = 1.0f);
-        float GetAspectRatio() const;
-        float GetZFar() const;
-        void SetZFar(float zFar);
-        float GetZNear() const;
-        void SetZNear(float zNear);
+        void SetAngle(float angle) { this->angle = Clamp(angle, 0.0f, 180.0f); }
+        float GetAngle() const { return this->angle; }
     };
 }

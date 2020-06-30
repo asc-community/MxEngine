@@ -156,7 +156,14 @@ namespace MxEngine::GUI
 		REMOVE_COMPONENT_BUTTON(debugDraw);
 		ImGui::Checkbox("draw bounding box (AABB)", &debugDraw.RenderBoundingBox);
 		ImGui::Checkbox("draw bounding sphere", &debugDraw.RenderBoundingSphere);
-		ImGui::ColorEdit4("render color", &debugDraw.Color[0], ImGuiColorEditFlags_AlphaBar);
+		ImGui::Checkbox("draw light bounds", &debugDraw.RenderLightingBounds);
+		ImGui::Checkbox("draw sound bounds", &debugDraw.RenderSoundBounds);
+		ImGui::Checkbox("draw frustrum bounds", &debugDraw.RenderFrustrumBounds);
+		ImGui::ColorEdit4("bounding box color", &debugDraw.BoundingBoxColor[0], ImGuiColorEditFlags_AlphaBar);
+		ImGui::ColorEdit4("bounding sphere color", &debugDraw.BoundingSphereColor[0], ImGuiColorEditFlags_AlphaBar);
+		ImGui::ColorEdit4("light source color", &debugDraw.LightSourceColor[0], ImGuiColorEditFlags_AlphaBar);
+		ImGui::ColorEdit4("sound source color", &debugDraw.SoundSourceColor[0], ImGuiColorEditFlags_AlphaBar);
+		ImGui::ColorEdit4("frustrum color", &debugDraw.FrustrumColor[0], ImGuiColorEditFlags_AlphaBar);
 	}
 
     void MeshRendererEditor(MeshRenderer& meshRenderer)
@@ -267,9 +274,9 @@ namespace MxEngine::GUI
 
 		ImGui::DragFloat3("direction", &spotLight.Direction[0], 0.01f);
 
-		if (ImGui::DragFloat("outer angle", &outerAngle, 1.0f, 0.0f, 90.0f))
+		if (ImGui::DragFloat("outer angle", &outerAngle))
 			spotLight.UseOuterAngle(outerAngle);
-		if (ImGui::DragFloat("inner angle", &innerAngle, 1.0f, 0.0f, 90.0f))
+		if (ImGui::DragFloat("inner angle", &innerAngle))
 			spotLight.UseInnerAngle(innerAngle);
 
 		auto texture = spotLight.GetDepthTexture();
@@ -325,7 +332,7 @@ namespace MxEngine::GUI
 			auto bounds = cameraController.GetCamera<FrustrumCamera>().GetBounds();
 			if (ImGui::DragFloat2("center", &bounds[0], 0.01f))
 				cameraController.GetCamera<FrustrumCamera>().SetBounds(bounds.x, bounds.y, bounds.z);
-			if (ImGui::DragFloat("size", &bounds.z, 0.01f))
+			if (ImGui::DragFloat("size", &bounds.z, 0.01f, 0.0f, 10000.0f))
 				cameraController.GetCamera<FrustrumCamera>().SetBounds(bounds.x, bounds.y, bounds.z);
 		}
 

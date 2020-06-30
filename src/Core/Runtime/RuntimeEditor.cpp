@@ -82,16 +82,6 @@ namespace MxEngine
 			ImGui::DockSpace(0xFF);
 			ImGui::End();
 
-			this->console->Draw("Developer Console");
-
-			GUI::DrawViewportWindow(cachedWindowSize);
-
-			GUI::DrawRenderEditor();
-
-			ImGui::Begin("Profiling Tools");
-			GUI_TREE_NODE("Profiler", GUI::DrawProfiler());
-			ImGui::End();
-
 			{
 				ImGui::Begin("Object Editor");
 
@@ -136,6 +126,17 @@ namespace MxEngine
 					}
 					ImGui::PopID();
 				}
+
+				this->console->Draw("Developer Console");
+
+				ImGui::Begin("Profiling Tools");
+				GUI_TREE_NODE("Profiler", GUI::DrawProfiler());
+				ImGui::End();
+
+				GUI::DrawViewportWindow(cachedWindowSize);
+
+				GUI::DrawRenderEditor();
+
 				ImGui::End();
 			}
 		}

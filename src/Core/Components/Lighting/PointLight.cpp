@@ -52,6 +52,15 @@ namespace MxEngine
         return this->factors;
     }
 
+    float PointLight::ComputeRadius() const
+    {
+        auto maxLight  = Max(this->DiffuseColor.x, this->DiffuseColor.y, this->DiffuseColor.z);
+        auto constant  = this->factors[0];
+        auto linear    = this->factors[1];
+        auto quadratic = this->factors[2];
+        return -linear + std::sqrtf(linear * linear - 4.0f * quadratic * (constant - (256.0f / 5.0f) * maxLight)) / (2.0f * quadratic);
+    }
+
     GResource<CubeMap> PointLight::GetDepthCubeMap() const
     {
         return this->cubemap;

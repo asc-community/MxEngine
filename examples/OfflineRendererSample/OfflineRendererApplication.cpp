@@ -9,7 +9,7 @@ namespace ProjectTemplate
     class MxApplication : public Application
     {
         // Configure this parameters //
-        VectorInt2 viewportSize{ 640, 360 };
+        VectorInt2 viewportSize{ 7680, 4320 };
         size_t texturesPerRaw = 4;
         float imageSize = 0.2f;
         ///////////////////////////////
@@ -23,7 +23,6 @@ namespace ProjectTemplate
             auto cameraObject = MxObject::Create();
             auto controller = cameraObject->AddComponent<CameraController>();
             controller->SetDirection(Vector3(0.0f, -0.333f, 1.0f));
-            controller->Camera.SetZFar(1000000.0f);
             controller->SetCameraType(CameraType::FRUSTRUM);
             auto skybox = cameraObject->AddComponent<Skybox>();
             skybox->Texture = AssetManager::LoadCubeMap("Resources/dawn.jpg");

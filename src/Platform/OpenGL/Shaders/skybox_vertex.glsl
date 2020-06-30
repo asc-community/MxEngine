@@ -14,7 +14,7 @@ out vec3 TexCoords;
 void main()
 {
     TexCoords = position;
-    vec3 pos = Rotation * position * 100000.0f;
+    vec3 pos = Rotation * position * 10000.0f;
     vec4 screenPos = StaticViewProjection * vec4(pos, 1.0);
     gl_Position = screenPos;
 }

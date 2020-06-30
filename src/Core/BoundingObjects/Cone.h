@@ -32,37 +32,27 @@
 
 namespace MxEngine
 {
-    class CameraBase
+    class Cone
     {
-    private:
-        float aspectRatio = 16.0f / 9.0f;
-        float zNear = 0.1f;
-        float zFar = 100000.0f;
-        float zoom = 1.0f;
-        Vector2 projectionCenter{ -0.5f };
-        Matrix4x4 view;
-        Matrix4x4 projection;
-        mutable Matrix4x4 matrix;
-        mutable bool updateMatrix = true;
+        Vector3 direction;
+        float angle;
+        float length;
     public:
-        MXENGINE_MAKE_MOVEONLY(CameraBase);
+        Vector3 Origin;
+        Vector3 Direction;
 
-        mutable bool UpdateProjection = true;
+        Cone(const Vector3& origin, const Vector3& direction, float length, float angle)
+        {
+            this->Origin = origin;
+            this->Direction = direction;
+            this->SetAngle(angle);
+            this->SetLength(length);
+        }
 
-        const Matrix4x4& GetMatrix() const;
-        const Matrix4x4& GetProjectionMatrix() const;
-        const Matrix4x4& GetViewMatrix() const;
-        const Vector2& GetProjectionCenter() const;
-        void SetProjectionCenter(const Vector2& center);
-        void SetProjectionMatrix(const Matrix4x4& projection);
-        void SetViewMatrix(const Matrix4x4& view);
-        float GetZoom() const;
-        void SetZoom(float zoom);
-        void SetAspectRatio(float w, float h = 1.0f);
-        float GetAspectRatio() const;
-        float GetZFar() const;
-        void SetZFar(float zFar);
-        float GetZNear() const;
-        void SetZNear(float zNear);
+        void SetAngle(float angle) { this->angle = Clamp(angle, 0.0f, 180.0f); }
+        void SetLength(float length) { this->length = Max(0.0f, length); }
+
+        float GetAngle() const { return this->angle; }
+        float GetLength() const { return this->length; }
     };
 }

@@ -189,7 +189,7 @@ vec3 calcSpotLight(vec3 ambient, vec3 diffuse, vec3 specular, SpotLight light, v
 	vec3 Hdir = normalize(lightDir + viewDir);
 	float shadowFactor = CalcShadowFactor2D(fragLightSpace, map_shadow);
 
-	float fragAngle = max(dot(lightDir, normalize(light.direction)), 0.0f);
+	float fragAngle = max(dot(lightDir, normalize(-light.direction)), 0.0f);
 	float epsilon = light.innerAngle - light.outerAngle;
 	float intensity = clamp((fragAngle - light.outerAngle) / epsilon, 0.0f, 1.0f);
 

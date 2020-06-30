@@ -32,12 +32,12 @@ void InitSpotLight(MxObject& object)
     object.Name = "Spot Light";
 
     auto light = object.AddComponent<SpotLight>();
-    light->AmbientColor  = {   1.0f, 1.0f,  1.0f };
-    light->DiffuseColor  = {   1.0f, 1.0f,  1.0f };
-    light->SpecularColor = {   1.0f, 1.0f,  1.0f };
-    light->Direction     = {  -1.0f, 1.3f, -1.0f };
-    light->UseOuterAngle(35.0f);
-    light->UseInnerAngle(15.0f);
+    light->AmbientColor  = { 1.0f,  1.0f, 1.0f };
+    light->DiffuseColor  = { 1.0f,  1.0f, 1.0f };
+    light->SpecularColor = { 1.0f,  1.0f, 1.0f };
+    light->Direction     = { 1.0f, -1.3f, 1.0f };
+    light->UseOuterAngle(70.0f);
+    light->UseInnerAngle(30.0f);
 
     object.AddComponent<MeshSource>(Primitives::CreateCube());
     object.GetOrAddComponent<MeshRenderer>()->GetMaterial()->EmmisiveColor = light->AmbientColor + light->DiffuseColor;

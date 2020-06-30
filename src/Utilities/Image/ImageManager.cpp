@@ -75,6 +75,50 @@ namespace MxEngine
         ImageManager::SaveTexture((MxString)filePath, texture, type);
     }
 
+    void ImageManager::SaveTexture(StringId fileHash, const GResource<Texture>& texture)
+    {
+        ImageManager::SaveTexture(FileManager::GetFilePath(fileHash), texture);
+    }
+
+    void ImageManager::SaveTexture(const FilePath& filepath, const GResource<Texture>& texture)
+    {
+        auto ext = filepath.extension();
+        if (ext == ".png")
+        {
+            ImageManager::SaveTexture(filepath, texture, ImageType::PNG);
+        }
+        else if (ext == ".jpg" || ext == ".jpeg")
+        {
+            ImageManager::SaveTexture(filepath, texture, ImageType::JPG);
+        }
+        else if (ext == ".bmp")
+        {
+            ImageManager::SaveTexture(filepath, texture, ImageType::BMP);
+        }
+        else if (ext == ".tga")
+        {
+            ImageManager::SaveTexture(filepath, texture, ImageType::TGA);
+        }
+        else if (ext == ".hdr")
+        {
+            ImageManager::SaveTexture(filepath, texture, ImageType::HDR);
+        }
+        else
+        {
+            Logger::Instance().Warning("MxEngine::ImageManager", "image was not saved because extenstion was invalid: " + MxString(ext.string().c_str()));
+        }
+    }
+
+    void ImageManager::SaveTexture(const MxString& filePath, const GResource<Texture>& texture)
+    {
+        ImageManager::SaveTexture(filePath.c_str(), texture);
+    }
+
+    void ImageManager::SaveTexture(const char* filePath, const GResource<Texture>& texture)
+    {
+        ImageManager::SaveTexture(MxString(filePath), texture);
+    }
+
     void ImageManager::TakeScreenShot(StringId fileHash, ImageType type)
     {
         ImageManager::TakeScreenShot(FileManager::GetFilePath(fileHash), type);
@@ -101,6 +145,50 @@ namespace MxEngine
         ImageManager::TakeScreenShot((MxString)filePath, type);
     }
 
+    void ImageManager::TakeScreenShot(StringId fileHash)
+    {
+        ImageManager::TakeScreenShot(FileManager::GetFilePath(fileHash));
+    }
+
+    void ImageManager::TakeScreenShot(const FilePath& filePath)
+    {
+        auto ext = filePath.extension();
+        if (ext == ".png")
+        {
+            ImageManager::TakeScreenShot(filePath, ImageType::PNG);
+        }
+        else if (ext == ".jpg" || ext == ".jpeg")
+        {
+            ImageManager::TakeScreenShot(filePath, ImageType::JPG);
+        }
+        else if (ext == ".bmp")
+        {
+            ImageManager::TakeScreenShot(filePath, ImageType::BMP);
+        }
+        else if (ext == ".tga")
+        {
+            ImageManager::TakeScreenShot(filePath, ImageType::TGA);
+        }
+        else if (ext == ".hdr")
+        {
+            ImageManager::TakeScreenShot(filePath, ImageType::HDR);
+        }
+        else
+        {
+            Logger::Instance().Warning("MxEngine::ImageManager", "screenshots was not saved because extenstion was invalid: " + MxString(ext.string().c_str()));
+        }
+    }
+
+    void ImageManager::TakeScreenShot(const MxString& filePath)
+    {
+        ImageManager::TakeScreenShot(filePath.c_str());
+    }
+
+    void ImageManager::TakeScreenShot(const char* filePath)
+    {
+        ImageManager::TakeScreenShot(FilePath(filePath));
+    }
+
     Image ImageManager::CombineImages(ArrayView<Image> images, size_t imagesPerRaw)
     {
         #if defined(MXENGINE_DEBUG)
@@ -118,6 +206,7 @@ namespace MxEngine
         size_t channels = images[0].GetChannels();
 
         auto result = (uint8_t*)std::malloc(width * height * channels * images.size());
+        MX_ASSERT(result != nullptr);
 
         const size_t imagesPerColumn = images.size() / imagesPerRaw;
         const size_t rawWidth = width * channels;
