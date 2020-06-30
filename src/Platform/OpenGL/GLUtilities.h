@@ -28,12 +28,11 @@
 
 #pragma once
 
-#include <string>
+#include "Core/Macro/Macro.h"
 
 #include "Vendors/glew/glew.h"
 #include "Vendors/GLFW/glfw3.h"
 
-#include "Core/Macro/Macro.h"
 
 namespace MxEngine
 {

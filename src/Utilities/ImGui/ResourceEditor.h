@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Core/Resources/ResourceFactory.h"
+#include "Core/Resources/AssetManager.h"
 #include "Core/Components/Lighting/LightBase.h"
 
 namespace MxEngine::GUI

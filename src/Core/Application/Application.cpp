@@ -26,25 +26,25 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include "Core/Macro/Macro.h"
 #include "Application.h"
+
 #include "Platform/GraphicAPI.h"
 #include "Platform/Modules/GraphicModule.h"
-#include "Core/Event/Event.h"
+#include "Platform/AudioAPI.h"
+#include "Platform/Modules/AudioModule.h"
 
-// conditional includes
-#include "Core/Macro/Macro.h"
+#include "Core/Event/Event.h"
+#include "Core/Application/EventManager.h"
 
 #include "Library/Primitives/Colors.h"
 
-#include "Utilities/Logger/Logger.h"
-#include "Utilities/Math/Math.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/FileSystem/FileManager.h"
 #include "Utilities/UUID/UUID.h"
 #include "Utilities/Json/Json.h"
 #include "Utilities/ECS/ComponentFactory.h"
 #include "Utilities/ImGui/ComponentEditor.h"
-#include "Core/Application/EventManager.h"
 
 namespace MxEngine
 {
@@ -387,17 +387,20 @@ namespace MxEngine
 		Application::Set(app);
 
 		FileManager::Init();
+		AudioModule::Init();
 		GraphicModule::Init();
 		UUIDGenerator::Init();
 		GraphicFactory::Init();
 		ComponentFactory::Init();
 		ResourceFactory::Init();
+		AudioFactory::Init();
 		MxObject::Factory::Init();
 	}
 
 	Application::ModuleManager::~ModuleManager()
 	{
 		GraphicModule::Destroy();
+		AudioModule::Destroy();
 		#if defined(MXENGINE_DEBUG)
 		Profiler::Instance().EndSession();
 		#endif
@@ -429,5 +432,7 @@ namespace MxEngine
 		this->GetRuntimeEditor().RegisterComponentEditor("CameraController",   GUI::CameraControllerEditor);
 		this->GetRuntimeEditor().RegisterComponentEditor("VRCameraController", GUI::VRCameraControllerEditor);
 		this->GetRuntimeEditor().RegisterComponentEditor("InputControl",       GUI::InputControlEditor);
+		this->GetRuntimeEditor().RegisterComponentEditor("AudioSource",        GUI::AudioSourceEditor);
+		this->GetRuntimeEditor().RegisterComponentEditor("AudioListener",      GUI::AudioListenerEditor);
 	}
 }

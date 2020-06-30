@@ -115,7 +115,7 @@ namespace MxEngine
 		case GL_DEBUG_SEVERITY_NOTIFICATION: out << "Severity: notification"; break;
 		}
 
-		Logger::Instance().Error("OpenGL", ToMxString(out.str()));
+		Logger::Instance().Error("OpenGL::ErrorHandler", ToMxString(out.str()));
 	}
 
 	template<>

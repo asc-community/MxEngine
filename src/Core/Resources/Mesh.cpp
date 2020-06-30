@@ -32,7 +32,7 @@
 #include "Platform/GraphicAPI.h"
 #include "Utilities/LODGenerator/LODGenerator.h"
 #include "Utilities/Format/Format.h"
-#include "Core/Resources/ResourceFactory.h"
+#include "Core/Resources/AssetManager.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
 
 #include <algorithm>

@@ -32,6 +32,7 @@
 #include "Core/Components/Rendering/MeshSource.h"
 #include "Core/Components/Rendering/MeshLOD.h"
 #include "Core/Components/Rendering/DebugDraw.h"
+#include "Core/Components/Audio/AudioSource.h"
 
 namespace MxEngine
 {
@@ -311,6 +312,7 @@ namespace MxEngine
                 auto spotLight = object.GetComponent<SpotLight>();
                 auto pointLight = object.GetComponent<PointLight>();
                 auto cameraController = object.GetComponent<CameraController>();
+                auto audioSource = object.GetComponent<AudioSource>();
                 AABB box;
                 if (meshSource.IsValid())
                 {
@@ -337,6 +339,19 @@ namespace MxEngine
                 {
                     Cone cone(object.Transform->GetPosition(), spotLight->Direction, 3.0f, spotLight->GetOuterAngle());
                     this->DebugDrawer.Submit(cone, debugDraw.LightSourceColor);
+                }
+                if (debugDraw.RenderSoundBounds && audioSource.IsValid())
+                {
+                    if (audioSource->IsOmnidirectional())
+                    {
+                        BoundingSphere sphere(object.Transform->GetPosition(), 3.0f);
+                        this->DebugDrawer.Submit(sphere, debugDraw.SoundSourceColor);
+                    }
+                    else
+                    {
+                        Cone cone(object.Transform->GetPosition(), audioSource->GetDirection(), 3.0f, audioSource->GetOuterAngle());
+                        this->DebugDrawer.Submit(cone, debugDraw.SoundSourceColor);
+                    }
                 }
                 if (debugDraw.RenderFrustrumBounds && cameraController.IsValid())
                 {

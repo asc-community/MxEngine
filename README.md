@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-7.0.6-red)
+![](https://img.shields.io/badge/version-7.1.0-audio-red)
 ![](https://img.shields.io/badge/license-bsd--3-yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
 <!-- soon! [![Documentation](https://codedocs.xyz/MomoDeve/MxEngine.svg)](https://codedocs.xyz/MomoDeve/MxEngine/) -->
@@ -22,6 +22,8 @@ MxEngine is not a huge framework so multiple third-party libraries are used. Her
 - [Assimp](http://www.assimp.org/) - portable Open Source library to import various well-known 3D model formats
 - [fmt](https://github.com/fmtlib/fmt) - formatting library for modern C++
 - [json](https://github.com/nlohmann/json) - nlohmann's json library for modern C++
+- [miniaudio](https://github.com/dr-soft/miniaudio) - header-only audio file loader collection
+- [OpenAL](https://github.com/kcat/openal-soft) - Ocross-platform, software implementation of the OpenAL 3D audio API
 
 All libraries are included in source code (which compiled automatically as part of engine) or compiled as static libraries and stored in zip folders inside engine repository. If you got troubles linking to libs, consider pulling submodule from github and building it yourself.
 Note that MxEngine may include more additional libraries in further releases. It also uses [Boost library](https://www.boost.org) in its core, but not exposes it to user-code. Engine requires at least C++17-compatable compiler as it depends on some new STL features. All source files are compiled using MSVC through VS2019, as I mainly use this IDE to develop the engine, but in future other compilers will be supported too.
