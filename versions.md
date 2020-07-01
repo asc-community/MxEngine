@@ -138,3 +138,7 @@
 - added new debug draw utilities (frustrum for cameras, cones and spheres for light objects)
 - added Frustrum camera for tiled rendering (alternative to Perspective and Orthographic)
 - added offline renderer sample, showing how to render large image with offline tile rendering
+### 7.2.0
+- audio support added for mp3, ogg, wav and flac files
+- added AudioSource and AudioListener components
+- audio sample with 3D sound example

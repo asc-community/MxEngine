@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Utilities/ECS/Component.h"
-#include "Core/Resources/ResourceFactory.h"
+#include "Core/Resources/AssetManager.h"
 
 namespace MxEngine
 {
@@ -37,7 +37,7 @@ namespace MxEngine
     {
         MAKE_COMPONENT(MeshRenderer);
     public:
-        using MaterialRef = Resource<Material, ResourceFactory>;
+        using MaterialRef = MaterialHandle;
         using MaterialArray = MxVector<MaterialRef>;
 
         MaterialArray Materials;

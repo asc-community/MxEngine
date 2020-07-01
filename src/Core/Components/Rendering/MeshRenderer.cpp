@@ -28,11 +28,11 @@
 
 #include "MeshRenderer.h"
 #include "Utilities/ObjectLoader/ObjectLoader.h"
-#include "Core/Resources/ResourceFactory.h"
+#include "Core/Resources/AssetManager.h"
 
 namespace MxEngine
 {
-	Resource<Material, ResourceFactory> ConvertMaterial(const MaterialInfo& mat, MxHashMap<StringId, GResource<Texture>>& textures)
+	MaterialHandle ConvertMaterial(const MaterialInfo& mat, MxHashMap<StringId, GResource<Texture>>& textures)
 	{
 		auto materialResource = ResourceFactory::Create<Material>();
 		auto& material = *materialResource;

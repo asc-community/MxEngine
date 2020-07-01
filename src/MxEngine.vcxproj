@@ -33,6 +33,8 @@
     <ClInclude Include="Core\BoundingObjects\BoundingSphere.h" />
     <ClInclude Include="Core\BoundingObjects\Cone.h" />
     <ClInclude Include="Core\BoundingObjects\Frustrum.h" />
+    <ClInclude Include="Core\Components\Audio\AudioListener.h" />
+    <ClInclude Include="Core\Components\Audio\AudioSource.h" />
     <ClInclude Include="Core\Components\Camera\CameraBase.h" />
     <ClInclude Include="Core\Components\Camera\CameraController.h" />
     <ClInclude Include="Core\Components\Camera\FrustrumCamera.h" />
@@ -70,16 +72,23 @@
     <ClInclude Include="Core\Rendering\RenderAdaptor.h" />
     <ClInclude Include="Core\Rendering\RenderPipeline.h" />
     <ClInclude Include="Core\Resources\MeshData.h" />
-    <ClInclude Include="Core\Resources\ResourceFactory.h" />
+    <ClInclude Include="Core\Resources\AssetManager.h" />
     <ClInclude Include="Core\Resources\SubMesh.h" />
     <ClInclude Include="Core\Rendering\SkyboxObject.h" />
+    <ClInclude Include="Platform\AudioAPI.h" />
     <ClInclude Include="Platform\GraphicAPI.h" />
+    <ClInclude Include="Platform\Modules\AudioModule.h" />
+    <ClInclude Include="Platform\OpenAL\ALUtilities.h" />
+    <ClInclude Include="Platform\OpenAL\AudioBuffer.h" />
+    <ClInclude Include="Platform\OpenAL\AudioPlayer.h" />
+    <ClInclude Include="Utilities\Audio\SupportedAudioTypes.h" />
     <ClInclude Include="Platform\OpenGL\CubeMap.h" />
     <ClInclude Include="Platform\OpenGL\FrameBuffer.h" />
     <ClInclude Include="Platform\OpenGL\RenderBuffer.h" />
     <ClInclude Include="Platform\Window\InputManager.h" />
     <ClInclude Include="Platform\Window\WindowManager.h" />
     <ClInclude Include="Utilities\AbstractFactory\AbstractFactory.h" />
+    <ClInclude Include="Utilities\Audio\AudioLoader.h" />
     <ClInclude Include="Utilities\ECS\Component.h" />
     <ClInclude Include="Utilities\ECS\ComponentFactory.h" />
     <ClInclude Include="Utilities\ECS\ComponentView.h" />
@@ -365,6 +374,15 @@
     <ClInclude Include="Vendors\json\json_fwd.hpp" />
     <ClInclude Include="Vendors\json\thirdparty\hedley\hedley.hpp" />
     <ClInclude Include="Vendors\json\thirdparty\hedley\hedley_undef.hpp" />
+    <ClInclude Include="Vendors\miniaudio\dr_flac.h" />
+    <ClInclude Include="Vendors\miniaudio\dr_mp3.h" />
+    <ClInclude Include="Vendors\miniaudio\dr_wav.h" />
+    <ClInclude Include="Vendors\OpenAL\al.h" />
+    <ClInclude Include="Vendors\OpenAL\alc.h" />
+    <ClInclude Include="Vendors\OpenAL\alext.h" />
+    <ClInclude Include="Vendors\OpenAL\efx-creative.h" />
+    <ClInclude Include="Vendors\OpenAL\efx-presets.h" />
+    <ClInclude Include="Vendors\OpenAL\efx.h" />
     <ClInclude Include="Vendors\stb\stb_image.h" />
     <ClInclude Include="Vendors\stb\stb_image_write.h" />
     <ClInclude Include="Vendor\chaiscript_windows.hpp">
@@ -374,6 +392,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\Application\RenderManager.cpp" />
+    <ClCompile Include="Core\Components\Audio\AudioListener.cpp" />
+    <ClCompile Include="Core\Components\Audio\AudioSource.cpp" />
     <ClCompile Include="Core\Components\Camera\CameraBase.cpp" />
     <ClCompile Include="Core\Components\Camera\CameraController.cpp" />
     <ClCompile Include="Core\Components\Camera\FrustrumCamera.cpp" />
@@ -399,11 +419,15 @@
     <ClCompile Include="Core\Rendering\RenderAdaptor.cpp" />
     <ClCompile Include="Core\Rendering\RenderController.cpp" />
     <ClCompile Include="Core\Resources\MeshData.cpp" />
-    <ClCompile Include="Core\Resources\ResourceFactory.cpp" />
+    <ClCompile Include="Core\Resources\AssetManager.cpp" />
     <ClCompile Include="Core\Resources\SubMesh.cpp" />
     <ClCompile Include="Core\Rendering\SkyboxObject.cpp" />
     <ClCompile Include="Library\Primitives\Primitives.cpp" />
     <ClCompile Include="Library\Scripting\Python\PythonEngine.cpp" />
+    <ClCompile Include="Platform\Modules\AudioModule.cpp" />
+    <ClCompile Include="Platform\OpenAL\ALUtilities.cpp" />
+    <ClCompile Include="Platform\OpenAL\AudioBuffer.cpp" />
+    <ClCompile Include="Platform\OpenAL\AudioPlayer.cpp" />
     <ClCompile Include="Platform\OpenGL\CubeMap.cpp" />
     <ClCompile Include="Platform\OpenGL\FrameBuffer.cpp" />
     <ClCompile Include="Platform\Modules\GraphicModule.cpp" />
@@ -419,6 +443,7 @@
     <ClCompile Include="Platform\Window\InputManager.cpp" />
     <ClCompile Include="Platform\Window\Window.cpp" />
     <ClCompile Include="Platform\Window\WindowManager.cpp" />
+    <ClCompile Include="Utilities\Audio\AudioLoader.cpp" />
     <ClCompile Include="Utilities\FileSystem\File.cpp" />
     <ClCompile Include="Utilities\FileSystem\FileManager.cpp" />
     <ClCompile Include="Utilities\Image\Image.cpp" />
@@ -457,6 +482,7 @@
     <ClCompile Include="Vendors\imgui\imgui_impl_glfw.cpp" />
     <ClCompile Include="Vendors\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="Vendors\imgui\imgui_widgets.cpp" />
+    <ClInclude Include="Vendors\stb\stb_vorbis.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Platform\OpenGL\Shaders\bloom_fragment.glsl" />

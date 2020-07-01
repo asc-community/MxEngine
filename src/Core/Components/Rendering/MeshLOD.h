@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Utilities/ECS/Component.h"
-#include "Core/Resources/ResourceFactory.h"
+#include "Core/Resources/AssetManager.h"
 #include "MeshSource.h"
 
 namespace MxEngine
@@ -43,7 +43,7 @@ namespace MxEngine
     {
         MAKE_COMPONENT(MeshLOD);
     public:
-        using LODInstance = Resource<Mesh, ResourceFactory>;
+        using LODInstance = MeshHandle;
         using LODIndex = uint8_t;
 
         bool AutoLODSelection = true;

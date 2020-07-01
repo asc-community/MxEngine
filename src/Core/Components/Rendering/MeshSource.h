@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Utilities/ECS/Component.h"
-#include "Core/Resources/ResourceFactory.h"
+#include "Core/Resources/AssetManager.h"
 
 namespace MxEngine
 {
@@ -37,7 +37,7 @@ namespace MxEngine
     {
         MAKE_COMPONENT(MeshSource);
     public:
-        Resource<Mesh, ResourceFactory> Mesh;
+        MeshHandle Mesh;
         bool IsDrawn = true;
 
         MeshSource() : Mesh(ResourceFactory::Create<MxEngine::Mesh>()) { }

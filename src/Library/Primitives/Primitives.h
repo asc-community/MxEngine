@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Utilities/Array/ArrayView.h"
-#include "Core/Resources/ResourceFactory.h"
+#include "Core/Resources/AssetManager.h"
 #include "Utilities/Array/Array2D.h"
 
 namespace MxEngine
@@ -37,7 +37,6 @@ namespace MxEngine
     class Primitives
     {
     public:
-        using MeshHandle = Resource<Mesh, ResourceFactory>;
         using TextureHandle = GResource<Texture>;
 
         static MeshHandle CreateMesh(const AABB& boundingBox, MeshData meshData);

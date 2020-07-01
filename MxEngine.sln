@@ -25,6 +25,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VRCameraSample", "examples\
 		{24ACBC28-FA4F-49D7-9D69-31F578294414} = {24ACBC28-FA4F-49D7-9D69-31F578294414}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SoundSample", "examples\SoundSample\SoundSample.vcxproj", "{481C6BCA-AFDD-41F8-A5E2-7B8D00EE476E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{24ACBC28-FA4F-49D7-9D69-31F578294414} = {24ACBC28-FA4F-49D7-9D69-31F578294414}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -95,6 +100,18 @@ Global
 		{02C5CE5C-CC57-4A8A-B325-AEE8D903AF20}.Shipping|x64.Build.0 = Shipping|x64
 		{02C5CE5C-CC57-4A8A-B325-AEE8D903AF20}.Shipping|x86.ActiveCfg = Shipping|Win32
 		{02C5CE5C-CC57-4A8A-B325-AEE8D903AF20}.Shipping|x86.Build.0 = Shipping|Win32
+		{481C6BCA-AFDD-41F8-A5E2-7B8D00EE476E}.Debug|x64.ActiveCfg = Debug|x64
+		{481C6BCA-AFDD-41F8-A5E2-7B8D00EE476E}.Debug|x64.Build.0 = Debug|x64
+		{481C6BCA-AFDD-41F8-A5E2-7B8D00EE476E}.Debug|x86.ActiveCfg = Debug|Win32
+		{481C6BCA-AFDD-41F8-A5E2-7B8D00EE476E}.Debug|x86.Build.0 = Debug|Win32
+		{481C6BCA-AFDD-41F8-A5E2-7B8D00EE476E}.Release|x64.ActiveCfg = Release|x64
+		{481C6BCA-AFDD-41F8-A5E2-7B8D00EE476E}.Release|x64.Build.0 = Release|x64
+		{481C6BCA-AFDD-41F8-A5E2-7B8D00EE476E}.Release|x86.ActiveCfg = Release|Win32
+		{481C6BCA-AFDD-41F8-A5E2-7B8D00EE476E}.Release|x86.Build.0 = Release|Win32
+		{481C6BCA-AFDD-41F8-A5E2-7B8D00EE476E}.Shipping|x64.ActiveCfg = Shipping|x64
+		{481C6BCA-AFDD-41F8-A5E2-7B8D00EE476E}.Shipping|x64.Build.0 = Shipping|x64
+		{481C6BCA-AFDD-41F8-A5E2-7B8D00EE476E}.Shipping|x86.ActiveCfg = Shipping|Win32
+		{481C6BCA-AFDD-41F8-A5E2-7B8D00EE476E}.Shipping|x86.Build.0 = Shipping|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -49,7 +49,7 @@ namespace MxEngine
             this->SetLength(length);
         }
 
-        void SetAngle(float angle) { this->angle = Clamp(angle, 0.0f, 180.0f); }
+        void SetAngle(float angle) { this->angle = Clamp(angle, 0.0f, 360.0f); }
         void SetLength(float length) { this->length = Max(0.0f, length); }
 
         float GetAngle() const { return this->angle; }

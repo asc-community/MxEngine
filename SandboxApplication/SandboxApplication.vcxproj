@@ -285,6 +285,7 @@
     <ClInclude Include="Gameplay\GridObject.h" />
     <ClInclude Include="Gameplay\Lights.h" />
     <ClInclude Include="Gameplay\SandboxScene.h" />
+    <ClInclude Include="Gameplay\SoundObject.h" />
     <ClInclude Include="Gameplay\SphereObject.h" />
     <ClInclude Include="Gameplay\SurfaceObject.h" />
     <ClInclude Include="Sandbox.h" />
