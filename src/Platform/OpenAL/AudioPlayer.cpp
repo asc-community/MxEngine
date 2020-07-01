@@ -79,9 +79,19 @@ namespace MxEngine
         ALCALL(alSourcei(id, AL_LOOPING, value));
     }
 
+    void AudioPlayer::SetRelative(bool value)
+    {
+        ALCALL(alSourcei(id, AL_SOURCE_RELATIVE, value));
+    }
+
     void AudioPlayer::SetVolume(float volume)
     {
         ALCALL(alSourcef(id, AL_GAIN, volume));
+    }
+
+    void AudioPlayer::SetOuterAngleVolume(float volume)
+    {
+        ALCALL(alSourcef(id, AL_CONE_OUTER_GAIN, volume));
     }
 
     void AudioPlayer::SetOuterAngle(float angle)

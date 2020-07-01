@@ -45,7 +45,6 @@ namespace MxEngine
     AudioData AudioLoader::Load(const MxString& path)
     {
         auto ext = FilePath(path.c_str()).extension();
-        // TODO: clear memory after load and store data in vector containers
         AudioData result;
 
         if (ext == ".wav")

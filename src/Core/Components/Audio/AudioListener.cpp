@@ -22,7 +22,7 @@ namespace MxEngine
         {
             Vector3 orientation[] = {
                 camera->GetDirection(),
-                camera->GetUpVector()
+                camera->GetDirectionUp()
             };
             ALCALL(alListener3f(AL_POSITION, position.x, position.y, position.z));
             ALCALL(alListenerfv(AL_ORIENTATION, &orientation[0][0]));
@@ -36,15 +36,15 @@ namespace MxEngine
         EventManager::AddEventListener(uuid, [self](UpdateEvent& e) mutable { self->OnUpdate(); });
     }
 
-    void AudioListener::SetPlaybackSpeed(float speed)
+    void AudioListener::SetVolume(float volume)
     {
-        this->playbackSpeed = Max(0.001f, speed);
-        ALCALL(alListenerf(AL_GAIN, this->playbackSpeed));
+        this->volume = Max(0.001f, volume);
+        ALCALL(alListenerf(AL_GAIN, this->volume));
     }
 
-    float AudioListener::GetPlaybackSpeed() const
+    float AudioListener::GetVolume() const
     {
-        return this->playbackSpeed;
+        return this->volume;
     }
 
     void AudioListener::SetVelocity(const Vector3& velocity)

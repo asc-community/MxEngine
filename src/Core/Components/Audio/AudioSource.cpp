@@ -53,14 +53,14 @@ namespace MxEngine
         EventManager::RemoveEventListener(this->player.GetUUID());
     }
 
-    void AudioSource::SetSource(const AResource<AudioBuffer>& buffer)
+    void AudioSource::Load(const AResource<AudioBuffer>& buffer)
     {
         this->buffer = buffer;
         if(this->buffer.IsValid())
             player->AttachBuffer(*buffer);
     }
 
-    AResource<AudioBuffer> AudioSource::GetSource() const
+    AResource<AudioBuffer> AudioSource::GetLoadedSource() const
     {
         return this->buffer;
     }
@@ -106,6 +106,12 @@ namespace MxEngine
         this->player->SetLooping(this->isLooping);
     }
 
+    void AudioSource::SetRelative(bool value)
+    {
+        this->isRelative = value;
+        this->player->SetRelative(this->isRelative);
+    }
+
     void AudioSource::SetPlaybackSpeed(float speed)
     {
         this->currentSpeed = Max(speed, 0.001f);
@@ -142,6 +148,12 @@ namespace MxEngine
         this->player->SetInnerAngle(this->innerAngle);
     }
 
+    void AudioSource::SetOuterAngleVolume(float volume)
+    {
+        this->outerAngleVolume = Clamp(volume, 0.0f, 1.0f);
+        this->player->SetOuterAngleVolume(this->outerAngleVolume);
+    }
+
     void AudioSource::SetRollofFactor(float factor)
     {
         this->rollofFactor = Max(0.0f, factor);
@@ -164,6 +176,11 @@ namespace MxEngine
         return this->isPlaying;
     }
 
+    bool AudioSource::IsRelative() const
+    {
+        return this->isRelative;
+    }
+
     float AudioSource::GetVolume() const
     {
         return this->currentVolume;
@@ -172,6 +189,11 @@ namespace MxEngine
     float AudioSource::GetSpeed() const
     {
         return this->currentSpeed;
+    }
+
+    float AudioSource::GetOuterAngleVolume() const
+    {
+        return this->outerAngleVolume;
     }
 
     float AudioSource::GetOuterAngle() const
@@ -192,7 +214,7 @@ namespace MxEngine
 
     bool AudioSource::IsOmnidirectional() const
     {
-        return this->outerAngle >= 180.0f;
+        return this->outerAngle == 360.0f;
     }
 
     const Vector3& AudioSource::GetVelocity() const

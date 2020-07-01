@@ -9,3 +9,4 @@
 #include "SurfaceObject.h"
 #include "CameraObject.h"
 #include "Lights.h"
+#include "SoundObject.h"

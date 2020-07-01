@@ -44,19 +44,21 @@ namespace MxEngine
 		float currentSpeed = 1.0f;
 		Vector3 velocity = MakeVector3(0.0f);
 		Vector3 direction = MakeVector3(0.0f, 0.0f, 1.0f);
+		float outerAngleVolume = 0.0f;
 		float outerAngle = 360.0f;
 		float innerAngle = 360.0f;
 		float rollofFactor = 1.0f;
 		float referenceDistance = 1.0f;
 		bool isLooping = false;
 		bool isPlaying = false;
+		bool isRelative = false;
 	public:
 		void OnUpdate();
 		void Init();
 		~AudioSource();
 
-		void SetSource(const AResource<AudioBuffer>& buffer);
-		AResource<AudioBuffer> GetSource() const;
+		void Load(const AResource<AudioBuffer>& buffer);
+		AResource<AudioBuffer> GetLoadedSource() const;
 
 		void Play();
 		void Stop();
@@ -65,19 +67,23 @@ namespace MxEngine
 		void Replay();
 		void SetVolume(float volume);
 		void SetLooping(bool value);
+		void SetRelative(bool value);
 		void SetPlaybackSpeed(float speed);
 		void SetVelocity(const Vector3& velocity);
 		void SetDirection(const Vector3& direction);
 		void SetOuterAngle(float angle);
 		void SetInnerAngle(float angle);
+		void SetOuterAngleVolume(float volume);
 		void SetRollofFactor(float factor);
 		void SetReferenceDistance(float distance);
 		void MakeOmnidirectional();
 		bool IsOmnidirectional() const;
 		bool IsLooping() const;
 		bool IsPlaying() const;
+		bool IsRelative() const;
 		float GetVolume() const;
 		float GetSpeed() const;
+		float GetOuterAngleVolume() const;
 		float GetOuterAngle() const;
 		float GetInnerAngle() const;
 		const Vector3& GetVelocity() const;

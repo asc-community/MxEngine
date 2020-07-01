@@ -76,7 +76,7 @@ namespace MxEngine
         auto audio = AudioLoader::Load(path);
         if (audio.data != nullptr)
         {
-            this->nativeFormat = AL_FORMAT_STEREO16;
+            this->nativeFormat = AL_FORMAT_MONO16;
             switch (audio.channels)
             {
             case 1:
@@ -84,6 +84,7 @@ namespace MxEngine
                 break;
             case 2:
                 this->nativeFormat = AL_FORMAT_STEREO16;
+                Logger::Instance().Warning("MxEngine::AudioLoader", "stereo format audio cannot produce 3D sound, probably you need to convert it to mono");
                 break;
             }
             this->channels = (uint8_t)audio.channels;

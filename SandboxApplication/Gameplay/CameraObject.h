@@ -4,6 +4,7 @@ void InitCamera(MxObject& object)
 {	
 	object.Name = "Camera";
 
+	auto listener = object.AddComponent<AudioListener>();
 	auto controller = object.AddComponent<CameraController>();
 	auto skybox = object.AddComponent<Skybox>();
 	auto input = object.AddComponent<InputControl>();
@@ -13,7 +14,6 @@ void InitCamera(MxObject& object)
 	controller->Camera.SetAspectRatio(WindowManager::GetWidth(), WindowManager::GetHeight());
 
 	controller->SetMoveSpeed(5.0f);
-	controller->SetRotateSpeed(5.0f);
 	controller->ListenWindowResizeEvent();
 	input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
 	input->BindRotation();

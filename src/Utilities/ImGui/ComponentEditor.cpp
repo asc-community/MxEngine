@@ -486,10 +486,10 @@ namespace MxEngine::GUI
 
 		if (ImGui::TreeNode("source"))
 		{
-			auto source = audioSource.GetSource();
+			auto source = audioSource.GetLoadedSource();
 			static MxString path;
 			if (GUI::InputTextOnClick(nullptr, path, 128, "load audio"))
-				audioSource.SetSource(AssetManager::LoadAudio(path));
+				audioSource.Load(AssetManager::LoadAudio(path));
 
 
 			if (!source.IsValid())
@@ -502,7 +502,7 @@ namespace MxEngine::GUI
 				ImGui::Text("native format: %d", (int)source->GetNativeFormat());
 				ImGui::Text("audio format: %s", EnumToString(source->GetAudioType()));
 				ImGui::Text("channel count: %d", (int)source->GetChannelCount());
-				ImGui::Text("length (seconds): %d", (int)(source->GetSize() / source->GetFrequency()));
+				ImGui::Text("size in samples: %d", (int)source->GetSize());
 				ImGui::Text("sampling frequency: %d", (int)source->GetFrequency());
 				ImGui::Text("buffer size: %d", (int)source->GetSize());
 
@@ -513,9 +513,11 @@ namespace MxEngine::GUI
 
 		auto isLooping = audioSource.IsLooping();
 		auto isPlaying = audioSource.IsPlaying();
+		auto isRelative = audioSource.IsRelative();
 		auto omnidirectional = audioSource.IsOmnidirectional();
 		auto volume = audioSource.GetVolume();
 		auto speed = audioSource.GetSpeed();
+		auto coneVolume = audioSource.GetOuterAngleVolume();
 		auto velocity = audioSource.GetVelocity();
 		auto direction = audioSource.GetDirection();
 		auto outerAngle = audioSource.GetOuterAngle();
@@ -527,6 +529,9 @@ namespace MxEngine::GUI
 
 		if (ImGui::Checkbox("is looping", &isLooping))
 			audioSource.SetLooping(isLooping);
+
+		if (ImGui::Checkbox("is relative", &isRelative))
+			audioSource.SetRelative(isRelative);
 
 		if (ImGui::Button("make omnidirectional"))
 			audioSource.MakeOmnidirectional();
@@ -566,6 +571,9 @@ namespace MxEngine::GUI
 
 		if (ImGui::TreeNode("other settings"))
 		{
+			if (ImGui::DragFloat("outer angle volume", &coneVolume))
+				audioSource.SetOuterAngleVolume(coneVolume);
+
 			if (ImGui::DragFloat("rollof factor", &rollofFactor))
 				audioSource.SetRollofFactor(rollofFactor);
 
@@ -580,13 +588,13 @@ namespace MxEngine::GUI
 		TREE_NODE_PUSH("AudioListener");
 		REMOVE_COMPONENT_BUTTON(audioListener);
 
-		auto playbackSpeed = audioListener.GetPlaybackSpeed();
+		auto volume = audioListener.GetVolume();
 		auto velocity = audioListener.GetVelocity();
 		auto soundSpeed = audioListener.GetSoundSpeed();
 		auto dopplerFactor = audioListener.GetDopplerFactor();
 
-		if (ImGui::DragFloat("playback speed", &playbackSpeed, 0.001f))
-			audioListener.SetPlaybackSpeed(playbackSpeed);
+		if (ImGui::DragFloat("volume", &volume, 0.001f))
+			audioListener.SetVolume(volume);
 
 		if (ImGui::DragFloat3("velocity", &velocity[0]))
 			audioListener.SetVelocity(velocity);

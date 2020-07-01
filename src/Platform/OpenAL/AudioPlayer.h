@@ -45,7 +45,9 @@ namespace MxEngine
         void Pause() const;
         void Reset() const;
         void SetLooping(bool value);
+        void SetRelative(bool value);
         void SetVolume(float volume);
+        void SetOuterAngleVolume(float volume);
         void SetOuterAngle(float angle);
         void SetInnerAngle(float angle);
         void SetVelocity(float x, float y, float z);

@@ -48,7 +48,7 @@ namespace MxEngine
     {
         MAKE_COMPONENT(AudioListener);
 
-        float playbackSpeed = 1.0f;
+        float volume = 1.0f;
         Vector3 velocity{ 0.0f, 0.0f, 0.0f };
         float soundSpeed = 343.3f;
         float dopplerFactor = 1.0f;
@@ -58,13 +58,13 @@ namespace MxEngine
         void OnUpdate();
         void Init();
 
-        void SetPlaybackSpeed(float speed);
+        void SetVolume(float speed);
         void SetVelocity(const Vector3& velocity);
         void SetSoundSpeed(float value);
         void SetDopplerFactor(float factor);
         void SetSoundModel(SoundModel model);
 
-        float GetPlaybackSpeed() const; 
+        float GetVolume() const; 
         const Vector3& GetVelocity() const;
         float GetSoundSpeed() const;
         float GetDopplerFactor() const;
