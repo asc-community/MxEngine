@@ -43,6 +43,8 @@ namespace MxEngine
     {
         this->player = AudioFactory::Create<AudioPlayer>();
         this->SetDirection(this->GetDirection());
+        if (this->buffer.IsValid())
+            this->player->AttachBuffer(*this->buffer);
 
         auto self = MxObject::GetComponentHandle(*this);
         EventManager::AddEventListener(this->player.GetUUID(), [self](UpdateEvent&) mutable { self->OnUpdate(); });
@@ -51,6 +53,11 @@ namespace MxEngine
     AudioSource::~AudioSource()
     {
         EventManager::RemoveEventListener(this->player.GetUUID());
+    }
+
+    AudioSource::AudioSource(const AResource<AudioBuffer>& buffer)
+    {
+        this->buffer = buffer;
     }
 
     void AudioSource::Load(const AResource<AudioBuffer>& buffer)

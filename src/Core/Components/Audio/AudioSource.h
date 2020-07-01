@@ -56,6 +56,8 @@ namespace MxEngine
 		void OnUpdate();
 		void Init();
 		~AudioSource();
+		AudioSource() = default;
+		AudioSource(const AResource<AudioBuffer>& buffer);
 
 		void Load(const AResource<AudioBuffer>& buffer);
 		AResource<AudioBuffer> GetLoadedSource() const;

@@ -6,6 +6,6 @@ void InitSound(MxObject& object)
     auto audio = object.AddComponent<AudioSource>();
     auto debug = object.AddComponent<DebugDraw>();
     debug->RenderSoundBounds = true;
-    audio->Load(AssetManager::LoadAudio(R"(D:\repos\MxEngineAudio\Audio\res\test.mp3)"));
+    audio->Load(AssetManager::LoadAudio("sounds/never-gonna-give-you-up.mp3"_id));
     audio->Play();
 }
