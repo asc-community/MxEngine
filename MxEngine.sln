@@ -5,22 +5,22 @@ VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MxEngine", "src\MxEngine.vcxproj", "{24ACBC28-FA4F-49D7-9D69-31F578294414}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SandboxApplication", "SandboxApplication\SandboxApplication.vcxproj", "{B519E02C-F17F-40BF-A5DE-2FBD7B8B7AC9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SandboxApplication", "samples\SandboxApplication\SandboxApplication.vcxproj", "{B519E02C-F17F-40BF-A5DE-2FBD7B8B7AC9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{24ACBC28-FA4F-49D7-9D69-31F578294414} = {24ACBC28-FA4F-49D7-9D69-31F578294414}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectTemplate", "examples\ProjectTemplate\ProjectTemplate.vcxproj", "{0825AD39-8252-462B-AF7E-E7FAF8161FC6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProjectTemplate", "samples\ProjectTemplate\ProjectTemplate.vcxproj", "{0825AD39-8252-462B-AF7E-E7FAF8161FC6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{24ACBC28-FA4F-49D7-9D69-31F578294414} = {24ACBC28-FA4F-49D7-9D69-31F578294414}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfflineRendererSample", "examples\OfflineRendererSample\OfflineRendererSample.vcxproj", "{35483F85-A2CD-4F6C-9877-62EA4B7433B1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfflineRendererSample", "samples\OfflineRendererSample\OfflineRendererSample.vcxproj", "{35483F85-A2CD-4F6C-9877-62EA4B7433B1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{24ACBC28-FA4F-49D7-9D69-31F578294414} = {24ACBC28-FA4F-49D7-9D69-31F578294414}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VRCameraSample", "examples\VRCameraSample\VRCameraSample.vcxproj", "{02C5CE5C-CC57-4A8A-B325-AEE8D903AF20}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VRCameraSample", "samples\VRCameraSample\VRCameraSample.vcxproj", "{02C5CE5C-CC57-4A8A-B325-AEE8D903AF20}"
 	ProjectSection(ProjectDependencies) = postProject
 		{24ACBC28-FA4F-49D7-9D69-31F578294414} = {24ACBC28-FA4F-49D7-9D69-31F578294414}
 	EndProjectSection
