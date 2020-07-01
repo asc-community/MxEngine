@@ -70,7 +70,7 @@ namespace MxEngine
 		float exposure = 1.0f;
 		float bloomWeight = 0.5f;
 		float moveSpeed = 1.0f;
-		float rotateSpeed = 1.0f;
+		float rotateSpeed = 10.0f;
 
 		void SubmitMatrixProjectionChanges() const;
 

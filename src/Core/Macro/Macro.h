@@ -18,19 +18,22 @@
     #define MXENGINE_DEBUG
 #endif
 
-// at least one must be defined:
+// graphic api
 #define MXENGINE_USE_OPENGL
-// #define MXENGINE_USE_DIRECTX // not supported
-// #define MXENGINE_USE_VULKAN  // not supported
 
-// scripting (optional):
+// audio api
+#define MXENGINE_USE_OPENAL
+
+// scripting
 #define MXENGINE_USE_PYTHON
 
 // assert handling 
 #define MX_ASSERT_EXCEPTION
 
-// required in engine source:
+// engine code subsystems
 #define MXENGINE_USE_BOOST
+
+// model loader
 #define MXENGINE_USE_ASSIMP
 
 #pragma comment(lib, "MxEngine.lib")
@@ -43,6 +46,10 @@
 
     #define PLATFORM_SHADER_PATH Platform/OpenGL/Shaders/
     #define PLATFORM_SHADER_EXTENSION .glsl
+#endif
+
+#if defined(MXENGINE_USE_OPENAL)
+    #pragma comment(lib, "OpenAL32.lib")
 #endif
 
 #if defined(MXENGINE_USE_ASSIMP)

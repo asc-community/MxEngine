@@ -32,7 +32,7 @@
 #include "Core/Application/Application.h"
 #include "Utilities/FileSystem/FileManager.h"
 #include "Utilities/ECS/ComponentFactory.h"
-#include "Core/Resources/ResourceFactory.h"
+#include "Core/Resources/AssetManager.h"
 
 namespace MxEngine
 {

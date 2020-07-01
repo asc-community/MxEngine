@@ -28,3 +28,9 @@
 [submodule "submodules/EABase"]
 	path = submodules/EABase
 	url = https://github.com/electronicarts/EABase
+[submodule "submodules/miniaudio"]
+	path = submodules/miniaudio
+	url = https://github.com/dr-soft/miniaudio
+[submodule "submodules/openal-soft"]
+	path = submodules/openal-soft
+	url = https://github.com/kcat/openal-soft

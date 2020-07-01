@@ -2,7 +2,7 @@
 
 namespace MxEngine
 {
-    Resource<Mesh, ResourceFactory> Primitives::CreateMesh(const AABB& boundingBox, MeshData meshData)
+    MeshHandle Primitives::CreateMesh(const AABB& boundingBox, MeshData meshData)
     {
         auto mesh = ResourceFactory::Create<Mesh>();
 
@@ -19,7 +19,7 @@ namespace MxEngine
         return mesh;
     }
 
-    Primitives::MeshHandle Primitives::CreateCube()
+    MeshHandle Primitives::CreateCube()
     {
         MeshData meshData;
         AABB aabb{ MakeVector3(-0.5f), MakeVector3(0.5f) };
@@ -92,7 +92,7 @@ namespace MxEngine
         return Primitives::CreateMesh(aabb, std::move(meshData));
     }
 
-    Primitives::MeshHandle Primitives::CreatePlane(size_t size)
+    MeshHandle Primitives::CreatePlane(size_t size)
     {
         MeshData meshData;
 
@@ -132,7 +132,7 @@ namespace MxEngine
         return Primitives::CreateMesh(aabb, std::move(meshData));
     }
 
-    Primitives::MeshHandle Primitives::CreateSphere(size_t polygons)
+    MeshHandle Primitives::CreateSphere(size_t polygons)
     {
         MeshData meshData;
         AABB aabb{ MakeVector3(-1.0f), MakeVector3(1.0f) };
@@ -188,7 +188,7 @@ namespace MxEngine
         return Primitives::CreateMesh(aabb, std::move(meshData));
     }
 
-    Primitives::MeshHandle Primitives::CreateSurface(const Array2D<float>& heights)
+    MeshHandle Primitives::CreateSurface(const Array2D<float>& heights)
     {
         MeshData meshData;
 

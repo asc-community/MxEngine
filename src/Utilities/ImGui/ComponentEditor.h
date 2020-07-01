@@ -47,4 +47,6 @@ namespace MxEngine::GUI
 	void CameraControllerEditor(CameraController& camera);
 	void VRCameraControllerEditor(VRCameraController& vrCameraController);
 	void InputControlEditor(InputControl& inputControl);
+	void AudioSourceEditor(AudioSource& audioSource);
+	void AudioListenerEditor(AudioListener& audioListener);
 }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <MxEngine.h>
-#include <Library/Primitives/Colors.h>
 
 namespace ProjectTemplate
 {

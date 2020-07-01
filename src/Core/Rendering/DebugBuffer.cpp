@@ -131,9 +131,10 @@ namespace MxEngine
 
     void DebugBuffer::Submit(const Cone& cone, const Vector4& color)
     {
-        auto normDir = Normalize(cone.Direction);
-        auto direction = normDir * cone.GetLength();
         auto radius = std::tan(Radians(cone.GetAngle() * 0.5f)) * cone.GetLength();
+        auto normDir = Normalize(cone.Direction);
+        if (cone.GetAngle() > 180.0f) normDir = -normDir;   
+        auto direction = normDir * cone.GetLength();
 
         Vector3 v{ 0.0f };
         Vector3 u{ 0.0f };
