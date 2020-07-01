@@ -502,10 +502,9 @@ namespace MxEngine::GUI
 				ImGui::Text("native format: %d", (int)source->GetNativeFormat());
 				ImGui::Text("audio format: %s", EnumToString(source->GetAudioType()));
 				ImGui::Text("channel count: %d", (int)source->GetChannelCount());
-				ImGui::Text("size in samples: %d", (int)source->GetSize());
+				ImGui::Text("length (in seconds): %d", int(source->GetSampleCount()) / (source->GetFrequency()));
+				ImGui::Text("sample count: %d", (int)source->GetSampleCount());
 				ImGui::Text("sampling frequency: %d", (int)source->GetFrequency());
-				ImGui::Text("buffer size: %d", (int)source->GetSize());
-
 				ImGui::Text("path to file: %s", source->GetFilePath().c_str());
 			}							  
 			ImGui::TreePop();
@@ -525,14 +524,16 @@ namespace MxEngine::GUI
 		auto rollofFactor = audioSource.GetRollofFactor();
 		auto referenceDistance = audioSource.GetReferenceDistance();
 		
-		ImGui::Text("is omnidirectional: %s", BOOL_STRING(omnidirectional));
 
 		if (ImGui::Checkbox("is looping", &isLooping))
 			audioSource.SetLooping(isLooping);
-
+		ImGui::SameLine();
 		if (ImGui::Checkbox("is relative", &isRelative))
 			audioSource.SetRelative(isRelative);
 
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("is omnidirectional: %s", BOOL_STRING(omnidirectional));
+		ImGui::SameLine();
 		if (ImGui::Button("make omnidirectional"))
 			audioSource.MakeOmnidirectional();
 

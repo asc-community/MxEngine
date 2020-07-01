@@ -52,7 +52,7 @@ namespace MxEngine
         this->filepath = std::move(other.filepath);
         this->channels = other.channels;
         this->type = other.type;
-        this->size = other.size;
+        this->sampleCount = other.sampleCount;
         this->frequency = other.frequency;
         this->nativeFormat = other.nativeFormat;
         other.id = 0;
@@ -64,7 +64,7 @@ namespace MxEngine
         this->filepath = std::move(other.filepath);
         this->channels = other.channels;
         this->type = other.type;
-        this->size = other.size;
+        this->sampleCount = other.sampleCount;
         this->frequency = other.frequency;
         this->nativeFormat = other.nativeFormat;
         other.id = 0;
@@ -76,22 +76,20 @@ namespace MxEngine
         auto audio = AudioLoader::Load(path);
         if (audio.data != nullptr)
         {
-            this->nativeFormat = AL_FORMAT_MONO16;
-            switch (audio.channels)
+            if (audio.channels != 1)
             {
-            case 1:
-                this->nativeFormat = AL_FORMAT_MONO16;
-                break;
-            case 2:
-                this->nativeFormat = AL_FORMAT_STEREO16;
-                Logger::Instance().Warning("MxEngine::AudioLoader", "stereo format audio cannot produce 3D sound, probably you need to convert it to mono");
-                break;
+                auto copy = audio;
+                audio = AudioLoader::ConvertToMono(audio);
+                AudioLoader::Free(copy);
             }
+
+            this->nativeFormat = AL_FORMAT_MONO16;
             this->channels = (uint8_t)audio.channels;
             this->frequency = audio.frequency;
             this->type = audio.type;
+            this->sampleCount = audio.sampleCount;
             this->filepath = path;
-            ALCALL(alBufferData(id, (ALenum)this->nativeFormat, audio.data, (ALsizei)audio.size, (ALsizei)audio.frequency));
+            ALCALL(alBufferData(id, (ALenum)this->nativeFormat, audio.data, ALsizei(audio.sampleCount * sizeof(int16_t)), (ALsizei)audio.frequency));
 
             AudioLoader::Free(audio);
         }
@@ -121,9 +119,9 @@ namespace MxEngine
         return this->nativeFormat;
     }
 
-    size_t AudioBuffer::GetSize() const
+    size_t AudioBuffer::GetSampleCount() const
     {
-        return this->size;
+        return this->sampleCount;
     }
 
     AudioType AudioBuffer::GetAudioType() const

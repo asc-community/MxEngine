@@ -37,7 +37,7 @@ namespace MxEngine
     {
         int16_t* data = nullptr;
         AudioType type = AudioType::WAV;
-        size_t size = 0;
+        size_t sampleCount = 0;
         size_t channels = 0;
         size_t frequency = 0;
     };
@@ -46,6 +46,7 @@ namespace MxEngine
     {
     public:
         static AudioData Load(const MxString& path);
-        static void Free(AudioData& data);
+        static AudioData ConvertToMono(AudioData& audio);
+        static void Free(AudioData& audio);
     };
 }

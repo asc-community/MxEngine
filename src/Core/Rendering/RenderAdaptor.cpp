@@ -342,15 +342,18 @@ namespace MxEngine
                 }
                 if (debugDraw.RenderSoundBounds && audioSource.IsValid())
                 {
-                    if (audioSource->IsOmnidirectional())
+                    if (!audioSource->IsRelative())
                     {
-                        BoundingSphere sphere(object.Transform->GetPosition(), 3.0f);
-                        this->DebugDrawer.Submit(sphere, debugDraw.SoundSourceColor);
-                    }
-                    else
-                    {
-                        Cone cone(object.Transform->GetPosition(), audioSource->GetDirection(), 3.0f, audioSource->GetOuterAngle());
-                        this->DebugDrawer.Submit(cone, debugDraw.SoundSourceColor);
+                        if (audioSource->IsOmnidirectional())
+                        {
+                            BoundingSphere sphere(object.Transform->GetPosition(), 3.0f);
+                            this->DebugDrawer.Submit(sphere, debugDraw.SoundSourceColor);
+                        }
+                        else
+                        {
+                            Cone cone(object.Transform->GetPosition(), audioSource->GetDirection(), 3.0f, audioSource->GetOuterAngle());
+                            this->DebugDrawer.Submit(cone, debugDraw.SoundSourceColor);
+                        }
                     }
                 }
                 if (debugDraw.RenderFrustrumBounds && cameraController.IsValid())

@@ -57,7 +57,7 @@ namespace MxEngine
                 return result;
 
             result.data = pSampleData;
-            result.size = size_t(totalPCMFrameCount * sizeof(uint16_t) * channels);
+            result.sampleCount = size_t(totalPCMFrameCount * channels);
             result.channels = channels;
             result.frequency = sampleRate;
             result.type = AudioType::WAV;
@@ -71,7 +71,7 @@ namespace MxEngine
                 return result;
 
             result.data = pSampleData;
-            result.size = size_t(totalPCMFrameCount * sizeof(uint16_t) * config.channels);
+            result.sampleCount = size_t(totalPCMFrameCount * config.channels);
             result.channels = config.channels;
             result.frequency = config.sampleRate;
             result.type = AudioType::MP3;
@@ -86,7 +86,7 @@ namespace MxEngine
                 return result;
 
             result.data = pSampleData;
-            result.size = size_t(totalPCMFrameCount * sizeof(uint16_t) * channels);
+            result.sampleCount = size_t(totalPCMFrameCount * channels);
             result.channels = channels;
             result.frequency = sampleRate;
             result.type = AudioType::FLAC;
@@ -96,7 +96,8 @@ namespace MxEngine
             int channels;
             int rate;
             short* pSampleData;
-            result.size = stb_vorbis_decode_filename(path.c_str(), &channels, &rate, &pSampleData);
+            int size = stb_vorbis_decode_filename(path.c_str(), &channels, &rate, &pSampleData);
+            result.sampleCount = size / sizeof(int16_t);
             result.data = pSampleData;
             result.channels = channels;
             result.frequency = rate;
@@ -105,6 +106,26 @@ namespace MxEngine
         else
         {
             Logger::Instance().Warning("MxEngine::AudioLoader", "file was not loaded as extension is unknown: " + ToMxString(ext));
+        }
+        return result;
+    }
+
+    AudioData AudioLoader::ConvertToMono(AudioData& audio)
+    {
+        AudioData result;
+
+        result.sampleCount = audio.sampleCount / audio.channels;
+        result.data = (int16_t*)std::malloc(result.sampleCount * sizeof(int16_t));
+        result.channels = 1;
+        result.frequency = audio.frequency;
+        result.type = audio.type;
+        MX_ASSERT(audio.data != nullptr);
+
+        for (size_t i = 0, j = 0; i < audio.sampleCount; i += 2, j++)
+        {
+            auto left = audio.data[i];
+            auto right = audio.data[i + 1];
+            result.data[j] = (int(left) + int(right)) / 2;
         }
         return result;
     }

@@ -42,7 +42,7 @@ namespace MxEngine
         uint8_t channels = 0;
         AudioType type = AudioType::WAV;
         size_t frequency = 0;
-        size_t size = 0;
+        size_t sampleCount = 0;
         size_t nativeFormat = 0;
     public:
         AudioBuffer();
@@ -57,7 +57,7 @@ namespace MxEngine
         size_t GetChannelCount() const;
         size_t GetFrequency() const;
         size_t GetNativeFormat() const;
-        size_t GetSize() const;
+        size_t GetSampleCount() const;
         AudioType GetAudioType() const;
         const MxString& GetFilePath() const;
     };
