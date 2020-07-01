@@ -132,17 +132,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("MxEngine::OnUpdate");
 		UpdateEvent updateEvent(this->timeDelta);
 		EventManager::Invoke(updateEvent);
-		{
-			MAKE_SCOPE_PROFILER("MxObjects::OnUpdate");
-			auto objects = MxObject::GetObjects();
-			for (auto& object : objects)
-			{
-				auto behaviour = object.GetComponent<Behaviour>();
-				if (behaviour.IsValid()) behaviour.GetUnchecked()->InvokeUpdate(timeDelta);
-				auto instances = object.GetComponent<InstanceFactory>();
-				if (instances.IsValid()) instances->SubmitInstances();
-			}
-		}
+
 		{
 			MAKE_SCOPE_PROFILER("Application::OnUpdate");
 			this->OnUpdate();
@@ -201,9 +191,9 @@ namespace MxEngine
 		else
 		{
 			config["renderer"]["opengl-profile"] = "core";
-			config["renderer"]["opengl-major-version"] = 4;
+			config["renderer"]["opengl-major-version"] = 4; //-V112
 			config["renderer"]["opengl-minor-version"] = 0;
-			config["renderer"]["msaa-samples"] = 4;
+			config["renderer"]["msaa-samples"] = 4; //-V112
 			config["renderer"]["anisothropic-filtering"] = 16;
 			config["renderer"]["debug-line-width"] = 3;
 
@@ -313,7 +303,7 @@ namespace MxEngine
 			MAKE_SCOPE_PROFILER("Application::Run");
 			MAKE_SCOPE_TIMER("MxEngine::Application", "Application::Run()");
 			Logger::Instance().Debug("MxEngine::Application", "starting main loop...");
-			while (this->GetWindow().IsOpen())
+			while (this->GetWindow().IsOpen()) //-V807
 			{
 				fpsCounter++;
 				const float now = Time::Current();
@@ -415,24 +405,25 @@ namespace MxEngine
 		EventManager::AddEventListener("DeveloperConsole",
 			[this](UpdateEvent&) { this->GetRuntimeEditor().OnRender(); });
 
-		this->GetRuntimeEditor().ExecuteScript("InitializeOpenGL()");
+		auto& editor = this->GetRuntimeEditor();
+		editor.ExecuteScript("InitializeOpenGL()");
 
-		this->GetRuntimeEditor().RegisterComponentEditor("Transform",          GUI::TransformEditor);
-		this->GetRuntimeEditor().RegisterComponentEditor("Behaviour",          GUI::BehaviourEditor);
-		this->GetRuntimeEditor().RegisterComponentEditor("Script",             GUI::ScriptEditor);
-		this->GetRuntimeEditor().RegisterComponentEditor("InstanceFactory",    GUI::InstanceFactoryEditor);
-		this->GetRuntimeEditor().RegisterComponentEditor("Skybox",             GUI::SkyboxEditor);
-		this->GetRuntimeEditor().RegisterComponentEditor("DebugDraw",          GUI::DebugDrawEditor);
-		this->GetRuntimeEditor().RegisterComponentEditor("MeshRenderer",       GUI::MeshRendererEditor);
-		this->GetRuntimeEditor().RegisterComponentEditor("MeshSource",         GUI::MeshSourceEditor);
-		this->GetRuntimeEditor().RegisterComponentEditor("MeshLOD",            GUI::MeshLODEditor);
-		this->GetRuntimeEditor().RegisterComponentEditor("DirectionalLight",   GUI::DirectionalLightEditor);
-		this->GetRuntimeEditor().RegisterComponentEditor("PointLight",         GUI::PointLightEditor);
-		this->GetRuntimeEditor().RegisterComponentEditor("SpotLight",          GUI::SpotLightEditor);
-		this->GetRuntimeEditor().RegisterComponentEditor("CameraController",   GUI::CameraControllerEditor);
-		this->GetRuntimeEditor().RegisterComponentEditor("VRCameraController", GUI::VRCameraControllerEditor);
-		this->GetRuntimeEditor().RegisterComponentEditor("InputControl",       GUI::InputControlEditor);
-		this->GetRuntimeEditor().RegisterComponentEditor("AudioSource",        GUI::AudioSourceEditor);
-		this->GetRuntimeEditor().RegisterComponentEditor("AudioListener",      GUI::AudioListenerEditor);
+		editor.RegisterComponentEditor("Transform",          GUI::TransformEditor);
+		editor.RegisterComponentEditor("Behaviour",          GUI::BehaviourEditor);
+		editor.RegisterComponentEditor("Script",             GUI::ScriptEditor);
+		editor.RegisterComponentEditor("InstanceFactory",    GUI::InstanceFactoryEditor);
+		editor.RegisterComponentEditor("Skybox",             GUI::SkyboxEditor);
+		editor.RegisterComponentEditor("DebugDraw",          GUI::DebugDrawEditor);
+		editor.RegisterComponentEditor("MeshRenderer",       GUI::MeshRendererEditor);
+		editor.RegisterComponentEditor("MeshSource",         GUI::MeshSourceEditor);
+		editor.RegisterComponentEditor("MeshLOD",            GUI::MeshLODEditor);
+		editor.RegisterComponentEditor("DirectionalLight",   GUI::DirectionalLightEditor);
+		editor.RegisterComponentEditor("PointLight",         GUI::PointLightEditor);
+		editor.RegisterComponentEditor("SpotLight",          GUI::SpotLightEditor);
+		editor.RegisterComponentEditor("CameraController",   GUI::CameraControllerEditor);
+		editor.RegisterComponentEditor("VRCameraController", GUI::VRCameraControllerEditor);
+		editor.RegisterComponentEditor("InputControl",       GUI::InputControlEditor);
+		editor.RegisterComponentEditor("AudioSource",        GUI::AudioSourceEditor);
+		editor.RegisterComponentEditor("AudioListener",      GUI::AudioListenerEditor);
 	}
 }

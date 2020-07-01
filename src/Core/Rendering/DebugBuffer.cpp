@@ -231,7 +231,7 @@ namespace MxEngine
         return this->storage.size();
     }
 
-    GResource<VertexArray> DebugBuffer::GetVAO() const
+    VertexArrayHandle DebugBuffer::GetVAO() const
     {
         return this->VAO;
     }

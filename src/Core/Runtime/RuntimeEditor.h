@@ -51,7 +51,7 @@ namespace MxEngine
 		using ScriptEngine = int; // stub
 		#endif
 
-		ScriptEngine* engine;
+		ScriptEngine* engine = nullptr;
 		GraphicConsole* console;
 		Vector2 cachedWindowSize{ 0.0f };
 		bool shouldRender = false;

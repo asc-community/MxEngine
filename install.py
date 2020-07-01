@@ -6,8 +6,7 @@ def extract_to(zip_path, dist_folder):
 	zf.close()
 	
 print('unzipping python...')
-extract_to('./x64/Debug',   './external_libraries/python.zip')
-extract_to('./x64/Release', './external_libraries/python.zip')
+extract_to('.', './external_libraries/python.zip')
 
 print('unzipping boost_headers...')
 extract_to('.', './external_libraries/boost_headers.zip')

@@ -34,8 +34,8 @@ namespace MxEngine
 {
 	class Rectangle
 	{
-		GResource<VertexBuffer> VBO;
-		GResource<VertexArray> VAO;
+		VertexBufferHandle VBO;
+		VertexArrayHandle VAO;
 	public:
 		static constexpr size_t VertexCount = 2 * 3; // 2 triangles, each with 3 vertecies
 

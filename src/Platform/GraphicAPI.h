@@ -58,15 +58,28 @@ namespace MxEngine
         VertexBufferLayout
     >;
 
+
     template<typename T>
     using GResource = Resource<T, GraphicFactory>;
+
+    #define CREATE_HANDLE(name) using name##Handle = GResource<name>;
+    CREATE_HANDLE(CubeMap)
+    CREATE_HANDLE(FrameBuffer)
+    CREATE_HANDLE(IndexBuffer)
+    CREATE_HANDLE(RenderBuffer)
+    CREATE_HANDLE(Shader)
+    CREATE_HANDLE(Texture)
+    CREATE_HANDLE(VertexArray)
+    CREATE_HANDLE(VertexBuffer)
+    CREATE_HANDLE(VertexBufferLayout)
+    #undef CREATE_HANDLE
 
     inline auto GetAttachedTexture(const FrameBuffer& framebuffer)
     {
         return framebuffer.GetAttachedTexture<Resource, GraphicFactory>();
     }
 
-    inline auto GetAttachedTexture(const GResource<FrameBuffer>& framebuffer)
+    inline auto GetAttachedTexture(const FrameBufferHandle& framebuffer)
     {
         return GetAttachedTexture(*framebuffer);
     }
@@ -76,7 +89,7 @@ namespace MxEngine
         return framebuffer.GetAttachedCubeMap<Resource, GraphicFactory>();
     }
 
-    inline auto GetAttachedCubeMap(const GResource<FrameBuffer>& framebuffer)
+    inline auto GetAttachedCubeMap(const FrameBufferHandle& framebuffer)
     {
         return GetAttachedCubeMap(*framebuffer);
     }

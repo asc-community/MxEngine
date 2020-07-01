@@ -36,11 +36,11 @@ namespace MxEngine
 	{
 		MAKE_COMPONENT(VRCameraController);
 
-		GResource<Shader> shaderVR;
+		ShaderHandle shaderVR;
 
 		void OnUpdate();
 		void UpdateEyes(CameraController::Handle& leftCamera, CameraController::Handle& rightCamera);
-		void Render(GResource<Texture>& target, const GResource<Texture>& leftEye, const GResource<Texture>& rightEye);
+		void Render(TextureHandle& target, const TextureHandle& leftEye, const TextureHandle& rightEye);
 	public:
 		CameraController::Handle LeftEye;
 		CameraController::Handle RightEye;

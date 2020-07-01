@@ -34,17 +34,17 @@
 
 namespace MxEngine
 {
-    void ImageManager::SaveTexture(StringId fileHash, const GResource<Texture>& texture, ImageType type)
+    void ImageManager::SaveTexture(StringId fileHash, const TextureHandle& texture, ImageType type)
     {
         ImageManager::SaveTexture(FileManager::GetFilePath(fileHash), texture, type);
     }
 
-    void ImageManager::SaveTexture(const FilePath& filePath, const GResource<Texture>& texture, ImageType type)
+    void ImageManager::SaveTexture(const FilePath& filePath, const TextureHandle& texture, ImageType type)
     {
         ImageManager::SaveTexture(ToMxString(filePath), texture, type);
     }
 
-    void ImageManager::SaveTexture(const MxString& filePath, const GResource<Texture>& texture, ImageType type)
+    void ImageManager::SaveTexture(const MxString& filePath, const TextureHandle& texture, ImageType type)
     {
         File file(filePath, File::WRITE | File::BINARY);
         ImageConverter::RawImageData imageByteData;
@@ -70,17 +70,17 @@ namespace MxEngine
         file.WriteBytes(imageByteData.data(), imageByteData.size());
     }
 
-    void ImageManager::SaveTexture(const char* filePath, const GResource<Texture>& texture, ImageType type)
+    void ImageManager::SaveTexture(const char* filePath, const TextureHandle& texture, ImageType type)
     {
         ImageManager::SaveTexture((MxString)filePath, texture, type);
     }
 
-    void ImageManager::SaveTexture(StringId fileHash, const GResource<Texture>& texture)
+    void ImageManager::SaveTexture(StringId fileHash, const TextureHandle& texture)
     {
         ImageManager::SaveTexture(FileManager::GetFilePath(fileHash), texture);
     }
 
-    void ImageManager::SaveTexture(const FilePath& filepath, const GResource<Texture>& texture)
+    void ImageManager::SaveTexture(const FilePath& filepath, const TextureHandle& texture)
     {
         auto ext = filepath.extension();
         if (ext == ".png")
@@ -109,12 +109,12 @@ namespace MxEngine
         }
     }
 
-    void ImageManager::SaveTexture(const MxString& filePath, const GResource<Texture>& texture)
+    void ImageManager::SaveTexture(const MxString& filePath, const TextureHandle& texture)
     {
         ImageManager::SaveTexture(filePath.c_str(), texture);
     }
 
-    void ImageManager::SaveTexture(const char* filePath, const GResource<Texture>& texture)
+    void ImageManager::SaveTexture(const char* filePath, const TextureHandle& texture)
     {
         ImageManager::SaveTexture(MxString(filePath), texture);
     }

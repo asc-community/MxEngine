@@ -38,8 +38,8 @@ namespace MxEngine
 	{
 		MAKE_COMPONENT(AudioSource);
 
-		AResource<AudioPlayer> player;
-		AResource<AudioBuffer> buffer;
+		AudioPlayerHandle player;
+		AudioBufferHandle buffer;
 		float currentVolume = 1.0f;
 		float currentSpeed = 1.0f;
 		Vector3 velocity = MakeVector3(0.0f);
@@ -57,10 +57,10 @@ namespace MxEngine
 		void Init();
 		~AudioSource();
 		AudioSource() = default;
-		AudioSource(const AResource<AudioBuffer>& buffer);
+		AudioSource(const AudioBufferHandle& buffer);
 
-		void Load(const AResource<AudioBuffer>& buffer);
-		AResource<AudioBuffer> GetLoadedSource() const;
+		void Load(const AudioBufferHandle& buffer);
+		AudioBufferHandle GetLoadedSource() const;
 
 		void Play();
 		void Stop();

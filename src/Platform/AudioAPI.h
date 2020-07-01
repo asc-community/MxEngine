@@ -43,4 +43,7 @@ namespace MxEngine
 
     template<typename T>
     using AResource = Resource<T, AudioFactory>;
+
+    using AudioBufferHandle = AResource<AudioBuffer>;
+    using AudioPlayerHandle = AResource<AudioPlayer>;
 }

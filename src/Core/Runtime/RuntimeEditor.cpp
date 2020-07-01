@@ -48,7 +48,7 @@ namespace MxEngine
 
 	void RuntimeEditor::Log(const MxString& message)
 	{
-		this->console->PrintLog("%s", message.c_str());
+		this->console->PrintLog("%s", message.c_str()); //-V111
 	}
 
 	void RuntimeEditor::ClearLog()
@@ -208,30 +208,39 @@ namespace MxEngine
 
 	void RuntimeEditor::ExecuteScript(const MxString& code)
 	{
+		#if defined(MXENGINE_USE_PYTHON)
 		MAKE_SCOPE_PROFILER("RuntimeEditor::ExecuteScript");
 		this->GetEngine().Execute(code.c_str());
+		#endif
 	}
 
 	const MxString& RuntimeEditor::GetLastErrorMessage() const
 	{
+		#if defined(MXENGINE_USE_PYTHON)
 		return this->engine->GetErrorMessage();
+		#else
+		static MxString empty;
+		return empty;
+		#endif
 	}
 
 	bool RuntimeEditor::HasErrorsInExecution() const
 	{
+		#if defined(MXENGINE_USE_PYTHON)
 		return this->engine->HasErrors();
+		#else
+		return false;
+		#endif
 	}
 
 	RuntimeEditor::RuntimeEditor()
 	{
 		MAKE_SCOPE_PROFILER("DeveloperConsole::Init");
 		MAKE_SCOPE_TIMER("MxEngine::DeveloperConsole", "DeveloperConsole::Init");
+		this->console = Alloc<GraphicConsole>();
+
 		#if defined(MXENGINE_USE_PYTHON)
 		this->engine = Alloc<PythonEngine>();
-		#else
-		this->engine = nullptr;
-		#endif
-		this->console = Alloc<GraphicConsole>();
 
 		this->engine->Execute("from mx_engine import *");
 		this->engine->Execute("dt = lambda: mx.dt()");
@@ -248,5 +257,6 @@ namespace MxEngine
 				this->Log(this->engine->GetOutput());
 			}
 		});
+		#endif
 	}
 }

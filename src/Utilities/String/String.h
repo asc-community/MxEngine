@@ -98,7 +98,7 @@ namespace MxEngine
 	constexpr StringId crc32(const char* str, size_t size, size_t idx = 0, uint32_t prev_crc = 0xFFFFFFFF)
 	{
 		if (size == idx)
-			return prev_crc ^ 0xFFFFFFFF;
+			return prev_crc ^ 0xFFFFFFFF; //-V112
 		else
 			return crc32(str, size, idx + 1, (prev_crc >> 8) ^ crc_table[(prev_crc ^ str[idx]) & 0xFF]);
 	}

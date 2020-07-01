@@ -37,6 +37,6 @@ namespace MxEngine
     {
         MAKE_COMPONENT(Skybox);
     public:
-        GResource<CubeMap> Texture;
+        CubeMapHandle Texture;
     };
 }

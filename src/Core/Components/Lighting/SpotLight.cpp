@@ -73,12 +73,12 @@ namespace MxEngine
         return *this;
     }
 
-    GResource<Texture> SpotLight::GetDepthTexture() const
+    TextureHandle SpotLight::GetDepthTexture() const
     {
         return this->texture;
     }
 
-    void SpotLight::AttachDepthTexture(const GResource<Texture>& texture)
+    void SpotLight::AttachDepthTexture(const TextureHandle& texture)
     {
         this->texture = texture;
     }

@@ -53,15 +53,15 @@ namespace MxEngine
         IndexData indicies;
         AABB boundingBox;
 
-        GResource<VertexBuffer> VBO;
-        GResource<VertexArray> VAO;
-        GResource<IndexBuffer> IBO;
+        VertexBufferHandle VBO;
+        VertexArrayHandle VAO;
+        IndexBufferHandle IBO;
     public:
         MeshData();
 
-        GResource<VertexArray> GetVAO() const;
-        GResource<VertexBuffer> GetVBO() const;
-        GResource<IndexBuffer> GetIBO() const;
+        VertexArrayHandle GetVAO() const;
+        VertexBufferHandle GetVBO() const;
+        IndexBufferHandle GetIBO() const;
         const AABB& GetAABB() const;
 
         VertexData& GetVertecies();

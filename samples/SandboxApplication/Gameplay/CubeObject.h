@@ -2,7 +2,7 @@
 
 struct CubeBehaviour
 {
-	std::vector<InstanceFactory::MxInstance> instances;
+	std::vector<InstanceHandle> instances;
 
 	void OnUpdate(MxObject& object, float dt)
 	{

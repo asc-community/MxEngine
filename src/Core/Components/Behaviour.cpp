@@ -28,9 +28,22 @@
 
 #include "Behaviour.h"
 #include "Core/MxObject/MxObject.h"
+#include "Core/Application/EventManager.h"
+#include "Core/Event/Events/UpdateEvent.h"
 
 namespace MxEngine
 {
+    Behaviour::~Behaviour()
+    {
+        EventManager::RemoveEventListener(MxObject::GetComponentUUID(*this));
+    }
+
+    void Behaviour::Init()
+    {
+        auto self = MxObject::GetComponentHandle(*this);
+        EventManager::AddEventListener(self.GetUUID(), [self](UpdateEvent& e) mutable { self->InvokeUpdate(e.TimeDelta); });
+    }
+
     void Behaviour::InvokeUpdate(Behaviour::TimeDelta dt)
     {
         if(this->UpdateCallback)

@@ -39,4 +39,19 @@ namespace MxEngine
     {
         return WND(IsKeyReleased, key);
     }
+
+    bool InputManager::IsMouseHeld(MouseButton button)
+    {
+        return WND(IsMouseHeld, button);
+    }
+
+    bool InputManager::IsMousePressed(MouseButton button)
+    {
+        return WND(IsMousePressed, button);
+    }
+
+    bool InputManager::IsMouseReleased(MouseButton button)
+    {
+        return WND(IsMouseReleased, button);
+    }
 }

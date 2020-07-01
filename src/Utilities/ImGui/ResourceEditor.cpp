@@ -33,7 +33,7 @@
 
 namespace MxEngine::GUI
 {
-    void DrawTextureEditor(const char* name, GResource<Texture>& texture)
+    void DrawTextureEditor(const char* name, TextureHandle& texture)
     {
         SCOPE_TREE_NODE(name);
 
@@ -44,8 +44,8 @@ namespace MxEngine::GUI
             ImGui::Text("height: %d", (int)texture->GetHeight());
             ImGui::Text("channels: %d", (int)texture->GetChannelCount());
             ImGui::Text("samples: %d", (int)texture->GetSampleCount());
-            ImGui::Text("format: %s", EnumToString(texture->GetFormat()));
-            ImGui::Text("wrap type: %s", EnumToString(texture->GetWrapType()));
+            ImGui::Text("format: %s", EnumToString(texture->GetFormat())); //-V111
+            ImGui::Text("wrap type: %s", EnumToString(texture->GetWrapType())); //-V111
             ImGui::Text("native render type: %d", (int)texture->GetTextureType());
             ImGui::Text("native handle: %d", (int)texture->GetNativeHandle());
             ImGui::Text("is depth-only: %s", BOOL_STRING(texture->IsDepthOnly()));
@@ -80,7 +80,7 @@ namespace MxEngine::GUI
         }
     }
 
-    void DrawCubeMapEditor(const char* name, GResource<CubeMap>& cubemap)
+    void DrawCubeMapEditor(const char* name, CubeMapHandle& cubemap)
     {
         SCOPE_TREE_NODE(name);
 
@@ -160,7 +160,7 @@ namespace MxEngine::GUI
         ImGui::InputFloat3("bitangent", &vertex.Bitangent[0]);
     }
 
-    void DrawImageSaver(const GResource<Texture>& texture, const char* name)
+    void DrawImageSaver(const TextureHandle& texture, const char* name)
     {
         static MxString path(128, '\0');
         ImGui::InputText("save path", path.data(), path.size());

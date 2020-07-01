@@ -36,7 +36,7 @@ namespace MxEngine
 {
     struct DebugBufferUnit
     {
-        GResource<VertexArray> VAO;
+        VertexArrayHandle VAO;
         size_t VertexCount;
     };
 
@@ -45,12 +45,12 @@ namespace MxEngine
         Matrix4x4 ViewProjMatrix;
         Matrix4x4 StaticViewProjMatrix;
         Vector3 ViewportPosition;
-        GResource<FrameBuffer> FrameBufferMSAA;
-        GResource<FrameBuffer> FrameBufferHDR;
-        GResource<Texture> BloomTextureHDR;
-        GResource<Texture> OutputTexture;
+        FrameBufferHandle FrameBufferMSAA;
+        FrameBufferHandle FrameBufferHDR;
+        TextureHandle BloomTextureHDR;
+        TextureHandle OutputTexture;
         Matrix3x3 InversedSkyboxRotation;
-        GResource<CubeMap> SkyboxMap;
+        CubeMapHandle SkyboxMap;
         float BloomWeight;
         float Exposure;
 
@@ -61,26 +61,26 @@ namespace MxEngine
 
     struct EnvironmentUnit
     {
-        GResource<Shader> MainShader;
-        GResource<Shader> SkyboxShader;
-        GResource<Shader> ShadowMapShader;
-        GResource<Shader> ShadowCubeMapShader;
-        GResource<Shader> MSAAHDRSplitShader;
-        GResource<Shader> HDRSplitShader;
-        GResource<Shader> BloomShader;
-        GResource<Shader> HDRBloomCombineHDRShader;
-        GResource<Shader> ImageForwardShader;
-        GResource<Shader> DebugDrawShader;
+        ShaderHandle MainShader;
+        ShaderHandle SkyboxShader;
+        ShaderHandle ShadowMapShader;
+        ShaderHandle ShadowCubeMapShader;
+        ShaderHandle MSAAHDRSplitShader;
+        ShaderHandle HDRSplitShader;
+        ShaderHandle BloomShader;
+        ShaderHandle HDRBloomCombineHDRShader;
+        ShaderHandle ImageForwardShader;
+        ShaderHandle DebugDrawShader;
 
-        GResource<Texture> DefaultMaterialMap;
-        GResource<Texture> DefaultNormalMap;
-        GResource<Texture> DefaultHeightMap;
-        GResource<Texture> DefaultBlackMap;
-        GResource<CubeMap> DefaultBlackCubeMap;
+        TextureHandle DefaultMaterialMap;
+        TextureHandle DefaultNormalMap;
+        TextureHandle DefaultHeightMap;
+        TextureHandle DefaultBlackMap;
+        CubeMapHandle DefaultBlackCubeMap;
 
-        GResource<FrameBuffer> DepthFrameBuffer;
-        GResource<FrameBuffer> PostProcessFrameBuffer;
-        std::array<GResource<FrameBuffer>, 2> BloomBuffers;
+        FrameBufferHandle DepthFrameBuffer;
+        FrameBufferHandle PostProcessFrameBuffer;
+        std::array<FrameBufferHandle, 2> BloomBuffers;
 
         SkyboxObject SkyboxCubeObject;
         DebugBufferUnit DebugBufferObject;
@@ -99,7 +99,7 @@ namespace MxEngine
 
     struct DirectionalLigthUnit
     {
-        GResource<Texture> ShadowMap;
+        TextureHandle ShadowMap;
         Matrix4x4 ProjectionMatrix;
         Matrix4x4 BiasedProjectionMatrix;
         Vector3 Direction;
@@ -110,7 +110,7 @@ namespace MxEngine
 
     struct PointLightUnit
     {
-        GResource<CubeMap> ShadowMap;
+        CubeMapHandle ShadowMap;
         Matrix4x4 ProjectionMatrices[6];
         Vector3 Position;
         float FarDistance;
@@ -122,7 +122,7 @@ namespace MxEngine
 
     struct SpotLightUnit
     {
-        GResource<Texture> ShadowMap;
+        TextureHandle ShadowMap;
         Matrix4x4 ProjectionMatrix;
         Matrix4x4 BiasedProjectionMatrix;
         Vector3 Position;
@@ -143,8 +143,8 @@ namespace MxEngine
 
     struct RenderUnit
     {
-        GResource<VertexArray> VAO;
-        GResource<IndexBuffer> IBO;
+        VertexArrayHandle VAO;
+        IndexBufferHandle IBO;
 
         Material RenderMaterial;
         

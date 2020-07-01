@@ -37,7 +37,7 @@ namespace MxEngine
     class DirectionalLight : public LightBase
     {
         MAKE_COMPONENT(DirectionalLight);
-        GResource<Texture> texture;
+        TextureHandle texture;
     public:
         DirectionalLight();
         ~DirectionalLight();
@@ -45,8 +45,8 @@ namespace MxEngine
         Vector3 Direction        = MakeVector3(0.0f, 1.0f, 0.0f);
         float ProjectionSize     = 50.0f;
 
-        [[nodiscard]] GResource<Texture> GetDepthTexture() const;
-        void AttachDepthTexture(const GResource<Texture>& texture);
+        [[nodiscard]] TextureHandle GetDepthTexture() const;
+        void AttachDepthTexture(const TextureHandle& texture);
         [[nodiscard]] Matrix4x4 GetMatrix(const Vector3& center) const;
         void FollowViewport();
     };

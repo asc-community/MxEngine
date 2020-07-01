@@ -37,12 +37,12 @@ namespace MxEngine
 {
 	struct Material
 	{
-		GResource<Texture> AmbientMap;
-		GResource<Texture> DiffuseMap;
-		GResource<Texture> SpecularMap;
-		GResource<Texture> EmmisiveMap;
-		GResource<Texture> NormalMap;
-		GResource<Texture> HeightMap;
+		TextureHandle AmbientMap;
+		TextureHandle DiffuseMap;
+		TextureHandle SpecularMap;
+		TextureHandle EmmisiveMap;
+		TextureHandle NormalMap;
+		TextureHandle HeightMap;
 
 		float SpecularExponent = 128.0f;
 		float Transparency = 1.0f;

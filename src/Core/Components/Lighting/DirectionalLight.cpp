@@ -46,12 +46,12 @@ namespace MxEngine
         EventManager::RemoveEventListener(eventName);
     }
 
-    GResource<Texture> DirectionalLight::GetDepthTexture() const
+    TextureHandle DirectionalLight::GetDepthTexture() const
     {
         return this->texture;
     }
 
-    void DirectionalLight::AttachDepthTexture(const GResource<Texture>& texture)
+    void DirectionalLight::AttachDepthTexture(const TextureHandle& texture)
     {
         this->texture = texture;
     }

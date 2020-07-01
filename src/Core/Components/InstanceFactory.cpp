@@ -1,6 +1,8 @@
 #include "InstanceFactory.h"
 #include "Core/MxObject/MxObject.h"
 #include "Core/Components/Rendering/MeshSource.h"
+#include "Core/Application/EventManager.h"
+#include "Core/Event/Events/UpdateEvent.h"
 
 namespace MxEngine
 {
@@ -17,9 +19,9 @@ namespace MxEngine
         if (meshSource.IsValid())
         {
             auto& mesh = *meshSource->Mesh;
-            this->RemoveInstancedBuffer(mesh, this->bufferIndex + 2);
-            this->RemoveInstancedBuffer(mesh, this->bufferIndex + 1);
-            this->RemoveInstancedBuffer(mesh, this->bufferIndex + 0);
+            this->RemoveInstancedBuffer(mesh, (size_t)this->bufferIndex + 2);
+            this->RemoveInstancedBuffer(mesh, (size_t)this->bufferIndex + 1);
+            this->RemoveInstancedBuffer(mesh, (size_t)this->bufferIndex + 0);
         }
     }
 
@@ -35,15 +37,25 @@ namespace MxEngine
             auto colorBufferIndex  = this->AddInstancedBuffer(mesh, this->GetColorData());
             this->bufferIndex = modelBufferIndex; // others will be `bufferIndex + 1`, `bufferIndex + 2`
         }
+        
+        auto self = MxObject::GetComponentHandle(*this);
+        MxString uuid = self.GetUUID();
+        EventManager::RemoveEventListener(uuid);
+        EventManager::AddEventListener(uuid, [self](UpdateEvent&) mutable { self->OnUpdate(); });
     }
 
-    InstanceFactory::MxInstance InstanceFactory::MakeInstance()
+    void InstanceFactory::OnUpdate()
+    {
+        if (!this->IsStatic) this->SubmitInstances();
+    }
+
+    InstanceFactory::InstanceHandle InstanceFactory::MakeInstance()
     {
         auto& object = MxObject::GetByComponent(*this);
 
         auto uuid = UUIDGenerator::Get();
         size_t index = this->GetInstancePool().Allocate(uuid);
-        auto instance = MxInstance(uuid, index, &this->factory);
+        auto instance = InstanceHandle(uuid, index, &this->factory);
         instance->Transform = *object.Transform;
         instance.MakeStatic();
         return std::move(instance);
@@ -100,6 +112,8 @@ namespace MxEngine
     InstanceFactory::~InstanceFactory()
     {
         this->Destroy();
+
+        EventManager::RemoveEventListener(MxObject::GetComponentUUID(*this));
     }
 
     void InstanceFactory::SubmitInstances()
@@ -112,15 +126,15 @@ namespace MxEngine
         {
             auto& mesh = *meshSource->Mesh;
 
-            if (mesh.GetBufferCount() < this->bufferIndex + 2)
+            if ((uint16_t)mesh.GetBufferCount() < this->bufferIndex + 2)
             {
                 this->Init(); // MeshSource was updated, re-init mesh
             }
             else
             {
-                this->BufferDataByIndex(mesh, this->bufferIndex + 0, this->GetModelData());
-                this->BufferDataByIndex(mesh, this->bufferIndex + 1, this->GetNormalData());
-                this->BufferDataByIndex(mesh, this->bufferIndex + 2, this->GetColorData());
+                this->BufferDataByIndex(mesh, (size_t)this->bufferIndex + 0, this->GetModelData());
+                this->BufferDataByIndex(mesh, (size_t)this->bufferIndex + 1, this->GetNormalData());
+                this->BufferDataByIndex(mesh, (size_t)this->bufferIndex + 2, this->GetColorData());
             }
         }
     }

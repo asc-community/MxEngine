@@ -58,10 +58,10 @@ namespace MxEngine
 		void DrawShadowMap(const RenderUnit& unit, const DirectionalLigthUnit& dirLight, const Shader& shader);
 		void DrawShadowMap(const RenderUnit& unit, const SpotLightUnit& spotLight, const Shader& shader);
 		void DrawShadowMap(const RenderUnit& unit, const PointLightUnit& pointLight, const Shader& shader);
-		void AttachDepthMap(const GResource<Texture>& texture);
-		void AttachDepthMap(const GResource<CubeMap>& cubemap);
+		void AttachDepthMap(const TextureHandle& texture);
+		void AttachDepthMap(const CubeMapHandle& cubemap);
 		void PostProcessImage(CameraUnit& camera);
-		GResource<Texture> PerformBloomIterations(const GResource<Texture>& inputBloom, uint8_t iterations);
+		TextureHandle PerformBloomIterations(const TextureHandle& inputBloom, uint8_t iterations);
 	public:
 		const Renderer& GetRenderEngine() const;
 		Renderer& GetRenderEngine();
@@ -72,10 +72,10 @@ namespace MxEngine
 		void ToggleFaceCulling(bool value, bool counterClockWise = true, bool cullBack = true);
 		void SetAnisotropicFiltering(float value);
 		void SetViewport(int x, int y, int width, int height);
-		void AttachFrameBuffer(const GResource<FrameBuffer>& framebuffer);
+		void AttachFrameBuffer(const FrameBufferHandle& framebuffer);
 		void AttachDefaultFrameBuffer();
-		void RenderToFrameBuffer(const GResource<FrameBuffer>& framebuffer, const Shader& shader);
-		void RenderToTexture(const GResource<Texture>& texture, const Shader& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
+		void RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const Shader& shader);
+		void RenderToTexture(const TextureHandle& texture, const Shader& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
 		
 		EnvironmentUnit& GetEnvironment();
 		const EnvironmentUnit& GetEnvironment() const;
@@ -85,7 +85,7 @@ namespace MxEngine
 		void SubmitLightSource(const SpotLight& light, const Transform& parentTransform);
 		void SubmitCamera(const CameraController& controller, const Transform& parentTransform, const Skybox& skybox);
 		void SubmitPrimitive(const SubMesh& object, const Material& material, const Transform& parentTransform, size_t instanceCount);
-		void SubmitFinalImage(const GResource<Texture>& texture);
+		void SubmitFinalImage(const TextureHandle& texture);
 		void StartPipeline();
 	};
 }

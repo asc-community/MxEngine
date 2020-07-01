@@ -50,8 +50,8 @@ namespace MxEngine
 		AABB boundingBox;
 		
 		SubmeshList submeshes;
-		MxVector<GResource<VertexBuffer>> VBOs;
-		MxVector<GResource<VertexBufferLayout>> VBLs;
+		MxVector<VertexBufferHandle> VBOs;
+		MxVector<VertexBufferLayoutHandle> VBLs;
 
 		void LoadFromFile(const MxString& filepath);
 	public:
@@ -68,9 +68,9 @@ namespace MxEngine
 		const AABB& GetAABB() const;
 		void SetAABB(const AABB& boundingBox);
 		void UpdateAABB();
-		size_t AddInstancedBuffer(GResource<VertexBuffer> vbo, GResource<VertexBufferLayout> vbl);
-		GResource<VertexBuffer> GetBufferByIndex(size_t index) const; 
-		GResource<VertexBufferLayout> GetBufferLayoutByIndex(size_t index) const;
+		size_t AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl);
+		VertexBufferHandle GetBufferByIndex(size_t index) const; 
+		VertexBufferLayoutHandle GetBufferLayoutByIndex(size_t index) const;
 		size_t GetBufferCount() const;
 		void PopInstancedBuffer();
 	};

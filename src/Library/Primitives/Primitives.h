@@ -37,7 +37,7 @@ namespace MxEngine
     class Primitives
     {
     public:
-        using TextureHandle = GResource<Texture>;
+        using TextureHandle = TextureHandle;
 
         static MeshHandle CreateMesh(const AABB& boundingBox, MeshData meshData);
         static MeshHandle CreateCube();

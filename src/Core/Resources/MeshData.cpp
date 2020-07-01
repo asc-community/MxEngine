@@ -46,17 +46,17 @@ namespace MxEngine
         this->VAO->AddBuffer(*this->VBO, *VBL);
     }
 
-    GResource<VertexArray> MeshData::GetVAO() const
+    VertexArrayHandle MeshData::GetVAO() const
     {
         return this->VAO;
     }
 
-    GResource<VertexBuffer> MeshData::GetVBO() const
+    VertexBufferHandle MeshData::GetVBO() const
     {
         return this->VBO;
     }
 
-    GResource<IndexBuffer> MeshData::GetIBO() const
+    IndexBufferHandle MeshData::GetIBO() const
     {
         return this->IBO;
     }

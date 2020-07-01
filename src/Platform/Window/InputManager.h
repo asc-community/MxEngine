@@ -42,5 +42,8 @@ namespace MxEngine
 		static bool IsKeyHeld(KeyCode key);
 		static bool IsKeyPressed(KeyCode key);
 		static bool IsKeyReleased(KeyCode key);
+		static bool IsMouseHeld(MouseButton button);
+		static bool IsMousePressed(MouseButton button);
+		static bool IsMouseReleased(MouseButton button);
 	};
 }

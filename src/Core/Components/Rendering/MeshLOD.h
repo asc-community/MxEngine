@@ -50,7 +50,7 @@ namespace MxEngine
         LODIndex CurrentLOD = 0;
 
         MxVector<LODInstance> LODs;
-        void Generate(LODConfig config = LODConfig{ });
+        void Generate(const LODConfig& config = LODConfig{ });
         void FixBestLOD(const Vector3& viewportPosition, float viewportZoom = 1.0f);
         LODInstance GetMeshLOD() const;
     };

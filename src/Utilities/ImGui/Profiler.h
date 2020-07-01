@@ -48,7 +48,7 @@ namespace MxEngine::GUI
 		INVOKE_ONCE(EventManager::AddEventListener<FpsUpdateEvent>("FpsGraph", [graphRecordSize](FpsUpdateEvent& e)
 		{
 			fpsData[curPointer] = static_cast<float>(e.FPS);
-			curPointer = (curPointer + 1) % (int)graphRecordSize;
+			curPointer = (curPointer + 1) % graphRecordSize;
 			if (curPointer == 0) std::fill(fpsData.begin(), fpsData.end(), 0.0f);
 		}));
 

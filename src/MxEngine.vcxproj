@@ -695,8 +695,10 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy /d $(SolutionDir)python $(SolutionDir)$(Platform)\$(Configuration) /e /Y</Command>
-      <Message>xcopy /d $(SolutionDir)python $(SolutionDir)$(Platform)\$(Configuration) /e /Y</Message>
+      <Command>
+      </Command>
+      <Message>
+      </Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -784,8 +786,10 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy /d $(SolutionDir)python $(SolutionDir)$(Platform)\$(Configuration) /e /Y</Command>
-      <Message>xcopy /d $(SolutionDir)python $(SolutionDir)$(Platform)\$(Configuration) /e /Y</Message>
+      <Command>
+      </Command>
+      <Message>
+      </Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'">
@@ -815,8 +819,10 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy /d $(SolutionDir)python $(SolutionDir)$(Platform)\$(Configuration) /e /Y</Command>
-      <Message>xcopy /d $(SolutionDir)python $(SolutionDir)$(Platform)\$(Configuration) /e /Y</Message>
+      <Command>
+      </Command>
+      <Message>
+      </Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

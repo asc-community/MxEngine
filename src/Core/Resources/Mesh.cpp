@@ -133,7 +133,7 @@ namespace MxEngine
 		}
 	}
 
-	size_t Mesh::AddInstancedBuffer(GResource<VertexBuffer> vbo, GResource<VertexBufferLayout> vbl)
+	size_t Mesh::AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl)
 	{
 		this->VBOs.push_back(std::move(vbo));
 		this->VBLs.push_back(std::move(vbl));
@@ -144,13 +144,13 @@ namespace MxEngine
 		return this->VBOs.size() - 1;
 	}
 
-	GResource<VertexBuffer> Mesh::GetBufferByIndex(size_t index) const
+	VertexBufferHandle Mesh::GetBufferByIndex(size_t index) const
 	{
 		MX_ASSERT(index < this->VBOs.size());
 		return this->VBOs[index];
 	}
 
-	GResource<VertexBufferLayout> Mesh::GetBufferLayoutByIndex(size_t index) const
+	VertexBufferLayoutHandle Mesh::GetBufferLayoutByIndex(size_t index) const
 	{
 		MX_ASSERT(index < this->VBLs.size());
 		return this->VBLs[index];

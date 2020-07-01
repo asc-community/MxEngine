@@ -34,8 +34,8 @@ namespace MxEngine
 {
     class SkyboxObject
     {
-        GResource<VertexBuffer> VBO;
-        GResource<VertexArray> VAO;
+        VertexBufferHandle VBO;
+        VertexArrayHandle VAO;
     public:
         static constexpr size_t VertexCount = 6 * 2 * 3; // 6 sides, each with 2 triangles, each with 3 vertecies
         

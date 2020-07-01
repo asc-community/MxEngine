@@ -79,7 +79,7 @@ namespace MxEngine
         cameraR->SetDirection(Normalize(REyeDirection));
     }
 
-    void VRCameraController::Render(GResource<Texture>& target, const GResource<Texture>& leftEye, const GResource<Texture>& rightEye)
+    void VRCameraController::Render(TextureHandle& target, const TextureHandle& leftEye, const TextureHandle& rightEye)
     {
         leftEye->Bind(0);
         rightEye->Bind(1);

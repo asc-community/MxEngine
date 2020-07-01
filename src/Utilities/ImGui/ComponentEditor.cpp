@@ -95,7 +95,7 @@ namespace MxEngine::GUI
 	{
 		TREE_NODE_PUSH("Script");
 		REMOVE_COMPONENT_BUTTON(script);
-		ImGui::Text("path: %s", script.GetFilePath().c_str());
+		ImGui::Text("path: %s", script.GetFilePath().c_str()); //-V111
 		ImGui::LabelText("contents", script.GetContent().c_str());
 	}
 
@@ -114,7 +114,7 @@ namespace MxEngine::GUI
 			instanceFactory.GetInstancePool() = { };
 
 		int id = 0;
-		auto begin = instanceFactory.GetInstancePool().begin();
+		auto begin = instanceFactory.GetInstancePool().begin(); //-V807
 		auto end = instanceFactory.GetInstancePool().end();
 		for (auto it = begin; it != end; it++)
 		{
@@ -500,7 +500,7 @@ namespace MxEngine::GUI
 			{
 				ImGui::Text("native handle: %d", (int)source->GetNativeHandle());
 				ImGui::Text("native format: %d", (int)source->GetNativeFormat());
-				ImGui::Text("audio format: %s", EnumToString(source->GetAudioType()));
+				ImGui::Text("audio format: %s", EnumToString(source->GetAudioType())); //-V111
 				ImGui::Text("channel count: %d", (int)source->GetChannelCount());
 				ImGui::Text("length (in seconds): %d", int(source->GetSampleCount()) / (source->GetFrequency()));
 				ImGui::Text("sample count: %d", (int)source->GetSampleCount());

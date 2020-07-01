@@ -61,12 +61,12 @@ namespace MxEngine
         return -linear + std::sqrtf(linear * linear - 4.0f * quadratic * (constant - (256.0f / 5.0f) * maxLight)) / (2.0f * quadratic);
     }
 
-    GResource<CubeMap> PointLight::GetDepthCubeMap() const
+    CubeMapHandle PointLight::GetDepthCubeMap() const
     {
         return this->cubemap;
     }
 
-    void PointLight::AttachDepthCubeMap(const GResource<CubeMap>& cubemap)
+    void PointLight::AttachDepthCubeMap(const CubeMapHandle& cubemap)
     {
         this->cubemap = cubemap;
     }

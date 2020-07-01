@@ -33,12 +33,12 @@
 
 namespace MxEngine::GUI
 {
-	void DrawTextureEditor(const char* name, GResource<Texture>& texture);
-	void DrawCubeMapEditor(const char* name, GResource<CubeMap>& cubemap);
+	void DrawTextureEditor(const char* name, TextureHandle& texture);
+	void DrawCubeMapEditor(const char* name, CubeMapHandle& cubemap);
 	void DrawMeshEditor(const char* name, MeshHandle& mesh);
 	void DrawAABBEditor(const char* name, AABB& aabb);
 	void DrawLightBaseEditor(LightBase& base);
 	void DrawMaterialEditor(MaterialHandle& material);
 	void DrawVertexEditor(Vertex& vertex);
-	void DrawImageSaver(const GResource<Texture>& texture, const char* name = "save texture to disk");
+	void DrawImageSaver(const TextureHandle& texture, const char* name = "save texture to disk");
 }

@@ -24,8 +24,8 @@
 // audio api
 #define MXENGINE_USE_OPENAL
 
-// scripting
-#define MXENGINE_USE_PYTHON
+// // scripting
+// #define MXENGINE_USE_PYTHON
 
 // assert handling 
 #define MX_ASSERT_EXCEPTION

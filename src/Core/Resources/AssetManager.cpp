@@ -32,82 +32,82 @@
 
 namespace MxEngine
 {
-    GResource<CubeMap> AssetManager::LoadCubeMap(StringId hash)
+    CubeMapHandle AssetManager::LoadCubeMap(StringId hash)
     {
         return AssetManager::LoadCubeMap(FileManager::GetFilePath(hash));
     }
 
-    GResource<CubeMap> AssetManager::LoadCubeMap(const FilePath& path)
+    CubeMapHandle AssetManager::LoadCubeMap(const FilePath& path)
     {
         return AssetManager::LoadCubeMap(ToMxString(path));
     }
 
-    GResource<CubeMap> AssetManager::LoadCubeMap(const MxString& path)
+    CubeMapHandle AssetManager::LoadCubeMap(const MxString& path)
     {
         return GraphicFactory::Create<CubeMap>(path);
     }
 
-    GResource<CubeMap> AssetManager::LoadCubeMap(const char* path)
+    CubeMapHandle AssetManager::LoadCubeMap(const char* path)
     {
         return AssetManager::LoadCubeMap(MxString(path));
     }
 
-    GResource<Texture> AssetManager::LoadTexture(StringId hash)
+    TextureHandle AssetManager::LoadTexture(StringId hash)
     {
         return AssetManager::LoadTexture(FileManager::GetFilePath(hash));
     }
 
-    GResource<Texture> AssetManager::LoadTexture(const FilePath& path)
+    TextureHandle AssetManager::LoadTexture(const FilePath& path)
     {
         return AssetManager::LoadTexture(ToMxString(path));
     }
 
-    GResource<Texture> AssetManager::LoadTexture(const MxString& path)
+    TextureHandle AssetManager::LoadTexture(const MxString& path)
     {
         return GraphicFactory::Create<Texture>(path);
     }
 
-    GResource<Texture> AssetManager::LoadTexture(const char* path)
+    TextureHandle AssetManager::LoadTexture(const char* path)
     {
         return AssetManager::LoadTexture(MxString(path));
     }
 
-    GResource<Shader> AssetManager::LoadShader(StringId vertex, StringId fragment)
+    ShaderHandle AssetManager::LoadShader(StringId vertex, StringId fragment)
     {
         return AssetManager::LoadShader(FileManager::GetFilePath(vertex), FileManager::GetFilePath(fragment));
     }
 
-    GResource<Shader> AssetManager::LoadShader(const FilePath& vertex, const FilePath& fragment)
+    ShaderHandle AssetManager::LoadShader(const FilePath& vertex, const FilePath& fragment)
     {
         return AssetManager::LoadShader(ToMxString(vertex), ToMxString(fragment));
     }
 
-    GResource<Shader> AssetManager::LoadShader(const MxString& vertex, const MxString& fragment)
+    ShaderHandle AssetManager::LoadShader(const MxString& vertex, const MxString& fragment)
     {
         return GraphicFactory::Create<Shader>(vertex, fragment);
     }
 
-    GResource<Shader> AssetManager::LoadShader(const char* vertex, const char* fragment)
+    ShaderHandle AssetManager::LoadShader(const char* vertex, const char* fragment)
     {
         return AssetManager::LoadShader(MxString(vertex), MxString(fragment));
     }
 
-    GResource<Shader> AssetManager::LoadShader(StringId vertex, StringId geometry, StringId fragment)
+    ShaderHandle AssetManager::LoadShader(StringId vertex, StringId geometry, StringId fragment)
     {
         return AssetManager::LoadShader(FileManager::GetFilePath(vertex), FileManager::GetFilePath(geometry), FileManager::GetFilePath(fragment));
     }
 
-    GResource<Shader> AssetManager::LoadShader(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment)
+    ShaderHandle AssetManager::LoadShader(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment)
     {
         return AssetManager::LoadShader(ToMxString(vertex), ToMxString(geometry), ToMxString(fragment));
     }
 
-    GResource<Shader> AssetManager::LoadShader(const MxString& vertex, const MxString& geometry, const MxString& fragment)
+    ShaderHandle AssetManager::LoadShader(const MxString& vertex, const MxString& geometry, const MxString& fragment)
     {
         return GraphicFactory::Create<Shader>(vertex, geometry, fragment);
     }
 
-    GResource<Shader> AssetManager::LoadShader(const char* vertex, const char* geometry, const char* fragment)
+    ShaderHandle AssetManager::LoadShader(const char* vertex, const char* geometry, const char* fragment)
     {
         return AssetManager::LoadShader(MxString(vertex), MxString(geometry), MxString(fragment));
     }
@@ -152,24 +152,24 @@ namespace MxEngine
         return AssetManager::LoadMaterials(MxString(path));
     }
 
-    AResource<AudioBuffer> AssetManager::LoadAudio(StringId hash)
+    AudioBufferHandle AssetManager::LoadAudio(StringId hash)
     {
         return AssetManager::LoadAudio(FileManager::GetFilePath(hash));
     }
 
-    AResource<AudioBuffer> AssetManager::LoadAudio(const FilePath& filepath)
+    AudioBufferHandle AssetManager::LoadAudio(const FilePath& filepath)
     {
         return AssetManager::LoadAudio(ToMxString(filepath));
     }
 
-    AResource<AudioBuffer> AssetManager::LoadAudio(const MxString& filepath)
+    AudioBufferHandle AssetManager::LoadAudio(const MxString& filepath)
     {
         auto buffer = AudioFactory::Create<AudioBuffer>();
         buffer->Load(filepath);
         return buffer;
     }
 
-    AResource<AudioBuffer> AssetManager::LoadAudio(const char* filepath)
+    AudioBufferHandle AssetManager::LoadAudio(const char* filepath)
     {
         return AssetManager::LoadAudio(MxString(filepath));
     }

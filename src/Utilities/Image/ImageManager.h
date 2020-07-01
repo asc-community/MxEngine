@@ -47,15 +47,15 @@ namespace MxEngine
 	class ImageManager
 	{
 	public:
-		static void SaveTexture(StringId        fileHash, const GResource<Texture>& texture, ImageType type);
-		static void SaveTexture(const FilePath& filePath, const GResource<Texture>& texture, ImageType type);
-		static void SaveTexture(const MxString& filePath, const GResource<Texture>& texture, ImageType type);
-		static void SaveTexture(const char*     filePath, const GResource<Texture>& texture, ImageType type);
+		static void SaveTexture(StringId        fileHash, const TextureHandle& texture, ImageType type);
+		static void SaveTexture(const FilePath& filePath, const TextureHandle& texture, ImageType type);
+		static void SaveTexture(const MxString& filePath, const TextureHandle& texture, ImageType type);
+		static void SaveTexture(const char*     filePath, const TextureHandle& texture, ImageType type);
 
-		static void SaveTexture(StringId        fileHash, const GResource<Texture>& texture);
-		static void SaveTexture(const FilePath& filePath, const GResource<Texture>& texture);
-		static void SaveTexture(const MxString& filePath, const GResource<Texture>& texture);
-		static void SaveTexture(const char* filePath,     const GResource<Texture>& texture);
+		static void SaveTexture(StringId        fileHash, const TextureHandle& texture);
+		static void SaveTexture(const FilePath& filePath, const TextureHandle& texture);
+		static void SaveTexture(const MxString& filePath, const TextureHandle& texture);
+		static void SaveTexture(const char* filePath,     const TextureHandle& texture);
 
 		static void TakeScreenShot(StringId        fileHash, ImageType type);
 		static void TakeScreenShot(const FilePath& filePath, ImageType type);

@@ -34,6 +34,7 @@
 #include "Utilities/Time/Time.h"
 #include "Utilities/Math/Math.h"
 #include "Core/Event/Events/KeyEvent.h"
+#include "Core/Event/Events/MouseEvent.h"
 
 struct GLFWwindow; // from glfw header file
 
@@ -64,6 +65,9 @@ namespace MxEngine
 		mutable std::bitset<350> keyHeld;
 		mutable std::bitset<350> keyPressed;
 		mutable std::bitset<350> keyReleased;
+		mutable std::bitset<8> mouseHeld;
+		mutable std::bitset<8> mousePressed;
+		mutable std::bitset<8> mouseReleased;
 		CursorMode cursorMode = CursorMode::NORMAL;
 		bool doubleBuffer = false;
 		Vector2 windowPosition{ 0.0f, 0.0f };
@@ -92,6 +96,9 @@ namespace MxEngine
 		bool IsKeyHeld(KeyCode key) const;
 		bool IsKeyPressed(KeyCode key) const;
 		bool IsKeyReleased(KeyCode key) const;
+		bool IsMouseHeld(MouseButton button);
+		bool IsMousePressed(MouseButton button);
+		bool IsMouseReleased(MouseButton button);
 		WindowHandle GetNativeHandle();
 		AppEventDispatcher& GetEventDispatcher();
 		bool IsCreated() const;

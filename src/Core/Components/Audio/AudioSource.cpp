@@ -55,19 +55,17 @@ namespace MxEngine
         EventManager::RemoveEventListener(this->player.GetUUID());
     }
 
-    AudioSource::AudioSource(const AResource<AudioBuffer>& buffer)
-    {
-        this->buffer = buffer;
-    }
+    AudioSource::AudioSource(const AudioBufferHandle& buffer)
+        : buffer(buffer) { }
 
-    void AudioSource::Load(const AResource<AudioBuffer>& buffer)
+    void AudioSource::Load(const AudioBufferHandle& buffer)
     {
         this->buffer = buffer;
         if(this->buffer.IsValid())
             player->AttachBuffer(*buffer);
     }
 
-    AResource<AudioBuffer> AudioSource::GetLoadedSource() const
+    AudioBufferHandle AudioSource::GetLoadedSource() const
     {
         return this->buffer;
     }
@@ -221,7 +219,7 @@ namespace MxEngine
 
     bool AudioSource::IsOmnidirectional() const
     {
-        return this->outerAngle == 360.0f;
+        return this->outerAngle == 360.0f; //-V550
     }
 
     const Vector3& AudioSource::GetVelocity() const

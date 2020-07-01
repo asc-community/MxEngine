@@ -106,9 +106,9 @@ namespace MxEngine
     void FrameBuffer::DetachRenderTarget()
     {
         if (this->currentAttachment == AttachmentType::TEXTURE)
-            reinterpret_cast<GResource<Texture>*>(&this->attachmentStorage)->~Resource();
+            reinterpret_cast<TextureHandle*>(&this->attachmentStorage)->~Resource();
         else if (this->currentAttachment == AttachmentType::CUBEMAP)
-            reinterpret_cast<GResource<CubeMap>*>(&this->attachmentStorage)->~Resource();
+            reinterpret_cast<CubeMapHandle*>(&this->attachmentStorage)->~Resource();
 
         this->currentAttachment = AttachmentType::NONE;
 

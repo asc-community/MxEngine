@@ -231,7 +231,7 @@ namespace MxEngine
             {
                 out << std::hex << (int)((DataPointer)this->storage)[i];
             }
-            out << std::dec << "\n --- dumped " << this->count * sizeof(Block) << " bytes --- \n";
+            out << std::dec << "\n --- dumped " << this->count * sizeof(Block) << " bytes --- \n"; //-V128
         }
     };
 }

@@ -31,7 +31,6 @@
 #include "Utilities/Logger/Logger.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/Memory/Memory.h"
-#include "Core/Event/Events/MouseEvent.h"
 #include "Core/Event/Events/WindowResizeEvent.h"
 #include "Platform/Modules/GraphicModule.h"
 #include "Platform/OpenGL/GLUtilities.h"
@@ -41,6 +40,22 @@
 
 namespace MxEngine
 {
+	int buttonTable[] =
+	{
+		GLFW_MOUSE_BUTTON_1,
+		GLFW_MOUSE_BUTTON_2,
+		GLFW_MOUSE_BUTTON_3,
+		GLFW_MOUSE_BUTTON_4,
+		GLFW_MOUSE_BUTTON_5,
+		GLFW_MOUSE_BUTTON_6,
+		GLFW_MOUSE_BUTTON_7,
+		GLFW_MOUSE_BUTTON_8,
+		GLFW_MOUSE_BUTTON_LAST,
+		GLFW_MOUSE_BUTTON_LEFT,
+		GLFW_MOUSE_BUTTON_RIGHT,
+		GLFW_MOUSE_BUTTON_MIDDLE,
+	};
+
 	void Window::Destroy()
 	{
 		if (this->window != nullptr)
@@ -61,6 +76,9 @@ namespace MxEngine
 		this->keyHeld = other.keyHeld;
 		this->keyPressed = other.keyPressed;
 		this->keyReleased = other.keyReleased;
+		this->mouseHeld = other.mouseHeld;
+		this->mousePressed = other.mousePressed;
+		this->mouseReleased = other.mouseReleased;
 		this->cursorMode = other.cursorMode;
 		this->windowPosition = other.windowPosition;
 		this->cursorPosition = other.cursorPosition;
@@ -142,6 +160,8 @@ namespace MxEngine
 			this->dispatcher->AddEvent(std::move(keyEvent));
 			auto mouseMoveEvent = MakeUnique<MouseMoveEvent>(this->cursorPosition.x, this->cursorPosition.y);
 			this->dispatcher->AddEvent(std::move(mouseMoveEvent));
+			auto mousePress = MakeUnique<MousePressEvent>(&this->mouseHeld, &this->mousePressed, &this->mouseReleased);
+			this->dispatcher->AddEvent(std::move(mousePress));
 		}
 	}
 
@@ -207,6 +227,21 @@ namespace MxEngine
 		return key != KeyCode::UNKNOWN && this->keyReleased[(size_t)key];
 	}
 
+	bool Window::IsMouseHeld(MouseButton button)
+	{
+		return this->mouseHeld[(size_t)button];
+	}
+
+    bool Window::IsMousePressed(MouseButton button)
+    {
+		return this->mousePressed[(size_t)button];
+    }
+
+	bool Window::IsMouseReleased(MouseButton button)
+	{
+		return this->mouseReleased[(size_t)button];
+	}
+
 	Window& Window::Create()
 	{
 		{
@@ -239,6 +274,16 @@ namespace MxEngine
 			glfwSetWindowSizeCallback(window, [](GLFWwindow* w, int width, int height)
 				{
 					glViewport(0, 0, width, height);
+				});
+			glfwSetMouseButtonCallback(window, [](GLFWwindow* w, int button, int action, int mods)
+				{
+					if (action == GLFW_REPEAT) return;
+
+					Window& window = *(Window*)glfwGetWindowUserPointer(w);
+					if (button >= 8) return;
+					window.mousePressed[(size_t)button] = (action == GLFW_PRESS);
+					window.mouseReleased[(size_t)button] = (action == GLFW_RELEASE);
+					window.mouseHeld[(size_t)button] = (action == GLFW_PRESS);
 				});
 		}
 		GraphicModule::OnWindowCreate(this->GetNativeHandle());

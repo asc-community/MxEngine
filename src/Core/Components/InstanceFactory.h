@@ -38,7 +38,7 @@
 
 namespace MxEngine
 {
-	class MxInstanceImpl
+	class MxInstance
 	{
 		Vector3 color{ 1.0f };
 	public:
@@ -61,7 +61,7 @@ namespace MxEngine
 	public:
 		struct Factory
 		{
-			FactoryImpl<MxInstanceImpl> inner;
+			FactoryImpl<MxInstance> inner;
 
 			template<typename T>
 			void Destroy(LocalResource<T, Factory>& resource)
@@ -79,9 +79,9 @@ namespace MxEngine
 		using ModelData = MxVector<Matrix4x4>;
 		using NormalData = MxVector<Matrix3x3>;
 		using ColorData = MxVector<Vector3>;
-		using BufferIndex = size_t;
+		using BufferIndex = uint16_t;
 
-		using MxInstance = LocalResource<MxInstanceImpl, Factory>;
+		using InstanceHandle = LocalResource<MxInstance, Factory>;
 	private:
 		Factory factory;
 		ModelData models;
@@ -96,7 +96,7 @@ namespace MxEngine
 			auto VBL = GraphicFactory::Create<VertexBufferLayout>();
 			VBL->Push<T>();
 			VBO->Load((float*)data.data(), data.size() * sizeof(T) / sizeof(float), UsageType::DYNAMIC_DRAW);
-			return mesh.AddInstancedBuffer(std::move(VBO), std::move(VBL));
+			return (BufferIndex)mesh.AddInstancedBuffer(std::move(VBO), std::move(VBL));
 		}
 
 		template<typename T>
@@ -109,14 +109,18 @@ namespace MxEngine
 		void RemoveInstancedBuffer(Mesh& mesh, size_t index);
 		void Destroy();
 	public:
+		bool IsStatic = false;
+
 		const auto& GetInstancePool() const { return this->factory.inner.Pool; }
 		auto& GetInstancePool() { return this->factory.inner.Pool; };
 		size_t GetCount() const { return this->GetInstancePool().Allocated(); }
 		auto GetInstances() { return ComponentView{ this->GetInstancePool() }; }
 
 		void Init();
+		void OnUpdate();
+
 		void SubmitInstances();
-		MxInstance MakeInstance();
+		InstanceHandle MakeInstance();
 
 		ModelData& GetModelData();
 		NormalData& GetNormalData();
@@ -129,4 +133,6 @@ namespace MxEngine
 		InstanceFactory& operator=(InstanceFactory&&) noexcept = default;
 		~InstanceFactory();
 	};
+
+	using InstanceHandle = LocalResource<MxInstance, InstanceFactory::Factory>;
 }

@@ -44,10 +44,10 @@ namespace MxEngine
 
 	struct CameraRender
 	{
-		GResource<FrameBuffer> framebufferMSAA;
-		GResource<RenderBuffer> renderbufferMSAA;
-		GResource<FrameBuffer> framebufferHDR;
-		GResource<Texture> bloomTextureHDR;
+		FrameBufferHandle framebufferMSAA;
+		RenderBufferHandle renderbufferMSAA;
+		FrameBufferHandle framebufferHDR;
+		TextureHandle bloomTextureHDR;
 
 		void Init(int width, int height);
 		void Resize(int width, int height);
@@ -59,7 +59,7 @@ namespace MxEngine
 		MAKE_COMPONENT(CameraController);
 
 		UniqueRef<CameraRender> renderBuffers = MakeUnique<CameraRender>();
-		GResource<Texture> renderTexture;
+		TextureHandle renderTexture;
 
 		Vector3 direction = { 1.0f, 0.0f, 0.0f };
 		Vector3 up = { 0.0f, 1.0f, 0.0f };
@@ -94,14 +94,14 @@ namespace MxEngine
 
 		const Matrix4x4& GetMatrix(const Vector3& position) const;
 		Matrix4x4 GetStaticMatrix() const;
-		GResource<FrameBuffer> GetFrameBufferMSAA() const;
-		GResource<FrameBuffer> GetFrameBufferHDR() const;
-		GResource<RenderBuffer> GetRenderBufferMSAA() const;
-		GResource<Texture> GetBloomTexture() const;
-		GResource<Texture> GetRenderTexture() const;
+		FrameBufferHandle GetFrameBufferMSAA() const;
+		FrameBufferHandle GetFrameBufferHDR() const;
+		RenderBufferHandle GetRenderBufferMSAA() const;
+		TextureHandle GetBloomTexture() const;
+		TextureHandle GetRenderTexture() const;
 		void ListenWindowResizeEvent();
 		void ResizeRenderTexture(size_t width, size_t height);
-		void SetRenderTexture(const GResource<Texture>& texture);
+		void SetRenderTexture(const TextureHandle& texture);
 		bool IsRendered() const;
 		void ToggleRendering(bool value);
 

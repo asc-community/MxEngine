@@ -133,27 +133,27 @@ namespace MxEngine
 		return ProjectionMatrix * (Matrix4x4)ViewMatrix;
     }
 
-	GResource<FrameBuffer> CameraController::GetFrameBufferMSAA() const
+	FrameBufferHandle CameraController::GetFrameBufferMSAA() const
 	{
 		return this->renderBuffers->framebufferMSAA;
 	}
 
-	GResource<FrameBuffer> CameraController::GetFrameBufferHDR() const
+	FrameBufferHandle CameraController::GetFrameBufferHDR() const
 	{
 		return this->renderBuffers->framebufferHDR;
 	}
 
-    GResource<RenderBuffer> CameraController::GetRenderBufferMSAA() const
+    RenderBufferHandle CameraController::GetRenderBufferMSAA() const
     {
 		return this->renderBuffers->renderbufferMSAA;
     }
 
-	GResource<Texture> CameraController::GetBloomTexture() const
+	TextureHandle CameraController::GetBloomTexture() const
 	{
 		return this->renderBuffers->bloomTextureHDR;
 	}
 
-	GResource<Texture> CameraController::GetRenderTexture() const
+	TextureHandle CameraController::GetRenderTexture() const
 	{
 		return this->renderTexture;
 	}
@@ -179,7 +179,7 @@ namespace MxEngine
 			this->renderBuffers->Resize((int)w, (int)h);
 	}
 
-	void CameraController::SetRenderTexture(const GResource<Texture>& texture)
+	void CameraController::SetRenderTexture(const TextureHandle& texture)
 	{
 		MX_ASSERT(texture.IsValid());
 		this->renderTexture = texture;
@@ -413,9 +413,9 @@ namespace MxEngine
 
 	void CameraRender::DeInit()
 	{
-		this->bloomTextureHDR  = GResource<Texture>      { };
-		this->framebufferHDR   = GResource<FrameBuffer>  { };
-		this->framebufferMSAA  = GResource<FrameBuffer>  { };
-		this->renderbufferMSAA = GResource<RenderBuffer> { };
+		this->bloomTextureHDR  = TextureHandle      { };
+		this->framebufferHDR   = FrameBufferHandle  { };
+		this->framebufferMSAA  = FrameBufferHandle  { };
+		this->renderbufferMSAA = RenderBufferHandle { };
 	}
 }

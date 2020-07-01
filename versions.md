@@ -142,3 +142,7 @@
 - audio support added for mp3, ogg, wav and flac files
 - added AudioSource and AudioListener components
 - audio sample with 3D sound example
+### 7.2.1
+- added typedefs for graphic and audio handles
+- added static InstanceFactory data submission
+- added mouse button events and InputManager functions

@@ -38,7 +38,7 @@ namespace MxEngine
     {
         MAKE_COMPONENT(SpotLight);
 
-        GResource<Texture> texture;
+        TextureHandle texture;
         float innerAngle  = 35.0f;
         float innerCos    = std::cos(Radians(innerAngle));
         float outerAngle  = 45.0f;
@@ -55,8 +55,8 @@ namespace MxEngine
         SpotLight& UseInnerAngle(float angle);
         SpotLight& UseOuterAngle(float angle);
 
-        [[nodiscard]] GResource<Texture> GetDepthTexture() const;
-        void AttachDepthTexture(const GResource<Texture>& texture);
+        [[nodiscard]] TextureHandle GetDepthTexture() const;
+        void AttachDepthTexture(const TextureHandle& texture);
         [[nodiscard]] Matrix4x4 GetMatrix(const Vector3& position) const;
     };
 }

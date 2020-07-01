@@ -32,7 +32,7 @@
 
 namespace MxEngine
 {
-	MaterialHandle ConvertMaterial(const MaterialInfo& mat, MxHashMap<StringId, GResource<Texture>>& textures)
+	MaterialHandle ConvertMaterial(const MaterialInfo& mat, MxHashMap<StringId, TextureHandle>& textures)
 	{
 		auto materialResource = ResourceFactory::Create<Material>();
 		auto& material = *materialResource;
@@ -66,7 +66,7 @@ namespace MxEngine
 	MeshRenderer::MaterialArray MeshRenderer::LoadMaterials(const MxString& path)
 	{
 		MaterialArray materials;
-		MxHashMap<StringId, GResource<Texture>> textures;
+		MxHashMap<StringId, TextureHandle> textures;
 		auto materialLibPath = path + MeshRenderer::GetMaterialFileSuffix();
 		auto materialLibrary = ObjectLoader::LoadMaterials(materialLibPath);
 

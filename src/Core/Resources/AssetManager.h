@@ -44,24 +44,24 @@ namespace MxEngine
     class AssetManager
     {
     public:
-        static GResource<CubeMap> LoadCubeMap(StringId hash);
-        static GResource<CubeMap> LoadCubeMap(const FilePath& path);
-        static GResource<CubeMap> LoadCubeMap(const MxString& path);
-        static GResource<CubeMap> LoadCubeMap(const char* path);
+        static CubeMapHandle LoadCubeMap(StringId hash);
+        static CubeMapHandle LoadCubeMap(const FilePath& path);
+        static CubeMapHandle LoadCubeMap(const MxString& path);
+        static CubeMapHandle LoadCubeMap(const char* path);
 
-        static GResource<Texture> LoadTexture(StringId hash);
-        static GResource<Texture> LoadTexture(const FilePath& path);
-        static GResource<Texture> LoadTexture(const MxString& path);
-        static GResource<Texture> LoadTexture(const char* path);
+        static TextureHandle LoadTexture(StringId hash);
+        static TextureHandle LoadTexture(const FilePath& path);
+        static TextureHandle LoadTexture(const MxString& path);
+        static TextureHandle LoadTexture(const char* path);
 
-        static GResource<Shader> LoadShader(StringId vertex, StringId fragment);
-        static GResource<Shader> LoadShader(const FilePath& vertex, const FilePath& fragment);
-        static GResource<Shader> LoadShader(const MxString& vertex, const MxString& fragment);
-        static GResource<Shader> LoadShader(const char* vertex, const char* fragment);
-        static GResource<Shader> LoadShader(StringId vertex, StringId geometry, StringId fragment);
-        static GResource<Shader> LoadShader(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment);
-        static GResource<Shader> LoadShader(const MxString& vertex, const MxString& geometry, const MxString& fragment);
-        static GResource<Shader> LoadShader(const char* vertex, const char* geometry, const char* fragment);
+        static ShaderHandle LoadShader(StringId vertex, StringId fragment);
+        static ShaderHandle LoadShader(const FilePath& vertex, const FilePath& fragment);
+        static ShaderHandle LoadShader(const MxString& vertex, const MxString& fragment);
+        static ShaderHandle LoadShader(const char* vertex, const char* fragment);
+        static ShaderHandle LoadShader(StringId vertex, StringId geometry, StringId fragment);
+        static ShaderHandle LoadShader(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment);
+        static ShaderHandle LoadShader(const MxString& vertex, const MxString& geometry, const MxString& fragment);
+        static ShaderHandle LoadShader(const char* vertex, const char* geometry, const char* fragment);
 
         static MeshHandle LoadMesh(StringId hash);
         static MeshHandle LoadMesh(const FilePath& path);
@@ -73,9 +73,9 @@ namespace MxEngine
         static MxVector<MaterialHandle> LoadMaterials(const MxString& path);
         static MxVector<MaterialHandle> LoadMaterials(const char* path);
 
-        static AResource<AudioBuffer> LoadAudio(StringId hash);
-        static AResource<AudioBuffer> LoadAudio(const FilePath& path);
-        static AResource<AudioBuffer> LoadAudio(const MxString& path);
-        static AResource<AudioBuffer> LoadAudio(const char* path);
+        static AudioBufferHandle LoadAudio(StringId hash);
+        static AudioBufferHandle LoadAudio(const FilePath& path);
+        static AudioBufferHandle LoadAudio(const MxString& path);
+        static AudioBufferHandle LoadAudio(const char* path);
     };
 }

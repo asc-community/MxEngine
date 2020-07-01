@@ -46,8 +46,8 @@ namespace MxEngine
 		};
 		using FrontendStorage = MxVector<Point>;
 
-		GResource<VertexBuffer> VBO;
-		GResource<VertexArray> VAO;
+		VertexBufferHandle VBO;
+		VertexArrayHandle VAO;
 
 		FrontendStorage storage;
 	public:
@@ -61,6 +61,6 @@ namespace MxEngine
 		void ClearBuffer(); 
 		void SubmitBuffer();
 		size_t GetSize() const;
-		GResource<VertexArray> GetVAO() const;
+		VertexArrayHandle GetVAO() const;
 	};
 }

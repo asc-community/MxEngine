@@ -32,7 +32,7 @@
 
 namespace MxEngine
 {
-    void MeshLOD::Generate(LODConfig config)
+    void MeshLOD::Generate(const LODConfig& config)
     {
         auto& object = MxObject::GetByComponent(*this);
         auto meshSource = object.GetComponent<MeshSource>();

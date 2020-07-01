@@ -38,7 +38,7 @@ namespace MxEngine
     {
         MAKE_COMPONENT(PointLight);
 
-        GResource<CubeMap> cubemap;
+        CubeMapHandle cubemap;
         Vector3 factors   = MakeVector3(1.0f, 0.009f, 0.032f);
     public:
         PointLight();
@@ -53,8 +53,8 @@ namespace MxEngine
         [[nodiscard]] const Vector3& GetFactors() const;
         [[nodiscard]] float ComputeRadius() const;
 
-        [[nodiscard]] GResource<CubeMap> GetDepthCubeMap() const;
-        void AttachDepthCubeMap(const GResource<CubeMap>& cubemap);
+        [[nodiscard]] CubeMapHandle GetDepthCubeMap() const;
+        void AttachDepthCubeMap(const CubeMapHandle& cubemap);
         [[nodiscard]] Matrix4x4 GetMatrix(size_t index, const Vector3& position) const;
     };
 }

@@ -60,7 +60,7 @@ namespace MxEngine
             GREY,
         };
 
-        static inline GResource<Texture> MakeTexture(uint8_t r, uint8_t g, uint8_t b)
+        static inline TextureHandle MakeTexture(uint8_t r, uint8_t g, uint8_t b)
         {
             auto texture = GraphicFactory::Create<Texture>();
             uint8_t buffer[] = { r, g, b };
@@ -68,12 +68,12 @@ namespace MxEngine
             return texture;
         }
 
-        static inline GResource<Texture> MakeTexture(float r, float g, float b)
+        static inline TextureHandle MakeTexture(float r, float g, float b)
         {
             return MakeTexture(MakeVector3(r, g, b));
         }
 
-        static inline GResource<Texture> MakeTexture(const Vector3& color)
+        static inline TextureHandle MakeTexture(const Vector3& color)
         {
             uint8_t r = static_cast<uint8_t>(Clamp(color.r, 0.0f, 1.0f) * 255.0f);
             uint8_t g = static_cast<uint8_t>(Clamp(color.g, 0.0f, 1.0f) * 255.0f);
@@ -81,12 +81,12 @@ namespace MxEngine
             return MakeTexture(r, g, b);
         }
 
-        static GResource<Texture> MakeTexture(Palette color)
+        static TextureHandle MakeTexture(Palette color)
         {
-            return MakeTexture(ColorPaletteToVector3(color));
+            return MakeTexture(Create(color));
         }
 
-        static inline GResource<CubeMap> MakeCubeMap(uint8_t r, uint8_t g, uint8_t b)
+        static inline CubeMapHandle MakeCubeMap(uint8_t r, uint8_t g, uint8_t b)
         {
             auto cubemap = GraphicFactory::Create<CubeMap>();
             uint8_t buffer[] = { r, g, b };
@@ -95,12 +95,12 @@ namespace MxEngine
             return cubemap;
         }
 
-        static inline GResource<CubeMap> MakeCubeMap(float r, float g, float b)
+        static inline CubeMapHandle MakeCubeMap(float r, float g, float b)
         {
             return MakeCubeMap(MakeVector3(r, g, b));
         }
 
-        static inline GResource<CubeMap> MakeCubeMap(const Vector3& color)
+        static inline CubeMapHandle MakeCubeMap(const Vector3& color)
         {
             uint8_t r = static_cast<uint8_t>(Clamp(color.r, 0.0f, 1.0f) * 255.0f);
             uint8_t g = static_cast<uint8_t>(Clamp(color.g, 0.0f, 1.0f) * 255.0f);
@@ -108,12 +108,12 @@ namespace MxEngine
             return MakeCubeMap(r, g, b);
         }
 
-        static GResource<CubeMap> MakeCubeMap(Palette color)
+        static CubeMapHandle MakeCubeMap(Palette color)
         {
-            return MakeCubeMap(ColorPaletteToVector3(color));
+            return MakeCubeMap(Create(color));
         }
 
-        static Vector3 ColorPaletteToVector3(Palette color)
+        static Vector3 Create(Palette color)
         {
             switch (color)
             {

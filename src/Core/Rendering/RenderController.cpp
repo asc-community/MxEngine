@@ -292,7 +292,7 @@ namespace MxEngine
 		this->GetRenderEngine().DrawTrianglesInstanced(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
 	}
 
-	GResource<Texture> RenderController::PerformBloomIterations(const GResource<Texture>& inputBloom, uint8_t iterations)
+	TextureHandle RenderController::PerformBloomIterations(const TextureHandle& inputBloom, uint8_t iterations)
 	{
 		if (iterations == 0) return this->Pipeline.Environment.DefaultBlackMap;
 		MAKE_SCOPE_PROFILER("RenderController::PerformBloomIterarations()");
@@ -346,21 +346,21 @@ namespace MxEngine
 		this->GetRenderEngine().Clear();
 	}
 
-	void RenderController::AttachDepthMap(const GResource<Texture>& texture)
+	void RenderController::AttachDepthMap(const TextureHandle& texture)
 	{
 		auto& framebuffer = this->Pipeline.Environment.DepthFrameBuffer;
 		framebuffer->AttachTexture(texture, Attachment::DEPTH_ATTACHMENT);
 		this->AttachFrameBuffer(framebuffer);
 	}
 
-	void RenderController::AttachDepthMap(const GResource<CubeMap>& cubemap)
+	void RenderController::AttachDepthMap(const CubeMapHandle& cubemap)
 	{
 		auto& framebuffer = this->Pipeline.Environment.DepthFrameBuffer;
 		framebuffer->AttachCubeMap(cubemap, Attachment::DEPTH_ATTACHMENT);
 		this->AttachFrameBuffer(framebuffer);
 	}
 
-	void RenderController::AttachFrameBuffer(const GResource<FrameBuffer>& framebuffer)
+	void RenderController::AttachFrameBuffer(const FrameBufferHandle& framebuffer)
 	{
 		framebuffer->Bind();
 		this->SetViewport(0, 0, (int)framebuffer->GetWidth(), (int)framebuffer->GetHeight());
@@ -376,14 +376,14 @@ namespace MxEngine
 		this->Clear();
 	}
 
-	void RenderController::RenderToFrameBuffer(const GResource<FrameBuffer>& framebuffer, const Shader& shader)
+	void RenderController::RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const Shader& shader)
 	{
 		this->AttachFrameBuffer(framebuffer);
 		auto& rectangle = this->Pipeline.Environment.RectangularObject;
 		this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, shader);
 	}
 
-	void RenderController::RenderToTexture(const GResource<Texture>& texture, const Shader& shader, Attachment attachment)
+	void RenderController::RenderToTexture(const TextureHandle& texture, const Shader& shader, Attachment attachment)
 	{
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(texture, attachment);
 		this->RenderToFrameBuffer(this->Pipeline.Environment.PostProcessFrameBuffer, shader);
@@ -608,7 +608,7 @@ namespace MxEngine
 		if (!primitive.RenderMaterial.HeightMap.IsValid())   primitive.RenderMaterial.HeightMap   = this->Pipeline.Environment.DefaultHeightMap;
     }
 
-	void RenderController::SubmitFinalImage(const GResource<Texture>& texture)
+	void RenderController::SubmitFinalImage(const TextureHandle& texture)
 	{
 		auto& finalShader = *this->Pipeline.Environment.ImageForwardShader;
 		auto& rectangle = this->Pipeline.Environment.RectangularObject;

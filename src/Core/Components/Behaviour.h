@@ -45,6 +45,9 @@ namespace MxEngine
         UpdateCallbackType UpdateCallback;
 
         Behaviour() = default;
+        ~Behaviour();
+
+        void Init();
 
         template<typename T>
         Behaviour(T&& customBehaviour)
