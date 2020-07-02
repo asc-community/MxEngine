@@ -40,28 +40,54 @@ namespace MxEngine
         MAKE_COMPONENT(Behaviour);
 
         using TimeDelta = float;
-        using UpdateCallbackType = MxFunction<void(MxObject&, TimeDelta)>::type;
+        using UpdateCallbackType = MxFunction<void(void*, MxObject&, TimeDelta)>::type;
+        using DeleteCallbackType = MxFunction<void(void*)>::type;
+
+        UpdateCallbackType updateCallback;
+        DeleteCallbackType deleteCallback;
+        void* userBehaviour = nullptr;
     public:
-        UpdateCallbackType UpdateCallback;
 
         Behaviour() = default;
         ~Behaviour();
 
         void Init();
+        void InvokeUpdate(TimeDelta dt);
+        void RemoveBehaviour();
+        bool HasBehaviour() const;
 
         template<typename T>
         Behaviour(T&& customBehaviour)
         {
-            this->SetUpdate(std::forward<T>(customBehaviour));
+            this->SetBehaviour(std::forward<T>(customBehaviour));
         }
 
         template<typename T>
-        void SetUpdate(T&& customBehaviour)
+        void SetBehaviour(T&& customBehaviour)
         {
-            static_assert(!std::is_reference_v<T>, "passing reference to object as callback is prohibited");
-            this->UpdateCallback = [object = std::move(customBehaviour)](MxObject& self, TimeDelta dt) mutable { object.OnUpdate(self, dt); };
+            static_assert(!std::is_reference_v<T>, "passing reference to object as behaviour is prohibited");
+
+            this->RemoveBehaviour();
+
+            this->userBehaviour = std::malloc(sizeof(T));
+            auto* _ = new(this->userBehaviour) T(std::move(customBehaviour)); //-V799
+
+            this->updateCallback = [](void* behaviour, MxObject& self, TimeDelta dt) mutable { ((T*)behaviour)->OnUpdate(self, dt); };
+            this->deleteCallback = [](void* behaviour) { reinterpret_cast<T*>(behaviour)->~T(); };
         }
-        
-        void InvokeUpdate(TimeDelta dt);
+
+        template<typename T>
+        T& GetBehaviour()
+        {
+            MX_ASSERT(this->HasBehaviour());
+            return *reinterpret_cast<T*>(this->userBehaviour);
+        }
+
+        template<typename T>
+        const T& GetBehaviour() const
+        {
+            MX_ASSERT(this->HasBehaviour());
+            return *reinterpret_cast<const T*>(this->userBehaviour);
+        }
     };
 }

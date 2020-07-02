@@ -35,6 +35,7 @@ namespace MxEngine
 {
     Behaviour::~Behaviour()
     {
+        this->RemoveBehaviour();
         EventManager::RemoveEventListener(MxObject::GetComponentUUID(*this));
     }
 
@@ -46,7 +47,24 @@ namespace MxEngine
 
     void Behaviour::InvokeUpdate(Behaviour::TimeDelta dt)
     {
-        if(this->UpdateCallback)
-            this->UpdateCallback(MxObject::GetByComponent(*this), dt);
+        if (this->userBehaviour != nullptr)
+        {
+            this->updateCallback(this->userBehaviour, MxObject::GetByComponent(*this), dt);
+        }
+    }
+
+    void Behaviour::RemoveBehaviour()
+    {
+        if (this->HasBehaviour())
+        {
+            this->deleteCallback(this->userBehaviour);
+            std::free(this->userBehaviour);
+            this->userBehaviour = nullptr;
+        }
+    }
+
+    bool Behaviour::HasBehaviour() const
+    {
+        return this->userBehaviour != nullptr;
     }
 }

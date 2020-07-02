@@ -314,7 +314,7 @@ namespace MxEngine
 					secondEnd = now;
 					EventManager::AddEvent(MakeUnique<FpsUpdateEvent>(this->counterFPS));
 				}
-				timeDelta = now - frameEnd;
+				this->timeDelta = Min(now - frameEnd, 1.0f / 30.0f);
 				frameEnd = now;
 
 				// event phase

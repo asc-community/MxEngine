@@ -150,3 +150,7 @@
 - Transform is no longer component and stored directly in MxObject
 - InstanceFactory now produces MxObjects with Instance component (is used to access color or parent)
 - Removed dependency from python36.dll if MXENGINE_USE_PYTHON macro is not defined
+### 7.2.3
+- key and mouse events are not activated in editor mode (if you still want to access them, consider Window::Is???HeldUnchecked() method)
+- you can now access custom behaviour using GetBehaviour<T>() where T is your behaviour callback
+- time delta now cannot be bigger than 1/30 of second

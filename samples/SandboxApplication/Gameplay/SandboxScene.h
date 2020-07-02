@@ -22,9 +22,6 @@ public:
 		auto surface = MxObject::Create();
 		InitSurface(*surface);
 
-		auto sound = MxObject::Create();
-		InitSound(*sound);
-
         // auto arc = MxObject::Create();
 		// InitArc(*arc);
 
@@ -48,6 +45,9 @@ public:
 
 		auto camera = MxObject::Create();
 		InitCamera(*camera);
+
+		auto sound = MxObject::Create();
+		InitSound(*sound);
 
 		RenderManager::SetViewport(camera->GetComponent<CameraController>());
     }

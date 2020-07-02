@@ -78,7 +78,7 @@ namespace MxEngine
 
 		ScriptEngine& GetEngine();
 		Vector2 GetSize() const;
-		bool IsToggled() const;
+		bool IsActive() const;
 
 		void ExecuteScript(const MxString& code);
 		bool HasErrorsInExecution() const;

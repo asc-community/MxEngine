@@ -143,11 +143,16 @@ namespace MxEngine
 	{
 		Logger::Instance().Debug("MxEngine::ConsoleBinding", MxFormat("bound console to keycode: {0}", EnumToString(openKey)));
 		EventManager::AddEventListener("RuntimeEditor", 
-		[cursorPos = Vector2(), cursorModeCached = CursorMode::DISABLED, openKey](UpdateEvent& event) mutable
+		[cursorPos = Vector2(), cursorModeCached = CursorMode::DISABLED, openKey, savedStateKeyHeld = false](UpdateEvent& event) mutable
 		{
-			if (InputManager::IsKeyPressed(openKey))
+			bool isHeld = Application::Get()->GetWindow().IsKeyHeldUnchecked(openKey);
+			if (isHeld != savedStateKeyHeld) savedStateKeyHeld = false;
+
+
+			if (isHeld && !savedStateKeyHeld)
 			{
-				if (Application::Get()->GetRuntimeEditor().IsToggled())
+				savedStateKeyHeld = true;
+				if (Application::Get()->GetRuntimeEditor().IsActive())
 				{
 					InputManager::SetCursorMode(cursorModeCached);
 					Application::Get()->ToggleRuntimeEditor(false);
@@ -180,7 +185,7 @@ namespace MxEngine
 		return Vector2(this->console->GetSize().x, this->console->GetSize().y);
 	}
 
-	bool RuntimeEditor::IsToggled() const
+	bool RuntimeEditor::IsActive() const
 	{
 		return this->shouldRender;
 	}

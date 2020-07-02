@@ -87,7 +87,11 @@ namespace MxEngine::GUI
 	{
 		TREE_NODE_PUSH("Behaviour");
 		REMOVE_COMPONENT_BUTTON(behaviour);
-		ImGui::Text("has update callback: %s", BOOL_STRING(behaviour.UpdateCallback));
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("has update callback: %s", BOOL_STRING(behaviour.HasBehaviour()));
+		ImGui::SameLine();
+		if (ImGui::Button("remove")) 
+			behaviour.RemoveBehaviour();
 	}
 
 	// TODO: runtime editing of script file
@@ -124,7 +128,7 @@ namespace MxEngine::GUI
 
 			GUI::Indent _(5.0f);
 			ImGui::PushID(id);
-			MxString nodeName = MxFormat("instance #{0}", id++);
+			MxString nodeName = MxFormat("instance #{0}", id++); //-V127
 			Application::Get()->GetRuntimeEditor().DrawMxObject(nodeName, *self->GetInstancePool()[i]);
 			ImGui::PopID();
 		}

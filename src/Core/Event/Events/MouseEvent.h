@@ -17,18 +17,18 @@ namespace MxEngine
 
 	enum class MouseButton
 	{
-		_1,
-		_2,
-		_3,
-		_4,
-		_5,
-		_6,
-		_7,
-		_8,
-		LAST,
-		LEFT,
-		RIGHT,
-		MIDDLE,
+		_1 = 0,
+		_2 = 1,
+		_3 = 2,
+		_4 = 3,
+		_5 = 4,
+		_6 = 5,
+		_7 = 6,
+		_8 = 7,
+		LAST = 7,
+		LEFT = 0,
+		RIGHT = 1,
+		MIDDLE = 2,
 	};
 
 	class MousePressEvent : public IEvent

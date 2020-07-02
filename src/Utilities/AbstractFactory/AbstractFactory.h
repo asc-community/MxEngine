@@ -176,27 +176,27 @@ namespace MxEngine
 
         T* operator->()
         {
-            MX_ASSERT(this->IsValid());
+            MX_ASSERT(this->IsValid()); // access of null handle
             if (!this->IsValid()) return nullptr;
             return this->GetUnchecked();
         }
 
         [[nodiscard]] const T* operator->() const
         {
-            MX_ASSERT(this->IsValid());
+            MX_ASSERT(this->IsValid()); // access of null handle
             if (!this->IsValid()) return nullptr;
             return this->GetUnchecked();
         }
 
         [[nodiscard]] T& operator*()
         {
-            MX_ASSERT(this->IsValid());
+            MX_ASSERT(this->IsValid()); // access of null handle
             return *this->GetUnchecked();
         }
 
         [[nodiscard]] const T& operator*() const
         {
-            MX_ASSERT(this->IsValid());
+            MX_ASSERT(this->IsValid()); // access of null handle
             return *this->GetUnchecked();
         }
 

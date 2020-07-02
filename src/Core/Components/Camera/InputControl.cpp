@@ -57,6 +57,7 @@ namespace MxEngine
 			auto vecRight   = MakeVector3(-1.0f, 0.0f, 0.0f);
 			auto vecUp      = MakeVector3( 0.0f, 1.0f, 0.0f);
 			float moveSpeed = 1.0f;
+			auto moveDirection = MakeVector3(0.0f);
 			if (camera.IsValid())
 			{
 				vecForward = camera->GetForwardVector();
@@ -74,28 +75,30 @@ namespace MxEngine
 			auto dt = Application::Get()->GetTimeDelta();
 			if (event.IsHeld(forward))
 			{
-				object->Transform.Translate(vecForward * moveSpeed * dt);
+				moveDirection += vecForward;
 			}
 			if (event.IsHeld(back))
 			{
-				object->Transform.Translate(-1.0f * vecForward * moveSpeed * dt);
+				moveDirection -= vecForward;
 			}
 			if (event.IsHeld(right))
 			{
-				object->Transform.Translate(vecRight * moveSpeed * dt);
+				moveDirection += vecRight;
 			}
 			if (event.IsHeld(left))
 			{
-				object->Transform.Translate(-1.0f * vecRight * moveSpeed * dt);
+				moveDirection -= vecRight;
 			}
 			if (event.IsHeld(up))
 			{
-				object->Transform.Translate(vecUp * moveSpeed * dt);
+				moveDirection += vecUp;
 			}
 			if (event.IsHeld(down))
 			{
-				object->Transform.Translate(-1.0f * vecUp * moveSpeed * dt);
+				moveDirection -= vecUp;
 			}
+			if(moveDirection != MakeVector3(0.0f))
+				object->Transform.Translate(Normalize(moveDirection) * moveSpeed * dt);
 		});
 	}
 	

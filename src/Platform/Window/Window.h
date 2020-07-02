@@ -99,6 +99,8 @@ namespace MxEngine
 		bool IsMouseHeld(MouseButton button);
 		bool IsMousePressed(MouseButton button);
 		bool IsMouseReleased(MouseButton button);
+		bool IsKeyHeldUnchecked(KeyCode key);
+		bool IsMouseHeldUnchecked(MouseButton button);
 		WindowHandle GetNativeHandle();
 		AppEventDispatcher& GetEventDispatcher();
 		bool IsCreated() const;

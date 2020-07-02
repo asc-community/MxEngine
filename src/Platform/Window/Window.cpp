@@ -148,21 +148,13 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("Window::PullEvents");
 		this->keyPressed.reset();
 		this->keyReleased.reset();
+		this->mousePressed.reset();
+		this->mouseReleased.reset();
 
 		glfwPollEvents();
 
 		if (this->doubleBuffer)
 			glfwSwapBuffers(this->window);
-
-		if (this->dispatcher != nullptr)
-		{
-			auto keyEvent = MakeUnique<KeyEvent>(&this->keyHeld, &this->keyPressed, &this->keyReleased);
-			this->dispatcher->AddEvent(std::move(keyEvent));
-			auto mouseMoveEvent = MakeUnique<MouseMoveEvent>(this->cursorPosition.x, this->cursorPosition.y);
-			this->dispatcher->AddEvent(std::move(mouseMoveEvent));
-			auto mousePress = MakeUnique<MousePressEvent>(&this->mouseHeld, &this->mousePressed, &this->mouseReleased);
-			this->dispatcher->AddEvent(std::move(mousePress));
-		}
 	}
 
 	void Window::OnUpdate()
@@ -179,6 +171,21 @@ namespace MxEngine
 				this->width =  (int)currentSize.x;
 				this->height = (int)currentSize.y;
 			}
+			auto keyEvent = MakeUnique<KeyEvent>(&this->keyHeld, &this->keyPressed, &this->keyReleased);
+			this->dispatcher->AddEvent(std::move(keyEvent));
+			auto mouseMoveEvent = MakeUnique<MouseMoveEvent>(this->cursorPosition.x, this->cursorPosition.y);
+			this->dispatcher->AddEvent(std::move(mouseMoveEvent));
+			auto mousePress = MakeUnique<MousePressEvent>(&this->mouseHeld, &this->mousePressed, &this->mouseReleased);
+			this->dispatcher->AddEvent(std::move(mousePress));
+		}
+		else // do not store key and mouse states if dispatcher is nullptr
+		{
+			this->keyPressed.reset();
+			this->keyReleased.reset();
+			this->keyHeld.reset();
+			this->mousePressed.reset();
+			this->mouseReleased.reset();
+			this->mouseHeld.reset();
 		}
 	}
 
@@ -240,6 +247,20 @@ namespace MxEngine
 	bool Window::IsMouseReleased(MouseButton button)
 	{
 		return this->mouseReleased[(size_t)button];
+	}
+
+    bool Window::IsKeyHeldUnchecked(KeyCode key)
+    {
+		if (this->window == nullptr) return false;
+		auto state = glfwGetKey(this->window, (int)key);
+		return state == GLFW_PRESS;
+    }
+
+	bool Window::IsMouseHeldUnchecked(MouseButton button)
+	{
+		if (this->window == nullptr) return false;
+		auto state = glfwGetMouseButton(this->window, buttonTable[(size_t)button]);
+		return state == GLFW_PRESS;
 	}
 
 	Window& Window::Create()
