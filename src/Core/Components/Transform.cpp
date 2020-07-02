@@ -36,6 +36,40 @@ namespace MxEngine
     static Vector3 RightVec   = MakeVector3(-1.0f, 0.0f, 0.0f);
     static Vector3 UpVec      = MakeVector3( 0.0f, 1.0f, 0.0f);
 
+    void Transform::Copy(const Transform& other) noexcept
+    {
+        this->translation = other.GetTranslation();
+        this->scale = other.GetScale();
+        this->rotation = other.GetRotation();
+        this->eulerRotation = other.GetEulerRotation();
+        other.GetMatrix(this->transform);
+        other.GetNormalMatrix(this->transform, this->normalMatrix);
+        this->needTransformUpdate = false;
+        this->needRotationUpdate = false;
+    }
+
+    Transform::Transform(const Transform& other)
+    {
+        this->Copy(other);
+    }
+
+    Transform::Transform(Transform&& other) noexcept
+    {
+        this->Copy(other);
+    }
+
+    Transform& Transform::operator=(const Transform& other)
+    {
+        this->Copy(other);
+        return *this;
+    }
+
+    Transform& Transform::operator=(Transform&& other) noexcept
+    {
+        this->Copy(other);
+        return *this;
+    }
+
     const Matrix4x4& Transform::GetMatrix() const
     {
         if (this->needTransformUpdate)

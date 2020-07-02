@@ -77,11 +77,11 @@ namespace MxEngine
 
         EventManager::RemoveEventListener(uuid);
 
-        EventManager::AddEventListener(uuid, [tr = object.Transform](UpdateEvent& e) mutable
+        EventManager::AddEventListener(uuid, [object = MxObject::GetHandleByComponent(*this)](UpdateEvent& e) mutable
         {
             auto viewport = RenderManager::GetViewport();
             if (viewport.IsValid()) 
-                tr->SetPosition(MxObject::GetByComponent(*viewport).Transform->GetPosition());
+                object->Transform.SetPosition(MxObject::GetByComponent(*viewport).Transform.GetPosition());
         });
     }
 }

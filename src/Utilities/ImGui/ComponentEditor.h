@@ -36,6 +36,7 @@ namespace MxEngine::GUI
 	void BehaviourEditor(Behaviour& behaviour);
 	void ScriptEditor(Script& script);
 	void InstanceFactoryEditor(InstanceFactory& instanceFactory);
+	void InstanceEditor(Instance& instance);
 	void SkyboxEditor(Skybox& skybox);
 	void DebugDrawEditor(DebugDraw& debugDraw);
 	void MeshRendererEditor(MeshRenderer& meshRenderer);

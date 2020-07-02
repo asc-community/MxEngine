@@ -74,6 +74,8 @@ namespace MxEngine
 		void Toggle(bool isVisible = true);
 		void AddKeyBinding(KeyCode openKey);
 
+		void DrawMxObject(const MxString& treeName, MxObject& object);
+
 		ScriptEngine& GetEngine();
 		Vector2 GetSize() const;
 		bool IsToggled() const;

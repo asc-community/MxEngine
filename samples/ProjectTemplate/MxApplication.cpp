@@ -30,7 +30,7 @@ namespace ProjectTemplate
             auto cubeObject = MxObject::Create();
             cubeObject->Name = "Cube";
             // move it a bit away from camera
-            cubeObject->Transform->Translate(MakeVector3(-1.0f, -1.0f, 3.0f));
+            cubeObject->Transform.Translate(MakeVector3(-1.0f, -1.0f, 3.0f));
             // add mesh to a cube using Primitives class
             auto meshSource = cubeObject->AddComponent<MeshSource>(Primitives::CreateCube());
             // add default (white) material using MeshRenderer component

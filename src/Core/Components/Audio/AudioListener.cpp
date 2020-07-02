@@ -15,7 +15,7 @@ namespace MxEngine
     void AudioListener::OnUpdate()
     {
         auto& object = MxObject::GetByComponent(*this);
-        auto position = object.Transform->GetPosition();
+        auto position = object.Transform.GetPosition();
         auto camera = object.GetComponent<CameraController>();
 
         if (camera.IsValid())

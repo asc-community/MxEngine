@@ -28,62 +28,120 @@
 
 #pragma once
 
-#include <vector>
-#include "Utilities/Math/Math.h"
-#include "Utilities/Memory/Memory.h"
-#include "Utilities/Profiler/Profiler.h"
-#include "Core/Components/Transform.h"
-#include "Utilities/AbstractFactory/AbstractFactory.h"
-#include "Core/Resources/Mesh.h"
+#include "Core/Components/Instance.h"
 
 namespace MxEngine
 {
-	class MxInstance
-	{
-		Vector3 color{ 1.0f };
-	public:
-		Transform Transform;
+    class InstanceView
+    {
+    public:
+        using Pool = VectorPool<MxObject::Handle>;
 
-		inline void SetColor(const Vector3& color)
-		{
-			this->color = Clamp(color, MakeVector3(0.0f), MakeVector3(1.0f));
-		}
+        class InstanceIterator
+        {
+        public:
+            using PoolIterator = typename Pool::PoolIterator;
 
-		inline const Vector3& GetColor() const
-		{
-			return this->color;
-		}
-	};
+        private:
+            PoolIterator it;
+
+        public:
+            InstanceIterator(PoolIterator it) : it(it) {}
+
+            InstanceIterator operator++(int)
+            {
+                InstanceIterator copy = *this;
+                it++;
+                return copy;
+            }
+
+            InstanceIterator operator++()
+            {
+                ++it;
+                return *this;
+            }
+
+            InstanceIterator operator--(int)
+            {
+                InstanceIterator copy = *this;
+                it--;
+                return copy;
+            }
+
+            InstanceIterator operator--()
+            {
+                --it;
+                return *this;
+            }
+
+            MxObject::Handle& operator->()
+            {
+                return *it;
+            }
+
+            const MxObject::Handle& operator->() const
+            {
+                return *it;
+            }
+
+            MxObject::Handle& operator*()
+            {
+                return *it;
+            }
+
+            const MxObject::Handle& operator*() const
+            {
+                return *it;
+            }
+
+            bool operator==(const InstanceIterator& other) const
+            {
+                return it == other.it;
+            }
+
+            bool operator!=(const InstanceIterator& other) const
+            {
+                return it != other.it;
+            }
+        };
+    private:
+        Pool& ref;
+
+    public:
+        explicit InstanceView(Pool& ref) : ref(ref) {}
+
+        InstanceIterator begin()
+        {
+            return InstanceIterator{ ref.begin() };
+        }
+
+        const InstanceIterator begin() const
+        {
+            return InstanceIterator{ ref.begin() };
+        }
+
+        InstanceIterator end()
+        {
+            return InstanceIterator{ ref.end() };
+        }
+
+        const InstanceIterator end() const
+        {
+            return InstanceIterator{ ref.end() };
+        }
+    };
 
 	class InstanceFactory
 	{
 		MAKE_COMPONENT(InstanceFactory);
 	public:
-		struct Factory
-		{
-			FactoryImpl<MxInstance> inner;
-
-			template<typename T>
-			void Destroy(LocalResource<T, Factory>& resource)
-			{
-				inner.GetPool<T>().Deallocate(resource.GetHandle());
-			}
-
-			template<typename T>
-			auto& Get()
-			{
-				return inner.GetPool<T>();
-			}
-		};
-
+		using InstancePool = VectorPool<MxObject::Handle>;
 		using ModelData = MxVector<Matrix4x4>;
 		using NormalData = MxVector<Matrix3x3>;
 		using ColorData = MxVector<Vector3>;
 		using BufferIndex = uint16_t;
-
-		using InstanceHandle = LocalResource<MxInstance, Factory>;
 	private:
-		Factory factory;
+		InstancePool pool;
 		ModelData models;
 		NormalData normals;
 		ColorData colors;
@@ -107,20 +165,22 @@ namespace MxEngine
 		}
 
 		void RemoveInstancedBuffer(Mesh& mesh, size_t index);
+		void RemoveDanglingHandles();
 		void Destroy();
 	public:
 		bool IsStatic = false;
 
-		const auto& GetInstancePool() const { return this->factory.inner.Pool; }
-		auto& GetInstancePool() { return this->factory.inner.Pool; };
+		const InstancePool& GetInstancePool() const { return this->pool; }
+		InstancePool& GetInstancePool() { return this->pool; };
 		size_t GetCount() const { return this->GetInstancePool().Allocated(); }
-		auto GetInstances() { return ComponentView{ this->GetInstancePool() }; }
+        InstanceView GetInstances() { return InstanceView{ this->GetInstancePool() }; }
 
 		void Init();
 		void OnUpdate();
 
 		void SubmitInstances();
-		InstanceHandle MakeInstance();
+		MxObject::Handle MakeInstance();
+		void DestroyInstances();
 
 		ModelData& GetModelData();
 		NormalData& GetNormalData();
@@ -128,11 +188,9 @@ namespace MxEngine
 
 		InstanceFactory() = default;
 		InstanceFactory(const InstanceFactory&) = delete;
-		InstanceFactory(InstanceFactory&&) noexcept = default;
+		InstanceFactory(InstanceFactory&&) noexcept = delete;
 		InstanceFactory& operator=(const InstanceFactory&) = delete;
-		InstanceFactory& operator=(InstanceFactory&&) noexcept = default;
+		InstanceFactory& operator=(InstanceFactory&&) noexcept = delete;
 		~InstanceFactory();
 	};
-
-	using InstanceHandle = LocalResource<MxInstance, InstanceFactory::Factory>;
 }

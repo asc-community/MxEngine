@@ -35,7 +35,7 @@ namespace MxEngine
 {
     void AudioSource::OnUpdate()
     {
-        auto position = MxObject::GetByComponent(*this).Transform->GetPosition();
+        auto position = MxObject::GetByComponent(*this).Transform.GetPosition();
         this->player->SetPosition(position.x, position.y, position.z);
     }
 

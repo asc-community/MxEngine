@@ -43,6 +43,7 @@
     <ClInclude Include="Core\Components\Camera\PerspectiveCamera.h" />
     <ClInclude Include="Core\Components\Camera\VRCameraController.h" />
     <ClInclude Include="Core\Components\Components.h" />
+    <ClInclude Include="Core\Components\Instance.h" />
     <ClInclude Include="Core\Components\InstanceFactory.h" />
     <ClInclude Include="Core\Components\Lighting\LightBase.h" />
     <ClInclude Include="Core\Components\Rendering\DebugDraw.h" />
@@ -97,6 +98,7 @@
     <ClInclude Include="Utilities\Image\ImageManager.h" />
     <ClInclude Include="Utilities\Image\ImageConverter.h" />
     <ClInclude Include="Utilities\ImGui\ComponentEditor.h" />
+    <ClInclude Include="Utilities\ImGui\MxObjectEditor.h" />
     <ClInclude Include="Utilities\ImGui\RenderEditor.h" />
     <ClInclude Include="Utilities\ImGui\ResourceEditor.h" />
     <ClInclude Include="Utilities\ImGui\Viewport.h" />
@@ -452,6 +454,7 @@
     <ClCompile Include="Utilities\Image\ImageManager.cpp" />
     <ClCompile Include="Utilities\ImGui\ComponentEditor.cpp" />
     <ClCompile Include="Utilities\ImGui\GraphicConsole.cpp" />
+    <ClCompile Include="Utilities\ImGui\MxObjectEditor.cpp" />
     <ClCompile Include="Utilities\ImGui\RenderEditor.cpp" />
     <ClCompile Include="Utilities\ImGui\ResourceEditor.cpp" />
     <ClCompile Include="Utilities\ImGui\Viewport.cpp" />

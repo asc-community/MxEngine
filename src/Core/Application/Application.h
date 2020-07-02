@@ -56,7 +56,7 @@ namespace MxEngine
 		AppEventDispatcher dispatcher;
 		RuntimeEditor console;
 		TimeStep timeDelta = 0.0f;
-		int counterFPS = 0;
+		size_t counterFPS = 0;
 		bool shouldClose = false;
 		bool isRunning = false;
 
@@ -82,7 +82,7 @@ namespace MxEngine
 		RuntimeEditor& GetRuntimeEditor();
 		Window& GetWindow();
 		float GetTimeDelta() const;
-		int GetCurrentFPS() const;
+		size_t GetCurrentFPS() const;
 		void Run();
 		bool IsRunning() const;
 		void CloseApplication();

@@ -11,6 +11,6 @@ void InitSurface(MxObject& surface)
 	);
 	surface.AddComponent<MeshRenderer>();
 
-	surface.Transform->Scale(MakeVector3(10.0f, 2.0f, 10.0f));
-	surface.Transform->Translate(MakeVector3(10.0f, 3.0f, 10.0f));
+	surface.Transform.Scale(MakeVector3(10.0f, 2.0f, 10.0f));
+	surface.Transform.Translate(MakeVector3(10.0f, 3.0f, 10.0f));
 }

@@ -30,7 +30,6 @@
 
 #include "Core/Resources/Mesh.h"
 #include "Core/Components/Transform.h"
-#include "Core/Components/InstanceFactory.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
 
 GENERATE_METHOD_CHECK(Init, Init())
@@ -50,7 +49,7 @@ namespace MxEngine
 		float TranslateSpeed = 1.0f;
 		float RotateSpeed = 1.0f;
 		float ScaleSpeed = 1.0f;
-		Transform::Handle Transform;
+		Transform Transform;
 	private:
 		ComponentManager components;
 	public:
@@ -80,10 +79,10 @@ namespace MxEngine
 			MX_ASSERT(handle != InvalidHandle);
 			auto& managedObject = Factory::Get<MxObject>()[handle];
 			MX_ASSERT(managedObject.refCount > 0 && managedObject.uuid != UUIDGenerator::GetNull());
-			return MxObjectHandle(managedObject.uuid, handle);
+			return MxObject::Handle(managedObject.uuid, handle);
 		}
 
-		MxObject();
+		MxObject() = default;
 		MxObject(const MxObject&) = delete;
 		MxObject& operator=(const MxObject&) = delete;
 		MxObject(MxObject&&) = default;
@@ -93,6 +92,8 @@ namespace MxEngine
 		template<typename T, typename... Args>
 		auto AddComponent(Args&&... args)
 		{
+			static_assert(!std::is_same_v<T, MxEngine::Transform>, "Transform component is already present in MxObject");
+
 			auto component = this->components.AddComponent<T>(std::forward<Args>(args)...);
 			component->UserData = reinterpret_cast<void*>(this->handle);
 			if constexpr (has_method_Init<T>::value) component->Init();

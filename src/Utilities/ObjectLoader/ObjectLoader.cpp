@@ -68,8 +68,8 @@ namespace MxEngine
 			return object;
 		}
 
-		object.meshes.resize(scene->mNumMeshes);
-		object.materials.resize(scene->mNumMaterials);
+		object.meshes.resize((size_t)scene->mNumMeshes);
+		object.materials.resize((size_t)scene->mNumMaterials);
 
 		for (size_t i = 0; i < object.materials.size(); i++)
 		{
@@ -125,7 +125,7 @@ namespace MxEngine
 		for (size_t i = 0; i < object.meshes.size(); i++)
 		{
 			auto& mesh = scene->mMeshes[i];
-			auto coords = MinMaxComponents((Vector3*)mesh->mVertices, mesh->mNumVertices);
+			auto coords = MinMaxComponents((Vector3*)mesh->mVertices, (size_t)mesh->mNumVertices);
 
 			minCoords = VectorMin(minCoords, coords.first);
 			maxCoords = VectorMax(maxCoords, coords.second);
@@ -139,7 +139,7 @@ namespace MxEngine
 			meshInfo.name = mesh->mName.C_Str();
 			meshInfo.useNormal = mesh->HasNormals();
 			meshInfo.useTexture = mesh->HasTextureCoords(0);
-			meshInfo.material = object.materials.data() + mesh->mMaterialIndex;
+			meshInfo.material = object.materials.data() + (size_t)mesh->mMaterialIndex;
 
 			MX_ASSERT(mesh->mNormals != nullptr);
 			MX_ASSERT(mesh->mVertices != nullptr);

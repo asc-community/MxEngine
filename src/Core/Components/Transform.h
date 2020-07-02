@@ -45,7 +45,16 @@ namespace MxEngine
 		mutable bool needTransformUpdate = true;
 		mutable bool needRotationUpdate = true;
 		mutable Matrix3x3 normalMatrix{ 0.0f };
+
+		void Copy(const Transform& other) noexcept;
 	public:
+		Transform() = default;
+		~Transform() = default;
+		Transform(const Transform&);
+		Transform(Transform&&) noexcept;
+		Transform& operator=(const Transform&);
+		Transform& operator=(Transform&&) noexcept;
+
 		const Matrix4x4& GetMatrix() const;
 		const Matrix3x3& GetNormalMatrix() const;
 		void GetMatrix(Matrix4x4& inPlaceMatrix) const;

@@ -132,7 +132,7 @@ namespace MxEngine
 
 					directionalLight.ShadowMap->Bind(textureBindIndex);
 					shader.SetUniformInt(MxFormat("map_dirLight_shadow[{0}]", i), textureBindIndex);
-					textureBindIndex++;
+					textureBindIndex++; //-V127
 				}
 			}
 
@@ -155,7 +155,7 @@ namespace MxEngine
 
 					spotLight.ShadowMap->Bind(textureBindIndex);
 					shader.SetUniformInt(MxFormat("map_spotLight_shadow[{0}]", i), textureBindIndex);
-					textureBindIndex++;
+					textureBindIndex++; //-V127
 				}
 			}
 
@@ -176,7 +176,7 @@ namespace MxEngine
 
 					pointLight.ShadowMap->Bind(textureBindIndex);
 					shader.SetUniformInt(MxFormat("map_pointLight_shadow[{0}]", i), textureBindIndex);
-					textureBindIndex++;
+					textureBindIndex++; //-V127
 				}
 			}
 
@@ -252,7 +252,7 @@ namespace MxEngine
 			shader.SetUniformFloat("material.refl", unit.RenderMaterial.Reflection);
 			shader.SetUniformFloat("displacement", unit.RenderMaterial.Displacement);
 
-			this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix);
+			this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
 			this->GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
 			this->GetRenderEngine().SetDefaultVertexAttribute(12, unit.RenderMaterial.BaseColor);
 		}
@@ -266,7 +266,7 @@ namespace MxEngine
 		unit.RenderMaterial.HeightMap->Bind(0);
 		shader.SetUniformInt("map_height", 0);
 
-		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix);
+		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
 		this->GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
 		this->GetRenderEngine().DrawTrianglesInstanced(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
 	}
@@ -277,7 +277,7 @@ namespace MxEngine
 		unit.RenderMaterial.HeightMap->Bind(0);
 		shader.SetUniformInt("map_height", 0);
 
-		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix);
+		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
 		this->GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
 		this->GetRenderEngine().DrawTrianglesInstanced(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
 	}
@@ -486,7 +486,7 @@ namespace MxEngine
 		if (this->Pipeline.Environment.DebugBufferObject.VertexCount == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawDebugBuffer()");
 
-		this->GetRenderEngine().UseDepthBuffer(!this->Pipeline.Environment.OverlayDebugDraws);
+		this->GetRenderEngine().UseDepthBuffer(!this->Pipeline.Environment.OverlayDebugDraws); //-V807
 
 		auto& shader = *this->Pipeline.Environment.DebugDrawShader;
 		shader.SetUniformMat4("ViewProjMatrix", camera.ViewProjMatrix);
@@ -593,7 +593,7 @@ namespace MxEngine
 		primitive.VAO = object.MeshData.GetVAO();
 		primitive.IBO = object.MeshData.GetIBO();
 		primitive.RenderMaterial = material;
-		primitive.ModelMatrix  = parentTransform.GetMatrix() * object.GetTransform()->GetMatrix();
+		primitive.ModelMatrix  = parentTransform.GetMatrix() * object.GetTransform()->GetMatrix(); //-V807
 		primitive.NormalMatrix = parentTransform.GetNormalMatrix() * object.GetTransform()->GetNormalMatrix();
 		primitive.InstanceCount = instanceCount;
 

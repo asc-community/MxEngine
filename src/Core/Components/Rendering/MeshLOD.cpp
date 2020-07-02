@@ -29,6 +29,7 @@
 #include "MeshLOD.h"
 #include "Utilities/LODGenerator/LODGenerator.h"
 #include "Core/MxObject/MxObject.h"
+#include "Utilities/Logger/Logger.h"
 
 namespace MxEngine
 {
@@ -76,7 +77,7 @@ namespace MxEngine
             return;
         }
 
-        auto box = meshSource->Mesh->GetAABB() * object.Transform->GetMatrix();
+        auto box = meshSource->Mesh->GetAABB() * object.Transform.GetMatrix();
 
         float distance = Length(box.GetCenter() - viewportPosition);
         Vector3 length = box.Length();

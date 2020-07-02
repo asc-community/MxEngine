@@ -26,50 +26,31 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Time.h"
+#pragma once
 
-// only for time
-#include <chrono>
-#include "Core/Macro/Macro.h"
-#if defined(MXENGINE_USE_OPENGL)
-#include "Platform/OpenGL/GLUtilities.h"
-#include "Core/Application/Application.h"
-
-MxEngine::TimeStep MxEngine::Time::Current()
-{
-	return (MxEngine::TimeStep)glfwGetTime();
-}
-#endif
+#include "Core/MxObject/MxObject.h"
 
 namespace MxEngine
 {
-	SystemTime Time::System()
+	class Instance
 	{
-		using namespace std::chrono;
-		return system_clock::to_time_t(system_clock::now());
-	}
+		MAKE_COMPONENT(Instance);
 
-    TimeStep Time::Delta()
-    {
-		return Application::Get()->GetTimeDelta();
-    }
+		Vector3 color{ 1.0f };
+		MxObject::Handle parent;
+	public:
+		Instance(const MxObject::Handle& parent) : parent(parent) { }
 
-	size_t Time::FPS()
-	{
-		return Application::Get()->GetCurrentFPS();
-	}
+		MxObject::Handle GetParent() { return this->parent; }
 
-	MxString BeautifyTime(TimeStep time)
-	{
-		if (time > 1.0f)
+		void SetColor(const Vector3& color)
 		{
-			int timeInt = int(time * 100);
-			return ToMxString(timeInt / 100) + "." + ToMxString(timeInt % 100) + "s";
+			this->color = Clamp(color, MakeVector3(0.0f), MakeVector3(1.0f));
 		}
-		else
+
+		const Vector3& GetColor() const
 		{
-			int timeInt = int(time * 1000 * 100);
-			return ToMxString(timeInt / 100) + "." + ToMxString(timeInt % 100) + "ms";
+			return this->color;
 		}
-	}
+	};
 }

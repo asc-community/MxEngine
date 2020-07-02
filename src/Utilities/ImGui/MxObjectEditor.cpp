@@ -26,50 +26,52 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Time.h"
+#include "MxObjectEditor.h"
+#include "ImGuiUtils.h"
+#include "ComponentEditor.h"
 
-// only for time
-#include <chrono>
-#include "Core/Macro/Macro.h"
-#if defined(MXENGINE_USE_OPENGL)
-#include "Platform/OpenGL/GLUtilities.h"
-#include "Core/Application/Application.h"
-
-MxEngine::TimeStep MxEngine::Time::Current()
+namespace MxEngine::GUI
 {
-	return (MxEngine::TimeStep)glfwGetTime();
-}
-#endif
-
-namespace MxEngine
-{
-	SystemTime Time::System()
+	void DrawMxObjectEditor(
+		const char* name,
+		MxObject& object,
+		const MxVector<const char*>& componentNames,
+		MxVector<std::function<void(MxObject&)>>& componentAdderCallbacks,
+		MxVector<std::function<void(MxObject&)>>& componentEditorCallbacks
+	)
 	{
-		using namespace std::chrono;
-		return system_clock::to_time_t(system_clock::now());
-	}
-
-    TimeStep Time::Delta()
-    {
-		return Application::Get()->GetTimeDelta();
-    }
-
-	size_t Time::FPS()
-	{
-		return Application::Get()->GetCurrentFPS();
-	}
-
-	MxString BeautifyTime(TimeStep time)
-	{
-		if (time > 1.0f)
+		if (ImGui::CollapsingHeader(name))
 		{
-			int timeInt = int(time * 100);
-			return ToMxString(timeInt / 100) + "." + ToMxString(timeInt % 100) + "s";
-		}
-		else
-		{
-			int timeInt = int(time * 1000 * 100);
-			return ToMxString(timeInt / 100) + "." + ToMxString(timeInt % 100) + "ms";
+			GUI::Indent _(5.0f);
+
+			if (ImGui::Button("Destroy object"))
+			{
+				MxObject::Destroy(object);
+			}
+			else
+			{
+				static MxString objectName;
+				if (GUI::InputTextOnClick("object name", objectName, 48))
+				{
+					if (!objectName.empty()) object.Name = objectName;
+					objectName.clear();
+				}
+
+				static int currentItem = 0;
+				ImGui::Combo("", &currentItem, componentNames.data(), (int)componentNames.size());
+				ImGui::SameLine();
+				if (ImGui::Button("add component"))
+				{
+					componentAdderCallbacks[(size_t)currentItem](object);
+				}
+
+				GUI::TransformEditor(object.Transform);
+
+				for (size_t i = 0; i < componentEditorCallbacks.size(); i++)
+				{
+					componentEditorCallbacks[i](object);
+				}
+			}
 		}
 	}
 }

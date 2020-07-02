@@ -18,5 +18,5 @@ void InitCamera(MxObject& object)
 	input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
 	input->BindRotation();
 
-	object.Transform->Translate(MakeVector3(1.0f, 3.0f, 0.0f));
+	object.Transform.Translate(MakeVector3(1.0f, 3.0f, 0.0f));
 }

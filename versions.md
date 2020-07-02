@@ -146,3 +146,7 @@
 - added typedefs for graphic and audio handles
 - added static InstanceFactory data submission
 - added mouse button events and InputManager functions
+### 7.2.2
+- Transform is no longer component and stored directly in MxObject
+- InstanceFactory now produces MxObjects with Instance component (is used to access color or parent)
+- Removed dependency from python36.dll if MXENGINE_USE_PYTHON macro is not defined

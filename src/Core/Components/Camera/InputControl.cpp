@@ -51,7 +51,7 @@ namespace MxEngine
 		MxString uuid = object.GetComponent<InputControl>().GetUUID();
 	
 		EventManager::AddEventListener(uuid,
-			[forward, back, right, left, up, down, camera, transform = object.Transform](KeyEvent& event) mutable
+			[forward, back, right, left, up, down, camera, object = MxObject::GetHandleByComponent(*this)](KeyEvent& event) mutable
 		{
 			auto vecForward = MakeVector3( 0.0f, 0.0f, 1.0f);
 			auto vecRight   = MakeVector3(-1.0f, 0.0f, 0.0f);
@@ -66,35 +66,35 @@ namespace MxEngine
 			}
 			else
 			{
-				vecForward = transform->GetRotation() * vecForward;
-				vecRight   = transform->GetRotation() * vecRight;
-				vecUp      = transform->GetRotation() * vecUp;
+				vecForward = object->Transform.GetRotation() * vecForward;
+				vecRight   = object->Transform.GetRotation() * vecRight;
+				vecUp      = object->Transform.GetRotation() * vecUp;
 			}
 
 			auto dt = Application::Get()->GetTimeDelta();
 			if (event.IsHeld(forward))
 			{
-				transform->Translate(vecForward * moveSpeed * dt);
+				object->Transform.Translate(vecForward * moveSpeed * dt);
 			}
 			if (event.IsHeld(back))
 			{
-				transform->Translate(-1.0f * vecForward * moveSpeed * dt);
+				object->Transform.Translate(-1.0f * vecForward * moveSpeed * dt);
 			}
 			if (event.IsHeld(right))
 			{
-				transform->Translate(vecRight * moveSpeed * dt);
+				object->Transform.Translate(vecRight * moveSpeed * dt);
 			}
 			if (event.IsHeld(left))
 			{
-				transform->Translate(-1.0f * vecRight * moveSpeed * dt);
+				object->Transform.Translate(-1.0f * vecRight * moveSpeed * dt);
 			}
 			if (event.IsHeld(up))
 			{
-				transform->Translate(vecUp * moveSpeed * dt);
+				object->Transform.Translate(vecUp * moveSpeed * dt);
 			}
 			if (event.IsHeld(down))
 			{
-				transform->Translate(-1.0f * vecUp * moveSpeed * dt);
+				object->Transform.Translate(-1.0f * vecUp * moveSpeed * dt);
 			}
 		});
 	}

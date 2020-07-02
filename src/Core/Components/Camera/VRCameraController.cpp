@@ -61,7 +61,7 @@ namespace MxEngine
     void VRCameraController::UpdateEyes(CameraController::Handle& cameraL, CameraController::Handle& cameraR)
     {
         auto& object = MxObject::GetByComponent(*this);
-        auto position = object.Transform->GetPosition();
+        auto position = object.Transform.GetPosition();
         auto camera = object.GetComponent<CameraController>();
         
         auto& LEyeTransform = MxObject::GetByComponent(*cameraL).Transform;
@@ -70,8 +70,8 @@ namespace MxEngine
         auto LEyeDistance = -this->EyeDistance * camera->GetRightVector();
         auto REyeDistance = +this->EyeDistance * camera->GetRightVector();
 
-        LEyeTransform->SetPosition(position + LEyeDistance);
-        REyeTransform->SetPosition(position + REyeDistance);
+        LEyeTransform.SetPosition(position + LEyeDistance);
+        REyeTransform.SetPosition(position + REyeDistance);
 
         auto LEyeDirection = this->FocusDistance * camera->GetDirection() - LEyeDistance;
         auto REyeDirection = this->FocusDistance * camera->GetDirection() - REyeDistance;

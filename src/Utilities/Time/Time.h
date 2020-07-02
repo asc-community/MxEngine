@@ -57,5 +57,15 @@ namespace MxEngine
 		/returns system time (uses chrono std library)
 		*/
 		static SystemTime System();
+		/*!
+		gets time passed since last frame
+		\returns timestep measured in seconds
+		*/
+		static TimeStep Delta();
+		/*!
+		gets average frames per second since last second
+		\returns amount of frames per second
+		*/
+		static size_t FPS();
 	};
 }

@@ -71,11 +71,6 @@ namespace MxEngine
 		return MxObject::Handle{ };
 	}
 
-    MxObject::MxObject()
-    {
-		this->Transform = this->AddComponent<MxEngine::Transform>();
-    }
-
     MxObject::~MxObject()
     {
 		this->components.RemoveAllComponents();

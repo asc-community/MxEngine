@@ -36,8 +36,8 @@ namespace MxEngine
 	{
 		MAKE_EVENT(FpsUpdateEvent);
 	public:
-		const int FPS;
-		inline FpsUpdateEvent(int fps)
+		const size_t FPS;
+		inline FpsUpdateEvent(size_t fps)
 			: FPS(fps) { }
 	};
 }

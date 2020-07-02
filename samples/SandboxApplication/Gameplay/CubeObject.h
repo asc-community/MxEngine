@@ -2,8 +2,6 @@
 
 struct CubeBehaviour
 {
-	std::vector<InstanceHandle> instances;
-
 	void OnUpdate(MxObject& object, float dt)
 	{
 		static float counter = 1.0f;
@@ -14,8 +12,8 @@ struct CubeBehaviour
 		if (!instances.IsValid()) return;
 		float maxHeight = 0.5f * (instances->GetCount() - 1);
 
-		auto view = instances->GetInstances();
-		for (auto& instance : view)
+		auto pool = instances->GetInstances();
+		for (auto& instance : pool)
 		{
 			int id = int(idx - offset);
 			idx++;
@@ -28,14 +26,14 @@ struct CubeBehaviour
 
 			if (position.y > maxHeight) offset++;
 
-			instance.Transform.SetPosition(position);
+			instance->Transform.SetPosition(position);
 		}
 	}
 };
 
 void InitCube(MxObject& cube)
 {
-	cube.Transform->Translate(MakeVector3(0.5f, 0.0f, 0.5f));
+	cube.Transform.Translate(MakeVector3(0.5f, 0.0f, 0.5f));
 	cube.Name = "Crate";
 
 	auto meshSource = cube.AddComponent<MeshSource>(Primitives::CreateCube());
@@ -45,7 +43,7 @@ void InitCube(MxObject& cube)
 
 	for (size_t i = 0; i < 100; i++)
 	{
-		instances->MakeInstance().MakeStatic();
+		instances->MakeInstance();
 	}
 
 	auto cubeTexture = AssetManager::LoadTexture("objects/crate/crate.jpg"_id);

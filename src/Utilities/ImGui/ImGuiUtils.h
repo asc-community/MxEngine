@@ -33,6 +33,7 @@
 #include "Viewport.h"
 #include "ResourceEditor.h"
 #include "RenderEditor.h"
+#include "MxObjectEditor.h"
 
 namespace MxEngine
 {

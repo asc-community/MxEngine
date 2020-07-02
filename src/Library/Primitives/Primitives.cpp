@@ -55,14 +55,14 @@ namespace MxEngine
         {
             VectorInt3(1, 0, 0), VectorInt3(5, 2, 0), VectorInt3(7, 3, 0),
             VectorInt3(7, 3, 0), VectorInt3(3, 1, 0), VectorInt3(1, 0, 0),
-            VectorInt3(4, 2, 1), VectorInt3(0, 0, 1), VectorInt3(2, 1, 1),
-            VectorInt3(2, 1, 1), VectorInt3(6, 3, 1), VectorInt3(4, 2, 1),
-            VectorInt3(4, 0, 2), VectorInt3(6, 1, 2), VectorInt3(7, 3, 2),
-            VectorInt3(7, 3, 2), VectorInt3(5, 2, 2), VectorInt3(4, 0, 2),
+            VectorInt3(4, 2, 1), VectorInt3(0, 0, 1), VectorInt3(2, 1, 1), //-V112
+            VectorInt3(2, 1, 1), VectorInt3(6, 3, 1), VectorInt3(4, 2, 1), //-V112
+            VectorInt3(4, 0, 2), VectorInt3(6, 1, 2), VectorInt3(7, 3, 2), //-V112
+            VectorInt3(7, 3, 2), VectorInt3(5, 2, 2), VectorInt3(4, 0, 2), //-V112
             VectorInt3(2, 0, 3), VectorInt3(0, 1, 3), VectorInt3(1, 3, 3),
             VectorInt3(1, 3, 3), VectorInt3(3, 2, 3), VectorInt3(2, 0, 3),
-            VectorInt3(0, 0, 4), VectorInt3(4, 2, 4), VectorInt3(5, 3, 4),
-            VectorInt3(5, 3, 4), VectorInt3(1, 1, 4), VectorInt3(0, 0, 4),
+            VectorInt3(0, 0, 4), VectorInt3(4, 2, 4), VectorInt3(5, 3, 4), //-V112
+            VectorInt3(5, 3, 4), VectorInt3(1, 1, 4), VectorInt3(0, 0, 4), //-V112
             VectorInt3(6, 0, 5), VectorInt3(2, 2, 5), VectorInt3(3, 3, 5),
             VectorInt3(3, 3, 5), VectorInt3(7, 1, 5), VectorInt3(6, 0, 5),
         };
@@ -252,9 +252,9 @@ namespace MxEngine
         {
             size_t width = texture.width();
             size_t height = texture.height() / 3;
-            for (int i = 0; i < width; i++)
+            for (size_t i = 0; i < width; i++)
             {
-                for (int j = 0; j < height; j++)
+                for (size_t j = 0; j < height; j++)
                 {
                     if (i < borderSize || i + borderSize >= width ||
                         j < borderSize || j + borderSize >= height)

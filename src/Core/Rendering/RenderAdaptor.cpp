@@ -33,6 +33,7 @@
 #include "Core/Components/Rendering/MeshLOD.h"
 #include "Core/Components/Rendering/DebugDraw.h"
 #include "Core/Components/Audio/AudioSource.h"
+#include "Core/Components/InstanceFactory.h"
 
 namespace MxEngine
 {
@@ -180,7 +181,7 @@ namespace MxEngine
         float viewportZoom = 0.0f;
         if (this->Viewport.IsValid())
         {
-            viewportPosition = MxObject::GetByComponent(*this->Viewport).Transform->GetPosition();
+            viewportPosition = MxObject::GetByComponent(*this->Viewport).Transform.GetPosition();
             viewportZoom = this->Viewport->Camera.GetZoom();
         }
 
@@ -227,7 +228,7 @@ namespace MxEngine
                 auto& transform = object.Transform;
                 auto skyboxComponent = object.GetComponent<Skybox>();
                 Skybox skybox = skyboxComponent.IsValid() ? *skyboxComponent.GetUnchecked() : Skybox();
-                this->Renderer.SubmitCamera(camera, *transform, skybox);
+                this->Renderer.SubmitCamera(camera, transform, skybox);
                 TrackMainCameraIndex(camera);
             }
         }
@@ -263,7 +264,7 @@ namespace MxEngine
                     auto materialId = submesh.GetMaterialId() < meshRenderer->Materials.size() ? submesh.GetMaterialId() : 0;
                     auto material = meshRenderer->Materials[materialId];
 
-                    this->Renderer.SubmitPrimitive(submesh, *material, *transform, instanceCount);
+                    this->Renderer.SubmitPrimitive(submesh, *material, transform, instanceCount);
                 }
             }
         }
@@ -274,21 +275,21 @@ namespace MxEngine
             for (const auto& dirLight : dirLightView)
             {
                 auto& transform = MxObject::GetByComponent(dirLight).Transform;
-                this->Renderer.SubmitLightSource(dirLight, *transform);
+                this->Renderer.SubmitLightSource(dirLight, transform);
             }
 
             auto spotLightView = ComponentFactory::GetView<SpotLight>();
             for (const auto& spotLight : spotLightView)
             {
                 auto& transform = MxObject::GetByComponent(spotLight).Transform;
-                this->Renderer.SubmitLightSource(spotLight, *transform);
+                this->Renderer.SubmitLightSource(spotLight, transform);
             }
 
             auto pointLightView = ComponentFactory::GetView<PointLight>();
             for (const auto& pointLight : pointLightView)
             {
                 auto& transform = MxObject::GetByComponent(pointLight).Transform;
-                this->Renderer.SubmitLightSource(pointLight, *transform);
+                this->Renderer.SubmitLightSource(pointLight, transform);
             }
         }
 
@@ -307,37 +308,29 @@ namespace MxEngine
             for (auto& debugDraw : debugDrawView)
             {
                 auto& object = MxObject::GetByComponent(debugDraw);
-                auto instances = object.GetComponent<InstanceFactory>();
+                auto instanceFactory = object.GetComponent<InstanceFactory>();
+                auto instance = object.GetComponent<Instance>();
                 auto meshSource = object.GetComponent<MeshSource>();
                 auto spotLight = object.GetComponent<SpotLight>();
                 auto pointLight = object.GetComponent<PointLight>();
                 auto cameraController = object.GetComponent<CameraController>();
                 auto audioSource = object.GetComponent<AudioSource>();
-                AABB box;
-                if (meshSource.IsValid())
+
+                if(instance.IsValid()) meshSource = instance->GetParent()->GetComponent<MeshSource>();
+
+                if (meshSource.IsValid() && !instanceFactory.IsValid())
                 {
-                    if (instances.IsValid())
-                    {
-                        for (const auto& instance : instances->GetInstances())
-                        {
-                            box = meshSource->Mesh->GetAABB() * instance.Transform.GetMatrix();
-                            submitDebugData(this->DebugDrawer, debugDraw, box);
-                        }
-                    }
-                    else
-                    {
-                        box = meshSource->Mesh->GetAABB() * object.Transform->GetMatrix();
-                        submitDebugData(this->DebugDrawer, debugDraw, box);
-                    }
+                    auto box = meshSource->Mesh->GetAABB() * object.Transform.GetMatrix();
+                    submitDebugData(this->DebugDrawer, debugDraw, box);
                 }
                 if (debugDraw.RenderLightingBounds && pointLight.IsValid())
                 {
-                    BoundingSphere sphere(object.Transform->GetPosition(), 3.0f);
+                    BoundingSphere sphere(object.Transform.GetPosition(), 3.0f);
                     this->DebugDrawer.Submit(sphere, debugDraw.LightSourceColor);
                 }
                 if (debugDraw.RenderLightingBounds && spotLight.IsValid())
                 {
-                    Cone cone(object.Transform->GetPosition(), spotLight->Direction, 3.0f, spotLight->GetOuterAngle());
+                    Cone cone(object.Transform.GetPosition(), spotLight->Direction, 3.0f, spotLight->GetOuterAngle());
                     this->DebugDrawer.Submit(cone, debugDraw.LightSourceColor);
                 }
                 if (debugDraw.RenderSoundBounds && audioSource.IsValid())
@@ -346,12 +339,12 @@ namespace MxEngine
                     {
                         if (audioSource->IsOmnidirectional())
                         {
-                            BoundingSphere sphere(object.Transform->GetPosition(), 3.0f);
+                            BoundingSphere sphere(object.Transform.GetPosition(), 3.0f);
                             this->DebugDrawer.Submit(sphere, debugDraw.SoundSourceColor);
                         }
                         else
                         {
-                            Cone cone(object.Transform->GetPosition(), audioSource->GetDirection(), 3.0f, audioSource->GetOuterAngle());
+                            Cone cone(object.Transform.GetPosition(), audioSource->GetDirection(), 3.0f, audioSource->GetOuterAngle());
                             this->DebugDrawer.Submit(cone, debugDraw.SoundSourceColor);
                         }
                     }
@@ -362,7 +355,7 @@ namespace MxEngine
                     auto up = cameraController->GetDirectionUp();
                     auto aspect = cameraController->Camera.GetAspectRatio();
                     auto zoom = cameraController->Camera.GetZoom() * 65.0f;
-                    Frustrum frustrum(object.Transform->GetPosition() + Normalize(direction), direction, up, zoom, aspect);
+                    Frustrum frustrum(object.Transform.GetPosition() + Normalize(direction), direction, up, zoom, aspect);
                     this->DebugDrawer.Submit(frustrum, debugDraw.FrustrumColor);
                 }
             }

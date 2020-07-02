@@ -2,7 +2,7 @@
 
 void InitGrid(MxObject& object)
 {
-	object.Transform->Scale(3.0f);
+	object.Transform.Scale(3.0f);
 
 	object.Name = "Grid";
 	object.AddComponent<MeshSource>(Primitives::CreatePlane(1000));

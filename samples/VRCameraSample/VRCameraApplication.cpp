@@ -47,7 +47,7 @@ namespace ProjectTemplate
 
             auto cubeObject = MxObject::Create();
             cubeObject->Name = "Cube";
-            cubeObject->Transform->Translate(MakeVector3(-1.0f, -1.0f, 3.0f));
+            cubeObject->Transform.Translate(MakeVector3(-1.0f, -1.0f, 3.0f));
             cubeObject->AddComponent<MeshSource>(Primitives::CreateCube());
             auto cubeMaterials = cubeObject->AddComponent<MeshRenderer>();
             cubeMaterials->GetMaterial()->AmbientColor = MakeVector3(1.0f, 0.0f, 0.0f);
@@ -55,7 +55,7 @@ namespace ProjectTemplate
 
             auto sphereObject = MxObject::Create();
             sphereObject->Name = "Sphere";
-            sphereObject->Transform->Translate(MakeVector3(5.0f, 0.0f, 5.0f));
+            sphereObject->Transform.Translate(MakeVector3(5.0f, 0.0f, 5.0f));
             sphereObject->AddComponent<MeshSource>(Primitives::CreateSphere());
             auto sphereMaterials = sphereObject->AddComponent<MeshRenderer>();
             auto instanceFactory = sphereObject->AddComponent<InstanceFactory>();
@@ -69,7 +69,7 @@ namespace ProjectTemplate
                 float rz = Random::GetFloat();
 
                 sphereInstance->Transform.Translate(20.0f * MakeVector3(rx, ry, rz) - 10.0f);
-                sphereInstance->SetColor(MakeVector3(rx, ry, rz));
+                sphereInstance->GetComponent<Instance>()->SetColor(MakeVector3(rx, ry, rz));
             }
 
             auto lightObject = MxObject::Create();

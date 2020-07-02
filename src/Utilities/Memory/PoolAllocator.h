@@ -168,6 +168,9 @@ namespace MxEngine
                     block->data.~T();
                 }
             }
+            this->count = 0;
+            this->storage = nullptr;
+            this->free = InvalidOffset;
         }
 
         /*!

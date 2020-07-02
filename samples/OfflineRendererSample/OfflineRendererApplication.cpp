@@ -31,8 +31,8 @@ namespace ProjectTemplate
             RenderManager::ResizeViewport(viewportSize.x, viewportSize.y);
 
             auto cubeObject = MxObject::Create();
-            cubeObject->Transform->Translate(MakeVector3(0.0f, -1.0f, 3.0f));
-            cubeObject->Transform->RotateY(45.0f);
+            cubeObject->Transform.Translate(MakeVector3(0.0f, -1.0f, 3.0f));
+            cubeObject->Transform.RotateY(45.0f);
 
             auto meshSource = cubeObject->AddComponent<MeshSource>(Primitives::CreateCube());
             auto meshRenderer = cubeObject->AddComponent<MeshRenderer>();

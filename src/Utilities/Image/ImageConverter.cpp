@@ -40,7 +40,7 @@ namespace MxEngine
     {
         auto* storage = (ImageConverter::RawImageData*)(context);
         auto membegin = (uint8_t*)data;
-        auto memend = membegin + size;
+        auto memend = membegin + size; //-V104
         storage->insert(storage->end(), membegin, memend);
     }
 

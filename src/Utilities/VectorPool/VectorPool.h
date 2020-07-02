@@ -276,8 +276,9 @@ namespace MxEngine
         */
         void Clear()
         {
-            allocator.~PoolAllocator();
-            memoryStorage.clear();
+            this->allocator.~PoolAllocator();
+            this->memoryStorage.clear();
+            this->allocated = 0;
         }
 
         /*!

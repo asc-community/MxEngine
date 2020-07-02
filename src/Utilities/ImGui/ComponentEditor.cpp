@@ -31,6 +31,7 @@
 #include "Core/Components/Camera/PerspectiveCamera.h"
 #include "Core/Components/Camera/OrthographicCamera.h"
 #include "Core/Components/Camera/FrustrumCamera.h"
+#include "Core/Application/Application.h"
 
 namespace MxEngine::GUI
 {
@@ -108,39 +109,33 @@ namespace MxEngine::GUI
 		
 		ImGui::SameLine();
 		if (ImGui::Button("instanciate"))
-			instanceFactory.MakeInstance().MakeStatic();
+			instanceFactory.MakeInstance();
 		ImGui::SameLine();
 		if (ImGui::Button("destroy all"))
-			instanceFactory.GetInstancePool() = { };
+			instanceFactory.DestroyInstances();
+		ImGui::SameLine();
+		ImGui::Checkbox("is static", &instanceFactory.IsStatic);
 
 		int id = 0;
-		auto begin = instanceFactory.GetInstancePool().begin(); //-V807
-		auto end = instanceFactory.GetInstancePool().end();
-		for (auto it = begin; it != end; it++)
+		auto self = MxObject::GetComponentHandle(instanceFactory);
+		for (size_t i = 0; i < self->GetInstancePool().Capacity(); i++)
 		{
+			if (!self->GetInstancePool().IsAllocated(i)) continue;
+
+			GUI::Indent _(5.0f);
 			ImGui::PushID(id);
-			if (ImGui::Button("-"))
-			{
-				instanceFactory.GetInstancePool().Deallocate(it);
-			}
-			else
-			{
-				MxString nodeName = MxFormat("instance #{0}", id++);
-				ImGui::SameLine();
-				if (ImGui::CollapsingHeader(nodeName.c_str()))
-				{
-					GUI::Indent _(30.0f);
-
-					auto& instance = it->value;
-					auto color = instance.GetColor();
-
-					TransformEditor(instance.Transform);
-					if (ImGui::ColorEdit3("base color", &color[0], ImGuiColorEditFlags_HDR))
-						instance.SetColor(color);
-				}
-			}
+			MxString nodeName = MxFormat("instance #{0}", id++);
+			Application::Get()->GetRuntimeEditor().DrawMxObject(nodeName, *self->GetInstancePool()[i]);
 			ImGui::PopID();
 		}
+	}
+
+	void InstanceEditor(Instance& instance)
+	{
+		TREE_NODE_PUSH("Instance");
+		auto color = instance.GetColor();
+		if (ImGui::ColorEdit3("base color", &color[0], ImGuiColorEditFlags_HDR))
+			instance.SetColor(color);
 	}
 
 	void SkyboxEditor(Skybox& skybox)

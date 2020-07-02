@@ -56,7 +56,7 @@ namespace ProjectTemplate
                     angle = std::fmod(angle + speed * dt, TwoPi<float>());
                     float x = radius * std::sin(angle);
                     float z = radius * std::cos(angle);
-                    object.Transform->SetPosition(MakeVector3(x, 0.0f, z));
+                    object.Transform.SetPosition(MakeVector3(x, 0.0f, z));
                 }
             };
             soundObject->AddComponent<Behaviour>(SoundBehaviour{ });

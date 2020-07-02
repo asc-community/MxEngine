@@ -80,7 +80,7 @@ namespace MxEngine
 		return this->timeDelta;
 	}
 
-	int Application::GetCurrentFPS() const
+	size_t Application::GetCurrentFPS() const
 	{
 		return this->counterFPS;
 	}
@@ -298,7 +298,7 @@ namespace MxEngine
 		}
 
 		float secondEnd = Time::Current(), frameEnd = secondEnd;
-		int fpsCounter = 0;
+		size_t fpsCounter = 0;
 		{
 			MAKE_SCOPE_PROFILER("Application::Run");
 			MAKE_SCOPE_TIMER("MxEngine::Application", "Application::Run()");
@@ -408,10 +408,10 @@ namespace MxEngine
 		auto& editor = this->GetRuntimeEditor();
 		editor.ExecuteScript("InitializeOpenGL()");
 
-		editor.RegisterComponentEditor("Transform",          GUI::TransformEditor);
 		editor.RegisterComponentEditor("Behaviour",          GUI::BehaviourEditor);
 		editor.RegisterComponentEditor("Script",             GUI::ScriptEditor);
 		editor.RegisterComponentEditor("InstanceFactory",    GUI::InstanceFactoryEditor);
+		editor.RegisterComponentEditor("Instance",           GUI::InstanceEditor);
 		editor.RegisterComponentEditor("Skybox",             GUI::SkyboxEditor);
 		editor.RegisterComponentEditor("DebugDraw",          GUI::DebugDrawEditor);
 		editor.RegisterComponentEditor("MeshRenderer",       GUI::MeshRendererEditor);

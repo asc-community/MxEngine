@@ -33,6 +33,7 @@
 #include "Library/Scripting/Python/PythonEngine.h"
 #include "Core/Event/Events/WindowResizeEvent.h"
 #include "Core/Application/EventManager.h"
+#include "Core/Components/Instance.h"
 #include "Core/Event/Events/UpdateEvent.h"
 #include "Core/Application/RenderManager.h"
 #include "Platform/Window/WindowManager.h"
@@ -92,39 +93,12 @@ namespace MxEngine
 				int id = 0;
 				for (auto& object : objects)
 				{
-					ImGui::PushID(id++);
-					if (ImGui::CollapsingHeader(object.Name.c_str()))
+					if (!object.HasComponent<Instance>())
 					{
-						GUI::Indent _(5.0f);
-
-						if (ImGui::Button("Destroy object"))
-						{
-							MxObject::Destroy(object);
-						}
-						else
-						{
-							static MxString objectName;
-							if (GUI::InputTextOnClick("object name", objectName, 48))
-							{
-								if (!objectName.empty()) object.Name = objectName;
-								objectName.clear();
-							}
-
-							static int currentItem = 0;
-							ImGui::Combo("", &currentItem, this->componentNames.data(), (int)this->componentNames.size());
-							ImGui::SameLine();
-							if (ImGui::Button("add component"))
-							{
-								this->componentAdderCallbacks[(size_t)currentItem](object);
-							}
-
-							for (auto& callback : this->componentEditorCallbacks)
-							{
-								callback(object);
-							}
-						}
+						ImGui::PushID(id++);
+						this->DrawMxObject(object.Name, object);
+						ImGui::PopID();
 					}
-					ImGui::PopID();
 				}
 
 				this->console->Draw("Developer Console");
@@ -190,6 +164,11 @@ namespace MxEngine
 			}
 		});
 	}
+
+    void RuntimeEditor::DrawMxObject(const MxString& treeName, MxObject& object)
+    {
+		GUI::DrawMxObjectEditor(treeName.c_str(), object, this->componentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
+    }
 
 	RuntimeEditor::ScriptEngine& RuntimeEditor::GetEngine()
 	{

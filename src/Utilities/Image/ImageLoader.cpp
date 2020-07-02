@@ -46,7 +46,7 @@ namespace MxEngine
 		int width, height, channels;
 		uint8_t* data = stbi_load(filepath.c_str(), &width, &height, &channels, STBI_rgb);
 		channels = 3;
-		return Image(data, width, height, channels);
+		return Image(data, (size_t)width, (size_t)height, (size_t)channels);
 	}
 
 	/*
@@ -67,12 +67,12 @@ namespace MxEngine
 	{
 		ImageArray result;
 		size_t channels = 3; 
-		size_t width = image.GetWidth() / 4;
+		size_t width = image.GetWidth() / 4; //-V112
 		size_t height = image.GetHeight() / 3;
 		if (width != height)
 		{
 			Logger::Instance().Warning("MxEngine::ImageLoader", "image size is invalid, it will be reduced to fit skybox cubemap");
-			width = height = FloorToPow2(Min(image.GetWidth() / 4, image.GetHeight() / 3));
+			width = height = FloorToPow2(Min(image.GetWidth() / 4, image.GetHeight() / 3)); //-V112
 		}
 		for (auto& arr : result)
 		{
