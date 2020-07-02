@@ -164,6 +164,7 @@ namespace MxEngine
 			VBO->BufferDataWithResize((float*)buffer.data(), buffer.size() * sizeof(T) / sizeof(float));
 		}
 
+        void InitMesh();
 		void RemoveInstancedBuffer(Mesh& mesh, size_t index);
 		void RemoveDanglingHandles();
 		void Destroy();

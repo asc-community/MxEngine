@@ -154,3 +154,6 @@
 - key and mouse events are not activated in editor mode (if you still want to access them, consider Window::Is???HeldUnchecked() method)
 - you can now access custom behaviour using GetBehaviour<T>() where T is your behaviour callback
 - time delta now cannot be bigger than 1/30 of second
+### 7.2.4
+- fixed bug for InstanceFactory which does not tracked instances if parent object has no mesh attached
+- fixed bug for InstanceFactory which did not update instances for one frame if mesh had changed

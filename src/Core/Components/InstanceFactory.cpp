@@ -5,6 +5,20 @@
 
 namespace MxEngine
 {
+    void InstanceFactory::InitMesh()
+    {
+        auto& object = MxObject::GetByComponent(*this);
+        auto meshSource = object.GetComponent<MeshSource>();
+        if (meshSource.IsValid())
+        {
+            auto& mesh = *meshSource->Mesh;
+            auto modelBufferIndex = this->AddInstancedBuffer(mesh, this->GetModelData());
+            auto normalBufferIndex = this->AddInstancedBuffer(mesh, this->GetNormalData());
+            auto colorBufferIndex = this->AddInstancedBuffer(mesh, this->GetColorData());
+            this->bufferIndex = modelBufferIndex; // others will be `bufferIndex + 1`, `bufferIndex + 2`
+        }
+    }
+
     void InstanceFactory::RemoveInstancedBuffer(Mesh& mesh, size_t index)
     {
         MX_ASSERT(mesh.GetBufferCount() == index + 1);
@@ -38,25 +52,16 @@ namespace MxEngine
 
     void InstanceFactory::Init()
     {
-        auto& object = MxObject::GetByComponent(*this);
-        auto meshSource = object.GetComponent<MeshSource>();
-        if (meshSource.IsValid())
-        {
-            auto& mesh = *meshSource->Mesh;
-            auto modelBufferIndex  = this->AddInstancedBuffer(mesh, this->GetModelData());
-            auto normalBufferIndex = this->AddInstancedBuffer(mesh, this->GetNormalData());
-            auto colorBufferIndex  = this->AddInstancedBuffer(mesh, this->GetColorData());
-            this->bufferIndex = modelBufferIndex; // others will be `bufferIndex + 1`, `bufferIndex + 2`
-        }
+        this->InitMesh();
         
         auto self = MxObject::GetComponentHandle(*this);
         MxString uuid = self.GetUUID();
-        EventManager::RemoveEventListener(uuid);
         EventManager::AddEventListener(uuid, [self](UpdateEvent&) mutable { self->OnUpdate(); });
     }
 
     void InstanceFactory::OnUpdate()
     {
+        this->RemoveDanglingHandles();
         if (!this->IsStatic) this->SubmitInstances();
     }
 
@@ -148,12 +153,10 @@ namespace MxEngine
 
             if ((uint16_t)mesh.GetBufferCount() < this->bufferIndex + 2)
             {
-                this->Init(); // MeshSource was updated, re-init mesh
+                this->InitMesh(); // MeshSource was updated, re-init mesh
             }
             else
             {
-                this->RemoveDanglingHandles();
-
                 this->BufferDataByIndex(mesh, (size_t)this->bufferIndex + 0, this->GetModelData());
                 this->BufferDataByIndex(mesh, (size_t)this->bufferIndex + 1, this->GetNormalData());
                 this->BufferDataByIndex(mesh, (size_t)this->bufferIndex + 2, this->GetColorData());
