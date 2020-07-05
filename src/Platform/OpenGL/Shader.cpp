@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Shader.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 #include "Core/Macro/Macro.h"
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Utilities/FileSystem/File.h"
@@ -120,17 +120,17 @@ namespace MxEngine
 		MxString fs = File::ReadAllText(fragment);
 
 		if (fs.empty())
-			Logger::Instance().Warning("OpenGL::Shader", "fragment shader is empty: " + fragment);
+			MXLOG_WARNING("OpenGL::Shader", "fragment shader is empty: " + fragment);
 		if (vs.empty())
-			Logger::Instance().Warning("OpenGL::Shader", "vertex shader is empty: " + vertex);
+			MXLOG_WARNING("OpenGL::Shader", "vertex shader is empty: " + vertex);
 
-		Logger::Instance().Debug("OpenGL::Shader", "compiling vertex shader: " + vertex);
+		MXLOG_DEBUG("OpenGL::Shader", "compiling vertex shader: " + vertex);
 		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vs, vertex);
-		Logger::Instance().Debug("OpenGL::Shader", "compiling fragment shader: " + fragment);
+		MXLOG_DEBUG("OpenGL::Shader", "compiling fragment shader: " + fragment);
 		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fs, fragment);
 
 		id = CreateProgram(vertexShader, fragmentShader);
-		Logger::Instance().Debug("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
+		MXLOG_DEBUG("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
 	}
 
 	void Shader::Load(const MxString& vertex, const MxString& geometry, const MxString& fragment)
@@ -146,49 +146,49 @@ namespace MxEngine
 		MxString fs = File::ReadAllText(fragment);
 
 		if (fs.empty())
-			Logger::Instance().Warning("OpenGL::Shader", "fragment shader is empty: " + fragment);
+			MXLOG_WARNING("OpenGL::Shader", "fragment shader is empty: " + fragment);
 		if (gs.empty())
-			Logger::Instance().Warning("OpenGL::Shader", "fragment shader is empty: " + geometry);
+			MXLOG_WARNING("OpenGL::Shader", "fragment shader is empty: " + geometry);
 		if (vs.empty())
-			Logger::Instance().Warning("OpenGL::Shader", "vertex shader is empty: " + vertex);
+			MXLOG_WARNING("OpenGL::Shader", "vertex shader is empty: " + vertex);
 
-		Logger::Instance().Debug("OpenGL::Shader", "compiling vertex shader: " + vertex);
+		MXLOG_DEBUG("OpenGL::Shader", "compiling vertex shader: " + vertex);
 		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vs, vertex);
-		Logger::Instance().Debug("OpenGL::Shader", "compiling geometry shader: " + geometry);
+		MXLOG_DEBUG("OpenGL::Shader", "compiling geometry shader: " + geometry);
 		unsigned int geometryShader = CompileShader((GLenum)ShaderType::GEOMETRY_SHADER, gs, geometry);
-		Logger::Instance().Debug("OpenGL::Shader", "compiling fragment shader: " + fragment);
+		MXLOG_DEBUG("OpenGL::Shader", "compiling fragment shader: " + fragment);
 		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fs, fragment);
 
 		id = CreateProgram(vertexShader, geometryShader, fragmentShader);
-		Logger::Instance().Debug("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
+		MXLOG_DEBUG("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
 	}
 
     void Shader::LoadFromString(const MxString& vertex, const MxString& fragment)
     {
 		this->InvalidateUniformCache();
 
-		Logger::Instance().Debug("OpenGL::Shader", "compiling vertex shader: [[raw source]]");
+		MXLOG_DEBUG("OpenGL::Shader", "compiling vertex shader: [[raw source]]");
 		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, "[[raw source]]");
-		Logger::Instance().Debug("OpenGL::Shader", "compiling fragment shader: [[raw source]]");
+		MXLOG_DEBUG("OpenGL::Shader", "compiling fragment shader: [[raw source]]");
 		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fragment, "[[raw source]]");
 
 		id = CreateProgram(vertexShader, fragmentShader);
-		Logger::Instance().Debug("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
+		MXLOG_DEBUG("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
     }
 
 	void Shader::LoadFromString(const MxString& vertex, const MxString& geometry, const MxString& fragment)
 	{
 		this->InvalidateUniformCache();
 
-		Logger::Instance().Debug("OpenGL::Shader", "compiling vertex shader: [[raw source]]");
+		MXLOG_DEBUG("OpenGL::Shader", "compiling vertex shader: [[raw source]]");
 		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, "[[raw source]]");
-		Logger::Instance().Debug("OpenGL::Shader", "compiling geometry shader: [[raw source]]");
+		MXLOG_DEBUG("OpenGL::Shader", "compiling geometry shader: [[raw source]]");
 		unsigned int geometryShader = CompileShader((GLenum)ShaderType::GEOMETRY_SHADER, geometry, "[[raw source]]");
-		Logger::Instance().Debug("OpenGL::Shader", "compiling fragment shader: [[raw source]]");
+		MXLOG_DEBUG("OpenGL::Shader", "compiling fragment shader: [[raw source]]");
 		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fragment, "[[raw source]]");
 
 		id = CreateProgram(vertexShader, geometryShader, fragmentShader);
-		Logger::Instance().Debug("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
+		MXLOG_DEBUG("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
 	}
 
 	void Shader::SetUniformFloat(const MxString& name, float f) const
@@ -277,8 +277,8 @@ namespace MxEngine
 				typeName = "fragment";
 				break;
 			}
-			Logger::Instance().Error("OpenGL::Shader", "failed to compile " + typeName + " shader: " + name);
-			Logger::Instance().Error("OpenGL", msg);
+			MXLOG_ERROR("OpenGL::Shader", "failed to compile " + typeName + " shader: " + name);
+			MXLOG_ERROR("OpenGL", msg);
 		}
 
 		return shaderId;
@@ -323,7 +323,7 @@ namespace MxEngine
 
 		GLCALL(int location = glGetUniformLocation(id, uniformName.c_str()));
 		if (location == -1)
-			Logger::Instance().Warning("OpenGL::Shader", "uniform was not found: " + uniformName);
+			MXLOG_WARNING("OpenGL::Shader", "uniform was not found: " + uniformName);
 		uniformCache[uniformName] = location;
 		return location;
 	}

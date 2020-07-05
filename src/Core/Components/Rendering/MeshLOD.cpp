@@ -29,7 +29,8 @@
 #include "MeshLOD.h"
 #include "Utilities/LODGenerator/LODGenerator.h"
 #include "Core/MxObject/MxObject.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
+#include "Utilities/Format/Format.h"
 
 namespace MxEngine
 {
@@ -39,7 +40,7 @@ namespace MxEngine
         auto meshSource = object.GetComponent<MeshSource>();
         if (!meshSource.IsValid() || !meshSource->Mesh.IsValid())
         {
-            Logger::Instance().Warning("MxEngine::MeshLOD", "LODs are not generated as object has no mesh: " + object.Name);
+            MXLOG_WARNING("MxEngine::MeshLOD", "LODs are not generated as object has no mesh: " + object.Name);
             return;
         }
 
@@ -62,7 +63,7 @@ namespace MxEngine
                 submeshLOD.MeshData = lod.CreateObject(factor);
                 totalIndicies += submeshLOD.MeshData.GetIndicies().size();
             }
-            Logger::Instance().Debug("MxEngine::MeshLOD", MxFormat("generated LOD with {0} indicies for object: {1}", totalIndicies, object.Name.c_str()));
+            MXLOG_DEBUG("MxEngine::MeshLOD", MxFormat("generated LOD with {0} indicies for object: {1}", totalIndicies, object.Name.c_str()));
         }
     }
 

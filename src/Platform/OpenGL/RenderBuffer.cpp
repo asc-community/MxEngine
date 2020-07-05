@@ -29,14 +29,14 @@
 #include "RenderBuffer.h"
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Platform/OpenGL/FrameBuffer.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
 {
     RenderBuffer::RenderBuffer()
     {
         GLCALL(glGenRenderbuffers(1, &this->id));
-        Logger::Instance().Debug("OpenGL::RenderBuffer", "created renderbuffer with id = " + ToMxString(this->id));
+        MXLOG_DEBUG("OpenGL::RenderBuffer", "created renderbuffer with id = " + ToMxString(this->id));
     }
 
     RenderBuffer::~RenderBuffer()

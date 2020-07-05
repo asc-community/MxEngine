@@ -28,7 +28,7 @@
 
 #include "IndexBuffer.h"
 #include "Platform/OpenGL/GLUtilities.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 #include "Core/Macro/Macro.h"
 
 namespace MxEngine
@@ -36,7 +36,7 @@ namespace MxEngine
 	IndexBuffer::IndexBuffer()
 	{
 		GLCALL(glGenBuffers(1, &id));
-		Logger::Instance().Debug("OpenGL::IndexBuffer", "created index buffer with id = " + ToMxString(id));
+		MXLOG_DEBUG("OpenGL::IndexBuffer", "created index buffer with id = " + ToMxString(id));
 	}
 
 	IndexBuffer::IndexBuffer(const IndexType* data, size_t count)

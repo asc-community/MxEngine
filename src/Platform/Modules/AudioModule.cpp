@@ -29,7 +29,7 @@
 #include "AudioModule.h"
 #include "Platform/OpenAL/ALUtilities.h"
 #include "Utilities/Memory/Memory.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
 {
@@ -47,19 +47,19 @@ namespace MxEngine
                 MxString renderer = alGetString(AL_RENDERER);
                 MxString vendor = alGetString(AL_VENDOR);
 
-                Logger::Instance().Debug("MxEngine::AudioModule", "successfully initialized OpenAL library");
-                Logger::Instance().Debug("MxEngine::AudioModule", "OpenAL library : " + version);
-                Logger::Instance().Debug("MxEngine::AudioModule", "OpenAL library renderer info: " + renderer);
-                Logger::Instance().Debug("MxEngine::AudioModule", "OpenAL library vendor info: " + vendor);
+                MXLOG_INFO("MxEngine::AudioModule", "successfully initialized OpenAL library");
+                MXLOG_INFO("MxEngine::AudioModule", "OpenAL library : " + version);
+                MXLOG_INFO("MxEngine::AudioModule", "OpenAL library renderer info: " + renderer);
+                MXLOG_INFO("MxEngine::AudioModule", "OpenAL library vendor info: " + vendor);
             }
             else
             {
-                Logger::Instance().Error("MxEngine::AudioModule", "audio context was not created");
+                MXLOG_ERROR("MxEngine::AudioModule", "audio context was not created");
             }
         }
         else
         {
-            Logger::Instance().Error("MxEngine::AudioModule", "no audio device was found");
+            MXLOG_ERROR("MxEngine::AudioModule", "no audio device was found");
         }
     }
 

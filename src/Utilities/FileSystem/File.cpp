@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "File.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 
 #include <map>
 
@@ -76,7 +76,7 @@ namespace MxEngine
         {
             if ((mode & File::WRITE) == 0)
             {
-                Logger::Instance().Error("MxEngine::File", "file was not found: " + ToMxString(this->filePath));
+                MXLOG_ERROR("MxEngine::File", "file was not found: " + ToMxString(this->filePath));
                 return;
             }
         }
@@ -104,7 +104,7 @@ namespace MxEngine
         std::string content;
         if (!this->IsOpen())
         {
-            Logger::Instance().Error("MxEngine::File", "file was not opened before reading: " + ToMxString(this->filePath));
+            MXLOG_ERROR("MxEngine::File", "file was not opened before reading: " + ToMxString(this->filePath));
         }
         content.assign(std::istreambuf_iterator<char>(this->fileStream), std::istreambuf_iterator<char>());
         return ToMxString(content);
@@ -179,7 +179,7 @@ namespace MxEngine
     {
         if (!File::Exists(path))
         {
-            Logger::Instance().Warning("MxEngine::File", "file was not found: " + ToMxString(path));
+            MXLOG_WARNING("MxEngine::File", "file was not found: " + ToMxString(path));
             return FileSystemTime();
         }
         return std::filesystem::last_write_time(path);
@@ -189,7 +189,7 @@ namespace MxEngine
     {
         if (!File::Exists(path))
         {
-            Logger::Instance().Warning("MxEngine::File", "file was not found: " + path);
+            MXLOG_WARNING("MxEngine::File", "file was not found: " + path);
             return FileSystemTime();
         }
         return std::filesystem::last_write_time(path.c_str());
@@ -199,7 +199,7 @@ namespace MxEngine
     {
         if (!File::Exists(path))
         {
-            Logger::Instance().Warning("MxEngine::File", "file was not found: " + (MxString)path);
+            MXLOG_WARNING("MxEngine::File", "file was not found: " + (MxString)path);
             return FileSystemTime();
         }
         return std::filesystem::last_write_time(path);

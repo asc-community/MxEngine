@@ -40,6 +40,7 @@
     operator MxEngine::Vector4() const { return MxEngine::MakeVector4(x,y,z,w); }
 
 #include "Vendors/imgui/imgui.h"
+#include "Vendors/imgui/imgui_internal.h"
 
 #if defined(MXENGINE_USE_OPENGL)
     #define IMGUI_IMPL_OPENGL_LOADER_GLEW

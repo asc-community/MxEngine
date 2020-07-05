@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ALUtilities.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 #include "Utilities/Format/Format.h"
 
 namespace MxEngine
@@ -63,7 +63,7 @@ namespace MxEngine
                 message = "AL_OUT_OF_MEMORY";
                 break;
             }
-            Logger::Instance().Error("OpenAL::ErrorHandler", MxFormat(FMT_STRING("{0} error in {1}, {2} ({3})"), message, function, file, line));
+            MXLOG_ERROR("OpenAL::ErrorHandler", MxFormat("{0} error in {1}, {2} ({3})", message, function, file, line));
         }
         return success;
     }

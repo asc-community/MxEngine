@@ -28,7 +28,7 @@
 
 #include "VertexBuffer.h"
 #include "Platform/OpenGL/GLUtilities.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
 {		
@@ -49,7 +49,7 @@ namespace MxEngine
 	{
 		this->size = 0;
 		GLCALL(glGenBuffers(1, &id));
-		Logger::Instance().Debug("OpenGL::VertexBuffer", "created vertex buffer with id = " + ToMxString(id));
+		MXLOG_DEBUG("OpenGL::VertexBuffer", "created vertex buffer with id = " + ToMxString(id));
 	}
 
 	VertexBuffer::VertexBuffer(BufferData data, size_t count, UsageType type) 

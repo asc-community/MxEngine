@@ -95,11 +95,6 @@ namespace MxEngine
 		return this->renderAdaptor;
 	}
 
-	LoggerImpl& Application::GetLogger()
-	{
-		return Logger::Instance();
-	}
-
 	void Application::ToggleRuntimeEditor(bool isVisible)
 	{
 		this->GetRuntimeEditor().Toggle(isVisible);
@@ -108,7 +103,7 @@ namespace MxEngine
 
 	void Application::CloseOnKeyPress(KeyCode key)
 	{
-		Logger::Instance().Debug("MxEngine::AppCloseBinding", MxFormat("bound app close to keycode: {0}", EnumToString(key)));
+		MXLOG_DEBUG("MxEngine::AppCloseBinding", MxFormat("bound app close to keycode: {0}", EnumToString(key)));
 		EventManager::AddEventListener("AppCloseEvent", [key](KeyEvent& event)
 		{
 			auto context = Application::Get();
@@ -143,17 +138,17 @@ namespace MxEngine
 	{
 		if (!this->GetWindow().IsCreated())
 		{
-			Logger::Instance().Error("MxEngine::Application", "window was not created, probably CreateContext() was not called");
+			MXLOG_ERROR("MxEngine::Application", "window was not created, probably CreateContext() was not called");
 			return false;
 		}
 		if (this->isRunning)
 		{
-			Logger::Instance().Error("MxEngine::Application", "Application::Run() is called when application is already running");
+			MXLOG_ERROR("MxEngine::Application", "Application::Run() is called when application is already running");
 			return false;
 		}
 		if (!this->GetWindow().IsOpen())
 		{
-			Logger::Instance().Error("MxEngine::Application", "window was created but is closed. Note that application can be runned only once");
+			MXLOG_ERROR("MxEngine::Application", "window was created but is closed. Note that application can be runned only once");
 			return false;
 		}
 		return true; // verified!
@@ -168,7 +163,7 @@ namespace MxEngine
 	{
 		if (this->GetWindow().IsCreated())
 		{
-			Logger::Instance().Warning("MxEngine::Application", "CreateContext() called when window was already created");
+			MXLOG_WARNING("MxEngine::Application", "CreateContext() called when window was already created");
 			return;
 		}
 		MAKE_SCOPE_PROFILER("Application::CreateContext");
@@ -184,7 +179,7 @@ namespace MxEngine
 		MxString configPath = "engine_config.json";
 		if (File::Exists(configPath))
 		{
-			Logger::Instance().Debug("Application::CreateContext", "Using engine config file to set up context...");
+			MXLOG_INFO("Application::CreateContext", "Using engine config file to set up context...");
 			File configFile(configPath);
 			config = Json::LoadJson(configFile);
 		}
@@ -302,7 +297,7 @@ namespace MxEngine
 		{
 			MAKE_SCOPE_PROFILER("Application::Run");
 			MAKE_SCOPE_TIMER("MxEngine::Application", "Application::Run()");
-			Logger::Instance().Debug("MxEngine::Application", "starting main loop...");
+			MXLOG_INFO("MxEngine::Application", "starting main loop...");
 			while (this->GetWindow().IsOpen()) //-V807
 			{
 				fpsCounter++;
@@ -354,7 +349,7 @@ namespace MxEngine
 
 	Application::~Application()
 	{
-		Logger::Instance().Debug("MxEngine::Application", "application destroyed");
+		MXLOG_INFO("MxEngine::Application", "application destroyed");
 	}
 
 	Application* Application::Get()
@@ -376,6 +371,7 @@ namespace MxEngine
 		MX_ASSERT(Application::Get() == nullptr);
 		Application::Set(app);
 
+		Logger::Init();
 		FileManager::Init();
 		AudioModule::Init();
 		GraphicModule::Init();

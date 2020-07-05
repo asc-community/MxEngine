@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Utilities/Time/Time.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 #include "Utilities/SingletonHolder/SingletonHolder.h"
 
 #include <fstream>
@@ -155,7 +155,7 @@ namespace MxEngine
 		inline ScopeTimer(std::string_view invoker, std::string_view function)
 			: start(Time::Current()), invoker(invoker), function(function.data())
 		{
-			Logger::Instance().Debug(this->invoker.data(), "calling " + this->function);
+			MXLOG_INFO(this->invoker.data(), "calling " + this->function);
 		}
 
 		/*!
@@ -165,7 +165,7 @@ namespace MxEngine
 		{
 			TimeStep end = Time::Current();
 			MxString delta = BeautifyTime(end - start);
-			Logger::Instance().Debug(this->invoker.data(), this->function + " finished in " + delta);
+			MXLOG_INFO(this->invoker.data(), this->function + " finished in " + delta);
 		}
 	};
 

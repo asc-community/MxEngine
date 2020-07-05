@@ -32,5 +32,5 @@
 
 namespace MxEngine::GUI
 {
-	void DrawRenderEditor();
+	void DrawRenderEditor(const char* name, bool* isOpen = nullptr);
 }

@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ObjectLoader.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Core/Macro/Macro.h"
 #include "Utilities/FileSystem/File.h"
@@ -52,19 +52,20 @@ namespace MxEngine
 
 		if (!File::Exists(filepath) || !File::IsFile(filepath))
 		{
-			MxEngine::Logger::Instance().Error("Assimp::Importer", "file does not exist: " + filename);
+			MXLOG_ERROR("Assimp::Importer", "file does not exist: " + filename);
 			return object;
 		}
 
 		MAKE_SCOPE_PROFILER("ObjectLoader::LoadObject");
 		MAKE_SCOPE_TIMER("MxEngine::ObjectLoader", "ObjectLoader::LoadObject");
-		Logger::Instance().Debug("Assimp::Importer", MxFormat("loading object from file: {}", filename));
-		static Assimp::Importer importer; // not thread safe
+		MXLOG_INFO("Assimp::Importer", "loading object from file: " + filename);
+
+		static Assimp::Importer importer; // TODO: not thread safe
 		const aiScene* scene = importer.ReadFile(filename.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices 
 			| aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_ImproveCacheLocality | aiProcess_GenUVCoords | aiProcess_CalcTangentSpace);
 		if (scene == nullptr)
 		{
-			MxEngine::Logger::Instance().Error("Assimp::Importer", importer.GetErrorString());
+			MXLOG_ERROR("Assimp::Importer", importer.GetErrorString());
 			return object;
 		}
 
@@ -187,10 +188,10 @@ namespace MxEngine
 		File file(path);
 		if (!file.IsOpen())
 		{
-			Logger::Instance().Error("MxEngine::ObjectLoader", "cannot open file: " + path);
+			MXLOG_ERROR("MxEngine::ObjectLoader", "cannot open file: " + path);
 			return materials;
 		}
-		Logger::Instance().Debug("MxEngine::ObjectLoader", "loading materials from file: " + path);
+		MXLOG_INFO("MxEngine::ObjectLoader", "loading materials from file: " + path);
 
 		auto materialList = Json::LoadJson(file);
 
@@ -226,7 +227,7 @@ namespace MxEngine
 	{
 		JsonFile json;
 		File file(path, File::WRITE);
-		Logger::Instance().Debug("MxEngine::ObjectLoader", "dumping materials to file: " + path);
+		MXLOG_INFO("MxEngine::ObjectLoader", "dumping materials to file: " + path);
 
 		#define DUMP(index, name) json[index][#name] = materials[index].name
 
@@ -259,7 +260,7 @@ namespace MxEngine
 {
 	ObjectInfo ObjectLoader::Load(MxString path)
 	{
-		Logger::Instance().Error("MxEngine::ObjectLoader", "object cannot be loaded as Assimp library was turned off in engine settings");
+		MXLOG_ERROR("MxEngine::ObjectLoader", "object cannot be loaded as Assimp library was turned off in engine settings");
 		ObjectInfo object;
 		object.isSuccess = false;
 		return object;

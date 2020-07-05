@@ -47,16 +47,16 @@ namespace MxEngine
 		char buf[1024];
 		va_list args;
 		va_start(args, fmt);
-		vsnprintf(buf, IM_ARRAYSIZE(buf), fmt, args);
-		buf[IM_ARRAYSIZE(buf) - 1] = 0;
+		vsnprintf(buf, std::size(buf), fmt, args);
+		buf[std::size(buf) - 1] = 0;
 		va_end(args);
 		Items.push_back(Strdup(buf));
 	}
 
-	void GraphicConsole::Draw(const char* title)
+	void GraphicConsole::Draw(const char* title, bool* isOpen)
 	{
 		ImGui::SetNextWindowSize(this->size);
-		ImGui::Begin(title);
+		ImGui::Begin(title, isOpen);
 
 		if (ImGui::SmallButton("Clear")) { ClearLog(); } ImGui::SameLine();
 		bool copy_to_clipboard = ImGui::SmallButton("Copy"); ImGui::SameLine();
@@ -94,7 +94,7 @@ namespace MxEngine
 		// A typical application wanting coarse clipping and filtering may want to pre-compute an array of indices that passed the filtering test, recomputing this array when user changes the filter,
 		// and appending newly elements as they are inserted. This is left as a task to the user until we can manage to improve this example code!
 		// If your items are of variable size you may want to implement code similar to what ImGuiListClipper does. Or split your data into fixed height items to allow random-seeking into your list.
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing //-V112
 		if (copy_to_clipboard)
 		ImGui::LogToClipboard();
 		for (int i = 0; i < Items.Size; i++)
@@ -125,7 +125,7 @@ namespace MxEngine
 		// Command-line
 		bool reclaim_focus = false;
 		ImGui::PushItemWidth(this->size.x - 60);
-		if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory, &TextEditCallbackStub, (void*)this))
+		if (ImGui::InputText("Input", InputBuf, std::size(InputBuf), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory, &TextEditCallbackStub, (void*)this))
 		{
 			char* s = InputBuf;
 			Strtrim(s);
@@ -164,7 +164,7 @@ namespace MxEngine
 			if (Stricmp(History[i], command_line) == 0)
 			{
 				free(History[i]);
-				History.erase(History.begin() + i);
+				History.erase(History.begin() + (size_t)i);
 				break;
 			}
 		History.push_back(Strdup(command_line));

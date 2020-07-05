@@ -34,9 +34,9 @@
 
 namespace MxEngine::GUI
 {
-	void DrawViewportWindow(Vector2& viewportSize)
+	void DrawViewportWindow(const char* name, Vector2& viewportSize, bool* isOpen)
 	{
-		ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+		ImGui::Begin(name, isOpen, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 		auto viewport = RenderManager::GetViewport();
 
 		if (viewport.IsValid() && viewport->GetRenderTexture().IsValid())

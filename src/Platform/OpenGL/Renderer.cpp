@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Renderer.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Platform/Modules/GraphicModule.h"
 #include "Utilities/Profiler/Profiler.h"
@@ -167,12 +167,12 @@ namespace MxEngine
 		if (value)
 		{
 			GLCALL(glEnable(GL_MULTISAMPLE));
-			Logger::Instance().Debug("OpenGL::Renderer", "multisampling is enabled");
+			MXLOG_DEBUG("OpenGL::Renderer", "native multisampling is enabled");
 		}
 		else
 		{
 			GLCALL(glDisable(GL_MULTISAMPLE));
-			Logger::Instance().Debug("OpenGL::Renderer", "multisampling is disabled");
+			MXLOG_DEBUG("OpenGL::Renderer", "native multisampling is disabled");
 		}
 		return *this;
 	}
@@ -269,12 +269,12 @@ namespace MxEngine
 	{
 		if (!glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
 		{
-			Logger::Instance().Error("OpenGL::Renderer", "anisotropic filtering is not supported on your device");
+			MXLOG_WARNING("OpenGL::Renderer", "anisotropic filtering is not supported on your device");
 		}
 		else
 		{
 			GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, factor));
-			Logger::Instance().Debug("OpenGL::Renderer", "set anisotropic filtering factor to " + ToMxString((int)factor) + "x");
+			MXLOG_DEBUG("OpenGL::Renderer", "set anisotropic filtering factor to " + ToMxString((int)factor) + "x");
 		}
 		return *this;
 	}
@@ -289,7 +289,7 @@ namespace MxEngine
 	{
 		if (!glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
 		{
-			Logger::Instance().Warning("OpenGL::Renderer", "anisotropic filtering is not supported");
+			MXLOG_WARNING("OpenGL::Renderer", "anisotropic filtering is not supported");
 			return 0.0f;
 		}
 		float factor;

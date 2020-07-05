@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-7.2.4-red)
+![](https://img.shields.io/badge/version-7.3.0-red)
 ![](https://img.shields.io/badge/license-bsd--3-yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
 <!-- soon! [![Documentation](https://codedocs.xyz/MomoDeve/MxEngine.svg)](https://codedocs.xyz/MomoDeve/MxEngine/) -->
@@ -8,7 +8,9 @@ MxEngine is an educational modern-C++ general-purpose 3D game engine.
 Right now MxEngine is developed only by me, [#Momo](https://github.com/MomoDeve), but any contributions are welcome and will be reviewed.
 Fow now MxEngine supports OpenGL as graphic API and targeting x64 only. My plans include other graphic API support, but do not expect it in the near future, as there are still a lot of other stuff to do.
 
-![preview](readme_preview.png)
+<p align="center">
+<img src="preview_images/readme_main.png">
+</p>
 
 ## Additional dependencies
 MxEngine is not a huge framework so multiple third-party libraries are used. Here is the full list of dependencies for last MxEngine release version:
@@ -54,3 +56,11 @@ Right now MxEngine is distributed in source code as Visual Studio project which 
 	> Initially this was an educational project (actually I still learn a lot of new things when developing it), where I learned about OpenGL, graphics, software engeneering and game development. I loved it and still love to spend my free time fixing some stuff or implementing new features. Thats really a great opportunity to have such cool project, even if it will never be any better than existing game engines like Unity or Unreal Engine
 - If I want to help you with development, how can I get into this project? Is there a documentation for it?
 	> Sadly there are too much things that I need to document and so much features which I need to implement, that I have almost no time for proper documentation. You can start with `ProjectTemplate` VS project, and try some things for yourself. I promise I will add more samples with each release to make usage of the engine easier. If you want to help me with developing, building on other systems or fixing bugs, first contact me personally (links to my social media can be found in [my profile](https://github.com/MomoDeve)). We can discuss what you may do and how can you help the engine to progress
+	
+## Projects based on MxEngine
+Here is the list of some projects using MxEngine. If you want to see yours here, [contact me](https://github.com/MomoDeve).
+### Rainball by WhiteBlackGoose
+[project link](https://github.com/WhiteBlackGoose/Rainball)
+<p align="center">
+<img src="https://github.com/WhiteBlackGoose/Rainball/blob/master/realistic.gif">
+</p>

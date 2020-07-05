@@ -29,7 +29,8 @@
 #include "AudioLoader.h"
 
 #include "Utilities/FileSystem/File.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Profiler/Profiler.h"
+#include "Core/Macro/Macro.h"
 
 #define DR_FLAC_IMPLEMENTATION
 #include "Vendors/miniaudio/dr_flac.h"     /* Enables FLAC decoding. */
@@ -44,6 +45,10 @@ namespace MxEngine
 {
     AudioData AudioLoader::Load(const MxString& path)
     {
+        MAKE_SCOPE_PROFILER("AudioLoader::Load");
+        MAKE_SCOPE_TIMER("MxEngine::AudioLoader", "AudioLoader::Load");
+        MXLOG_INFO("MxEngine::AudioLoader", "loading audio from file: " + path);
+
         auto ext = FilePath(path.c_str()).extension();
         AudioData result;
 
@@ -105,7 +110,7 @@ namespace MxEngine
         }
         else
         {
-            Logger::Instance().Warning("MxEngine::AudioLoader", "file was not loaded as extension is unknown: " + ToMxString(ext));
+            MXLOG_WARNING("MxEngine::AudioLoader", "file was not loaded as extension is unknown: " + ToMxString(ext));
         }
         return result;
     }

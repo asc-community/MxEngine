@@ -27,9 +27,9 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "FileManager.h"
-#include "Utilities/Logger/Logger.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/Memory/Memory.h"
+#include "Utilities/Format/Format.h"
 
 namespace MxEngine
 {
@@ -38,7 +38,7 @@ namespace MxEngine
         if (!File::Exists(directory))
         {
             File::CreateDirectory(directory);
-            Logger::Instance().Debug("MxEngine::FileManager", "creating directory: " + ToMxString(directory));
+            MXLOG_DEBUG("MxEngine::FileManager", "creating directory: " + ToMxString(directory));
         }
 
         namespace fs = std::filesystem;
@@ -76,12 +76,11 @@ namespace MxEngine
         auto filehash = MakeStringId(filename);
         if (manager->filetable.find(filehash) != manager->filetable.end())
         {
-            Logger::Instance().Warning("MxEngine::FileManager", 
-                MxFormat("hash of file \"{0}\" conflicts with other one in the project: {1}", filename, manager->filetable[filehash].string()));
+            MXLOG_WARNING("MxEngine::FileManager", MxFormat("hash of file \"{0}\" conflicts with other one in the project: {1}", filename, manager->filetable[filehash].string()));
         }
         else
         {
-            Logger::Instance().Debug("MxEngine::FileManager", MxFormat("file added to the project: {0}", filename));
+            MXLOG_DEBUG("MxEngine::FileManager", MxFormat("file added to the project: {0}", filename));
         }
         manager->filetable.emplace(filehash, file);
     }

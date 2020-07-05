@@ -28,7 +28,7 @@
 
 #include "Window.h"
 
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/Memory/Memory.h"
 #include "Core/Event/Events/WindowResizeEvent.h"
@@ -62,7 +62,7 @@ namespace MxEngine
 		{
 			this->Close();
 			glfwDestroyWindow(this->window);
-			Logger::Instance().Debug("MxEngine::Window", "window destroyed");
+			MXLOG_DEBUG("MxEngine::Window", "window destroyed");
 		}
 	}
 
@@ -98,7 +98,7 @@ namespace MxEngine
 	Window::Window(int width, int height, const MxString& title)
 		: title(title), width(width), height(height)
 	{		
-		Logger::Instance().Debug("MxEngine::Window", "window object created");
+		MXLOG_DEBUG("MxEngine::Window", "window object created");
 	}
 
     Window::Window(Window&& other) noexcept
@@ -135,7 +135,7 @@ namespace MxEngine
 	{
 		if (this->window == nullptr)
 		{
-			Logger::Instance().Warning("MxEngine::Window", "window was not created while calling Window::IsOpen");
+			MXLOG_WARNING("MxEngine::Window", "window was not created while calling Window::IsOpen");
 			return false;
 		}
 		bool isOpen = !glfwWindowShouldClose(this->window);
@@ -196,7 +196,7 @@ namespace MxEngine
 			GraphicModule::OnWindowDestroy(this->GetNativeHandle());
 
 			glfwSetWindowShouldClose(this->window, (int)true);
-			Logger::Instance().Debug("MxEngine::Window", "window closed");
+			MXLOG_DEBUG("MxEngine::Window", "window closed");
 		}
 		return *this;
 	}
@@ -271,7 +271,7 @@ namespace MxEngine
 			this->window = glfwCreateWindow(width, height, "", nullptr, nullptr);
 			if (this->window == nullptr)
 			{
-				Logger::Instance().Error("GLFW", "glfw window was not created");
+				MXLOG_FATAL("OpenGL::InitGLFW", "glfw window was not created");
 				return *this;
 			}
 			// window events
@@ -313,7 +313,7 @@ namespace MxEngine
 		UseCursorMode(this->cursorMode);
 		UseWindowPosition((int)this->windowPosition.x, (int)this->windowPosition.y);
 		UseCursorPosition(this->cursorPosition);
-		Logger::Instance().Debug("MxEngine::Window", "window initialized");
+		MXLOG_DEBUG("MxEngine::Window", "window initialized");
 		return *this;
 	}
 
@@ -341,7 +341,7 @@ namespace MxEngine
 	Window& Window::UseDebugging(bool value)
 	{
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, value);
-		Logger::Instance().Debug("OpenGL::Window", "debug context was set to: " + (MxString)BOOL_STRING(value));
+		MXLOG_DEBUG("OpenGL::Window", "debug context was set to: " + (MxString)BOOL_STRING(value));
 		return *this;
 	}
 
@@ -349,7 +349,7 @@ namespace MxEngine
 	{
 		this->doubleBuffer = value;
 		glfwWindowHint(GLFW_DOUBLEBUFFER, value);
-		Logger::Instance().Debug("OpenGL::Window", "doublebuffering was set to: " + (MxString)BOOL_STRING(value));
+		MXLOG_DEBUG("OpenGL::Window", "doublebuffering was set to: " + (MxString)BOOL_STRING(value));
 		return *this;
 	}
 

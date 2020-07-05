@@ -28,12 +28,14 @@
 
 #include "AudioPlayer.h"
 #include "ALUtilities.h"
+#include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
 {
     AudioPlayer::AudioPlayer()
     {
         ALCALL(alGenSources(1, &id));
+        MXLOG_DEBUG("OpenAL::AudioPlayer", "created audio source with id = " + ToMxString(id));
     }
 
     AudioPlayer::~AudioPlayer()

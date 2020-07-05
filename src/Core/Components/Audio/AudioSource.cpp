@@ -53,6 +53,7 @@ namespace MxEngine
     AudioSource::~AudioSource()
     {
         EventManager::RemoveEventListener(this->player.GetUUID());
+        this->player = { };
     }
 
     AudioSource::AudioSource(const AudioBufferHandle& buffer)

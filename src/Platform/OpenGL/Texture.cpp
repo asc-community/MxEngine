@@ -28,7 +28,7 @@
 
 #include "Texture.h"
 #include "Platform/OpenGL/GLUtilities.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 #include "Utilities/Time/Time.h"
 #include "Utilities/Image/ImageLoader.h"
 
@@ -68,7 +68,7 @@ namespace MxEngine
 	Texture::Texture()
 	{
 		GLCALL(glGenTextures(1, &id));
-		Logger::Instance().Debug("OpenGL::Texture", "created texture with id = " + ToMxString(id));
+		MXLOG_DEBUG("OpenGL::Texture", "created texture with id = " + ToMxString(id));
 	}
 
 	Texture::Texture(Texture&& texture) noexcept
@@ -135,7 +135,7 @@ namespace MxEngine
 
 		if (image.GetRawData() == nullptr)
 		{
-			Logger::Instance().Error("Texture", "file with name '" + filepath + "' was not found");
+			MXLOG_ERROR("Texture", "file with name '" + filepath + "' was not found");
 			return;
 		}
 		this->width = image.GetWidth();

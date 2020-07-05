@@ -28,7 +28,7 @@
 
 #include "FrameBuffer.h"
 #include "Platform/OpenGL/GLUtilities.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 #include "Core/Macro/Macro.h"
 #include "Platform/GraphicAPI.h"
 
@@ -60,7 +60,7 @@ namespace MxEngine
     FrameBuffer::FrameBuffer()
     {
         GLCALL(glGenFramebuffers(1, &id));
-        Logger::Instance().Debug("OpenGL::FrameBuffer", "created framebuffer with id = " + ToMxString(id));
+        MXLOG_DEBUG("OpenGL::FrameBuffer", "created framebuffer with id = " + ToMxString(id));
     }
 
     void FrameBuffer::OnTextureAttach(const Texture& texture, Attachment attachment)
@@ -100,7 +100,7 @@ namespace MxEngine
     {
         this->Bind();
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            Logger::Instance().Error("OpenGL::FrameBuffer", "framebuffer validation failed: incomplete");
+            MXLOG_ERROR("OpenGL::FrameBuffer", "framebuffer validation failed: incomplete");
     }
 
     void FrameBuffer::DetachRenderTarget()

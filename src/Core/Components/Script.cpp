@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Script.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 #include "Utilities/FileSystem/FileManager.h"
 #include "Core/Application/Application.h"
 
@@ -58,7 +58,7 @@ namespace MxEngine
     {
         this->path = path;
         if (!File::Exists(this->path))
-            Logger::Instance().Warning("MxEngine::Script", "script is not loaded, file was not found: " + path);
+            MXLOG_WARNING("MxEngine::Script", "script is not loaded, file was not found: " + path);
 
         this->UpdateContents();
     }
@@ -74,7 +74,7 @@ namespace MxEngine
                 auto systemFileTime = File::LastModifiedTime(this->path);
                 if (this->fileUpdate < systemFileTime)
                 {
-                    Logger::Instance().Debug("MxEngine::Script", "updated script: " + this->path);
+                    MXLOG_DEBUG("MxEngine::Script", "updated script: " + this->path);
                     this->data = File(this->path).ReadAllText();
                 }
 
@@ -90,7 +90,7 @@ namespace MxEngine
         editor.ExecuteScript(this->GetContent());
         if (editor.HasErrorsInExecution())
         {
-            Logger::Instance().Error("Application::ExecuteScript", editor.GetLastErrorMessage());
+            MXLOG_ERROR("Application::ExecuteScript", editor.GetLastErrorMessage());
         }
     }
 

@@ -45,10 +45,11 @@ namespace MxEngine
 	
 	void InputControl::BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down)
 	{
-		Logger::Instance().Debug("MxEngine::InputControl", "bound object movement");
 		auto& object = MxObject::GetByComponent(*this);
 		auto camera = object.GetComponent<CameraController>();
 		MxString uuid = object.GetComponent<InputControl>().GetUUID();
+
+		MXLOG_DEBUG("MxEngine::InputControl", "bound object movement: " + object.Name);
 	
 		EventManager::AddEventListener(uuid,
 			[forward, back, right, left, up, down, camera, object = MxObject::GetHandleByComponent(*this)](KeyEvent& event) mutable
@@ -108,11 +109,11 @@ namespace MxEngine
 		auto camera = object.GetComponent<CameraController>();
 		if (!camera.IsValid())
 		{
-			Logger::Instance().Warning("MxEngine::InputControl", "rotation can be bound only to CameraController component");
+			MXLOG_WARNING("MxEngine::InputControl", "rotation can be bound only to CameraController component");
 			return;
 		}
 
-		Logger::Instance().Debug("MxEngine::InputControl", "bound object rotation");
+		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
 		MxString uuid = object.GetComponent<InputControl>().GetUUID(); 
 
 		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
@@ -131,11 +132,11 @@ namespace MxEngine
 		auto camera = object.GetComponent<CameraController>();
 		if (!camera.IsValid())
 		{
-			Logger::Instance().Warning("MxEngine::InputControl", "rotation can be bound only to CameraController component");
+			MXLOG_WARNING("MxEngine::InputControl", "rotation can be bound only to CameraController component");
 			return;
 		}
 
-		Logger::Instance().Debug("MxEngine::InputControl", "bound object rotation");
+		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
 		MxString uuid = object.GetComponent<InputControl>().GetUUID();
 	
 		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
@@ -154,11 +155,11 @@ namespace MxEngine
 		auto camera = object.GetComponent<CameraController>();
 		if (!camera.IsValid())
 		{
-			Logger::Instance().Warning("MxEngine::InputControl", "rotation can be bound only to CameraController component");
+			MXLOG_WARNING("MxEngine::InputControl", "rotation can be bound only to CameraController component");
 			return;
 		}
 
-		Logger::Instance().Debug("MxEngine::InputControl", "bound object rotation");
+		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
 		MxString uuid = object.GetComponent<InputControl>().GetUUID();
 	
 		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable

@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "GLUtilities.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 #include "Utilities/Format/Format.h"
 
 #include <fstream>
@@ -56,7 +56,7 @@ namespace MxEngine
 			const char* message = (const char*)gluErrorString(error);
 			if (message == nullptr) message = "unknown";
 			setlocale(LC_ALL, "");
-			Logger::Instance().Error("OpenGL::ErrorHandler", MxFormat(FMT_STRING("{0}\n  {1} in file: {2}, line: {3}"), message, function, file, line));
+			MXLOG_ERROR("OpenGL::ErrorHandler", MxFormat("{0}\n  {1} in file: {2}, line: {3}", message, function, file, line));
 		}
 		return success;
 	}
@@ -115,7 +115,7 @@ namespace MxEngine
 		case GL_DEBUG_SEVERITY_NOTIFICATION: out << "Severity: notification"; break;
 		}
 
-		Logger::Instance().Error("OpenGL::ErrorHandler", ToMxString(out.str()));
+		MXLOG_ERROR("OpenGL::ErrorHandler", ToMxString(out.str()));
 	}
 
 	template<>

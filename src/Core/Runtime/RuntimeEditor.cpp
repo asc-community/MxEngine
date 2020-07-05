@@ -38,6 +38,7 @@
 #include "Core/Application/RenderManager.h"
 #include "Platform/Window/WindowManager.h"
 #include "Platform/Window/InputManager.h"
+#include "Utilities/Format/Format.h"
 
 namespace MxEngine
 {
@@ -62,29 +63,55 @@ namespace MxEngine
 		this->console->PrintHistory();
 	}
 
+	void InitDockspace(ImGuiID dockspaceId)
+	{
+		static bool inited = false;
+		auto node = ImGui::DockBuilderGetNode(dockspaceId);
+
+		if (inited || (node != nullptr && node->IsSplitNode()))
+			return;
+
+		inited = true;
+		const float viewportRatio = 0.7f;
+
+		ImGuiID leftDockspace = 0; 
+		ImGuiID rightDockspace = 0;
+		ImGui::DockBuilderSplitNode(dockspaceId, ImGuiDir_Left, viewportRatio, &leftDockspace, &rightDockspace);
+
+		ImGuiID viewportId = 0;
+		ImGuiID profilerId = 0;
+		ImGui::DockBuilderSplitNode(leftDockspace, ImGuiDir_Up, viewportRatio, &viewportId, &profilerId);
+
+		ImGui::DockBuilderDockWindow("Viewport", viewportId);
+		ImGui::DockBuilderDockWindow("Profiling Tools", profilerId);
+		ImGui::DockBuilderDockWindow("Object Editor", rightDockspace);
+		ImGui::DockBuilderDockWindow("Developer Console", rightDockspace);
+		ImGui::DockBuilderDockWindow("Object Editor", rightDockspace);
+		ImGui::DockBuilderDockWindow("Render Editor", rightDockspace);
+
+		ImGui::DockBuilderFinish(dockspaceId);
+	}
+
 	void RuntimeEditor::OnRender()
 	{
 		if (this->shouldRender)
 		{
-			ImGuiViewport* viewport = ImGui::GetMainViewport();
-			ImGui::SetNextWindowPos(viewport->GetWorkPos());
-			ImGui::SetNextWindowSize(viewport->GetWorkSize());
-			ImGui::SetNextWindowViewport(viewport->ID);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+			auto dockspaceID = ImGui::DockSpaceOverViewport();
+			InitDockspace(dockspaceID);
 
-			ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-			window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-			window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+			static bool isRenderEditorOpened = false;
+			static bool isObjectEditorOpened = false;
+			static bool isDeveloperConsoleOpened = true;
+			static bool isProfilerOpened = true;
+			static bool isViewportOpened = true;
 
-			ImGui::Begin("DockSpace", nullptr, window_flags);
-			ImGui::PopStyleVar(3);
-			ImGui::DockSpace(0xFF);
-			ImGui::End();
+			this->console->Draw("Developer Console", &isDeveloperConsoleOpened);
+
+			GUI::DrawViewportWindow("Viewport", this->cachedWindowSize, &isViewportOpened);
+			GUI::DrawRenderEditor("Render Editor", &isRenderEditorOpened);
 
 			{
-				ImGui::Begin("Object Editor");
+				ImGui::Begin("Object Editor", &isObjectEditorOpened);
 
 				if (ImGui::Button("create new MxObject"))
 					MxObject::Create();
@@ -100,19 +127,15 @@ namespace MxEngine
 						ImGui::PopID();
 					}
 				}
+			}
 
-				this->console->Draw("Developer Console");
-
-				ImGui::Begin("Profiling Tools");
+			{
+				ImGui::Begin("Profiling Tools", &isProfilerOpened);
 				GUI_TREE_NODE("Profiler", GUI::DrawProfiler());
 				ImGui::End();
-
-				GUI::DrawViewportWindow(cachedWindowSize);
-
-				GUI::DrawRenderEditor();
-
-				ImGui::End();
 			}
+
+			ImGui::End();
 		}
 	}
 
@@ -141,7 +164,7 @@ namespace MxEngine
 
 	void RuntimeEditor::AddKeyBinding(KeyCode openKey)
 	{
-		Logger::Instance().Debug("MxEngine::ConsoleBinding", MxFormat("bound console to keycode: {0}", EnumToString(openKey)));
+		MXLOG_INFO("MxEngine::ConsoleBinding", MxFormat("bound console to keycode: {0}", EnumToString(openKey)));
 		EventManager::AddEventListener("RuntimeEditor", 
 		[cursorPos = Vector2(), cursorModeCached = CursorMode::DISABLED, openKey, savedStateKeyHeld = false](UpdateEvent& event) mutable
 		{

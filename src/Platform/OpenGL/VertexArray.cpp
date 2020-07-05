@@ -30,7 +30,7 @@
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Platform/OpenGL/VertexBuffer.h"
 #include "Platform/OpenGL/VertexBufferLayout.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
 {
@@ -83,7 +83,7 @@ namespace MxEngine
 		if (id == 0)
 		{
 			GLCALL(glGenVertexArrays(1, &id));
-			Logger::Instance().Debug("OpenGL::VertexArray", "created vertex array with id = " + ToMxString(id));
+			MXLOG_DEBUG("OpenGL::VertexArray", "created vertex array with id = " + ToMxString(id));
 		}
 		this->Bind();
 		buffer.Bind();

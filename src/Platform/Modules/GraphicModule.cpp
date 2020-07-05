@@ -28,7 +28,7 @@
 
 #include "GraphicModule.h"
 #include "Platform/OpenGL/GLUtilities.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/ImGui/ImGuiBase.h"
 
@@ -44,11 +44,11 @@ namespace MxEngine
 			MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "OpenGL::InitGLFW");
 			glfwSetErrorCallback([](int errorCode, const char* errorMessage)
 				{
-					Logger::Instance().Error("OpenGL::Init", errorMessage);
+					MXLOG_FATAL("OpenGL::InitGLFW", errorMessage);
 				});
 			if (!glfwInit())
 			{
-				Logger::Instance().Error("OpenGL::Init", "OpenGL init failed");
+				MXLOG_FATAL("OpenGL::InitGLFW", "OpenGL init failed");
 				return;
 			}
 		}
@@ -62,11 +62,11 @@ namespace MxEngine
 			GLenum err = glewInit();
 			if (err != GLEW_OK)
 			{
-				Logger::Instance().Error("OpenGL::InitGLEW", "OpenGL init failed");
+				MXLOG_FATAL("OpenGL::InitGLEW", "OpenGL init failed");
 			}
 			else
 			{
-				Logger::Instance().Debug("OpenGL::InitGLEW", "OpenGL version: " + MxString((char*)glGetString(GL_VERSION)));
+				MXLOG_INFO("OpenGL::InitGLEW", "OpenGL version: " + MxString((char*)glGetString(GL_VERSION)));
 			}
 		}
 

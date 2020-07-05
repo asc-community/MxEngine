@@ -30,7 +30,7 @@
 #include "Utilities/FileSystem/FileManager.h"
 #include "Utilities/Image/ImageConverter.h"
 #include "Core/Application/RenderManager.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
 {
@@ -64,7 +64,7 @@ namespace MxEngine
             imageByteData = ImageConverter::ConvertImageJPG(imageData);
             break;
         case ImageType::HDR:
-            Logger::Instance().Warning("MxEngine::ImageManager", "HDR texture format is not supported through ImageManager, use ImageConverter::ConvertImageHDR");
+            MXLOG_WARNING("MxEngine::ImageManager", "HDR texture format is not supported through ImageManager, use ImageConverter::ConvertImageHDR");
             break;
         }
         file.WriteBytes(imageByteData.data(), imageByteData.size());
@@ -105,7 +105,7 @@ namespace MxEngine
         }
         else
         {
-            Logger::Instance().Warning("MxEngine::ImageManager", "image was not saved because extenstion was invalid: " + MxString(ext.string().c_str()));
+            MXLOG_WARNING("MxEngine::ImageManager", "image was not saved because extenstion was invalid: " + MxString(ext.string().c_str()));
         }
     }
 
@@ -134,7 +134,7 @@ namespace MxEngine
         auto viewport = RenderManager::GetViewport();
         if (!viewport.IsValid())
         {
-            Logger::Instance().Warning("MxEngine::ImageManager", "cannot take screenshot at there is no viewport attached");
+            MXLOG_WARNING("MxEngine::ImageManager", "cannot take screenshot at there is no viewport attached");
             return;
         }
         ImageManager::SaveTexture(filePath, viewport->GetRenderTexture(), type);
@@ -175,7 +175,7 @@ namespace MxEngine
         }
         else
         {
-            Logger::Instance().Warning("MxEngine::ImageManager", "screenshots was not saved because extenstion was invalid: " + MxString(ext.string().c_str()));
+            MXLOG_WARNING("MxEngine::ImageManager", "screenshots was not saved because extenstion was invalid: " + MxString(ext.string().c_str()));
         }
     }
 

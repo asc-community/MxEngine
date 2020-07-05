@@ -36,7 +36,7 @@
 #include "Platform/GraphicAPI.h"
 #include "Platform/Window/InputManager.h"
 #include "Platform/Window/WindowManager.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 #include "Core/Components/Camera/PerspectiveCamera.h"
 #include "Core/Components/Camera/OrthographicCamera.h"
 #include "Core/Components/Camera/FrustrumCamera.h"

@@ -35,9 +35,9 @@
 
 namespace MxEngine
 {
-    void MxEngine::GUI::DrawRenderEditor()
+    void GUI::DrawRenderEditor(const char* name, bool* isOpen)
     {
-        ImGui::Begin("Render Editor");
+        ImGui::Begin(name, isOpen);
 
         if (ImGui::TreeNode("fog settings"))
         {

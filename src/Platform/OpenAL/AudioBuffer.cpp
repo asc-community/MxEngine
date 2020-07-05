@@ -28,7 +28,7 @@
 
 #include "AudioBuffer.h"
 #include "ALUtilities.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 #include "Utilities/Audio/AudioLoader.h"
 
 namespace MxEngine
@@ -36,6 +36,7 @@ namespace MxEngine
     AudioBuffer::AudioBuffer()
     {
         ALCALL(alGenBuffers(1, &id));
+        MXLOG_DEBUG("OpenAL::AudioBuffer", "created audio buffer with id = " + ToMxString(id));
     }
 
     AudioBuffer::~AudioBuffer()
@@ -95,7 +96,7 @@ namespace MxEngine
         }
         else
         {
-            Logger::Instance().Error("MxEngine::AudioLoader", "audio file was not loaded: " + path);
+            MXLOG_ERROR("MxEngine::AudioLoader", "audio file was not loaded: " + path);
         }
     }
 

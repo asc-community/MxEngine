@@ -99,7 +99,7 @@ namespace MxEngine
 		calls ImGui code to draw console in a new personal window
 		\param title title of window in which console is drawn
 		*/
-		void Draw(const char* title);
+		void Draw(const char* title, bool* isOpen = nullptr);
 		/*!
 		size getter
 		\returns console size in pixels

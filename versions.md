@@ -157,3 +157,7 @@
 ### 7.2.4
 - fixed bug for InstanceFactory which does not tracked instances if parent object has no mesh attached
 - fixed bug for InstanceFactory which did not update instances for one frame if mesh had changed
+### 7.3.0
+- added new logger class (now static, has logging to a file, expanded macros based on build settings, severity levels)
+- fixed bugs with imgui windows, now they have normal layout. Object Editor is opened by default instead of Render Editor
+- fixed bug with audio source which triggers error when deleted before audio buffer

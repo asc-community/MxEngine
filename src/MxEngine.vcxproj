@@ -104,6 +104,10 @@
     <ClInclude Include="Utilities\ImGui\Viewport.h" />
     <ClInclude Include="Utilities\Json\Json.h" />
     <ClInclude Include="Utilities\LODGenerator\LODGenerator.h" />
+    <ClInclude Include="Utilities\Logging\Logger.h" />
+    <ClInclude Include="Utilities\Logging\LoggerData.h" />
+    <ClInclude Include="Utilities\Logging\LogSettings.h" />
+    <ClInclude Include="Utilities\Logging\Platform.h" />
     <ClInclude Include="Utilities\Memory\ChunkAllocator.h" />
     <ClInclude Include="Utilities\Memory\LinearAllocator.h" />
     <ClInclude Include="Utilities\Memory\Memory.h" />
@@ -142,8 +146,6 @@
     <ClInclude Include="Utilities\ImGui\ImGuiUtils.h" />
     <ClInclude Include="Utilities\ImGui\Layout.h" />
     <ClInclude Include="Utilities\ImGui\Profiler.h" />
-    <ClInclude Include="Utilities\LifetimeManager\LifetimeManager.h" />
-    <ClInclude Include="Utilities\Logger\Logger.h" />
     <ClInclude Include="Utilities\Math\Math.h" />
     <ClInclude Include="Utilities\ObjectLoader\ObjectLoader.h" />
     <ClInclude Include="Utilities\Profiler\Profiler.h" />
@@ -460,7 +462,8 @@
     <ClCompile Include="Utilities\ImGui\Viewport.cpp" />
     <ClCompile Include="Utilities\Json\Json.cpp" />
     <ClCompile Include="Utilities\LODGenerator\LODGenerator.cpp" />
-    <ClCompile Include="Utilities\Logger\Logger.cpp" />
+    <ClCompile Include="Utilities\Logging\Logger.cpp" />
+    <ClCompile Include="Utilities\Logging\Platform.cpp" />
     <ClCompile Include="Utilities\Memory\Memory.cpp" />
     <ClCompile Include="Utilities\ObjectLoader\ObjectLoader.cpp" />
     <ClCompile Include="Utilities\Profiler\Profiler.cpp" />

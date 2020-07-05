@@ -40,7 +40,7 @@ namespace MxEngine
 	{
 		MAKE_SCOPE_PROFILER("ImageLoader::LoadImage");
 		MAKE_SCOPE_TIMER("MxEngine::ImageLoader", "ImageLoader::LoadImage()");
-		Logger::Instance().Debug("MxEngine::ImageLoader", "loading image from file: " + filepath);
+		MXLOG_INFO("MxEngine::ImageLoader", "loading image from file: " + filepath);
 
 		stbi_set_flip_vertically_on_load(flipImage);
 		int width, height, channels;
@@ -71,7 +71,7 @@ namespace MxEngine
 		size_t height = image.GetHeight() / 3;
 		if (width != height)
 		{
-			Logger::Instance().Warning("MxEngine::ImageLoader", "image size is invalid, it will be reduced to fit skybox cubemap");
+			MXLOG_WARNING("MxEngine::ImageLoader", "image size is invalid, it will be reduced to fit skybox cubemap");
 			width = height = FloorToPow2(Min(image.GetWidth() / 4, image.GetHeight() / 3)); //-V112
 		}
 		for (auto& arr : result)

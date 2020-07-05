@@ -31,7 +31,7 @@
 #include "CubeMap.h"
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Utilities/Image/ImageLoader.h"
-#include "Utilities/Logger/Logger.h"
+#include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
 {
@@ -48,7 +48,7 @@ namespace MxEngine
 	CubeMap::CubeMap()
 	{
 		GLCALL(glGenTextures(1, &id));
-		Logger::Instance().Debug("OpenGL::CubeMap", "created cubemap with id = " + ToMxString(id));
+		MXLOG_DEBUG("OpenGL::CubeMap", "created cubemap with id = " + ToMxString(id));
 	}
 
     CubeMap::CubeMap(const MxString filepath, bool genMipmaps, bool flipImage)
@@ -121,7 +121,7 @@ namespace MxEngine
 		Image img = ImageLoader::LoadImage(filepath, flipImage);
 		if (img.GetRawData() == nullptr)
 		{
-			Logger::Instance().Error("OpenGL::CubeMap", "file with name '" + filepath + "' was not found");
+			MXLOG_DEBUG("OpenGL::CubeMap", "file with name '" + filepath + "' was not found");
 			return;
 		}
 		auto images = ImageLoader::CreateCubemap(img);

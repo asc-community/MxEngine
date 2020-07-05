@@ -28,6 +28,7 @@
 
 #include "ComponentEditor.h"
 #include "ImGuiUtils.h"
+#include "Utilities/Format/Format.h"
 #include "Core/Components/Camera/PerspectiveCamera.h"
 #include "Core/Components/Camera/OrthographicCamera.h"
 #include "Core/Components/Camera/FrustrumCamera.h"

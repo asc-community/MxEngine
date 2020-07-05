@@ -78,7 +78,6 @@ namespace MxEngine
 
 		AppEventDispatcher& GetEventDispatcher();
 		RenderAdaptor& GetRenderAdaptor();
-		LoggerImpl& GetLogger();
 		RuntimeEditor& GetRuntimeEditor();
 		Window& GetWindow();
 		float GetTimeDelta() const;
