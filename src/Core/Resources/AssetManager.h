@@ -48,6 +48,10 @@ namespace MxEngine
         static CubeMapHandle LoadCubeMap(const FilePath& path);
         static CubeMapHandle LoadCubeMap(const MxString& path);
         static CubeMapHandle LoadCubeMap(const char* path);
+        static CubeMapHandle LoadCubeMap(StringId right, StringId left, StringId top, StringId bottom, StringId front, StringId back);
+        static CubeMapHandle LoadCubeMap(const FilePath& right, const FilePath& left, const FilePath& top, const FilePath& bottom, const FilePath& front, const FilePath& back);
+        static CubeMapHandle LoadCubeMap(const MxString& right, const MxString& left, const MxString& top, const MxString& bottom, const MxString& front, const MxString& back);
+        static CubeMapHandle LoadCubeMap(const char* right, const char* left, const char* top, const char* bottom, const char* front, const char* back);
 
         static TextureHandle LoadTexture(StringId hash);
         static TextureHandle LoadTexture(const FilePath& path);

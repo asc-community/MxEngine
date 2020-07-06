@@ -47,12 +47,9 @@ namespace MxEngine
         DeleteCallbackType deleteCallback;
         void* userBehaviour = nullptr;
     public:
-
         Behaviour() = default;
-        ~Behaviour();
+        void OnUpdate(TimeDelta dt);
 
-        void Init();
-        void InvokeUpdate(TimeDelta dt);
         void RemoveBehaviour();
         bool HasBehaviour() const;
 

@@ -53,10 +53,7 @@ namespace MxEngine
         float soundSpeed = 343.3f;
         float dopplerFactor = 1.0f;
     public:
-        ~AudioListener();
-
-        void OnUpdate();
-        void Init();
+        void OnUpdate(float timeDelta);
 
         void SetVolume(float speed);
         void SetVelocity(const Vector3& velocity);

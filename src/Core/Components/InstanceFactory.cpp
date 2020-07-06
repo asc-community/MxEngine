@@ -1,7 +1,6 @@
 #include "InstanceFactory.h"
 #include "Core/Components/Rendering/MeshSource.h"
-#include "Core/Application/EventManager.h"
-#include "Core/Event/Events/UpdateEvent.h"
+#include "Utilities/Profiler/Profiler.h"
 
 namespace MxEngine
 {
@@ -53,13 +52,9 @@ namespace MxEngine
     void InstanceFactory::Init()
     {
         this->InitMesh();
-        
-        auto self = MxObject::GetComponentHandle(*this);
-        MxString uuid = self.GetUUID();
-        EventManager::AddEventListener(uuid, [self](UpdateEvent&) mutable { self->OnUpdate(); });
     }
 
-    void InstanceFactory::OnUpdate()
+    void InstanceFactory::OnUpdate(float timeDelta)
     {
         this->RemoveDanglingHandles();
         if (!this->IsStatic) this->SubmitInstances();
@@ -137,8 +132,6 @@ namespace MxEngine
     InstanceFactory::~InstanceFactory()
     {
         this->Destroy();
-
-        EventManager::RemoveEventListener(MxObject::GetComponentUUID(*this));
     }
 
     void InstanceFactory::SubmitInstances()

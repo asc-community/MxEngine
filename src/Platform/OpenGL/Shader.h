@@ -52,6 +52,7 @@ namespace MxEngine
 		BindableId CreateProgram(ShaderId vertexShader, ShaderId fragmentShader) const;
 		BindableId CreateProgram(ShaderId vertexShader, ShaderId geometryShader, ShaderId fragmentShader) const;
 		UniformType GetUniformLocation(const MxString& uniformName) const;
+		void FreeShader();
 	public:
 		Shader();
 		Shader(const MxString& vertexShaderPath, const MxString& fragmentShaderPath);

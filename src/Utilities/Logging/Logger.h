@@ -44,6 +44,8 @@ namespace MxEngine
         static void SetLogFile(bool value);
         static void SetLogLevel(VerbosityLevel level);
         static void SetLogColor(VerbosityType type, ConsoleColor color);
+
+        static VerbosityLevel GetVerbosityLevel();
     };
 
     #if defined(MXENGINE_SHIPPING)

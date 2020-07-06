@@ -65,7 +65,7 @@ namespace MxEngine
             result.sampleCount = size_t(totalPCMFrameCount * channels);
             result.channels = channels;
             result.frequency = sampleRate;
-            result.type = AudioType::WAV;
+            result.type = AudioType::WAV; //-V1048
         }
         else if (ext == ".mp3")
         {
@@ -130,7 +130,7 @@ namespace MxEngine
         {
             auto left = audio.data[i];
             auto right = audio.data[i + 1];
-            result.data[j] = (int(left) + int(right)) / 2;
+            result.data[j] = (int(left) + int(right)) / 2; //-V522
         }
         return result;
     }

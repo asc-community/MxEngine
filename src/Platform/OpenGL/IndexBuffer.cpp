@@ -33,6 +33,14 @@
 
 namespace MxEngine
 {
+	void IndexBuffer::FreeIndexBuffer()
+	{
+		if (this->id != 0)
+		{
+			GLCALL(glDeleteBuffers(1, &id));
+		}
+	}
+
 	IndexBuffer::IndexBuffer()
 	{
 		GLCALL(glGenBuffers(1, &id));
@@ -55,6 +63,8 @@ namespace MxEngine
 
 	IndexBuffer& IndexBuffer::operator=(IndexBuffer&& ibo) noexcept
 	{
+		this->FreeIndexBuffer();
+
 		this->count = ibo.count;
 		this->id = ibo.id;
 		ibo.count = 0;
@@ -64,10 +74,7 @@ namespace MxEngine
 
 	IndexBuffer::~IndexBuffer()
 	{
-		if (this->id != 0)
-		{
-			GLCALL(glDeleteBuffers(1, &id));
-		}
+		this->FreeIndexBuffer();
 	}
 
 	void IndexBuffer::Load(const IndexType* data, size_t count)

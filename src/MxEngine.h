@@ -31,6 +31,7 @@
 #include "Core/Macro/Macro.h"
 #include "Core/Application/Application.h"
 #include "Core/Application/RenderManager.h"
+#include "Core/Application/RuntimeManager.h"
 #include "Utilities/Memory/Memory.h"
 #include "Core/MxObject/MxObject.h"
 #include "Platform/GraphicAPI.h"

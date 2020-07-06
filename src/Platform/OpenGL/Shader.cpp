@@ -90,6 +90,8 @@ namespace MxEngine
 
 	Shader& Shader::operator=(Shader&& shader) noexcept
 	{
+		this->FreeShader();
+
 		#if defined(MXENGINE_DEBUG)
 		this->vertexShaderPath = shader.vertexShaderPath;
 		this->geometryShaderPath = shader.geometryShaderPath;
@@ -103,10 +105,7 @@ namespace MxEngine
 
 	Shader::~Shader()
 	{
-		if (id != 0)
-		{
-			GLCALL(glDeleteProgram(id));
-		}
+		this->FreeShader();
 	}
 
 	void Shader::Load(const MxString& vertex, const MxString& fragment)
@@ -326,5 +325,13 @@ namespace MxEngine
 			MXLOG_WARNING("OpenGL::Shader", "uniform was not found: " + uniformName);
 		uniformCache[uniformName] = location;
 		return location;
+	}
+
+	void Shader::FreeShader()
+	{
+		if (id != 0)
+		{
+			GLCALL(glDeleteProgram(id));
+		}
 	}
 }

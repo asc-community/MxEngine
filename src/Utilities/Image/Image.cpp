@@ -31,19 +31,28 @@
 
 namespace MxEngine
 {
-	Image::Image(uint8_t* data, size_t width, size_t height, size_t channels)
+	void Image::Free()
+	{
+		if (this->data != nullptr)
+			std::free(this->data);
+	}
+
+	Image::Image() : Image(nullptr, 0, 0, 0) { }
+
+    Image::Image(uint8_t* data, size_t width, size_t height, size_t channels)
 		: data(data), width(width), height(height), channels(channels)
 	{
 	}
 
 	Image::~Image()
 	{
-		if (this->data != nullptr)
-			std::free(this->data);
+		this->Free();
 	}
 
 	Image::Image(Image&& other) noexcept
 	{
+		this->Free();
+
 		this->data = other.data;
 		this->width = other.width;
 		this->height = other.height;
@@ -54,6 +63,8 @@ namespace MxEngine
 
 	Image& Image::operator=(Image&& other) noexcept
 	{
+		this->Free();
+
 		this->data = other.data;
 		this->width = other.width;
 		this->height = other.height;

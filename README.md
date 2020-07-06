@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-7.3.0-red)
+![](https://img.shields.io/badge/version-7.3.1-red)
 ![](https://img.shields.io/badge/license-bsd--3-yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
 <!-- soon! [![Documentation](https://codedocs.xyz/MomoDeve/MxEngine.svg)](https://codedocs.xyz/MomoDeve/MxEngine/) -->
@@ -60,7 +60,7 @@ Right now MxEngine is distributed in source code as Visual Studio project which 
 ## Projects based on MxEngine
 Here is the list of some projects using MxEngine. If you want to see yours here, [contact me](https://github.com/MomoDeve).
 ### Rainball by WhiteBlackGoose
-[project link](https://github.com/WhiteBlackGoose/Rainball)
+3D pseudo water simulation, project link: https://github.com/WhiteBlackGoose/Rainball
 <p align="center">
 <img src="https://github.com/WhiteBlackGoose/Rainball/blob/master/realistic.gif">
 </p>

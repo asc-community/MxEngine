@@ -94,6 +94,8 @@ namespace MxEngine
 
 	Texture& Texture::operator=(Texture&& texture) noexcept
 	{
+		this->FreeTexture();
+
 		this->width = texture.width;
 		this->height = texture.height;
 		this->channels = texture.channels;

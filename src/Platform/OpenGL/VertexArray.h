@@ -39,6 +39,7 @@ namespace MxEngine
 
 		BindableId id = 0;
 		int attributeIndex = 0;
+		void FreeVertexArray();
 	public:
 		VertexArray();
 		~VertexArray();

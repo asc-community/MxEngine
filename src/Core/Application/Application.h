@@ -38,10 +38,10 @@
 
 #include "Platform/Window/Window.h"
 
+GENERATE_METHOD_CHECK(OnUpdate, OnUpdate(float()));
+
 namespace MxEngine
 {
-	class LoggerImpl;
-
 	class Application
 	{
 		struct ModuleManager
@@ -49,18 +49,21 @@ namespace MxEngine
 			ModuleManager(Application* app);
 			~ModuleManager();
 		} manager;
+
+		using CallbackList = MxVector<std::function<void(TimeStep)>>;
 	private:
 		static inline Application* Current = nullptr;
 		UniqueRef<Window> window;
 		RenderAdaptor renderAdaptor;
 		AppEventDispatcher dispatcher;
 		RuntimeEditor console;
+		CallbackList updateCallbacks;
 		TimeStep timeDelta = 0.0f;
 		size_t counterFPS = 0;
 		bool shouldClose = false;
 		bool isRunning = false;
 
-		void InitializeRuntimeEditor(RuntimeEditor& console);
+		void InitializeRuntime(RuntimeEditor& console);
 		void InitializeRenderAdaptor(RenderAdaptor& adaptor);
 		void DrawObjects();
 		void InvokeUpdate();
@@ -73,6 +76,8 @@ namespace MxEngine
 		virtual void OnUpdate();
 		virtual void OnDestroy();
 	public:
+		template<typename T>
+		void RegisterComponentUpdate();
 		void ToggleRuntimeEditor(bool isVisible);
 		void CloseOnKeyPress(KeyCode key);
 
@@ -91,4 +96,18 @@ namespace MxEngine
 		static Application* Get();
 		static void Set(Application* application);
 	};
+	
+	template<typename T>
+	inline void Application::RegisterComponentUpdate()
+	{
+		static_assert(has_method_OnUpdate<T>::value, "object must contain OnUpdate(TimeDelta) method");
+		this->updateCallbacks.push_back([](TimeStep dt)
+		{
+			auto view = ComponentFactory::GetView<T>();
+			for (auto& component : view)
+			{
+				component.OnUpdate(dt);
+			}
+		});
+	}
 }

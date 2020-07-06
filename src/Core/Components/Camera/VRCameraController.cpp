@@ -34,7 +34,7 @@
 
 namespace MxEngine
 {
-    void VRCameraController::OnUpdate()
+    void VRCameraController::OnUpdate(float timeDelta)
     {
         auto camera = MxObject::GetByComponent(*this).GetComponent<CameraController>();
 
@@ -89,11 +89,6 @@ namespace MxEngine
         target->GenerateMipmaps();
     }
 
-    VRCameraController::~VRCameraController()
-    {
-        EventManager::RemoveEventListener(this->shaderVR.GetUUID());
-    }
-
     void VRCameraController::Init()
     {
         this->shaderVR = GraphicFactory::Create<Shader>();
@@ -102,10 +97,5 @@ namespace MxEngine
             ,
             #include MAKE_PLATFORM_SHADER(vr_fragment)
         );
-
-        auto self = MxObject::GetComponentHandle(*this);
-
-        EventManager::AddEventListener(this->shaderVR.GetUUID(), 
-            [self](UpdateEvent&) mutable { self->OnUpdate(); });
     }
 }

@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Utilities/STL/MxString.h"
+#include "Utilities/Image/Image.h"
 
 namespace MxEngine
 {
@@ -43,7 +44,7 @@ namespace MxEngine
         void FreeCubeMap();
     public:
         CubeMap();
-        CubeMap(const MxString filepath, bool genMipmaps = true, bool flipImage = false);
+        CubeMap(const MxString& filepath, bool genMipmaps = true, bool flipImage = false);
         CubeMap(const CubeMap&) = delete;
         CubeMap& operator=(const CubeMap&) = delete;
         CubeMap(CubeMap&&) noexcept;
@@ -55,11 +56,14 @@ namespace MxEngine
        BindableId GetNativeHandle() const;
        void Bind(CubeMapId id) const;
        void Load(const MxString& filepath, bool genMipmaps = true, bool flipImage = false);
-       void Load(std::array<uint8_t*, 6> data, int width, int height, bool genMipmaps = true);
+       void Load(const std::array<const MxString&, 6>& filepaths, bool genMipmaps = true, bool flipImage = false);
+       void Load(const std::array<Image, 6>& images, bool genMipmaps = true);
+       void Load(const std::array<uint8_t*, 6>& RawDataRGB, size_t width, size_t height, bool genMipmaps = true);
        void LoadDepth(int width, int height);
        const MxString& GetPath() const;
        size_t GetWidth() const;
        size_t GetHeight() const;
        size_t GetChannelCount() const;
+       void GenerateMipmaps();
     };
 }

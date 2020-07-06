@@ -44,6 +44,8 @@ namespace MxEngine
         size_t frequency = 0;
         size_t sampleCount = 0;
         size_t nativeFormat = 0;
+
+        void FreeAudioBuffer();
     public:
         AudioBuffer();
         ~AudioBuffer();

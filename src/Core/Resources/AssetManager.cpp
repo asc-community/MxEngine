@@ -52,6 +52,38 @@ namespace MxEngine
         return AssetManager::LoadCubeMap(MxString(path));
     }
 
+    CubeMapHandle AssetManager::LoadCubeMap(StringId right, StringId left, StringId top, StringId bottom, StringId front, StringId back)
+    {
+        return AssetManager::LoadCubeMap(
+            FileManager::GetFilePath(right), FileManager::GetFilePath(left),
+            FileManager::GetFilePath(top),   FileManager::GetFilePath(bottom),
+            FileManager::GetFilePath(front), FileManager::GetFilePath(back)
+        );
+    }
+
+    CubeMapHandle AssetManager::LoadCubeMap(const FilePath& right, const FilePath& left, const FilePath& top, const FilePath& bottom, const FilePath& front, const FilePath& back)
+    {
+        return AssetManager::LoadCubeMap(
+            ToMxString(right),  ToMxString(left),  ToMxString(top),
+            ToMxString(bottom), ToMxString(front), ToMxString(back)
+        );
+    }
+
+    CubeMapHandle AssetManager::LoadCubeMap(const MxString& right, const MxString& left, const MxString& top, const MxString& bottom, const MxString& front, const MxString& back)
+    {
+        auto cubemap = GraphicFactory::Create<CubeMap>();
+        cubemap->Load({ right, left, top, bottom, front, back });
+        return cubemap;
+    }
+
+    CubeMapHandle AssetManager::LoadCubeMap(const char* right, const char* left, const char* top, const char* bottom, const char* front, const char* back)
+    {
+        return AssetManager::LoadCubeMap(
+            MxString(right),  MxString(left), MxString(top),
+            MxString(bottom), MxString(front), MxString(back)
+        );
+    }
+
     TextureHandle AssetManager::LoadTexture(StringId hash)
     {
         return AssetManager::LoadTexture(FileManager::GetFilePath(hash));

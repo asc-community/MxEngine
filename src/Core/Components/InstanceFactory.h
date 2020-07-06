@@ -177,7 +177,7 @@ namespace MxEngine
         InstanceView GetInstances() { return InstanceView{ this->GetInstancePool() }; }
 
 		void Init();
-		void OnUpdate();
+		void OnUpdate(float timeDelta);
 
 		void SubmitInstances();
 		MxObject::Handle MakeInstance();

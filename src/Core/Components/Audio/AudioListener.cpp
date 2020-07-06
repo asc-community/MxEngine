@@ -6,13 +6,7 @@
 
 namespace MxEngine
 {
-    AudioListener::~AudioListener()
-    {
-        auto uuid = MxObject::GetComponentUUID(*this);
-        EventManager::RemoveEventListener(uuid);
-    }
-
-    void AudioListener::OnUpdate()
+    void AudioListener::OnUpdate(float timeDelta)
     {
         auto& object = MxObject::GetByComponent(*this);
         auto position = object.Transform.GetPosition();
@@ -27,13 +21,6 @@ namespace MxEngine
             ALCALL(alListener3f(AL_POSITION, position.x, position.y, position.z));
             ALCALL(alListenerfv(AL_ORIENTATION, &orientation[0][0]));
         }
-    }
-
-    void AudioListener::Init()
-    {
-        auto self = MxObject::GetComponentHandle(*this);
-        auto uuid = self.GetUUID();
-        EventManager::AddEventListener(uuid, [self](UpdateEvent& e) mutable { self->OnUpdate(); });
     }
 
     void AudioListener::SetVolume(float volume)

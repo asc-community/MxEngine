@@ -36,9 +36,16 @@ namespace MxEngine
     {
         using BindableId = unsigned int;
         BindableId id = 0;
+
+        void FreeAudioPlayer();
     public:
         AudioPlayer();
+        AudioPlayer(const AudioPlayer&) = delete;
+        AudioPlayer(AudioPlayer&&) noexcept;
+        AudioPlayer& operator=(const AudioPlayer&) = delete;
+        AudioPlayer& operator=(AudioPlayer&&) noexcept;
         ~AudioPlayer();
+
         void AttachBuffer(const AudioBuffer& buffer);
         void Play() const;
         void Stop() const;

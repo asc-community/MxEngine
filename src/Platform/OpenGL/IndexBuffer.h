@@ -37,6 +37,8 @@ namespace MxEngine
 		using BindableId = unsigned int;
 		BindableId id = 0;
 		size_t count = 0;
+
+		void FreeIndexBuffer();
 	public:
 		using IndexType = unsigned int;
 

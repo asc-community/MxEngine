@@ -125,6 +125,12 @@ namespace MxEngine
 	{
 		this->GetWindow().OnUpdate();
 		MAKE_SCOPE_PROFILER("MxEngine::OnUpdate");
+
+		for (const auto& callback : this->updateCallbacks)
+		{
+			callback(this->timeDelta);
+		}
+
 		UpdateEvent updateEvent(this->timeDelta);
 		EventManager::Invoke(updateEvent);
 
@@ -267,7 +273,7 @@ namespace MxEngine
 			.UseAnisotropicFiltering(static_cast<float>(anisothropic))
 			;
 
-		this->InitializeRuntimeEditor(this->GetRuntimeEditor());
+		this->InitializeRuntime(this->GetRuntimeEditor());
 		this->InitializeRenderAdaptor(this->GetRenderAdaptor());
 	}
 
@@ -396,7 +402,8 @@ namespace MxEngine
 	{
 		adaptor.InitRendererEnvironment();
 	}
-	void Application::InitializeRuntimeEditor(RuntimeEditor& console)
+
+	void Application::InitializeRuntime(RuntimeEditor& console)
 	{
 		EventManager::AddEventListener("DeveloperConsole",
 			[this](UpdateEvent&) { this->GetRuntimeEditor().OnRender(); });
@@ -421,5 +428,11 @@ namespace MxEngine
 		editor.RegisterComponentEditor("InputControl",       GUI::InputControlEditor);
 		editor.RegisterComponentEditor("AudioSource",        GUI::AudioSourceEditor);
 		editor.RegisterComponentEditor("AudioListener",      GUI::AudioListenerEditor);
+
+		this->RegisterComponentUpdate<Behaviour>();
+		this->RegisterComponentUpdate<InstanceFactory>();
+		this->RegisterComponentUpdate<VRCameraController>();
+		this->RegisterComponentUpdate<AudioListener>();
+		this->RegisterComponentUpdate<AudioSource>();
 	}
 }

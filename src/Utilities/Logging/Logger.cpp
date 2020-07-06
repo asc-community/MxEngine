@@ -7,7 +7,7 @@ namespace MxEngine
 {
     void Logger::HandleFatalErrors(VerbosityType type)
     {
-        if ((type >= VerbosityType::FATAL) && logger->AbortOnFatal)
+        if ((type >= VerbosityType::FATAL) && Logger::IsAbortOnFatal())
         {
             Logger::CloseLogFile();
             std::cout.flush();
@@ -128,7 +128,7 @@ namespace MxEngine
 
     void Logger::Log(VerbosityType type, const char* text)
     {
-        if ((uint8_t)type >= (uint8_t)logger->VerbosityLevel)
+        if ((uint8_t)type >= (uint8_t)Logger::GetVerbosityLevel())
         {
             SetConsoleColor(logger->Colors[(size_t)type]);
             Logger::LogLineToConsole(text);
@@ -137,9 +137,10 @@ namespace MxEngine
             Logger::LogToFile(Logger::GetVerbosityStringAligned(type));
             Logger::LogToFile(" > ");
             Logger::LogLineToFile(text);
-        }
 
-        Logger::HandleFatalErrors(type);
+            Logger::HandleErrors(type);
+            Logger::HandleFatalErrors(type);
+        }
     }
 
     void Logger::Log(VerbosityType type, const MxString& caller, const MxString& message)
@@ -176,5 +177,10 @@ namespace MxEngine
     void Logger::SetLogColor(VerbosityType type, ConsoleColor color)
     {
         logger->Colors[(size_t)type] = color;
+    }
+
+    VerbosityLevel Logger::GetVerbosityLevel()
+    {
+        return logger->VerbosityLevel;
     }
 }

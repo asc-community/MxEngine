@@ -4,11 +4,14 @@
 #include <ctime>
 
 #include "Core/Macro/Macro.h"
-#include <boost/stacktrace.hpp>
-
 
 #if defined(MXENGINE_WINDOWS)
 #include <Windows.h>
+#define BOOST_STACKTRACE_USE_WINDBG_CACHED
+#endif
+
+#if defined(MXENGINE_USE_BOOST)
+#include <boost/stacktrace.hpp>
 #endif
 
 namespace MxEngine
@@ -43,6 +46,7 @@ namespace MxEngine
 
     void PrintStacktrace(std::ostream& out)
     {
+    #if defined(MXENGINE_USE_BOOST)
         auto st = boost::stacktrace::stacktrace().as_vector();
         for (size_t i = 0, size = st.size(); i < size; i++)
         {
@@ -64,6 +68,7 @@ namespace MxEngine
                 out << " | " << st[i].address() << '\n';
             }
         }
+    #endif
     }
 
     #undef GetCurrentTime // win api

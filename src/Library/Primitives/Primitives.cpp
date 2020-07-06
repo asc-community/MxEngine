@@ -19,76 +19,147 @@ namespace MxEngine
         return mesh;
     }
 
-    MeshHandle Primitives::CreateCube()
+    MeshHandle Primitives::CreateCube(size_t polygons)
     {
         MeshData meshData;
         AABB aabb{ MakeVector3(-0.5f), MakeVector3(0.5f) };
+        polygons = polygons + 1; // polygons in [1; inf), but we need at least two points per edge
 
-        std::array position =
-        {
-            Vector3(-0.5f, -0.5f, -0.5f),
-            Vector3(-0.5f, -0.5f,  0.5f),
-            Vector3(-0.5f,  0.5f, -0.5f),
-            Vector3(-0.5f,  0.5f,  0.5f),
-            Vector3(0.5f, -0.5f, -0.5f),
-            Vector3(0.5f, -0.5f,  0.5f),
-            Vector3(0.5f,  0.5f, -0.5f),
-            Vector3(0.5f,  0.5f,  0.5f),
-        };
-        std::array texture =
-        {
-            Vector2(0.0f, 0.0f),
-            Vector2(0.0f, 1.0f),
-            Vector2(1.0f, 0.0f),
-            Vector2(1.0f, 1.0f),
-        };
-        std::array normal =
-        {
-            Vector3(0.0f,  0.0f,  1.0f),
-            Vector3(0.0f,  0.0f, -1.0f),
-            Vector3(1.0f,  0.0f,  0.0f),
-            Vector3(-1.0f,  0.0f,  0.0f),
-            Vector3(0.0f, -1.0f,  0.0f),
-            Vector3(0.0f,  1.0f,  0.0f),
-        };
-        std::array face =
-        {
-            VectorInt3(1, 0, 0), VectorInt3(5, 2, 0), VectorInt3(7, 3, 0),
-            VectorInt3(7, 3, 0), VectorInt3(3, 1, 0), VectorInt3(1, 0, 0),
-            VectorInt3(4, 2, 1), VectorInt3(0, 0, 1), VectorInt3(2, 1, 1), //-V112
-            VectorInt3(2, 1, 1), VectorInt3(6, 3, 1), VectorInt3(4, 2, 1), //-V112
-            VectorInt3(4, 0, 2), VectorInt3(6, 1, 2), VectorInt3(7, 3, 2), //-V112
-            VectorInt3(7, 3, 2), VectorInt3(5, 2, 2), VectorInt3(4, 0, 2), //-V112
-            VectorInt3(2, 0, 3), VectorInt3(0, 1, 3), VectorInt3(1, 3, 3),
-            VectorInt3(1, 3, 3), VectorInt3(3, 2, 3), VectorInt3(2, 0, 3),
-            VectorInt3(0, 0, 4), VectorInt3(4, 2, 4), VectorInt3(5, 3, 4), //-V112
-            VectorInt3(5, 3, 4), VectorInt3(1, 1, 4), VectorInt3(0, 0, 4), //-V112
-            VectorInt3(6, 0, 5), VectorInt3(2, 2, 5), VectorInt3(3, 3, 5),
-            VectorInt3(3, 3, 5), VectorInt3(7, 1, 5), VectorInt3(6, 0, 5),
-        };
-
-        auto& indicies = meshData.GetIndicies();
         auto& vertecies = meshData.GetVertecies();
+        auto& indicies = meshData.GetIndicies();
 
-        indicies.resize(face.size());
-        for (size_t i = 0; i < face.size(); i++)
+        for (size_t i = 0; i < polygons; i++)
         {
-            indicies[i] = static_cast<uint32_t>(i);
+            for (size_t j = 0; j < polygons; j++)
+            {
+                auto& vertex = vertecies.emplace_back();
+                float offset = 1.0f / (polygons - 1);
+                float init = offset < 0.0f ? 0.5f : -0.5f;
 
-            auto& vertex = vertecies.emplace_back();
-
-            vertex.Position = position[face[i].x];
-            vertex.TexCoord = texture[face[i].y];
-            vertex.Normal   = normal[face[i].z];
-
-            size_t tanIndex = i - i % 3;
-            auto tanbitan   = ComputeTangentSpace(
-                position[face[tanIndex].x], position[face[tanIndex + 1].x], position[face[tanIndex + 2].x],
-                texture[face[tanIndex].y], texture[face[tanIndex + 1].y], texture[face[tanIndex + 2].y]
-            );
-            vertex.Tangent   = tanbitan[0];
-            vertex.Bitangent = tanbitan[1];
+                float x = init + offset * j;
+                float y = init + offset * i;
+                float z = 0.5f;
+                vertex.Position  = MakeVector3(x, y, z);
+                vertex.TexCoord  = MakeVector2(x, y) + 0.5f;
+                vertex.Normal    = MakeVector3(0.0f, 0.0f, 1.0f);
+            }
         }
+        for (size_t i = 0; i < polygons; i++)
+        {
+            for (size_t j = 0; j < polygons; j++)
+            {
+                auto& vertex = vertecies.emplace_back();
+                float offset = 1.0f / (polygons - 1);
+                float init = offset < 0 ? 0.5f : -0.5f;
+
+                float x = 0.5f;
+                float y = init + offset * j;
+                float z = init + offset * i;
+                vertex.Position = MakeVector3(x, y, z);
+                vertex.TexCoord = MakeVector2(-z, y) + 0.5f;
+                vertex.Normal = MakeVector3(1.0f, 0.0f, 0.0f);
+            }
+        }
+        for (size_t i = 0; i < polygons; i++)
+        {
+            for (size_t j = 0; j < polygons; j++)
+            {
+                auto& vertex = vertecies.emplace_back();
+                float offset = -1.0f / (polygons - 1);
+                float init = offset < 0 ? 0.5f : -0.5f;
+
+                float x = init + offset * j;
+                float y = -0.5f;
+                float z = init + offset * i;
+                vertex.Position = MakeVector3(x, y, z);
+                vertex.TexCoord = MakeVector2(x, z) + 0.5f;
+                vertex.Normal = MakeVector3(0.0f, -1.0f, 0.0f);
+            }
+        }
+
+        for (size_t i = 0; i < polygons; i++)
+        {
+            for (size_t j = 0; j < polygons; j++)
+            {
+                auto& vertex = vertecies.emplace_back();
+                float offset = 1.0f / (polygons - 1);
+                float init = offset < 0 ? 0.5f : -0.5f;
+
+                float x = init + offset * j;
+                float y = init + offset * i;
+                float z = -0.5f;
+                vertex.Position = MakeVector3(x, y, z);
+                vertex.TexCoord = MakeVector2(-x, y) + 0.5f;
+                vertex.Normal = MakeVector3(0.0f, 0.0f, -1.0f);
+            }
+        }
+        for (size_t i = 0; i < polygons; i++)
+        {
+            for (size_t j = 0; j < polygons; j++)
+            {
+                auto& vertex = vertecies.emplace_back();
+                float offset = -1.0f / (polygons - 1);
+                float init = offset < 0 ? 0.5f : -0.5f;
+
+                float x = init + offset * j;
+                float y = 0.5f;
+                float z = init + offset * i;
+                vertex.Position = MakeVector3(x, y, z);
+                vertex.TexCoord = MakeVector2(-x, z) + 0.5f;
+                vertex.Normal = MakeVector3(0.0f, 1.0f, 0.0f);
+            }
+        }
+        for (size_t i = 0; i < polygons; i++)
+        {
+            for (size_t j = 0; j < polygons; j++)
+            {
+                auto& vertex = vertecies.emplace_back();
+                float offset = -1.0f / (polygons - 1);
+                float init = offset < 0 ? 0.5f : -0.5f;
+
+                float x = -0.5f;
+                float y = init + offset * j;
+                float z = init + offset * i;
+                vertex.Position = MakeVector3(x, y, z);
+                vertex.TexCoord = MakeVector2(z, y) + 0.5f;
+                vertex.Normal = MakeVector3(-1.0f, 0.0f, 0.0f);
+            }
+        }
+
+        for (size_t i = 0; i < 3; i++)
+        {
+            auto offset = uint32_t(i * polygons * polygons);
+            for (size_t x = 0; x < polygons - 1; x++)
+            {
+                for (size_t y = 0; y < polygons - 1; y++)
+                {
+                    indicies.push_back(uint32_t(offset + y + x * polygons));
+                    indicies.push_back(uint32_t(offset + y + x * polygons + 1));
+                    indicies.push_back(uint32_t(offset + y + x * polygons + polygons));
+                    indicies.push_back(uint32_t(offset + y + x * polygons + 1));
+                    indicies.push_back(uint32_t(offset + y + x * polygons + 1 + polygons));
+                    indicies.push_back(uint32_t(offset + y + x * polygons + polygons));
+                }
+            }
+        }
+        for (size_t i = 0; i < 3; i++)
+        {
+            auto offset = uint32_t((i + 3) * polygons * polygons);
+            for (size_t x = 0; x < polygons - 1; x++)
+            {
+                for (size_t y = 0; y < polygons - 1; y++)
+                {
+                    indicies.push_back(uint32_t(offset + y + x * polygons));
+                    indicies.push_back(uint32_t(offset + y + x * polygons + polygons));
+                    indicies.push_back(uint32_t(offset + y + x * polygons + 1));
+                    indicies.push_back(uint32_t(offset + y + x * polygons + 1));
+                    indicies.push_back(uint32_t(offset + y + x * polygons + polygons));
+                    indicies.push_back(uint32_t(offset + y + x * polygons + 1 + polygons));
+                }
+            }
+        }
+        meshData.RegenerateTangentSpace();
+
         return Primitives::CreateMesh(aabb, std::move(meshData));
     }
 

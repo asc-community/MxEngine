@@ -38,17 +38,15 @@ namespace MxEngine
 
 		ShaderHandle shaderVR;
 
-		void OnUpdate();
 		void UpdateEyes(CameraController::Handle& leftCamera, CameraController::Handle& rightCamera);
 		void Render(TextureHandle& target, const TextureHandle& leftEye, const TextureHandle& rightEye);
 	public:
+		void OnUpdate(float timeDelta);
+
 		CameraController::Handle LeftEye;
 		CameraController::Handle RightEye;
 		float EyeDistance = 0.1f;
 		float FocusDistance = 10.0f;
-
-		VRCameraController() = default;
-		~VRCameraController();
 
 		void Init();
 	};

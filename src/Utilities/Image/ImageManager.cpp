@@ -220,7 +220,7 @@ namespace MxEngine
                 {
                     auto& tex = images[t1 * imagesPerRaw + t2];
                     auto currentRaw = tex.GetRawData() + i * rawWidth;
-                    std::copy(currentRaw, currentRaw + rawWidth, result + offset);
+                    std::copy(currentRaw, currentRaw + rawWidth, result + offset); //-V769
                     offset += rawWidth;
                 }
             }

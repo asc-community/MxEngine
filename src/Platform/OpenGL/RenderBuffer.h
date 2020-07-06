@@ -37,6 +37,8 @@ namespace MxEngine
 		using BindableId = unsigned int; 
 		BindableId id = 0;
 		int width = 0, height = 0, samples = 0;
+
+		void FreeRenderBuffer();
 	public:
 		RenderBuffer();
 		~RenderBuffer();

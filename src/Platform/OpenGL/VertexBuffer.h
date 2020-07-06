@@ -50,6 +50,7 @@ namespace MxEngine
 
 		BindableId id = 0;
 		size_t size;
+		void FreeVertexBuffer();
 	public:
 		explicit VertexBuffer();
 		explicit VertexBuffer(BufferData data, size_t sizeInFloats, UsageType type);

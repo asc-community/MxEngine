@@ -89,6 +89,15 @@ namespace MxEngine
         }
     }
 
+    void FrameBuffer::FreeFrameBuffer()
+    {
+        this->DetachRenderTarget();
+        if (this->id != 0)
+        {
+            GLCALL(glDeleteFramebuffers(1, &id));
+        }
+    }
+
     void FrameBuffer::CopyFrameBufferContents(int screenWidth, int screenHeight) const
     {
         GLCALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, this->id));
@@ -162,8 +171,7 @@ namespace MxEngine
 
     FrameBuffer::~FrameBuffer()
     {
-        this->DetachRenderTarget();
-        GLCALL(glDeleteFramebuffers(1, &id));
+        this->FreeFrameBuffer();
     }
 
     FrameBuffer::FrameBuffer(FrameBuffer&& framebuffer) noexcept
@@ -177,6 +185,8 @@ namespace MxEngine
 
     FrameBuffer& FrameBuffer::operator=(FrameBuffer&& framebuffer) noexcept
     {
+        this->FreeFrameBuffer();
+
         this->id = framebuffer.id;
         this->currentAttachment = framebuffer.currentAttachment;
         this->attachmentStorage = framebuffer.attachmentStorage;

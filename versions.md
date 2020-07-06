@@ -161,3 +161,8 @@
 - added new logger class (now static, has logging to a file, expanded macros based on build settings, severity levels)
 - fixed bugs with imgui windows, now they have normal layout. Object Editor is opened by default instead of Render Editor
 - fixed bug with audio source which triggers error when deleted before audio buffer
+### 7.3.1
+- cubemap now can be loaded from six images
+- fix multiple bugs with logger and graphic resources
+- now components can be automatically updated with RuntimeManager::RegisterComponentUpdate<T>() method
+- high-poly cube added (also fixed height maps on cube's sharp edges)

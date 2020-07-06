@@ -33,7 +33,7 @@
 
 namespace MxEngine
 {
-    void AudioSource::OnUpdate()
+    void AudioSource::OnUpdate(float timeDelta)
     {
         auto position = MxObject::GetByComponent(*this).Transform.GetPosition();
         this->player->SetPosition(position.x, position.y, position.z);
@@ -45,15 +45,6 @@ namespace MxEngine
         this->SetDirection(this->GetDirection());
         if (this->buffer.IsValid())
             this->player->AttachBuffer(*this->buffer);
-
-        auto self = MxObject::GetComponentHandle(*this);
-        EventManager::AddEventListener(this->player.GetUUID(), [self](UpdateEvent&) mutable { self->OnUpdate(); });
-    }
-
-    AudioSource::~AudioSource()
-    {
-        EventManager::RemoveEventListener(this->player.GetUUID());
-        this->player = { };
     }
 
     AudioSource::AudioSource(const AudioBufferHandle& buffer)

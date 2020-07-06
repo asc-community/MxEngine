@@ -40,7 +40,7 @@ namespace MxEngine
         using TextureHandle = TextureHandle;
 
         static MeshHandle CreateMesh(const AABB& boundingBox, MeshData meshData);
-        static MeshHandle CreateCube();
+        static MeshHandle CreateCube(size_t polygons = 1);
         static MeshHandle CreatePlane(size_t UVrepeats = 1);
         static MeshHandle CreateSphere(size_t polygons = 30);
         static MeshHandle CreateSurface(const Array2D<float>& heights);

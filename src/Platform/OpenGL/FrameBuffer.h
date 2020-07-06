@@ -81,6 +81,7 @@ namespace MxEngine
 
         void OnTextureAttach(const Texture& texture, Attachment attachment);
         void OnCubeMapAttach(const CubeMap& cubemap, Attachment attachment);
+        void FreeFrameBuffer();
     public:
         FrameBuffer();
         ~FrameBuffer();

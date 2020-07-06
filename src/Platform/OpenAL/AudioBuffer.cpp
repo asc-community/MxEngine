@@ -33,6 +33,14 @@
 
 namespace MxEngine
 {
+    void AudioBuffer::FreeAudioBuffer()
+    {
+        if (id != 0)
+        {
+            ALCALL(alDeleteBuffers(1, &id));
+        }
+    }
+
     AudioBuffer::AudioBuffer()
     {
         ALCALL(alGenBuffers(1, &id));
@@ -41,10 +49,7 @@ namespace MxEngine
 
     AudioBuffer::~AudioBuffer()
     {
-        if (id != 0)
-        {
-            ALCALL(alDeleteBuffers(1, &id));
-        }
+        this->FreeAudioBuffer();
     }
 
     AudioBuffer::AudioBuffer(AudioBuffer&& other) noexcept
@@ -61,6 +66,8 @@ namespace MxEngine
 
     AudioBuffer& AudioBuffer::operator=(AudioBuffer&& other) noexcept
     {
+        this->FreeAudioBuffer();
+
         this->id = other.id;
         this->filepath = std::move(other.filepath);
         this->channels = other.channels;

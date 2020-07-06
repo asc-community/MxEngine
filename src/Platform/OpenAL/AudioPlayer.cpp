@@ -32,18 +32,38 @@
 
 namespace MxEngine
 {
+    void AudioPlayer::FreeAudioPlayer()
+    {
+        if (id != 0)
+        {
+            ALCALL(alDeleteSources(1, &id));
+        }
+    }
+
     AudioPlayer::AudioPlayer()
     {
         ALCALL(alGenSources(1, &id));
         MXLOG_DEBUG("OpenAL::AudioPlayer", "created audio source with id = " + ToMxString(id));
     }
 
+    AudioPlayer::AudioPlayer(AudioPlayer&& other) noexcept
+    {
+        this->id = other.id;
+        other.id = 0;
+    }
+
+    AudioPlayer& AudioPlayer::operator=(AudioPlayer&& other) noexcept
+    {
+        this->FreeAudioPlayer();
+
+        this->id = other.id;
+        other.id = 0;
+        return *this;
+    }
+
     AudioPlayer::~AudioPlayer()
     {
-        if (id != 0)
-        {
-            ALCALL(alDeleteSources(1, &id));
-        }
+        this->FreeAudioPlayer();
     }
 
     AudioPlayer::BindableId AudioPlayer::GetNativeHandle() const

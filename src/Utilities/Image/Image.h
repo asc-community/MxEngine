@@ -41,7 +41,10 @@ namespace MxEngine
 		size_t width;
 		size_t height;
 		size_t channels;
+
+		void Free();
 	public:
+		Image();
 		Image(uint8_t* data, size_t width, size_t height, size_t channels);
 		~Image();
 		Image(const Image&) = delete;

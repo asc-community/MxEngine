@@ -51,7 +51,7 @@ namespace MxEngine
 		MXLOG_DEBUG("OpenGL::CubeMap", "created cubemap with id = " + ToMxString(id));
 	}
 
-    CubeMap::CubeMap(const MxString filepath, bool genMipmaps, bool flipImage)
+    CubeMap::CubeMap(const MxString& filepath, bool genMipmaps, bool flipImage)
 		: CubeMap()
     {
 		this->Load(filepath, genMipmaps, flipImage);
@@ -74,6 +74,8 @@ namespace MxEngine
 
 	CubeMap& CubeMap::operator=(CubeMap&& other) noexcept
 	{
+		this->FreeCubeMap();
+
 		this->id = other.id;
 		this->activeId = other.activeId;
 		this->width = other.width;
@@ -137,39 +139,74 @@ namespace MxEngine
 			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGB, 
 				(GLsizei)images[i].width(), (GLsizei)images[i].height() / (GLsizei)this->channels, 0, GL_RGB, GL_UNSIGNED_BYTE, images[i].data()));
 		}
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+
 		if (genMipmaps)
 		{
-			GLCALL(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
+			this->GenerateMipmaps();
 		}
 	}
 
-	void CubeMap::Load(std::array<uint8_t*, 6> data, int width, int height, bool genMipmaps)
+    void CubeMap::Load(const std::array<const MxString&, 6>& filepaths, bool genMipmaps, bool flipImage)
+    {
+		std::array<Image, 6> images;
+		for (size_t i = 0; i < images.size(); i++)
+		{
+			images[i] = ImageLoader::LoadImage(filepaths[i], flipImage);
+		}
+		this->Load(images, genMipmaps);
+    }
+
+	void CubeMap::Load(const std::array<Image, 6>& images, bool genMipmaps)
 	{
+		this->width = images.front().GetWidth();
+		this->height = images.front().GetHeight();
+		this->channels = images.front().GetChannels();
+		this->filepath = "[[raw data]]";
+
+		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
+		for (size_t i = 0; i < images.size(); i++)
+		{
+			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGB,
+				(GLsizei)this->width, (GLsizei)this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, images[i].GetRawData()));
+		}
+
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+		
+		if (genMipmaps)
+		{
+			this->GenerateMipmaps();
+		}
+	}
+
+    void CubeMap::Load(const std::array<uint8_t*, 6>& data, size_t width, size_t height, bool genMipmaps)
+    {
 		this->width = width;
 		this->height = height;
-		this->filepath = "[[raw data]]";
 		this->channels = 3;
+		this->filepath = "[[raw data]]";
 
 		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
 		for (size_t i = 0; i < data.size(); i++)
 		{
-
 			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGB,
-				(GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, data[i]));
+				(GLsizei)this->width, (GLsizei)this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, data[i]));
 		}
+
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+
 		if (genMipmaps)
 		{
-			GLCALL(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
+			this->GenerateMipmaps();
 		}
-	}
+    }
 
 	void CubeMap::LoadDepth(int width, int height)
 	{
@@ -213,5 +250,11 @@ namespace MxEngine
 	size_t CubeMap::GetChannelCount() const
 	{
 		return this->channels;
+	}
+
+	void CubeMap::GenerateMipmaps()
+	{
+		this->Bind(0);
+		GLCALL(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
 	}
 }

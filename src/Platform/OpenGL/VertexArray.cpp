@@ -34,6 +34,14 @@
 
 namespace MxEngine
 {
+	void VertexArray::FreeVertexArray()
+	{
+		if (id != 0)
+		{
+			GLCALL(glDeleteVertexArrays(1, &id));
+		}
+	}
+
 	VertexArray::VertexArray()
 	{
 		this->id = 0;
@@ -41,10 +49,7 @@ namespace MxEngine
 
 	VertexArray::~VertexArray()
 	{
-		if (id != 0)
-		{
-			GLCALL(glDeleteVertexArrays(1, &id));
-		}
+		this->FreeVertexArray();
 	}
 
 	VertexArray::VertexArray(VertexArray&& array) noexcept
@@ -57,6 +62,7 @@ namespace MxEngine
 
 	VertexArray& VertexArray::operator=(VertexArray&& array) noexcept
 	{
+		this->FreeVertexArray();
 		this->attributeIndex = array.attributeIndex;
 		this->id = array.id;
 		array.id = 0;

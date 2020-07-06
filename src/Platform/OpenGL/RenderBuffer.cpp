@@ -33,6 +33,14 @@
 
 namespace MxEngine
 {
+    void RenderBuffer::FreeRenderBuffer()
+    {
+        if (this->id != 0)
+        {
+            GLCALL(glDeleteRenderbuffers(1, &this->id));
+        }
+    }
+
     RenderBuffer::RenderBuffer()
     {
         GLCALL(glGenRenderbuffers(1, &this->id));
@@ -41,7 +49,7 @@ namespace MxEngine
 
     RenderBuffer::~RenderBuffer()
     {
-        GLCALL(glDeleteRenderbuffers(1, &this->id));
+        this->FreeRenderBuffer();
     }
 
     RenderBuffer::RenderBuffer(RenderBuffer&& renderbuffer) noexcept
@@ -58,6 +66,8 @@ namespace MxEngine
 
     RenderBuffer& RenderBuffer::operator=(RenderBuffer&& renderbuffer) noexcept
     {
+        this->FreeRenderBuffer();
+
         this->id = renderbuffer.id;
         this->width = renderbuffer.width;
         this->height = renderbuffer.height;

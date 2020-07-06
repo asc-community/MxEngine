@@ -45,7 +45,15 @@ namespace MxEngine
 		GL_DYNAMIC_COPY,
 	};
 
-	VertexBuffer::VertexBuffer()
+    void VertexBuffer::FreeVertexBuffer()
+    {
+		if (this->id != 0)
+		{
+			GLCALL(glDeleteBuffers(1, &id));
+		}
+    }
+
+    VertexBuffer::VertexBuffer()
 	{
 		this->size = 0;
 		GLCALL(glGenBuffers(1, &id));
@@ -60,10 +68,7 @@ namespace MxEngine
 
 	VertexBuffer::~VertexBuffer()
 	{
-		if (this->id != 0)
-		{
-			GLCALL(glDeleteBuffers(1, &id));
-		}
+		this->FreeVertexBuffer();
 	}
 
 	VertexBuffer::VertexBuffer(VertexBuffer&& vbo) noexcept
@@ -76,6 +81,8 @@ namespace MxEngine
 
 	VertexBuffer& VertexBuffer::operator=(VertexBuffer&& vbo) noexcept
 	{
+		this->FreeVertexBuffer();
+
 		this->id = vbo.id;
 		this->size = vbo.size;
 		vbo.id = 0;
