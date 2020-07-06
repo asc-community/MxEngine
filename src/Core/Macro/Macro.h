@@ -27,6 +27,9 @@
 // // scripting
 // #define MXENGINE_USE_PYTHON
 
+// physics
+#define MXENGINE_USE_BULLET3
+
 // assert handling 
 #define MX_ASSERT_EXCEPTION
 
@@ -53,14 +56,26 @@
 #endif
 
 #if defined(MXENGINE_USE_ASSIMP)
-    #if defined(MXENGINE_RELEASE)
-        #pragma comment(lib, "assimp-vc142-mt.lib")
-        #pragma comment(lib, "IrrXML.lib")
-        #pragma comment(lib, "zlibstatic.lib")
-    #elif defined(MXENGINE_DEBUG)
+    #if defined(MXENGINE_DEBUG)
         #pragma comment(lib, "assimp-vc142-mtd.lib")
         #pragma comment(lib, "IrrXMLd.lib")
         #pragma comment(lib, "zlibstaticd.lib")
+    #else
+        #pragma comment(lib, "assimp-vc142-mt.lib")
+        #pragma comment(lib, "IrrXML.lib")
+        #pragma comment(lib, "zlibstatic.lib")
+    #endif
+#endif
+
+#if defined(MXENGINE_USE_BULLET3)
+    #if defined(MXENGINE_DEBUG)
+        #pragma comment(lib, "BulletCollision-mtd.lib")
+        #pragma comment(lib, "BulletDynamics-mtd.lib")
+        #pragma comment(lib, "LinearMath-mtd.lib")
+    #else
+        #pragma comment(lib, "BulletCollision-mt.lib")
+        #pragma comment(lib, "BulletDynamics-mt.lib")
+        #pragma comment(lib, "LinearMath-mt.lib")
     #endif
 #endif
 
