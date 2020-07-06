@@ -18,5 +18,20 @@ namespace MxEngine
         {
             Application::Get()->RegisterComponentUpdate<T>();
         }
+
+        static bool IsEditorActive()
+        {
+            return Application::Get()->GetRuntimeEditor().IsActive();
+        }
+
+        static void ExecuteScript(const MxString& script)
+        {
+            Application::Get()->GetRuntimeEditor().ExecuteScript(script);
+        }
+
+        static void CloseApplication()
+        {
+            Application::Get()->CloseApplication();
+        }
     };
 }

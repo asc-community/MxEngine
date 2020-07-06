@@ -166,3 +166,7 @@
 - fix multiple bugs with logger and graphic resources
 - now components can be automatically updated with RuntimeManager::RegisterComponentUpdate<T>() method
 - high-poly cube added (also fixed height maps on cube's sharp edges)
+### 7.3.2
+- added Schedule() method to behaviour, now it can be called each time delta or once after some timedelta
+- Behaviour timer now can be tweaked from runtime editor
+- fixed bug with cubemap not loading from six strings

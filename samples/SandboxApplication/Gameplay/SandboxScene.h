@@ -33,6 +33,13 @@ public:
 
 		// auto object = MxObject::Create();
 		// object->AddComponent<MeshSource>(AssetManager::LoadMesh("D:/repos/glTF-Sample-Models/2.0/Sponza/glTF/Sponza.gltf"));
+
+		auto notifier = MxObject::Create();
+		notifier->Name = "Notifier";
+		notifier->AddComponent<Behaviour>([](MxObject&, float dt)
+		{
+			MXLOG_INFO("Timer", "I am called!");
+		})->Schedule(Timer::UPDATE_EACH_DELTA, 1000000000.0f);
 		
 		auto dirLight = MxObject::Create();
 		InitDirLight(*dirLight);

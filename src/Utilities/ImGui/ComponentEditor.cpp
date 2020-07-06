@@ -88,6 +88,32 @@ namespace MxEngine::GUI
 	{
 		TREE_NODE_PUSH("Behaviour");
 		REMOVE_COMPONENT_BUTTON(behaviour);
+
+		Timer timer = behaviour.GetTimerMode();
+		bool eachFrame = timer == Timer::UPDATE_EACH_FRAME;
+		bool eachDelta = timer == Timer::UPDATE_EACH_DELTA;
+		bool onceDelta = timer == Timer::UPDATE_AFTER_DELTA;
+		static auto timeDelta = 0.0f;
+
+		ImGui::InputFloat("time delta", &timeDelta, 0.01f);
+
+		if (ImGui::BeginCombo("timer mode", eachFrame ? "per frame" : (eachDelta ? "per delta" : "once")))
+		{
+			if (ImGui::Selectable("per frame", &eachFrame))
+			{
+				behaviour.Schedule(Timer::UPDATE_EACH_FRAME);
+			}
+			if (ImGui::Selectable("per delta", &eachDelta))
+			{
+				behaviour.Schedule(Timer::UPDATE_EACH_DELTA, timeDelta);
+			}
+			if (ImGui::Selectable("once"))
+			{
+				behaviour.Schedule(Timer::UPDATE_AFTER_DELTA, timeDelta);
+			}
+			ImGui::EndCombo();
+		}
+
 		ImGui::AlignTextToFramePadding();
 		ImGui::Text("has update callback: %s", BOOL_STRING(behaviour.HasBehaviour()));
 		ImGui::SameLine();
@@ -291,12 +317,13 @@ namespace MxEngine::GUI
 	{
 		TREE_NODE_PUSH("CameraController");
 		REMOVE_COMPONENT_BUTTON(cameraController);
-			
-		if (ImGui::BeginCombo("camera type", "perspective"))
+		
+		bool perspective = cameraController.GetCameraType() == CameraType::PERSPECTIVE;
+		bool orthographic = cameraController.GetCameraType() == CameraType::ORTHOGRAPHIC;
+		bool frustrum = cameraController.GetCameraType() == CameraType::FRUSTRUM;
+
+		if (ImGui::BeginCombo("camera type", perspective ? "perspective" : (orthographic ? "orthographic" : "frustrum")))
 		{
-			bool perspective = cameraController.GetCameraType() == CameraType::PERSPECTIVE;
-			bool orthographic = cameraController.GetCameraType() == CameraType::ORTHOGRAPHIC;
-			bool frustrum = cameraController.GetCameraType() == CameraType::FRUSTRUM;
 			if (ImGui::Selectable("perspective", &perspective))
 			{
 				cameraController.SetCameraType(CameraType::PERSPECTIVE);

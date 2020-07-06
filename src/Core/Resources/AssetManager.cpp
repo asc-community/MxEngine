@@ -72,7 +72,7 @@ namespace MxEngine
     CubeMapHandle AssetManager::LoadCubeMap(const MxString& right, const MxString& left, const MxString& top, const MxString& bottom, const MxString& front, const MxString& back)
     {
         auto cubemap = GraphicFactory::Create<CubeMap>();
-        cubemap->Load({ right, left, top, bottom, front, back });
+        cubemap->Load(right, left, top, bottom, front, back);
         return cubemap;
     }
 

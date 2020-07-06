@@ -56,7 +56,8 @@ namespace MxEngine
        BindableId GetNativeHandle() const;
        void Bind(CubeMapId id) const;
        void Load(const MxString& filepath, bool genMipmaps = true, bool flipImage = false);
-       void Load(const std::array<const MxString&, 6>& filepaths, bool genMipmaps = true, bool flipImage = false);
+       void Load(const MxString& right, const MxString& left, const MxString& top, 
+                 const MxString& bottom, const MxString& front, const MxString& back, bool genMipmaps = true, bool flipImage = false);
        void Load(const std::array<Image, 6>& images, bool genMipmaps = true);
        void Load(const std::array<uint8_t*, 6>& RawDataRGB, size_t width, size_t height, bool genMipmaps = true);
        void LoadDepth(int width, int height);

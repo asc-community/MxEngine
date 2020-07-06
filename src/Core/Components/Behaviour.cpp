@@ -31,11 +31,39 @@
 
 namespace MxEngine
 {
-    void Behaviour::OnUpdate(Behaviour::TimeDelta dt)
+    void Behaviour::InvokeUserBehaviour(TimeDelta dt)
     {
         if (this->userBehaviour != nullptr)
         {
             this->updateCallback(this->userBehaviour, MxObject::GetByComponent(*this), dt);
+        }
+    }
+
+    void Behaviour::OnUpdate(TimeDelta dt)
+    {
+        this->timeLeft -= dt;
+
+        switch (this->timerMode)
+        {
+        case Timer::UPDATE_EACH_FRAME:
+            this->InvokeUserBehaviour(dt);
+            break;
+        case Timer::UPDATE_EACH_DELTA:
+            if (this->timeLeft <= 0.0f)
+            {
+                this->timeLeft = this->timeRequested;
+                this->InvokeUserBehaviour(dt);
+            }
+            break;
+        case Timer::UPDATE_AFTER_DELTA:
+            if (this->timeLeft <= 0.0f)
+            {
+                this->timeLeft = std::numeric_limits<TimeDelta>::infinity();
+                this->InvokeUserBehaviour(dt);
+            }
+            break;
+        default:
+            break;
         }
     }
 
@@ -52,5 +80,27 @@ namespace MxEngine
     bool Behaviour::HasBehaviour() const
     {
         return this->userBehaviour != nullptr;
+    }
+
+    void Behaviour::Schedule(Timer timer, TimeDelta seconds)
+    {
+        this->timerMode = timer;
+        this->timeRequested = seconds;
+        this->timeLeft = this->timeRequested;
+    }
+
+    Behaviour::TimeDelta Behaviour::GetTimeLeft() const
+    {
+        return this->timeLeft;
+    }
+
+    Behaviour::TimeDelta Behaviour::GetTimeRequest() const
+    {
+        return this->timeRequested;
+    }
+
+    Timer Behaviour::GetTimerMode() const
+    {
+        return this->timerMode;
     }
 }

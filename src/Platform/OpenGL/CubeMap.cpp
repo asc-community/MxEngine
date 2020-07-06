@@ -150,13 +150,18 @@ namespace MxEngine
 		}
 	}
 
-    void CubeMap::Load(const std::array<const MxString&, 6>& filepaths, bool genMipmaps, bool flipImage)
+    void CubeMap::Load(const MxString& right, const MxString& left, const MxString& top,
+		               const MxString& bottom, const MxString& front, const MxString& back, bool genMipmaps, bool flipImage)
     {
-		std::array<Image, 6> images;
-		for (size_t i = 0; i < images.size(); i++)
+		std::array<Image, 6> images =
 		{
-			images[i] = ImageLoader::LoadImage(filepaths[i], flipImage);
-		}
+			ImageLoader::LoadImage(right, flipImage),
+			ImageLoader::LoadImage(left, flipImage),
+			ImageLoader::LoadImage(top, flipImage),
+			ImageLoader::LoadImage(bottom, flipImage),
+			ImageLoader::LoadImage(front, flipImage),
+			ImageLoader::LoadImage(back, flipImage),
+		};
 		this->Load(images, genMipmaps);
     }
 

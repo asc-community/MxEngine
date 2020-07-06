@@ -27,6 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Image.h"
+#include "Core/Macro/Macro.h"
 #include <memory>
 
 namespace MxEngine
@@ -51,8 +52,6 @@ namespace MxEngine
 
 	Image::Image(Image&& other) noexcept
 	{
-		this->Free();
-
 		this->data = other.data;
 		this->width = other.width;
 		this->height = other.height;
@@ -92,5 +91,65 @@ namespace MxEngine
 	size_t Image::GetChannels() const
 	{
 		return this->channels;
+	}
+
+    void Image::SetPixel(size_t x, size_t y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+    {
+		MX_ASSERT(x < this->width && y < this->height);
+		switch (this->channels)
+		{
+		case 1:
+			this->data[x * this->height + y] = r;
+			break;
+		case 2:
+			this->data[(x * this->height + y) * 2 + 0] = r;
+			this->data[(x * this->height + y) * 2 + 1] = g;
+			break;
+		case 3:
+			this->data[(x * this->height + y) * 3 + 0] = r;
+			this->data[(x * this->height + y) * 3 + 1] = g;
+			this->data[(x * this->height + y) * 3 + 2] = b;
+			break;
+		case 4:
+			this->data[(x * this->height + y) * 4 + 0] = r;
+			this->data[(x * this->height + y) * 4 + 1] = g;
+			this->data[(x * this->height + y) * 4 + 2] = b;
+			this->data[(x * this->height + y) * 4 + 3] = a;
+			break;
+		default:
+			MX_ASSERT(false);
+			break;
+		}
+    }
+
+	std::array<uint8_t, 4> Image::GetPixel(size_t x, size_t y)
+	{
+		std::array<uint8_t, 4> rgba{ 0, 0, 0, 0 };
+		MX_ASSERT(x < this->width&& y < this->height);
+		switch (this->channels)
+		{
+		case 1:
+			rgba[0] = this->data[x * this->height + y];
+			break;
+		case 2:
+			rgba[0] = this->data[(x * this->height + y) * 2 + 0];
+			rgba[1] = this->data[(x * this->height + y) * 2 + 1];
+			break;
+		case 3:
+			rgba[0] = this->data[(x * this->height + y) * 3 + 0];
+			rgba[1] = this->data[(x * this->height + y) * 3 + 1];
+			rgba[2] = this->data[(x * this->height + y) * 3 + 2];
+			break;
+		case 4:
+			rgba[0] = this->data[(x * this->height + y) * 4 + 0];
+			rgba[1] = this->data[(x * this->height + y) * 4 + 1];
+			rgba[2] = this->data[(x * this->height + y) * 4 + 2];
+			rgba[3] = this->data[(x * this->height + y) * 4 + 3];
+			break;
+		default:
+			MX_ASSERT(false);
+			break;
+		}
+		return rgba;
 	}
 }

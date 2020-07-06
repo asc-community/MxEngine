@@ -29,6 +29,7 @@
 #pragma once
 
 #include <cstdint>
+#include <array>
 
 namespace MxEngine
 {
@@ -56,5 +57,8 @@ namespace MxEngine
 		size_t GetWidth() const;
 		size_t GetHeight() const;
 		size_t GetChannels() const;
+
+		void SetPixel(size_t x, size_t y, uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);
+		std::array<uint8_t, 4> GetPixel(size_t x, size_t y);
 	};
 }

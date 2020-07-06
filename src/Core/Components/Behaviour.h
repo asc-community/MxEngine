@@ -31,9 +31,18 @@
 #include "Utilities/ECS/Component.h"
 #include "Utilities/STL/MxFunction.h"
 
+namespace MxEngine { class MxObject; }
+
+GENERATE_METHOD_CHECK(BehaviourUpdate, OnUpdate(std::declval<MxEngine::MxObject&>(), float()));
+
 namespace MxEngine
 {
-    class MxObject;
+    enum class Timer
+    {
+        UPDATE_EACH_FRAME,
+        UPDATE_EACH_DELTA,
+        UPDATE_AFTER_DELTA,
+    };
 
     class Behaviour
     {
@@ -46,12 +55,21 @@ namespace MxEngine
         UpdateCallbackType updateCallback;
         DeleteCallbackType deleteCallback;
         void* userBehaviour = nullptr;
+        TimeDelta timeLeft = 0.0f;
+        TimeDelta timeRequested = 0.0f;
+        Timer timerMode = Timer::UPDATE_EACH_FRAME;
+
+        void InvokeUserBehaviour(TimeDelta dt);
     public:
         Behaviour() = default;
         void OnUpdate(TimeDelta dt);
 
         void RemoveBehaviour();
         bool HasBehaviour() const;
+        void Schedule(Timer timer, TimeDelta seconds = 0.0f);
+        TimeDelta GetTimeLeft() const;
+        TimeDelta GetTimeRequest() const;
+        Timer GetTimerMode() const;
 
         template<typename T>
         Behaviour(T&& customBehaviour)
@@ -69,9 +87,14 @@ namespace MxEngine
             this->userBehaviour = std::malloc(sizeof(T));
             auto* _ = new(this->userBehaviour) T(std::move(customBehaviour)); //-V799
 
-            this->updateCallback = [](void* behaviour, MxObject& self, TimeDelta dt) mutable { ((T*)behaviour)->OnUpdate(self, dt); };
             this->deleteCallback = [](void* behaviour) { reinterpret_cast<T*>(behaviour)->~T(); };
+
+            if constexpr(has_method_BehaviourUpdate<T>::value)
+                this->updateCallback = [](void* behaviour, MxObject& self, TimeDelta dt) mutable { ((T*)behaviour)->OnUpdate(self, dt); };
+            else
+                this->updateCallback = [](void* behaviour, MxObject& self, TimeDelta dt) mutable { (*(T*)behaviour)(self, dt); };
         }
+
 
         template<typename T>
         T& GetBehaviour()
