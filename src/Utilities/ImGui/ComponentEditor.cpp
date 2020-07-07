@@ -366,7 +366,7 @@ namespace MxEngine::GUI
 		int bloomIterations = (int)cameraController.GetBloomIterations();
 		float exposure = cameraController.GetExposure();
 		float bloomWeight = cameraController.GetBloomWeight();
-		auto direction = cameraController.GetDirection();
+		auto direction = cameraController.GetDirectionDenormalized();
 		float moveSpeed = cameraController.GetMoveSpeed();
 		float rotateSpeed = cameraController.GetRotateSpeed();
 

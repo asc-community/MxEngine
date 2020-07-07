@@ -136,8 +136,6 @@ namespace MxEngine
 
     void InstanceFactory::SubmitInstances()
     {
-        if (this->bufferIndex == std::numeric_limits<BufferIndex>::max()) return;
-
         auto& object = MxObject::GetByComponent(*this);
         auto meshSource = object.GetComponent<MeshSource>();
         if (meshSource.IsValid())

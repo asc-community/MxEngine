@@ -121,7 +121,8 @@ namespace MxEngine
 			if (!camera.IsValid()) return;
 			static Vector2 oldPos = event.position;
 			auto dt = Application::Get()->GetTimeDelta();
-			camera->Rotate(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
+			Vector2 diff(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
+			camera->Rotate(diff.x, diff.y);
 			oldPos = event.position;
 		});
 	}
@@ -141,11 +142,12 @@ namespace MxEngine
 	
 		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
 		{
-			if (!camera.IsValid()) return;
-			static Vector2 oldPos = event.position;
-			auto dt = Application::Get()->GetTimeDelta();
-			camera->Rotate(dt * (oldPos.x - event.position.x), 0.0f);
-			oldPos = event.position;
+				if (!camera.IsValid()) return;
+				static Vector2 oldPos = event.position;
+				auto dt = Application::Get()->GetTimeDelta();
+				Vector2 diff(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
+				camera->Rotate(diff.x, 0.0f);
+				oldPos = event.position;
 		});
 	}
 	
@@ -164,11 +166,12 @@ namespace MxEngine
 	
 		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
 		{
-			if (!camera.IsValid()) return;
-			static Vector2 oldPos = event.position;
-			auto dt = Application::Get()->GetTimeDelta();
-			camera->Rotate(0.0f, dt * (oldPos.y - event.position.y));
-			oldPos = event.position;
+				if (!camera.IsValid()) return;
+				static Vector2 oldPos = event.position;
+				auto dt = Application::Get()->GetTimeDelta();
+				Vector2 diff(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
+				camera->Rotate(0.0f, diff.y);
+				oldPos = event.position;
 		});
 	}
 }

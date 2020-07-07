@@ -40,9 +40,9 @@ namespace MxEngine
         float zFar = 100000.0f;
         float zoom = 1.0f;
         Vector2 projectionCenter{ -0.5f };
-        Matrix4x4 view;
-        Matrix4x4 projection;
-        mutable Matrix4x4 matrix;
+        Matrix4x4 view{ 1.0f };
+        Matrix4x4 projection{ 1.0f };
+        mutable Matrix4x4 matrix{ 1.0f };
         mutable bool updateMatrix = true;
     public:
         MXENGINE_MAKE_MOVEONLY(CameraBase);

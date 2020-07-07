@@ -225,8 +225,6 @@ namespace MxEngine
 
                 vertex.Position = MakeVector3(x, y, z);
                 vertex.Normal = MakeVector3(x, y, z);
-                vertex.Tangent = Normalize(Cross(MakeVector3(0.0f, 1.0f, 0.0f), MakeVector3(x, y, z)));
-                vertex.Bitangent = Cross(MakeVector3(x, y, z), vertex.Tangent);
 
                 vertex.TexCoord.x = 1.0f - static_cast<float>(n) / polygons;
                 vertex.TexCoord.y = static_cast<float>(m) / polygons;
@@ -256,6 +254,7 @@ namespace MxEngine
                 }
             }
         }
+        meshData.RegenerateTangentSpace();
         return Primitives::CreateMesh(aabb, std::move(meshData));
     }
 

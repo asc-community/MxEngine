@@ -71,7 +71,6 @@ namespace MxEngine
 		CursorMode cursorMode = CursorMode::NORMAL;
 		bool doubleBuffer = false;
 		Vector2 windowPosition{ 0.0f, 0.0f };
-		Vector2 cursorPosition{ 0.0f, 0.0f };
 
 		void Destroy();
 		void Move(Window&& window);
