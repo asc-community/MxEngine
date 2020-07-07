@@ -23,19 +23,24 @@ namespace ProjectTemplate
         UniqueRef<btBroadphaseInterface>  Broadphase;
         UniqueRef<btConstraintSolver> Solver;
         UniqueRef<btDiscreteDynamicsWorld> World;
-        MxVector<std::pair<UniqueRef<btRigidBody>, MxObject::Handle>> Objects;
+        MxVector<std::pair<Ref<btRigidBody>, MxObject::Handle>> Objects;
         MxObject::Handle cameraObject;
         InstanceFactory::Handle ObjectFactory;
-        int ObjectCount = 10;
+        InstanceFactory::Handle ShotFactory;
+        int lenA = 7;
+        int lenB = 30;
+        int lenC = 7;
         btRigidBody* bigCube;
+        MxVector<std::pair<Ref<btRigidBody>, MxObject::Handle>> Cubes;
 
         void Reset()
         {
             this->DestroyPhysics();
             ObjectFactory->DestroyInstances();
-            for (size_t i = 0; i < ObjectCount * ObjectCount * ObjectCount; i++)
+            Cubes.clear();
+            for (size_t i = 0; i < lenA * lenB * lenC; i++)
             {
-                float size = 1.f;
+                float size = 3.f;
 
                 #if defined(SPHERES_INSTEAD_CUBES)
                 btCollisionShape* colShape = new btSphereShape(size * 0.5f);
@@ -43,17 +48,17 @@ namespace ProjectTemplate
                 btCollisionShape* colShape = new btBoxShape(btVector3(size * 0.5f, size * 0.5f, size * 0.5f));
                 #endif
 
-                float x = i / (ObjectCount * ObjectCount) % ObjectCount;
-                float y = i / ObjectCount % ObjectCount;
-                float z = i % ObjectCount;
+                float x = i / (lenC * lenB) % lenA * size;
+                float y = i /  lenC % lenB * size;
+                float z = i %  lenC * size;
 
                 float offset = size * 0.5f;
 
                 btTransform startTransform;
                 startTransform.setIdentity();
-                startTransform.setOrigin(btVector3(x , y + offset, z));
+                startTransform.setOrigin(btVector3(x, y + offset, z));
 
-                btScalar mass(1.f);
+                btScalar mass(1.f / (y * y * y + 1));
                 btVector3 localInertia(0, 0, 0);
                 colShape->calculateLocalInertia(mass, localInertia);
 
@@ -62,23 +67,24 @@ namespace ProjectTemplate
                 btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
 
                 auto& object = this->Objects.emplace_back();
-                object.first = MakeUnique<btRigidBody>(rbInfo);
+                object.first = MakeRef<btRigidBody>(rbInfo);
                 object.second = ObjectFactory->MakeInstance();
-                object.second->GetComponent<Instance>()->SetColor(Colors::Create(Colors::RED));
+                object.second->GetComponent<Instance>()->SetColor(Vector3(x / lenA / size, y / lenB / size, z / lenC / size));
                 object.second->Transform.SetScale(size);
-
                 this->World->addRigidBody(object.first.get());
+
+                std::pair<Ref<btRigidBody>, MxObject::Handle> obj = std::make_pair(object.first, object.second);
+                Cubes.push_back(obj);
             }
         }
 
-        void InitializeBigCube()
+        void InitializeBoxFace(const Vector3& coord, const VectorInt3& xyz, const Vector3& offset, const float BigCubeSize, const float thickness)
         {
-            float BigCubeSize = 50.0f;
-            btCollisionShape* groundShape = new btBoxShape(btVector3(0.5f * BigCubeSize, 0.5f * BigCubeSize, 0.5f * BigCubeSize));
+            btCollisionShape* groundShape = new btBoxShape(btVector3(xyz.x * 0.5f * BigCubeSize + thickness, xyz.y * 0.5f * BigCubeSize + thickness, xyz.z * 0.5f * BigCubeSize + thickness));
 
             btTransform groundTransform;
             groundTransform.setIdentity();
-            groundTransform.setOrigin(btVector3(0, -BigCubeSize * 0.5f, 0));
+            groundTransform.setOrigin(btVector3((BigCubeSize * offset).x, (BigCubeSize * offset).y, (BigCubeSize * offset).z) / 2 + btVec2Vec(coord));
 
             btScalar mass(0.0f);
             btVector3 localInertia(0, 0, 0);
@@ -96,8 +102,8 @@ namespace ProjectTemplate
             cube->Name = "Big Cube";
             cube->AddComponent<MeshRenderer>();
             cube->AddComponent<MeshSource>(Primitives::CreateCube());
-            cube->Transform.SetScale(BigCubeSize);
-            cube->Transform.SetPosition(Vector3(0, -BigCubeSize * 0.5f, 0));
+            cube->Transform.SetScale(Vector3(xyz.x * BigCubeSize + thickness, xyz.y * BigCubeSize + thickness, xyz.z * BigCubeSize + thickness));
+            cube->Transform.SetPosition(Vector3((BigCubeSize * offset).x / 2, (BigCubeSize * offset).y / 2, (BigCubeSize * offset).z / 2) + coord);
 
             this->World->addRigidBody(bigCube);
         }
@@ -115,7 +121,7 @@ namespace ProjectTemplate
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
             RenderManager::SetViewport(controller);
-
+            controller->SetMoveSpeed(30);
             // create global directional light
             auto lightObject = MxObject::Create();
             lightObject->Name = "Global Light";
@@ -141,17 +147,42 @@ namespace ProjectTemplate
             instances->AddComponent<MeshRenderer>();
             ObjectFactory = instances->AddComponent<InstanceFactory>();
 
-            this->InitializeBigCube();
+            auto shots = MxObject::Create();
+            shots->AddComponent<MeshSource>(Primitives::CreateSphere());
+            shots->AddComponent<MeshRenderer>();
+            ShotFactory = shots->AddComponent<InstanceFactory>();
+
+            //this->InitializeBigCube();
+            float cubeSIze = 160;
+            Vector3 coordOffset(0, cubeSIze / 2, 0);
+            InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, -1, 0), cubeSIze, 0.1);
+            InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, 1, 0),  cubeSIze, 0.1);
+            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(-1, 0, 0), cubeSIze, 0.1);
+            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(1, 0, 0),  cubeSIze, 0.1);
+            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, -1), cubeSIze, 0.1);
+            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, 1),  cubeSIze, 0.1);
             this->Reset();
         }
 
+        void Typhoon()
+        {
+            for (auto& cube : Cubes)
+            {
+                auto coord = cube.second->Transform.GetPosition();
+                auto velo = Length(coord) * Normalize(Cross(Vector3(0, 1, 0), coord));
+                velo.y += Length(coord) / 6;
+                cube.first->setLinearVelocity(btVec2Vec(velo));
+            }
+        }
+
+        float timeGone = 0;
         virtual void OnUpdate() override
         {
-
-            if (InputManager::IsMousePressed(MouseButton::LEFT))
+            timeGone += GetTimeDelta();
+            if (InputManager::IsMouseHeld(MouseButton::LEFT) && timeGone > 0.1)
             {
                 float cubeSize = 1.5f;
-
+                timeGone = 0;
                 #if defined(SPHERES_INSTEAD_CUBES)
                 btCollisionShape* colShape = new btSphereShape(cubeSize * 0.5f);
                 #else
@@ -162,7 +193,7 @@ namespace ProjectTemplate
                 startTransform.setIdentity();
                 startTransform.setOrigin(btVector3(btVec2Vec(cameraObject->Transform.GetPosition())));
 
-                btScalar mass(8.f);
+                btScalar mass(38.f);
                 btVector3 localInertia(0, 0, 0);
                 colShape->calculateLocalInertia(mass, localInertia);
 
@@ -171,18 +202,24 @@ namespace ProjectTemplate
                 btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
 
                 auto& object = this->Objects.emplace_back();
-                object.first = MakeUnique<btRigidBody>(rbInfo);
+                object.first = MakeRef<btRigidBody>(rbInfo);
 
                 auto dir = cameraObject->GetComponent<CameraController>()->GetDirection();
                 object.first->setLinearVelocity(btVec2Vec(dir * 180.0f));
 
-                object.second = ObjectFactory->MakeInstance();
+                object.second = ShotFactory->MakeInstance();
                 object.second->GetComponent<Instance>()->SetColor(Colors::Create(Colors::AQUA));
                 object.second->Transform.SetScale(cubeSize);
                 this->World->addRigidBody(object.first.get());
             }
 
-            this->World->stepSimulation(Time::Delta());
+            if (InputManager::IsKeyHeld(KeyCode::R))
+            {
+                Typhoon();
+            }
+
+            if (!InputManager::IsMouseHeld(MouseButton::RIGHT))
+                this->World->stepSimulation(Time::Delta());
 
             for (auto& object : this->Objects)
             {
@@ -199,7 +236,9 @@ namespace ProjectTemplate
                 if (ImGui::Button("reset"))
                     this->Reset();
                 
-                ImGui::InputInt("cubes per row", &ObjectCount);
+                ImGui::InputInt("X", &lenA);
+                ImGui::InputInt("Y", &lenB);
+                ImGui::InputInt("Z", &lenC);
 
                 ImGui::End();
             }
