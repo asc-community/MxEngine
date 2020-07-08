@@ -71,7 +71,13 @@ namespace MxEngine
 
     inline constexpr bool operator==(const AABB& box1, const AABB& box2)
     {
-        return box1.Max == box2.Max && box1.Min == box2.Min;
+        constexpr auto abs = [](float x) { return x >= 0.0f ? x : -x; };
+
+        auto d1 = box1.Min - box2.Min;
+        auto d2 = box1.Max - box2.Max;
+        bool res1 = abs(d1.x) < 0.01f && abs(d1.y) < 0.01f && abs(d1.z) < 0.01f;
+        bool res2 = abs(d2.x) < 0.01f && abs(d2.y) < 0.01f && abs(d2.z) < 0.01f;
+        return res1 && res2;
     }
 
     inline constexpr bool operator!=(const AABB& box1, const AABB& box2)

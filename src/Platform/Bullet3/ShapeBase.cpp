@@ -56,27 +56,30 @@ namespace MxEngine
 
     AABB ShapeBase::GetBoundingBox(const Transform& transform) const
     {
-        AABB result;
+        btVector3 min, max;
         btTransform tr;
         tr.setFromOpenGLMatrix(&transform.GetMatrix()[0][0]);
-        this->collider->getAabb(tr, ToBulletVector3(result.Min), ToBulletVector3(result.Max));
-        return result;
+        this->collider->getAabb(tr, min, max);
+        return AABB{ FromBulletVector3(min), FromBulletVector3(max) };
     }
 
     AABB ShapeBase::GetBoundingBoxUnchanged() const
     {
-        AABB result;
+        auto scale = this->GetScale();
+        btVector3 min, max;
         btTransform tr;
         tr.setIdentity();
-        this->collider->getAabb(tr, ToBulletVector3(result.Min), ToBulletVector3(result.Max));
-        return result;
+        this->collider->getAabb(tr, min, max);
+        if (scale == MakeVector3(0.0f))
+            scale = MakeVector3(1.0f);
+        return AABB{ FromBulletVector3(min) / scale, FromBulletVector3(max) / scale };
     }
 
     BoundingSphere ShapeBase::GetBoundingSphere() const
     {
-        Vector3 center{ 0.0f };
+        btVector3 center;
         float r = 0.0f;
-        this->collider->getBoundingSphere(ToBulletVector3(center), r);
-        return BoundingSphere(center, r);
+        this->collider->getBoundingSphere(center, r);
+        return BoundingSphere(FromBulletVector3(center), r);
     }
 }

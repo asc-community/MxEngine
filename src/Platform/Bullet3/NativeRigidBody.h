@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Utilities/Math/Math.h"
+#include "Core/Components/Transform.h"
 
 class btRigidBody;
 class btCollisionShape;
@@ -51,8 +52,9 @@ namespace MxEngine
         btRigidBody* body = nullptr;
 
         void DestroyBody();
+        void ReAddRigidBody();
     public:
-        NativeRigidBody();
+        NativeRigidBody(const Transform& transform);
         NativeRigidBody(const NativeRigidBody&) = delete;
         NativeRigidBody(NativeRigidBody&&) noexcept;
         NativeRigidBody& operator=(const NativeRigidBody&) = delete;
@@ -75,6 +77,7 @@ namespace MxEngine
         void SetMass(float mass);
         void MakeKinematic();
         bool IsKinematic() const;
+        bool IsStatic() const;
         void SetActivationState(ActivationState state);
         ActivationState GetActivationState() const;
         bool IsActive() const;

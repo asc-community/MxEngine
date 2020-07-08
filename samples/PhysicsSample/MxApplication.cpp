@@ -1,8 +1,8 @@
 #pragma once
 
 #include <MxEngine.h>
-
-#include <Vendors/bullet3/btBulletDynamicsCommon.h>
+#include "Platform/Modules/PhysicsModule.h"
+#include "Core/Application/PhysicsManager.h"
 
 //#define SPHERES_INSTEAD_CUBES
 
@@ -10,103 +10,54 @@ namespace ProjectTemplate
 {
     using namespace MxEngine;
 
-    btVector3 btVec2Vec(const Vector3& vec)
-    {
-        return btVector3(vec.x, vec.y, vec.z);
-    }
 
     class MxApplication : public Application
     {
     public:
-        UniqueRef<btCollisionConfiguration> CollisionConfiguration;
-        UniqueRef<btDispatcher> Dispatcher;
-        UniqueRef<btBroadphaseInterface>  Broadphase;
-        UniqueRef<btConstraintSolver> Solver;
-        UniqueRef<btDiscreteDynamicsWorld> World;
-        MxVector<std::pair<Ref<btRigidBody>, MxObject::Handle>> Objects;
         MxObject::Handle cameraObject;
         InstanceFactory::Handle ObjectFactory;
         InstanceFactory::Handle ShotFactory;
-        int lenA = 7;
-        int lenB = 30;
-        int lenC = 7;
+        int lenA = 3;
+        int lenB = 3;
+        int lenC = 3;
         btRigidBody* bigCube;
-        MxVector<std::pair<Ref<btRigidBody>, MxObject::Handle>> Cubes;
 
         void Reset()
         {
-            this->DestroyPhysics();
             ObjectFactory->DestroyInstances();
             ShotFactory->DestroyInstances();
-            Objects.clear();
-            Cubes.clear();
             for (size_t i = 0; i < lenA * lenB * lenC; i++)
             {
                 float size = 5.f;
 
-                #if defined(SPHERES_INSTEAD_CUBES)
-                btCollisionShape* colShape = new btSphereShape(size * 0.5f);
-                #else
-                btCollisionShape* colShape = new btBoxShape(btVector3(size * 0.5f, size * 0.5f, size * 0.5f));
-                #endif
-
                 float x = i / (lenC * lenB) % lenA * size;
-                float y = i /  lenC % lenB * size;
-                float z = i %  lenC * size;
+                float y = i / lenC % lenB * size;
+                float z = i % lenC * size;
 
                 float offset = size * 0.5f;
 
-                btTransform startTransform;
-                startTransform.setIdentity();
-                startTransform.setOrigin(btVector3(x, y + offset, z));
+                auto object = ObjectFactory->MakeInstance();
 
-                btScalar mass(1.f / (y * y * y + 1));
-                btVector3 localInertia(0, 0, 0);
-                colShape->calculateLocalInertia(mass, localInertia);
+                object->Transform.SetPosition(MakeVector3(x, y + offset, z));
+                object->GetComponent<Instance>()->SetColor(Vector3(x / lenA / size, y / lenB / size, z / lenC / size));
+                object->Transform.SetScale(size - 0.04f);
 
-                //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-                btMotionState* myMotionState = new btDefaultMotionState(startTransform);
-                btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
-
-                auto& object = this->Objects.emplace_back();
-                object.first = MakeRef<btRigidBody>(rbInfo);
-                object.second = ObjectFactory->MakeInstance();
-                object.second->GetComponent<Instance>()->SetColor(Vector3(x / lenA / size, y / lenB / size, z / lenC / size));
-                object.second->Transform.SetScale(size);
-                this->World->addRigidBody(object.first.get());
-
-                std::pair<Ref<btRigidBody>, MxObject::Handle> obj = std::make_pair(object.first, object.second);
-                Cubes.push_back(obj);
+                object->AddComponent<BoxCollider>();
+                auto rigidBody = object->AddComponent<RigidBody>();
+                rigidBody->SetMass(1.0f / (0.3f + y * y * y));
             }
         }
 
         void InitializeBoxFace(const Vector3& coord, const Vector3& xyz, const Vector3& offset, const float BigCubeSize, const float thickness, const float visible)
         {
-            btCollisionShape* groundShape = new btBoxShape(btVector3(xyz.x * 0.5f * BigCubeSize + thickness, xyz.y * 0.5f * BigCubeSize + thickness, xyz.z * 0.5f * BigCubeSize + thickness));
-
-            btTransform groundTransform;
-            groundTransform.setIdentity();
-            groundTransform.setOrigin(btVector3((BigCubeSize * offset).x, (BigCubeSize * offset).y, (BigCubeSize * offset).z) / 2 + btVec2Vec(coord));
-
-            btScalar mass(0.0f);
-            btVector3 localInertia(0, 0, 0);
-
-            //using motionstate is optional, it provides interpolation capabilities, and only synchronizes 'active' objects
-            btMotionState* myMotionState = new btDefaultMotionState(groundTransform);
-            btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
-
-            //add the body to the dynamics world
-
-            bigCube = new btRigidBody(rbInfo);
-
             auto cube = MxObject::Create();
             cube->Name = "Big Cube";
             cube->AddComponent<MeshRenderer>()->GetMaterial()->Transparency = visible;
             cube->AddComponent<MeshSource>(Primitives::CreateCube());
+            cube->AddComponent<BoxCollider>();
+            cube->AddComponent<RigidBody>();
             cube->Transform.SetScale(Vector3(xyz.x * BigCubeSize + thickness, xyz.y * BigCubeSize + thickness, xyz.z * BigCubeSize + thickness));
             cube->Transform.SetPosition(Vector3((BigCubeSize * offset).x / 2, (BigCubeSize * offset).y / 2, (BigCubeSize * offset).z / 2) + coord);
-
-            this->World->addRigidBody(bigCube);
         }
 
         virtual void OnCreate() override
@@ -128,28 +79,19 @@ namespace ProjectTemplate
             auto lightObject = MxObject::Create();
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
-            dirLight->Direction = MakeVector3(0.5f, 1.0f, 1.0f);
+            dirLight->ProjectionSize = 150.0f;
             dirLight->FollowViewport();
 
-            // set up world
-            this->CollisionConfiguration = MakeUnique<btDefaultCollisionConfiguration>();
-            this->Dispatcher = MakeUnique<btCollisionDispatcher>(this->CollisionConfiguration.get());
-            this->Broadphase = MakeUnique<btDbvtBroadphase>();
-            this->Solver = MakeUnique<btSequentialImpulseConstraintSolver>();
-            this->World = MakeUnique<btDiscreteDynamicsWorld>(
-                this->Dispatcher.get(), this->Broadphase.get(), this->Solver.get(), this->CollisionConfiguration.get());
-            this->World->setGravity(btVector3(0.0f, -9.8f * 3, 0.0f));
+            PhysicsManager::SetGravity(Vector3(0, -28, 0));
 
             auto instances = MxObject::Create();
-            #if defined(SPHERES_INSTEAD_CUBES)
-            instances->AddComponent<MeshSource>(Primitives::CreateSphere());
-            #else
+            instances->Name = "Cube Instances";
             instances->AddComponent<MeshSource>(Primitives::CreateCube());
-            #endif
             instances->AddComponent<MeshRenderer>();
             ObjectFactory = instances->AddComponent<InstanceFactory>();
 
             auto shots = MxObject::Create();
+            shots->Name = "Shots Instances";
             shots->AddComponent<MeshSource>(Primitives::CreateSphere());
             shots->AddComponent<MeshRenderer>();
             ShotFactory = shots->AddComponent<InstanceFactory>();
@@ -161,23 +103,23 @@ namespace ProjectTemplate
             InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, -1, 0), cubeSIze, thickness, 0.6);
             //InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, 1, 0),  cubeSIze, thickness, 0.8);
             InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(-1, 0, 0), cubeSIze, thickness, 0.6);
-            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(1, 0, 0),  cubeSIze, thickness, 0.25);
+            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(1, 0, 0), cubeSIze, thickness, 0.25);
             InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, -1), cubeSIze, thickness, 0.6);
-            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, 1),  cubeSIze, thickness, 0.6);
+            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, 1), cubeSIze, thickness, 0.6);
 
             this->Reset();
         }
 
         void Typhoon()
         {
-            for (auto& cube : Cubes)
+            for (auto& cube : ObjectFactory->GetInstances())
             {
-                auto coord = cube.second->Transform.GetPosition();
+                auto coord = cube->Transform.GetPosition();
                 auto velo = Length(coord) * Normalize(Cross(Vector3(0, 1, 0), coord));
                 velo.y += Length(coord) / 12;
                 auto dist = Length(Vector3(coord.x, 0, coord.z));
                 velo.y *= 1 / (1 + pow(1.6, coord.y - dist * 4));
-                cube.first->setLinearVelocity(btVec2Vec(velo));
+                cube->GetComponent<RigidBody>()->SetLinearVelocity(velo);
             }
         }
 
@@ -189,53 +131,21 @@ namespace ProjectTemplate
             {
                 float cubeSize = 1.5f;
                 timeGone = 0;
-                #if defined(SPHERES_INSTEAD_CUBES)
-                btCollisionShape* colShape = new btSphereShape(cubeSize * 0.5f);
-                #else
-                btCollisionShape* colShape = new btBoxShape(btVector3(cubeSize * 0.5f, cubeSize * 0.5f, cubeSize * 0.5f));
-                #endif
 
-                btTransform startTransform;
-                startTransform.setIdentity();
-                startTransform.setOrigin(btVector3(btVec2Vec(cameraObject->Transform.GetPosition())));
-
-                btScalar mass(38.f);
-                btVector3 localInertia(0, 0, 0);
-                colShape->calculateLocalInertia(mass, localInertia);
-
-                //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-                btMotionState* myMotionState = new btDefaultMotionState(startTransform);
-                btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, localInertia);
-
-                auto& object = this->Objects.emplace_back();
-                object.first = MakeRef<btRigidBody>(rbInfo);
+                auto object = ShotFactory->MakeInstance();
 
                 auto dir = cameraObject->GetComponent<CameraController>()->GetDirection();
-                object.first->setLinearVelocity(btVec2Vec(dir * 180.0f));
-
-                object.second = ShotFactory->MakeInstance();
-                object.second->GetComponent<Instance>()->SetColor(Colors::Create(Colors::AQUA));
-                object.second->Transform.SetScale(cubeSize);
-                this->World->addRigidBody(object.first.get());
+                object->Transform.SetScale(cubeSize);
+                object->Transform.SetPosition(cameraObject->Transform.GetPosition());
+                auto rigidBody = object->AddComponent<RigidBody>();
+                object->AddComponent<SphereCollider>();
+                rigidBody->SetLinearVelocity(dir * 180.0f);
+                rigidBody->SetMass(38.0f);
             }
 
             if (InputManager::IsKeyHeld(KeyCode::R))
             {
                 Typhoon();
-            }
-
-            const int PHY_FREQ = 5;
-
-            if (!InputManager::IsMouseHeld(MouseButton::RIGHT))
-                for(int i = 0; i < PHY_FREQ; i++)
-                    this->World->stepSimulation(Time::Delta() / PHY_FREQ);
-
-            for (auto& object : this->Objects)
-            {
-                auto rot = object.first->getWorldTransform().getRotation();
-                auto pos = object.first->getWorldTransform().getOrigin();
-                object.second->Transform.SetPosition(*(Vector3*)&pos);
-                object.second->Transform.SetRotation(*(Quaternion*)&rot);
             }
 
             if (RuntimeManager::IsEditorActive())
@@ -244,33 +154,13 @@ namespace ProjectTemplate
 
                 if (ImGui::Button("reset"))
                     this->Reset();
-                
+
                 ImGui::InputInt("X", &lenA);
                 ImGui::InputInt("Y", &lenB);
                 ImGui::InputInt("Z", &lenC);
 
                 ImGui::End();
             }
-        }
-
-        void DestroyPhysics()
-        {
-            for (auto& object : this->Objects)
-            {
-                this->World->removeRigidBody(object.first.get());
-                delete object.first->getMotionState();
-                delete object.first->getCollisionShape();
-            }
-            this->Objects.clear();
-        }
-
-        virtual void OnDestroy() override
-        {
-            this->DestroyPhysics();
-            delete bigCube->getMotionState();
-            delete bigCube->getCollisionShape();
-            this->World->removeRigidBody(bigCube);
-            delete bigCube;
         }
     };
 }

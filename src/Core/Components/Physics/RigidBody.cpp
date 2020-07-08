@@ -30,11 +30,37 @@
 #include "Core/MxObject/MxObject.h"
 #include "Core/Components/Physics/BoxCollider.h"
 #include "Core/Components/Physics/SphereCollider.h"
+#include "Utilities/Logging/Logger.h"
 #include "Platform/Bullet3/Bullet3Utils.h"
-#include "Core/Application/PhysicsManager.h"
 
 namespace MxEngine
 {
+    void RigidBody::UpdateTransform()
+    {
+        auto& self = MxObject::GetByComponent(*this);
+        auto& selfScale = self.Transform.GetScale();
+
+        if (this->rigidBody->HasTransformUpdate())
+        {
+            if (this->rigidBody->IsStatic())
+            {
+                btTransform tr;
+                ToBulletTransform(tr, self.Transform);
+                this->rigidBody->GetNativeHandle()->setWorldTransform(tr);
+            }
+            else
+            {
+                FromBulletTransform(self.Transform, this->rigidBody->GetNativeHandle()->getWorldTransform());
+            }
+            this->rigidBody->SetTransformUpdateFlag(false);
+        }
+
+        if (selfScale != this->rigidBody->GetScale())
+        {
+            this->rigidBody->SetScale(selfScale);
+        }
+    }
+
     NativeRigidBodyHandle RigidBody::GetNativeHandle() const
     {
         return this->rigidBody;
@@ -42,26 +68,16 @@ namespace MxEngine
 
     void RigidBody::Init()
     {
-        this->rigidBody = PhysicsFactory::Create<NativeRigidBody>();
-        PhysicsManager::AddRigidBody(this->rigidBody);
+        auto& transform = MxObject::GetByComponent(*this).Transform;
+        this->rigidBody = PhysicsFactory::Create<NativeRigidBody>(transform);
+
+        //this->UpdateCollider();
     }
 
     void RigidBody::OnUpdate(float dt)
     {
-        auto& self = MxObject::GetByComponent(*this);
-        auto& selfScale = self.Transform.GetScale();
-
         this->UpdateCollider();
-
-        if (this->rigidBody->HasTransformUpdate())
-        {
-            FromBulletTransform(self.Transform, this->rigidBody->GetNativeHandle()->getWorldTransform());
-            this->rigidBody->SetTransformUpdateFlag(false);
-        }
-        if (selfScale != this->rigidBody->GetScale())
-        {
-            this->rigidBody->SetScale(selfScale);
-        }
+        this->UpdateTransform();
     }
 
     template<typename T>
@@ -73,6 +89,7 @@ namespace MxEngine
             collider->UpdateCollider();
             if (collider->HasColliderChanged())
             {
+                MXLOG_DEBUG("MxEngine::NativeRigidBody", "updating collision shape");
                 auto shape = collider->GetNativeHandle();
                 rigidBody->SetCollisionShape(shape->GetNativeHandle());
                 collider->SetColliderChangeFlag(false);
@@ -84,21 +101,11 @@ namespace MxEngine
     void RigidBody::UpdateCollider()
     {
         auto& self = MxObject::GetByComponent(*this);
-        auto boxCollider = self.GetComponent<BoxCollider>();
-        auto sphereCollider = self.GetComponent<BoxCollider>();
 
         bool tests = false;
-        if (!tests) tests |= TestCollider(this->rigidBody, self.GetComponent<BoxCollider>());
+        if (!tests) tests |= TestCollider(this->rigidBody, self.GetComponent<BoxCollider>()); //-V547
         if (!tests) tests |= TestCollider(this->rigidBody, self.GetComponent<SphereCollider>());
         if (!tests) this->rigidBody->SetCollisionShape(nullptr); // no collider
-    }
-
-    RigidBody::~RigidBody()
-    {
-        if (this->rigidBody.IsValid())
-        {
-            PhysicsManager::RemoveRigidBody(this->rigidBody);
-        }
     }
 
     void RigidBody::MakeKinematic()

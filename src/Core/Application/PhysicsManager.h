@@ -30,14 +30,18 @@
 
 #include "Platform/PhysicsAPI.h"
 
+class btRigidBody;
+
 namespace MxEngine
 {
+
     class PhysicsManager
     {
     public:
-        static void AddRigidBody(NativeRigidBodyHandle body);
-        static void RemoveRigidBody(NativeRigidBodyHandle body);
+        static void AddRigidBody(btRigidBody* body);
+        static void RemoveRigidBody(btRigidBody* body);
         static void SetGravity(const Vector3& gravity);
-        static void SetSimulationStep(float timeInMilliseconds);
+        static void PerformExtraSimulationStep(float timeDelta);
+        static void SetSimulationStep(float timeDelta);
     };
 }

@@ -391,6 +391,7 @@ namespace MxEngine
 		ComponentFactory::Init();
 		ResourceFactory::Init();
 		AudioFactory::Init();
+		PhysicsFactory::Init();
 		MxObject::Factory::Init();
 	}
 

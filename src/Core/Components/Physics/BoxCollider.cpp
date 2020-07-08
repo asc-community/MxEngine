@@ -30,6 +30,7 @@
 #include "Core/MxObject/MxObject.h"
 #include "Core/Components/Rendering/MeshSource.h"
 #include "Core/Components/Instance.h"
+#include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
 {
@@ -63,11 +64,13 @@ namespace MxEngine
 
         if (meshSource.IsValid())
         {
-            auto& meshAABB = meshSource->Mesh->GetAABB();
-            auto colliderAABB = this->boxShape->GetBoundingBoxUnchanged();
-            if (meshAABB != colliderAABB)
+            auto& mesh = meshSource->Mesh;
+            if (this->savedMeshState != mesh.GetUUID())
             {
+                MXLOG_DEBUG("MxEngine::SphereCollider", "updated collider for new mesh");
+                auto& meshAABB = mesh->GetAABB();
                 this->CreateNewShape(meshAABB);
+                this->savedMeshState = mesh.GetUUID();
             }
         }
         else

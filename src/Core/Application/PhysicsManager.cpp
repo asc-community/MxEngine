@@ -27,6 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "PhysicsManager.h"
+#include "Utilities/Logging/Logger.h"
 #include "Platform/Modules/PhysicsModule.h"
 #include "Platform/Bullet3/Bullet3Utils.h"
 
@@ -34,14 +35,14 @@ namespace MxEngine
 {
     #define WORLD PhysicsModule::GetImpl()->World
 
-    void PhysicsManager::AddRigidBody(NativeRigidBodyHandle body)
+    void PhysicsManager::AddRigidBody(btRigidBody* body) //-V813
     {
-        WORLD->addRigidBody(body->GetNativeHandle());
+        WORLD->addRigidBody(body);
     }
 
-    void PhysicsManager::RemoveRigidBody(NativeRigidBodyHandle body)
+    void PhysicsManager::RemoveRigidBody(btRigidBody* body) //-V813
     {
-        WORLD->removeRigidBody(body->GetNativeHandle());
+        WORLD->removeRigidBody(body);
     }
 
     void PhysicsManager::SetGravity(const Vector3& gravity)
@@ -49,8 +50,13 @@ namespace MxEngine
         WORLD->setGravity(ToBulletVector3(gravity));
     }
 
-    void PhysicsManager::SetSimulationStep(float timeInMilliseconds)
+    void PhysicsManager::PerformExtraSimulationStep(float timeDelta)
     {
-        PhysicsModule::SetSimulationStep(timeInMilliseconds);
+        PhysicsModule::OnUpdate(timeDelta);
+    }
+
+    void PhysicsManager::SetSimulationStep(float timeDelta)
+    {
+        PhysicsModule::SetSimulationStep(timeDelta);
     }
 }

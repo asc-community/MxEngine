@@ -39,6 +39,7 @@ namespace MxEngine
         MAKE_COMPONENT(BoxCollider);
 
         BoxShapeHandle boxShape;
+        UUID savedMeshState = UUIDGenerator::GetNull();
         bool colliderChanged = true;
 
         void CreateNewShape(const AABB& aabb);

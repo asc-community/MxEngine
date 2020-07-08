@@ -29,6 +29,8 @@
 #include "NativeRigidBody.h"
 #include "Bullet3Utils.h"
 #include "Utilities/Memory/Memory.h"
+#include "Utilities/Logging/Logger.h"
+#include "Core/Application/PhysicsManager.h"
 
 namespace MxEngine
 {
@@ -50,16 +52,27 @@ namespace MxEngine
     {
         if (this->body != nullptr)
         {
+            PhysicsManager::RemoveRigidBody(this->body);
+
             Free(this->body);
             Free(this->state);
         }
     }
 
-    NativeRigidBody::NativeRigidBody()
+    void NativeRigidBody::ReAddRigidBody()
+    {
+        PhysicsManager::RemoveRigidBody(this->body);
+        PhysicsManager::AddRigidBody(this->body);
+    }
+
+    NativeRigidBody::NativeRigidBody(const Transform& transform)
     {
         btTransform tr;
+        ToBulletTransform(tr, transform);
         this->state = Alloc<MotionStateNotifier>(tr);
         this->body = Alloc<btRigidBody>(0.0f, this->state, nullptr);
+
+        PhysicsManager::AddRigidBody(this->body);
     }
 
     NativeRigidBody::NativeRigidBody(NativeRigidBody&& other) noexcept
@@ -118,11 +131,16 @@ namespace MxEngine
     void NativeRigidBody::SetCollisionShape(btCollisionShape* shape)
     {
         this->body->setCollisionShape(shape);
-        btVector3 inertia(0.0f, 0.0f, 0.0f);
-        float mass = this->body->getMass();
 
-        if (mass != 0.0f) shape->calculateLocalInertia(mass, inertia);
+        float mass = this->GetMass();
+        btVector3 inertia(0.0f, 0.0f, 0.0f);
+        if (shape != nullptr && mass != 0.0f)
+        {
+            shape->calculateLocalInertia(mass, inertia);
+        }
         this->body->setMassProps(mass, inertia);
+
+        this->ReAddRigidBody();
     }
 
     bool NativeRigidBody::HasTransformUpdate() const
@@ -158,13 +176,10 @@ namespace MxEngine
 
     void NativeRigidBody::SetMass(float mass)
     {
+        MXLOG_DEBUG("MxEngine::NativeRigidBody", "updating mass to: " + ToMxString(mass));
         btVector3 inertia(0.0f, 0.0f, 0.0f);
-        auto* shape = this->GetCollisionShape();
-
-        if (shape != nullptr && mass != 0.0f)
-            shape->calculateLocalInertia(mass, inertia);
-
         this->body->setMassProps(mass, inertia);
+        this->SetCollisionShape(this->GetCollisionShape());
     }
 
     void NativeRigidBody::MakeKinematic()
@@ -176,6 +191,11 @@ namespace MxEngine
     bool NativeRigidBody::IsKinematic() const
     {
         return this->body->isKinematicObject();
+    }
+
+    bool NativeRigidBody::IsStatic() const
+    {
+        return this->body->getMass() == 0.0f;
     }
 
     void NativeRigidBody::SetActivationState(ActivationState state)

@@ -45,6 +45,8 @@ namespace MxEngine
         MAKE_COMPONENT(RigidBody);
 
         NativeRigidBodyHandle rigidBody;
+
+        void UpdateTransform();
     public:
         MXENGINE_MAKE_MOVEONLY(RigidBody);
 
@@ -53,7 +55,6 @@ namespace MxEngine
         void Init();
         void OnUpdate(float dt);
         void UpdateCollider();
-        ~RigidBody();
 
         void MakeKinematic();
         bool IsKinematic();

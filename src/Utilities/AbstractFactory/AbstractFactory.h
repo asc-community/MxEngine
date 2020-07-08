@@ -177,14 +177,18 @@ namespace MxEngine
         T* operator->()
         {
             MX_ASSERT(this->IsValid()); // access of null handle
+            #if !defined(MXENGINE_SHIPPING)
             if (!this->IsValid()) return nullptr;
+            #endif
             return this->GetUnchecked();
         }
 
         [[nodiscard]] const T* operator->() const
         {
             MX_ASSERT(this->IsValid()); // access of null handle
+            #if !defined(MXENGINE_SHIPPING)
             if (!this->IsValid()) return nullptr;
+            #endif
             return this->GetUnchecked();
         }
 

@@ -35,7 +35,7 @@ class btRigidBody;
 
 namespace MxEngine
 {
-	struct PhysicsModuleData
+	struct PhysicsModuleData //-V730
 	{
 		btCollisionConfiguration* CollisionConfiguration;
 		btDispatcher* Dispatcher;
