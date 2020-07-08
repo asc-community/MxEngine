@@ -26,40 +26,32 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Core/Application/Application.h"
+#include "BoxShape.h"
+#include "Bullet3Utils.h"
 
 namespace MxEngine
 {
-    class RuntimeManager
+    BoxShape::BoxShape(const AABB& boundingBox)
     {
-    public:
-        template<typename Func>
-        static void RegisterComponentEditor(const char* name, Func&& callback)
-        {
-            Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
-        }
+        this->CreateShape<btBoxShape>(ToBulletVector3(boundingBox.Length() * 0.5f));
+    }
 
-        template<typename T>
-        static void RegisterComponentUpdate()
-        {
-            Application::Get()->RegisterComponentUpdate<T>();
-        }
+    BoxShape::BoxShape(BoxShape&& other) noexcept
+    {
+        this->collider = other.collider;
+        other.collider = nullptr;
+    }
 
-        static bool IsEditorActive()
-        {
-            return Application::Get()->GetRuntimeEditor().IsActive();
-        }
+    BoxShape& BoxShape::operator=(BoxShape&& other) noexcept
+    {
+        this->DestroyShape();
+        this->collider = other.collider;
+        other.collider = nullptr;
+        return *this;
+    }
 
-        static void ExecuteScript(const MxString& script)
-        {
-            Application::Get()->GetRuntimeEditor().ExecuteScript(script);
-        }
-
-        static void CloseApplication()
-        {
-            Application::Get()->CloseApplication();
-        }
-    };
+    BoxShape::~BoxShape()
+    {
+        this->DestroyShape();
+    }
 }

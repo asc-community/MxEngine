@@ -26,40 +26,57 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Core/Application/Application.h"
+#include "ShapeBase.h"
+#include "Bullet3Utils.h"
 
 namespace MxEngine
 {
-    class RuntimeManager
+    void ShapeBase::DestroyShape()
     {
-    public:
-        template<typename Func>
-        static void RegisterComponentEditor(const char* name, Func&& callback)
+        if (this->collider != nullptr)
         {
-            Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
+            Free(this->collider);
         }
+    }
 
-        template<typename T>
-        static void RegisterComponentUpdate()
-        {
-            Application::Get()->RegisterComponentUpdate<T>();
-        }
+    void ShapeBase::SetScale(const Vector3& scale)
+    {
+        this->collider->setLocalScaling(ToBulletVector3(scale));
+    }
 
-        static bool IsEditorActive()
-        {
-            return Application::Get()->GetRuntimeEditor().IsActive();
-        }
+    Vector3 ShapeBase::GetScale() const
+    {
+        return FromBulletVector3(this->collider->getLocalScaling());
+    }
 
-        static void ExecuteScript(const MxString& script)
-        {
-            Application::Get()->GetRuntimeEditor().ExecuteScript(script);
-        }
+    btCollisionShape* ShapeBase::GetNativeHandle()
+    {
+        return this->collider;
+    }
 
-        static void CloseApplication()
-        {
-            Application::Get()->CloseApplication();
-        }
-    };
+    AABB ShapeBase::GetBoundingBox(const Transform& transform) const
+    {
+        AABB result;
+        btTransform tr;
+        tr.setFromOpenGLMatrix(&transform.GetMatrix()[0][0]);
+        this->collider->getAabb(tr, ToBulletVector3(result.Min), ToBulletVector3(result.Max));
+        return result;
+    }
+
+    AABB ShapeBase::GetBoundingBoxUnchanged() const
+    {
+        AABB result;
+        btTransform tr;
+        tr.setIdentity();
+        this->collider->getAabb(tr, ToBulletVector3(result.Min), ToBulletVector3(result.Max));
+        return result;
+    }
+
+    BoundingSphere ShapeBase::GetBoundingSphere() const
+    {
+        Vector3 center{ 0.0f };
+        float r = 0.0f;
+        this->collider->getBoundingSphere(ToBulletVector3(center), r);
+        return BoundingSphere(center, r);
+    }
 }

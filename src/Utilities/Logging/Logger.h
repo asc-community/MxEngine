@@ -56,7 +56,7 @@ namespace MxEngine
         #define MXLOG_FATAL(caller, ...) AbortApplication()
     #else
         #if defined(MXENGINE_RELEASE)
-            #define MXLOG_DEBUG(caller, __VA_ARGS__)
+            #define MXLOG_DEBUG(caller, ...)
         #else
             #define MXLOG_DEBUG(caller, ...) Logger::Log(VerbosityType::DEBUG, caller, __VA_ARGS__)
         #endif

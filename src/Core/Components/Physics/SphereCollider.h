@@ -28,38 +28,27 @@
 
 #pragma once
 
-#include "Core/Application/Application.h"
+#include "Utilities/ECS/Component.h"
+#include "Core/BoundingObjects/BoundingSphere.h"
+#include "Platform/PhysicsAPI.h"
 
 namespace MxEngine
 {
-    class RuntimeManager
+    class SphereCollider
     {
+        MAKE_COMPONENT(SphereCollider);
+
+        SphereShapeHandle sphereShape;
+        bool colliderChanged = true;
+
+        void CreateNewShape(const AABB& aabb);
     public:
-        template<typename Func>
-        static void RegisterComponentEditor(const char* name, Func&& callback)
-        {
-            Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
-        }
+        bool HasColliderChanged() const;
+        void SetColliderChangeFlag(bool value);
 
-        template<typename T>
-        static void RegisterComponentUpdate()
-        {
-            Application::Get()->RegisterComponentUpdate<T>();
-        }
+        void Init();
+        void UpdateCollider();
 
-        static bool IsEditorActive()
-        {
-            return Application::Get()->GetRuntimeEditor().IsActive();
-        }
-
-        static void ExecuteScript(const MxString& script)
-        {
-            Application::Get()->GetRuntimeEditor().ExecuteScript(script);
-        }
-
-        static void CloseApplication()
-        {
-            Application::Get()->CloseApplication();
-        }
+        SphereShapeHandle GetNativeHandle() const;
     };
 }

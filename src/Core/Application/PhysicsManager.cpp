@@ -26,40 +26,26 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Core/Application/Application.h"
+#include "PhysicsManager.h"
+#include "Platform/Modules/PhysicsModule.h"
+#include "Platform/Bullet3/Bullet3Utils.h"
 
 namespace MxEngine
 {
-    class RuntimeManager
+    #define WORLD PhysicsModule::GetImpl()->World
+
+    void PhysicsManager::AddRigidBody(NativeRigidBodyHandle body)
     {
-    public:
-        template<typename Func>
-        static void RegisterComponentEditor(const char* name, Func&& callback)
-        {
-            Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
-        }
+        WORLD->addRigidBody(body->GetNativeHandle());
+    }
 
-        template<typename T>
-        static void RegisterComponentUpdate()
-        {
-            Application::Get()->RegisterComponentUpdate<T>();
-        }
+    void PhysicsManager::RemoveRigidBody(NativeRigidBodyHandle body)
+    {
+        WORLD->removeRigidBody(body->GetNativeHandle());
+    }
 
-        static bool IsEditorActive()
-        {
-            return Application::Get()->GetRuntimeEditor().IsActive();
-        }
-
-        static void ExecuteScript(const MxString& script)
-        {
-            Application::Get()->GetRuntimeEditor().ExecuteScript(script);
-        }
-
-        static void CloseApplication()
-        {
-            Application::Get()->CloseApplication();
-        }
-    };
+    void PhysicsManager::SetGravity(const Vector3& gravity)
+    {
+        WORLD->setGravity(ToBulletVector3(gravity));
+    }
 }

@@ -2,19 +2,21 @@
 
 namespace MxEngine
 {
-    MeshHandle Primitives::CreateMesh(const AABB& boundingBox, MeshData meshData)
+    MeshHandle Primitives::CreateMesh(MeshData meshData)
     {
         auto mesh = ResourceFactory::Create<Mesh>();
 
         SubMesh::MaterialId materialId = 0;
         auto transform = ComponentFactory::CreateComponent<Transform>();
 
-        mesh->SetAABB(boundingBox);
         auto& submeshes = mesh->GetSubmeshes();
         auto& submesh = submeshes.emplace_back(materialId, transform);
         submesh.MeshData = std::move(meshData);
         submesh.MeshData.BufferVertecies();
         submesh.MeshData.BufferIndicies();
+        submesh.MeshData.UpdateBoundingBox();
+
+        mesh->UpdateAABB();
 
         return mesh;
     }
@@ -22,7 +24,6 @@ namespace MxEngine
     MeshHandle Primitives::CreateCube(size_t polygons)
     {
         MeshData meshData;
-        AABB aabb{ MakeVector3(-0.5f), MakeVector3(0.5f) };
         polygons = polygons + 1; // polygons in [1; inf), but we need at least two points per edge
 
         auto& vertecies = meshData.GetVertecies();
@@ -160,16 +161,12 @@ namespace MxEngine
         }
         meshData.RegenerateTangentSpace();
 
-        return Primitives::CreateMesh(aabb, std::move(meshData));
+        return Primitives::CreateMesh(std::move(meshData));
     }
 
     MeshHandle Primitives::CreatePlane(size_t size)
     {
         MeshData meshData;
-
-        auto fsize = static_cast<float>(size);
-        auto delta = 0.0001f;
-        AABB aabb{ MakeVector3(-fsize, -delta, -fsize), MakeVector3(fsize, delta, fsize) };
 
         auto& indicies = meshData.GetIndicies();
         auto& vertecies = meshData.GetVertecies();
@@ -200,13 +197,12 @@ namespace MxEngine
             vertecies[i].Bitangent  = MakeVector3(0.0f, 0.0f, 1.0f);
         }
         indicies = { 0, 1, 2, 2, 1, 3, 0, 2, 1, 1, 2, 3 };
-        return Primitives::CreateMesh(aabb, std::move(meshData));
+        return Primitives::CreateMesh(std::move(meshData));
     }
 
     MeshHandle Primitives::CreateSphere(size_t polygons)
     {
         MeshData meshData;
-        AABB aabb{ MakeVector3(-1.0f), MakeVector3(1.0f) };
 
         auto& verteces = meshData.GetVertecies();
         auto& indicies = meshData.GetIndicies();
@@ -255,7 +251,7 @@ namespace MxEngine
             }
         }
         meshData.RegenerateTangentSpace();
-        return Primitives::CreateMesh(aabb, std::move(meshData));
+        return Primitives::CreateMesh(std::move(meshData));
     }
 
     MeshHandle Primitives::CreateSurface(const Array2D<float>& heights)
@@ -269,11 +265,6 @@ namespace MxEngine
 
         auto& vertecies = meshData.GetVertecies();
         auto& indicies = meshData.GetIndicies();
-
-        auto minmax = std::minmax_element(heights.begin(), heights.end());
-        AABB aabb{ MakeVector3(0.0f, *minmax.first, 0.0f), MakeVector3(1.0f, *minmax.second, 1.0f) };
-        auto center = aabb.GetCenter();
-        aabb = aabb - center;
 
         vertecies.reserve(xsize * ysize);
         for (size_t x = 0; x < xsize; x++)
@@ -290,7 +281,6 @@ namespace MxEngine
                 // yes, z component is actually y component, because in such case its easier to think 
                 // of plane as OXY, with heights pointing towards z axis
                 vertex.Position = MakeVector3(fx, fz, fy);
-                vertex.Position -= center;
             }
         }
 
@@ -308,7 +298,7 @@ namespace MxEngine
             }
         }
         meshData.RegenerateNormals();
-        return Primitives::CreateMesh(aabb, std::move(meshData));
+        return Primitives::CreateMesh(std::move(meshData));
     }
 
     Primitives::TextureHandle Primitives::CreateGridTexture(size_t textureSize, float borderScale)

@@ -37,6 +37,8 @@ namespace ProjectTemplate
         {
             this->DestroyPhysics();
             ObjectFactory->DestroyInstances();
+            ShotFactory->DestroyInstances();
+            Objects.clear();
             Cubes.clear();
             for (size_t i = 0; i < lenA * lenB * lenC; i++)
             {
@@ -154,13 +156,14 @@ namespace ProjectTemplate
 
             //this->InitializeBigCube();
             float cubeSIze = 160;
-            Vector3 coordOffset(0, cubeSIze / 2, 0);
-            InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, -1, 0), cubeSIze, 0.1);
-            InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, 1, 0),  cubeSIze, 0.1);
-            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(-1, 0, 0), cubeSIze, 0.1);
-            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(1, 0, 0),  cubeSIze, 0.1);
-            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, -1), cubeSIze, 0.1);
-            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, 1),  cubeSIze, 0.1);
+            float thickness = 1.0f;
+            Vector3 coordOffset(0, cubeSIze / 2 + thickness, 0);
+            InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, -1, 0), cubeSIze, thickness);
+            InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, 1, 0),  cubeSIze, thickness);
+            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(-1, 0, 0), cubeSIze, thickness);
+            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(1, 0, 0),  cubeSIze, thickness);
+            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, -1), cubeSIze, thickness);
+            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, 1),  cubeSIze, thickness);
             this->Reset();
         }
 
@@ -169,7 +172,7 @@ namespace ProjectTemplate
             for (auto& cube : Cubes)
             {
                 auto coord = cube.second->Transform.GetPosition();
-                auto velo = Length(coord) * Normalize(Cross(Vector3(0, 1, 0), coord));
+                auto velo = 1.3f * Length(coord) * Normalize(Cross(Vector3(0, 1, 0), Normalize(coord)));
                 velo.y += Length(coord) / 6;
                 cube.first->setLinearVelocity(btVec2Vec(velo));
             }

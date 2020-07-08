@@ -28,38 +28,33 @@
 
 #pragma once
 
-#include "Core/Application/Application.h"
+#include "Core/BoundingObjects/BoundingSphere.h"
+#include "Utilities/Memory/Memory.h"
+#include "Core/Components/Transform.h"
+
+class btCollisionShape;
 
 namespace MxEngine
 {
-    class RuntimeManager
+    class ShapeBase
     {
+    protected:
+        btCollisionShape* collider = nullptr;
+
+        void DestroyShape();
+
+        template<typename T, typename... Args>
+        T* CreateShape(Args&&... args)
+        {
+            this->collider = Alloc<T>(std::forward<Args>(args)...);
+            return static_cast<T*>(this->collider);
+        }
     public:
-        template<typename Func>
-        static void RegisterComponentEditor(const char* name, Func&& callback)
-        {
-            Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
-        }
-
-        template<typename T>
-        static void RegisterComponentUpdate()
-        {
-            Application::Get()->RegisterComponentUpdate<T>();
-        }
-
-        static bool IsEditorActive()
-        {
-            return Application::Get()->GetRuntimeEditor().IsActive();
-        }
-
-        static void ExecuteScript(const MxString& script)
-        {
-            Application::Get()->GetRuntimeEditor().ExecuteScript(script);
-        }
-
-        static void CloseApplication()
-        {
-            Application::Get()->CloseApplication();
-        }
+        void SetScale(const Vector3& scale);
+        Vector3 GetScale() const;
+        btCollisionShape* GetNativeHandle();
+        AABB GetBoundingBox(const Transform& transform) const;
+        AABB GetBoundingBoxUnchanged() const;
+        BoundingSphere GetBoundingSphere() const;
     };
 }

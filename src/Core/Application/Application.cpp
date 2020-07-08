@@ -33,6 +33,8 @@
 #include "Platform/Modules/GraphicModule.h"
 #include "Platform/AudioAPI.h"
 #include "Platform/Modules/AudioModule.h"
+#include "Platform/PhysicsAPI.h"
+#include "Platform/Modules/PhysicsModule.h"
 
 #include "Core/Event/Event.h"
 #include "Core/Application/EventManager.h"
@@ -381,6 +383,7 @@ namespace MxEngine
 		FileManager::Init();
 		AudioModule::Init();
 		GraphicModule::Init();
+		PhysicsModule::Init();
 		UUIDGenerator::Init();
 		GraphicFactory::Init();
 		ComponentFactory::Init();
@@ -391,6 +394,7 @@ namespace MxEngine
 
 	Application::ModuleManager::~ModuleManager()
 	{
+		PhysicsModule::Destroy();
 		GraphicModule::Destroy();
 		AudioModule::Destroy();
 		#if defined(MXENGINE_DEBUG)
@@ -434,5 +438,6 @@ namespace MxEngine
 		this->RegisterComponentUpdate<VRCameraController>();
 		this->RegisterComponentUpdate<AudioListener>();
 		this->RegisterComponentUpdate<AudioSource>();
+		this->RegisterComponentUpdate<RigidBody>();
 	}
 }
