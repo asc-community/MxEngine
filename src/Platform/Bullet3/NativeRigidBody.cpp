@@ -26,7 +26,7 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "BulletRigidBody.h"
+#include "NativeRigidBody.h"
 #include "Bullet3Utils.h"
 #include "Utilities/Memory/Memory.h"
 
@@ -46,7 +46,7 @@ namespace MxEngine
         }
     };
 
-    void BulletRigidBody::DestroyBody()
+    void NativeRigidBody::DestroyBody()
     {
         if (this->body != nullptr)
         {
@@ -55,14 +55,14 @@ namespace MxEngine
         }
     }
 
-    BulletRigidBody::BulletRigidBody()
+    NativeRigidBody::NativeRigidBody()
     {
         btTransform tr;
         this->state = Alloc<MotionStateNotifier>(tr);
         this->body = Alloc<btRigidBody>(0.0f, this->state, nullptr);
     }
 
-    BulletRigidBody::BulletRigidBody(BulletRigidBody&& other) noexcept
+    NativeRigidBody::NativeRigidBody(NativeRigidBody&& other) noexcept
     {
         this->body = other.body;
         this->state = other.state;
@@ -70,7 +70,7 @@ namespace MxEngine
         other.state = nullptr;
     }
 
-    BulletRigidBody& BulletRigidBody::operator=(BulletRigidBody&& other) noexcept
+    NativeRigidBody& NativeRigidBody::operator=(NativeRigidBody&& other) noexcept
     {
         this->DestroyBody();
         this->body = other.body;
@@ -80,42 +80,42 @@ namespace MxEngine
         return *this;
     }
 
-    BulletRigidBody::~BulletRigidBody()
+    NativeRigidBody::~NativeRigidBody()
     {
         this->DestroyBody();
     }
 
-    btRigidBody* BulletRigidBody::GetNativeHandle()
+    btRigidBody* NativeRigidBody::GetNativeHandle()
     {
         return this->body;
     }
 
-    const btRigidBody* BulletRigidBody::GetNativeHandle() const
+    const btRigidBody* NativeRigidBody::GetNativeHandle() const
     {
         return this->body;
     }
 
-    btMotionState* BulletRigidBody::GetMotionState()
+    btMotionState* NativeRigidBody::GetMotionState()
     {
         return this->state;
     }
 
-    const btMotionState* BulletRigidBody::GetMotionState() const
+    const btMotionState* NativeRigidBody::GetMotionState() const
     {
         return this->state;
     }
 
-    btCollisionShape* BulletRigidBody::GetCollisionShape()
+    btCollisionShape* NativeRigidBody::GetCollisionShape()
     {
         return this->body->getCollisionShape();
     }
 
-    const btCollisionShape* BulletRigidBody::GetCollisionShape() const
+    const btCollisionShape* NativeRigidBody::GetCollisionShape() const
     {
         return this->body->getCollisionShape();
     }
 
-    void BulletRigidBody::SetCollisionShape(btCollisionShape* shape)
+    void NativeRigidBody::SetCollisionShape(btCollisionShape* shape)
     {
         this->body->setCollisionShape(shape);
         btVector3 inertia(0.0f, 0.0f, 0.0f);
@@ -125,17 +125,17 @@ namespace MxEngine
         this->body->setMassProps(mass, inertia);
     }
 
-    bool BulletRigidBody::HasTransformUpdate() const
+    bool NativeRigidBody::HasTransformUpdate() const
     {
         return static_cast<MotionStateNotifier*>(this->state)->TransformUpdated;
     }
 
-    void BulletRigidBody::SetTransformUpdateFlag(bool value)
+    void NativeRigidBody::SetTransformUpdateFlag(bool value)
     {
         static_cast<MotionStateNotifier*>(this->state)->TransformUpdated = value;
     }
 
-    Vector3 BulletRigidBody::GetScale() const
+    Vector3 NativeRigidBody::GetScale() const
     {
         auto* collider = this->GetCollisionShape();
         if (collider != nullptr)
@@ -144,19 +144,19 @@ namespace MxEngine
             return MakeVector3(0.0f);
     }
 
-    void BulletRigidBody::SetScale(const Vector3& scale)
+    void NativeRigidBody::SetScale(const Vector3& scale)
     {
         auto* collider = this->GetCollisionShape();
         if (collider != nullptr)
             collider->setLocalScaling(ToBulletVector3(scale));
     }
 
-    float BulletRigidBody::GetMass() const
+    float NativeRigidBody::GetMass() const
     {
         return this->body->getMass();
     }
 
-    void BulletRigidBody::SetMass(float mass)
+    void NativeRigidBody::SetMass(float mass)
     {
         btVector3 inertia(0.0f, 0.0f, 0.0f);
         auto* shape = this->GetCollisionShape();
@@ -167,28 +167,28 @@ namespace MxEngine
         this->body->setMassProps(mass, inertia);
     }
 
-    void BulletRigidBody::MakeKinematic()
+    void NativeRigidBody::MakeKinematic()
     {
         this->body->setCollisionFlags(this->body->getCollisionFlags() | btRigidBody::CF_KINEMATIC_OBJECT);
         this->body->setActivationState(DISABLE_DEACTIVATION);
     }
 
-    bool BulletRigidBody::IsKinematic() const
+    bool NativeRigidBody::IsKinematic() const
     {
         return this->body->isKinematicObject();
     }
 
-    void BulletRigidBody::SetActivationState(ActivationState state)
+    void NativeRigidBody::SetActivationState(ActivationState state)
     {
         this->body->setActivationState((int)state);
     }
 
-    ActivationState BulletRigidBody::GetActivationState() const
+    ActivationState NativeRigidBody::GetActivationState() const
     {
         return ActivationState(this->body->getActivationState());
     }
 
-    bool BulletRigidBody::IsActive() const
+    bool NativeRigidBody::IsActive() const
     {
         return this->body->isActive();
     }

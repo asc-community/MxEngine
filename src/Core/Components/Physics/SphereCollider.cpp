@@ -28,6 +28,7 @@
 
 #include "SphereCollider.h"
 #include "Core/MxObject/MxObject.h"
+#include "Core/Components/Instance.h"
 #include "Core/Components/Rendering/MeshSource.h"
 
 namespace MxEngine
@@ -56,7 +57,9 @@ namespace MxEngine
     void SphereCollider::UpdateCollider()
     {
         auto& self = MxObject::GetByComponent(*this);
-        auto meshSource = self.GetComponent<MeshSource>();
+
+        auto instance = self.GetComponent<Instance>();
+        auto meshSource = instance.IsValid() ? instance->GetParent()->GetComponent<MeshSource>() : self.GetComponent<MeshSource>();
         
         if (meshSource.IsValid())
         {

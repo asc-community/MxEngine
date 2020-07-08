@@ -45,19 +45,19 @@ namespace MxEngine
         DISABLE_SIMULATION = 5,
     };
 
-    class BulletRigidBody
+    class NativeRigidBody
     {
         btMotionState* state = nullptr;
         btRigidBody* body = nullptr;
 
         void DestroyBody();
     public:
-        BulletRigidBody();
-        BulletRigidBody(const BulletRigidBody&) = delete;
-        BulletRigidBody(BulletRigidBody&&) noexcept;
-        BulletRigidBody& operator=(const BulletRigidBody&) = delete;
-        BulletRigidBody& operator=(BulletRigidBody&&) noexcept;
-        ~BulletRigidBody();
+        NativeRigidBody();
+        NativeRigidBody(const NativeRigidBody&) = delete;
+        NativeRigidBody(NativeRigidBody&&) noexcept;
+        NativeRigidBody& operator=(const NativeRigidBody&) = delete;
+        NativeRigidBody& operator=(NativeRigidBody&&) noexcept;
+        ~NativeRigidBody();
 
         btRigidBody* GetNativeHandle();
         const btRigidBody* GetNativeHandle() const;

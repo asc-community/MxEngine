@@ -42,7 +42,7 @@ namespace MxEngine
 
     void RigidBody::Init()
     {
-        this->rigidBody = PhysicsFactory::Create<BulletRigidBody>();
+        this->rigidBody = PhysicsFactory::Create<NativeRigidBody>();
         PhysicsManager::AddRigidBody(this->rigidBody);
     }
 

@@ -128,6 +128,8 @@ namespace MxEngine
 		this->GetWindow().OnUpdate();
 		MAKE_SCOPE_PROFILER("MxEngine::OnUpdate");
 
+		PhysicsModule::OnUpdate(this->timeDelta);
+
 		for (const auto& callback : this->updateCallbacks)
 		{
 			callback(this->timeDelta);

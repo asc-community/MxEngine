@@ -29,6 +29,7 @@
 #include "BoxCollider.h"
 #include "Core/MxObject/MxObject.h"
 #include "Core/Components/Rendering/MeshSource.h"
+#include "Core/Components/Instance.h"
 
 namespace MxEngine
 {
@@ -56,7 +57,9 @@ namespace MxEngine
     void BoxCollider::UpdateCollider()
     {
         auto& self = MxObject::GetByComponent(*this);
-        auto meshSource = self.GetComponent<MeshSource>();
+
+        auto instance = self.GetComponent<Instance>();
+        auto meshSource = instance.IsValid() ? instance->GetParent()->GetComponent<MeshSource>() : self.GetComponent<MeshSource>();
 
         if (meshSource.IsValid())
         {

@@ -30,14 +30,14 @@
 
 #include "Bullet3/BoxShape.h"
 #include "Bullet3/SphereShape.h"
-#include "Bullet3/BulletRigidBody.h"
+#include "Bullet3/NativeRigidBody.h"
 #include "Utilities/AbstractFactory/AbstractFactory.h"
 
 namespace MxEngine
 {
-    using PhysicsFactory = AbstractFactoryImpl<BoxShape, SphereShape, BulletRigidBody>;
+    using PhysicsFactory = AbstractFactoryImpl<BoxShape, SphereShape, NativeRigidBody>;
 
     using BoxShapeHandle = Resource<BoxShape, PhysicsFactory>;
     using SphereShapeHandle = Resource<SphereShape, PhysicsFactory>;
-    using NativeRigidBodyHandle = Resource<BulletRigidBody, PhysicsFactory>;
+    using NativeRigidBodyHandle = Resource<NativeRigidBody, PhysicsFactory>;
 }

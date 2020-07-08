@@ -83,7 +83,7 @@
     <ClInclude Include="Core\Rendering\SkyboxObject.h" />
     <ClInclude Include="Platform\AudioAPI.h" />
     <ClInclude Include="Platform\Bullet3\BoxShape.h" />
-    <ClInclude Include="Platform\Bullet3\BulletRigidBody.h" />
+    <ClInclude Include="Platform\Bullet3\NativeRigidBody.h" />
     <ClInclude Include="Platform\Bullet3\ShapeBase.h" />
     <ClInclude Include="Platform\Bullet3\SphereShape.h" />
     <ClInclude Include="Platform\GraphicAPI.h" />
@@ -870,7 +870,7 @@
     <ClCompile Include="Library\Primitives\Primitives.cpp" />
     <ClCompile Include="Library\Scripting\Python\PythonEngine.cpp" />
     <ClCompile Include="Platform\Bullet3\BoxShape.cpp" />
-    <ClCompile Include="Platform\Bullet3\BulletRigidBody.cpp" />
+    <ClCompile Include="Platform\Bullet3\NativeRigidBody.cpp" />
     <ClCompile Include="Platform\Bullet3\ShapeBase.cpp" />
     <ClCompile Include="Platform\Bullet3\SphereShape.cpp" />
     <ClCompile Include="Platform\Modules\AudioModule.cpp" />
