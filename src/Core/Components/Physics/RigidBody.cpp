@@ -44,12 +44,14 @@ namespace MxEngine
         {
             if (this->rigidBody->IsStatic())
             {
+                // if body is static, MxObject's Transform component controls its position
                 btTransform tr;
                 ToBulletTransform(tr, self.Transform);
                 this->rigidBody->GetNativeHandle()->setWorldTransform(tr);
             }
             else
             {
+                // if body is not static, transform is controlled by physics engine
                 FromBulletTransform(self.Transform, this->rigidBody->GetNativeHandle()->getWorldTransform());
             }
             this->rigidBody->SetTransformUpdateFlag(false);
@@ -70,8 +72,6 @@ namespace MxEngine
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
         this->rigidBody = PhysicsFactory::Create<NativeRigidBody>(transform);
-
-        //this->UpdateCollider();
     }
 
     void RigidBody::OnUpdate(float dt)
@@ -92,7 +92,7 @@ namespace MxEngine
                 MXLOG_DEBUG("MxEngine::NativeRigidBody", "updating collision shape");
                 auto shape = collider->GetNativeHandle();
                 rigidBody->SetCollisionShape(shape->GetNativeHandle());
-                collider->SetColliderChangeFlag(false);
+                collider->SetColliderChangedFlag(false);
             }
         }
         return valid;

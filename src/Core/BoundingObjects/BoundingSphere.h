@@ -51,7 +51,7 @@ namespace MxEngine
     {
         auto center = box.GetCenter();
         auto length = box.Length();
-        float radius = Max(length.x, length.y, length.z) * 0.5f;
+        float radius = Max(length.x, length.y, length.z) / RootFive<float>(); // * 0.5f;
         return BoundingSphere(center, radius);
     }
 }

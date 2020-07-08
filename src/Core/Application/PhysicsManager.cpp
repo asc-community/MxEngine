@@ -52,7 +52,7 @@ namespace MxEngine
 
     void PhysicsManager::PerformExtraSimulationStep(float timeDelta)
     {
-        PhysicsModule::OnUpdate(timeDelta);
+        WORLD->stepSimulation(timeDelta);
     }
 
     void PhysicsManager::SetSimulationStep(float timeDelta)

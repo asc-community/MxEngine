@@ -4,8 +4,6 @@
 #include "Platform/Modules/PhysicsModule.h"
 #include "Core/Application/PhysicsManager.h"
 
-//#define SPHERES_INSTEAD_CUBES
-
 namespace ProjectTemplate
 {
     using namespace MxEngine;
@@ -19,8 +17,10 @@ namespace ProjectTemplate
         InstanceFactory::Handle ShotFactory;
         int lenA = 3;
         int lenB = 3;
-        int lenC = 3;
-        btRigidBody* bigCube;
+        int lenC = 3;            
+        float BigCubeSize = 160;
+        float BigCubeThickness = 3;
+        bool PhysicsDebug = true;
 
         void Reset()
         {
@@ -34,17 +34,22 @@ namespace ProjectTemplate
                 float y = i / lenC % lenB * size;
                 float z = i % lenC * size;
 
-                float offset = size * 0.5f;
+                float offset = size * 0.5f + BigCubeThickness * 0.5f;
 
                 auto object = ObjectFactory->MakeInstance();
 
                 object->Transform.SetPosition(MakeVector3(x, y + offset, z));
                 object->GetComponent<Instance>()->SetColor(Vector3(x / lenA / size, y / lenB / size, z / lenC / size));
-                object->Transform.SetScale(size - 0.04f);
+                object->Transform.SetScale(size);
 
                 object->AddComponent<BoxCollider>();
                 auto rigidBody = object->AddComponent<RigidBody>();
-                rigidBody->SetMass(1.0f / (0.3f + y * y * y));
+                rigidBody->SetMass(1.0f / (0.3f + y + y + y));
+
+                if (PhysicsDebug)
+                {
+                    object->AddComponent<DebugDraw>()->RenderPhysicsCollider = true;
+                }
             }
         }
 
@@ -96,18 +101,16 @@ namespace ProjectTemplate
             shots->AddComponent<MeshRenderer>();
             ShotFactory = shots->AddComponent<InstanceFactory>();
 
-            float cubeSIze = 160;
-
-            float thickness = 3;
-            Vector3 coordOffset(0, cubeSIze / 2, 0);
-            InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, -1, 0), cubeSIze, thickness, 0.6);
+            Vector3 coordOffset(0, BigCubeSize / 2, 0);
+            InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, -1, 0), BigCubeSize, BigCubeThickness, 0.6);
             //InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, 1, 0),  cubeSIze, thickness, 0.8);
-            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(-1, 0, 0), cubeSIze, thickness, 0.6);
-            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(1, 0, 0), cubeSIze, thickness, 0.25);
-            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, -1), cubeSIze, thickness, 0.6);
-            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, 1), cubeSIze, thickness, 0.6);
+            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(-1, 0, 0), BigCubeSize, BigCubeThickness, 0.6);
+            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(1, 0, 0), BigCubeSize, BigCubeThickness, 0.25);
+            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, -1), BigCubeSize, BigCubeThickness, 0.6);
+            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, 1), BigCubeSize, BigCubeThickness, 0.6);
 
             this->Reset();
+            PhysicsManager::SetSimulationStep(0.0f); // ban auto-physics sim
         }
 
         void Typhoon()
@@ -134,6 +137,11 @@ namespace ProjectTemplate
 
                 auto object = ShotFactory->MakeInstance();
 
+                if (PhysicsDebug)
+                {
+                    object->AddComponent<DebugDraw>()->RenderPhysicsCollider = true;
+                }
+
                 auto dir = cameraObject->GetComponent<CameraController>()->GetDirection();
                 object->Transform.SetScale(cubeSize);
                 object->Transform.SetPosition(cameraObject->Transform.GetPosition());
@@ -141,6 +149,11 @@ namespace ProjectTemplate
                 object->AddComponent<SphereCollider>();
                 rigidBody->SetLinearVelocity(dir * 180.0f);
                 rigidBody->SetMass(38.0f);
+            }
+
+            if (InputManager::IsMouseHeld(MouseButton::RIGHT))
+            {
+                PhysicsManager::PerformExtraSimulationStep(1.0f / 60.0f);
             }
 
             if (InputManager::IsKeyHeld(KeyCode::R))
@@ -154,6 +167,8 @@ namespace ProjectTemplate
 
                 if (ImGui::Button("reset"))
                     this->Reset();
+
+                ImGui::Checkbox("debug physics", &PhysicsDebug);
 
                 ImGui::InputInt("X", &lenA);
                 ImGui::InputInt("Y", &lenB);

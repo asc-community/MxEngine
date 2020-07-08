@@ -119,11 +119,14 @@ namespace MxEngine
         }
         // TODO: let user change viewport to other camera controller
 
-        if (ImGui::TreeNode("other settings"))
+        if (ImGui::TreeNode("debug settings"))
         {
             static int lineWidth = 3;
             if (GUI::InputIntOnClick("line width", &lineWidth))
                 RenderManager::GetController().GetRenderEngine().UseLineWidth(Max(1, lineWidth));
+
+            auto& drawOverlay = RenderManager::GetDebugDrawer().DrawAsScreenOverlay;
+            ImGui::Checkbox("overlay debug", &drawOverlay);
 
             ImGui::TreePop();
         }

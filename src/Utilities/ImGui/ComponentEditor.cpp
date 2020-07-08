@@ -180,6 +180,7 @@ namespace MxEngine::GUI
 	{
 		TREE_NODE_PUSH("DebugDraw");
 		REMOVE_COMPONENT_BUTTON(debugDraw);
+		ImGui::Checkbox("draw physics collider", &debugDraw.RenderPhysicsCollider);
 		ImGui::Checkbox("draw bounding box (AABB)", &debugDraw.RenderBoundingBox);
 		ImGui::Checkbox("draw bounding sphere", &debugDraw.RenderBoundingSphere);
 		ImGui::Checkbox("draw light bounds", &debugDraw.RenderLightingBounds);

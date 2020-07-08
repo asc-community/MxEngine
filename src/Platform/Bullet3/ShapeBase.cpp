@@ -58,7 +58,7 @@ namespace MxEngine
     {
         btVector3 min, max;
         btTransform tr;
-        tr.setFromOpenGLMatrix(&transform.GetMatrix()[0][0]);
+        ToBulletTransform(tr, transform);
         this->collider->getAabb(tr, min, max);
         return AABB{ FromBulletVector3(min), FromBulletVector3(max) };
     }
@@ -75,7 +75,15 @@ namespace MxEngine
         return AABB{ FromBulletVector3(min) / scale, FromBulletVector3(max) / scale };
     }
 
-    BoundingSphere ShapeBase::GetBoundingSphere() const
+    BoundingSphere ShapeBase::GetBoundingSphere(const Transform& transform) const
+    {
+        btVector3 center;
+        float r = 0.0f;
+        this->collider->getBoundingSphere(center, r);
+        return BoundingSphere(FromBulletVector3(center) + transform.GetPosition(), r);
+    }
+
+    BoundingSphere ShapeBase::GetBoundingSphereUnchanged() const
     {
         btVector3 center;
         float r = 0.0f;

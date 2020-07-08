@@ -36,18 +36,8 @@ namespace MxEngine
 {
     void SphereCollider::CreateNewShape(const AABB& aabb)
     {
-        this->SetColliderChangeFlag(true);
+        this->SetColliderChangedFlag(true);
         this->sphereShape = PhysicsFactory::Create<SphereShape>(ToSphere(aabb).GetRedius());
-    }
-
-    bool SphereCollider::HasColliderChanged() const
-    {
-        return this->colliderChanged;
-    }
-
-    void SphereCollider::SetColliderChangeFlag(bool value)
-    {
-        this->colliderChanged = value;
     }
 
     void SphereCollider::Init()
@@ -58,29 +48,25 @@ namespace MxEngine
     void SphereCollider::UpdateCollider()
     {
         auto& self = MxObject::GetByComponent(*this);
+        auto aabb = this->ShouldUpdateCollider(self);
 
-        auto instance = self.GetComponent<Instance>();
-        auto meshSource = instance.IsValid() ? instance->GetParent()->GetComponent<MeshSource>() : self.GetComponent<MeshSource>();
-        
-        if (meshSource.IsValid())
-        {
-            auto& mesh = meshSource->Mesh;
-            if (this->savedMeshState != mesh.GetUUID())
-            {
-                MXLOG_DEBUG("MxEngine::SphereCollider", "updated collider for new mesh");
-                auto& meshAABB = mesh->GetAABB();
-                this->CreateNewShape(meshAABB);
-                this->savedMeshState = mesh.GetUUID();
-            }
-        }
-        else
-        {
-            this->CreateNewShape(AABB());
-        }
+        if (aabb.has_value()) this->CreateNewShape(aabb.value());
     }
 
     SphereShapeHandle SphereCollider::GetNativeHandle() const
     {
         return this->sphereShape;
+    }
+
+    AABB SphereCollider::GetBoundingBox() const
+    {
+        auto& transform = MxObject::GetByComponent(*this).Transform;
+        return this->sphereShape->GetBoundingBox(transform);
+    }
+
+    BoundingSphere SphereCollider::GetBoundingSphere() const
+    {
+        auto& transform = MxObject::GetByComponent(*this).Transform;
+        return this->sphereShape->GetBoundingSphere(transform);
     }
 }

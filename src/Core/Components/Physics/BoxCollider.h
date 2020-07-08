@@ -29,27 +29,25 @@
 #pragma once
 
 #include "Utilities/ECS/Component.h"
-#include "Core/BoundingObjects/AABB.h"
 #include "Platform/PhysicsAPI.h"
+#include "ColliderBase.h"
 
 namespace MxEngine
 {
-    class BoxCollider
+    class BoxCollider : public ColliderBase
     {
         MAKE_COMPONENT(BoxCollider);
 
         BoxShapeHandle boxShape;
-        UUID savedMeshState = UUIDGenerator::GetNull();
-        bool colliderChanged = true;
 
         void CreateNewShape(const AABB& aabb);
     public:
-        bool HasColliderChanged() const;
-        void SetColliderChangeFlag(bool value);
-
         void Init();
         void UpdateCollider();
 
         BoxShapeHandle GetNativeHandle() const;
+
+        AABB GetBoundingBox() const;
+        BoundingSphere GetBoundingSphere() const;
     };
 }

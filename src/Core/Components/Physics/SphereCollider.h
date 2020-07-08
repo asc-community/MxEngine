@@ -30,26 +30,23 @@
 
 #include "Utilities/ECS/Component.h"
 #include "Core/BoundingObjects/BoundingSphere.h"
+#include "ColliderBase.h"
 #include "Platform/PhysicsAPI.h"
 
 namespace MxEngine
 {
-    class SphereCollider
+    class SphereCollider : public ColliderBase
     {
         MAKE_COMPONENT(SphereCollider);
 
         SphereShapeHandle sphereShape;
-        UUID savedMeshState = UUIDGenerator::GetNull();
-        bool colliderChanged = true;
-
         void CreateNewShape(const AABB& aabb);
     public:
-        bool HasColliderChanged() const;
-        void SetColliderChangeFlag(bool value);
-
         void Init();
         void UpdateCollider();
 
         SphereShapeHandle GetNativeHandle() const;
+        AABB GetBoundingBox() const;
+        BoundingSphere GetBoundingSphere() const;
     };
 }

@@ -33,6 +33,8 @@
 #include "Core/Components/Rendering/MeshLOD.h"
 #include "Core/Components/Rendering/DebugDraw.h"
 #include "Core/Components/Audio/AudioSource.h"
+#include "Core/Components/Physics/BoxCollider.h"
+#include "Core/Components/Physics/SphereCollider.h"
 #include "Core/Components/InstanceFactory.h"
 
 namespace MxEngine
@@ -315,6 +317,8 @@ namespace MxEngine
                 auto pointLight = object.GetComponent<PointLight>();
                 auto cameraController = object.GetComponent<CameraController>();
                 auto audioSource = object.GetComponent<AudioSource>();
+                auto boxCollider = object.GetComponent<BoxCollider>();
+                auto sphereCollider = object.GetComponent<SphereCollider>();
 
                 if(instance.IsValid()) meshSource = instance->GetParent()->GetComponent<MeshSource>();
 
@@ -357,6 +361,13 @@ namespace MxEngine
                     auto zoom = cameraController->Camera.GetZoom() * 65.0f;
                     Frustrum frustrum(object.Transform.GetPosition() + Normalize(direction), direction, up, zoom, aspect);
                     this->DebugDrawer.Submit(frustrum, debugDraw.FrustrumColor);
+                }
+                if (debugDraw.RenderPhysicsCollider)
+                {
+                    if (boxCollider.IsValid())
+                        this->DebugDrawer.Submit(boxCollider->GetBoundingBox(), debugDraw.BoundingBoxColor);
+                    if (sphereCollider.IsValid())
+                        this->DebugDrawer.Submit(sphereCollider->GetBoundingSphere(), debugDraw.BoundingSphereColor);
                 }
             }
             environment.DebugBufferObject.VertexCount = this->DebugDrawer.GetSize();

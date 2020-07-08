@@ -26,47 +26,24 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "BoxCollider.h"
-#include "Core/MxObject/MxObject.h"
-#include "Core/Components/Rendering/MeshSource.h"
-#include "Core/Components/Instance.h"
-#include "Utilities/Logging/Logger.h"
+#pragma once
+
+#include "Core/BoundingObjects/AABB.h"
+#include "Utilities/UUID/UUID.h"
+#include <optional>
 
 namespace MxEngine
 {
-    void BoxCollider::CreateNewShape(const AABB& aabb)
-    {
-        this->SetColliderChangedFlag(true);
-        this->boxShape = PhysicsFactory::Create<BoxShape>(aabb);
-    }
+    class MxObject;
 
-    void BoxCollider::Init()
+    class ColliderBase
     {
-        this->CreateNewShape(AABB());
-    }
-
-    void BoxCollider::UpdateCollider()
-    {
-        auto& self = MxObject::GetByComponent(*this);
-        auto aabb = this->ShouldUpdateCollider(self);
-
-        if (aabb.has_value()) this->CreateNewShape(aabb.value());
-    }
-
-    BoxShapeHandle BoxCollider::GetNativeHandle() const
-    {
-        return this->boxShape;
-    }
-
-    AABB BoxCollider::GetBoundingBox() const
-    {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->boxShape->GetBoundingBox(transform);
-    }
-
-    BoundingSphere BoxCollider::GetBoundingSphere() const
-    {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->boxShape->GetBoundingSphere(transform);
-    }
+        UUID savedMeshState = UUIDGenerator::GetNull();
+        bool colliderChangedFlag = true;
+    protected:
+        std::optional<AABB> ShouldUpdateCollider(MxObject& self);
+    public:
+        void SetColliderChangedFlag(bool value);
+        bool HasColliderChanged() const;
+    };
 }

@@ -38,12 +38,9 @@ namespace MxEngine
 {
 	class MxObject
 	{
-		mutable AABB boundingBox;
-
 		using EngineHandle = size_t;
 		constexpr static EngineHandle InvalidHandle = std::numeric_limits<EngineHandle>::max();
 		EngineHandle handle = InvalidHandle;
-
 	public:
 		MxString Name = UUIDGenerator::Get();
 		float TranslateSpeed = 1.0f;

@@ -26,47 +26,46 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "BoxCollider.h"
-#include "Core/MxObject/MxObject.h"
-#include "Core/Components/Rendering/MeshSource.h"
-#include "Core/Components/Instance.h"
+#include "ColliderBase.h"
 #include "Utilities/Logging/Logger.h"
+#include "Core/MxObject/MxObject.h"
+#include "Core/Components/Instance.h"
+#include "Core/Components/Rendering/MeshSource.h"
 
 namespace MxEngine
 {
-    void BoxCollider::CreateNewShape(const AABB& aabb)
+    std::optional<AABB> ColliderBase::ShouldUpdateCollider(MxObject& self)
     {
-        this->SetColliderChangedFlag(true);
-        this->boxShape = PhysicsFactory::Create<BoxShape>(aabb);
+        auto instance = self.GetComponent<Instance>();
+        auto meshSource = instance.IsValid() ? instance->GetParent()->GetComponent<MeshSource>() : self.GetComponent<MeshSource>();
+
+        if (meshSource.IsValid())
+        {
+            auto& mesh = meshSource->Mesh;
+            if (this->savedMeshState != mesh.GetUUID())
+            {
+                MXLOG_DEBUG("MxEngine::SphereCollider", "updated collider for new mesh");
+                auto& meshAABB = mesh->GetAABB();
+                this->savedMeshState = mesh.GetUUID();
+                return meshAABB; // ask to update collider to new meshAABB
+            }
+        }
+        else if(this->savedMeshState != UUIDGenerator::GetNull())
+        {
+            this->savedMeshState = UUIDGenerator::GetNull();
+            return AABB{ }; // ask to update collider to empty AABB
+        }
+
+        return { }; // in other cases just return empty AABB
     }
 
-    void BoxCollider::Init()
+    void ColliderBase::SetColliderChangedFlag(bool value)
     {
-        this->CreateNewShape(AABB());
+        this->colliderChangedFlag = value;
     }
 
-    void BoxCollider::UpdateCollider()
+    bool ColliderBase::HasColliderChanged() const
     {
-        auto& self = MxObject::GetByComponent(*this);
-        auto aabb = this->ShouldUpdateCollider(self);
-
-        if (aabb.has_value()) this->CreateNewShape(aabb.value());
-    }
-
-    BoxShapeHandle BoxCollider::GetNativeHandle() const
-    {
-        return this->boxShape;
-    }
-
-    AABB BoxCollider::GetBoundingBox() const
-    {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->boxShape->GetBoundingBox(transform);
-    }
-
-    BoundingSphere BoxCollider::GetBoundingSphere() const
-    {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->boxShape->GetBoundingSphere(transform);
+        return this->colliderChangedFlag;
     }
 }

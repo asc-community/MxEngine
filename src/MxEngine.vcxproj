@@ -49,6 +49,7 @@
     <ClInclude Include="Core\Components\InstanceFactory.h" />
     <ClInclude Include="Core\Components\Lighting\LightBase.h" />
     <ClInclude Include="Core\Components\Physics\BoxCollider.h" />
+    <ClInclude Include="Core\Components\Physics\ColliderBase.h" />
     <ClInclude Include="Core\Components\Physics\RigidBody.h" />
     <ClInclude Include="Core\Components\Physics\SphereCollider.h" />
     <ClInclude Include="Core\Components\Rendering\DebugDraw.h" />
@@ -846,6 +847,7 @@
     <ClCompile Include="Core\Components\Camera\VRCameraController.cpp" />
     <ClCompile Include="Core\Components\InstanceFactory.cpp" />
     <ClCompile Include="Core\Components\Physics\BoxCollider.cpp" />
+    <ClCompile Include="Core\Components\Physics\ColliderBase.cpp" />
     <ClCompile Include="Core\Components\Physics\RigidBody.cpp" />
     <ClCompile Include="Core\Components\Physics\SphereCollider.cpp" />
     <ClCompile Include="Core\Components\Rendering\MeshLOD.cpp" />

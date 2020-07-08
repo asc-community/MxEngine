@@ -55,6 +55,7 @@ namespace MxEngine
         btCollisionShape* GetNativeHandle();
         AABB GetBoundingBox(const Transform& transform) const;
         AABB GetBoundingBoxUnchanged() const;
-        BoundingSphere GetBoundingSphere() const;
+        BoundingSphere GetBoundingSphere(const Transform& transform) const;
+        BoundingSphere GetBoundingSphereUnchanged() const;
     };
 }

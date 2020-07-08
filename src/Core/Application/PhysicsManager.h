@@ -34,7 +34,6 @@ class btRigidBody;
 
 namespace MxEngine
 {
-
     class PhysicsManager
     {
     public:
