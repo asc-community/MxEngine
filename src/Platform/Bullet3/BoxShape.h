@@ -28,38 +28,18 @@
 
 #pragma once
 
-#include "Core/Application/Application.h"
+#include "ShapeBase.h"
 
 namespace MxEngine
 {
-    class RuntimeManager
+    class BoxShape : public ShapeBase
     {
     public:
-        template<typename Func>
-        static void RegisterComponentEditor(const char* name, Func&& callback)
-        {
-            Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
-        }
-
-        template<typename T>
-        static void RegisterComponentUpdate()
-        {
-            Application::Get()->RegisterComponentUpdate<T>();
-        }
-
-        static bool IsEditorActive()
-        {
-            return Application::Get()->GetRuntimeEditor().IsActive();
-        }
-
-        static void ExecuteScript(const MxString& script)
-        {
-            Application::Get()->GetRuntimeEditor().ExecuteScript(script);
-        }
-
-        static void CloseApplication()
-        {
-            Application::Get()->CloseApplication();
-        }
+        BoxShape(const AABB& boundingBox);
+        BoxShape(const BoxShape&) = delete;
+        BoxShape(BoxShape&&) noexcept;
+        BoxShape& operator=(const BoxShape&) = delete;
+        BoxShape& operator=(BoxShape&&) noexcept;
+        ~BoxShape();
     };
 }

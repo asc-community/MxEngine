@@ -26,40 +26,33 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Core/Application/Application.h"
+#include "SphereShape.h"
+#include "Bullet3Utils.h"
+#include "Utilities/Memory/Memory.h"
 
 namespace MxEngine
 {
-    class RuntimeManager
+    SphereShape::SphereShape(float radius)
     {
-    public:
-        template<typename Func>
-        static void RegisterComponentEditor(const char* name, Func&& callback)
-        {
-            Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
-        }
+        this->CreateShape<btSphereShape>(radius);
+    }
 
-        template<typename T>
-        static void RegisterComponentUpdate()
-        {
-            Application::Get()->RegisterComponentUpdate<T>();
-        }
+    SphereShape::SphereShape(SphereShape&& other) noexcept
+    {
+        this->collider = other.collider;
+        other.collider = nullptr;
+    }
 
-        static bool IsEditorActive()
-        {
-            return Application::Get()->GetRuntimeEditor().IsActive();
-        }
+    SphereShape& SphereShape::operator=(SphereShape&& other) noexcept
+    {
+        this->DestroyShape();
+        this->collider = other.collider;
+        other.collider = nullptr;
+        return *this;
+    }
 
-        static void ExecuteScript(const MxString& script)
-        {
-            Application::Get()->GetRuntimeEditor().ExecuteScript(script);
-        }
-
-        static void CloseApplication()
-        {
-            Application::Get()->CloseApplication();
-        }
-    };
+    SphereShape::~SphereShape()
+    {
+        this->DestroyShape();
+    }
 }

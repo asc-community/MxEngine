@@ -37,6 +37,8 @@ namespace ProjectTemplate
         {
             this->DestroyPhysics();
             ObjectFactory->DestroyInstances();
+            ShotFactory->DestroyInstances();
+            Objects.clear();
             Cubes.clear();
             for (size_t i = 0; i < lenA * lenB * lenC; i++)
             {
@@ -153,6 +155,7 @@ namespace ProjectTemplate
             ShotFactory = shots->AddComponent<InstanceFactory>();
 
             float cubeSIze = 160;
+
             float thickness = 3;
             Vector3 coordOffset(0, cubeSIze / 2, 0);
             InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, -1, 0), cubeSIze, thickness, 0.6);
@@ -161,6 +164,7 @@ namespace ProjectTemplate
             InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(1, 0, 0),  cubeSIze, thickness, 0.25);
             InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, -1), cubeSIze, thickness, 0.6);
             InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, 1),  cubeSIze, thickness, 0.6);
+
             this->Reset();
         }
 

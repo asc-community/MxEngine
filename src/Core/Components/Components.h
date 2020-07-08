@@ -15,5 +15,8 @@
 #include "Camera/VRCameraController.h"
 #include "Audio/AudioListener.h"
 #include "Audio/AudioSource.h"
+#include "Physics/BoxCollider.h"
+#include "Physics/SphereCollider.h"
+#include "Physics/RigidBody.h"
 #include "Script.h"
 #include "Transform.h"

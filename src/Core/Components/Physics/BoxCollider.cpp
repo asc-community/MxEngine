@@ -26,40 +26,55 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Core/Application/Application.h"
+#include "BoxCollider.h"
+#include "Core/MxObject/MxObject.h"
+#include "Core/Components/Rendering/MeshSource.h"
 
 namespace MxEngine
 {
-    class RuntimeManager
+    void BoxCollider::CreateNewShape(const AABB& aabb)
     {
-    public:
-        template<typename Func>
-        static void RegisterComponentEditor(const char* name, Func&& callback)
-        {
-            Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
-        }
+        this->SetColliderChangeFlag(true);
+        this->boxShape = PhysicsFactory::Create<BoxShape>(aabb);
+    }
 
-        template<typename T>
-        static void RegisterComponentUpdate()
-        {
-            Application::Get()->RegisterComponentUpdate<T>();
-        }
+    bool BoxCollider::HasColliderChanged() const
+    {
+        return this->colliderChanged;
+    }
 
-        static bool IsEditorActive()
-        {
-            return Application::Get()->GetRuntimeEditor().IsActive();
-        }
+    void BoxCollider::SetColliderChangeFlag(bool value)
+    {
+        this->colliderChanged = value;
+    }
 
-        static void ExecuteScript(const MxString& script)
-        {
-            Application::Get()->GetRuntimeEditor().ExecuteScript(script);
-        }
+    void BoxCollider::Init()
+    {
+        this->CreateNewShape(AABB());
+    }
 
-        static void CloseApplication()
+    void BoxCollider::UpdateCollider()
+    {
+        auto& self = MxObject::GetByComponent(*this);
+        auto meshSource = self.GetComponent<MeshSource>();
+
+        if (meshSource.IsValid())
         {
-            Application::Get()->CloseApplication();
+            auto& meshAABB = meshSource->Mesh->GetAABB();
+            auto colliderAABB = this->boxShape->GetBoundingBoxUnchanged();
+            if (meshAABB != colliderAABB)
+            {
+                this->CreateNewShape(meshAABB);
+            }
         }
-    };
+        else
+        {
+            this->CreateNewShape(AABB());
+        }
+    }
+
+    BoxShapeHandle BoxCollider::GetNativeHandle() const
+    {
+        return this->boxShape;
+    }
 }

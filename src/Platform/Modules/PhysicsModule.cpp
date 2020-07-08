@@ -26,40 +26,47 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Core/Application/Application.h"
+#include "PhysicsModule.h"
+#include "Utilities/Memory/Memory.h"
+#include "Platform/Bullet3/Bullet3Utils.h"
 
 namespace MxEngine
 {
-    class RuntimeManager
+    void PhysicsModule::Init()
     {
-    public:
-        template<typename Func>
-        static void RegisterComponentEditor(const char* name, Func&& callback)
-        {
-            Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
-        }
+        data = Alloc<PhysicsModuleData>();
+        data->CollisionConfiguration = Alloc<btDefaultCollisionConfiguration>();
+        data->Dispatcher = Alloc<btCollisionDispatcher>(data->CollisionConfiguration);
+        data->Broadphase = Alloc<btDbvtBroadphase>();
+        data->Solver = Alloc<btSequentialImpulseConstraintSolver>();
+        data->World = Alloc<btDiscreteDynamicsWorld>(
+            data->Dispatcher, data->Broadphase, data->Solver, data->CollisionConfiguration);
 
-        template<typename T>
-        static void RegisterComponentUpdate()
-        {
-            Application::Get()->RegisterComponentUpdate<T>();
-        }
+        data->World->setGravity(btVector3(0.0f, -9.8f, 0.0f));
+    }
 
-        static bool IsEditorActive()
-        {
-            return Application::Get()->GetRuntimeEditor().IsActive();
-        }
+    void PhysicsModule::Destroy()
+    {
+        Free(data->World);
+        Free(data->Solver);
+        Free(data->Broadphase);
+        Free(data->Dispatcher);
+        Free(data->CollisionConfiguration);
+        Free(data);
+    }
 
-        static void ExecuteScript(const MxString& script)
-        {
-            Application::Get()->GetRuntimeEditor().ExecuteScript(script);
-        }
+    void PhysicsModule::OnUpdate(float dt)
+    {
+        data->World->stepSimulation(Min(dt, 1.0f / 60.0f));
+    }
 
-        static void CloseApplication()
-        {
-            Application::Get()->CloseApplication();
-        }
-    };
+    PhysicsModuleData* PhysicsModule::GetImpl()
+    {
+        return PhysicsModule::data;
+    }
+
+    void PhysicsModule::Clone(PhysicsModuleData* impl)
+    {
+        PhysicsModule::data = impl;
+    }
 }

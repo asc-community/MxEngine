@@ -28,38 +28,55 @@
 
 #pragma once
 
-#include "Core/Application/Application.h"
+#include "Utilities/Math/Math.h"
+
+class btRigidBody;
+class btCollisionShape;
+class btMotionState;
 
 namespace MxEngine
 {
-    class RuntimeManager
+    enum class ActivationState
     {
+        ACTIVE_TAG = 1,
+        ISLAND_SLEEPING = 2,
+        WANTS_DEACTIVATION = 3,
+        DISABLE_DEACTIVATION = 4,
+        DISABLE_SIMULATION = 5,
+    };
+
+    class BulletRigidBody
+    {
+        btMotionState* state = nullptr;
+        btRigidBody* body = nullptr;
+
+        void DestroyBody();
     public:
-        template<typename Func>
-        static void RegisterComponentEditor(const char* name, Func&& callback)
-        {
-            Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
-        }
+        BulletRigidBody();
+        BulletRigidBody(const BulletRigidBody&) = delete;
+        BulletRigidBody(BulletRigidBody&&) noexcept;
+        BulletRigidBody& operator=(const BulletRigidBody&) = delete;
+        BulletRigidBody& operator=(BulletRigidBody&&) noexcept;
+        ~BulletRigidBody();
 
-        template<typename T>
-        static void RegisterComponentUpdate()
-        {
-            Application::Get()->RegisterComponentUpdate<T>();
-        }
+        btRigidBody* GetNativeHandle();
+        const btRigidBody* GetNativeHandle() const;
+        btMotionState* GetMotionState();
+        const btMotionState* GetMotionState() const;
+        bool HasTransformUpdate() const;
+        void SetTransformUpdateFlag(bool value);
 
-        static bool IsEditorActive()
-        {
-            return Application::Get()->GetRuntimeEditor().IsActive();
-        }
-
-        static void ExecuteScript(const MxString& script)
-        {
-            Application::Get()->GetRuntimeEditor().ExecuteScript(script);
-        }
-
-        static void CloseApplication()
-        {
-            Application::Get()->CloseApplication();
-        }
+        btCollisionShape* GetCollisionShape();
+        const btCollisionShape* GetCollisionShape() const;
+        void SetCollisionShape(btCollisionShape* shape);
+        Vector3 GetScale() const;
+        void SetScale(const Vector3& scale);
+        float GetMass() const;
+        void SetMass(float mass);
+        void MakeKinematic();
+        bool IsKinematic() const;
+        void SetActivationState(ActivationState state);
+        ActivationState GetActivationState() const;
+        bool IsActive() const;
     };
 }

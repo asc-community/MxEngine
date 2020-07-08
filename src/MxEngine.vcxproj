@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Application\EventManager.h" />
+    <ClInclude Include="Core\Application\PhysicsManager.h" />
     <ClInclude Include="Core\Application\RenderManager.h" />
     <ClInclude Include="Core\Application\RuntimeManager.h" />
     <ClInclude Include="Core\BoundingObjects\AABB.h" />
@@ -47,6 +48,9 @@
     <ClInclude Include="Core\Components\Instance.h" />
     <ClInclude Include="Core\Components\InstanceFactory.h" />
     <ClInclude Include="Core\Components\Lighting\LightBase.h" />
+    <ClInclude Include="Core\Components\Physics\BoxCollider.h" />
+    <ClInclude Include="Core\Components\Physics\RigidBody.h" />
+    <ClInclude Include="Core\Components\Physics\SphereCollider.h" />
     <ClInclude Include="Core\Components\Rendering\DebugDraw.h" />
     <ClInclude Include="Core\Components\Rendering\MeshLOD.h" />
     <ClInclude Include="Core\Components\Rendering\MeshRenderer.h" />
@@ -78,11 +82,17 @@
     <ClInclude Include="Core\Resources\SubMesh.h" />
     <ClInclude Include="Core\Rendering\SkyboxObject.h" />
     <ClInclude Include="Platform\AudioAPI.h" />
+    <ClInclude Include="Platform\Bullet3\BoxShape.h" />
+    <ClInclude Include="Platform\Bullet3\BulletRigidBody.h" />
+    <ClInclude Include="Platform\Bullet3\ShapeBase.h" />
+    <ClInclude Include="Platform\Bullet3\SphereShape.h" />
     <ClInclude Include="Platform\GraphicAPI.h" />
     <ClInclude Include="Platform\Modules\AudioModule.h" />
+    <ClInclude Include="Platform\Modules\PhysicsModule.h" />
     <ClInclude Include="Platform\OpenAL\ALUtilities.h" />
     <ClInclude Include="Platform\OpenAL\AudioBuffer.h" />
     <ClInclude Include="Platform\OpenAL\AudioPlayer.h" />
+    <ClInclude Include="Platform\PhysicsAPI.h" />
     <ClInclude Include="Utilities\Audio\SupportedAudioTypes.h" />
     <ClInclude Include="Platform\OpenGL\CubeMap.h" />
     <ClInclude Include="Platform\OpenGL\FrameBuffer.h" />
@@ -149,6 +159,7 @@
     <ClInclude Include="Utilities\ImGui\Profiler.h" />
     <ClInclude Include="Utilities\Math\Math.h" />
     <ClInclude Include="Utilities\ObjectLoader\ObjectLoader.h" />
+    <ClInclude Include="Platform\Bullet3\Bullet3Utils.h" />
     <ClInclude Include="Utilities\Profiler\Profiler.h" />
     <ClInclude Include="Utilities\Random\Random.h" />
     <ClInclude Include="Utilities\STL\MxFunction.h" />
@@ -821,6 +832,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Core\Application\PhysicsManager.cpp" />
     <ClCompile Include="Core\Application\RenderManager.cpp" />
     <ClCompile Include="Core\Components\Audio\AudioListener.cpp" />
     <ClCompile Include="Core\Components\Audio\AudioSource.cpp" />
@@ -833,6 +845,9 @@
     <ClCompile Include="Core\Application\Application.cpp" />
     <ClCompile Include="Core\Components\Camera\VRCameraController.cpp" />
     <ClCompile Include="Core\Components\InstanceFactory.cpp" />
+    <ClCompile Include="Core\Components\Physics\BoxCollider.cpp" />
+    <ClCompile Include="Core\Components\Physics\RigidBody.cpp" />
+    <ClCompile Include="Core\Components\Physics\SphereCollider.cpp" />
     <ClCompile Include="Core\Components\Rendering\MeshLOD.cpp" />
     <ClCompile Include="Core\Components\Rendering\MeshRenderer.cpp" />
     <ClCompile Include="Core\Components\Script.cpp" />
@@ -854,7 +869,12 @@
     <ClCompile Include="Core\Rendering\SkyboxObject.cpp" />
     <ClCompile Include="Library\Primitives\Primitives.cpp" />
     <ClCompile Include="Library\Scripting\Python\PythonEngine.cpp" />
+    <ClCompile Include="Platform\Bullet3\BoxShape.cpp" />
+    <ClCompile Include="Platform\Bullet3\BulletRigidBody.cpp" />
+    <ClCompile Include="Platform\Bullet3\ShapeBase.cpp" />
+    <ClCompile Include="Platform\Bullet3\SphereShape.cpp" />
     <ClCompile Include="Platform\Modules\AudioModule.cpp" />
+    <ClCompile Include="Platform\Modules\PhysicsModule.cpp" />
     <ClCompile Include="Platform\OpenAL\ALUtilities.cpp" />
     <ClCompile Include="Platform\OpenAL\AudioBuffer.cpp" />
     <ClCompile Include="Platform\OpenAL\AudioPlayer.cpp" />

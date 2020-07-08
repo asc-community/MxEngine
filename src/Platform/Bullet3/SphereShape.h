@@ -28,38 +28,20 @@
 
 #pragma once
 
-#include "Core/Application/Application.h"
+#include "ShapeBase.h"
+
+class btSphereShape;
 
 namespace MxEngine
 {
-    class RuntimeManager
+    class SphereShape : public ShapeBase
     {
     public:
-        template<typename Func>
-        static void RegisterComponentEditor(const char* name, Func&& callback)
-        {
-            Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
-        }
-
-        template<typename T>
-        static void RegisterComponentUpdate()
-        {
-            Application::Get()->RegisterComponentUpdate<T>();
-        }
-
-        static bool IsEditorActive()
-        {
-            return Application::Get()->GetRuntimeEditor().IsActive();
-        }
-
-        static void ExecuteScript(const MxString& script)
-        {
-            Application::Get()->GetRuntimeEditor().ExecuteScript(script);
-        }
-
-        static void CloseApplication()
-        {
-            Application::Get()->CloseApplication();
-        }
+        SphereShape(float radius);
+        SphereShape(const SphereShape&) = delete;
+        SphereShape(SphereShape&&) noexcept;
+        SphereShape& operator=(const SphereShape&) = delete;
+        SphereShape& operator=(SphereShape&&) noexcept;
+        ~SphereShape();
     };
 }

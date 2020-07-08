@@ -26,40 +26,33 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Core/Application/Application.h"
+class btCollisionConfiguration;
+class btDispatcher;
+class btBroadphaseInterface;
+class btConstraintSolver;
+class btDynamicsWorld;
+class btRigidBody;
 
 namespace MxEngine
 {
-    class RuntimeManager
-    {
-    public:
-        template<typename Func>
-        static void RegisterComponentEditor(const char* name, Func&& callback)
-        {
-            Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
-        }
+	struct PhysicsModuleData
+	{
+		btCollisionConfiguration* CollisionConfiguration;
+		btDispatcher* Dispatcher;
+		btBroadphaseInterface*  Broadphase;
+		btConstraintSolver* Solver;
+		btDynamicsWorld* World;
+	};
 
-        template<typename T>
-        static void RegisterComponentUpdate()
-        {
-            Application::Get()->RegisterComponentUpdate<T>();
-        }
+	class PhysicsModule
+	{
+		inline static PhysicsModuleData* data = nullptr;
+	public:
+		static void Init();
+		static void Destroy();
+		static void OnUpdate(float dt);
 
-        static bool IsEditorActive()
-        {
-            return Application::Get()->GetRuntimeEditor().IsActive();
-        }
-
-        static void ExecuteScript(const MxString& script)
-        {
-            Application::Get()->GetRuntimeEditor().ExecuteScript(script);
-        }
-
-        static void CloseApplication()
-        {
-            Application::Get()->CloseApplication();
-        }
-    };
+		static PhysicsModuleData* GetImpl();
+		static void Clone(PhysicsModuleData* impl);
+	};
 }

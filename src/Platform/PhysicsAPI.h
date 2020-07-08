@@ -28,38 +28,16 @@
 
 #pragma once
 
-#include "Core/Application/Application.h"
+#include "Bullet3/BoxShape.h"
+#include "Bullet3/SphereShape.h"
+#include "Bullet3/BulletRigidBody.h"
+#include "Utilities/AbstractFactory/AbstractFactory.h"
 
 namespace MxEngine
 {
-    class RuntimeManager
-    {
-    public:
-        template<typename Func>
-        static void RegisterComponentEditor(const char* name, Func&& callback)
-        {
-            Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
-        }
+    using PhysicsFactory = AbstractFactoryImpl<BoxShape, SphereShape, BulletRigidBody>;
 
-        template<typename T>
-        static void RegisterComponentUpdate()
-        {
-            Application::Get()->RegisterComponentUpdate<T>();
-        }
-
-        static bool IsEditorActive()
-        {
-            return Application::Get()->GetRuntimeEditor().IsActive();
-        }
-
-        static void ExecuteScript(const MxString& script)
-        {
-            Application::Get()->GetRuntimeEditor().ExecuteScript(script);
-        }
-
-        static void CloseApplication()
-        {
-            Application::Get()->CloseApplication();
-        }
-    };
+    using BoxShapeHandle = Resource<BoxShape, PhysicsFactory>;
+    using SphereShapeHandle = Resource<SphereShape, PhysicsFactory>;
+    using NativeRigidBodyHandle = Resource<BulletRigidBody, PhysicsFactory>;
 }
