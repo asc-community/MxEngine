@@ -48,4 +48,9 @@ namespace MxEngine
     {
         WORLD->setGravity(ToBulletVector3(gravity));
     }
+
+    void PhysicsManager::SetSimulationStep(float timeInMilliseconds)
+    {
+        PhysicsModule::SetSimulationStep(timeInMilliseconds);
+    }
 }

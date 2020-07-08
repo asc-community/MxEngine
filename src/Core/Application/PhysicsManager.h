@@ -38,5 +38,6 @@ namespace MxEngine
         static void AddRigidBody(NativeRigidBodyHandle body);
         static void RemoveRigidBody(NativeRigidBodyHandle body);
         static void SetGravity(const Vector3& gravity);
+        static void SetSimulationStep(float timeInMilliseconds);
     };
 }

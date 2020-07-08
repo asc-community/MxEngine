@@ -57,7 +57,15 @@ namespace MxEngine
 
     void PhysicsModule::OnUpdate(float dt)
     {
-        data->World->stepSimulation(Min(dt, 1.0f / 60.0f));
+        if (data->simulationStep > 0.0f)
+        {
+            data->World->stepSimulation(Min(dt, data->simulationStep));
+        }
+    }
+
+    void PhysicsModule::SetSimulationStep(float timedelta)
+    {
+        data->simulationStep = Max(0.0f, timedelta);
     }
 
     PhysicsModuleData* PhysicsModule::GetImpl()

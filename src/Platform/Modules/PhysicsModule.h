@@ -42,6 +42,7 @@ namespace MxEngine
 		btBroadphaseInterface*  Broadphase;
 		btConstraintSolver* Solver;
 		btDynamicsWorld* World;
+		float simulationStep = 1.0f / 60.0f;
 	};
 
 	class PhysicsModule
@@ -51,6 +52,7 @@ namespace MxEngine
 		static void Init();
 		static void Destroy();
 		static void OnUpdate(float dt);
+		static void SetSimulationStep(float timedelta);
 
 		static PhysicsModuleData* GetImpl();
 		static void Clone(PhysicsModuleData* impl);
