@@ -40,7 +40,7 @@ namespace ProjectTemplate
             Cubes.clear();
             for (size_t i = 0; i < lenA * lenB * lenC; i++)
             {
-                float size = 3.f;
+                float size = 5.f;
 
                 #if defined(SPHERES_INSTEAD_CUBES)
                 btCollisionShape* colShape = new btSphereShape(size * 0.5f);
@@ -78,7 +78,7 @@ namespace ProjectTemplate
             }
         }
 
-        void InitializeBoxFace(const Vector3& coord, const VectorInt3& xyz, const Vector3& offset, const float BigCubeSize, const float thickness)
+        void InitializeBoxFace(const Vector3& coord, const Vector3& xyz, const Vector3& offset, const float BigCubeSize, const float thickness, const float visible)
         {
             btCollisionShape* groundShape = new btBoxShape(btVector3(xyz.x * 0.5f * BigCubeSize + thickness, xyz.y * 0.5f * BigCubeSize + thickness, xyz.z * 0.5f * BigCubeSize + thickness));
 
@@ -97,10 +97,9 @@ namespace ProjectTemplate
 
             bigCube = new btRigidBody(rbInfo);
 
-
             auto cube = MxObject::Create();
             cube->Name = "Big Cube";
-            cube->AddComponent<MeshRenderer>();
+            cube->AddComponent<MeshRenderer>()->GetMaterial()->Transparency = visible;
             cube->AddComponent<MeshSource>(Primitives::CreateCube());
             cube->Transform.SetScale(Vector3(xyz.x * BigCubeSize + thickness, xyz.y * BigCubeSize + thickness, xyz.z * BigCubeSize + thickness));
             cube->Transform.SetPosition(Vector3((BigCubeSize * offset).x / 2, (BigCubeSize * offset).y / 2, (BigCubeSize * offset).z / 2) + coord);
@@ -115,6 +114,7 @@ namespace ProjectTemplate
             cameraObject->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap(R"(D:\repos\MxEngine\samples\SandboxApplication\Resources\textures\dawn.jpg)");
             cameraObject->Transform.SetPosition(Vector3(30, 30, 30));
             auto controller = cameraObject->AddComponent<CameraController>();
+            controller->SetMoveSpeed(50);
             auto input = cameraObject->AddComponent<InputControl>();
             controller->ListenWindowResizeEvent();
             controller->SetMoveSpeed(10.0f);
@@ -136,7 +136,7 @@ namespace ProjectTemplate
             this->Solver = MakeUnique<btSequentialImpulseConstraintSolver>();
             this->World = MakeUnique<btDiscreteDynamicsWorld>(
                 this->Dispatcher.get(), this->Broadphase.get(), this->Solver.get(), this->CollisionConfiguration.get());
-            this->World->setGravity(btVector3(0.0f, -9.8f, 0.0f));
+            this->World->setGravity(btVector3(0.0f, -9.8f * 3, 0.0f));
 
             auto instances = MxObject::Create();
             #if defined(SPHERES_INSTEAD_CUBES)
@@ -152,15 +152,15 @@ namespace ProjectTemplate
             shots->AddComponent<MeshRenderer>();
             ShotFactory = shots->AddComponent<InstanceFactory>();
 
-            //this->InitializeBigCube();
             float cubeSIze = 160;
+            float thickness = 3;
             Vector3 coordOffset(0, cubeSIze / 2, 0);
-            InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, -1, 0), cubeSIze, 0.1);
-            InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, 1, 0),  cubeSIze, 0.1);
-            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(-1, 0, 0), cubeSIze, 0.1);
-            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(1, 0, 0),  cubeSIze, 0.1);
-            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, -1), cubeSIze, 0.1);
-            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, 1),  cubeSIze, 0.1);
+            InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, -1, 0), cubeSIze, thickness, 0.6);
+            //InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, 1, 0),  cubeSIze, thickness, 0.8);
+            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(-1, 0, 0), cubeSIze, thickness, 0.6);
+            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(1, 0, 0),  cubeSIze, thickness, 0.25);
+            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, -1), cubeSIze, thickness, 0.6);
+            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, 1),  cubeSIze, thickness, 0.6);
             this->Reset();
         }
 
@@ -170,7 +170,9 @@ namespace ProjectTemplate
             {
                 auto coord = cube.second->Transform.GetPosition();
                 auto velo = Length(coord) * Normalize(Cross(Vector3(0, 1, 0), coord));
-                velo.y += Length(coord) / 6;
+                velo.y += Length(coord) / 12;
+                auto dist = Length(Vector3(coord.x, 0, coord.z));
+                velo.y *= 1 / (1 + pow(1.6, coord.y - dist * 4));
                 cube.first->setLinearVelocity(btVec2Vec(velo));
             }
         }
@@ -218,8 +220,11 @@ namespace ProjectTemplate
                 Typhoon();
             }
 
+            const int PHY_FREQ = 5;
+
             if (!InputManager::IsMouseHeld(MouseButton::RIGHT))
-                this->World->stepSimulation(Time::Delta());
+                for(int i = 0; i < PHY_FREQ; i++)
+                    this->World->stepSimulation(Time::Delta() / PHY_FREQ);
 
             for (auto& object : this->Objects)
             {
