@@ -16,11 +16,12 @@ namespace ProjectTemplate
         InstanceFactory::Handle ObjectFactory;
         InstanceFactory::Handle ShotFactory;
         int lenA = 3;
-        int lenB = 3;
+        int lenB = 7;
         int lenC = 3;            
         float BigCubeSize = 160;
-        float BigCubeThickness = 3;
-        bool PhysicsDebug = true;
+        float BigCubeThickness = 8;
+        bool PhysicsDebug = false;
+        MxObject::Handle UserGunSphere;
 
         void Reset()
         {
@@ -38,13 +39,16 @@ namespace ProjectTemplate
 
                 auto object = ObjectFactory->MakeInstance();
 
-                object->Transform.SetPosition(MakeVector3(x, y + offset, z));
+                object->Transform.SetPosition(MakeVector3(x * 1.02, y * 1.004 + offset, z * 1.02));
                 object->GetComponent<Instance>()->SetColor(Vector3(x / lenA / size, y / lenB / size, z / lenC / size));
                 object->Transform.SetScale(size);
 
                 object->AddComponent<BoxCollider>();
                 auto rigidBody = object->AddComponent<RigidBody>();
-                rigidBody->SetMass(1.0f / (0.3f + y + y + y));
+                rigidBody->SetFriction(0.9);
+                rigidBody->SetSpinningFriction(0.9);
+                rigidBody->SetBounceFactor(0.1);
+                rigidBody->SetMass(1.0f / (0.3f + y * y * y));
 
                 if (PhysicsDebug)
                 {
@@ -60,7 +64,9 @@ namespace ProjectTemplate
             cube->AddComponent<MeshRenderer>()->GetMaterial()->Transparency = visible;
             cube->AddComponent<MeshSource>(Primitives::CreateCube());
             cube->AddComponent<BoxCollider>();
-            cube->AddComponent<RigidBody>();
+            auto rigBody = cube->AddComponent<RigidBody>();
+            rigBody->SetFriction(0.6);
+            rigBody->SetBounceFactor(0.1);
             cube->Transform.SetScale(Vector3(xyz.x * BigCubeSize + thickness, xyz.y * BigCubeSize + thickness, xyz.z * BigCubeSize + thickness));
             cube->Transform.SetPosition(Vector3((BigCubeSize * offset).x / 2, (BigCubeSize * offset).y / 2, (BigCubeSize * offset).z / 2) + coord);
         }
@@ -69,7 +75,7 @@ namespace ProjectTemplate
         {
             cameraObject = MxObject::Create();
             cameraObject->Name = "Player Camera";
-            cameraObject->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap(R"(D:\repos\MxEngine\samples\SandboxApplication\Resources\textures\dawn.jpg)");
+            cameraObject->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("bluesky.png"_id);
             cameraObject->Transform.SetPosition(Vector3(30, 30, 30));
             auto controller = cameraObject->AddComponent<CameraController>();
             controller->SetMoveSpeed(50);
@@ -98,7 +104,12 @@ namespace ProjectTemplate
             auto shots = MxObject::Create();
             shots->Name = "Shots Instances";
             shots->AddComponent<MeshSource>(Primitives::CreateSphere());
-            shots->AddComponent<MeshRenderer>();
+            auto mat = shots->AddComponent<MeshRenderer>()->GetMaterial();
+
+            auto BallPath = "Ball14.jpg"_id;
+            mat->Reflection = 0.5;
+            mat->AmbientMap = AssetManager::LoadTexture(BallPath);
+            mat->DiffuseMap = AssetManager::LoadTexture(BallPath);
             ShotFactory = shots->AddComponent<InstanceFactory>();
 
             Vector3 coordOffset(0, BigCubeSize / 2, 0);
@@ -111,6 +122,13 @@ namespace ProjectTemplate
 
             this->Reset();
             PhysicsManager::SetSimulationStep(0.0f); // ban auto-physics sim
+
+            UserGunSphere = MxObject::Create();
+            UserGunSphere->AddComponent<MeshSource>()->Mesh = Primitives::CreateSphere();
+            UserGunSphere->Transform.SetScale(0.05);
+            auto matUserG = UserGunSphere->AddComponent<MeshRenderer>()->GetMaterial();
+            matUserG->AmbientMap = AssetManager::LoadTexture(BallPath);
+            matUserG->DiffuseMap = AssetManager::LoadTexture(BallPath);
         }
 
         void Typhoon()
@@ -129,12 +147,14 @@ namespace ProjectTemplate
         float timeGone = 0;
         virtual void OnUpdate() override
         {
-            timeGone += GetTimeDelta();
-            if (InputManager::IsMouseHeld(MouseButton::LEFT) && timeGone > 0.1)
+            UserGunSphere->Transform.SetPosition(cameraObject->Transform.GetPosition() + cameraObject->GetComponent<CameraController>()->GetDirection() * (3 - timeGone));
+            if (InputManager::IsMouseHeld(MouseButton::LEFT))
+            {
+                timeGone = Min(timeGone + GetTimeDelta(), 2.5f);
+            }
+            if (InputManager::IsMouseReleased(MouseButton::LEFT))
             {
                 float cubeSize = 1.5f;
-                timeGone = 0;
-
                 auto object = ShotFactory->MakeInstance();
 
                 if (PhysicsDebug)
@@ -147,11 +167,16 @@ namespace ProjectTemplate
                 object->Transform.SetPosition(cameraObject->Transform.GetPosition());
                 auto rigidBody = object->AddComponent<RigidBody>();
                 object->AddComponent<SphereCollider>();
-                rigidBody->SetLinearVelocity(dir * 180.0f);
+                rigidBody->SetFriction(0.5);
+                rigidBody->SetBounceFactor(2.8);                
+                //rigidBody->SetLinearVelocity(dir * (float)((timeGone + 0.1) * 60));
+                rigidBody->SetLinearVelocity(dir * (float)((timeGone + 0.0) * 60));
                 rigidBody->SetMass(38.0f);
+                
+                timeGone = 0;
             }
 
-            if (InputManager::IsMouseHeld(MouseButton::RIGHT))
+            if (!InputManager::IsMouseHeld(MouseButton::RIGHT))
             {
                 PhysicsManager::PerformExtraSimulationStep(1.0f / 60.0f);
             }
