@@ -87,5 +87,6 @@ namespace MxEngine
 		void SubmitPrimitive(const SubMesh& object, const Material& material, const Transform& parentTransform, size_t instanceCount);
 		void SubmitFinalImage(const TextureHandle& texture);
 		void StartPipeline();
+		void EndPipeline();
 	};
 }

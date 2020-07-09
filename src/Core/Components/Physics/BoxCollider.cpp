@@ -29,7 +29,7 @@
 #include "BoxCollider.h"
 #include "Core/MxObject/MxObject.h"
 #include "Core/Components/Rendering/MeshSource.h"
-#include "Core/Components/Instance.h"
+#include "Core/Components/Instancing/Instance.h"
 #include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
@@ -43,6 +43,7 @@ namespace MxEngine
     void BoxCollider::Init()
     {
         this->CreateNewShape(AABB());
+        this->UpdateCollider();
     }
 
     void BoxCollider::UpdateCollider()

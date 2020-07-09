@@ -65,6 +65,27 @@ namespace MxEngine
         PhysicsManager::AddRigidBody(this->body);
     }
 
+    void NativeRigidBody::UpdateRigidBodyCollider(float mass, btCollisionShape* collider)
+    {
+        btVector3 inertia(0.0f, 0.0f, 0.0f);
+        if (collider != nullptr && mass != 0.0f)
+            collider->calculateLocalInertia(mass, inertia);
+
+        auto oldMass = this->GetMass();
+        bool wasStatic = oldMass == 0.0f;
+        bool nowStatic = mass == 0.0f;
+        if (wasStatic != nowStatic || collider != this->GetCollisionShape())
+        {
+            this->body->setCollisionShape(collider);
+            this->body->setMassProps(mass, inertia);
+            this->ReAddRigidBody();
+        }
+        else
+        {
+            this->body->setMassProps(mass, inertia);
+        }
+    }
+
     NativeRigidBody::NativeRigidBody(const Transform& transform)
     {
         btTransform tr;
@@ -130,17 +151,7 @@ namespace MxEngine
 
     void NativeRigidBody::SetCollisionShape(btCollisionShape* shape)
     {
-        this->body->setCollisionShape(shape);
-
-        float mass = this->GetMass();
-        btVector3 inertia(0.0f, 0.0f, 0.0f);
-        if (shape != nullptr && mass != 0.0f) //-V550
-        {
-            shape->calculateLocalInertia(mass, inertia);
-        }
-        this->body->setMassProps(mass, inertia);
-
-        this->ReAddRigidBody();
+        this->UpdateRigidBodyCollider(this->GetMass(), shape);
     }
 
     bool NativeRigidBody::HasTransformUpdate() const
@@ -176,10 +187,7 @@ namespace MxEngine
 
     void NativeRigidBody::SetMass(float mass)
     {
-        MXLOG_DEBUG("MxEngine::NativeRigidBody", "updating mass to: " + ToMxString(mass));
-        btVector3 inertia(0.0f, 0.0f, 0.0f);
-        this->body->setMassProps(mass, inertia);
-        this->SetCollisionShape(this->GetCollisionShape());
+        this->UpdateRigidBodyCollider(mass, this->GetCollisionShape());
     }
 
     void NativeRigidBody::MakeKinematic()
@@ -191,11 +199,6 @@ namespace MxEngine
     bool NativeRigidBody::IsKinematic() const
     {
         return this->body->isKinematicObject();
-    }
-
-    bool NativeRigidBody::IsStatic() const
-    {
-        return this->body->getMass() == 0.0f; //-V550
     }
 
     void NativeRigidBody::SetActivationState(ActivationState state)

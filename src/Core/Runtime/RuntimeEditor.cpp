@@ -33,7 +33,7 @@
 #include "Library/Scripting/Python/PythonEngine.h"
 #include "Core/Event/Events/WindowResizeEvent.h"
 #include "Core/Application/EventManager.h"
-#include "Core/Components/Instance.h"
+#include "Core/Components/Instancing/Instance.h"
 #include "Core/Event/Events/UpdateEvent.h"
 #include "Core/Application/RenderManager.h"
 #include "Platform/Window/WindowManager.h"

@@ -28,7 +28,7 @@
 
 #include "SphereCollider.h"
 #include "Core/MxObject/MxObject.h"
-#include "Core/Components/Instance.h"
+#include "Core/Components/Instancing/Instance.h"
 #include "Core/Components/Rendering/MeshSource.h"
 #include "Utilities/Logging/Logger.h"
 
@@ -43,6 +43,7 @@ namespace MxEngine
     void SphereCollider::Init()
     {
         this->CreateNewShape(BoundingSphere());
+        this->UpdateCollider();
     }
 
     void SphereCollider::UpdateCollider()

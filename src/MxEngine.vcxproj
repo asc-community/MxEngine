@@ -45,8 +45,8 @@
     <ClInclude Include="Core\Components\Camera\PerspectiveCamera.h" />
     <ClInclude Include="Core\Components\Camera\VRCameraController.h" />
     <ClInclude Include="Core\Components\Components.h" />
-    <ClInclude Include="Core\Components\Instance.h" />
-    <ClInclude Include="Core\Components\InstanceFactory.h" />
+    <ClInclude Include="Core\Components\Instancing\Instance.h" />
+    <ClInclude Include="Core\Components\Instancing\InstanceFactory.h" />
     <ClInclude Include="Core\Components\Lighting\LightBase.h" />
     <ClInclude Include="Core\Components\Physics\BoxCollider.h" />
     <ClInclude Include="Core\Components\Physics\ColliderBase.h" />
@@ -112,6 +112,7 @@
     <ClInclude Include="Utilities\ImGui\ComponentEditor.h" />
     <ClInclude Include="Utilities\ImGui\MxObjectEditor.h" />
     <ClInclude Include="Utilities\ImGui\RenderEditor.h" />
+    <ClCompile Include="Utilities\ImGui\ComponentEditors\RenderingEditors.cpp" />
     <ClInclude Include="Utilities\ImGui\ResourceEditor.h" />
     <ClInclude Include="Utilities\ImGui\Viewport.h" />
     <ClInclude Include="Utilities\Json\Json.h" />
@@ -845,7 +846,7 @@
     <ClCompile Include="Core\Components\Camera\PerspectiveCamera.cpp" />
     <ClCompile Include="Core\Application\Application.cpp" />
     <ClCompile Include="Core\Components\Camera\VRCameraController.cpp" />
-    <ClCompile Include="Core\Components\InstanceFactory.cpp" />
+    <ClCompile Include="Core\Components\Instancing\InstanceFactory.cpp" />
     <ClCompile Include="Core\Components\Physics\BoxCollider.cpp" />
     <ClCompile Include="Core\Components\Physics\ColliderBase.cpp" />
     <ClCompile Include="Core\Components\Physics\RigidBody.cpp" />
@@ -902,9 +903,14 @@
     <ClCompile Include="Utilities\Image\ImageLoader.cpp" />
     <ClCompile Include="Utilities\Image\ImageConverter.cpp" />
     <ClCompile Include="Utilities\Image\ImageManager.cpp" />
-    <ClCompile Include="Utilities\ImGui\ComponentEditor.cpp" />
+    <ClCompile Include="Utilities\ImGui\ComponentEditors\AudioEditors.cpp" />
+    <ClCompile Include="Utilities\ImGui\ComponentEditors\CameraEditors.cpp" />
+    <ClCompile Include="Utilities\ImGui\ComponentEditors\ComponentEditor.cpp" />
     <ClCompile Include="Utilities\ImGui\GraphicConsole.cpp" />
+    <ClCompile Include="Utilities\ImGui\ComponentEditors\InstancingEditors.cpp" />
+    <ClCompile Include="Utilities\ImGui\LightEditors.cpp" />
     <ClCompile Include="Utilities\ImGui\MxObjectEditor.cpp" />
+    <ClCompile Include="Utilities\ImGui\ComponentEditors\PhysicsEditors.cpp" />
     <ClCompile Include="Utilities\ImGui\RenderEditor.cpp" />
     <ClCompile Include="Utilities\ImGui\ResourceEditor.cpp" />
     <ClCompile Include="Utilities\ImGui\Viewport.cpp" />

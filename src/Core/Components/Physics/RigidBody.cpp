@@ -42,7 +42,7 @@ namespace MxEngine
 
         if (this->rigidBody->HasTransformUpdate())
         {
-            if (this->rigidBody->IsStatic())
+            if (this->IsStatic())
             {
                 // if body is static, MxObject's Transform component controls its position
                 btTransform tr;
@@ -68,12 +68,6 @@ namespace MxEngine
         return this->rigidBody;
     }
 
-    void RigidBody::Init()
-    {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
-        this->rigidBody = PhysicsFactory::Create<NativeRigidBody>(transform);
-    }
-
     void RigidBody::OnUpdate(float dt)
     {
         this->UpdateCollider();
@@ -83,19 +77,35 @@ namespace MxEngine
     template<typename T>
     bool TestCollider(NativeRigidBodyHandle& rigidBody, T collider)
     {
-        bool valid = collider.IsValid();
-        if (valid)
+        if (!collider.IsValid()) return false;
+
+        collider->UpdateCollider();
+        if (collider->HasColliderChanged())
         {
-            collider->UpdateCollider();
-            if (collider->HasColliderChanged())
-            {
-                MXLOG_DEBUG("MxEngine::NativeRigidBody", "updating collision shape");
-                auto shape = collider->GetNativeHandle();
-                rigidBody->SetCollisionShape(shape->GetNativeHandle());
-                collider->SetColliderChangedFlag(false);
-            }
+            MXLOG_DEBUG("MxEngine::NativeRigidBody", "updating collision shape");
+            auto shape = collider->GetNativeHandle();
+            rigidBody->SetCollisionShape(shape->GetNativeHandle());
+            collider->SetColliderChangedFlag(false);
         }
-        return valid;
+        return true;
+    }
+
+    template<typename T>
+    void InvalidateCollider(MxObject& self)
+    {
+        auto collider = self.GetComponent<T>();
+        if(collider.IsValid())
+            collider->SetColliderChangedFlag(true);
+    }
+
+    void RigidBody::Init()
+    {
+        auto& self = MxObject::GetByComponent(*this);
+        auto& transform = MxObject::GetByComponent(*this).Transform;
+        this->rigidBody = PhysicsFactory::Create<NativeRigidBody>(transform);
+        
+        InvalidateCollider<BoxCollider>(self);
+        InvalidateCollider<SphereCollider>(self);
     }
 
     void RigidBody::UpdateCollider()
@@ -113,9 +123,19 @@ namespace MxEngine
         this->rigidBody->MakeKinematic();
     }
 
-    bool RigidBody::IsKinematic()
+    bool RigidBody::IsKinematic() const
     {
         return this->rigidBody->IsKinematic();
+    }
+
+    bool RigidBody::IsStatic() const
+    {
+        return this->GetMass() == 0.0f;
+    }
+
+    void RigidBody::ClearForces()
+    {
+        this->rigidBody->GetNativeHandle()->clearForces();
     }
 
     float RigidBody::GetMass() const

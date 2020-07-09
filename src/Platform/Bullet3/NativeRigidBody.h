@@ -53,6 +53,7 @@ namespace MxEngine
 
         void DestroyBody();
         void ReAddRigidBody();
+        void UpdateRigidBodyCollider(float mass, btCollisionShape* collider);
     public:
         NativeRigidBody(const Transform& transform);
         NativeRigidBody(const NativeRigidBody&) = delete;
@@ -77,7 +78,6 @@ namespace MxEngine
         void SetMass(float mass);
         void MakeKinematic();
         bool IsKinematic() const;
-        bool IsStatic() const;
         void SetActivationState(ActivationState state);
         ActivationState GetActivationState() const;
         bool IsActive() const;

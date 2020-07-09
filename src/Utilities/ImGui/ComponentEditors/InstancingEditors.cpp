@@ -26,34 +26,51 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+#include "Core/Components/Instancing/InstanceFactory.h"
 
-#include "Core/Rendering/RenderController.h"
+#include "Utilities/ImGui/ImGuiUtils.h"
 
-namespace MxEngine
+namespace MxEngine::GUI
 {
-    struct RenderAdaptor
-    {
-        RenderController Renderer;
-        DebugBuffer DebugDrawer;
-        CameraController::Handle Viewport;
+	#define REMOVE_COMPONENT_BUTTON(comp) \
+	if(ImGui::Button("remove component")) {\
+		MxObject::GetByComponent(comp).RemoveComponent<std::remove_reference_t<decltype(comp)>>(); return; }
 
-        constexpr static TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;
-        void InitRendererEnvironment();
-        void LoadMainShader(bool useLighting = true);
-        void RenderFrame();
-        void SubmitRenderedFrame();
-        void SetWindowSize(const VectorInt2& size);
-        void SetRenderToDefaultFrameBuffer(bool value = true);
-        bool IsRenderedToDefaultFrameBuffer() const;
+	void InstanceFactoryEditor(InstanceFactory& instanceFactory)
+	{
+		TREE_NODE_PUSH("InstanceFactory");
+		REMOVE_COMPONENT_BUTTON(instanceFactory);
 
-        void SetFogColor(const Vector3& color);
-        const Vector3& GetFogColor() const;
-        void SetFogDensity(float density);
-        float GetFogDensity() const;
-        void SetFogDistance(float distance);
-        float GetFogDistance() const;
-        void SetShadowBlurIterations(size_t iterations);
-        size_t GetShadowBlurIterations() const;
-    };
+		ImGui::Text("instance count: %d", (int)instanceFactory.GetCount());
+
+		ImGui::SameLine();
+		if (ImGui::Button("instanciate"))
+			instanceFactory.MakeInstance();
+		ImGui::SameLine();
+		if (ImGui::Button("destroy all"))
+			instanceFactory.DestroyInstances();
+		ImGui::SameLine();
+		ImGui::Checkbox("is static", &instanceFactory.IsStatic);
+
+		int id = 0;
+		auto self = MxObject::GetComponentHandle(instanceFactory);
+		for (size_t i = 0; i < self->GetInstancePool().Capacity(); i++)
+		{
+			if (!self->GetInstancePool().IsAllocated(i)) continue;
+
+			GUI::Indent _(5.0f);
+			ImGui::PushID(id);
+			MxString nodeName = "instance #" + ToMxString(id++); //-V127
+			Application::Get()->GetRuntimeEditor().DrawMxObject(nodeName, *self->GetInstancePool()[i]);
+			ImGui::PopID();
+		}
+	}
+
+	void InstanceEditor(Instance& instance)
+	{
+		TREE_NODE_PUSH("Instance");
+		auto color = instance.GetColor();
+		if (ImGui::ColorEdit3("base color", &color[0], ImGuiColorEditFlags_HDR))
+			instance.SetColor(color);
+	}
 }

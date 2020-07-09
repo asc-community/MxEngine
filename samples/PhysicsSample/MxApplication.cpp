@@ -16,35 +16,36 @@ namespace ProjectTemplate
         InstanceFactory::Handle ObjectFactory;
         InstanceFactory::Handle ShotFactory;
         int lenA = 3;
-        int lenB = 3;
+        int lenB = 7;
         int lenC = 3;            
-        float BigCubeSize = 160;
-        float BigCubeThickness = 3;
-        bool PhysicsDebug = true;
+        float BigCubeSize = 160.0f;
+        float BigCubeThickness = 3.0f;
+        bool PhysicsDebug = false;
 
         void Reset()
         {
             ObjectFactory->DestroyInstances();
             ShotFactory->DestroyInstances();
-            for (size_t i = 0; i < lenA * lenB * lenC; i++)
+            for (size_t i = 0; i < size_t(lenA * lenB * lenC); i++)
             {
-                float size = 5.f;
+                float size = 5.0f;
 
-                float x = i / (lenC * lenB) % lenA * size;
-                float y = i / lenC % lenB * size;
-                float z = i % lenC * size;
+                float x = i / (lenC * lenB) % lenA * size; //-V104 //-V636
+                float y = i / lenC % lenB * size;          //-V104 //-V636
+                float z = i % lenC * size;                 //-V104 //-V636
 
                 float offset = size * 0.5f + BigCubeThickness * 0.5f;
 
                 auto object = ObjectFactory->MakeInstance();
 
-                object->Transform.SetPosition(MakeVector3(x, y + offset, z));
+                object->Transform.SetPosition(Vector3(x, y + offset, z));
                 object->GetComponent<Instance>()->SetColor(Vector3(x / lenA / size, y / lenB / size, z / lenC / size));
                 object->Transform.SetScale(size);
 
                 object->AddComponent<BoxCollider>();
                 auto rigidBody = object->AddComponent<RigidBody>();
-                rigidBody->SetMass(1.0f / (1.0f + y + y + y));
+                rigidBody->SetMass(250.0f);
+                rigidBody->SetAngularForceFactor(Vector3(0.01f));
 
                 if (PhysicsDebug)
                 {
@@ -53,16 +54,35 @@ namespace ProjectTemplate
             }
         }
 
-        void InitializeBoxFace(const Vector3& coord, const Vector3& xyz, const Vector3& offset, const float BigCubeSize, const float thickness, const float visible)
+        void InitializeBoxFace(const Vector3& coord, const Vector3& xyz, const Vector3& offset, const float BigCubeSize, const float thickness, const float transparency)
         {
             auto cube = MxObject::Create();
             cube->Name = "Big Cube";
-            cube->AddComponent<MeshRenderer>()->GetMaterial()->Transparency = visible;
+            cube->AddComponent<MeshRenderer>()->GetMaterial()->Transparency = transparency;
             cube->AddComponent<MeshSource>(Primitives::CreateCube());
             cube->AddComponent<BoxCollider>();
             cube->AddComponent<RigidBody>();
             cube->Transform.SetScale(Vector3(xyz.x * BigCubeSize + thickness, xyz.y * BigCubeSize + thickness, xyz.z * BigCubeSize + thickness));
             cube->Transform.SetPosition(Vector3((BigCubeSize * offset).x / 2, (BigCubeSize * offset).y / 2, (BigCubeSize * offset).z / 2) + coord);
+        }
+
+        void CreateShot()
+        {
+            float cubeSize = 1.5f;
+            auto object = ShotFactory->MakeInstance();
+
+            if (PhysicsDebug)
+            {
+                object->AddComponent<DebugDraw>()->RenderPhysicsCollider = true;
+            }
+
+            auto dir = cameraObject->GetComponent<CameraController>()->GetDirection();
+            object->Transform.SetScale(cubeSize);
+            object->Transform.SetPosition(cameraObject->Transform.GetPosition());
+            object->AddComponent<SphereCollider>();
+            auto rigidBody = object->AddComponent<RigidBody>();
+            rigidBody->SetLinearVelocity(dir * 180.0f);
+            rigidBody->SetMass(50.0f);
         }
 
         virtual void OnCreate() override
@@ -75,19 +95,19 @@ namespace ProjectTemplate
             controller->SetMoveSpeed(50);
             auto input = cameraObject->AddComponent<InputControl>();
             controller->ListenWindowResizeEvent();
-            controller->SetMoveSpeed(10.0f);
+            controller->SetMoveSpeed(30);
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
             RenderManager::SetViewport(controller);
-            controller->SetMoveSpeed(30);
+            RenderManager::SetFogDensity(0.0f);
+
             // create global directional light
             auto lightObject = MxObject::Create();
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
-            dirLight->ProjectionSize = 150.0f;
+            dirLight->ProjectionSize = 250.0f;
+            dirLight->Direction = MakeVector3(0.1f, 1.0f, 0.0f);
             dirLight->FollowViewport();
-
-            PhysicsManager::SetGravity(Vector3(0, -28, 0));
 
             auto instances = MxObject::Create();
             instances->Name = "Cube Instances";
@@ -102,63 +122,29 @@ namespace ProjectTemplate
             ShotFactory = shots->AddComponent<InstanceFactory>();
 
             Vector3 coordOffset(0, BigCubeSize / 2, 0);
-            InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, -1, 0), BigCubeSize, BigCubeThickness, 0.6);
-            //InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3(0, 1, 0),  cubeSIze, thickness, 0.8);
-            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(-1, 0, 0), BigCubeSize, BigCubeThickness, 0.6);
-            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(1, 0, 0), BigCubeSize, BigCubeThickness, 0.25);
-            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, -1), BigCubeSize, BigCubeThickness, 0.6);
-            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3(0, 0, 1), BigCubeSize, BigCubeThickness, 0.6);
+            InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3( 0, -1,  0), BigCubeSize, BigCubeThickness, 0.6f);
+            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(-1,  0,  0), BigCubeSize, BigCubeThickness, 0.6f);
+            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3( 1,  0,  0), BigCubeSize, BigCubeThickness, 0.6f);
+            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3( 0,  0, -1), BigCubeSize, BigCubeThickness, 0.6f);
+            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3( 0,  0,  1), BigCubeSize, BigCubeThickness, 0.6f);
 
             this->Reset();
-            PhysicsManager::SetSimulationStep(0.0f); // ban auto-physics sim
+            PhysicsManager::SetSimulationStep(0.0f); // disable auto-physics sim
         }
 
-        void Typhoon()
-        {
-            for (auto& cube : ObjectFactory->GetInstances())
-            {
-                auto coord = cube->Transform.GetPosition();
-                auto velo = Length(coord) * Normalize(Cross(Vector3(0, 1, 0), coord));
-                velo.y += Length(coord) / 12;
-                auto dist = Length(Vector3(coord.x, 0, coord.z));
-                velo.y *= 1 / (1 + pow(1.6, coord.y - dist * 4));
-                cube->GetComponent<RigidBody>()->SetLinearVelocity(velo);
-            }
-        }
-
-        float timeGone = 0;
         virtual void OnUpdate() override
         {
-            timeGone += GetTimeDelta();
-            if (InputManager::IsMouseHeld(MouseButton::LEFT) && timeGone > 0.1)
+            static float timeSinceShot = 0.0f;
+            timeSinceShot += GetTimeDelta();
+            if (InputManager::IsMouseHeld(MouseButton::LEFT) && timeSinceShot > 0.1f)
             {
-                float cubeSize = 1.5f;
-                timeGone = 0;
-
-                auto object = ShotFactory->MakeInstance();
-
-                if (PhysicsDebug)
-                {
-                    object->AddComponent<DebugDraw>()->RenderPhysicsCollider = true;
-                }
-
-                auto dir = cameraObject->GetComponent<CameraController>()->GetDirection();
-                object->Transform.SetScale(cubeSize);
-                object->Transform.SetPosition(cameraObject->Transform.GetPosition());
-                auto rigidBody = object->AddComponent<RigidBody>();
-                object->AddComponent<SphereCollider>();
-                rigidBody->SetLinearVelocity(dir * 180.0f);
-                rigidBody->SetMass(38.0f);
+                timeSinceShot = 0.0f;
+                this->CreateShot();
             }
 
-            if (InputManager::IsMouseHeld(MouseButton::RIGHT))
+            if (!InputManager::IsMouseHeld(MouseButton::RIGHT))
             {
                 PhysicsManager::PerformExtraSimulationStep(1.0f / 60.0f);
-            }
-
-            if (InputManager::IsKeyHeld(KeyCode::R))
-            {
-                Typhoon();
             }
 
             if (RuntimeManager::IsEditorActive())

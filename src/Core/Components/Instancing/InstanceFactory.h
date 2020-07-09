@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Core/Components/Instance.h"
+#include "Core/Components/Instancing/Instance.h"
 
 namespace MxEngine
 {

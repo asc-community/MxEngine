@@ -66,6 +66,9 @@ namespace MxEngine::GUI
     #define GUI_TREE_NODE(name, ...) if(ImGui::CollapsingHeader(name)) { GUI::Indent _(5.0f); __VA_ARGS__; }
     #define SCOPE_TREE_NODE(name) if (!ImGui::CollapsingHeader(name)) return; GUI::Indent _(5.0f)
 
+    struct TreeNodeAutoPop { ~TreeNodeAutoPop() { ImGui::TreePop(); } };
+    #define TREE_NODE_PUSH(name) if(!ImGui::TreeNode(name)) return; TreeNodeAutoPop _pop_
+
     /*!
     creates input field for an int and apply-button next to it
     \param title input field title
@@ -100,6 +103,27 @@ namespace MxEngine::GUI
         ImGui::Text(title);
         ImGui::SameLine();
         ImGui::InputFloat("", v);
+        ImGui::SameLine();
+        bool result = ImGui::Button(buttonText);
+        ImGui::PopID();
+        return result;
+    }
+
+    /*!
+    creates input field for a vec3 and apply-button next to it
+    \param title input field title
+    \param v value in which input will be stored
+    \param speed speed of dragger
+    \param buttonText text of apply-button
+    \returns true if button was pressed, false either
+    */
+    inline bool InputVec3OnClick(const char* title, float* v, float speed = 0.01f, const char* buttonText = "apply")
+    {
+        ImGui::PushID(title);
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text(title);
+        ImGui::SameLine();
+        ImGui::DragFloat3("", v);
         ImGui::SameLine();
         bool result = ImGui::Button(buttonText);
         ImGui::PopID();

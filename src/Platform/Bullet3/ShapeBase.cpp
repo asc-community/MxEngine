@@ -80,18 +80,18 @@ namespace MxEngine
         btVector3 center;
         float r = 0.0f;
         this->collider->getBoundingSphere(center, r);
-        auto scale = transform.GetScale();
-        if (scale == MakeVector3(0.0f))
-            scale = MakeVector3(1.0f);
-        r /= ComponentMax(scale);
-        return BoundingSphere(FromBulletVector3(center) + transform.GetPosition(), r);
+        return BoundingSphere(FromBulletVector3(center) + transform.GetPosition(), r / RootThree<float>());
     }
 
     BoundingSphere ShapeBase::GetBoundingSphereUnchanged() const
     {
+        auto scale = this->GetScale();
         btVector3 center;
         float r = 0.0f;
         this->collider->getBoundingSphere(center, r);
+        if (scale == MakeVector3(0.0f))
+            scale = MakeVector3(1.0f);
+        r /= ComponentMax(scale);
         return BoundingSphere(FromBulletVector3(center), r);
     }
 }

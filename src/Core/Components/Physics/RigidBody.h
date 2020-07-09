@@ -57,7 +57,9 @@ namespace MxEngine
         void UpdateCollider();
 
         void MakeKinematic();
-        bool IsKinematic();
+        bool IsKinematic() const;
+        bool IsStatic() const;
+        void ClearForces();
         float GetMass() const;
         void SetMass(float mass);
         float GetFriction() const;

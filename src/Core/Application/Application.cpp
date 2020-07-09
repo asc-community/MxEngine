@@ -26,9 +26,10 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Core/Macro/Macro.h"
 #include "Application.h"
+#include "Core/Macro/Macro.h"
 
+// platform modules and api functions
 #include "Platform/GraphicAPI.h"
 #include "Platform/Modules/GraphicModule.h"
 #include "Platform/AudioAPI.h"
@@ -36,17 +37,18 @@
 #include "Platform/PhysicsAPI.h"
 #include "Platform/Modules/PhysicsModule.h"
 
+// event system
 #include "Core/Event/Event.h"
 #include "Core/Application/EventManager.h"
 
-#include "Library/Primitives/Colors.h"
-
-#include "Utilities/Profiler/Profiler.h"
+// utilities
 #include "Utilities/FileSystem/FileManager.h"
-#include "Utilities/UUID/UUID.h"
 #include "Utilities/Json/Json.h"
-#include "Utilities/ECS/ComponentFactory.h"
 #include "Utilities/ImGui/ComponentEditor.h"
+#include "Utilities/Format/Format.h"
+
+// components
+#include "Core/Components/Components.h"
 
 namespace MxEngine
 {
@@ -63,6 +65,11 @@ namespace MxEngine
 	}
 
 	void Application::OnUpdate()
+	{
+		// is overriden in derived class
+	}
+
+	void Application::OnRender()
 	{
 		// is overriden in derived class
 	}
@@ -120,7 +127,12 @@ namespace MxEngine
 	{
 		MAKE_SCOPE_PROFILER("Application::DrawObjects");
 		this->GetRenderAdaptor().SetWindowSize({ this->GetWindow().GetWidth(), this->GetWindow().GetHeight() });
-		this->GetRenderAdaptor().PerformRenderIteration();
+		this->GetRenderAdaptor().RenderFrame();
+
+		RenderEvent renderEvent;
+		EventManager::Invoke(renderEvent);
+		this->OnRender();
+		this->GetRenderAdaptor().SubmitRenderedFrame();
 	}
 
 	void Application::InvokeUpdate()
@@ -331,10 +343,6 @@ namespace MxEngine
 
 				this->InvokeUpdate();
 				this->DrawObjects();
-
-				RenderEvent renderEvent;
-				EventManager::Invoke(renderEvent);
-				this->GetRenderAdaptor().Renderer.Render();
 				this->GetWindow().PullEvents();
 				if (this->shouldClose) break;
 			}
@@ -435,6 +443,9 @@ namespace MxEngine
 		editor.RegisterComponentEditor("InputControl",       GUI::InputControlEditor);
 		editor.RegisterComponentEditor("AudioSource",        GUI::AudioSourceEditor);
 		editor.RegisterComponentEditor("AudioListener",      GUI::AudioListenerEditor);
+		editor.RegisterComponentEditor("RigidBody",          GUI::RigidBodyEditor);
+		editor.RegisterComponentEditor("BoxCollider",        GUI::BoxColliderEditor);
+		editor.RegisterComponentEditor("SphereCollider",     GUI::SphereColliderEditor);
 
 		this->RegisterComponentUpdate<Behaviour>();
 		this->RegisterComponentUpdate<InstanceFactory>();

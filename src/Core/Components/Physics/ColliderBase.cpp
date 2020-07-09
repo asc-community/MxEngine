@@ -23,13 +23,12 @@
 // DAMAGES(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
 // SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 // CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-// OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ColliderBase.h"
-#include "Utilities/Logging/Logger.h"
 #include "Core/MxObject/MxObject.h"
-#include "Core/Components/Instance.h"
+#include "Core/Components/Instancing/Instance.h"
 #include "Core/Components/Rendering/MeshSource.h"
 
 namespace MxEngine
@@ -49,7 +48,6 @@ namespace MxEngine
             auto& mesh = meshSource->Mesh;
             if (this->savedMeshState != mesh.GetUUID())
             {
-                MXLOG_DEBUG("MxEngine::SphereCollider", "updated collider for new mesh");
                 auto& meshAABB = mesh->GetBoundingBox();
                 this->savedMeshState = mesh.GetUUID();
                 return true; // ask to update collider to new meshAABB

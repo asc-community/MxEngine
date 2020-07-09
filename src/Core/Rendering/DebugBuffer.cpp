@@ -125,7 +125,7 @@ namespace MxEngine
 
         for (const Vector3& v : sphereData)
         {
-            this->storage.push_back({ sphere.GetRedius() * v + sphere.Center, color });
+            this->storage.push_back({ sphere.GetRedius() * v * 1.1f + sphere.Center, color });
         }
     }
 

@@ -35,7 +35,8 @@
 #include "Core/Components/Audio/AudioSource.h"
 #include "Core/Components/Physics/BoxCollider.h"
 #include "Core/Components/Physics/SphereCollider.h"
-#include "Core/Components/InstanceFactory.h"
+#include "Core/Components/Physics/RigidBody.h"
+#include "Core/Components/Instancing/InstanceFactory.h"
 
 namespace MxEngine
 {
@@ -173,7 +174,7 @@ namespace MxEngine
         }
     }
 
-    void RenderAdaptor::PerformRenderIteration()
+    void RenderAdaptor::RenderFrame()
     {
         this->Renderer.ResetPipeline();
 
@@ -290,6 +291,7 @@ namespace MxEngine
                 auto audioSource = object.GetComponent<AudioSource>();
                 auto boxCollider = object.GetComponent<BoxCollider>();
                 auto sphereCollider = object.GetComponent<SphereCollider>();
+                auto rigidBody = object.GetComponent<RigidBody>();
 
                 if(instance.IsValid()) meshSource = instance->GetParent()->GetComponent<MeshSource>();
 
@@ -343,7 +345,7 @@ namespace MxEngine
                     Frustrum frustrum(object.Transform.GetPosition() + Normalize(direction), direction, up, zoom, aspect);
                     this->DebugDrawer.Submit(frustrum, debugDraw.FrustrumColor);
                 }
-                if (debugDraw.RenderPhysicsCollider)
+                if (rigidBody.IsValid() && debugDraw.RenderPhysicsCollider)
                 {
                     if (boxCollider.IsValid())
                         this->DebugDrawer.Submit(boxCollider->GetBoundingBox(), debugDraw.BoundingBoxColor);
@@ -358,6 +360,12 @@ namespace MxEngine
         }
 
         this->Renderer.StartPipeline();
+    }
+
+    void RenderAdaptor::SubmitRenderedFrame()
+    {
+        this->Renderer.EndPipeline();
+        this->Renderer.Render();
     }
 
     void RenderAdaptor::SetWindowSize(const VectorInt2& size)

@@ -624,7 +624,8 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::StartPipeline()");
 		if (this->Pipeline.Cameras.empty())
 		{
-			this->AttachDefaultFrameBuffer();
+			if(this->Pipeline.Environment.RenderToDefaultFrameBuffer)
+				this->AttachDefaultFrameBuffer();
 			return;
 		}
 
@@ -652,7 +653,10 @@ namespace MxEngine
 			this->DrawDebugBuffer(camera);
 			this->PostProcessImage(camera);
 		}
-		
+	}
+
+	void RenderController::EndPipeline()
+	{
 		MAKE_SCOPE_PROFILER("RenderController::SubmitFinalImage");
 		this->AttachDefaultFrameBuffer();
 		if (this->Pipeline.Environment.RenderToDefaultFrameBuffer && this->Pipeline.Environment.MainCameraIndex < this->Pipeline.Cameras.size())
