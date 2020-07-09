@@ -200,27 +200,6 @@ namespace MxEngine
             }
         };
 
-        constexpr auto ComputeLODLevel = [](const AABB& box, const Vector3& viewportPosition, float viewportZoom)
-        {
-            float distance = Length(box.GetCenter() - viewportPosition);
-            Vector3 length = box.Length();
-            float maxLength = Max(length.x, length.y, length.z);
-            float scaledDistance = maxLength / distance / viewportZoom;
-
-            constexpr static std::array lodDistance = {
-                    0.21f,
-                    0.15f,
-                    0.10f,
-                    0.06f,
-                    0.03f,
-            };
-            size_t lod = 0;
-            while (lod < lodDistance.size() && scaledDistance < lodDistance[lod])
-                lod++;
-
-            return lod;
-        };
-
         {
             MAKE_SCOPE_PROFILER("RenderAdaptor::SubmitCameras()");
             auto cameraView = ComponentFactory::GetView<CameraController>();
@@ -298,14 +277,6 @@ namespace MxEngine
         {
             MAKE_SCOPE_PROFILER("RenderAdaptor::SubmitDebugData()");
 
-            constexpr auto submitDebugData = [](DebugBuffer& drawer, DebugDraw& debugDraw, const AABB& box)
-            {
-                if (debugDraw.RenderBoundingBox)
-                    drawer.Submit(box, debugDraw.BoundingBoxColor);
-                if (debugDraw.RenderBoundingSphere)
-                    drawer.Submit(ToSphere(box), debugDraw.BoundingSphereColor);
-            };
-
             auto debugDrawView = ComponentFactory::GetView<DebugDraw>();
             for (auto& debugDraw : debugDrawView)
             {
@@ -324,8 +295,18 @@ namespace MxEngine
 
                 if (meshSource.IsValid() && !instanceFactory.IsValid())
                 {
-                    auto box = meshSource->Mesh->GetAABB() * object.Transform.GetMatrix();
-                    submitDebugData(this->DebugDrawer, debugDraw, box);
+                    if (debugDraw.RenderBoundingBox)
+                    {
+                        auto box = meshSource->Mesh->GetBoundingBox() * object.Transform.GetMatrix();
+                        this->DebugDrawer.Submit(box, debugDraw.BoundingBoxColor);
+                    }
+                    if (debugDraw.RenderBoundingSphere)
+                    {
+                        auto sphere = meshSource->Mesh->GetBoundingSphere();
+                        sphere.Center += object.Transform.GetPosition();
+                        sphere.SetRadius(sphere.GetRedius() * ComponentMax(object.Transform.GetScale()));
+                        this->DebugDrawer.Submit(sphere, debugDraw.BoundingSphereColor);
+                    }
                 }
                 if (debugDraw.RenderLightingBounds && pointLight.IsValid())
                 {

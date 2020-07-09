@@ -68,7 +68,7 @@ namespace MxEngine
 			}
 			else
 			{
-				vecForward = object->Transform.GetRotation() * vecForward;
+				vecForward = object->Transform.GetRotation() * vecForward; //-V807
 				vecRight   = object->Transform.GetRotation() * vecRight;
 				vecUp      = object->Transform.GetRotation() * vecUp;
 			}

@@ -134,7 +134,7 @@ namespace MxEngine
 
         float mass = this->GetMass();
         btVector3 inertia(0.0f, 0.0f, 0.0f);
-        if (shape != nullptr && mass != 0.0f)
+        if (shape != nullptr && mass != 0.0f) //-V550
         {
             shape->calculateLocalInertia(mass, inertia);
         }
@@ -195,7 +195,7 @@ namespace MxEngine
 
     bool NativeRigidBody::IsStatic() const
     {
-        return this->body->getMass() == 0.0f;
+        return this->body->getMass() == 0.0f; //-V550
     }
 
     void NativeRigidBody::SetActivationState(ActivationState state)

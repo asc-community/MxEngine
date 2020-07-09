@@ -34,29 +34,46 @@
 
 namespace MxEngine
 {
-    std::optional<AABB> ColliderBase::ShouldUpdateCollider(MxObject& self)
+    MeshSource::Handle GetCurrentlyUsedMesh(MxObject& self)
     {
         auto instance = self.GetComponent<Instance>();
         auto meshSource = instance.IsValid() ? instance->GetParent()->GetComponent<MeshSource>() : self.GetComponent<MeshSource>();
+        return meshSource;
+    }
 
+    bool ColliderBase::ShouldUpdateCollider(MxObject& self)
+    {
+        auto meshSource = GetCurrentlyUsedMesh(self);
         if (meshSource.IsValid())
         {
             auto& mesh = meshSource->Mesh;
             if (this->savedMeshState != mesh.GetUUID())
             {
                 MXLOG_DEBUG("MxEngine::SphereCollider", "updated collider for new mesh");
-                auto& meshAABB = mesh->GetAABB();
+                auto& meshAABB = mesh->GetBoundingBox();
                 this->savedMeshState = mesh.GetUUID();
-                return meshAABB; // ask to update collider to new meshAABB
+                return true; // ask to update collider to new meshAABB
             }
         }
         else if(this->savedMeshState != UUIDGenerator::GetNull())
         {
             this->savedMeshState = UUIDGenerator::GetNull();
-            return AABB{ }; // ask to update collider to empty AABB
+            return true; // ask to update collider to empty AABB
         }
 
-        return { }; // in other cases just return empty AABB
+        return false;
+    }
+
+    const AABB& ColliderBase::GetBoundingBox(MxObject& self)
+    {
+        auto meshSource = GetCurrentlyUsedMesh(self); 
+        return meshSource->Mesh->GetBoundingBox();
+    }
+
+    const BoundingSphere& ColliderBase::GetBoundingSphere(MxObject& self)
+    {
+        auto meshSource = GetCurrentlyUsedMesh(self);
+        return meshSource->Mesh->GetBoundingSphere();
     }
 
     void ColliderBase::SetColliderChangedFlag(bool value)

@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "Core/BoundingObjects/AABB.h"
 #include "Core/Components/Transform.h"
 #include "Utilities/String/String.h"
 #include "Utilities/FileSystem/File.h"
@@ -42,12 +41,10 @@ namespace MxEngine
 	
 	class Mesh
 	{
-		typedef unsigned int GLuint;
-		typedef float GLfloat;
-
 		using SubmeshList = MxVector<SubMesh>;
 
 		AABB boundingBox;
+		BoundingSphere boundingSphere;
 		
 		SubmeshList submeshes;
 		MxVector<VertexBufferHandle> VBOs;
@@ -65,9 +62,11 @@ namespace MxEngine
 		void Load(const MxString& filepath);
 		SubmeshList& GetSubmeshes();
 		const SubmeshList& GetSubmeshes() const;
-		const AABB& GetAABB() const;
-		void SetAABB(const AABB& boundingBox);
-		void UpdateAABB();
+		const AABB& GetBoundingBox() const;
+		const BoundingSphere& GetBoundingSphere() const;
+		void SetBoundingBox(const AABB& boundingBox);
+		void SetBoundingSphere(const BoundingSphere& boundingSphere);
+		void UpdateBoundingGeometry();
 		size_t AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl);
 		VertexBufferHandle GetBufferByIndex(size_t index) const; 
 		VertexBufferLayoutHandle GetBufferLayoutByIndex(size_t index) const;

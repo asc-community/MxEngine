@@ -203,16 +203,6 @@ namespace MxEngine
         return this->rigidBody->GetNativeHandle()->getInvMass();
     }
 
-    Vector3 RigidBody::GetMassFactor() const
-    {
-        return FromBulletVector3(this->rigidBody->GetNativeHandle()->getLinearFactor());
-    }
-
-    void RigidBody::SetMassFactor(const Vector3& factor)
-    {
-        this->rigidBody->GetNativeHandle()->setLinearFactor(ToBulletVector3(factor));
-    }
-
     Vector3 RigidBody::GetAngularForceFactor() const
     {
         return FromBulletVector3(this->rigidBody->GetNativeHandle()->getAngularFactor());
@@ -319,11 +309,6 @@ namespace MxEngine
     }
 
     void RigidBody::ApplyCentralForce(const Vector3& force)
-    {
-        this->rigidBody->GetNativeHandle()->applyCentralForce(ToBulletVector3(force));
-    }
-
-    void RigidBody::ApplyCenteralForce(const Vector3& force)
     {
         this->rigidBody->GetNativeHandle()->applyCentralForce(ToBulletVector3(force));
     }

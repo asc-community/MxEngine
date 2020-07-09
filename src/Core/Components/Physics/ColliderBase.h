@@ -28,20 +28,22 @@
 
 #pragma once
 
-#include "Core/BoundingObjects/AABB.h"
 #include "Utilities/UUID/UUID.h"
-#include <optional>
 
 namespace MxEngine
 {
     class MxObject;
+    class AABB;
+    class BoundingSphere;
 
     class ColliderBase
     {
         UUID savedMeshState = UUIDGenerator::GetNull();
         bool colliderChangedFlag = true;
     protected:
-        std::optional<AABB> ShouldUpdateCollider(MxObject& self);
+        bool ShouldUpdateCollider(MxObject& self);
+        static const AABB& GetBoundingBox(MxObject& self);
+        static const BoundingSphere& GetBoundingSphere(MxObject& self);
     public:
         void SetColliderChangedFlag(bool value);
         bool HasColliderChanged() const;

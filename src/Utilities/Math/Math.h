@@ -259,6 +259,28 @@ namespace MxEngine
 	}
 
 	template<typename T>
+	inline constexpr auto ComponentMax(const T& v)
+	{
+		auto max = v[0];
+		for (typename T::length_type i = 0; i < v.length(); i++)
+		{
+			max = Max(max, v[i]);
+		}
+		return max;
+	}
+
+	template<typename T>
+	inline constexpr auto ComponentMin(const T& v)
+	{
+		auto min = v[0];
+		for (typename T::length_type i = 0; i < v.length(); i++)
+		{
+			min = Min(min, v[i]);
+		}
+		return min;
+	}
+
+	template<typename T>
 	inline constexpr T Radians(const T& degrees)
 	{
 		return glm::radians(degrees);

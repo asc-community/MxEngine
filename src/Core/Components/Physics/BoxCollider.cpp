@@ -48,9 +48,11 @@ namespace MxEngine
     void BoxCollider::UpdateCollider()
     {
         auto& self = MxObject::GetByComponent(*this);
-        auto aabb = this->ShouldUpdateCollider(self);
-
-        if (aabb.has_value()) this->CreateNewShape(aabb.value());
+        if (this->ShouldUpdateCollider(self))
+        {
+            auto& aabb = ColliderBase::GetBoundingBox(self);
+            this->CreateNewShape(aabb);
+        }
     }
 
     BoxShapeHandle BoxCollider::GetNativeHandle() const

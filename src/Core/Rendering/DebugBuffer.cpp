@@ -34,7 +34,7 @@ namespace MxEngine
     {
         auto VBL = GraphicFactory::Create<VertexBufferLayout>();
         VBL->PushFloat(3); // position
-        VBL->PushFloat(4); // color
+        VBL->PushFloat(4); // color //-V112
 
         this->VBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::DYNAMIC_DRAW);
         this->VAO = GraphicFactory::Create<VertexArray>();
@@ -125,7 +125,7 @@ namespace MxEngine
 
         for (const Vector3& v : sphereData)
         {
-            this->storage.push_back({ sphere.GetRedius() * v * RootThree<float>() + sphere.Center, color });
+            this->storage.push_back({ sphere.GetRedius() * v + sphere.Center, color });
         }
     }
 
@@ -146,7 +146,7 @@ namespace MxEngine
             v = MakeVector3(-normDir.z, 0.0f, normDir.x);
 
         v = Normalize(v);
-        u = Normalize(Cross(normDir, v));
+        u = Normalize(Cross(normDir, v)); //-V519
 
         std::array circle = {
              v,
@@ -187,7 +187,7 @@ namespace MxEngine
         auto normDir = Normalize(frustrum.Direction);
         auto normUp = Normalize(frustrum.Up);
 
-        auto normRight = Normalize(Cross(normDir, normUp));
+        auto normRight = Normalize(Cross(normDir, normUp)); //-V537
         auto right = normRight * frustrum.AspectRatio;
         auto scale = 2.0f;
 

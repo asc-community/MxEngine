@@ -40,7 +40,7 @@ namespace MxEngine
         MAKE_COMPONENT(SphereCollider);
 
         SphereShapeHandle sphereShape;
-        void CreateNewShape(const AABB& aabb);
+        void CreateNewShape(const BoundingSphere& sphere);
     public:
         void Init();
         void UpdateCollider();

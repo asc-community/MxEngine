@@ -14,9 +14,9 @@ namespace MxEngine
         submesh.MeshData = std::move(meshData);
         submesh.MeshData.BufferVertecies();
         submesh.MeshData.BufferIndicies();
-        submesh.MeshData.UpdateBoundingBox();
+        submesh.MeshData.UpdateBoundingGeometry();
 
-        mesh->UpdateAABB();
+        mesh->UpdateBoundingGeometry();
 
         return mesh;
     }
@@ -203,6 +203,7 @@ namespace MxEngine
     MeshHandle Primitives::CreateSphere(size_t polygons)
     {
         MeshData meshData;
+        polygons -= polygons % 4;
 
         auto& verteces = meshData.GetVertecies();
         auto& indicies = meshData.GetIndicies();

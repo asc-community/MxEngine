@@ -34,9 +34,11 @@ namespace MxEngine
 {
     class BoundingSphere
     {
-        float radius;
+        float radius = 0.0f;
     public:
-        Vector3 Center;
+        Vector3 Center = MakeVector3(0.0f);
+
+        constexpr BoundingSphere() = default;
 
         constexpr BoundingSphere(const Vector3& center, float r)
             : radius(Max(0.0f, r)), Center(center) { }

@@ -34,23 +34,25 @@
 
 namespace MxEngine
 {
-    void SphereCollider::CreateNewShape(const AABB& aabb)
+    void SphereCollider::CreateNewShape(const BoundingSphere& sphere)
     {
         this->SetColliderChangedFlag(true);
-        this->sphereShape = PhysicsFactory::Create<SphereShape>(ToSphere(aabb).GetRedius());
+        this->sphereShape = PhysicsFactory::Create<SphereShape>(sphere.GetRedius());
     }
 
     void SphereCollider::Init()
     {
-        this->CreateNewShape(AABB());
+        this->CreateNewShape(BoundingSphere());
     }
 
     void SphereCollider::UpdateCollider()
     {
         auto& self = MxObject::GetByComponent(*this);
-        auto aabb = this->ShouldUpdateCollider(self);
-
-        if (aabb.has_value()) this->CreateNewShape(aabb.value());
+        if (this->ShouldUpdateCollider(self))
+        {
+            auto& sphere = ColliderBase::GetBoundingSphere(self);
+            this->CreateNewShape(sphere);
+        }
     }
 
     SphereShapeHandle SphereCollider::GetNativeHandle() const

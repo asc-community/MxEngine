@@ -75,8 +75,6 @@ namespace MxEngine
         void SetAngularVelocity(const Vector3& velocity);
         Vector3 GetAngularVelocity() const;
         float GetInverseMass() const;
-        Vector3 GetMassFactor() const;
-        void SetMassFactor(const Vector3& factor);
         Vector3 GetAngularForceFactor() const;
         void SetAngularForceFactor(const Vector3& factor);
         Vector3 GetLinearForceFactor() const;
@@ -99,7 +97,6 @@ namespace MxEngine
         void ApplyTorqueImpulse(const Vector3& impulse);
         void ApplyTorqueTurnImpulse(const Vector3& impulse);
         void ApplyCentralForce(const Vector3& force);
-        void ApplyCenteralForce(const Vector3& force);
         void SetPushVelocity(const Vector3& velocity);
         Vector3 GetPushVelocity() const;
         void SetTurnVelocity(const Vector3& velocity);

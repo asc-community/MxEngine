@@ -44,7 +44,7 @@ namespace ProjectTemplate
 
                 object->AddComponent<BoxCollider>();
                 auto rigidBody = object->AddComponent<RigidBody>();
-                rigidBody->SetMass(1.0f / (0.3f + y + y + y));
+                rigidBody->SetMass(1.0f / (1.0f + y + y + y));
 
                 if (PhysicsDebug)
                 {

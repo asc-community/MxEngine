@@ -140,6 +140,15 @@ namespace MxEngine::GUI
         aabb.Max = VectorMax(aabb.Min, aabb.Max);
     }
 
+    void DrawSphereEditor(const char* name, BoundingSphere& sphere)
+    {
+        SCOPE_TREE_NODE(name);
+        float radius = sphere.GetRedius();
+        ImGui::DragFloat3("center", &sphere.Center[0], 0.01f);
+        ImGui::DragFloat("radius", &radius, 0.01f);
+        sphere.SetRadius(radius);
+    }
+
     void DrawLightBaseEditor(LightBase& base)
     {
         ImGui::ColorEdit3("ambient color",  &base.AmbientColor[0],  ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
@@ -179,12 +188,15 @@ namespace MxEngine::GUI
     {
         SCOPE_TREE_NODE(name);
 
-        auto aabb = mesh->GetAABB();
-        DrawAABBEditor("AABB", aabb);
-        mesh->SetAABB(aabb);
+        auto aabb = mesh->GetBoundingBox();
+        auto sphere = mesh->GetBoundingSphere();
+        DrawAABBEditor("bounding box", aabb);
+        DrawSphereEditor("bounding sphere", sphere);
+        mesh->SetBoundingBox(aabb);
+        mesh->SetBoundingSphere(sphere);
 
-        if (ImGui::Button("update mesh AABB"))
-            mesh->UpdateAABB();
+        if (ImGui::Button("update mesh boundings"))
+            mesh->UpdateBoundingGeometry();
 
         static MxString path;
         if (GUI::InputTextOnClick("", path, 128, "load mesh"))
@@ -214,8 +226,8 @@ namespace MxEngine::GUI
 
             TransformEditor(*submesh.GetTransform());
 
-            if (ImGui::Button("update submesh AABB"))
-                submesh.MeshData.UpdateBoundingBox();
+            if (ImGui::Button("update submesh boundings"))
+                submesh.MeshData.UpdateBoundingGeometry();
             ImGui::SameLine();
             if (ImGui::Button("buffer vertecies"))
                 submesh.MeshData.BufferVertecies();
