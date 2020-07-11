@@ -150,7 +150,7 @@ namespace MxEngine
 		{
 			auto sphere = submesh.MeshData.GetBoundingSphere();
 			auto distanceToCenter = Length(sphere.Center);
-			maxRadius = Max(maxRadius, distanceToCenter + sphere.GetRedius());
+			maxRadius = Max(maxRadius, distanceToCenter + sphere.Radius);
 		}
 		this->boundingSphere = BoundingSphere(center, maxRadius);
 	}

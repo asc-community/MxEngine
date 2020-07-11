@@ -72,4 +72,9 @@ namespace MxEngine
         auto& transform = MxObject::GetByComponent(*this).Transform;
         return this->boxShape->GetBoundingSphere(transform);
     }
+
+    void BoxCollider::SetBoundingBox(const AABB& aabb)
+    {
+        this->CreateNewShape(aabb);
+    }
 }

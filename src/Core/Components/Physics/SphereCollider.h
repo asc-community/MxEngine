@@ -46,7 +46,9 @@ namespace MxEngine
         void UpdateCollider();
 
         SphereShapeHandle GetNativeHandle() const;
+
         AABB GetBoundingBox() const;
         BoundingSphere GetBoundingSphere() const;
+        void SetBoundingSphere(const BoundingSphere& sphere);
     };
 }

@@ -35,8 +35,11 @@
 #include "Core/Components/Audio/AudioSource.h"
 #include "Core/Components/Physics/BoxCollider.h"
 #include "Core/Components/Physics/SphereCollider.h"
+#include "Core/Components/Physics/CylinderCollider.h"
 #include "Core/Components/Physics/RigidBody.h"
 #include "Core/Components/Instancing/InstanceFactory.h"
+#include "Core/BoundingObjects/Cone.h"
+#include "Core/BoundingObjects/Frustrum.h"
 
 namespace MxEngine
 {
@@ -291,6 +294,7 @@ namespace MxEngine
                 auto audioSource = object.GetComponent<AudioSource>();
                 auto boxCollider = object.GetComponent<BoxCollider>();
                 auto sphereCollider = object.GetComponent<SphereCollider>();
+                auto cylinderCollider = object.GetComponent<CylinderCollider>();
                 auto rigidBody = object.GetComponent<RigidBody>();
 
                 if(instance.IsValid()) meshSource = instance->GetParent()->GetComponent<MeshSource>();
@@ -306,7 +310,7 @@ namespace MxEngine
                     {
                         auto sphere = meshSource->Mesh->GetBoundingSphere();
                         sphere.Center += object.Transform.GetPosition();
-                        sphere.SetRadius(sphere.GetRedius() * ComponentMax(object.Transform.GetScale()));
+                        sphere.Radius *= ComponentMax(object.Transform.GetScale());
                         this->DebugDrawer.Submit(sphere, debugDraw.BoundingSphereColor);
                     }
                 }
@@ -351,6 +355,8 @@ namespace MxEngine
                         this->DebugDrawer.Submit(boxCollider->GetBoundingBox(), debugDraw.BoundingBoxColor);
                     if (sphereCollider.IsValid())
                         this->DebugDrawer.Submit(sphereCollider->GetBoundingSphere(), debugDraw.BoundingSphereColor);
+                    if (cylinderCollider.IsValid())
+                        this->DebugDrawer.Submit(cylinderCollider->GetBoundingCylinder(), debugDraw.BoundingBoxColor);
                 }
             }
             environment.DebugBufferObject.VertexCount = this->DebugDrawer.GetSize();

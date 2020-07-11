@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-7.3.2|physics-red)
+![](https://img.shields.io/badge/version-7.4.0|physics-red)
 ![](https://img.shields.io/badge/license-bsd--3-yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
 <!-- soon! [![Documentation](https://codedocs.xyz/MomoDeve/MxEngine.svg)](https://codedocs.xyz/MomoDeve/MxEngine/) -->
@@ -12,24 +12,6 @@ Fow now MxEngine supports OpenGL as graphic API and targeting x64 only. My plans
 <img src="preview_images/readme_main.png">
 </p>
 
-## Additional dependencies
-MxEngine is not a huge framework so multiple third-party libraries are used. Here is the full list of dependencies for last MxEngine release version:
-- [EASTL](https://github.com/electronicarts/EASTL) - EA standard library which is used in engine core as STL alternative
-- [stb](https://github.com/nothings/stb) - header-only one-file library to work with images, audio files and etc.
-- [GLEW](http://glew.sourceforge.net/) - OpenGL C/C++ extension loading library
-- [GLFW](https://www.glfw.org/) - multi-platform library for OpenGL providing API for creating windows, receiving input and events
-- [GLM](https://glm.g-truc.net/0.9.9/index.html) - header only C++ mathematics library for graphics software
-- [ImGui](https://github.com/ocornut/imgui) - Bloat-free Immediate Mode Graphical User interface for C++
-- [Boost](https://www.boost.org) - large C++ library that you should already know about
-- [Assimp](http://www.assimp.org/) - portable Open Source library to import various well-known 3D model formats
-- [fmt](https://github.com/fmtlib/fmt) - formatting library for modern C++
-- [json](https://github.com/nlohmann/json) - nlohmann's json library for modern C++
-- [miniaudio](https://github.com/dr-soft/miniaudio) - header-only audio file loader collection
-- [OpenAL](https://github.com/kcat/openal-soft) - Ocross-platform, software implementation of the OpenAL 3D audio API
-
-All libraries are included in source code (which compiled automatically as part of engine) or compiled as static libraries and stored in zip folders inside engine repository. If you got troubles linking to libs, consider pulling submodule from github and building it yourself.
-Note that MxEngine may include more additional libraries in further releases. It also uses [Boost library](https://www.boost.org) in its core, but not exposes it to user-code. Engine requires at least C++17-compatable compiler as it depends on some new STL features. All source files are compiled using MSVC through VS2019, as I mainly use this IDE to develop the engine, but in future other compilers will be supported too.
-
 ## Versions & Releases
 MxEngine releases comes with version in format X.Y.Z where X stand for major release, Y for minor release and Z for bug fix or non-significant change. 
 
@@ -39,13 +21,17 @@ Minor releases may change API or add new features but usually user code can be e
 
 Bug fixes & improvements are just fixes to already existing code to reestablish initially planned behaviour. This fixes may also be merged into major or minor releases if they come in the same time.
 
-For full version list see versions.md file
+For full version list see [versions.md](versions.md) file
+
 ## Installing and running MxEngine
 Right now MxEngine is distributed in source code as Visual Studio project which can be runned under Windows. Here is the steps you need to do to compile and run test projects:
 1. clone this repo to your system using `git clone https://github.com/asc-community/MxEngine`
 2. run `install.py` file located in the project root directory (you need [python interpreter](https://www.python.org/) to do this)
 3. open `MxEngine.sln` located in the project root directory and set startup project to `ProjectTemplate` or `SandboxApplication`
 4. click `F5` button and wait until game is loaded (make sure you choose Debug/Release x64 build)
+
+## Dependencies
+If you are interesed in libraries MxEngine depend on, consider reading [dependencies.md](dependencies.md) file. It contains third-party library list with links to each project's github repository and brief explanation of why each library is used in the engine. Note that if you build MxEngine using VS2019 on x64, you do NOT have to clone the libraries or build them yourself - all binaries are already shipped with the engine and are automatically extracted by `install.py` script
 
 ## Answers to some questions:
 - Is it possible to build MxEngine under Linux/MacOS/other system?

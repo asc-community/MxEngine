@@ -41,8 +41,6 @@
 #include "DebugBuffer.h"
 #include "RenderPipeline.h"
 
-#include <array>
-
 namespace MxEngine
 {
 	class RenderController
@@ -74,8 +72,8 @@ namespace MxEngine
 		void SetViewport(int x, int y, int width, int height);
 		void AttachFrameBuffer(const FrameBufferHandle& framebuffer);
 		void AttachDefaultFrameBuffer();
-		void RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const Shader& shader);
-		void RenderToTexture(const TextureHandle& texture, const Shader& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
+		void RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
+		void RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
 		
 		EnvironmentUnit& GetEnvironment();
 		const EnvironmentUnit& GetEnvironment() const;

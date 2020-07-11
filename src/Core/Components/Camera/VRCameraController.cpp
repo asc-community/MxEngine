@@ -85,7 +85,7 @@ namespace MxEngine
         rightEye->Bind(1);
         this->shaderVR->SetUniformInt("leftEyeTex", 0);
         this->shaderVR->SetUniformInt("rightEyeTex", 1);
-        RenderManager::GetController().RenderToTexture(target, *this->shaderVR);
+        RenderManager::GetController().RenderToTexture(target, this->shaderVR);
         target->GenerateMipmaps();
     }
 

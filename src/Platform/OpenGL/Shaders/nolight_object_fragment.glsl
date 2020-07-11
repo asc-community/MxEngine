@@ -17,20 +17,14 @@ struct Material
 	float d;
 };
 
-uniform sampler2D map_Ka;
-uniform sampler2D map_Kd;
+uniform sampler2D map_albedo;
 uniform Material material;
 
 void main()
 {
-	vec3 ambient = vec3(texture(map_Ka, fsin.TexCoord));
-	vec3 diffuse = vec3(texture(map_Kd, fsin.TexCoord));
+	vec3 albedo = texture(map_albedo, fsin.TexCoord).rgb;
 	float dissolve = material.d;
-
-	vec3 color = 0.3 * ambient + 0.7 * diffuse;
-
 	color *= fsin.RenderColor;
-
-	Color = vec4(color, dissolve);
+	Color = vec4(albedo, dissolve);
 }
 )

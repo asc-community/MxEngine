@@ -37,7 +37,7 @@ namespace MxEngine
     void SphereCollider::CreateNewShape(const BoundingSphere& sphere)
     {
         this->SetColliderChangedFlag(true);
-        this->sphereShape = PhysicsFactory::Create<SphereShape>(sphere.GetRedius());
+        this->sphereShape = PhysicsFactory::Create<SphereShape>(sphere.Radius);
     }
 
     void SphereCollider::Init()
@@ -71,5 +71,10 @@ namespace MxEngine
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
         return this->sphereShape->GetBoundingSphere(transform);
+    }
+
+    void SphereCollider::SetBoundingSphere(const BoundingSphere& sphere)
+    {
+        this->CreateNewShape(sphere);
     }
 }

@@ -125,7 +125,7 @@ namespace MxEngine
             if (GUI::InputIntOnClick("line width", &lineWidth))
                 RenderManager::GetController().GetRenderEngine().UseLineWidth(Max(1, lineWidth));
 
-            auto& drawOverlay = RenderManager::GetDebugDrawer().DrawAsScreenOverlay;
+            auto& drawOverlay = RenderManager::GetAdaptor().DebugDrawer.DrawAsScreenOverlay;
             ImGui::Checkbox("overlay debug", &drawOverlay);
 
             ImGui::TreePop();

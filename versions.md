@@ -170,3 +170,8 @@
 - added Schedule() method to behaviour, now it can be called each time delta or once after some timedelta
 - Behaviour timer now can be tweaked from runtime editor
 - fixed bug with cubemap not loading from six strings
+### 7.4.0
+- added Bullet physics library and engine abstractions other it
+- new physics components: RigidBody, BoxCollider, SphereCollider, CyllinderCollider
+- removed ambient map and replaced diffuse map with albedo
+- some small fixes in engine utilities

@@ -42,7 +42,7 @@ namespace MxEngine
 		btBroadphaseInterface*  Broadphase;
 		btConstraintSolver* Solver;
 		btDynamicsWorld* World;
-		float simulationStep = 1.0f / 60.0f;
+		float simulationStep = 1.0f;
 	};
 
 	class PhysicsModule

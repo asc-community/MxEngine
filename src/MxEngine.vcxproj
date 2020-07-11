@@ -33,7 +33,9 @@
     <ClInclude Include="Core\Application\RuntimeManager.h" />
     <ClInclude Include="Core\BoundingObjects\AABB.h" />
     <ClInclude Include="Core\BoundingObjects\BoundingSphere.h" />
+    <ClInclude Include="Core\BoundingObjects\Capsule.h" />
     <ClInclude Include="Core\BoundingObjects\Cone.h" />
+    <ClInclude Include="Core\BoundingObjects\Cylinder.h" />
     <ClInclude Include="Core\BoundingObjects\Frustrum.h" />
     <ClInclude Include="Core\Components\Audio\AudioListener.h" />
     <ClInclude Include="Core\Components\Audio\AudioSource.h" />
@@ -50,6 +52,7 @@
     <ClInclude Include="Core\Components\Lighting\LightBase.h" />
     <ClInclude Include="Core\Components\Physics\BoxCollider.h" />
     <ClInclude Include="Core\Components\Physics\ColliderBase.h" />
+    <ClInclude Include="Core\Components\Physics\CylinderCollider.h" />
     <ClInclude Include="Core\Components\Physics\RigidBody.h" />
     <ClInclude Include="Core\Components\Physics\SphereCollider.h" />
     <ClInclude Include="Core\Components\Rendering\DebugDraw.h" />
@@ -84,6 +87,7 @@
     <ClInclude Include="Core\Rendering\SkyboxObject.h" />
     <ClInclude Include="Platform\AudioAPI.h" />
     <ClInclude Include="Platform\Bullet3\BoxShape.h" />
+    <ClInclude Include="Platform\Bullet3\CylinderShape.h" />
     <ClInclude Include="Platform\Bullet3\NativeRigidBody.h" />
     <ClInclude Include="Platform\Bullet3\ShapeBase.h" />
     <ClInclude Include="Platform\Bullet3\SphereShape.h" />
@@ -112,6 +116,8 @@
     <ClInclude Include="Utilities\ImGui\ComponentEditor.h" />
     <ClInclude Include="Utilities\ImGui\MxObjectEditor.h" />
     <ClInclude Include="Utilities\ImGui\RenderEditor.h" />
+    <ClCompile Include="Core\Components\Physics\CylinderCollider.cpp" />
+    <ClCompile Include="Platform\Bullet3\CylinderShape.cpp" />
     <ClCompile Include="Utilities\ImGui\ComponentEditors\RenderingEditors.cpp" />
     <ClInclude Include="Utilities\ImGui\ResourceEditor.h" />
     <ClInclude Include="Utilities\ImGui\Viewport.h" />

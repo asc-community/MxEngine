@@ -39,6 +39,7 @@ namespace MxEngine
         data->Dispatcher = Alloc<btCollisionDispatcher>(data->CollisionConfiguration);
         data->Broadphase = Alloc<btDbvtBroadphase>();
         data->Solver = Alloc<btSequentialImpulseConstraintSolver>();
+        data->Solver->reset();
         data->World = Alloc<btDiscreteDynamicsWorld>(
             data->Dispatcher, data->Broadphase, data->Solver, data->CollisionConfiguration);
 

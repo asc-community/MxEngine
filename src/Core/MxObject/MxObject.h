@@ -43,9 +43,6 @@ namespace MxEngine
 		EngineHandle handle = InvalidHandle;
 	public:
 		MxString Name = UUIDGenerator::Get();
-		float TranslateSpeed = 1.0f;
-		float RotateSpeed = 1.0f;
-		float ScaleSpeed = 1.0f;
 		Transform Transform;
 	private:
 		ComponentManager components;

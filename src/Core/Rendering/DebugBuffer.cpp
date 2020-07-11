@@ -27,6 +27,12 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "DebugBuffer.h"
+#include "Core/BoundingObjects/AABB.h"
+#include "Core/BoundingObjects/BoundingSphere.h"
+#include "Core/BoundingObjects/Cylinder.h"
+#include "Core/BoundingObjects/Capsule.h"
+#include "Core/BoundingObjects/Cone.h"
+#include "Core/BoundingObjects/Frustrum.h"
 
 namespace MxEngine
 {
@@ -39,6 +45,12 @@ namespace MxEngine
         this->VBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::DYNAMIC_DRAW);
         this->VAO = GraphicFactory::Create<VertexArray>();
         VAO->AddBuffer(*this->VBO, *VBL);
+    }
+
+    void DebugBuffer::Submit(const Line& line, const Vector4& color)
+    {
+        this->storage.push_back(line.p1);
+        this->storage.push_back(line.p2);
     }
 
     void DebugBuffer::Submit(const AABB& box, const Vector4& color)
@@ -125,7 +137,7 @@ namespace MxEngine
 
         for (const Vector3& v : sphereData)
         {
-            this->storage.push_back({ sphere.GetRedius() * v * 1.1f + sphere.Center, color });
+            this->storage.push_back({ sphere.Radius * v * 1.1f + sphere.Center, color });
         }
     }
 
@@ -212,6 +224,71 @@ namespace MxEngine
         this->storage.push_back({ plane.front(), color });
     }
 
+    void DebugBuffer::Submit(const Cylinder& cylinder, const Vector4& color)
+    {
+        constexpr std::array circle =
+        {
+            Vector2(0.0f, 1.0f),
+            Vector2(0.5f, RootThree<float>() * 0.5f),
+            Vector2(OneOverRootTwo<float>(), OneOverRootTwo<float>()),
+            Vector2(RootThree<float>() * 0.5f, 0.5f),
+            Vector2(1.0f, 0.0f),
+            Vector2(RootThree<float>() * 0.5f, -0.5f),
+            Vector2(OneOverRootTwo<float>(), -OneOverRootTwo<float>()),
+            Vector2(0.5f, -RootThree<float>() * 0.5f),
+            Vector2(0.0f, -1.0f),
+            Vector2(-0.5f, -RootThree<float>() * 0.5f),
+            Vector2(-OneOverRootTwo<float>(), -OneOverRootTwo<float>()),
+            Vector2(-RootThree<float>() * 0.5f, -0.5f),
+            Vector2(-1.0f, 0.0f),
+            Vector2(-RootThree<float>() * 0.5f, 0.5f),
+            Vector2(-OneOverRootTwo<float>(), OneOverRootTwo<float>()),
+            Vector2(-0.5f, RootThree<float>() * 0.5f),
+        };
+
+        std::array<Vector3, circle.size()> upper;
+        std::array<Vector3, circle.size()> lower;
+
+        Vector3 center{ 0.0f };
+        Vector3 offset{ 0.0f };
+        for (size_t i = 0; i < circle.size(); i++)
+        {
+            switch (cylinder.Orientation)
+            {
+            case Cylinder::Axis::X:
+                center = MakeVector3(0.0f, circle[i].x, circle[i].y) * cylinder.Radius + cylinder.Center;
+                offset.x = cylinder.Height * 0.5f;
+                break;
+            case Cylinder::Axis::Y:
+                center = MakeVector3(circle[i].x, 0.0f, circle[i].y) * cylinder.Radius + cylinder.Center;
+                offset.y = cylinder.Height * 0.5f;
+                break;
+            case Cylinder::Axis::Z:
+                center = MakeVector3(circle[i].x, circle[i].y, 0.0f) * cylinder.Radius + cylinder.Center;
+                offset.z = cylinder.Height * 0.5f;
+                break;
+            }
+            upper[i] = center - offset;
+            lower[i] = center + offset;
+        }
+        for (size_t i = 0; i < circle.size(); i++)
+        {
+            this->storage.push_back({ lower[i], color });
+            this->storage.push_back({ upper[i], color });
+        }
+        for (size_t i = 1; i < circle.size(); i++)
+        {
+            this->storage.push_back({ lower[i - 1], color });
+            this->storage.push_back({ lower[i],     color });
+            this->storage.push_back({ upper[i - 1], color });
+            this->storage.push_back({ upper[i],     color });
+        }
+        this->storage.push_back({ lower.front(), color });
+        this->storage.push_back({ lower.back(),  color });
+        this->storage.push_back({ upper.front(), color });
+        this->storage.push_back({ upper.back(),  color });
+    }
+
     void DebugBuffer::ClearBuffer()
     {
         this->storage.clear();
@@ -219,7 +296,7 @@ namespace MxEngine
 
     void DebugBuffer::SubmitBuffer()
     {
-        size_t size = this->GetSize() * sizeof(Point) / sizeof(float);
+        size_t size = this->GetSize() * sizeof(Line::Point) / sizeof(float);
         if (size <= this->VBO->GetSize())
             this->VBO->BufferSubData((float*)this->storage.data(), size);
         else

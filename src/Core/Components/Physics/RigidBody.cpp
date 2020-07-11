@@ -30,6 +30,7 @@
 #include "Core/MxObject/MxObject.h"
 #include "Core/Components/Physics/BoxCollider.h"
 #include "Core/Components/Physics/SphereCollider.h"
+#include "Core/Components/Physics/CylinderCollider.h"
 #include "Utilities/Logging/Logger.h"
 #include "Platform/Bullet3/Bullet3Utils.h"
 
@@ -106,6 +107,7 @@ namespace MxEngine
         
         InvalidateCollider<BoxCollider>(self);
         InvalidateCollider<SphereCollider>(self);
+        InvalidateCollider<CylinderCollider>(self);
     }
 
     void RigidBody::UpdateCollider()
@@ -115,6 +117,7 @@ namespace MxEngine
         bool tests = false;
         if (!tests) tests |= TestCollider(this->rigidBody, self.GetComponent<BoxCollider>()); //-V547
         if (!tests) tests |= TestCollider(this->rigidBody, self.GetComponent<SphereCollider>());
+        if (!tests) tests |= TestCollider(this->rigidBody, self.GetComponent<CylinderCollider>());
         if (!tests) this->rigidBody->SetCollisionShape(nullptr); // no collider
     }
 

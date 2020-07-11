@@ -113,8 +113,7 @@ namespace MxEngine::GUI
         }
         SCOPE_TREE_NODE(material->Name.c_str());
 
-        DrawTextureEditor("ambient map", material->AmbientMap);
-        DrawTextureEditor("diffuse map", material->DiffuseMap);
+        DrawTextureEditor("albedo map", material->AlbedoMap);
         DrawTextureEditor("specular map", material->SpecularMap);
         DrawTextureEditor("emmisive map", material->EmmisiveMap);
         DrawTextureEditor("normal map", material->NormalMap);
@@ -143,10 +142,9 @@ namespace MxEngine::GUI
     void DrawSphereEditor(const char* name, BoundingSphere& sphere)
     {
         SCOPE_TREE_NODE(name);
-        float radius = sphere.GetRedius();
         ImGui::DragFloat3("center", &sphere.Center[0], 0.01f);
-        ImGui::DragFloat("radius", &radius, 0.01f);
-        sphere.SetRadius(radius);
+        ImGui::DragFloat("radius", &sphere.Radius, 0.01f);
+        sphere.Radius = Max(sphere.Radius, 0.0f);
     }
 
     void DrawLightBaseEditor(LightBase& base)

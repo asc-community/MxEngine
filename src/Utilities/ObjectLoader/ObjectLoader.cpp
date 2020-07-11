@@ -115,8 +115,7 @@ namespace MxEngine
 					materialInfo.field = MxString((directory / path.C_Str()).string().c_str());\
 				}\
 			}
-			GET_TEXTURE(aiTextureType_AMBIENT, AmbientMap);
-			GET_TEXTURE(aiTextureType_DIFFUSE, DiffuseMap);
+			GET_TEXTURE(aiTextureType_DIFFUSE, AlbedoMap);
 			GET_TEXTURE(aiTextureType_SPECULAR, SpecularMap);
 			GET_TEXTURE(aiTextureType_EMISSIVE, EmmisiveMap);
 		}
@@ -211,8 +210,7 @@ namespace MxEngine
 			material.SpecularColor = json["SpecularColor"].get<Vector3>();
 			material.EmmisiveColor = json["EmmisiveColor"].get<Vector3>();
 
-			material.AmbientMap       = json["AmbientMap"     ].get<MxString>();
-			material.DiffuseMap       = json["DiffuseMap"     ].get<MxString>();
+			material.AlbedoMap        = json["AlbedoMap"      ].get<MxString>();
 			material.SpecularMap      = json["SpecularMap"    ].get<MxString>();
 			material.EmmisiveMap      = json["EmmisiveMap"    ].get<MxString>();
 			material.HeightMap        = json["HeightMap"      ].get<MxString>();
@@ -242,8 +240,7 @@ namespace MxEngine
 			DUMP(i, SpecularColor);
 			DUMP(i, EmmisiveColor);
 
-			DUMP(i, AmbientMap);
-			DUMP(i, DiffuseMap);
+			DUMP(i, AlbedoMap);
 			DUMP(i, SpecularMap);
 			DUMP(i, EmmisiveMap);
 			DUMP(i, HeightMap);

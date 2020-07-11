@@ -32,6 +32,8 @@
 
 namespace MxEngine
 {
+    struct RenderAdaptor;
+
 	class RenderManager
 	{
     public:
@@ -39,7 +41,7 @@ namespace MxEngine
 		static void SetViewport(const CameraController::Handle& viewport);
         static void ResizeViewport(size_t width, size_t height);
 		static RenderController& GetController();
-		static DebugBuffer& GetDebugDrawer();
+        static RenderAdaptor& GetAdaptor();
         static void LoadMainShader(bool useLighting = true);
         static void SetRenderToDefaultFrameBuffer(bool value = true);
         static bool IsRenderedToDefaultFrameBuffer();
@@ -51,5 +53,10 @@ namespace MxEngine
         static float GetFogDistance();
         static void SetShadowBlurIterations(size_t iterations);
         static size_t GetShadowBlurIterations();
+        static void Draw(const Line& line, const Vector4& color);
+        static void Draw(const AABB& box, const Vector4& color);
+        static void Draw(const BoundingSphere& sphere, const Vector4& color);
+        static void Draw(const Frustrum& frustrum, const Vector4& color);
+        static void Draw(const Cone& box, const Vector4& color);
 	};
 }

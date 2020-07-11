@@ -34,17 +34,14 @@ namespace MxEngine
 {
     class BoundingSphere
     {
-        float radius = 0.0f;
     public:
+        float Radius = 0.0f;
         Vector3 Center = MakeVector3(0.0f);
 
         constexpr BoundingSphere() = default;
 
         constexpr BoundingSphere(const Vector3& center, float r)
-            : radius(Max(0.0f, r)), Center(center) { }
-
-        constexpr float GetRedius() const { return radius; }
-        constexpr void SetRadius(float r) { this->radius = Max(0.0f, r); }
+            : Radius(r), Center(center) { }
     };
 
     // TODO: sphere must be created more precisely, as it is almost always less in size than AABB
@@ -53,7 +50,7 @@ namespace MxEngine
     {
         auto center = box.GetCenter();
         auto length = box.Length();
-        float radius = Max(length.x, length.y, length.z) / RootFive<float>(); // * 0.5f;
+        float radius = ComponentMax(length) * 0.5f;
         return BoundingSphere(center, radius);
     }
 }

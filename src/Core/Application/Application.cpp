@@ -112,7 +112,7 @@ namespace MxEngine
 
 	void Application::CloseOnKeyPress(KeyCode key)
 	{
-		MXLOG_DEBUG("MxEngine::AppCloseBinding", MxFormat("bound app close to keycode: {0}", EnumToString(key)));
+		MXLOG_INFO("MxEngine::AppCloseBinding", MxFormat("bound app close to keycode: {0}", EnumToString(key)));
 		EventManager::AddEventListener("AppCloseEvent", [key](KeyEvent& event)
 		{
 			auto context = Application::Get();

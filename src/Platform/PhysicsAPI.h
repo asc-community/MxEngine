@@ -30,14 +30,33 @@
 
 #include "Bullet3/BoxShape.h"
 #include "Bullet3/SphereShape.h"
+#include "Bullet3/CylinderShape.h"
 #include "Bullet3/NativeRigidBody.h"
 #include "Utilities/AbstractFactory/AbstractFactory.h"
 
 namespace MxEngine
 {
-    using PhysicsFactory = AbstractFactoryImpl<BoxShape, SphereShape, NativeRigidBody>;
+    using PhysicsFactory = AbstractFactoryImpl<BoxShape, SphereShape, CylinderShape, NativeRigidBody>;
 
     using BoxShapeHandle = Resource<BoxShape, PhysicsFactory>;
     using SphereShapeHandle = Resource<SphereShape, PhysicsFactory>;
+    using CylinderShapeHandle = Resource<CylinderShape, PhysicsFactory>;
     using NativeRigidBodyHandle = Resource<NativeRigidBody, PhysicsFactory>;
+
+    // Physics: how to add new collider
+    //
+    //
+    // Create new bounding object with all desired data for collider
+    // 
+    // Create class <ColliderType>Shape (copy-past from any other existing shape)
+    // 
+    // alias handle to it as <ColliderType>ShapeHandle = ...
+    //
+    // create component <ColliderType>Collider (copy-past from any other existing shape)
+    //
+    // add tests for new collider in RigidBody.cpp in Init() and UpdateCollider() methods
+    //
+    // add Submit method in DebugDrawer to draw collider in game
+    //
+    // add test for collider in RenderAdaptor.cpp DebugDraw component case
 }

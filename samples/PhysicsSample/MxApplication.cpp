@@ -1,13 +1,10 @@
 #pragma once
 
 #include <MxEngine.h>
-#include "Platform/Modules/PhysicsModule.h"
-#include "Core/Application/PhysicsManager.h"
 
 namespace ProjectTemplate
 {
     using namespace MxEngine;
-
 
     class MxApplication : public Application
     {
@@ -42,9 +39,9 @@ namespace ProjectTemplate
                 object->GetComponent<Instance>()->SetColor(Vector3(x / lenA / size, y / lenB / size, z / lenC / size));
                 object->Transform.SetScale(size);
 
-                object->AddComponent<BoxCollider>();
+                object->AddComponent<CylinderCollider>()->SetOrientation(Cylinder::Axis::X);
                 auto rigidBody = object->AddComponent<RigidBody>();
-                rigidBody->SetMass(250.0f);
+                rigidBody->SetMass(800.0f / (1.0f + y * y * y));
                 rigidBody->SetAngularForceFactor(Vector3(0.01f));
 
                 if (PhysicsDebug)
@@ -89,7 +86,7 @@ namespace ProjectTemplate
         {
             cameraObject = MxObject::Create();
             cameraObject->Name = "Player Camera";
-            cameraObject->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap(R"(D:\repos\MxEngine\samples\SandboxApplication\Resources\textures\dawn.jpg)");
+            cameraObject->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("dawn.jpg"_id);
             cameraObject->Transform.SetPosition(Vector3(30, 30, 30));
             auto controller = cameraObject->AddComponent<CameraController>();
             controller->SetMoveSpeed(50);

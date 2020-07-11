@@ -55,9 +55,9 @@ namespace MxEngine
         return Application::Get()->GetRenderAdaptor().Renderer;
     }
 
-    DebugBuffer& RenderManager::GetDebugDrawer()
+    RenderAdaptor& RenderManager::GetAdaptor()
     {
-        return Application::Get()->GetRenderAdaptor().DebugDrawer;
+        return Application::Get()->GetRenderAdaptor();
     }
 
     #define FWD(func_name, ...) Application::Get()->GetRenderAdaptor().func_name(__VA_ARGS__)
@@ -115,5 +115,32 @@ namespace MxEngine
     size_t RenderManager::GetShadowBlurIterations()
     {
         return FWD(GetShadowBlurIterations);
+    }
+
+    #define DRW Application::Get()->GetRenderAdaptor().DebugDrawer
+
+    void RenderManager::Draw(const Line& line, const Vector4& color)
+    {
+        DRW.Submit(line, color);
+    }
+
+    void RenderManager::Draw(const AABB& box, const Vector4& color)
+    {
+        DRW.Submit(box, color);
+    }
+
+    void RenderManager::Draw(const BoundingSphere& sphere, const Vector4& color)
+    {
+        DRW.Submit(sphere, color);
+    }
+
+    void RenderManager::Draw(const Frustrum& frustrum, const Vector4& color)
+    {
+        DRW.Submit(frustrum, color);
+    }
+
+    void RenderManager::Draw(const Cone& cone, const Vector4& color)
+    {
+        DRW.Submit(cone, color);
     }
 }
