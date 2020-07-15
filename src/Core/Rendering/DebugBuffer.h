@@ -34,9 +34,9 @@ namespace MxEngine
 {
 	class AABB;
 	class BoundingSphere;
-	class Capsule;
 	class Cone;
 	class Cylinder;
+	class Capsule;
 	class Frustrum;
 
 	class Line

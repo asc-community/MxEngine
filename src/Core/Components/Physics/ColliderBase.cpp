@@ -46,10 +46,11 @@ namespace MxEngine
         if (meshSource.IsValid())
         {
             auto& mesh = meshSource->Mesh;
-            if (this->savedMeshState != mesh.GetUUID())
+            auto uuid = mesh.GetUUID();
+            if (this->savedMeshState != uuid)
             {
                 auto& meshAABB = mesh->GetBoundingBox();
-                this->savedMeshState = mesh.GetUUID();
+                this->savedMeshState = uuid;
                 return true; // ask to update collider to new meshAABB
             }
         }

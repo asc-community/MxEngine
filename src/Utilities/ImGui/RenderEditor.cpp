@@ -29,7 +29,7 @@
 #include "RenderEditor.h"
 #include "ImGuiUtils.h"
 
-#include "Core/Application/RenderManager.h"
+#include "Core/Application/Rendering.h"
 #include "ComponentEditor.h"
 #include "Platform/Window/WindowManager.h"
 
@@ -41,31 +41,31 @@ namespace MxEngine
 
         if (ImGui::TreeNode("fog settings"))
         {
-            auto fogColor = RenderManager::GetFogColor();
-            auto fogDensity = RenderManager::GetFogDensity();
-            auto fogDistance = RenderManager::GetFogDistance();
+            auto fogColor = Rendering::GetFogColor();
+            auto fogDensity = Rendering::GetFogDensity();
+            auto fogDistance = Rendering::GetFogDistance();
 
             if (ImGui::ColorEdit3("fog color", &fogColor[0]))
-                RenderManager::SetFogColor(fogColor);
+                Rendering::SetFogColor(fogColor);
 
             if (ImGui::DragFloat("fog density", &fogDensity, 0.001f, 0.0f, 10000.0f))
-                RenderManager::SetFogDensity(fogDensity);
+                Rendering::SetFogDensity(fogDensity);
 
             if (ImGui::DragFloat("fog distance", &fogDistance, 0.01f, 0.0f, 1.0f))
-                RenderManager::SetFogDistance(fogDistance);
+                Rendering::SetFogDistance(fogDistance);
 
             ImGui::TreePop();
         }
 
         if (ImGui::TreeNode("shadows settings"))
         {
-            int blurIterations = (int)RenderManager::GetShadowBlurIterations();
+            int blurIterations = (int)Rendering::GetShadowBlurIterations();
             if(ImGui::DragInt("shadow blur iterations", &blurIterations, 0.01f))
-                RenderManager::SetShadowBlurIterations(Max(0, blurIterations));
+                Rendering::SetShadowBlurIterations(Max(0, blurIterations));
 
             static bool lightingEnabled = true;
             if (ImGui::Checkbox("toggle global lighting", &lightingEnabled))
-                RenderManager::LoadMainShader(lightingEnabled);
+                Rendering::LoadMainShader(lightingEnabled);
 
             ImGui::TreePop();
         }
@@ -105,7 +105,7 @@ namespace MxEngine
 
         if (ImGui::TreeNode("renderer viewport"))
         {
-            auto viewport = RenderManager::GetViewport();
+            auto viewport = Rendering::GetViewport();
             if (viewport.IsValid())
             {
                 GUI::DrawImageSaver(viewport->GetRenderTexture(), "take screenshot");
@@ -123,9 +123,9 @@ namespace MxEngine
         {
             static int lineWidth = 3;
             if (GUI::InputIntOnClick("line width", &lineWidth))
-                RenderManager::GetController().GetRenderEngine().UseLineWidth(Max(1, lineWidth));
+                Rendering::GetController().GetRenderEngine().UseLineWidth(Max(1, lineWidth));
 
-            auto& drawOverlay = RenderManager::GetAdaptor().DebugDrawer.DrawAsScreenOverlay;
+            auto& drawOverlay = Rendering::GetAdaptor().DebugDrawer.DrawAsScreenOverlay;
             ImGui::Checkbox("overlay debug", &drawOverlay);
 
             ImGui::TreePop();

@@ -28,11 +28,38 @@
 
 #pragma once
 
-#include "Utilities/EventDispatcher/EventDispatcher.h"
+#include "Core/Application/Application.h"
 
 namespace MxEngine
 {
-	MAKE_EVENT_BASE(IEvent);
+    class Runtime
+    {
+    public:
+        template<typename Func>
+        static void RegisterComponentEditor(const char* name, Func&& callback)
+        {
+            Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
+        }
 
-	using AppEventDispatcher = EventDispatcherImpl<IEvent>;
+        template<typename T>
+        static void RegisterComponentUpdate()
+        {
+            Application::Get()->RegisterComponentUpdate<T>();
+        }
+
+        static bool IsEditorActive()
+        {
+            return Application::Get()->GetRuntimeEditor().IsActive();
+        }
+
+        static void ExecuteScript(const MxString& script)
+        {
+            Application::Get()->GetRuntimeEditor().ExecuteScript(script);
+        }
+
+        static void CloseApplication()
+        {
+            Application::Get()->CloseApplication();
+        }
+    };
 }

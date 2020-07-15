@@ -30,7 +30,7 @@
 #include "Bullet3Utils.h"
 #include "Utilities/Memory/Memory.h"
 #include "Utilities/Logging/Logger.h"
-#include "Core/Application/PhysicsManager.h"
+#include "Core/Application/Physics.h"
 
 namespace MxEngine
 {
@@ -52,7 +52,7 @@ namespace MxEngine
     {
         if (this->body != nullptr)
         {
-            PhysicsManager::RemoveRigidBody(this->body);
+            Physics::RemoveRigidBody(this->body);
 
             Free(this->body);
             Free(this->state);
@@ -61,8 +61,8 @@ namespace MxEngine
 
     void NativeRigidBody::ReAddRigidBody()
     {
-        PhysicsManager::RemoveRigidBody(this->body);
-        PhysicsManager::AddRigidBody(this->body);
+        Physics::RemoveRigidBody(this->body);
+        Physics::AddRigidBody(this->body);
     }
 
     void NativeRigidBody::UpdateRigidBodyCollider(float mass, btCollisionShape* collider)
@@ -93,7 +93,7 @@ namespace MxEngine
         this->state = Alloc<MotionStateNotifier>(tr);
         this->body = Alloc<btRigidBody>(0.0f, this->state, nullptr);
 
-        PhysicsManager::AddRigidBody(this->body);
+        Physics::AddRigidBody(this->body);
     }
 
     NativeRigidBody::NativeRigidBody(NativeRigidBody&& other) noexcept

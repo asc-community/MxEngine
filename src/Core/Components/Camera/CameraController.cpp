@@ -27,8 +27,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "CameraController.h"
-#include "Core/Event/Events/WindowResizeEvent.h"
-#include "Core/Application/EventManager.h"
+#include "Core/Events/WindowResizeEvent.h"
+#include "Core/Application/Event.h"
 #include "Platform/Window/WindowManager.h"
 #include "OrthographicCamera.h"
 #include "PerspectiveCamera.h"
@@ -97,7 +97,7 @@ namespace MxEngine
 
 	CameraController::~CameraController()
 	{
-		EventManager::RemoveEventListener(this->GetFrameBufferMSAA().GetUUID());
+		Event::RemoveEventListener(this->GetFrameBufferMSAA().GetUUID());
 	}
 
 	void CameraController::SetCameraType(CameraType type)
@@ -160,9 +160,9 @@ namespace MxEngine
 
 	void CameraController::ListenWindowResizeEvent()
 	{
-		EventManager::RemoveEventListener(this->GetFrameBufferMSAA().GetUUID());
+		Event::RemoveEventListener(this->GetFrameBufferMSAA().GetUUID());
 
-		EventManager::AddEventListener<WindowResizeEvent>(this->GetFrameBufferMSAA().GetUUID(),
+		Event::AddEventListener<WindowResizeEvent>(this->GetFrameBufferMSAA().GetUUID(),
 		[camera = MxObject::GetComponentHandle(*this)](WindowResizeEvent& e) mutable
 		{
 			if (camera.IsValid() && (e.Old != e.New))

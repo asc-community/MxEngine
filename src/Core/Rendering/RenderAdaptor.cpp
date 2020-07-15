@@ -36,6 +36,7 @@
 #include "Core/Components/Physics/BoxCollider.h"
 #include "Core/Components/Physics/SphereCollider.h"
 #include "Core/Components/Physics/CylinderCollider.h"
+#include "Core/Components/Physics/CapsuleCollider.h"
 #include "Core/Components/Physics/RigidBody.h"
 #include "Core/Components/Instancing/InstanceFactory.h"
 #include "Core/BoundingObjects/Cone.h"
@@ -295,6 +296,7 @@ namespace MxEngine
                 auto boxCollider = object.GetComponent<BoxCollider>();
                 auto sphereCollider = object.GetComponent<SphereCollider>();
                 auto cylinderCollider = object.GetComponent<CylinderCollider>();
+                auto capsuleCollider = object.GetComponent<CapsuleCollider>();
                 auto rigidBody = object.GetComponent<RigidBody>();
 
                 if(instance.IsValid()) meshSource = instance->GetParent()->GetComponent<MeshSource>();
@@ -357,6 +359,8 @@ namespace MxEngine
                         this->DebugDrawer.Submit(sphereCollider->GetBoundingSphere(), debugDraw.BoundingSphereColor);
                     if (cylinderCollider.IsValid())
                         this->DebugDrawer.Submit(cylinderCollider->GetBoundingCylinder(), debugDraw.BoundingBoxColor);
+                    if (capsuleCollider.IsValid())
+                        this->DebugDrawer.Submit(capsuleCollider->GetBoundingCapsule(), debugDraw.BoundingSphereColor);
                 }
             }
             environment.DebugBufferObject.VertexCount = this->DebugDrawer.GetSize();

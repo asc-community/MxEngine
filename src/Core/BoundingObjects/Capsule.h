@@ -29,20 +29,51 @@
 #pragma once
 
 #include "Utilities/Math/Math.h"
+#include "Core/BoundingObjects/AABB.h"
 
 namespace MxEngine
 {
     class Capsule
     {
     public:
+        enum class Axis
+        {
+            X, Y, Z
+        };
+
         float Height = 0.0f;
         float Radius = 0.0f;
+        Vector3 Center = MakeVector3(0.0f);
+        Quaternion Rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
+        Axis Orientation = Axis::Y;
 
         constexpr Capsule() = default;
 
-        constexpr Capsule(float height, float radius)
-            : Height(height), Radius(radius)
+        constexpr Capsule(float height, float radius, Axis orientation)
+            : Height(height), Radius(radius), Orientation(orientation)
         {
         }
     };
+
+    constexpr Capsule ToCapsule(const AABB& aabb, Capsule::Axis axis)
+    {
+        auto length = aabb.Length();
+        float height = 0.0f, radius = 0.0f;
+        switch (axis)
+        {
+        case Capsule::Axis::X:
+            radius = Max(length.y, length.z) * 0.5f;
+            height = Max(0.01f, length.x - 2.0f * radius);
+            break;
+        case Capsule::Axis::Y:
+            radius = Max(length.x, length.z) * 0.5f;
+            height = Max(0.01f, length.y - 2.0f * radius);
+            break;
+        case Capsule::Axis::Z:
+            radius = Max(length.x, length.y) * 0.5f;
+            height = Max(0.01f, length.z - 2.0f * radius);
+            break;
+        }
+        return Capsule(height, radius, axis);
+    }
 }

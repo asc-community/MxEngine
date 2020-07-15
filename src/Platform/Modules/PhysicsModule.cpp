@@ -28,6 +28,7 @@
 
 #include "PhysicsModule.h"
 #include "Utilities/Memory/Memory.h"
+#include "Utilities/Profiler/Profiler.h"
 #include "Platform/Bullet3/Bullet3Utils.h"
 
 namespace MxEngine
@@ -60,6 +61,7 @@ namespace MxEngine
     {
         if (data->simulationStep > 0.0f)
         {
+            MAKE_SCOPE_PROFILER("Physics::SimulationStep()");
             data->World->stepSimulation(Min(dt, data->simulationStep));
         }
     }

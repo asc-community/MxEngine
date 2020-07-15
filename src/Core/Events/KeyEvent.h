@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Core/Event/IEvent.h"
+#include "Core/Events/EventBase.h"
 #include <bitset>
 
 namespace MxEngine
@@ -289,7 +289,7 @@ namespace MxEngine
 		return "INVALID_KEY";
 	}
 
-	class KeyEvent : public IEvent
+	class KeyEvent : public EventBase
 	{
 		MAKE_EVENT(KeyEvent);
 

@@ -30,7 +30,6 @@
 #include "Core/MxObject/MxObject.h"
 #include "Core/Components/Instancing/Instance.h"
 #include "Core/Components/Rendering/MeshSource.h"
-#include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
 {

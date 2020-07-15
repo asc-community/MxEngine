@@ -39,7 +39,7 @@ namespace ProjectTemplate
                 object->GetComponent<Instance>()->SetColor(Vector3(x / lenA / size, y / lenB / size, z / lenC / size));
                 object->Transform.SetScale(size);
 
-                object->AddComponent<CylinderCollider>()->SetOrientation(Cylinder::Axis::X);
+                object->AddComponent<BoxCollider>();
                 auto rigidBody = object->AddComponent<RigidBody>();
                 rigidBody->SetMass(800.0f / (1.0f + y * y * y));
                 rigidBody->SetAngularForceFactor(Vector3(0.01f));
@@ -95,8 +95,8 @@ namespace ProjectTemplate
             controller->SetMoveSpeed(30);
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
-            RenderManager::SetViewport(controller);
-            RenderManager::SetFogDensity(0.0f);
+            Rendering::SetViewport(controller);
+            Rendering::SetFogDensity(0.0f);
 
             // create global directional light
             auto lightObject = MxObject::Create();
@@ -126,7 +126,7 @@ namespace ProjectTemplate
             InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3( 0,  0,  1), BigCubeSize, BigCubeThickness, 0.6f);
 
             this->Reset();
-            PhysicsManager::SetSimulationStep(0.0f); // disable auto-physics sim
+            Physics::SetSimulationStep(0.0f); // disable auto-physics sim
         }
 
         virtual void OnUpdate() override
@@ -141,10 +141,10 @@ namespace ProjectTemplate
 
             if (!InputManager::IsMouseHeld(MouseButton::RIGHT))
             {
-                PhysicsManager::PerformExtraSimulationStep(1.0f / 60.0f);
+                Physics::PerformExtraSimulationStep(1.0f / 60.0f);
             }
 
-            if (RuntimeManager::IsEditorActive())
+            if (Runtime::IsEditorActive())
             {
                 ImGui::Begin("physics");
 

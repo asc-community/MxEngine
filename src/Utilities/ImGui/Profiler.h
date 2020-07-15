@@ -29,8 +29,8 @@
 #pragma once
 
 #include "Utilities/ImGui/ImGuiBase.h"
-#include "Core/Application/EventManager.h"
-#include "Core/Event/Events/FpsUpdateEvent.h"
+#include "Core/Application/Event.h"
+#include "Core/Events/FpsUpdateEvent.h"
 
 namespace MxEngine::GUI
 {
@@ -38,21 +38,20 @@ namespace MxEngine::GUI
 	draws fps graph in currenly active window. Listens to FpsUpdateEvent in global (Application) context
 	\param graphRecordSize how many fps updates to track before refreshing (clearing). Each update happens each second.
 	*/
-	inline void DrawProfiler(size_t graphRecordSize = 128)
-	{
-		static std::vector<float> fpsData;
-		static size_t curPointer = 0;
-		fpsData.resize(graphRecordSize);
-		auto context = Application::Get();
-		
-		INVOKE_ONCE(EventManager::AddEventListener<FpsUpdateEvent>("FpsGraph", [graphRecordSize](FpsUpdateEvent& e)
-		{
-			fpsData[curPointer] = static_cast<float>(e.FPS);
-			curPointer = (curPointer + 1) % graphRecordSize;
-			if (curPointer == 0) std::fill(fpsData.begin(), fpsData.end(), 0.0f);
+	inline void DrawProfiler()
+	{		
+		static MxVector<float> fpsData;
+
+		INVOKE_ONCE(Event::AddEventListener<FpsUpdateEvent>(
+			"FpsGraph", [](FpsUpdateEvent& e) mutable
+		{		
+			constexpr size_t ProfilerGraphRecordSize = 128;
+			fpsData.push_back((float)e.FPS);
+			if (fpsData.size() > ProfilerGraphRecordSize)
+				fpsData.erase(fpsData.begin());
 		}));
 
-		ImGui::PlotLines("", fpsData.data(), (int)graphRecordSize, 0, "FPS profiler", 
-			FLT_MAX, FLT_MAX, { ImGui::GetWindowWidth() - 15.0f, graphRecordSize + 15.0f });
+		ImGui::PlotLines("", fpsData.data(), (int)fpsData.size(), 0, "FPS profiler",
+			FLT_MAX, FLT_MAX, { ImGui::GetWindowWidth() - 15.0f, (float)fpsData.size() + 15.0f });
 	}
 }

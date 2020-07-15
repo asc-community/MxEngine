@@ -26,60 +26,39 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-// Andrei's Alexandrescu SingletonHolder (see "Modern C++ Design" ch. 6)
+#include "Physics.h"
+#include "Utilities/Logging/Logger.h"
+#include "Platform/Modules/PhysicsModule.h"
+#include "Platform/Bullet3/Bullet3Utils.h"
+#include "Utilities/Profiler/Profiler.h"
 
 namespace MxEngine
 {
-	using AtExitFunctionPointer = void (*)();
+    #define WORLD PhysicsModule::GetImpl()->World
 
-	/*!
-	lifetime policy of singleton which shedules destruction function call at program exit
-	*/
-	template <class T>
-	class DefaultLifetime
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer func)
-		{
-			std::atexit(func);
-		}
+    void Physics::AddRigidBody(void* body) //-V813
+    {
+        WORLD->addRigidBody((btRigidBody*)body);
+    }
 
-		static inline void OnDeadReference() { }
-	};
+    void Physics::RemoveRigidBody(void* body) //-V813
+    {
+        WORLD->removeRigidBody((btRigidBody*)body);
+    }
 
-	/*!
-	lifetime policy of singleton which does not destroy an object
-	*/
-	template <class T>
-	class NoDestroy
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer) { }
+    void Physics::SetGravity(const Vector3& gravity)
+    {
+        WORLD->setGravity(ToBulletVector3(gravity));
+    }
 
-		static inline void OnDeadReference() { }
-	};
+    void Physics::PerformExtraSimulationStep(float timeDelta)
+    {
+        MAKE_SCOPE_PROFILER("Physics::SimulationStep()");
+        WORLD->stepSimulation(timeDelta);
+    }
 
-	/*!
-	lifetime policy of singleton which shedules object destruction, but allow it be recreated many times
-	*/
-	template <class T>
-	class PhoenixSingleton
-	{
-	public:
-		static inline void ScheduleDestruction(T*, AtExitFunctionPointer func)
-		{
-			if (!destroyedOnce)
-				std::atexit(func);
-		}
-
-		static inline void OnDeadReference()
-		{
-			destroyedOnce = true;
-		}
-
-	private:
-		inline static bool destroyedOnce = false;
-	};
+    void Physics::SetSimulationStep(float timeDelta)
+    {
+        PhysicsModule::SetSimulationStep(timeDelta);
+    }
 }

@@ -49,7 +49,7 @@ public:
 		auto sound = MxObject::Create();
 		InitSound(*sound);
 
-		RenderManager::SetViewport(camera->GetComponent<CameraController>());
+		Rendering::SetViewport(camera->GetComponent<CameraController>());
     }
 
 	void OnUpdate()

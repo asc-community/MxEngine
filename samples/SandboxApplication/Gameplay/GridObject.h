@@ -9,7 +9,6 @@ void InitGrid(MxObject& object)
 
 	auto gridTexture = AssetManager::LoadTexture("textures/brick.jpg"_id);
 	auto material = object.GetOrAddComponent<MeshRenderer>()->GetMaterial();
-	material->AmbientMap = gridTexture;
 	material->AlbedoMap = gridTexture;
 	material->NormalMap = AssetManager::LoadTexture("textures/brick_normal.jpg"_id);
 }

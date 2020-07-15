@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Core/Components/Instancing/Instance.h"
+#include "Core/Resources/Mesh.h"
 
 namespace MxEngine
 {

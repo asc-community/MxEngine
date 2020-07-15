@@ -43,7 +43,7 @@ namespace ProjectTemplate
             VR->LeftEye = leftEye;
             VR->RightEye = rightEye;
 
-            RenderManager::SetViewport(controller);
+            Rendering::SetViewport(controller);
 
             auto cubeObject = MxObject::Create();
             cubeObject->Name = "Cube";

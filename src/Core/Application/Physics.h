@@ -28,18 +28,17 @@
 
 #pragma once
 
-#include "Core/Event/IEvent.h"
-#include "Utilities/Math/Math.h"
+#include "Platform/PhysicsAPI.h"
 
 namespace MxEngine
 {
-	class WindowResizeEvent : public IEvent
-	{
-		MAKE_EVENT(WindowResizeEvent);
-	public:
-		Vector2 Old, New;
-
-		WindowResizeEvent(Vector2 Old, Vector2 New)
-			: Old(Old), New(New) { }
-	};
+    class Physics
+    {
+    public:
+        static void AddRigidBody(void* body);
+        static void RemoveRigidBody(void* body);
+        static void SetGravity(const Vector3& gravity);
+        static void PerformExtraSimulationStep(float timeDelta);
+        static void SetSimulationStep(float timeDelta);
+    };
 }

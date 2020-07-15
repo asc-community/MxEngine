@@ -28,69 +28,31 @@
 
 #pragma once
 
-#include <memory>
-
-// Andrei's Alexandrescu SingletonHolder (see "Modern C++ Design" ch. 6)
+#include "Utilities/ECS/Component.h"
+#include "Platform/PhysicsAPI.h"
+#include "ColliderBase.h"
 
 namespace MxEngine
 {
-	/*!
-	policy class which allocates singleton object using new operator
-	*/
-	template<typename T>
-	class CreateWithNew
-	{
-	public:
-		static inline T* Create()
-		{
-			return new T();
-		}
+    class CapsuleCollider : public ColliderBase
+    {
+        MAKE_COMPONENT(CapsuleCollider);
 
-		static inline void Destroy(T* obj)
-		{
-			delete obj;
-		}
-	};
+        CapsuleShapeHandle capsuleShape;
 
-	/*!
-	policy class which allocates singleton object using malloc function
-	*/
-	template<typename T>
-	class CreateWithMalloc
-	{
-	public:
-		static inline T* Create()
-		{
-			T* ptr = std::malloc(sizeof(T));
-			if (ptr == nullptr) 
-				return nullptr;
-			return new(ptr) T();
-		}
+        void CreateNewShape(const Capsule& capsule);
+    public:
+        void Init();
+        void UpdateCollider();
 
-		static inline void Destroy(T* obj)
-		{
-			obj->~T();
-			std::free(obj);
-		}
-	};
+        CapsuleShapeHandle GetNativeHandle() const;
 
-	/*!
-	policy class which allocates singleton object using inplace new operator
-	*/
-	template<typename T>
-	class CreateStatic
-	{
-		union MaxAling { char t[sizeof(T)]; long double ld; long long ll; };
-	public:
-		static inline T* Create()
-		{
-			static MaxAling staticMemory;
-			return new(&staticMemory) T();
-		}
+        void SetOrientation(Capsule::Axis axis);
+        Capsule::Axis GetOrientation() const;
 
-		static inline void Destroy(T* obj)
-		{
-			obj->~T();
-		}
-	};
+        AABB GetBoundingBox() const;
+        BoundingSphere GetBoundingSphere() const;
+        Capsule GetBoundingCapsule() const;
+        void SetBoundingCapsule(const Capsule& capsule);
+    };
 }

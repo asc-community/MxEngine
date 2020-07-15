@@ -28,13 +28,12 @@
 
 #pragma once
 
-#include <string>
 #include <bitset>
 
 #include "Utilities/Time/Time.h"
 #include "Utilities/Math/Math.h"
-#include "Core/Event/Events/KeyEvent.h"
-#include "Core/Event/Events/MouseEvent.h"
+#include "Core/Events/KeyEvent.h"
+#include "Core/Events/MouseEvent.h"
 
 struct GLFWwindow; // from glfw header file
 
@@ -61,7 +60,7 @@ namespace MxEngine
 		MxString title;
 		GLFWwindow* window = nullptr;
 		int width = 0, height = 0;
-		AppEventDispatcher* dispatcher = nullptr;
+		EventDispatcher* dispatcher = nullptr;
 		mutable std::bitset<350> keyHeld;
 		mutable std::bitset<350> keyPressed;
 		mutable std::bitset<350> keyReleased;
@@ -101,7 +100,7 @@ namespace MxEngine
 		bool IsKeyHeldUnchecked(KeyCode key);
 		bool IsMouseHeldUnchecked(MouseButton button);
 		WindowHandle GetNativeHandle();
-		AppEventDispatcher& GetEventDispatcher();
+		EventDispatcher& GetEventDispatcher();
 		bool IsCreated() const;
 		Window& Create();
 		Window& Close();
@@ -113,7 +112,7 @@ namespace MxEngine
 		Window& UseTitle(const MxString& title);
 		Window& UseWindowPosition(int xpos, int ypos);
 		Window& UseWindowSize(int width, int height);
-		Window& UseEventDispatcher(AppEventDispatcher* dispatcher);
+		Window& UseEventDispatcher(EventDispatcher* dispatcher);
 		Window& UseProfile(int majorVersion, int minorVersion, Profile profile);
 	};
 }

@@ -28,17 +28,31 @@
 
 #pragma once
 
+#include "Core/Components/Behaviour.h"
+#include "Core/MxObject/MxObject.h"
+
 namespace MxEngine
 {
-	/*!
-	threading policy. Provides easy way to replace multi-threading programs with single-threaded and visa versa.
-	For now, MxEngine supports only single-threaded execution, so this is just a stub policy
-	*/
-	template<typename T>
-	class SingleThreaded
-	{
-	public:
-		using VolatileType = T;
-		struct Lock {};
-	};
+    class Timer
+    {
+    public:
+        template<typename F>
+        static void Schedule(F&& func, TimerMode mode = TimerMode::UPDATE_EACH_FRAME, float timeInSeconds = 0.0f)
+        {
+            auto object = MxObject::Create();
+            object->SetDisplayInRuntimeEditor(false);
+            auto behaviour = object->AddComponent<Behaviour>(
+            [callback = std::forward<F>(func)](MxObject& self, float dt)
+            {
+                callback();
+                // destroy object if timer was set to single update mode
+                auto& behaviour = *self.GetComponent<Behaviour>();
+                bool shouldDestroy = (behaviour.GetTimerMode() == TimerMode::UPDATE_AFTER_DELTA) &&
+                                     (behaviour.GetTimeLeft() <= 0.0f);
+
+                if(shouldDestroy) MxObject::Destroy(self);
+            });
+            behaviour->Schedule(mode, timeInSeconds);
+        }
+    };
 }

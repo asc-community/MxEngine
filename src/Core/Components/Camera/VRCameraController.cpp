@@ -28,9 +28,8 @@
 
 #include "VRCameraController.h"
 #include "Core/MxObject/MxObject.h"
-#include "Core/Application/RenderManager.h"
-#include "Core/Application/EventManager.h"
-#include "Core/Event/Events/UpdateEvent.h"
+#include "Core/Application/Rendering.h"
+#include "Core/Application/Event.h"
 
 namespace MxEngine
 {
@@ -85,7 +84,7 @@ namespace MxEngine
         rightEye->Bind(1);
         this->shaderVR->SetUniformInt("leftEyeTex", 0);
         this->shaderVR->SetUniformInt("rightEyeTex", 1);
-        RenderManager::GetController().RenderToTexture(target, this->shaderVR);
+        Rendering::GetController().RenderToTexture(target, this->shaderVR);
         target->GenerateMipmaps();
     }
 

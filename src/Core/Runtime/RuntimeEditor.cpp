@@ -31,11 +31,10 @@
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Library/Scripting/Python/PythonEngine.h"
-#include "Core/Event/Events/WindowResizeEvent.h"
-#include "Core/Application/EventManager.h"
-#include "Core/Components/Instancing/Instance.h"
-#include "Core/Event/Events/UpdateEvent.h"
-#include "Core/Application/RenderManager.h"
+#include "Core/Events/WindowResizeEvent.h"
+#include "Core/Events/UpdateEvent.h"
+#include "Core/Application/Event.h"
+#include "Core/Application/Rendering.h"
 #include "Platform/Window/WindowManager.h"
 #include "Platform/Window/InputManager.h"
 #include "Utilities/Format/Format.h"
@@ -120,7 +119,7 @@ namespace MxEngine
 				int id = 0;
 				for (auto& object : objects)
 				{
-					if (!object.HasComponent<Instance>())
+					if (object.IsDisplayedInRuntimeEditor())
 					{
 						ImGui::PushID(id++);
 						this->DrawMxObject(object.Name, object);
@@ -150,22 +149,22 @@ namespace MxEngine
 
 		if (!this->shouldRender) // if developer environment was turned off, we should notify application that viewport returned to normal
 		{
-			RenderManager::SetRenderToDefaultFrameBuffer(this->useDefaultFrameBufferCached);
+			Rendering::SetRenderToDefaultFrameBuffer(this->useDefaultFrameBufferCached);
 			auto windowSize = WindowManager::GetSize();
-			EventManager::AddEvent(MakeUnique<WindowResizeEvent>(this->cachedWindowSize, windowSize));
+			Event::AddEvent(MakeUnique<WindowResizeEvent>(this->cachedWindowSize, windowSize));
 			this->cachedWindowSize = windowSize;
 		}
 		else
 		{
-			this->useDefaultFrameBufferCached = RenderManager::IsRenderedToDefaultFrameBuffer();
-			RenderManager::SetRenderToDefaultFrameBuffer(false);
+			this->useDefaultFrameBufferCached = Rendering::IsRenderedToDefaultFrameBuffer();
+			Rendering::SetRenderToDefaultFrameBuffer(false);
 		}
 	}
 
 	void RuntimeEditor::AddKeyBinding(KeyCode openKey)
 	{
 		MXLOG_INFO("MxEngine::ConsoleBinding", MxFormat("bound console to keycode: {0}", EnumToString(openKey)));
-		EventManager::AddEventListener("RuntimeEditor", 
+		Event::AddEventListener("RuntimeEditor", 
 		[cursorPos = Vector2(), cursorModeCached = CursorMode::DISABLED, openKey, savedStateKeyHeld = false](UpdateEvent& event) mutable
 		{
 			bool isHeld = Application::Get()->GetWindow().IsKeyHeldUnchecked(openKey);

@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Utilities/Time/Time.h"
-#include "Core/Event/IEvent.h"
+#include "Core/Events/EventBase.h"
 #include "Core/Runtime/RuntimeEditor.h"
 #include "Core/Rendering/RenderAdaptor.h"
 #include "Core/MxObject/MxObject.h"
@@ -55,7 +55,7 @@ namespace MxEngine
 		static inline Application* Current = nullptr;
 		UniqueRef<Window> window;
 		RenderAdaptor renderAdaptor;
-		AppEventDispatcher dispatcher;
+		EventDispatcher dispatcher;
 		RuntimeEditor console;
 		CallbackList updateCallbacks;
 		TimeStep timeDelta = 0.0f;
@@ -82,7 +82,7 @@ namespace MxEngine
 		void ToggleRuntimeEditor(bool isVisible);
 		void CloseOnKeyPress(KeyCode key);
 
-		AppEventDispatcher& GetEventDispatcher();
+		EventDispatcher& GetEventDispatcher();
 		RenderAdaptor& GetRenderAdaptor();
 		RuntimeEditor& GetRuntimeEditor();
 		Window& GetWindow();
@@ -104,6 +104,7 @@ namespace MxEngine
 		static_assert(has_method_OnUpdate<T>::value, "object must contain OnUpdate(TimeDelta) method");
 		this->updateCallbacks.push_back([](TimeStep dt)
 		{
+			MAKE_SCOPE_PROFILER(typeid(T).name());
 			auto view = ComponentFactory::GetView<T>();
 			for (auto& component : view)
 			{

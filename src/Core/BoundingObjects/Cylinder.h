@@ -41,33 +41,35 @@ namespace MxEngine
             X, Y, Z
         };
 
-        float Height = 0.0f;
-        float Radius = 0.0f;
+        float Height  = 0.0f;
+        float RadiusX = 0.0f;
+        float RadiusZ = 0.0f;
         Vector3 Center = MakeVector3(0.0f);
+        Quaternion Rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
         Axis Orientation = Axis::Y;
 
         constexpr Cylinder() = default;
 
-        constexpr Cylinder(float height, float radius, Axis orientation)
-            : Height(height), Radius(radius), Orientation(orientation) { }
+        constexpr Cylinder(float height, float radiusX, float radiusZ, Axis orientation)
+            : Height(height), RadiusX(radiusX), RadiusZ(radiusZ), Orientation(orientation) { }
     };
 
     constexpr Cylinder ToCylinder(const AABB& aabb, Cylinder::Axis axis)
     {
         auto length = aabb.Length();
-        float height = 0.0f, radius = 0.0f;
+        float height = 0.0f, radiusX = 0.0f, radiusZ = 0.0f;
         switch (axis)
         {
         case Cylinder::Axis::X:
-            height = length.x, radius = Max(length.y, length.z) * 0.5f;
+            height = length.x, radiusX = length.y * 0.5f, radiusZ = length.z * 0.5f;
             break;
         case Cylinder::Axis::Y:
-            height = length.y, radius = Max(length.x, length.z) * 0.5f;
+            height = length.y, radiusX = length.x * 0.5f, radiusZ = length.z * 0.5f;
             break;
         case Cylinder::Axis::Z:
-            height = length.z, radius = Max(length.x, length.y) * 0.5f;
+            height = length.z, radiusX = length.x * 0.5f, radiusZ = length.y * 0.5f;
             break;
         }
-        return Cylinder(height, radius, axis);
+        return Cylinder(height, radiusX, radiusZ, axis);
     }
 }

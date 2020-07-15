@@ -28,17 +28,18 @@
 
 #pragma once
 
-#include "Core/Event/IEvent.h"
-#include "Utilities/Time/Time.h"
+#include "Core/Events/EventBase.h"
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-	class UpdateEvent : public IEvent
+	class WindowResizeEvent : public EventBase
 	{
-		MAKE_EVENT(UpdateEvent);
+		MAKE_EVENT(WindowResizeEvent);
 	public:
-		const TimeStep TimeDelta;
-		UpdateEvent(TimeStep time)
-			: TimeDelta(time) { }
+		Vector2 Old, New;
+
+		WindowResizeEvent(Vector2 Old, Vector2 New)
+			: Old(Old), New(New) { }
 	};
 }

@@ -28,19 +28,16 @@
 
 #pragma once
 
-#include "Platform/PhysicsAPI.h"
-
-class btRigidBody;
+#include "Core/Events/EventBase.h"
 
 namespace MxEngine
 {
-    class PhysicsManager
-    {
-    public:
-        static void AddRigidBody(btRigidBody* body);
-        static void RemoveRigidBody(btRigidBody* body);
-        static void SetGravity(const Vector3& gravity);
-        static void PerformExtraSimulationStep(float timeDelta);
-        static void SetSimulationStep(float timeDelta);
-    };
+	class FpsUpdateEvent : public EventBase
+	{
+		MAKE_EVENT(FpsUpdateEvent);
+	public:
+		const size_t FPS;
+		inline FpsUpdateEvent(size_t fps)
+			: FPS(fps) { }
+	};
 }

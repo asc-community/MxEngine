@@ -71,6 +71,22 @@ namespace MxEngine
 		return MxObject::Handle{ };
 	}
 
+    void MxObject::SetDisplayInRuntimeEditor(bool value)
+    {
+		#if defined(MXENGINE_MXOBJECT_EDITOR)
+		this->displayedInEditorList = value;
+		#endif
+    }
+
+	bool MxObject::IsDisplayedInRuntimeEditor() const
+	{
+		#if defined(MXENGINE_MXOBJECT_EDITOR)
+		return this->displayedInEditorList;
+		#else
+		return false;
+		#endif
+	}
+
     MxObject::~MxObject()
     {
 		this->components.RemoveAllComponents();

@@ -84,10 +84,10 @@ namespace MxEngine::GUI
 		TREE_NODE_PUSH("Behaviour");
 		REMOVE_COMPONENT_BUTTON(behaviour);
 
-		Timer timer = behaviour.GetTimerMode();
-		bool eachFrame = timer == Timer::UPDATE_EACH_FRAME;
-		bool eachDelta = timer == Timer::UPDATE_EACH_DELTA;
-		bool onceDelta = timer == Timer::UPDATE_AFTER_DELTA;
+		TimerMode timer = behaviour.GetTimerMode();
+		bool eachFrame = timer == TimerMode::UPDATE_EACH_FRAME;
+		bool eachDelta = timer == TimerMode::UPDATE_EACH_DELTA;
+		bool onceDelta = timer == TimerMode::UPDATE_AFTER_DELTA;
 		static auto timeDelta = 0.0f;
 
 		ImGui::InputFloat("time delta", &timeDelta, 0.01f);
@@ -96,15 +96,15 @@ namespace MxEngine::GUI
 		{
 			if (ImGui::Selectable("per frame", &eachFrame))
 			{
-				behaviour.Schedule(Timer::UPDATE_EACH_FRAME);
+				behaviour.Schedule(TimerMode::UPDATE_EACH_FRAME);
 			}
 			if (ImGui::Selectable("per delta", &eachDelta))
 			{
-				behaviour.Schedule(Timer::UPDATE_EACH_DELTA, timeDelta);
+				behaviour.Schedule(TimerMode::UPDATE_EACH_DELTA, timeDelta);
 			}
 			if (ImGui::Selectable("once"))
 			{
-				behaviour.Schedule(Timer::UPDATE_AFTER_DELTA, timeDelta);
+				behaviour.Schedule(TimerMode::UPDATE_AFTER_DELTA, timeDelta);
 			}
 			ImGui::EndCombo();
 		}

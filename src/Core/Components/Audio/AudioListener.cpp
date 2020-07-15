@@ -1,7 +1,6 @@
 #include "AudioListener.h"
 #include "Platform/OpenAL/ALUtilities.h"
-#include "Core/Event/Events/UpdateEvent.h"
-#include "Core/Application/EventManager.h"
+#include "Core/Components/Camera/CameraController.h"
 #include "Core/MxObject/MxObject.h"
 
 namespace MxEngine

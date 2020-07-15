@@ -28,11 +28,13 @@
 
 #pragma once
 
-#include "Core/Resources/Mesh.h"
 #include "Core/Components/Transform.h"
-#include "Core/Components/Rendering/MeshRenderer.h"
 
 GENERATE_METHOD_CHECK(Init, Init())
+
+#if !defined(MXENGINE_SHIPPING)
+#define MXENGINE_MXOBJECT_EDITOR
+#endif
 
 namespace MxEngine
 {
@@ -41,12 +43,17 @@ namespace MxEngine
 		using EngineHandle = size_t;
 		constexpr static EngineHandle InvalidHandle = std::numeric_limits<EngineHandle>::max();
 		EngineHandle handle = InvalidHandle;
+		#if defined(MXENGINE_MXOBJECT_EDITOR)
+		bool displayedInEditorList = true;
+		#endif
 	public:
 		MxString Name = UUIDGenerator::Get();
 		Transform Transform;
 	private:
+		// placed here to be destroyed before other members
 		ComponentManager components;
 	public:
+
 		using Factory = AbstractFactoryImpl<MxObject>;
 		using Handle = Resource<MxObject, Factory>;
 
@@ -65,6 +72,9 @@ namespace MxEngine
 			auto& managedObject = Factory::Get<MxObject>()[handle];
 			return managedObject.value;
 		}
+	
+		void SetDisplayInRuntimeEditor(bool value);
+		bool IsDisplayedInRuntimeEditor() const;
 
 		template<typename T>
 		static Handle GetHandleByComponent(T& component)

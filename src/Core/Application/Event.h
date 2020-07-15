@@ -32,7 +32,7 @@
 
 namespace MxEngine
 {
-    class EventManager
+    class Event
     {
     public:
 		/*!
@@ -82,7 +82,7 @@ namespace MxEngine
 		Adds event to event queue. All such events will be dispatched in next frames in the order they were added
 		\param event event to shedule dispatch
 		*/
-		static void AddEvent(UniqueRef<IEvent> event)
+		static void AddEvent(UniqueRef<EventBase> event)
 		{
 			Application::Get()->GetEventDispatcher().AddEvent(std::move(event));
 		}

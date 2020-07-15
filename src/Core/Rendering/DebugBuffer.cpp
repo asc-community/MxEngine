@@ -256,20 +256,23 @@ namespace MxEngine
             switch (cylinder.Orientation)
             {
             case Cylinder::Axis::X:
-                center = MakeVector3(0.0f, circle[i].x, circle[i].y) * cylinder.Radius + cylinder.Center;
+                center = MakeVector3(0.0f, circle[i].x * cylinder.RadiusX, circle[i].y * cylinder.RadiusZ);
                 offset.x = cylinder.Height * 0.5f;
                 break;
             case Cylinder::Axis::Y:
-                center = MakeVector3(circle[i].x, 0.0f, circle[i].y) * cylinder.Radius + cylinder.Center;
+                center = MakeVector3(circle[i].x * cylinder.RadiusX, 0.0f, circle[i].y * cylinder.RadiusZ);
                 offset.y = cylinder.Height * 0.5f;
                 break;
             case Cylinder::Axis::Z:
-                center = MakeVector3(circle[i].x, circle[i].y, 0.0f) * cylinder.Radius + cylinder.Center;
+                center = MakeVector3(circle[i].x * cylinder.RadiusX, circle[i].y, 0.0f * cylinder.RadiusZ);
                 offset.z = cylinder.Height * 0.5f;
                 break;
             }
             upper[i] = center - offset;
             lower[i] = center + offset;
+
+            upper[i] = cylinder.Rotation * upper[i] + cylinder.Center;
+            lower[i] = cylinder.Rotation * lower[i] + cylinder.Center;
         }
         for (size_t i = 0; i < circle.size(); i++)
         {
@@ -287,6 +290,99 @@ namespace MxEngine
         this->storage.push_back({ lower.back(),  color });
         this->storage.push_back({ upper.front(), color });
         this->storage.push_back({ upper.back(),  color });
+    }
+
+    void DebugBuffer::Submit(const Capsule& capsule, const Vector4& color)
+    {
+        std::array hemisphere = {
+            Vector2(0.0f, 1.0f),
+            Vector2(0.5f, RootThree<float>() * 0.5f),
+            Vector2(OneOverRootTwo<float>(), OneOverRootTwo<float>()),
+            Vector2(RootThree<float>() * 0.5f, 0.5f),
+            Vector2(1.0f, 0.0f),
+        };
+
+        float halfHeight = capsule.Height * 0.5f;
+        float radius = capsule.Radius;
+        Quaternion rotation = capsule.Rotation;
+        Vector3 position = capsule.Center;
+
+        std::array<Vector3, hemisphere.size() * 4> ovale1, ovale2;
+        size_t offset1 = 0, offset2 = hemisphere.size(), offset3 = 2 * hemisphere.size(), offset4 = 3 * hemisphere.size();
+        for (size_t i = 0; i < hemisphere.size(); i++)
+        {
+            auto h = hemisphere[i];
+            switch (capsule.Orientation)
+            {
+            case Capsule::Axis::X:
+                ovale1[offset1 + i] = MakeVector3( h.x,  h.y, 0.0f);
+                ovale2[offset1 + i] = MakeVector3( h.x, 0.0f,  h.y);
+                ovale1[offset2 + i] = MakeVector3( h.y, -h.x, 0.0f);
+                ovale2[offset2 + i] = MakeVector3( h.y, 0.0f, -h.x);
+                ovale1[offset3 + i] = MakeVector3(-h.x, -h.y, 0.0f);
+                ovale2[offset3 + i] = MakeVector3(-h.x, 0.0f, -h.y);
+                ovale1[offset4 + i] = MakeVector3(-h.y,  h.x, 0.0f);
+                ovale2[offset4 + i] = MakeVector3(-h.y, 0.0f,  h.x);
+                break;
+            case Capsule::Axis::Y:
+                ovale1[offset1 + i] = MakeVector3(0.0f,  h.x, h.y);
+                ovale2[offset1 + i] = MakeVector3( h.y,  h.x, 0.0f);
+                ovale1[offset2 + i] = MakeVector3(0.0f,  h.y, -h.x);
+                ovale2[offset2 + i] = MakeVector3(-h.x,  h.y, 0.0f);
+                ovale1[offset3 + i] = MakeVector3(0.0f, -h.x, -h.y);
+                ovale2[offset3 + i] = MakeVector3(-h.y, -h.x, 0.0f);
+                ovale1[offset4 + i] = MakeVector3(0.0f, -h.y,  h.x);
+                ovale2[offset4 + i] = MakeVector3( h.x, -h.y, 0.0f);
+                break;
+            case Capsule::Axis::Z:
+                ovale1[offset1 + i] = MakeVector3(0.0f,  h.y,  h.x);
+                ovale2[offset1 + i] = MakeVector3( h.y, 0.0f,  h.x);
+                ovale1[offset2 + i] = MakeVector3(0.0f,  h.x,  h.y);
+                ovale2[offset2 + i] = MakeVector3( h.x, 0.0f,  h.y);
+                ovale1[offset3 + i] = MakeVector3(0.0f, -h.y, -h.x);
+                ovale2[offset3 + i] = MakeVector3(-h.y, 0.0f, -h.x);
+                ovale1[offset4 + i] = MakeVector3(0.0f,  h.x, -h.y);
+                ovale2[offset4 + i] = MakeVector3( h.x, 0.0f, -h.y);
+                break;
+            }
+        }    
+        
+        Vector3 heightVec{ 0.0f };
+        switch (capsule.Orientation)
+        {
+        case Capsule::Axis::X:
+            heightVec.x = halfHeight;
+            break;
+        case Capsule::Axis::Y:
+            heightVec.y = halfHeight;
+            break;
+        case Capsule::Axis::Z:
+            heightVec.z = halfHeight;
+            break;
+        }
+
+        for (size_t i = 0; i < hemisphere.size() * 2; i++)
+        {
+            ovale1[i] = rotation * (ovale1[i] * radius + heightVec) + position;
+            ovale2[i] = rotation * (ovale2[i] * radius + heightVec) + position;
+
+        }
+        for (size_t i = 0; i < hemisphere.size() * 2; i++)
+        {
+            ovale1[hemisphere.size() * 2 + i] = rotation * (ovale1[hemisphere.size() * 2 + i] * radius - heightVec) + position;
+            ovale2[hemisphere.size() * 2 + i] = rotation * (ovale2[hemisphere.size() * 2 + i] * radius - heightVec) + position;
+        }
+        for (size_t i = 1; i < ovale1.size(); i++)
+        {
+            this->storage.push_back({ ovale1[i - 1], color });
+            this->storage.push_back({ ovale1[i], color });
+            this->storage.push_back({ ovale2[i - 1], color });
+            this->storage.push_back({ ovale2[i], color });
+        }
+        this->storage.push_back({ ovale1.back(), color });
+        this->storage.push_back({ ovale1.front(), color });
+        this->storage.push_back({ ovale2.back(), color });
+        this->storage.push_back({ ovale2.front(), color });
     }
 
     void DebugBuffer::ClearBuffer()

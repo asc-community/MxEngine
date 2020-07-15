@@ -28,16 +28,12 @@
 
 #pragma once
 
-#include "Core/Event/IEvent.h"
+#include "Core/Events/EventBase.h"
 
 namespace MxEngine
 {
-	class FpsUpdateEvent : public IEvent
-	{
-		MAKE_EVENT(FpsUpdateEvent);
-	public:
-		const size_t FPS;
-		inline FpsUpdateEvent(size_t fps)
-			: FPS(fps) { }
-	};
+    class AppDestroyEvent : public EventBase
+    {
+        MAKE_EVENT(AppDestroyEvent);
+    };
 }

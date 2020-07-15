@@ -26,41 +26,37 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "CylinderShape.h"
+#include "CapsuleShape.h"
 #include "Bullet3Utils.h"
 
-using btCylinderShapeY = btCylinderShape;
+using btCapsuleShapeY = btCapsuleShape;
 
 namespace MxEngine
 {
-    CylinderShape::CylinderShape(const Cylinder& cylinder)
+    CapsuleShape::CapsuleShape(const Capsule& capsule)
     {
-        btVector3 boundings{ 0.0f, 0.0f, 0.0f };
-        this->orientation = cylinder.Orientation;
-        switch (cylinder.Orientation)
+        this->orientation = capsule.Orientation;
+        switch (capsule.Orientation)
         {
-        case Cylinder::Axis::X:
-            boundings.setValue(cylinder.Height * 0.5f, cylinder.RadiusX, cylinder.RadiusZ);
-            this->CreateShape<btCylinderShapeX>(boundings);
+        case Capsule::Axis::X:
+            this->CreateShape<btCapsuleShapeX>(capsule.Radius, capsule.Height);
             break;
-        case Cylinder::Axis::Y:
-            boundings.setValue(cylinder.RadiusX, cylinder.Height * 0.5f, cylinder.RadiusZ);
-            this->CreateShape<btCylinderShapeY>(boundings);
+        case Capsule::Axis::Y:
+            this->CreateShape<btCapsuleShapeY>(capsule.Radius, capsule.Height);
             break;
-        case Cylinder::Axis::Z:
-            boundings.setValue(cylinder.RadiusX, cylinder.RadiusZ, cylinder.Height * 0.5f);
-            this->CreateShape<btCylinderShapeZ>(boundings);
+        case Capsule::Axis::Z:
+            this->CreateShape<btCapsuleShapeZ>(capsule.Radius, capsule.Height);
             break;
         }
     }
 
-    CylinderShape::CylinderShape(CylinderShape&& other) noexcept
+    CapsuleShape::CapsuleShape(CapsuleShape&& other) noexcept
     {
         this->collider = other.collider;
         other.collider = nullptr;
     }
 
-    CylinderShape& CylinderShape::operator=(CylinderShape&& other) noexcept
+    CapsuleShape& CapsuleShape::operator=(CapsuleShape&& other) noexcept
     {
         this->DestroyShape();
         this->collider = other.collider;
@@ -68,46 +64,43 @@ namespace MxEngine
         return *this;
     }
 
-    CylinderShape::~CylinderShape()
+    CapsuleShape::~CapsuleShape()
     {
         this->DestroyShape();
     }
 
-    Cylinder CylinderShape::GetBoundingCylinder(const Transform& transform) const
+    Capsule CapsuleShape::GetBoundingCapsule(const Transform& transform) const
     {
-        auto cylinder = this->GetBoundingCylinderUnchanged();
+        auto capsule = this->GetBoundingCapsuleUnchanged();
         auto& scale = transform.GetScale();
-        cylinder.Center += transform.GetPosition();
-        cylinder.Rotation = transform.GetRotation();
-        switch (cylinder.Orientation)
+        capsule.Center += transform.GetPosition();
+        capsule.Rotation = transform.GetRotation();
+        switch (capsule.Orientation)
         {
-        case Cylinder::Axis::X:
-            cylinder.Height *= scale.x;
-            cylinder.RadiusX *= scale.y;
-            cylinder.RadiusZ *= scale.z;
+        case Capsule::Axis::X:
+            capsule.Height *= scale.x;
+            capsule.Radius *= Max(scale.y, scale.z);
             break;
-        case Cylinder::Axis::Y:
-            cylinder.Height *= scale.y;
-            cylinder.RadiusX *= scale.x;
-            cylinder.RadiusZ *= scale.z;
+        case Capsule::Axis::Y:
+            capsule.Height *= scale.y;
+            capsule.Radius *= Max(scale.x, scale.z);
             break;
-        case Cylinder::Axis::Z:
-            cylinder.Height *= scale.z;
-            cylinder.RadiusX *= scale.x;
-            cylinder.RadiusZ *= scale.y;
+        case Capsule::Axis::Z:
+            capsule.Height *= scale.z;
+            capsule.Radius *= Max(scale.x, scale.y);
             break;
         }
-        return cylinder;
+        return capsule;
     }
 
-    Cylinder CylinderShape::GetBoundingCylinderUnchanged() const
+    Capsule CapsuleShape::GetBoundingCapsuleUnchanged() const
     {
         auto box = this->GetBoundingBoxUnchanged();
-        auto cylinder = ToCylinder(box, this->orientation);
-        return cylinder;
+        auto capsule = ToCapsule(box, this->orientation);
+        return capsule;
     }
 
-    Cylinder::Axis CylinderShape::GetOrientation() const
+    Capsule::Axis CapsuleShape::GetOrientation() const
     {
         return this->orientation;
     }

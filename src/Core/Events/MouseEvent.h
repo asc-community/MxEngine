@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Core/Event/IEvent.h"
+#include "Core/Events/EventBase.h"
 #include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-	class MouseMoveEvent : public IEvent
+	class MouseMoveEvent : public EventBase
 	{
 		MAKE_EVENT(MouseMoveEvent);
 	public:
@@ -31,7 +31,7 @@ namespace MxEngine
 		MIDDLE = 2,
 	};
 
-	class MousePressEvent : public IEvent
+	class MousePressEvent : public EventBase
 	{
 		MAKE_EVENT(MousePressEvent);
 

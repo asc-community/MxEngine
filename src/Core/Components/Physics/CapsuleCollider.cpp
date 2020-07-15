@@ -26,54 +26,72 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "BoxCollider.h"
+#include "CapsuleCollider.h"
 #include "Core/MxObject/MxObject.h"
 #include "Core/Components/Rendering/MeshSource.h"
 #include "Core/Components/Instancing/Instance.h"
 
 namespace MxEngine
 {
-    void BoxCollider::CreateNewShape(const AABB& aabb)
+    void CapsuleCollider::CreateNewShape(const Capsule& capsule)
     {
         this->SetColliderChangedFlag(true);
-        this->boxShape = PhysicsFactory::Create<BoxShape>(aabb);
+        this->capsuleShape = PhysicsFactory::Create<CapsuleShape>(capsule);
     }
 
-    void BoxCollider::Init()
+    void CapsuleCollider::Init()
     {
-        this->CreateNewShape(AABB());
+        this->CreateNewShape(Capsule());
         this->UpdateCollider();
     }
 
-    void BoxCollider::UpdateCollider()
+    void CapsuleCollider::UpdateCollider()
     {
         auto& self = MxObject::GetByComponent(*this);
         if (this->ShouldUpdateCollider(self))
         {
             auto& aabb = ColliderBase::GetBoundingBox(self);
-            this->CreateNewShape(aabb);
+            this->CreateNewShape(ToCapsule(aabb, this->GetOrientation()));
         }
     }
 
-    BoxShapeHandle BoxCollider::GetNativeHandle() const
+    CapsuleShapeHandle CapsuleCollider::GetNativeHandle() const
     {
-        return this->boxShape;
+        return this->capsuleShape;
     }
 
-    AABB BoxCollider::GetBoundingBox() const
+    void CapsuleCollider::SetOrientation(Capsule::Axis axis)
+    {
+        auto& self = MxObject::GetByComponent(*this);
+        auto& aabb = ColliderBase::GetBoundingBox(self);
+        this->CreateNewShape(ToCapsule(aabb, axis));
+    }
+
+    Capsule::Axis CapsuleCollider::GetOrientation() const
+    {
+        return this->capsuleShape->GetOrientation();
+    }
+
+    AABB CapsuleCollider::GetBoundingBox() const
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->boxShape->GetBoundingBox(transform);
+        return this->capsuleShape->GetBoundingBox(transform);
     }
 
-    BoundingSphere BoxCollider::GetBoundingSphere() const
+    BoundingSphere CapsuleCollider::GetBoundingSphere() const
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->boxShape->GetBoundingSphere(transform);
+        return this->capsuleShape->GetBoundingSphere(transform);
     }
 
-    void BoxCollider::SetBoundingBox(const AABB& aabb)
+    Capsule CapsuleCollider::GetBoundingCapsule() const
     {
-        this->CreateNewShape(aabb);
+        auto& transform = MxObject::GetByComponent(*this).Transform;
+        return this->capsuleShape->GetBoundingCapsule(transform);
+    }
+
+    void CapsuleCollider::SetBoundingCapsule(const Capsule& cylinder)
+    {
+        this->CreateNewShape(cylinder);
     }
 }

@@ -28,10 +28,24 @@
 
 #pragma once
 
-#include "Events/AppDestroyEvent.h"
-#include "Events/FpsUpdateEvent.h"
-#include "Events/KeyEvent.h"
-#include "Events/MouseEvent.h"
-#include "Events/RenderEvent.h"
-#include "Events/UpdateEvent.h"
-#include "Events/WindowResizeEvent.h"
+#include "ShapeBase.h"
+#include "Core/BoundingObjects/Capsule.h"
+
+namespace MxEngine
+{
+    class CapsuleShape : public ShapeBase
+    {
+        Capsule::Axis orientation = Capsule::Axis::Y;
+    public:
+        CapsuleShape(const Capsule &capsule);
+        CapsuleShape(const CapsuleShape&) = delete;
+        CapsuleShape(CapsuleShape&&) noexcept;
+        CapsuleShape& operator=(const CapsuleShape&) = delete;
+        CapsuleShape& operator=(CapsuleShape&&) noexcept;
+        ~CapsuleShape();
+
+        Capsule GetBoundingCapsule(const Transform& transform) const;
+        Capsule GetBoundingCapsuleUnchanged() const;
+        Capsule::Axis GetOrientation() const;
+    };
+}

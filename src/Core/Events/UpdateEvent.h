@@ -28,12 +28,17 @@
 
 #pragma once
 
-#include "Core/Event/IEvent.h"
+#include "Core/Events/EventBase.h"
+#include "Utilities/Time/Time.h"
 
 namespace MxEngine
 {
-    class AppDestroyEvent : public IEvent
-    {
-        MAKE_EVENT(AppDestroyEvent);
-    };
+	class UpdateEvent : public EventBase
+	{
+		MAKE_EVENT(UpdateEvent);
+	public:
+		const TimeStep TimeDelta;
+		UpdateEvent(TimeStep time)
+			: TimeDelta(time) { }
+	};
 }

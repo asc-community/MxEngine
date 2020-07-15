@@ -31,7 +31,7 @@
 #include "Utilities/Logging/Logger.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/Memory/Memory.h"
-#include "Core/Event/Events/WindowResizeEvent.h"
+#include "Core/Events/WindowResizeEvent.h"
 #include "Platform/Modules/GraphicModule.h"
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Utilities/Format/Format.h"
@@ -119,7 +119,7 @@ namespace MxEngine
 		return this->window;
 	}
 
-	AppEventDispatcher& Window::GetEventDispatcher()
+	EventDispatcher& Window::GetEventDispatcher()
 	{
 		return *this->dispatcher;
 	}
@@ -401,7 +401,7 @@ namespace MxEngine
 		return *this;
 	}
 
-	Window& Window::UseEventDispatcher(AppEventDispatcher* dispatcher)
+	Window& Window::UseEventDispatcher(EventDispatcher* dispatcher)
 	{
 		this->dispatcher = dispatcher;
 		return *this;

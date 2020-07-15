@@ -33,20 +33,20 @@ namespace MxEngine
 	void ProfileSession::WriteJsonHeader()
 	{
 		if (!this->IsValid()) return;
-		stream << "{\n";
-		stream << "  \"traceEvents\": [\n";
+		output << "{\n";
+		output << "  \"traceEvents\": [\n";
 	}
 
 	void ProfileSession::WriteJsonFooter()
 	{
 		if (!this->IsValid()) return;
-		stream << "\n  ]\n";
-		stream << '}';
+		output << "\n  ]\n";
+		output << '}';
 	}
 
 	bool ProfileSession::IsValid() const
 	{
-		return this->stream.is_open();
+		return this->output.IsOpen();
 	}
 
 	size_t ProfileSession::GetEntryCount() const
@@ -56,8 +56,8 @@ namespace MxEngine
 
 	void ProfileSession::StartSession(const MxString& filename)
 	{
-		if (stream.is_open()) stream.close();
-		stream.open(filename.c_str());
+		if (output.IsOpen()) output.Close();
+		output.Open(filename.c_str(), File::WRITE);
 		this->WriteJsonHeader();
 	}
 
@@ -67,24 +67,24 @@ namespace MxEngine
 
 		if (this->GetEntryCount() > 0)
 		{
-			stream << ",\n";
+			output << ",\n";
 		}
 		this->entriesCount++;
 
-		stream << "	{";
-		stream << "\"pid\": 0, ";
-		stream << "\"tid\": 0, ";
-		stream << "\"ts\": " << std::to_string(uint64_t((double)begin * 1000000)) << ", ";
-		stream << "\"dur\": " << std::to_string(uint64_t((double)delta * 1000000)) << ", ";
-		stream << "\"ph\": \"X\", ";
-		stream << "\"name\": \"" << function << '\"';
-		stream << "}";
+		output << "	{";
+		output << "\"pid\": 0, ";
+		output << "\"tid\": 0, ";
+		output << "\"ts\": " << std::to_string(uint64_t((double)begin * 1000000)) << ", ";
+		output << "\"dur\": " << std::to_string(uint64_t((double)delta * 1000000)) << ", ";
+		output << "\"ph\": \"X\", ";
+		output << "\"name\": \"" << function << '\"';
+		output << "}";
 	}
 
 	void ProfileSession::EndSession()
 	{
 		if (!this->IsValid()) return;
 		this->WriteJsonFooter();
-		stream.close();
+		output.Close();
 	}
 }

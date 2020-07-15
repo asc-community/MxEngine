@@ -28,12 +28,10 @@
 
 #pragma once
 
-#include "Core/Event/IEvent.h"
-
-namespace MxEngine
-{
-	class RenderEvent : public IEvent
-	{
-		MAKE_EVENT(RenderEvent);
-	};
-}
+#include "AppDestroyEvent.h"
+#include "FpsUpdateEvent.h"
+#include "KeyEvent.h"
+#include "MouseEvent.h"
+#include "RenderEvent.h"
+#include "UpdateEvent.h"
+#include "WindowResizeEvent.h"

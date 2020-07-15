@@ -26,37 +26,13 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "PhysicsManager.h"
-#include "Utilities/Logging/Logger.h"
-#include "Platform/Modules/PhysicsModule.h"
-#include "Platform/Bullet3/Bullet3Utils.h"
+#pragma once
+
+#include "Utilities/EventDispatcher/EventDispatcher.h"
 
 namespace MxEngine
 {
-    #define WORLD PhysicsModule::GetImpl()->World
+	MAKE_EVENT_BASE(EventBase);
 
-    void PhysicsManager::AddRigidBody(btRigidBody* body) //-V813
-    {
-        WORLD->addRigidBody(body);
-    }
-
-    void PhysicsManager::RemoveRigidBody(btRigidBody* body) //-V813
-    {
-        WORLD->removeRigidBody(body);
-    }
-
-    void PhysicsManager::SetGravity(const Vector3& gravity)
-    {
-        WORLD->setGravity(ToBulletVector3(gravity));
-    }
-
-    void PhysicsManager::PerformExtraSimulationStep(float timeDelta)
-    {
-        WORLD->stepSimulation(timeDelta);
-    }
-
-    void PhysicsManager::SetSimulationStep(float timeDelta)
-    {
-        PhysicsModule::SetSimulationStep(timeDelta);
-    }
+	using EventDispatcher = EventDispatcherImpl<EventBase>;
 }

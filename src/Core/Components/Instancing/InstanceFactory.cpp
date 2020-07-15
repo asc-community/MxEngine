@@ -66,6 +66,7 @@ namespace MxEngine
 
         auto instance = MxObject::Create();
         this->pool.Allocate(instance);
+        instance->SetDisplayInRuntimeEditor(false);
         instance->Transform = object->Transform;
         auto component = instance->AddComponent<Instance>(object);
         return std::move(instance);

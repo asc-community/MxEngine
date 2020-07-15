@@ -26,120 +26,120 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "RenderManager.h"
+#include "Rendering.h"
 #include "Core/Application/Application.h"
 
 namespace MxEngine
 {
-    CameraController::Handle MxEngine::RenderManager::GetViewport()
+    CameraController::Handle MxEngine::Rendering::GetViewport()
     {
         return Application::Get()->GetRenderAdaptor().Viewport;
     }
 
-    void RenderManager::SetViewport(const CameraController::Handle& viewport)
+    void Rendering::SetViewport(const CameraController::Handle& viewport)
     {
         Application::Get()->GetRenderAdaptor().Viewport = viewport;
     }
 
-    void RenderManager::ResizeViewport(size_t width, size_t height)
+    void Rendering::ResizeViewport(size_t width, size_t height)
     {
-        auto viewport = RenderManager::GetViewport();
+        auto viewport = Rendering::GetViewport();
         if (viewport.IsValid())
         {
             viewport->ResizeRenderTexture(width, height);
         }
     }
 
-    RenderController& RenderManager::GetController()
+    RenderController& Rendering::GetController()
     {
         return Application::Get()->GetRenderAdaptor().Renderer;
     }
 
-    RenderAdaptor& RenderManager::GetAdaptor()
+    RenderAdaptor& Rendering::GetAdaptor()
     {
         return Application::Get()->GetRenderAdaptor();
     }
 
     #define FWD(func_name, ...) Application::Get()->GetRenderAdaptor().func_name(__VA_ARGS__)
 
-    void RenderManager::LoadMainShader(bool useLighting)
+    void Rendering::LoadMainShader(bool useLighting)
     {
         FWD(LoadMainShader, useLighting);
     }
 
-    void RenderManager::SetRenderToDefaultFrameBuffer(bool value)
+    void Rendering::SetRenderToDefaultFrameBuffer(bool value)
     {
         FWD(SetRenderToDefaultFrameBuffer, value);
     }
 
-    bool RenderManager::IsRenderedToDefaultFrameBuffer()
+    bool Rendering::IsRenderedToDefaultFrameBuffer()
     {
         return FWD(IsRenderedToDefaultFrameBuffer);
     }
 
-    void RenderManager::SetFogColor(const Vector3& color)
+    void Rendering::SetFogColor(const Vector3& color)
     {
         FWD(SetFogColor, color);
     }
 
-    const Vector3& RenderManager::GetFogColor()
+    const Vector3& Rendering::GetFogColor()
     {
         return FWD(GetFogColor);
     }
 
-    void RenderManager::SetFogDensity(float density)
+    void Rendering::SetFogDensity(float density)
     {
         FWD(SetFogDensity, density);
     }
 
-    float RenderManager::GetFogDensity()
+    float Rendering::GetFogDensity()
     {
         return FWD(GetFogDensity);
     }
 
-    void RenderManager::SetFogDistance(float distance)
+    void Rendering::SetFogDistance(float distance)
     {
         FWD(SetFogDistance, distance);
     }
 
-    float RenderManager::GetFogDistance()
+    float Rendering::GetFogDistance()
     {
         return FWD(GetFogDistance);
     }
 
-    void RenderManager::SetShadowBlurIterations(size_t iterations)
+    void Rendering::SetShadowBlurIterations(size_t iterations)
     {
         FWD(SetShadowBlurIterations, iterations);
     }
 
-    size_t RenderManager::GetShadowBlurIterations()
+    size_t Rendering::GetShadowBlurIterations()
     {
         return FWD(GetShadowBlurIterations);
     }
 
     #define DRW Application::Get()->GetRenderAdaptor().DebugDrawer
 
-    void RenderManager::Draw(const Line& line, const Vector4& color)
+    void Rendering::Draw(const Line& line, const Vector4& color)
     {
         DRW.Submit(line, color);
     }
 
-    void RenderManager::Draw(const AABB& box, const Vector4& color)
+    void Rendering::Draw(const AABB& box, const Vector4& color)
     {
         DRW.Submit(box, color);
     }
 
-    void RenderManager::Draw(const BoundingSphere& sphere, const Vector4& color)
+    void Rendering::Draw(const BoundingSphere& sphere, const Vector4& color)
     {
         DRW.Submit(sphere, color);
     }
 
-    void RenderManager::Draw(const Frustrum& frustrum, const Vector4& color)
+    void Rendering::Draw(const Frustrum& frustrum, const Vector4& color)
     {
         DRW.Submit(frustrum, color);
     }
 
-    void RenderManager::Draw(const Cone& cone, const Vector4& color)
+    void Rendering::Draw(const Cone& cone, const Vector4& color)
     {
         DRW.Submit(cone, color);
     }

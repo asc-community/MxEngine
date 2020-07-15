@@ -27,15 +27,15 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "InputControl.h"
-#include "Core/Application/EventManager.h"
-#include "Core/Event/Events/MouseEvent.h"
+#include "Core/Application/Event.h"
+#include "Core/Events/MouseEvent.h"
 
 namespace MxEngine
 {
 	InputControl::~InputControl()
 	{	
 		MxString uuid = MxObject::GetComponentUUID(*this);
-		EventManager::RemoveEventListener(uuid);
+		Event::RemoveEventListener(uuid);
 	}
 
 	void InputControl::BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right)
@@ -51,7 +51,7 @@ namespace MxEngine
 
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object movement: " + object.Name);
 	
-		EventManager::AddEventListener(uuid,
+		Event::AddEventListener(uuid,
 			[forward, back, right, left, up, down, camera, object = MxObject::GetHandleByComponent(*this)](KeyEvent& event) mutable
 		{
 			auto vecForward = MakeVector3( 0.0f, 0.0f, 1.0f);
@@ -116,7 +116,7 @@ namespace MxEngine
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
 		MxString uuid = object.GetComponent<InputControl>().GetUUID(); 
 
-		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
+		Event::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
 		{
 			if (!camera.IsValid()) return;
 			static Vector2 oldPos = event.position;
@@ -140,7 +140,7 @@ namespace MxEngine
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
 		MxString uuid = object.GetComponent<InputControl>().GetUUID();
 	
-		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
+		Event::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
 		{
 				if (!camera.IsValid()) return;
 				static Vector2 oldPos = event.position;
@@ -164,7 +164,7 @@ namespace MxEngine
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
 		MxString uuid = object.GetComponent<InputControl>().GetUUID();
 	
-		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
+		Event::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
 		{
 				if (!camera.IsValid()) return;
 				static Vector2 oldPos = event.position;
