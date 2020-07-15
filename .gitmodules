@@ -34,3 +34,6 @@
 [submodule "submodules/openal-soft"]
 	path = submodules/openal-soft
 	url = https://github.com/kcat/openal-soft
+[submodule "submodules/bullet3"]
+	path = submodules/bullet3
+	url = https://github.com/bulletphysics/bullet3
