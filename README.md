@@ -39,14 +39,14 @@ cubeObject->AddComponent<MeshSource>(Primitives::CreateCube());
 cubeObject->AddComponent<MeshRenderer>();
 ```
 ### Loading object from file
-MxEngine is using Assimp library which can load many popular object formats. To load materials simply pass same path to object file
+MxEngine is using Assimp library which can load any popular object format. To load materials simply pass same path to object file
 ```cs
 auto object = MxObject::Create();
 object.AddComponent<MeshSource>(AssetManager::LoadMesh("objects/your_object.obj"));
 object.AddComponent<MeshRenderer>(AssetManager::LoadMaterials("objects/your_object.obj"));
 ```
 ### Creating lights
-Dynamic directional lights, spot lights and point lights are supported. Each has simular interface and created in a uniform way
+Dynamic directional lights, spot lights and point lights are supported. Each has simular interface and is created in a uniform way
 ```cs
 auto object = MxObject::Create();
 auto light = object.AddComponent<SpotLight>();
@@ -57,7 +57,7 @@ light->Direction     = { 1.0f, -1.3f, 1.0f };
 light->UseOuterAngle(45.0f);
 ```
 ### Creating multiple objects using GPU instancing
-you can create MxObjects which share same Mesh and material. They all can have different position and color, but are rendered in one draw call
+you can create MxObjects which share same mesh and material. They all can have different position and color, but still rendered in one draw call
 ```cs
 auto factory = object.AddComponent<InstanceFactory>();
 
@@ -89,7 +89,7 @@ auto camera = object->AddComponent<CameraController>();
 camera->SetCameraType(CameraType::PERSPECTIVE);
 ```
 ### Creating physical objects
-MxEngine supports realtime physics simulations. Just add RigidBody component and attach suitable collider
+MxEngine supports realtime physics simulation. Just add RigidBody component and attach suitable collider
 ```cs
 auto sphere = MxObject::Create();
 sphere->AddComponent<MeshSource>(Primitives::CreateSphere());
@@ -100,15 +100,30 @@ auto rigidBody = sphere->AddComponent<RigidBody>();
 rigidBody->SetMass(1.0f);
 rigidBody->SetLinearVelocity({0.0f, 10.0f, 0.0f});
 ```
+### Raycasting on your game scene
+All physical objects with colliders can be raycasted and accessed using simple api
+```cs
+auto raySource = Vector3(0.0f);
+auto rayDirection = Vector3(1.0f, 0.0f, 0.0f);
+auto rayDistance = raySource + rayDirection * 100.0f;
+
+float rayLength = 0.0f;
+auto object = Physics::RayCast(raySource, rayDistance, rayLength);
+if(object.IsValid())
+{
+	MXLOG_INFO("raycast", "found object: " + object->Name);
+	MXLOG_INFO("raycast", "distance to object: " + ToMxString(rayLength));
+}
+```
 ### Setting up timers and events
 You can sign up for event or create timer with specific call interval in one line of code
 ```cs
-Timer::Shedule([]() { MXLOG_INGO("MyTimer", "I am called every 500ms!"); }, TimerMode::UPDATE_EACH_DELTA, 0.5f);
+Timer::Shedule([]() { MXLOG_INFO("MyTimer", "I am called every 500ms!"); }, TimerMode::UPDATE_EACH_DELTA, 0.5f);
 
-Event::AddEventListener("MyEvent", [](UpdateEvent& e) { MXLOG_INGO("MyEvent", "I am called every frame!"); });
+Event::AddEventListener("MyEvent", [](UpdateEvent& e) { MXLOG_INFO("MyEvent", "I am called every frame!"); });
 ```
 ### Reading input from user devices
-To read input, you can sign up for event or just retrieve state in update function. Also, there are binders for player control
+To read input, you can add event listener or just retrieve state in update method. Also, there are binders for player controls
 ```cs
 auto player = MxObject::Create();
 auto control = player->AddComponent<InputControl>();
@@ -117,8 +132,8 @@ control->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D);
 if (Input::IsMouseButton(MouseButton::LEFT))
 	ShootBullet(player);
 ```
-### Integrate your editors into MxEngine runtime editor
-If you want custom editors for your application, you can use ImGui functions in update loop
+### Integrating your editors into MxEngine runtime editor
+If you want custom editors in your application, you can use ImGui functions in update loop
 ```cs
 void OnUpdate() override
 {
@@ -140,7 +155,7 @@ ImageManager::SaveTexture("images/camera.png", texture);
 ImageManager::TakeScreenShot("images/viewport.png");
 ``` 
 ### Drawing debug primitives
-There are cases when you just want to display some 2D primitives to debug your game
+There are cases when you just want to display some 2D primitives to debug your game or check current object state
 ```cs
 auto debug = object->AddComponent<DebugDraw>();
 debug->RenderBoundingBox = true;
