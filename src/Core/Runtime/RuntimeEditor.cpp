@@ -36,7 +36,7 @@
 #include "Core/Application/Event.h"
 #include "Core/Application/Rendering.h"
 #include "Platform/Window/WindowManager.h"
-#include "Platform/Window/InputManager.h"
+#include "Platform/Window/Input.h"
 #include "Utilities/Format/Format.h"
 
 namespace MxEngine
@@ -176,17 +176,17 @@ namespace MxEngine
 				savedStateKeyHeld = true;
 				if (Application::Get()->GetRuntimeEditor().IsActive())
 				{
-					InputManager::SetCursorMode(cursorModeCached);
+					Input::SetCursorMode(cursorModeCached);
 					Application::Get()->ToggleRuntimeEditor(false);
-					InputManager::SetCursorPosition(cursorPos);
+					Input::SetCursorPosition(cursorPos);
 				}
 				else
 				{
-					cursorPos = InputManager::GetCursorPosition();
-					cursorModeCached = InputManager::GetCursorMode();
-					InputManager::SetCursorMode(CursorMode::NORMAL);
+					cursorPos = Input::GetCursorPosition();
+					cursorModeCached = Input::GetCursorMode();
+					Input::SetCursorMode(CursorMode::NORMAL);
 					Application::Get()->ToggleRuntimeEditor(true);
-					InputManager::SetCursorPosition(WindowManager::GetSize() * 0.5f);
+					Input::SetCursorPosition(WindowManager::GetSize() * 0.5f);
 				}
 			}
 		});

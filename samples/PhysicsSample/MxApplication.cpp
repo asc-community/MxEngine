@@ -133,13 +133,13 @@ namespace ProjectTemplate
         {
             static float timeSinceShot = 0.0f;
             timeSinceShot += GetTimeDelta();
-            if (InputManager::IsMouseHeld(MouseButton::LEFT) && timeSinceShot > 0.1f)
+            if (Input::IsMouseHeld(MouseButton::LEFT) && timeSinceShot > 0.1f)
             {
                 timeSinceShot = 0.0f;
                 this->CreateShot();
             }
 
-            if (!InputManager::IsMouseHeld(MouseButton::RIGHT))
+            if (!Input::IsMouseHeld(MouseButton::RIGHT))
             {
                 Physics::PerformExtraSimulationStep(1.0f / 60.0f);
             }

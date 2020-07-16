@@ -103,7 +103,7 @@
     <ClInclude Include="Platform\OpenGL\CubeMap.h" />
     <ClInclude Include="Platform\OpenGL\FrameBuffer.h" />
     <ClInclude Include="Platform\OpenGL\RenderBuffer.h" />
-    <ClInclude Include="Platform\Window\InputManager.h" />
+    <ClInclude Include="Platform\Window\Input.h" />
     <ClInclude Include="Platform\Window\WindowManager.h" />
     <ClInclude Include="Utilities\AbstractFactory\AbstractFactory.h" />
     <ClInclude Include="Utilities\Audio\AudioLoader.h" />
@@ -894,7 +894,7 @@
     <ClCompile Include="Platform\OpenGL\VertexBufferLayout.cpp" />
     <ClCompile Include="Platform\OpenGL\VertexBuffer.cpp" />
     <ClCompile Include="Platform\OpenGL\Renderer.cpp" />
-    <ClCompile Include="Platform\Window\InputManager.cpp" />
+    <ClCompile Include="Platform\Window\Input.cpp" />
     <ClCompile Include="Platform\Window\Window.cpp" />
     <ClCompile Include="Platform\Window\WindowManager.cpp" />
     <ClCompile Include="Utilities\Audio\AudioLoader.cpp" />

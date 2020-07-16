@@ -30,6 +30,125 @@ Right now MxEngine is distributed in source code as Visual Studio project which 
 3. open `MxEngine.sln` located in the project root directory and set startup project to `ProjectTemplate` or `SandboxApplication`
 4. click `F5` button and wait until game is loaded (make sure you choose Debug/Release x64 build)
 
+## Code snippets
+### Primitive creation
+You can easily create spheres, planes, cylinders and etc. Custom number of vertecies for displacement maps are supported out of box
+```cs
+auto cube = MxObject::Create();
+cubeObject->AddComponent<MeshSource>(Primitives::CreateCube());
+cubeObject->AddComponent<MeshRenderer>();
+```
+### Loading object from file
+MxEngine is using Assimp library which can load many popular object formats. To load materials simply pass same path to object file
+```cs
+auto object = MxObject::Create();
+object.AddComponent<MeshSource>(AssetManager::LoadMesh("objects/your_object.obj"));
+object.AddComponent<MeshRenderer>(AssetManager::LoadMaterials("objects/your_object.obj"));
+```
+### Creating lights
+Dynamic directional lights, spot lights and point lights are supported. Each has simular interface and created in a uniform way
+```cs
+auto object = MxObject::Create();
+auto light = object.AddComponent<SpotLight>();
+light->AmbientColor  = { 1.0f,  1.0f, 1.0f };
+light->DiffuseColor  = { 1.0f,  1.0f, 1.0f };
+light->SpecularColor = { 1.0f,  1.0f, 1.0f };
+light->Direction     = { 1.0f, -1.3f, 1.0f };
+light->UseOuterAngle(45.0f);
+```
+### Creating multiple objects using GPU instancing
+you can create MxObjects which share same Mesh and material. They all can have different position and color, but are rendered in one draw call
+```cs
+auto factory = object.AddComponent<InstanceFactory>();
+
+auto instance1 = factory->MakeInstance();
+instance1->Transform.SetPosition({0.0f, 1.0f, 0.0f});
+
+auto instance2 = factory->MakeInstance();
+instance2->Transform.SetPosition({0.0f, 2.0f, 0.0f});
+
+auto instance3 = factory->MakeInstance();
+instance3->Transform.SetPosition({0.0f, 3.0f, 0.0f});
+```
+### Playing audio files
+To play audio files in 3D world, attach listener to player object and create object with audio source component. mp3, wav, flac and ogg file formats are supported
+```cs
+auto player = MxObject::Create();
+auto listener = player->AddComponent<AudioListener>();
+
+auto object = MxObject::Create();
+object->Transform.SetPosition({1.0f, 0.0f, 1.0f});
+auto audio = object->AddComponent<AudioSource>(AssetManager::LoadAudio("sounds/music.mp3"));
+audio->Play();
+```
+### Managing multiple cameras
+You can create cameras and render scene from different angles. The results can be used for post-effects or dynamic textures
+```cs
+auto object = MxObject::Create();
+auto camera = object->AddComponent<CameraController>();
+camera->SetCameraType(CameraType::PERSPECTIVE);
+```
+### Creating physical objects
+MxEngine supports realtime physics simulations. Just add RigidBody component and attach suitable collider
+```cs
+auto sphere = MxObject::Create();
+sphere->AddComponent<MeshSource>(Primitives::CreateSphere());
+sphere->AddComponent<MeshRenderer>();
+sphere->AddComponent<SphereCollider>();
+
+auto rigidBody = sphere->AddComponent<RigidBody>();
+rigidBody->SetMass(1.0f);
+rigidBody->SetLinearVelocity({0.0f, 10.0f, 0.0f});
+```
+### Setting up timers and events
+You can sign up for event or create timer with specific call interval in one line of code
+```cs
+Timer::Shedule([]() { MXLOG_INGO("MyTimer", "I am called every 500ms!"); }, TimerMode::UPDATE_EACH_DELTA, 0.5f);
+
+Event::AddEventListener("MyEvent", [](UpdateEvent& e) { MXLOG_INGO("MyEvent", "I am called every frame!"); });
+```
+### Reading input from user devices
+To read input, you can sign up for event or just retrieve state in update function. Also, there are binders for player control
+```cs
+auto player = MxObject::Create();
+auto control = player->AddComponent<InputControl>();
+control->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D);
+
+if (Input::IsMouseButton(MouseButton::LEFT))
+	ShootBullet(player);
+```
+### Integrate your editors into MxEngine runtime editor
+If you want custom editors for your application, you can use ImGui functions in update loop
+```cs
+void OnUpdate() override
+{
+	if(Runtime::IsEditorActive())
+	{
+		ImGui::Begin("MySettings");
+		ImGui::InputFloat("player health", &health);
+		ImGui::InputFloat("player ammo", &ammo);
+		ImGui::End();
+	}
+}
+```
+### Saving rendered images to disk
+Sometimes you want to save rendered image to your hard drive. There are functions to do so
+```cs
+auto texture = cameraController->GetRenderTexture();
+ImageManager::SaveTexture("images/camera.png", texture);
+
+ImageManager::TakeScreenShot("images/viewport.png");
+``` 
+### Drawing debug primitives
+There are cases when you just want to display some 2D primitives to debug your game
+```cs
+auto debug = object->AddComponent<DebugDraw>();
+debug->RenderBoundingBox = true;
+debug->BoundingBoxColor = Colors::Create(Colors::RED);
+
+Rendering::Draw(Line({0.0f, 0.0f, 0.0f}, {10.0f, 10.0f, 10.0f}), Colors::Create(Colors::GREEN));
+```
+
 ## Dependencies
 If you are interesed in libraries MxEngine depend on, consider reading [dependencies.md](dependencies.md) file. It contains third-party library list with links to each project's github repository and brief explanation of why each library is used in the engine. Note that if you build MxEngine using VS2019 on x64, you do NOT have to clone the libraries or build them yourself - all binaries are already shipped with the engine and are automatically extracted by `install.py` script
 

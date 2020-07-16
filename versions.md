@@ -175,3 +175,4 @@
 - new physics components: RigidBody, BoxCollider, SphereCollider, CyllinderCollider
 - removed ambient map and replaced diffuse map with albedo
 - some small fixes in engine utilities
+- added raycast functions for RigidBodies (needs collider)

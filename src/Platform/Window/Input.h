@@ -32,7 +32,7 @@
 
 namespace MxEngine
 {
-	class InputManager
+	class Input
 	{
 	public:
 		static Vector2 GetCursorPosition();

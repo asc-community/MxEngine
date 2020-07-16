@@ -42,7 +42,7 @@
 #include "Core/Application/Event.h"
 #include "Core/Events/Events.h"
 #include "Platform/GraphicAPI.h"
-#include "Platform/Window/InputManager.h"
+#include "Platform/Window/Input.h"
 #include "Platform/Window/WindowManager.h"
 #include "Utilities/Math/Math.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
