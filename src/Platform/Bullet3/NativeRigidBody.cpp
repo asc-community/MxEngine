@@ -62,7 +62,7 @@ namespace MxEngine
     void NativeRigidBody::ReAddRigidBody()
     {
         Physics::RemoveRigidBody(this->body);
-        Physics::AddRigidBody(this->body);
+        Physics::AddRigidBody(this->body, this->group, this->mask);
     }
 
     void NativeRigidBody::UpdateRigidBodyCollider(float mass, btCollisionShape* collider)
@@ -74,6 +74,20 @@ namespace MxEngine
         auto oldMass = this->GetMass();
         bool wasStatic = oldMass == 0.0f;
         bool nowStatic = mass == 0.0f;
+
+        if (nowStatic)
+        {
+            this->mask |= CollisionMask::STATIC;
+            this->mask &= ~CollisionMask::DEFAULT;
+            this->group &= CollisionGroup::NO_STATIC_COLLISIONS;
+        }
+        else
+        {
+            this->mask &= ~CollisionMask::STATIC;
+            this->mask |= CollisionMask::DEFAULT;
+            this->group |= ~CollisionGroup::NO_STATIC_COLLISIONS;
+        }
+
         if (wasStatic != nowStatic || collider != this->GetCollisionShape())
         {
             this->body->setCollisionShape(collider);
@@ -93,7 +107,7 @@ namespace MxEngine
         this->state = Alloc<MotionStateNotifier>(tr);
         this->body = Alloc<btRigidBody>(0.0f, this->state, nullptr);
 
-        Physics::AddRigidBody(this->body);
+        Physics::AddRigidBody(this->body, this->group, this->mask);
     }
 
     NativeRigidBody::NativeRigidBody(NativeRigidBody&& other) noexcept
@@ -152,6 +166,31 @@ namespace MxEngine
     void NativeRigidBody::SetCollisionShape(btCollisionShape* shape)
     {
         this->UpdateRigidBodyCollider(this->GetMass(), shape);
+    }
+
+    void NativeRigidBody::SetCollisionFilter(uint32_t group, uint32_t mask)
+    {
+        btTransform tr;
+        this->state->getWorldTransform(tr);
+
+        auto newBody = Alloc<btRigidBody>(this->GetMass(), this->state, this->GetCollisionShape());
+        newBody->setUserPointer(this->body->getUserPointer());
+
+        Physics::RemoveRigidBody(this->body);
+        Free(this->body);
+        this->mask = mask, this->group = group;
+        Physics::AddRigidBody(newBody, this->group, this->mask);
+        this->body = newBody;
+    }
+
+    uint32_t NativeRigidBody::GetCollisionGroup() const
+    {
+        return this->group;
+    }
+
+    uint32_t NativeRigidBody::GetCollisionMask() const
+    {
+        return this->mask;
     }
 
     bool NativeRigidBody::HasTransformUpdate() const
@@ -214,5 +253,43 @@ namespace MxEngine
     bool NativeRigidBody::IsActive() const
     {
         return this->body->isActive();
+    }
+
+    const char* EnumToString(CollisionMask::Mask mask)
+    {
+        switch (mask)
+        {
+        case CollisionMask::GHOST:
+            return "GHOST";
+        case CollisionMask::DEFAULT:
+            return "DEFAULT";
+        case CollisionMask::STATIC:
+            return "STATIC";
+        case CollisionMask::KINEMATIC:
+            return "KINEMATIC";
+        case CollisionMask::DEBRIS:
+            return "DEBRIS";
+        case CollisionMask::TRIGGER:
+            return "TRIGGER";
+        case CollisionMask::CHARACTER:
+            return "CHARACTER";
+        default:
+            return "CUSTOM";
+        }
+    }
+
+    const char* EnumToString(CollisionGroup::Group group)
+    {
+        switch (group)
+        {
+        case CollisionGroup::NONE:
+            return "NONE";
+        case CollisionGroup::DEFAULT:
+            return "DEFAULT";
+        case CollisionGroup::NO_STATIC_COLLISIONS:
+            return "NO_STATIC_COLLISIONS";
+        default:
+            return "CUSTOM";
+        }
     }
 }

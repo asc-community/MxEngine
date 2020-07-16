@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include "Core/MxObject/MxObject.h"
 #include "Platform/PhysicsAPI.h"
 
 namespace MxEngine
@@ -36,7 +37,13 @@ namespace MxEngine
     {
     public:
         static void AddRigidBody(void* body);
+        static void AddRigidBody(void* body, int group, int mask);
         static void RemoveRigidBody(void* body);
+        static void SetRigidBodyParent(void* body, MxObject& parent);
+        static MxObject::Handle GetRigidBodyParent(const void* body);
+        static MxObject::Handle RayCast(const Vector3& from, const Vector3& to);
+        static MxObject::Handle RayCast(const Vector3& from, const Vector3& to, float& rayDistance);
+
         static void SetGravity(const Vector3& gravity);
         static void PerformExtraSimulationStep(float timeDelta);
         static void SetSimulationStep(float timeDelta);

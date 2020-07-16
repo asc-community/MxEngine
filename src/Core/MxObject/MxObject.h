@@ -40,7 +40,11 @@ namespace MxEngine
 {
 	class MxObject
 	{
+	public:
 		using EngineHandle = size_t;
+		using Factory = AbstractFactoryImpl<MxObject>;
+		using Handle = Resource<MxObject, Factory>;
+	private:
 		constexpr static EngineHandle InvalidHandle = std::numeric_limits<EngineHandle>::max();
 		EngineHandle handle = InvalidHandle;
 		#if defined(MXENGINE_MXOBJECT_EDITOR)
@@ -53,10 +57,6 @@ namespace MxEngine
 		// placed here to be destroyed before other members
 		ComponentManager components;
 	public:
-
-		using Factory = AbstractFactoryImpl<MxObject>;
-		using Handle = Resource<MxObject, Factory>;
-
 		static Handle Create();
 		static void Destroy(Handle& object);
 		static void Destroy(MxObject& object);
@@ -73,17 +73,17 @@ namespace MxEngine
 			return managedObject.value;
 		}
 	
+		static MxObject::Handle GetByHandle(EngineHandle handle);
+
 		void SetDisplayInRuntimeEditor(bool value);
 		bool IsDisplayedInRuntimeEditor() const;
+		EngineHandle GetNativeHandle() const;
 
 		template<typename T>
 		static Handle GetHandleByComponent(T& component)
 		{
 			auto handle = reinterpret_cast<EngineHandle>(component.UserData);
-			MX_ASSERT(handle != InvalidHandle);
-			auto& managedObject = Factory::Get<MxObject>()[handle];
-			MX_ASSERT(managedObject.refCount > 0 && managedObject.uuid != UUIDGenerator::GetNull());
-			return MxObject::Handle(managedObject.uuid, handle);
+			return MxObject::GetByHandle(handle);
 		}
 
 		MxObject() = default;

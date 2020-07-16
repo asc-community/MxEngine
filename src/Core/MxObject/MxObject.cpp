@@ -71,7 +71,15 @@ namespace MxEngine
 		return MxObject::Handle{ };
 	}
 
-    void MxObject::SetDisplayInRuntimeEditor(bool value)
+	MxObject::Handle MxObject::GetByHandle(EngineHandle handle)
+	{
+		MX_ASSERT(handle != InvalidHandle);
+		auto& managedObject = Factory::Get<MxObject>()[handle];
+		MX_ASSERT(managedObject.refCount > 0 && managedObject.uuid != UUIDGenerator::GetNull());
+		return MxObject::Handle(managedObject.uuid, handle);
+	}
+
+	void MxObject::SetDisplayInRuntimeEditor(bool value)
     {
 		#if defined(MXENGINE_MXOBJECT_EDITOR)
 		this->displayedInEditorList = value;
@@ -86,6 +94,11 @@ namespace MxEngine
 		return false;
 		#endif
 	}
+
+    MxObject::EngineHandle MxObject::GetNativeHandle() const
+    {
+		return this->handle;
+    }
 
     MxObject::~MxObject()
     {

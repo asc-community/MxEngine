@@ -33,6 +33,8 @@
 
 namespace MxEngine
 {
+    class MxObject;
+
     enum class AnisotropicFriction
     {
         DISABLED = 0,
@@ -59,6 +61,10 @@ namespace MxEngine
         void MakeKinematic();
         bool IsKinematic() const;
         bool IsStatic() const;
+        void SetCollisionFilter(uint32_t mask, uint32_t group = CollisionGroup::DEFAULT);
+        void SetCollisionFilter(CollisionMask::Mask mask, CollisionGroup::Group group = CollisionGroup::DEFAULT);
+        uint32_t GetCollisionGroup() const;
+        uint32_t GetCollisionMask() const;
         void ClearForces();
         float GetMass() const;
         void SetMass(float mass);

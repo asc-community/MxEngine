@@ -37,6 +37,34 @@ class btMotionState;
 
 namespace MxEngine
 {
+    namespace CollisionMask
+    {
+        enum Mask : uint32_t
+        {
+            GHOST = 0,
+            DEFAULT = 1 << 0,
+            STATIC = 1 << 1,
+            KINEMATIC = 1 << 2,
+            DEBRIS = 1 << 3,
+            TRIGGER = 1 << 4,
+            CHARACTER = 1 << 5,
+            ALL = uint32_t(-1),
+        };
+    }
+
+    namespace CollisionGroup
+    {
+        enum Group : uint32_t
+        {  
+            NONE,
+            DEFAULT = uint32_t(-1),
+            NO_STATIC_COLLISIONS = uint32_t(-1) & ~CollisionMask::STATIC,
+        };
+    }
+
+    const char* EnumToString(CollisionGroup::Group mask);
+    const char* EnumToString(CollisionMask::Mask group);
+
     enum class ActivationState
     {
         ACTIVE_TAG = 1,
@@ -50,6 +78,7 @@ namespace MxEngine
     {
         btMotionState* state = nullptr;
         btRigidBody* body = nullptr;
+        uint32_t group = CollisionGroup::DEFAULT, mask = CollisionMask::STATIC | CollisionMask::DEFAULT;
 
         void DestroyBody();
         void ReAddRigidBody();
@@ -72,6 +101,9 @@ namespace MxEngine
         btCollisionShape* GetCollisionShape();
         const btCollisionShape* GetCollisionShape() const;
         void SetCollisionShape(btCollisionShape* shape);
+        void SetCollisionFilter(uint32_t group, uint32_t mask);
+        uint32_t GetCollisionGroup() const;
+        uint32_t GetCollisionMask() const;
         Vector3 GetScale() const;
         void SetScale(const Vector3& scale);
         float GetMass() const;

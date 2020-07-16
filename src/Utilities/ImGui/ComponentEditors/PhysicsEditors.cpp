@@ -46,8 +46,14 @@ namespace MxEngine::GUI
 		auto inertia = rigidBody.GetInertia();
 		auto totalForce = rigidBody.GetTotalForce();
 		auto totalTorque = rigidBody.GetTotalTorque();
+		auto collisionGroup = rigidBody.GetCollisionGroup();
+		auto collisionMask = rigidBody.GetCollisionMask();
 
 		ImGui::Text("is kinematic: %s, is static: %s", BOOL_STRING(rigidBody.IsKinematic()), BOOL_STRING(rigidBody.IsStatic()));
+		ImGui::Text("collision group: %s, collision mask: %s", 
+			EnumToString((CollisionGroup::Group)collisionGroup), 
+			EnumToString((CollisionMask::Mask)collisionMask)
+		);
 		ImGui::Text("total force  applied: (%f, %f, %f)", totalForce.x, totalForce.y, totalForce.z);
 		ImGui::Text("total torque applied: (%f, %f, %f)", totalTorque.x, totalTorque.y, totalTorque.z);
 		ImGui::Text("body inertia:         (%f, %f, %f)", inertia.x, inertia.y, inertia.z);

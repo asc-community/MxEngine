@@ -27,6 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Physics.h"
+#include "Core/MxObject/MxObject.h"
 #include "Utilities/Logging/Logger.h"
 #include "Platform/Modules/PhysicsModule.h"
 #include "Platform/Bullet3/Bullet3Utils.h"
@@ -36,14 +37,70 @@ namespace MxEngine
 {
     #define WORLD PhysicsModule::GetImpl()->World
 
+    struct CustomRayCastCallback : public btCollisionWorld::ClosestRayResultCallback
+    {
+        CustomRayCastCallback(const btVector3& from, const btVector3& to)
+            : btCollisionWorld::ClosestRayResultCallback(from, to)
+        {
+            this->m_collisionFilterGroup = CollisionGroup::DEFAULT;
+            this->m_collisionFilterMask = CollisionMask::ALL;
+        }
+
+        MxObject::Handle GetResult() const
+        {
+            if (!this->hasHit()) return MxObject::Handle{ };
+            return Physics::GetRigidBodyParent(this->m_collisionObject);
+        }
+
+        float GetRayLength() const
+        {
+            return this->m_closestHitFraction * (this->m_rayFromWorld - this->m_rayToWorld).length();
+        }
+    };
+
     void Physics::AddRigidBody(void* body) //-V813
     {
         WORLD->addRigidBody((btRigidBody*)body);
     }
 
+    void Physics::AddRigidBody(void* body, int group, int mask)
+    {
+        WORLD->addRigidBody((btRigidBody*)body, group, mask);
+    }
+
     void Physics::RemoveRigidBody(void* body) //-V813
     {
         WORLD->removeRigidBody((btRigidBody*)body);
+    }
+
+    void Physics::SetRigidBodyParent(void* body, MxObject& parent)
+    {
+        auto objectHandle = parent.GetNativeHandle();
+        ((btRigidBody*)body)->setUserPointer(reinterpret_cast<void*>(objectHandle));
+    }
+
+    MxObject::Handle Physics::GetRigidBodyParent(const void* body)
+    {
+        auto objectHandle = reinterpret_cast<MxObject::EngineHandle>(((btRigidBody*)body)->getUserPointer());
+        return MxObject::GetByHandle(objectHandle);
+    }
+
+    MxObject::Handle Physics::RayCast(const Vector3& from, const Vector3& to)
+    {
+        float rayDistance = 0.0f;
+        return Physics::RayCast(from, to, rayDistance);
+    }
+
+    MxObject::Handle Physics::RayCast(const Vector3& from, const Vector3& to, float& rayDistance)
+    {
+        auto btFrom = ToBulletVector3(from);
+        auto btTo = ToBulletVector3(to);
+
+        CustomRayCastCallback callback(btFrom, btTo);
+
+        WORLD->rayTest(btFrom, btTo, callback);
+        rayDistance = callback.GetRayLength();
+        return callback.GetResult();
     }
 
     void Physics::SetGravity(const Vector3& gravity)

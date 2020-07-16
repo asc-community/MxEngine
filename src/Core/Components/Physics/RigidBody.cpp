@@ -34,6 +34,7 @@
 #include "Core/Components/Physics/CapsuleCollider.h"
 #include "Utilities/Logging/Logger.h"
 #include "Platform/Bullet3/Bullet3Utils.h"
+#include "Core/Application/Physics.h"
 
 namespace MxEngine
 {
@@ -103,8 +104,9 @@ namespace MxEngine
     void RigidBody::Init()
     {
         auto& self = MxObject::GetByComponent(*this);
-        auto& transform = MxObject::GetByComponent(*this).Transform;
-        this->rigidBody = PhysicsFactory::Create<NativeRigidBody>(transform);
+        this->rigidBody = PhysicsFactory::Create<NativeRigidBody>(self.Transform);
+
+        Physics::SetRigidBodyParent(this->rigidBody->GetNativeHandle(), self);
         
         InvalidateCollider<BoxCollider>(self);
         InvalidateCollider<SphereCollider>(self);
@@ -137,6 +139,26 @@ namespace MxEngine
     bool RigidBody::IsStatic() const
     {
         return this->GetMass() == 0.0f;
+    }
+
+    void RigidBody::SetCollisionFilter(uint32_t mask, uint32_t group)
+    {
+        this->rigidBody->SetCollisionFilter(group, mask);
+    }
+
+    void RigidBody::SetCollisionFilter(CollisionMask::Mask mask, CollisionGroup::Group group)
+    {
+        this->SetCollisionFilter((uint32_t)group, (uint32_t)mask);
+    }
+
+    uint32_t RigidBody::GetCollisionGroup() const
+    {
+        return this->rigidBody->GetCollisionGroup();
+    }
+
+    uint32_t RigidBody::GetCollisionMask() const
+    {
+        return this->rigidBody->GetCollisionGroup();
     }
 
     void RigidBody::ClearForces()

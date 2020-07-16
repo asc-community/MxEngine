@@ -146,7 +146,24 @@ namespace ProjectTemplate
 
             if (Runtime::IsEditorActive())
             {
+                auto dir = cameraObject->GetComponent<CameraController>()->GetDirection();
+                auto pos = cameraObject->Transform.GetPosition();
+                float dist = 0.0f;
+                auto lookingAt = Physics::RayCast(pos, pos + dir * 1000.0f, dist);
+
                 ImGui::Begin("physics");
+
+                ImGui::Text("raycast");
+                if (lookingAt.IsValid())
+                {
+                    ImGui::Text("distance to object: %f", dist);
+                    ImGui::Text("object name: %s", lookingAt->Name.c_str());
+                }
+                else
+                {
+                    ImGui::Text("no object");
+                }
+                ImGui::Separator();
 
                 if (ImGui::Button("reset"))
                     this->Reset();
