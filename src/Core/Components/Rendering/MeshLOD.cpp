@@ -78,11 +78,11 @@ namespace MxEngine
             return;
         }
 
-        auto box = meshSource->Mesh->GetAABB() * object.Transform.GetMatrix();
+        auto box = meshSource->Mesh->GetBoundingBox() * object.Transform.GetMatrix();
 
         float distance = Length(box.GetCenter() - viewportPosition);
         Vector3 length = box.Length();
-        float maxLength = Max(length.x, length.y, length.z);
+        float maxLength = ComponentMax(length);
         float scaledDistance = maxLength / (distance * viewportZoom);
 
         // magic numbers which were measured in game to find best distance for each LOD peek

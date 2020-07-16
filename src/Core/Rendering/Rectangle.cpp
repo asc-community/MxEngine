@@ -44,7 +44,7 @@ namespace MxEngine
 
         this->VBO = GraphicFactory::Create<VertexBuffer>((float*)vertecies.data(), vertecies.size() * sizeof(float), UsageType::STATIC_DRAW);
         auto VBL = GraphicFactory::Create<VertexBufferLayout>();
-        VBL->PushFloat(4);
+        VBL->PushFloat(4); //-V112
         this->VAO = GraphicFactory::Create<VertexArray>();
         VAO->AddBuffer(*VBO, *VBL);
     }

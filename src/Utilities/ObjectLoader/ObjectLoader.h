@@ -50,13 +50,9 @@ namespace MxEngine
 		MxString Name;
 
 		/*!
-		ambient texture path
+		albedo texture path
 		*/
-		MxString AmbientMap;
-		/*!
-		diffuse texture path
-		*/
-		MxString DiffuseMap;
+		MxString AlbedoMap;
 		/*!
 		specular texture path
 		*/

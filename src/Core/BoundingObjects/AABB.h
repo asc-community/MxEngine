@@ -69,6 +69,22 @@ namespace MxEngine
         return AABB{ box.Min - translate, box.Max - translate };
     }
 
+    inline constexpr bool operator==(const AABB& box1, const AABB& box2)
+    {
+        constexpr auto abs = [](float x) { return x >= 0.0f ? x : -x; };
+
+        auto d1 = box1.Min - box2.Min;
+        auto d2 = box1.Max - box2.Max;
+        bool res1 = abs(d1.x) < 0.01f && abs(d1.y) < 0.01f && abs(d1.z) < 0.01f;
+        bool res2 = abs(d2.x) < 0.01f && abs(d2.y) < 0.01f && abs(d2.z) < 0.01f;
+        return res1 && res2;
+    }
+
+    inline constexpr bool operator!=(const AABB& box1, const AABB& box2)
+    {
+        return !(box1 == box2);
+    }
+
     inline AABB operator*(const AABB& box, const Matrix4x4& matrix)
     {
         std::array<Vector3, 8> vecs;

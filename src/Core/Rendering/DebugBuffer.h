@@ -26,25 +26,38 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Core/BoundingObjects/AABB.h"
-#include "Core/BoundingObjects/BoundingSphere.h"
-#include "Core/BoundingObjects/Cone.h"
-#include "Core/BoundingObjects/Frustrum.h"
-
 #include "Platform/GraphicAPI.h"
 
 #pragma once
 
 namespace MxEngine
 {
-	class DebugBuffer
+	class AABB;
+	class BoundingSphere;
+	class Cone;
+	class Cylinder;
+	class Capsule;
+	class Frustrum;
+
+	class Line
 	{
+	public:
 		struct Point
 		{
 			Vector3 position;
 			Vector4 color;
 		};
-		using FrontendStorage = MxVector<Point>;
+
+		union
+		{
+			Point Points[2];
+			struct { Point p1, p2; };
+		};
+	};
+
+	class DebugBuffer
+	{
+		using FrontendStorage = MxVector<Line::Point>;
 
 		VertexBufferHandle VBO;
 		VertexArrayHandle VAO;
@@ -54,10 +67,13 @@ namespace MxEngine
 		bool DrawAsScreenOverlay = false;
 
 		void Init();
+		void Submit(const Line& line, const Vector4& color);
 		void Submit(const AABB& box, const Vector4& color);
 		void Submit(const BoundingSphere& sphere, const Vector4 color);
 		void Submit(const Cone& cone, const Vector4& color);
 		void Submit(const Frustrum& frustrum, const Vector4& color);
+		void Submit(const Cylinder& cylinder, const Vector4& color);
+		void Submit(const Capsule& capsule, const Vector4& color);
 		void ClearBuffer(); 
 		void SubmitBuffer();
 		size_t GetSize() const;

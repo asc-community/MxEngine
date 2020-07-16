@@ -24,7 +24,7 @@ namespace ProjectTemplate
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
             // set controller to be main application viewport
-            RenderManager::SetViewport(controller);
+            Rendering::SetViewport(controller);
 
             // create cube object
             auto cubeObject = MxObject::Create();

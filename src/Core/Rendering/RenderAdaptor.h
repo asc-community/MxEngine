@@ -41,7 +41,8 @@ namespace MxEngine
         constexpr static TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;
         void InitRendererEnvironment();
         void LoadMainShader(bool useLighting = true);
-        void PerformRenderIteration();
+        void RenderFrame();
+        void SubmitRenderedFrame();
         void SetWindowSize(const VectorInt2& size);
         void SetRenderToDefaultFrameBuffer(bool value = true);
         bool IsRenderedToDefaultFrameBuffer() const;

@@ -33,7 +33,14 @@
 #include "Core/Components/Rendering/MeshLOD.h"
 #include "Core/Components/Rendering/DebugDraw.h"
 #include "Core/Components/Audio/AudioSource.h"
-#include "Core/Components/InstanceFactory.h"
+#include "Core/Components/Physics/BoxCollider.h"
+#include "Core/Components/Physics/SphereCollider.h"
+#include "Core/Components/Physics/CylinderCollider.h"
+#include "Core/Components/Physics/CapsuleCollider.h"
+#include "Core/Components/Physics/RigidBody.h"
+#include "Core/Components/Instancing/InstanceFactory.h"
+#include "Core/BoundingObjects/Cone.h"
+#include "Core/BoundingObjects/Frustrum.h"
 
 namespace MxEngine
 {
@@ -171,7 +178,7 @@ namespace MxEngine
         }
     }
 
-    void RenderAdaptor::PerformRenderIteration()
+    void RenderAdaptor::RenderFrame()
     {
         this->Renderer.ResetPipeline();
 
@@ -196,27 +203,6 @@ namespace MxEngine
             {
                 mainCameraIndex++;
             }
-        };
-
-        constexpr auto ComputeLODLevel = [](const AABB& box, const Vector3& viewportPosition, float viewportZoom)
-        {
-            float distance = Length(box.GetCenter() - viewportPosition);
-            Vector3 length = box.Length();
-            float maxLength = Max(length.x, length.y, length.z);
-            float scaledDistance = maxLength / distance / viewportZoom;
-
-            constexpr static std::array lodDistance = {
-                    0.21f,
-                    0.15f,
-                    0.10f,
-                    0.06f,
-                    0.03f,
-            };
-            size_t lod = 0;
-            while (lod < lodDistance.size() && scaledDistance < lodDistance[lod])
-                lod++;
-
-            return lod;
         };
 
         {
@@ -296,14 +282,6 @@ namespace MxEngine
         {
             MAKE_SCOPE_PROFILER("RenderAdaptor::SubmitDebugData()");
 
-            constexpr auto submitDebugData = [](DebugBuffer& drawer, DebugDraw& debugDraw, const AABB& box)
-            {
-                if (debugDraw.RenderBoundingBox)
-                    drawer.Submit(box, debugDraw.BoundingBoxColor);
-                if (debugDraw.RenderBoundingSphere)
-                    drawer.Submit(ToSphere(box), debugDraw.BoundingSphereColor);
-            };
-
             auto debugDrawView = ComponentFactory::GetView<DebugDraw>();
             for (auto& debugDraw : debugDrawView)
             {
@@ -315,13 +293,28 @@ namespace MxEngine
                 auto pointLight = object.GetComponent<PointLight>();
                 auto cameraController = object.GetComponent<CameraController>();
                 auto audioSource = object.GetComponent<AudioSource>();
+                auto boxCollider = object.GetComponent<BoxCollider>();
+                auto sphereCollider = object.GetComponent<SphereCollider>();
+                auto cylinderCollider = object.GetComponent<CylinderCollider>();
+                auto capsuleCollider = object.GetComponent<CapsuleCollider>();
+                auto rigidBody = object.GetComponent<RigidBody>();
 
                 if(instance.IsValid()) meshSource = instance->GetParent()->GetComponent<MeshSource>();
 
                 if (meshSource.IsValid() && !instanceFactory.IsValid())
                 {
-                    auto box = meshSource->Mesh->GetAABB() * object.Transform.GetMatrix();
-                    submitDebugData(this->DebugDrawer, debugDraw, box);
+                    if (debugDraw.RenderBoundingBox)
+                    {
+                        auto box = meshSource->Mesh->GetBoundingBox() * object.Transform.GetMatrix();
+                        this->DebugDrawer.Submit(box, debugDraw.BoundingBoxColor);
+                    }
+                    if (debugDraw.RenderBoundingSphere)
+                    {
+                        auto sphere = meshSource->Mesh->GetBoundingSphere();
+                        sphere.Center += object.Transform.GetPosition();
+                        sphere.Radius *= ComponentMax(object.Transform.GetScale());
+                        this->DebugDrawer.Submit(sphere, debugDraw.BoundingSphereColor);
+                    }
                 }
                 if (debugDraw.RenderLightingBounds && pointLight.IsValid())
                 {
@@ -358,6 +351,17 @@ namespace MxEngine
                     Frustrum frustrum(object.Transform.GetPosition() + Normalize(direction), direction, up, zoom, aspect);
                     this->DebugDrawer.Submit(frustrum, debugDraw.FrustrumColor);
                 }
+                if (rigidBody.IsValid() && debugDraw.RenderPhysicsCollider)
+                {
+                    if (boxCollider.IsValid())
+                        this->DebugDrawer.Submit(boxCollider->GetBoundingBox(), debugDraw.BoundingBoxColor);
+                    if (sphereCollider.IsValid())
+                        this->DebugDrawer.Submit(sphereCollider->GetBoundingSphere(), debugDraw.BoundingSphereColor);
+                    if (cylinderCollider.IsValid())
+                        this->DebugDrawer.Submit(cylinderCollider->GetBoundingCylinder(), debugDraw.BoundingBoxColor);
+                    if (capsuleCollider.IsValid())
+                        this->DebugDrawer.Submit(capsuleCollider->GetBoundingCapsule(), debugDraw.BoundingSphereColor);
+                }
             }
             environment.DebugBufferObject.VertexCount = this->DebugDrawer.GetSize();
             environment.OverlayDebugDraws = this->DebugDrawer.DrawAsScreenOverlay;
@@ -366,6 +370,12 @@ namespace MxEngine
         }
 
         this->Renderer.StartPipeline();
+    }
+
+    void RenderAdaptor::SubmitRenderedFrame()
+    {
+        this->Renderer.EndPipeline();
+        this->Renderer.Render();
     }
 
     void RenderAdaptor::SetWindowSize(const VectorInt2& size)

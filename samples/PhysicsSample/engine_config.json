@@ -1,0 +1,30 @@
+{
+  "debug-build": {
+    "app-close-key": "ESCAPE",
+    "editor-key": "GRAVE_ACCENT"
+  },
+  "filesystem": {
+    "root": "Resources"
+  },
+  "renderer": {
+    "anisothropic-filtering": 16,
+    "debug-line-width": 3,
+    "msaa-samples": 4,
+    "opengl-major-version": 4,
+    "opengl-minor-version": 0,
+    "opengl-profile": "core"
+  },
+  "window": {
+    "cursor-mode": "disabled",
+    "double-buffering": false,
+    "position": [
+      300,
+      150
+    ],
+    "size": [
+      1600,
+      900
+    ],
+    "title": "MxEngine Application"
+  }
+}

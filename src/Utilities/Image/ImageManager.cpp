@@ -29,7 +29,7 @@
 #include "ImageManager.h"
 #include "Utilities/FileSystem/FileManager.h"
 #include "Utilities/Image/ImageConverter.h"
-#include "Core/Application/RenderManager.h"
+#include "Core/Application/Rendering.h"
 #include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
@@ -131,7 +131,7 @@ namespace MxEngine
 
     void ImageManager::TakeScreenShot(const MxString& filePath, ImageType type)
     {
-        auto viewport = RenderManager::GetViewport();
+        auto viewport = Rendering::GetViewport();
         if (!viewport.IsValid())
         {
             MXLOG_WARNING("MxEngine::ImageManager", "cannot take screenshot at there is no viewport attached");

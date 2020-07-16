@@ -28,15 +28,12 @@
 
 #pragma once
 
-#include <memory>
 #include <functional>
-#include <unordered_set>
-#include <typeindex>
-#include <map>
 #include <algorithm>
 
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/Memory/Memory.h"
+#include "Utilities/STL/MxHashMap.h"
 #include "Utilities/String/String.h" // is used in macro, so analyzer may say it is unused, but its not
 #include "Utilities/STL/MxVector.h"
 
@@ -51,7 +48,7 @@ namespace MxEngine
 	inserted into class body of derived classes from base event. Using compile-time hash from class name to generate type id
 	*/
 	#define MAKE_EVENT(class_name) \
-	template<typename T> friend class EventDispatcher;\
+	template<typename T> friend class MxEngine::EventDispatcherImpl;\
 	public: inline virtual uint32_t GetEventType() const override { return eventType; } private:\
 	constexpr static uint32_t eventType = STRING_ID(#class_name)
 
@@ -60,7 +57,7 @@ namespace MxEngine
 	for currently active scene. Note that events are NOT dispatched when developer console is opened and instead sheduled until it close
 	*/
 	template<typename EventBase>
-	class EventDispatcher
+	class EventDispatcherImpl
 	{
 		using CallbackBaseFunction = std::function<void(EventBase&)>;
 		using NamedCallback = std::pair<MxString, CallbackBaseFunction>;
@@ -69,21 +66,21 @@ namespace MxEngine
 		using EventTypeIndex = uint32_t;
 
 		/*!
-		list of scheduled all events (executed once per frame by Application class)
+		list of scheduled all events
 		*/
 		EventList events;
 		/*!
 		maps event id to list of event listeners of that id 
 		*/
-		std::unordered_map<EventTypeIndex, CallbackList> callbacks;
+		MxHashMap<EventTypeIndex, CallbackList> callbacks;
 		/*!
 		schedules listeners which will be added next frame. 
-		This cache exists because sometimes user wants to add new listener inside other listener callback, which may result in crash.
+		This cache exists to prevent crushes when user wants to add new listener inside other listener callback.
 		*/
-		std::unordered_map<EventTypeIndex, CallbackList> toAddCache;
+		MxHashMap<EventTypeIndex, CallbackList> toAddCache;
 		/*!
 		shedules listeners which will be removed next frame. 
-		This cache exists because sometimes user wants to remove event listener inside other listener callback (or even perform self-removal), which may result in crash.
+		This cache exists to prevent crushes when user wants to remove event listener inside other listener callback (or even perform self-removal).
 		*/
 		MxVector<MxString> toRemoveCache;
 
@@ -93,6 +90,7 @@ namespace MxEngine
 		*/
 		inline void ProcessEvent(EventBase& event)
 		{
+			MAKE_SCOPE_PROFILER(typeid(event).name());
 			auto& eventCallbacks = this->callbacks[event.GetEventType()];
 			for (const auto& [name, callback] : eventCallbacks)
 			{
@@ -127,6 +125,21 @@ namespace MxEngine
 			});
 			callbacks.erase(it, callbacks.end());
 		}
+
+		/*!
+		wraps event listener into callback with base event as argument. Actual type is retrieved inside callback
+		\param name name of listener to add
+		\param func listener callback function
+		*/
+		template<typename EventType>
+		void AddEventListenerImpl(const MxString& name, std::function<void(EventType&)> func)
+		{
+			this->template AddCallbackImpl<EventType>(name, [func = std::move(func)](EventBase& e)
+			{
+				if (e.GetEventType() == EventType::eventType)
+					func(static_cast<EventType&>(e));
+			});
+		}
 	public:
 		/*!
 		performs cache update, removing events from toRemoveCache list and adding events from toAddCache list
@@ -154,7 +167,7 @@ namespace MxEngine
 		}
 
 		/*!
-		adds new event listener to dispatcher (listener placed in waiting queue until next frame).
+		adds new event listener to dispatcher
 		Note that multiple listeners may have same name. If so, deleting by name will result in removing all of them
 		\param name name of listener (used for deleting listener)
 		\param func listener callback functor
@@ -162,15 +175,11 @@ namespace MxEngine
 		template<typename EventType>
 		void AddEventListener(const MxString& name, std::function<void(EventType&)> func)
 		{
-			this->template AddCallbackImpl<EventType>(name, [func = std::move(func)](EventBase& e)
-			{
-				if (e.GetEventType() == EventType::eventType)
-					func(static_cast<EventType&>(e));
-			});
+			this->AddEventListenerImpl(name, std::move(func));
 		}
 
 		/*!
-		adds new event listener to dispatcher (listener is placed in waiting queue until next frame).
+		adds new event listener to dispatcher
 		Note that multiple listeners may have same name. If so, deleting by name will result in removing all of them
 		\param name name of listener (used for deleting listener)
 		\param func listener callback functor
@@ -178,11 +187,11 @@ namespace MxEngine
 		template<typename FunctionType>
 		void AddEventListener(const MxString& name, FunctionType&& func)
 		{
-			this->AddEventListener(name, std::function(std::forward<FunctionType>(func)));
+			this->AddEventListenerImpl(name, std::function(std::forward<FunctionType>(func)));
 		}
 
 		/*!
-		removes all event listeners by their names (action is placed in waiting queue until next frame)
+		removes all event listeners by their names
 		\param name name of listeners to be deleted
 		*/
 		void RemoveEventListener(const MxString& name)
@@ -196,7 +205,7 @@ namespace MxEngine
 		}
 		
 		/*!
-		Immediately invokes event of specific type. Note that invokation also forces queues to be invalidated
+		Immediately invokes event of specific type
 		\param event event to dispatch
 		*/
 		template<typename Event>
@@ -207,7 +216,7 @@ namespace MxEngine
 		}
 
 		/*!
-		Adds event to event queue. All such events will be dispatched in next frames in the order they were added
+		Adds event to event queue.
 		\param event event to shedule dispatch
 		*/
 		void AddEvent(UniqueRef<EventBase> event)
@@ -216,7 +225,7 @@ namespace MxEngine
 		}
 
 		/*!
-		Invokes all shedules events in the order they were added. Note that invoke also forces queues to be invalidated
+		Invokes all shedules events in the order they were added
 		*/
 		void InvokeAll()
 		{
@@ -224,7 +233,6 @@ namespace MxEngine
 
 			for (size_t i = 0; i < this->events.size(); i++)
 			{
-				MAKE_SCOPE_PROFILER(typeid(*this->events[i]).name());
 				this->ProcessEvent(*this->events[i]);
 			}
 			this->events.clear();

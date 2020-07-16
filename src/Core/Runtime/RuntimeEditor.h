@@ -31,7 +31,7 @@
 #include "Utilities/STL/MxString.h"
 #include "Utilities/Memory/Memory.h"
 #include "Core/MxObject/MxObject.h"
-#include "Core/Event/Events/KeyEvent.h"
+#include "Core/Events/KeyEvent.h"
 #include <functional>
 
 namespace MxEngine

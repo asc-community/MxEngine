@@ -27,15 +27,15 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "InputControl.h"
-#include "Core/Application/EventManager.h"
-#include "Core/Event/Events/MouseEvent.h"
+#include "Core/Application/Event.h"
+#include "Core/Events/MouseEvent.h"
 
 namespace MxEngine
 {
 	InputControl::~InputControl()
 	{	
 		MxString uuid = MxObject::GetComponentUUID(*this);
-		EventManager::RemoveEventListener(uuid);
+		Event::RemoveEventListener(uuid);
 	}
 
 	void InputControl::BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right)
@@ -51,7 +51,7 @@ namespace MxEngine
 
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object movement: " + object.Name);
 	
-		EventManager::AddEventListener(uuid,
+		Event::AddEventListener(uuid,
 			[forward, back, right, left, up, down, camera, object = MxObject::GetHandleByComponent(*this)](KeyEvent& event) mutable
 		{
 			auto vecForward = MakeVector3( 0.0f, 0.0f, 1.0f);
@@ -68,7 +68,7 @@ namespace MxEngine
 			}
 			else
 			{
-				vecForward = object->Transform.GetRotation() * vecForward;
+				vecForward = object->Transform.GetRotation() * vecForward; //-V807
 				vecRight   = object->Transform.GetRotation() * vecRight;
 				vecUp      = object->Transform.GetRotation() * vecUp;
 			}
@@ -116,12 +116,13 @@ namespace MxEngine
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
 		MxString uuid = object.GetComponent<InputControl>().GetUUID(); 
 
-		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
+		Event::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
 		{
 			if (!camera.IsValid()) return;
 			static Vector2 oldPos = event.position;
 			auto dt = Application::Get()->GetTimeDelta();
-			camera->Rotate(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
+			Vector2 diff(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
+			camera->Rotate(diff.x, diff.y);
 			oldPos = event.position;
 		});
 	}
@@ -139,13 +140,14 @@ namespace MxEngine
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
 		MxString uuid = object.GetComponent<InputControl>().GetUUID();
 	
-		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
+		Event::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
 		{
-			if (!camera.IsValid()) return;
-			static Vector2 oldPos = event.position;
-			auto dt = Application::Get()->GetTimeDelta();
-			camera->Rotate(dt * (oldPos.x - event.position.x), 0.0f);
-			oldPos = event.position;
+				if (!camera.IsValid()) return;
+				static Vector2 oldPos = event.position;
+				auto dt = Application::Get()->GetTimeDelta();
+				Vector2 diff(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
+				camera->Rotate(diff.x, 0.0f);
+				oldPos = event.position;
 		});
 	}
 	
@@ -162,13 +164,14 @@ namespace MxEngine
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
 		MxString uuid = object.GetComponent<InputControl>().GetUUID();
 	
-		EventManager::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
+		Event::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
 		{
-			if (!camera.IsValid()) return;
-			static Vector2 oldPos = event.position;
-			auto dt = Application::Get()->GetTimeDelta();
-			camera->Rotate(0.0f, dt * (oldPos.y - event.position.y));
-			oldPos = event.position;
+				if (!camera.IsValid()) return;
+				static Vector2 oldPos = event.position;
+				auto dt = Application::Get()->GetTimeDelta();
+				Vector2 diff(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
+				camera->Rotate(0.0f, diff.y);
+				oldPos = event.position;
 		});
 	}
 }

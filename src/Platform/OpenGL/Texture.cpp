@@ -175,6 +175,11 @@ namespace MxEngine
 		if (genMipmaps) this->GenerateMipmaps();
 	}
 
+    void Texture::Load(const Image& image, TextureFormat format, TextureWrap wrap, bool genMipmaps)
+    {
+		this->Load(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), format, wrap, genMipmaps);
+    }
+
 	void Texture::LoadMipmaps(Texture::RawDataPointer* data, size_t mipmaps, int biggestWidth, int biggestHeight, TextureWrap wrap)
 	{
 		this->filepath = "[[raw data]]";

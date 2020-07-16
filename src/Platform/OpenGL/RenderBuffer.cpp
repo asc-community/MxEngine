@@ -66,7 +66,7 @@ namespace MxEngine
 
     RenderBuffer& RenderBuffer::operator=(RenderBuffer&& renderbuffer) noexcept
     {
-        this->FreeRenderBuffer();
+        this->FreeRenderBuffer(); //-V509
 
         this->id = renderbuffer.id;
         this->width = renderbuffer.width;

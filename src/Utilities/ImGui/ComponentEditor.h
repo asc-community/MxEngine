@@ -28,7 +28,29 @@
 
 #pragma once
 
-#include "Core/Components/Components.h"
+namespace MxEngine
+{
+	class Transform;
+	class Behaviour;
+	class Script;
+	class InstanceFactory;
+	class Instance;
+	class Skybox;
+	class DebugDraw;
+	class MeshRenderer;
+	class MeshLOD;
+	class DirectionalLight;
+	class PointLight;
+	class SpotLight;
+	class CameraController;
+	class VRCameraController;
+	class InputControl;
+	class AudioSource;
+	class AudioListener;
+	class RigidBody;
+	class BoxCollider;
+	class SphereCollider;
+}
 
 namespace MxEngine::GUI
 {
@@ -50,4 +72,7 @@ namespace MxEngine::GUI
 	void InputControlEditor(InputControl& inputControl);
 	void AudioSourceEditor(AudioSource& audioSource);
 	void AudioListenerEditor(AudioListener& audioListener);
+	void RigidBodyEditor(RigidBody& rigidBody);
+	void BoxColliderEditor(BoxCollider& boxCollider);
+	void SphereColliderEditor(SphereCollider& sphereCollider);
 }

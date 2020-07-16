@@ -82,12 +82,12 @@ namespace MxEngine
 			submesh.MeshData.GetIndicies() = std::move(meshData.indicies);
 			submesh.MeshData.BufferVertecies();
 			submesh.MeshData.BufferIndicies();
-			submesh.MeshData.UpdateBoundingBox();
+			submesh.MeshData.UpdateBoundingGeometry();
 			submesh.Name = std::move(meshData.name);
 
 			submeshes.push_back(std::move(submesh));
 		}
-		this->UpdateAABB(); // use submeshes AABB to update mesh bounding box
+		this->UpdateBoundingGeometry(); // use submeshes boundings to update mesh boundings
 	}
 
     Mesh::Mesh(const MxString& path)
@@ -110,27 +110,49 @@ namespace MxEngine
 		return this->submeshes;
 	}
 
-	const AABB& Mesh::GetAABB() const
+	const AABB& Mesh::GetBoundingBox() const
 	{
 		return this->boundingBox;
 	}
 
-	void Mesh::SetAABB(const AABB& boundingBox)
+	const BoundingSphere& Mesh::GetBoundingSphere() const
+	{
+		return this->boundingSphere;
+	}
+
+	void Mesh::SetBoundingBox(const AABB& boundingBox)
 	{
 		this->boundingBox = boundingBox;
 	}
 
-	void Mesh::UpdateAABB()
+	void Mesh::SetBoundingSphere(const BoundingSphere& boundingSphere)
 	{
+		this->boundingSphere = boundingSphere;
+	}
+
+	void Mesh::UpdateBoundingGeometry()
+	{
+		// compute bounding box, taking min and max points from each sub-box
 		this->boundingBox = { MakeVector3(0.0f), MakeVector3(0.0f) };
 		if (!this->submeshes.empty()) 
-			this->boundingBox = this->submeshes.front().MeshData.GetAABB();
+			this->boundingBox = this->submeshes.front().MeshData.GetBoundingBox();
 
 		for (const auto& submesh : this->submeshes)
 		{
-			this->boundingBox.Min = VectorMin(this->boundingBox.Min, submesh.MeshData.GetAABB().Min);
-			this->boundingBox.Max = VectorMax(this->boundingBox.Max, submesh.MeshData.GetAABB().Max);
+			this->boundingBox.Min = VectorMin(this->boundingBox.Min, submesh.MeshData.GetBoundingBox().Min);
+			this->boundingBox.Max = VectorMax(this->boundingBox.Max, submesh.MeshData.GetBoundingBox().Max);
 		}
+
+		// compute bounding sphere, taking sun of max sub-sphere radius and distance to it
+		auto center = MakeVector3(0.0f);
+		auto maxRadius = 0.0f;
+		for (const auto& submesh : this->submeshes)
+		{
+			auto sphere = submesh.MeshData.GetBoundingSphere();
+			auto distanceToCenter = Length(sphere.Center);
+			maxRadius = Max(maxRadius, distanceToCenter + sphere.Radius);
+		}
+		this->boundingSphere = BoundingSphere(center, maxRadius);
 	}
 
 	size_t Mesh::AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl)

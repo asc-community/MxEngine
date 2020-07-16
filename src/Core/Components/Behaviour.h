@@ -37,7 +37,7 @@ GENERATE_METHOD_CHECK(BehaviourUpdate, OnUpdate(std::declval<MxEngine::MxObject&
 
 namespace MxEngine
 {
-    enum class Timer
+    enum class TimerMode
     {
         UPDATE_EACH_FRAME,
         UPDATE_EACH_DELTA,
@@ -57,7 +57,7 @@ namespace MxEngine
         void* userBehaviour = nullptr;
         TimeDelta timeLeft = 0.0f;
         TimeDelta timeRequested = 0.0f;
-        Timer timerMode = Timer::UPDATE_EACH_FRAME;
+        TimerMode timerMode = TimerMode::UPDATE_EACH_FRAME;
 
         void InvokeUserBehaviour(TimeDelta dt);
     public:
@@ -66,10 +66,10 @@ namespace MxEngine
 
         void RemoveBehaviour();
         bool HasBehaviour() const;
-        void Schedule(Timer timer, TimeDelta seconds = 0.0f);
+        void Schedule(TimerMode timer, TimeDelta seconds = 0.0f);
         TimeDelta GetTimeLeft() const;
         TimeDelta GetTimeRequest() const;
-        Timer GetTimerMode() const;
+        TimerMode GetTimerMode() const;
 
         template<typename T>
         Behaviour(T&& customBehaviour)
