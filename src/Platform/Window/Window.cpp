@@ -31,7 +31,7 @@
 #include "Utilities/Logging/Logger.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/Memory/Memory.h"
-#include "Core/Event/Events/WindowResizeEvent.h"
+#include "Core/Events/WindowResizeEvent.h"
 #include "Platform/Modules/GraphicModule.h"
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Utilities/Format/Format.h"
@@ -81,7 +81,6 @@ namespace MxEngine
 		this->mouseReleased = other.mouseReleased;
 		this->cursorMode = other.cursorMode;
 		this->windowPosition = other.windowPosition;
-		this->cursorPosition = other.cursorPosition;
 
 		other.width = 0;
 		other.height = 0;
@@ -89,7 +88,6 @@ namespace MxEngine
 		other.dispatcher = nullptr;
 		other.cursorMode = CursorMode::NORMAL;
 		other.windowPosition = MakeVector2(0.0f);
-		other.cursorPosition = MakeVector2(0.0f);
 		other.keyHeld.reset();
 		other.keyReleased.reset();
 		other.keyPressed.reset();
@@ -121,7 +119,7 @@ namespace MxEngine
 		return this->window;
 	}
 
-	AppEventDispatcher& Window::GetEventDispatcher()
+	EventDispatcher& Window::GetEventDispatcher()
 	{
 		return *this->dispatcher;
 	}
@@ -171,9 +169,10 @@ namespace MxEngine
 				this->width =  (int)currentSize.x;
 				this->height = (int)currentSize.y;
 			}
+			auto cursor = this->GetCursorPosition();
 			auto keyEvent = MakeUnique<KeyEvent>(&this->keyHeld, &this->keyPressed, &this->keyReleased);
 			this->dispatcher->AddEvent(std::move(keyEvent));
-			auto mouseMoveEvent = MakeUnique<MouseMoveEvent>(this->cursorPosition.x, this->cursorPosition.y);
+			auto mouseMoveEvent = MakeUnique<MouseMoveEvent>(cursor.x, cursor.y);
 			this->dispatcher->AddEvent(std::move(mouseMoveEvent));
 			auto mousePress = MakeUnique<MousePressEvent>(&this->mouseHeld, &this->mousePressed, &this->mouseReleased);
 			this->dispatcher->AddEvent(std::move(mousePress));
@@ -287,11 +286,6 @@ namespace MxEngine
 					window.keyReleased[(size_t)key] = (action == GLFW_RELEASE);
 					window.keyHeld[(size_t)key] = (action == GLFW_PRESS);
 				});
-			glfwSetCursorPosCallback(this->window, [](GLFWwindow* w, double x, double y)
-				{
-					Window& window = *(Window*)glfwGetWindowUserPointer(w);
-					window.cursorPosition = { float(x), float(y) };
-				});
 			glfwSetWindowSizeCallback(window, [](GLFWwindow* w, int width, int height)
 				{
 					glViewport(0, 0, width, height);
@@ -312,7 +306,7 @@ namespace MxEngine
 		UseTitle(this->title);
 		UseCursorMode(this->cursorMode);
 		UseWindowPosition((int)this->windowPosition.x, (int)this->windowPosition.y);
-		UseCursorPosition(this->cursorPosition);
+		UseCursorPosition(this->windowPosition);
 		MXLOG_DEBUG("MxEngine::Window", "window initialized");
 		return *this;
 	}
@@ -370,7 +364,6 @@ namespace MxEngine
 
 	Window& Window::UseCursorPosition(const Vector2& pos)
 	{
-		this->cursorPosition = pos;
 		if (this->window != nullptr)
 		{
 			glfwSetCursorPos(this->window, pos.x, pos.y);
@@ -408,7 +401,7 @@ namespace MxEngine
 		return *this;
 	}
 
-	Window& Window::UseEventDispatcher(AppEventDispatcher* dispatcher)
+	Window& Window::UseEventDispatcher(EventDispatcher* dispatcher)
 	{
 		this->dispatcher = dispatcher;
 		return *this;

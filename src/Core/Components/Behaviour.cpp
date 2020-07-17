@@ -45,17 +45,17 @@ namespace MxEngine
 
         switch (this->timerMode)
         {
-        case Timer::UPDATE_EACH_FRAME:
+        case TimerMode::UPDATE_EACH_FRAME:
             this->InvokeUserBehaviour(dt);
             break;
-        case Timer::UPDATE_EACH_DELTA:
+        case TimerMode::UPDATE_EACH_DELTA:
             if (this->timeLeft <= 0.0f)
             {
                 this->timeLeft = this->timeRequested;
                 this->InvokeUserBehaviour(dt);
             }
             break;
-        case Timer::UPDATE_AFTER_DELTA:
+        case TimerMode::UPDATE_AFTER_DELTA:
             if (this->timeLeft <= 0.0f)
             {
                 this->timeLeft = std::numeric_limits<TimeDelta>::infinity();
@@ -82,7 +82,7 @@ namespace MxEngine
         return this->userBehaviour != nullptr;
     }
 
-    void Behaviour::Schedule(Timer timer, TimeDelta seconds)
+    void Behaviour::Schedule(TimerMode timer, TimeDelta seconds)
     {
         this->timerMode = timer;
         this->timeRequested = seconds;
@@ -99,7 +99,7 @@ namespace MxEngine
         return this->timeRequested;
     }
 
-    Timer Behaviour::GetTimerMode() const
+    TimerMode Behaviour::GetTimerMode() const
     {
         return this->timerMode;
     }

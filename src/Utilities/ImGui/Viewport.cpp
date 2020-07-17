@@ -28,23 +28,23 @@
 
 #include "Viewport.h"
 #include "Utilities/ImGui/ImGuiBase.h"
-#include "Core/Application/RenderManager.h"
-#include "Core/Event/Events/WindowResizeEvent.h"
-#include "Core/Application/EventManager.h"
+#include "Core/Application/Rendering.h"
+#include "Core/Events/WindowResizeEvent.h"
+#include "Core/Application/Event.h"
 
 namespace MxEngine::GUI
 {
 	void DrawViewportWindow(const char* name, Vector2& viewportSize, bool* isOpen)
 	{
 		ImGui::Begin(name, isOpen, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-		auto viewport = RenderManager::GetViewport();
+		auto viewport = Rendering::GetViewport();
 
 		if (viewport.IsValid() && viewport->GetRenderTexture().IsValid())
 		{
 			Vector2 newWindowSize = ImGui::GetWindowSize();
 			if (newWindowSize != viewportSize) // notify application that viewport size has been changed
 			{
-				EventManager::AddEvent(MakeUnique<WindowResizeEvent>(viewportSize, newWindowSize));
+				Event::AddEvent(MakeUnique<WindowResizeEvent>(viewportSize, newWindowSize));
 				viewportSize = newWindowSize;
 			}
 			ImGui::SetCursorPos((newWindowSize - viewportSize) * 0.5f);

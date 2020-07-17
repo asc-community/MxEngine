@@ -113,8 +113,7 @@ namespace MxEngine::GUI
         }
         SCOPE_TREE_NODE(material->Name.c_str());
 
-        DrawTextureEditor("ambient map", material->AmbientMap);
-        DrawTextureEditor("diffuse map", material->DiffuseMap);
+        DrawTextureEditor("albedo map", material->AlbedoMap);
         DrawTextureEditor("specular map", material->SpecularMap);
         DrawTextureEditor("emmisive map", material->EmmisiveMap);
         DrawTextureEditor("normal map", material->NormalMap);
@@ -138,6 +137,14 @@ namespace MxEngine::GUI
         ImGui::DragFloat3("max", &aabb.Max[0], 0.01f);
         aabb.Min = VectorMin(aabb.Min, aabb.Max);
         aabb.Max = VectorMax(aabb.Min, aabb.Max);
+    }
+
+    void DrawSphereEditor(const char* name, BoundingSphere& sphere)
+    {
+        SCOPE_TREE_NODE(name);
+        ImGui::DragFloat3("center", &sphere.Center[0], 0.01f);
+        ImGui::DragFloat("radius", &sphere.Radius, 0.01f);
+        sphere.Radius = Max(sphere.Radius, 0.0f);
     }
 
     void DrawLightBaseEditor(LightBase& base)
@@ -179,12 +186,15 @@ namespace MxEngine::GUI
     {
         SCOPE_TREE_NODE(name);
 
-        auto aabb = mesh->GetAABB();
-        DrawAABBEditor("AABB", aabb);
-        mesh->SetAABB(aabb);
+        auto aabb = mesh->GetBoundingBox();
+        auto sphere = mesh->GetBoundingSphere();
+        DrawAABBEditor("bounding box", aabb);
+        DrawSphereEditor("bounding sphere", sphere);
+        mesh->SetBoundingBox(aabb);
+        mesh->SetBoundingSphere(sphere);
 
-        if (ImGui::Button("update mesh AABB"))
-            mesh->UpdateAABB();
+        if (ImGui::Button("update mesh boundings"))
+            mesh->UpdateBoundingGeometry();
 
         static MxString path;
         if (GUI::InputTextOnClick("", path, 128, "load mesh"))
@@ -214,8 +224,8 @@ namespace MxEngine::GUI
 
             TransformEditor(*submesh.GetTransform());
 
-            if (ImGui::Button("update submesh AABB"))
-                submesh.MeshData.UpdateBoundingBox();
+            if (ImGui::Button("update submesh boundings"))
+                submesh.MeshData.UpdateBoundingGeometry();
             ImGui::SameLine();
             if (ImGui::Button("buffer vertecies"))
                 submesh.MeshData.BufferVertecies();

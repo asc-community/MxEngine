@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Behaviour.h"
-#include "InstanceFactory.h"
+#include "Instancing/InstanceFactory.h"
 #include "Lighting/DirectionalLight.h"
 #include "Lighting/SpotLight.h"
 #include "Lighting/PointLight.h"
@@ -15,5 +14,11 @@
 #include "Camera/VRCameraController.h"
 #include "Audio/AudioListener.h"
 #include "Audio/AudioSource.h"
+#include "Physics/BoxCollider.h"
+#include "Physics/SphereCollider.h"
+#include "Physics/CylinderCollider.h"
+#include "Physics/CapsuleCollider.h"
+#include "Physics/RigidBody.h"
 #include "Script.h"
 #include "Transform.h"
+#include "Behaviour.h"

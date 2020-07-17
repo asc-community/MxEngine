@@ -61,9 +61,14 @@ namespace MxEngine
         return this->IBO;
     }
 
-    const AABB& MeshData::GetAABB() const
+    const AABB& MeshData::GetBoundingBox() const
     {
         return this->boundingBox;
+    }
+
+    const BoundingSphere& MeshData::GetBoundingSphere() const
+    {
+        return this->boundingSphere;
     }
 
     MeshData::VertexData& MeshData::GetVertecies()
@@ -103,7 +108,7 @@ namespace MxEngine
         this->IBO->Load(data, this->indicies.size());
     }
 
-    void MeshData::UpdateBoundingBox()
+    void MeshData::UpdateBoundingGeometry()
     {
         this->boundingBox = { MakeVector3(0.0f), MakeVector3(0.0f) };
         if (vertecies.size() > 0)
@@ -115,6 +120,15 @@ namespace MxEngine
                 this->boundingBox.Max = VectorMax(this->boundingBox.Max, vertex.Position);
             }
         }
+
+        auto center = this->boundingBox.GetCenter();
+        float maxRadius = 0.0f;
+        for (const auto& vertex : vertecies)
+        {
+            auto distance = vertex.Position - center;
+            maxRadius = Max(maxRadius, Length2(distance));
+        }
+        this->boundingSphere = BoundingSphere(center, std::sqrt(maxRadius));
     }
 
     void MeshData::RegenerateNormals()

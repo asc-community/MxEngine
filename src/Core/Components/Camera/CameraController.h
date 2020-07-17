@@ -73,6 +73,7 @@ namespace MxEngine
 		float rotateSpeed = 10.0f;
 
 		void SubmitMatrixProjectionChanges() const;
+		void RecalculateRotationAngles();
 
 		uint8_t bloomIterations = 6;
 		CameraType cameraType = CameraType::PERSPECTIVE;
@@ -105,7 +106,9 @@ namespace MxEngine
 		bool IsRendered() const;
 		void ToggleRendering(bool value);
 
-		const Vector3& GetDirection() const;
+		Vector3 GetDirection() const;
+		const Vector3& GetDirectionDenormalized() const;
+
 		void SetDirection(const Vector3& direction);
 		Vector3 GetDirectionUp() const;
 		float GetHorizontalAngle() const;

@@ -26,25 +26,29 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Core/Macro/Macro.h"
 #include "Application.h"
+#include "Core/Macro/Macro.h"
 
+// platform modules and api functions
 #include "Platform/GraphicAPI.h"
 #include "Platform/Modules/GraphicModule.h"
 #include "Platform/AudioAPI.h"
 #include "Platform/Modules/AudioModule.h"
+#include "Platform/PhysicsAPI.h"
+#include "Platform/Modules/PhysicsModule.h"
 
-#include "Core/Event/Event.h"
-#include "Core/Application/EventManager.h"
+// event system
+#include "Core/Events/Events.h"
+#include "Core/Application/Event.h"
 
-#include "Library/Primitives/Colors.h"
-
-#include "Utilities/Profiler/Profiler.h"
+// utilities
 #include "Utilities/FileSystem/FileManager.h"
-#include "Utilities/UUID/UUID.h"
 #include "Utilities/Json/Json.h"
-#include "Utilities/ECS/ComponentFactory.h"
 #include "Utilities/ImGui/ComponentEditor.h"
+#include "Utilities/Format/Format.h"
+
+// components
+#include "Core/Components/Components.h"
 
 namespace MxEngine
 {
@@ -61,6 +65,11 @@ namespace MxEngine
 	}
 
 	void Application::OnUpdate()
+	{
+		// is overriden in derived class
+	}
+
+	void Application::OnRender()
 	{
 		// is overriden in derived class
 	}
@@ -85,7 +94,7 @@ namespace MxEngine
 		return this->counterFPS;
 	}
 
-	AppEventDispatcher& Application::GetEventDispatcher()
+	EventDispatcher& Application::GetEventDispatcher()
 	{
 		return this->dispatcher;
 	}
@@ -103,8 +112,8 @@ namespace MxEngine
 
 	void Application::CloseOnKeyPress(KeyCode key)
 	{
-		MXLOG_DEBUG("MxEngine::AppCloseBinding", MxFormat("bound app close to keycode: {0}", EnumToString(key)));
-		EventManager::AddEventListener("AppCloseEvent", [key](KeyEvent& event)
+		MXLOG_INFO("MxEngine::AppCloseBinding", MxFormat("bound app close to keycode: {0}", EnumToString(key)));
+		Event::AddEventListener("AppCloseEvent", [key](KeyEvent& event)
 		{
 			auto context = Application::Get();
 			if (event.IsHeld(key))
@@ -118,21 +127,31 @@ namespace MxEngine
 	{
 		MAKE_SCOPE_PROFILER("Application::DrawObjects");
 		this->GetRenderAdaptor().SetWindowSize({ this->GetWindow().GetWidth(), this->GetWindow().GetHeight() });
-		this->GetRenderAdaptor().PerformRenderIteration();
+		this->GetRenderAdaptor().RenderFrame();
+
+		RenderEvent renderEvent;
+		Event::Invoke(renderEvent);
+		this->OnRender();
+		this->GetRenderAdaptor().SubmitRenderedFrame();
 	}
 
 	void Application::InvokeUpdate()
 	{
-		this->GetWindow().OnUpdate();
 		MAKE_SCOPE_PROFILER("MxEngine::OnUpdate");
+		this->GetWindow().OnUpdate();
 
-		for (const auto& callback : this->updateCallbacks)
+		PhysicsModule::OnUpdate(this->timeDelta);
+
 		{
-			callback(this->timeDelta);
+			MAKE_SCOPE_PROFILER("Application::UpdateComponents");
+			for (const auto& callback : this->updateCallbacks)
+			{
+				callback(this->timeDelta);
+			}
 		}
 
 		UpdateEvent updateEvent(this->timeDelta);
-		EventManager::Invoke(updateEvent);
+		Event::Invoke(updateEvent);
 
 		{
 			MAKE_SCOPE_PROFILER("Application::OnUpdate");
@@ -313,7 +332,7 @@ namespace MxEngine
 					this->counterFPS = fpsCounter;
 					fpsCounter = 0;
 					secondEnd = now;
-					EventManager::AddEvent(MakeUnique<FpsUpdateEvent>(this->counterFPS));
+					Event::AddEvent(MakeUnique<FpsUpdateEvent>(this->counterFPS));
 				}
 				this->timeDelta = Min(now - frameEnd, 1.0f / 30.0f);
 				frameEnd = now;
@@ -321,16 +340,12 @@ namespace MxEngine
 				// event phase
 				{
 					MAKE_SCOPE_PROFILER("Application::ProcessEvents");
-					EventManager::InvokeAll();
+					Event::InvokeAll();
 					if (this->shouldClose) break;
 				}
 
 				this->InvokeUpdate();
 				this->DrawObjects();
-
-				RenderEvent renderEvent;
-				EventManager::Invoke(renderEvent);
-				this->GetRenderAdaptor().Renderer.Render();
 				this->GetWindow().PullEvents();
 				if (this->shouldClose) break;
 			}
@@ -340,7 +355,7 @@ namespace MxEngine
 				MAKE_SCOPE_PROFILER("Application::CloseApplication");
 				MAKE_SCOPE_TIMER("MxEngine::Application", "Application::CloseApplication()");
 				AppDestroyEvent appDestroyEvent;
-				EventManager::Invoke(appDestroyEvent);
+				Event::Invoke(appDestroyEvent);
 				this->OnDestroy();
 				this->GetWindow().Close();
 				this->isRunning = false;
@@ -370,8 +385,8 @@ namespace MxEngine
 
 	Application::ModuleManager::ModuleManager(Application* app)
 	{
-		#if defined(MXENGINE_DEBUG)
-		Profiler::Instance().StartSession("profile_log.json");
+		#if defined(MXENGINE_PROFILING_ENABLED)
+		Profiler::Start("profile_log.json");
 		#endif
 
 		MX_ASSERT(Application::Get() == nullptr);
@@ -381,20 +396,23 @@ namespace MxEngine
 		FileManager::Init();
 		AudioModule::Init();
 		GraphicModule::Init();
+		PhysicsModule::Init();
 		UUIDGenerator::Init();
 		GraphicFactory::Init();
 		ComponentFactory::Init();
 		ResourceFactory::Init();
 		AudioFactory::Init();
+		PhysicsFactory::Init();
 		MxObject::Factory::Init();
 	}
 
 	Application::ModuleManager::~ModuleManager()
 	{
+		PhysicsModule::Destroy();
 		GraphicModule::Destroy();
 		AudioModule::Destroy();
-		#if defined(MXENGINE_DEBUG)
-		Profiler::Instance().EndSession();
+		#if defined(MXENGINE_PROFILING_ENABLED)
+		Profiler::Finish();
 		#endif
 	}
 
@@ -405,7 +423,7 @@ namespace MxEngine
 
 	void Application::InitializeRuntime(RuntimeEditor& console)
 	{
-		EventManager::AddEventListener("DeveloperConsole",
+		Event::AddEventListener("DeveloperConsole",
 			[this](UpdateEvent&) { this->GetRuntimeEditor().OnRender(); });
 
 		auto& editor = this->GetRuntimeEditor();
@@ -428,11 +446,15 @@ namespace MxEngine
 		editor.RegisterComponentEditor("InputControl",       GUI::InputControlEditor);
 		editor.RegisterComponentEditor("AudioSource",        GUI::AudioSourceEditor);
 		editor.RegisterComponentEditor("AudioListener",      GUI::AudioListenerEditor);
+		editor.RegisterComponentEditor("RigidBody",          GUI::RigidBodyEditor);
+		editor.RegisterComponentEditor("BoxCollider",        GUI::BoxColliderEditor);
+		editor.RegisterComponentEditor("SphereCollider",     GUI::SphereColliderEditor);
 
 		this->RegisterComponentUpdate<Behaviour>();
 		this->RegisterComponentUpdate<InstanceFactory>();
 		this->RegisterComponentUpdate<VRCameraController>();
 		this->RegisterComponentUpdate<AudioListener>();
 		this->RegisterComponentUpdate<AudioSource>();
+		this->RegisterComponentUpdate<RigidBody>();
 	}
 }

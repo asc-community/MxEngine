@@ -28,34 +28,35 @@
 
 #pragma once
 
-#include "Core/Resources/Mesh.h"
 #include "Core/Components/Transform.h"
-#include "Core/Components/Rendering/MeshRenderer.h"
 
 GENERATE_METHOD_CHECK(Init, Init())
+
+#if !defined(MXENGINE_SHIPPING)
+#define MXENGINE_MXOBJECT_EDITOR
+#endif
 
 namespace MxEngine
 {
 	class MxObject
 	{
-		mutable AABB boundingBox;
-
+	public:
 		using EngineHandle = size_t;
-		constexpr static EngineHandle InvalidHandle = std::numeric_limits<EngineHandle>::max();
-		EngineHandle handle = InvalidHandle;
-
-	public:
-		MxString Name = UUIDGenerator::Get();
-		float TranslateSpeed = 1.0f;
-		float RotateSpeed = 1.0f;
-		float ScaleSpeed = 1.0f;
-		Transform Transform;
-	private:
-		ComponentManager components;
-	public:
 		using Factory = AbstractFactoryImpl<MxObject>;
 		using Handle = Resource<MxObject, Factory>;
-
+	private:
+		constexpr static EngineHandle InvalidHandle = std::numeric_limits<EngineHandle>::max();
+		EngineHandle handle = InvalidHandle;
+		#if defined(MXENGINE_MXOBJECT_EDITOR)
+		bool displayedInEditorList = true;
+		#endif
+	public:
+		MxString Name = UUIDGenerator::Get();
+		Transform Transform;
+	private:
+		// placed here to be destroyed before other members
+		ComponentManager components;
+	public:
 		static Handle Create();
 		static void Destroy(Handle& object);
 		static void Destroy(MxObject& object);
@@ -71,15 +72,18 @@ namespace MxEngine
 			auto& managedObject = Factory::Get<MxObject>()[handle];
 			return managedObject.value;
 		}
+	
+		static MxObject::Handle GetByHandle(EngineHandle handle);
+
+		void SetDisplayInRuntimeEditor(bool value);
+		bool IsDisplayedInRuntimeEditor() const;
+		EngineHandle GetNativeHandle() const;
 
 		template<typename T>
 		static Handle GetHandleByComponent(T& component)
 		{
 			auto handle = reinterpret_cast<EngineHandle>(component.UserData);
-			MX_ASSERT(handle != InvalidHandle);
-			auto& managedObject = Factory::Get<MxObject>()[handle];
-			MX_ASSERT(managedObject.refCount > 0 && managedObject.uuid != UUIDGenerator::GetNull());
-			return MxObject::Handle(managedObject.uuid, handle);
+			return MxObject::GetByHandle(handle);
 		}
 
 		MxObject() = default;

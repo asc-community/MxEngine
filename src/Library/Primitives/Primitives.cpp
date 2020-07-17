@@ -2,19 +2,21 @@
 
 namespace MxEngine
 {
-    MeshHandle Primitives::CreateMesh(const AABB& boundingBox, MeshData meshData)
+    MeshHandle Primitives::CreateMesh(MeshData meshData)
     {
         auto mesh = ResourceFactory::Create<Mesh>();
 
         SubMesh::MaterialId materialId = 0;
         auto transform = ComponentFactory::CreateComponent<Transform>();
 
-        mesh->SetAABB(boundingBox);
         auto& submeshes = mesh->GetSubmeshes();
         auto& submesh = submeshes.emplace_back(materialId, transform);
         submesh.MeshData = std::move(meshData);
         submesh.MeshData.BufferVertecies();
         submesh.MeshData.BufferIndicies();
+        submesh.MeshData.UpdateBoundingGeometry();
+
+        mesh->UpdateBoundingGeometry();
 
         return mesh;
     }
@@ -22,7 +24,6 @@ namespace MxEngine
     MeshHandle Primitives::CreateCube(size_t polygons)
     {
         MeshData meshData;
-        AABB aabb{ MakeVector3(-0.5f), MakeVector3(0.5f) };
         polygons = polygons + 1; // polygons in [1; inf), but we need at least two points per edge
 
         auto& vertecies = meshData.GetVertecies();
@@ -160,16 +161,12 @@ namespace MxEngine
         }
         meshData.RegenerateTangentSpace();
 
-        return Primitives::CreateMesh(aabb, std::move(meshData));
+        return Primitives::CreateMesh(std::move(meshData));
     }
 
     MeshHandle Primitives::CreatePlane(size_t size)
     {
         MeshData meshData;
-
-        auto fsize = static_cast<float>(size);
-        auto delta = 0.0001f;
-        AABB aabb{ MakeVector3(-fsize, -delta, -fsize), MakeVector3(fsize, delta, fsize) };
 
         auto& indicies = meshData.GetIndicies();
         auto& vertecies = meshData.GetVertecies();
@@ -200,13 +197,13 @@ namespace MxEngine
             vertecies[i].Bitangent  = MakeVector3(0.0f, 0.0f, 1.0f);
         }
         indicies = { 0, 1, 2, 2, 1, 3, 0, 2, 1, 1, 2, 3 };
-        return Primitives::CreateMesh(aabb, std::move(meshData));
+        return Primitives::CreateMesh(std::move(meshData));
     }
 
     MeshHandle Primitives::CreateSphere(size_t polygons)
     {
         MeshData meshData;
-        AABB aabb{ MakeVector3(-1.0f), MakeVector3(1.0f) };
+        polygons -= polygons % 4;
 
         auto& verteces = meshData.GetVertecies();
         auto& indicies = meshData.GetIndicies();
@@ -225,8 +222,6 @@ namespace MxEngine
 
                 vertex.Position = MakeVector3(x, y, z);
                 vertex.Normal = MakeVector3(x, y, z);
-                vertex.Tangent = Normalize(Cross(MakeVector3(0.0f, 1.0f, 0.0f), MakeVector3(x, y, z)));
-                vertex.Bitangent = Cross(MakeVector3(x, y, z), vertex.Tangent);
 
                 vertex.TexCoord.x = 1.0f - static_cast<float>(n) / polygons;
                 vertex.TexCoord.y = static_cast<float>(m) / polygons;
@@ -256,7 +251,121 @@ namespace MxEngine
                 }
             }
         }
-        return Primitives::CreateMesh(aabb, std::move(meshData));
+        meshData.RegenerateTangentSpace();
+        return Primitives::CreateMesh(std::move(meshData));
+    }
+
+    MeshHandle Primitives::CreateCylinder(size_t polygons)
+    {
+        MeshData meshData;
+
+        polygons -= polygons % 4;
+        MxVector<Vector2> circle(polygons);
+        for (size_t i = 0; i < polygons; i++)
+        {
+            float angle = TwoPi<float>() * float(i) / float(polygons);
+            circle[i].x = 0.5f * std::sin(angle);
+            circle[i].y = 0.5f * std::cos(angle);
+        }
+        auto& vertecies = meshData.GetVertecies();
+        auto& indicies = meshData.GetIndicies();
+
+        // format: 
+        // [center upper circle vertex]
+        // [x vertecies for upper circle]
+        // [center lower circle vertex]
+        // [x vertecies for lower circle]
+        // [2x vertecies for cylinder face]
+
+        Vertex upper;
+        upper.Position = MakeVector3(0.0f, 0.5f, 0.0f);
+        upper.TexCoord = MakeVector2(0.5f, 0.5f);
+        vertecies.push_back(upper);
+        for (const auto& pos : circle)
+        {
+            Vertex v;
+            v.Position = MakeVector3(pos.x, 0.5f, pos.y);
+            v.TexCoord = pos + 0.5f;
+            vertecies.push_back(v);
+        }
+
+        Vertex lower;
+        lower.Position = MakeVector3(0.0f, -0.5f, 0.0f);
+        lower.TexCoord = MakeVector2(0.5f, 0.5f);
+        vertecies.push_back(lower);
+        for (const auto& pos : circle)
+        {
+            Vertex v;
+            v.Position = MakeVector3(pos.x, -0.5f, pos.y);
+            v.TexCoord = pos + 0.5f;
+            vertecies.push_back(v);
+        }
+
+        for (size_t i = 0; i < circle.size(); i++)
+        {
+            const auto& pos = circle[i];
+            Vertex v1, v2;
+            v1.Position = MakeVector3(pos.x, 0.5f, pos.y);
+            v1.TexCoord = MakeVector2(float(i) / float(circle.size()), 1.0f);
+            v2.Position = MakeVector3(pos.x, -0.5f, pos.y);
+            v2.TexCoord = MakeVector2(float(i) / float(circle.size()), 0.0f);
+            vertecies.push_back(v1);
+            vertecies.push_back(v2);
+        }
+
+        size_t offset = 0;
+        // upper circle
+        offset = 1;
+        for (size_t i = 1; i < polygons; i++)
+        {
+            indicies.push_back(uint32_t(offset + i - 1));
+            indicies.push_back(uint32_t(offset + i));
+            indicies.push_back(uint32_t(offset - 1));
+        }
+        indicies.push_back(uint32_t(offset + polygons - 1));
+        indicies.push_back(uint32_t(offset));
+        indicies.push_back(uint32_t(offset - 1));
+
+        // lower circle
+        offset = 2 + polygons;
+        for (size_t i = 1; i < polygons; i++)
+        {
+            indicies.push_back(uint32_t(offset + i - 1));
+            indicies.push_back(uint32_t(offset - 1));
+            indicies.push_back(uint32_t(offset + i));
+        }
+        indicies.push_back(uint32_t(offset + polygons - 1));
+        indicies.push_back(uint32_t(offset - 1));
+        indicies.push_back(uint32_t(offset));
+
+        offset = 2 + 2 * polygons;
+
+        for (size_t i = 1; i < polygons; i++)
+        {
+            size_t upperL = offset + 2 * i - 2;
+            size_t lowerL = offset + 2 * i - 1;
+            size_t upperR = offset + 2 * i;
+            size_t lowerR = offset + 2 * i + 1;
+            indicies.push_back(uint32_t(upperL));
+            indicies.push_back(uint32_t(lowerL));
+            indicies.push_back(uint32_t(upperR));
+            indicies.push_back(uint32_t(upperR));
+            indicies.push_back(uint32_t(lowerL));
+            indicies.push_back(uint32_t(lowerR));
+        }
+        size_t upperL = offset + 2 * polygons - 2;
+        size_t lowerL = offset + 2 * polygons - 1;
+        size_t upperR = offset;
+        size_t lowerR = offset + 1;
+        indicies.push_back(uint32_t(upperL));
+        indicies.push_back(uint32_t(lowerL));
+        indicies.push_back(uint32_t(upperR));
+        indicies.push_back(uint32_t(upperR));
+        indicies.push_back(uint32_t(lowerL));
+        indicies.push_back(uint32_t(lowerR));
+
+        meshData.RegenerateNormals();
+        return Primitives::CreateMesh(std::move(meshData));
     }
 
     MeshHandle Primitives::CreateSurface(const Array2D<float>& heights)
@@ -270,11 +379,6 @@ namespace MxEngine
 
         auto& vertecies = meshData.GetVertecies();
         auto& indicies = meshData.GetIndicies();
-
-        auto minmax = std::minmax_element(heights.begin(), heights.end());
-        AABB aabb{ MakeVector3(0.0f, *minmax.first, 0.0f), MakeVector3(1.0f, *minmax.second, 1.0f) };
-        auto center = aabb.GetCenter();
-        aabb = aabb - center;
 
         vertecies.reserve(xsize * ysize);
         for (size_t x = 0; x < xsize; x++)
@@ -291,7 +395,6 @@ namespace MxEngine
                 // yes, z component is actually y component, because in such case its easier to think 
                 // of plane as OXY, with heights pointing towards z axis
                 vertex.Position = MakeVector3(fx, fz, fy);
-                vertex.Position -= center;
             }
         }
 
@@ -309,7 +412,7 @@ namespace MxEngine
             }
         }
         meshData.RegenerateNormals();
-        return Primitives::CreateMesh(aabb, std::move(meshData));
+        return Primitives::CreateMesh(std::move(meshData));
     }
 
     Primitives::TextureHandle Primitives::CreateGridTexture(size_t textureSize, float borderScale)

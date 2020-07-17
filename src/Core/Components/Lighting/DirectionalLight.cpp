@@ -27,9 +27,9 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "DirectionalLight.h"
-#include "Core/Application/RenderManager.h"
-#include "Core/Application/EventManager.h"
-#include "Core/Event/Events/UpdateEvent.h"
+#include "Core/Application/Rendering.h"
+#include "Core/Application/Event.h"
+#include "Core/Events/UpdateEvent.h"
 
 namespace MxEngine
 {
@@ -43,7 +43,7 @@ namespace MxEngine
     DirectionalLight::~DirectionalLight()
     {
         MxString eventName = MxObject::GetComponentUUID(*this);
-        EventManager::RemoveEventListener(eventName);
+        Event::RemoveEventListener(eventName);
     }
 
     TextureHandle DirectionalLight::GetDepthTexture() const
@@ -75,11 +75,11 @@ namespace MxEngine
         auto& object = MxObject::GetByComponent(*this);
         MxString uuid = object.GetComponent<DirectionalLight>().GetUUID();
 
-        EventManager::RemoveEventListener(uuid);
+        Event::RemoveEventListener(uuid);
 
-        EventManager::AddEventListener(uuid, [object = MxObject::GetHandleByComponent(*this)](UpdateEvent& e) mutable
+        Event::AddEventListener(uuid, [object = MxObject::GetHandleByComponent(*this)](UpdateEvent& e) mutable
         {
-            auto viewport = RenderManager::GetViewport();
+            auto viewport = Rendering::GetViewport();
             if (viewport.IsValid()) 
                 object->Transform.SetPosition(MxObject::GetByComponent(*viewport).Transform.GetPosition());
         });

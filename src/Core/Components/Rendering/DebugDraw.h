@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Utilities/ECS/Component.h"
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
@@ -41,6 +42,7 @@ namespace MxEngine
         Vector4 LightSourceColor    = MakeVector4(1.0f, 1.0f, 0.0f, 1.0f);
         Vector4 SoundSourceColor    = MakeVector4(0.0f, 1.0f, 0.0f, 1.0f);
         Vector4 FrustrumColor       = MakeVector4(1.0f, 0.0f, 1.0f, 1.0f);
+        bool RenderPhysicsCollider = false;
         bool RenderBoundingBox = false;
         bool RenderBoundingSphere = false;
         bool RenderLightingBounds = false;

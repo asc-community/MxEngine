@@ -95,7 +95,7 @@ namespace MxEngine
             return result;
         }
 
-        Vector3 distance = mesh.GetAABB().Length();
+        Vector3 distance = mesh.GetBoundingBox().Length();
         float averageDistance = Dot(distance, MakeVector3(1.0f / 3.0f));
         if (averageDistance == 0.0f) averageDistance = 1.0f; //-V550
         this->PrepareIndexData(threshold * averageDistance);

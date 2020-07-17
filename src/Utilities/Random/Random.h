@@ -75,6 +75,12 @@ namespace MxEngine
         */
         static float GetFloat();
         /*!
+        generates random bool value
+        \returns true with requested probabily
+        */
+        static bool GetBool(float probability);
+
+        /*!
         generates random int64 value
         \returns int64 in interval [lower; upper]
         */

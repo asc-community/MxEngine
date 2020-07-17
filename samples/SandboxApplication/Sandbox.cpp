@@ -3,7 +3,7 @@
 
 void SandboxApp::OnCreate()
 {
-	EventManager::AddEventListener("CountFPS",
+	Event::AddEventListener("CountFPS",
 		[this](FpsUpdateEvent& e)
 		{
 			WindowManager::SetTitle(MxFormat("Sandbox App {0} FPS", e.FPS));

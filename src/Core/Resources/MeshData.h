@@ -30,7 +30,7 @@
 
 #include "Core/Components/Transform.h"
 #include "Platform/GraphicAPI.h"
-#include "Core/BoundingObjects/AABB.h"
+#include "Core/BoundingObjects/BoundingSphere.h"
 
 namespace MxEngine
 {
@@ -52,6 +52,7 @@ namespace MxEngine
         VertexData vertecies;
         IndexData indicies;
         AABB boundingBox;
+        BoundingSphere boundingSphere;
 
         VertexBufferHandle VBO;
         VertexArrayHandle VAO;
@@ -62,7 +63,8 @@ namespace MxEngine
         VertexArrayHandle GetVAO() const;
         VertexBufferHandle GetVBO() const;
         IndexBufferHandle GetIBO() const;
-        const AABB& GetAABB() const;
+        const AABB& GetBoundingBox() const;
+        const BoundingSphere& GetBoundingSphere() const;
 
         VertexData& GetVertecies();
         const VertexData& GetVertecies() const;
@@ -72,7 +74,7 @@ namespace MxEngine
         void BufferVertecies(UsageType usageType = UsageType::STATIC_DRAW);
         void FreeMeshDataCopy();
         void BufferIndicies();
-        void UpdateBoundingBox();
+        void UpdateBoundingGeometry();
         void RegenerateNormals();
         void RegenerateTangentSpace();
     };

@@ -27,8 +27,8 @@ namespace ProjectTemplate
             auto skybox = cameraObject->AddComponent<Skybox>();
             skybox->Texture = AssetManager::LoadCubeMap("Resources/dawn.jpg");
 
-            RenderManager::SetViewport(controller);
-            RenderManager::ResizeViewport(viewportSize.x, viewportSize.y);
+            Rendering::SetViewport(controller);
+            Rendering::ResizeViewport(viewportSize.x, viewportSize.y);
 
             auto cubeObject = MxObject::Create();
             cubeObject->Transform.Translate(MakeVector3(0.0f, -1.0f, 3.0f));
@@ -50,14 +50,14 @@ namespace ProjectTemplate
         virtual void OnUpdate() override
         {
             static int frame_count = 0;
-            auto& viewport = *RenderManager::GetViewport();
+            auto& viewport = *Rendering::GetViewport();
 
             auto& cam = viewport.GetCamera<FrustrumCamera>();
             cam.SetProjectionForTile(frame_count % texturesPerRaw, frame_count / texturesPerRaw, texturesPerRaw, imageSize);
 
             if (frame_count != 0)
             {
-                auto texture = RenderManager::GetViewport()->GetRenderTexture();
+                auto texture = Rendering::GetViewport()->GetRenderTexture();
                 textures.push_back(texture->GetRawTextureData());
             }
             if (frame_count == texturesPerRaw * texturesPerRaw)

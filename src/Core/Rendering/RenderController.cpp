@@ -219,20 +219,17 @@ namespace MxEngine
 	{
 		{
 			MAKE_SCOPE_PROFILER("RenderController::SubmitShaderRenderPrimitiveUniforms()");
-			unit.RenderMaterial.AmbientMap->Bind(textureBindIndex);
-			shader.SetUniformInt("map_Ka", textureBindIndex);
-			textureBindIndex++;
 
-			unit.RenderMaterial.DiffuseMap->Bind(textureBindIndex);
-			shader.SetUniformInt("map_Kd", textureBindIndex);
+			unit.RenderMaterial.AlbedoMap->Bind(textureBindIndex);
+			shader.SetUniformInt("map_albedo", textureBindIndex);
 			textureBindIndex++;
 
 			unit.RenderMaterial.SpecularMap->Bind(textureBindIndex);
-			shader.SetUniformInt("map_Ks", textureBindIndex);
+			shader.SetUniformInt("map_specular", textureBindIndex);
 			textureBindIndex++;
 
 			unit.RenderMaterial.EmmisiveMap->Bind(textureBindIndex);
-			shader.SetUniformInt("map_Ke", textureBindIndex);
+			shader.SetUniformInt("map_emmisive", textureBindIndex);
 			textureBindIndex++;
 
 			unit.RenderMaterial.NormalMap->Bind(textureBindIndex);
@@ -305,21 +302,22 @@ namespace MxEngine
 		MX_ASSERT(bloomBuffers[1]->HasTextureAttached());
 		MX_ASSERT(iterations % 2 == 0);
 
-		auto& shader = *this->Pipeline.Environment.BloomShader;
+		auto& bloomShaderHandle = this->Pipeline.Environment.BloomShader;
+		auto& bloomShader = *bloomShaderHandle.GetUnchecked();
 
-		shader.SetUniformInt("BloomTexture", 0);
+		bloomShader.SetUniformInt("BloomTexture", 0);
 		for (uint8_t i = 0; i < iterations; i++)
 		{
 			auto& target = bloomBuffers[ (i & 1)];
 			auto& source = bloomBuffers[!(i & 1)];
-			shader.SetUniformInt("horizontalKernel", int(i & 1));
+			bloomShader.SetUniformInt("horizontalKernel", int(i & 1));
 
 			if (i == 0)
 				inputBloom->Bind(0);
 			else
 				GetAttachedTexture(source)->Bind(0);
 
-			this->RenderToFrameBuffer(target, shader);
+			this->RenderToFrameBuffer(target, bloomShaderHandle);
 		}
 		auto result = GetAttachedTexture(bloomBuffers.back());
 		result->GenerateMipmaps();
@@ -376,14 +374,14 @@ namespace MxEngine
 		this->Clear();
 	}
 
-	void RenderController::RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const Shader& shader)
+	void RenderController::RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader)
 	{
 		this->AttachFrameBuffer(framebuffer);
 		auto& rectangle = this->Pipeline.Environment.RectangularObject;
-		this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, shader);
+		this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, *shader);
 	}
 
-	void RenderController::RenderToTexture(const TextureHandle& texture, const Shader& shader, Attachment attachment)
+	void RenderController::RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment)
 	{
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(texture, attachment);
 		this->RenderToFrameBuffer(this->Pipeline.Environment.PostProcessFrameBuffer, shader);
@@ -403,23 +401,26 @@ namespace MxEngine
 
 			if (inputTexture.IsMultisampled())
 			{
-				auto& msaaShader = *this->Pipeline.Environment.MSAAHDRSplitShader;
+				auto& msaaShaderHandle = this->Pipeline.Environment.MSAAHDRSplitShader;
+				auto& msaaShader = *msaaShaderHandle.GetUnchecked();
 				msaaShader.SetUniformInt("HDRtexture", 0);
 				msaaShader.SetUniformInt("msaa_samples", inputTexture.GetSampleCount());
-				this->RenderToFrameBuffer(camera.FrameBufferHDR, msaaShader);
+				this->RenderToFrameBuffer(camera.FrameBufferHDR, msaaShaderHandle);
 			}
 			else
 			{
-				auto& msaaShader = *this->Pipeline.Environment.HDRSplitShader;
+				auto& msaaShaderHandle = this->Pipeline.Environment.HDRSplitShader;
+				auto& msaaShader = *msaaShaderHandle.GetUnchecked();
 				msaaShader.SetUniformInt("HDRtexture", 0);
-				this->RenderToFrameBuffer(camera.FrameBufferHDR, msaaShader);
+				this->RenderToFrameBuffer(camera.FrameBufferHDR, msaaShaderHandle);
 			}
 		}
 		camera.BloomTextureHDR->GenerateMipmaps();
 
 		// here we use bloom enhanced texture and hdr texture obtained from HDRFrameBuffer to combine them into final image
 		auto& bloomEnhancedTexture = *PerformBloomIterations(camera.BloomTextureHDR, camera.BloomIterations);
-		auto& combineShader = *this->Pipeline.Environment.HDRBloomCombineHDRShader;
+		auto& combineShaderHandle = this->Pipeline.Environment.HDRBloomCombineHDRShader;
+		auto& combineShader = *combineShaderHandle.GetUnchecked();
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.OutputTexture);
 		auto& mainTexture = *GetAttachedTexture(camera.FrameBufferHDR);
 
@@ -430,7 +431,7 @@ namespace MxEngine
 		mainTexture.Bind(0);
 		bloomEnhancedTexture.Bind(1);
 
-		this->RenderToFrameBuffer(this->Pipeline.Environment.PostProcessFrameBuffer, combineShader);
+		this->RenderToFrameBuffer(this->Pipeline.Environment.PostProcessFrameBuffer, combineShaderHandle);
 
 		MAKE_SCOPE_PROFILER("CameraTexture::GenerateMipmaps()");
 		camera.OutputTexture->GenerateMipmaps();
@@ -600,8 +601,7 @@ namespace MxEngine
 		// we need to change displacement to account object scale, so we take average of object scale components as multiplier
 		primitive.RenderMaterial.Displacement *= Dot(parentTransform.GetScale() * object.GetTransform()->GetScale(), MakeVector3(1.0f / 3.0f));
 		// set default textures if they are not exist
-		if (!primitive.RenderMaterial.AmbientMap.IsValid())  primitive.RenderMaterial.AmbientMap  = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!primitive.RenderMaterial.DiffuseMap.IsValid())  primitive.RenderMaterial.DiffuseMap  = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!primitive.RenderMaterial.AlbedoMap.IsValid())   primitive.RenderMaterial.AlbedoMap   = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!primitive.RenderMaterial.SpecularMap.IsValid()) primitive.RenderMaterial.SpecularMap = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!primitive.RenderMaterial.EmmisiveMap.IsValid()) primitive.RenderMaterial.EmmisiveMap = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!primitive.RenderMaterial.NormalMap.IsValid())   primitive.RenderMaterial.NormalMap   = this->Pipeline.Environment.DefaultNormalMap;
@@ -624,7 +624,8 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::StartPipeline()");
 		if (this->Pipeline.Cameras.empty())
 		{
-			this->AttachDefaultFrameBuffer();
+			if(this->Pipeline.Environment.RenderToDefaultFrameBuffer)
+				this->AttachDefaultFrameBuffer();
 			return;
 		}
 
@@ -652,7 +653,10 @@ namespace MxEngine
 			this->DrawDebugBuffer(camera);
 			this->PostProcessImage(camera);
 		}
-		
+	}
+
+	void RenderController::EndPipeline()
+	{
 		MAKE_SCOPE_PROFILER("RenderController::SubmitFinalImage");
 		this->AttachDefaultFrameBuffer();
 		if (this->Pipeline.Environment.RenderToDefaultFrameBuffer && this->Pipeline.Environment.MainCameraIndex < this->Pipeline.Cameras.size())

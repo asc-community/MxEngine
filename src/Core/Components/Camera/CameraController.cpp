@@ -27,8 +27,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "CameraController.h"
-#include "Core/Event/Events/WindowResizeEvent.h"
-#include "Core/Application/EventManager.h"
+#include "Core/Events/WindowResizeEvent.h"
+#include "Core/Application/Event.h"
 #include "Platform/Window/WindowManager.h"
 #include "OrthographicCamera.h"
 #include "PerspectiveCamera.h"
@@ -97,7 +97,7 @@ namespace MxEngine
 
 	CameraController::~CameraController()
 	{
-		EventManager::RemoveEventListener(this->GetFrameBufferMSAA().GetUUID());
+		Event::RemoveEventListener(this->GetFrameBufferMSAA().GetUUID());
 	}
 
 	void CameraController::SetCameraType(CameraType type)
@@ -115,7 +115,7 @@ namespace MxEngine
 	{
 		if (this->Camera.UpdateProjection) this->SubmitMatrixProjectionChanges();
 		
-		auto view = MakeViewMatrix(position, position + direction, up);
+		auto view = MakeViewMatrix(position, position + this->GetDirection(), this->GetUpVector());
 		this->Camera.SetViewMatrix(view);
 
 		return this->Camera.GetMatrix();
@@ -125,7 +125,7 @@ namespace MxEngine
     {
 		if (this->Camera.UpdateProjection) this->SubmitMatrixProjectionChanges();
 		
-		auto view = MakeViewMatrix(MakeVector3(0.0f), direction, up);
+		auto view = MakeViewMatrix(MakeVector3(0.0f), this->GetDirection(), this->GetUpVector());
 		this->Camera.SetViewMatrix(view);
 
 		auto ViewMatrix = (Matrix3x3)this->Camera.GetViewMatrix();
@@ -160,9 +160,9 @@ namespace MxEngine
 
 	void CameraController::ListenWindowResizeEvent()
 	{
-		EventManager::RemoveEventListener(this->GetFrameBufferMSAA().GetUUID());
+		Event::RemoveEventListener(this->GetFrameBufferMSAA().GetUUID());
 
-		EventManager::AddEventListener<WindowResizeEvent>(this->GetFrameBufferMSAA().GetUUID(),
+		Event::AddEventListener<WindowResizeEvent>(this->GetFrameBufferMSAA().GetUUID(),
 		[camera = MxObject::GetComponentHandle(*this)](WindowResizeEvent& e) mutable
 		{
 			if (camera.IsValid() && (e.Old != e.New))
@@ -229,14 +229,42 @@ namespace MxEngine
 		}
     }
 
-	const Vector3& CameraController::GetDirection() const
+	void CameraController::RecalculateRotationAngles()
+	{
+		auto normDir = this->GetDirection();
+		float verticalAngle = std::asin(normDir.y);
+		auto normDirXZ = Normalize(MakeVector3(normDir.x, 0.0f, normDir.z));
+		float horizontalAngle = std::acos(Dot(normDir, MakeVector3(0.0f, 0.0f, 1.0f)));
+
+		// std::cos(verticalAngle)* std::sin(horizontalAngle),
+		// std::sin(verticalAngle),
+		// std::cos(verticalAngle)* std::cos(horizontalAngle);
+
+		auto x = std::sin(horizontalAngle);
+		auto z = std::cos(horizontalAngle);
+
+		bool xCorrect = std::signbit(normDir.x) == std::signbit(x);
+		bool zCorrect = std::signbit(normDir.z) == std::signbit(z);
+		if(!xCorrect || !zCorrect) horizontalAngle = TwoPi<float>() - horizontalAngle;
+
+		this->horizontalAngle = horizontalAngle;
+		this->verticalAngle = verticalAngle;
+	}
+
+	const Vector3& CameraController::GetDirectionDenormalized() const
 	{
 		return this->direction;
 	}
 
+    Vector3 CameraController::GetDirection() const
+    {
+		return Normalize(this->direction);
+    }
+
 	void CameraController::SetDirection(const Vector3& direction)
 	{
 		this->direction = direction + MakeVector3(0.0f, 0.0f, 0.00001f);
+		this->RecalculateRotationAngles();
 	}
 
 	Vector3 CameraController::GetDirectionUp() const
@@ -316,12 +344,11 @@ namespace MxEngine
 		
 		this->horizontalAngle = this->horizontalAngle - TwoPi<float>() * std::floor(this->horizontalAngle / TwoPi<float>());
 
-
-		this->SetDirection({
+		this->direction = MakeVector3(
 			std::cos(verticalAngle) * std::sin(horizontalAngle),
 			std::sin(verticalAngle),
 			std::cos(verticalAngle) * std::cos(horizontalAngle)
-			});
+		);
 
 		this->forward = MakeVector3(
 			sin(horizontalAngle),

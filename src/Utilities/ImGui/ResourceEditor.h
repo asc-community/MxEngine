@@ -37,6 +37,7 @@ namespace MxEngine::GUI
 	void DrawCubeMapEditor(const char* name, CubeMapHandle& cubemap);
 	void DrawMeshEditor(const char* name, MeshHandle& mesh);
 	void DrawAABBEditor(const char* name, AABB& aabb);
+	void DrawSphereEditor(const char* name, BoundingSphere& sphere);
 	void DrawLightBaseEditor(LightBase& base);
 	void DrawMaterialEditor(MaterialHandle& material);
 	void DrawVertexEditor(Vertex& vertex);

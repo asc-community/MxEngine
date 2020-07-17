@@ -69,10 +69,9 @@ struct SpotLight
 	vec3 specular;
 };
 
-uniform sampler2D map_Ka;
-uniform sampler2D map_Kd;
-uniform sampler2D map_Ks;
-uniform sampler2D map_Ke;
+uniform sampler2D map_albedo;
+uniform sampler2D map_specular;
+uniform sampler2D map_emmisive;
 uniform sampler2D map_normal;
 uniform samplerCube map_pointLight_shadow[MAX_POINT_LIGHTS];
 uniform sampler2D map_spotLight_shadow[MAX_SPOT_LIGHTS];
@@ -150,11 +149,11 @@ vec3 calcDirLight(vec3 ambient, vec3 diffuse, vec3 specular, DirLight light, vec
 	float specularFactor = min(pow(max(dot(Hdir, normal), 0.0f), material.Ns), 0.5f);
 	vec3 diffuseObject = diffuse * diffuseFactor;
 
+	reflection = reflection * (diffuseObject + ambient);
 	ambient = ambient * light.ambient;
 	diffuse = light.diffuse * diffuseObject;
 	specular = specular * light.specular * specularFactor;
 
-	reflection = reflection * diffuseObject;
 	diffuse = (1.0f - material.refl) * diffuse;
 	ambient = (1.0f - material.refl) * ambient;
 	shadowFactor = max(shadowFactor, 0.5f);
@@ -231,11 +230,15 @@ void main()
 	vec3 viewDist = viewPos - fsin.FragPosWorld;
 	vec3 viewDir = normalize(viewDist);
 
-	vec3 ambient  = vec3(texture(map_Ka, fsin.TexCoord)) * material.Ka;
-	vec3 diffuse  = vec3(texture(map_Kd, fsin.TexCoord)) * material.Kd;
-	vec3 specular = vec3(texture(map_Ks, fsin.TexCoord)) * material.Ks;
-	vec3 emmisive = vec3(texture(map_Ke, fsin.TexCoord)) * material.Ke;
+	vec3 albedoTex   = texture(map_albedo,   fsin.TexCoord).rgb;
+	vec3 specularTex = texture(map_specular, fsin.TexCoord).rgb;
+	vec3 emmisiveTex = texture(map_emmisive, fsin.TexCoord).rgb;
+
 	vec3 reflection = calcReflection(viewDir, normal);
+	vec3 ambient  = albedoTex   * material.Ka;
+	vec3 diffuse  = albedoTex   * material.Kd;
+	vec3 specular = specularTex * material.Ks;
+	vec3 emmisive = emmisiveTex * material.Ke;
 
 	vec3 color = vec3(0.0f);
 	// directional lights

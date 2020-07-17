@@ -37,8 +37,7 @@ namespace MxEngine
 {
 	struct Material
 	{
-		TextureHandle AmbientMap;
-		TextureHandle DiffuseMap;
+		TextureHandle AlbedoMap;
 		TextureHandle SpecularMap;
 		TextureHandle EmmisiveMap;
 		TextureHandle NormalMap;

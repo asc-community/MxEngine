@@ -16,7 +16,7 @@ namespace ProjectTemplate
 
             auto controller = cameraObject->AddComponent<CameraController>();
             controller->ListenWindowResizeEvent();
-            RenderManager::SetViewport(controller);
+            Rendering::SetViewport(controller);
 
             auto input = cameraObject->AddComponent<InputControl>();
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);

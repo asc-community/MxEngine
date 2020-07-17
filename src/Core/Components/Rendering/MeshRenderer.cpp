@@ -43,8 +43,7 @@ namespace MxEngine
 			textures[id] = GraphicFactory::Create<Texture>(mat.tex);\
 		material.tex = textures[id];}
 
-		MAKE_TEX(AmbientMap);
-		MAKE_TEX(DiffuseMap);
+		MAKE_TEX(AlbedoMap);
 		MAKE_TEX(SpecularMap);
 		MAKE_TEX(EmmisiveMap);
 		MAKE_TEX(HeightMap);

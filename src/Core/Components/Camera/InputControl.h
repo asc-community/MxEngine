@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Utilities/ECS/Component.h"
-#include "Core/Event/Events/KeyEvent.h"
+#include "Core/Events/KeyEvent.h"
 
 namespace MxEngine
 {

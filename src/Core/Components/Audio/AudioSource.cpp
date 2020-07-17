@@ -27,8 +27,6 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "AudioSource.h"
-#include "Core/Event/Events/UpdateEvent.h"
-#include "Core/Application/EventManager.h"
 #include "Core/MxObject/MxObject.h"
 
 namespace MxEngine

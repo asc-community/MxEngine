@@ -50,6 +50,12 @@ namespace MxEngine
         return (float)mersenne64() / (mersenne64.max() - 1);
     }
 
+    bool Random::GetBool(float probability)
+    {
+        float v = Random::GetFloat();
+        return v <= probability;
+    }
+
     int32_t Random::Get(int32_t lower, int32_t upper)
     {
         return GetRandomImpl(mersenne64, lower, upper);
