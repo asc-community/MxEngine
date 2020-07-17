@@ -26,48 +26,26 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Platform/GraphicAPI.h"
-
 #pragma once
+
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-	class AABB;
-	class BoundingSphere;
-	class Cone;
-	class Cylinder;
-	class Capsule;
-	class Frustrum;
-	class Line;
-
-	class DebugBuffer
+	class Line
 	{
-		struct Point
-		{
-			Vector3 position;
-			Vector4 color;
-		};
-
-		using FrontendStorage = MxVector<Point>;
-
-		VertexBufferHandle VBO;
-		VertexArrayHandle VAO;
-
-		FrontendStorage storage;
 	public:
-		bool DrawAsScreenOverlay = false;
-
-		void Init();
-		void Submit(const Line& line, const Vector4& color);
-		void Submit(const AABB& box, const Vector4& color);
-		void Submit(const BoundingSphere& sphere, const Vector4 color);
-		void Submit(const Cone& cone, const Vector4& color);
-		void Submit(const Frustrum& frustrum, const Vector4& color);
-		void Submit(const Cylinder& cylinder, const Vector4& color);
-		void Submit(const Capsule& capsule, const Vector4& color);
-		void ClearBuffer(); 
-		void SubmitBuffer();
-		size_t GetSize() const;
-		VertexArrayHandle GetVAO() const;
+		union
+		{
+			struct
+			{
+				Vector3 p1, p2;
+			};
+			struct
+			{
+				Vector3 points[2];
+			};
+			float components[6] = { 0.0f };
+		};
 	};
 }

@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-7.3.1-red)
+![](https://img.shields.io/badge/version-7.4.0-red)
 ![](https://img.shields.io/badge/license-bsd--3-yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
 <!-- soon! [![Documentation](https://codedocs.xyz/MomoDeve/MxEngine.svg)](https://codedocs.xyz/MomoDeve/MxEngine/) -->
@@ -12,26 +12,8 @@ Fow now MxEngine supports OpenGL as graphic API and targeting x64 only. My plans
 <img src="preview_images/readme_main.png">
 </p>
 
-## Additional dependencies
-MxEngine is not a huge framework so multiple third-party libraries are used. Here is the full list of dependencies for last MxEngine release version:
-- [EASTL](https://github.com/electronicarts/EASTL) - EA standard library which is used in engine core as STL alternative
-- [stb](https://github.com/nothings/stb) - header-only one-file library to work with images, audio files and etc.
-- [GLEW](http://glew.sourceforge.net/) - OpenGL C/C++ extension loading library
-- [GLFW](https://www.glfw.org/) - multi-platform library for OpenGL providing API for creating windows, receiving input and events
-- [GLM](https://glm.g-truc.net/0.9.9/index.html) - header only C++ mathematics library for graphics software
-- [ImGui](https://github.com/ocornut/imgui) - Bloat-free Immediate Mode Graphical User interface for C++
-- [Boost](https://www.boost.org) - large C++ library that you should already know about
-- [Assimp](http://www.assimp.org/) - portable Open Source library to import various well-known 3D model formats
-- [fmt](https://github.com/fmtlib/fmt) - formatting library for modern C++
-- [json](https://github.com/nlohmann/json) - nlohmann's json library for modern C++
-- [miniaudio](https://github.com/dr-soft/miniaudio) - header-only audio file loader collection
-- [OpenAL](https://github.com/kcat/openal-soft) - Ocross-platform, software implementation of the OpenAL 3D audio API
-
-All libraries are included in source code (which compiled automatically as part of engine) or compiled as static libraries and stored in zip folders inside engine repository. If you got troubles linking to libs, consider pulling submodule from github and building it yourself.
-Note that MxEngine may include more additional libraries in further releases. It also uses [Boost library](https://www.boost.org) in its core, but not exposes it to user-code. Engine requires at least C++17-compatable compiler as it depends on some new STL features. All source files are compiled using MSVC through VS2019, as I mainly use this IDE to develop the engine, but in future other compilers will be supported too.
-
 ## Versions & Releases
-MxEngine releases comes with version in format X.Y.Z where X stand for major release, Y for minor release and Z for bug fix or non-significant change. 
+MxEngine releases come with versions in format X.Y.Z where X stands for major release, Y for minor release and Z for bug fixes or non-significant changes. 
 
 Major releases are prone to breakage of already existing API and functional but bring a lot new features to the engine. Usually it is possible to rewrite all code using new API and retain former behaviour.
 
@@ -39,13 +21,151 @@ Minor releases may change API or add new features but usually user code can be e
 
 Bug fixes & improvements are just fixes to already existing code to reestablish initially planned behaviour. This fixes may also be merged into major or minor releases if they come in the same time.
 
-For full version list see versions.md file
+For full version list see [versions.md](versions.md) file
+
 ## Installing and running MxEngine
 Right now MxEngine is distributed in source code as Visual Studio project which can be runned under Windows. Here is the steps you need to do to compile and run test projects:
 1. clone this repo to your system using `git clone https://github.com/asc-community/MxEngine`
 2. run `install.py` file located in the project root directory (you need [python interpreter](https://www.python.org/) to do this)
 3. open `MxEngine.sln` located in the project root directory and set startup project to `ProjectTemplate` or `SandboxApplication`
 4. click `F5` button and wait until game is loaded (make sure you choose Debug/Release x64 build)
+
+## Code snippets
+### Primitive creation
+You can easily create spheres, planes, cylinders and etc. Custom number of vertecies for displacement maps are supported out of box
+```cs
+auto cube = MxObject::Create();
+cubeObject->AddComponent<MeshSource>(Primitives::CreateCube());
+cubeObject->AddComponent<MeshRenderer>();
+```
+### Loading object from file
+MxEngine is using Assimp library which can load any popular object format. To load materials simply pass same path to object file
+```cs
+auto object = MxObject::Create();
+object.AddComponent<MeshSource>(AssetManager::LoadMesh("objects/your_object.obj"));
+object.AddComponent<MeshRenderer>(AssetManager::LoadMaterials("objects/your_object.obj"));
+```
+### Creating lights
+Dynamic directional lights, spot lights and point lights are supported. Each has simular interface and is created in a uniform way
+```cs
+auto object = MxObject::Create();
+auto light = object.AddComponent<SpotLight>();
+light->AmbientColor  = { 1.0f,  1.0f, 1.0f };
+light->DiffuseColor  = { 1.0f,  1.0f, 1.0f };
+light->SpecularColor = { 1.0f,  1.0f, 1.0f };
+light->Direction     = { 1.0f, -1.3f, 1.0f };
+light->UseOuterAngle(45.0f);
+```
+### Creating multiple objects using GPU instancing
+you can create MxObjects which share same mesh and material. They all can have different position and color, but still rendered in one draw call
+```cs
+auto factory = object.AddComponent<InstanceFactory>();
+
+auto instance1 = factory->MakeInstance();
+instance1->Transform.SetPosition({0.0f, 1.0f, 0.0f});
+
+auto instance2 = factory->MakeInstance();
+instance2->Transform.SetPosition({0.0f, 2.0f, 0.0f});
+
+auto instance3 = factory->MakeInstance();
+instance3->Transform.SetPosition({0.0f, 3.0f, 0.0f});
+```
+### Playing audio files
+To play audio files in 3D world, attach listener to player object and create object with audio source component. mp3, wav, flac and ogg file formats are supported
+```cs
+auto player = MxObject::Create();
+auto listener = player->AddComponent<AudioListener>();
+
+auto object = MxObject::Create();
+object->Transform.SetPosition({1.0f, 0.0f, 1.0f});
+auto audio = object->AddComponent<AudioSource>(AssetManager::LoadAudio("sounds/music.mp3"));
+audio->Play();
+```
+### Managing multiple cameras
+You can create cameras and render scene from different angles. The results can be used for post-effects or dynamic textures
+```cs
+auto object = MxObject::Create();
+auto camera = object->AddComponent<CameraController>();
+camera->SetCameraType(CameraType::PERSPECTIVE);
+```
+### Creating physical objects
+MxEngine supports realtime physics simulation. Just add RigidBody component and attach suitable collider
+```cs
+auto sphere = MxObject::Create();
+sphere->AddComponent<MeshSource>(Primitives::CreateSphere());
+sphere->AddComponent<MeshRenderer>();
+sphere->AddComponent<SphereCollider>();
+
+auto rigidBody = sphere->AddComponent<RigidBody>();
+rigidBody->SetMass(1.0f);
+rigidBody->SetLinearVelocity({0.0f, 10.0f, 0.0f});
+```
+### Raycasting on your game scene
+All physical objects with colliders can be raycasted and accessed using simple api
+```cs
+auto raySource = Vector3(0.0f);
+auto rayDirection = Vector3(1.0f, 0.0f, 0.0f);
+auto rayDistance = raySource + rayDirection * 100.0f;
+
+float rayLength = 0.0f;
+auto object = Physics::RayCast(raySource, rayDistance, rayLength);
+if(object.IsValid())
+{
+	MXLOG_INFO("raycast", "found object: " + object->Name);
+	MXLOG_INFO("raycast", "distance to object: " + ToMxString(rayLength));
+}
+```
+### Setting up timers and events
+You can sign up for event or create timer with specific call interval in one line of code
+```cs
+Timer::Shedule([]() { MXLOG_INFO("MyTimer", "I am called every 500ms!"); }, TimerMode::UPDATE_EACH_DELTA, 0.5f);
+
+Event::AddEventListener("MyEvent", [](UpdateEvent& e) { MXLOG_INFO("MyEvent", "I am called every frame!"); });
+```
+### Reading input from user devices
+To read input, you can add event listener or just retrieve state in update method. Also, there are binders for player controls
+```cs
+auto player = MxObject::Create();
+auto control = player->AddComponent<InputControl>();
+control->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D);
+
+if (Input::IsMousePressed(MouseButton::LEFT))
+	ShootBullet(player);
+```
+### Integrating your editors into MxEngine runtime editor
+If you want custom editors in your application, you can use ImGui functions in update loop
+```cs
+void OnUpdate() override
+{
+	if(Runtime::IsEditorActive())
+	{
+		ImGui::Begin("MySettings");
+		ImGui::InputFloat("player health", &health);
+		ImGui::InputFloat("player ammo", &ammo);
+		ImGui::End();
+	}
+}
+```
+### Saving rendered images to disk
+Sometimes you want to save rendered image to your hard drive. There are functions to do so
+```cs
+auto texture = cameraController->GetRenderTexture();
+ImageManager::SaveTexture("images/camera.png", texture);
+
+ImageManager::TakeScreenShot("images/viewport.png");
+``` 
+### Drawing debug primitives
+There are cases when you just want to display some 2D primitives to debug your game or check current object state
+```cs
+auto debug = object->AddComponent<DebugDraw>();
+debug->RenderBoundingBox = true;
+debug->BoundingBoxColor = Colors::Create(Colors::RED);
+
+Rendering::Draw(Line({0.0f, 0.0f, 0.0f}, {10.0f, 10.0f, 10.0f}), Colors::Create(Colors::GREEN));
+```
+
+## Dependencies
+If you are interesed in libraries MxEngine depend on, consider reading [dependencies.md](dependencies.md) file. It contains third-party library list with links to each project's github repository and brief explanation of why each library is used in the engine. Note that if you build MxEngine using VS2019 on x64, you do NOT have to clone the libraries or build them yourself - all binaries are already shipped with the engine and are automatically extracted by `install.py` script
 
 ## Answers to some questions:
 - Is it possible to build MxEngine under Linux/MacOS/other system?

@@ -34,6 +34,7 @@
     <ClInclude Include="Core\BoundingObjects\BoundingSphere.h" />
     <ClInclude Include="Core\BoundingObjects\Cone.h" />
     <ClInclude Include="Core\BoundingObjects\Frustrum.h" />
+    <ClInclude Include="Core\BoundingObjects\Line.h" />
     <ClInclude Include="Core\Components\Audio\AudioListener.h" />
     <ClInclude Include="Core\Components\Audio\AudioSource.h" />
     <ClInclude Include="Core\Components\Camera\CameraBase.h" />
