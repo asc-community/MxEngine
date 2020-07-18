@@ -29,17 +29,21 @@
 #pragma once
 
 #include "ShapeBase.h"
+#include "Core/BoundingObjects/BoundingBox.h"
 
 namespace MxEngine
 {
     class BoxShape : public ShapeBase
     {
     public:
-        BoxShape(const AABB& boundingBox);
+        BoxShape(const BoundingBox& boundingBox);
         BoxShape(const BoxShape&) = delete;
         BoxShape(BoxShape&&) noexcept;
         BoxShape& operator=(const BoxShape&) = delete;
         BoxShape& operator=(BoxShape&&) noexcept;
         ~BoxShape();
+
+        BoundingBox GetBoundingBox(const Transform& transform) const;
+        BoundingBox GetBoundingBoxUnchanged() const;
     };
 }

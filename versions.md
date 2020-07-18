@@ -176,3 +176,7 @@
 - removed ambient map and replaced diffuse map with albedo
 - some small fixes in engine utilities
 - added raycast functions for RigidBodies (needs collider)
+### 7.4.1
+- now colliders can be edited via runtime editor
+- BoxCollider bounding box now replicate actual collider, not AABB
+- added config class from which engine_config.json data can be accessed

@@ -42,7 +42,7 @@ namespace MxEngine
         bool colliderChangedFlag = true;
     protected:
         bool ShouldUpdateCollider(MxObject& self);
-        static const AABB& GetBoundingBox(MxObject& self);
+        static const AABB& GetAABB(MxObject& self);
         static const BoundingSphere& GetBoundingSphere(MxObject& self);
     public:
         void SetColliderChangedFlag(bool value);

@@ -26,60 +26,31 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "BoxCollider.h"
-#include "Core/MxObject/MxObject.h"
-#include "Core/Components/Rendering/MeshSource.h"
-#include "Core/Components/Instancing/Instance.h"
+#pragma once
+
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-    void BoxCollider::CreateNewShape(const BoundingBox& box)
+    class BoundingBox
     {
-        this->SetColliderChangedFlag(true);
-        this->boxShape = PhysicsFactory::Create<BoxShape>(box);
-    }
+    public:
+        Vector3 Min = MakeVector3(0.0f);
+        Vector3 Max = MakeVector3(0.0f);
+        Vector3 Center{ 0.0f, 0.0f, 0.0f };
+        Quaternion Rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
 
-    void BoxCollider::Init()
-    {
-        this->CreateNewShape(BoundingBox());
-        this->UpdateCollider();
-    }
-
-    void BoxCollider::UpdateCollider()
-    {
-        auto& self = MxObject::GetByComponent(*this);
-        if (this->ShouldUpdateCollider(self))
+        constexpr Vector3 Length() const
         {
-            auto& aabb = ColliderBase::GetAABB(self);
-            this->CreateNewShape(ToBoundingBox(aabb));
+            return Max - Min;
         }
-    }
+    };
 
-    BoxShapeHandle BoxCollider::GetNativeHandle() const
+    inline constexpr BoundingBox ToBoundingBox(const AABB& aabb)
     {
-        return this->boxShape;
-    }
-
-    AABB BoxCollider::GetAABB() const
-    {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->boxShape->GetAABB(transform);
-    }
-
-    BoundingBox BoxCollider::GetBoundingBox() const
-    {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->boxShape->GetBoundingBox(transform);
-    }
-
-    BoundingSphere BoxCollider::GetBoundingSphere() const
-    {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->boxShape->GetBoundingSphere(transform);
-    }
-
-    void BoxCollider::SetBoundingBox(const BoundingBox& box)
-    {
-        this->CreateNewShape(box);
+        BoundingBox result;
+        result.Max = aabb.Max;
+        result.Min = aabb.Min;
+        return result;
     }
 }

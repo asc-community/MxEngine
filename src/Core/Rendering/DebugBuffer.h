@@ -33,6 +33,7 @@
 namespace MxEngine
 {
 	class AABB;
+	class BoundingBox;
 	class BoundingSphere;
 	class Cone;
 	class Cylinder;
@@ -60,6 +61,7 @@ namespace MxEngine
 		void Init();
 		void Submit(const Line& line, const Vector4& color);
 		void Submit(const AABB& box, const Vector4& color);
+		void Submit(const BoundingBox& box, const Vector4 color);
 		void Submit(const BoundingSphere& sphere, const Vector4 color);
 		void Submit(const Cone& cone, const Vector4& color);
 		void Submit(const Frustrum& frustrum, const Vector4& color);

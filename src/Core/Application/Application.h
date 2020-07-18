@@ -35,6 +35,7 @@
 #include "Core/MxObject/MxObject.h"
 #include "Utilities/FileSystem/File.h"
 #include "Core/Components/Script.h"
+#include "Core/Application/Config.h"
 
 #include "Platform/Window/Window.h"
 
@@ -58,11 +59,13 @@ namespace MxEngine
 		EventDispatcher dispatcher;
 		RuntimeEditor console;
 		CallbackList updateCallbacks;
+		Config config;
 		TimeStep timeDelta = 0.0f;
 		size_t counterFPS = 0;
 		bool shouldClose = false;
 		bool isRunning = false;
 
+		void InitializeConfig(Config& config);
 		void InitializeRuntime(RuntimeEditor& console);
 		void InitializeRenderAdaptor(RenderAdaptor& adaptor);
 		void DrawObjects();
@@ -85,6 +88,7 @@ namespace MxEngine
 		EventDispatcher& GetEventDispatcher();
 		RenderAdaptor& GetRenderAdaptor();
 		RuntimeEditor& GetRuntimeEditor();
+		Config& GetConfig();
 		Window& GetWindow();
 		float GetTimeDelta() const;
 		size_t GetCurrentFPS() const;

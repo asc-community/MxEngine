@@ -31,25 +31,10 @@
 #include <bitset>
 
 #include "Utilities/Time/Time.h"
-#include "Utilities/Math/Math.h"
-#include "Core/Events/KeyEvent.h"
+#include "Core/Application/Config.h"
 #include "Core/Events/MouseEvent.h"
 
 struct GLFWwindow; // from glfw header file
-
-enum class Profile
-{
-	ANY,
-	COMPAT,
-	CORE,
-};
-
-enum class CursorMode
-{
-	NORMAL,
-	HIDDEN,
-	DISABLED,
-};
 
 namespace MxEngine
 {
@@ -113,6 +98,6 @@ namespace MxEngine
 		Window& UseWindowPosition(int xpos, int ypos);
 		Window& UseWindowSize(int width, int height);
 		Window& UseEventDispatcher(EventDispatcher* dispatcher);
-		Window& UseProfile(int majorVersion, int minorVersion, Profile profile);
+		Window& UseProfile(int majorVersion, int minorVersion, RenderProfile profile);
 	};
 }

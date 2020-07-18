@@ -44,8 +44,6 @@ namespace MxEngine
             : Radius(r), Center(center) { }
     };
 
-    // TODO: sphere must be created more precisely, as it is almost always less in size than AABB
-
     inline constexpr BoundingSphere ToSphere(const AABB& box)
     {
         auto center = box.GetCenter();

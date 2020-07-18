@@ -60,10 +60,10 @@ namespace MxEngine
         return this->sphereShape;
     }
 
-    AABB SphereCollider::GetBoundingBox() const
+    AABB SphereCollider::GetAABB() const
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->sphereShape->GetBoundingBox(transform);
+        return this->sphereShape->GetAABB(transform);
     }
 
     BoundingSphere SphereCollider::GetBoundingSphere() const

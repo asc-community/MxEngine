@@ -26,60 +26,29 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "BoxCollider.h"
-#include "Core/MxObject/MxObject.h"
-#include "Core/Components/Rendering/MeshSource.h"
-#include "Core/Components/Instancing/Instance.h"
+#pragma once
+
+#include "Config.h"
 
 namespace MxEngine
 {
-    void BoxCollider::CreateNewShape(const BoundingBox& box)
-    {
-        this->SetColliderChangedFlag(true);
-        this->boxShape = PhysicsFactory::Create<BoxShape>(box);
-    }
-
-    void BoxCollider::Init()
-    {
-        this->CreateNewShape(BoundingBox());
-        this->UpdateCollider();
-    }
-
-    void BoxCollider::UpdateCollider()
-    {
-        auto& self = MxObject::GetByComponent(*this);
-        if (this->ShouldUpdateCollider(self))
-        {
-            auto& aabb = ColliderBase::GetAABB(self);
-            this->CreateNewShape(ToBoundingBox(aabb));
-        }
-    }
-
-    BoxShapeHandle BoxCollider::GetNativeHandle() const
-    {
-        return this->boxShape;
-    }
-
-    AABB BoxCollider::GetAABB() const
-    {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->boxShape->GetAABB(transform);
-    }
-
-    BoundingBox BoxCollider::GetBoundingBox() const
-    {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->boxShape->GetBoundingBox(transform);
-    }
-
-    BoundingSphere BoxCollider::GetBoundingSphere() const
-    {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->boxShape->GetBoundingSphere(transform);
-    }
-
-    void BoxCollider::SetBoundingBox(const BoundingBox& box)
-    {
-        this->CreateNewShape(box);
-    }
+	class GlobalConfig
+	{
+	public:
+        static const Vector2& GetWindowPosition();
+        static const Vector2& GetWindowSize();
+        static const MxString& GetWindowTitle();
+        static CursorMode GetCursorMode();
+        static bool HasDoubleBuffering();
+        static RenderProfile GetGraphicAPIProfile();
+        static size_t GetGraphicAPIMajorVersion();
+        static size_t GetGraphicAPIMinorVersion();
+        static size_t GetAnisothropicFiltering();
+        static size_t GetDebugLineWidth();
+        static size_t GetMSAASamples();
+        static const MxString& GetProjectRootDirectory();
+        static bool HasGraphicAPIDebug();
+        static KeyCode GetApplicationCloseKey();
+        static KeyCode GetEditorOpenKey();
+	};
 }

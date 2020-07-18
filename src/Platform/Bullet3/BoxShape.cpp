@@ -31,7 +31,7 @@
 
 namespace MxEngine
 {
-    BoxShape::BoxShape(const AABB& boundingBox)
+    BoxShape::BoxShape(const BoundingBox& boundingBox)
     {
         this->CreateShape<btBoxShape>(ToBulletVector3(boundingBox.Length() * 0.5f));
     }
@@ -53,5 +53,22 @@ namespace MxEngine
     BoxShape::~BoxShape()
     {
         this->DestroyShape();
+    }
+
+    BoundingBox BoxShape::GetBoundingBox(const Transform& transform) const
+    {
+        auto box = this->GetBoundingBoxUnchanged();
+        box.Min *= transform.GetScale();
+        box.Max *= transform.GetScale();
+        box.Center = transform.GetPosition();
+        box.Rotation = transform.GetRotation();
+        return box;
+    }
+
+    BoundingBox BoxShape::GetBoundingBoxUnchanged() const
+    {
+        auto aabb = this->GetAABBUnchanged();
+        auto box = ToBoundingBox(aabb);
+        return box;
     }
 }

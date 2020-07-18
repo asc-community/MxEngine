@@ -29,6 +29,9 @@
 #include "ResourceEditor.h"
 #include "ImGuiUtils.h"
 #include "ComponentEditor.h"
+#include "Core/BoundingObjects/Cylinder.h"
+#include "Core/BoundingObjects/Capsule.h"
+#include "Core/BoundingObjects/BoundingBox.h"
 #include "Utilities/Image/ImageManager.h"
 
 namespace MxEngine::GUI
@@ -139,12 +142,89 @@ namespace MxEngine::GUI
         aabb.Max = VectorMax(aabb.Min, aabb.Max);
     }
 
+    void DrawBoxEditor(const char* name, BoundingBox& box)
+    {
+        SCOPE_TREE_NODE(name);
+        ImGui::DragFloat3("min", &box.Min[0], 0.01f);
+        ImGui::DragFloat3("max", &box.Max[0], 0.01f);
+        box.Min = VectorMin(box.Min, box.Max);
+        box.Max = VectorMax(box.Min, box.Max);
+    }
+
     void DrawSphereEditor(const char* name, BoundingSphere& sphere)
     {
         SCOPE_TREE_NODE(name);
         ImGui::DragFloat3("center", &sphere.Center[0], 0.01f);
         ImGui::DragFloat("radius", &sphere.Radius, 0.01f);
         sphere.Radius = Max(sphere.Radius, 0.0f);
+    }
+
+    void DrawCylinderEditor(const char* name, Cylinder& cylinder)
+    {
+        SCOPE_TREE_NODE(name);
+        ImGui::DragFloat("height",   &cylinder.Height, 0.01f);
+        ImGui::DragFloat("x radius", &cylinder.RadiusX, 0.01f);
+        ImGui::DragFloat("z radius", &cylinder.RadiusZ, 0.01f);
+        cylinder.Height  = Max(cylinder.Height, 0.0f);
+        cylinder.RadiusX = Max(cylinder.RadiusX, 0.0f);
+        cylinder.RadiusZ = Max(cylinder.RadiusZ, 0.0f);
+
+        bool axisX = cylinder.Orientation == Cylinder::Axis::X;
+        bool axisY = cylinder.Orientation == Cylinder::Axis::Y;
+        bool axisZ = cylinder.Orientation == Cylinder::Axis::Z;
+
+        if (ImGui::BeginCombo("orientation", axisX ? "x axis" : (axisY ? "y axis" : "z axis")))
+        {
+            if (ImGui::Selectable("x axis", &axisX))
+            {
+                cylinder.Orientation = Cylinder::Axis::X;
+                ImGui::SetItemDefaultFocus();
+            }
+            if (ImGui::Selectable("y axis", &axisX))
+            {
+                cylinder.Orientation = Cylinder::Axis::Y;
+                ImGui::SetItemDefaultFocus();
+            }
+            if (ImGui::Selectable("z axis", &axisX))
+            {
+                cylinder.Orientation = Cylinder::Axis::Z;
+                ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+    }
+
+    void DrawCapsuleEditor(const char* name, Capsule& capsule)
+    {
+        SCOPE_TREE_NODE(name);
+        ImGui::DragFloat("height", &capsule.Height, 0.01f);
+        ImGui::DragFloat("radius", &capsule.Radius, 0.01f);
+        capsule.Height = Max(capsule.Height, 0.0f);
+        capsule.Radius = Max(capsule.Radius, 0.0f);
+
+        bool axisX = capsule.Orientation == Capsule::Axis::X;
+        bool axisY = capsule.Orientation == Capsule::Axis::Y;
+        bool axisZ = capsule.Orientation == Capsule::Axis::Z;
+
+        if (ImGui::BeginCombo("orientation", axisX ? "x axis" : (axisY ? "y axis" : "z axis")))
+        {
+            if (ImGui::Selectable("x axis", &axisX))
+            {
+                capsule.Orientation = Capsule::Axis::X;
+                ImGui::SetItemDefaultFocus();
+            }
+            if (ImGui::Selectable("y axis", &axisX))
+            {
+                capsule.Orientation = Capsule::Axis::Y;
+                ImGui::SetItemDefaultFocus();
+            }
+            if (ImGui::Selectable("z axis", &axisX))
+            {
+                capsule.Orientation = Capsule::Axis::Z;
+                ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
     }
 
     void DrawLightBaseEditor(LightBase& base)

@@ -27,6 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "GraphicModule.h"
+#include "Core/Application/GlobalConfig.h"
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Utilities/Logging/Logger.h"
 #include "Utilities/Profiler/Profiler.h"
@@ -34,69 +35,63 @@
 
 #include <string>
 
-
 namespace MxEngine
 {
-	void GraphicModule::Init()
+	MxString GetOpenGLShaderVersion()
 	{
-		{
-			MAKE_SCOPE_PROFILER("OpenGL::InitGLFW");
-			MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "OpenGL::InitGLFW");
-			glfwSetErrorCallback([](int errorCode, const char* errorMessage)
-				{
-					MXLOG_FATAL("OpenGL::InitGLFW", errorMessage);
-				});
-			if (!glfwInit())
+		return "#version " + ToMxString(GlobalConfig::GetGraphicAPIMajorVersion() * 100 + GlobalConfig::GetGraphicAPIMinorVersion() * 10);
+	}
+
+	void InitializeGLFW()
+	{
+		MAKE_SCOPE_PROFILER("OpenGL::InitGLFW");
+		MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "OpenGL::InitGLFW");
+		glfwSetErrorCallback([](int errorCode, const char* errorMessage)
 			{
-				MXLOG_FATAL("OpenGL::InitGLFW", "OpenGL init failed");
-				return;
-			}
+				MXLOG_FATAL("OpenGL::InitGLFW", errorMessage);
+			});
+		if (!glfwInit())
+		{
+			MXLOG_FATAL("OpenGL::InitGLFW", "OpenGL init failed");
+			return;
 		}
 	}
 
-	void GraphicModule::OnWindowCreate(WindowHandle window)
+	void InitializeImGui(void* window)
 	{
+		MAKE_SCOPE_PROFILER("ImGui::Init");
+		MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "ImGui::Init()");
+
+		auto context = ImGui::CreateContext();
+		ImGui::SetCurrentContext(context);
+		ImGui::StyleColorsDark();
+
+		auto& imguiIO = ImGui::GetIO();
+		imguiIO.ConfigFlags |= ImGuiConfigFlags_::ImGuiConfigFlags_DockingEnable;
+		imguiIO.ConfigDockingAlwaysTabBar = true;
+
+		ImGui_ImplGlfw_InitForOpenGL(reinterpret_cast<GLFWwindow*>(window), true);
+		ImGui_ImplOpenGL3_Init(GetOpenGLShaderVersion().c_str());
+	}
+
+	void InitializeGLEW(void* window)
+	{
+		MAKE_SCOPE_PROFILER("OpenGL::InitGLEW");
+		MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "OpenGL::InitGLEW()");
+		GLenum err = glewInit();
+		if (err != GLEW_OK)
 		{
-			MAKE_SCOPE_PROFILER("OpenGL::InitGLEW");
-			MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "OpenGL::InitGLEW()");
-			GLenum err = glewInit();
-			if (err != GLEW_OK)
-			{
-				MXLOG_FATAL("OpenGL::InitGLEW", "OpenGL init failed");
-			}
-			else
-			{
-				MXLOG_INFO("OpenGL::InitGLEW", "OpenGL version: " + MxString((char*)glGetString(GL_VERSION)));
-			}
+			MXLOG_FATAL("OpenGL::InitGLEW", "OpenGL init failed");
 		}
-
+		else
 		{
-			MAKE_SCOPE_PROFILER("ImGui::Init");
-			MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "ImGui::Init()");
-
-			auto context = ImGui::CreateContext();
-			ImGui::SetCurrentContext(context);
-			ImGui::StyleColorsDark();
-
-			auto& imguiIO = ImGui::GetIO();
-			imguiIO.ConfigFlags |= ImGuiConfigFlags_::ImGuiConfigFlags_DockingEnable;
-			imguiIO.ConfigDockingAlwaysTabBar = true;
-
-			ImGui_ImplGlfw_InitForOpenGL(reinterpret_cast<GLFWwindow*>(window), true);
-
-			GLCALL(MxString shaderVersion = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-			auto idx = shaderVersion.find('.');
-			if (idx != shaderVersion.npos)
-			{
-				if (idx > 0) shaderVersion.erase(0, idx - 1); // ... 3.30 ... -> 3.30 ...
-				shaderVersion.erase(idx + 3, shaderVersion.size()); // 3.30 ... -> 3.30
-				shaderVersion.erase(idx, idx); // 3.30 -> 330
-			}
-			shaderVersion = "#version " + shaderVersion; // 330 -> #version 330
-			ImGui_ImplOpenGL3_Init(shaderVersion.c_str());
+			MXLOG_INFO("OpenGL::InitGLEW", "OpenGL version: " + MxString((char*)glGetString(GL_VERSION)));
 		}
+	}
 
-		GLint flags; 
+	void InitializeDebug(void* window)
+	{
+		GLint flags;
 		GLCALL(glGetIntegerv(GL_CONTEXT_FLAGS, &flags));
 		if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
 		{
@@ -105,6 +100,18 @@ namespace MxEngine
 			GLCALL(glDebugMessageCallback(PrintDebugInformation, nullptr));
 			GLCALL(glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE));
 		}
+	}
+
+	void GraphicModule::Init()
+	{
+		InitializeGLFW();
+	}
+
+	void GraphicModule::OnWindowCreate(WindowHandle window)
+	{
+		InitializeGLEW(window);
+		InitializeImGui(window);
+		InitializeDebug(window);
 	}
 
 	void GraphicModule::OnWindowUpdate(WindowHandle window)

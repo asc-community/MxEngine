@@ -42,13 +42,13 @@ namespace MxEngine
         enum Mask : uint32_t
         {
             GHOST = 0,
-            DEFAULT = 1 << 0,
+            DYNAMIC = 1 << 0,
             STATIC = 1 << 1,
             KINEMATIC = 1 << 2,
             DEBRIS = 1 << 3,
             TRIGGER = 1 << 4,
             CHARACTER = 1 << 5,
-            ALL = uint32_t(-1),
+            ANY = uint32_t(-1),
         };
     }
 
@@ -78,7 +78,7 @@ namespace MxEngine
     {
         btMotionState* state = nullptr;
         btRigidBody* body = nullptr;
-        uint32_t group = CollisionGroup::DEFAULT, mask = CollisionMask::STATIC | CollisionMask::DEFAULT;
+        uint32_t group = CollisionGroup::DEFAULT, mask = CollisionMask::STATIC | CollisionMask::DYNAMIC;
 
         void DestroyBody();
         void ReAddRigidBody();

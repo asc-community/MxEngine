@@ -39,15 +39,16 @@ namespace MxEngine
         MAKE_COMPONENT(BoxCollider);
 
         BoxShapeHandle boxShape;
-        void CreateNewShape(const AABB& aabb);
+        void CreateNewShape(const BoundingBox& box);
     public:
         void Init();
         void UpdateCollider();
 
         BoxShapeHandle GetNativeHandle() const;
 
-        AABB GetBoundingBox() const;
+        AABB GetAABB() const;
+        BoundingBox GetBoundingBox() const;
         BoundingSphere GetBoundingSphere() const;
-        void SetBoundingBox(const AABB& aabb);
+        void SetBoundingBox(const BoundingBox& box);
     };
 }

@@ -50,6 +50,8 @@ namespace MxEngine
 	class RigidBody;
 	class BoxCollider;
 	class SphereCollider;
+	class CylinderCollider;
+	class CapsuleCollider;
 }
 
 namespace MxEngine::GUI
@@ -75,4 +77,6 @@ namespace MxEngine::GUI
 	void RigidBodyEditor(RigidBody& rigidBody);
 	void BoxColliderEditor(BoxCollider& boxCollider);
 	void SphereColliderEditor(SphereCollider& sphereCollider);
+	void CylinderColliderEditor(CylinderCollider& cylinderCollider);
+	void CapsuleColliderEditor(CapsuleCollider& capsuleCollider);
 }

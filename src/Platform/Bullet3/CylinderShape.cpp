@@ -102,7 +102,7 @@ namespace MxEngine
 
     Cylinder CylinderShape::GetBoundingCylinderUnchanged() const
     {
-        auto box = this->GetBoundingBoxUnchanged();
+        auto box = this->GetAABBUnchanged();
         auto cylinder = ToCylinder(box, this->orientation);
         return cylinder;
     }

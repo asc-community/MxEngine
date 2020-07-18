@@ -142,6 +142,7 @@ namespace MxEngine
 
 		PhysicsModule::OnUpdate(this->timeDelta);
 
+		this->GetRuntimeEditor().OnRender();
 		{
 			MAKE_SCOPE_PROFILER("Application::UpdateComponents");
 			for (const auto& callback : this->updateCallbacks)
@@ -193,106 +194,32 @@ namespace MxEngine
 		}
 		MAKE_SCOPE_PROFILER("Application::CreateContext");
 
-		#if defined(MXENGINE_SHIPPING)
-		bool useDebugging = false;
-		#else
-		bool useDebugging = true;
-		#endif
-
-		JsonFile config;
-
-		MxString configPath = "engine_config.json";
-		if (File::Exists(configPath))
-		{
-			MXLOG_INFO("Application::CreateContext", "Using engine config file to set up context...");
-			File configFile(configPath);
-			config = Json::LoadJson(configFile);
-		}
-		else
-		{
-			config["renderer"]["opengl-profile"] = "core";
-			config["renderer"]["opengl-major-version"] = 4; //-V112
-			config["renderer"]["opengl-minor-version"] = 0;
-			config["renderer"]["msaa-samples"] = 4; //-V112
-			config["renderer"]["anisothropic-filtering"] = 16;
-			config["renderer"]["debug-line-width"] = 3;
-
-			config["window"]["title"] = "MxEngine Application";
-			config["window"]["double-buffering"] = false;
-			config["window"]["position"] = std::array<int, 2> { 300, 150 };
-			config["window"]["size"] = std::array<int, 2> { 1600, 900 };
-			config["window"]["cursor-mode"] = "disabled";
-
-			config["debug-build"]["app-close-key"] = KeyCode::ESCAPE;
-			config["debug-build"]["editor-key"] = KeyCode::GRAVE_ACCENT;
-
-			config["filesystem"]["root"] = "Resources";
-
-			File configFile(configPath, File::WRITE);
-			Json::SaveJson(configFile, config);
-		}
-
-		auto profileType  = config["renderer"]["opengl-profile"].get<MxString>();
-		auto profileMajor = config["renderer"]["opengl-major-version"].get<int>();
-		auto profileMinor = config["renderer"]["opengl-minor-version"].get<int>();
-		auto msaaSamples  = config["renderer"]["msaa-samples"].get<int>();
-		auto anisothropic = config["renderer"]["anisothropic-filtering"].get<int>();
-		auto lineWidth    = config["renderer"]["debug-line-width"].get<int>();
-
-		auto title        = config["window"]["title"].get<MxString>();
-		auto doubleBuffer = config["window"]["double-buffering"].get<bool>();
-		auto position     = config["window"]["position"].get<std::array<int, 2>>();
-		auto size         = config["window"]["size"].get<std::array<int, 2>>();
-		auto cursorMode   = config["window"]["cursor-mode"].get<MxString>();
-
-		auto rootPath = config["filesystem"]["root"].get<MxString>();
-
-		FileManager::SetRoot(ToFilePath(rootPath));
-
-		Profile enumProfile;
-		if (profileType == "core")
-			enumProfile = Profile::CORE;
-		else if (profileType == "compat")
-			enumProfile = Profile::COMPAT;
-		else
-			enumProfile = Profile::ANY;
-
-		auto enumCursor = CursorMode::DISABLED;
-		if (cursorMode == "disabled")
-			enumCursor = CursorMode::DISABLED; //-V1048
-		else if (cursorMode == "hidden")
-			enumCursor = CursorMode::HIDDEN;
-
-		#if !defined(MXENGINE_SHIPPING)
-		auto editorKey   = config["debug-build"]["editor-key"   ].get<KeyCode>();
-		auto appCloseKey = config["debug-build"]["app-close-key"].get<KeyCode>();
-
-		this->GetRuntimeEditor().AddKeyBinding(editorKey);
-		this->CloseOnKeyPress(appCloseKey);
-		#endif
+		this->InitializeConfig(this->config);
+		FileManager::SetRoot(ToFilePath(config.ProjectRootDirectory));
 
 		this->GetWindow()
-			.UseProfile(profileMajor, profileMinor, enumProfile)
-			.UseCursorMode(CursorMode::DISABLED)
-			.UseDoubleBuffering(doubleBuffer)
-			.UseTitle(title)
-			.UseDebugging(useDebugging)
-			.UseWindowPosition(position[0], position[1])
-			.UseWindowSize(size[0], size[1])
+			.UseProfile((int)this->config.GraphicAPIMajorVersion, (int)this->config.GraphicAPIMinorVersion, this->config.GraphicAPIProfile)
+			.UseCursorMode(this->config.CursorMode)
+			.UseDoubleBuffering(this->config.DoubleBuffering)
+			.UseTitle(this->config.WindowTitle)
+			.UseDebugging(this->config.GraphicAPIDebug)
+			.UseWindowPosition((int)this->config.WindowPosition.x, (int)this->config.WindowPosition.y)
+			.UseWindowSize((int)this->config.WindowSize.x, (int)this->config.WindowSize.y)
 			.Create();
 
 		auto& renderingEngine = this->GetRenderAdaptor().Renderer.GetRenderEngine();
 		renderingEngine
 			.UseCulling()
 			.UseDepthBuffer()
-			.UseLineWidth(lineWidth)
-			.UseReversedDepth(false)
+			.UseLineWidth(this->config.DebugLineWidth)
 			.UseClearColor(0.0f, 0.0f, 0.0f, 1.0f)
 			.UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA)
-			.UseAnisotropicFiltering(static_cast<float>(anisothropic))
+			.UseAnisotropicFiltering((float)this->config.AnisothropicFiltering)
 			;
 
+		this->GetRuntimeEditor().AddKeyBinding(config.EditorOpenKey);
 		this->InitializeRuntime(this->GetRuntimeEditor());
+		this->CloseOnKeyPress(config.ApplicationCloseKey);
 		this->InitializeRenderAdaptor(this->GetRenderAdaptor());
 	}
 
@@ -300,6 +227,11 @@ namespace MxEngine
 	{
 		return this->console;
 	}
+
+    Config& Application::GetConfig()
+    {
+		return this->config;
+    }
 
 	void Application::Run()
 	{
@@ -421,11 +353,34 @@ namespace MxEngine
 		adaptor.InitRendererEnvironment();
 	}
 
+	void Application::InitializeConfig(Config& config)
+	{
+		const char* configPath = "engine_config.json";
+		File file;
+		JsonFile jsonConfig;
+
+		// if no config file exists, use default settings and create new config file
+		if (!File::Exists(configPath))
+		{
+			Serialize(jsonConfig, config);
+			file.Open(configPath, File::WRITE);
+			SaveJson(file, jsonConfig);
+		}
+
+		file.Open(configPath, File::READ);
+		jsonConfig = LoadJson(file);
+
+		Deserialize(config, jsonConfig);
+
+		#if defined(MXENGINE_SHIPPING)
+		config.GraphicAPIDebug = false;
+		config.EditorOpenKey = KeyCode::UNKNOWN;
+		config.ApplicationCloseKey = KeyCode::UNKNOWN;
+		#endif
+	}
+
 	void Application::InitializeRuntime(RuntimeEditor& console)
 	{
-		Event::AddEventListener("DeveloperConsole",
-			[this](UpdateEvent&) { this->GetRuntimeEditor().OnRender(); });
-
 		auto& editor = this->GetRuntimeEditor();
 		editor.ExecuteScript("InitializeOpenGL()");
 
@@ -449,6 +404,8 @@ namespace MxEngine
 		editor.RegisterComponentEditor("RigidBody",          GUI::RigidBodyEditor);
 		editor.RegisterComponentEditor("BoxCollider",        GUI::BoxColliderEditor);
 		editor.RegisterComponentEditor("SphereCollider",     GUI::SphereColliderEditor);
+		editor.RegisterComponentEditor("CylinderCollider",   GUI::CylinderColliderEditor);
+		editor.RegisterComponentEditor("CapsuleCollider",    GUI::CapsuleColliderEditor);
 
 		this->RegisterComponentUpdate<Behaviour>();
 		this->RegisterComponentUpdate<InstanceFactory>();

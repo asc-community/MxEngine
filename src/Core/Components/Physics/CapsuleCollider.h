@@ -50,7 +50,7 @@ namespace MxEngine
         void SetOrientation(Capsule::Axis axis);
         Capsule::Axis GetOrientation() const;
 
-        AABB GetBoundingBox() const;
+        AABB GetAABB() const;
         BoundingSphere GetBoundingSphere() const;
         Capsule GetBoundingCapsule() const;
         void SetBoundingCapsule(const Capsule& capsule);

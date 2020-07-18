@@ -29,6 +29,8 @@
 #include "Core/Components/Physics/RigidBody.h"
 #include "Core/Components/Physics/BoxCollider.h"
 #include "Core/Components/Physics/SphereCollider.h"
+#include "Core/Components/Physics/CapsuleCollider.h"
+#include "Core/Components/Physics/CylinderCollider.h"
 
 #include "Utilities/ImGui/ImGuiUtils.h"
 
@@ -57,6 +59,25 @@ namespace MxEngine::GUI
 		ImGui::Text("total force  applied: (%f, %f, %f)", totalForce.x, totalForce.y, totalForce.z);
 		ImGui::Text("total torque applied: (%f, %f, %f)", totalTorque.x, totalTorque.y, totalTorque.z);
 		ImGui::Text("body inertia:         (%f, %f, %f)", inertia.x, inertia.y, inertia.z);
+
+		std::array collisionMasks = {
+			CollisionMask::GHOST, CollisionMask::DYNAMIC, CollisionMask::STATIC,
+			CollisionMask::DEBRIS, CollisionMask::TRIGGER, CollisionMask::CHARACTER,
+			CollisionMask::KINEMATIC, CollisionMask::ANY
+		};
+		static bool selected = false;
+		if (ImGui::BeginCombo("body type", EnumToString((CollisionMask::Mask)collisionMask)))
+		{
+			for (auto& mask : collisionMasks)
+			{
+				if (ImGui::Selectable(EnumToString(mask), &selected))
+				{
+					rigidBody.SetCollisionFilter(mask);
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
 
 		if (ImGui::Button("clear forces"))
 			rigidBody.ClearForces(); //-V111
@@ -198,8 +219,9 @@ namespace MxEngine::GUI
 		TREE_NODE_PUSH("BoxCollider");
 		REMOVE_COMPONENT_BUTTON(boxCollider);
 
-		auto boundingBox = boxCollider.GetBoundingBox();
-		DrawAABBEditor("bounding box", boundingBox);
+		auto boundingBox = boxCollider.GetNativeHandle()->GetBoundingBoxUnchanged();
+		DrawBoxEditor("bounding box", boundingBox);
+		boxCollider.SetBoundingBox(boundingBox);
 
 		auto shape = boxCollider.GetNativeHandle();
 		ImGui::Text("native handle: 0x%p", shape->GetNativeHandle()); //-V111
@@ -210,10 +232,37 @@ namespace MxEngine::GUI
 		TREE_NODE_PUSH("SphereCollider");
 		REMOVE_COMPONENT_BUTTON(sphereCollider);
 
-		auto boundingSphere = sphereCollider.GetBoundingSphere();
+		auto boundingSphere = sphereCollider.GetNativeHandle()->GetBoundingSphereUnchanged();
 		DrawSphereEditor("bounding sphere", boundingSphere);
+		sphereCollider.SetBoundingSphere(boundingSphere);
 
 		auto shape = sphereCollider.GetNativeHandle();
+		ImGui::Text("native handle: 0x%p", shape->GetNativeHandle()); //-V111
+	}
+
+	void CylinderColliderEditor(CylinderCollider& cylinderCollider) //-V111
+	{
+		TREE_NODE_PUSH("CylinderCollider");
+		REMOVE_COMPONENT_BUTTON(cylinderCollider);
+
+		auto boundingCylinder = cylinderCollider.GetNativeHandle()->GetBoundingCylinderUnchanged();
+		DrawCylinderEditor("bounding cylinder", boundingCylinder);
+		cylinderCollider.SetBoundingCylinder(boundingCylinder);
+
+		auto shape = cylinderCollider.GetNativeHandle();
+		ImGui::Text("native handle: 0x%p", shape->GetNativeHandle()); //-V111
+	}
+
+	void CapsuleColliderEditor(CapsuleCollider& capsuleCollider) //-V111
+	{
+		TREE_NODE_PUSH("CapsuleCollider");
+		REMOVE_COMPONENT_BUTTON(capsuleCollider);
+
+		auto boundingCapsule = capsuleCollider.GetNativeHandle()->GetBoundingCapsuleUnchanged();
+		DrawCapsuleEditor("bounding capsule", boundingCapsule);
+		capsuleCollider.SetBoundingCapsule(boundingCapsule);
+
+		auto shape = capsuleCollider.GetNativeHandle();
 		ImGui::Text("native handle: 0x%p", shape->GetNativeHandle()); //-V111
 	}
 }

@@ -28,11 +28,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Application\Event.h" />
+    <ClInclude Include="Core\Application\Config.h" />
+    <ClInclude Include="Core\Application\GlobalConfig.h" />
     <ClInclude Include="Core\Application\Physics.h" />
     <ClInclude Include="Core\Application\Rendering.h" />
     <ClInclude Include="Core\Application\Runtime.h" />
     <ClInclude Include="Core\Application\Timer.h" />
     <ClInclude Include="Core\BoundingObjects\AABB.h" />
+    <ClInclude Include="Core\BoundingObjects\BoundingBox.h" />
     <ClInclude Include="Core\BoundingObjects\BoundingSphere.h" />
     <ClInclude Include="Core\BoundingObjects\Capsule.h" />
     <ClInclude Include="Core\BoundingObjects\Cone.h" />
@@ -118,6 +121,8 @@
     <ClInclude Include="Utilities\ImGui\ComponentEditor.h" />
     <ClInclude Include="Utilities\ImGui\MxObjectEditor.h" />
     <ClInclude Include="Utilities\ImGui\RenderEditor.h" />
+    <ClCompile Include="Core\Application\Config.cpp" />
+    <ClCompile Include="Core\Application\GlobalConfig.cpp" />
     <ClCompile Include="Core\Components\Physics\CapsuleCollider.cpp" />
     <ClCompile Include="Core\Components\Physics\CylinderCollider.cpp" />
     <ClCompile Include="Platform\Bullet3\CapsuleShape.cpp" />

@@ -43,7 +43,7 @@ namespace MxEngine
             : btCollisionWorld::ClosestRayResultCallback(from, to)
         {
             this->m_collisionFilterGroup = CollisionGroup::DEFAULT;
-            this->m_collisionFilterMask = CollisionMask::ALL;
+            this->m_collisionFilterMask = CollisionMask::ANY;
         }
 
         MxObject::Handle GetResult() const

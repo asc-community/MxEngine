@@ -31,13 +31,23 @@
 #include "Core/Resources/AssetManager.h"
 #include "Core/Components/Lighting/LightBase.h"
 
+namespace MxEngine
+{
+	class Capsule;
+	class Cylinder;
+	class BoundingBox;
+}
+
 namespace MxEngine::GUI
 {
 	void DrawTextureEditor(const char* name, TextureHandle& texture);
 	void DrawCubeMapEditor(const char* name, CubeMapHandle& cubemap);
 	void DrawMeshEditor(const char* name, MeshHandle& mesh);
 	void DrawAABBEditor(const char* name, AABB& aabb);
+	void DrawBoxEditor(const char* name, BoundingBox& box);
 	void DrawSphereEditor(const char* name, BoundingSphere& sphere);
+	void DrawCylinderEditor(const char* name, Cylinder& cylinder);
+	void DrawCapsuleEditor(const char* name, Capsule& capsule);
 	void DrawLightBaseEditor(LightBase& base);
 	void DrawMaterialEditor(MaterialHandle& material);
 	void DrawVertexEditor(Vertex& vertex);

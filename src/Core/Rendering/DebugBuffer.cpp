@@ -28,6 +28,7 @@
 
 #include "DebugBuffer.h"
 #include "Core/BoundingObjects/AABB.h"
+#include "Core/BoundingObjects/BoundingBox.h"
 #include "Core/BoundingObjects/BoundingSphere.h"
 #include "Core/BoundingObjects/Cylinder.h"
 #include "Core/BoundingObjects/Capsule.h"
@@ -80,6 +81,40 @@ namespace MxEngine
         this->storage.push_back({ MakeVector3(box.Min.x, box.Max.y, box.Max.z), color });
         this->storage.push_back({ MakeVector3(box.Max.x, box.Min.y, box.Min.z), color });
         this->storage.push_back({ MakeVector3(box.Max.x, box.Max.y, box.Min.z), color });
+    }
+
+    void DebugBuffer::Submit(const BoundingBox& box, const Vector4 color)
+    {
+        std::array points = {
+            MakeVector3(box.Min.x, box.Min.y, box.Min.z),
+            MakeVector3(box.Max.x, box.Min.y, box.Min.z),
+            MakeVector3(box.Min.x, box.Max.y, box.Min.z),
+            MakeVector3(box.Min.x, box.Min.y, box.Max.z),
+            MakeVector3(box.Max.x, box.Max.y, box.Max.z),
+            MakeVector3(box.Min.x, box.Max.y, box.Max.z),
+            MakeVector3(box.Max.x, box.Min.y, box.Max.z),
+            MakeVector3(box.Max.x, box.Max.y, box.Min.z),
+        };
+
+        std::array lines = {
+            Line{ points[0], points[1] },
+            Line{ points[0], points[2] },
+            Line{ points[0], points[3] },
+            Line{ points[4], points[5] },
+            Line{ points[4], points[6] },
+            Line{ points[4], points[7] },
+            Line{ points[2], points[5] },
+            Line{ points[2], points[7] },
+            Line{ points[6], points[1] },
+            Line{ points[6], points[3] },
+            Line{ points[3], points[5] },
+            Line{ points[1], points[7] },
+        };
+        for (auto& line : lines)
+        {
+            this->storage.push_back({ box.Rotation * line.p1 + box.Center, color });
+            this->storage.push_back({ box.Rotation * line.p2 + box.Center, color });
+        }
     }
 
     auto InitializeSphere()

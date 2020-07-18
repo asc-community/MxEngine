@@ -26,60 +26,85 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "BoxCollider.h"
-#include "Core/MxObject/MxObject.h"
-#include "Core/Components/Rendering/MeshSource.h"
-#include "Core/Components/Instancing/Instance.h"
+#include "GlobalConfig.h"
+#include "Core/Application/Application.h"
 
 namespace MxEngine
 {
-    void BoxCollider::CreateNewShape(const BoundingBox& box)
+    #define CFG(name) Application::Get()->GetConfig().name
+
+    const Vector2& GlobalConfig::GetWindowPosition()
     {
-        this->SetColliderChangedFlag(true);
-        this->boxShape = PhysicsFactory::Create<BoxShape>(box);
+        return CFG(WindowPosition);
     }
 
-    void BoxCollider::Init()
+    const Vector2& GlobalConfig::GetWindowSize()
     {
-        this->CreateNewShape(BoundingBox());
-        this->UpdateCollider();
+        return CFG(WindowSize);
     }
 
-    void BoxCollider::UpdateCollider()
+    const MxString& GlobalConfig::GetWindowTitle()
     {
-        auto& self = MxObject::GetByComponent(*this);
-        if (this->ShouldUpdateCollider(self))
-        {
-            auto& aabb = ColliderBase::GetAABB(self);
-            this->CreateNewShape(ToBoundingBox(aabb));
-        }
+        return CFG(WindowTitle);
     }
 
-    BoxShapeHandle BoxCollider::GetNativeHandle() const
+    CursorMode GlobalConfig::GetCursorMode()
     {
-        return this->boxShape;
+        return CFG(CursorMode);
     }
 
-    AABB BoxCollider::GetAABB() const
+    bool GlobalConfig::HasDoubleBuffering()
     {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->boxShape->GetAABB(transform);
+        return CFG(DoubleBuffering);
     }
 
-    BoundingBox BoxCollider::GetBoundingBox() const
+    RenderProfile GlobalConfig::GetGraphicAPIProfile()
     {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->boxShape->GetBoundingBox(transform);
+        return CFG(GraphicAPIProfile);
     }
 
-    BoundingSphere BoxCollider::GetBoundingSphere() const
+    size_t GlobalConfig::GetGraphicAPIMajorVersion()
     {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->boxShape->GetBoundingSphere(transform);
+        return CFG(GraphicAPIMajorVersion);
     }
 
-    void BoxCollider::SetBoundingBox(const BoundingBox& box)
+    size_t GlobalConfig::GetGraphicAPIMinorVersion()
     {
-        this->CreateNewShape(box);
+        return CFG(GraphicAPIMinorVersion);
+    }
+
+    size_t GlobalConfig::GetAnisothropicFiltering()
+    {
+        return CFG(AnisothropicFiltering);
+    }
+
+    size_t GlobalConfig::GetDebugLineWidth()
+    {
+        return CFG(DebugLineWidth);
+    }
+
+    size_t GlobalConfig::GetMSAASamples()
+    {
+        return CFG(MSAASamples);
+    }
+
+    const MxString& GlobalConfig::GetProjectRootDirectory()
+    {
+        return CFG(ProjectRootDirectory);
+    }
+
+    bool GlobalConfig::HasGraphicAPIDebug()
+    {
+        return CFG(GraphicAPIDebug);
+    }
+
+    KeyCode GlobalConfig::GetApplicationCloseKey()
+    {
+        return CFG(ApplicationCloseKey);
+    }
+
+    KeyCode GlobalConfig::GetEditorOpenKey()
+    {
+        return CFG(EditorOpenKey);
     }
 }

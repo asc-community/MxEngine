@@ -54,7 +54,7 @@ namespace MxEngine
         return this->collider;
     }
 
-    AABB ShapeBase::GetBoundingBox(const Transform& transform) const
+    AABB ShapeBase::GetAABB(const Transform& transform) const
     {
         btVector3 min, max;
         btTransform tr;
@@ -63,7 +63,7 @@ namespace MxEngine
         return AABB{ FromBulletVector3(min), FromBulletVector3(max) };
     }
 
-    AABB ShapeBase::GetBoundingBoxUnchanged() const
+    AABB ShapeBase::GetAABBUnchanged() const
     {
         auto scale = this->GetScale();
         btVector3 min, max;

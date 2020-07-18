@@ -47,7 +47,7 @@ namespace MxEngine
 
         SphereShapeHandle GetNativeHandle() const;
 
-        AABB GetBoundingBox() const;
+        AABB GetAABB() const;
         BoundingSphere GetBoundingSphere() const;
         void SetBoundingSphere(const BoundingSphere& sphere);
     };

@@ -28,6 +28,7 @@
 
 #include "CameraController.h"
 #include "Core/Events/WindowResizeEvent.h"
+#include "Core/Application/GlobalConfig.h"
 #include "Core/Application/Event.h"
 #include "Platform/Window/WindowManager.h"
 #include "OrthographicCamera.h"
@@ -236,10 +237,6 @@ namespace MxEngine
 		auto normDirXZ = Normalize(MakeVector3(normDir.x, 0.0f, normDir.z));
 		float horizontalAngle = std::acos(Dot(normDir, MakeVector3(0.0f, 0.0f, 1.0f)));
 
-		// std::cos(verticalAngle)* std::sin(horizontalAngle),
-		// std::sin(verticalAngle),
-		// std::cos(verticalAngle)* std::cos(horizontalAngle);
-
 		auto x = std::sin(horizontalAngle);
 		auto z = std::cos(horizontalAngle);
 
@@ -397,7 +394,7 @@ namespace MxEngine
 
 	void CameraRender::Init(int width, int height)
 	{
-		constexpr size_t samples = 4;
+		size_t samples = GlobalConfig::GetMSAASamples();
 
 		auto multisampledTexture = GraphicFactory::Create<Texture>();
 		auto textureHDR = GraphicFactory::Create<Texture>();
@@ -406,7 +403,7 @@ namespace MxEngine
 		this->framebufferHDR = GraphicFactory::Create<FrameBuffer>();
 		this->bloomTextureHDR = GraphicFactory::Create<Texture>();
 
-		multisampledTexture->LoadMultisample(width, height, TextureFormat::RGBA16F, samples);
+		multisampledTexture->LoadMultisample(width, height, TextureFormat::RGBA16F, (int)samples);
 		this->framebufferMSAA->AttachTexture(multisampledTexture);
 		this->renderbufferMSAA->InitStorage((int)multisampledTexture->GetWidth(), (int)multisampledTexture->GetHeight(), multisampledTexture->GetSampleCount());
 		this->renderbufferMSAA->LinkToFrameBuffer(*this->framebufferMSAA);

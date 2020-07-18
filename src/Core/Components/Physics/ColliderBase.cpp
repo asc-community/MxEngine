@@ -63,7 +63,7 @@ namespace MxEngine
         return false;
     }
 
-    const AABB& ColliderBase::GetBoundingBox(MxObject& self)
+    const AABB& ColliderBase::GetAABB(MxObject& self)
     {
         auto meshSource = GetCurrentlyUsedMesh(self); 
         return meshSource->Mesh->GetBoundingBox();

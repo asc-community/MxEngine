@@ -192,7 +192,7 @@ namespace MxEngine
 		}
 		MXLOG_INFO("MxEngine::ObjectLoader", "loading materials from file: " + path);
 
-		auto materialList = Json::LoadJson(file);
+		auto materialList = LoadJson(file);
 
 		size_t materialCount = materialList.size();
 		materials.resize(materialCount);
@@ -248,7 +248,7 @@ namespace MxEngine
 			DUMP(i, Name);
 		}
 
-		Json::SaveJson(file, json);
+		SaveJson(file, json);
 	}
 }
 #else

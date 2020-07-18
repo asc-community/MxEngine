@@ -324,7 +324,7 @@ namespace MxEngine
 		GLFW_OPENGL_CORE_PROFILE,
 	};
 
-	Window& Window::UseProfile(int majorVersion, int minorVersion, Profile profile)
+	Window& Window::UseProfile(int majorVersion, int minorVersion, RenderProfile profile)
 	{
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, majorVersion);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minorVersion);

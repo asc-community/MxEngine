@@ -75,18 +75,18 @@ namespace MxEngine
         bool wasStatic = oldMass == 0.0f;
         bool nowStatic = mass == 0.0f;
 
-        if (this->mask != CollisionMask::GHOST)
+        if (this->mask & (CollisionMask::DYNAMIC | CollisionMask::STATIC))
         {
             if (nowStatic)
             {
                 this->mask |= CollisionMask::STATIC;
-                this->mask &= ~CollisionMask::DEFAULT;
+                this->mask &= ~CollisionMask::DYNAMIC;
                 this->group &= CollisionGroup::NO_STATIC_COLLISIONS;
             }
             else
             {
                 this->mask &= ~CollisionMask::STATIC;
-                this->mask |= CollisionMask::DEFAULT;
+                this->mask |= CollisionMask::DYNAMIC;
                 this->group |= ~CollisionGroup::NO_STATIC_COLLISIONS;
             }
         }
@@ -264,8 +264,8 @@ namespace MxEngine
         {
         case CollisionMask::GHOST:
             return "GHOST";
-        case CollisionMask::DEFAULT:
-            return "DEFAULT";
+        case CollisionMask::DYNAMIC:
+            return "DYNAMIC";
         case CollisionMask::STATIC:
             return "STATIC";
         case CollisionMask::KINEMATIC:

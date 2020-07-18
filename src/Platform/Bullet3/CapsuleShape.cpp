@@ -95,7 +95,7 @@ namespace MxEngine
 
     Capsule CapsuleShape::GetBoundingCapsuleUnchanged() const
     {
-        auto box = this->GetBoundingBoxUnchanged();
+        auto box = this->GetAABBUnchanged();
         auto capsule = ToCapsule(box, this->orientation);
         return capsule;
     }

@@ -50,7 +50,7 @@ namespace MxEngine
         auto& self = MxObject::GetByComponent(*this);
         if (this->ShouldUpdateCollider(self))
         {
-            auto& aabb = ColliderBase::GetBoundingBox(self);
+            auto& aabb = ColliderBase::GetAABB(self);
             this->CreateNewShape(ToCylinder(aabb, this->GetOrientation()));
         }
     }
@@ -63,7 +63,7 @@ namespace MxEngine
     void CylinderCollider::SetOrientation(Cylinder::Axis axis)
     {
         auto& self = MxObject::GetByComponent(*this);
-        auto& aabb = ColliderBase::GetBoundingBox(self);
+        auto& aabb = ColliderBase::GetAABB(self);
         this->CreateNewShape(ToCylinder(aabb, axis));
     }
 
@@ -72,10 +72,10 @@ namespace MxEngine
         return this->cylinderShape->GetOrientation();
     }
 
-    AABB CylinderCollider::GetBoundingBox() const
+    AABB CylinderCollider::GetAABB() const
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->cylinderShape->GetBoundingBox(transform);
+        return this->cylinderShape->GetAABB(transform);
     }
 
     BoundingSphere CylinderCollider::GetBoundingSphere() const

@@ -50,7 +50,7 @@ namespace MxEngine
         void SetOrientation(Cylinder::Axis axis);
         Cylinder::Axis GetOrientation() const;
         
-        AABB GetBoundingBox() const;
+        AABB GetAABB() const;
         BoundingSphere GetBoundingSphere() const;
         Cylinder GetBoundingCylinder() const;
         void SetBoundingCylinder(const Cylinder& cylinder);
