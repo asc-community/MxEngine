@@ -28,18 +28,31 @@
 
 #pragma once
 
-#include "ProfilerGraph.h"
-#include "Layout.h"
-#include "Viewport.h"
-#include "Editors/ResourceEditor.h"
-#include "Editors/RenderEditor.h"
-#include "Editors/MxObjectEditor.h"
-#include "Editors/ApplicationEditor.h"
+#include "Utilities/STL/MxVector.h"
+#include "Utilities/STL/MxString.h"
 
 namespace MxEngine
 {
-    /*!
-    MxEngine GUI namespace. Used for declaration of Immediate GUI functions
-    */
-    namespace GUI {}
+    class EventLogger
+    {
+        MxVector<MxString> entries;
+        bool autoScroll = true;
+        bool isCurrentlyCapturing = false;
+        bool isFrameAlreadyCaptured = false;
+    public:
+        bool UpdateEvents = true;
+        bool RenderEvents = true;
+        bool FpsUpdateEvents = true;
+        bool MouseMoveEvents = true;
+
+        EventLogger();
+        ~EventLogger();
+
+        void Init();
+        void AddEventEntry(const MxString& entry);
+        void Draw(const char* name, size_t lineCount);
+
+        void EndFrameCapture();
+        void StartFrameCapture();
+    };
 }

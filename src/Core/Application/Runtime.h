@@ -34,6 +34,8 @@ namespace MxEngine
 {
     class Runtime
     {
+        // callback must be in format `MxString Func(EventType& e)`
+        template<typename R, typename T> static T DeduceEventTypeFromCallback(std::function<R(T&)>) { return std::declval<T>(); };
     public:
         template<typename Func>
         static void RegisterComponentEditor(const char* name, Func&& callback)
@@ -45,6 +47,19 @@ namespace MxEngine
         static void RegisterComponentUpdate()
         {
             Application::Get()->RegisterComponentUpdate<T>();
+        }
+
+        template<typename Func>
+        static void RegisterEventLogger(Func&& callback)
+        {
+            using EventType = decltype(Runtime::DeduceEventTypeFromCallback(std::function{ std::declval<Func>() }));
+            static_assert(std::is_convertible_v<std::invoke_result_t<Func, EventType&>, MxString>, "callback must return value convertable to MxString");
+            Application::Get()->GetEventDispatcher().AddEventListener("EventLogger", [f = std::forward<Func>(callback)](EventType& e) { Runtime::AddEventLogEntry(f(e)); });
+        }
+
+        static void AddEventLogEntry(const MxString& entry)
+        {
+            Application::Get()->GetRuntimeEditor().AddEventEntry(entry);
         }
 
         static bool IsEditorActive()

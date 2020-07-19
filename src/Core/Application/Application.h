@@ -68,6 +68,7 @@ namespace MxEngine
 		void InitializeConfig(Config& config);
 		void InitializeRuntime(RuntimeEditor& console);
 		void InitializeRenderAdaptor(RenderAdaptor& adaptor);
+		void UpdateTimeDelta(TimeStep& lastFrameEnd, TimeStep& lastSecondEnd, size_t& framesPerSecond);
 		void DrawObjects();
 		void InvokeUpdate();
 		bool VerifyApplicationState();
@@ -80,9 +81,13 @@ namespace MxEngine
 		virtual void OnRender();
 		virtual void OnDestroy();
 	public:
+		bool IsPaused = false;
+		float TimeScale = 1.0f;
+
 		template<typename T>
 		void RegisterComponentUpdate();
 		void ToggleRuntimeEditor(bool isVisible);
+		void ToggleWindowUpdates(bool isPolled);
 		void CloseOnKeyPress(KeyCode key);
 
 		EventDispatcher& GetEventDispatcher();
@@ -91,6 +96,7 @@ namespace MxEngine
 		Config& GetConfig();
 		Window& GetWindow();
 		float GetTimeDelta() const;
+		float GetUnscaledTimeDelta() const;
 		size_t GetCurrentFPS() const;
 		void Run();
 		bool IsRunning() const;

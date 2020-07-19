@@ -38,6 +38,7 @@ namespace MxEngine
 	class Skybox;
 	class DebugDraw;
 	class MeshRenderer;
+	class MeshSource;
 	class MeshLOD;
 	class DirectionalLight;
 	class PointLight;

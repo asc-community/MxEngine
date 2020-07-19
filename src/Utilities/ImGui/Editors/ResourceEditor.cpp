@@ -27,8 +27,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ResourceEditor.h"
-#include "ImGuiUtils.h"
 #include "ComponentEditor.h"
+#include "Utilities/ImGui/ImGuiUtils.h"
 #include "Core/BoundingObjects/Cylinder.h"
 #include "Core/BoundingObjects/Capsule.h"
 #include "Core/BoundingObjects/BoundingBox.h"

@@ -37,6 +37,7 @@
 namespace MxEngine
 {
 	class GraphicConsole;
+	class EventLogger;
 
 	#if defined(MXENGINE_USE_PYTHON)
 	class PythonEngine;
@@ -52,7 +53,8 @@ namespace MxEngine
 		#endif
 
 		ScriptEngine* engine = nullptr;
-		GraphicConsole* console;
+		GraphicConsole* console = nullptr;
+		EventLogger* logger = nullptr;
 		Vector2 cachedWindowSize{ 0.0f };
 		bool shouldRender = false;
 		bool useDefaultFrameBufferCached = false;
@@ -60,7 +62,7 @@ namespace MxEngine
 		MxVector<std::function<void(MxObject&)>> componentEditorCallbacks;
 		MxVector<std::function<void(MxObject&)>> componentAdderCallbacks;
 		MxVector<const char*> componentNames;
-	public:
+  	public:
 		RuntimeEditor();
 		RuntimeEditor(const RuntimeEditor&) = delete;
 		RuntimeEditor(RuntimeEditor&&) = default;
@@ -69,7 +71,8 @@ namespace MxEngine
 		void Log(const MxString& message);
 		void ClearLog();
 		void PrintHistory();
-		void OnRender();
+		void OnUpdate();
+		void AddEventEntry(const MxString& entry);
 		void SetSize(const Vector2& size);
 		void Toggle(bool isVisible = true);
 		void AddKeyBinding(KeyCode openKey);

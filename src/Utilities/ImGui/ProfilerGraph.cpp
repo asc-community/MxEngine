@@ -26,20 +26,26 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
 #include "ProfilerGraph.h"
-#include "Layout.h"
-#include "Viewport.h"
-#include "Editors/ResourceEditor.h"
-#include "Editors/RenderEditor.h"
-#include "Editors/MxObjectEditor.h"
-#include "Editors/ApplicationEditor.h"
+#include "Utilities/ImGui/ImGuiBase.h"
+#include "Core/Application/Event.h"
+#include "Core/Events/FpsUpdateEvent.h"
 
-namespace MxEngine
+namespace MxEngine::GUI
 {
-    /*!
-    MxEngine GUI namespace. Used for declaration of Immediate GUI functions
-    */
-    namespace GUI {}
+	void DrawProfiler(const char* name)
+	{
+		static constexpr size_t ProfilerGraphRecordSize = 128;
+		static MxVector<float> fpsData(ProfilerGraphRecordSize);
+
+		INVOKE_ONCE(Event::AddEventListener<FpsUpdateEvent>(
+			"PfoilerGraph", [](FpsUpdateEvent& e) mutable
+			{
+				fpsData.push_back((float)e.FPS);
+				fpsData.erase(fpsData.begin());
+			}));
+
+		ImGui::PlotLines("", fpsData.data(), (int)fpsData.size(), 0, name,
+			FLT_MAX, FLT_MAX, { ImGui::GetWindowWidth() - 15.0f, (float)ProfilerGraphRecordSize + 15.0f });
+	}
 }

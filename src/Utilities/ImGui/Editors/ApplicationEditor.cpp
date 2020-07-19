@@ -26,20 +26,21 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+#include "ApplicationEditor.h"
+#include "Utilities/ImGui/ImGuiUtils.h"
 
-#include "ProfilerGraph.h"
-#include "Layout.h"
-#include "Viewport.h"
-#include "Editors/ResourceEditor.h"
-#include "Editors/RenderEditor.h"
-#include "Editors/MxObjectEditor.h"
-#include "Editors/ApplicationEditor.h"
-
-namespace MxEngine
+namespace MxEngine::GUI
 {
-    /*!
-    MxEngine GUI namespace. Used for declaration of Immediate GUI functions
-    */
-    namespace GUI {}
+    void DrawApplicationEditor(const char* name, bool* isOpen)
+    {
+        ImGui::Begin(name, isOpen);
+
+        auto app = Application::Get();
+
+        ImGui::Checkbox("paused", &app->IsPaused);
+        ImGui::DragFloat("time scale", &app->TimeScale, 0.01f);
+        ImGui::Text("current time delta: %f", app->GetTimeDelta());
+
+        ImGui::End();
+    }
 }

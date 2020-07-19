@@ -141,7 +141,7 @@ namespace ProjectTemplate
 
             if (!Input::IsMouseHeld(MouseButton::RIGHT))
             {
-                Physics::PerformExtraSimulationStep(1.0f / 60.0f);
+                Physics::PerformExtraSimulationStep(this->GetTimeDelta());
             }
 
             if (Runtime::IsEditorActive())

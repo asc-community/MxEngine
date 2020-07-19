@@ -26,32 +26,52 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Utilities/ImGui/ImGuiBase.h"
-#include "Core/Application/Event.h"
-#include "Core/Events/FpsUpdateEvent.h"
+#include "MxObjectEditor.h"
+#include "ComponentEditor.h"
+#include "Utilities/ImGui/ImGuiUtils.h"
 
 namespace MxEngine::GUI
 {
-	/*!
-	draws fps graph in currenly active window. Listens to FpsUpdateEvent in global (Application) context
-	\param graphRecordSize how many fps updates to track before refreshing (clearing). Each update happens each second.
-	*/
-	inline void DrawProfiler()
-	{		
-		static MxVector<float> fpsData;
+	void DrawMxObjectEditor(
+		const char* name,
+		MxObject& object,
+		const MxVector<const char*>& componentNames,
+		MxVector<std::function<void(MxObject&)>>& componentAdderCallbacks,
+		MxVector<std::function<void(MxObject&)>>& componentEditorCallbacks
+	)
+	{
+		if (ImGui::CollapsingHeader(name))
+		{
+			GUI::Indent _(5.0f);
 
-		INVOKE_ONCE(Event::AddEventListener<FpsUpdateEvent>(
-			"FpsGraph", [](FpsUpdateEvent& e) mutable
-		{		
-			constexpr size_t ProfilerGraphRecordSize = 128;
-			fpsData.push_back((float)e.FPS);
-			if (fpsData.size() > ProfilerGraphRecordSize)
-				fpsData.erase(fpsData.begin());
-		}));
+			if (ImGui::Button("Destroy object"))
+			{
+				MxObject::Destroy(object);
+			}
+			else
+			{
+				static MxString objectName;
+				if (GUI::InputTextOnClick("object name", objectName, 48))
+				{
+					if (!objectName.empty()) object.Name = objectName;
+					objectName.clear();
+				}
 
-		ImGui::PlotLines("", fpsData.data(), (int)fpsData.size(), 0, "FPS profiler",
-			FLT_MAX, FLT_MAX, { ImGui::GetWindowWidth() - 15.0f, (float)fpsData.size() + 15.0f });
+				static int currentItem = 0;
+				ImGui::Combo("", &currentItem, componentNames.data(), (int)componentNames.size());
+				ImGui::SameLine();
+				if (ImGui::Button("add component"))
+				{
+					componentAdderCallbacks[(size_t)currentItem](object);
+				}
+
+				GUI::TransformEditor(object.Transform);
+
+				for (size_t i = 0; i < componentEditorCallbacks.size(); i++)
+				{
+					componentEditorCallbacks[i](object);
+				}
+			}
+		}
 	}
 }

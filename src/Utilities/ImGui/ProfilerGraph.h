@@ -28,9 +28,11 @@
 
 #pragma once
 
-#include "Utilities/Math/Math.h"
-
 namespace MxEngine::GUI
 {
-	void DrawRenderEditor(const char* name, bool* isOpen = nullptr);
+	/*!
+	draws fps profiler in current window
+	\param name drawn graph discription name
+	*/
+	void DrawProfiler(const char* name);
 }

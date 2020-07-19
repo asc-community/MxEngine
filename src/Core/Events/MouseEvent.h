@@ -31,6 +31,31 @@ namespace MxEngine
 		MIDDLE = 2,
 	};
 
+	inline const char* EnumToString(MouseButton button)
+	{
+		switch (button)
+		{
+		case MxEngine::MouseButton::_4:
+			return "4";
+		case MxEngine::MouseButton::_5:
+			return "5";
+		case MxEngine::MouseButton::_6:
+			return "6";
+		case MxEngine::MouseButton::_7:
+			return "7";
+		case MxEngine::MouseButton::_8:
+			return "8";
+		case MxEngine::MouseButton::LEFT:
+			return "LEFT";
+		case MxEngine::MouseButton::RIGHT:
+			return "RIGHT";
+		case MxEngine::MouseButton::MIDDLE:
+			return "MIDDLE";
+		default:
+			return "UNKNOWN";
+		}
+	}
+
 	class MousePressEvent : public EventBase
 	{
 		MAKE_EVENT(MousePressEvent);
@@ -45,8 +70,8 @@ namespace MxEngine
 		inline MousePressEvent(MouseVectorPointer held, MouseVectorPointer pressed, MouseVectorPointer released) noexcept
 			: mouseHeld(held), mousePressed(pressed), mouseReleased(released) { }
 
-		inline bool IsHeld(MouseButton key)     const { return (*mouseHeld)[size_t(key)]; }
-		inline bool IsPressed(MouseButton key)  const { return (*mousePressed)[size_t(key)]; }
-		inline bool IsReleased(MouseButton key) const { return (*mouseReleased)[size_t(key)]; }
+		inline bool IsHeld(MouseButton button)     const { return (*mouseHeld)[size_t(button)]; }
+		inline bool IsPressed(MouseButton button)  const { return (*mousePressed)[size_t(button)]; }
+		inline bool IsReleased(MouseButton button) const { return (*mouseReleased)[size_t(button)]; }
 	};
 }

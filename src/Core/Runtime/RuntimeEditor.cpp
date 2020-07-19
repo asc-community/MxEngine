@@ -28,16 +28,17 @@
 
 #include "RuntimeEditor.h"
 #include "Utilities/ImGui/GraphicConsole.h"
+#include "Utilities/ImGui/EventLogger.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
-#include "Library/Scripting/Python/PythonEngine.h"
+#include "Utilities/Format/Format.h"
 #include "Core/Events/WindowResizeEvent.h"
 #include "Core/Events/UpdateEvent.h"
 #include "Core/Application/Event.h"
 #include "Core/Application/Rendering.h"
 #include "Platform/Window/WindowManager.h"
 #include "Platform/Window/Input.h"
-#include "Utilities/Format/Format.h"
+#include "Library/Scripting/Python/PythonEngine.h"
 
 namespace MxEngine
 {
@@ -45,11 +46,12 @@ namespace MxEngine
 	{
 		Free(this->engine);
 		Free(this->console);
+		Free(this->logger);
 	}
 
 	void RuntimeEditor::Log(const MxString& message)
 	{
-		this->console->PrintLog("%s", message.c_str()); //-V111
+		this->console->PrintLog(message.c_str()); //-V111
 	}
 
 	void RuntimeEditor::ClearLog()
@@ -72,6 +74,7 @@ namespace MxEngine
 
 		inited = true;
 		const float viewportRatio = 0.7f;
+		const float editorRatio = 0.1f;
 
 		ImGuiID leftDockspace = 0; 
 		ImGuiID rightDockspace = 0;
@@ -81,17 +84,22 @@ namespace MxEngine
 		ImGuiID profilerId = 0;
 		ImGui::DockBuilderSplitNode(leftDockspace, ImGuiDir_Up, viewportRatio, &viewportId, &profilerId);
 
+		ImGuiID rightUpDockspace = 0;
+		ImGuiID rightDownDockspace = 0;
+		ImGui::DockBuilderSplitNode(rightDockspace, ImGuiDir_Up, editorRatio, &rightUpDockspace, &rightDownDockspace);
+
 		ImGui::DockBuilderDockWindow("Viewport", viewportId);
 		ImGui::DockBuilderDockWindow("Profiling Tools", profilerId);
-		ImGui::DockBuilderDockWindow("Object Editor", rightDockspace);
-		ImGui::DockBuilderDockWindow("Developer Console", rightDockspace);
-		ImGui::DockBuilderDockWindow("Object Editor", rightDockspace);
-		ImGui::DockBuilderDockWindow("Render Editor", rightDockspace);
+		ImGui::DockBuilderDockWindow("Application Editor", rightUpDockspace);
+		ImGui::DockBuilderDockWindow("Object Editor", rightDownDockspace);
+		ImGui::DockBuilderDockWindow("Developer Console", rightDownDockspace);
+		ImGui::DockBuilderDockWindow("Object Editor", rightDownDockspace);
+		ImGui::DockBuilderDockWindow("Render Editor", rightDownDockspace);
 
 		ImGui::DockBuilderFinish(dockspaceId);
 	}
 
-	void RuntimeEditor::OnRender()
+	void RuntimeEditor::OnUpdate()
 	{
 		if (this->shouldRender)
 		{
@@ -100,6 +108,7 @@ namespace MxEngine
 
 			static bool isRenderEditorOpened = false;
 			static bool isObjectEditorOpened = false;
+			static bool isApplicationEditorOpened = true;
 			static bool isDeveloperConsoleOpened = true;
 			static bool isProfilerOpened = true;
 			static bool isViewportOpened = true;
@@ -108,6 +117,7 @@ namespace MxEngine
 
 			GUI::DrawViewportWindow("Viewport", this->cachedWindowSize, &isViewportOpened);
 			GUI::DrawRenderEditor("Render Editor", &isRenderEditorOpened);
+			GUI::DrawApplicationEditor("Application Editor", &isApplicationEditorOpened);
 
 			{
 				ImGui::Begin("Object Editor", &isObjectEditorOpened);
@@ -130,12 +140,20 @@ namespace MxEngine
 
 			{
 				ImGui::Begin("Profiling Tools", &isProfilerOpened);
-				GUI_TREE_NODE("Profiler", GUI::DrawProfiler());
+				
+				GUI_TREE_NODE("Profiler", GUI::DrawProfiler("fps profiler"));
+				this->logger->Draw("Event Logger", 20);
+
 				ImGui::End();
 			}
-
+			
 			ImGui::End();
 		}
+	}
+
+	void RuntimeEditor::AddEventEntry(const MxString& entry)
+	{
+		this->logger->AddEventEntry(entry);
 	}
 
 	void RuntimeEditor::SetSize(const Vector2& size)
@@ -244,6 +262,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("DeveloperConsole::Init");
 		MAKE_SCOPE_TIMER("MxEngine::DeveloperConsole", "DeveloperConsole::Init");
 		this->console = Alloc<GraphicConsole>();
+		this->logger = Alloc<EventLogger>();
 
 		#if defined(MXENGINE_USE_PYTHON)
 		this->engine = Alloc<PythonEngine>();

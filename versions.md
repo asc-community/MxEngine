@@ -180,3 +180,7 @@
 - now colliders can be edited via runtime editor
 - BoxCollider bounding box now replicate actual collider, not AABB
 - added config class from which engine_config.json data can be accessed
+### 7.4.2
+- added time scale and pause option which blocks all update events
+- added event logger which tracks what events are invoked
+- all invoked events during one frame now can be captured and displayed in editor

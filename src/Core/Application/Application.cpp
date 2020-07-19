@@ -44,7 +44,7 @@
 // utilities
 #include "Utilities/FileSystem/FileManager.h"
 #include "Utilities/Json/Json.h"
-#include "Utilities/ImGui/ComponentEditor.h"
+#include "Utilities/ImGui/Editors/ComponentEditor.h"
 #include "Utilities/Format/Format.h"
 
 // components
@@ -53,9 +53,8 @@
 namespace MxEngine
 {
 	Application::Application()
-		: manager(this), window(MakeUnique<Window>(1600, 900, "MxEngine Application")), renderAdaptor()
+		: manager(this), window(MakeUnique<Window>(1600, 900, "MxEngine Application"))
 	{
-		this->GetWindow().UseEventDispatcher(&this->dispatcher);
 		this->CreateContext();
 	}
 
@@ -89,6 +88,11 @@ namespace MxEngine
 		return this->timeDelta;
 	}
 
+	float Application::GetUnscaledTimeDelta() const
+	{
+		return this->timeDelta / this->TimeScale;
+	}
+
 	size_t Application::GetCurrentFPS() const
 	{
 		return this->counterFPS;
@@ -107,7 +111,12 @@ namespace MxEngine
 	void Application::ToggleRuntimeEditor(bool isVisible)
 	{
 		this->GetRuntimeEditor().Toggle(isVisible);
-		this->GetWindow().UseEventDispatcher(isVisible ? nullptr : &this->dispatcher);
+		this->ToggleWindowUpdates(!isVisible); // no updates if editor is enabled
+	}
+
+	void Application::ToggleWindowUpdates(bool isPolled)
+	{
+		this->GetWindow().UseEventDispatcher(isPolled ? &this->dispatcher : nullptr);
 	}
 
 	void Application::CloseOnKeyPress(KeyCode key)
@@ -129,34 +138,59 @@ namespace MxEngine
 		this->GetRenderAdaptor().SetWindowSize({ this->GetWindow().GetWidth(), this->GetWindow().GetHeight() });
 		this->GetRenderAdaptor().RenderFrame();
 
+		// invoke render event and application main callback
 		RenderEvent renderEvent;
 		Event::Invoke(renderEvent);
 		this->OnRender();
+
 		this->GetRenderAdaptor().SubmitRenderedFrame();
 	}
 
 	void Application::InvokeUpdate()
 	{
-		MAKE_SCOPE_PROFILER("MxEngine::OnUpdate");
-		this->GetWindow().OnUpdate();
-
-		PhysicsModule::OnUpdate(this->timeDelta);
-
-		this->GetRuntimeEditor().OnRender();
+		// update window and keyboard state
 		{
-			MAKE_SCOPE_PROFILER("Application::UpdateComponents");
-			for (const auto& callback : this->updateCallbacks)
-			{
-				callback(this->timeDelta);
-			}
+			MAKE_SCOPE_PROFILER("MxEngine::OnUpdate");
+			this->GetWindow().OnUpdate();
 		}
 
-		UpdateEvent updateEvent(this->timeDelta);
-		Event::Invoke(updateEvent);
-
+		// do not invoke any events of perform physics if application is paused
+		if (!this->IsPaused)
 		{
-			MAKE_SCOPE_PROFILER("Application::OnUpdate");
-			this->OnUpdate();
+			// invoke all events from previous frame or invoked by fps update
+			{
+				MAKE_SCOPE_PROFILER("Application::ProcessEvents");
+				Event::InvokeAll();
+			}
+
+			// update physics simulation
+			PhysicsModule::OnUpdate(this->timeDelta);
+		}
+
+		// update runtime editor
+		this->GetRuntimeEditor().OnUpdate();
+
+		// do not update components or call update callbacks if application is paused
+		if (!IsPaused)
+		{
+			// invoke all components waiting for updates
+			{
+				MAKE_SCOPE_PROFILER("Application::UpdateComponents");
+				for (const auto& callback : this->updateCallbacks)
+				{
+					callback(this->timeDelta);
+				}
+			}
+
+			// invoke update event
+			UpdateEvent updateEvent(this->timeDelta);
+			Event::Invoke(updateEvent);
+
+			// invoke main application update
+			{
+				MAKE_SCOPE_PROFILER("Application::OnUpdate");
+				this->OnUpdate();
+			}
 		}
 	}
 
@@ -174,7 +208,7 @@ namespace MxEngine
 		}
 		if (!this->GetWindow().IsOpen())
 		{
-			MXLOG_ERROR("MxEngine::Application", "window was created but is closed. Note that application can be runned only once");
+			MXLOG_ERROR("MxEngine::Application", "window was created but is currently closed. Note that application can be runned only once");
 			return false;
 		}
 		return true; // verified!
@@ -198,6 +232,7 @@ namespace MxEngine
 		FileManager::SetRoot(ToFilePath(config.ProjectRootDirectory));
 
 		this->GetWindow()
+			.UseEventDispatcher(&this->dispatcher)
 			.UseProfile((int)this->config.GraphicAPIMajorVersion, (int)this->config.GraphicAPIMinorVersion, this->config.GraphicAPIProfile)
 			.UseCursorMode(this->config.CursorMode)
 			.UseDoubleBuffering(this->config.DoubleBuffering)
@@ -249,33 +284,16 @@ namespace MxEngine
 			this->OnCreate();
 		}
 
-		float secondEnd = Time::Current(), frameEnd = secondEnd;
-		size_t fpsCounter = 0;
+		float secondEnd = Time::Current();
+		float frameEnd  = Time::Current();
+		size_t frameCount = 0;
 		{
 			MAKE_SCOPE_PROFILER("Application::Run");
 			MAKE_SCOPE_TIMER("MxEngine::Application", "Application::Run()");
 			MXLOG_INFO("MxEngine::Application", "starting main loop...");
 			while (this->GetWindow().IsOpen()) //-V807
 			{
-				fpsCounter++;
-				const float now = Time::Current();
-				if (now - secondEnd >= 1.0f)
-				{
-					this->counterFPS = fpsCounter;
-					fpsCounter = 0;
-					secondEnd = now;
-					Event::AddEvent(MakeUnique<FpsUpdateEvent>(this->counterFPS));
-				}
-				this->timeDelta = Min(now - frameEnd, 1.0f / 30.0f);
-				frameEnd = now;
-
-				// event phase
-				{
-					MAKE_SCOPE_PROFILER("Application::ProcessEvents");
-					Event::InvokeAll();
-					if (this->shouldClose) break;
-				}
-
+				this->UpdateTimeDelta(frameEnd, secondEnd, frameCount);
 				this->InvokeUpdate();
 				this->DrawObjects();
 				this->GetWindow().PullEvents();
@@ -343,6 +361,7 @@ namespace MxEngine
 		PhysicsModule::Destroy();
 		GraphicModule::Destroy();
 		AudioModule::Destroy();
+
 		#if defined(MXENGINE_PROFILING_ENABLED)
 		Profiler::Finish();
 		#endif
@@ -353,20 +372,51 @@ namespace MxEngine
 		adaptor.InitRendererEnvironment();
 	}
 
+	void Application::UpdateTimeDelta(TimeStep& lastFrameEnd, TimeStep& lastSecondEnd, size_t& framesPerSecond)
+	{
+		if (this->IsPaused)
+		{
+			lastFrameEnd = 0.0f;
+			lastSecondEnd = 0.0f;
+			framesPerSecond = 0;
+			this->counterFPS = 0;
+			this->timeDelta = 0.0f;
+			return;
+		}
+
+		float currentTime = Time::Current();
+		framesPerSecond++;
+		// check if 1 second passed. If so, update current FPS counter and add event
+		if (lastFrameEnd - lastSecondEnd >= 1.0f)
+		{
+			this->counterFPS = framesPerSecond;
+			lastSecondEnd = currentTime;
+			framesPerSecond = 0;
+			Event::AddEvent(MakeUnique<FpsUpdateEvent>(this->counterFPS));
+		}
+		// limit dt to be not less than 30fps
+		this->timeDelta = this->TimeScale * Min(currentTime - lastFrameEnd, 1.0f / 30.0f);
+		lastFrameEnd = currentTime;
+	}
+
 	void Application::InitializeConfig(Config& config)
 	{
-		const char* configPath = "engine_config.json";
+		MAKE_SCOPE_PROFILER("Application::InitializeConfig");
+		MAKE_SCOPE_TIMER("MxEngine::Application", "Application::InitializeConfig");
+
+		const MxString configPath = "engine_config.json";
 		File file;
 		JsonFile jsonConfig;
 
 		// if no config file exists, use default settings and create new config file
 		if (!File::Exists(configPath))
 		{
+			MXLOG_INFO("MxEngine::Application", "config file was not found, generating default one...");
 			Serialize(jsonConfig, config);
 			file.Open(configPath, File::WRITE);
 			SaveJson(file, jsonConfig);
 		}
-
+		MXLOG_INFO("MxEngine::Application", "loading application config from " + configPath);
 		file.Open(configPath, File::READ);
 		jsonConfig = LoadJson(file);
 

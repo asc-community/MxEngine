@@ -27,10 +27,9 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "RenderEditor.h"
-#include "ImGuiUtils.h"
-
-#include "Core/Application/Rendering.h"
 #include "ComponentEditor.h"
+#include "Utilities/ImGui/ImGuiUtils.h"
+#include "Core/Application/Rendering.h"
 #include "Platform/Window/WindowManager.h"
 
 namespace MxEngine

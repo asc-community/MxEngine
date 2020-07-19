@@ -28,18 +28,7 @@
 
 #pragma once
 
-#include "ProfilerGraph.h"
-#include "Layout.h"
-#include "Viewport.h"
-#include "Editors/ResourceEditor.h"
-#include "Editors/RenderEditor.h"
-#include "Editors/MxObjectEditor.h"
-#include "Editors/ApplicationEditor.h"
-
-namespace MxEngine
+namespace MxEngine::GUI
 {
-    /*!
-    MxEngine GUI namespace. Used for declaration of Immediate GUI functions
-    */
-    namespace GUI {}
+	void DrawApplicationEditor(const char* name, bool* isOpen = nullptr);
 }

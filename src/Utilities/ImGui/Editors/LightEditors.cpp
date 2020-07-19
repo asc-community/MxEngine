@@ -30,7 +30,7 @@
 #include "Core/Components/Lighting/PointLight.h"
 #include "Core/Components/Lighting/SpotLight.h"
 
-#include "ImGuiUtils.h"
+#include "Utilities/ImGui/ImGuiUtils.h"
 
 namespace MxEngine::GUI
 {

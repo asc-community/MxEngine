@@ -26,52 +26,9 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "MxObjectEditor.h"
-#include "ImGuiUtils.h"
-#include "ComponentEditor.h"
+#pragma once
 
 namespace MxEngine::GUI
 {
-	void DrawMxObjectEditor(
-		const char* name,
-		MxObject& object,
-		const MxVector<const char*>& componentNames,
-		MxVector<std::function<void(MxObject&)>>& componentAdderCallbacks,
-		MxVector<std::function<void(MxObject&)>>& componentEditorCallbacks
-	)
-	{
-		if (ImGui::CollapsingHeader(name))
-		{
-			GUI::Indent _(5.0f);
-
-			if (ImGui::Button("Destroy object"))
-			{
-				MxObject::Destroy(object);
-			}
-			else
-			{
-				static MxString objectName;
-				if (GUI::InputTextOnClick("object name", objectName, 48))
-				{
-					if (!objectName.empty()) object.Name = objectName;
-					objectName.clear();
-				}
-
-				static int currentItem = 0;
-				ImGui::Combo("", &currentItem, componentNames.data(), (int)componentNames.size());
-				ImGui::SameLine();
-				if (ImGui::Button("add component"))
-				{
-					componentAdderCallbacks[(size_t)currentItem](object);
-				}
-
-				GUI::TransformEditor(object.Transform);
-
-				for (size_t i = 0; i < componentEditorCallbacks.size(); i++)
-				{
-					componentEditorCallbacks[i](object);
-				}
-			}
-		}
-	}
+	void DrawRenderEditor(const char* name, bool* isOpen = nullptr);
 }
