@@ -270,10 +270,13 @@ set(nlohmann_json ${submodules_path}/json)
 set(eastl ${submodules_path}/EASTL)
 set(eabase ${submodules_path}/EABase)
 
+find_package(Boost REQUIRED)
+
 set(third_party_include_directories
     ${nlohmann_json}/single_include
     ${eastl}/include
-    ${eabase}/include/Common
+    ${eabase}/include/Common    
+    ${Boost_INCLUDE_DIRS}
 )
 
 set(third_party_build_dir ${CMAKE_CURRENT_BINARY_DIR})

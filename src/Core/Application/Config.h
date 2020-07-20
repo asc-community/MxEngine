@@ -80,13 +80,11 @@ namespace MxEngine
 
     void Deserialize(Config& config, const JsonFile& json);
     void Serialize(JsonFile& json, const Config& config);
-}
 
-MX_BEGIN_DECLARE_JSON
     void to_json(JsonFile& j, CursorMode mode);
     void from_json(const JsonFile& j, CursorMode& mode);
     void to_json(JsonFile& j, RenderProfile profile);
     void from_json(const JsonFile& j, RenderProfile& profile);
     void to_json(JsonFile& j, KeyCode key);
     void from_json(const JsonFile& j, KeyCode& key);
-MX_END_DECLARE_JSON
+}
