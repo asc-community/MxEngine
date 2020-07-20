@@ -28,9 +28,9 @@
 
 #pragma once
 
-#include "Vendors/glm/glm.hpp"
-#include "Vendors/glm/ext.hpp"
-#include "Vendors/glm/gtx/quaternion.hpp"
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include "Core/Macro/Macro.h"
 #include <cmath>
 #include <array>

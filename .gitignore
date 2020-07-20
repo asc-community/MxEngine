@@ -40,6 +40,7 @@ __pycache__
 #CMake
 CMakeFiles
 CMakeCache.txt
+CMakeSettings.json
 out
 
 # MxEngine

@@ -1,6 +1,3 @@
-[submodule "submodules/assimp"]
-	path = submodules/assimp
-	url = https://github.com/assimp/assimp
 [submodule "submodules/boost"]
 	path = submodules/boost
 	url = https://github.com/boostorg/boost
@@ -34,6 +31,12 @@
 [submodule "submodules/openal-soft"]
 	path = submodules/openal-soft
 	url = https://github.com/kcat/openal-soft
+[submodule "submodules/assimp"]
+	path = submodules/assimp
+	url = https://github.com/MomoDeve/assimp
+[submodule "submodules/glew"]
+	path = submodules/glew
+	url = https://github.com/MomoDeve/glew
 [submodule "submodules/bullet3"]
 	path = submodules/bullet3
-	url = https://github.com/bulletphysics/bullet3
+	url = https://github.com/MomoDeve/bullet3

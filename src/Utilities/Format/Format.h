@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Vendors/fmt/format.h"
+#include <fmt/format.h>
 #include "Utilities/STL/MxString.h"
 
 namespace MxEngine

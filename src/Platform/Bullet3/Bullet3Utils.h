@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vendors/bullet3/btBulletDynamicsCommon.h"
+#include <btBulletDynamicsCommon.h>
 #include "Utilities/Math/Math.h"
 #include "Core/Components/Transform.h"
 

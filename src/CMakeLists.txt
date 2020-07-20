@@ -1,4 +1,4 @@
-set(mxengine_headers
+set(MXENGINE_HEADERS
     "Core/Application/Application.h" 
     "Core/Application/Event.h" 
     "Core/Application/Config.h" 
@@ -159,7 +159,7 @@ set(mxengine_headers
     "MxEngine.h"
 )
 
-set(mxengine_sources
+set(MXENGINE_SOURCES
     "Core/Application/Config.cpp" 
     "Core/Application/GlobalConfig.cpp" 
     "Core/Application/Physics.cpp" 
@@ -263,29 +263,62 @@ set(mxengine_sources
     "Library/Scripting/Python/PythonEngine.cpp"   
 )
 
-set(project_root_path ${CMAKE_CURRENT_SOURCE_DIR}/..)
-set(submodules_path ${project_root_path}/submodules)
+set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
+set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)
 
-set(nlohmann_json ${submodules_path}/json)
-set(eastl ${submodules_path}/EASTL)
-set(eabase ${submodules_path}/EABase)
+set(nlohmann_json ${SUBMODULES_PATH}/json)
+set(glm ${SUBMODULES_PATH}/glm)
+set(fmt ${SUBMODULES_PATH}/fmt)
+set(stb ${SUBMODULES_PATH}/stb)
+set(glfw ${SUBMODULES_PATH}/glfw)
+set(glew ${SUBMODULES_PATH}/glew)
+set(miniaudio ${SUBMODULES_PATH}/miniaudio)
+set(openal ${SUBMODULES_PATH}/openal-soft)
+set(eastl ${SUBMODULES_PATH}/EASTL)
+set(eabase ${SUBMODULES_PATH}/EABase)
+set(assimp ${SUBMODULES_PATH}/assimp)
+set(bullet3 ${SUBMODULES_PATH}/bullet3)
 
+set(THIRD_PARTY_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 find_package(Boost REQUIRED)
 
-set(third_party_include_directories
+if(MSVC_COMPILER)
+    add_compile_definitions(_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
+endif()
+
+set(BUILD_BULLET2_DEMOS OFF)
+set(BUILD_OPENGL3_DEMOS OFF)
+set(BUILD_UNIT_TESTS OFF)
+set(USE_GRAPHICAL_BENCHMARK OFF)
+set(ASSIMP_BUILD_TESTS OFF)
+
+set(THIRD_PARTY_INCLUDE_DIRS
     ${nlohmann_json}/single_include
+    ${eabase}/include/Common  
     ${eastl}/include
-    ${eabase}/include/Common    
+    ${openal}/include
+    ${fmt}/include
+    ${glfw}/include
+    ${glew}/include
+    ${assimp}/include
+    ${miniaudio}/extras
+    ${bullet3}/src
+    ${glm}
+    ${stb}
     ${Boost_INCLUDE_DIRS}
 )
 
-set(third_party_build_dir ${CMAKE_CURRENT_BINARY_DIR})
+add_subdirectory(${fmt} ${THIRD_PARTY_BUILD_DIR}/fmt)
+add_subdirectory(${bullet3} ${THIRD_PARTY_BUILD_DIR}/bullet3)
+add_subdirectory(${assimp} ${THIRD_PARTY_BUILD_DIR}/assimp)
+add_subdirectory(${glfw} ${THIRD_PARTY_BUILD_DIR}/glfw)
+add_subdirectory(${glew} ${THIRD_PARTY_BUILD_DIR}/glew)
+add_subdirectory(${eastl} ${THIRD_PARTY_BUILD_DIR}/eastl)
+add_subdirectory(${eabase} ${THIRD_PARTY_BUILD_DIR}/eabase)
+add_subdirectory(${openal} ${THIRD_PARTY_BUILD_DIR}/openal)
 
-add_subdirectory(${eastl} ${third_party_build_dir}/eastl)
-add_subdirectory(${eabase} ${third_party_build_dir}/eabase)
+set(MXENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${THIRD_PARTY_INCLUDE_DIRS})
+include_directories(${MXENGINE_INCLUDE_DIRS})
 
-set(mxengine_include_directories ${CMAKE_CURRENT_SOURCE_DIR} ${third_party_include_directories})
-include_directories(${mxengine_include_directories})
-
-add_library(MxEngine ${mxengine_sources})
+add_library(MxEngine STATIC ${MXENGINE_SOURCES} ${MXENGINE_HEADERS})
 add_library(MxEngine::MxEngine ALIAS MxEngine)

@@ -12,11 +12,6 @@
       "ctestCommandArgs": "",
       "variables": [
         {
-          "name": "Boost_DIR",
-          "value": "D:/boost",
-          "type": "PATH"
-        },
-        {
           "name": "Boost_INCLUDE_DIR",
           "value": "D:/boost",
           "type": "PATH"
