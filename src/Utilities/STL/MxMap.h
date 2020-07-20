@@ -28,8 +28,8 @@
 
 #pragma once
 
-#include <Vendors/eastl/EASTL/map.h>
-#include <Vendors/eastl/EASTL/fixed_map.h>
+#include <EASTL/map.h>
+#include <EASTL/fixed_map.h>
 
 namespace MxEngine
 {

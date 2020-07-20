@@ -52,13 +52,12 @@ void nlohmann::from_json(const JsonFile& j, Vector2& v)
     v = MakeVector2(a[0], a[1]);
 }
 
-void nlohmann::to_json(JsonFile& j, const MxString& str)
+void nlohmann::to_json(JsonFile& j, const MxString& s)
 {
-    j = str.c_str();
+    j = JsonFile{ s.c_str() };
 }
 
-void nlohmann::from_json(const JsonFile& j, MxString& str)
+void nlohmann::from_json(const JsonFile& j, MxString& s)
 {
-    auto s = j.get<std::string>();
-    str = ToMxString(s);
+    s = j.get<MxString>();
 }

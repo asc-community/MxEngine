@@ -28,8 +28,10 @@
 
 #pragma once
 
+#include <nlohmann/json.hpp>
 #include "Utilities/FileSystem/File.h"
-#include "Vendors/json/json.hpp"
+#include "Utilities/STL/MxMap.h"
+#include "Utilities/STL/MxVector.h"
 
 namespace MxEngine
 {
@@ -37,7 +39,7 @@ namespace MxEngine
 
     inline JsonFile LoadJson(File& file)
     {
-        return nlohmann::json::parse(file.ReadAllText());
+        return JsonFile::parse(file.ReadAllText());
     }
 
     inline void SaveJson(File& file, const JsonFile& json)
@@ -57,6 +59,6 @@ MX_BEGIN_DECLARE_JSON
     void from_json(const JsonFile& j, Vector3& v);
     void to_json(JsonFile& j, const Vector2& v);
     void from_json(const JsonFile& j, Vector2& v);
-    void to_json(JsonFile& j, const MxString& str);
-    void from_json(const JsonFile& j, MxString& str);
+    void to_json(JsonFile& j, const MxString& s);
+    void from_json(const JsonFile& j, MxString& s);
 MX_END_DECLARE_JSON

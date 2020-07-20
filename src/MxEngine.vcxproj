@@ -1130,7 +1130,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)python\include;$(SolutionDir)boost_headers;$(SolutionDir)assimp\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)submodules/json/include;$(SolutionDir)submodules/EASTL/include;$(SolutionDir)submodules/EABase/include/Common;$(SolutionDir)src;$(SolutionDir)python\include;$(SolutionDir)boost_headers;$(SolutionDir)assimp\include;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -1220,7 +1220,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)python\include;$(SolutionDir)boost_headers;$(SolutionDir)assimp\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)submodules/json/include;$(SolutionDir)submodules/EASTL/include;$(SolutionDir)submodules/EABase/include/Common;$(SolutionDir)src;$(SolutionDir)python\include;$(SolutionDir)boost_headers;$(SolutionDir)assimp\include;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -1254,7 +1254,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)python\include;$(SolutionDir)boost_headers;$(SolutionDir)assimp\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)submodules/json/include;$(SolutionDir)submodules/EASTL/include;$(SolutionDir)submodules/EABase/include/Common;$(SolutionDir)src;$(SolutionDir)python\include;$(SolutionDir)boost_headers;$(SolutionDir)assimp\include;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;MXENGINE_SHIPPING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
