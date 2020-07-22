@@ -26,6 +26,8 @@
 # Executables
 *.out
 *.app
+*.dll
+*.lib
 
 # Visual Studio
 x64
