@@ -2,11 +2,11 @@
 
 #include <MxEngine.h>
 
-namespace ProjectTemplate
+namespace SoundSample
 {
     using namespace MxEngine;
 
-    class MxApplication : public Application
+    class SoundApplication : public Application
     {
     public:
         virtual void OnCreate() override
@@ -76,7 +76,7 @@ namespace ProjectTemplate
 
 int main()
 {
-    ProjectTemplate::MxApplication app;
+    OfflineRenderer::OfflineRendererApplication app;
     app.Run();
     return 0;
 }

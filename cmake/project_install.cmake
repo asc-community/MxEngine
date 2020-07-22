@@ -1,8 +1,4 @@
 function(install_mxengine_project EXECUTABLE_NAME)
-    if(MSVC)
-        set_property(TARGET ${EXECUTABLE_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
-    endif()
-    
     set(FULL_EXECUTABLE_FILENAME ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}${CMAKE_EXECUTABLE_SUFFIX})
     # copy executable to the source folder to access user project resources
     add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD

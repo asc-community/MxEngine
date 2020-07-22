@@ -2,11 +2,11 @@
 
 #include <MxEngine.h>
 
-namespace ProjectTemplate
+namespace OfflineRendererSample
 {
     using namespace MxEngine;
 
-    class MxApplication : public Application
+    class OfflineRendererApplication : public Application
     {
         // Configure this parameters //
         VectorInt2 viewportSize{ 7680, 4320 };
@@ -80,7 +80,7 @@ namespace ProjectTemplate
 
 int main()
 {
-    ProjectTemplate::MxApplication app;
+    OfflineRenderer::OfflineRendererApplication app;
     app.Run();
     return 0;
 }

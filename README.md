@@ -24,12 +24,14 @@ Bug fixes & improvements are just fixes to already existing code to reestablish 
 For full version list see [versions.md](versions.md) file
 
 ## Installing and running MxEngine
-Right now MxEngine is distributed in only source code with configurable CMake files. Here is the steps you need to do to compile and run test projects:
+Right now MxEngine is distributed in source code with configurable CMake files. Here are the steps you need to do to compile and run MxEngine sample projects:
 1. clone this repo to your system using `git clone --recurse-submodules https://github.com/asc-community/MxEngine`
+2. install [Boost](https://www.boost.org) and provide path to the library by setting `Boost_INCLUDE_DIR` in `CMakeLists.txt`
 2. build project by running `CMakeLists.txt` located in root directory (set up necessary options if needed)
 3. go to `samples/<any_sample>` and run the executable file
 4. to create your own project, consider taking ProjectTemplate sample as starting point, it has everything already configured for build
-*note: if you are using Visual Studio and want to debug applications, click on executable located in project directory and select* ***set as startup item***, *then work with project as usual*
+
+*note: if you are using Visual Studio and want to debug applications, click on executable located in the project directory and select* ***set as startup item***, *then work with VS project as usual*
 
 ## Code snippets
 ### Primitive creation
@@ -166,7 +168,7 @@ Rendering::Draw(Line({0.0f, 0.0f, 0.0f}, {10.0f, 10.0f, 10.0f}), Colors::Create(
 ```
 
 ## Dependencies
-If you are interesed in libraries MxEngine depend on, consider reading [dependencies.md](dependencies.md) file. It contains third-party library list with links to each project's github repository and brief explanation of why each library is used in the engine. Note that if you build MxEngine using VS2019 on x64, you do NOT have to clone the libraries or build them yourself - all binaries are already shipped with the engine and are automatically extracted by `install.py` script
+If you are interesed in libraries MxEngine depend on, consider reading [dependencies.md](dependencies.md) file. It contains third-party library list with links to each project's github repository and brief explanation of why each library is used in the engine. Note that some of the libraries are shipped in modified version, so do no try to edit engine CMake file if your are unsure if everything will still work correctly
 
 ## Answers to some questions:
 - Is it possible to build MxEngine under Linux/MacOS/other system?
@@ -176,7 +178,7 @@ If you are interesed in libraries MxEngine depend on, consider reading [dependen
 - Why do you do this project? How long are you planning to develop the engine? Will it one day be better than UE/Unity/Godot?
 	> Initially this was an educational project (actually I still learn a lot of new things when developing it), where I learned about OpenGL, graphics, software engeneering and game development. I loved it and still love to spend my free time fixing some stuff or implementing new features. Thats really a great opportunity to have such cool project, even if it will never be any better than existing game engines like Unity or Unreal Engine
 - If I want to help you with development, how can I get into this project? Is there a documentation for it?
-	> Sadly there are too much things that I need to document and so much features which I need to implement, that I have almost no time for proper documentation. You can start with `ProjectTemplate` VS project, and try some things for yourself. I promise I will add more samples with each release to make usage of the engine easier. If you want to help me with developing, building on other systems or fixing bugs, first contact me personally (links to my social media can be found in [my profile](https://github.com/MomoDeve)). We can discuss what you may do and how can you help the engine to progress
+	> Sadly there are too much things that I need to document and so much features which I need to implement, that I have almost no time for proper documentation. You can start with `ProjectTemplate` CMake project, and try some things for yourself. I promise I will add more samples with each release to make usage of the engine easier. If you want to help me with developing, building on other systems or fixing bugs, first contact me personally (links to my social media can be found in [my profile](https://github.com/MomoDeve)). We can discuss what you may do and how can you help the engine to progress
 	
 ## Projects based on MxEngine
 Here is the list of some projects using MxEngine. If you want to see yours here, [contact me](https://github.com/MomoDeve).
