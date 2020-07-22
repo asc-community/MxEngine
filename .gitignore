@@ -28,7 +28,6 @@
 *.app
 *.dll
 *.lib
-*.exe
 
 # Visual Studio
 x64
@@ -43,6 +42,7 @@ __pycache__
 #CMake
 CMakeFiles
 CMakeCache.txt
+CMakeSettings.json
 out
 
 # MxEngine
