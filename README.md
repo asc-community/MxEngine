@@ -26,10 +26,10 @@ For full version list see [versions.md](versions.md) file
 ## Installing and running MxEngine
 Right now MxEngine is distributed in only source code with configurable CMake files. Here is the steps you need to do to compile and run test projects:
 1. clone this repo to your system using `git clone --recurse-submodules https://github.com/asc-community/MxEngine`
-2. build project by running CMakeLists.txt located in root directory (set up necessary options if needed)
-3. go to samples/\any_sample\> and run the executable file
+2. build project by running `CMakeLists.txt` located in root directory (set up necessary options if needed)
+3. go to `samples/<any_sample>` and run the executable file
 4. to create your own project, consider taking ProjectTemplate sample as starting point, it has everything already configured for build
-*note: if you are using Visual Studio and want to debug applications, click on executable located in project directory and select * ***set as startup item***, then work with project as usual
+*note: if you are using Visual Studio and want to debug applications, click on executable located in project directory and select* ***set as startup item***, *then work with project as usual*
 
 ## Code snippets
 ### Primitive creation
