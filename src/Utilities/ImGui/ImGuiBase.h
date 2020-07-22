@@ -39,11 +39,11 @@
     ImVec4(const MxEngine::Vector4& f) { x = f.x; y = f.y; z = f.z; w = f.w; }\
     operator MxEngine::Vector4() const { return MxEngine::MakeVector4(x,y,z,w); }
 
-#include "Vendors/imgui/imgui.h"
-#include "Vendors/imgui/imgui_internal.h"
+#include <imgui.h>
+#include <imgui_internal.h>
 
 #if defined(MXENGINE_USE_OPENGL)
     #define IMGUI_IMPL_OPENGL_LOADER_GLEW
-    #include "Vendors/imgui/imgui_impl_glfw.h"
-    #include "Vendors/imgui/imgui_impl_opengl3.h"
+    #include <examples/imgui_impl_glfw.h>
+    #include <examples/imgui_impl_opengl3.h>
 #endif

@@ -110,7 +110,16 @@ namespace MxEngine
         MAKE_SCOPE_TIMER("MxEngine::FileManager", "FileManager::Init()");
         MAKE_SCOPE_PROFILER("FileManager::Init()");
 
-        manager->root = rootPath;
+        if (rootPath.is_relative())
+        {
+            manager->root = std::filesystem::current_path() / rootPath;
+        }
+        else
+        {
+            manager->root = rootPath;
+        }
+        MXLOG_DEBUG("MxEngine::FileManager", "setting root directory to: " + ToMxString(manager->root));
+
         manager->rootPathSize = rootPath.string().size();
         FileManager::AddDirectory(rootPath);
     }

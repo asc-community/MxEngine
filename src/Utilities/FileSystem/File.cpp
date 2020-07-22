@@ -80,6 +80,7 @@ namespace MxEngine
                 return;
             }
         }
+        if (this->IsOpen()) this->Close();
         this->fileStream.open(this->filePath, FileModeTable[mode]);
     }
 

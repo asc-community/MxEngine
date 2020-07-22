@@ -33,7 +33,7 @@ namespace MxEngine
 {
     JsonFile LoadJson(File& file)
     {
-        return JsonFile{ file.ReadAllText().c_str() };
+        return JsonFile::parse(file.ReadAllText().c_str());
     }
 
     void SaveJson(File& file, const JsonFile& json)
@@ -73,7 +73,7 @@ namespace eastl
 {
     void to_json(JsonFile& j, const MxString& s)
     {
-        j = JsonFile{ s.c_str() };
+        j = s.c_str();
     }
 
     void from_json(const JsonFile& j, MxString& s)

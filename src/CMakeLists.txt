@@ -195,6 +195,7 @@ set(MXENGINE_SOURCES
     "Core/Rendering/RenderController.cpp" 
     "Core/Rendering/SkyboxObject.cpp"
     "Core/Runtime/RuntimeEditor.cpp"  
+    "Core/Macro/Macro.cpp"
     "Core/MxObject/MxObject.cpp" 
     "Core/Resources/Mesh.cpp" 
     "Core/Resources/MeshData.cpp" 
@@ -248,6 +249,7 @@ set(MXENGINE_SOURCES
     "Utilities/ImGui/Editors/RenderEditor.cpp" 
     "Utilities/ImGui/Editors/ResourceEditor.cpp" 
     "Utilities/ImGui/Viewport.cpp" 
+    "Utilities/ImGui/ImGuiBase.cpp"
     "Utilities/Json/Json.cpp" 
     "Utilities/LODGenerator/LODGenerator.cpp" 
     "Utilities/Logging/Logger.cpp" 
@@ -272,6 +274,7 @@ set(fmt ${SUBMODULES_PATH}/fmt)
 set(stb ${SUBMODULES_PATH}/stb)
 set(glfw ${SUBMODULES_PATH}/glfw)
 set(glew ${SUBMODULES_PATH}/glew)
+set(imgui ${SUBMODULES_PATH}/imgui)
 set(miniaudio ${SUBMODULES_PATH}/miniaudio)
 set(openal ${SUBMODULES_PATH}/openal-soft)
 set(eastl ${SUBMODULES_PATH}/EASTL)
@@ -282,15 +285,20 @@ set(bullet3 ${SUBMODULES_PATH}/bullet3)
 set(THIRD_PARTY_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 find_package(Boost REQUIRED)
 
-if(MSVC_COMPILER)
+if(MSVC)
     add_compile_definitions(_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
 endif()
+
+add_compile_definitions(MXENGINE_BUILD_FROM_CMAKE)
 
 set(BUILD_BULLET2_DEMOS OFF)
 set(BUILD_OPENGL3_DEMOS OFF)
 set(BUILD_UNIT_TESTS OFF)
 set(USE_GRAPHICAL_BENCHMARK OFF)
 set(ASSIMP_BUILD_TESTS OFF)
+set(USE_GLU ON)
+set(glew-cmake_BUILD_SHARED OFF)
+set(glew-cmake_BUILD_STATIC ON)
 
 set(THIRD_PARTY_INCLUDE_DIRS
     ${nlohmann_json}/single_include
@@ -303,22 +311,76 @@ set(THIRD_PARTY_INCLUDE_DIRS
     ${assimp}/include
     ${miniaudio}/extras
     ${bullet3}/src
+    ${imgui}
     ${glm}
     ${stb}
     ${Boost_INCLUDE_DIRS}
 )
 
-add_subdirectory(${fmt} ${THIRD_PARTY_BUILD_DIR}/fmt)
-add_subdirectory(${bullet3} ${THIRD_PARTY_BUILD_DIR}/bullet3)
-add_subdirectory(${assimp} ${THIRD_PARTY_BUILD_DIR}/assimp)
-add_subdirectory(${glfw} ${THIRD_PARTY_BUILD_DIR}/glfw)
-add_subdirectory(${glew} ${THIRD_PARTY_BUILD_DIR}/glew)
-add_subdirectory(${eastl} ${THIRD_PARTY_BUILD_DIR}/eastl)
-add_subdirectory(${eabase} ${THIRD_PARTY_BUILD_DIR}/eabase)
-add_subdirectory(${openal} ${THIRD_PARTY_BUILD_DIR}/openal)
+set(fmt_binary_dir ${THIRD_PARTY_BUILD_DIR}/fmt)
+set(bullet3_binary_dir ${THIRD_PARTY_BUILD_DIR}/bullet3)
+set(assimp_binary_dir ${THIRD_PARTY_BUILD_DIR}/assimp)
+set(glfw_binary_dir ${THIRD_PARTY_BUILD_DIR}/glfw)
+set(glew_binary_dir ${THIRD_PARTY_BUILD_DIR}/glew)
+set(imgui_binary_dir ${THIRD_PARTY_BUILD_DIR}/imgui)
+set(eastl_binary_dir ${THIRD_PARTY_BUILD_DIR}/eastl)
+set(eabase_binary_dir ${THIRD_PARTY_BUILD_DIR}/eabase)
+set(openal_binary_dir ${THIRD_PARTY_BUILD_DIR}/openal)
+
+add_subdirectory(${fmt} ${fmt_binary_dir})
+add_subdirectory(${bullet3} ${bullet3_binary_dir})
+add_subdirectory(${assimp} ${assimp_binary_dir})
+add_subdirectory(${glfw} ${glfw_binary_dir})
+add_subdirectory(${glew} ${glew_binary_dir})
+add_subdirectory(${imgui} ${imgui_binary_dir})
+add_subdirectory(${eastl} ${eastl_binary_dir})
+add_subdirectory(${eabase} ${eabase_binary_dir})
+add_subdirectory(${openal} ${openal_binary_dir})
+
+set(THIRD_PARTY_BINARY_DIRS
+    ${fmt_binary_dir}
+    ${bullet3_binary_dir}
+    ${assimp_binary_dir}
+    ${glfw_binary_dir}
+    ${glew_binary_dir}
+    ${imgui_binary_dir}
+    ${eastl_binary_dir}
+    ${eabase_binary_dir} 
+    ${openal_binary_dir}
+)
+
+set(THIRD_PARTY_LIBRARIES
+    fmt 
+    libglew_static  
+    BulletCollision 
+    BulletDynamics 
+    LinearMath 
+    assimp
+    glfw 
+    imgui
+    EASTL
+    OpenAL
+)
 
 set(MXENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${THIRD_PARTY_INCLUDE_DIRS})
 include_directories(${MXENGINE_INCLUDE_DIRS})
+set(MxEngine_INCLUDE_DIR ${MXENGINE_INCLUDE_DIRS} PARENT_SCOPE)
+set(MxEngine_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 
-add_library(MxEngine STATIC ${MXENGINE_SOURCES} ${MXENGINE_HEADERS})
-add_library(MxEngine::MxEngine ALIAS MxEngine)
+set(LIBRARY_NAME MxEngine)
+add_library(${LIBRARY_NAME} STATIC ${MXENGINE_SOURCES} ${MXENGINE_HEADERS})
+add_library(${LIBRARY_NAME}::${LIBRARY_NAME} ALIAS ${LIBRARY_NAME})
+
+link_directories(${THIRD_PARTY_BINARY_DIRS})
+target_link_libraries(${LIBRARY_NAME} ${THIRD_PARTY_LIBRARIES})
+
+set(SHARED_LIBRARIES_PATHS
+    ${openal_binary_dir}/OpenAL32${CMAKE_SHARED_LIBRARY_SUFFIX}
+)
+
+set(MxEngine_SHARED_LIBRARIES ${SHARED_LIBRARIES_PATHS} PARENT_SCOPE)
+
+add_custom_command(TARGET ${LIBRARY_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E
+    copy ${SHARED_LIBRARIES_PATHS} "${CMAKE_CURRENT_BINARY_DIR}"
+)
