@@ -24,11 +24,12 @@ Bug fixes & improvements are just fixes to already existing code to reestablish 
 For full version list see [versions.md](versions.md) file
 
 ## Installing and running MxEngine
-Right now MxEngine is distributed in source code as Visual Studio project which can be runned under Windows. Here is the steps you need to do to compile and run test projects:
-1. clone this repo to your system using `git clone https://github.com/asc-community/MxEngine`
-2. run `install.py` file located in the project root directory (you need [python interpreter](https://www.python.org/) to do this)
-3. open `MxEngine.sln` located in the project root directory and set startup project to `ProjectTemplate` or `SandboxApplication`
-4. click `F5` button and wait until game is loaded (make sure you choose Debug/Release x64 build)
+Right now MxEngine is distributed in only source code with configurable CMake files. Here is the steps you need to do to compile and run test projects:
+1. clone this repo to your system using `git clone --recurse-submodules https://github.com/asc-community/MxEngine`
+2. build project by running CMakeLists.txt located in root directory (set up necessary options if needed)
+3. go to samples/\any_sample\> and run the executable file
+4. to create your own project, consider taking ProjectTemplate sample as starting point, it has everything already configured for build
+*note: if you are using Visual Studio and want to debug applications, click on executable located in project directory and select * ***set as startup item***, then work with project as usual
 
 ## Code snippets
 ### Primitive creation
@@ -169,7 +170,7 @@ If you are interesed in libraries MxEngine depend on, consider reading [dependen
 
 ## Answers to some questions:
 - Is it possible to build MxEngine under Linux/MacOS/other system?
-	> Probably not in the current project state. There are some things which I still need to do before engine can be cross-platform at least on desktops. If you want to help with porting library to other systems, consider reading [PR guideline](https://github.com/asc-community/MxEngine/issues/5).
+	> MxEngine supports Windows/Linux builds. Unluckly, other systems are not supported out-of-box for now. If you want to help with porting library to other systems, consider reading [PR guideline](https://github.com/asc-community/MxEngine/issues/5).
 - Whats the roadmap for the engine? Which features can I expect to see, if I follow this repository?
 	> I put all features and not-fixed bugs to the public [trello board](https://trello.com/b/lfPsihUY/mxengine). If you want to see some specific feature in engine, which is not mentioned already, you can request it in [feature request](https://github.com/asc-community/MxEngine/issues/4) issue
 - Why do you do this project? How long are you planning to develop the engine? Will it one day be better than UE/Unity/Godot?
