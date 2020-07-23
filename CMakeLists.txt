@@ -16,7 +16,6 @@ if (MSVC)
   endif()
 endif()
 
-set(Boost_INCLUDE_DIR "D:/boost" CACHE STRING "Boost root directory")
 set(MxEngine_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(MxEngine_CMAKE_UTILS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 

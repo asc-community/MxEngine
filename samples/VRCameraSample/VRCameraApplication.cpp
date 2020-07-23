@@ -102,7 +102,7 @@ namespace VRCameraSample
 
 int main()
 {
-    OfflineRenderer::OfflineRendererApplication app;
+    VRCameraSample::VRCameraApplication app;
     app.Run();
     return 0;
 }

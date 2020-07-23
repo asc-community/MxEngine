@@ -80,7 +80,7 @@ namespace OfflineRendererSample
 
 int main()
 {
-    OfflineRenderer::OfflineRendererApplication app;
+    OfflineRendererSample::OfflineRendererApplication app;
     app.Run();
     return 0;
 }

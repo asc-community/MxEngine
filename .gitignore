@@ -28,6 +28,7 @@
 *.app
 *.dll
 *.lib
+*.exe
 
 # Visual Studio
 x64

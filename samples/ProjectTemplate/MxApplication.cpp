@@ -60,7 +60,7 @@ namespace ProjectTemplate
 
 int main()
 {
-    OfflineRenderer::OfflineRendererApplication app;
+    ProjectTemplate::MxApplication app;
     app.Run();
     return 0;
 }

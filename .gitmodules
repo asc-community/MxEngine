@@ -1,6 +1,3 @@
-[submodule "submodules/boost"]
-	path = submodules/boost
-	url = https://github.com/boostorg/boost
 [submodule "submodules/fmt"]
 	path = submodules/fmt
 	url = https://github.com/fmtlib/fmt

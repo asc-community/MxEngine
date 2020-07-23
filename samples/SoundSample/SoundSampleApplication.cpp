@@ -76,7 +76,7 @@ namespace SoundSample
 
 int main()
 {
-    OfflineRenderer::OfflineRendererApplication app;
+    SoundSample::SoundApplication app;
     app.Run();
     return 0;
 }

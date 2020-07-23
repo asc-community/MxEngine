@@ -182,7 +182,7 @@ namespace PhysicsSample
 
 int main()
 {
-    OfflineRenderer::PhysicsApplication app;
+    PhysicsSample::PhysicsApplication app;
     app.Run();
     return 0;
 }
