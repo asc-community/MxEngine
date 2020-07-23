@@ -8,8 +8,6 @@
         #define MXENGINE_WINDOWS32
         #error MxEngine can target only x64 platform
     #endif
-#else
-#warning MxEngine should be compiled under Windows platform
 #endif
 
 #if defined(NDEBUG) || !defined(_DEBUG)

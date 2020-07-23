@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Utilities/Math/Math.h"
-#include "core/Macro/Macro.h"
+#include "Core/Macro/Macro.h"
 #include "Utilities/STL/MxString.h"
 #include "Utilities/STL/MxHashMap.h"
 

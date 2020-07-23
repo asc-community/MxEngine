@@ -135,7 +135,7 @@ namespace MxEngine
 		template<typename T>
 		static typename T::Handle GetComponentHandle(const T& component)
 		{
-			return MxObject::GetByComponent(component).GetComponent<T>();
+			return MxObject::GetByComponent(component).template GetComponent<T>();
 		}
 
 		template<typename T>
