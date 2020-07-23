@@ -18,7 +18,8 @@ endif()
 
 set(MxEngine_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(MxEngine_CMAKE_UTILS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-set(Boost_INCLUDE_DIR "/usr/local/boost_1_73_0")
+# set(Boost_INCLUDE_DIR "/usr/local/boost_1_73_0")
+set(Boost_INCLUDE_DIR "D:/boost")
 
 add_subdirectory(src)
 

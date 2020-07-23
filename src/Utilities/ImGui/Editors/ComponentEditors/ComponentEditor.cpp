@@ -38,7 +38,7 @@ namespace MxEngine::GUI
 	if(ImGui::Button("remove component")) {\
 		MxObject::GetByComponent(comp).RemoveComponent<std::remove_reference_t<decltype(comp)>>(); return; }
 
-    void TransformEditor(Transform& transform)
+    void TransformEditor(TransformComponent& transform)
     {
 		TREE_NODE_PUSH("Transform");
 		// note that Transform component cannot be removed

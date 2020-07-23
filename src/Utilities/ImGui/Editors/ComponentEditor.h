@@ -30,7 +30,7 @@
 
 namespace MxEngine
 {
-	class Transform;
+	class TransformComponent;
 	class Behaviour;
 	class Script;
 	class InstanceFactory;
@@ -57,7 +57,7 @@ namespace MxEngine
 
 namespace MxEngine::GUI
 {
-	void TransformEditor(Transform& transform);
+	void TransformEditor(TransformComponent& transform);
 	void BehaviourEditor(Behaviour& behaviour);
 	void ScriptEditor(Script& script);
 	void InstanceFactoryEditor(InstanceFactory& instanceFactory);

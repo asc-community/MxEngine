@@ -55,7 +55,7 @@ namespace MxEngine
         this->DestroyShape();
     }
 
-    BoundingBox BoxShape::GetBoundingBox(const Transform& transform) const
+    BoundingBox BoxShape::GetBoundingBox(const TransformComponent& transform) const
     {
         auto box = this->GetBoundingBoxUnchanged();
         box.Min *= transform.GetScale();

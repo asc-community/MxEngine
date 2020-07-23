@@ -517,7 +517,7 @@ namespace MxEngine
 		this->Pipeline.Cameras.clear();
 	}
 
-	void RenderController::SubmitLightSource(const DirectionalLight& light, const Transform& parentTransform)
+	void RenderController::SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform)
 	{
 		auto& dirLight = this->Pipeline.Lighting.DirectionalLights.emplace_back();
 
@@ -530,7 +530,7 @@ namespace MxEngine
 		dirLight.BiasedProjectionMatrix = MakeBiasMatrix() * light.GetMatrix(parentTransform.GetPosition());
 	}
 
-	void RenderController::SubmitLightSource(const PointLight& light, const Transform& parentTransform)
+	void RenderController::SubmitLightSource(const PointLight& light, const TransformComponent& parentTransform)
 	{
 		auto& pointLight = this->Pipeline.Lighting.PointLights.emplace_back();
 
@@ -546,7 +546,7 @@ namespace MxEngine
 			pointLight.ProjectionMatrices[i] = light.GetMatrix(i, parentTransform.GetPosition());
 	}
 
-	void RenderController::SubmitLightSource(const SpotLight& light, const Transform& parentTransform)
+	void RenderController::SubmitLightSource(const SpotLight& light, const TransformComponent& parentTransform)
 	{
 		auto& spotLight = this->Pipeline.Lighting.SpotLights.emplace_back();
 
@@ -562,7 +562,7 @@ namespace MxEngine
 		spotLight.ShadowMap = light.GetDepthTexture();
 	}
 
-	void RenderController::SubmitCamera(const CameraController& controller, const Transform& parentTransform, const Skybox& skybox)
+	void RenderController::SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, const Skybox& skybox)
 	{
 		auto& camera = this->Pipeline.Cameras.emplace_back();
 
@@ -582,7 +582,7 @@ namespace MxEngine
 		camera.RenderToTexture        = controller.IsRendered();
 	}
 
-    void RenderController::SubmitPrimitive(const SubMesh& object, const Material& material, const Transform& parentTransform, size_t instanceCount)
+    void RenderController::SubmitPrimitive(const SubMesh& object, const Material& material, const TransformComponent& parentTransform, size_t instanceCount)
     {
 		RenderUnit* primitivePtr = nullptr;
 		if (material.Transparency == 1.0f) // put object into separate list depending on its transparency //-V550
@@ -591,8 +591,8 @@ namespace MxEngine
 			primitivePtr = &this->Pipeline.TransparentRenderUnits.emplace_back();
 		auto& primitive = *primitivePtr;
 
-		primitive.VAO = object.MeshData.GetVAO();
-		primitive.IBO = object.MeshData.GetIBO();
+		primitive.VAO = object.Data.GetVAO();
+		primitive.IBO = object.Data.GetIBO();
 		primitive.RenderMaterial = material;
 		primitive.ModelMatrix  = parentTransform.GetMatrix() * object.GetTransform()->GetMatrix(); //-V807
 		primitive.NormalMatrix = parentTransform.GetNormalMatrix() * object.GetTransform()->GetNormalMatrix();

@@ -234,7 +234,7 @@ namespace MxEngine
 		this->GetWindow()
 			.UseEventDispatcher(&this->dispatcher)
 			.UseProfile((int)this->config.GraphicAPIMajorVersion, (int)this->config.GraphicAPIMinorVersion, this->config.GraphicAPIProfile)
-			.UseCursorMode(this->config.CursorMode)
+			.UseCursorMode(this->config.Cursor)
 			.UseDoubleBuffering(this->config.DoubleBuffering)
 			.UseTitle(this->config.WindowTitle)
 			.UseDebugging(this->config.GraphicAPIDebug)

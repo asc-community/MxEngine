@@ -42,11 +42,11 @@ namespace MxEngine
 	void Mesh::LoadFromFile(const MxString& filepath)
 	{
 		ObjectInfo objectInfo = ObjectLoader::Load(filepath);
-		MxVector<Transform::Handle> submeshTransforms;
+		MxVector<TransformComponent::Handle> submeshTransforms;
 
 		for (const auto& group : objectInfo.meshes)
 		{
-			submeshTransforms.push_back(ComponentFactory::CreateComponent<Transform>());
+			submeshTransforms.push_back(ComponentFactory::CreateComponent<TransformComponent>());
 		}
 
 		MxVector<SubMesh::MaterialId> materialIds;
@@ -78,11 +78,11 @@ namespace MxEngine
 			auto& transform = submeshTransforms[i];
 
 			SubMesh submesh(materialId, transform);
-			submesh.MeshData.GetVertecies() = std::move(meshData.vertecies);
-			submesh.MeshData.GetIndicies() = std::move(meshData.indicies);
-			submesh.MeshData.BufferVertecies();
-			submesh.MeshData.BufferIndicies();
-			submesh.MeshData.UpdateBoundingGeometry();
+			submesh.Data.GetVertecies() = std::move(meshData.vertecies);
+			submesh.Data.GetIndicies() = std::move(meshData.indicies);
+			submesh.Data.BufferVertecies();
+			submesh.Data.BufferIndicies();
+			submesh.Data.UpdateBoundingGeometry();
 			submesh.Name = std::move(meshData.name);
 
 			submeshes.push_back(std::move(submesh));
@@ -135,12 +135,12 @@ namespace MxEngine
 		// compute bounding box, taking min and max points from each sub-box
 		this->boundingBox = { MakeVector3(0.0f), MakeVector3(0.0f) };
 		if (!this->submeshes.empty()) 
-			this->boundingBox = this->submeshes.front().MeshData.GetBoundingBox();
+			this->boundingBox = this->submeshes.front().Data.GetBoundingBox();
 
 		for (const auto& submesh : this->submeshes)
 		{
-			this->boundingBox.Min = VectorMin(this->boundingBox.Min, submesh.MeshData.GetBoundingBox().Min);
-			this->boundingBox.Max = VectorMax(this->boundingBox.Max, submesh.MeshData.GetBoundingBox().Max);
+			this->boundingBox.Min = VectorMin(this->boundingBox.Min, submesh.Data.GetBoundingBox().Min);
+			this->boundingBox.Max = VectorMax(this->boundingBox.Max, submesh.Data.GetBoundingBox().Max);
 		}
 
 		// compute bounding sphere, taking sun of max sub-sphere radius and distance to it
@@ -148,7 +148,7 @@ namespace MxEngine
 		auto maxRadius = 0.0f;
 		for (const auto& submesh : this->submeshes)
 		{
-			auto sphere = submesh.MeshData.GetBoundingSphere();
+			auto sphere = submesh.Data.GetBoundingSphere();
 			auto distanceToCenter = Length(sphere.Center);
 			maxRadius = Max(maxRadius, distanceToCenter + sphere.Radius);
 		}
@@ -161,7 +161,7 @@ namespace MxEngine
 		this->VBLs.push_back(std::move(vbl));
 		for (auto& mesh : submeshes)
 		{
-			mesh.MeshData.GetVAO()->AddInstancedBuffer(*this->VBOs.back(), *this->VBLs.back());
+			mesh.Data.GetVAO()->AddInstancedBuffer(*this->VBOs.back(), *this->VBLs.back());
 		}
 		return this->VBOs.size() - 1;
 	}
@@ -188,7 +188,7 @@ namespace MxEngine
 		MX_ASSERT(!this->VBOs.empty());
 		for (auto& mesh : submeshes)
 		{
-			mesh.MeshData.GetVAO()->PopBuffer(*this->VBLs.back());
+			mesh.Data.GetVAO()->PopBuffer(*this->VBLs.back());
 		}
 		this->VBOs.pop_back();
 		this->VBLs.pop_back();

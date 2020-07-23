@@ -38,14 +38,14 @@ namespace MxEngine
 		using MaterialId = size_t;
 	private:
 		MaterialId materialId;
-		Transform::Handle transform;
+		TransformComponent::Handle transform;
 	public:
-		MeshData MeshData;
+		MeshData Data;
 		MxString Name = "Main";
 
-		SubMesh(size_t materiaId, const Transform::Handle& transform);
+		SubMesh(size_t materiaId, const TransformComponent::Handle& transform);
 
-		Transform::Handle GetTransform() const;
+		TransformComponent::Handle GetTransform() const;
 		MaterialId GetMaterialId() const;
 	};
 }

@@ -69,7 +69,7 @@ namespace MxEngine
         this->DestroyShape();
     }
 
-    Capsule CapsuleShape::GetBoundingCapsule(const Transform& transform) const
+    Capsule CapsuleShape::GetBoundingCapsule(const TransformComponent& transform) const
     {
         auto capsule = this->GetBoundingCapsuleUnchanged();
         auto& scale = transform.GetScale();
