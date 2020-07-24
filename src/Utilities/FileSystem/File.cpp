@@ -81,7 +81,7 @@ namespace MxEngine
             }
         }
         if (this->IsOpen()) this->Close();
-        this->fileStream.open(this->filePath, FileModeTable[mode]);
+        this->fileStream.open(this->filePath, (std::ios_base::openmode)FileModeTable[mode]);
     }
 
     void File::Open(const MxString& path, int mode)

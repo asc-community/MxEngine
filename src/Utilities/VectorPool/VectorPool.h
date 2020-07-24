@@ -337,7 +337,9 @@ namespace MxEngine
         */
         size_t IndexOf(const T& obj)
         {
-            const uint8_t* ptr = (uint8_t*)&obj - offsetof(Block, data);
+            // we should subtract offsetof data, but it gives error on gcc.
+            // As data is first element of block, offset is 0 so we can omit it
+            const uint8_t* ptr = (uint8_t*)&obj; // - offsetof(Block, data);
             MX_ASSERT(memoryStorage.data() <= ptr && ptr < memoryStorage.data() + memoryStorage.size());
             return (Block*)ptr - (Block*)memoryStorage.data();
         }

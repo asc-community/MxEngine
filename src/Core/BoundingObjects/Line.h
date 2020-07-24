@@ -35,17 +35,6 @@ namespace MxEngine
 	class Line
 	{
 	public:
-		union
-		{
-			struct
-			{
-				Vector3 p1, p2;
-			};
-			struct
-			{
-				Vector3 points[2];
-			};
-			float components[6] = { 0.0f };
-		};
+	    Vector3 p1{0.0f}, p2{0.0f};
 	};
 }

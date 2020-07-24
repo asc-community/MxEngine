@@ -60,7 +60,7 @@ namespace MxEngine::GUI
 				ImGui::Text("native format: %d", (int)source->GetNativeFormat());
 				ImGui::Text("audio format: %s", EnumToString(source->GetAudioType())); //-V111
 				ImGui::Text("channel count: %d", (int)source->GetChannelCount());
-				ImGui::Text("length (in seconds): %d", int(source->GetSampleCount()) / (source->GetFrequency()));
+				ImGui::Text("length (in seconds): %d", int(source->GetSampleCount() / source->GetFrequency()));
 				ImGui::Text("sample count: %d", (int)source->GetSampleCount());
 				ImGui::Text("sampling frequency: %d", (int)source->GetFrequency());
 				ImGui::Text("path to file: %s", source->GetFilePath().c_str());

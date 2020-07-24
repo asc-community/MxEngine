@@ -50,7 +50,7 @@ namespace MxEngine
 
     CursorMode GlobalConfig::GetCursorMode()
     {
-        return CFG(CursorMode);
+        return CFG(Cursor);
     }
 
     bool GlobalConfig::HasDoubleBuffering()

@@ -80,7 +80,7 @@ namespace MxEngine::GUI
     {
         ImGui::PushID(title);
         ImGui::AlignTextToFramePadding();
-        ImGui::Text(title);
+        ImGui::Text("%s", title);
         ImGui::SameLine();
         ImGui::InputInt("", v); 
         ImGui::SameLine();
@@ -100,7 +100,7 @@ namespace MxEngine::GUI
     {
         ImGui::PushID(title);
         ImGui::AlignTextToFramePadding();
-        ImGui::Text(title);
+        ImGui::Text("%s", title);
         ImGui::SameLine();
         ImGui::InputFloat("", v);
         ImGui::SameLine();
@@ -121,7 +121,7 @@ namespace MxEngine::GUI
     {
         ImGui::PushID(title);
         ImGui::AlignTextToFramePadding();
-        ImGui::Text(title);
+        ImGui::Text("%s", title);
         ImGui::SameLine();
         ImGui::DragFloat3("", v);
         ImGui::SameLine();
@@ -145,7 +145,7 @@ namespace MxEngine::GUI
         if (text != nullptr)
         {
             ImGui::AlignTextToFramePadding();
-            ImGui::Text(text);
+            ImGui::Text("%s", text);
             ImGui::SameLine();
         }
         ImGui::InputText("", str.data(), sizeRequired);

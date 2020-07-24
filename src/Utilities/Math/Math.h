@@ -216,14 +216,14 @@ namespace MxEngine
 		return glm::slerp(q1, q2, a);
 	}
 
-	template<size_t Columns, size_t Rows, typename T>
-	inline Matrix<Columns, Rows, T> Transpose(const Matrix<Columns, Rows, T>& mat)
+    template<typename Matrix>
+	inline Matrix Transpose(const Matrix& mat)
 	{
 		return glm::transpose(mat);
 	}
 
-	template<size_t Columns, size_t Rows, typename T>
-	inline Matrix<Columns, Rows, T> Inverse(const Matrix<Columns, Rows, T>& mat)
+	template<typename Matrix>
+	inline Matrix Inverse(const Matrix& mat)
 	{
 		return glm::inverse(mat);
 	}

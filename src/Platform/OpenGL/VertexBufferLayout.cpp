@@ -49,7 +49,7 @@ namespace MxEngine
 		this->layoutString += TypeToString<float>() + ToMxString(count) + ", ";
 		#endif
 		this->elements.push_back({ (unsigned int)count, GetGLType<float>(), false });
-		this->stride += unsigned int(sizeof(float) * count);
+		this->stride += StrideType(sizeof(float) * count);
 	}
 
 	void VertexBufferLayout::PopFloat(size_t count)
@@ -60,7 +60,7 @@ namespace MxEngine
 		this->layoutString.erase(this->layoutString.end() - str.size() - 1, this->layoutString.end());
 		#endif
 		this->elements.pop_back();
-		this->stride -= unsigned int(sizeof(float) * count);
+		this->stride -= StrideType(sizeof(float) * count);
 	}
 
 	template<>
