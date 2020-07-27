@@ -42,6 +42,11 @@ namespace MxEngine
 
     AudioPlayer::AudioPlayer()
     {
+        if(!ALIsInitialized())
+        {
+            MXLOG_ERROR("OpenAL::AudioPlayer", "source cannot be created as there is no audio device available");
+            return;
+        }
         ALCALL(alGenSources(1, &id));
         MXLOG_DEBUG("OpenAL::AudioPlayer", "created audio source with id = " + ToMxString(id));
     }

@@ -67,4 +67,9 @@ namespace MxEngine
         }
         return success;
     }
+
+    bool ALIsInitialized()
+    {
+        return alcGetCurrentContext() != nullptr;
+    }
 }

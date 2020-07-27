@@ -318,9 +318,9 @@ set(THIRD_PARTY_INCLUDE_DIRS
     ${fmt}/include
     ${glfw}/include
     ${glew}/include
+    ${bullet3}/src
     ${assimp}/include
     ${miniaudio}/extras
-    ${bullet3}/src
     ${imgui}
     ${glm}
     ${stb}
@@ -362,14 +362,14 @@ set(THIRD_PARTY_BINARY_DIRS
 set(THIRD_PARTY_LIBRARIES
     fmt
     libglew_static
-    BulletCollision
-    BulletDynamics
-    LinearMath
     assimp
     glfw
     imgui
     EASTL
     OpenAL
+    BulletDynamics
+    BulletCollision
+    LinearMath
 )
 
 set(MXENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${THIRD_PARTY_INCLUDE_DIRS})

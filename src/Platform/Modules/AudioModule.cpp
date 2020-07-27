@@ -66,8 +66,10 @@ namespace MxEngine
     void AudioModule::Destroy()
     {
         alcMakeContextCurrent(nullptr);
-        alcDestroyContext(data->context);
-        alcCloseDevice(data->device);
+        if (data->context != nullptr)
+            alcDestroyContext(data->context);
+        if (data->device != nullptr)
+            alcCloseDevice(data->device);
         data->context = nullptr;
         data->device = nullptr;
     }

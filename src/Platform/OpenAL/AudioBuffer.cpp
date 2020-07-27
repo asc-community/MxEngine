@@ -43,6 +43,11 @@ namespace MxEngine
 
     AudioBuffer::AudioBuffer()
     {
+        if(!ALIsInitialized())
+        {
+            MXLOG_ERROR("OpenAL::AudioBuffer", "buffer cannot be created as there is no audio device available");
+            return;
+        }
         ALCALL(alGenBuffers(1, &id));
         MXLOG_DEBUG("OpenAL::AudioBuffer", "created audio buffer with id = " + ToMxString(id));
     }
@@ -97,7 +102,8 @@ namespace MxEngine
             this->type = audio.type;
             this->sampleCount = audio.sampleCount;
             this->filepath = path;
-            ALCALL(alBufferData(id, (ALenum)this->nativeFormat, audio.data, ALsizei(audio.sampleCount * sizeof(int16_t)), (ALsizei)audio.frequency));
+
+            ALCALL(alBufferData(id, (ALenum) this->nativeFormat, audio.data, ALsizei(audio.sampleCount * sizeof(int16_t)), (ALsizei) audio.frequency));
 
             AudioLoader::Free(audio);
         }

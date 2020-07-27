@@ -71,7 +71,7 @@ namespace MxEngine
         FromJson(config.WindowPosition,         json["window"],      "position"              );
         FromJson(config.WindowSize,             json["window"],      "size"                  );
         FromJson(config.WindowTitle,            json["window"],      "title"                 );
-        FromJson(config.Cursor,             json["window"],      "cursor-mode"           );
+        FromJson(config.Cursor,                 json["window"],      "cursor-mode"           );
         FromJson(config.DoubleBuffering,        json["window"],      "double-buffering"      );
         FromJson(config.GraphicAPIProfile,      json["renderer"],    "profile"               );
         FromJson(config.GraphicAPIMajorVersion, json["renderer"],    "major-version"         );

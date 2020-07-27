@@ -33,14 +33,15 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 
-#if defined(MXENGINE_DEBUG)
-#define ALCALL(x) AlClearErrors(); x; AlLogCall(#x, __FILE__, __LINE__)
-#else
-#define ALCALL(x) x
-#endif 
-
 namespace MxEngine
 {
     void AlClearErrors();
     bool AlLogCall(const char* function, const char* file, int line);
+    bool ALIsInitialized();
 }
+
+#if defined(MXENGINE_DEBUG)
+#define ALCALL(x) if(MxEngine::ALIsInitialized()) { MxEngine::AlClearErrors(); x; MxEngine::AlLogCall(#x, __FILE__, __LINE__); };
+#else
+#define ALCALL(x) if(MxEngine::ALIsInitialized()) { x; };
+#endif
