@@ -292,12 +292,12 @@ endif()
 add_compile_definitions(MXENGINE_BUILD_FROM_CMAKE)
 
 # bullet3
+set(BUILD_CPU_DEMOS OFF)
 set(BUILD_BULLET2_DEMOS OFF)
 set(BUILD_OPENGL3_DEMOS OFF)
 set(BUILD_UNIT_TESTS OFF)
 set(USE_GRAPHICAL_BENCHMARK OFF)
 set(BUILD_CLSOCKET OFF)
-set(BUILD_CPU_DEMOS OFF)
 set(BUILD_ENET OFF)
 set(BUILD_EXTRAS OFF)
 
@@ -360,13 +360,13 @@ set(THIRD_PARTY_BINARY_DIRS
 )
 
 set(THIRD_PARTY_LIBRARIES
-    fmt 
-    libglew_static  
-    BulletCollision 
-    BulletDynamics 
-    LinearMath 
+    fmt
+    libglew_static
+    BulletCollision
+    BulletDynamics
+    LinearMath
     assimp
-    glfw 
+    glfw
     imgui
     EASTL
     OpenAL
@@ -390,7 +390,9 @@ set(SHARED_LIBRARIES_PATHS
 
 set(MxEngine_SHARED_LIBRARIES ${SHARED_LIBRARIES_PATHS} PARENT_SCOPE)
 
-add_custom_command(TARGET ${LIBRARY_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E
-    copy ${SHARED_LIBRARIES_PATHS} "${CMAKE_CURRENT_BINARY_DIR}"
-)
+if(MSVC)
+    add_custom_command(TARGET ${LIBRARY_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E
+        copy ${SHARED_LIBRARIES_PATHS} "${CMAKE_CURRENT_BINARY_DIR}"
+    )
+endif()

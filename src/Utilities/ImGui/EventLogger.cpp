@@ -168,7 +168,7 @@ namespace MxEngine
         // display event log entries
         for (auto& entry : this->entries)
         {
-            ImGui::Text(entry.c_str());
+            ImGui::Text("%s", entry.c_str());
         }
         // if frame is not captured, move cursor to the last log entry
         if (this->autoScroll && !this->isCurrentlyCapturing)

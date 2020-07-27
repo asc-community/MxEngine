@@ -1,5 +1,3 @@
-#pragma once
-
 #include <MxEngine.h>
 
 namespace OfflineRendererSample

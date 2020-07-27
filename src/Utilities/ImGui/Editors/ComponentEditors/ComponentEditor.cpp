@@ -123,6 +123,6 @@ namespace MxEngine::GUI
 		TREE_NODE_PUSH("Script");
 		REMOVE_COMPONENT_BUTTON(script);
 		ImGui::Text("path: %s", script.GetFilePath().c_str()); //-V111
-		ImGui::LabelText("contents: %s", script.GetContent().c_str());
+		ImGui::Text("contents:\n %s", script.GetContent().c_str());
 	}
 }

@@ -415,9 +415,9 @@ namespace MxEngine
         return Primitives::CreateMesh(std::move(meshData));
     }
 
-    Primitives::TextureHandle Primitives::CreateGridTexture(size_t textureSize, float borderScale)
+    TextureHandle Primitives::CreateGridTexture(size_t textureSize, float borderScale)
     {
-        Primitives::TextureHandle gridTexture = GraphicFactory::Create<Texture>();
+        TextureHandle gridTexture = GraphicFactory::Create<Texture>();
 
         Array2D<uint8_t> textureData;
         textureData.resize(textureSize, textureSize * 3);

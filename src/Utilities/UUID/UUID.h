@@ -33,6 +33,7 @@
 #include <istream>
 
 #include "Utilities/STL/MxString.h"
+#include "Core/Macro/Macro.h"
 
 namespace boost::uuids
 {
@@ -66,7 +67,11 @@ namespace MxEngine
 
     struct UUIDGeneratorImpl
     {
+        #if defined(MXENGINE_WINDOWS)
         std::aligned_storage_t<8> generator;
+        #else // boost random generator has members only on win platform
+        std::aligned_storage_t<1, 1> generator;
+        #endif
         boost::uuids::random_generator_pure& GetGeneratorImpl();
     };
 

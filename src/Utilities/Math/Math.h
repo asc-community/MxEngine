@@ -531,7 +531,7 @@ namespace MxEngine
 	*/
 	template<typename T>
 	inline auto DegreesVec(T vec)
-		-> decltype(vec.length(), vec[0], vec)
+		-> std::remove_reference_t<decltype(vec.length(), vec[0], vec)>
 	{
 		T result = vec;
 		for (typename T::length_type i = 0; i < vec.length(); i++)
@@ -546,7 +546,7 @@ namespace MxEngine
 	*/
 	template<typename T>
 	inline auto RadiansVec(T vec)
-		-> decltype(vec.length(), vec[0], vec)
+		-> std::remove_reference_t<decltype(vec.length(), vec[0], vec)>
 	{
 		T result = vec;
 		for (typename T::length_type i = 0; i < vec.length(); i++)
