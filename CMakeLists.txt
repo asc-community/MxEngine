@@ -6,6 +6,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(MXENGINE_BUILD_SAMPLES "build sample projects" ON)
+option(MXENGINE_BUILD_SHIPPING OFF)
+
+if(MXENGINE_BUILD_SHIPPING)
+    set(CMAKE_BUILD_TYPE "Release")
+endif()
 
 if (MSVC)
   add_compile_options("/MP")

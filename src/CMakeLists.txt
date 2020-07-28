@@ -283,6 +283,10 @@ set(assimp ${SUBMODULES_PATH}/assimp)
 set(bullet3 ${SUBMODULES_PATH}/bullet3)
 
 set(THIRD_PARTY_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
+set(LIBRARY_OUTPUT_PATH "")
+set(CMAKE_DEBUG_POSTFIX "")
+set(CMAKE_RELEASE_POSTFIX "")
+set(CMAKE_RELWITHDEBINFO_POSTFIX "")
 
 find_package(Boost)
 if (NOT Boost_FOUND)
@@ -295,6 +299,9 @@ if(MSVC)
 endif()
 
 add_compile_definitions(MXENGINE_BUILD_FROM_CMAKE)
+if(MXENGINE_BUILD_SHIPPING)
+    add_compile_definitions(MXENGINE_SHIPPING)
+endif()
 
 # bullet3
 set(BUILD_CPU_DEMOS OFF)
