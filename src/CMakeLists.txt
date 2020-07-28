@@ -283,7 +283,12 @@ set(assimp ${SUBMODULES_PATH}/assimp)
 set(bullet3 ${SUBMODULES_PATH}/bullet3)
 
 set(THIRD_PARTY_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
-find_package(Boost REQUIRED)
+
+find_package(Boost)
+if (NOT Boost_FOUND)
+    message(SEND_ERROR "Boost package was not found, please add boost to environment variables by setting BOOST_ROOT or set Boost_INCLUDE_DIR variable in CMake project")
+    return()
+endif()
 
 if(MSVC)
     add_compile_definitions(_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)

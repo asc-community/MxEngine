@@ -31,6 +31,7 @@
 #include "Core/Macro/Macro.h"
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Utilities/FileSystem/File.h"
+#include "Core/Application/GlobalConfig.h"
 
 namespace MxEngine
 {
@@ -249,8 +250,9 @@ namespace MxEngine
 	Shader::ShaderId Shader::CompileShader(unsigned int type, const MxString& source, const MxString& name) const
 	{
 		GLCALL(GLuint shaderId = glCreateShader((GLenum)type));
-		const char* src = source.c_str();
-		GLCALL(glShaderSource(shaderId, 1, &src, nullptr));
+		auto sourceModified = Shader::SetCurrentShaderVersion(source);
+		auto cStringSource = sourceModified.c_str();
+		GLCALL(glShaderSource(shaderId, 1, &cStringSource, nullptr));
 		GLCALL(glCompileShader(shaderId));
 
 		GLint result;
@@ -277,7 +279,7 @@ namespace MxEngine
 				break;
 			}
 			MXLOG_ERROR("OpenGL::Shader", "failed to compile " + typeName + " shader: " + name);
-			MXLOG_ERROR("OpenGL", msg);
+			MXLOG_ERROR("OpenGL::ErrorHandler", msg);
 		}
 
 		return shaderId;
@@ -333,5 +335,32 @@ namespace MxEngine
 		{
 			GLCALL(glDeleteProgram(id));
 		}
+	}
+
+    MxString Shader::GetShaderVersionString()
+    {
+		return "#version " + ToMxString(GlobalConfig::GetGraphicAPIMajorVersion() * 100 + GlobalConfig::GetGraphicAPIMinorVersion() * 10);
+    }
+
+	MxString Shader::SetCurrentShaderVersion(const MxString& shaderSource)
+	{
+		MxString copy = shaderSource;
+		auto version = Shader::GetShaderVersionString();
+		auto versionOffset = copy.find("#version ");
+		if (versionOffset != copy.npos) // check if there is version directive
+		{
+			auto versionItBegin = copy.begin() + versionOffset;
+			// find version number end (sub 1 to not include null char)
+			auto versionItEnd = versionItBegin + (std::size("#version XXX") - 1);
+			if (versionItEnd <= copy.end())
+				copy.erase(versionItBegin, versionItEnd);
+			// insert new version directive
+			copy.insert(versionItBegin, version.begin(), version.end());
+		}
+		else // if version directive was not found, just include one
+		{
+			copy.insert(copy.begin(), version.begin(), version.end());
+		}
+		return copy;
 	}
 }

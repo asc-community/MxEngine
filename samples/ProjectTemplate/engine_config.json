@@ -10,8 +10,8 @@
   "renderer": {
     "anisothropic-filtering": 16,
     "debug-line-width": 3,
-    "major-version": 4,
-    "minor-version": 0,
+    "major-version": 3,
+    "minor-version": 3,
     "msaa-samples": 4,
     "profile": "CORE"
   },
