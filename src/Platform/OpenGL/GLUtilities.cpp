@@ -53,10 +53,8 @@ namespace MxEngine
 			if (ExistingErrors.find(error) != ExistingErrors.end())
 				continue;
 			ExistingErrors.insert(error);
-			const char* message = (const char*)gluErrorString(error);
-			if (message == nullptr) message = "unknown";
 			setlocale(LC_ALL, "");
-			MXLOG_ERROR("OpenGL::ErrorHandler", MxFormat("{0}\n  {1} in file: {2}, line: {3}", message, function, file, line));
+			MXLOG_ERROR("OpenGL::ErrorHandler", MxFormat("error#{0} {1} in file: {2}, line: {3}", error, function, file, line));
 		}
 		return success;
 	}

@@ -1,12 +1,10 @@
-#pragma once
-
 #include <MxEngine.h>
 
-namespace ProjectTemplate
+namespace VRCameraSample
 {
     using namespace MxEngine;
 
-    class MxApplication : public Application
+    class VRCameraApplication : public Application
     {
         MxObject::Handle VRCamera;
     public:
@@ -102,7 +100,7 @@ namespace ProjectTemplate
 
 int main()
 {
-    ProjectTemplate::MxApplication app;
+    VRCameraSample::VRCameraApplication app;
     app.Run();
     return 0;
 }

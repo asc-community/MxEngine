@@ -7,14 +7,14 @@ namespace MxEngine
         auto mesh = ResourceFactory::Create<Mesh>();
 
         SubMesh::MaterialId materialId = 0;
-        auto transform = ComponentFactory::CreateComponent<Transform>();
+        auto transform = ComponentFactory::CreateComponent<TransformComponent>();
 
         auto& submeshes = mesh->GetSubmeshes();
         auto& submesh = submeshes.emplace_back(materialId, transform);
-        submesh.MeshData = std::move(meshData);
-        submesh.MeshData.BufferVertecies();
-        submesh.MeshData.BufferIndicies();
-        submesh.MeshData.UpdateBoundingGeometry();
+        submesh.Data = std::move(meshData);
+        submesh.Data.BufferVertecies();
+        submesh.Data.BufferIndicies();
+        submesh.Data.UpdateBoundingGeometry();
 
         mesh->UpdateBoundingGeometry();
 
@@ -415,9 +415,9 @@ namespace MxEngine
         return Primitives::CreateMesh(std::move(meshData));
     }
 
-    Primitives::TextureHandle Primitives::CreateGridTexture(size_t textureSize, float borderScale)
+    TextureHandle Primitives::CreateGridTexture(size_t textureSize, float borderScale)
     {
-        Primitives::TextureHandle gridTexture = GraphicFactory::Create<Texture>();
+        TextureHandle gridTexture = GraphicFactory::Create<Texture>();
 
         Array2D<uint8_t> textureData;
         textureData.resize(textureSize, textureSize * 3);

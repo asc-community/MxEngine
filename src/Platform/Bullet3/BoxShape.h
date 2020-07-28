@@ -43,7 +43,7 @@ namespace MxEngine
         BoxShape& operator=(BoxShape&&) noexcept;
         ~BoxShape();
 
-        BoundingBox GetBoundingBox(const Transform& transform) const;
+        BoundingBox GetBoundingBox(const TransformComponent& transform) const;
         BoundingBox GetBoundingBoxUnchanged() const;
     };
 }

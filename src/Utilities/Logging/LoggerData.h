@@ -11,7 +11,7 @@ namespace MxEngine
     {
         std::ofstream LogFile;
 
-        VerbosityLevel VerbosityLevel = VerbosityLevel::ALL;
+        VerbosityLevel Verbosity = VerbosityLevel::ALL;
         bool AbortOnFatal = true;
         bool StacktraceOnError = true;
         bool LogToConsole = true;

@@ -171,7 +171,7 @@ namespace MxEngine
 
     void Logger::SetLogLevel(VerbosityLevel level)
     {
-        logger->VerbosityLevel = level;
+        logger->Verbosity = level;
     }
 
     void Logger::SetLogColor(VerbosityType type, ConsoleColor color)
@@ -181,6 +181,6 @@ namespace MxEngine
 
     VerbosityLevel Logger::GetVerbosityLevel()
     {
-        return logger->VerbosityLevel;
+        return logger->Verbosity;
     }
 }

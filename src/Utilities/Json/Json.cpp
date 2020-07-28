@@ -27,38 +27,57 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Json.h"
+#include <iomanip>
+
+namespace MxEngine
+{
+    JsonFile LoadJson(File& file)
+    {
+        return JsonFile::parse(file.ReadAllText().c_str());
+    }
+
+    void SaveJson(File& file, const JsonFile& json)
+    {
+        file << std::setw(2) << json;
+    }
+}
 
 using namespace MxEngine;
 
-void nlohmann::to_json(JsonFile& j, const Vector3& v)
+namespace glm
 {
-    j = JsonFile{ v.x, v.y, v.z };
+    void to_json(JsonFile& j, const Vector3& v)
+    {
+        j = JsonFile{ v.x, v.y, v.z };
+    }
+
+    void from_json(const JsonFile& j, Vector3& v)
+    {
+        auto a = j.get<std::array<float, 3>>();
+        v = MakeVector3(a[0], a[1], a[2]);
+    }
+
+    void to_json(JsonFile& j, const Vector2& v)
+    {
+        j = JsonFile{ v.x, v.y };
+    }
+
+    void from_json(const JsonFile& j, Vector2& v)
+    {
+        auto a = j.get<std::array<float, 2>>();
+        v = MakeVector2(a[0], a[1]);
+    }
 }
 
-void nlohmann::from_json(const JsonFile& j, Vector3& v)
+namespace eastl
 {
-    auto a = j.get<std::array<float, 3>>();
-    v = MakeVector3(a[0], a[1], a[2]);
-}
+    void to_json(JsonFile& j, const MxString& s)
+    {
+        j = s.c_str();
+    }
 
-void nlohmann::to_json(JsonFile& j, const Vector2& v)
-{
-    j = JsonFile{ v.x, v.y };
-}
-
-void nlohmann::from_json(const JsonFile& j, Vector2& v)
-{
-    auto a = j.get<std::array<float, 2>>();
-    v = MakeVector2(a[0], a[1]);
-}
-
-void nlohmann::to_json(JsonFile& j, const MxString& str)
-{
-    j = str.c_str();
-}
-
-void nlohmann::from_json(const JsonFile& j, MxString& str)
-{
-    auto s = j.get<std::string>();
-    str = ToMxString(s);
+    void from_json(const JsonFile& j, MxString& s)
+    {
+        s = j.get<std::string>().c_str();
+    }
 }

@@ -28,8 +28,8 @@
 
 #pragma once
 
-#include <Vendors/eastl/EASTL/vector.h>
-#include <Vendors/eastl/EASTL/fixed_vector.h>
+#include <EASTL/vector.h>
+#include <EASTL/fixed_vector.h>
 
 namespace MxEngine
 {

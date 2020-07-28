@@ -57,11 +57,11 @@ namespace MxEngine
             size_t totalIndicies = 0;
             for (const auto& submesh : mesh->GetSubmeshes())
             {
-                LODGenerator lod(submesh.MeshData);
+                LODGenerator lod(submesh.Data);
                 auto& submeshLOD = meshLODsubmeshes.emplace_back(submesh.GetMaterialId(), submesh.GetTransform());
                 submeshLOD.Name = submesh.Name;
-                submeshLOD.MeshData = lod.CreateObject(factor);
-                totalIndicies += submeshLOD.MeshData.GetIndicies().size();
+                submeshLOD.Data = lod.CreateObject(factor);
+                totalIndicies += submeshLOD.Data.GetIndicies().size();
             }
             MXLOG_DEBUG("MxEngine::MeshLOD", MxFormat("generated LOD with {0} indicies for object: {1}", totalIndicies, object.Name.c_str()));
         }

@@ -123,7 +123,7 @@ namespace MxEngine
             MX_ASSERT(newData != nullptr);
             MX_ASSERT(this->count <= newCount);
             
-            std::memcpy(newData, this->storage, this->count * sizeof(Block)); // copy old blocks to new memory chunk
+            memcpy(newData, this->storage, this->count * sizeof(Block)); // copy old blocks to new memory chunk
 
             // some objects in MxEngine tend to invoke clean up on destruction, even if they are moved.
             // to avoid this we put restriction on pool allocator objects to not to refer to themselves. Its better to use

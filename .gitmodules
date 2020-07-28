@@ -1,9 +1,3 @@
-[submodule "submodules/assimp"]
-	path = submodules/assimp
-	url = https://github.com/assimp/assimp
-[submodule "submodules/boost"]
-	path = submodules/boost
-	url = https://github.com/boostorg/boost
 [submodule "submodules/fmt"]
 	path = submodules/fmt
 	url = https://github.com/fmtlib/fmt
@@ -16,9 +10,6 @@
 [submodule "submodules/glm"]
 	path = submodules/glm
 	url = https://github.com/g-truc/glm
-[submodule "submodules/imgui"]
-	path = submodules/imgui
-	url = https://github.com/ocornut/imgui
 [submodule "submodules/EASTL"]
 	path = submodules/EASTL
 	url = https://github.com/electronicarts/EASTL
@@ -34,6 +25,16 @@
 [submodule "submodules/openal-soft"]
 	path = submodules/openal-soft
 	url = https://github.com/kcat/openal-soft
+[submodule "submodules/assimp"]
+	path = submodules/assimp
+	url = https://github.com/MomoDeve/assimp
 [submodule "submodules/bullet3"]
 	path = submodules/bullet3
-	url = https://github.com/bulletphysics/bullet3
+	url = https://github.com/MomoDeve/bullet3
+[submodule "submodules/imgui"]
+	path = submodules/imgui
+	url = https://github.com/MomoDeve/imgui
+	branch = docking
+[submodule "submodules/glew"]
+	path = submodules/glew
+	url = https://github.com/MomoDeve/glew-cmake

@@ -103,7 +103,7 @@ namespace MxEngine
         }
     }
 
-    NativeRigidBody::NativeRigidBody(const Transform& transform)
+    NativeRigidBody::NativeRigidBody(const TransformComponent& transform)
     {
         btTransform tr;
         ToBulletTransform(tr, transform);

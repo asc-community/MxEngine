@@ -76,66 +76,66 @@ namespace MxEngine
 
         environment.SkyboxShader = GraphicFactory::Create<Shader>();
         environment.SkyboxShader->LoadFromString(
-            #include MAKE_PLATFORM_SHADER(skybox_vertex)
+            #include "Platform/OpenGL/Shaders/skybox_vertex.glsl"
             ,
-            #include MAKE_PLATFORM_SHADER(skybox_fragment)
+            #include "Platform/OpenGL/Shaders/skybox_fragment.glsl"
         );
 
         environment.ShadowMapShader = GraphicFactory::Create<Shader>();
         environment.ShadowMapShader->LoadFromString(
-            #include MAKE_PLATFORM_SHADER(depthtexture_vertex)
+            #include "Platform/OpenGL/Shaders/depthtexture_vertex.glsl"
             , 
-            #include MAKE_PLATFORM_SHADER(depthtexture_fragment)
+            #include "Platform/OpenGL/Shaders/depthtexture_fragment.glsl"
         );
 
         environment.ShadowCubeMapShader = GraphicFactory::Create<Shader>();
         environment.ShadowCubeMapShader->LoadFromString(
-            #include MAKE_PLATFORM_SHADER(depthcubemap_vertex)
+            #include "Platform/OpenGL/Shaders/depthcubemap_vertex.glsl"
             ,
-            #include MAKE_PLATFORM_SHADER(depthcubemap_geometry)
+            #include "Platform/OpenGL/Shaders/depthcubemap_geometry.glsl"
             ,
-            #include MAKE_PLATFORM_SHADER(depthcubemap_fragment)
+            #include "Platform/OpenGL/Shaders/depthcubemap_fragment.glsl"
         );
 
         environment.MSAAHDRSplitShader = GraphicFactory::Create<Shader>();
         environment.MSAAHDRSplitShader->LoadFromString(
-            #include MAKE_PLATFORM_SHADER(rect_vertex)
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
-            #include MAKE_PLATFORM_SHADER(hdrsplitmsaa_fragment)
+            #include "Platform/OpenGL/Shaders/hdrsplitmsaa_fragment.glsl"
         );
         environment.HDRSplitShader = GraphicFactory::Create<Shader>();
         environment.HDRSplitShader->LoadFromString(
-            #include MAKE_PLATFORM_SHADER(rect_vertex)
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
-            #include MAKE_PLATFORM_SHADER(hdrsplit_fragment)
+            #include "Platform/OpenGL/Shaders/hdrsplit_fragment.glsl"
         );
 
         environment.HDRBloomCombineHDRShader = GraphicFactory::Create<Shader>();
         environment.HDRBloomCombineHDRShader->LoadFromString(
-            #include MAKE_PLATFORM_SHADER(rect_vertex)
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
-            #include MAKE_PLATFORM_SHADER(hdr_fragment)
+            #include "Platform/OpenGL/Shaders/hdr_fragment.glsl"
         );
 
         environment.BloomShader = GraphicFactory::Create<Shader>();
         environment.BloomShader->LoadFromString(
-            #include MAKE_PLATFORM_SHADER(rect_vertex)
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
-            #include MAKE_PLATFORM_SHADER(bloom_fragment)
+            #include "Platform/OpenGL/Shaders/bloom_fragment.glsl"
         );
 
         environment.ImageForwardShader = GraphicFactory::Create<Shader>();
         environment.ImageForwardShader->LoadFromString(
-            #include MAKE_PLATFORM_SHADER(rect_vertex)
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
-            #include MAKE_PLATFORM_SHADER(rect_fragment)
+            #include "Platform/OpenGL/Shaders/rect_fragment.glsl"
         );
 
         environment.DebugDrawShader = GraphicFactory::Create<Shader>();
         environment.DebugDrawShader->LoadFromString(
-            #include MAKE_PLATFORM_SHADER(debug_vertex)
+            #include "Platform/OpenGL/Shaders/debug_vertex.glsl"
             ,
-            #include MAKE_PLATFORM_SHADER(debug_fragment)
+            #include "Platform/OpenGL/Shaders/debug_fragment.glsl"
         );
 
         // framebuffers
@@ -163,17 +163,17 @@ namespace MxEngine
         if (useLighting)
         {
             this->Renderer.GetEnvironment().MainShader->LoadFromString(
-                #include MAKE_PLATFORM_SHADER(object_vertex)
+                #include "Platform/OpenGL/Shaders/object_vertex.glsl"
                 ,
-                #include MAKE_PLATFORM_SHADER(object_fragment)
+                #include "Platform/OpenGL/Shaders/object_fragment.glsl"
             );
         }
         else
         {
             this->Renderer.GetEnvironment().MainShader->LoadFromString(
-                #include MAKE_PLATFORM_SHADER(nolight_object_vertex)
+                #include "Platform/OpenGL/Shaders/nolight_object_vertex.glsl"
                 ,
-                #include MAKE_PLATFORM_SHADER(nolight_object_fragment)
+                #include "Platform/OpenGL/Shaders/nolight_object_vertex.glsl"
             );
         }
     }

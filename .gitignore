@@ -13,6 +13,7 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
+*.dll
 
 # Fortran module files
 *.mod
@@ -22,10 +23,12 @@
 *.lai
 *.la
 *.a
+*.lib
 
 # Executables
 *.out
 *.app
+*.exe
 
 # Visual Studio
 x64
@@ -34,12 +37,17 @@ Debug
 *.filters
 *.user
 
+# Clion
+.idea
+
 # Python
 __pycache__
 
 #CMake
 CMakeFiles
 CMakeCache.txt
+CMakeSettings.json
+cmake-build-debug
 out
 
 # MxEngine

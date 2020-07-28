@@ -78,11 +78,11 @@ namespace MxEngine
 		EnvironmentUnit& GetEnvironment();
 		const EnvironmentUnit& GetEnvironment() const;
 		void ResetPipeline();
-		void SubmitLightSource(const DirectionalLight& light, const Transform& parentTransform);
-		void SubmitLightSource(const PointLight& light, const Transform& parentTransform);
-		void SubmitLightSource(const SpotLight& light, const Transform& parentTransform);
-		void SubmitCamera(const CameraController& controller, const Transform& parentTransform, const Skybox& skybox);
-		void SubmitPrimitive(const SubMesh& object, const Material& material, const Transform& parentTransform, size_t instanceCount);
+		void SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform);
+		void SubmitLightSource(const PointLight& light, const TransformComponent& parentTransform);
+		void SubmitLightSource(const SpotLight& light, const TransformComponent& parentTransform);
+		void SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, const Skybox& skybox);
+		void SubmitPrimitive(const SubMesh& object, const Material& material, const TransformComponent& parentTransform, size_t instanceCount);
 		void SubmitFinalImage(const TextureHandle& texture);
 		void StartPipeline();
 		void EndPipeline();

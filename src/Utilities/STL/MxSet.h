@@ -28,8 +28,8 @@
 
 #pragma once
 
-#include <Vendors/eastl/EASTL/set.h>
-#include <Vendors/eastl/EASTL/fixed_set.h>
+#include <EASTL/set.h>
+#include <EASTL/fixed_set.h>
 
 namespace MxEngine
 {

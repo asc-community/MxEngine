@@ -234,7 +234,7 @@ namespace MxEngine
 		this->GetWindow()
 			.UseEventDispatcher(&this->dispatcher)
 			.UseProfile((int)this->config.GraphicAPIMajorVersion, (int)this->config.GraphicAPIMinorVersion, this->config.GraphicAPIProfile)
-			.UseCursorMode(this->config.CursorMode)
+			.UseCursorMode(this->config.Cursor)
 			.UseDoubleBuffering(this->config.DoubleBuffering)
 			.UseTitle(this->config.WindowTitle)
 			.UseDebugging(this->config.GraphicAPIDebug)
@@ -419,8 +419,16 @@ namespace MxEngine
 		MXLOG_INFO("MxEngine::Application", "loading application config from " + configPath);
 		file.Open(configPath, File::READ);
 		jsonConfig = LoadJson(file);
+		file.Close();
 
-		Deserialize(config, jsonConfig);
+		if (!jsonConfig.empty())
+		{
+			Deserialize(config, jsonConfig);
+		}
+		else
+		{
+			MXLOG_ERROR("MxEngine::Application", "config was not loaded properly: " + configPath);
+		}
 
 		#if defined(MXENGINE_SHIPPING)
 		config.GraphicAPIDebug = false;
