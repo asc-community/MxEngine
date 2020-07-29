@@ -18,13 +18,14 @@ struct Material
 };
 
 uniform sampler2D map_albedo;
+uniform sampler2D map_transparency;
 uniform Material material;
 
 void main()
 {
 	vec3 albedo = texture(map_albedo, fsin.TexCoord).rgb;
-	float dissolve = material.d;
+	float transparency = material.d * texture(map_transparency, fsin.TexCoord).r;
 	color *= fsin.RenderColor;
-	Color = vec4(albedo, dissolve);
+	Color = vec4(albedo, transparency);
 }
 )

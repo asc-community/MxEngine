@@ -35,6 +35,7 @@ namespace MxEngine
 	class GlobalConfig
 	{
 	public:
+        static BuildType GetBuildType();
         static const Vector2& GetWindowPosition();
         static const Vector2& GetWindowSize();
         static const MxString& GetWindowTitle();

@@ -41,6 +41,7 @@ namespace ProjectTemplate
 
                 object->AddComponent<BoxCollider>();
                 auto rigidBody = object->AddComponent<RigidBody>();
+                rigidBody->MakeDynamic();
                 rigidBody->SetMass(800.0f / (1.0f + y * y * y));
                 rigidBody->SetAngularForceFactor(Vector3(0.01f));
 
@@ -55,10 +56,11 @@ namespace ProjectTemplate
         {
             auto cube = MxObject::Create();
             cube->Name = "Big Cube";
-            cube->AddComponent<MeshRenderer>()->GetMaterial()->Transparency = transparency;
             cube->AddComponent<MeshSource>(Primitives::CreateCube());
             cube->AddComponent<BoxCollider>();
             cube->AddComponent<RigidBody>();
+            auto material = cube->AddComponent<MeshRenderer>()->GetMaterial();
+            material->Transparency = transparency;
             cube->Transform.SetScale(Vector3(xyz.x * BigCubeSize + thickness, xyz.y * BigCubeSize + thickness, xyz.z * BigCubeSize + thickness));
             cube->Transform.SetPosition(Vector3((BigCubeSize * offset).x / 2, (BigCubeSize * offset).y / 2, (BigCubeSize * offset).z / 2) + coord);
         }
@@ -78,6 +80,7 @@ namespace ProjectTemplate
             object->Transform.SetPosition(cameraObject->Transform.GetPosition());
             object->AddComponent<SphereCollider>();
             auto rigidBody = object->AddComponent<RigidBody>();
+            rigidBody->MakeDynamic();
             rigidBody->SetLinearVelocity(dir * 180.0f);
             rigidBody->SetMass(50.0f);
         }
@@ -148,15 +151,19 @@ namespace ProjectTemplate
             {
                 auto dir = cameraObject->GetComponent<CameraController>()->GetDirection();
                 auto pos = cameraObject->Transform.GetPosition();
-                float dist = 0.0f;
-                auto lookingAt = Physics::RayCast(pos, pos + dir * 1000.0f, dist);
+                auto end = pos + dir * 1000.0f;
+                float fraction = 0.0f;
+                auto lookingAt = Physics::RayCast(pos, end, fraction);
+                float distance = Length(end - pos) * fraction;
+
+                Rendering::Draw(BoundingBox(pos + dir * distance, MakeVector3(1.0f)), Colors::Create(Colors::RED, 1.0f));
 
                 ImGui::Begin("physics");
 
                 ImGui::Text("raycast");
                 if (lookingAt.IsValid())
                 {
-                    ImGui::Text("distance to object: %f", dist);
+                    ImGui::Text("distance to object: %f", distance);
                     ImGui::Text("object name: %s", lookingAt->Name.c_str());
                 }
                 else

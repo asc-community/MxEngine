@@ -35,7 +35,7 @@
 #include "Core/MxObject/MxObject.h"
 #include "Utilities/FileSystem/File.h"
 #include "Core/Components/Script.h"
-#include "Core/Application/Config.h"
+#include "Core/Config/Config.h"
 
 #include "Platform/Window/Window.h"
 
@@ -71,6 +71,7 @@ namespace MxEngine
 		void UpdateTimeDelta(TimeStep& lastFrameEnd, TimeStep& lastSecondEnd, size_t& framesPerSecond);
 		void DrawObjects();
 		void InvokeUpdate();
+		void InvokeCreate();
 		bool VerifyApplicationState();
 	protected:
 

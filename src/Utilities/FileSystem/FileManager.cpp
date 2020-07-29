@@ -105,6 +105,11 @@ namespace MxEngine
         return manager->root;
     }
 
+    FilePath FileManager::GetWorkingDirectory()
+    {
+        return std::filesystem::current_path();
+    }
+
     void FileManager::SetRoot(const FilePath& rootPath)
     {
         MAKE_SCOPE_TIMER("MxEngine::FileManager", "FileManager::Init()");

@@ -128,17 +128,49 @@ namespace MxEngine
 
     void RigidBody::MakeKinematic()
     {
-        this->rigidBody->MakeKinematic();
+        this->SetCollisionFilter(CollisionMask::KINEMATIC, CollisionGroup::ALL);
+        #undef DISABLE_DEACTIVATION
+        // from bullet3 manual (see https://github.com/bulletphysics/bullet3/blob/master/docs/Bullet_User_Manual.pdf page 22)
+        this->rigidBody->SetActivationState(ActivationState::DISABLE_DEACTIVATION);
+    }
+
+    void RigidBody::MakeDynamic()
+    {
+        this->SetCollisionFilter(CollisionMask::DYNAMIC, CollisionGroup::ALL);
+    }
+
+    void RigidBody::MakeStatic()
+    {
+        this->SetMass(0.0f);
+        this->SetCollisionFilter(CollisionMask::STATIC, CollisionGroup::NO_STATIC_COLLISIONS);
     }
 
     bool RigidBody::IsKinematic() const
     {
-        return this->rigidBody->IsKinematic();
+        return this->GetCollisionMask() & CollisionMask::KINEMATIC;
+    }
+
+    bool RigidBody::IsDynamic() const
+    {
+        return this->GetCollisionMask() & CollisionMask::DYNAMIC;
     }
 
     bool RigidBody::IsStatic() const
     {
-        return this->GetMass() == 0.0f;
+        return this->GetCollisionMask() & CollisionMask::STATIC;
+    }
+
+    bool RigidBody::IsRayCastable() const
+    {
+        return this->GetCollisionGroup() & CollisionGroup::RAYCAST_ONLY;
+    }
+
+    void RigidBody::ToggleRayCasting(bool value)
+    {
+        if (value)
+            this->SetCollisionFilter(this->GetCollisionMask(), this->GetCollisionGroup() | CollisionGroup::RAYCAST_ONLY);
+        else
+            this->SetCollisionFilter(this->GetCollisionMask(), this->GetCollisionGroup() & ~CollisionGroup::RAYCAST_ONLY);
     }
 
     void RigidBody::SetCollisionFilter(uint32_t mask, uint32_t group)
@@ -148,7 +180,7 @@ namespace MxEngine
 
     void RigidBody::SetCollisionFilter(CollisionMask::Mask mask, CollisionGroup::Group group)
     {
-        this->SetCollisionFilter((uint32_t)group, (uint32_t)mask);
+        this->SetCollisionFilter((uint32_t)mask, (uint32_t)group);
     }
 
     uint32_t RigidBody::GetCollisionGroup() const
@@ -158,7 +190,7 @@ namespace MxEngine
 
     uint32_t RigidBody::GetCollisionMask() const
     {
-        return this->rigidBody->GetCollisionGroup();
+        return this->rigidBody->GetCollisionMask();
     }
 
     void RigidBody::ClearForces()

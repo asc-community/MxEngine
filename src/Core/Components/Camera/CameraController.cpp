@@ -28,7 +28,7 @@
 
 #include "CameraController.h"
 #include "Core/Events/WindowResizeEvent.h"
-#include "Core/Application/GlobalConfig.h"
+#include "Core/Config/GlobalConfig.h"
 #include "Core/Application/Event.h"
 #include "Platform/Window/WindowManager.h"
 #include "OrthographicCamera.h"

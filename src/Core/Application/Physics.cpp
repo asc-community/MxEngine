@@ -42,8 +42,8 @@ namespace MxEngine
         CustomRayCastCallback(const btVector3& from, const btVector3& to)
             : btCollisionWorld::ClosestRayResultCallback(from, to)
         {
-            this->m_collisionFilterGroup = CollisionGroup::DEFAULT;
-            this->m_collisionFilterMask = CollisionMask::ANY;
+            this->m_collisionFilterGroup = CollisionGroup::ALL;
+            this->m_collisionFilterMask = CollisionMask::RAYCAST_ONLY;
         }
 
         MxObject::Handle GetResult() const
@@ -52,9 +52,9 @@ namespace MxEngine
             return Physics::GetRigidBodyParent(this->m_collisionObject);
         }
 
-        float GetRayLength() const
+        float GetRayFraction() const
         {
-            return this->m_closestHitFraction * (this->m_rayFromWorld - this->m_rayToWorld).length();
+            return this->m_closestHitFraction;
         }
     };
 
@@ -91,7 +91,7 @@ namespace MxEngine
         return Physics::RayCast(from, to, rayDistance);
     }
 
-    MxObject::Handle Physics::RayCast(const Vector3& from, const Vector3& to, float& rayDistance)
+    MxObject::Handle Physics::RayCast(const Vector3& from, const Vector3& to, float& rayFraction)
     {
         auto btFrom = ToBulletVector3(from);
         auto btTo = ToBulletVector3(to);
@@ -99,7 +99,7 @@ namespace MxEngine
         CustomRayCastCallback callback(btFrom, btTo);
 
         WORLD->rayTest(btFrom, btTo, callback);
-        rayDistance = callback.GetRayLength();
+        rayFraction = callback.GetRayFraction();
         return callback.GetResult();
     }
 

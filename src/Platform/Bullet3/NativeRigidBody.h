@@ -42,13 +42,10 @@ namespace MxEngine
         enum Mask : uint32_t
         {
             GHOST = 0,
-            DYNAMIC = 1 << 0,
-            STATIC = 1 << 1,
-            KINEMATIC = 1 << 2,
-            DEBRIS = 1 << 3,
-            TRIGGER = 1 << 4,
-            CHARACTER = 1 << 5,
-            ANY = uint32_t(-1),
+            RAYCAST_ONLY = 1,
+            DYNAMIC = 1 << 1,
+            STATIC  = 1 << 2,
+            KINEMATIC = 1 << 3,
         };
     }
 
@@ -56,9 +53,12 @@ namespace MxEngine
     {
         enum Group : uint32_t
         {  
-            NONE,
-            DEFAULT = uint32_t(-1),
-            NO_STATIC_COLLISIONS = uint32_t(-1) & ~CollisionMask::STATIC,
+            NONE = 0,
+            RAYCAST_ONLY = CollisionMask::RAYCAST_ONLY,
+            ALL_NO_RAYCAST = CollisionMask::DYNAMIC | CollisionMask::STATIC | CollisionMask::KINEMATIC,
+            ALL = ALL_NO_RAYCAST | CollisionGroup::RAYCAST_ONLY,
+            NO_STATIC_COLLISIONS_NO_RAYCAST = ALL_NO_RAYCAST & ~CollisionMask::STATIC,
+            NO_STATIC_COLLISIONS = ALL & ~CollisionMask::STATIC,
         };
     }
 
@@ -78,7 +78,8 @@ namespace MxEngine
     {
         btMotionState* state = nullptr;
         btRigidBody* body = nullptr;
-        uint32_t group = CollisionGroup::DEFAULT, mask = CollisionMask::STATIC | CollisionMask::DYNAMIC;
+        uint32_t group = CollisionGroup::NO_STATIC_COLLISIONS;
+        uint32_t mask = CollisionMask::STATIC;
 
         void DestroyBody();
         void ReAddRigidBody();
@@ -108,8 +109,6 @@ namespace MxEngine
         void SetScale(const Vector3& scale);
         float GetMass() const;
         void SetMass(float mass);
-        void MakeKinematic();
-        bool IsKinematic() const;
         void SetActivationState(ActivationState state);
         ActivationState GetActivationState() const;
         bool IsActive() const;

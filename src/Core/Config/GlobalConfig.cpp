@@ -33,6 +33,19 @@ namespace MxEngine
 {
     #define CFG(name) Application::Get()->GetConfig().name
 
+    BuildType GlobalConfig::GetBuildType()
+    {
+        #if defined(MXENGINE_SHIPPING)
+        return BuildType::SHIPPING;
+        #elif defined(MXENGINE_RELEASE)
+        return BuildType::RELEASE;
+        #elif defined(MXENGINE_DEBUG)
+        return BuildType::DEBUG;
+        #else
+        return BuildType::UNKNOWN;
+        #endif
+    }
+
     const Vector2& GlobalConfig::GetWindowPosition()
     {
         return CFG(WindowPosition);
@@ -50,7 +63,7 @@ namespace MxEngine
 
     CursorMode GlobalConfig::GetCursorMode()
     {
-        return CFG(CursorMode);
+        return CFG(Cursor);
     }
 
     bool GlobalConfig::HasDoubleBuffering()

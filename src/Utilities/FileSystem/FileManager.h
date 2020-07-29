@@ -56,6 +56,7 @@ namespace MxEngine
         static void Clone(FileManagerImpl* other);
         static FileManagerImpl* GetImpl();
         static FilePath& GetRoot();
+        static FilePath GetWorkingDirectory();
         static void SetRoot(const FilePath& rootPath);
     };
 }

@@ -31,7 +31,7 @@
 #include <bitset>
 
 #include "Utilities/Time/Time.h"
-#include "Core/Application/Config.h"
+#include "Core/Config/Config.h"
 #include "Core/Events/MouseEvent.h"
 
 struct GLFWwindow; // from glfw header file

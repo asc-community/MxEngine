@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "GraphicModule.h"
-#include "Core/Application/GlobalConfig.h"
+#include "Core/Config/GlobalConfig.h"
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Utilities/Logging/Logger.h"
 #include "Utilities/Profiler/Profiler.h"

@@ -40,6 +40,11 @@ namespace MxEngine
         Vector3 Center{ 0.0f, 0.0f, 0.0f };
         Quaternion Rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
 
+        constexpr BoundingBox() = default;
+
+        constexpr BoundingBox(const Vector3& center, const Vector3& halfSize)
+            : Center(center), Min(-halfSize), Max(halfSize) { }
+
         constexpr Vector3 Length() const
         {
             return Max - Min;

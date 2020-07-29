@@ -184,3 +184,7 @@
 - added time scale and pause option which blocks all update events
 - added event logger which tracks what events are invoked
 - all invoked events during one frame now can be captured and displayed in editor
+### 7.4.3
+- improved RigidBody api - added raycasting filter toggle, convinient function Make Static/Dynamic/Kinematic
+- added some missing methods to many classes (GlobalConfig, Rendering, Shader, etc.)
+- added transparency map for materials (will be useful for particle system later)

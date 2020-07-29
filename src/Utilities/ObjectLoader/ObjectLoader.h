@@ -62,6 +62,10 @@ namespace MxEngine
 		*/
 		MxString EmmisiveMap;
 		/*!
+		transparency texture path
+		*/
+		MxString TransparencyMap;
+		/*!
 		height texture path
 		*/
 		MxString HeightMap;
@@ -82,7 +86,7 @@ namespace MxEngine
 		height displacement value
 		*/
 		float Displacement = 0.0f;
-		
+
 		/*!
 		ambient color
 		*/

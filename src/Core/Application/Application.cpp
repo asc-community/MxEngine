@@ -194,6 +194,13 @@ namespace MxEngine
 		}
 	}
 
+	void Application::InvokeCreate()
+	{
+		MAKE_SCOPE_PROFILER("Application::OnCreate");
+		MAKE_SCOPE_TIMER("MxEngine::Application", "Application::OnCreate()");
+		this->OnCreate();
+	}
+
 	bool Application::VerifyApplicationState()
 	{
 		if (!this->GetWindow().IsCreated())
@@ -234,7 +241,7 @@ namespace MxEngine
 		this->GetWindow()
 			.UseEventDispatcher(&this->dispatcher)
 			.UseProfile((int)this->config.GraphicAPIMajorVersion, (int)this->config.GraphicAPIMinorVersion, this->config.GraphicAPIProfile)
-			.UseCursorMode(this->config.CursorMode)
+			.UseCursorMode(this->config.Cursor)
 			.UseDoubleBuffering(this->config.DoubleBuffering)
 			.UseTitle(this->config.WindowTitle)
 			.UseDebugging(this->config.GraphicAPIDebug)
@@ -272,17 +279,7 @@ namespace MxEngine
 	{
 		if (!VerifyApplicationState()) return;
 		this->isRunning = true;
-
-		this->GetRuntimeEditor().Log("Welcome to MxEngine developer console!");
-		#if defined(MXENGINE_USE_PYTHON)
-		this->GetRuntimeEditor().Log("This console is powered by Python: https://www.python.org");
-		#endif
-
-		{
-			MAKE_SCOPE_PROFILER("Application::OnCreate");
-			MAKE_SCOPE_TIMER("MxEngine::Application", "Application::OnCreate()");
-			this->OnCreate();
-		}
+		this->InvokeCreate();
 
 		float secondEnd = Time::Current();
 		float frameEnd  = Time::Current();
@@ -404,7 +401,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("Application::InitializeConfig");
 		MAKE_SCOPE_TIMER("MxEngine::Application", "Application::InitializeConfig");
 
-		const MxString configPath = "engine_config.json";
+		const FilePath configPath = FileManager::GetWorkingDirectory() / "engine_config.json";
 		File file;
 		JsonFile jsonConfig;
 
@@ -416,22 +413,46 @@ namespace MxEngine
 			file.Open(configPath, File::WRITE);
 			SaveJson(file, jsonConfig);
 		}
-		MXLOG_INFO("MxEngine::Application", "loading application config from " + configPath);
+		MXLOG_INFO("MxEngine::Application", "loading application config from " + ToMxString(configPath));
 		file.Open(configPath, File::READ);
 		jsonConfig = LoadJson(file);
+		file.Close();
 
-		Deserialize(config, jsonConfig);
+		if (!jsonConfig.empty())
+		{
+			Deserialize(config, jsonConfig);
+		}
+		else
+		{
+			MXLOG_ERROR("MxEngine::Application", "config was not loaded properly: " + ToMxString(configPath));
+		}
 
 		#if defined(MXENGINE_SHIPPING)
 		config.GraphicAPIDebug = false;
 		config.EditorOpenKey = KeyCode::UNKNOWN;
 		config.ApplicationCloseKey = KeyCode::UNKNOWN;
 		#endif
+
+		#if defined(MXENGINE_SHIPPING)
+		MXLOG_INFO("MxEngine::Application", "application is running in shipping mode");
+		#elif defined(MXENGINE_RELEASE)
+		MXLOG_INFO("MxEngine::Application", "application is running in release mode");
+		#elif defined(MXENGINE_DEBUG)
+		MXLOG_INFO("MxEngine::Application", "application is running in debug mode");
+		#else
+		MXLOG_WARNING("MxEngine::Application", "application is running in unknown mode");
+		#endif
 	}
 
 	void Application::InitializeRuntime(RuntimeEditor& console)
 	{
 		auto& editor = this->GetRuntimeEditor();
+
+		editor.Log("Welcome to MxEngine developer console!");
+		#if defined(MXENGINE_USE_PYTHON)
+		editor.Log("This console is powered by Python: https://www.python.org");
+		#endif
+
 		editor.ExecuteScript("InitializeOpenGL()");
 
 		editor.RegisterComponentEditor("Behaviour",          GUI::BehaviourEditor);

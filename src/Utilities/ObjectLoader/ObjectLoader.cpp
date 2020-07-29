@@ -118,6 +118,9 @@ namespace MxEngine
 			GET_TEXTURE(aiTextureType_DIFFUSE, AlbedoMap);
 			GET_TEXTURE(aiTextureType_SPECULAR, SpecularMap);
 			GET_TEXTURE(aiTextureType_EMISSIVE, EmmisiveMap);
+			GET_TEXTURE(aiTextureType_HEIGHT, HeightMap);
+			GET_TEXTURE(aiTextureType_NORMALS, NormalMap);
+			GET_TEXTURE(aiTextureType_OPACITY, TransparencyMap);
 		}
 
 		Vector3 minCoords = MakeVector3(std::numeric_limits<float>::max());
@@ -201,22 +204,23 @@ namespace MxEngine
 			auto& json = materialList[i];
 			auto& material = materials[i];
 
-			material.Transparency     = json["Transparency"].get<float>();
-			material.Displacement     = json["Displacement"].get<float>();
+			material.Transparency     = json["Transparency"    ].get<float>();
+			material.Displacement     = json["Displacement"    ].get<float>();
 			material.SpecularExponent = json["SpecularExponent"].get<float>();
 
-			material.AmbientColor  = json["AmbientColor" ].get<Vector3>();
-			material.DiffuseColor  = json["DiffuseColor" ].get<Vector3>();
-			material.SpecularColor = json["SpecularColor"].get<Vector3>();
-			material.EmmisiveColor = json["EmmisiveColor"].get<Vector3>();
+			material.AmbientColor     = json["AmbientColor"    ].get<Vector3>();
+			material.DiffuseColor     = json["DiffuseColor"    ].get<Vector3>();
+			material.SpecularColor    = json["SpecularColor"   ].get<Vector3>();
+			material.EmmisiveColor    = json["EmmisiveColor"   ].get<Vector3>();
 
-			material.AlbedoMap        = json["AlbedoMap"      ].get<MxString>();
-			material.SpecularMap      = json["SpecularMap"    ].get<MxString>();
-			material.EmmisiveMap      = json["EmmisiveMap"    ].get<MxString>();
-			material.HeightMap        = json["HeightMap"      ].get<MxString>();
-			material.NormalMap        = json["NormalMap"      ].get<MxString>();
-			material.Name             = json["Name"           ].get<MxString>();
-		}
+			material.AlbedoMap        = json["AlbedoMap"       ].get<MxString>();
+			material.SpecularMap      = json["SpecularMap"     ].get<MxString>();
+			material.EmmisiveMap      = json["EmmisiveMap"     ].get<MxString>();
+			material.TransparencyMap  = json["TransparencyMap" ].get<MxString>();
+			material.HeightMap        = json["HeightMap"       ].get<MxString>();
+			material.NormalMap        = json["NormalMap"       ].get<MxString>();
+			material.Name             = json["Name"            ].get<MxString>();
+		}													   
 
 		return materials;
     }
@@ -243,6 +247,7 @@ namespace MxEngine
 			DUMP(i, AlbedoMap);
 			DUMP(i, SpecularMap);
 			DUMP(i, EmmisiveMap);
+			DUMP(i, TransparencyMap);
 			DUMP(i, HeightMap);
 			DUMP(i, NormalMap);
 			DUMP(i, Name);

@@ -72,6 +72,7 @@ struct SpotLight
 uniform sampler2D map_albedo;
 uniform sampler2D map_specular;
 uniform sampler2D map_emmisive;
+uniform sampler2D map_transparency;
 uniform sampler2D map_normal;
 uniform samplerCube map_pointLight_shadow[MAX_POINT_LIGHTS];
 uniform sampler2D map_spotLight_shadow[MAX_SPOT_LIGHTS];
@@ -256,14 +257,15 @@ void main()
 	{
 		color += calcSpotLight(ambient, diffuse, specular, spotLight[i], normal, viewDir, fsin.FragPosSpotLight[i], map_spotLight_shadow[i]);
 	}
-	float dissolve = material.d;
+	float transparencyTex = texture(map_transparency, fsin.TexCoord).r;
+	float transparency = material.d * transparencyTex;
 
 	color = applyFog(color, length(viewDist), viewDir);
 
 	// emmisive light
 	color += 5.0f * emmisive;
 	color *= fsin.RenderColor;
-	Color = vec4(color, dissolve);
+	Color = vec4(color, transparency);
 }
 
 )

@@ -28,16 +28,20 @@
 
 #include "ApplicationEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
+#include "Core/Config/GlobalConfig.h"
 
 namespace MxEngine::GUI
 {
     void DrawApplicationEditor(const char* name, bool* isOpen)
     {
-        ImGui::Begin(name, isOpen);
-
         auto app = Application::Get();
 
-        ImGui::Checkbox("paused", &app->IsPaused);
+        ImGui::Begin(name, isOpen);
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("project build type: %s", EnumToString(GlobalConfig::GetBuildType()));
+        ImGui::SameLine();
+        ImGui::Checkbox("is paused", &app->IsPaused);
+
         ImGui::DragFloat("time scale", &app->TimeScale, 0.01f);
         ImGui::Text("current time delta: %f", app->GetTimeDelta());
 

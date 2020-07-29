@@ -71,35 +71,11 @@ namespace MxEngine
         if (collider != nullptr && mass != 0.0f)
             collider->calculateLocalInertia(mass, inertia);
 
-        auto oldMass = this->GetMass();
-        bool wasStatic = oldMass == 0.0f;
-        bool nowStatic = mass == 0.0f;
-
-        if (this->mask & (CollisionMask::DYNAMIC | CollisionMask::STATIC))
-        {
-            if (nowStatic)
-            {
-                this->mask |= CollisionMask::STATIC;
-                this->mask &= ~CollisionMask::DYNAMIC;
-                this->group &= CollisionGroup::NO_STATIC_COLLISIONS;
-            }
-            else
-            {
-                this->mask &= ~CollisionMask::STATIC;
-                this->mask |= CollisionMask::DYNAMIC;
-                this->group |= ~CollisionGroup::NO_STATIC_COLLISIONS;
-            }
-        }
-
-        if (wasStatic != nowStatic || collider != this->GetCollisionShape())
+        this->body->setMassProps(mass, inertia);
+        if (collider != this->GetCollisionShape())
         {
             this->body->setCollisionShape(collider);
-            this->body->setMassProps(mass, inertia);
             this->ReAddRigidBody();
-        }
-        else
-        {
-            this->body->setMassProps(mass, inertia);
         }
     }
 
@@ -232,17 +208,6 @@ namespace MxEngine
         this->UpdateRigidBodyCollider(mass, this->GetCollisionShape());
     }
 
-    void NativeRigidBody::MakeKinematic()
-    {
-        this->body->setCollisionFlags(this->body->getCollisionFlags() | btRigidBody::CF_KINEMATIC_OBJECT);
-        this->body->setActivationState(DISABLE_DEACTIVATION);
-    }
-
-    bool NativeRigidBody::IsKinematic() const
-    {
-        return this->body->isKinematicObject();
-    }
-
     void NativeRigidBody::SetActivationState(ActivationState state)
     {
         this->body->setActivationState((int)state);
@@ -264,18 +229,14 @@ namespace MxEngine
         {
         case CollisionMask::GHOST:
             return "GHOST";
+        case CollisionMask::RAYCAST_ONLY:
+            return "RAYCAST_ONLY";
         case CollisionMask::DYNAMIC:
             return "DYNAMIC";
         case CollisionMask::STATIC:
             return "STATIC";
         case CollisionMask::KINEMATIC:
             return "KINEMATIC";
-        case CollisionMask::DEBRIS:
-            return "DEBRIS";
-        case CollisionMask::TRIGGER:
-            return "TRIGGER";
-        case CollisionMask::CHARACTER:
-            return "CHARACTER";
         default:
             return "CUSTOM";
         }
@@ -287,8 +248,14 @@ namespace MxEngine
         {
         case CollisionGroup::NONE:
             return "NONE";
-        case CollisionGroup::DEFAULT:
-            return "DEFAULT";
+        case CollisionGroup::RAYCAST_ONLY:
+            return "RAYCAST_ONLY";
+        case CollisionGroup::ALL_NO_RAYCAST:
+            return "ALL_NO_RAYCAST";
+        case CollisionGroup::ALL:
+            return "ALL";
+        case CollisionGroup::NO_STATIC_COLLISIONS_NO_RAYCAST:
+            return "NO_STATIC_COLLISIONS_NO_RAYCAST";
         case CollisionGroup::NO_STATIC_COLLISIONS:
             return "NO_STATIC_COLLISIONS";
         default:

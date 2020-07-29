@@ -59,10 +59,15 @@ namespace MxEngine
         void UpdateCollider();
 
         void MakeKinematic();
+        void MakeDynamic();
+        void MakeStatic();
         bool IsKinematic() const;
+        bool IsDynamic() const;
         bool IsStatic() const;
-        void SetCollisionFilter(uint32_t mask, uint32_t group = CollisionGroup::DEFAULT);
-        void SetCollisionFilter(CollisionMask::Mask mask, CollisionGroup::Group group = CollisionGroup::DEFAULT);
+        bool IsRayCastable() const;
+        void ToggleRayCasting(bool value);
+        void SetCollisionFilter(uint32_t mask, uint32_t group = CollisionGroup::ALL);
+        void SetCollisionFilter(CollisionMask::Mask mask, CollisionGroup::Group group = CollisionGroup::ALL);
         uint32_t GetCollisionGroup() const;
         uint32_t GetCollisionMask() const;
         void ClearForces();

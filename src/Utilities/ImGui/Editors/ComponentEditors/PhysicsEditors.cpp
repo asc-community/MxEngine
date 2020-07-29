@@ -51,7 +51,9 @@ namespace MxEngine::GUI
 		auto collisionGroup = rigidBody.GetCollisionGroup();
 		auto collisionMask = rigidBody.GetCollisionMask();
 
-		ImGui::Text("is kinematic: %s, is static: %s", BOOL_STRING(rigidBody.IsKinematic()), BOOL_STRING(rigidBody.IsStatic()));
+		ImGui::Text("is kinematic: %s, is static: %s, is dynamic: %s", 
+			BOOL_STRING(rigidBody.IsKinematic()), BOOL_STRING(rigidBody.IsStatic()), BOOL_STRING(rigidBody.IsDynamic()));
+
 		ImGui::Text("collision group: %s, collision mask: %s", 
 			EnumToString((CollisionGroup::Group)collisionGroup), 
 			EnumToString((CollisionMask::Mask)collisionMask)
@@ -60,33 +62,23 @@ namespace MxEngine::GUI
 		ImGui::Text("total torque applied: (%f, %f, %f)", totalTorque.x, totalTorque.y, totalTorque.z);
 		ImGui::Text("body inertia:         (%f, %f, %f)", inertia.x, inertia.y, inertia.z);
 
-		std::array collisionMasks = {
-			CollisionMask::GHOST, CollisionMask::DYNAMIC, CollisionMask::STATIC,
-			CollisionMask::DEBRIS, CollisionMask::TRIGGER, CollisionMask::CHARACTER,
-			CollisionMask::KINEMATIC, CollisionMask::ANY
-		};
-		static bool selected = false;
-		if (ImGui::BeginCombo("body type", EnumToString((CollisionMask::Mask)collisionMask)))
-		{
-			for (auto& mask : collisionMasks)
-			{
-				if (ImGui::Selectable(EnumToString(mask), &selected))
-				{
-					rigidBody.SetCollisionFilter(mask);
-					ImGui::SetItemDefaultFocus();
-				}
-			}
-			ImGui::EndCombo();
-		}
-
-		if (ImGui::Button("clear forces"))
-			rigidBody.ClearForces(); //-V111
+		if (ImGui::Button("make dynamic"))
+			rigidBody.MakeDynamic();
 		ImGui::SameLine();
 		if (ImGui::Button("make kinematic"))
 			rigidBody.MakeKinematic();
 		ImGui::SameLine();
 		if (ImGui::Button("make static"))
-			rigidBody.SetMass(0.0f);
+			rigidBody.MakeStatic();
+
+		if (ImGui::Button("clear forces"))
+			rigidBody.ClearForces(); //-V111
+
+		ImGui::SameLine();
+
+		bool isRaycastable = rigidBody.IsRayCastable();
+		if (ImGui::Checkbox("raycast enabled", &isRaycastable))
+			rigidBody.ToggleRayCasting(isRaycastable);
 			
 		auto mass = rigidBody.GetMass();
 		if (ImGui::DragFloat("mass", &mass, 0.01f, 0.01f))
@@ -222,9 +214,6 @@ namespace MxEngine::GUI
 		auto boundingBox = boxCollider.GetNativeHandle()->GetBoundingBoxUnchanged();
 		DrawBoxEditor("bounding box", boundingBox);
 		boxCollider.SetBoundingBox(boundingBox);
-
-		auto shape = boxCollider.GetNativeHandle();
-		ImGui::Text("native handle: 0x%p", shape->GetNativeHandle()); //-V111
 	}
 
 	void SphereColliderEditor(SphereCollider& sphereCollider) //-V111
@@ -235,9 +224,6 @@ namespace MxEngine::GUI
 		auto boundingSphere = sphereCollider.GetNativeHandle()->GetBoundingSphereUnchanged();
 		DrawSphereEditor("bounding sphere", boundingSphere);
 		sphereCollider.SetBoundingSphere(boundingSphere);
-
-		auto shape = sphereCollider.GetNativeHandle();
-		ImGui::Text("native handle: 0x%p", shape->GetNativeHandle()); //-V111
 	}
 
 	void CylinderColliderEditor(CylinderCollider& cylinderCollider) //-V111
@@ -248,9 +234,6 @@ namespace MxEngine::GUI
 		auto boundingCylinder = cylinderCollider.GetNativeHandle()->GetBoundingCylinderUnchanged();
 		DrawCylinderEditor("bounding cylinder", boundingCylinder);
 		cylinderCollider.SetBoundingCylinder(boundingCylinder);
-
-		auto shape = cylinderCollider.GetNativeHandle();
-		ImGui::Text("native handle: 0x%p", shape->GetNativeHandle()); //-V111
 	}
 
 	void CapsuleColliderEditor(CapsuleCollider& capsuleCollider) //-V111
@@ -261,8 +244,5 @@ namespace MxEngine::GUI
 		auto boundingCapsule = capsuleCollider.GetNativeHandle()->GetBoundingCapsuleUnchanged();
 		DrawCapsuleEditor("bounding capsule", boundingCapsule);
 		capsuleCollider.SetBoundingCapsule(boundingCapsule);
-
-		auto shape = capsuleCollider.GetNativeHandle();
-		ImGui::Text("native handle: 0x%p", shape->GetNativeHandle()); //-V111
 	}
 }

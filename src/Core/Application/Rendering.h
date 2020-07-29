@@ -55,8 +55,11 @@ namespace MxEngine
         static size_t GetShadowBlurIterations();
         static void Draw(const Line& line, const Vector4& color);
         static void Draw(const AABB& box, const Vector4& color);
+        static void Draw(const BoundingBox& box, const Vector4& color);
         static void Draw(const BoundingSphere& sphere, const Vector4& color);
         static void Draw(const Frustrum& frustrum, const Vector4& color);
-        static void Draw(const Cone& box, const Vector4& color);
+        static void Draw(const Cone& cone, const Vector4& color);
+        static void Draw(const Capsule& capsule, const Vector4& color);
+        static void Draw(const Cylinder& cylinder, const Vector4& color);
 	};
 }

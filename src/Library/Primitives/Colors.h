@@ -157,5 +157,10 @@ namespace MxEngine
                 return MakeVector3(0.0f);
             }
         }
+
+        static Vector4 Create(Palette color, float transparency)
+        {
+            return Vector4(Colors::Create(color), transparency);
+        }
     };
 }

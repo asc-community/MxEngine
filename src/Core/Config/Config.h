@@ -49,8 +49,17 @@ namespace MxEngine
         DISABLED,
     };
 
+    enum class BuildType : uint8_t
+    {
+        UNKNOWN,
+        DEBUG,
+        RELEASE,
+        SHIPPING,
+    };
+
     const char* EnumToString(CursorMode mode);
     const char* EnumToString(RenderProfile profile);
+    const char* EnumToString(BuildType mode);
 
     struct Config
     {
@@ -58,7 +67,7 @@ namespace MxEngine
         Vector2 WindowPosition{ 300, 150 };
         Vector2 WindowSize{ 1600, 900 };
         MxString WindowTitle = "MxEngine Application";
-        CursorMode CursorMode = CursorMode::DISABLED;
+        CursorMode Cursor = CursorMode::DISABLED;
         bool DoubleBuffering = false;
 
         // Renderer settings
@@ -72,7 +81,6 @@ namespace MxEngine
         // Filesystem settings
         MxString ProjectRootDirectory = "Resources";
 
-        // Debug-build settings
         bool GraphicAPIDebug = true;
         KeyCode ApplicationCloseKey = KeyCode::ESCAPE;
         KeyCode EditorOpenKey = KeyCode::GRAVE_ACCENT;
@@ -80,13 +88,11 @@ namespace MxEngine
 
     void Deserialize(Config& config, const JsonFile& json);
     void Serialize(JsonFile& json, const Config& config);
-}
 
-MX_BEGIN_DECLARE_JSON
     void to_json(JsonFile& j, CursorMode mode);
     void from_json(const JsonFile& j, CursorMode& mode);
     void to_json(JsonFile& j, RenderProfile profile);
     void from_json(const JsonFile& j, RenderProfile& profile);
     void to_json(JsonFile& j, KeyCode key);
     void from_json(const JsonFile& j, KeyCode& key);
-MX_END_DECLARE_JSON
+}

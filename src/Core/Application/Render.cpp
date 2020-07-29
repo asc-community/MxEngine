@@ -129,6 +129,11 @@ namespace MxEngine
         DRW.Submit(box, color);
     }
 
+    void Rendering::Draw(const BoundingBox& box, const Vector4& color)
+    {
+        DRW.Submit(box, color);
+    }
+
     void Rendering::Draw(const BoundingSphere& sphere, const Vector4& color)
     {
         DRW.Submit(sphere, color);
@@ -142,5 +147,15 @@ namespace MxEngine
     void Rendering::Draw(const Cone& cone, const Vector4& color)
     {
         DRW.Submit(cone, color);
+    }
+
+    void Rendering::Draw(const Capsule& capsule, const Vector4& color)
+    {
+        DRW.Submit(capsule, color);
+    }
+
+    void Rendering::Draw(const Cylinder& cylinder, const Vector4& color)
+    {
+        DRW.Submit(cylinder, color);
     }
 }

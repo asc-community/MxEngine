@@ -232,6 +232,10 @@ namespace MxEngine
 			shader.SetUniformInt("map_emmisive", textureBindIndex);
 			textureBindIndex++;
 
+			unit.RenderMaterial.EmmisiveMap->Bind(textureBindIndex);
+			shader.SetUniformInt("map_transparency", textureBindIndex);
+			textureBindIndex++;
+
 			unit.RenderMaterial.NormalMap->Bind(textureBindIndex);
 			shader.SetUniformInt("map_normal", textureBindIndex);
 			textureBindIndex++;
@@ -585,10 +589,11 @@ namespace MxEngine
     void RenderController::SubmitPrimitive(const SubMesh& object, const Material& material, const Transform& parentTransform, size_t instanceCount)
     {
 		RenderUnit* primitivePtr = nullptr;
-		if (material.Transparency == 1.0f) // put object into separate list depending on its transparency //-V550
-			primitivePtr = &this->Pipeline.OpaqueRenderUnits.emplace_back();
-		else
+		// filter transparent object to render in separate order
+		if (material.Transparency < 1.0f || material.TransparencyMap.IsValid())
 			primitivePtr = &this->Pipeline.TransparentRenderUnits.emplace_back();
+		else
+			primitivePtr = &this->Pipeline.OpaqueRenderUnits.emplace_back();
 		auto& primitive = *primitivePtr;
 
 		primitive.VAO = object.MeshData.GetVAO();
@@ -601,11 +606,12 @@ namespace MxEngine
 		// we need to change displacement to account object scale, so we take average of object scale components as multiplier
 		primitive.RenderMaterial.Displacement *= Dot(parentTransform.GetScale() * object.GetTransform()->GetScale(), MakeVector3(1.0f / 3.0f));
 		// set default textures if they are not exist
-		if (!primitive.RenderMaterial.AlbedoMap.IsValid())   primitive.RenderMaterial.AlbedoMap   = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!primitive.RenderMaterial.SpecularMap.IsValid()) primitive.RenderMaterial.SpecularMap = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!primitive.RenderMaterial.EmmisiveMap.IsValid()) primitive.RenderMaterial.EmmisiveMap = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!primitive.RenderMaterial.NormalMap.IsValid())   primitive.RenderMaterial.NormalMap   = this->Pipeline.Environment.DefaultNormalMap;
-		if (!primitive.RenderMaterial.HeightMap.IsValid())   primitive.RenderMaterial.HeightMap   = this->Pipeline.Environment.DefaultHeightMap;
+		if (!primitive.RenderMaterial.AlbedoMap.IsValid())       primitive.RenderMaterial.AlbedoMap       = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!primitive.RenderMaterial.SpecularMap.IsValid())     primitive.RenderMaterial.SpecularMap     = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!primitive.RenderMaterial.EmmisiveMap.IsValid())     primitive.RenderMaterial.EmmisiveMap     = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!primitive.RenderMaterial.TransparencyMap.IsValid()) primitive.RenderMaterial.TransparencyMap = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!primitive.RenderMaterial.NormalMap.IsValid())       primitive.RenderMaterial.NormalMap       = this->Pipeline.Environment.DefaultNormalMap;
+		if (!primitive.RenderMaterial.HeightMap.IsValid())       primitive.RenderMaterial.HeightMap       = this->Pipeline.Environment.DefaultHeightMap;
     }
 
 	void RenderController::SubmitFinalImage(const TextureHandle& texture)
