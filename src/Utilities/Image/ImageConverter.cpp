@@ -30,7 +30,7 @@
 #include "Utilities/Profiler/Profiler.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "Vendors/stb/stb_image_write.h"
+#include <stb_image_write.h>
 
 #include <algorithm>
 

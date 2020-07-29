@@ -32,7 +32,7 @@
 #include "Utilities/Math/Math.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "Vendors/stb/stb_image.h"
+#include <stb_image.h>
 
 namespace MxEngine
 {

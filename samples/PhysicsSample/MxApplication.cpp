@@ -1,12 +1,10 @@
-#pragma once
-
 #include <MxEngine.h>
 
-namespace ProjectTemplate
+namespace PhysicsSample
 {
     using namespace MxEngine;
 
-    class MxApplication : public Application
+    class PhysicsApplication : public Application
     {
     public:
         MxObject::Handle cameraObject;
@@ -189,7 +187,7 @@ namespace ProjectTemplate
 
 int main()
 {
-    ProjectTemplate::MxApplication app;
+    PhysicsSample::PhysicsApplication app;
     app.Run();
     return 0;
 }

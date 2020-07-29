@@ -287,8 +287,8 @@ namespace MxEngine::GUI
         size_t vertexCount = 0, indexCount = 0;
         for (auto& submesh : mesh->GetSubmeshes())
         {
-            vertexCount += submesh.MeshData.GetVertecies().size();
-            indexCount += submesh.MeshData.GetIndicies().size();
+            vertexCount += submesh.Data.GetVertecies().size();
+            indexCount += submesh.Data.GetIndicies().size();
         }
         ImGui::Text("total vertex count: %d, total index count: %d", (int)vertexCount, (int)indexCount);
 
@@ -299,26 +299,26 @@ namespace MxEngine::GUI
             GUI::Indent _(5.0f);
             ImGui::PushID(id++);
 
-            ImGui::Text("vertex count: %d", (int)submesh.MeshData.GetVertecies().size());
-            ImGui::Text("index count: %d", (int)submesh.MeshData.GetIndicies().size());
+            ImGui::Text("vertex count: %d", (int)submesh.Data.GetVertecies().size());
+            ImGui::Text("index count: %d", (int)submesh.Data.GetIndicies().size());
             ImGui::Text("material id: %d", (int)submesh.GetMaterialId());
 
             TransformEditor(*submesh.GetTransform());
 
             if (ImGui::Button("update submesh boundings"))
-                submesh.MeshData.UpdateBoundingGeometry();
+                submesh.Data.UpdateBoundingGeometry();
             ImGui::SameLine();
             if (ImGui::Button("buffer vertecies"))
-                submesh.MeshData.BufferVertecies();
+                submesh.Data.BufferVertecies();
             ImGui::SameLine();
             if (ImGui::Button("free mesh data copy"))
-                submesh.MeshData.FreeMeshDataCopy();
+                submesh.Data.FreeMeshDataCopy();
 
             if (ImGui::Button("regenerate normals"))
-                submesh.MeshData.RegenerateNormals();
+                submesh.Data.RegenerateNormals();
             ImGui::SameLine();
             if (ImGui::Button("regenerate tangents"))
-                submesh.MeshData.RegenerateTangentSpace();
+                submesh.Data.RegenerateTangentSpace();
 
             // TODO: maybe add indicies editor?
             {
@@ -326,7 +326,7 @@ namespace MxEngine::GUI
                 {
                     GUI::Indent _(5.0f);
                     int id = 0;
-                    for (auto& vertex : submesh.MeshData.GetVertecies())
+                    for (auto& vertex : submesh.Data.GetVertecies())
                     {
                         ImGui::PushID(id++);
                         DrawVertexEditor(vertex);

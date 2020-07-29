@@ -37,8 +37,6 @@ namespace MxEngine
     class Primitives
     {
     public:
-        using TextureHandle = TextureHandle;
-
         static MeshHandle CreateMesh(MeshData meshData);
         static MeshHandle CreateCube(size_t polygons = 1);
         static MeshHandle CreatePlane(size_t UVrepeats = 1);

@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include <Vendors/eastl/EASTL/functional.h>
+#include <EASTL/functional.h>
 
 namespace MxEngine
 {

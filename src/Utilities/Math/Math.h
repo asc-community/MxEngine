@@ -28,9 +28,9 @@
 
 #pragma once
 
-#include "Vendors/glm/glm.hpp"
-#include "Vendors/glm/ext.hpp"
-#include "Vendors/glm/gtx/quaternion.hpp"
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include "Core/Macro/Macro.h"
 #include <cmath>
 #include <array>
@@ -216,14 +216,14 @@ namespace MxEngine
 		return glm::slerp(q1, q2, a);
 	}
 
-	template<size_t Columns, size_t Rows, typename T>
-	inline Matrix<Columns, Rows, T> Transpose(const Matrix<Columns, Rows, T>& mat)
+    template<typename Matrix>
+	inline Matrix Transpose(const Matrix& mat)
 	{
 		return glm::transpose(mat);
 	}
 
-	template<size_t Columns, size_t Rows, typename T>
-	inline Matrix<Columns, Rows, T> Inverse(const Matrix<Columns, Rows, T>& mat)
+	template<typename Matrix>
+	inline Matrix Inverse(const Matrix& mat)
 	{
 		return glm::inverse(mat);
 	}
@@ -531,7 +531,7 @@ namespace MxEngine
 	*/
 	template<typename T>
 	inline auto DegreesVec(T vec)
-		-> decltype(vec.length(), vec[0], vec)
+		-> std::remove_reference_t<decltype(vec.length(), vec[0], vec)>
 	{
 		T result = vec;
 		for (typename T::length_type i = 0; i < vec.length(); i++)
@@ -546,7 +546,7 @@ namespace MxEngine
 	*/
 	template<typename T>
 	inline auto RadiansVec(T vec)
-		-> decltype(vec.length(), vec[0], vec)
+		-> std::remove_reference_t<decltype(vec.length(), vec[0], vec)>
 	{
 		T result = vec;
 		for (typename T::length_type i = 0; i < vec.length(); i++)

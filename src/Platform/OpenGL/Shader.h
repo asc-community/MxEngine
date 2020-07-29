@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Utilities/Math/Math.h"
-#include "core/Macro/Macro.h"
+#include "Core/Macro/Macro.h"
 #include "Utilities/STL/MxString.h"
 #include "Utilities/STL/MxHashMap.h"
 
@@ -53,7 +53,11 @@ namespace MxEngine
 		BindableId CreateProgram(ShaderId vertexShader, ShaderId geometryShader, ShaderId fragmentShader) const;
 		UniformType GetUniformLocation(const MxString& uniformName) const;
 		void FreeShader();
+
+		static MxString SetCurrentShaderVersion(const MxString& shaderSource);
 	public:
+		static MxString GetShaderVersionString();
+
 		Shader();
 		Shader(const MxString& vertexShaderPath, const MxString& fragmentShaderPath);
 		Shader(const MxString& vertexShaderPath, const MxString& geometryShaderPath, const MxString& fragmentShaderPath);

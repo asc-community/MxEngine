@@ -13,6 +13,7 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
+*.dll
 
 # Fortran module files
 *.mod
@@ -22,17 +23,23 @@
 *.lai
 *.la
 *.a
+*.lib
 
 # Executables
 *.out
 *.app
+*.exe
 
 # Visual Studio
 x64
 .vs
+.vscode
 Debug
 *.filters
 *.user
+
+# Clion
+.idea
 
 # Python
 __pycache__
@@ -40,6 +47,10 @@ __pycache__
 #CMake
 CMakeFiles
 CMakeCache.txt
+CMakeSettings.json
+cmake-build-debug
+cmake-build-release
+build
 out
 
 # MxEngine
@@ -50,4 +61,3 @@ external_libraries/*.lib
 python
 boost_headers
 Vendors
-Debug

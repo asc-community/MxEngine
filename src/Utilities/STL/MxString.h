@@ -28,8 +28,8 @@
 
 #pragma once
 
-#include <Vendors/eastl/EASTL/string.h>
-#include <Vendors/eastl/EASTL/fixed_string.h>
+#include <EASTL/string.h>
+#include <EASTL/fixed_string.h>
 #include <string>
 
 namespace MxEngine

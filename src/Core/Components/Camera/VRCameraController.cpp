@@ -92,9 +92,9 @@ namespace MxEngine
     {
         this->shaderVR = GraphicFactory::Create<Shader>();
         this->shaderVR->LoadFromString(
-            #include MAKE_PLATFORM_SHADER(rect_vertex)
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
-            #include MAKE_PLATFORM_SHADER(vr_fragment)
+            #include "Platform/OpenGL/Shaders/vr_fragment.glsl"
         );
     }
 }

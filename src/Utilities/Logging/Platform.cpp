@@ -13,6 +13,7 @@
 #if defined(MXENGINE_USE_BOOST)
 #include <boost/stacktrace.hpp>
 #endif
+#include <string>
 
 namespace MxEngine
 {
@@ -44,6 +45,21 @@ namespace MxEngine
         #endif
     }
 
+    bool starts_with(std::string_view str, std::string_view sub)
+    {
+        auto strIt = str.begin();
+        auto subIt = sub.begin();
+        auto strEnd = str.end();
+        auto subEnd = sub.end();
+
+        for(; subIt != subEnd; subIt++, strIt++)
+        {
+            if((strIt == strEnd) || (*strIt != *subIt))
+                return false;
+        }
+        return true;
+    }
+
     void PrintStacktrace(std::ostream& out)
     {
     #if defined(MXENGINE_USE_BOOST)
@@ -52,12 +68,12 @@ namespace MxEngine
         {
             auto function = st[i].name();
             auto filename = st[i].source_file();
-            // in C++20 starts_with will replace _Starts_with
+            // in C++20 starts_with will be included in standard
             if (!filename.empty() &&
-                !function._Starts_with("boost::") &&
-                !function._Starts_with("MxEngine::Logger") &&
-                !function._Starts_with("std::") &&
-                !function._Starts_with("function_call") &&
+                starts_with(function, "boost::") &&
+                starts_with(function, "MxEngine::Logger") &&
+                starts_with(function, "std::") &&
+                starts_with(function, "function_call") &&
                 function.find("main") == function.npos &&
                 function.find("PrintStacktrace") == function.npos &&
                 function.find("lambda_") == function.npos

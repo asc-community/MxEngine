@@ -26,8 +26,6 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
 #include "PointLight.h"
 
 namespace MxEngine
@@ -58,7 +56,7 @@ namespace MxEngine
         auto constant  = this->factors[0];
         auto linear    = this->factors[1];
         auto quadratic = this->factors[2];
-        return -linear + std::sqrtf(linear * linear - 4.0f * quadratic * (constant - (256.0f / 5.0f) * maxLight)) / (2.0f * quadratic);
+        return -linear + std::sqrt(linear * linear - 4.0f * quadratic * (constant - (256.0f / 5.0f) * maxLight)) / (2.0f * quadratic);
     }
 
     CubeMapHandle PointLight::GetDepthCubeMap() const

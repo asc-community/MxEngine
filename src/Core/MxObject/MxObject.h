@@ -52,7 +52,7 @@ namespace MxEngine
 		#endif
 	public:
 		MxString Name = UUIDGenerator::Get();
-		Transform Transform;
+		TransformComponent Transform;
 	private:
 		// placed here to be destroyed before other members
 		ComponentManager components;
@@ -96,7 +96,7 @@ namespace MxEngine
 		template<typename T, typename... Args>
 		auto AddComponent(Args&&... args)
 		{
-			static_assert(!std::is_same_v<T, MxEngine::Transform>, "Transform component is already present in MxObject");
+			static_assert(!std::is_same_v<T, TransformComponent>, "Transform component is already present in MxObject");
 
 			auto component = this->components.AddComponent<T>(std::forward<Args>(args)...);
 			component->UserData = reinterpret_cast<void*>(this->handle);
@@ -122,7 +122,7 @@ namespace MxEngine
 		template<typename T>
 		void RemoveComponent()
 		{
-			static_assert(!std::is_same_v<T, MxEngine::Transform>, "Transform component cannot be deleted");
+			static_assert(!std::is_same_v<T, MxEngine::TransformComponent>, "Transform component cannot be deleted");
 			this->components.RemoveComponent<T>();
 		}
 
@@ -135,7 +135,7 @@ namespace MxEngine
 		template<typename T>
 		static typename T::Handle GetComponentHandle(const T& component)
 		{
-			return MxObject::GetByComponent(component).GetComponent<T>();
+			return MxObject::GetByComponent(component).template GetComponent<T>();
 		}
 
 		template<typename T>

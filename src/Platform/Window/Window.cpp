@@ -329,6 +329,8 @@ namespace MxEngine
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, majorVersion);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minorVersion);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, ProfileType[(int)profile]);
+		MXLOG_INFO("OpenGL::Window", MxFormat("OpenGL version was set to: {0}.{1} ({2} profile)",
+                majorVersion, minorVersion, EnumToString(profile)));
 		return *this;
 	}
 

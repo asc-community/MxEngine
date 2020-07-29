@@ -30,15 +30,13 @@
 
 #include "File.h"
 #include "Utilities/String/String.h"
-
-#include <Vendors/eastl/EASTL/hash_map.h>
-#include <Vendors/eastl/EASTL/hash_set.h>
+#include "Utilities/STL/MxHashMap.h"
 
 namespace MxEngine
 {
     struct FileManagerImpl
     {
-        eastl::hash_map<StringId, FilePath> filetable;
+        MxHashMap<StringId, FilePath> filetable;
         FilePath root;
         size_t rootPathSize;
     };

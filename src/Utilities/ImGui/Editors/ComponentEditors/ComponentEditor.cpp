@@ -38,7 +38,7 @@ namespace MxEngine::GUI
 	if(ImGui::Button("remove component")) {\
 		MxObject::GetByComponent(comp).RemoveComponent<std::remove_reference_t<decltype(comp)>>(); return; }
 
-    void TransformEditor(Transform& transform)
+    void TransformEditor(TransformComponent& transform)
     {
 		TREE_NODE_PUSH("Transform");
 		// note that Transform component cannot be removed
@@ -123,6 +123,6 @@ namespace MxEngine::GUI
 		TREE_NODE_PUSH("Script");
 		REMOVE_COMPONENT_BUTTON(script);
 		ImGui::Text("path: %s", script.GetFilePath().c_str()); //-V111
-		ImGui::LabelText("contents", script.GetContent().c_str());
+		ImGui::Text("contents:\n %s", script.GetContent().c_str());
 	}
 }

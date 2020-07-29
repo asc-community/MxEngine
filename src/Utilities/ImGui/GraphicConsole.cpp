@@ -11,7 +11,7 @@ static void  Strtrim(char* str) { char* str_end = str + strlen(str); while (str_
 namespace MxEngine
 {
 	// In C++11 you are better off using lambdas for this sort of forwarding callbacks
-	static int TextEditCallbackStub(ImGuiInputTextCallbackData* data)
+	int TextEditCallbackStub(ImGuiInputTextCallbackData* data)
 	{
 		GraphicConsole* console = (GraphicConsole*)data->UserData;
 		return console->TextEditCallback(data);
@@ -131,7 +131,11 @@ namespace MxEngine
 			Strtrim(s);
 			if (s[0])
 				ExecCommand(s);
+            #if defined(MXENGINE_WINDOWS)
 			strcpy_s(s, 1, "");
+            #else
+            strcpy(s, "");
+            #endif
 			reclaim_focus = true;
 		}
 		ImGui::PopItemWidth();

@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Core/Macro/Macro.h"
+#include <cstddef>
 
 namespace MxEngine
 {

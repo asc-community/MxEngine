@@ -85,7 +85,7 @@ namespace MxEngine
         void ReAddRigidBody();
         void UpdateRigidBodyCollider(float mass, btCollisionShape* collider);
     public:
-        NativeRigidBody(const Transform& transform);
+        NativeRigidBody(const TransformComponent& transform);
         NativeRigidBody(const NativeRigidBody&) = delete;
         NativeRigidBody(NativeRigidBody&&) noexcept;
         NativeRigidBody& operator=(const NativeRigidBody&) = delete;

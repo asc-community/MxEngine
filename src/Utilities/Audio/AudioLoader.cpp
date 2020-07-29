@@ -33,13 +33,13 @@
 #include "Core/Macro/Macro.h"
 
 #define DR_FLAC_IMPLEMENTATION
-#include "Vendors/miniaudio/dr_flac.h"     /* Enables FLAC decoding. */
+#include <dr_flac.h>     /* Enables FLAC decoding. */
 #define DR_MP3_IMPLEMENTATION
-#include "Vendors/miniaudio/dr_mp3.h"      /* Enables MP3 decoding. */
+#include <dr_mp3.h>      /* Enables MP3 decoding. */
 #define DR_WAV_IMPLEMENTATION
-#include "Vendors/miniaudio/dr_wav.h"      /* Enables WAV decoding. */
+#include <dr_wav.h>      /* Enables WAV decoding. */
 
-#include "Vendors/stb/stb_vorbis.h"  /* Enables OGG decoding. */
+#include <stb_vorbis.c>  /* Enables OGG decoding. */
 
 namespace MxEngine
 {
