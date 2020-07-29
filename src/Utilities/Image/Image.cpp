@@ -29,13 +29,14 @@
 #include "Image.h"
 #include "Core/Macro/Macro.h"
 #include <memory>
+#include <cstdlib>
 
 namespace MxEngine
 {
 	void Image::Free()
 	{
 		if (this->data != nullptr)
-			std::free(this->data);
+			free(this->data);
 	}
 
 	Image::Image() : Image(nullptr, 0, 0, 0) { }
