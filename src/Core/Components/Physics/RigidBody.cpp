@@ -126,10 +126,12 @@ namespace MxEngine
         this->rigidBody->SetCollisionShape(nullptr); // no collider
     }
 
+    #undef DISABLE_DEACTIVATION
+    #undef ACTIVE_TAG
+
     void RigidBody::MakeKinematic()
     {
         this->SetCollisionFilter(CollisionMask::KINEMATIC, CollisionGroup::ALL);
-        #undef DISABLE_DEACTIVATION
         // from bullet3 manual (see https://github.com/bulletphysics/bullet3/blob/master/docs/Bullet_User_Manual.pdf page 22)
         this->rigidBody->SetActivationState(ActivationState::DISABLE_DEACTIVATION);
     }
@@ -137,12 +139,14 @@ namespace MxEngine
     void RigidBody::MakeDynamic()
     {
         this->SetCollisionFilter(CollisionMask::DYNAMIC, CollisionGroup::ALL);
+        this->rigidBody->SetActivationState(ActivationState::ACTIVE_TAG);
     }
 
     void RigidBody::MakeStatic()
     {
         this->SetMass(0.0f);
         this->SetCollisionFilter(CollisionMask::STATIC, CollisionGroup::NO_STATIC_COLLISIONS);
+        this->rigidBody->SetActivationState(ActivationState::ACTIVE_TAG);
     }
 
     bool RigidBody::IsKinematic() const

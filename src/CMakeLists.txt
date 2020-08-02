@@ -163,7 +163,7 @@ set(MXENGINE_SOURCES
     "Core/Config/Config.cpp" 
     "Core/Config/GlobalConfig.cpp" 
     "Core/Application/Physics.cpp" 
-    "Core/Application/Render.cpp" 
+    "Core/Application/Rendering.cpp" 
     "Core/Application/Application.cpp" 
     "Core/Components/Physics/CapsuleCollider.cpp" 
     "Core/Components/Physics/CylinderCollider.cpp"

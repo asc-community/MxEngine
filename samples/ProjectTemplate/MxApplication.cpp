@@ -4,6 +4,9 @@ namespace ProjectTemplate
 {
     using namespace MxEngine;
 
+    /*
+    this is MxEngine template project. Just copy it and start developing!
+    */
     class MxApplication : public Application
     {
     public:

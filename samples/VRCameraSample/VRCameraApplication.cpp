@@ -4,6 +4,12 @@ namespace VRCameraSample
 {
     using namespace MxEngine;
 
+    /*
+    this samples show how to create working VR camera (render two images aka eyes)
+    you can set eye distance or focus distance for vr camera. To make focus distance dynamic,
+    you would need to add colliders for each cube and raycast from eye center
+    for more info about colliders and raycasting, see PhysicsSample
+    */
     class VRCameraApplication : public Application
     {
         MxObject::Handle VRCamera;
@@ -12,13 +18,15 @@ namespace VRCameraSample
         {
             auto skyboxCubemap = AssetManager::LoadCubeMap("Resources/bluesky.png");
 
-            auto leftEyeObject  = MxObject::Create();
+            // create camera for left eye
+            auto leftEyeObject = MxObject::Create();
             leftEyeObject->Name = "Left Eye";
             auto leftEyeSkybox = leftEyeObject->AddComponent<Skybox>();
             leftEyeSkybox->Texture = skyboxCubemap;
             auto leftEye = leftEyeObject->AddComponent<CameraController>();
             leftEye->GetCamera<PerspectiveCamera>().SetFOV(90.0f);
 
+            // create camera for right eye
             auto rightEyeObject = MxObject::Create();
             rightEyeObject->Name = "Right Eye";
             auto rightEyeSkybox = rightEyeObject->AddComponent<Skybox>();
@@ -26,6 +34,7 @@ namespace VRCameraSample
             auto rightEye = rightEyeObject->AddComponent<CameraController>();
             rightEye->GetCamera<PerspectiveCamera>().SetFOV(90.0f);
 
+            // create VR camera and add other cameras as two eyes
             VRCamera = MxObject::Create();
             VRCamera->Name = "VR Camera";
 
@@ -43,33 +52,27 @@ namespace VRCameraSample
 
             Rendering::SetViewport(controller);
 
+            // create bunch of random cubes to test how VR works with different parameters
             auto cubeObject = MxObject::Create();
-            cubeObject->Name = "Cube";
-            cubeObject->Transform.Translate(MakeVector3(-1.0f, -1.0f, 3.0f));
+            cubeObject->Name = "CubeFactory";
+            cubeObject->Transform.Translate(MakeVector3(5.0f, 0.0f, 5.0f));
             cubeObject->AddComponent<MeshSource>(Primitives::CreateCube());
-            auto cubeMaterials = cubeObject->AddComponent<MeshRenderer>();
-            cubeMaterials->GetMaterial()->AmbientColor = MakeVector3(1.0f, 0.0f, 0.0f);
-            cubeMaterials->GetMaterial()->DiffuseColor = MakeVector3(1.0f, 0.0f, 0.0f);
+            auto sphereMaterials = cubeObject->AddComponent<MeshRenderer>();
+            auto instanceFactory = cubeObject->AddComponent<InstanceFactory>();
 
-            auto sphereObject = MxObject::Create();
-            sphereObject->Name = "Sphere";
-            sphereObject->Transform.Translate(MakeVector3(5.0f, 0.0f, 5.0f));
-            sphereObject->AddComponent<MeshSource>(Primitives::CreateSphere());
-            auto sphereMaterials = sphereObject->AddComponent<MeshRenderer>();
-            auto instanceFactory = sphereObject->AddComponent<InstanceFactory>();
-            
-            for (size_t i = 0; i < 20; i++)
+            for (size_t i = 0; i < 500; i++)
             {
-                auto sphereInstance = instanceFactory->MakeInstance();
+                auto instance = instanceFactory->MakeInstance();
 
                 float rx = Random::GetFloat();
                 float ry = Random::GetFloat();
                 float rz = Random::GetFloat();
 
-                sphereInstance->Transform.Translate(20.0f * MakeVector3(rx, ry, rz) - 10.0f);
-                sphereInstance->GetComponent<Instance>()->SetColor(MakeVector3(rx, ry, rz));
+                instance->Transform.Translate(20.0f * MakeVector3(rx, ry, rz) - 10.0f);
+                instance->GetComponent<Instance>()->SetColor(MakeVector3(rx, ry, rz));
             }
 
+            // create global light
             auto lightObject = MxObject::Create();
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
@@ -79,22 +82,20 @@ namespace VRCameraSample
 
         virtual void OnUpdate() override
         {
+            // draw debug information to check vr camera parameters without opening runtime editor
             if (this->VRCamera.IsValid() && this->VRCamera->HasComponent<VRCameraController>())
             {
                 auto& vr = *VRCamera->GetComponent<VRCameraController>();
                 ImGui::Begin("VR info");
                 ImGui::Text("eye focus distance: %f", vr.FocusDistance);
                 ImGui::Text("eye distance: %f", vr.EyeDistance);
-                ImGui::Text(" left eye fov: %f",  vr.LeftEye->GetCamera<PerspectiveCamera>().GetFOV());
+                ImGui::Text(" left eye fov: %f", vr.LeftEye->GetCamera<PerspectiveCamera>().GetFOV());
                 ImGui::Text("right eye fov: %f", vr.RightEye->GetCamera<PerspectiveCamera>().GetFOV());
                 ImGui::End();
             }
         }
 
-        virtual void OnDestroy() override
-        {
-
-        }
+        virtual void OnDestroy() override { }
     };
 }
 

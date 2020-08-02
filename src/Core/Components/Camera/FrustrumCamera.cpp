@@ -46,11 +46,11 @@ namespace MxEngine
         return MakeVector3(v.x, v.y, s);
     }
 
-    void FrustrumCamera::SetProjectionForTile(size_t xTile, size_t yTile, size_t tilesPerRaw, float totalImageSize)
+    void FrustrumCamera::SetProjectionForTile(size_t xTile, size_t yTile, size_t tilesPerRow, float totalImageSize)
     {
-        float tileSize = totalImageSize / float(tilesPerRaw);
-        float initialOffsetX = -0.5f * tilesPerRaw * tileSize;
-        float initialOffsetY = -0.5f * tilesPerRaw * tileSize;
+        float tileSize = totalImageSize / float(tilesPerRow);
+        float initialOffsetX = -0.5f * tilesPerRow * tileSize;
+        float initialOffsetY = -0.5f * tilesPerRow * tileSize;
         float x = initialOffsetX + xTile * tileSize;
         float y = initialOffsetY + yTile * tileSize;
         this->SetBounds(x, y, tileSize);

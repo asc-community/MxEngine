@@ -13,9 +13,6 @@
 [submodule "submodules/EASTL"]
 	path = submodules/EASTL
 	url = https://github.com/electronicarts/EASTL
-[submodule "submodules/json"]
-	path = submodules/json
-	url = https://github.com/nlohmann/json
 [submodule "submodules/EABase"]
 	path = submodules/EABase
 	url = https://github.com/electronicarts/EABase
@@ -38,3 +35,6 @@
 [submodule "submodules/glew"]
 	path = submodules/glew
 	url = https://github.com/MomoDeve/glew-cmake
+[submodule "submodules/json"]
+	path = submodules/json
+	url = https://github.com/nlohmann/json

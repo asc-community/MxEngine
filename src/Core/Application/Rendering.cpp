@@ -50,6 +50,19 @@ namespace MxEngine
         }
     }
 
+    VectorInt2 GetViewportSize()
+    {
+        VectorInt2 size{ 0, 0 };
+        auto viewport = Rendering::GetViewport();
+        if (viewport.IsValid())
+        {
+            auto texture = viewport->GetRenderTexture();
+            size.x = (int)texture->GetWidth();
+            size.y = (int)texture->GetHeight();
+        }
+        return size;
+    }
+
     RenderController& Rendering::GetController()
     {
         return Application::Get()->GetRenderAdaptor().Renderer;

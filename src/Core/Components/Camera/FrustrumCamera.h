@@ -37,6 +37,6 @@ namespace MxEngine
 	public:
 		void SetBounds(float x, float y, float size);
 		Vector3 GetBounds() const;
-		void SetProjectionForTile(size_t xTile, size_t yTile, size_t tilesPerRaw, float totalImageSize);
+		void SetProjectionForTile(size_t xTile, size_t yTile, size_t tilesPerRow, float totalImageSize);
 	};
 }

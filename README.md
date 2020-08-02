@@ -108,14 +108,15 @@ All physical objects with colliders can be raycasted and accessed using simple a
 ```cs
 auto raySource = Vector3(0.0f);
 auto rayDirection = Vector3(1.0f, 0.0f, 0.0f);
-auto rayDistance = raySource + rayDirection * 100.0f;
+auto rayLength = 100.0f;
+auto rayDistance = raySource + rayDirection * rayLength;
 
-float rayLength = 0.0f;
-auto object = Physics::RayCast(raySource, rayDistance, rayLength);
+float rayFraction = 0.0f;
+auto object = Physics::RayCast(raySource, rayDistance, rayFraction);
 if(object.IsValid())
 {
 	MXLOG_INFO("raycast", "found object: " + object->Name);
-	MXLOG_INFO("raycast", "distance to object: " + ToMxString(rayLength));
+	MXLOG_INFO("raycast", "distance to object: " + ToMxString(rayLength * rayFraction));
 }
 ```
 ### Setting up timers and events
@@ -164,7 +165,7 @@ auto debug = object->AddComponent<DebugDraw>();
 debug->RenderBoundingBox = true;
 debug->BoundingBoxColor = Colors::Create(Colors::RED);
 
-Rendering::Draw(Line({0.0f, 0.0f, 0.0f}, {10.0f, 10.0f, 10.0f}), Colors::Create(Colors::GREEN));
+Rendering::Draw(Line({0.0f, 0.0f, 0.0f}, {10.0f, 10.0f, 10.0f}), Colors::Create(Colors::GREEN, 1.0f));
 ```
 
 ## Dependencies
@@ -180,6 +181,19 @@ If you are interesed in libraries MxEngine depend on, consider reading [dependen
 - If I want to help you with development, how can I get into this project? Is there a documentation for it?
 	> Sadly there are too much things that I need to document and so much features which I need to implement, that I have almost no time for proper documentation. You can start with `ProjectTemplate` CMake project, and try some things for yourself. I promise I will add more samples with each release to make usage of the engine easier. If you want to help me with developing, building on other systems or fixing bugs, first contact me personally (links to my social media can be found in [my profile](https://github.com/MomoDeve)). We can discuss what you may do and how can you help the engine to progress
 	
+## More engine screenshots
+<p align="center">
+<img src="preview_images/readme_additional1.png">
+*physics simulation with colliders turned on*
+
+<img src="preview_images/readme_additional2.png">
+*light and sound bounds, other debug utilities*
+</p>
+
+<img src="preview_images/readme_additional3.png">
+*VR camera rendering scene for each eye*
+</p>
+
 ## Projects based on MxEngine
 Here is the list of some projects using MxEngine. If you want to see yours here, [contact me](https://github.com/MomoDeve).
 ### Rainball by WhiteBlackGoose

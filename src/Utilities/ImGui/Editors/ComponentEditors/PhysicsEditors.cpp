@@ -81,7 +81,7 @@ namespace MxEngine::GUI
 			rigidBody.ToggleRayCasting(isRaycastable);
 			
 		auto mass = rigidBody.GetMass();
-		if (ImGui::DragFloat("mass", &mass, 0.01f, 0.01f))
+		if (ImGui::DragFloat("mass", &mass, 0.01f))
 			rigidBody.SetMass(mass);
 
 		if (ImGui::TreeNode("applied forces"))

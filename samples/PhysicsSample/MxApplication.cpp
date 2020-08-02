@@ -4,77 +4,85 @@ namespace PhysicsSample
 {
     using namespace MxEngine;
 
+    /*
+    this big sample shows how engine physics and raycasting works
+    here we create big box with open top and put some physical objects inside
+    player allowed to shoot spheres to interact with environment
+    many parameters can be setup in runtime editor: simulation reset, object count, debug draw for physics
+    also, when editor is enabled, raycasting info is shown, raycasted point is indicated by small red box
+    */
     class PhysicsApplication : public Application
     {
-    public:
         MxObject::Handle cameraObject;
-        InstanceFactory::Handle ObjectFactory;
-        InstanceFactory::Handle ShotFactory;
-        int lenA = 3;
-        int lenB = 7;
-        int lenC = 3;            
-        float BigCubeSize = 160.0f;
-        float BigCubeThickness = 3.0f;
-        bool PhysicsDebug = false;
+        InstanceFactory::Handle physicalObjectFactory;
+        InstanceFactory::Handle shotFactory;
+        bool debugPhysics = false;
+        size_t cubeConstraintsA = 3;
+        size_t cubeConstraintsB = 7;
+        size_t cubeConstraintsC = 3;
 
-        void Reset()
+        const float wallSize = 160.0f;
+        const float wallThickness = 3.0f;
+        const float shotSize = 1.5f;
+
+        void ResetSimulation()
         {
-            ObjectFactory->DestroyInstances();
-            ShotFactory->DestroyInstances();
-            for (size_t i = 0; i < size_t(lenA * lenB * lenC); i++)
+            physicalObjectFactory->DestroyInstances();
+            shotFactory->DestroyInstances();
+
+            for (size_t i = 0; i < cubeConstraintsA * cubeConstraintsB * cubeConstraintsC; i++)
             {
-                float size = 5.0f;
+                const float size = 5.0f;
+                const float offset = size * 0.5f + wallThickness * 0.5f;
 
-                float x = i / (lenC * lenB) % lenA * size; //-V104 //-V636
-                float y = i / lenC % lenB * size;          //-V104 //-V636
-                float z = i % lenC * size;                 //-V104 //-V636
+                float x = i / (cubeConstraintsC * cubeConstraintsB) % cubeConstraintsA * size; //-V104 //-V636
+                float y = i / cubeConstraintsC % cubeConstraintsB * size;                      //-V104 //-V636
+                float z = i % cubeConstraintsC * size;                                         //-V104 //-V636
 
-                float offset = size * 0.5f + BigCubeThickness * 0.5f;
-
-                auto object = ObjectFactory->MakeInstance();
+                auto object = physicalObjectFactory->MakeInstance();
 
                 object->Transform.SetPosition(Vector3(x, y + offset, z));
-                object->GetComponent<Instance>()->SetColor(Vector3(x / lenA / size, y / lenB / size, z / lenC / size));
+                object->GetComponent<Instance>()->SetColor(Vector3(x / cubeConstraintsA / size, y / cubeConstraintsB / size, z / cubeConstraintsC / size));
                 object->Transform.SetScale(size);
 
+                // create rigid body with box collider. setup extra parameters to make objects more balanced
                 object->AddComponent<BoxCollider>();
                 auto rigidBody = object->AddComponent<RigidBody>();
                 rigidBody->MakeDynamic();
                 rigidBody->SetMass(800.0f / (1.0f + y * y * y));
                 rigidBody->SetAngularForceFactor(Vector3(0.01f));
 
-                if (PhysicsDebug)
+                if (debugPhysics)
                 {
                     object->AddComponent<DebugDraw>()->RenderPhysicsCollider = true;
                 }
             }
         }
 
-        void InitializeBoxFace(const Vector3& coord, const Vector3& xyz, const Vector3& offset, const float BigCubeSize, const float thickness, const float transparency)
+        void InitializeWall(const Vector3& coord, const Vector3& xyz, const Vector3& offset, const float size, const float thickness, const float transparency)
         {
-            auto cube = MxObject::Create();
-            cube->Name = "Big Cube";
-            cube->AddComponent<MeshSource>(Primitives::CreateCube());
-            cube->AddComponent<BoxCollider>();
-            cube->AddComponent<RigidBody>();
-            auto material = cube->AddComponent<MeshRenderer>()->GetMaterial();
+            auto wall = MxObject::Create();
+            wall->Name = "Wall";
+            wall->AddComponent<MeshSource>(Primitives::CreateCube());
+            wall->AddComponent<BoxCollider>();
+            wall->AddComponent<RigidBody>();
+            auto material = wall->AddComponent<MeshRenderer>()->GetMaterial();
             material->Transparency = transparency;
-            cube->Transform.SetScale(Vector3(xyz.x * BigCubeSize + thickness, xyz.y * BigCubeSize + thickness, xyz.z * BigCubeSize + thickness));
-            cube->Transform.SetPosition(Vector3((BigCubeSize * offset).x / 2, (BigCubeSize * offset).y / 2, (BigCubeSize * offset).z / 2) + coord);
+            wall->Transform.SetScale(Vector3(xyz.x * size + thickness, xyz.y * size + thickness, xyz.z * size + thickness));
+            wall->Transform.SetPosition(Vector3((size * offset).x / 2, (size * offset).y / 2, (size * offset).z / 2) + coord);
         }
 
         void CreateShot()
         {
-            float cubeSize = 1.5f;
-            auto object = ShotFactory->MakeInstance();
+            auto object = shotFactory->MakeInstance();
 
-            if (PhysicsDebug)
+            if (debugPhysics)
             {
                 object->AddComponent<DebugDraw>()->RenderPhysicsCollider = true;
             }
 
             auto dir = cameraObject->GetComponent<CameraController>()->GetDirection();
-            object->Transform.SetScale(cubeSize);
+            object->Transform.SetScale(shotSize);
             object->Transform.SetPosition(cameraObject->Transform.GetPosition());
             object->AddComponent<SphereCollider>();
             auto rigidBody = object->AddComponent<RigidBody>();
@@ -83,8 +91,10 @@ namespace PhysicsSample
             rigidBody->SetMass(50.0f);
         }
 
+    public:
         virtual void OnCreate() override
         {
+            // setup camera
             cameraObject = MxObject::Create();
             cameraObject->Name = "Player Camera";
             cameraObject->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("dawn.jpg"_id);
@@ -107,44 +117,43 @@ namespace PhysicsSample
             dirLight->Direction = MakeVector3(0.1f, 1.0f, 0.0f);
             dirLight->FollowViewport();
 
+            // create factories for physical objects and player shots
             auto instances = MxObject::Create();
             instances->Name = "Cube Instances";
             instances->AddComponent<MeshSource>(Primitives::CreateCube());
             instances->AddComponent<MeshRenderer>();
-            ObjectFactory = instances->AddComponent<InstanceFactory>();
+            physicalObjectFactory = instances->AddComponent<InstanceFactory>();
 
             auto shots = MxObject::Create();
             shots->Name = "Shots Instances";
             shots->AddComponent<MeshSource>(Primitives::CreateSphere());
             shots->AddComponent<MeshRenderer>();
-            ShotFactory = shots->AddComponent<InstanceFactory>();
+            shotFactory = shots->AddComponent<InstanceFactory>();
 
-            Vector3 coordOffset(0, BigCubeSize / 2, 0);
-            InitializeBoxFace(coordOffset, Vector3(1, 0, 1), Vector3( 0, -1,  0), BigCubeSize, BigCubeThickness, 0.6f);
-            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3(-1,  0,  0), BigCubeSize, BigCubeThickness, 0.6f);
-            InitializeBoxFace(coordOffset, Vector3(0, 1, 1), Vector3( 1,  0,  0), BigCubeSize, BigCubeThickness, 0.6f);
-            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3( 0,  0, -1), BigCubeSize, BigCubeThickness, 0.6f);
-            InitializeBoxFace(coordOffset, Vector3(1, 1, 0), Vector3( 0,  0,  1), BigCubeSize, BigCubeThickness, 0.6f);
+            // create open-box shape where simulation will happen
+            Vector3 coordinateOffset(0, wallSize / 2, 0);
+            InitializeWall(coordinateOffset, Vector3(1, 0, 1), Vector3( 0, -1,  0), wallSize, wallThickness, 0.6f);
+            InitializeWall(coordinateOffset, Vector3(0, 1, 1), Vector3(-1,  0,  0), wallSize, wallThickness, 0.6f);
+            InitializeWall(coordinateOffset, Vector3(0, 1, 1), Vector3( 1,  0,  0), wallSize, wallThickness, 0.6f);
+            InitializeWall(coordinateOffset, Vector3(1, 1, 0), Vector3( 0,  0, -1), wallSize, wallThickness, 0.6f);
+            InitializeWall(coordinateOffset, Vector3(1, 1, 0), Vector3( 0,  0,  1), wallSize, wallThickness, 0.6f);
 
-            this->Reset();
-            Physics::SetSimulationStep(0.0f); // disable auto-physics sim
+            this->ResetSimulation();
         }
 
         virtual void OnUpdate() override
         {
+            // allow player to shoot every 100ms
             static float timeSinceShot = 0.0f;
+            const float shootInterval = 0.1f;
             timeSinceShot += GetTimeDelta();
-            if (Input::IsMouseHeld(MouseButton::LEFT) && timeSinceShot > 0.1f)
+            if (Input::IsMouseHeld(MouseButton::LEFT) && timeSinceShot > shootInterval)
             {
                 timeSinceShot = 0.0f;
                 this->CreateShot();
             }
 
-            if (!Input::IsMouseHeld(MouseButton::RIGHT))
-            {
-                Physics::PerformExtraSimulationStep(this->GetTimeDelta());
-            }
-
+            // draw small red box where player is looking at
             if (Runtime::IsEditorActive())
             {
                 auto dir = cameraObject->GetComponent<CameraController>()->GetDirection();
@@ -171,13 +180,18 @@ namespace PhysicsSample
                 ImGui::Separator();
 
                 if (ImGui::Button("reset"))
-                    this->Reset();
+                {
+                    this->ResetSimulation();
+                }
 
-                ImGui::Checkbox("debug physics", &PhysicsDebug);
+                ImGui::Checkbox("debug physics", &debugPhysics);
 
-                ImGui::InputInt("X", &lenA);
-                ImGui::InputInt("Y", &lenB);
-                ImGui::InputInt("Z", &lenC);
+                int x = cubeConstraintsA, y = cubeConstraintsB, z = cubeConstraintsC;
+                ImGui::InputInt("X", &x);
+                ImGui::InputInt("Y", &y);
+                ImGui::InputInt("Z", &z);
+
+                cubeConstraintsA = Max(0, x), cubeConstraintsB = Max(0, y), cubeConstraintsC = Max(0, z);
 
                 ImGui::End();
             }

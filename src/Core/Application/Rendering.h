@@ -40,6 +40,7 @@ namespace MxEngine
 		static CameraController::Handle GetViewport();
 		static void SetViewport(const CameraController::Handle& viewport);
         static void ResizeViewport(size_t width, size_t height);
+        static VectorInt2 GetViewportSize();
 		static RenderController& GetController();
         static RenderAdaptor& GetAdaptor();
         static void LoadMainShader(bool useLighting = true);

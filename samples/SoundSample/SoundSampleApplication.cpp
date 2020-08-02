@@ -4,11 +4,17 @@ namespace SoundSample
 {
     using namespace MxEngine;
 
+    /*
+    this sample shows how 3D sounds can be played in engine
+    usually you would like to attach AudioListener to player (camera)
+    then just create object with AudioSource attached and activate it
+    */
     class SoundApplication : public Application
     {
     public:
         virtual void OnCreate() override
         {
+            // create camera and global light for a scene
             auto cameraObject = MxObject::Create();
             cameraObject->Name = "Player Camera";
 
@@ -60,15 +66,9 @@ namespace SoundSample
             soundObject->AddComponent<Behaviour>(SoundBehaviour{ });
         }
 
-        virtual void OnUpdate() override
-        {
-            
-        }
+        virtual void OnUpdate() override { }
 
-        virtual void OnDestroy() override
-        {
-
-        }
+        virtual void OnDestroy() override { }
     };
 }
 
