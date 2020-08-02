@@ -5,9 +5,9 @@ namespace SoundSample
     using namespace MxEngine;
 
     /*
-    this sample shows how 3D sounds can be played in engine
-    usually you would like to attach AudioListener to player (camera)
-    then just create object with AudioSource attached and activate it
+    this sample shows how 3D sounds can be played in the engine
+    usually you would like to attach AudioListener to player object (camera)
+    then just create another object with AudioSource attached and activate it
     */
     class SoundApplication : public Application
     {

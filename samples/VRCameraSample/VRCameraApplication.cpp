@@ -5,9 +5,9 @@ namespace VRCameraSample
     using namespace MxEngine;
 
     /*
-    this samples show how to create working VR camera (render two images aka eyes)
-    you can set eye distance or focus distance for vr camera. To make focus distance dynamic,
-    you would need to add colliders for each cube and raycast from eye center
+    this sample shows how to create working VR camera (render two images as eyes)
+    you can set eye distance or focus distance for VR camera. If you want to make focus distance dynamic,
+    you need to add colliders for each cube and use raycast from eye center
     for more info about colliders and raycasting, see PhysicsSample
     */
     class VRCameraApplication : public Application

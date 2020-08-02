@@ -2,6 +2,7 @@
 ![](https://img.shields.io/badge/version-7.4.3-red)
 ![](https://img.shields.io/badge/license-bsd--3-yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
+![](https://img.shields.io/badge/build-cmake-green)
 <!-- soon! [![Documentation](https://codedocs.xyz/MomoDeve/MxEngine.svg)](https://codedocs.xyz/MomoDeve/MxEngine/) -->
 
 MxEngine is an educational modern-C++ general-purpose 3D game engine. 
@@ -184,14 +185,14 @@ If you are interesed in libraries MxEngine depend on, consider reading [dependen
 ## More engine screenshots
 <p align="center">
 <img src="preview_images/readme_additional1.png">
-*physics simulation with colliders turned on*
+<i>physics simulation with colliders turned on</i>
 
 <img src="preview_images/readme_additional2.png">
-*light and sound bounds, other debug utilities*
+<i>light and sound bounds, other debug utilities</i>
 </p>
 
 <img src="preview_images/readme_additional3.png">
-*VR camera rendering scene for each eye*
+<i>VR camera rendering scene for each eye</i>
 </p>
 
 ## Projects based on MxEngine

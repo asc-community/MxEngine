@@ -5,11 +5,12 @@ namespace PhysicsSample
     using namespace MxEngine;
 
     /*
-    this big sample shows how engine physics and raycasting works
+    this big sample shows how engine physics and raycasting work
     here we create big box with open top and put some physical objects inside
-    player allowed to shoot spheres to interact with environment
-    many parameters can be setup in runtime editor: simulation reset, object count, debug draw for physics
-    also, when editor is enabled, raycasting info is shown, raycasted point is indicated by small red box
+    player allowed to shoot spheres to interact with the environment
+    many parameters can be set in runtime editor: 
+    reseting simulation, dynamic object count, debug draw for physic colliders
+    also, when editor is enabled, raycasting info is shown and raycasted point is indicated by small red box
     */
     class PhysicsApplication : public Application
     {
