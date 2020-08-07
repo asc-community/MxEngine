@@ -220,11 +220,14 @@ namespace MxEngine
                 float z = std::sin(Pi<float>() * m / polygons) * std::sin(2 * Pi<float>() * n / polygons);
                 float y = std::cos(Pi<float>() * m / polygons) * -1.0f;
 
-                vertex.Position = MakeVector3(x, y, z);
+                vertex.Position = 0.5f * MakeVector3(x, y, z);
                 vertex.Normal = MakeVector3(x, y, z);
 
                 vertex.TexCoord.x = 1.0f - static_cast<float>(n) / polygons;
                 vertex.TexCoord.y = static_cast<float>(m) / polygons;
+
+                vertex.Tangent = MakeVector3(-z, 0, x);
+                vertex.Bitangent = Cross(vertex.Normal, vertex.Tangent);
             }
         }
 
@@ -251,7 +254,6 @@ namespace MxEngine
                 }
             }
         }
-        meshData.RegenerateTangentSpace();
         return Primitives::CreateMesh(std::move(meshData));
     }
 
@@ -259,7 +261,7 @@ namespace MxEngine
     {
         MeshData meshData;
 
-        polygons -= polygons % 4;
+        polygons = Max(polygons - polygons % 4, 4);
         MxVector<Vector2> circle(polygons);
         for (size_t i = 0; i < polygons; i++)
         {

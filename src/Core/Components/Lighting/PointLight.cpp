@@ -27,13 +27,15 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "PointLight.h"
+#include "Core/Config/GlobalConfig.h"
 
 namespace MxEngine
 {
     PointLight::PointLight()
     {
+        auto depthTextureSize = (int)GlobalConfig::GetPointLightTextureSize();
         auto cubemap = GraphicFactory::Create<CubeMap>();
-        cubemap->LoadDepth(512, 512);
+        cubemap->LoadDepth(depthTextureSize, depthTextureSize);
         this->AttachDepthCubeMap(cubemap);
     }
 

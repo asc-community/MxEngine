@@ -187,7 +187,7 @@ namespace PhysicsSample
 
                 ImGui::Checkbox("debug physics", &debugPhysics);
 
-                int x = cubeConstraintsA, y = cubeConstraintsB, z = cubeConstraintsC;
+                auto x = (int)cubeConstraintsA, y = (int)cubeConstraintsB, z = (int)cubeConstraintsC;
                 ImGui::InputInt("X", &x);
                 ImGui::InputInt("Y", &y);
                 ImGui::InputInt("Z", &z);

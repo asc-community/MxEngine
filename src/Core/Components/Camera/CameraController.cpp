@@ -41,7 +41,7 @@ namespace MxEngine
 	PerspectiveCamera& CameraController::GetCamera<PerspectiveCamera>()
 	{
 		MX_ASSERT(this->GetCameraType() == CameraType::PERSPECTIVE);
-		static_assert(sizeof(PerspectiveCamera) == sizeof(this->Camera), "camera byte storage size mismatch");
+		static_assert(AssertEquality<sizeof(PerspectiveCamera), sizeof(this->Camera)>::value, "camera byte storage size mismatch");
 		return *reinterpret_cast<PerspectiveCamera*>(&this->Camera); //-V717
 	}
 
@@ -49,7 +49,7 @@ namespace MxEngine
 	const PerspectiveCamera& CameraController::GetCamera<PerspectiveCamera>() const
 	{
 		MX_ASSERT(this->GetCameraType() == CameraType::PERSPECTIVE);
-		static_assert(sizeof(PerspectiveCamera) == sizeof(this->Camera), "camera byte storage size mismatch");
+		static_assert(AssertEquality<sizeof(PerspectiveCamera), sizeof(this->Camera)>::value, "camera byte storage size mismatch");
 		return *reinterpret_cast<const PerspectiveCamera*>(&this->Camera); //-V717
 	}
 
@@ -57,7 +57,7 @@ namespace MxEngine
 	FrustrumCamera& CameraController::GetCamera<FrustrumCamera>()
 	{
 		MX_ASSERT(this->GetCameraType() == CameraType::FRUSTRUM);
-		static_assert(sizeof(FrustrumCamera) == sizeof(this->Camera), "camera byte storage size mismatch");
+		static_assert(AssertEquality<sizeof(FrustrumCamera), sizeof(this->Camera)>::value, "camera byte storage size mismatch");
 		return *reinterpret_cast<FrustrumCamera*>(&this->Camera); //-V717
 	}
 
@@ -65,7 +65,7 @@ namespace MxEngine
 	const FrustrumCamera& CameraController::GetCamera<FrustrumCamera>() const
 	{
 		MX_ASSERT(this->GetCameraType() == CameraType::FRUSTRUM);
-		static_assert(sizeof(FrustrumCamera) == sizeof(this->Camera), "camera byte storage size mismatch");
+		static_assert(AssertEquality<sizeof(FrustrumCamera), sizeof(this->Camera)>::value, "camera byte storage size mismatch");
 		return *reinterpret_cast<const FrustrumCamera*>(&this->Camera); //-V717
 	}
 
@@ -73,7 +73,7 @@ namespace MxEngine
 	OrthographicCamera& CameraController::GetCamera<OrthographicCamera>()
 	{
 		MX_ASSERT(this->GetCameraType() == CameraType::ORTHOGRAPHIC);
-		static_assert(sizeof(OrthographicCamera) == sizeof(this->Camera), "camera byte storage size mismatch");
+		static_assert(AssertEquality<sizeof(OrthographicCamera), sizeof(this->Camera)>::value, "camera byte storage size mismatch");
 		return *reinterpret_cast<OrthographicCamera*>(&this->Camera); //-V717
 	}
 
@@ -81,7 +81,7 @@ namespace MxEngine
 	const OrthographicCamera& CameraController::GetCamera<OrthographicCamera>() const
 	{
 		MX_ASSERT(this->GetCameraType() == CameraType::ORTHOGRAPHIC);
-		static_assert(sizeof(OrthographicCamera) == sizeof(this->Camera), "camera byte storage size mismatch");
+		static_assert(AssertEquality<sizeof(OrthographicCamera), sizeof(this->Camera)>::value, "camera byte storage size mismatch");
 		return *reinterpret_cast<const OrthographicCamera*>(&this->Camera); //-V717
 	}
 
@@ -94,6 +94,7 @@ namespace MxEngine
 
 		this->renderTexture = GraphicFactory::Create<Texture>();
 		this->renderTexture->Load(nullptr, viewport.x, viewport.y, TextureFormat::RGB, TextureWrap::CLAMP_TO_EDGE);
+		this->renderTexture->SetPath("[[camera output]]");
 	}
 
 	CameraController::~CameraController()
@@ -176,6 +177,7 @@ namespace MxEngine
 	void CameraController::ResizeRenderTexture(size_t w, size_t h)
 	{
 		this->renderTexture->Load(nullptr, (int)w, (int)h, this->renderTexture->GetFormat(), this->renderTexture->GetWrapType());
+		this->renderTexture->SetPath("[[camera output]]");
 		if(this->IsRendered())
 			this->renderBuffers->Resize((int)w, (int)h);
 	}
@@ -404,13 +406,16 @@ namespace MxEngine
 		this->bloomTextureHDR = GraphicFactory::Create<Texture>();
 
 		multisampledTexture->LoadMultisample(width, height, TextureFormat::RGBA16F, (int)samples);
+		multisampledTexture->SetPath("[[camera main]]");
 		this->framebufferMSAA->AttachTexture(multisampledTexture);
 		this->renderbufferMSAA->InitStorage((int)multisampledTexture->GetWidth(), (int)multisampledTexture->GetHeight(), multisampledTexture->GetSampleCount());
 		this->renderbufferMSAA->LinkToFrameBuffer(*this->framebufferMSAA);
 		this->framebufferMSAA->Validate();
 
 		textureHDR->Load(nullptr, width, height, TextureFormat::RGB16F, TextureWrap::CLAMP_TO_EDGE);
+		textureHDR->SetPath("[[camera hdr]]");
 		this->bloomTextureHDR->Load(nullptr, width, height, TextureFormat::RGB16F, TextureWrap::CLAMP_TO_EDGE);
+		this->bloomTextureHDR->SetPath("[[camera bloom]]");
 		this->framebufferHDR->AttachTexture(textureHDR, Attachment::COLOR_ATTACHMENT0);
 		this->framebufferHDR->AttachTextureExtra(this->bloomTextureHDR, Attachment::COLOR_ATTACHMENT1);
 		this->framebufferHDR->UseDrawBuffers(2);
@@ -433,6 +438,10 @@ namespace MxEngine
 		this->bloomTextureHDR->Load(nullptr, width, height, this->bloomTextureHDR->GetFormat(), this->bloomTextureHDR->GetWrapType());
 
 		this->renderbufferMSAA->InitStorage((int)textureMSAA->GetWidth(), (int)textureMSAA->GetHeight(), textureMSAA->GetSampleCount());
+
+		this->bloomTextureHDR->SetPath("[[camera bloom]]");
+		textureHDR->SetPath("[[camera hdr]]");
+		textureMSAA->SetPath("[[camera main]]");
 	}
 
 	void CameraRender::DeInit()

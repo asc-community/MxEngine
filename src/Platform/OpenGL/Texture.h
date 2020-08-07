@@ -107,6 +107,7 @@ namespace MxEngine
 		TextureWrap GetWrapType() const;
 		void Bind(TextureBindId id) const;
 		const MxString& GetPath() const;
+		void SetPath(const MxString& newPath);
 		unsigned int GetTextureType() const;
 		size_t GetWidth() const;
 		size_t GetHeight() const;

@@ -85,40 +85,48 @@ namespace MxEngine
 
     void Deserialize(Config& config, const JsonFile& json)
     {
-        FromJson(config.WindowPosition,         json["window"],      "position"              );
-        FromJson(config.WindowSize,             json["window"],      "size"                  );
-        FromJson(config.WindowTitle,            json["window"],      "title"                 );
-        FromJson(config.Cursor,                 json["window"],      "cursor-mode"           );
-        FromJson(config.DoubleBuffering,        json["window"],      "double-buffering"      );
-        FromJson(config.GraphicAPIProfile,      json["renderer"],    "profile"               );
-        FromJson(config.GraphicAPIMajorVersion, json["renderer"],    "major-version"         );
-        FromJson(config.GraphicAPIMinorVersion, json["renderer"],    "minor-version"         );
-        FromJson(config.AnisothropicFiltering,  json["renderer"],    "anisothropic-filtering");
-        FromJson(config.DebugLineWidth,         json["renderer"],    "debug-line-width"      );
-        FromJson(config.MSAASamples,            json["renderer"],    "msaa-samples"          );
-        FromJson(config.ProjectRootDirectory,   json["filesystem"],  "root"                  );
-        FromJson(config.ApplicationCloseKey,    json["debug-build"], "app-close-key"         );
-        FromJson(config.EditorOpenKey,          json["debug-build"], "editor-key"            );
-        FromJson(config.GraphicAPIDebug,        json["debug-build"], "debug-graphics"        );
+        FromJson(config.WindowPosition,         json["window"],      "position"                );
+        FromJson(config.WindowSize,             json["window"],      "size"                    );
+        FromJson(config.WindowTitle,            json["window"],      "title"                   );
+        FromJson(config.Cursor,                 json["window"],      "cursor-mode"             );
+        FromJson(config.DoubleBuffering,        json["window"],      "double-buffering"        );
+        FromJson(config.GraphicAPIProfile,      json["renderer"],    "profile"                 );
+        FromJson(config.GraphicAPIMajorVersion, json["renderer"],    "major-version"           );
+        FromJson(config.GraphicAPIMinorVersion, json["renderer"],    "minor-version"           );
+        FromJson(config.AnisothropicFiltering,  json["renderer"],    "anisothropic-filtering"  );
+        FromJson(config.DebugLineWidth,         json["renderer"],    "debug-line-width"        );
+        FromJson(config.MSAASamples,            json["renderer"],    "msaa-samples"            );
+        FromJson(config.DirLightTextureSize,    json["renderer"],    "dir-light-texture-size"  );
+        FromJson(config.PointLightTextureSize,  json["renderer"],    "point-light-texture-size");
+        FromJson(config.SpotLightTextureSize,   json["renderer"],    "spot-light-texture-size" );
+        FromJson(config.BloomTextureSize,       json["renderer"],    "bloom-texture-size"      );
+        FromJson(config.ProjectRootDirectory,   json["filesystem"],  "root"                    );
+        FromJson(config.ApplicationCloseKey,    json["debug-build"], "app-close-key"           );
+        FromJson(config.EditorOpenKey,          json["debug-build"], "editor-key"              );
+        FromJson(config.GraphicAPIDebug,        json["debug-build"], "debug-graphics"          );
     }
 
     void Serialize(JsonFile& json, const Config& config)
     {
-        json["window"     ]["position"              ] = config.WindowPosition;
-        json["window"     ]["size"                  ] = config.WindowSize;
-        json["window"     ]["title"                 ] = config.WindowTitle;
-        json["window"     ]["cursor-mode"           ] = config.Cursor;
-        json["window"     ]["double-buffering"      ] = config.DoubleBuffering;
-        json["renderer"   ]["profile"               ] = config.GraphicAPIProfile;
-        json["renderer"   ]["major-version"         ] = config.GraphicAPIMajorVersion;
-        json["renderer"   ]["minor-version"         ] = config.GraphicAPIMinorVersion;
-        json["renderer"   ]["anisothropic-filtering"] = config.AnisothropicFiltering;
-        json["renderer"   ]["debug-line-width"      ] = config.DebugLineWidth;
-        json["renderer"   ]["msaa-samples"          ] = config.MSAASamples;
-        json["filesystem" ]["root"                  ] = config.ProjectRootDirectory;
-        json["debug-build"]["app-close-key"         ] = config.ApplicationCloseKey;
-        json["debug-build"]["editor-key"            ] = config.EditorOpenKey;
-        json["debug-build"]["debug-graphics"        ] = config.GraphicAPIDebug;
+        json["window"     ]["position"                ] = config.WindowPosition;
+        json["window"     ]["size"                    ] = config.WindowSize;
+        json["window"     ]["title"                   ] = config.WindowTitle;
+        json["window"     ]["cursor-mode"             ] = config.Cursor;
+        json["window"     ]["double-buffering"        ] = config.DoubleBuffering;
+        json["renderer"   ]["profile"                 ] = config.GraphicAPIProfile;
+        json["renderer"   ]["major-version"           ] = config.GraphicAPIMajorVersion;
+        json["renderer"   ]["minor-version"           ] = config.GraphicAPIMinorVersion;
+        json["renderer"   ]["anisothropic-filtering"  ] = config.AnisothropicFiltering;
+        json["renderer"   ]["debug-line-width"        ] = config.DebugLineWidth;
+        json["renderer"   ]["msaa-samples"            ] = config.MSAASamples;
+        json["renderer"   ]["dir-light-texture-size"  ] = config.DirLightTextureSize;
+        json["renderer"   ]["point-light-texture-size"] = config.PointLightTextureSize;
+        json["renderer"   ]["spot-light-texture-size" ] = config.SpotLightTextureSize;
+        json["renderer"   ]["bloom-texture-size"      ] = config.BloomTextureSize;
+        json["filesystem" ]["root"                    ] = config.ProjectRootDirectory;
+        json["debug-build"]["app-close-key"           ] = config.ApplicationCloseKey;
+        json["debug-build"]["editor-key"              ] = config.EditorOpenKey;
+        json["debug-build"]["debug-graphics"          ] = config.GraphicAPIDebug;
     }
 
     void to_json(JsonFile& j, MxEngine::CursorMode mode)

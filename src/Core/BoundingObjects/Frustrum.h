@@ -34,7 +34,6 @@ namespace MxEngine
 {
     class Frustrum
     {
-        Vector3 direction;
         float angle;
     public:
         Vector3 Origin;

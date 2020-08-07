@@ -366,6 +366,11 @@ namespace MxEngine
 		return this->filepath;
 	}
 
+	void Texture::SetPath(const MxString& newPath)
+	{
+		this->filepath = newPath;
+	}
+
     unsigned int Texture::GetTextureType() const
     {
 		return this->textureType;

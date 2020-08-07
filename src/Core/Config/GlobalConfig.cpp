@@ -101,6 +101,26 @@ namespace MxEngine
         return CFG(MSAASamples);
     }
 
+    size_t GlobalConfig::GetDirectionalLightTextureSize()
+    {
+        return CFG(DirLightTextureSize);
+    }
+
+    size_t GlobalConfig::GetPointLightTextureSize()
+    {
+        return CFG(PointLightTextureSize);
+    }
+
+    size_t GlobalConfig::GetSpotLightTextureSize()
+    {
+        return CFG(SpotLightTextureSize);
+    }
+
+    size_t GlobalConfig::GetBloomTextureSize()
+    {
+        return CFG(BloomTextureSize);
+    }
+
     const MxString& GlobalConfig::GetProjectRootDirectory()
     {
         return CFG(ProjectRootDirectory);

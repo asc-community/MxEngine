@@ -27,13 +27,16 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SpotLight.h"
+#include "Core/Config/GlobalConfig.h"
 
 namespace MxEngine
 {
     SpotLight::SpotLight()
     {
+        auto depthTextureSize = (int)GlobalConfig::GetSpotLightTextureSize();
         auto texture = GraphicFactory::Create<Texture>();
-        texture->LoadDepth(512, 512);
+        texture->LoadDepth(depthTextureSize, depthTextureSize);
+        texture->SetPath("[[spot light]]");
         this->AttachDepthTexture(texture);
     }
 

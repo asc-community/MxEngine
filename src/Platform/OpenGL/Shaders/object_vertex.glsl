@@ -38,9 +38,9 @@ out VSout
 
 vec3 getDisplacement(vec2 uv, sampler2D heightMap, float displacementFactor)
 {
-	vec3 heightTex = 2.0f * texture(heightMap, uv).rgb - vec3(1.0f);
 	if (texCoord.x < 0.001f || texCoord.y < 0.001f || texCoord.x > 0.999f || texCoord.y > 0.999f)
 		return vec3(0.0f);
+	vec3 heightTex = texture(heightMap, uv).rgb;
 	return displacementFactor * heightTex;
 }
 

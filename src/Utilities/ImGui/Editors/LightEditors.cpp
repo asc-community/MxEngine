@@ -54,7 +54,7 @@ namespace MxEngine::GUI
 		if (GUI::InputIntOnClick("depth map size", &depthMapSize))
 			texture->LoadDepth(depthMapSize, depthMapSize);
 
-		DrawTextureEditor("depth map", texture);
+		DrawTextureEditor("depth map", texture, false);
 	}
 
 	void PointLightEditor(PointLight& pointLight)
@@ -97,6 +97,6 @@ namespace MxEngine::GUI
 		if (GUI::InputIntOnClick("depth map size", &depthMapSize))
 			texture->LoadDepth(depthMapSize, depthMapSize);
 
-		DrawTextureEditor("depth map", texture);
+		DrawTextureEditor("depth map", texture, false);
 	}
 }

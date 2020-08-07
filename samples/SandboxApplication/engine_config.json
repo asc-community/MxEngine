@@ -9,11 +9,15 @@
   },
   "renderer": {
     "anisothropic-filtering": 16,
+    "bloom-texture-size": 512,
     "debug-line-width": 3,
+    "dir-light-texture-size": 4096,
     "major-version": 4,
     "minor-version": 0,
     "msaa-samples": 4,
-    "profile": "CORE"
+    "point-light-texture-size": 512,
+    "profile": "CORE",
+    "spot-light-texture-size": 512
   },
   "window": {
     "cursor-mode": "DISABLED",

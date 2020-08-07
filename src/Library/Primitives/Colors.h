@@ -63,6 +63,7 @@ namespace MxEngine
         static inline TextureHandle MakeTexture(uint8_t r, uint8_t g, uint8_t b)
         {
             auto texture = GraphicFactory::Create<Texture>();
+            texture->SetPath("[[color]]");
             uint8_t buffer[] = { r, g, b };
             texture->Load(buffer, 1, 1);
             return texture;

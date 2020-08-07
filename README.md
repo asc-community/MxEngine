@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-7.4.3-red)
+![](https://img.shields.io/badge/version-7.4.4-red)
 ![](https://img.shields.io/badge/license-bsd--3-yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
 ![](https://img.shields.io/badge/build-cmake-green)
@@ -189,7 +189,6 @@ If you are interesed in libraries MxEngine depend on, consider reading [dependen
 
 <img src="preview_images/readme_additional2.png">
 <i>light and sound bounds, other debug utilities</i>
-</p>
 
 <img src="preview_images/readme_additional3.png">
 <i>VR camera rendering scene for each eye</i>

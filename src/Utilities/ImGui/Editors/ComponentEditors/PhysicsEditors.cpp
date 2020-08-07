@@ -84,6 +84,9 @@ namespace MxEngine::GUI
 		if (ImGui::DragFloat("mass", &mass, 0.01f))
 			rigidBody.SetMass(mass);
 
+		auto nativeBody = rigidBody.GetNativeHandle();
+		ImGui::Text("native handle: 0x%p", nativeBody->GetNativeHandle()); //-V111
+
 		if (ImGui::TreeNode("applied forces"))
 		{
 			auto gravity = rigidBody.GetGravity();
@@ -91,57 +94,24 @@ namespace MxEngine::GUI
 				rigidBody.SetGravity(gravity);
 
 			static auto centralForce = MakeVector3(0.0f);
-			ImGui::Text("central force");
-			ImGui::PushID("central force");
-			if (GUI::InputVec3OnClick("", &centralForce[0]))
-			{
+			if (ImGui::DragFloat3("central force", &centralForce[0]))
 				rigidBody.ApplyCentralForce(centralForce);
-				centralForce = MakeVector3(0.0f);
-			}
-			ImGui::PopID();
 
 			static auto centralImpulse = MakeVector3(0.0f);
-			ImGui::Text("central impulse");
-			ImGui::PushID("central impulse");
-			if (GUI::InputVec3OnClick("", &centralImpulse[0]))
-			{
+			if (ImGui::DragFloat3("central impulse", &centralImpulse[0]))
 				rigidBody.ApplyCentralImpulse(centralImpulse);
-				centralImpulse = MakeVector3(0.0f);
-			}
-			ImGui::PopID();
 
 			static auto centralPushImpulse = MakeVector3(0.0f);
-			ImGui::Text("central push impulse");
-			ImGui::PushID("central push impulse");
-			if (GUI::InputVec3OnClick("", &centralPushImpulse[0]))
-			{
+			if (ImGui::DragFloat3("central push impulse", &centralPushImpulse[0]))
 				rigidBody.ApplyCentralPushImpulse(centralPushImpulse);
-				centralPushImpulse = MakeVector3(0.0f);
-			}
-			ImGui::PopID();
 
 			static auto torque = MakeVector3(0.0f);
-			ImGui::Text("torque impulse");
-			ImGui::PushID("torque impulse");
-			if (GUI::InputVec3OnClick("", &torque[0]))
-			{
+			if (ImGui::DragFloat3("torque impulse", &torque[0]))
 				rigidBody.ApplyTorque(torque);
-				torque = MakeVector3(0.0f);
-			}
-			ImGui::PopID();
 
 			static auto turnTorque = MakeVector3(0.0f);
-			ImGui::Text("turn torque impulse");
-			ImGui::PushID("turn torque impulse");
-			if (GUI::InputVec3OnClick("", &turnTorque[0]))
-			{
+			if (ImGui::DragFloat3("turn torque impulse", &turnTorque[0]))
 				rigidBody.ApplyTorqueTurnImpulse(turnTorque);
-				turnTorque = MakeVector3(0.0f);
-			}
-			ImGui::PopID();
-
-			auto nativeBody = rigidBody.GetNativeHandle();
-			ImGui::Text("native handle: 0x%p", nativeBody->GetNativeHandle()); //-V111
 
 			ImGui::TreePop();
 		}

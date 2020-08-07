@@ -305,6 +305,13 @@ namespace MxEngine
                 factory = new Factory(); // not deleted, but its static member, so it does not matter
         }
 
+        static void DeInit()
+        {
+            MX_ASSERT(factory != nullptr);
+            delete factory;
+            factory = nullptr;
+        }
+
         static void Clone(Factory* other)
         {
             factory = other;
@@ -324,6 +331,14 @@ namespace MxEngine
             auto& pool = factory->template GetPool<T>();
             size_t index = pool.Allocate(uuid, std::forward<ConstructArgs>(args)...);
             return Resource<T, ThisType>(uuid, index);
+        }
+
+        template<typename T>
+        static Resource<T, ThisType> GetHandle(const ManagedResource<T>& object)
+        {
+            auto& pool = factory->template GetPool<T>();
+            size_t index = pool.IndexOf(object);
+            return Resource<T, ThisType>(pool[index].uuid, index);
         }
 
         template<typename T>

@@ -33,15 +33,87 @@
 #include "Core/BoundingObjects/Capsule.h"
 #include "Core/BoundingObjects/BoundingBox.h"
 #include "Utilities/Image/ImageManager.h"
+#include "Library/Primitives/Colors.h"
+#include "Library/Primitives/Primitives.h"
 
 namespace MxEngine::GUI
 {
-    void DrawTextureEditor(const char* name, TextureHandle& texture)
+    void DrawTextureList(const char* name, bool* isOpen)
+    {
+        ImGui::Begin(name, isOpen);
+
+        static char filter[128] = { '\0' };
+        ImGui::InputText("search filter", filter, std::size(filter));
+
+        if (ImGui::CollapsingHeader("create new texture"))
+        {
+            static MxString path;
+            if (GUI::InputTextOnClick("load from path", path, 128))
+            {
+                auto newTexture = GraphicFactory::Create<Texture>();
+                newTexture->Load(path);
+                newTexture.MakeStatic();
+            }
+
+            static Vector3 color{ 0.0f };
+            ImGui::ColorEdit3("", &color[0]);
+            ImGui::SameLine();
+            if (ImGui::Button("create texture"))
+            {
+                auto colorTexture = Colors::MakeTexture(color);
+                colorTexture->SetPath("[[color runtime]]");
+                colorTexture.MakeStatic();
+            }
+        }
+
+        ImGui::SetCursorPosX(0.5f * ImGui::GetWindowWidth() - 20.0f);
+        ImGui::Text("%s", "texture list");
+
+        auto& factory = GraphicFactory::Get<Texture>();
+        for (auto& object : factory)
+        {
+            auto id = (int)factory.IndexOf(object);
+            ImGui::PushID(id);
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("id: %-3d", id);
+            ImGui::SameLine();
+
+            auto texture = GraphicFactory::GetHandle(object);
+            auto& texturePath = texture->GetPath();
+
+            if (filter[0] == '\0' || texturePath.find(filter) != texturePath.npos)
+            {
+                DrawTextureEditor(texturePath.c_str(), texture, false);
+            }
+
+            ImGui::PopID();
+        }
+
+        ImGui::End();
+    }
+
+    void LoadFromInputId(TextureHandle& texture, int id)
+    {
+        auto handle = (size_t)Max(id, 0);
+        auto& storage = GraphicFactory::Get<Texture>();
+        if (storage.IsAllocated(handle))
+        {
+            texture = GraphicFactory::GetHandle(storage[handle]);
+        }
+    }
+
+    void DrawTextureEditor(const char* name, TextureHandle& texture, bool withTextureLoader)
     {
         SCOPE_TREE_NODE(name);
 
         if (texture.IsValid())
         {
+            if (ImGui::Button("delete"))
+            {
+                GraphicFactory::Destroy(texture);
+                return;
+            }
+
             ImGui::Text("path: %s", texture->GetPath().c_str());
             ImGui::Text("width: %d", (int)texture->GetWidth());
             ImGui::Text("height: %d", (int)texture->GetHeight());
@@ -59,10 +131,16 @@ namespace MxEngine::GUI
             ImGui::Text("empty resource");
         }
 
-        static MxString path;
-        if (GUI::InputTextOnClick(nullptr, path, 128, "load texture"))
-            texture = AssetManager::LoadTexture(path);
-        // TODO: support textures from Colors class
+        if (withTextureLoader)
+        {
+            static MxString path;
+            if (GUI::InputTextOnClick(nullptr, path, 128, "load from file"))
+                texture = AssetManager::LoadTexture(path);
+            
+            static int id = 0;
+            if(GUI::InputIntOnClick("", &id, "load from id"))
+                LoadFromInputId(texture, id);
+        }
 
         if (texture.IsValid())
         {   
@@ -79,7 +157,10 @@ namespace MxEngine::GUI
             ImGui::DragFloat("texture preview scale", &scale, 0.01f, 0.0f, 1.0f);
             auto width = ImGui::GetWindowSize().x * 0.9f * scale;
             auto height = width * nativeHeight / nativeWidth;
-            ImGui::Image((void*)(uintptr_t)texture->GetNativeHandle(), ImVec2(width, height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+            if (!texture->IsMultisampled()) // TODO: support multisampled textures
+            {
+                ImGui::Image((void*)(uintptr_t)texture->GetNativeHandle(), ImVec2(width, height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+            }
         }
     }
 
@@ -116,12 +197,12 @@ namespace MxEngine::GUI
         }
         SCOPE_TREE_NODE(material->Name.c_str());
 
-        DrawTextureEditor("albedo map", material->AlbedoMap);
-        DrawTextureEditor("specular map", material->SpecularMap);
-        DrawTextureEditor("emmisive map", material->EmmisiveMap);
-        DrawTextureEditor("normal map", material->NormalMap);
-        DrawTextureEditor("height map", material->HeightMap);
-        DrawTextureEditor("transparency map", material->TransparencyMap);
+        DrawTextureEditor("albedo map", material->AlbedoMap, true);
+        DrawTextureEditor("specular map", material->SpecularMap, true);
+        DrawTextureEditor("emmisive map", material->EmmisiveMap, true);
+        DrawTextureEditor("normal map", material->NormalMap, true);
+        DrawTextureEditor("height map", material->HeightMap, true);
+        DrawTextureEditor("transparency map", material->TransparencyMap, true);
 
         ImGui::DragFloat("specular exponent", &material->SpecularExponent, 1.0f, 1.0f, 10000.0f);
         ImGui::DragFloat("displacement", &material->Displacement, 0.01f);
@@ -263,6 +344,40 @@ namespace MxEngine::GUI
         ImGui::PopItemWidth();
     }
 
+    void LoadFromPrimitive(MeshHandle& mesh)
+    {
+        bool optionPeeked = false;
+        static int subdivisions = 1;
+        ImGui::InputInt("subdivisions", &subdivisions);
+        subdivisions = Max(subdivisions, 1);
+
+        if (ImGui::BeginCombo("load primitive", "click to select"))
+        {
+            if (ImGui::Selectable("cube", &optionPeeked))
+            {
+                mesh = Primitives::CreateCube(subdivisions);
+                ImGui::SetItemDefaultFocus();
+            }
+            if (ImGui::Selectable("sphere", &optionPeeked))
+            {
+                mesh = Primitives::CreateSphere(subdivisions);
+                ImGui::SetItemDefaultFocus();
+            }
+            if (ImGui::Selectable("plane", &optionPeeked))
+            {
+                mesh = Primitives::CreatePlane(subdivisions);
+                ImGui::SetItemDefaultFocus();
+            }
+            if (ImGui::Selectable("cylinder", &optionPeeked))
+            {
+                mesh = Primitives::CreateCylinder(subdivisions);
+                ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+        if (optionPeeked) subdivisions = 1; // reset parameter
+    }
+
     void DrawMeshEditor(const char* name, MeshHandle& mesh)
     {
         SCOPE_TREE_NODE(name);
@@ -280,7 +395,10 @@ namespace MxEngine::GUI
         static MxString path;
         if (GUI::InputTextOnClick("", path, 128, "load mesh"))
             mesh = AssetManager::LoadMesh(path);
-        // TODO: support meshes from Primitives class
+        
+        ImGui::Indent(9.0f);
+        LoadFromPrimitive(mesh);
+        ImGui::Unindent(9.0f);
 
         static MxString submeshName;
         

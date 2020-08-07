@@ -78,6 +78,7 @@ namespace MxEngine::GUI
     */
     inline bool InputIntOnClick(const char* title, int* v, const char* buttonText = "apply")
     {
+        MX_ASSERT(title != nullptr);
         ImGui::PushID(title);
         ImGui::AlignTextToFramePadding();
         ImGui::Text("%s", title);
@@ -98,6 +99,7 @@ namespace MxEngine::GUI
     */
     inline bool InputFloatOnClick(const char* title, float* v, const char* buttonText = "apply")
     {
+        MX_ASSERT(title != nullptr);
         ImGui::PushID(title);
         ImGui::AlignTextToFramePadding();
         ImGui::Text("%s", title);
@@ -119,6 +121,7 @@ namespace MxEngine::GUI
     */
     inline bool InputVec3OnClick(const char* title, float* v, float speed = 0.01f, const char* buttonText = "apply")
     {
+        MX_ASSERT(title != nullptr);
         ImGui::PushID(title);
         ImGui::AlignTextToFramePadding();
         ImGui::Text("%s", title);

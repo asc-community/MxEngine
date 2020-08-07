@@ -29,14 +29,17 @@
 #include "DirectionalLight.h"
 #include "Core/Application/Rendering.h"
 #include "Core/Application/Event.h"
+#include "Core/Config/GlobalConfig.h"
 #include "Core/Events/UpdateEvent.h"
 
 namespace MxEngine
 {
     DirectionalLight::DirectionalLight()
     { 
+        auto depthTextureSize = (int)GlobalConfig::GetDirectionalLightTextureSize();
         auto texture = GraphicFactory::Create<Texture>();
-        texture->LoadDepth(4096, 4096);
+        texture->LoadDepth(depthTextureSize, depthTextureSize);
+        texture->SetPath("[[directional light]]");
         this->AttachDepthTexture(texture);
     }
 

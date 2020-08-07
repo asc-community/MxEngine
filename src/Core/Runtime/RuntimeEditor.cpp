@@ -95,6 +95,7 @@ namespace MxEngine
 		ImGui::DockBuilderDockWindow("Developer Console", rightDownDockspace);
 		ImGui::DockBuilderDockWindow("Object Editor", rightDownDockspace);
 		ImGui::DockBuilderDockWindow("Render Editor", rightDownDockspace);
+		ImGui::DockBuilderDockWindow("Texture Viewer", rightDownDockspace);
 
 		ImGui::DockBuilderFinish(dockspaceId);
 	}
@@ -109,6 +110,7 @@ namespace MxEngine
 			static bool isRenderEditorOpened = false;
 			static bool isObjectEditorOpened = false;
 			static bool isApplicationEditorOpened = true;
+			static bool isTextureListOpened = true;
 			static bool isDeveloperConsoleOpened = true;
 			static bool isProfilerOpened = true;
 			static bool isViewportOpened = true;
@@ -118,6 +120,7 @@ namespace MxEngine
 			GUI::DrawViewportWindow("Viewport", this->cachedWindowSize, &isViewportOpened);
 			GUI::DrawRenderEditor("Render Editor", &isRenderEditorOpened);
 			GUI::DrawApplicationEditor("Application Editor", &isApplicationEditorOpened);
+			GUI::DrawTextureList("Texture Viewer", &isTextureListOpened);
 
 			{
 				ImGui::Begin("Object Editor", &isObjectEditorOpened);

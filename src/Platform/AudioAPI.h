@@ -39,7 +39,7 @@
 
 namespace MxEngine
 {
-    using AudioFactory = AbstractFactoryImpl<AudioBuffer, AudioPlayer>;
+    using AudioFactory = AbstractFactoryImpl<AudioPlayer, AudioBuffer>;
 
     template<typename T>
     using AResource = Resource<T, AudioFactory>;

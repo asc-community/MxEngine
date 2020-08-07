@@ -288,7 +288,7 @@ namespace MxEngine
         */
         bool IsAllocated(size_t index)
         {
-            return !GetBlockByIndex(index)->IsFree();
+            return index < this->Capacity() && !GetBlockByIndex(index)->IsFree();
         }
 
         /*!

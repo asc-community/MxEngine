@@ -28,6 +28,7 @@
 
 #include "RenderAdaptor.h"
 #include "Library/Primitives/Colors.h"
+#include "Core/Config/GlobalConfig.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
 #include "Core/Components/Rendering/MeshSource.h"
 #include "Core/Components/Rendering/MeshLOD.h"
@@ -69,6 +70,11 @@ namespace MxEngine
         environment.DefaultNormalMap = Colors::MakeTexture(Colors::FLAT_NORMAL);
         environment.DefaultMaterialMap = Colors::MakeTexture(Colors::WHITE);
         environment.DefaultBlackCubeMap = Colors::MakeCubeMap(Colors::BLACK);
+
+        environment.DefaultBlackMap->SetPath("[[black color]]");
+        environment.DefaultHeightMap->SetPath("[[default height]]");
+        environment.DefaultNormalMap->SetPath("[[default normal]]");
+        environment.DefaultMaterialMap->SetPath("[[white color]]");
 
         // shaders
         environment.MainShader = GraphicFactory::Create<Shader>();
@@ -142,15 +148,12 @@ namespace MxEngine
         environment.DepthFrameBuffer = GraphicFactory::Create<FrameBuffer>();
         environment.PostProcessFrameBuffer = GraphicFactory::Create<FrameBuffer>();
 
+        auto bloomBufferSize = (int)GlobalConfig::GetBloomTextureSize();
         for (auto& bloomBuffer : environment.BloomBuffers)
         {
             auto bloomTexture = GraphicFactory::Create<Texture>();
-            constexpr size_t bloomBufferSize = 512;
-
-            for (auto& bloomBuffer : environment.BloomBuffers)
-            {
-                bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
-            }
+            bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+            bloomTexture->SetPath("[[bloom]]");
 
             bloomBuffer = GraphicFactory::Create<FrameBuffer>();
             bloomBuffer->AttachTexture(bloomTexture, Attachment::COLOR_ATTACHMENT0);

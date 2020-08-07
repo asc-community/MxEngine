@@ -61,7 +61,7 @@ namespace MxEngine
 		UniqueRef<CameraRender> renderBuffers = MakeUnique<CameraRender>();
 		TextureHandle renderTexture;
 
-		Vector3 direction = { 1.0f, 0.0f, 0.0f };
+		Vector3 direction = { 0.0f, 0.0f, 1.0f };
 		Vector3 up = { 0.0f, 1.0f, 0.0f };
 		Vector3 forward ={ 0.0f, 0.0f, 1.0f };
 		Vector3 right = { 1.0f, 0.0f, 0.0f };

@@ -188,3 +188,7 @@
 - improved RigidBody api - added raycasting filter toggle, convinient function Make Static/Dynamic/Kinematic
 - added some missing methods to many classes (GlobalConfig, Rendering, Shader, etc.)
 - added transparency map for materials (will be useful for particle system later)
+### 7.4.4
+- added texture list viewer and primitive mesh loader for runtime editor
+- fixed bugs with displacement, camera frustrum and OpenAL buffers
+- added texture sizes to engine_config.json file (please regenerate configs!)

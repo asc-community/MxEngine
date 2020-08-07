@@ -85,7 +85,6 @@ namespace MxEngine
         collider->UpdateCollider();
         if (collider->HasColliderChanged())
         {
-            MXLOG_DEBUG("MxEngine::NativeRigidBody", "updating collision shape");
             auto shape = collider->GetNativeHandle();
             rigidBody->SetCollisionShape(shape->GetNativeHandle());
             collider->SetColliderChangedFlag(false);

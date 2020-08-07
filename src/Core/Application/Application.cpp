@@ -288,6 +288,7 @@ namespace MxEngine
 			MAKE_SCOPE_PROFILER("Application::Run");
 			MAKE_SCOPE_TIMER("MxEngine::Application", "Application::Run()");
 			MXLOG_INFO("MxEngine::Application", "starting main loop...");
+
 			while (this->GetWindow().IsOpen()) //-V807
 			{
 				this->UpdateTimeDelta(frameEnd, secondEnd, frameCount);
@@ -357,6 +358,7 @@ namespace MxEngine
 	{
 		PhysicsModule::Destroy();
 		GraphicModule::Destroy();
+		AudioFactory::DeInit(); // OpenAL is angry when buffers are not deleted
 		AudioModule::Destroy();
 
 		#if defined(MXENGINE_PROFILING_ENABLED)
