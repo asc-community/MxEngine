@@ -46,8 +46,8 @@ public:
 		auto camera = MxObject::Create();
 		InitCamera(*camera);
 
-		auto sound = MxObject::Create();
-		InitSound(*sound);
+		// auto sound = MxObject::Create();
+		// InitSound(*sound);
 
 		Rendering::SetViewport(camera->GetComponent<CameraController>());
     }
