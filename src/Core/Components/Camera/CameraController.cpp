@@ -209,6 +209,11 @@ namespace MxEngine
 		this->renderingEnabled = value;
 	}
 
+    const FrustrumCuller& CameraController::GetFrustrumCuller() const
+    {
+		return this->Camera.GetFrustrumCuller();
+    }
+
     void CameraController::SubmitMatrixProjectionChanges() const
     {
 		if (this->GetCameraType() == CameraType::PERSPECTIVE)

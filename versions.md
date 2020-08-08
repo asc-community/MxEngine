@@ -192,3 +192,6 @@
 - added texture list viewer and primitive mesh loader for runtime editor
 - fixed bugs with displacement, camera frustrum and OpenAL buffers
 - added texture sizes to engine_config.json file (please regenerate configs!)
+### 7.4.5
+- editor style settings in config and new editor theme in Visual Studio style
+- frustrum culling per camera
