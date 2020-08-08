@@ -83,6 +83,23 @@ namespace MxEngine
         }
     }
 
+    const char* EnumToString(EditorStyle style)
+    {
+        switch (style)
+        {
+        case MxEngine::EditorStyle::CLASSIC:
+            return "CLASSIC";
+        case MxEngine::EditorStyle::LIGHT:
+            return "LIGHT";
+        case MxEngine::EditorStyle::DARK:
+            return "DARK";
+        case MxEngine::EditorStyle::MXENGINE:
+            return "MXENGINE";
+        default:
+            return "MXENGINE";
+        }
+    }
+
     void Deserialize(Config& config, const JsonFile& json)
     {
         FromJson(config.WindowPosition,         json["window"],      "position"                );
@@ -102,6 +119,7 @@ namespace MxEngine
         FromJson(config.BloomTextureSize,       json["renderer"],    "bloom-texture-size"      );
         FromJson(config.ProjectRootDirectory,   json["filesystem"],  "root"                    );
         FromJson(config.ApplicationCloseKey,    json["debug-build"], "app-close-key"           );
+        FromJson(config.Style,                  json["debug-build"], "editor-style"            );
         FromJson(config.EditorOpenKey,          json["debug-build"], "editor-key"              );
         FromJson(config.GraphicAPIDebug,        json["debug-build"], "debug-graphics"          );
     }
@@ -125,6 +143,7 @@ namespace MxEngine
         json["renderer"   ]["bloom-texture-size"      ] = config.BloomTextureSize;
         json["filesystem" ]["root"                    ] = config.ProjectRootDirectory;
         json["debug-build"]["app-close-key"           ] = config.ApplicationCloseKey;
+        json["debug-build"]["editor-style"            ] = config.Style;
         json["debug-build"]["editor-key"              ] = config.EditorOpenKey;
         json["debug-build"]["debug-graphics"          ] = config.GraphicAPIDebug;
     }
@@ -142,23 +161,23 @@ namespace MxEngine
     void from_json(const JsonFile& j, MxEngine::CursorMode& mode)
     {
         auto val = j.get<MxString>();
-        if (val == "HIDDEN")
-            mode = CursorMode::HIDDEN;
-        else if (val == "DISABLED")
+        if (val == "DISABLED")
             mode = CursorMode::DISABLED;
         else if (val == "NORMAL")
             mode = CursorMode::NORMAL;
+        else
+            mode = CursorMode::HIDDEN;
     }
 
     void from_json(const JsonFile& j, MxEngine::RenderProfile& profile)
     {
         auto val = j.get<MxString>();
-        if (val == "ANY")
-            profile = RenderProfile::ANY;
-        else if (val == "COMPAT")
+        if (val == "COMPAT")
             profile = RenderProfile::COMPAT;
         else if (val == "CORE")
             profile = RenderProfile::CORE;
+        else
+            profile = RenderProfile::ANY;
     }
 
     void to_json(JsonFile& j, KeyCode key)
@@ -291,5 +310,25 @@ namespace MxEngine
         JSONKEY(RIGHT_ALT);
         JSONKEY(RIGHT_SUPER);
         JSONKEY(MENU);
+
+        key = KeyCode::UNKNOWN;
+    }
+
+    void to_json(JsonFile& j, EditorStyle style)
+    {
+        j = EnumToString(style);
+    }
+
+    void from_json(const JsonFile& j, EditorStyle& style)
+    {
+        auto val = j.get<MxString>();
+        if (val == "CLASSIC")
+            style = EditorStyle::CLASSIC;
+        else if (val == "DARK")
+            style = EditorStyle::DARK;
+        else if (val == "LIGHT")
+            style = EditorStyle::LIGHT;
+        else
+            style = EditorStyle::MXENGINE;
     }
 }
