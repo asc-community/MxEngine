@@ -211,7 +211,9 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::DrawMeshPrimitives()");
 		for (const auto& unit : objects)
 		{
-			this->DrawObject(unit, textureBindIndex, shader);
+			bool isUnitVisible = unit.InstanceCount > 0 || camera.Culler.IsAABBVisible(unit.MinAABB, unit.MaxAABB);
+
+			if (isUnitVisible) this->DrawObject(unit, textureBindIndex, shader);
 		}
 	}
 
@@ -571,6 +573,7 @@ namespace MxEngine
 		auto& camera = this->Pipeline.Cameras.emplace_back();
 
 		camera.ViewportPosition       = parentTransform.GetPosition();
+		camera.Culler                 = controller.GetFrustrumCuller();
 		camera.ViewProjMatrix         = controller.GetMatrix(parentTransform.GetPosition());
 		camera.StaticViewProjMatrix   = controller.GetStaticMatrix();
 		camera.IsPerspective          = controller.GetCameraType() == CameraType::PERSPECTIVE;
@@ -602,6 +605,11 @@ namespace MxEngine
 		primitive.ModelMatrix  = parentTransform.GetMatrix() * object.GetTransform()->GetMatrix(); //-V807
 		primitive.NormalMatrix = parentTransform.GetNormalMatrix() * object.GetTransform()->GetNormalMatrix();
 		primitive.InstanceCount = instanceCount;
+
+		// compute aabb of primitive object for later frustrum culling
+		auto aabb = object.Data.GetBoundingBox() * primitive.ModelMatrix;
+		primitive.MinAABB = aabb.Min;
+		primitive.MaxAABB = aabb.Max;
 
 		// we need to change displacement to account object scale, so we take average of object scale components as multiplier
 		primitive.RenderMaterial.Displacement *= Dot(parentTransform.GetScale() * object.GetTransform()->GetScale(), MakeVector3(1.0f / 3.0f));

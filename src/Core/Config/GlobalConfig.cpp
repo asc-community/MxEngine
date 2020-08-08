@@ -126,6 +126,11 @@ namespace MxEngine
         return CFG(ProjectRootDirectory);
     }
 
+    EditorStyle GlobalConfig::GetEditorStyle()
+    {
+        return CFG(Style);
+    }
+
     bool GlobalConfig::HasGraphicAPIDebug()
     {
         return CFG(GraphicAPIDebug);

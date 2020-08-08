@@ -29,6 +29,8 @@
 #pragma once
 
 #include "Utilities/Math/Math.h"
+#include "Utilities/Memory/Memory.h"
+#include "Core/BoundingObjects/FrustrumCuller.h"
 
 namespace MxEngine
 {
@@ -42,6 +44,7 @@ namespace MxEngine
         Vector2 projectionCenter{ -0.5f };
         Matrix4x4 view{ 1.0f };
         Matrix4x4 projection{ 1.0f };
+        mutable FrustrumCuller culler;
         mutable Matrix4x4 matrix{ 1.0f };
         mutable bool updateMatrix = true;
     public:
@@ -64,5 +67,6 @@ namespace MxEngine
         void SetZFar(float zFar);
         float GetZNear() const;
         void SetZNear(float zNear);
+        const FrustrumCuller& GetFrustrumCuller() const;
     };
 }

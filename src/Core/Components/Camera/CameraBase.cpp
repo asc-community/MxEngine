@@ -33,7 +33,11 @@ namespace MxEngine
     const Matrix4x4& CameraBase::GetMatrix() const
     {
         MX_ASSERT(this->UpdateProjection == false);
-        if (this->updateMatrix) this->matrix = this->GetProjectionMatrix() * this->GetViewMatrix();
+        if (this->updateMatrix)
+        {
+            this->matrix = this->GetProjectionMatrix() * this->GetViewMatrix();
+            this->culler = FrustrumCuller(this->matrix);
+        }
         return this->matrix;
     }
 
@@ -113,5 +117,10 @@ namespace MxEngine
     {
         this->zNear = Min(zNear, this->zFar);
         this->UpdateProjection = true;
+    }
+
+    const FrustrumCuller& CameraBase::GetFrustrumCuller() const
+    {
+        return this->culler;
     }
 }

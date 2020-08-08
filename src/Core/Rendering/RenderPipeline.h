@@ -31,6 +31,7 @@
 #include "Platform/GraphicAPI.h"
 #include "Rectangle.h"
 #include "SkyboxObject.h"
+#include "Core/BoundingObjects/FrustrumCuller.h"
 
 namespace MxEngine
 {
@@ -42,6 +43,7 @@ namespace MxEngine
 
     struct CameraUnit
     {
+        FrustrumCuller Culler;
         Matrix4x4 ViewProjMatrix;
         Matrix4x4 StaticViewProjMatrix;
         Vector3 ViewportPosition;
@@ -151,6 +153,7 @@ namespace MxEngine
         Matrix4x4 ModelMatrix;
         Matrix3x3 NormalMatrix;
 
+        Vector3 MinAABB, MaxAABB;
         size_t InstanceCount;
     };
 

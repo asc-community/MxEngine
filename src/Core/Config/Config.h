@@ -57,9 +57,18 @@ namespace MxEngine
         SHIPPING,
     };
 
+    enum class EditorStyle : uint8_t
+    {
+        CLASSIC,
+        LIGHT,
+        DARK,
+        MXENGINE,
+    };
+
     const char* EnumToString(CursorMode mode);
     const char* EnumToString(RenderProfile profile);
     const char* EnumToString(BuildType mode);
+    const char* EnumToString(EditorStyle style);
 
     struct Config
     {
@@ -86,6 +95,7 @@ namespace MxEngine
         MxString ProjectRootDirectory = "Resources";
 
         bool GraphicAPIDebug = true;
+        EditorStyle Style = EditorStyle::MXENGINE;
         KeyCode ApplicationCloseKey = KeyCode::ESCAPE;
         KeyCode EditorOpenKey = KeyCode::GRAVE_ACCENT;
     };
@@ -99,4 +109,6 @@ namespace MxEngine
     void from_json(const JsonFile& j, RenderProfile& profile);
     void to_json(JsonFile& j, KeyCode key);
     void from_json(const JsonFile& j, KeyCode& key);
+    void to_json(JsonFile& j, EditorStyle style);
+    void from_json(const JsonFile& j, EditorStyle& style);
 }

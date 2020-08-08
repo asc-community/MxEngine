@@ -2,7 +2,8 @@
   "debug-build": {
     "app-close-key": "ESCAPE",
     "debug-graphics": true,
-    "editor-key": "GRAVE_ACCENT"
+    "editor-key": "GRAVE_ACCENT",
+    "editor-style": "MXENGINE"
   },
   "filesystem": {
     "root": "Resources"

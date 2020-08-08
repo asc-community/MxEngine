@@ -105,6 +105,7 @@ namespace MxEngine
 		void SetRenderTexture(const TextureHandle& texture);
 		bool IsRendered() const;
 		void ToggleRendering(bool value);
+		const FrustrumCuller& GetFrustrumCuller() const;
 
 		Vector3 GetDirection() const;
 		const Vector3& GetDirectionDenormalized() const;
