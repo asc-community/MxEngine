@@ -205,6 +205,7 @@ namespace MxEngine::GUI
         DrawTextureEditor("transparency map", material->TransparencyMap, true);
 
         ImGui::DragFloat("specular factor", &material->SpecularFactor, 0.01f, 0.0f, 1.0f);
+        ImGui::DragFloat("specular intensity", &material->SpecularIntensity, 0.1f, 1.0f, FLT_MAX);
         ImGui::DragFloat("emmision", &material->Emmision, 0.01f, 0.0f);
         ImGui::DragFloat("displacement", &material->Displacement, 0.01f);
         ImGui::DragFloat("reflection", &material->Reflection, 0.01f, 0.0f, 1.0f);

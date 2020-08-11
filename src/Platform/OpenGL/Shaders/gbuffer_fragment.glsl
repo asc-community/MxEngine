@@ -15,9 +15,10 @@ layout(location = 2) out vec4 OutMaterial;
 
 struct Material
 {
-	float specular;
-	float reflection;
 	float emmisive;
+	float reflection;
+	float specularFactor;
+	float specularIntensity;
 };
 
 uniform sampler2D map_albedo;
@@ -42,12 +43,13 @@ void main()
 	float emmisiveTex = texture(map_emmisive, fsin.TexCoord).r;
 
 	float emmisive = material.emmisive * emmisiveTex;
-	float specular = material.specular * specularTex;
 	float reflection = material.reflection;
+	float specularFactor = material.specularFactor * specularTex;
+	float specularIntensity = material.specularIntensity;
 
 	OutAlbedo = vec4(fsin.RenderColor * albedoTex, 1.0f);
 	OutNormal = vec4(normal, 1.0f);
-	OutMaterial = vec4(specular, emmisive, reflection, 1.0f);
+	OutMaterial = vec4(emmisive, reflection, specularFactor, specularIntensity);
 }
 
 )

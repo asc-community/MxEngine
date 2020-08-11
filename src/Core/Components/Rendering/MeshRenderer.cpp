@@ -52,6 +52,7 @@ namespace MxEngine
 
 		material.Emmision = mat.Emmision;
 		material.SpecularFactor = mat.SpecularFactor;
+		material.SpecularIntensity = mat.SpecularIntensity;
 		material.Transparency = mat.Transparency;
 		material.Name = mat.Name;
 

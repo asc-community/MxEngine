@@ -94,6 +94,7 @@ namespace MxEngine
         void CopyFrameBufferContents(int screenWidth, int screenHeight) const;
         void Validate() const;
         void DetachRenderTarget();
+        void DetachExtraTarget(Attachment attachment);
         bool HasTextureAttached() const;
         bool HasCubeMapAttached() const;
         void UseDrawBuffers(ArrayView<Attachment> attachments) const;

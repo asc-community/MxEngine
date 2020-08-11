@@ -46,6 +46,7 @@ namespace MxEngine
 
 		float Transparency = 1.0f;
 		float SpecularFactor = 0.2f;
+		float SpecularIntensity = 128.0f;
 		float Emmision = 0.0f;
 		float Displacement = 0.025f;
 		float Reflection = 0.1f;

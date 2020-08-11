@@ -79,6 +79,10 @@ namespace MxEngine
 		*/
 		float SpecularFactor = 1.0f;
 		/*!
+		specular intensity (power) value
+		*/
+		float SpecularIntensity = 128.0f;
+		/*!
 		transparency value
 		*/
 		float Transparency = 0.0f;

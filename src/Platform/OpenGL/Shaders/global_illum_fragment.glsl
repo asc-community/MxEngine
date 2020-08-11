@@ -67,40 +67,38 @@ float calcShadowFactor(vec4 fragPosLight, sampler2D map_shadow, float bias)
 	return shadowFactor;
 }
 
-vec3 calcColorUnderDirLight(vec3 albedo, float specularIntensity, float reflection, vec3 reflectionColor, vec3 normal, DirLight light, vec3 viewDir, vec4 fragLightSpace, sampler2D map_shadow)
+vec3 calcColorUnderDirLight(vec3 albedo, float specularIntensity, float specularFactor, float reflectionFactor, vec3 reflectionColor, vec3 normal, DirLight light, vec3 viewDir, vec4 fragLightSpace, sampler2D map_shadow)
 {
 	vec3 lightDir = normalize(light.direction);
 	vec3 Hdir = normalize(lightDir + viewDir);
 	float shadowFactor = calcShadowFactor(fragLightSpace, map_shadow, 0.005f);
 
-	float diffuseFactor = max(dot(lightDir, normal), 0.0f);
-	float specularFactor = max(dot(Hdir, normal), 0.0f);
+	float diffuseCoef = max(dot(lightDir, normal), 0.0f);
+	float specularCoef = pow(clamp(dot(Hdir, normal), 0.0f, 1.0f), specularIntensity);
 
 	vec3 ambientColor = albedo;
-	vec3 diffuseColor = albedo * diffuseFactor;
-	vec3 specularColor = vec3(specularFactor * specularIntensity);
+	vec3 diffuseColor = albedo * diffuseCoef;
+	vec3 specularColor = vec3(specularCoef * specularFactor);
 	reflectionColor = reflectionColor * (diffuseColor + ambientColor);
 
 	ambientColor = ambientColor * light.ambient;
 	diffuseColor = diffuseColor * light.diffuse;
 	specularColor = specularColor * light.specular;
 
-	diffuseColor = (1.0f - reflection) * diffuseColor;
-	ambientColor = (1.0f - reflection) * ambientColor;
-
-	return vec3(ambientColor + shadowFactor * (diffuseColor + specularColor + reflectionColor));
+	return vec3(ambientColor + specularColor + shadowFactor * mix(diffuseColor, reflectionColor, reflectionFactor));
 }
 
 void main()
 {
 	vec3 albedo = texture(albedoTex, TexCoord).rgb;
 	vec3 normal = texture(normalTex, TexCoord).rgb;
-	vec3 material = texture(materialTex, TexCoord).rgb;
+	vec4 material = texture(materialTex, TexCoord).rgba;
 	float depth = texture(depthTex, TexCoord).r;
 
-	float specularIntensity = material.r;
-	float emmisionFactor = material.g;
-	float reflection = material.b;
+	float emmisionFactor = material.r;
+	float reflection = material.g;
+	float specularFactor = material.b;
+	float specularIntensity = material.a;
 
 	vec3 fragPosition = reconstructWorldPosition(depth, TexCoord);
 	vec3 viewDirection = normalize(viewPosition - fragPosition.xyz);
@@ -110,7 +108,7 @@ void main()
 	for (int i = 0; i < lightCount; i++)
 	{
 		vec4 fragLightSpace = lights[i].transform * vec4(fragPosition, 1.0f);
-		totalColor += calcColorUnderDirLight(albedo, specularIntensity, reflection, reflectionColor, normal, lights[i], viewDirection, fragLightSpace, lightDepthMaps[i]);
+		totalColor += calcColorUnderDirLight(albedo, specularIntensity, specularFactor, reflection, reflectionColor, normal, lights[i], viewDirection, fragLightSpace, lightDepthMaps[i]);
 	}
 	OutColor = vec4(totalColor, 1.0f);
 }

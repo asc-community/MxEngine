@@ -4,21 +4,20 @@ R"(
 )" \
 MAKE_STRING(
 
-out vec4 Color;
+layout(location = 0) out vec4 OutAlbedo;
+layout(location = 1) out vec4 OutNormal;
+layout(location = 2) out vec4 OutMaterial;
 
 in vec3 TexCoords;
 
 uniform samplerCube skybox;
-uniform vec3 fogColor;
-uniform float fogDistance;
-uniform float fogDensity;
 
 void main()
 {
 	vec3 skyboxColor = texture(skybox, TexCoords).rgb;
-	float fogFactor = 1.0f - fogDistance / (1.0f + fogDensity);
-	fogFactor = clamp(fogFactor, 0.0f, 1.0f);
-	Color = vec4(mix(skyboxColor, fogColor, fogFactor), 1.0f);
+	OutAlbedo = vec4(skyboxColor, 1.0f);
+	OutNormal = vec4(0.0f);
+	OutMaterial = vec4(0.0f);
 }
 
 )

@@ -136,7 +136,8 @@ namespace MxEngine
 		shader.SetUniformInt("map_height", textureBindIndex);
 		textureBindIndex++;
 
-		shader.SetUniformFloat("material.specular", unit.RenderMaterial.SpecularFactor);
+		shader.SetUniformFloat("material.specularFactor", unit.RenderMaterial.SpecularFactor);
+		shader.SetUniformFloat("material.specularIntensity", unit.RenderMaterial.SpecularIntensity);
 		shader.SetUniformFloat("material.emmisive", unit.RenderMaterial.Emmision);
 		shader.SetUniformFloat("material.reflection", unit.RenderMaterial.Reflection);
 		shader.SetUniformFloat("displacement", unit.RenderMaterial.Displacement);
@@ -219,6 +220,11 @@ namespace MxEngine
 	{
 		auto& illumShader = this->Pipeline.Environment.GlobalIlluminationShader;
 
+		camera.AlbedoTexture->GenerateMipmaps();
+		camera.NormalTexture->GenerateMipmaps();
+		camera.MaterialTexture->GenerateMipmaps();
+		camera.DepthTexture->GenerateMipmaps();
+
 		Texture::TextureBindId textureId = 0;
 		
 		// bind G buffer channels
@@ -279,6 +285,14 @@ namespace MxEngine
 		// render global illumination
 		this->RenderToTexture(camera.HDRTexture, illumShader);
 		
+		// render skybox & debug buffer (HDR texture already attached)
+		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.DepthTexture, Attachment::DEPTH_ATTACHMENT);
+		this->GetRenderEngine().UseDepthBufferMask(false);
+		this->DrawSkybox(camera);
+		this->DrawDebugBuffer(camera);
+		this->GetRenderEngine().UseDepthBufferMask(true);
+		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
+
 		auto& HDRToLDRShader = this->Pipeline.Environment.HDRToLDRShader;
 		camera.HDRTexture->Bind(0);
 		HDRToLDRShader->SetUniformInt("HDRTex", 0);
@@ -385,9 +399,6 @@ namespace MxEngine
 
 		shader.SetUniformMat4("StaticViewProjection", camera.ProjectionMatrix * camera.StaticViewMatrix);
 		shader.SetUniformMat3("Rotation", Transpose(camera.InversedSkyboxRotation));
-		shader.SetUniformVec3("fogColor", this->Pipeline.Environment.FogColor);
-		shader.SetUniformFloat("fogDistance", this->Pipeline.Environment.FogDistance);
-		shader.SetUniformFloat("fogDensity", this->Pipeline.Environment.FogDensity);
 
 		camera.SkyboxMap->Bind(0);
 		shader.SetUniformInt("skybox", 0);
@@ -560,6 +571,7 @@ namespace MxEngine
 		{
 			if (!camera.RenderToTexture) continue;
 
+			this->GetRenderEngine().UseBlending(BlendFactor::NONE, BlendFactor::NONE);
 			this->ToggleReversedDepth(camera.IsPerspective);
 			this->AttachFrameBuffer(camera.GBuffer);
 

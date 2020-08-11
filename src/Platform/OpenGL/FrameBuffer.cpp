@@ -119,6 +119,11 @@ namespace MxEngine
         #endif
     }
 
+    void FrameBuffer::DetachExtraTarget(Attachment attachment)
+    {
+        GLCALL(glFramebufferTexture(GL_FRAMEBUFFER, AttachmentTable[(int)attachment], 0, 0));
+    }
+
     bool FrameBuffer::HasTextureAttached() const
     {
         return this->currentAttachment == AttachmentType::TEXTURE;
