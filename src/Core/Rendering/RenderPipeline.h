@@ -43,13 +43,16 @@ namespace MxEngine
 
     struct CameraUnit
     {
+        FrameBufferHandle GBuffer;
+        TextureHandle AlbedoTexture;
+        TextureHandle NormalTexture;
+        TextureHandle MaterialTexture;
+        TextureHandle DepthTexture;
+
         FrustrumCuller Culler;
         Matrix4x4 ViewProjMatrix;
         Matrix4x4 StaticViewProjMatrix;
         Vector3 ViewportPosition;
-        FrameBufferHandle FrameBufferMSAA;
-        FrameBufferHandle FrameBufferHDR;
-        TextureHandle BloomTextureHDR;
         TextureHandle OutputTexture;
         Matrix3x3 InversedSkyboxRotation;
         CubeMapHandle SkyboxMap;
@@ -63,7 +66,7 @@ namespace MxEngine
 
     struct EnvironmentUnit
     {
-        ShaderHandle MainShader;
+        ShaderHandle GBufferShader;
         ShaderHandle SkyboxShader;
         ShaderHandle ShadowMapShader;
         ShaderHandle ShadowCubeMapShader;
@@ -76,7 +79,6 @@ namespace MxEngine
 
         TextureHandle DefaultMaterialMap;
         TextureHandle DefaultNormalMap;
-        TextureHandle DefaultHeightMap;
         TextureHandle DefaultBlackMap;
         CubeMapHandle DefaultBlackCubeMap;
 

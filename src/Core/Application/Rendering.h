@@ -43,7 +43,6 @@ namespace MxEngine
         static VectorInt2 GetViewportSize();
 		static RenderController& GetController();
         static RenderAdaptor& GetAdaptor();
-        static void LoadMainShader(bool useLighting = true);
         static void SetRenderToDefaultFrameBuffer(bool value = true);
         static bool IsRenderedToDefaultFrameBuffer();
         static void SetFogColor(const Vector3& color);

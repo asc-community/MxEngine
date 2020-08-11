@@ -31,6 +31,7 @@
 #include "Core/Macro/Macro.h"
 #include "Platform/OpenGL/Texture.h"
 #include "Platform/OpenGL/CubeMap.h"
+#include "Utilities/Array/ArrayView.h"
 
 namespace MxEngine
 {
@@ -95,7 +96,8 @@ namespace MxEngine
         void DetachRenderTarget();
         bool HasTextureAttached() const;
         bool HasCubeMapAttached() const;
-        void UseDrawBuffers(size_t count) const;
+        void UseDrawBuffers(ArrayView<Attachment> attachments) const;
+        void UseOnlyDepth() const;
         size_t GetWidth() const;
         size_t GetHeight() const;
         void Bind() const;
@@ -121,14 +123,12 @@ namespace MxEngine
         template<template<typename, typename> typename Resource, typename Factory>
         void AttachTextureExtra(const Resource<Texture, Factory>& texture, Attachment attachment)
         {
-            MX_ASSERT(this->currentAttachment != AttachmentType::NONE);
             this->OnTextureAttach(*texture, attachment);
         }
 
         template<template<typename, typename> typename Resource, typename Factory>
         void AttachCubeMapExtra(const Resource<CubeMap, Factory>& cubemap, Attachment attachment)
         {
-            MX_ASSERT(this->currentAttachment != AttachmentType::NONE);
             this->OnCubeMapAttach(*cubemap, attachment);
         }
 

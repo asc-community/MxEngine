@@ -20,8 +20,11 @@ void InitPointLight(MxObject& object)
     light->DiffuseColor  = {  1.0f, 0.3f,  0.0f };
     light->SpecularColor = {  1.0f, 0.3f,  0.0f };
 
+    auto material = object.GetOrAddComponent<MeshRenderer>()->GetMaterial();
+    material->BaseColor = light->AmbientColor + light->DiffuseColor;
+    material->Emmision = 5.0f;
+
     object.AddComponent<MeshSource>(Primitives::CreateCube());
-    object.GetOrAddComponent<MeshRenderer>()->GetMaterial()->EmmisiveColor = light->AmbientColor + light->DiffuseColor;
     object.Transform
         .SetPosition(MakeVector3(-3.0f, 2.0f, -3.0f))
         .SetScale(MakeVector3(0.3f));
@@ -39,8 +42,11 @@ void InitSpotLight(MxObject& object)
     light->UseOuterAngle(70.0f);
     light->UseInnerAngle(30.0f);
 
+    auto material = object.GetOrAddComponent<MeshRenderer>()->GetMaterial();
+    material->BaseColor = light->AmbientColor + light->DiffuseColor;
+    material->Emmision = 5.0f;
+    
     object.AddComponent<MeshSource>(Primitives::CreateCube());
-    object.GetOrAddComponent<MeshRenderer>()->GetMaterial()->EmmisiveColor = light->AmbientColor + light->DiffuseColor;
     object.Transform
         .SetPosition(MakeVector3(-15.0f, 3.0f,  0.0f))
         .SetScale(MakeVector3(0.3f));

@@ -204,14 +204,11 @@ namespace MxEngine::GUI
         DrawTextureEditor("height map", material->HeightMap, true);
         DrawTextureEditor("transparency map", material->TransparencyMap, true);
 
-        ImGui::DragFloat("specular exponent", &material->SpecularExponent, 1.0f, 1.0f, 10000.0f);
+        ImGui::DragFloat("specular factor", &material->SpecularFactor, 0.01f, 0.0f, 1.0f);
+        ImGui::DragFloat("emmision", &material->Emmision, 0.01f, 0.0f);
         ImGui::DragFloat("displacement", &material->Displacement, 0.01f);
         ImGui::DragFloat("reflection", &material->Reflection, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("transparency", &material->Transparency, 0.01f, 0.0f, 1.0f);
-        ImGui::ColorEdit3("ambient color", &material->AmbientColor[0], ImGuiColorEditFlags_HDR);
-        ImGui::ColorEdit3("diffuse color", &material->DiffuseColor[0], ImGuiColorEditFlags_HDR);
-        ImGui::ColorEdit3("specular color", &material->SpecularColor[0], ImGuiColorEditFlags_HDR);
-        ImGui::ColorEdit3("emmisive color", &material->EmmisiveColor[0], ImGuiColorEditFlags_HDR);
         ImGui::ColorEdit3("base color", &material->BaseColor[0], ImGuiColorEditFlags_HDR);
     }
 

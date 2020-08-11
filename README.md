@@ -1,7 +1,7 @@
 # MxEngine
 ![](https://img.shields.io/badge/version-7.4.5-red)
 ![](https://img.shields.io/badge/build-cmake-green)
-[![GitHub](https://img.shields.io/github/license/asc-community/MxEngine?color=yellow)]
+![GitHub](https://img.shields.io/github/license/asc-community/MxEngine?color=yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
 [![discord](https://img.shields.io/discord/642350046213439489?color=orange&label=discord)](https://discord.gg/YWJEX7a)
 <!-- soon! [![Documentation](https://codedocs.xyz/MomoDeve/MxEngine.svg)](https://codedocs.xyz/MomoDeve/MxEngine/) -->

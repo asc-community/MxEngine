@@ -99,7 +99,7 @@ namespace MxEngine
 
 	CameraController::~CameraController()
 	{
-		Event::RemoveEventListener(this->GetFrameBufferMSAA().GetUUID());
+		Event::RemoveEventListener(this->GetEventUUID());
 	}
 
 	void CameraController::SetCameraType(CameraType type)
@@ -135,26 +135,6 @@ namespace MxEngine
 		return ProjectionMatrix * (Matrix4x4)ViewMatrix;
     }
 
-	FrameBufferHandle CameraController::GetFrameBufferMSAA() const
-	{
-		return this->renderBuffers->framebufferMSAA;
-	}
-
-	FrameBufferHandle CameraController::GetFrameBufferHDR() const
-	{
-		return this->renderBuffers->framebufferHDR;
-	}
-
-    RenderBufferHandle CameraController::GetRenderBufferMSAA() const
-    {
-		return this->renderBuffers->renderbufferMSAA;
-    }
-
-	TextureHandle CameraController::GetBloomTexture() const
-	{
-		return this->renderBuffers->bloomTextureHDR;
-	}
-
 	TextureHandle CameraController::GetRenderTexture() const
 	{
 		return this->renderTexture;
@@ -162,9 +142,9 @@ namespace MxEngine
 
 	void CameraController::ListenWindowResizeEvent()
 	{
-		Event::RemoveEventListener(this->GetFrameBufferMSAA().GetUUID());
+		Event::RemoveEventListener(this->GetEventUUID());
 
-		Event::AddEventListener<WindowResizeEvent>(this->GetFrameBufferMSAA().GetUUID(),
+		Event::AddEventListener<WindowResizeEvent>(this->GetEventUUID(),
 		[camera = MxObject::GetComponentHandle(*this)](WindowResizeEvent& e) mutable
 		{
 			if (camera.IsValid() && (e.Old != e.New))
@@ -253,6 +233,11 @@ namespace MxEngine
 
 		this->horizontalAngle = horizontalAngle;
 		this->verticalAngle = verticalAngle;
+	}
+
+	const UUID& CameraController::GetEventUUID() const
+	{
+		return this->GetGBuffer().GetUUID();
 	}
 
 	const Vector3& CameraController::GetDirectionDenormalized() const
@@ -399,61 +384,74 @@ namespace MxEngine
 		return this->right;
 	}
 
+	FrameBufferHandle CameraController::GetGBuffer() const
+	{
+		return this->renderBuffers->GBuffer;
+	}
+
+	TextureHandle CameraController::GetAlbedoTexture() const
+	{
+		return this->renderBuffers->Albedo;
+	}
+
+	TextureHandle CameraController::GetNormalTexture() const
+	{
+		return this->renderBuffers->Normal;
+	}
+
+	TextureHandle CameraController::GetMaterialTexture() const
+	{
+		return this->renderBuffers->Material;
+	}
+
+	TextureHandle CameraController::GetDepthTexture() const
+	{
+		return this->renderBuffers->Depth;
+	}
+
 	void CameraRender::Init(int width, int height)
 	{
-		size_t samples = GlobalConfig::GetMSAASamples();
+		this->GBuffer = GraphicFactory::Create<FrameBuffer>();
+		this->Albedo = GraphicFactory::Create<Texture>();
+		this->Normal = GraphicFactory::Create<Texture>();
+		this->Material = GraphicFactory::Create<Texture>();
+		this->Depth = GraphicFactory::Create<Texture>();
 
-		auto multisampledTexture = GraphicFactory::Create<Texture>();
-		auto textureHDR = GraphicFactory::Create<Texture>();
-		this->framebufferMSAA = GraphicFactory::Create<FrameBuffer>();
-		this->renderbufferMSAA = GraphicFactory::Create<RenderBuffer>();
-		this->framebufferHDR = GraphicFactory::Create<FrameBuffer>();
-		this->bloomTextureHDR = GraphicFactory::Create<Texture>();
+		this->Resize(width, height);
+		
+		this->GBuffer->AttachTexture(this->Albedo, Attachment::COLOR_ATTACHMENT0);
+		this->GBuffer->AttachTextureExtra(this->Normal, Attachment::COLOR_ATTACHMENT1);
+		this->GBuffer->AttachTextureExtra(this->Material, Attachment::COLOR_ATTACHMENT2);
+		this->GBuffer->AttachTextureExtra(this->Depth, Attachment::DEPTH_ATTACHMENT);
 
-		multisampledTexture->LoadMultisample(width, height, TextureFormat::RGBA16F, (int)samples);
-		multisampledTexture->SetPath("[[camera main]]");
-		this->framebufferMSAA->AttachTexture(multisampledTexture);
-		this->renderbufferMSAA->InitStorage((int)multisampledTexture->GetWidth(), (int)multisampledTexture->GetHeight(), multisampledTexture->GetSampleCount());
-		this->renderbufferMSAA->LinkToFrameBuffer(*this->framebufferMSAA);
-		this->framebufferMSAA->Validate();
-
-		textureHDR->Load(nullptr, width, height, TextureFormat::RGB16F, TextureWrap::CLAMP_TO_EDGE);
-		textureHDR->SetPath("[[camera hdr]]");
-		this->bloomTextureHDR->Load(nullptr, width, height, TextureFormat::RGB16F, TextureWrap::CLAMP_TO_EDGE);
-		this->bloomTextureHDR->SetPath("[[camera bloom]]");
-		this->framebufferHDR->AttachTexture(textureHDR, Attachment::COLOR_ATTACHMENT0);
-		this->framebufferHDR->AttachTextureExtra(this->bloomTextureHDR, Attachment::COLOR_ATTACHMENT1);
-		this->framebufferHDR->UseDrawBuffers(2);
-		this->framebufferHDR->Validate();
+		std::array attachments = {
+			Attachment::COLOR_ATTACHMENT0,
+			Attachment::COLOR_ATTACHMENT1,
+			Attachment::COLOR_ATTACHMENT2,
+		};
+		this->GBuffer->UseDrawBuffers(attachments);
+		this->GBuffer->Validate();
 	}
 
 	void CameraRender::Resize(int width, int height)
 	{
-		auto textureMSAA = GetAttachedTexture(this->framebufferMSAA);
+		this->Albedo->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
+		this->Normal->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
+		this->Material->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
+		this->Depth->LoadDepth(width, height, TextureFormat::DEPTH, TextureWrap::CLAMP_TO_EDGE);
 
-		if (textureMSAA->IsMultisampled())
-			textureMSAA->LoadMultisample(width, height, textureMSAA->GetFormat(), textureMSAA->GetSampleCount(), textureMSAA->GetWrapType());
-		else if (textureMSAA->IsDepthOnly())
-			textureMSAA->LoadDepth(width, height, textureMSAA->GetWrapType());
-		else
-			textureMSAA->Load(nullptr, width, height, textureMSAA->GetFormat(), textureMSAA->GetWrapType());
-
-		auto textureHDR = GetAttachedTexture(this->framebufferHDR);
-		textureHDR->Load(nullptr, width, height, textureHDR->GetFormat(), textureHDR->GetWrapType());
-		this->bloomTextureHDR->Load(nullptr, width, height, this->bloomTextureHDR->GetFormat(), this->bloomTextureHDR->GetWrapType());
-
-		this->renderbufferMSAA->InitStorage((int)textureMSAA->GetWidth(), (int)textureMSAA->GetHeight(), textureMSAA->GetSampleCount());
-
-		this->bloomTextureHDR->SetPath("[[camera bloom]]");
-		textureHDR->SetPath("[[camera hdr]]");
-		textureMSAA->SetPath("[[camera main]]");
+		this->Albedo->SetPath("[[cam albedo]]");
+		this->Normal->SetPath("[[cam normal]]");
+		this->Material->SetPath("[[cam material]]");
+		this->Depth->SetPath("[[cam depth]]");
 	}
 
 	void CameraRender::DeInit()
 	{
-		this->bloomTextureHDR  = TextureHandle      { };
-		this->framebufferHDR   = FrameBufferHandle  { };
-		this->framebufferMSAA  = FrameBufferHandle  { };
-		this->renderbufferMSAA = RenderBufferHandle { };
+		this->GBuffer = { };
+		this->Albedo = { };
+		this->Normal = { };
+		this->Material = { };
+		this->Depth = { };
 	}
 }

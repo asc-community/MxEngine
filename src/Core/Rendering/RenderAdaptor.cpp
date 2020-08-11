@@ -66,19 +66,21 @@ namespace MxEngine
 
         // default textures
         environment.DefaultBlackMap = Colors::MakeTexture(Colors::BLACK);
-        environment.DefaultHeightMap = Colors::MakeTexture(Colors::GREY);
         environment.DefaultNormalMap = Colors::MakeTexture(Colors::FLAT_NORMAL);
         environment.DefaultMaterialMap = Colors::MakeTexture(Colors::WHITE);
         environment.DefaultBlackCubeMap = Colors::MakeCubeMap(Colors::BLACK);
 
         environment.DefaultBlackMap->SetPath("[[black color]]");
-        environment.DefaultHeightMap->SetPath("[[default height]]");
         environment.DefaultNormalMap->SetPath("[[default normal]]");
         environment.DefaultMaterialMap->SetPath("[[white color]]");
 
         // shaders
-        environment.MainShader = GraphicFactory::Create<Shader>();
-        LoadMainShader();
+        environment.GBufferShader = GraphicFactory::Create<Shader>();
+        environment.GBufferShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/gbuffer_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/gbuffer_fragment.glsl"
+        );
 
         environment.SkyboxShader = GraphicFactory::Create<Shader>();
         environment.SkyboxShader->LoadFromString(
@@ -146,6 +148,7 @@ namespace MxEngine
 
         // framebuffers
         environment.DepthFrameBuffer = GraphicFactory::Create<FrameBuffer>();
+        environment.DepthFrameBuffer->UseOnlyDepth();
         environment.PostProcessFrameBuffer = GraphicFactory::Create<FrameBuffer>();
 
         auto bloomBufferSize = (int)GlobalConfig::GetBloomTextureSize();
@@ -158,26 +161,6 @@ namespace MxEngine
             bloomBuffer = GraphicFactory::Create<FrameBuffer>();
             bloomBuffer->AttachTexture(bloomTexture, Attachment::COLOR_ATTACHMENT0);
             bloomBuffer->Validate();
-        }
-    }
-
-    void RenderAdaptor::LoadMainShader(bool useLighting)
-    {
-        if (useLighting)
-        {
-            this->Renderer.GetEnvironment().MainShader->LoadFromString(
-                #include "Platform/OpenGL/Shaders/object_vertex.glsl"
-                ,
-                #include "Platform/OpenGL/Shaders/object_fragment.glsl"
-            );
-        }
-        else
-        {
-            this->Renderer.GetEnvironment().MainShader->LoadFromString(
-                #include "Platform/OpenGL/Shaders/nolight_object_vertex.glsl"
-                ,
-                #include "Platform/OpenGL/Shaders/nolight_object_vertex.glsl"
-            );
         }
     }
 

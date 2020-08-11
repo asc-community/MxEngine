@@ -44,15 +44,12 @@ namespace MxEngine
 		TextureHandle NormalMap;
 		TextureHandle HeightMap;
 
-		float SpecularExponent = 128.0f;
 		float Transparency = 1.0f;
-		Vector3 AmbientColor{ 0.4f };
-		Vector3 DiffuseColor{ 0.6f };
-		Vector3 SpecularColor{ 0.2f };
-		Vector3 EmmisiveColor{ 0.0f };
-
+		float SpecularFactor = 0.2f;
+		float Emmision = 0.0f;
 		float Displacement = 0.025f;
 		float Reflection = 0.1f;
+
 		Vector3 BaseColor{ 1.0f };
 		MxString Name = "DefaultMaterial";
 	};

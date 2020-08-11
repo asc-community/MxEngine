@@ -359,6 +359,7 @@ namespace MxEngine
 		}
 		else // if version directive was not found, just include one
 		{
+			version += '\n';
 			copy.insert(copy.begin(), version.begin(), version.end());
 		}
 		return copy;

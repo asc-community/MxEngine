@@ -110,6 +110,30 @@ namespace MxEngine
     }
 
     template<typename T>
+    template<size_t N>
+    inline array_view<T>::array_view(T(&array)[N])
+    {
+        this->_data = array;
+        this->_size = N;
+    }
+
+    template<typename T>
+    template<size_t N>
+    inline array_view<T>::array_view(std::array<T, N>& array)
+    {
+        this->_data = array.data();
+        this->_size = N;
+    }
+
+    template<typename T>
+    template<typename RandomIt>
+    inline array_view<T>::array_view(RandomIt begin, RandomIt end)
+    {
+        this->_data = begin;
+        this->_size = end - begin;
+    }
+
+    template<typename T>
     inline size_t array_view<T>::size() const
     {
         return this->_size;
@@ -197,30 +221,6 @@ namespace MxEngine
     inline const T* array_view<T>::end() const
     {
         return this->_data + this->_size;
-    }
-
-    template<typename T>
-    template<size_t N>
-    inline array_view<T>::array_view(T(&array)[N])
-    {
-        this->_data = array;
-        this->_size = N;
-    }
-
-    template<typename T>
-    template<size_t N>
-    inline array_view<T>::array_view(std::array<T, N>& array)
-    {
-        this->_data = array.data();
-        this->_size = N;
-    }
-
-    template<typename T>
-    template<typename RandomIt>
-    inline array_view<T>::array_view(RandomIt begin, RandomIt end)
-    {
-        this->_data = begin;
-        this->_size = end - begin;
     }
     
     /*!

@@ -86,25 +86,12 @@ namespace MxEngine
 					materialInfo.field = (float)val;\
 				}\
 			}
+
 			GET_FLOAT(OPACITY, Transparency);
-			GET_FLOAT(SHININESS, SpecularExponent);
+			GET_FLOAT(SHININESS_STRENGTH, SpecularFactor);
 
 			// TODO: this is workaround, because some object formats export alpha channel as 0, but its actually means 1
 			if (materialInfo.Transparency == 0.0f) materialInfo.Transparency = 1.0f;
-
-			#define GET_COLOR(type, field)\
-			{ aiColor3D color;\
-				if (material->Get(AI_MATKEY_COLOR_##type, color) == aiReturn_SUCCESS)\
-				{\
-					materialInfo.field.x = color.r;\
-					materialInfo.field.y = color.g;\
-					materialInfo.field.z = color.b;\
-				}\
-			}
-			GET_COLOR(AMBIENT,  AmbientColor);
-			GET_COLOR(DIFFUSE,  DiffuseColor);
-			GET_COLOR(SPECULAR, SpecularColor);
-			GET_COLOR(EMISSIVE, EmmisiveColor);
 
 			#define GET_TEXTURE(type, field)\
 			if (material->GetTextureCount(type) > 0)\
@@ -204,22 +191,18 @@ namespace MxEngine
 			auto& json = materialList[i];
 			auto& material = materials[i];
 
-			material.Transparency     = json["Transparency"    ].get<float>();
-			material.Displacement     = json["Displacement"    ].get<float>();
-			material.SpecularExponent = json["SpecularExponent"].get<float>();
+			material.Transparency     = json["Transparency"  ].get<float>();
+			material.Displacement     = json["Displacement"  ].get<float>();
+			material.SpecularFactor   = json["SpecularFactor"].get<float>();
+			material.Emmision         = json["Emmision"      ].get<float>();
 
-			material.AmbientColor     = json["AmbientColor"    ].get<Vector3>();
-			material.DiffuseColor     = json["DiffuseColor"    ].get<Vector3>();
-			material.SpecularColor    = json["SpecularColor"   ].get<Vector3>();
-			material.EmmisiveColor    = json["EmmisiveColor"   ].get<Vector3>();
-
-			material.AlbedoMap        = json["AlbedoMap"       ].get<MxString>();
-			material.SpecularMap      = json["SpecularMap"     ].get<MxString>();
-			material.EmmisiveMap      = json["EmmisiveMap"     ].get<MxString>();
-			material.TransparencyMap  = json["TransparencyMap" ].get<MxString>();
-			material.HeightMap        = json["HeightMap"       ].get<MxString>();
-			material.NormalMap        = json["NormalMap"       ].get<MxString>();
-			material.Name             = json["Name"            ].get<MxString>();
+			material.AlbedoMap        = json["AlbedoMap"      ].get<MxString>();
+			material.SpecularMap      = json["SpecularMap"    ].get<MxString>();
+			material.EmmisiveMap      = json["EmmisiveMap"    ].get<MxString>();
+			material.TransparencyMap  = json["TransparencyMap"].get<MxString>();
+			material.HeightMap        = json["HeightMap"      ].get<MxString>();
+			material.NormalMap        = json["NormalMap"      ].get<MxString>();
+			material.Name             = json["Name"           ].get<MxString>();
 		}													   
 
 		return materials;
@@ -237,12 +220,7 @@ namespace MxEngine
 		{
 			DUMP(i, Transparency);
 			DUMP(i, Displacement);
-			DUMP(i, SpecularExponent);
-
-			DUMP(i, AmbientColor);
-			DUMP(i, DiffuseColor);
-			DUMP(i, SpecularColor);
-			DUMP(i, EmmisiveColor);
+			DUMP(i, SpecularFactor);
 
 			DUMP(i, AlbedoMap);
 			DUMP(i, SpecularMap);
@@ -250,6 +228,7 @@ namespace MxEngine
 			DUMP(i, TransparencyMap);
 			DUMP(i, HeightMap);
 			DUMP(i, NormalMap);
+
 			DUMP(i, Name);
 		}
 

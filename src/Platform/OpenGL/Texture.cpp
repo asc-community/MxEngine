@@ -44,7 +44,8 @@ namespace MxEngine
 		GL_RGBA16F,
 		GL_RGB32F,
 		GL_RGBA32F,
-		GL_DEPTH_COMPONENT
+		GL_DEPTH_COMPONENT,
+		GL_DEPTH24_STENCIL8,
 	};
 
 	GLenum wrapTable[] =
@@ -211,19 +212,19 @@ namespace MxEngine
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
 	}
 
-	void Texture::LoadDepth(int width, int height, TextureWrap wrap)
+	void Texture::LoadDepth(int width, int height, TextureFormat format, TextureWrap wrap)
 	{
 		this->filepath = "[[depth]]";
 		this->width = width;
 		this->height = height;
 		this->channels = 1;
 		this->textureType = GL_TEXTURE_2D;
-		this->format = TextureFormat::DEPTH;
+		this->format = format;
 		this->wrapType = wrap;
-	
+
 		this->Bind();
 
-		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr));
+		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], width, height, 0, formatTable[(int)this->format], GL_FLOAT, nullptr));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));

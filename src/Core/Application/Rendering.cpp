@@ -50,7 +50,7 @@ namespace MxEngine
         }
     }
 
-    VectorInt2 GetViewportSize()
+    VectorInt2 Rendering::GetViewportSize()
     {
         VectorInt2 size{ 0, 0 };
         auto viewport = Rendering::GetViewport();
@@ -74,11 +74,6 @@ namespace MxEngine
     }
 
     #define FWD(func_name, ...) Application::Get()->GetRenderAdaptor().func_name(__VA_ARGS__)
-
-    void Rendering::LoadMainShader(bool useLighting)
-    {
-        FWD(LoadMainShader, useLighting);
-    }
 
     void Rendering::SetRenderToDefaultFrameBuffer(bool value)
     {

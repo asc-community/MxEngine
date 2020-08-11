@@ -62,10 +62,6 @@ namespace MxEngine
             if(ImGui::DragInt("shadow blur iterations", &blurIterations, 0.01f))
                 Rendering::SetShadowBlurIterations(Max(0, blurIterations));
 
-            static bool lightingEnabled = true;
-            if (ImGui::Checkbox("toggle global lighting", &lightingEnabled))
-                Rendering::LoadMainShader(lightingEnabled);
-
             ImGui::TreePop();
         }
 
