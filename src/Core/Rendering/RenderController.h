@@ -58,8 +58,8 @@ namespace MxEngine
 		void DrawShadowMap(const RenderUnit& unit, const PointLightUnit& pointLight, const Shader& shader);
 		void AttachDepthMap(const TextureHandle& texture);
 		void AttachDepthMap(const CubeMapHandle& cubemap);
-		void PostProcessImage(CameraUnit& camera);
 		TextureHandle PerformBloomIterations(const TextureHandle& inputBloom, uint8_t iterations);
+		void PerformGlobalIlluminationPass(CameraUnit& camera);
 	public:
 		const Renderer& GetRenderEngine() const;
 		Renderer& GetRenderEngine();

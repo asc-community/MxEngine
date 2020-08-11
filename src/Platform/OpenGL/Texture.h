@@ -46,7 +46,7 @@ namespace MxEngine
 		RGB32F,
 		RGBA32F,
 		DEPTH,
-		DEPTH24_SPENCIL8
+		DEPTH32F
 	};
 
 	enum class TextureWrap : uint8_t
@@ -93,7 +93,6 @@ namespace MxEngine
 		void Load(const MxString& filepath, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
 		void Load(RawDataPointer data, int width, int height, TextureFormat format = TextureFormat::RGB, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true);
 		void Load(const Image& image, TextureFormat format = TextureFormat::RGB, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true);
-		void LoadMipmaps(RawDataPointer* data, size_t mipmaps, int biggestWidth, int biggestHeight, TextureWrap wrap = TextureWrap::REPEAT);
 		void LoadDepth(int width, int height, TextureFormat format = TextureFormat::DEPTH, TextureWrap wrap = TextureWrap::CLAMP_TO_BORDER);
 		void LoadMultisample(int width, int height, TextureFormat format, int samples, TextureWrap wrap = TextureWrap::REPEAT);
 		Image GetRawTextureData() const;

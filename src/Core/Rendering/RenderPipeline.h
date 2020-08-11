@@ -48,10 +48,12 @@ namespace MxEngine
         TextureHandle NormalTexture;
         TextureHandle MaterialTexture;
         TextureHandle DepthTexture;
+        TextureHandle HDRTexture;
 
         FrustrumCuller Culler;
-        Matrix4x4 ViewProjMatrix;
-        Matrix4x4 StaticViewProjMatrix;
+        Matrix4x4 ViewMatrix;
+        Matrix4x4 ProjectionMatrix;
+        Matrix4x4 StaticViewMatrix;
         Vector3 ViewportPosition;
         TextureHandle OutputTexture;
         Matrix3x3 InversedSkyboxRotation;
@@ -67,13 +69,12 @@ namespace MxEngine
     struct EnvironmentUnit
     {
         ShaderHandle GBufferShader;
+        ShaderHandle GlobalIlluminationShader;
+        ShaderHandle HDRToLDRShader;
         ShaderHandle SkyboxShader;
         ShaderHandle ShadowMapShader;
         ShaderHandle ShadowCubeMapShader;
-        ShaderHandle MSAAHDRSplitShader;
-        ShaderHandle HDRSplitShader;
         ShaderHandle BloomShader;
-        ShaderHandle HDRBloomCombineHDRShader;
         ShaderHandle ImageForwardShader;
         ShaderHandle DebugDrawShader;
 

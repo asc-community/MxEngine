@@ -82,6 +82,20 @@ namespace MxEngine
             #include "Platform/OpenGL/Shaders/gbuffer_fragment.glsl"
         );
 
+        environment.GlobalIlluminationShader = GraphicFactory::Create<Shader>();
+        environment.GlobalIlluminationShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/global_illum_fragment.glsl"
+        );
+
+        environment.HDRToLDRShader = GraphicFactory::Create<Shader>();
+        environment.HDRToLDRShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/hdr_to_ldr_fragment.glsl"
+        );
+
         environment.SkyboxShader = GraphicFactory::Create<Shader>();
         environment.SkyboxShader->LoadFromString(
             #include "Platform/OpenGL/Shaders/skybox_vertex.glsl"
@@ -103,26 +117,6 @@ namespace MxEngine
             #include "Platform/OpenGL/Shaders/depthcubemap_geometry.glsl"
             ,
             #include "Platform/OpenGL/Shaders/depthcubemap_fragment.glsl"
-        );
-
-        environment.MSAAHDRSplitShader = GraphicFactory::Create<Shader>();
-        environment.MSAAHDRSplitShader->LoadFromString(
-            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/hdrsplitmsaa_fragment.glsl"
-        );
-        environment.HDRSplitShader = GraphicFactory::Create<Shader>();
-        environment.HDRSplitShader->LoadFromString(
-            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/hdrsplit_fragment.glsl"
-        );
-
-        environment.HDRBloomCombineHDRShader = GraphicFactory::Create<Shader>();
-        environment.HDRBloomCombineHDRShader->LoadFromString(
-            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/hdr_fragment.glsl"
         );
 
         environment.BloomShader = GraphicFactory::Create<Shader>();

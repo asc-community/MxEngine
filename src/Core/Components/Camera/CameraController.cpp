@@ -116,24 +116,40 @@ namespace MxEngine
 	const Matrix4x4& CameraController::GetMatrix(const Vector3& position) const
 	{
 		if (this->Camera.UpdateProjection) this->SubmitMatrixProjectionChanges();
-		
+
+		auto& _ = this->GetViewMatrix(position);
+		return this->Camera.GetMatrix();
+	}
+
+	const Matrix4x4& CameraController::GetViewMatrix(const Vector3& position) const
+	{
 		auto view = MakeViewMatrix(position, position + this->GetDirection(), this->GetUpVector());
 		this->Camera.SetViewMatrix(view);
+		return this->Camera.GetViewMatrix();
+	}
 
-		return this->Camera.GetMatrix();
+	const Matrix4x4& CameraController::GetProjectionMatrix() const
+	{
+		if (this->Camera.UpdateProjection) this->SubmitMatrixProjectionChanges();
+		return this->Camera.GetProjectionMatrix();
 	}
 
     Matrix4x4 CameraController::GetStaticMatrix() const
     {
 		if (this->Camera.UpdateProjection) this->SubmitMatrixProjectionChanges();
-		
+
+		auto ViewMatrix = this->GetStaticViewMatrix();
+		const Matrix4x4& ProjectionMatrix = this->Camera.GetProjectionMatrix();
+		return ProjectionMatrix * ViewMatrix;
+    }
+
+	Matrix4x4 CameraController::GetStaticViewMatrix() const
+	{
 		auto view = MakeViewMatrix(MakeVector3(0.0f), this->GetDirection(), this->GetUpVector());
 		this->Camera.SetViewMatrix(view);
-
-		auto ViewMatrix = (Matrix3x3)this->Camera.GetViewMatrix();
-		const Matrix4x4& ProjectionMatrix = this->Camera.GetProjectionMatrix();
-		return ProjectionMatrix * (Matrix4x4)ViewMatrix;
-    }
+		auto viewMatrix = (Matrix3x3)this->Camera.GetViewMatrix();
+		return (Matrix4x4)viewMatrix;
+	}
 
 	TextureHandle CameraController::GetRenderTexture() const
 	{
@@ -409,6 +425,11 @@ namespace MxEngine
 		return this->renderBuffers->Depth;
 	}
 
+	TextureHandle CameraController::GetHDRTexture() const
+	{
+		return this->renderBuffers->HDR;
+	}
+
 	void CameraRender::Init(int width, int height)
 	{
 		this->GBuffer = GraphicFactory::Create<FrameBuffer>();
@@ -416,6 +437,7 @@ namespace MxEngine
 		this->Normal = GraphicFactory::Create<Texture>();
 		this->Material = GraphicFactory::Create<Texture>();
 		this->Depth = GraphicFactory::Create<Texture>();
+		this->HDR = GraphicFactory::Create<Texture>();
 
 		this->Resize(width, height);
 		
@@ -438,12 +460,14 @@ namespace MxEngine
 		this->Albedo->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
 		this->Normal->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
 		this->Material->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
-		this->Depth->LoadDepth(width, height, TextureFormat::DEPTH, TextureWrap::CLAMP_TO_EDGE);
+		this->Depth->LoadDepth(width, height, TextureFormat::DEPTH32F, TextureWrap::CLAMP_TO_EDGE);
+		this->HDR->Load(nullptr, width, height, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
 
 		this->Albedo->SetPath("[[cam albedo]]");
 		this->Normal->SetPath("[[cam normal]]");
 		this->Material->SetPath("[[cam material]]");
 		this->Depth->SetPath("[[cam depth]]");
+		this->HDR->SetPath("[[cam hdr]]");
 	}
 
 	void CameraRender::DeInit()

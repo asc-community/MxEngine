@@ -49,6 +49,7 @@ namespace MxEngine
 		TextureHandle Normal;
 		TextureHandle Material;
 		TextureHandle Depth;
+		TextureHandle HDR;
 
 		void Init(int width, int height);
 		void Resize(int width, int height);
@@ -96,7 +97,10 @@ namespace MxEngine
 		CameraType GetCameraType() const;
 
 		const Matrix4x4& GetMatrix(const Vector3& position) const;
+		const Matrix4x4& GetViewMatrix(const Vector3& position) const;
+		const Matrix4x4& GetProjectionMatrix() const;
 		Matrix4x4 GetStaticMatrix() const;
+		Matrix4x4 GetStaticViewMatrix() const;
 		TextureHandle GetRenderTexture() const;
 		void ListenWindowResizeEvent();
 		void ResizeRenderTexture(size_t width, size_t height);
@@ -135,5 +139,6 @@ namespace MxEngine
 		TextureHandle GetNormalTexture() const;
 		TextureHandle GetMaterialTexture() const;
 		TextureHandle GetDepthTexture() const;
+		TextureHandle GetHDRTexture() const;
 	};
 }
