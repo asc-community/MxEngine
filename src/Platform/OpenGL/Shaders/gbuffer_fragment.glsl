@@ -45,11 +45,11 @@ void main()
 	float emmisive = material.emmisive * emmisiveTex;
 	float reflection = material.reflection;
 	float specularFactor = material.specularFactor * specularTex;
-	float specularIntensity = material.specularIntensity;
+	float specularIntensity = 1.0f / material.specularIntensity;
 
 	OutAlbedo = vec4(fsin.RenderColor * albedoTex, 1.0f);
-	OutNormal = vec4(normal, 1.0f);
-	OutMaterial = vec4(emmisive, reflection, specularFactor, specularIntensity);
+	OutNormal = vec4(0.5f * normal + 0.5f, 1.0f);
+	OutMaterial = vec4(emmisive, reflection, specularIntensity, specularFactor);
 }
 
 )

@@ -254,6 +254,11 @@ namespace MxEngine
 		illumShader->SetUniformInt("skyboxTex", textureId);
 		textureId++;
 
+		// fod info
+		illumShader->SetUniformFloat("fogDistance", this->Pipeline.Environment.FogDistance);
+		illumShader->SetUniformFloat("fogDensity", this->Pipeline.Environment.FogDensity);
+		illumShader->SetUniformVec3("fogColor", this->Pipeline.Environment.FogColor);
+
 		// submit directional light information
 		constexpr size_t MaxDirLightCount = 2;
 		const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
@@ -399,6 +404,9 @@ namespace MxEngine
 
 		shader.SetUniformMat4("StaticViewProjection", camera.ProjectionMatrix * camera.StaticViewMatrix);
 		shader.SetUniformMat3("Rotation", Transpose(camera.InversedSkyboxRotation));
+		shader.SetUniformFloat("fogDistance", this->Pipeline.Environment.FogDistance);
+		shader.SetUniformFloat("fogDensity", this->Pipeline.Environment.FogDensity);
+		shader.SetUniformVec3("fogColor", this->Pipeline.Environment.FogColor);
 
 		camera.SkyboxMap->Bind(0);
 		shader.SetUniformInt("skybox", 0);

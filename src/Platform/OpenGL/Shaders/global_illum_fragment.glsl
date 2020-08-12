@@ -20,6 +20,9 @@ uniform sampler2D depthTex;
 
 uniform int lightCount;
 uniform int pcfDistance;
+uniform float fogDistance;
+uniform float fogDensity;
+uniform vec3 fogColor;
 uniform vec3 viewPosition;
 uniform mat4 invViewMatrix;
 uniform mat4 invProjMatrix;
@@ -88,19 +91,26 @@ vec3 calcColorUnderDirLight(vec3 albedo, float specularIntensity, float specular
 	return vec3(ambientColor + specularColor + shadowFactor * mix(diffuseColor, reflectionColor, reflectionFactor));
 }
 
+vec3 applyFog(vec3 color, float distance, vec3 viewDir)
+{
+	float fogFactor = 1.0f - fogDistance * exp(-distance * fogDensity);
+	return mix(color, fogColor, clamp(fogFactor, 0.0f, 1.0f));
+}
+
 void main()
 {
 	vec3 albedo = texture(albedoTex, TexCoord).rgb;
-	vec3 normal = texture(normalTex, TexCoord).rgb;
+	vec3 normal = 2.0f * texture(normalTex, TexCoord).rgb - vec3(1.0f);
 	vec4 material = texture(materialTex, TexCoord).rgba;
 	float depth = texture(depthTex, TexCoord).r;
 
 	float emmisionFactor = material.r;
 	float reflection = material.g;
-	float specularFactor = material.b;
-	float specularIntensity = material.a;
+	float specularIntensity = 1.0f / material.b;
+	float specularFactor = material.a;
 
 	vec3 fragPosition = reconstructWorldPosition(depth, TexCoord);
+	float fragDistance = length(viewPosition - fragPosition.xyz);
 	vec3 viewDirection = normalize(viewPosition - fragPosition.xyz);
 	vec3 reflectionColor = calcReflectionColor(reflection, skyboxTex, TexCoord, skyboxTransform, viewDirection, normal);
 
@@ -110,6 +120,9 @@ void main()
 		vec4 fragLightSpace = lights[i].transform * vec4(fragPosition, 1.0f);
 		totalColor += calcColorUnderDirLight(albedo, specularIntensity, specularFactor, reflection, reflectionColor, normal, lights[i], viewDirection, fragLightSpace, lightDepthMaps[i]);
 	}
+
+	totalColor = applyFog(totalColor, fragDistance, viewDirection);
+
 	OutColor = vec4(totalColor, 1.0f);
 }
 
