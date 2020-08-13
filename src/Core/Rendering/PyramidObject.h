@@ -26,31 +26,25 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Rectangle.h"
+#pragma once
+
+#include "Platform/GraphicAPI.h"
+#include "Core/Resources/Vertex.h"
 
 namespace MxEngine
 {
-    void Rectangle::Init(float halfSize)
-    {
-        std::array vertecies =
-        {
-            Vector4(-halfSize, -halfSize, 0.5f, 1.0f),
-            Vector4( halfSize, -halfSize, 0.5f, 1.0f),
-            Vector4(-halfSize,  halfSize, 0.5f, 1.0f),
-            Vector4(-halfSize,  halfSize, 0.5f, 1.0f),
-            Vector4( halfSize, -halfSize, 0.5f, 1.0f),
-            Vector4( halfSize,  halfSize, 0.5f, 1.0f),
-        };
+	class PyramidObject
+	{
+		VertexBufferHandle VBO;
+		VertexArrayHandle VAO;
+		IndexBufferHandle IBO;
+	public:
+		PyramidObject() = default;
+		PyramidObject(VertexBufferHandle vbo, VertexArrayHandle vao, IndexBufferHandle ibo)
+			: VBO(std::move(vbo)), VAO(std::move(vao)), IBO(std::move(ibo)) { }
 
-        this->VBO = GraphicFactory::Create<VertexBuffer>((float*)vertecies.data(), vertecies.size() * sizeof(float), UsageType::STATIC_DRAW);
-        auto VBL = GraphicFactory::Create<VertexBufferLayout>();
-        VBL->PushFloat(4); //-V112
-        this->VAO = GraphicFactory::Create<VertexArray>();
-        VAO->AddBuffer(*VBO, *VBL);
-    }
-    
-    const VertexArray& Rectangle::GetVAO() const
-    {
-        return *this->VAO;
-    }
+		const VertexArray& GetVAO() const { return *VAO; }
+		const IndexBuffer& GetIBO() const { return *IBO; }
+		const size_t GetVertexCount() const { return VBO->GetSize() / Vertex::Size; }
+	};
 }

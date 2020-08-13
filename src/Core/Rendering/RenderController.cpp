@@ -48,7 +48,7 @@ namespace MxEngine
 				this->AttachDepthMap(directionalLight.ShadowMap);
 				directionalLightShader.SetUniformMat4("LightProjMatrix", directionalLight.ProjectionMatrix);
 
-				for (const auto& renderUnit : this->Pipeline.OpaqueRenderUnits)
+				for (const auto& renderUnit : this->Pipeline.ShadowCasterUnits)
 				{
 					this->DrawShadowMap(renderUnit, directionalLight, directionalLightShader);
 				}
@@ -63,7 +63,7 @@ namespace MxEngine
 				this->AttachDepthMap(spotLight.ShadowMap);
 				spotLightShader.SetUniformMat4("LightProjMatrix", spotLight.ProjectionMatrix);
 
-				for (const auto& renderUnit : this->Pipeline.OpaqueRenderUnits)
+				for (const auto& renderUnit : this->Pipeline.ShadowCasterUnits)
 				{
 					this->DrawShadowMap(renderUnit, spotLight, spotLightShader);
 				}
@@ -85,7 +85,7 @@ namespace MxEngine
 				pointLightShader.SetUniformFloat("zFar", pointLight.FarDistance);
 				pointLightShader.SetUniformVec3("lightPos", pointLight.Position);
 
-				for (const auto& renderUnit : this->Pipeline.OpaqueRenderUnits)
+				for (const auto& renderUnit : this->Pipeline.ShadowCasterUnits)
 				{
 					this->DrawShadowMap(renderUnit, pointLight, pointLightShader);
 				}
@@ -115,44 +115,50 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::SubmitShaderRenderPrimitiveUniforms()");
 
 		Texture::TextureBindId textureBindIndex = 0;
+		const auto& material = this->Pipeline.MaterialUnits[unit.materialIndex];
 
-		unit.RenderMaterial.AlbedoMap->Bind(textureBindIndex);
+		material.AlbedoMap->Bind(textureBindIndex);
 		shader.SetUniformInt("map_albedo", textureBindIndex);
 		textureBindIndex++;
 
-		unit.RenderMaterial.SpecularMap->Bind(textureBindIndex);
+		material.SpecularMap->Bind(textureBindIndex);
 		shader.SetUniformInt("map_specular", textureBindIndex);
 		textureBindIndex++;
 
-		unit.RenderMaterial.EmmisiveMap->Bind(textureBindIndex);
+		material.EmmisiveMap->Bind(textureBindIndex);
 		shader.SetUniformInt("map_emmisive", textureBindIndex);
 		textureBindIndex++;
 
-		unit.RenderMaterial.NormalMap->Bind(textureBindIndex);
+		material.NormalMap->Bind(textureBindIndex);
 		shader.SetUniformInt("map_normal", textureBindIndex);
 		textureBindIndex++;
 
-		unit.RenderMaterial.HeightMap->Bind(textureBindIndex);
+		material.HeightMap->Bind(textureBindIndex);
 		shader.SetUniformInt("map_height", textureBindIndex);
 		textureBindIndex++;
 
-		shader.SetUniformFloat("material.specularFactor", unit.RenderMaterial.SpecularFactor);
-		shader.SetUniformFloat("material.specularIntensity", unit.RenderMaterial.SpecularIntensity);
-		shader.SetUniformFloat("material.emmisive", unit.RenderMaterial.Emmision);
-		shader.SetUniformFloat("material.reflection", unit.RenderMaterial.Reflection);
-		shader.SetUniformFloat("displacement", unit.RenderMaterial.Displacement);
+		material.TransparencyMap->Bind(textureBindIndex);
+		shader.SetUniformInt("map_transparency", textureBindIndex);
+		textureBindIndex++;
+
+		shader.SetUniformFloat("material.specularFactor", material.SpecularFactor);
+		shader.SetUniformFloat("material.specularIntensity", material.SpecularIntensity);
+		shader.SetUniformFloat("material.emmisive", material.Emmision);
+		shader.SetUniformFloat("material.reflection", material.Reflection);
+		shader.SetUniformFloat("displacement", material.Displacement);
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
 		this->GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
-		this->GetRenderEngine().SetDefaultVertexAttribute(12, unit.RenderMaterial.BaseColor);
+		this->GetRenderEngine().SetDefaultVertexAttribute(12, material.BaseColor);
 		
 		this->GetRenderEngine().DrawTrianglesInstanced(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
 	}
 
 	void RenderController::DrawShadowMap(const RenderUnit& unit, const DirectionalLigthUnit& dirLight, const Shader& shader)
 	{
-		shader.SetUniformFloat("displacement", unit.RenderMaterial.Displacement);
-		unit.RenderMaterial.HeightMap->Bind(0);
+		const auto& material = this->Pipeline.MaterialUnits[unit.materialIndex];
+		shader.SetUniformFloat("displacement", material.Displacement);
+		material.HeightMap->Bind(0);
 		shader.SetUniformInt("map_height", 0);
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
@@ -162,8 +168,9 @@ namespace MxEngine
 
 	void RenderController::DrawShadowMap(const RenderUnit& unit, const SpotLightUnit& spotLight, const Shader& shader)
 	{
-		shader.SetUniformFloat("displacement", unit.RenderMaterial.Displacement);
-		unit.RenderMaterial.HeightMap->Bind(0);
+		const auto& material = this->Pipeline.MaterialUnits[unit.materialIndex];
+		shader.SetUniformFloat("displacement", material.Displacement);
+		material.HeightMap->Bind(0);
 		shader.SetUniformInt("map_height", 0);
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
@@ -173,8 +180,9 @@ namespace MxEngine
 
 	void RenderController::DrawShadowMap(const RenderUnit& unit, const PointLightUnit& pointLight, const Shader& shader)
 	{
-		shader.SetUniformFloat("displacement", unit.RenderMaterial.Displacement);
-		unit.RenderMaterial.HeightMap->Bind(0);
+		const auto& material = this->Pipeline.MaterialUnits[unit.materialIndex];
+		shader.SetUniformFloat("displacement", material.Displacement);
+		material.HeightMap->Bind(0);
 		shader.SetUniformInt("map_height", 0);
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix);
@@ -264,7 +272,7 @@ namespace MxEngine
 		const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
 		size_t lightCount = Min(MaxDirLightCount, dirLights.size());
 
-		illumShader->SetUniformInt("lightCount", lightCount);
+		illumShader->SetUniformInt("lightCount", (int)lightCount);
 		illumShader->SetUniformInt("pcfDistance", this->Pipeline.Environment.ShadowBlurIterations);
 
 		for (size_t i = 0; i < lightCount; i++)
@@ -304,6 +312,18 @@ namespace MxEngine
 		HDRToLDRShader->SetUniformFloat("exposure", camera.Exposure);
 		
 		this->RenderToTexture(camera.OutputTexture, HDRToLDRShader);
+	}
+
+	void RenderController::PerformPositionedLightPass(CameraUnit& camera)
+	{
+		const auto& spotLights = this->Pipeline.Lighting.SpotLights;
+		constexpr size_t MaxSpotLightCount = 8;
+
+		size_t spotLightCount = Min(MaxSpotLightCount, spotLights.size());
+		for (size_t i = 0; i < spotLightCount; i++)
+		{
+			const auto& spotLight = spotLights[i];
+		}
 	}
 
 	const Renderer& RenderController::GetRenderEngine() const
@@ -446,6 +466,8 @@ namespace MxEngine
 		this->Pipeline.Lighting.SpotLights.clear();
 		this->Pipeline.OpaqueRenderUnits.clear();
 		this->Pipeline.TransparentRenderUnits.clear();
+		this->Pipeline.ShadowCasterUnits.clear();
+		this->Pipeline.MaterialUnits.clear();
 		this->Pipeline.Cameras.clear();
 	}
 
@@ -489,6 +511,7 @@ namespace MxEngine
 		spotLight.Direction = light.Direction;
 		spotLight.ProjectionMatrix = light.GetMatrix(parentTransform.GetPosition());
 		spotLight.BiasedProjectionMatrix = MakeBiasMatrix() * light.GetMatrix(parentTransform.GetPosition());
+		spotLight.FrustrumTransformMatrix = light.GetPyramidTransform(parentTransform.GetPosition());
 		spotLight.InnerAngleCos = light.GetInnerCos();
 		spotLight.OuterAngleCos = light.GetOuterCos();
 		spotLight.ShadowMap = light.GetDepthTexture();
@@ -523,7 +546,7 @@ namespace MxEngine
     {
 		RenderUnit* primitivePtr = nullptr;
 		// filter transparent object to render in separate order
-		if (material.Transparency < 1.0f || material.TransparencyMap.IsValid())
+		if (material.Transparency < 1.0f)
 			primitivePtr = &this->Pipeline.TransparentRenderUnits.emplace_back();
 		else
 			primitivePtr = &this->Pipeline.OpaqueRenderUnits.emplace_back();
@@ -531,7 +554,7 @@ namespace MxEngine
 
 		primitive.VAO = object.Data.GetVAO();
 		primitive.IBO = object.Data.GetIBO();
-		primitive.RenderMaterial = material;
+		primitive.materialIndex = this->Pipeline.MaterialUnits.size();
 		primitive.ModelMatrix  = parentTransform.GetMatrix() * object.GetTransform()->GetMatrix(); //-V807
 		primitive.NormalMatrix = parentTransform.GetNormalMatrix() * object.GetTransform()->GetNormalMatrix();
 		primitive.InstanceCount = instanceCount;
@@ -541,15 +564,19 @@ namespace MxEngine
 		primitive.MinAABB = aabb.Min;
 		primitive.MaxAABB = aabb.Max;
 
+		auto& renderMaterial = this->Pipeline.MaterialUnits.emplace_back(material); // create a copy of material for future work
+
 		// we need to change displacement to account object scale, so we take average of object scale components as multiplier
-		primitive.RenderMaterial.Displacement *= Dot(parentTransform.GetScale() * object.GetTransform()->GetScale(), MakeVector3(1.0f / 3.0f));
+		renderMaterial.Displacement *= Dot(parentTransform.GetScale() * object.GetTransform()->GetScale(), MakeVector3(1.0f / 3.0f));
 		// set default textures if they are not exist
-		if (!primitive.RenderMaterial.AlbedoMap.IsValid())       primitive.RenderMaterial.AlbedoMap       = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!primitive.RenderMaterial.SpecularMap.IsValid())     primitive.RenderMaterial.SpecularMap     = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!primitive.RenderMaterial.EmmisiveMap.IsValid())     primitive.RenderMaterial.EmmisiveMap     = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!primitive.RenderMaterial.TransparencyMap.IsValid()) primitive.RenderMaterial.TransparencyMap = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!primitive.RenderMaterial.NormalMap.IsValid())       primitive.RenderMaterial.NormalMap       = this->Pipeline.Environment.DefaultNormalMap;
-		if (!primitive.RenderMaterial.HeightMap.IsValid())       primitive.RenderMaterial.HeightMap       = this->Pipeline.Environment.DefaultBlackMap;
+		if (!renderMaterial.AlbedoMap.IsValid())       renderMaterial.AlbedoMap       = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!renderMaterial.SpecularMap.IsValid())     renderMaterial.SpecularMap     = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!renderMaterial.EmmisiveMap.IsValid())     renderMaterial.EmmisiveMap     = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!renderMaterial.TransparencyMap.IsValid()) renderMaterial.TransparencyMap = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!renderMaterial.NormalMap.IsValid())       renderMaterial.NormalMap       = this->Pipeline.Environment.DefaultNormalMap;
+		if (!renderMaterial.HeightMap.IsValid())       renderMaterial.HeightMap       = this->Pipeline.Environment.DefaultBlackMap;
+
+		if (renderMaterial.CastsShadow) this->Pipeline.ShadowCasterUnits.push_back(primitive);
     }
 
 	void RenderController::SubmitFinalImage(const TextureHandle& texture)
@@ -597,8 +624,6 @@ namespace MxEngine
 			//  	this->ToggleFaceCulling(true);
 			//  	this->GetRenderEngine().UseDepthBufferMask(true);
 			//  }
-			// 
-			// this->DrawDebugBuffer(camera);
 		}
 	}
 

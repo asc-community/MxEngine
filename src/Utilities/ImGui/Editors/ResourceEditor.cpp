@@ -74,15 +74,15 @@ namespace MxEngine::GUI
         {
             auto id = (int)factory.IndexOf(object);
             ImGui::PushID(id);
-            ImGui::AlignTextToFramePadding();
-            ImGui::Text("id: %-3d", id);
-            ImGui::SameLine();
 
             auto texture = GraphicFactory::GetHandle(object);
             auto& texturePath = texture->GetPath();
 
             if (filter[0] == '\0' || texturePath.find(filter) != texturePath.npos)
             {
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("id: %-3d", id);
+                ImGui::SameLine();
                 DrawTextureEditor(texturePath.c_str(), texture, false);
             }
 
@@ -204,6 +204,7 @@ namespace MxEngine::GUI
         DrawTextureEditor("height map", material->HeightMap, true);
         DrawTextureEditor("transparency map", material->TransparencyMap, true);
 
+        ImGui::Checkbox("casts shadows", &material->CastsShadow);
         ImGui::DragFloat("specular factor", &material->SpecularFactor, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("specular intensity", &material->SpecularIntensity, 0.1f, 1.0f, FLT_MAX);
         ImGui::DragFloat("emmision", &material->Emmision, 0.01f, 0.0f);
@@ -369,6 +370,11 @@ namespace MxEngine::GUI
             if (ImGui::Selectable("cylinder", &optionPeeked))
             {
                 mesh = Primitives::CreateCylinder(subdivisions);
+                ImGui::SetItemDefaultFocus();
+            }
+            if (ImGui::Selectable("pyramid", &optionPeeked))
+            {
+                mesh = Primitives::CreatePyramid();
                 ImGui::SetItemDefaultFocus();
             }
             ImGui::EndCombo();

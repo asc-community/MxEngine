@@ -26,31 +26,20 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Rectangle.h"
+#pragma once
+
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-    void Rectangle::Init(float halfSize)
+    struct Vertex
     {
-        std::array vertecies =
-        {
-            Vector4(-halfSize, -halfSize, 0.5f, 1.0f),
-            Vector4( halfSize, -halfSize, 0.5f, 1.0f),
-            Vector4(-halfSize,  halfSize, 0.5f, 1.0f),
-            Vector4(-halfSize,  halfSize, 0.5f, 1.0f),
-            Vector4( halfSize, -halfSize, 0.5f, 1.0f),
-            Vector4( halfSize,  halfSize, 0.5f, 1.0f),
-        };
+        Vector3 Position{ 0.0f };
+        Vector2 TexCoord{ 0.0f };
+        Vector3 Normal{ 0.0f };
+        Vector3 Tangent{ 0.0f };
+        Vector3 Bitangent{ 0.0f };
 
-        this->VBO = GraphicFactory::Create<VertexBuffer>((float*)vertecies.data(), vertecies.size() * sizeof(float), UsageType::STATIC_DRAW);
-        auto VBL = GraphicFactory::Create<VertexBufferLayout>();
-        VBL->PushFloat(4); //-V112
-        this->VAO = GraphicFactory::Create<VertexArray>();
-        VAO->AddBuffer(*VBO, *VBL);
-    }
-    
-    const VertexArray& Rectangle::GetVAO() const
-    {
-        return *this->VAO;
-    }
+        constexpr static size_t Size = 3 + 2 + 3 + 3 + 3;
+    };
 }

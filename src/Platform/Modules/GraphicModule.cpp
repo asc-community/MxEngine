@@ -51,7 +51,7 @@ namespace MxEngine
 		MAKE_SCOPE_TIMER("MxEngine::GLGraphicModule", "OpenGL::InitGLFW");
 		glfwSetErrorCallback([](int errorCode, const char* errorMessage)
 			{
-				MXLOG_FATAL("OpenGL::InitGLFW", errorMessage);
+				MXLOG_ERROR("OpenGL::InitGLFW", errorMessage);
 			});
 		if (!glfwInit())
 		{

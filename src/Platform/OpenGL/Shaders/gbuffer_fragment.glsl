@@ -25,6 +25,7 @@ uniform sampler2D map_albedo;
 uniform sampler2D map_specular;
 uniform sampler2D map_emmisive;
 uniform sampler2D map_normal;
+uniform sampler2D map_transparency;
 uniform Material material;
 
 vec3 calcNormal(vec2 texcoord, mat3 TBN)
@@ -36,6 +37,9 @@ vec3 calcNormal(vec2 texcoord, mat3 TBN)
 
 void main()
 {
+	vec3 transparencyTex = texture(map_transparency, fsin.TexCoord).rgb;
+	if (transparencyTex.x + transparencyTex.y + transparencyTex.z < 0.1f) discard; // mask fragments with low opacity
+
 	vec3 normal = calcNormal(fsin.TexCoord, fsin.TBN);
 
 	vec3 albedoTex   = texture(map_albedo,   fsin.TexCoord).rgb;

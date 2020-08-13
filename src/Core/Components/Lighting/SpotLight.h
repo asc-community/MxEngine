@@ -58,5 +58,6 @@ namespace MxEngine
         [[nodiscard]] TextureHandle GetDepthTexture() const;
         void AttachDepthTexture(const TextureHandle& texture);
         [[nodiscard]] Matrix4x4 GetMatrix(const Vector3& position) const;
+        [[nodiscard]] Matrix4x4 GetPyramidTransform(const Vector3& position) const;
     };
 }

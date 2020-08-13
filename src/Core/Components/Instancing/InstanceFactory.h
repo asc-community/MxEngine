@@ -168,7 +168,12 @@ namespace MxEngine
         void InitMesh();
 		void RemoveInstancedBuffer(Mesh& mesh, size_t index);
 		void RemoveDanglingHandles();
+        void SendInstancesToGPU();
 		void Destroy();
+
+        ModelData& GetModelData();
+        NormalData& GetNormalData();
+        ColorData& GetColorData();
 	public:
 		bool IsStatic = false;
 
@@ -179,14 +184,9 @@ namespace MxEngine
 
 		void Init();
 		void OnUpdate(float timeDelta);
-
-		void SubmitInstances();
 		MxObject::Handle MakeInstance();
+        void SubmitInstances();
 		void DestroyInstances();
-
-		ModelData& GetModelData();
-		NormalData& GetNormalData();
-		ColorData& GetColorData();
 
 		InstanceFactory() = default;
 		InstanceFactory(const InstanceFactory&) = delete;

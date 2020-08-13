@@ -190,17 +190,17 @@ namespace MxEngine
 
     TransformComponent& TransformComponent::ScaleX(float scale) 
     {
-        return this->Scale(MakeVector3(scale, 0.0f, 0.0f));
+        return this->Scale(MakeVector3(scale, 1.0f, 1.0f));
     }
 
     TransformComponent& TransformComponent::ScaleY(float scale) 
     {
-        return this->Scale(MakeVector3(0.0f, scale, 0.0f));
+        return this->Scale(MakeVector3(1.0f, scale, 1.0f));
     }
 
     TransformComponent& TransformComponent::ScaleZ(float scale) 
     {
-        return this->Scale(MakeVector3(0.0f, 0.0f, scale));
+        return this->Scale(MakeVector3(1.0f, 1.0f, scale));
     }
 
     TransformComponent& TransformComponent::Rotate(float angle, const Vector3& axis)

@@ -60,6 +60,7 @@ namespace MxEngine
 		void AttachDepthMap(const CubeMapHandle& cubemap);
 		TextureHandle PerformBloomIterations(const TextureHandle& inputBloom, uint8_t iterations);
 		void PerformGlobalIlluminationPass(CameraUnit& camera);
+		void PerformPositionedLightPass(CameraUnit& camera);
 	public:
 		const Renderer& GetRenderEngine() const;
 		Renderer& GetRenderEngine();

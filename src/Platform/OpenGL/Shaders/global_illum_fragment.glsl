@@ -23,6 +23,7 @@ uniform int pcfDistance;
 uniform float fogDistance;
 uniform float fogDensity;
 uniform vec3 fogColor;
+uniform bool isViewPerspective;
 uniform vec3 viewPosition;
 uniform mat4 invViewMatrix;
 uniform mat4 invProjMatrix;

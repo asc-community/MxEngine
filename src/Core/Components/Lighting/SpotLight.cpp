@@ -86,9 +86,11 @@ namespace MxEngine
         this->texture = texture;
     }
 
+    constexpr float ZFar = 1000.0f;
+
     Matrix4x4 SpotLight::GetMatrix(const Vector3& position) const
     {
-        auto Projection = MakePerspectiveMatrix(Radians(2.0f * this->outerAngle), 1.0f, 1.1f, 1000.0f);
+        auto Projection = MakePerspectiveMatrix(Radians(2.0f * this->outerAngle), 1.0f, 1.1f, ZFar);
         auto directionNorm = Normalize(MakeVector3(
             this->Direction.x + 0.0001f,
             this->Direction.y,
@@ -100,5 +102,15 @@ namespace MxEngine
             MakeVector3(0.0f, 1.0f, 0.0f)
         );
         return Projection * View;
+    }
+
+    Matrix4x4 SpotLight::GetPyramidTransform(const Vector3& position) const
+    {
+        Matrix4x4 I{ 1.0f };
+        float fov = std::tan(2.0f * Radians(this->GetOuterAngle()));
+        auto T = Translate(I, position);
+        auto R = ToMatrix(LookAtRotation(this->Direction, MakeVector3(0.00001f, 1.0f, 0.0f)));
+        auto S = Scale(I, MakeVector3(fov, fov, ZFar));
+        return T * R * S;
     }
 }

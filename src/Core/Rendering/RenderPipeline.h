@@ -28,10 +28,10 @@
 
 #pragma once
 
-#include "Platform/GraphicAPI.h"
+#include "Core/BoundingObjects/FrustrumCuller.h"
 #include "Rectangle.h"
 #include "SkyboxObject.h"
-#include "Core/BoundingObjects/FrustrumCuller.h"
+#include "PyramidObject.h"
 
 namespace MxEngine
 {
@@ -90,6 +90,7 @@ namespace MxEngine
         SkyboxObject SkyboxCubeObject;
         DebugBufferUnit DebugBufferObject;
         Rectangle RectangularObject;
+        PyramidObject PyramidFrustrum;
         VectorInt2 Viewport;
 
         Vector3 FogColor;
@@ -129,6 +130,7 @@ namespace MxEngine
     {
         TextureHandle ShadowMap;
         Matrix4x4 ProjectionMatrix;
+        Matrix4x4 FrustrumTransformMatrix;
         Matrix4x4 BiasedProjectionMatrix;
         Vector3 Position;
         Vector3 AmbientColor;
@@ -151,7 +153,7 @@ namespace MxEngine
         VertexArrayHandle VAO;
         IndexBufferHandle IBO;
 
-        Material RenderMaterial;
+        size_t materialIndex;
         
         Matrix4x4 ModelMatrix;
         Matrix3x3 NormalMatrix;
@@ -164,8 +166,10 @@ namespace MxEngine
     {
         EnvironmentUnit Environment;
         LightingSystem Lighting;
+        MxVector<RenderUnit> ShadowCasterUnits;
         MxVector<RenderUnit> OpaqueRenderUnits;
         MxVector<RenderUnit> TransparentRenderUnits;
+        MxVector<Material> MaterialUnits;
         MxVector<CameraUnit> Cameras;
     };
 }
