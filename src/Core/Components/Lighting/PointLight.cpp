@@ -39,26 +39,15 @@ namespace MxEngine
         this->AttachDepthCubeMap(cubemap);
     }
 
-    PointLight& PointLight::UseFactors(const Vector3& factors)
+    float PointLight::GetRadius() const
     {
-        this->factors[Constant]  = Max(factors[Constant],  1.0f);
-        this->factors[Linear]    = Max(factors[Linear],    0.0f);
-        this->factors[Quadratic] = Max(factors[Quadratic], 0.0f);
+        return this->radius;
+    }
+
+    PointLight& PointLight::UseRadius(float radius)
+    {
+        this->radius = Max(0.0f, radius);
         return *this;
-    }
-
-    const Vector3& PointLight::GetFactors() const
-    {
-        return this->factors;
-    }
-
-    float PointLight::ComputeRadius() const
-    {
-        auto maxLight  = Max(this->DiffuseColor.x, this->DiffuseColor.y, this->DiffuseColor.z);
-        auto constant  = this->factors[0];
-        auto linear    = this->factors[1];
-        auto quadratic = this->factors[2];
-        return -linear + std::sqrt(linear * linear - 4.0f * quadratic * (constant - (256.0f / 5.0f) * maxLight)) / (2.0f * quadratic);
     }
 
     CubeMapHandle PointLight::GetDepthCubeMap() const
@@ -101,5 +90,14 @@ namespace MxEngine
             UpTable[index]
         );
         return Projection * View;
+    }
+
+    Matrix4x4 PointLight::GetSphereTransform(const Vector3& position) const
+    {
+        Matrix4x4 I{ 1.0f };
+        auto T = Translate(I, position);
+        auto R = I;
+        auto S = Scale(I, 2.0f * RootTwo<float>() * this->radius);
+        return T * R * S;
     }
 }

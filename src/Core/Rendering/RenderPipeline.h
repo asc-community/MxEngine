@@ -71,6 +71,7 @@ namespace MxEngine
         ShaderHandle GBufferShader;
         ShaderHandle GlobalIlluminationShader;
         ShaderHandle SpotLightShader;
+        ShaderHandle PointLightShader;
         ShaderHandle HDRToLDRShader;
         ShaderHandle SkyboxShader;
         ShaderHandle ShadowMapShader;
@@ -120,9 +121,10 @@ namespace MxEngine
     {
         CubeMapHandle ShadowMap;
         Matrix4x4 ProjectionMatrices[6];
+        Matrix4x4 SphereTransformMatrix;
         Vector3 Position;
         float FarDistance;
-        Vector3 Factors;
+        float Radius;
         Vector3 AmbientColor;
         Vector3 DiffuseColor;
         Vector3 SpecularColor;

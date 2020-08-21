@@ -299,6 +299,7 @@ namespace MxEngine
 		this->RenderToTexture(camera.HDRTexture, illumShader);
 
 		this->PerformSpotLightPass(camera);
+		this->PerformPointLightPass(camera);
 
 		// render skybox & debug buffer (HDR texture already attached)
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.DepthTexture, Attachment::DEPTH_ATTACHMENT);
@@ -318,8 +319,6 @@ namespace MxEngine
 
 	void RenderController::PerformSpotLightPass(CameraUnit& camera)
 	{
-		// TODO: perform fog after all lights are rendered
-
 		const auto& spotLights = this->Pipeline.Lighting.SpotLights;
 		auto shader = this->Pipeline.Environment.SpotLightShader;
 		auto& pyramid = this->Pipeline.Environment.PyramidObject;
@@ -347,10 +346,8 @@ namespace MxEngine
 		shader->SetUniformMat4("invViewMatrix", Inverse(camera.ViewMatrix));
 		shader->SetUniformInt("pcfDistance", this->Pipeline.Environment.ShadowBlurIterations);
 
-		constexpr size_t MaxSpotLightCount = 8;
-		size_t spotLightCount = Min(MaxSpotLightCount, spotLights.size());
 		auto viewProjMatrix = camera.ProjectionMatrix * camera.ViewMatrix;
-		for (size_t i = 0; i < spotLightCount; i++)
+		for (size_t i = 0; i < spotLights.size(); i++)
 		{
 			const auto& spotLight = spotLights[i];
 
@@ -369,6 +366,57 @@ namespace MxEngine
 			shader->SetUniformVec3("spotLight.specular", spotLight.SpecularColor);
 
 			this->GetRenderEngine().DrawTriangles(pyramid.GetVAO(), pyramid.GetIBO(), *shader);
+		}
+
+		this->GetRenderEngine().UseCulling(true, true, true);
+	}
+
+	void RenderController::PerformPointLightPass(CameraUnit& camera)
+	{
+		const auto& pointLights = this->Pipeline.Lighting.PointLights;
+		auto shader = this->Pipeline.Environment.PointLightShader;
+		auto& sphere = this->Pipeline.Environment.SphereObject;
+		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
+
+		this->GetRenderEngine().UseCulling(true, true, false);
+		this->GetRenderEngine().UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::SRC_ALPHA);
+
+		// bind G buffer channels
+		camera.AlbedoTexture->Bind(0);
+		shader->SetUniformInt("albedoTex", 0);
+
+		camera.NormalTexture->Bind(1);
+		shader->SetUniformInt("normalTex", 1);
+
+		camera.MaterialTexture->Bind(2);
+		shader->SetUniformInt("materialTex", 2);
+
+		camera.DepthTexture->Bind(3);
+		shader->SetUniformInt("depthTex", 3);
+
+		shader->SetUniformVec3("viewPosition", camera.ViewportPosition);
+		shader->SetUniformVec2("viewportSize", viewportSize);
+		shader->SetUniformMat4("invProjMatrix", Inverse(camera.ProjectionMatrix));
+		shader->SetUniformMat4("invViewMatrix", Inverse(camera.ViewMatrix));
+
+		auto viewProjMatrix = camera.ProjectionMatrix * camera.ViewMatrix;
+		for (size_t i = 0; i < pointLights.size(); i++)
+		{
+			const auto& pointLight = pointLights[i];
+
+			pointLight.ShadowMap->Bind(4);
+			shader->SetUniformInt("lightDepthMap", 4);
+
+			shader->SetUniformMat4("MVP", viewProjMatrix * pointLight.SphereTransformMatrix);
+
+			shader->SetUniformVec3("pointLight.position", pointLight.Position);
+			shader->SetUniformFloat("pointLight.radius", pointLight.Radius);
+			shader->SetUniformFloat("pointLight.zfar", pointLight.FarDistance);
+			shader->SetUniformVec3("pointLight.ambient", pointLight.AmbientColor);
+			shader->SetUniformVec3("pointLight.diffuse", pointLight.DiffuseColor);
+			shader->SetUniformVec3("pointLight.specular", pointLight.SpecularColor);
+
+			this->GetRenderEngine().DrawTriangles(sphere.GetVAO(), sphere.GetIBO(), *shader);
 		}
 
 		this->GetRenderEngine().UseCulling(true, true, true);
@@ -541,8 +589,9 @@ namespace MxEngine
 		pointLight.SpecularColor = light.SpecularColor;
 		pointLight.Position = parentTransform.GetPosition();
 		pointLight.ShadowMap = light.GetDepthCubeMap();
-		pointLight.Factors = light.GetFactors();
+		pointLight.Radius = light.GetRadius();
 		pointLight.FarDistance = light.FarDistance;
+		pointLight.SphereTransformMatrix = light.GetSphereTransform(parentTransform.GetPosition());
 
 		for (size_t i = 0; i < std::size(pointLight.ProjectionMatrices); i++)
 			pointLight.ProjectionMatrices[i] = light.GetMatrix(i, parentTransform.GetPosition());

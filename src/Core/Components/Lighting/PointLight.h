@@ -39,22 +39,18 @@ namespace MxEngine
         MAKE_COMPONENT(PointLight);
 
         CubeMapHandle cubemap;
-        Vector3 factors   = MakeVector3(1.0f, 0.009f, 0.032f);
+        float radius = 8.0f;
     public:
         PointLight();
 
         float FarDistance = 1000.0f;
 
-        constexpr static size_t Constant  = 0;
-        constexpr static size_t Linear    = 1;
-        constexpr static size_t Quadratic = 2;
-
-        PointLight& UseFactors(const Vector3& factors);
-        [[nodiscard]] const Vector3& GetFactors() const;
-        [[nodiscard]] float ComputeRadius() const;
+        [[nodiscard]] float GetRadius() const;
+        PointLight& UseRadius(float radius);
 
         [[nodiscard]] CubeMapHandle GetDepthCubeMap() const;
         void AttachDepthCubeMap(const CubeMapHandle& cubemap);
         [[nodiscard]] Matrix4x4 GetMatrix(size_t index, const Vector3& position) const;
+        [[nodiscard]] Matrix4x4 GetSphereTransform(const Vector3& position) const;
     };
 }

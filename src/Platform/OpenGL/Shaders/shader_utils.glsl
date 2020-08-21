@@ -29,6 +29,33 @@ float calcShadowFactor2D(vec4 fragPosLight, sampler2D depthMap, float bias, int 
 	return shadowFactor;
 }
 
+const int POINT_LIGHT_SAMPLES = 20;
+vec3 sampleOffsetDirections[POINT_LIGHT_SAMPLES] = vec3[]
+(
+	vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1),
+	vec3(1, 1, -1), vec3(1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+	vec3(1, 1, 0), vec3(1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
+	vec3(1, 0, 1), vec3(-1, 0, 1), vec3(1, 0, -1), vec3(-1, 0, -1),
+	vec3(0, 1, 1), vec3(0, -1, 1), vec3(0, -1, -1), vec3(0, 1, -1)
+);
+
+float CalcShadowFactor3D(vec3 fragToLightRay, vec3 viewDist, float zfar, float bias, samplerCube depthMap)
+{
+	float invZfar = 1.0f / zfar;
+	float currentDepth = length(fragToLightRay);
+	currentDepth = (currentDepth - bias) * invZfar;
+	float diskRadius = (1.0f + invZfar) * 0.04f;
+	float shadowFactor = 0.0f;
+
+	for (int i = 0; i < POINT_LIGHT_SAMPLES; i++)
+	{
+		float closestDepth = texture(depthMap, sampleOffsetDirections[i] * diskRadius - fragToLightRay).r;
+		shadowFactor += (currentDepth < closestDepth) ? 1.0f : 0.0f;
+	}
+	shadowFactor /= float(POINT_LIGHT_SAMPLES);
+	return shadowFactor;
+}
+
 vec3 applyFog(vec3 color, float distance, vec3 viewDir, float fogDensity, float fogDistance, vec3 fogColor)
 {
 	float fogFactor = 1.0f - fogDistance * exp(-distance * fogDensity);

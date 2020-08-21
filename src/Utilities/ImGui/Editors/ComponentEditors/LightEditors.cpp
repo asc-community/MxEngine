@@ -63,9 +63,9 @@ namespace MxEngine::GUI
 		REMOVE_COMPONENT_BUTTON(pointLight);
 
 		DrawLightBaseEditor(pointLight);
-		auto factors = pointLight.GetFactors();
-		if (ImGui::DragFloat3("factors", &factors[0], 0.01f, 0.0f, 10000.0f))
-			pointLight.UseFactors(factors);
+		auto radius = pointLight.GetRadius();
+		if (ImGui::DragFloat("radius", &radius))
+			pointLight.UseRadius(radius);
 
 		auto cubemap = pointLight.GetDepthCubeMap();
 		static int depthMapSize = (int)cubemap->GetWidth();

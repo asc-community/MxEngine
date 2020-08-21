@@ -105,6 +105,13 @@ namespace MxEngine
             #include "Platform/OpenGL/Shaders/spotlight_fragment.glsl"
         );
 
+        environment.PointLightShader = GraphicFactory::Create<Shader>();
+        environment.PointLightShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/pos_light_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/pointlight_fragment.glsl"
+        );
+
         environment.HDRToLDRShader = GraphicFactory::Create<Shader>();
         environment.HDRToLDRShader->LoadFromString(
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
@@ -314,7 +321,7 @@ namespace MxEngine
                 }
                 if (debugDraw.RenderLightingBounds && pointLight.IsValid())
                 {
-                    BoundingSphere sphere(object.Transform.GetPosition(), 3.0f);
+                    BoundingSphere sphere(object.Transform.GetPosition(), pointLight->GetRadius());
                     this->DebugDrawer.Submit(sphere, debugDraw.LightSourceColor);
                 }
                 if (debugDraw.RenderLightingBounds && spotLight.IsValid())
