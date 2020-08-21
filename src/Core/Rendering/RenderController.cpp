@@ -263,9 +263,9 @@ namespace MxEngine
 		textureId++;
 
 		// fod info
-		illumShader->SetUniformFloat("fogDistance", this->Pipeline.Environment.FogDistance);
-		illumShader->SetUniformFloat("fogDensity", this->Pipeline.Environment.FogDensity);
-		illumShader->SetUniformVec3("fogColor", this->Pipeline.Environment.FogColor);
+		illumShader->SetUniformFloat("fog.distance", this->Pipeline.Environment.FogDistance);
+		illumShader->SetUniformFloat("fog.density", this->Pipeline.Environment.FogDensity);
+		illumShader->SetUniformVec3("fog.color", this->Pipeline.Environment.FogColor);
 
 		// submit directional light information
 		constexpr size_t MaxDirLightCount = 2;
@@ -297,7 +297,9 @@ namespace MxEngine
 		}
 		// render global illumination
 		this->RenderToTexture(camera.HDRTexture, illumShader);
-		
+
+		this->PerformSpotLightPass(camera);
+
 		// render skybox & debug buffer (HDR texture already attached)
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.DepthTexture, Attachment::DEPTH_ATTACHMENT);
 		this->GetRenderEngine().UseDepthBufferMask(false);
@@ -314,16 +316,62 @@ namespace MxEngine
 		this->RenderToTexture(camera.OutputTexture, HDRToLDRShader);
 	}
 
-	void RenderController::PerformPositionedLightPass(CameraUnit& camera)
+	void RenderController::PerformSpotLightPass(CameraUnit& camera)
 	{
-		const auto& spotLights = this->Pipeline.Lighting.SpotLights;
-		constexpr size_t MaxSpotLightCount = 8;
+		// TODO: perform fog after all lights are rendered
 
+		const auto& spotLights = this->Pipeline.Lighting.SpotLights;
+		auto shader = this->Pipeline.Environment.SpotLightShader;
+		auto& pyramid = this->Pipeline.Environment.PyramidObject;
+		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
+
+		this->GetRenderEngine().UseCulling(true, true, false);
+		this->GetRenderEngine().UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::SRC_ALPHA);
+
+		// bind G buffer channels
+		camera.AlbedoTexture->Bind(0);
+		shader->SetUniformInt("albedoTex", 0);
+
+		camera.NormalTexture->Bind(1);
+		shader->SetUniformInt("normalTex", 1);
+
+		camera.MaterialTexture->Bind(2);
+		shader->SetUniformInt("materialTex", 2);
+
+		camera.DepthTexture->Bind(3);
+		shader->SetUniformInt("depthTex", 3);
+
+		shader->SetUniformVec3("viewPosition", camera.ViewportPosition);
+		shader->SetUniformVec2("viewportSize", viewportSize);
+		shader->SetUniformMat4("invProjMatrix", Inverse(camera.ProjectionMatrix));
+		shader->SetUniformMat4("invViewMatrix", Inverse(camera.ViewMatrix));
+		shader->SetUniformInt("pcfDistance", this->Pipeline.Environment.ShadowBlurIterations);
+
+		constexpr size_t MaxSpotLightCount = 8;
 		size_t spotLightCount = Min(MaxSpotLightCount, spotLights.size());
+		auto viewProjMatrix = camera.ProjectionMatrix * camera.ViewMatrix;
 		for (size_t i = 0; i < spotLightCount; i++)
 		{
 			const auto& spotLight = spotLights[i];
+
+			spotLight.ShadowMap->Bind(4);
+			shader->SetUniformInt("lightDepthMap", 4);
+
+			shader->SetUniformMat4("MVP", viewProjMatrix * spotLight.FrustrumTransformMatrix);
+
+			shader->SetUniformMat4("spotLight.transform", spotLight.BiasedProjectionMatrix);
+			shader->SetUniformFloat("spotLight.innerAngle", spotLight.InnerAngleCos);
+			shader->SetUniformFloat("spotLight.outerAngle", spotLight.OuterAngleCos);
+			shader->SetUniformVec3("spotLight.direction", spotLight.Direction);
+			shader->SetUniformVec3("spotLight.position", spotLight.Position);
+			shader->SetUniformVec3("spotLight.ambient", spotLight.AmbientColor);
+			shader->SetUniformVec3("spotLight.diffuse", spotLight.DiffuseColor);
+			shader->SetUniformVec3("spotLight.specular", spotLight.SpecularColor);
+
+			this->GetRenderEngine().DrawTriangles(pyramid.GetVAO(), pyramid.GetIBO(), *shader);
 		}
+
+		this->GetRenderEngine().UseCulling(true, true, true);
 	}
 
 	const Renderer& RenderController::GetRenderEngine() const
@@ -424,9 +472,9 @@ namespace MxEngine
 
 		shader.SetUniformMat4("StaticViewProjection", camera.ProjectionMatrix * camera.StaticViewMatrix);
 		shader.SetUniformMat3("Rotation", Transpose(camera.InversedSkyboxRotation));
-		shader.SetUniformFloat("fogDistance", this->Pipeline.Environment.FogDistance);
-		shader.SetUniformFloat("fogDensity", this->Pipeline.Environment.FogDensity);
-		shader.SetUniformVec3("fogColor", this->Pipeline.Environment.FogColor);
+		shader.SetUniformFloat("fog.distance", this->Pipeline.Environment.FogDistance);
+		shader.SetUniformFloat("fog.density", this->Pipeline.Environment.FogDensity);
+		shader.SetUniformVec3("fog.color", this->Pipeline.Environment.FogColor);
 
 		camera.SkyboxMap->Bind(0);
 		shader.SetUniformInt("skybox", 0);

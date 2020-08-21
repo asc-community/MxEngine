@@ -150,17 +150,17 @@ namespace MxEngine
 		GLCALL(glViewport(x, y, width, height));
 	}
 
-    Renderer& Renderer::UseColorMask(bool r, bool g, bool b, bool a)
-    {
+	Renderer& Renderer::UseColorMask(bool r, bool g, bool b, bool a)
+	{
 		GLCALL(glColorMask(r, g, b, a));
 		return *this;
-    }
+	}
 
-    Renderer& Renderer::UseDepthBufferMask(bool value)
-    {
+	Renderer& Renderer::UseDepthBufferMask(bool value)
+	{
 		GLCALL(glDepthMask(value));
 		return *this;
-    }
+	}
 
 	Renderer& Renderer::UseSampling(bool value)
 	{
@@ -198,15 +198,30 @@ namespace MxEngine
 		if (value)
 		{
 			GLCALL(glClearDepth(0.0f));
-			GLCALL(glDepthFunc(GL_GEQUAL));
 			GLCALL(glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE));
+			this->UseDepthFunction(DepthFunction::GREATER_EQUAL);
 		}
 		else
 		{
 			GLCALL(glClearDepth(1.0f));
-			GLCALL(glDepthFunc(GL_LESS));
 			GLCALL(glClipControl(GL_LOWER_LEFT, GL_NEGATIVE_ONE_TO_ONE));
+			this->UseDepthFunction(DepthFunction::LESS);
 		}
+		return *this;
+	}
+
+	GLenum depthFuncTable[] = {
+			GL_EQUAL,
+			GL_NOTEQUAL,
+			GL_LESS,
+			GL_GREATER,
+			GL_LEQUAL,
+			GL_GEQUAL,
+	};
+
+	Renderer& Renderer::UseDepthFunction(DepthFunction function)
+	{
+		GLCALL(glDepthFunc(depthFuncTable[(size_t)function]));
 		return *this;
 	}
 

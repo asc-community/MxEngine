@@ -84,6 +84,7 @@ namespace MxEngine::GUI
 
 		auto innerAngle = spotLight.GetInnerAngle();
 		auto outerAngle = spotLight.GetOuterAngle();
+		auto maxDistance = spotLight.GetMaxDistance();
 
 		ImGui::DragFloat3("direction", &spotLight.Direction[0], 0.01f);
 
@@ -91,6 +92,8 @@ namespace MxEngine::GUI
 			spotLight.UseOuterAngle(outerAngle);
 		if (ImGui::DragFloat("inner angle", &innerAngle))
 			spotLight.UseInnerAngle(innerAngle);
+		if (ImGui::DragFloat("max distance", &maxDistance))
+			spotLight.UseMaxDistance(maxDistance);
 
 		auto texture = spotLight.GetDepthTexture();
 		static int depthMapSize = (int)texture->GetWidth();

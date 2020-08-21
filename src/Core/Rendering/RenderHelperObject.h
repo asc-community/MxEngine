@@ -33,14 +33,14 @@
 
 namespace MxEngine
 {
-	class PyramidObject
+	class RenderHelperObject
 	{
 		VertexBufferHandle VBO;
 		VertexArrayHandle VAO;
 		IndexBufferHandle IBO;
 	public:
-		PyramidObject() = default;
-		PyramidObject(VertexBufferHandle vbo, VertexArrayHandle vao, IndexBufferHandle ibo)
+		RenderHelperObject() = default;
+		RenderHelperObject(VertexBufferHandle vbo, VertexArrayHandle vao, IndexBufferHandle ibo)
 			: VBO(std::move(vbo)), VAO(std::move(vao)), IBO(std::move(ibo)) { }
 
 		const VertexArray& GetVAO() const { return *VAO; }

@@ -43,6 +43,7 @@ namespace MxEngine
         float innerCos    = std::cos(Radians(innerAngle));
         float outerAngle  = 45.0f;
         float outerCos    = std::cos(Radians(outerAngle));
+        float maxDistance = 1000.0f;
     public:
         SpotLight();
 
@@ -52,8 +53,10 @@ namespace MxEngine
         [[nodiscard]] float GetOuterAngle() const;
         [[nodiscard]] float GetInnerCos() const;
         [[nodiscard]] float GetOuterCos() const;
+        [[nodiscard]] float GetMaxDistance() const;
         SpotLight& UseInnerAngle(float angle);
         SpotLight& UseOuterAngle(float angle);
+        SpotLight& UseMaxDistance(float zvalue);
 
         [[nodiscard]] TextureHandle GetDepthTexture() const;
         void AttachDepthTexture(const TextureHandle& texture);

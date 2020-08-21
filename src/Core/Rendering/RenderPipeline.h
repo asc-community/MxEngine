@@ -31,7 +31,7 @@
 #include "Core/BoundingObjects/FrustrumCuller.h"
 #include "Rectangle.h"
 #include "SkyboxObject.h"
-#include "PyramidObject.h"
+#include "RenderHelperObject.h"
 
 namespace MxEngine
 {
@@ -70,6 +70,7 @@ namespace MxEngine
     {
         ShaderHandle GBufferShader;
         ShaderHandle GlobalIlluminationShader;
+        ShaderHandle SpotLightShader;
         ShaderHandle HDRToLDRShader;
         ShaderHandle SkyboxShader;
         ShaderHandle ShadowMapShader;
@@ -90,7 +91,8 @@ namespace MxEngine
         SkyboxObject SkyboxCubeObject;
         DebugBufferUnit DebugBufferObject;
         Rectangle RectangularObject;
-        PyramidObject PyramidFrustrum;
+        RenderHelperObject PyramidObject;
+        RenderHelperObject SphereObject;
         VectorInt2 Viewport;
 
         Vector3 FogColor;

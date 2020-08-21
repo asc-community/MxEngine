@@ -60,9 +60,14 @@ namespace MxEngine
         return this->outerCos;
     }
 
+    float SpotLight::GetMaxDistance() const
+    {
+        return this->maxDistance;
+    }
+
     SpotLight& SpotLight::UseInnerAngle(float angle)
     {
-        this->innerAngle = Clamp(angle * 0.5f, 0.0f, this->outerAngle - 0.0001f);
+        this->innerAngle = Clamp(angle * 0.5f, 0.0f, this->outerAngle - 0.01f);
         this->innerCos = std::cos(Radians(this->innerAngle));
         return *this;
     }
@@ -76,6 +81,12 @@ namespace MxEngine
         return *this;
     }
 
+    SpotLight& SpotLight::UseMaxDistance(float zvalue)
+    {
+        this->maxDistance = Max(1.2f, zvalue);
+        return *this;
+    }
+
     TextureHandle SpotLight::GetDepthTexture() const
     {
         return this->texture;
@@ -86,11 +97,9 @@ namespace MxEngine
         this->texture = texture;
     }
 
-    constexpr float ZFar = 1000.0f;
-
     Matrix4x4 SpotLight::GetMatrix(const Vector3& position) const
     {
-        auto Projection = MakePerspectiveMatrix(Radians(2.0f * this->outerAngle), 1.0f, 1.1f, ZFar);
+        auto Projection = MakePerspectiveMatrix(Radians(2.0f * this->outerAngle), 1.0f, 1.1f, this->maxDistance);
         auto directionNorm = Normalize(MakeVector3(
             this->Direction.x + 0.0001f,
             this->Direction.y,
@@ -107,10 +116,10 @@ namespace MxEngine
     Matrix4x4 SpotLight::GetPyramidTransform(const Vector3& position) const
     {
         Matrix4x4 I{ 1.0f };
-        float fov = std::tan(2.0f * Radians(this->GetOuterAngle()));
+        float fov = std::tan(0.5f * Radians(this->GetOuterAngle()));
         auto T = Translate(I, position);
-        auto R = ToMatrix(LookAtRotation(this->Direction, MakeVector3(0.00001f, 1.0f, 0.0f)));
-        auto S = Scale(I, MakeVector3(fov, fov, ZFar));
+        auto R = ToMatrix(LookAtRotation(-Normalize(this->Direction), MakeVector3(0.1f, 1.0f, 0.1f)));
+        auto S = Scale(I, MakeVector3(fov * this->maxDistance, fov * this->maxDistance, this->maxDistance));
         return T * R * S;
     }
 }

@@ -28,6 +28,7 @@
 
 #include "RenderAdaptor.h"
 #include "Library/Primitives/Colors.h"
+#include "Library/Primitives/Primitives.h"
 #include "Core/Config/GlobalConfig.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
 #include "Core/Components/Rendering/MeshSource.h"
@@ -64,6 +65,14 @@ namespace MxEngine
         this->DebugDrawer.Init();
         environment.DebugBufferObject.VAO = this->DebugDrawer.GetVAO();
 
+        auto pyramid = Primitives::CreatePyramid();
+        auto& pyramidMesh = pyramid->GetSubmeshes().front();
+        environment.PyramidObject = RenderHelperObject(pyramidMesh.Data.GetVBO(), pyramidMesh.Data.GetVAO(), pyramidMesh.Data.GetIBO());
+
+        auto sphere = Primitives::CreateSphere(8);
+        auto& sphereMesh = sphere->GetSubmeshes().front();
+        environment.SphereObject = RenderHelperObject(sphereMesh.Data.GetVBO(), sphereMesh.Data.GetVAO(), sphereMesh.Data.GetIBO());
+
         // default textures
         environment.DefaultBlackMap = Colors::MakeTexture(Colors::BLACK);
         environment.DefaultNormalMap = Colors::MakeTexture(Colors::FLAT_NORMAL);
@@ -87,6 +96,13 @@ namespace MxEngine
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/global_illum_fragment.glsl"
+        );
+
+        environment.SpotLightShader = GraphicFactory::Create<Shader>();
+        environment.SpotLightShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/pos_light_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/spotlight_fragment.glsl"
         );
 
         environment.HDRToLDRShader = GraphicFactory::Create<Shader>();
