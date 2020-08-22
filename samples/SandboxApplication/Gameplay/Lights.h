@@ -19,6 +19,7 @@ void InitPointLight(MxObject& object)
     light->AmbientColor  = {  1.0f, 0.3f,  0.0f };
     light->DiffuseColor  = {  1.0f, 0.3f,  0.0f };
     light->SpecularColor = {  1.0f, 0.3f,  0.0f };
+    light->ToggleShadowCast(true);
 
     auto material = object.GetOrAddComponent<MeshRenderer>()->GetMaterial();
     material->BaseColor = light->AmbientColor + light->DiffuseColor;
@@ -41,6 +42,7 @@ void InitSpotLight(MxObject& object)
     light->Direction     = { 1.0f, -1.3f, 1.0f };
     light->UseOuterAngle(70.0f);
     light->UseInnerAngle(30.0f);
+    light->ToggleShadowCast(true);
 
     auto material = object.GetOrAddComponent<MeshRenderer>()->GetMaterial();
     material->BaseColor = light->AmbientColor + light->DiffuseColor;

@@ -31,7 +31,24 @@
 
 namespace MxEngine
 {
-    SpotLight::SpotLight()
+    bool SpotLight::IsCastingShadows() const
+    {
+        return this->texture.IsValid();
+    }
+
+    void SpotLight::ToggleShadowCast(bool value)
+    {
+        if (value && !this->IsCastingShadows())
+        {
+            this->LoadDepthTexture();
+        }
+        else if (!value && this->IsCastingShadows())
+        {
+            this->texture = { };
+        }
+    }
+
+    void SpotLight::LoadDepthTexture()
     {
         auto depthTextureSize = (int)GlobalConfig::GetSpotLightTextureSize();
         auto texture = GraphicFactory::Create<Texture>();

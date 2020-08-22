@@ -31,12 +31,29 @@
 
 namespace MxEngine
 {
-    PointLight::PointLight()
+    void PointLight::LoadDepthCubeMap()
     {
         auto depthTextureSize = (int)GlobalConfig::GetPointLightTextureSize();
         auto cubemap = GraphicFactory::Create<CubeMap>();
         cubemap->LoadDepth(depthTextureSize, depthTextureSize);
         this->AttachDepthCubeMap(cubemap);
+    }
+
+    bool PointLight::IsCastingShadows() const
+    {
+        return this->cubemap.IsValid();
+    }
+
+    void PointLight::ToggleShadowCast(bool value)
+    {
+        if (value && !this->IsCastingShadows())
+        {
+            this->LoadDepthCubeMap();
+        }
+        else if(!value && this->IsCastingShadows())
+        {
+            this->cubemap = { };
+        }
     }
 
     float PointLight::GetRadius() const
@@ -82,7 +99,7 @@ namespace MxEngine
 
     Matrix4x4 PointLight::GetMatrix(size_t index, const Vector3& position) const
     {
-        auto Projection = MakePerspectiveMatrix(Radians(90.0f), 1.0f, 0.1f, this->FarDistance);
+        auto Projection = MakePerspectiveMatrix(Radians(90.0f), 1.0f, 0.1f, this->radius);
         auto directionNorm = DirectionTable[index];
         auto View = MakeViewMatrix(
             position,

@@ -60,8 +60,12 @@ namespace MxEngine
 		void AttachDepthMap(const CubeMapHandle& cubemap);
 		TextureHandle PerformBloomIterations(const TextureHandle& inputBloom, uint8_t iterations);
 		void PerformGlobalIlluminationPass(CameraUnit& camera);
-		void PerformSpotLightPass(CameraUnit& camera);
-		void PerformPointLightPass(CameraUnit& camera);
+		void PerformPositionedLightPass(CameraUnit& camera);
+		void DrawShadowedPointLights(CameraUnit& camera);
+		void DrawShadowedSpotLights(CameraUnit& camera);
+		void DrawNonShadowedPointLights(CameraUnit& camera);
+		void DrawNonShadowedSpotLights(CameraUnit& camera);
+		void BindGBuffer(const CameraUnit& camera, const Shader& shader);
 	public:
 		const Renderer& GetRenderEngine() const;
 		Renderer& GetRenderEngine();
@@ -79,6 +83,8 @@ namespace MxEngine
 		
 		EnvironmentUnit& GetEnvironment();
 		const EnvironmentUnit& GetEnvironment() const;
+		LightingSystem& GetLightInformation();
+		const LightingSystem& GetLightInformation() const;
 		void ResetPipeline();
 		void SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform);
 		void SubmitLightSource(const PointLight& light, const TransformComponent& parentTransform);

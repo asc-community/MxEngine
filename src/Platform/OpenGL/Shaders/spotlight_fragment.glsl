@@ -10,19 +10,30 @@ uniform sampler2D normalTex;
 uniform sampler2D materialTex;
 uniform sampler2D depthTex;
 
+in SpotLightInfo
+{
+	vec3 position;
+	float innerAngle;
+	vec3 direction;
+	float outerAngle;
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+} spotLight;
+
 struct SpotLight
 {
-	mat4 transform;
 	vec3 position;
-	vec3 direction;
 	float innerAngle;
+	vec3 direction;
 	float outerAngle;
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
 };
 
-uniform SpotLight spotLight;
+uniform mat4 worldToLightTransform;
+uniform bool castsShadows;
 uniform sampler2D lightDepthMap;
 
 uniform int pcfDistance;
@@ -31,22 +42,35 @@ uniform mat4 invViewMatrix;
 uniform vec3 viewPosition;
 uniform vec2 viewportSize;
 
-vec3 calcColorUnderSpotLight(vec3 albedo, float specularIntensity, float specularFactor, vec3 normal, vec3 fragWorldSpace, SpotLight light, vec3 viewDir, vec4 fragLightSpace, sampler2D map_shadow)
+struct FragmentInfo
 {
-	vec3 lightDir = normalize(light.position - fragWorldSpace);
-	vec3 Hdir = normalize(lightDir + viewDir);
-	float shadowFactor = calcShadowFactor2D(fragLightSpace, map_shadow, 0.005f, pcfDistance);
+	vec3 albedo;
+	float specularIntensity;
+	float specularFactor;
+	float emmisionFactor;
+	float reflection;
+	vec3 normal;
+	vec3 position;
+};
 
-	float diffuseCoef = max(dot(lightDir, normal), 0.0f);
-	float specularCoef = pow(clamp(dot(Hdir, normal), 0.0f, 1.0f), specularIntensity);
+vec3 calcColorUnderSpotLight(FragmentInfo fragment, SpotLight light, vec3 viewDir, vec4 fragLightSpace, sampler2D map_shadow, bool computeShadow)
+{
+	vec3 lightDir = normalize(light.position - fragment.position);
+	vec3 Hdir = normalize(lightDir + viewDir);
+
+	float shadowFactor = 1.0f;
+	if (computeShadow) { shadowFactor = calcShadowFactor2D(fragLightSpace, map_shadow, 0.005f, pcfDistance); }
+
+	float diffuseCoef = max(dot(lightDir, fragment.normal), 0.0f);
+	float specularCoef = pow(clamp(dot(Hdir, fragment.normal), 0.0f, 1.0f), fragment.specularIntensity);
 
 	float fragAngle = dot(lightDir, normalize(-light.direction));
 	float epsilon = light.innerAngle - light.outerAngle;
 	float intensity = clamp((fragAngle - light.outerAngle) / epsilon, 0.0f, 1.0f);
 
-	vec3 ambientColor  = albedo;
-	vec3 diffuseColor  = albedo * diffuseCoef;
-	vec3 specularColor = vec3(specularCoef * specularFactor);
+	vec3 ambientColor  = fragment.albedo;
+	vec3 diffuseColor  = fragment.albedo * diffuseCoef;
+	vec3 specularColor = vec3(specularCoef * fragment.specularFactor);
 
 	ambientColor  = ambientColor  * intensity * light.ambient;
 	diffuseColor  = diffuseColor  * intensity * light.diffuse;
@@ -58,25 +82,35 @@ vec3 calcColorUnderSpotLight(vec3 albedo, float specularIntensity, float specula
 void main()
 {
 	vec2 TexCoord = gl_FragCoord.xy / viewportSize;
+	FragmentInfo fragment;
 
-	vec3 albedo = texture(albedoTex, TexCoord).rgb;
-	vec3 normal = 2.0f * texture(normalTex, TexCoord).rgb - vec3(1.0f);
+	fragment.albedo = texture(albedoTex, TexCoord).rgb;
+	fragment.normal = 2.0f * texture(normalTex, TexCoord).rgb - vec3(1.0f);
 	vec4 material = texture(materialTex, TexCoord).rgba;
 	float depth = texture(depthTex, TexCoord).r;
 
-	float emmisionFactor = material.r;
-	float reflection = material.g;
-	float specularIntensity = 1.0f / material.b;
-	float specularFactor = material.a;
+	fragment.emmisionFactor = material.r;
+	fragment.reflection = material.g;
+	fragment.specularIntensity = 1.0f / material.b;
+	fragment.specularFactor = material.a;
 
-	vec3 fragPosition = reconstructWorldPosition(depth, TexCoord, invProjMatrix, invViewMatrix);
-	float fragDistance = length(viewPosition - fragPosition);
-	vec3 viewDirection = normalize(viewPosition - fragPosition);
+	fragment.position = reconstructWorldPosition(depth, TexCoord, invProjMatrix, invViewMatrix);
+	float fragDistance = length(viewPosition - fragment.position);
+	vec3 viewDirection = normalize(viewPosition - fragment.position);
 
 	vec3 totalColor = vec3(0.0f);
 
-	vec4 fragLightSpace = spotLight.transform * vec4(fragPosition, 1.0f);
-	totalColor += calcColorUnderSpotLight(albedo, specularIntensity, specularFactor, normal, fragPosition, spotLight, viewDirection, fragLightSpace, lightDepthMap);
+	SpotLight light;
+	light.position = spotLight.position;
+	light.innerAngle = spotLight.innerAngle;
+	light.direction = spotLight.direction;
+	light.outerAngle = spotLight.outerAngle;
+	light.ambient = spotLight.ambient;
+	light.diffuse = spotLight.diffuse;
+	light.specular = spotLight.specular;
+
+	vec4 fragLightSpace = worldToLightTransform * vec4(fragment.position, 1.0f);
+	totalColor += calcColorUnderSpotLight(fragment, light, viewDirection, fragLightSpace, lightDepthMap, castsShadows);
 
 	OutColor = vec4(totalColor, 1.0f);
 }

@@ -35,6 +35,7 @@ namespace MxEngine
 {
 	class RenderHelperObject
 	{
+	protected:
 		VertexBufferHandle VBO;
 		VertexArrayHandle VAO;
 		IndexBufferHandle IBO;

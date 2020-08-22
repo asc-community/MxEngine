@@ -32,6 +32,8 @@
 #include "Rectangle.h"
 #include "SkyboxObject.h"
 #include "RenderHelperObject.h"
+#include "PointLightInstancedObject.h"
+#include "SpotLightInstancedObject.h"
 
 namespace MxEngine
 {
@@ -51,9 +53,11 @@ namespace MxEngine
         TextureHandle HDRTexture;
 
         FrustrumCuller Culler;
-        Matrix4x4 ViewMatrix;
-        Matrix4x4 ProjectionMatrix;
-        Matrix4x4 StaticViewMatrix;
+        Matrix4x4 InverseViewMatrix;
+        Matrix4x4 InverseProjectionMatrix;
+        Matrix4x4 ViewProjectionMatrix;
+        Matrix4x4 StaticViewProjectionMatrix;
+
         Vector3 ViewportPosition;
         TextureHandle OutputTexture;
         Matrix3x3 InversedSkyboxRotation;
@@ -92,8 +96,6 @@ namespace MxEngine
         SkyboxObject SkyboxCubeObject;
         DebugBufferUnit DebugBufferObject;
         Rectangle RectangularObject;
-        RenderHelperObject PyramidObject;
-        RenderHelperObject SphereObject;
         VectorInt2 Viewport;
 
         Vector3 FogColor;
@@ -117,32 +119,17 @@ namespace MxEngine
         Vector3 SpecularColor;
     };
 
-    struct PointLightUnit
+    struct PointLightUnit : PointLightBaseData
     {
         CubeMapHandle ShadowMap;
         Matrix4x4 ProjectionMatrices[6];
-        Matrix4x4 SphereTransformMatrix;
-        Vector3 Position;
-        float FarDistance;
-        float Radius;
-        Vector3 AmbientColor;
-        Vector3 DiffuseColor;
-        Vector3 SpecularColor;
     };
 
-    struct SpotLightUnit
+    struct SpotLightUnit : SpotLightBaseData
     {
         TextureHandle ShadowMap;
         Matrix4x4 ProjectionMatrix;
-        Matrix4x4 FrustrumTransformMatrix;
         Matrix4x4 BiasedProjectionMatrix;
-        Vector3 Position;
-        Vector3 AmbientColor;
-        Vector3 DiffuseColor;
-        Vector3 SpecularColor;
-        Vector3 Direction;
-        float InnerAngleCos;
-        float OuterAngleCos;
     };
 
     struct LightingSystem
@@ -150,6 +137,10 @@ namespace MxEngine
         MxVector<DirectionalLigthUnit> DirectionalLights;
         MxVector<PointLightUnit> PointLights;
         MxVector<SpotLightUnit> SpotLights;
+        SpotLightInstancedObject SpotLightsInstanced;
+        PointLightInstancedObject PointLigthsInstanced;
+        RenderHelperObject SphereLight;
+        RenderHelperObject PyramidLight;
     };
 
     struct RenderUnit

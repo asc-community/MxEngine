@@ -65,13 +65,26 @@ namespace MxEngine
         this->DebugDrawer.Init();
         environment.DebugBufferObject.VAO = this->DebugDrawer.GetVAO();
 
+        // light bounding objects
         auto pyramid = Primitives::CreatePyramid();
         auto& pyramidMesh = pyramid->GetSubmeshes().front();
-        environment.PyramidObject = RenderHelperObject(pyramidMesh.Data.GetVBO(), pyramidMesh.Data.GetVAO(), pyramidMesh.Data.GetIBO());
+        this->Renderer.GetLightInformation().PyramidLight =
+            RenderHelperObject(pyramidMesh.Data.GetVBO(), pyramidMesh.Data.GetVAO(), pyramidMesh.Data.GetIBO());
 
         auto sphere = Primitives::CreateSphere(8);
         auto& sphereMesh = sphere->GetSubmeshes().front();
-        environment.SphereObject = RenderHelperObject(sphereMesh.Data.GetVBO(), sphereMesh.Data.GetVAO(), sphereMesh.Data.GetIBO());
+        this->Renderer.GetLightInformation().SphereLight =
+            RenderHelperObject(sphereMesh.Data.GetVBO(), sphereMesh.Data.GetVAO(), sphereMesh.Data.GetIBO());
+
+        auto pyramidInstanced = Primitives::CreatePyramid();
+        auto& pyramidInstancedMesh = pyramidInstanced->GetSubmeshes().front();
+        this->Renderer.GetLightInformation().SpotLightsInstanced = 
+            SpotLightInstancedObject(pyramidInstancedMesh.Data.GetVBO(), pyramidInstancedMesh.Data.GetVAO(), pyramidInstancedMesh.Data.GetIBO());
+
+        auto sphereInstanced = Primitives::CreateSphere(8);
+        auto& sphereInstancedMesh = sphereInstanced->GetSubmeshes().front();
+        this->Renderer.GetLightInformation().PointLigthsInstanced =
+            PointLightInstancedObject(sphereInstancedMesh.Data.GetVBO(), sphereInstancedMesh.Data.GetVAO(), sphereInstancedMesh.Data.GetIBO());
 
         // default textures
         environment.DefaultBlackMap = Colors::MakeTexture(Colors::BLACK);
@@ -100,14 +113,14 @@ namespace MxEngine
 
         environment.SpotLightShader = GraphicFactory::Create<Shader>();
         environment.SpotLightShader->LoadFromString(
-            #include "Platform/OpenGL/Shaders/pos_light_vertex.glsl"
+            #include "Platform/OpenGL/Shaders/spotlight_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/spotlight_fragment.glsl"
         );
 
         environment.PointLightShader = GraphicFactory::Create<Shader>();
         environment.PointLightShader->LoadFromString(
-            #include "Platform/OpenGL/Shaders/pos_light_vertex.glsl"
+            #include "Platform/OpenGL/Shaders/pointlight_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/pointlight_fragment.glsl"
         );

@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-7.4.5-red)
+![](https://img.shields.io/badge/version-7.4.5|deferred_rendering-red)
 ![](https://img.shields.io/badge/build-cmake-green)
 ![GitHub](https://img.shields.io/github/license/asc-community/MxEngine?color=yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
@@ -40,8 +40,8 @@ Right now MxEngine is distributed in source code with configurable CMake files. 
 You can easily create spheres, planes, cylinders and etc. Custom number of vertecies for displacement maps are supported out of box
 ```cs
 auto cube = MxObject::Create();
-cubeObject->AddComponent<MeshSource>(Primitives::CreateCube());
-cubeObject->AddComponent<MeshRenderer>();
+cube->AddComponent<MeshSource>(Primitives::CreateCube());
+cube->AddComponent<MeshRenderer>();
 ```
 ### Loading object from file
 MxEngine is using Assimp library which can load any popular object format. To load materials simply pass same path to object file

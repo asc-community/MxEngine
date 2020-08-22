@@ -28,30 +28,45 @@
 
 #pragma once
 
-#include "Platform/GraphicAPI.h"
-#include "Utilities/ECS/Component.h"
-#include "LightBase.h"
+#include "RenderHelperObject.h"
 
 namespace MxEngine
 {
-    class PointLight : public LightBase
-    {
-        MAKE_COMPONENT(PointLight);
+	struct PointLightBaseData
+	{
+		Matrix4x4 Transform;
+		Vector3 Position;
+		float Radius;
+		Vector3 AmbientColor;
+		Vector3 DiffuseColor;
+		Vector3 SpecularColor;
 
-        CubeMapHandle cubemap;
-        float radius = 8.0f;
+		constexpr static size_t Size = 16 + 3 + 1 + 3 + 3 + 3;
+	};
 
-        void LoadDepthCubeMap();
-    public:
-        bool IsCastingShadows() const;
-        void ToggleShadowCast(bool value);
+	class PointLightInstancedObject : public RenderHelperObject
+	{
+		VertexBufferHandle instancedVBO;
+	public:
+		MxVector<PointLightBaseData> Instances;
 
-        [[nodiscard]] float GetRadius() const;
-        PointLight& UseRadius(float radius);
+		PointLightInstancedObject() = default;
 
-        [[nodiscard]] CubeMapHandle GetDepthCubeMap() const;
-        void AttachDepthCubeMap(const CubeMapHandle& cubemap);
-        [[nodiscard]] Matrix4x4 GetMatrix(size_t index, const Vector3& position) const;
-        [[nodiscard]] Matrix4x4 GetSphereTransform(const Vector3& position) const;
-    };
+		PointLightInstancedObject(VertexBufferHandle vbo, VertexArrayHandle vao, IndexBufferHandle ibo)
+			: RenderHelperObject(std::move(vbo), std::move(vao), std::move(ibo))
+		{
+			this->instancedVBO = GraphicFactory::Create<VertexBuffer>();
+
+			auto VBL = GraphicFactory::Create<VertexBufferLayout>();
+			VBL->Push<Matrix4x4>(); // transform
+			VBL->Push<Vector4>(); // position + radius
+			VBL->Push<Vector3>(); // ambient
+			VBL->Push<Vector3>(); // diffuse
+			VBL->Push<Vector3>(); // specular
+
+			this->VAO->AddInstancedBuffer(*this->instancedVBO, *VBL);
+		}
+
+		void SubmitToVBO() { instancedVBO->BufferDataWithResize((float*)this->Instances.data(), this->Instances.size() * PointLightBaseData::Size); }
+	};
 }
