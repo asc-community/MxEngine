@@ -104,6 +104,13 @@ namespace MxEngine
             #include "Platform/OpenGL/Shaders/gbuffer_fragment.glsl"
         );
 
+        environment.TransparentShader = GraphicFactory::Create<Shader>();
+        environment.TransparentShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/gbuffer_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/transparent_fragment.glsl"
+        );
+
         environment.GlobalIlluminationShader = GraphicFactory::Create<Shader>();
         environment.GlobalIlluminationShader->LoadFromString(
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"

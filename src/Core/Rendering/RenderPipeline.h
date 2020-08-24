@@ -76,6 +76,7 @@ namespace MxEngine
     struct EnvironmentUnit
     {
         ShaderHandle GBufferShader;
+        ShaderHandle TransparentShader;
         ShaderHandle GlobalIlluminationShader;
         ShaderHandle SpotLightShader;
         ShaderHandle PointLightShader;

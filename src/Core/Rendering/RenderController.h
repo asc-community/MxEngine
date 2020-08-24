@@ -50,7 +50,7 @@ namespace MxEngine
 
 		void PrepareShadowMaps();
 		void DrawSkybox(const CameraUnit& camera);
-		void DrawObjects(const CameraUnit& camera, const MxVector<RenderUnit>& objects);
+		void DrawObjects(const CameraUnit& camera, const Shader& shader, const MxVector<RenderUnit>& objects);
 		void DrawDebugBuffer(const CameraUnit& camera);
 		void DrawObject(const RenderUnit& unit, const Shader& shader);
 		void DrawShadowMap(const RenderUnit& unit, const DirectionalLigthUnit& dirLight, const Shader& shader);
@@ -62,6 +62,7 @@ namespace MxEngine
 		void PerformPostProcessing(CameraUnit& camera);
 		void DrawDirectionalLights(CameraUnit& camera);
 		void PerformLightPass(CameraUnit& camera);
+		void DrawTransparentObjects(CameraUnit& camera);
 		void ApplyPostEffects(CameraUnit& camera, TextureHandle input, TextureHandle output);
 		void PerformHDRToLDRConversion(CameraUnit& camera, TextureHandle input, TextureHandle output);
 		void DrawShadowedPointLights(CameraUnit& camera);

@@ -20,6 +20,7 @@ out VSout
 	vec3 Normal;
 	vec3 RenderColor;
 	mat3 TBN;
+	vec3 Position;
 } vsout;
 
 vec3 getDisplacement(vec2 uv, sampler2D heightMap, float displacementFactor)
@@ -43,6 +44,8 @@ void main()
 	vsout.RenderColor = renderColor;
 
 	modelPos.xyz += vsout.Normal * getDisplacement(texCoord, map_height, displacement);
+	vsout.Position = modelPos.xyz;
+
 	gl_Position = ViewProjMatrix * modelPos;
 }
 

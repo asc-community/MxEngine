@@ -1,19 +1,10 @@
 #define MAKE_STRING(...) #__VA_ARGS__
 
-#include "shader_utils.glsl"
+#include "directional_light.glsl"
 MAKE_STRING(
 
 out vec4 OutColor;
 in vec2 TexCoord;
-
-struct DirLight
-{
-	mat4 transform;
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
-	vec3 direction;
-};
 
 struct Camera
 {
@@ -38,27 +29,6 @@ const int MaxLightCount = 4;
 uniform DirLight lights[MaxLightCount];
 uniform sampler2D lightDepthMaps[MaxLightCount];
 
-vec3 calcColorUnderDirLight(FragmentInfo fragment, vec3 reflectionColor, DirLight light, vec3 viewDir, vec4 fragLightSpace, sampler2D map_shadow)
-{
-	vec3 lightDir = normalize(light.direction);
-	vec3 Hdir = normalize(lightDir + viewDir);
-	float shadowFactor = calcShadowFactor2D(fragLightSpace, map_shadow, 0.005f, pcfDistance);
-
-	float diffuseCoef = max(dot(lightDir, fragment.normal), 0.0f);
-	float specularCoef = pow(clamp(dot(Hdir, fragment.normal), 0.0f, 1.0f), fragment.specularIntensity);
-
-	vec3 ambientColor = fragment.albedo;
-	vec3 diffuseColor = fragment.albedo * diffuseCoef;
-	vec3 specularColor = vec3(specularCoef * fragment.specularFactor);
-	reflectionColor = reflectionColor * (diffuseColor + ambientColor);
-
-	ambientColor = ambientColor * light.ambient;
-	diffuseColor = diffuseColor * light.diffuse;
-	specularColor = specularColor * light.specular;
-
-	return vec3(ambientColor + shadowFactor * mix(diffuseColor + specularColor, reflectionColor, fragment.reflection));
-}
-
 void main()
 {
 	FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewMatrix, camera.invProjMatrix);
@@ -71,7 +41,7 @@ void main()
 	for (int i = 0; i < lightCount; i++)
 	{
 		vec4 fragLightSpace = lights[i].transform * vec4(fragment.position, 1.0f);
-		totalColor += calcColorUnderDirLight(fragment, reflectionColor, lights[i], viewDirection, fragLightSpace, lightDepthMaps[i]);
+		totalColor += calcColorUnderDirLight(fragment, reflectionColor, lights[i], viewDirection, pcfDistance, fragLightSpace, lightDepthMaps[i]);
 	}
 
 	OutColor = vec4(totalColor, 1.0f);

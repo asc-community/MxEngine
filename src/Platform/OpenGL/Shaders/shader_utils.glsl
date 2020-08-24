@@ -56,12 +56,6 @@ float CalcShadowFactor3D(vec3 fragToLightRay, vec3 viewDist, float zfar, float b
 	return shadowFactor;
 }
 
-vec3 applyFog(vec3 color, float fragDistance, vec3 viewDir, float fogDensity, float fogDistance, vec3 fogColor)
-{
-	float fogFactor = 1.0f - fogDistance * exp(-fragDistance * fogDensity);
-	return mix(color, fogColor, clamp(fogFactor, 0.0f, 1.0f));
-}
-
 vec3 calcReflectionColor(float reflectionFactor, samplerCube reflectionMap, mat3 reflectionMapTransform, vec3 viewDir, vec3 normal)
 {
 	vec3 I = -viewDir;

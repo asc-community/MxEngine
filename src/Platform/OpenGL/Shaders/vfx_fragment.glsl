@@ -2,6 +2,7 @@
 
 #include "shader_utils.glsl"
 #include "fxaa.glsl"
+#include "fog.glsl"
 MAKE_STRING(
 
 in vec2 TexCoord;
@@ -20,13 +21,6 @@ struct Camera
 	mat4 viewProjMatrix;
 };
 
-struct Fog
-{
-	vec3 color;
-	float density;
-	float distance;
-};
-
 uniform sampler2D cameraOutput;
 uniform Fog fog;
 uniform bool enableFXAA;
@@ -40,7 +34,7 @@ void main()
 	
 	vec3 currentColor;
 	currentColor = enableFXAA ? fxaa(cameraOutput, TexCoord).rgb : texture(cameraOutput, TexCoord).rgb;
-	currentColor = applyFog(currentColor, fragDistance, viewDirection, fog.density, fog.distance, fog.color);
+	currentColor = applyFog(currentColor, fragDistance, viewDirection, fog);
 
 	OutColor = vec4(currentColor, 1.0f);
 }

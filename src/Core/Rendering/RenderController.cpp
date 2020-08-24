@@ -33,6 +33,8 @@
 
 namespace MxEngine
 {
+	constexpr size_t MaxDirLightCount = 4;
+
 	void RenderController::PrepareShadowMaps()
 	{
 		MAKE_SCOPE_PROFILER("RenderController::PrepareShadowMaps()");
@@ -94,12 +96,11 @@ namespace MxEngine
 		this->ToggleDepthOnlyMode(false);
 	}
 
-	void RenderController::DrawObjects(const CameraUnit& camera, const MxVector<RenderUnit>& objects)
+	void RenderController::DrawObjects(const CameraUnit& camera, const Shader& shader, const MxVector<RenderUnit>& objects)
 	{
 		MAKE_SCOPE_PROFILER("RenderController::DrawObjects()");
 
 		if (objects.empty()) return;
-		auto& shader = *this->Pipeline.Environment.GBufferShader;
 		shader.SetUniformMat4("ViewProjMatrix", camera.ViewProjectionMatrix);
 		shader.SetUniformFloat("gamma", camera.Gamma);
 
@@ -113,10 +114,9 @@ namespace MxEngine
 
 	void RenderController::DrawObject(const RenderUnit& unit, const Shader& shader)
 	{
-		MAKE_SCOPE_PROFILER("RenderController::DrawObject()");
-
 		Texture::TextureBindId textureBindIndex = 0;
 		const auto& material = this->Pipeline.MaterialUnits[unit.materialIndex];
+		shader.IgnoreNonExistingUniform("material.transparency");
 
 		material.AlbedoMap->Bind(textureBindIndex);
 		shader.SetUniformInt("map_albedo", textureBindIndex);
@@ -146,6 +146,7 @@ namespace MxEngine
 		shader.SetUniformFloat("material.specularIntensity", material.SpecularIntensity);
 		shader.SetUniformFloat("material.emmisive", material.Emmision);
 		shader.SetUniformFloat("material.reflection", material.Reflection);
+		shader.SetUniformFloat("material.transparency", material.Transparency);
 		shader.SetUniformFloat("displacement", material.Displacement);
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
@@ -229,13 +230,12 @@ namespace MxEngine
 	{
 		MAKE_SCOPE_PROFILER("RenderController::PerformPostProcessing()");
 
-		this->PerformLightPass(camera);
-
 		// render skybox & debug buffer (HDR texture is already attached)
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.DepthTexture, Attachment::DEPTH_ATTACHMENT);
 		this->GetRenderEngine().UseDepthBufferMask(false);
 		this->DrawSkybox(camera);
 		this->DrawDebugBuffer(camera);
+		this->DrawTransparentObjects(camera);
 		this->GetRenderEngine().UseDepthBufferMask(true);
 		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
 
@@ -295,7 +295,7 @@ namespace MxEngine
 	{
 		this->DrawDirectionalLights(camera);
 
-		this->GetRenderEngine().UseCulling(true, true, false);
+		this->ToggleFaceCulling(true, true, false);
 		this->GetRenderEngine().UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::SRC_ALPHA);
 
 		this->DrawShadowedSpotLights(camera);
@@ -303,12 +303,67 @@ namespace MxEngine
 		this->DrawShadowedPointLights(camera);
 		this->DrawNonShadowedPointLights(camera);
 
-		this->GetRenderEngine().UseCulling(true, true, true);
+		this->ToggleFaceCulling(true, true, true);
+		this->GetRenderEngine().UseBlending(BlendFactor::NONE, BlendFactor::NONE);
+	}
+
+	void RenderController::DrawTransparentObjects(CameraUnit& camera)
+	{
+		if (this->Pipeline.TransparentRenderUnits.empty()) return;
+		MAKE_SCOPE_PROFILER("RenderController::DrawTransparentObjects()");
+
+		this->GetRenderEngine().UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA);
+		this->ToggleFaceCulling(false);
+
+		auto& shader = this->Pipeline.Environment.TransparentShader;
+
+		shader->SetUniformMat3("skyboxTransform", camera.InversedSkyboxRotation);
+		shader->SetUniformVec3("viewportPosition", camera.ViewportPosition);
+		shader->SetUniformFloat("gamma", camera.Gamma);
+
+		Texture::TextureBindId textureId = 6; // assume there are 6 textures in material structure
+		camera.SkyboxMap->Bind(textureId);
+		shader->SetUniformInt("skyboxTex", textureId);
+		textureId++;
+
+		// submit directional light information
+		const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
+		size_t lightCount = Min(MaxDirLightCount, dirLights.size());
+
+		shader->SetUniformInt("lightCount", (int)lightCount);
+		shader->SetUniformInt("pcfDistance", this->Pipeline.Environment.ShadowBlurIterations);
+
+		for (size_t i = 0; i < lightCount; i++)
+		{
+			auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
+
+			dirLight.ShadowMap->Bind(textureId);
+			shader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i), textureId);
+			textureId++;
+
+			shader->SetUniformMat4(MxFormat("lights[{}].transform", i), dirLight.BiasedProjectionMatrix);
+			shader->SetUniformVec3(MxFormat("lights[{}].ambient", i), dirLight.AmbientColor);
+			shader->SetUniformVec3(MxFormat("lights[{}].diffuse", i), dirLight.DiffuseColor);
+			shader->SetUniformVec3(MxFormat("lights[{}].specular", i), dirLight.SpecularColor);
+			shader->SetUniformVec3(MxFormat("lights[{}].direction", i), dirLight.Direction);
+		}
+		for (size_t i = lightCount; i < MaxDirLightCount; i++)
+		{
+			this->Pipeline.Environment.DefaultBlackMap->Bind(textureId);
+			shader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i), textureId);
+			textureId++;
+		}
+
+		this->DrawObjects(camera, *shader, this->Pipeline.TransparentRenderUnits);
+
+		this->ToggleFaceCulling(true);
 		this->GetRenderEngine().UseBlending(BlendFactor::NONE, BlendFactor::NONE);
 	}
 
 	void RenderController::ApplyPostEffects(CameraUnit& camera, TextureHandle input, TextureHandle output)
 	{
+		MAKE_SCOPE_PROFILER("RenderController::ApplyPostEffects()");
+
 		auto vfxShader = this->Pipeline.Environment.VFXShader;
 		if(camera.EnableFXAA) input->GenerateMipmaps();
 		input->Bind(4);
@@ -800,19 +855,11 @@ namespace MxEngine
 			this->ToggleReversedDepth(camera.IsPerspective);
 			this->AttachFrameBuffer(camera.GBuffer);
 
-			this->DrawObjects(camera, this->Pipeline.OpaqueRenderUnits);
+			this->DrawObjects(camera, *this->Pipeline.Environment.GBufferShader, this->Pipeline.OpaqueRenderUnits);
+			this->PerformLightPass(camera);
 			this->PerformPostProcessing(camera);
 
 			camera.OutputTexture->GenerateMipmaps();
-
-			//  if (!this->Pipeline.TransparentRenderUnits.empty())
-			//  {
-			//  	this->GetRenderEngine().UseDepthBufferMask(false);
-			//  	this->ToggleFaceCulling(false);
-			//  	this->DrawObjects(camera, this->Pipeline.TransparentRenderUnits);
-			//  	this->ToggleFaceCulling(true);
-			//  	this->GetRenderEngine().UseDepthBufferMask(true);
-			//  }
 		}
 	}
 

@@ -38,6 +38,7 @@
 namespace MxEngine
 {
 	static std::set<int> ExistingErrors;
+	static float lastErrorTime = -10.0f;
 
 	void GlClearErrors()
 	{
@@ -54,7 +55,7 @@ namespace MxEngine
 				continue;
 			ExistingErrors.insert(error);
 			setlocale(LC_ALL, "");
-			MXLOG_ERROR("OpenGL::ErrorHandler", MxFormat("error#{0} {1} in file: {2}, line: {3}", error, function, file, line));
+			MXLOG_ERROR("OpenGL::ErrorHandler", MxFormat("error #{0} {1} in file: {2}, line: {3}", error, function, file, line));
 		}
 		return success;
 	}
@@ -78,6 +79,10 @@ namespace MxEngine
 	{
 		// ignore non-significant error/warning codes
 		if (id == 131169 || id == 131184 || id == 131185 || id == 131218 || id == 131204) return;
+
+		if (ExistingErrors.find(id) != ExistingErrors.end())
+			return;
+		ExistingErrors.insert(id);
 
 		std::stringstream out;
 		out << "device message [errcode " << id << "]: " << message << "\n        ";

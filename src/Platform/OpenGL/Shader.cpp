@@ -163,7 +163,7 @@ namespace MxEngine
 		MXLOG_DEBUG("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
 	}
 
-	void Shader::IgnoreNonExistingUniform(const MxString& name)
+	void Shader::IgnoreNonExistingUniform(const MxString& name) const
 	{
 		if (uniformCache.find(name) == uniformCache.end())
 		{
