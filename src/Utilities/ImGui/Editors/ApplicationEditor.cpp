@@ -43,7 +43,8 @@ namespace MxEngine::GUI
         ImGui::Checkbox("is paused", &app->IsPaused);
 
         ImGui::DragFloat("time scale", &app->TimeScale, 0.01f);
-        ImGui::Text("current time delta: %f", app->GetTimeDelta());
+        ImGui::Text("current FPS: %d | total elapsed time: %f seconds", (int)Time::FPS(), Time::Current());
+        ImGui::Text("time delta: %fms | frame interval: %fms", Time::Delta() * 1000.0f, Time::UnscaledDelta() * 1000.0f);
 
         ImGui::End();
     }
