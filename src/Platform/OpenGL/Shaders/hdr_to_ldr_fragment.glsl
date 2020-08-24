@@ -12,7 +12,7 @@ void main()
 {
 	vec4 HDRColor = texture(HDRTex, TexCoord).rgba;
 	vec3 gammaCorrectedColor = pow(HDRColor.rgb, vec3(1.0f / gamma));
-	vec3 LDRColor = vec3(1.0f) - exp(-gammaCorrectedColor * exposure);
+	vec3 LDRColor = vec3(1.0f) - min(exp(-gammaCorrectedColor * exposure), 1.0f);
 	OutColor = vec4(LDRColor.rgb, HDRColor.a);
 }
 

@@ -193,7 +193,17 @@ namespace MxEngine
 		return this->renderingEnabled;
     }
 
-	void CameraController::ToggleRendering(bool value)
+	void CameraController::ToggleFXAA(bool value)
+	{
+		this->isFXAAEnabled = value;
+	}
+
+    bool CameraController::IsFXAAEnabled() const
+    {
+		return this->isFXAAEnabled;
+    }
+
+    void CameraController::ToggleRendering(bool value)
 	{
 		if (this->renderingEnabled != value)
 		{
@@ -440,6 +450,11 @@ namespace MxEngine
 		return this->renderBuffers->HDR;
 	}
 
+    TextureHandle CameraController::GetVFXTexture() const
+    {
+		return this->renderBuffers->VFX;
+    }
+
 	void CameraRender::Init(int width, int height)
 	{
 		this->GBuffer = GraphicFactory::Create<FrameBuffer>();
@@ -448,6 +463,7 @@ namespace MxEngine
 		this->Material = GraphicFactory::Create<Texture>();
 		this->Depth = GraphicFactory::Create<Texture>();
 		this->HDR = GraphicFactory::Create<Texture>();
+		this->VFX = GraphicFactory::Create<Texture>();
 
 		this->Resize(width, height);
 		
@@ -467,17 +483,21 @@ namespace MxEngine
 
 	void CameraRender::Resize(int width, int height)
 	{
+		constexpr TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;
+
 		this->Albedo->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
 		this->Normal->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
 		this->Material->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
 		this->Depth->LoadDepth(width, height, TextureFormat::DEPTH32F, TextureWrap::CLAMP_TO_EDGE);
-		this->HDR->Load(nullptr, width, height, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
+		this->HDR->Load(nullptr, width, height, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+		this->VFX->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
 
 		this->Albedo->SetPath("[[cam albedo]]");
 		this->Normal->SetPath("[[cam normal]]");
 		this->Material->SetPath("[[cam material]]");
 		this->Depth->SetPath("[[cam depth]]");
 		this->HDR->SetPath("[[cam hdr]]");
+		this->VFX->SetPath("[[cam vfx]]");
 	}
 
 	void CameraRender::DeInit()

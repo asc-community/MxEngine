@@ -42,17 +42,6 @@ uniform Camera camera;
 uniform int pcfDistance;
 uniform vec2 viewportSize;
 
-struct FragmentInfo
-{
-	vec3 albedo;
-	float specularIntensity;
-	float specularFactor;
-	float emmisionFactor;
-	float reflection;
-	vec3 normal;
-	vec3 position;
-};
-
 vec3 calcColorUnderPointLight(FragmentInfo fragment, PointLight light, vec3 viewDir, samplerCube map_shadow, bool computeShadow)
 {
 	vec3 lightPath = light.position - fragment.position;
@@ -86,19 +75,8 @@ vec3 calcColorUnderPointLight(FragmentInfo fragment, PointLight light, vec3 view
 void main()
 {
 	vec2 TexCoord = gl_FragCoord.xy / viewportSize;
-	FragmentInfo fragment;
+	FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewMatrix, camera.invProjMatrix);
 
-	fragment.albedo = texture(albedoTex, TexCoord).rgb;
-	fragment.normal = 2.0f * texture(normalTex, TexCoord).rgb - vec3(1.0f);
-	vec4 material = texture(materialTex, TexCoord).rgba;
-	float depth = texture(depthTex, TexCoord).r;
-
-	fragment.emmisionFactor = material.r;
-	fragment.reflection = material.g;
-	fragment.specularIntensity = 1.0f / material.b;
-	fragment.specularFactor = material.a;
-
-	fragment.position = reconstructWorldPosition(depth, TexCoord, camera.invProjMatrix, camera.invViewMatrix);
 	float fragDistance = length(camera.position - fragment.position);
 	vec3 viewDirection = normalize(camera.position - fragment.position);
 

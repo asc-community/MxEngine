@@ -256,6 +256,11 @@ namespace MxEngine
 		GLCALL(glUniform1i(location, i));
 	}
 
+	void Shader::SetUniformBool(const MxString& name, bool b) const
+	{
+		this->SetUniformInt(name, (int)b);
+	}
+
 	Shader::ShaderId Shader::CompileShader(unsigned int type, const MxString& source, const MxString& name) const
 	{
 		GLCALL(GLuint shaderId = glCreateShader((GLenum)type));

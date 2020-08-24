@@ -1,4 +1,5 @@
 #define MAKE_STRING(...) #__VA_ARGS__
+
 MAKE_STRING(
 
 layout(location = 0)  in vec4 position;

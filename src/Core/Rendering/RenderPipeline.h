@@ -51,6 +51,7 @@ namespace MxEngine
         TextureHandle MaterialTexture;
         TextureHandle DepthTexture;
         TextureHandle HDRTexture;
+        TextureHandle VFXTexture;
 
         FrustrumCuller Culler;
         Matrix4x4 InverseViewMatrix;
@@ -66,6 +67,7 @@ namespace MxEngine
         float Exposure;
         float Gamma;
 
+        bool EnableFXAA;
         bool IsPerspective;
         bool RenderToTexture;
         uint8_t BloomIterations;
@@ -78,6 +80,7 @@ namespace MxEngine
         ShaderHandle SpotLightShader;
         ShaderHandle PointLightShader;
         ShaderHandle HDRToLDRShader;
+        ShaderHandle VFXShader;
         ShaderHandle SkyboxShader;
         ShaderHandle ShadowMapShader;
         ShaderHandle ShadowCubeMapShader;

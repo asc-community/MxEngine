@@ -56,19 +56,50 @@ float CalcShadowFactor3D(vec3 fragToLightRay, vec3 viewDist, float zfar, float b
 	return shadowFactor;
 }
 
-vec3 applyFog(vec3 color, float distance, vec3 viewDir, float fogDensity, float fogDistance, vec3 fogColor)
+vec3 applyFog(vec3 color, float fragDistance, vec3 viewDir, float fogDensity, float fogDistance, vec3 fogColor)
 {
-	float fogFactor = 1.0f - fogDistance * exp(-distance * fogDensity);
+	float fogFactor = 1.0f - fogDistance * exp(-fragDistance * fogDensity);
 	return mix(color, fogColor, clamp(fogFactor, 0.0f, 1.0f));
 }
 
-vec3 calcReflectionColor(float reflectionFactor, samplerCube reflectionMap, vec2 texcoord, mat3 reflectionMapTransform, vec3 viewDir, vec3 normal)
+vec3 calcReflectionColor(float reflectionFactor, samplerCube reflectionMap, mat3 reflectionMapTransform, vec3 viewDir, vec3 normal)
 {
 	vec3 I = -viewDir;
 	vec3 reflectionRay = reflect(I, normal);
 	reflectionRay = reflectionMapTransform * reflectionRay;
 	vec3 color = reflectionFactor * texture(reflectionMap, reflectionRay).rgb;
 	return color;
+}
+
+struct FragmentInfo
+{
+	vec3 albedo;
+	float specularIntensity;
+	float specularFactor;
+	float emmisionFactor;
+	float reflection;
+	float depth;
+	vec3 normal;
+	vec3 position;
+};
+
+FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D normalTexture, sampler2D materialTexture, sampler2D depthTexture, mat4 invView, mat4 invProjection)
+{
+	FragmentInfo fragment;
+
+	fragment.albedo = texture(albedoTexture, texCoord).rgb;
+	fragment.normal = 2.0f * texture(normalTexture, texCoord).rgb - vec3(1.0f);
+	vec4 material = texture(materialTexture, texCoord).rgba;
+	fragment.depth = texture(depthTexture, texCoord).r;
+
+	fragment.emmisionFactor = material.r;
+	fragment.reflection = material.g;
+	fragment.specularIntensity = 1.0f / material.b;
+	fragment.specularFactor = material.a;
+
+	fragment.position = reconstructWorldPosition(fragment.depth, texCoord, invProjection, invView);
+
+	return fragment;
 }
 
 )

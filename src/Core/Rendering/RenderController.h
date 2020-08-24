@@ -62,6 +62,8 @@ namespace MxEngine
 		void PerformPostProcessing(CameraUnit& camera);
 		void DrawDirectionalLights(CameraUnit& camera);
 		void PerformLightPass(CameraUnit& camera);
+		void ApplyPostEffects(CameraUnit& camera, TextureHandle input, TextureHandle output);
+		void PerformHDRToLDRConversion(CameraUnit& camera, TextureHandle input, TextureHandle output);
 		void DrawShadowedPointLights(CameraUnit& camera);
 		void DrawShadowedSpotLights(CameraUnit& camera);
 		void DrawNonShadowedPointLights(CameraUnit& camera);
@@ -94,7 +96,7 @@ namespace MxEngine
 		void SubmitLightSource(const SpotLight& light, const TransformComponent& parentTransform);
 		void SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, const Skybox& skybox);
 		void SubmitPrimitive(const SubMesh& object, const Material& material, const TransformComponent& parentTransform, size_t instanceCount);
-		void SubmitFinalImage(const TextureHandle& texture);
+		void SubmitImage(const TextureHandle& texture);
 		void StartPipeline();
 		void EndPipeline();
 	};

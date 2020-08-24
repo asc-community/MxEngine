@@ -116,10 +116,13 @@ namespace MxEngine::GUI
 			cameraController.SetBloomIterations((size_t)Max(0, bloomIterations));
 
 		bool isRendered = cameraController.IsRendered();
-		if (ImGui::Checkbox("enable rendering", &isRendered))
+		if (ImGui::Checkbox("is rendering", &isRendered))
 			cameraController.ToggleRendering(isRendered);
-
 		ImGui::SameLine();
+		bool isFXAAEnabled = cameraController.IsFXAAEnabled();
+		if (ImGui::Checkbox("uses FXAA", &isFXAAEnabled))
+			cameraController.ToggleFXAA(isFXAAEnabled);
+
 		if (ImGui::Button("listen window resize"))
 		{
 			cameraController.ListenWindowResizeEvent();

@@ -83,5 +83,6 @@ namespace MxEngine
 		void SetUniformMat4(const MxString& name, const Matrix4x4& matrix) const;
 		void SetUniformMat3(const MxString& name, const Matrix3x3& matrix) const;
 		void SetUniformInt(const MxString& name, int i) const;
+		void SetUniformBool(const MxString& name, bool b) const;
 	};
 }

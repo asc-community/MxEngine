@@ -231,7 +231,7 @@ namespace MxEngine
 
 		this->PerformLightPass(camera);
 
-		// render skybox & debug buffer (HDR texture already attached)
+		// render skybox & debug buffer (HDR texture is already attached)
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.DepthTexture, Attachment::DEPTH_ATTACHMENT);
 		this->GetRenderEngine().UseDepthBufferMask(false);
 		this->DrawSkybox(camera);
@@ -239,13 +239,8 @@ namespace MxEngine
 		this->GetRenderEngine().UseDepthBufferMask(true);
 		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
 
-		auto& HDRToLDRShader = this->Pipeline.Environment.HDRToLDRShader;
-		camera.HDRTexture->Bind(0);
-		HDRToLDRShader->SetUniformInt("HDRTex", 0);
-		HDRToLDRShader->SetUniformFloat("exposure", camera.Exposure);
-		HDRToLDRShader->SetUniformFloat("gamma", camera.Gamma);
-		
-		this->RenderToTexture(camera.OutputTexture, HDRToLDRShader);
+		this->PerformHDRToLDRConversion(camera, camera.HDRTexture, camera.VFXTexture);
+		this->ApplyPostEffects(camera, camera.VFXTexture, camera.OutputTexture);
 	}
 
 	void RenderController::DrawDirectionalLights(CameraUnit& camera)
@@ -309,6 +304,39 @@ namespace MxEngine
 		this->DrawNonShadowedPointLights(camera);
 
 		this->GetRenderEngine().UseCulling(true, true, true);
+		this->GetRenderEngine().UseBlending(BlendFactor::NONE, BlendFactor::NONE);
+	}
+
+	void RenderController::ApplyPostEffects(CameraUnit& camera, TextureHandle input, TextureHandle output)
+	{
+		auto vfxShader = this->Pipeline.Environment.VFXShader;
+		if(camera.EnableFXAA) input->GenerateMipmaps();
+		input->Bind(4);
+		vfxShader->SetUniformInt("cameraOutput", 4);
+		vfxShader->SetUniformBool("enableFXAA", camera.EnableFXAA);
+
+		vfxShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
+		vfxShader->IgnoreNonExistingUniform("normalTex");
+		vfxShader->IgnoreNonExistingUniform("albedoTex");
+		vfxShader->IgnoreNonExistingUniform("materialTex");
+		this->BindGBuffer(camera, *vfxShader);
+		this->BindFogInformation(*vfxShader);
+		this->BindCameraInformation(camera, *vfxShader);
+
+		this->RenderToTexture(output, vfxShader);
+	}
+
+	void RenderController::PerformHDRToLDRConversion(CameraUnit& camera, TextureHandle input, TextureHandle output)
+	{
+		MAKE_SCOPE_PROFILER("RenderController::PerformHDRToLDRConversion()");
+
+		auto& HDRToLDRShader = this->Pipeline.Environment.HDRToLDRShader;
+		input->Bind(0);
+		HDRToLDRShader->SetUniformInt("HDRTex", 0);
+		HDRToLDRShader->SetUniformFloat("exposure", camera.Exposure);
+		HDRToLDRShader->SetUniformFloat("gamma", camera.Gamma);
+
+		this->RenderToTexture(output, HDRToLDRShader);
 	}
 
 	void RenderController::DrawShadowedSpotLights(CameraUnit& camera)
@@ -692,6 +720,7 @@ namespace MxEngine
 		camera.MaterialTexture            = controller.GetMaterialTexture();
 		camera.DepthTexture               = controller.GetDepthTexture();
 		camera.HDRTexture                 = controller.GetHDRTexture();
+		camera.VFXTexture                = controller.GetVFXTexture();
 		camera.BloomIterations            = (uint8_t)controller.GetBloomIterations();
 		camera.BloomWeight                = controller.GetBloomWeight();
 		camera.Exposure                   = controller.GetExposure();
@@ -700,6 +729,7 @@ namespace MxEngine
 		camera.InversedSkyboxRotation     = Transpose(ToMatrix(parentTransform.GetRotation()));
 		camera.OutputTexture              = controller.GetRenderTexture();
 		camera.RenderToTexture            = controller.IsRendered();
+		camera.EnableFXAA                 = controller.IsFXAAEnabled();
 	}
 
     void RenderController::SubmitPrimitive(const SubMesh& object, const Material& material, const TransformComponent& parentTransform, size_t instanceCount)
@@ -739,7 +769,7 @@ namespace MxEngine
 		if (renderMaterial.CastsShadow) this->Pipeline.ShadowCasterUnits.push_back(primitive);
     }
 
-	void RenderController::SubmitFinalImage(const TextureHandle& texture)
+	void RenderController::SubmitImage(const TextureHandle& texture)
 	{
 		auto& finalShader = *this->Pipeline.Environment.ImageForwardShader;
 		auto& rectangle = this->Pipeline.Environment.RectangularObject;
@@ -795,7 +825,7 @@ namespace MxEngine
 			const auto& mainCamera = this->Pipeline.Cameras[this->Pipeline.Environment.MainCameraIndex];
 			MX_ASSERT(mainCamera.OutputTexture.IsValid());
 
-			this->SubmitFinalImage(mainCamera.OutputTexture);
+			this->SubmitImage(mainCamera.OutputTexture);
 		}
 	}
 }

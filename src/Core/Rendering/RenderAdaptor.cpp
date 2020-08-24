@@ -57,7 +57,7 @@ namespace MxEngine
         // fog
         this->SetFogColor(MakeVector3(0.5f, 0.6f, 0.7f));
         this->SetFogDistance(1.0f);
-        this->SetFogDensity(0.01f);
+        this->SetFogDensity(0.001f);
 
         // helper objects
         environment.RectangularObject.Init(1.0f);
@@ -130,6 +130,13 @@ namespace MxEngine
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/hdr_to_ldr_fragment.glsl"
+        );
+
+        environment.VFXShader = GraphicFactory::Create<Shader>();
+        environment.VFXShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/vfx_fragment.glsl"
         );
 
         environment.SkyboxShader = GraphicFactory::Create<Shader>();

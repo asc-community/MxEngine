@@ -50,6 +50,7 @@ namespace MxEngine
 		TextureHandle Material;
 		TextureHandle Depth;
 		TextureHandle HDR;
+		TextureHandle VFX;
 
 		void Init(int width, int height);
 		void Resize(int width, int height);
@@ -82,6 +83,7 @@ namespace MxEngine
 		uint8_t bloomIterations = 6;
 		CameraType cameraType = CameraType::PERSPECTIVE;
 		bool renderingEnabled = true;
+		bool isFXAAEnabled = true;
 	public:
 		mutable CameraBase Camera;
 
@@ -107,6 +109,8 @@ namespace MxEngine
 		void ResizeRenderTexture(size_t width, size_t height);
 		void SetRenderTexture(const TextureHandle& texture);
 		bool IsRendered() const;
+		void ToggleFXAA(bool value);
+		bool IsFXAAEnabled() const;
 		void ToggleRendering(bool value);
 		const FrustrumCuller& GetFrustrumCuller() const;
 
@@ -143,5 +147,6 @@ namespace MxEngine
 		TextureHandle GetMaterialTexture() const;
 		TextureHandle GetDepthTexture() const;
 		TextureHandle GetHDRTexture() const;
+		TextureHandle GetVFXTexture() const;
 	};
 }
