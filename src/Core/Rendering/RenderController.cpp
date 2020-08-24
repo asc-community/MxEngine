@@ -101,6 +101,7 @@ namespace MxEngine
 		if (objects.empty()) return;
 		auto& shader = *this->Pipeline.Environment.GBufferShader;
 		shader.SetUniformMat4("ViewProjMatrix", camera.ViewProjectionMatrix);
+		shader.SetUniformFloat("gamma", camera.Gamma);
 
 		for (const auto& unit : objects)
 		{
@@ -224,37 +225,47 @@ namespace MxEngine
 		return result;
 	}
 
-	void RenderController::PerformGlobalIlluminationPass(CameraUnit& camera)
+	void RenderController::PerformPostProcessing(CameraUnit& camera)
 	{
-		MAKE_SCOPE_PROFILER("RenderController::GlobalIlluminationPass()");
+		MAKE_SCOPE_PROFILER("RenderController::PerformPostProcessing()");
 
+		this->PerformLightPass(camera);
+
+		// render skybox & debug buffer (HDR texture already attached)
+		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.DepthTexture, Attachment::DEPTH_ATTACHMENT);
+		this->GetRenderEngine().UseDepthBufferMask(false);
+		this->DrawSkybox(camera);
+		this->DrawDebugBuffer(camera);
+		this->GetRenderEngine().UseDepthBufferMask(true);
+		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
+
+		auto& HDRToLDRShader = this->Pipeline.Environment.HDRToLDRShader;
+		camera.HDRTexture->Bind(0);
+		HDRToLDRShader->SetUniformInt("HDRTex", 0);
+		HDRToLDRShader->SetUniformFloat("exposure", camera.Exposure);
+		HDRToLDRShader->SetUniformFloat("gamma", camera.Gamma);
+		
+		this->RenderToTexture(camera.OutputTexture, HDRToLDRShader);
+	}
+
+	void RenderController::DrawDirectionalLights(CameraUnit& camera)
+	{
+		MAKE_SCOPE_PROFILER("RenderController::DrawDirectionalLights");
 		auto& illumShader = this->Pipeline.Environment.GlobalIlluminationShader;
 
-		camera.AlbedoTexture->GenerateMipmaps();
-		camera.NormalTexture->GenerateMipmaps();
-		camera.MaterialTexture->GenerateMipmaps();
-		camera.DepthTexture->GenerateMipmaps();
-
-		this->BindGBuffer(camera, *illumShader);
-		Texture::TextureBindId textureId = 4;
-
-		// submit camera info
-		illumShader->SetUniformVec3("viewPosition", camera.ViewportPosition);
-		illumShader->SetUniformMat4("invProjMatrix", camera.InverseProjectionMatrix);
-		illumShader->SetUniformMat4("invViewMatrix", camera.InverseViewMatrix);
+		illumShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
 		illumShader->SetUniformMat3("skyboxTransform", camera.InversedSkyboxRotation);
+		this->BindGBuffer(camera, *illumShader);
+		this->BindCameraInformation(camera, *illumShader);
+
+		Texture::TextureBindId textureId = 4;
 
 		camera.SkyboxMap->Bind(textureId);
 		illumShader->SetUniformInt("skyboxTex", textureId);
 		textureId++;
 
-		// fod info
-		illumShader->SetUniformFloat("fog.distance", this->Pipeline.Environment.FogDistance);
-		illumShader->SetUniformFloat("fog.density", this->Pipeline.Environment.FogDensity);
-		illumShader->SetUniformVec3("fog.color", this->Pipeline.Environment.FogColor);
-
 		// submit directional light information
-		constexpr size_t MaxDirLightCount = 2;
+		constexpr size_t MaxDirLightCount = 4;
 		const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
 		size_t lightCount = Min(MaxDirLightCount, dirLights.size());
 
@@ -283,27 +294,12 @@ namespace MxEngine
 		}
 		// render global illumination
 		this->RenderToTexture(camera.HDRTexture, illumShader);
-
-		this->PerformPositionedLightPass(camera);
-
-		// render skybox & debug buffer (HDR texture already attached)
-		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.DepthTexture, Attachment::DEPTH_ATTACHMENT);
-		this->GetRenderEngine().UseDepthBufferMask(false);
-		this->DrawSkybox(camera);
-		this->DrawDebugBuffer(camera);
-		this->GetRenderEngine().UseDepthBufferMask(true);
-		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
-
-		auto& HDRToLDRShader = this->Pipeline.Environment.HDRToLDRShader;
-		camera.HDRTexture->Bind(0);
-		HDRToLDRShader->SetUniformInt("HDRTex", 0);
-		HDRToLDRShader->SetUniformFloat("exposure", camera.Exposure);
-		
-		this->RenderToTexture(camera.OutputTexture, HDRToLDRShader);
 	}
 
-	void RenderController::PerformPositionedLightPass(CameraUnit& camera)
+	void RenderController::PerformLightPass(CameraUnit& camera)
 	{
+		this->DrawDirectionalLights(camera);
+
 		this->GetRenderEngine().UseCulling(true, true, false);
 		this->GetRenderEngine().UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::SRC_ALPHA);
 
@@ -319,19 +315,16 @@ namespace MxEngine
 	{
 		const auto& spotLights = this->Pipeline.Lighting.SpotLights;
 		if (spotLights.empty()) return;
+		MAKE_SCOPE_PROFILER("RenderController::DrawShadowedSpotLights");
 
 		auto shader = this->Pipeline.Environment.SpotLightShader;
 		auto& pyramid = this->Pipeline.Lighting.PyramidLight;
 		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
 
-		this->BindGBuffer(camera, *shader);
-
-		shader->SetUniformVec3("viewPosition", camera.ViewportPosition);
 		shader->SetUniformVec2("viewportSize", viewportSize);
-		shader->SetUniformMat4("invProjMatrix", camera.InverseProjectionMatrix);
-		shader->SetUniformMat4("invViewMatrix", camera.InverseViewMatrix);
-		shader->SetUniformMat4("viewProjMatrix", camera.ViewProjectionMatrix);
 		shader->SetUniformInt("pcfDistance", this->Pipeline.Environment.ShadowBlurIterations);
+		this->BindGBuffer(camera, *shader);
+		this->BindCameraInformation(camera, *shader);
 
 		for (size_t i = 0; i < spotLights.size(); i++)
 		{
@@ -358,18 +351,15 @@ namespace MxEngine
 	{
 		const auto& pointLights = this->Pipeline.Lighting.PointLights;
 		if (pointLights.empty()) return;
+		MAKE_SCOPE_PROFILER("RenderController::DrawShadowedPointLights");
 
 		auto shader = this->Pipeline.Environment.PointLightShader;
 		auto& sphere = this->Pipeline.Lighting.SphereLight;
 		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
 
-		this->BindGBuffer(camera, *shader);
-
-		shader->SetUniformVec3("viewPosition", camera.ViewportPosition);
 		shader->SetUniformVec2("viewportSize", viewportSize);
-		shader->SetUniformMat4("invProjMatrix", camera.InverseProjectionMatrix);
-		shader->SetUniformMat4("invViewMatrix", camera.InverseViewMatrix);
-		shader->SetUniformMat4("viewProjMatrix", camera.ViewProjectionMatrix);
+		this->BindGBuffer(camera, *shader);
+		this->BindCameraInformation(camera, *shader);
 
 		for (size_t i = 0; i < pointLights.size(); i++)
 		{
@@ -393,19 +383,16 @@ namespace MxEngine
 	{
 		auto& instancedPointLights = this->Pipeline.Lighting.PointLigthsInstanced;
 		if (instancedPointLights.Instances.empty()) return;
+		MAKE_SCOPE_PROFILER("RenderController::DrawNonShadowedPointLights");
 
 		auto shader = this->Pipeline.Environment.PointLightShader;
 		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
 
 		this->BindGBuffer(camera, *shader);
-
-		shader->SetUniformVec3("viewPosition", camera.ViewportPosition);
-		shader->SetUniformVec2("viewportSize", viewportSize);
-		shader->SetUniformMat4("invProjMatrix", camera.InverseProjectionMatrix);
-		shader->SetUniformMat4("invViewMatrix", camera.InverseViewMatrix);
-		shader->SetUniformMat4("viewProjMatrix", camera.ViewProjectionMatrix);
+		this->BindCameraInformation(camera, *shader);
 
 		this->Pipeline.Environment.DefaultBlackCubeMap->Bind(4);
+		shader->SetUniformVec2("viewportSize", viewportSize);
 		shader->SetUniformInt("lightDepthMap", 4);
 		shader->SetUniformInt("castsShadows", false);
 
@@ -417,24 +404,36 @@ namespace MxEngine
 	{
 		auto& instancedSpotLights = this->Pipeline.Lighting.SpotLightsInstanced;
 		if (instancedSpotLights.Instances.empty()) return;
+		MAKE_SCOPE_PROFILER("RenderController::DrawNonShadowedSpotLights");
 
 		auto shader = this->Pipeline.Environment.SpotLightShader;
 		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
 
 		this->BindGBuffer(camera, *shader);
-
-		shader->SetUniformVec3("viewPosition", camera.ViewportPosition);
-		shader->SetUniformVec2("viewportSize", viewportSize);
-		shader->SetUniformMat4("invProjMatrix", camera.InverseProjectionMatrix);
-		shader->SetUniformMat4("invViewMatrix", camera.InverseViewMatrix);
-		shader->SetUniformMat4("viewProjMatrix", camera.ViewProjectionMatrix);
+		this->BindCameraInformation(camera, *shader);
 
 		this->Pipeline.Environment.DefaultBlackCubeMap->Bind(4);
+		shader->SetUniformVec2("viewportSize", viewportSize);
 		shader->SetUniformInt("lightDepthMap", 4);
 		shader->SetUniformInt("castsShadows", false);
 
 		instancedSpotLights.SubmitToVBO();
 		this->GetRenderEngine().DrawTrianglesInstanced(instancedSpotLights.GetVAO(), instancedSpotLights.GetIBO(), *shader, instancedSpotLights.Instances.size());
+	}
+
+	void RenderController::BindFogInformation(const Shader& shader)
+	{
+		shader.SetUniformFloat("fog.distance", this->Pipeline.Environment.FogDistance);
+		shader.SetUniformFloat("fog.density", this->Pipeline.Environment.FogDensity);
+		shader.SetUniformVec3("fog.color", this->Pipeline.Environment.FogColor);
+	}
+
+	void RenderController::BindCameraInformation(const CameraUnit& camera, const Shader& shader)
+	{
+		shader.SetUniformVec3("camera.position", camera.ViewportPosition);
+		shader.SetUniformMat4("camera.viewProjMatrix", camera.ViewProjectionMatrix);
+		shader.SetUniformMat4("camera.invViewMatrix", camera.InverseViewMatrix);
+		shader.SetUniformMat4("camera.invProjMatrix", camera.InverseProjectionMatrix);
 	}
 
 	void RenderController::BindGBuffer(const CameraUnit& camera, const Shader& shader)
@@ -548,11 +547,11 @@ namespace MxEngine
 		auto& shader = *this->Pipeline.Environment.SkyboxShader;
 		auto& skybox = this->Pipeline.Environment.SkyboxCubeObject;
 
+		this->BindFogInformation(shader);
+
 		shader.SetUniformMat4("StaticViewProjection", camera.StaticViewProjectionMatrix);
 		shader.SetUniformMat3("Rotation", Transpose(camera.InversedSkyboxRotation));
-		shader.SetUniformFloat("fog.distance", this->Pipeline.Environment.FogDistance);
-		shader.SetUniformFloat("fog.density", this->Pipeline.Environment.FogDensity);
-		shader.SetUniformVec3("fog.color", this->Pipeline.Environment.FogColor);
+		shader.SetUniformFloat("gamma", camera.Gamma);
 
 		camera.SkyboxMap->Bind(0);
 		shader.SetUniformInt("skybox", 0);
@@ -696,6 +695,7 @@ namespace MxEngine
 		camera.BloomIterations            = (uint8_t)controller.GetBloomIterations();
 		camera.BloomWeight                = controller.GetBloomWeight();
 		camera.Exposure                   = controller.GetExposure();
+		camera.Gamma                      = controller.GetGamma();
 		camera.SkyboxMap                  = skybox.Texture.IsValid() ? skybox.Texture : this->Pipeline.Environment.DefaultBlackCubeMap;
 		camera.InversedSkyboxRotation     = Transpose(ToMatrix(parentTransform.GetRotation()));
 		camera.OutputTexture              = controller.GetRenderTexture();
@@ -771,8 +771,7 @@ namespace MxEngine
 			this->AttachFrameBuffer(camera.GBuffer);
 
 			this->DrawObjects(camera, this->Pipeline.OpaqueRenderUnits);
-
-			this->PerformGlobalIlluminationPass(camera);
+			this->PerformPostProcessing(camera);
 
 			camera.OutputTexture->GenerateMipmaps();
 

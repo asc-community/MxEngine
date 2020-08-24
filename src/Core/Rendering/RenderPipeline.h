@@ -64,6 +64,7 @@ namespace MxEngine
         CubeMapHandle SkyboxMap;
         float BloomWeight;
         float Exposure;
+        float Gamma;
 
         bool IsPerspective;
         bool RenderToTexture;

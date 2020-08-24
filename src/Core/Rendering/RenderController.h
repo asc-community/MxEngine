@@ -59,13 +59,16 @@ namespace MxEngine
 		void AttachDepthMap(const TextureHandle& texture);
 		void AttachDepthMap(const CubeMapHandle& cubemap);
 		TextureHandle PerformBloomIterations(const TextureHandle& inputBloom, uint8_t iterations);
-		void PerformGlobalIlluminationPass(CameraUnit& camera);
-		void PerformPositionedLightPass(CameraUnit& camera);
+		void PerformPostProcessing(CameraUnit& camera);
+		void DrawDirectionalLights(CameraUnit& camera);
+		void PerformLightPass(CameraUnit& camera);
 		void DrawShadowedPointLights(CameraUnit& camera);
 		void DrawShadowedSpotLights(CameraUnit& camera);
 		void DrawNonShadowedPointLights(CameraUnit& camera);
 		void DrawNonShadowedSpotLights(CameraUnit& camera);
 		void BindGBuffer(const CameraUnit& camera, const Shader& shader);
+		void BindFogInformation(const Shader& shader);
+		void BindCameraInformation(const CameraUnit& camera, const Shader& shader);
 	public:
 		const Renderer& GetRenderEngine() const;
 		Renderer& GetRenderEngine();

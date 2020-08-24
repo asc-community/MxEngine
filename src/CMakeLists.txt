@@ -50,6 +50,8 @@ set(MXENGINE_HEADERS
     "Core/Rendering/RenderAdaptor.h" 
     "Core/Rendering/RenderPipeline.h" 
     "Core/Rendering/RenderHelperObject.h" 
+    "Core/Rendering/SpotLightInstancedObject.h" 
+    "Core/Rendering/PointLightInstancedObject.h" 
     "Core/Rendering/SkyboxObject.h" 
     "Core/Rendering/RenderController.h" 
     "Core/Runtime/RuntimeEditor.h" 

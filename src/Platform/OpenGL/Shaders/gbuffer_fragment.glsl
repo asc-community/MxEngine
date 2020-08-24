@@ -27,6 +27,7 @@ uniform sampler2D map_emmisive;
 uniform sampler2D map_normal;
 uniform sampler2D map_transparency;
 uniform Material material;
+uniform float gamma;
 
 vec3 calcNormal(vec2 texcoord, mat3 TBN)
 {
@@ -51,7 +52,9 @@ void main()
 	float specularFactor = material.specularFactor * specularTex;
 	float specularIntensity = 1.0f / material.specularIntensity;
 
-	OutAlbedo = vec4(fsin.RenderColor * albedoTex, 1.0f);
+	vec3 albedo = pow(fsin.RenderColor * albedoTex, vec3(gamma));
+
+	OutAlbedo = vec4(fsin.RenderColor * albedo, 1.0f);
 	OutNormal = vec4(0.5f * normal + 0.5f, 1.0f);
 	OutMaterial = vec4(emmisive, reflection, specularIntensity, specularFactor);
 }

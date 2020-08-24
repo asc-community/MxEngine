@@ -70,6 +70,7 @@ namespace MxEngine
 		float verticalAngle = 0.0f;
 		float horizontalAngle = 0.0f;
 		float exposure = 1.0f;
+		float gamma = 2.2f;
 		float bloomWeight = 0.5f;
 		float moveSpeed = 1.0f;
 		float rotateSpeed = 10.0f;
@@ -121,6 +122,8 @@ namespace MxEngine
 		void SetBloomIterations(size_t iterCount);
 		float GetExposure() const;
 		void SetExposure(float exp);
+		float GetGamma() const;
+		void SetGamma(float gamma);
 		float GetMoveSpeed() const;
 		void SetMoveSpeed(float speed);
 		float GetRotateSpeed() const;

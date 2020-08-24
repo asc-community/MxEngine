@@ -111,10 +111,10 @@ namespace MxEngine
 
     Matrix4x4 PointLight::GetSphereTransform(const Vector3& position) const
     {
-        Matrix4x4 I{ 1.0f };
-        auto T = Translate(I, position);
-        auto R = I;
-        auto S = Scale(I, 2.0f * RootTwo<float>() * this->radius);
-        return T * R * S;
+        Matrix4x4 m{ 0.0f };
+        const float scale = 2.0f * RootTwo<float>() * this->radius;
+        m[0][0] = m[1][1] = m[2][2] = scale;
+        m[3] = Vector4(position, 1.0f);
+        return m;
     }
 }

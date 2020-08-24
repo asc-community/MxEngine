@@ -443,7 +443,7 @@ namespace MxEngine
     {
         auto& environment = this->Renderer.GetEnvironment();
         using BlutIterType = decltype(environment.ShadowBlurIterations);
-        constexpr size_t maxIterations = (size_t)std::numeric_limits<BlutIterType>::max();
+        constexpr size_t maxIterations = 5;
         environment.ShadowBlurIterations = (BlutIterType)Min(iterations, maxIterations);
     }
 

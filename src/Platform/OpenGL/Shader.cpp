@@ -163,6 +163,15 @@ namespace MxEngine
 		MXLOG_DEBUG("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
 	}
 
+	void Shader::IgnoreNonExistingUniform(const MxString& name)
+	{
+		if (uniformCache.find(name) == uniformCache.end())
+		{
+			GLCALL(int location = glGetUniformLocation(this->id, name.c_str()));
+			uniformCache[name] = location;
+		}
+	}
+
     void Shader::LoadFromString(const MxString& vertex, const MxString& fragment)
     {
 		this->InvalidateUniformCache();

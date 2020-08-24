@@ -93,6 +93,7 @@ namespace MxEngine::GUI
 
 		int bloomIterations = (int)cameraController.GetBloomIterations();
 		float exposure = cameraController.GetExposure();
+		float gamma = cameraController.GetGamma();
 		float bloomWeight = cameraController.GetBloomWeight();
 		auto direction = cameraController.GetDirectionDenormalized();
 		float moveSpeed = cameraController.GetMoveSpeed();
@@ -107,6 +108,8 @@ namespace MxEngine::GUI
 			cameraController.SetDirection(direction);
 		if (ImGui::DragFloat("exposure", &exposure, 0.1f))
 			cameraController.SetExposure(exposure);
+		if (ImGui::DragFloat("gamma", &gamma, 0.01f, 0.0f, 5.0f))
+			cameraController.SetGamma(gamma);
 		if (ImGui::DragFloat("bloom weight", &bloomWeight, 0.1f))
 			cameraController.SetBloomWeight(bloomWeight);
 		if (ImGui::DragInt("bloom iterations", &bloomIterations))

@@ -62,7 +62,7 @@ namespace GrassSample
                 for (size_t j = 0; j < lightRowSize; j++)
                 {
                     auto object = lightFactory->MakeInstance();
-                    object->Transform.SetPosition(Vector3((float)i - lightRowSize / 2, 2.0f, (float)j - lightRowSize / 2) * 0.2f);
+                    object->Transform.SetPosition(Vector3((float)i - lightRowSize / 2, 0.5f, (float)j - lightRowSize / 2) * 0.2f);
                     object->Transform.Scale(0.1f);
 
                     auto pointLight = object->AddComponent<PointLight>();

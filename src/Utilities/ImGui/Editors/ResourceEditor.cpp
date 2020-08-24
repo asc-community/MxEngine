@@ -159,6 +159,7 @@ namespace MxEngine::GUI
             auto height = width * nativeHeight / nativeWidth;
             if (!texture->IsMultisampled()) // TODO: support multisampled textures
             {
+                texture->GenerateMipmaps(); // without mipmaps texture can be not visible in editor if its size is too small
                 ImGui::Image((void*)(uintptr_t)texture->GetNativeHandle(), ImVec2(width, height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
             }
         }

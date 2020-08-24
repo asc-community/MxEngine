@@ -52,7 +52,10 @@ namespace MxEngine
         size_t heightTotal = leftTexture->GetHeight() + rightTexture->GetHeight();
 
         if (resultTexture->GetWidth() != widthTotal || resultTexture->GetHeight() != heightTotal)
+        {
             resultTexture->Load(nullptr, (int)widthTotal, (int)heightTotal, resultTexture->GetFormat(), resultTexture->GetWrapType());
+            resultTexture->SetPath("[[vr cam output]]");
+        }
 
         this->Render(resultTexture, leftTexture, rightTexture);
     }

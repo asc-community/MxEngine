@@ -317,6 +317,16 @@ namespace MxEngine
 		this->exposure = Max(0.0f, exp);
 	}
 
+	float CameraController::GetGamma() const
+	{
+		return this->gamma;
+	}
+
+	void CameraController::SetGamma(float gamma)
+	{
+		this->gamma = Max(0.0f, gamma);
+	}
+
 	float CameraController::GetMoveSpeed() const
 	{
 		return this->moveSpeed;

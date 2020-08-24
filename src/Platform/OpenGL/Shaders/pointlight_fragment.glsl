@@ -28,13 +28,18 @@ struct PointLight
 	vec3 specular;
 };
 
+struct Camera
+{
+	vec3 position;
+	mat4 invProjMatrix;
+	mat4 invViewMatrix;
+	mat4 viewProjMatrix;
+};
+
 uniform samplerCube lightDepthMap;
 uniform bool castsShadows;
-
+uniform Camera camera;
 uniform int pcfDistance;
-uniform mat4 invProjMatrix;
-uniform mat4 invViewMatrix;
-uniform vec3 viewPosition;
 uniform vec2 viewportSize;
 
 struct FragmentInfo
@@ -93,9 +98,9 @@ void main()
 	fragment.specularIntensity = 1.0f / material.b;
 	fragment.specularFactor = material.a;
 
-	fragment.position = reconstructWorldPosition(depth, TexCoord, invProjMatrix, invViewMatrix);
-	float fragDistance = length(viewPosition - fragment.position);
-	vec3 viewDirection = normalize(viewPosition - fragment.position);
+	fragment.position = reconstructWorldPosition(depth, TexCoord, camera.invProjMatrix, camera.invViewMatrix);
+	float fragDistance = length(camera.position - fragment.position);
+	vec3 viewDirection = normalize(camera.position - fragment.position);
 
 	PointLight light;
 	light.position = pointLight.position;

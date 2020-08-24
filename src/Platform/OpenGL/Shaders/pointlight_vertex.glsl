@@ -17,11 +17,19 @@ out PointLightInfo
 	vec3 specular;
 } pointLight;
 
-uniform mat4 viewProjMatrix;
+struct Camera
+{
+	vec3 position;
+	mat4 invProjMatrix;
+	mat4 invViewMatrix;
+	mat4 viewProjMatrix;
+};
+
+uniform Camera camera;
 
 void main()
 {
-	vec4 position = viewProjMatrix * transform * position;
+	vec4 position = camera.viewProjMatrix * transform * position;
 	gl_Position = position;
 
 	pointLight.position = sphereParameters.xyz;

@@ -22,6 +22,14 @@ struct Fog
 	float distance;
 };
 
+struct Camera
+{
+	vec3 position;
+	mat4 invProjMatrix;
+	mat4 invViewMatrix;
+	mat4 viewProjMatrix;
+};
+
 uniform sampler2D albedoTex;
 uniform sampler2D normalTex;
 uniform sampler2D materialTex;
@@ -30,14 +38,11 @@ uniform sampler2D depthTex;
 uniform int lightCount;
 uniform int pcfDistance;
 uniform Fog fog;
-uniform bool isViewPerspective;
-uniform vec3 viewPosition;
-uniform mat4 invViewMatrix;
-uniform mat4 invProjMatrix;
+uniform Camera camera;
 uniform mat3 skyboxTransform;
 uniform samplerCube skyboxTex;
 
-const int MaxLightCount = 2;
+const int MaxLightCount = 4;
 uniform DirLight lights[MaxLightCount];
 uniform sampler2D lightDepthMaps[MaxLightCount];
 
@@ -74,9 +79,9 @@ void main()
 	float specularIntensity = 1.0f / material.b;
 	float specularFactor = material.a;
 
-	vec3 fragPosition = reconstructWorldPosition(depth, TexCoord, invProjMatrix, invViewMatrix);
-	float fragDistance = length(viewPosition - fragPosition.xyz);
-	vec3 viewDirection = normalize(viewPosition - fragPosition.xyz);
+	vec3 fragPosition = reconstructWorldPosition(depth, TexCoord, camera.invProjMatrix, camera.invViewMatrix);
+	float fragDistance = length(camera.position - fragPosition.xyz);
+	vec3 viewDirection = normalize(camera.position - fragPosition.xyz);
 	vec3 reflectionColor = calcReflectionColor(reflection, skyboxTex, TexCoord, skyboxTransform, viewDirection, normal);
 
 	vec3 totalColor = vec3(0.0f);
@@ -85,7 +90,6 @@ void main()
 		vec4 fragLightSpace = lights[i].transform * vec4(fragPosition, 1.0f);
 		totalColor += calcColorUnderDirLight(albedo, specularIntensity, specularFactor, reflection, reflectionColor, normal, lights[i], viewDirection, fragLightSpace, lightDepthMaps[i]);
 	}
-	totalColor = applyFog(totalColor, fragDistance, viewDirection, fog.density, fog.distance, fog.color);
 
 	OutColor = vec4(totalColor, 1.0f);
 }

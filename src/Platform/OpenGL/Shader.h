@@ -73,6 +73,7 @@ namespace MxEngine
 		BindableId GetNativeHandle() const;
 		void Load(const MxString& vertex, const MxString& fragment);
 		void Load(const MxString& vertex, const MxString& geometry, const MxString& fragment);
+		void IgnoreNonExistingUniform(const MxString& name);
 		void LoadFromString(const MxString& vertex, const MxString& fragment);
 		void LoadFromString(const MxString& vertex, const MxString& geometry, const MxString& fragment);
 		void SetUniformFloat(const MxString& name, float f) const;

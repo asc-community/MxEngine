@@ -6,11 +6,13 @@ in vec2 TexCoord;
 
 uniform sampler2D HDRTex;
 uniform float exposure;
+uniform float gamma;
 
 void main()
 {
 	vec4 HDRColor = texture(HDRTex, TexCoord).rgba;
-	vec3 LDRColor = vec3(1.0f) - exp(-HDRColor.rgb * exposure);
+	vec3 gammaCorrectedColor = pow(HDRColor.rgb, vec3(1.0f / gamma));
+	vec3 LDRColor = vec3(1.0f) - exp(-gammaCorrectedColor * exposure);
 	OutColor = vec4(LDRColor.rgb, HDRColor.a);
 }
 
