@@ -70,10 +70,6 @@ namespace MxEngine
 
         this->Bind();
         GLCALL(glFramebufferTexture2D(GL_FRAMEBUFFER, mode, texture.GetTextureType(), textureId, 0));
-        if (mode == GL_DEPTH_ATTACHMENT)
-        {
-            GLCALL(glDrawBuffer(GL_NONE));
-        }
     }
 
     void FrameBuffer::OnCubeMapAttach(const CubeMap& cubemap, Attachment attachment)
@@ -83,10 +79,6 @@ namespace MxEngine
 
         this->Bind();
         GLCALL(glFramebufferTexture(GL_FRAMEBUFFER, mode, cubemapId, 0));
-        if (mode == GL_DEPTH_ATTACHMENT)
-        {
-            GLCALL(glDrawBuffer(GL_NONE));
-        }
     }
 
     void FrameBuffer::FreeFrameBuffer()
@@ -127,6 +119,11 @@ namespace MxEngine
         #endif
     }
 
+    void FrameBuffer::DetachExtraTarget(Attachment attachment)
+    {
+        GLCALL(glFramebufferTexture(GL_FRAMEBUFFER, AttachmentTable[(int)attachment], 0, 0));
+    }
+
     bool FrameBuffer::HasTextureAttached() const
     {
         return this->currentAttachment == AttachmentType::TEXTURE;
@@ -137,10 +134,23 @@ namespace MxEngine
         return this->currentAttachment == AttachmentType::CUBEMAP;
     }
 
-    void FrameBuffer::UseDrawBuffers(size_t count) const
+    void FrameBuffer::UseDrawBuffers(ArrayView<Attachment> attachments) const
+    {
+        std::array<GLenum, 20> attachmentTypes{ };
+        MX_ASSERT(attachments.size() <= attachmentTypes.size());
+
+        this->Bind();
+        for (size_t i = 0; i < attachments.size(); i++)
+        {
+            attachmentTypes[i] = AttachmentTable[(int)attachments[i]];
+        }
+        GLCALL(glDrawBuffers((GLsizei)attachments.size(), attachmentTypes.data()));
+    }
+
+    void FrameBuffer::UseOnlyDepth() const
     {
         this->Bind();
-        GLCALL(glDrawBuffers((GLsizei)count, AttachmentTable));
+        GLCALL(glDrawBuffer(GL_NONE));
     }
 
     size_t FrameBuffer::GetWidth() const

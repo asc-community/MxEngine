@@ -163,6 +163,15 @@ namespace MxEngine
 		MXLOG_DEBUG("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
 	}
 
+	void Shader::IgnoreNonExistingUniform(const MxString& name) const
+	{
+		if (uniformCache.find(name) == uniformCache.end())
+		{
+			GLCALL(int location = glGetUniformLocation(this->id, name.c_str()));
+			uniformCache[name] = location;
+		}
+	}
+
     void Shader::LoadFromString(const MxString& vertex, const MxString& fragment)
     {
 		this->InvalidateUniformCache();
@@ -245,6 +254,11 @@ namespace MxEngine
 		if (location == -1) return;
 		Bind();
 		GLCALL(glUniform1i(location, i));
+	}
+
+	void Shader::SetUniformBool(const MxString& name, bool b) const
+	{
+		this->SetUniformInt(name, (int)b);
 	}
 
 	Shader::ShaderId Shader::CompileShader(unsigned int type, const MxString& source, const MxString& name) const
@@ -359,6 +373,7 @@ namespace MxEngine
 		}
 		else // if version directive was not found, just include one
 		{
+			version += '\n';
 			copy.insert(copy.begin(), version.begin(), version.end());
 		}
 		return copy;

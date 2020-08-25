@@ -31,7 +31,7 @@
 
 namespace MxEngine
 {
-    PointLight::PointLight()
+    void PointLight::LoadDepthCubeMap()
     {
         auto depthTextureSize = (int)GlobalConfig::GetPointLightTextureSize();
         auto cubemap = GraphicFactory::Create<CubeMap>();
@@ -39,26 +39,32 @@ namespace MxEngine
         this->AttachDepthCubeMap(cubemap);
     }
 
-    PointLight& PointLight::UseFactors(const Vector3& factors)
+    bool PointLight::IsCastingShadows() const
     {
-        this->factors[Constant]  = Max(factors[Constant],  1.0f);
-        this->factors[Linear]    = Max(factors[Linear],    0.0f);
-        this->factors[Quadratic] = Max(factors[Quadratic], 0.0f);
+        return this->cubemap.IsValid();
+    }
+
+    void PointLight::ToggleShadowCast(bool value)
+    {
+        if (value && !this->IsCastingShadows())
+        {
+            this->LoadDepthCubeMap();
+        }
+        else if(!value && this->IsCastingShadows())
+        {
+            this->cubemap = { };
+        }
+    }
+
+    float PointLight::GetRadius() const
+    {
+        return this->radius;
+    }
+
+    PointLight& PointLight::UseRadius(float radius)
+    {
+        this->radius = Max(0.0f, radius);
         return *this;
-    }
-
-    const Vector3& PointLight::GetFactors() const
-    {
-        return this->factors;
-    }
-
-    float PointLight::ComputeRadius() const
-    {
-        auto maxLight  = Max(this->DiffuseColor.x, this->DiffuseColor.y, this->DiffuseColor.z);
-        auto constant  = this->factors[0];
-        auto linear    = this->factors[1];
-        auto quadratic = this->factors[2];
-        return -linear + std::sqrt(linear * linear - 4.0f * quadratic * (constant - (256.0f / 5.0f) * maxLight)) / (2.0f * quadratic);
     }
 
     CubeMapHandle PointLight::GetDepthCubeMap() const
@@ -93,7 +99,7 @@ namespace MxEngine
 
     Matrix4x4 PointLight::GetMatrix(size_t index, const Vector3& position) const
     {
-        auto Projection = MakePerspectiveMatrix(Radians(90.0f), 1.0f, 0.1f, this->FarDistance);
+        auto Projection = MakePerspectiveMatrix(Radians(90.0f), 1.0f, 0.1f, this->radius);
         auto directionNorm = DirectionTable[index];
         auto View = MakeViewMatrix(
             position,
@@ -101,5 +107,14 @@ namespace MxEngine
             UpTable[index]
         );
         return Projection * View;
+    }
+
+    Matrix4x4 PointLight::GetSphereTransform(const Vector3& position) const
+    {
+        Matrix4x4 m{ 0.0f };
+        const float scale = 2.0f * RootTwo<float>() * this->radius;
+        m[0][0] = m[1][1] = m[2][2] = scale;
+        m[3] = Vector4(position, 1.0f);
+        return m;
     }
 }

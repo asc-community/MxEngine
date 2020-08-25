@@ -50,15 +50,11 @@ namespace MxEngine
 		MAKE_TEX(HeightMap);
 		MAKE_TEX(NormalMap);
 
-		material.AmbientColor = mat.AmbientColor;
-		material.DiffuseColor = mat.DiffuseColor;
-		material.EmmisiveColor = mat.EmmisiveColor;
-		material.SpecularColor = mat.SpecularColor;
-		material.SpecularExponent = mat.SpecularExponent;
+		material.Emmision = mat.Emmision;
+		material.SpecularFactor = mat.SpecularFactor;
+		material.SpecularIntensity = mat.SpecularIntensity;
 		material.Transparency = mat.Transparency;
 		material.Name = mat.Name;
-
-		if (material.SpecularExponent == 0.0f) material.SpecularExponent = 128.0f; // bad as pow(0.0, 0.0) -> NaN //-V550
 
 		return materialResource;
 	}

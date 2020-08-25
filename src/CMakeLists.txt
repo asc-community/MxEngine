@@ -49,6 +49,9 @@ set(MXENGINE_HEADERS
     "Core/Rendering/Rectangle.h" 
     "Core/Rendering/RenderAdaptor.h" 
     "Core/Rendering/RenderPipeline.h" 
+    "Core/Rendering/RenderHelperObject.h" 
+    "Core/Rendering/SpotLightInstancedObject.h" 
+    "Core/Rendering/PointLightInstancedObject.h" 
     "Core/Rendering/SkyboxObject.h" 
     "Core/Rendering/RenderController.h" 
     "Core/Runtime/RuntimeEditor.h" 
@@ -242,7 +245,7 @@ set(MXENGINE_SOURCES
     "Utilities/ImGui/EventLogger.cpp" 
     "Utilities/ImGui/GraphicConsole.cpp" 
     "Utilities/ImGui/Editors/ComponentEditors/InstancingEditors.cpp" 
-    "Utilities/ImGui/Editors/LightEditors.cpp" 
+    "Utilities/ImGui/Editors/ComponentEditors/LightEditors.cpp" 
     "Utilities/ImGui/Editors/MxObjectEditor.cpp" 
     "Utilities/ImGui/Editors/ComponentEditors/PhysicsEditors.cpp" 
     "Utilities/ImGui/ProfilerGraph.cpp" 
@@ -390,7 +393,7 @@ set(MxEngine_INCLUDE_DIR ${MXENGINE_INCLUDE_DIRS} PARENT_SCOPE)
 set(MxEngine_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 
 set(LIBRARY_NAME MxEngine)
-add_library(${LIBRARY_NAME} STATIC ${MXENGINE_SOURCES} ${MXENGINE_HEADERS})
+add_library(${LIBRARY_NAME} STATIC ${MXENGINE_SOURCES} ${MXENGINE_HEADERS} )
 add_library(${LIBRARY_NAME}::${LIBRARY_NAME} ALIAS ${LIBRARY_NAME})
 
 link_directories(${THIRD_PARTY_BINARY_DIRS})

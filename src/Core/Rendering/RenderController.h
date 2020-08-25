@@ -50,16 +50,28 @@ namespace MxEngine
 
 		void PrepareShadowMaps();
 		void DrawSkybox(const CameraUnit& camera);
-		void DrawObjects(const CameraUnit& camera, const MxVector<RenderUnit>& objects);
+		void DrawObjects(const CameraUnit& camera, const Shader& shader, const MxVector<RenderUnit>& objects);
 		void DrawDebugBuffer(const CameraUnit& camera);
-		void DrawObject(const RenderUnit& unit, Texture::TextureBindId textureBindIndex, const Shader& shader);
+		void DrawObject(const RenderUnit& unit, const Shader& shader);
 		void DrawShadowMap(const RenderUnit& unit, const DirectionalLigthUnit& dirLight, const Shader& shader);
 		void DrawShadowMap(const RenderUnit& unit, const SpotLightUnit& spotLight, const Shader& shader);
 		void DrawShadowMap(const RenderUnit& unit, const PointLightUnit& pointLight, const Shader& shader);
 		void AttachDepthMap(const TextureHandle& texture);
 		void AttachDepthMap(const CubeMapHandle& cubemap);
-		void PostProcessImage(CameraUnit& camera);
-		TextureHandle PerformBloomIterations(const TextureHandle& inputBloom, uint8_t iterations);
+		void ApplyBloomEffect(CameraUnit& camera);
+		void PerformPostProcessing(CameraUnit& camera);
+		void DrawDirectionalLights(CameraUnit& camera);
+		void PerformLightPass(CameraUnit& camera);
+		void DrawTransparentObjects(CameraUnit& camera);
+		void ApplyPostEffects(CameraUnit& camera, TextureHandle input, TextureHandle output);
+		void PerformHDRToLDRConversion(CameraUnit& camera, TextureHandle input, TextureHandle output);
+		void DrawShadowedPointLights(CameraUnit& camera);
+		void DrawShadowedSpotLights(CameraUnit& camera);
+		void DrawNonShadowedPointLights(CameraUnit& camera);
+		void DrawNonShadowedSpotLights(CameraUnit& camera);
+		void BindGBuffer(const CameraUnit& camera, const Shader& shader);
+		void BindFogInformation(const Shader& shader);
+		void BindCameraInformation(const CameraUnit& camera, const Shader& shader);
 	public:
 		const Renderer& GetRenderEngine() const;
 		Renderer& GetRenderEngine();
@@ -71,19 +83,22 @@ namespace MxEngine
 		void SetAnisotropicFiltering(float value);
 		void SetViewport(int x, int y, int width, int height);
 		void AttachFrameBuffer(const FrameBufferHandle& framebuffer);
+		void AttachFrameBufferNoClear(const FrameBufferHandle& framebuffer);
 		void AttachDefaultFrameBuffer();
 		void RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
 		void RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
 		
 		EnvironmentUnit& GetEnvironment();
 		const EnvironmentUnit& GetEnvironment() const;
+		LightingSystem& GetLightInformation();
+		const LightingSystem& GetLightInformation() const;
 		void ResetPipeline();
 		void SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform);
 		void SubmitLightSource(const PointLight& light, const TransformComponent& parentTransform);
 		void SubmitLightSource(const SpotLight& light, const TransformComponent& parentTransform);
 		void SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, const Skybox& skybox);
 		void SubmitPrimitive(const SubMesh& object, const Material& material, const TransformComponent& parentTransform, size_t instanceCount);
-		void SubmitFinalImage(const TextureHandle& texture);
+		void SubmitImage(const TextureHandle& texture);
 		void StartPipeline();
 		void EndPipeline();
 	};

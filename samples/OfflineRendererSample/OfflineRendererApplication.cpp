@@ -43,9 +43,7 @@ namespace OfflineRendererSample
             auto meshSource = cubeObject->AddComponent<MeshSource>(Primitives::CreateCube());
             auto meshRenderer = cubeObject->AddComponent<MeshRenderer>();
             auto yellowColor = MakeVector3(1.0f, 0.7f, 0.0f);
-            meshRenderer->GetMaterial()->DiffuseColor = yellowColor;
-            meshRenderer->GetMaterial()->AmbientColor = yellowColor;
-            meshRenderer->GetMaterial()->SpecularColor = yellowColor;
+            meshRenderer->GetMaterial()->BaseColor = yellowColor;
 
             // create global light
             auto lightObject = MxObject::Create();

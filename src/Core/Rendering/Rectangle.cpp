@@ -49,7 +49,7 @@ namespace MxEngine
         VAO->AddBuffer(*VBO, *VBL);
     }
     
-    const VertexArray& MxEngine::Rectangle::GetVAO() const
+    const VertexArray& Rectangle::GetVAO() const
     {
         return *this->VAO;
     }

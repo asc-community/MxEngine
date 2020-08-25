@@ -85,7 +85,6 @@ namespace MxEngine
         size_t GraphicAPIMinorVersion = 0;
         size_t AnisothropicFiltering = 16;
         size_t DebugLineWidth = 3;
-        size_t MSAASamples = 4;
         size_t DirLightTextureSize = 4096;
         size_t PointLightTextureSize = 512;
         size_t SpotLightTextureSize = 512;

@@ -1,8 +1,4 @@
-#define MAKE_STRING(...) #__VA_ARGS__
-R"(
-#version 400 core
-)" \
-MAKE_STRING(
+EMBEDDED_SHADER(
 
 in vec2 TexCoord;
 
@@ -10,7 +6,7 @@ out vec4 Color;
 
 uniform sampler2D BloomTexture;
 uniform bool horizontalKernel;
-uniform float weights[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
+float weights[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
 
 void main()
 {

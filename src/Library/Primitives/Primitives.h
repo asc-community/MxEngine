@@ -42,6 +42,7 @@ namespace MxEngine
         static MeshHandle CreatePlane(size_t UVrepeats = 1);
         static MeshHandle CreateSphere(size_t polygons = 32);
         static MeshHandle CreateCylinder(size_t polygons = 32);
+        static MeshHandle CreatePyramid();
         static MeshHandle CreateSurface(const Array2D<float>& heights);
         static TextureHandle CreateGridTexture(size_t textureSize = 512, float borderScale = 0.01f);
 

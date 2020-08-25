@@ -47,7 +47,6 @@ __pycache__
 #CMake
 CMakeFiles
 CMakeCache.txt
-CMakeSettings.json
 cmake-build-debug
 cmake-build-release
 build

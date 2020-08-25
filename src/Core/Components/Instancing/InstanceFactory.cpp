@@ -57,7 +57,13 @@ namespace MxEngine
     void InstanceFactory::OnUpdate(float timeDelta)
     {
         this->RemoveDanglingHandles();
-        if (!this->IsStatic) this->SubmitInstances();
+        if (!this->IsStatic) this->SendInstancesToGPU();
+    }
+
+    void InstanceFactory::SubmitInstances()
+    {
+        this->RemoveDanglingHandles();
+        this->SendInstancesToGPU();
     }
 
     MxObject::Handle InstanceFactory::MakeInstance()
@@ -135,7 +141,7 @@ namespace MxEngine
         this->Destroy();
     }
 
-    void InstanceFactory::SubmitInstances()
+    void InstanceFactory::SendInstancesToGPU()
     {
         auto& object = MxObject::GetByComponent(*this);
         auto meshSource = object.GetComponent<MeshSource>();

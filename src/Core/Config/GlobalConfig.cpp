@@ -96,11 +96,6 @@ namespace MxEngine
         return CFG(DebugLineWidth);
     }
 
-    size_t GlobalConfig::GetMSAASamples()
-    {
-        return CFG(MSAASamples);
-    }
-
     size_t GlobalConfig::GetDirectionalLightTextureSize()
     {
         return CFG(DirLightTextureSize);

@@ -31,7 +31,24 @@
 
 namespace MxEngine
 {
-    SpotLight::SpotLight()
+    bool SpotLight::IsCastingShadows() const
+    {
+        return this->texture.IsValid();
+    }
+
+    void SpotLight::ToggleShadowCast(bool value)
+    {
+        if (value && !this->IsCastingShadows())
+        {
+            this->LoadDepthTexture();
+        }
+        else if (!value && this->IsCastingShadows())
+        {
+            this->texture = { };
+        }
+    }
+
+    void SpotLight::LoadDepthTexture()
     {
         auto depthTextureSize = (int)GlobalConfig::GetSpotLightTextureSize();
         auto texture = GraphicFactory::Create<Texture>();
@@ -60,9 +77,14 @@ namespace MxEngine
         return this->outerCos;
     }
 
+    float SpotLight::GetMaxDistance() const
+    {
+        return this->maxDistance;
+    }
+
     SpotLight& SpotLight::UseInnerAngle(float angle)
     {
-        this->innerAngle = Clamp(angle * 0.5f, 0.0f, this->outerAngle - 0.0001f);
+        this->innerAngle = Clamp(angle * 0.5f, 0.0f, this->outerAngle - 0.01f);
         this->innerCos = std::cos(Radians(this->innerAngle));
         return *this;
     }
@@ -73,6 +95,12 @@ namespace MxEngine
         this->outerCos = std::cos(Radians(this->outerAngle));
         // update inner as it can be larger than outer
         this->UseInnerAngle(this->GetInnerAngle()); 
+        return *this;
+    }
+
+    SpotLight& SpotLight::UseMaxDistance(float zvalue)
+    {
+        this->maxDistance = Max(1.2f, zvalue);
         return *this;
     }
 
@@ -88,7 +116,7 @@ namespace MxEngine
 
     Matrix4x4 SpotLight::GetMatrix(const Vector3& position) const
     {
-        auto Projection = MakePerspectiveMatrix(Radians(2.0f * this->outerAngle), 1.0f, 1.1f, 1000.0f);
+        auto Projection = MakePerspectiveMatrix(Radians(2.0f * this->outerAngle), 1.0f, 1.1f, this->maxDistance);
         auto directionNorm = Normalize(MakeVector3(
             this->Direction.x + 0.0001f,
             this->Direction.y,
@@ -100,5 +128,15 @@ namespace MxEngine
             MakeVector3(0.0f, 1.0f, 0.0f)
         );
         return Projection * View;
+    }
+
+    Matrix4x4 SpotLight::GetPyramidTransform(const Vector3& position) const
+    {
+        Matrix4x4 I{ 1.0f };
+        float fov = std::tan(0.5f * Radians(this->GetOuterAngle()));
+        auto T = Translate(I, position);
+        auto R = ToMatrix(LookAtRotation(-Normalize(this->Direction), MakeVector3(0.1f, 1.0f, 0.1f)));
+        auto S = Scale(I, MakeVector3(fov * this->maxDistance, fov * this->maxDistance, this->maxDistance));
+        return T * R * S;
     }
 }

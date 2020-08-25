@@ -52,6 +52,7 @@
 
 #define MXENGINE_STRING_IMPL(x) #x
 #define MXENGINE_STRING(x) MXENGINE_STRING_IMPL(x)
+#define EMBEDDED_SHADER(x) MXENGINE_STRING_IMPL(x)
 
 #define MXENGINE_MAKE_MOVEONLY(class_name) class_name() = default; class_name(const class_name&) = delete; class_name& operator=(const class_name&) = delete;\
         class_name(class_name&&) noexcept = default; class_name& operator=(class_name&&) noexcept = default

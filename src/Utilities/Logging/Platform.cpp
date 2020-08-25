@@ -70,10 +70,10 @@ namespace MxEngine
             auto filename = st[i].source_file();
             // in C++20 starts_with will be included in standard
             if (!filename.empty() &&
-                starts_with(function, "boost::") &&
-                starts_with(function, "MxEngine::Logger") &&
-                starts_with(function, "std::") &&
-                starts_with(function, "function_call") &&
+                !starts_with(function, "boost::") &&
+                !starts_with(function, "MxEngine::Logger") &&
+                !starts_with(function, "std::") &&
+                !starts_with(function, "function_call") &&
                 function.find("main") == function.npos &&
                 function.find("PrintStacktrace") == function.npos &&
                 function.find("lambda_") == function.npos

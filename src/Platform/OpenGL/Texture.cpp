@@ -44,7 +44,8 @@ namespace MxEngine
 		GL_RGBA16F,
 		GL_RGB32F,
 		GL_RGBA32F,
-		GL_DEPTH_COMPONENT
+		GL_DEPTH_COMPONENT,
+		GL_DEPTH_COMPONENT32F
 	};
 
 	GLenum wrapTable[] =
@@ -180,50 +181,21 @@ namespace MxEngine
 		this->Load(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), format, wrap, genMipmaps);
     }
 
-	void Texture::LoadMipmaps(Texture::RawDataPointer* data, size_t mipmaps, int biggestWidth, int biggestHeight, TextureWrap wrap)
-	{
-		this->filepath = "[[raw data]]";
-		this->width = biggestWidth;
-		this->height = biggestHeight;
-		this->channels = 3;
-		this->textureType = GL_TEXTURE_2D;
-		this->wrapType = wrap;
-		this->format = TextureFormat::RGB;
-
-		GLint level = 0;
-		GLsizei width = biggestWidth;
-		GLsizei height = biggestHeight;
-
-		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, (GLint)mipmaps - 1));
-		while (width > 0 && height > 0)
-		{
-			MX_ASSERT(level < mipmaps);
-			GLCALL(glTexImage2D(GL_TEXTURE_2D, level, formatTable[(int)this->format], width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data[level]));
-			height /= 2;
-			width /= 2;
-			level++;
-		}
-
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
-	}
-
-	void Texture::LoadDepth(int width, int height, TextureWrap wrap)
+	void Texture::LoadDepth(int width, int height, TextureFormat format, TextureWrap wrap)
 	{
 		this->filepath = "[[depth]]";
 		this->width = width;
 		this->height = height;
 		this->channels = 1;
 		this->textureType = GL_TEXTURE_2D;
-		this->format = TextureFormat::DEPTH;
+		this->format = format;
 		this->wrapType = wrap;
-	
+
 		this->Bind();
 
-		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr));
+		GLenum type = this->IsFloatingPoint() ? GL_FLOAT : GL_UNSIGNED_BYTE;
+
+		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], width, height, 0, GL_DEPTH_COMPONENT, type, nullptr));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
@@ -268,7 +240,7 @@ namespace MxEngine
 	void Texture::GenerateMipmaps()
 	{
 		this->Bind(0);
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 		GLCALL(glGenerateMipmap(GL_TEXTURE_2D));
 	}
@@ -288,12 +260,13 @@ namespace MxEngine
 	bool Texture::IsFloatingPoint() const
 	{
 		return (format == TextureFormat::RGB16F ) || (format == TextureFormat::RGB32F ) ||
-			   (format == TextureFormat::RGBA16F) || (format == TextureFormat::RGBA32F);
+			   (format == TextureFormat::RGBA16F) || (format == TextureFormat::RGBA32F) ||
+			   (format == TextureFormat::DEPTH32F);
 	}
 
 	bool Texture::IsDepthOnly() const
 	{
-		return this->format == TextureFormat::DEPTH;
+		return format == TextureFormat::DEPTH || this->format == TextureFormat::DEPTH32F;
 	}
 
     int Texture::GetSampleCount() const

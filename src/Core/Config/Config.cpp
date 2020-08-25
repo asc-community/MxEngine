@@ -112,7 +112,6 @@ namespace MxEngine
         FromJson(config.GraphicAPIMinorVersion, json["renderer"],    "minor-version"           );
         FromJson(config.AnisothropicFiltering,  json["renderer"],    "anisothropic-filtering"  );
         FromJson(config.DebugLineWidth,         json["renderer"],    "debug-line-width"        );
-        FromJson(config.MSAASamples,            json["renderer"],    "msaa-samples"            );
         FromJson(config.DirLightTextureSize,    json["renderer"],    "dir-light-texture-size"  );
         FromJson(config.PointLightTextureSize,  json["renderer"],    "point-light-texture-size");
         FromJson(config.SpotLightTextureSize,   json["renderer"],    "spot-light-texture-size" );
@@ -136,7 +135,6 @@ namespace MxEngine
         json["renderer"   ]["minor-version"           ] = config.GraphicAPIMinorVersion;
         json["renderer"   ]["anisothropic-filtering"  ] = config.AnisothropicFiltering;
         json["renderer"   ]["debug-line-width"        ] = config.DebugLineWidth;
-        json["renderer"   ]["msaa-samples"            ] = config.MSAASamples;
         json["renderer"   ]["dir-light-texture-size"  ] = config.DirLightTextureSize;
         json["renderer"   ]["point-light-texture-size"] = config.PointLightTextureSize;
         json["renderer"   ]["spot-light-texture-size" ] = config.SpotLightTextureSize;

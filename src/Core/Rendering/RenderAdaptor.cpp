@@ -28,6 +28,7 @@
 
 #include "RenderAdaptor.h"
 #include "Library/Primitives/Colors.h"
+#include "Library/Primitives/Primitives.h"
 #include "Core/Config/GlobalConfig.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
 #include "Core/Components/Rendering/MeshSource.h"
@@ -56,7 +57,7 @@ namespace MxEngine
         // fog
         this->SetFogColor(MakeVector3(0.5f, 0.6f, 0.7f));
         this->SetFogDistance(1.0f);
-        this->SetFogDensity(0.01f);
+        this->SetFogDensity(0.001f);
 
         // helper objects
         environment.RectangularObject.Init(1.0f);
@@ -64,21 +65,86 @@ namespace MxEngine
         this->DebugDrawer.Init();
         environment.DebugBufferObject.VAO = this->DebugDrawer.GetVAO();
 
+        // light bounding objects
+        auto pyramid = Primitives::CreatePyramid();
+        auto& pyramidMesh = pyramid->GetSubmeshes().front();
+        this->Renderer.GetLightInformation().PyramidLight =
+            RenderHelperObject(pyramidMesh.Data.GetVBO(), pyramidMesh.Data.GetVAO(), pyramidMesh.Data.GetIBO());
+
+        auto sphere = Primitives::CreateSphere(8);
+        auto& sphereMesh = sphere->GetSubmeshes().front();
+        this->Renderer.GetLightInformation().SphereLight =
+            RenderHelperObject(sphereMesh.Data.GetVBO(), sphereMesh.Data.GetVAO(), sphereMesh.Data.GetIBO());
+
+        auto pyramidInstanced = Primitives::CreatePyramid();
+        auto& pyramidInstancedMesh = pyramidInstanced->GetSubmeshes().front();
+        this->Renderer.GetLightInformation().SpotLightsInstanced = 
+            SpotLightInstancedObject(pyramidInstancedMesh.Data.GetVBO(), pyramidInstancedMesh.Data.GetVAO(), pyramidInstancedMesh.Data.GetIBO());
+
+        auto sphereInstanced = Primitives::CreateSphere(8);
+        auto& sphereInstancedMesh = sphereInstanced->GetSubmeshes().front();
+        this->Renderer.GetLightInformation().PointLigthsInstanced =
+            PointLightInstancedObject(sphereInstancedMesh.Data.GetVBO(), sphereInstancedMesh.Data.GetVAO(), sphereInstancedMesh.Data.GetIBO());
+
         // default textures
         environment.DefaultBlackMap = Colors::MakeTexture(Colors::BLACK);
-        environment.DefaultHeightMap = Colors::MakeTexture(Colors::GREY);
         environment.DefaultNormalMap = Colors::MakeTexture(Colors::FLAT_NORMAL);
         environment.DefaultMaterialMap = Colors::MakeTexture(Colors::WHITE);
         environment.DefaultBlackCubeMap = Colors::MakeCubeMap(Colors::BLACK);
 
         environment.DefaultBlackMap->SetPath("[[black color]]");
-        environment.DefaultHeightMap->SetPath("[[default height]]");
         environment.DefaultNormalMap->SetPath("[[default normal]]");
         environment.DefaultMaterialMap->SetPath("[[white color]]");
 
         // shaders
-        environment.MainShader = GraphicFactory::Create<Shader>();
-        LoadMainShader();
+        environment.GBufferShader = GraphicFactory::Create<Shader>();
+        environment.GBufferShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/gbuffer_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/gbuffer_fragment.glsl"
+        );
+
+        environment.TransparentShader = GraphicFactory::Create<Shader>();
+        environment.TransparentShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/gbuffer_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/transparent_fragment.glsl"
+        );
+
+        environment.GlobalIlluminationShader = GraphicFactory::Create<Shader>();
+        environment.GlobalIlluminationShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/global_illum_fragment.glsl"
+        );
+
+        environment.SpotLightShader = GraphicFactory::Create<Shader>();
+        environment.SpotLightShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/spotlight_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/spotlight_fragment.glsl"
+        );
+
+        environment.PointLightShader = GraphicFactory::Create<Shader>();
+        environment.PointLightShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/pointlight_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/pointlight_fragment.glsl"
+        );
+
+        environment.HDRToLDRShader = GraphicFactory::Create<Shader>();
+        environment.HDRToLDRShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/hdr_to_ldr_fragment.glsl"
+        );
+
+        environment.VFXShader = GraphicFactory::Create<Shader>();
+        environment.VFXShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/vfx_fragment.glsl"
+        );
 
         environment.SkyboxShader = GraphicFactory::Create<Shader>();
         environment.SkyboxShader->LoadFromString(
@@ -103,31 +169,18 @@ namespace MxEngine
             #include "Platform/OpenGL/Shaders/depthcubemap_fragment.glsl"
         );
 
-        environment.MSAAHDRSplitShader = GraphicFactory::Create<Shader>();
-        environment.MSAAHDRSplitShader->LoadFromString(
+        environment.BloomIterationShader = GraphicFactory::Create<Shader>();
+        environment.BloomIterationShader->LoadFromString(
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
-            #include "Platform/OpenGL/Shaders/hdrsplitmsaa_fragment.glsl"
-        );
-        environment.HDRSplitShader = GraphicFactory::Create<Shader>();
-        environment.HDRSplitShader->LoadFromString(
-            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/hdrsplit_fragment.glsl"
+            #include "Platform/OpenGL/Shaders/bloom_iter_fragment.glsl"
         );
 
-        environment.HDRBloomCombineHDRShader = GraphicFactory::Create<Shader>();
-        environment.HDRBloomCombineHDRShader->LoadFromString(
+        environment.BloomSplitShader = GraphicFactory::Create<Shader>();
+        environment.BloomSplitShader->LoadFromString(
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
-            #include "Platform/OpenGL/Shaders/hdr_fragment.glsl"
-        );
-
-        environment.BloomShader = GraphicFactory::Create<Shader>();
-        environment.BloomShader->LoadFromString(
-            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/bloom_fragment.glsl"
+            #include "Platform/OpenGL/Shaders/bloom_split_fragment.glsl"
         );
 
         environment.ImageForwardShader = GraphicFactory::Create<Shader>();
@@ -146,6 +199,7 @@ namespace MxEngine
 
         // framebuffers
         environment.DepthFrameBuffer = GraphicFactory::Create<FrameBuffer>();
+        environment.DepthFrameBuffer->UseOnlyDepth();
         environment.PostProcessFrameBuffer = GraphicFactory::Create<FrameBuffer>();
 
         auto bloomBufferSize = (int)GlobalConfig::GetBloomTextureSize();
@@ -158,26 +212,6 @@ namespace MxEngine
             bloomBuffer = GraphicFactory::Create<FrameBuffer>();
             bloomBuffer->AttachTexture(bloomTexture, Attachment::COLOR_ATTACHMENT0);
             bloomBuffer->Validate();
-        }
-    }
-
-    void RenderAdaptor::LoadMainShader(bool useLighting)
-    {
-        if (useLighting)
-        {
-            this->Renderer.GetEnvironment().MainShader->LoadFromString(
-                #include "Platform/OpenGL/Shaders/object_vertex.glsl"
-                ,
-                #include "Platform/OpenGL/Shaders/object_fragment.glsl"
-            );
-        }
-        else
-        {
-            this->Renderer.GetEnvironment().MainShader->LoadFromString(
-                #include "Platform/OpenGL/Shaders/nolight_object_vertex.glsl"
-                ,
-                #include "Platform/OpenGL/Shaders/nolight_object_vertex.glsl"
-            );
         }
     }
 
@@ -321,7 +355,7 @@ namespace MxEngine
                 }
                 if (debugDraw.RenderLightingBounds && pointLight.IsValid())
                 {
-                    BoundingSphere sphere(object.Transform.GetPosition(), 3.0f);
+                    BoundingSphere sphere(object.Transform.GetPosition(), pointLight->GetRadius());
                     this->DebugDrawer.Submit(sphere, debugDraw.LightSourceColor);
                 }
                 if (debugDraw.RenderLightingBounds && spotLight.IsValid())
@@ -430,7 +464,7 @@ namespace MxEngine
     {
         auto& environment = this->Renderer.GetEnvironment();
         using BlutIterType = decltype(environment.ShadowBlurIterations);
-        constexpr size_t maxIterations = (size_t)std::numeric_limits<BlutIterType>::max();
+        constexpr size_t maxIterations = 5;
         environment.ShadowBlurIterations = (BlutIterType)Min(iterations, maxIterations);
     }
 

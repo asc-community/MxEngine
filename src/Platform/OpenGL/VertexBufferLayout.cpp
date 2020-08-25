@@ -64,6 +64,12 @@ namespace MxEngine
 	}
 
 	template<>
+	void VertexBufferLayout::Push<float>()
+	{
+		this->PushFloat(1);
+	}
+
+	template<>
 	void VertexBufferLayout::Push<Vector2>()
 	{
 		this->PushFloat(2);
@@ -96,6 +102,12 @@ namespace MxEngine
 		this->PushFloat(4);
 		this->PushFloat(4);
 		this->PushFloat(4);
+	}
+
+	template<>
+	void VertexBufferLayout::Pop<float>()
+	{
+		this->PopFloat(1);
 	}
 
 	template<>

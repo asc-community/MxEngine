@@ -28,10 +28,12 @@
 
 #pragma once
 
-#include "Platform/GraphicAPI.h"
+#include "Core/BoundingObjects/FrustrumCuller.h"
 #include "Rectangle.h"
 #include "SkyboxObject.h"
-#include "Core/BoundingObjects/FrustrumCuller.h"
+#include "RenderHelperObject.h"
+#include "PointLightInstancedObject.h"
+#include "SpotLightInstancedObject.h"
 
 namespace MxEngine
 {
@@ -43,19 +45,29 @@ namespace MxEngine
 
     struct CameraUnit
     {
+        FrameBufferHandle GBuffer;
+        TextureHandle AlbedoTexture;
+        TextureHandle NormalTexture;
+        TextureHandle MaterialTexture;
+        TextureHandle DepthTexture;
+        TextureHandle HDRTexture;
+        TextureHandle VFXTexture;
+
         FrustrumCuller Culler;
-        Matrix4x4 ViewProjMatrix;
-        Matrix4x4 StaticViewProjMatrix;
+        Matrix4x4 InverseViewMatrix;
+        Matrix4x4 InverseProjectionMatrix;
+        Matrix4x4 ViewProjectionMatrix;
+        Matrix4x4 StaticViewProjectionMatrix;
+
         Vector3 ViewportPosition;
-        FrameBufferHandle FrameBufferMSAA;
-        FrameBufferHandle FrameBufferHDR;
-        TextureHandle BloomTextureHDR;
         TextureHandle OutputTexture;
         Matrix3x3 InversedSkyboxRotation;
         CubeMapHandle SkyboxMap;
         float BloomWeight;
         float Exposure;
+        float Gamma;
 
+        bool EnableFXAA;
         bool IsPerspective;
         bool RenderToTexture;
         uint8_t BloomIterations;
@@ -63,20 +75,23 @@ namespace MxEngine
 
     struct EnvironmentUnit
     {
-        ShaderHandle MainShader;
+        ShaderHandle GBufferShader;
+        ShaderHandle TransparentShader;
+        ShaderHandle GlobalIlluminationShader;
+        ShaderHandle SpotLightShader;
+        ShaderHandle PointLightShader;
+        ShaderHandle HDRToLDRShader;
+        ShaderHandle VFXShader;
         ShaderHandle SkyboxShader;
         ShaderHandle ShadowMapShader;
         ShaderHandle ShadowCubeMapShader;
-        ShaderHandle MSAAHDRSplitShader;
-        ShaderHandle HDRSplitShader;
-        ShaderHandle BloomShader;
-        ShaderHandle HDRBloomCombineHDRShader;
+        ShaderHandle BloomSplitShader;
+        ShaderHandle BloomIterationShader;
         ShaderHandle ImageForwardShader;
         ShaderHandle DebugDrawShader;
 
         TextureHandle DefaultMaterialMap;
         TextureHandle DefaultNormalMap;
-        TextureHandle DefaultHeightMap;
         TextureHandle DefaultBlackMap;
         CubeMapHandle DefaultBlackCubeMap;
 
@@ -110,30 +125,17 @@ namespace MxEngine
         Vector3 SpecularColor;
     };
 
-    struct PointLightUnit
+    struct PointLightUnit : PointLightBaseData
     {
         CubeMapHandle ShadowMap;
         Matrix4x4 ProjectionMatrices[6];
-        Vector3 Position;
-        float FarDistance;
-        Vector3 Factors;
-        Vector3 AmbientColor;
-        Vector3 DiffuseColor;
-        Vector3 SpecularColor;
     };
 
-    struct SpotLightUnit
+    struct SpotLightUnit : SpotLightBaseData
     {
         TextureHandle ShadowMap;
         Matrix4x4 ProjectionMatrix;
         Matrix4x4 BiasedProjectionMatrix;
-        Vector3 Position;
-        Vector3 AmbientColor;
-        Vector3 DiffuseColor;
-        Vector3 SpecularColor;
-        Vector3 Direction;
-        float InnerAngleCos;
-        float OuterAngleCos;
     };
 
     struct LightingSystem
@@ -141,6 +143,10 @@ namespace MxEngine
         MxVector<DirectionalLigthUnit> DirectionalLights;
         MxVector<PointLightUnit> PointLights;
         MxVector<SpotLightUnit> SpotLights;
+        SpotLightInstancedObject SpotLightsInstanced;
+        PointLightInstancedObject PointLigthsInstanced;
+        RenderHelperObject SphereLight;
+        RenderHelperObject PyramidLight;
     };
 
     struct RenderUnit
@@ -148,7 +154,7 @@ namespace MxEngine
         VertexArrayHandle VAO;
         IndexBufferHandle IBO;
 
-        Material RenderMaterial;
+        size_t materialIndex;
         
         Matrix4x4 ModelMatrix;
         Matrix3x3 NormalMatrix;
@@ -161,8 +167,10 @@ namespace MxEngine
     {
         EnvironmentUnit Environment;
         LightingSystem Lighting;
+        MxVector<RenderUnit> ShadowCasterUnits;
         MxVector<RenderUnit> OpaqueRenderUnits;
         MxVector<RenderUnit> TransparentRenderUnits;
+        MxVector<Material> MaterialUnits;
         MxVector<CameraUnit> Cameras;
     };
 }

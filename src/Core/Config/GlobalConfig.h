@@ -46,7 +46,6 @@ namespace MxEngine
         static size_t GetGraphicAPIMinorVersion();
         static size_t GetAnisothropicFiltering();
         static size_t GetDebugLineWidth();
-        static size_t GetMSAASamples();
         static size_t GetDirectionalLightTextureSize();
         static size_t GetPointLightTextureSize();
         static size_t GetSpotLightTextureSize();

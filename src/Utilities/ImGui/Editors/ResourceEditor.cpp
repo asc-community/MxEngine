@@ -74,15 +74,15 @@ namespace MxEngine::GUI
         {
             auto id = (int)factory.IndexOf(object);
             ImGui::PushID(id);
-            ImGui::AlignTextToFramePadding();
-            ImGui::Text("id: %-3d", id);
-            ImGui::SameLine();
 
             auto texture = GraphicFactory::GetHandle(object);
             auto& texturePath = texture->GetPath();
 
             if (filter[0] == '\0' || texturePath.find(filter) != texturePath.npos)
             {
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("id: %-3d", id);
+                ImGui::SameLine();
                 DrawTextureEditor(texturePath.c_str(), texture, false);
             }
 
@@ -159,6 +159,7 @@ namespace MxEngine::GUI
             auto height = width * nativeHeight / nativeWidth;
             if (!texture->IsMultisampled()) // TODO: support multisampled textures
             {
+                texture->GenerateMipmaps(); // without mipmaps texture can be not visible in editor if its size is too small
                 ImGui::Image((void*)(uintptr_t)texture->GetNativeHandle(), ImVec2(width, height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
             }
         }
@@ -204,14 +205,13 @@ namespace MxEngine::GUI
         DrawTextureEditor("height map", material->HeightMap, true);
         DrawTextureEditor("transparency map", material->TransparencyMap, true);
 
-        ImGui::DragFloat("specular exponent", &material->SpecularExponent, 1.0f, 1.0f, 10000.0f);
+        ImGui::Checkbox("casts shadows", &material->CastsShadow);
+        ImGui::DragFloat("specular factor", &material->SpecularFactor, 0.01f, 0.0f, 1.0f);
+        ImGui::DragFloat("specular intensity", &material->SpecularIntensity, 0.1f, 1.0f, FLT_MAX);
+        ImGui::DragFloat("emmision", &material->Emmision, 0.01f, 0.0f);
         ImGui::DragFloat("displacement", &material->Displacement, 0.01f);
         ImGui::DragFloat("reflection", &material->Reflection, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("transparency", &material->Transparency, 0.01f, 0.0f, 1.0f);
-        ImGui::ColorEdit3("ambient color", &material->AmbientColor[0], ImGuiColorEditFlags_HDR);
-        ImGui::ColorEdit3("diffuse color", &material->DiffuseColor[0], ImGuiColorEditFlags_HDR);
-        ImGui::ColorEdit3("specular color", &material->SpecularColor[0], ImGuiColorEditFlags_HDR);
-        ImGui::ColorEdit3("emmisive color", &material->EmmisiveColor[0], ImGuiColorEditFlags_HDR);
         ImGui::ColorEdit3("base color", &material->BaseColor[0], ImGuiColorEditFlags_HDR);
     }
 
@@ -371,6 +371,11 @@ namespace MxEngine::GUI
             if (ImGui::Selectable("cylinder", &optionPeeked))
             {
                 mesh = Primitives::CreateCylinder(subdivisions);
+                ImGui::SetItemDefaultFocus();
+            }
+            if (ImGui::Selectable("pyramid", &optionPeeked))
+            {
+                mesh = Primitives::CreatePyramid();
                 ImGui::SetItemDefaultFocus();
             }
             ImGui::EndCombo();

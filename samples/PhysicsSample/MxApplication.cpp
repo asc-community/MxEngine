@@ -24,7 +24,7 @@ namespace PhysicsSample
 
         const float wallSize = 160.0f;
         const float wallThickness = 3.0f;
-        const float shotSize = 1.5f;
+        const float shotSize = 3.0f;
 
         void ResetSimulation()
         {
@@ -133,11 +133,11 @@ namespace PhysicsSample
 
             // create open-box shape where simulation will happen
             Vector3 coordinateOffset(0, wallSize / 2, 0);
-            InitializeWall(coordinateOffset, Vector3(1, 0, 1), Vector3( 0, -1,  0), wallSize, wallThickness, 0.6f);
-            InitializeWall(coordinateOffset, Vector3(0, 1, 1), Vector3(-1,  0,  0), wallSize, wallThickness, 0.6f);
-            InitializeWall(coordinateOffset, Vector3(0, 1, 1), Vector3( 1,  0,  0), wallSize, wallThickness, 0.6f);
-            InitializeWall(coordinateOffset, Vector3(1, 1, 0), Vector3( 0,  0, -1), wallSize, wallThickness, 0.6f);
-            InitializeWall(coordinateOffset, Vector3(1, 1, 0), Vector3( 0,  0,  1), wallSize, wallThickness, 0.6f);
+            InitializeWall(coordinateOffset, Vector3(1, 0, 1), Vector3( 0, -1,  0), wallSize, wallThickness, 0.4f);
+            InitializeWall(coordinateOffset, Vector3(0, 1, 1), Vector3(-1,  0,  0), wallSize, wallThickness, 0.4f);
+            InitializeWall(coordinateOffset, Vector3(0, 1, 1), Vector3( 1,  0,  0), wallSize, wallThickness, 0.4f);
+            InitializeWall(coordinateOffset, Vector3(1, 1, 0), Vector3( 0,  0, -1), wallSize, wallThickness, 0.4f);
+            InitializeWall(coordinateOffset, Vector3(1, 1, 0), Vector3( 0,  0,  1), wallSize, wallThickness, 0.4f);
 
             this->ResetSimulation();
         }

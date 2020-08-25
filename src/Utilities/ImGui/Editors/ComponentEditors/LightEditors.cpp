@@ -63,16 +63,24 @@ namespace MxEngine::GUI
 		REMOVE_COMPONENT_BUTTON(pointLight);
 
 		DrawLightBaseEditor(pointLight);
-		auto factors = pointLight.GetFactors();
-		if (ImGui::DragFloat3("factors", &factors[0], 0.01f, 0.0f, 10000.0f))
-			pointLight.UseFactors(factors);
 
-		auto cubemap = pointLight.GetDepthCubeMap();
-		static int depthMapSize = (int)cubemap->GetWidth();
-		if (GUI::InputIntOnClick("depth map size", &depthMapSize))
-			cubemap->LoadDepth(depthMapSize, depthMapSize);
+		auto radius = pointLight.GetRadius();
+		if (ImGui::DragFloat("radius", &radius))
+			pointLight.UseRadius(radius);
 
-		DrawCubeMapEditor("depth map", cubemap);
+		auto castsShadows = pointLight.IsCastingShadows();
+		if (ImGui::Checkbox("casts shadows", &castsShadows))
+			pointLight.ToggleShadowCast(castsShadows);
+
+		if (castsShadows)
+		{
+			auto cubemap = pointLight.GetDepthCubeMap();
+			static int depthMapSize = (int)cubemap->GetWidth();
+			if (GUI::InputIntOnClick("depth map size", &depthMapSize))
+				cubemap->LoadDepth(depthMapSize, depthMapSize);
+
+			DrawCubeMapEditor("depth map", cubemap);
+		}
 	}
 
 	void SpotLightEditor(SpotLight& spotLight)
@@ -84,19 +92,29 @@ namespace MxEngine::GUI
 
 		auto innerAngle = spotLight.GetInnerAngle();
 		auto outerAngle = spotLight.GetOuterAngle();
+		auto maxDistance = spotLight.GetMaxDistance();
+		auto castsShadows = spotLight.IsCastingShadows();
 
 		ImGui::DragFloat3("direction", &spotLight.Direction[0], 0.01f);
+
+		if (ImGui::Checkbox("casts shadows", &castsShadows))
+			spotLight.ToggleShadowCast(castsShadows);
 
 		if (ImGui::DragFloat("outer angle", &outerAngle))
 			spotLight.UseOuterAngle(outerAngle);
 		if (ImGui::DragFloat("inner angle", &innerAngle))
 			spotLight.UseInnerAngle(innerAngle);
+		if (ImGui::DragFloat("max distance", &maxDistance))
+			spotLight.UseMaxDistance(maxDistance);
 
-		auto texture = spotLight.GetDepthTexture();
-		static int depthMapSize = (int)texture->GetWidth();
-		if (GUI::InputIntOnClick("depth map size", &depthMapSize))
-			texture->LoadDepth(depthMapSize, depthMapSize);
+		if (castsShadows)
+		{
+			auto texture = spotLight.GetDepthTexture();
+			static int depthMapSize = (int)texture->GetWidth();
+			if (GUI::InputIntOnClick("depth map size", &depthMapSize))
+				texture->LoadDepth(depthMapSize, depthMapSize);
 
-		DrawTextureEditor("depth map", texture, false);
+			DrawTextureEditor("depth map", texture, false);
+		}
 	}
 }

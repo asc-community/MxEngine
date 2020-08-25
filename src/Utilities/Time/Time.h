@@ -58,10 +58,15 @@ namespace MxEngine
 		*/
 		static SystemTime System();
 		/*!
-		gets time passed since last frame
+		gets time passed between frames
 		\returns timestep measured in seconds
 		*/
 		static TimeStep Delta();
+		/*!
+		gets unscaled time passed since last frame
+		\returns timestep measured in seconds
+		*/
+		static TimeStep UnscaledDelta();
 		/*!
 		gets average frames per second since last second
 		\returns amount of frames per second

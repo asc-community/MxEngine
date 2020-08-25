@@ -93,6 +93,7 @@ namespace MxEngine::GUI
 
 		int bloomIterations = (int)cameraController.GetBloomIterations();
 		float exposure = cameraController.GetExposure();
+		float gamma = cameraController.GetGamma();
 		float bloomWeight = cameraController.GetBloomWeight();
 		auto direction = cameraController.GetDirectionDenormalized();
 		float moveSpeed = cameraController.GetMoveSpeed();
@@ -107,16 +108,21 @@ namespace MxEngine::GUI
 			cameraController.SetDirection(direction);
 		if (ImGui::DragFloat("exposure", &exposure, 0.1f))
 			cameraController.SetExposure(exposure);
+		if (ImGui::DragFloat("gamma", &gamma, 0.01f, 0.0f, 5.0f))
+			cameraController.SetGamma(gamma);
 		if (ImGui::DragFloat("bloom weight", &bloomWeight, 0.1f))
 			cameraController.SetBloomWeight(bloomWeight);
 		if (ImGui::DragInt("bloom iterations", &bloomIterations))
 			cameraController.SetBloomIterations((size_t)Max(0, bloomIterations));
 
 		bool isRendered = cameraController.IsRendered();
-		if (ImGui::Checkbox("enable rendering", &isRendered))
+		if (ImGui::Checkbox("is rendering", &isRendered))
 			cameraController.ToggleRendering(isRendered);
-
 		ImGui::SameLine();
+		bool isFXAAEnabled = cameraController.IsFXAAEnabled();
+		if (ImGui::Checkbox("uses FXAA", &isFXAAEnabled))
+			cameraController.ToggleFXAA(isFXAAEnabled);
+
 		if (ImGui::Button("listen window resize"))
 		{
 			cameraController.ListenWindowResizeEvent();

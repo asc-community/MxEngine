@@ -44,10 +44,13 @@ namespace MxEngine
 
 	struct CameraRender
 	{
-		FrameBufferHandle framebufferMSAA;
-		RenderBufferHandle renderbufferMSAA;
-		FrameBufferHandle framebufferHDR;
-		TextureHandle bloomTextureHDR;
+		FrameBufferHandle GBuffer;
+		TextureHandle Albedo;
+		TextureHandle Normal;
+		TextureHandle Material;
+		TextureHandle Depth;
+		TextureHandle HDR;
+		TextureHandle VFX;
 
 		void Init(int width, int height);
 		void Resize(int width, int height);
@@ -68,16 +71,19 @@ namespace MxEngine
 		float verticalAngle = 0.0f;
 		float horizontalAngle = 0.0f;
 		float exposure = 1.0f;
+		float gamma = 2.2f;
 		float bloomWeight = 0.5f;
 		float moveSpeed = 1.0f;
 		float rotateSpeed = 10.0f;
 
 		void SubmitMatrixProjectionChanges() const;
 		void RecalculateRotationAngles();
+		const UUID& GetEventUUID() const;
 
 		uint8_t bloomIterations = 6;
 		CameraType cameraType = CameraType::PERSPECTIVE;
 		bool renderingEnabled = true;
+		bool isFXAAEnabled = true;
 	public:
 		mutable CameraBase Camera;
 
@@ -94,22 +100,22 @@ namespace MxEngine
 		CameraType GetCameraType() const;
 
 		const Matrix4x4& GetMatrix(const Vector3& position) const;
+		const Matrix4x4& GetViewMatrix(const Vector3& position) const;
+		const Matrix4x4& GetProjectionMatrix() const;
 		Matrix4x4 GetStaticMatrix() const;
-		FrameBufferHandle GetFrameBufferMSAA() const;
-		FrameBufferHandle GetFrameBufferHDR() const;
-		RenderBufferHandle GetRenderBufferMSAA() const;
-		TextureHandle GetBloomTexture() const;
+		Matrix4x4 GetStaticViewMatrix() const;
 		TextureHandle GetRenderTexture() const;
 		void ListenWindowResizeEvent();
 		void ResizeRenderTexture(size_t width, size_t height);
 		void SetRenderTexture(const TextureHandle& texture);
 		bool IsRendered() const;
+		void ToggleFXAA(bool value);
+		bool IsFXAAEnabled() const;
 		void ToggleRendering(bool value);
 		const FrustrumCuller& GetFrustrumCuller() const;
 
 		Vector3 GetDirection() const;
 		const Vector3& GetDirectionDenormalized() const;
-
 		void SetDirection(const Vector3& direction);
 		Vector3 GetDirectionUp() const;
 		float GetHorizontalAngle() const;
@@ -120,6 +126,8 @@ namespace MxEngine
 		void SetBloomIterations(size_t iterCount);
 		float GetExposure() const;
 		void SetExposure(float exp);
+		float GetGamma() const;
+		void SetGamma(float gamma);
 		float GetMoveSpeed() const;
 		void SetMoveSpeed(float speed);
 		float GetRotateSpeed() const;
@@ -129,9 +137,16 @@ namespace MxEngine
 		void SetForwardVector(const Vector3& forward);
 		void SetUpVector(const Vector3& up);
 		void SetRightVector(const Vector3& right);
-
 		const Vector3& GetForwardVector() const;
 		const Vector3& GetUpVector() const;
 		const Vector3& GetRightVector() const;
+
+		FrameBufferHandle GetGBuffer() const;
+		TextureHandle GetAlbedoTexture() const;
+		TextureHandle GetNormalTexture() const;
+		TextureHandle GetMaterialTexture() const;
+		TextureHandle GetDepthTexture() const;
+		TextureHandle GetHDRTexture() const;
+		TextureHandle GetVFXTexture() const;
 	};
 }

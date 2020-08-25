@@ -75,9 +75,13 @@ namespace MxEngine
 		MxString NormalMap;
 
 		/*!
-		specular power value
+		specular factor value
 		*/
-		float SpecularExponent = 0.0f;
+		float SpecularFactor = 1.0f;
+		/*!
+		specular intensity (power) value
+		*/
+		float SpecularIntensity = 128.0f;
 		/*!
 		transparency value
 		*/
@@ -86,23 +90,10 @@ namespace MxEngine
 		height displacement value
 		*/
 		float Displacement = 0.0f;
-
 		/*!
-		ambient color
+		light emmision value
 		*/
-		Vector3 AmbientColor{ 0.0f };
-		/*!
-		diffuse color
-		*/
-		Vector3 DiffuseColor{ 0.0f };
-		/*!
-		specular color
-		*/
-		Vector3 SpecularColor{ 0.0f };
-		/*!
-		emmisive color
-		*/
-		Vector3 EmmisiveColor{ 0.0f };
+		float Emmision = 1.0f;
 	};
 
 	/*!

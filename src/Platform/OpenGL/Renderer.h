@@ -33,6 +33,8 @@
 enum class BlendFactor
 {
 	NONE,
+	ZERO,
+	ONE,
 	ONE_MINUS_SRC_COLOR,
 	SRC_ALPHA,
 	ONE_MINUS_SRC_ALPHA,
@@ -44,6 +46,16 @@ enum class BlendFactor
 	ONE_MINUS_CONSTANT_COLOR,
 	CONSTANT_ALPHA,
 	ONE_MINUS_CONSTANT_ALPHA,
+};
+
+enum class DepthFunction
+{
+	EQUAL,
+	NOT_EQUAL,
+	LESS,
+	GREATER,
+	LESS_EQUAL,
+	GREATER_EQUAL,
 };
 
 namespace MxEngine
@@ -78,6 +90,7 @@ namespace MxEngine
 		Renderer& UseSampling(bool value = true);
 		Renderer& UseDepthBuffer(bool value = true);
 		Renderer& UseReversedDepth(bool value = true);
+		Renderer& UseDepthFunction(DepthFunction function);
 		Renderer& UseCulling(bool value = true, bool counterClockWise = true, bool cullBack = true);
 		Renderer& UseClearColor(float r, float g, float b, float a = 0.0f);
 		Renderer& UseBlending(BlendFactor src, BlendFactor dist);

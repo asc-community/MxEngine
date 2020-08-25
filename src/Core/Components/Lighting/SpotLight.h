@@ -43,8 +43,12 @@ namespace MxEngine
         float innerCos    = std::cos(Radians(innerAngle));
         float outerAngle  = 45.0f;
         float outerCos    = std::cos(Radians(outerAngle));
+        float maxDistance = 1000.0f;
+
+        void LoadDepthTexture();
     public:
-        SpotLight();
+        bool IsCastingShadows() const;
+        void ToggleShadowCast(bool value);
 
         Vector3 Direction = MakeVector3(0.0f, -1.0f, 0.0f);
 
@@ -52,11 +56,14 @@ namespace MxEngine
         [[nodiscard]] float GetOuterAngle() const;
         [[nodiscard]] float GetInnerCos() const;
         [[nodiscard]] float GetOuterCos() const;
+        [[nodiscard]] float GetMaxDistance() const;
         SpotLight& UseInnerAngle(float angle);
         SpotLight& UseOuterAngle(float angle);
+        SpotLight& UseMaxDistance(float zvalue);
 
         [[nodiscard]] TextureHandle GetDepthTexture() const;
         void AttachDepthTexture(const TextureHandle& texture);
         [[nodiscard]] Matrix4x4 GetMatrix(const Vector3& position) const;
+        [[nodiscard]] Matrix4x4 GetPyramidTransform(const Vector3& position) const;
     };
 }

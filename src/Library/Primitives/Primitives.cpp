@@ -370,6 +370,37 @@ namespace MxEngine
         return Primitives::CreateMesh(std::move(meshData));
     }
 
+    MeshHandle Primitives::CreatePyramid()
+    {
+        MeshData meshData;
+        auto& vertecies = meshData.GetVertecies();
+        auto& indicies = meshData.GetIndicies();
+
+        vertecies.resize(5);
+        vertecies[0].Position = Vector3( 0.0f,  0.0f, 0.0f);
+        vertecies[0].TexCoord = Vector2( 0.5f,  0.5f);
+        vertecies[1].Position = Vector3(-1.0f, -1.0f, 1.0f);
+        vertecies[1].TexCoord = Vector2( 0.0f,  0.0f);
+        vertecies[2].Position = Vector3(-1.0f,  1.0f, 1.0f);
+        vertecies[2].TexCoord = Vector2( 0.0f,  1.0f);
+        vertecies[3].Position = Vector3( 1.0f,  1.0f, 1.0f);
+        vertecies[3].TexCoord = Vector2( 1.0f,  1.0f);
+        vertecies[4].Position = Vector3( 1.0f, -1.0f, 1.0f);
+        vertecies[4].TexCoord = Vector2( 1.0f,  0.0f);
+
+        indicies = {
+            0, 1, 2,
+            0, 2, 3,
+            0, 3, 4,
+            0, 4, 1,
+            1, 3, 2,
+            1, 4, 3,
+        };
+
+        meshData.RegenerateNormals();
+        return Primitives::CreateMesh(std::move(meshData));
+    }
+
     MeshHandle Primitives::CreateSurface(const Array2D<float>& heights)
     {
         MeshData meshData;

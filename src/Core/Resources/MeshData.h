@@ -31,20 +31,10 @@
 #include "Core/Components/Transform.h"
 #include "Platform/GraphicAPI.h"
 #include "Core/BoundingObjects/BoundingSphere.h"
+#include "Vertex.h"
 
 namespace MxEngine
 {
-    struct Vertex
-    {
-        Vector3 Position{ 0.0f };
-        Vector2 TexCoord{ 0.0f };
-        Vector3 Normal{ 0.0f };
-        Vector3 Tangent{ 0.0f };
-        Vector3 Bitangent{ 0.0f };
-
-        constexpr static size_t Size = 3 + 2 + 3 + 3 + 3;
-    };
-
     class MeshData
     {
         using VertexData = MxVector<Vertex>;

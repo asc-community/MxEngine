@@ -54,6 +54,11 @@ namespace MxEngine
 		return Application::Get()->GetTimeDelta();
     }
 
+    TimeStep Time::UnscaledDelta()
+    {
+		return Application::Get()->GetUnscaledTimeDelta();
+    }
+
 	size_t Time::FPS()
 	{
 		return Application::Get()->GetCurrentFPS();

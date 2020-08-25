@@ -73,6 +73,7 @@ namespace MxEngine
 		BindableId GetNativeHandle() const;
 		void Load(const MxString& vertex, const MxString& fragment);
 		void Load(const MxString& vertex, const MxString& geometry, const MxString& fragment);
+		void IgnoreNonExistingUniform(const MxString& name) const;
 		void LoadFromString(const MxString& vertex, const MxString& fragment);
 		void LoadFromString(const MxString& vertex, const MxString& geometry, const MxString& fragment);
 		void SetUniformFloat(const MxString& name, float f) const;
@@ -82,5 +83,6 @@ namespace MxEngine
 		void SetUniformMat4(const MxString& name, const Matrix4x4& matrix) const;
 		void SetUniformMat3(const MxString& name, const Matrix3x3& matrix) const;
 		void SetUniformInt(const MxString& name, int i) const;
+		void SetUniformBool(const MxString& name, bool b) const;
 	};
 }
