@@ -1,5 +1,4 @@
-#define MAKE_STRING(...) #__VA_ARGS__
-MAKE_STRING(
+EMBEDDED_SHADER(
 
 in vec4 FragmentColor;
 

@@ -1,7 +1,5 @@
-#define MAKE_STRING(...) #__VA_ARGS__
-
 #include "shader_utils.glsl"
-MAKE_STRING(
+EMBEDDED_SHADER(
 
 struct DirLight
 {
@@ -24,13 +22,13 @@ vec3 calcColorUnderDirLight(FragmentInfo fragment, vec3 reflectionColor, DirLigh
 	vec3 ambientColor = fragment.albedo;
 	vec3 diffuseColor = fragment.albedo * diffuseCoef;
 	vec3 specularColor = vec3(specularCoef * fragment.specularFactor);
-	reflectionColor = reflectionColor * (diffuseColor + ambientColor);
 
 	ambientColor = ambientColor * light.ambient;
 	diffuseColor = diffuseColor * light.diffuse;
 	specularColor = specularColor * light.specular;
+	reflectionColor = diffuseCoef * reflectionColor;
 
-	return vec3(ambientColor + shadowFactor * mix(diffuseColor + specularColor, reflectionColor, fragment.reflection));
+	return vec3(ambientColor + shadowFactor * (specularColor + mix(diffuseColor, reflectionColor, fragment.reflection)));
 }
 
 )

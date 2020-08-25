@@ -117,10 +117,8 @@ namespace MxEngine
 
 			this->console->Draw("Developer Console", &isDeveloperConsoleOpened);
 
-			GUI::DrawViewportWindow("Viewport", this->cachedWindowSize, &isViewportOpened);
 			GUI::DrawRenderEditor("Render Editor", &isRenderEditorOpened);
 			GUI::DrawApplicationEditor("Application Editor", &isApplicationEditorOpened);
-			GUI::DrawTextureList("Texture Viewer", &isTextureListOpened);
 
 			{
 				ImGui::Begin("Object Editor", &isObjectEditorOpened);
@@ -140,6 +138,10 @@ namespace MxEngine
 					}
 				}
 			}
+
+			// should be rendered after object editor, as user can delete drawn textures in this editor
+			GUI::DrawTextureList("Texture Viewer", &isTextureListOpened);
+			GUI::DrawViewportWindow("Viewport", this->cachedWindowSize, &isViewportOpened);
 
 			{
 				ImGui::Begin("Profiling Tools", &isProfilerOpened);

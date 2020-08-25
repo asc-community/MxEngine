@@ -1,7 +1,5 @@
-#define MAKE_STRING(...) #__VA_ARGS__
-
 #include "shader_utils.glsl"
-MAKE_STRING(
+EMBEDDED_SHADER(
 
 out vec4 OutColor;
 

@@ -1,5 +1,4 @@
-#define MAKE_STRING(...) #__VA_ARGS__
-MAKE_STRING(
+EMBEDDED_SHADER(
 
 vec3 reconstructWorldPosition(float depth, vec2 texcoord, mat4 invProjection, mat4 invView)
 {
@@ -86,7 +85,7 @@ FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D n
 	vec4 material = texture(materialTexture, texCoord).rgba;
 	fragment.depth = texture(depthTexture, texCoord).r;
 
-	fragment.emmisionFactor = material.r;
+	fragment.emmisionFactor = material.r / (1.0f - material.r);
 	fragment.reflection = material.g;
 	fragment.specularIntensity = 1.0f / material.b;
 	fragment.specularFactor = material.a;

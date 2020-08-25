@@ -1,9 +1,7 @@
-#define MAKE_STRING(...) #__VA_ARGS__
-
 #include "shader_utils.glsl"
 #include "fxaa.glsl"
 #include "fog.glsl"
-MAKE_STRING(
+EMBEDDED_SHADER(
 
 in vec2 TexCoord;
 out vec4 OutColor;
@@ -29,12 +27,11 @@ uniform Camera camera;
 void main()
 {
 	FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewMatrix, camera.invProjMatrix);
-	vec3 viewDirection = normalize(camera.position - fragment.position);
 	float fragDistance = length(camera.position - fragment.position);
 	
 	vec3 currentColor;
 	currentColor = enableFXAA ? fxaa(cameraOutput, TexCoord).rgb : texture(cameraOutput, TexCoord).rgb;
-	currentColor = applyFog(currentColor, fragDistance, viewDirection, fog);
+	currentColor = applyFog(currentColor, fragDistance, fog);
 
 	OutColor = vec4(currentColor, 1.0f);
 }

@@ -1,5 +1,4 @@
-#define MAKE_STRING(...) #__VA_ARGS__
-MAKE_STRING(
+EMBEDDED_SHADER(
 
 in VSout
 {
@@ -52,13 +51,13 @@ void main()
 	float emmisive = material.emmisive * emmisiveTex;
 	float reflection = material.reflection;
 	float specularFactor = material.specularFactor * specularTex;
-	float specularIntensity = 1.0f / material.specularIntensity;
+	float specularIntensity = material.specularIntensity;
 
 	vec3 albedo = pow(fsin.RenderColor * albedoTex, vec3(gamma));
 
 	OutAlbedo = vec4(fsin.RenderColor * albedo, 1.0f);
 	OutNormal = vec4(0.5f * normal + 0.5f, 1.0f);
-	OutMaterial = vec4(emmisive, reflection, specularIntensity, specularFactor);
+	OutMaterial = vec4(emmisive / (emmisive + 1.0f), reflection, 1.0f / specularIntensity, specularFactor);
 }
 
 )

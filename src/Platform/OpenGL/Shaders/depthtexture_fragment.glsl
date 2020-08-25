@@ -1,5 +1,5 @@
-#define MAKE_STRING(...) #__VA_ARGS__
-MAKE_STRING(
+EMBEDDED_SHADER(
 
 void main() { }
+
 )

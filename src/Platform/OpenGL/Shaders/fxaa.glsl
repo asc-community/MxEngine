@@ -34,8 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // this file was modified by @MomoDeve for MxEngine project (https://github.com/asc-community/MxEngine)
 
-#define MAKE_STRING(...) #__VA_ARGS__
-MAKE_STRING(
+EMBEDDED_SHADER(
 
 const float FXAA_REDUCE_MIN = 1.0f / 128.0f;
 const float FXAA_REDUCE_MUL = 1.0f / 8.0f;

@@ -1,7 +1,5 @@
-#define MAKE_STRING(...) #__VA_ARGS__
-
 #include "fog.glsl"
-MAKE_STRING(
+EMBEDDED_SHADER(
 
 out vec4 Color;
 in vec3 TexCoords;
@@ -14,7 +12,8 @@ void main()
 {
 	vec3 skyboxColor = texture(skybox, TexCoords).rgb;
 	skyboxColor = pow(skyboxColor, vec3(gamma));
-	Color = vec4(applySkyFog(skyboxColor, fog), 1.0f);
+	skyboxColor = applySkyFog(skyboxColor, fog);
+	Color = vec4(skyboxColor, 1.0f);
 }
 
 )

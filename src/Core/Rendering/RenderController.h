@@ -58,7 +58,7 @@ namespace MxEngine
 		void DrawShadowMap(const RenderUnit& unit, const PointLightUnit& pointLight, const Shader& shader);
 		void AttachDepthMap(const TextureHandle& texture);
 		void AttachDepthMap(const CubeMapHandle& cubemap);
-		TextureHandle PerformBloomIterations(const TextureHandle& inputBloom, uint8_t iterations);
+		void ApplyBloomEffect(CameraUnit& camera);
 		void PerformPostProcessing(CameraUnit& camera);
 		void DrawDirectionalLights(CameraUnit& camera);
 		void PerformLightPass(CameraUnit& camera);
@@ -83,6 +83,7 @@ namespace MxEngine
 		void SetAnisotropicFiltering(float value);
 		void SetViewport(int x, int y, int width, int height);
 		void AttachFrameBuffer(const FrameBufferHandle& framebuffer);
+		void AttachFrameBufferNoClear(const FrameBufferHandle& framebuffer);
 		void AttachDefaultFrameBuffer();
 		void RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
 		void RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);

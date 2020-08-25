@@ -1,7 +1,5 @@
-#define MAKE_STRING(...) #__VA_ARGS__
-
 #include "directional_light.glsl"
-MAKE_STRING(
+EMBEDDED_SHADER(
 
 out vec4 OutColor;
 in vec2 TexCoord;

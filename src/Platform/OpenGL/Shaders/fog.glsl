@@ -1,5 +1,4 @@
-#define MAKE_STRING(...) #__VA_ARGS__
-MAKE_STRING(
+EMBEDDED_SHADER(
 	
 struct Fog
 {
@@ -8,15 +7,16 @@ struct Fog
 	vec3 color;
 };
 
-vec3 applyFog(vec3 color, float fragDistance, vec3 viewDir, Fog fog)
+vec3 applyFog(vec3 color, float fragDistance, Fog fog)
 {
 	float fogFactor = 1.0f - fog.distance * exp(-fragDistance * fog.density);
-	return mix(color, fog.color, clamp(fogFactor, 0.0f, 1.0f));
+	fogFactor = clamp(fogFactor, 0.0f, 1.0f);
+	return mix(color, fog.color, fogFactor);
 }
 
 vec3 applySkyFog(vec3 color, Fog fog)
 {
-	float fogFactor = 1.0f - fog.distance / (1.0f + fog.density);
+	float fogFactor = 1.0f - fog.distance * exp(-10.0f * fog.density);
 	fogFactor = clamp(fogFactor, 0.0f, 1.0f);
 	return mix(color, fog.color, fogFactor);
 }

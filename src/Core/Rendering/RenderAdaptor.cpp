@@ -169,11 +169,18 @@ namespace MxEngine
             #include "Platform/OpenGL/Shaders/depthcubemap_fragment.glsl"
         );
 
-        environment.BloomShader = GraphicFactory::Create<Shader>();
-        environment.BloomShader->LoadFromString(
+        environment.BloomIterationShader = GraphicFactory::Create<Shader>();
+        environment.BloomIterationShader->LoadFromString(
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
-            #include "Platform/OpenGL/Shaders/bloom_fragment.glsl"
+            #include "Platform/OpenGL/Shaders/bloom_iter_fragment.glsl"
+        );
+
+        environment.BloomSplitShader = GraphicFactory::Create<Shader>();
+        environment.BloomSplitShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/bloom_split_fragment.glsl"
         );
 
         environment.ImageForwardShader = GraphicFactory::Create<Shader>();

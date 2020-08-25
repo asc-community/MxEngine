@@ -191,39 +191,48 @@ namespace MxEngine
 		this->GetRenderEngine().DrawTrianglesInstanced(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
 	}
 
-	TextureHandle RenderController::PerformBloomIterations(const TextureHandle& inputBloom, uint8_t iterations)
+	void RenderController::ApplyBloomEffect(CameraUnit& camera)
 	{
-		if (iterations == 0) return this->Pipeline.Environment.DefaultBlackMap;
+		auto iterations = camera.BloomIterations - camera.BloomIterations % 2;
+		if (iterations == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::PerformBloomIterarations()");
 
 		auto& bloomBuffers = this->Pipeline.Environment.BloomBuffers;
+		auto& splitShader = this->Pipeline.Environment.BloomSplitShader;
+		auto& iterShader = this->Pipeline.Environment.BloomIterationShader;
 
-		MX_ASSERT(bloomBuffers[0].IsValid());
-		MX_ASSERT(bloomBuffers[1].IsValid());
-		MX_ASSERT(bloomBuffers[0]->HasTextureAttached());
-		MX_ASSERT(bloomBuffers[1]->HasTextureAttached());
-		MX_ASSERT(iterations % 2 == 0);
+		float fogReduceFactor = this->Pipeline.Environment.FogDistance * std::exp(-25.0f * this->Pipeline.Environment.FogDensity);
+		float bloomWeight = camera.BloomWeight * fogReduceFactor;
 
-		auto& bloomShaderHandle = this->Pipeline.Environment.BloomShader;
-		auto& bloomShader = *bloomShaderHandle.GetUnchecked();
+		// first get bloom mask from camera G-buffer
+		camera.AlbedoTexture->GenerateMipmaps();
+		camera.MaterialTexture->GenerateMipmaps();
 
-		bloomShader.SetUniformInt("BloomTexture", 0);
+		camera.AlbedoTexture->Bind(0);
+		splitShader->SetUniformInt("albedoTex", 0);
+		camera.MaterialTexture->Bind(1);
+		splitShader->SetUniformInt("materialTex", 1);
+		splitShader->SetUniformFloat("weight", bloomWeight);
+		this->RenderToFrameBuffer(bloomBuffers.back(), splitShader);
+
+		// perform bloom iterations
+		iterShader->SetUniformInt("BloomTexture", 0);
 		for (uint8_t i = 0; i < iterations; i++)
 		{
-			auto& target = bloomBuffers[ (i & 1)];
+			auto& target = bloomBuffers[(i & 1)];
 			auto& source = bloomBuffers[!(i & 1)];
-			bloomShader.SetUniformInt("horizontalKernel", int(i & 1));
-
-			if (i == 0)
-				inputBloom->Bind(0);
-			else
-				GetAttachedTexture(source)->Bind(0);
-
-			this->RenderToFrameBuffer(target, bloomShaderHandle);
+			iterShader->SetUniformInt("horizontalKernel", int(i & 1));
+			GetAttachedTexture(source)->Bind(0);
+			this->RenderToFrameBuffer(target, iterShader);
 		}
 		auto result = GetAttachedTexture(bloomBuffers.back());
 		result->GenerateMipmaps();
-		return result;
+		
+		// use additive blending to apply bloom to camera HDR image
+		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ONE);
+		this->AttachFrameBufferNoClear(this->Pipeline.Environment.PostProcessFrameBuffer);
+		this->SubmitImage(result);
+		this->GetRenderEngine().UseBlending(BlendFactor::NONE, BlendFactor::NONE);
 	}
 
 	void RenderController::PerformPostProcessing(CameraUnit& camera)
@@ -239,6 +248,7 @@ namespace MxEngine
 		this->GetRenderEngine().UseDepthBufferMask(true);
 		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
 
+		this->ApplyBloomEffect(camera);
 		this->PerformHDRToLDRConversion(camera, camera.HDRTexture, camera.VFXTexture);
 		this->ApplyPostEffects(camera, camera.VFXTexture, camera.OutputTexture);
 	}
@@ -296,7 +306,7 @@ namespace MxEngine
 		this->DrawDirectionalLights(camera);
 
 		this->ToggleFaceCulling(true, true, false);
-		this->GetRenderEngine().UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::SRC_ALPHA);
+		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ONE);
 
 		this->DrawShadowedSpotLights(camera);
 		this->DrawNonShadowedSpotLights(camera);
@@ -570,9 +580,14 @@ namespace MxEngine
 
 	void RenderController::AttachFrameBuffer(const FrameBufferHandle& framebuffer)
 	{
+		this->AttachFrameBufferNoClear(framebuffer);
+		this->Clear();
+	}
+
+	void RenderController::AttachFrameBufferNoClear(const FrameBufferHandle& framebuffer)
+	{
 		framebuffer->Bind();
 		this->SetViewport(0, 0, (int)framebuffer->GetWidth(), (int)framebuffer->GetHeight());
-		this->Clear();
 	}
 
 	void RenderController::AttachDefaultFrameBuffer()

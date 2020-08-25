@@ -33,6 +33,8 @@
 enum class BlendFactor
 {
 	NONE,
+	ZERO,
+	ONE,
 	ONE_MINUS_SRC_COLOR,
 	SRC_ALPHA,
 	ONE_MINUS_SRC_ALPHA,

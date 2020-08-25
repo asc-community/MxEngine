@@ -1,8 +1,4 @@
-#define MAKE_STRING(...) #__VA_ARGS__
-R"(
-#version 400 core
-)" \
-MAKE_STRING(
+EMBEDDED_SHADER(
 
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 18) out;

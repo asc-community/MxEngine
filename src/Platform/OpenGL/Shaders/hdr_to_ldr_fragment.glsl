@@ -1,5 +1,4 @@
-#define MAKE_STRING(...) #__VA_ARGS__
-MAKE_STRING(
+EMBEDDED_SHADER(
 
 out vec4 OutColor;
 in vec2 TexCoord;
@@ -11,9 +10,9 @@ uniform float gamma;
 void main()
 {
 	vec4 HDRColor = texture(HDRTex, TexCoord).rgba;
-	vec3 gammaCorrectedColor = pow(HDRColor.rgb, vec3(1.0f / gamma));
-	vec3 LDRColor = vec3(1.0f) - min(exp(-gammaCorrectedColor * exposure), 1.0f);
-	OutColor = vec4(LDRColor.rgb, HDRColor.a);
+	vec3 LDRColor = vec3(1.0f) - min(exp(-HDRColor.rgb * exposure), 1.0f);
+	vec3 gammaCorrectedColor = pow(LDRColor.rgb, vec3(1.0f / gamma));
+	OutColor = vec4(gammaCorrectedColor.rgb, HDRColor.a);
 }
 
 )

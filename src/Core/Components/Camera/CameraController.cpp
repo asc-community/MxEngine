@@ -314,7 +314,7 @@ namespace MxEngine
 
 	void CameraController::SetBloomIterations(size_t iterCount)
 	{
-		this->bloomIterations = (uint8_t)Min(iterCount + iterCount % 2, std::numeric_limits<decltype(this->bloomIterations)>::max() - 1);
+		this->bloomIterations = (uint8_t)Min(iterCount, (size_t)std::numeric_limits<uint8_t>::max());
 	}
 
 	float CameraController::GetExposure() const
@@ -483,13 +483,11 @@ namespace MxEngine
 
 	void CameraRender::Resize(int width, int height)
 	{
-		constexpr TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;
-
 		this->Albedo->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
 		this->Normal->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
 		this->Material->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
 		this->Depth->LoadDepth(width, height, TextureFormat::DEPTH32F, TextureWrap::CLAMP_TO_EDGE);
-		this->HDR->Load(nullptr, width, height, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+		this->HDR->Load(nullptr, width, height, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
 		this->VFX->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
 
 		this->Albedo->SetPath("[[cam albedo]]");
@@ -502,10 +500,12 @@ namespace MxEngine
 
 	void CameraRender::DeInit()
 	{
-		this->GBuffer = { };
-		this->Albedo = { };
-		this->Normal = { };
-		this->Material = { };
-		this->Depth = { };
+		GraphicFactory::Destroy(this->GBuffer);
+		GraphicFactory::Destroy(this->Albedo);
+		GraphicFactory::Destroy(this->Normal);
+		GraphicFactory::Destroy(this->Material);
+		GraphicFactory::Destroy(this->Depth);
+		GraphicFactory::Destroy(this->HDR);
+		GraphicFactory::Destroy(this->VFX);
 	}
 }

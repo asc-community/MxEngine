@@ -195,3 +195,9 @@
 ### 7.4.5
 - editor style settings in config and new editor theme in Visual Studio style
 - frustrum culling per camera
+### 7.5.0
+- engine now using deferred rendering! Await for many new features to come
+- replaced MSAA with FXAA (I will try my best to fix remain issues in the next engine releases)
+- now spot lights and point lights amount is unlimited (but if you want many of them, turn of shadows)
+- now its possible to render objects with transparent mask (useful for grass, see GrassSample)
+- other minor fixes (more info in application window, fixed non-mipmapped textures in editor, etc.)

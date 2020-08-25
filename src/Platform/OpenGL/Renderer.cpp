@@ -38,6 +38,8 @@ namespace MxEngine
 	GLenum BlendTable[] =
 	{
 		0x00000000,
+		GL_ZERO,
+		GL_ONE,
 		GL_ONE_MINUS_SRC_COLOR,
 		GL_SRC_ALPHA,
 		GL_ONE_MINUS_SRC_ALPHA,

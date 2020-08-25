@@ -85,7 +85,8 @@ namespace MxEngine
         ShaderHandle SkyboxShader;
         ShaderHandle ShadowMapShader;
         ShaderHandle ShadowCubeMapShader;
-        ShaderHandle BloomShader;
+        ShaderHandle BloomSplitShader;
+        ShaderHandle BloomIterationShader;
         ShaderHandle ImageForwardShader;
         ShaderHandle DebugDrawShader;
 
