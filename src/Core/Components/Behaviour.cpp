@@ -39,6 +39,11 @@ namespace MxEngine
         }
     }
 
+    Behaviour::~Behaviour()
+    {
+        this->RemoveBehaviour();
+    }
+
     void Behaviour::OnUpdate(TimeDelta dt)
     {
         this->timeLeft -= dt;

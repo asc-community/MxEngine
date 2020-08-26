@@ -45,7 +45,7 @@ namespace MxEngine
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PrepareDirectionalLightMaps()");
 			const auto& directionalLightShader = *this->Pipeline.Environment.ShadowMapShader;
-			for (const auto& directionalLight : this->Pipeline.Lighting.DirectionalLights)
+			for (auto& directionalLight : this->Pipeline.Lighting.DirectionalLights)
 			{
 				this->AttachDepthMap(directionalLight.ShadowMap);
 				directionalLightShader.SetUniformMat4("LightProjMatrix", directionalLight.ProjectionMatrix);
@@ -54,13 +54,14 @@ namespace MxEngine
 				{
 					this->DrawShadowMap(renderUnit, directionalLight, directionalLightShader);
 				}
+				directionalLight.ShadowMap->GenerateMipmaps();
 			}
 		}
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PrepareSpotLightMaps()");
 			const auto& spotLightShader = *this->Pipeline.Environment.ShadowMapShader;
-			for (const auto& spotLight : this->Pipeline.Lighting.SpotLights)
+			for (auto& spotLight : this->Pipeline.Lighting.SpotLights)
 			{
 				this->AttachDepthMap(spotLight.ShadowMap);
 				spotLightShader.SetUniformMat4("LightProjMatrix", spotLight.ProjectionMatrix);
@@ -69,13 +70,14 @@ namespace MxEngine
 				{
 					this->DrawShadowMap(renderUnit, spotLight, spotLightShader);
 				}
+				spotLight.ShadowMap->GenerateMipmaps();
 			}
 		}
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PreparePointLightMaps()");
 			const auto& pointLightShader = *this->Pipeline.Environment.ShadowCubeMapShader;
-			for (const auto& pointLight : this->Pipeline.Lighting.PointLights)
+			for (auto& pointLight : this->Pipeline.Lighting.PointLights)
 			{
 				this->AttachDepthMap(pointLight.ShadowMap);
 				pointLightShader.SetUniformMat4("LightProjMatrix[0]", pointLight.ProjectionMatrices[0]);
@@ -91,6 +93,7 @@ namespace MxEngine
 				{
 					this->DrawShadowMap(renderUnit, pointLight, pointLightShader);
 				}
+				pointLight.ShadowMap->GenerateMipmaps();
 			}
 		}
 		this->ToggleDepthOnlyMode(false);
@@ -232,7 +235,7 @@ namespace MxEngine
 		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ONE);
 		this->AttachFrameBufferNoClear(this->Pipeline.Environment.PostProcessFrameBuffer);
 		this->SubmitImage(result);
-		this->GetRenderEngine().UseBlending(BlendFactor::NONE, BlendFactor::NONE);
+		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
 	void RenderController::PerformPostProcessing(CameraUnit& camera)
@@ -243,8 +246,8 @@ namespace MxEngine
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.DepthTexture, Attachment::DEPTH_ATTACHMENT);
 		this->GetRenderEngine().UseDepthBufferMask(false);
 		this->DrawSkybox(camera);
-		this->DrawDebugBuffer(camera);
 		this->DrawTransparentObjects(camera);
+		this->DrawDebugBuffer(camera);
 		this->GetRenderEngine().UseDepthBufferMask(true);
 		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
 
@@ -314,7 +317,7 @@ namespace MxEngine
 		this->DrawNonShadowedPointLights(camera);
 
 		this->ToggleFaceCulling(true, true, true);
-		this->GetRenderEngine().UseBlending(BlendFactor::NONE, BlendFactor::NONE);
+		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
 	void RenderController::DrawTransparentObjects(CameraUnit& camera)
@@ -367,7 +370,7 @@ namespace MxEngine
 		this->DrawObjects(camera, *shader, this->Pipeline.TransparentRenderUnits);
 
 		this->ToggleFaceCulling(true);
-		this->GetRenderEngine().UseBlending(BlendFactor::NONE, BlendFactor::NONE);
+		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
 	void RenderController::ApplyPostEffects(CameraUnit& camera, TextureHandle input, TextureHandle output)
@@ -866,7 +869,7 @@ namespace MxEngine
 		{
 			if (!camera.RenderToTexture) continue;
 
-			this->GetRenderEngine().UseBlending(BlendFactor::NONE, BlendFactor::NONE);
+			this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
 			this->ToggleReversedDepth(camera.IsPerspective);
 			this->AttachFrameBuffer(camera.GBuffer);
 

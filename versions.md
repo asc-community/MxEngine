@@ -201,3 +201,8 @@
 - now spot lights and point lights amount is unlimited (but if you want many of them, turn of shadows)
 - now its possible to render objects with transparent mask (useful for grass, see GrassSample)
 - other minor fixes (more info in application window, fixed non-mipmapped textures in editor, etc.)
+### 7.5.1
+- fixed kinematic object movement
+- fixed memory leak in Behaviour component
+- fixed bug in gltf assimp exporter (now gltf2 models can be exported)
+- fixed multiple graphics issues with transparency and shadows

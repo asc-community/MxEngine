@@ -62,6 +62,7 @@ namespace MxEngine
         void InvokeUserBehaviour(TimeDelta dt);
     public:
         Behaviour() = default;
+        ~Behaviour();
         void OnUpdate(TimeDelta dt);
 
         void RemoveBehaviour();

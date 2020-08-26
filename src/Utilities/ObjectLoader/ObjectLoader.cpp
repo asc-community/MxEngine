@@ -194,7 +194,7 @@ namespace MxEngine
 
 			material.Transparency     = json["Transparency"  ].get<float>();
 			material.Displacement     = json["Displacement"  ].get<float>();
-			material.SpecularFactor    = json["SpecularFactor"].get<float>();
+			material.SpecularFactor   = json["SpecularFactor"].get<float>();
 			material.Emmision         = json["Emmision"      ].get<float>();
 
 			material.AlbedoMap        = json["AlbedoMap"      ].get<MxString>();
@@ -223,6 +223,7 @@ namespace MxEngine
 			DUMP(i, Displacement);
 			DUMP(i, SpecularFactor);
 			DUMP(i, SpecularIntensity);
+			DUMP(i, Emmision);
 
 			DUMP(i, AlbedoMap);
 			DUMP(i, SpecularMap);

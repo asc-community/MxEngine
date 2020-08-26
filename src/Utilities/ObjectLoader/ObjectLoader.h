@@ -93,7 +93,7 @@ namespace MxEngine
 		/*!
 		light emmision value
 		*/
-		float Emmision = 1.0f;
+		float Emmision = 0.0f;
 	};
 
 	/*!

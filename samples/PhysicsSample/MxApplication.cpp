@@ -65,12 +65,12 @@ namespace PhysicsSample
             auto wall = MxObject::Create();
             wall->Name = "Wall";
             wall->AddComponent<MeshSource>(Primitives::CreateCube());
-            wall->AddComponent<BoxCollider>();
-            wall->AddComponent<RigidBody>();
             auto material = wall->AddComponent<MeshRenderer>()->GetMaterial();
             material->Transparency = transparency;
             wall->Transform.SetScale(Vector3(xyz.x * size + thickness, xyz.y * size + thickness, xyz.z * size + thickness));
             wall->Transform.SetPosition(Vector3((size * offset).x / 2, (size * offset).y / 2, (size * offset).z / 2) + coord);
+            wall->AddComponent<BoxCollider>();
+            wall->AddComponent<RigidBody>();
         }
 
         void CreateShot()

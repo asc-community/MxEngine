@@ -43,20 +43,17 @@ namespace MxEngine
         auto& self = MxObject::GetByComponent(*this);
         auto& selfScale = self.Transform.GetScale();
 
-        if (this->rigidBody->HasTransformUpdate())
+        if (this->IsKinematic())
         {
-            if (this->IsStatic())
-            {
-                // if body is static, MxObject's Transform component controls its position
-                btTransform tr;
-                ToBulletTransform(tr, self.Transform);
-                this->rigidBody->GetNativeHandle()->setWorldTransform(tr);
-            }
-            else
-            {
-                // if body is not static, transform is controlled by physics engine
-                FromBulletTransform(self.Transform, this->rigidBody->GetNativeHandle()->getWorldTransform());
-            }
+            // if body is kinematic, MxObject's Transform component controls its position
+            btTransform tr;
+            ToBulletTransform(tr, self.Transform);
+            this->rigidBody->GetNativeHandle()->setWorldTransform(tr);
+        }
+        else if (this->rigidBody->HasTransformUpdate())
+        {
+            // if body is not kinematic, transform is controlled by physics engine
+            FromBulletTransform(self.Transform, this->rigidBody->GetNativeHandle()->getWorldTransform());
             this->rigidBody->SetTransformUpdateFlag(false);
         }
 
@@ -130,6 +127,7 @@ namespace MxEngine
 
     void RigidBody::MakeKinematic()
     {
+        this->SetMass(0.0f);
         this->SetCollisionFilter(CollisionMask::KINEMATIC, CollisionGroup::ALL);
         // from bullet3 manual (see https://github.com/bulletphysics/bullet3/blob/master/docs/Bullet_User_Manual.pdf page 22)
         this->rigidBody->SetActivationState(ActivationState::DISABLE_DEACTIVATION);
@@ -137,6 +135,7 @@ namespace MxEngine
 
     void RigidBody::MakeDynamic()
     {
+        if(this->GetMass() == 0.0f) this->SetMass(1.0f);
         this->SetCollisionFilter(CollisionMask::DYNAMIC, CollisionGroup::ALL);
         this->rigidBody->SetActivationState(ActivationState::ACTIVE_TAG);
     }
