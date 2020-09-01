@@ -42,10 +42,10 @@ namespace MxEngine
         enum Mask : uint32_t
         {
             GHOST = 0,
-            RAYCAST_ONLY = 1,
-            DYNAMIC = 1 << 1,
-            STATIC  = 1 << 2,
-            KINEMATIC = 1 << 3,
+            STATIC = 1,
+            KINEMATIC = 1 << 1,
+            DYNAMIC  = 1 << 2,
+            RAYCAST_ONLY = 1 << 3,
         };
     }
 
@@ -57,8 +57,8 @@ namespace MxEngine
             RAYCAST_ONLY = CollisionMask::RAYCAST_ONLY,
             ALL_NO_RAYCAST = CollisionMask::DYNAMIC | CollisionMask::STATIC | CollisionMask::KINEMATIC,
             ALL = ALL_NO_RAYCAST | CollisionGroup::RAYCAST_ONLY,
-            NO_STATIC_COLLISIONS_NO_RAYCAST = ALL_NO_RAYCAST & ~CollisionMask::STATIC,
-            NO_STATIC_COLLISIONS = ALL & ~CollisionMask::STATIC,
+            NO_STATIC_COLLISIONS_NO_RAYCAST = ALL_NO_RAYCAST & ~CollisionMask::STATIC & ~CollisionMask::KINEMATIC,
+            NO_STATIC_COLLISIONS = ALL & ~CollisionMask::STATIC & ~CollisionMask::KINEMATIC,
         };
     }
 
@@ -106,11 +106,13 @@ namespace MxEngine
         uint32_t GetCollisionGroup() const;
         uint32_t GetCollisionMask() const;
         Vector3 GetScale() const;
+        void SetKinematicFlag(bool flag);
         void SetScale(const Vector3& scale);
         float GetMass() const;
         void SetMass(float mass);
         void SetActivationState(ActivationState state);
         ActivationState GetActivationState() const;
+        void Activate();
         bool IsActive() const;
     };
 }

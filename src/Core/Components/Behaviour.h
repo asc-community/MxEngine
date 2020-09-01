@@ -42,6 +42,7 @@ namespace MxEngine
         UPDATE_EACH_FRAME,
         UPDATE_EACH_DELTA,
         UPDATE_AFTER_DELTA,
+        UPDATE_FOR_N_SECONDS,
     };
 
     class Behaviour

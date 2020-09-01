@@ -83,7 +83,7 @@ namespace MxEngine
 		uint8_t bloomIterations = 6;
 		CameraType cameraType = CameraType::PERSPECTIVE;
 		bool renderingEnabled = true;
-		bool isFXAAEnabled = true;
+		bool isFXAAEnabled = false;
 	public:
 		mutable CameraBase Camera;
 

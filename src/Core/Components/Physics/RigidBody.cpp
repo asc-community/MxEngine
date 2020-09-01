@@ -49,6 +49,7 @@ namespace MxEngine
             btTransform tr;
             ToBulletTransform(tr, self.Transform);
             this->rigidBody->GetNativeHandle()->setWorldTransform(tr);
+            this->rigidBody->GetNativeHandle()->getMotionState()->setWorldTransform(tr);
         }
         else if (this->rigidBody->HasTransformUpdate())
         {
@@ -103,6 +104,8 @@ namespace MxEngine
         this->rigidBody = PhysicsFactory::Create<NativeRigidBody>(self.Transform);
 
         Physics::SetRigidBodyParent(this->rigidBody->GetNativeHandle(), self);
+        // initialized with a bit of bounce. Just because I like it
+        this->SetBounceFactor(0.1f);
         
         InvalidateCollider<BoxCollider>(self);
         InvalidateCollider<SphereCollider>(self);
@@ -122,29 +125,26 @@ namespace MxEngine
         this->rigidBody->SetCollisionShape(nullptr); // no collider
     }
 
-    #undef DISABLE_DEACTIVATION
-    #undef ACTIVE_TAG
-
     void RigidBody::MakeKinematic()
     {
         this->SetMass(0.0f);
-        this->SetCollisionFilter(CollisionMask::KINEMATIC, CollisionGroup::ALL);
+        this->SetCollisionFilter(CollisionMask::KINEMATIC, CollisionGroup::NO_STATIC_COLLISIONS);
+        this->rigidBody->SetKinematicFlag(true);
         // from bullet3 manual (see https://github.com/bulletphysics/bullet3/blob/master/docs/Bullet_User_Manual.pdf page 22)
-        this->rigidBody->SetActivationState(ActivationState::DISABLE_DEACTIVATION);
     }
 
     void RigidBody::MakeDynamic()
     {
         if(this->GetMass() == 0.0f) this->SetMass(1.0f);
         this->SetCollisionFilter(CollisionMask::DYNAMIC, CollisionGroup::ALL);
-        this->rigidBody->SetActivationState(ActivationState::ACTIVE_TAG);
+        this->rigidBody->SetKinematicFlag(false);
     }
 
     void RigidBody::MakeStatic()
     {
         this->SetMass(0.0f);
         this->SetCollisionFilter(CollisionMask::STATIC, CollisionGroup::NO_STATIC_COLLISIONS);
-        this->rigidBody->SetActivationState(ActivationState::ACTIVE_TAG);
+        this->rigidBody->SetKinematicFlag(false);
     }
 
     bool RigidBody::IsKinematic() const
@@ -252,7 +252,7 @@ namespace MxEngine
 
     void RigidBody::SetBounceFactor(float value)
     {
-        this->rigidBody->GetNativeHandle()->setRestitution(value);
+        this->rigidBody->GetNativeHandle()->setRestitution(Clamp(value, 0.0f, 1.0f));
     }
 
     Vector3 RigidBody::GetGravity() const

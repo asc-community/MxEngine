@@ -50,7 +50,7 @@ namespace PhysicsSample
                 object->AddComponent<BoxCollider>();
                 auto rigidBody = object->AddComponent<RigidBody>();
                 rigidBody->MakeDynamic();
-                rigidBody->SetMass(800.0f / (1.0f + y * y * y));
+                rigidBody->SetMass(100.0f);
                 rigidBody->SetAngularForceFactor(Vector3(0.01f));
 
                 if (debugPhysics)
@@ -90,6 +90,7 @@ namespace PhysicsSample
             rigidBody->MakeDynamic();
             rigidBody->SetLinearVelocity(dir * 180.0f);
             rigidBody->SetMass(50.0f);
+            rigidBody->SetBounceFactor(0.5f);
         }
 
     public:

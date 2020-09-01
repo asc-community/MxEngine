@@ -56,17 +56,52 @@ namespace MxEngine
         return v <= probability;
     }
 
-    int32_t Random::Get(int32_t lower, int32_t upper)
+    float Random::GetRotationRadians()
+    {
+        return Random::Range(-Pi<float>(), Pi<float>());
+    }
+
+    float Random::GetRotationDegrees()
+    {
+        return Random::Range(-180.0f, 180.0f);
+    }
+
+    Vector3 Random::GetUnitVector3()
+    {
+        // http://stackoverflow.com/questions/5408276/python-uniform-spherical-distribution
+        Vector3 result;
+
+        auto phi = Random::GetRotationRadians();
+        auto costheta = Random::Range(-1.0f, 1.0f);
+        auto theta = std::acos(costheta);
+
+        result.x = std::sin(theta) * std::cos(phi);
+        result.y = std::sin(theta) * std::sin(phi);
+        result.z = std::cos(theta);
+
+        return result;
+    }
+
+    Vector2 Random::GetUnitVector2()
+    {
+        Vector2 result;
+        auto phi = Random::GetRotationRadians();
+        result.x = std::cos(phi);
+        result.y = std::sin(phi);
+        return result;
+    }
+
+    int32_t Random::Range(int32_t lower, int32_t upper)
     {
         return GetRandomImpl(mersenne64, lower, upper);
     }
 
-    int64_t Random::Get(int64_t lower, int64_t upper)
+    int64_t Random::Range(int64_t lower, int64_t upper)
     {
         return GetRandomImpl(mersenne64, lower, upper);
     }
 
-    float Random::Get(float lower, float upper)
+    float Random::Range(float lower, float upper)
     {
         return lower + Random::GetFloat() * (upper - lower);
     }

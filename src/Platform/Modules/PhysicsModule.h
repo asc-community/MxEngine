@@ -30,7 +30,7 @@ class btCollisionConfiguration;
 class btDispatcher;
 class btBroadphaseInterface;
 class btConstraintSolver;
-class btDynamicsWorld;
+class btDiscreteDynamicsWorld;
 class btRigidBody;
 
 namespace MxEngine
@@ -41,7 +41,7 @@ namespace MxEngine
 		btDispatcher* Dispatcher;
 		btBroadphaseInterface*  Broadphase;
 		btConstraintSolver* Solver;
-		btDynamicsWorld* World;
+		btDiscreteDynamicsWorld* World;
 		float simulationStep = 1.0f;
 	};
 
@@ -52,6 +52,7 @@ namespace MxEngine
 		static void Init();
 		static void Destroy();
 		static void OnUpdate(float dt);
+		static void PerformSimulationStep(float dt);
 		static void SetSimulationStep(float timedelta);
 
 		static PhysicsModuleData* GetImpl();

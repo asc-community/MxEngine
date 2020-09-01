@@ -25,9 +25,6 @@
 [submodule "submodules/assimp"]
 	path = submodules/assimp
 	url = https://github.com/MomoDeve/assimp
-[submodule "submodules/bullet3"]
-	path = submodules/bullet3
-	url = https://github.com/MomoDeve/bullet3
 [submodule "submodules/imgui"]
 	path = submodules/imgui
 	url = https://github.com/MomoDeve/imgui
@@ -38,3 +35,6 @@
 [submodule "submodules/json"]
 	path = submodules/json
 	url = https://github.com/nlohmann/json
+[submodule "submodules/bullet3"]
+	path = submodules/bullet3
+	url = https://github.com/bulletphysics/bullet3

@@ -206,3 +206,7 @@
 - fixed memory leak in Behaviour component
 - fixed bug in gltf assimp exporter (now gltf2 models can be exported)
 - fixed multiple graphics issues with transparency and shadows
+### 7.5.2
+- added more random utilities
+- fixed kinematic objects interaction
+- added more timer utilities

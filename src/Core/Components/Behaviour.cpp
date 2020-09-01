@@ -67,6 +67,10 @@ namespace MxEngine
                 this->InvokeUserBehaviour(dt);
             }
             break;
+        case TimerMode::UPDATE_FOR_N_SECONDS:
+            if (this->timeLeft > 0.0f)
+                this->InvokeUserBehaviour(dt);
+            break;
         default:
             break;
         }

@@ -54,5 +54,35 @@ namespace MxEngine
             });
             behaviour->Schedule(mode, timeInSeconds);
         }
+
+        template<typename F>
+        static void CallEachFrame(F&& func)
+        {
+            Timer::Schedule(std::forward<F>(func), TimerMode::UPDATE_EACH_FRAME);
+        }
+
+        template<typename F>
+        static void CallEachDelta(F&& func, float delta)
+        {
+            Timer::Schedule(std::forward<F>(func), TimerMode::UPDATE_EACH_DELTA, delta);
+        }
+
+        template<typename F>
+        static void CallAfterDelta(F&& func, float delta)
+        {
+            Timer::Schedule(std::forward<F>(func), TimerMode::UPDATE_AFTER_DELTA, delta);
+        }
+
+        template<typename F>
+        static void Repeat(F&& func, float duration)
+        {
+            Timer::Schedule(std::forward<F>(func), TimerMode::UPDATE_FOR_N_SECONDS, duration);
+        }
+        
+        template<typename F>
+        static void RepeatAfterDelta(F&& func, float delta, float duration)
+        {
+            Timer::CallAfterDelta([f = std::forward<F>(func)]() { Timer::CallForSeconds(std::move(f), duration); }, delta);
+        }
     };
 }

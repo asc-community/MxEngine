@@ -29,6 +29,7 @@
 #pragma once
 
 #include <random>
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
@@ -79,21 +80,40 @@ namespace MxEngine
         \returns true with requested probabily
         */
         static bool GetBool(float probability);
-
+        /*!
+        generates random rotation [-pi, pi]
+        \returns angle in radians
+        */
+        static float GetRotationRadians();
+        /*!
+        generates random rotation [-180.0, 180.0]
+        \returns angle in degrees
+        */
+        static float GetRotationDegrees();
+        /*!
+        generates random unit vector
+        \returns vector with unit length
+        */
+        static Vector3 GetUnitVector3();
+        /*!
+        generates random unit vector
+        \returns vector with unit length
+        */
+        static Vector2 GetUnitVector2();
         /*!
         generates random int64 value
         \returns int64 in interval [lower; upper]
         */
-        static int64_t Get(int64_t lower, int64_t upper);
+        static int64_t Range(int64_t lower, int64_t upper);
         /*!
         generates random int32 value
         \returns int32 in interval [lower; upper]
         */
-        static int32_t Get(int32_t lower, int32_t upper);
+        static int32_t Range(int32_t lower, int32_t upper);
         /*!
         generates random float value
         \returns float in interval [lower; upper]
         */
-        static float Get(float lower, float upper);
+        static float Range(float lower, float upper);
     };
 }

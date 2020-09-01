@@ -111,7 +111,7 @@ namespace MxEngine
     void Physics::PerformExtraSimulationStep(float timeDelta)
     {
         MAKE_SCOPE_PROFILER("Physics::SimulationStep()");
-        WORLD->stepSimulation(timeDelta);
+        PhysicsModule::PerformSimulationStep(timeDelta);
     }
 
     void Physics::SetSimulationStep(float timeDelta)

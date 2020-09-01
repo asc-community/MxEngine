@@ -59,16 +59,21 @@ namespace MxEngine
 
     void PhysicsModule::OnUpdate(float dt)
     {
-        if (data->simulationStep > 0.0f)
+        if (data->simulationStep != 0.0f)
         {
-            MAKE_SCOPE_PROFILER("Physics::SimulationStep()");
-            data->World->stepSimulation(Min(dt, data->simulationStep));
+            PhysicsModule::PerformSimulationStep(Min(dt, data->simulationStep));
         }
+    }
+
+    void PhysicsModule::PerformSimulationStep(float dt)
+    {
+        MAKE_SCOPE_PROFILER("Physics::SimulationStep()");
+        data->World->stepSimulation(dt);
     }
 
     void PhysicsModule::SetSimulationStep(float timedelta)
     {
-        data->simulationStep = Max(0.0f, timedelta);
+        data->simulationStep = timedelta;
     }
 
     PhysicsModuleData* PhysicsModule::GetImpl()

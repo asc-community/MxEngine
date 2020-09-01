@@ -1,1 +1,0 @@
-#mx.scene.get_object("py_arc").rotate(dt(), 0)

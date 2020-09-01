@@ -36,16 +36,25 @@ namespace MxEngine
 {
     class MotionStateNotifier : public btDefaultMotionState
     {
+        btTransform cachedTransform;
     public:
-        MotionStateNotifier(btTransform& tr) : btDefaultMotionState(tr) { }
+        MotionStateNotifier(btTransform& tr) : btDefaultMotionState(tr), cachedTransform(tr) { }
 
         bool TransformUpdated = true;
 
-        virtual void setWorldTransform(const btTransform& centerOfMassWorldTrans)
+        virtual void setWorldTransform(const btTransform& centerOfMassWorldTrans) override
         {
             this->TransformUpdated = true;
+            this->cachedTransform = centerOfMassWorldTrans;
             btDefaultMotionState::setWorldTransform(centerOfMassWorldTrans);
         }
+
+        virtual void getWorldTransform(btTransform& centerOfMassWorldTrans) const override
+        {
+            centerOfMassWorldTrans = this->cachedTransform;
+        }
+        
+        virtual ~MotionStateNotifier() = default;
     };
 
     void NativeRigidBody::DestroyBody()
@@ -149,17 +158,9 @@ namespace MxEngine
 
     void NativeRigidBody::SetCollisionFilter(uint32_t group, uint32_t mask)
     {
-        btTransform tr;
-        this->state->getWorldTransform(tr);
-
-        auto newBody = Alloc<btRigidBody>(this->GetMass(), this->state, this->GetCollisionShape());
-        newBody->setUserPointer(this->body->getUserPointer());
-
-        Physics::RemoveRigidBody(this->body);
-        Free(this->body);
-        this->mask = mask, this->group = group;
-        Physics::AddRigidBody(newBody, this->group, this->mask);
-        this->body = newBody;
+        this->mask = mask;
+        this->group = group;
+        this->ReAddRigidBody();
     }
 
     uint32_t NativeRigidBody::GetCollisionGroup() const
@@ -191,6 +192,24 @@ namespace MxEngine
             return MakeVector3(0.0f);
     }
 
+    #undef DISABLE_DEACTIVATION
+    #undef ACTIVE_TAG
+
+    void NativeRigidBody::SetKinematicFlag(bool flag)
+    {
+        if (flag)
+        {
+            this->body->setCollisionFlags(this->body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+            this->SetActivationState(ActivationState::DISABLE_DEACTIVATION);
+            this->Activate();
+        }
+        else
+        {
+            this->body->setCollisionFlags(this->body->getCollisionFlags() & ~btCollisionObject::CF_KINEMATIC_OBJECT);
+            this->SetActivationState(ActivationState::ACTIVE_TAG);
+        }
+    }
+
     void NativeRigidBody::SetScale(const Vector3& scale)
     {
         auto* collider = this->GetCollisionShape();
@@ -210,12 +229,18 @@ namespace MxEngine
 
     void NativeRigidBody::SetActivationState(ActivationState state)
     {
-        this->body->setActivationState((int)state);
+        this->body->forceActivationState((int)state);
+        this->Activate();
     }
 
     ActivationState NativeRigidBody::GetActivationState() const
     {
         return ActivationState(this->body->getActivationState());
+    }
+
+    void NativeRigidBody::Activate()
+    {
+        this->body->activate(true);
     }
 
     bool NativeRigidBody::IsActive() const
