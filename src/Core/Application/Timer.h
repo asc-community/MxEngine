@@ -82,7 +82,7 @@ namespace MxEngine
         template<typename F>
         static void RepeatAfterDelta(F&& func, float delta, float duration)
         {
-            Timer::CallAfterDelta([f = std::forward<F>(func)]() { Timer::CallForSeconds(std::move(f), duration); }, delta);
+            Timer::CallAfterDelta([f = std::forward<F>(func)]() { Timer::Repeat(std::move(f), duration); }, delta);
         }
     };
 }
