@@ -1,3 +1,4 @@
+#include "displacement.glsl"
 EMBEDDED_SHADER(
 
 layout(location = 0)  in vec4 position;
@@ -9,14 +10,6 @@ layout(location = 9)  in mat3 normalMatrix;
 uniform mat4 LightProjMatrix;
 uniform float displacement;
 uniform sampler2D map_height;
-
-vec3 getDisplacement(vec2 uv, sampler2D heightMap, float displacementFactor)
-{
-    vec3 heightTex = 2.0f * texture(heightMap, uv).rgb - vec3(1.0f);
-    if (texCoord.x < 0.001f || texCoord.y < 0.001f || texCoord.x > 0.999f || texCoord.y > 0.999f)
-        return vec3(0.0f);
-    return displacementFactor * heightTex;
-}
 
 void main()
 {

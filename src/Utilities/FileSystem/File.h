@@ -32,6 +32,7 @@
 #include <fstream>
 
 #include "Utilities/STL/MxString.h"
+#include "Utilities/STL/MxVector.h"
 
 namespace MxEngine
 {
@@ -260,6 +261,12 @@ namespace MxEngine
         \param size how many bytes to write
         */
         void WriteBytes(const uint8_t* bytes, size_t size);
+        /*
+        reads binary data from a file. File must be opened with binary mode
+        \param bytes pointer to the first byte to read to
+        \param size how many bytes to read
+        */
+        void ReadBytes(uint8_t* bytes, size_t size);
     };
 
     template<typename T>

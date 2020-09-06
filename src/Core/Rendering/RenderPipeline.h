@@ -29,11 +29,11 @@
 #pragma once
 
 #include "Core/BoundingObjects/FrustrumCuller.h"
-#include "Rectangle.h"
-#include "SkyboxObject.h"
-#include "RenderHelperObject.h"
-#include "PointLightInstancedObject.h"
-#include "SpotLightInstancedObject.h"
+#include "RenderObjects/Rectangle.h"
+#include "RenderObjects/SkyboxObject.h"
+#include "RenderObjects/RenderHelperObject.h"
+#include "RenderObjects/PointLightInstancedObject.h"
+#include "RenderObjects/SpotLightInstancedObject.h"
 
 namespace MxEngine
 {
@@ -51,7 +51,7 @@ namespace MxEngine
         TextureHandle MaterialTexture;
         TextureHandle DepthTexture;
         TextureHandle HDRTexture;
-        TextureHandle VFXTexture;
+        TextureHandle SwapTexture;
 
         FrustrumCuller Culler;
         Matrix4x4 InverseViewMatrix;
@@ -66,6 +66,8 @@ namespace MxEngine
         float BloomWeight;
         float Exposure;
         float Gamma;
+        float VignetteIntensity;
+        float VignetteRadius;
 
         bool EnableFXAA;
         bool IsPerspective;
@@ -81,7 +83,9 @@ namespace MxEngine
         ShaderHandle SpotLightShader;
         ShaderHandle PointLightShader;
         ShaderHandle HDRToLDRShader;
-        ShaderHandle VFXShader;
+        ShaderHandle FXAAShader;
+        ShaderHandle FogShader;
+        ShaderHandle VignetteShader;
         ShaderHandle SkyboxShader;
         ShaderHandle ShadowMapShader;
         ShaderHandle ShadowCubeMapShader;

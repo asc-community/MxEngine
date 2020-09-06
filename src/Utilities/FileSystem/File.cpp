@@ -228,4 +228,9 @@ namespace MxEngine
     {
         this->fileStream.write((const char*)bytes, size);
     }
+
+    void File::ReadBytes(uint8_t* bytes, size_t size)
+    {
+        this->fileStream.read((char*)bytes, size);
+    }
 }

@@ -42,7 +42,8 @@ namespace MxEngine
         data->Solver = Alloc<btSequentialImpulseConstraintSolver>();
         data->Solver->reset();
         data->World = Alloc<btDiscreteDynamicsWorld>(
-            data->Dispatcher, data->Broadphase, data->Solver, data->CollisionConfiguration);
+            data->Dispatcher, data->Broadphase, data->Solver, data->CollisionConfiguration
+        );
 
         data->World->setGravity(btVector3(0.0f, -9.8f, 0.0f));
     }

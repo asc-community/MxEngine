@@ -28,8 +28,6 @@
 
 #pragma once
 
-#include "Utilities/Memory/Memory.h"
-#include "Utilities/Array/ArrayView.h"
 #include "Core/Components/Camera/CameraController.h"
 #include "Core/Components/Lighting/DirectionalLight.h"
 #include "Core/Components/Lighting/PointLight.h"
@@ -38,8 +36,8 @@
 #include "Core/Components/Rendering/MeshSource.h"
 #include "Core/Resources/Material.h"
 #include "Platform/OpenGL/Renderer.h"
-#include "DebugBuffer.h"
 #include "RenderPipeline.h"
+#include "RenderObjects/DebugBuffer.h"
 
 namespace MxEngine
 {
@@ -63,8 +61,10 @@ namespace MxEngine
 		void DrawDirectionalLights(CameraUnit& camera);
 		void PerformLightPass(CameraUnit& camera);
 		void DrawTransparentObjects(CameraUnit& camera);
-		void ApplyPostEffects(CameraUnit& camera, TextureHandle input, TextureHandle output);
-		void PerformHDRToLDRConversion(CameraUnit& camera, TextureHandle input, TextureHandle output);
+		void ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+		void ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+		void ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+		void ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void DrawShadowedPointLights(CameraUnit& camera);
 		void DrawShadowedSpotLights(CameraUnit& camera);
 		void DrawNonShadowedPointLights(CameraUnit& camera);
@@ -87,7 +87,8 @@ namespace MxEngine
 		void AttachDefaultFrameBuffer();
 		void RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
 		void RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
-		
+		void CopyTexture(const TextureHandle& input, const TextureHandle& output);
+
 		EnvironmentUnit& GetEnvironment();
 		const EnvironmentUnit& GetEnvironment() const;
 		LightingSystem& GetLightInformation();

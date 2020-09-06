@@ -50,7 +50,7 @@ namespace MxEngine
 		TextureHandle Material;
 		TextureHandle Depth;
 		TextureHandle HDR;
-		TextureHandle VFX;
+		TextureHandle SwapHDR;
 
 		void Init(int width, int height);
 		void Resize(int width, int height);
@@ -73,6 +73,8 @@ namespace MxEngine
 		float exposure = 1.0f;
 		float gamma = 2.2f;
 		float bloomWeight = 0.5f;
+		float vignetteRadius = 0.15f;
+		float vignetteIntensity = 100.0f;
 		float moveSpeed = 1.0f;
 		float rotateSpeed = 10.0f;
 
@@ -128,6 +130,10 @@ namespace MxEngine
 		void SetExposure(float exp);
 		float GetGamma() const;
 		void SetGamma(float gamma);
+		float GetVignetteRadius() const;
+		void SetVignetterRadius(float radius);
+		float GetVignetteIntensity() const;
+		void SetVignetteIntensity(float intensity);
 		float GetMoveSpeed() const;
 		void SetMoveSpeed(float speed);
 		float GetRotateSpeed() const;
@@ -147,6 +153,6 @@ namespace MxEngine
 		TextureHandle GetMaterialTexture() const;
 		TextureHandle GetDepthTexture() const;
 		TextureHandle GetHDRTexture() const;
-		TextureHandle GetVFXTexture() const;
+		TextureHandle GetSwapHDRTexture() const;
 	};
 }

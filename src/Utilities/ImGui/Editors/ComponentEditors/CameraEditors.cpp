@@ -95,6 +95,8 @@ namespace MxEngine::GUI
 		float exposure = cameraController.GetExposure();
 		float gamma = cameraController.GetGamma();
 		float bloomWeight = cameraController.GetBloomWeight();
+		float vignetteRadius = cameraController.GetVignetteRadius();
+		float vignetteIntensity = cameraController.GetVignetteIntensity();
 		auto direction = cameraController.GetDirectionDenormalized();
 		float moveSpeed = cameraController.GetMoveSpeed();
 		float rotateSpeed = cameraController.GetRotateSpeed();
@@ -114,6 +116,10 @@ namespace MxEngine::GUI
 			cameraController.SetBloomWeight(bloomWeight);
 		if (ImGui::DragInt("bloom iterations", &bloomIterations))
 			cameraController.SetBloomIterations((size_t)Max(0, bloomIterations));
+		if (ImGui::DragFloat("vignette radius", &vignetteRadius, 0.01f))
+			cameraController.SetVignetterRadius(vignetteRadius);
+		if (ImGui::DragFloat("vignette intensity", &vignetteIntensity, 0.1f))
+			cameraController.SetVignetteIntensity(vignetteIntensity);
 
 		bool isRendered = cameraController.IsRendered();
 		if (ImGui::Checkbox("is rendering", &isRendered))

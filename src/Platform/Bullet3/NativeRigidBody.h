@@ -76,7 +76,6 @@ namespace MxEngine
 
     class NativeRigidBody
     {
-        btMotionState* state = nullptr;
         btRigidBody* body = nullptr;
         uint32_t group = CollisionGroup::NO_STATIC_COLLISIONS;
         uint32_t mask = CollisionMask::STATIC;

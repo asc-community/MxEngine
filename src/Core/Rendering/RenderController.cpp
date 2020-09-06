@@ -252,13 +252,15 @@ namespace MxEngine
 		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
 
 		this->ApplyBloomEffect(camera);
-		this->PerformHDRToLDRConversion(camera, camera.HDRTexture, camera.VFXTexture);
-		this->ApplyPostEffects(camera, camera.VFXTexture, camera.OutputTexture);
+		this->ApplyFogEffect(camera, camera.HDRTexture, camera.SwapTexture);
+		this->ApplyHDRToLDRConversion(camera, camera.HDRTexture, camera.SwapTexture);
+		this->ApplyFXAA(camera, camera.HDRTexture, camera.SwapTexture);
+		this->ApplyVignette(camera, camera.HDRTexture, camera.SwapTexture);
 	}
 
 	void RenderController::DrawDirectionalLights(CameraUnit& camera)
 	{
-		MAKE_SCOPE_PROFILER("RenderController::DrawDirectionalLights");
+		MAKE_SCOPE_PROFILER("RenderController::DrawDirectionalLights()");
 		auto& illumShader = this->Pipeline.Environment.GlobalIlluminationShader;
 
 		illumShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
@@ -373,30 +375,33 @@ namespace MxEngine
 		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
-	void RenderController::ApplyPostEffects(CameraUnit& camera, TextureHandle input, TextureHandle output)
+	void RenderController::ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
-		MAKE_SCOPE_PROFILER("RenderController::ApplyPostEffects()");
+		if (this->Pipeline.Environment.FogDistance == 1.0 && this->Pipeline.Environment.FogDensity == 0.0f)
+			return; // such parameters produce no fog. Do not do extra work calling this shader
 
-		auto vfxShader = this->Pipeline.Environment.VFXShader;
-		if(camera.EnableFXAA) input->GenerateMipmaps();
+		MAKE_SCOPE_PROFILER("RenderController::ApplyFogEffect()");
+
+		auto fogShader = this->Pipeline.Environment.FogShader;
+		fogShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
+		fogShader->IgnoreNonExistingUniform("normalTex");
+		fogShader->IgnoreNonExistingUniform("albedoTex");
+		fogShader->IgnoreNonExistingUniform("materialTex");
+
 		input->Bind(4);
-		vfxShader->SetUniformInt("cameraOutput", 4);
-		vfxShader->SetUniformBool("enableFXAA", camera.EnableFXAA);
+		fogShader->SetUniformInt("cameraOutput", 4);
 
-		vfxShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
-		vfxShader->IgnoreNonExistingUniform("normalTex");
-		vfxShader->IgnoreNonExistingUniform("albedoTex");
-		vfxShader->IgnoreNonExistingUniform("materialTex");
-		this->BindGBuffer(camera, *vfxShader);
-		this->BindFogInformation(*vfxShader);
-		this->BindCameraInformation(camera, *vfxShader);
+		this->BindGBuffer(camera, *fogShader);
+		this->BindFogInformation(*fogShader);
+		this->BindCameraInformation(camera, *fogShader);
 
-		this->RenderToTexture(output, vfxShader);
+		this->RenderToTexture(output, fogShader);
+		std::swap(input, output);
 	}
 
-	void RenderController::PerformHDRToLDRConversion(CameraUnit& camera, TextureHandle input, TextureHandle output)
+	void RenderController::ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
-		MAKE_SCOPE_PROFILER("RenderController::PerformHDRToLDRConversion()");
+		MAKE_SCOPE_PROFILER("RenderController::ApplyHDRToLDRConversion()");
 
 		auto& HDRToLDRShader = this->Pipeline.Environment.HDRToLDRShader;
 		input->Bind(0);
@@ -405,13 +410,44 @@ namespace MxEngine
 		HDRToLDRShader->SetUniformFloat("gamma", camera.Gamma);
 
 		this->RenderToTexture(output, HDRToLDRShader);
+		std::swap(input, output);
+	}
+
+	void RenderController::ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
+	{
+		if (!camera.EnableFXAA) return;
+		MAKE_SCOPE_PROFILER("RenderController::ApplyFXAA");
+
+		auto& fxaaShader = this->Pipeline.Environment.FXAAShader;
+		input->GenerateMipmaps();
+		input->Bind(0);
+		fxaaShader->SetUniformInt("tex", 0);
+		
+		this->RenderToTexture(output, fxaaShader);
+		std::swap(input, output);
+	}
+
+	void RenderController::ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
+	{
+		if (camera.VignetteRadius == 0.0f) return;
+		MAKE_SCOPE_PROFILER("RenderController::ApplyVignette");
+
+		auto& vignetteShader = this->Pipeline.Environment.VignetteShader;
+		input->Bind(0);
+		vignetteShader->SetUniformInt("tex", 0);
+
+		vignetteShader->SetUniformFloat("radius", camera.VignetteRadius);
+		vignetteShader->SetUniformFloat("intensity", camera.VignetteIntensity);
+
+		this->RenderToTexture(output, vignetteShader);
+		std::swap(input, output);
 	}
 
 	void RenderController::DrawShadowedSpotLights(CameraUnit& camera)
 	{
 		const auto& spotLights = this->Pipeline.Lighting.SpotLights;
 		if (spotLights.empty()) return;
-		MAKE_SCOPE_PROFILER("RenderController::DrawShadowedSpotLights");
+		MAKE_SCOPE_PROFILER("RenderController::DrawShadowedSpotLights()");
 
 		auto shader = this->Pipeline.Environment.SpotLightShader;
 		auto& pyramid = this->Pipeline.Lighting.PyramidLight;
@@ -447,7 +483,7 @@ namespace MxEngine
 	{
 		const auto& pointLights = this->Pipeline.Lighting.PointLights;
 		if (pointLights.empty()) return;
-		MAKE_SCOPE_PROFILER("RenderController::DrawShadowedPointLights");
+		MAKE_SCOPE_PROFILER("RenderController::DrawShadowedPointLights()");
 
 		auto shader = this->Pipeline.Environment.PointLightShader;
 		auto& sphere = this->Pipeline.Lighting.SphereLight;
@@ -479,7 +515,7 @@ namespace MxEngine
 	{
 		auto& instancedPointLights = this->Pipeline.Lighting.PointLigthsInstanced;
 		if (instancedPointLights.Instances.empty()) return;
-		MAKE_SCOPE_PROFILER("RenderController::DrawNonShadowedPointLights");
+		MAKE_SCOPE_PROFILER("RenderController::DrawNonShadowedPointLights()");
 
 		auto shader = this->Pipeline.Environment.PointLightShader;
 		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
@@ -500,7 +536,7 @@ namespace MxEngine
 	{
 		auto& instancedSpotLights = this->Pipeline.Lighting.SpotLightsInstanced;
 		if (instancedSpotLights.Instances.empty()) return;
-		MAKE_SCOPE_PROFILER("RenderController::DrawNonShadowedSpotLights");
+		MAKE_SCOPE_PROFILER("RenderController::DrawNonShadowedSpotLights()");
 
 		auto shader = this->Pipeline.Environment.SpotLightShader;
 		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
@@ -559,7 +595,7 @@ namespace MxEngine
 
 	void RenderController::Render() const
 	{
-		this->GetRenderEngine().Finish();
+		this->GetRenderEngine().Flush();
 	}
 
 	void RenderController::Clear() const
@@ -613,6 +649,14 @@ namespace MxEngine
 	{
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(texture, attachment);
 		this->RenderToFrameBuffer(this->Pipeline.Environment.PostProcessFrameBuffer, shader);
+	}
+
+	void RenderController::CopyTexture(const TextureHandle& input, const TextureHandle& output)
+	{
+		MAKE_SCOPE_PROFILER("RenderController::CopyTexture");
+		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(output);
+		this->AttachFrameBufferNoClear(this->Pipeline.Environment.PostProcessFrameBuffer);
+		this->SubmitImage(input);
 	}
 
     void RenderController::ToggleDepthOnlyMode(bool value)
@@ -793,11 +837,13 @@ namespace MxEngine
 		camera.MaterialTexture            = controller.GetMaterialTexture();
 		camera.DepthTexture               = controller.GetDepthTexture();
 		camera.HDRTexture                 = controller.GetHDRTexture();
-		camera.VFXTexture                = controller.GetVFXTexture();
+		camera.SwapTexture                = controller.GetSwapHDRTexture();
 		camera.BloomIterations            = (uint8_t)controller.GetBloomIterations();
 		camera.BloomWeight                = controller.GetBloomWeight();
 		camera.Exposure                   = controller.GetExposure();
 		camera.Gamma                      = controller.GetGamma();
+		camera.VignetteRadius             = controller.GetVignetteRadius();
+		camera.VignetteIntensity          = controller.GetVignetteIntensity();
 		camera.SkyboxMap                  = skybox.Texture.IsValid() ? skybox.Texture : this->Pipeline.Environment.DefaultBlackCubeMap;
 		camera.InversedSkyboxRotation     = Transpose(ToMatrix(parentTransform.GetRotation()));
 		camera.OutputTexture              = controller.GetRenderTexture();
@@ -877,6 +923,7 @@ namespace MxEngine
 			this->PerformLightPass(camera);
 			this->PerformPostProcessing(camera);
 
+			this->CopyTexture(camera.HDRTexture, camera.OutputTexture);
 			camera.OutputTexture->GenerateMipmaps();
 		}
 	}

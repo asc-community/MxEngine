@@ -76,7 +76,6 @@ namespace MxEngine
 	{
 		this->width = texture.width;
 		this->height = texture.height;
-		this->channels = texture.channels;
 		this->textureType = texture.textureType;
 		this->filepath = std::move(texture.filepath);
 		this->wrapType = texture.wrapType;
@@ -88,7 +87,6 @@ namespace MxEngine
 		texture.activeId = 0;
 		texture.width = 0;
 		texture.height = 0;
-		texture.channels = 0;
 		texture.filepath = "[[deleted]]";
 		texture.samples = 0;
 	}
@@ -99,7 +97,6 @@ namespace MxEngine
 
 		this->width = texture.width;
 		this->height = texture.height;
-		this->channels = texture.channels;
 		this->textureType = texture.textureType;
 		this->filepath = std::move(texture.filepath);
 		this->wrapType = texture.wrapType;
@@ -111,7 +108,6 @@ namespace MxEngine
 		texture.activeId = 0;
 		texture.width = 0;
 		texture.height = 0;
-		texture.channels = 0;
 		texture.filepath = "[[deleted]]";
 		texture.samples = 0;
 
@@ -143,7 +139,6 @@ namespace MxEngine
 		}
 		this->width = image.GetWidth();
 		this->height = image.GetHeight();
-		this->channels = image.GetChannels();
 		this->textureType = GL_TEXTURE_2D;
 
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
@@ -160,7 +155,6 @@ namespace MxEngine
 		this->filepath = "[[raw data]]";
 		this->width = width;
 		this->height = height;
-		this->channels = 3;
 		this->textureType = GL_TEXTURE_2D;
 		this->format = format;
 		this->wrapType = wrap;
@@ -186,7 +180,6 @@ namespace MxEngine
 		this->filepath = "[[depth]]";
 		this->width = width;
 		this->height = height;
-		this->channels = 1;
 		this->textureType = GL_TEXTURE_2D;
 		this->format = format;
 		this->wrapType = wrap;
@@ -209,7 +202,6 @@ namespace MxEngine
 		this->filepath = "[[multisample]]";
 		this->width = width;
 		this->height = height;
-		this->channels = 3;
 		this->textureType = GL_TEXTURE_2D_MULTISAMPLE;
 		this->format = format;
 		this->wrapType = wrap;
@@ -234,7 +226,7 @@ namespace MxEngine
 		this->Bind(0);
 		GLCALL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
 		GLCALL(glGetTexImage(this->textureType, 0, formatTable[(int)this->format], type, (void*)result));
-		return Image(result, this->width, this->height, this->channels);
+		return Image(result, this->width, this->height, this->GetChannelCount());
     }
 
 	void Texture::GenerateMipmaps()
@@ -296,6 +288,8 @@ namespace MxEngine
 			return 4 * sizeof(uint32_t);
 		case MxEngine::TextureFormat::DEPTH:
 			return 1 * sizeof(uint8_t);
+		case MxEngine::TextureFormat::DEPTH32F:
+			return 1 * sizeof(uint32_t);
 		default:
 			return 0;
 		}
@@ -361,7 +355,31 @@ namespace MxEngine
 
 	size_t Texture::GetChannelCount() const
 	{
-		return channels;
+		switch (this->format)
+		{
+		case MxEngine::TextureFormat::RGB:
+			return 3;
+		case MxEngine::TextureFormat::RGBA:
+			return 4;
+		case MxEngine::TextureFormat::RGB16:
+			return 3;
+		case MxEngine::TextureFormat::RGB16F:
+			return 4;
+		case MxEngine::TextureFormat::RGBA16:
+			return 4;
+		case MxEngine::TextureFormat::RGBA16F:
+			return 4;
+		case MxEngine::TextureFormat::RGB32F:
+			return 3;
+		case MxEngine::TextureFormat::RGBA32F:
+			return 4;
+		case MxEngine::TextureFormat::DEPTH:
+			return 1;
+		case MxEngine::TextureFormat::DEPTH32F:
+			return 1;
+		default:
+			return 0;
+		}
 	}
 
     const char* EnumToString(TextureFormat format)
@@ -378,6 +396,7 @@ namespace MxEngine
 			TEX_FMT_STR(RGB32F);
 			TEX_FMT_STR(RGBA32F);
 			TEX_FMT_STR(DEPTH);
+			TEX_FMT_STR(DEPTH32F);
 		default:
 			return "INVALID_FORMAT";
 		}

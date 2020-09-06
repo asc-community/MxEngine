@@ -1,5 +1,4 @@
 #include "shader_utils.glsl"
-#include "fxaa.glsl"
 #include "fog.glsl"
 EMBEDDED_SHADER(
 
@@ -21,16 +20,14 @@ struct Camera
 
 uniform sampler2D cameraOutput;
 uniform Fog fog;
-uniform bool enableFXAA;
 uniform Camera camera;
 
 void main()
 {
 	FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewMatrix, camera.invProjMatrix);
 	float fragDistance = length(camera.position - fragment.position);
-	
-	vec3 currentColor;
-	currentColor = enableFXAA ? fxaa(cameraOutput, TexCoord).rgb : texture(cameraOutput, TexCoord).rgb;
+
+	vec3 currentColor = texture(cameraOutput, TexCoord).rgb;
 	currentColor = applyFog(currentColor, fragDistance, fog);
 
 	OutColor = vec4(currentColor, 1.0f);

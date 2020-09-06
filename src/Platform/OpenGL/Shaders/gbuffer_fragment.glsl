@@ -57,7 +57,7 @@ void main()
 
 	OutAlbedo = vec4(fsin.RenderColor * albedo, 1.0f);
 	OutNormal = vec4(0.5f * normal + 0.5f, 1.0f);
-	OutMaterial = vec4(emmisive / (emmisive + 1.0f), reflection, 1.0f / specularIntensity, specularFactor);
+	OutMaterial = vec4(emmisive / (emmisive + 1.0f), reflection, 1.0f / log(specularIntensity + 1.0f), specularFactor);
 }
 
 )

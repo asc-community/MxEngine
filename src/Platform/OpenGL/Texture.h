@@ -65,7 +65,7 @@ namespace MxEngine
 		using BindableId = unsigned int;
 
 		MxString filepath;
-		size_t width = 0, height = 0, channels = 0;
+		size_t width = 0, height = 0;
 		BindableId id = 0;
 		mutable BindableId activeId = 0;
 		unsigned int textureType = 0;

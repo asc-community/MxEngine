@@ -57,7 +57,7 @@ vec3 calcColorUnderPointLight(FragmentInfo fragment, PointLight light, vec3 view
 	float intensity = (light.radius - lightDistance) / light.radius;
 
 	float diffuseCoef = max(dot(lightDir, fragment.normal), 0.0f);
-	float specularCoef = pow(clamp(dot(Hdir, fragment.normal), 0.0f, 1.0f), fragment.specularIntensity);
+	float specularCoef = pow(max(dot(Hdir, fragment.normal), 0.0f), fragment.specularIntensity);
 
 	vec3 ambientColor = fragment.albedo;
 	vec3 diffuseColor = fragment.albedo * diffuseCoef;

@@ -337,6 +337,26 @@ namespace MxEngine
 		this->gamma = Max(0.0f, gamma);
 	}
 
+	float CameraController::GetVignetteRadius() const
+	{
+		return this->vignetteRadius;
+	}
+
+	void CameraController::SetVignetterRadius(float radius)
+	{
+		this->vignetteRadius = Max(0.0f, radius);
+	}
+
+	float CameraController::GetVignetteIntensity() const
+	{
+		return this->vignetteIntensity;
+	}
+
+	void CameraController::SetVignetteIntensity(float intensity)
+	{
+		this->vignetteIntensity = Max(0.0f, intensity);
+	}
+
 	float CameraController::GetMoveSpeed() const
 	{
 		return this->moveSpeed;
@@ -450,9 +470,9 @@ namespace MxEngine
 		return this->renderBuffers->HDR;
 	}
 
-    TextureHandle CameraController::GetVFXTexture() const
+    TextureHandle CameraController::GetSwapHDRTexture() const
     {
-		return this->renderBuffers->VFX;
+		return this->renderBuffers->SwapHDR;
     }
 
 	void CameraRender::Init(int width, int height)
@@ -463,7 +483,7 @@ namespace MxEngine
 		this->Material = GraphicFactory::Create<Texture>();
 		this->Depth = GraphicFactory::Create<Texture>();
 		this->HDR = GraphicFactory::Create<Texture>();
-		this->VFX = GraphicFactory::Create<Texture>();
+		this->SwapHDR = GraphicFactory::Create<Texture>();
 
 		this->Resize(width, height);
 		
@@ -484,18 +504,18 @@ namespace MxEngine
 	void CameraRender::Resize(int width, int height)
 	{
 		this->Albedo->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
-		this->Normal->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
+		this->Normal->Load(nullptr, width, height, TextureFormat::RGBA16, TextureWrap::CLAMP_TO_EDGE);
 		this->Material->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
 		this->Depth->LoadDepth(width, height, TextureFormat::DEPTH32F, TextureWrap::CLAMP_TO_EDGE);
 		this->HDR->Load(nullptr, width, height, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
-		this->VFX->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
+		this->SwapHDR->Load(nullptr, width, height, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
 
 		this->Albedo->SetPath("[[cam albedo]]");
 		this->Normal->SetPath("[[cam normal]]");
 		this->Material->SetPath("[[cam material]]");
 		this->Depth->SetPath("[[cam depth]]");
 		this->HDR->SetPath("[[cam hdr]]");
-		this->VFX->SetPath("[[cam vfx]]");
+		this->SwapHDR->SetPath("[[cam swap hdr]]");
 	}
 
 	void CameraRender::DeInit()
@@ -506,6 +526,6 @@ namespace MxEngine
 		GraphicFactory::Destroy(this->Material);
 		GraphicFactory::Destroy(this->Depth);
 		GraphicFactory::Destroy(this->HDR);
-		GraphicFactory::Destroy(this->VFX);
+		GraphicFactory::Destroy(this->SwapHDR);
 	}
 }

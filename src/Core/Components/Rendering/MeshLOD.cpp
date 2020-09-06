@@ -87,7 +87,7 @@ namespace MxEngine
 
         // magic numbers which were measured in game to find best distance for each LOD peek
         constexpr static std::array lodDistance = {
-            0.21f, 0.15f, 0.10f, 0.06f, 0.03f, 0.1f
+            0.21f, 0.15f, 0.10f, 0.06f, 0.03f, 0.01f
         };
         this->CurrentLOD = 0;
         while (this->CurrentLOD < lodDistance.size() && scaledDistance < lodDistance[this->CurrentLOD])

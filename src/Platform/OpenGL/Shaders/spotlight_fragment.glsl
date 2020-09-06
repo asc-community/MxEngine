@@ -54,7 +54,7 @@ vec3 calcColorUnderSpotLight(FragmentInfo fragment, SpotLight light, vec3 viewDi
 	if (computeShadow) { shadowFactor = calcShadowFactor2D(fragLightSpace, map_shadow, 0.005f, pcfDistance); }
 
 	float diffuseCoef = max(dot(lightDir, fragment.normal), 0.0f);
-	float specularCoef = pow(clamp(dot(Hdir, fragment.normal), 0.0f, 1.0f), fragment.specularIntensity);
+	float specularCoef = pow(max(dot(Hdir, fragment.normal), 0.0f), fragment.specularIntensity);
 
 	float fragAngle = dot(lightDir, normalize(-light.direction));
 	float epsilon = light.innerAngle - light.outerAngle;

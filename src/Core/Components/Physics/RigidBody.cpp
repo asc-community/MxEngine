@@ -48,7 +48,6 @@ namespace MxEngine
             // if body is kinematic, MxObject's Transform component controls its position
             btTransform tr;
             ToBulletTransform(tr, self.Transform);
-            this->rigidBody->GetNativeHandle()->setWorldTransform(tr);
             this->rigidBody->GetNativeHandle()->getMotionState()->setWorldTransform(tr);
         }
         else if (this->rigidBody->HasTransformUpdate())
@@ -242,6 +241,7 @@ namespace MxEngine
 
     void RigidBody::SetLinearVelocity(const Vector3& velocity)
     {
+        this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->setLinearVelocity(ToBulletVector3(velocity));
     }
 
@@ -272,6 +272,7 @@ namespace MxEngine
 
     void RigidBody::SetAngularVelocity(const Vector3& velocity)
     {
+        this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->setAngularVelocity(ToBulletVector3(velocity));
     }
 
@@ -352,51 +353,61 @@ namespace MxEngine
 
     void RigidBody::ApplyCentralImpulse(const Vector3& impulse)
     {
+        this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->applyCentralImpulse(ToBulletVector3(impulse));
     }
 
     void RigidBody::ApplyCentralPushImpulse(const Vector3& impulse)
     {
+        this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->applyCentralPushImpulse(ToBulletVector3(impulse));
     }
 
     void RigidBody::ApplyForce(const Vector3& force, const Vector3& relativePosition)
     {
+        this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->applyForce(ToBulletVector3(force), ToBulletVector3(relativePosition));
     }
 
     void RigidBody::ApplyImpulse(const Vector3& impulse, const Vector3& relativePosition)
     {
+        this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->applyForce(ToBulletVector3(impulse), ToBulletVector3(relativePosition));
     }
 
     void RigidBody::ApplyPushImpulse(const Vector3& impulse, const Vector3& relativePosition)
     {
+        this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->applyPushImpulse(ToBulletVector3(impulse), ToBulletVector3(relativePosition));
     }
 
     void RigidBody::ApplyTorque(const Vector3& force)
     {
+        this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->applyTorque(ToBulletVector3(force));
     }
 
     void RigidBody::ApplyTorqueImpulse(const Vector3& impulse)
     {
+        this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->applyTorqueImpulse(ToBulletVector3(impulse));
     }
 
     void RigidBody::ApplyTorqueTurnImpulse(const Vector3& impulse)
     {
+        this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->applyTorqueTurnImpulse(ToBulletVector3(impulse));
     }
 
     void RigidBody::ApplyCentralForce(const Vector3& force)
     {
+        this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->applyCentralForce(ToBulletVector3(force));
     }
 
     void RigidBody::SetPushVelocity(const Vector3& velocity)
     {
+        this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->setPushVelocity(ToBulletVector3(velocity));
     }
 
@@ -407,6 +418,7 @@ namespace MxEngine
 
     void RigidBody::SetTurnVelocity(const Vector3& velocity)
     {
+        this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->setTurnVelocity(ToBulletVector3(velocity));
     }
 

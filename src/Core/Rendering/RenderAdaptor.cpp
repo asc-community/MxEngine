@@ -139,11 +139,25 @@ namespace MxEngine
             #include "Platform/OpenGL/Shaders/hdr_to_ldr_fragment.glsl"
         );
 
-        environment.VFXShader = GraphicFactory::Create<Shader>();
-        environment.VFXShader->LoadFromString(
+        environment.FXAAShader = GraphicFactory::Create<Shader>();
+        environment.FXAAShader->LoadFromString(
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
-            #include "Platform/OpenGL/Shaders/vfx_fragment.glsl"
+            #include "Platform/OpenGL/Shaders/fxaa_fragment.glsl"
+        );
+
+        environment.FogShader = GraphicFactory::Create<Shader>();
+        environment.FogShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/fog_fragment.glsl"
+        );
+
+        environment.VignetteShader = GraphicFactory::Create<Shader>();
+        environment.VignetteShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/vignette_fragment.glsl"
         );
 
         environment.SkyboxShader = GraphicFactory::Create<Shader>();

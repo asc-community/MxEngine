@@ -36,25 +36,16 @@ namespace MxEngine
 {
     class MotionStateNotifier : public btDefaultMotionState
     {
-        btTransform cachedTransform;
     public:
-        MotionStateNotifier(btTransform& tr) : btDefaultMotionState(tr), cachedTransform(tr) { }
+        MotionStateNotifier(btTransform& tr) : btDefaultMotionState(tr) { }
 
         bool TransformUpdated = true;
 
         virtual void setWorldTransform(const btTransform& centerOfMassWorldTrans) override
         {
             this->TransformUpdated = true;
-            this->cachedTransform = centerOfMassWorldTrans;
             btDefaultMotionState::setWorldTransform(centerOfMassWorldTrans);
         }
-
-        virtual void getWorldTransform(btTransform& centerOfMassWorldTrans) const override
-        {
-            centerOfMassWorldTrans = this->cachedTransform;
-        }
-        
-        virtual ~MotionStateNotifier() = default;
     };
 
     void NativeRigidBody::DestroyBody()
@@ -63,8 +54,8 @@ namespace MxEngine
         {
             Physics::RemoveRigidBody(this->body);
 
+            Free(this->body->getMotionState());
             Free(this->body);
-            Free(this->state);
         }
     }
 
@@ -92,8 +83,8 @@ namespace MxEngine
     {
         btTransform tr;
         ToBulletTransform(tr, transform);
-        this->state = Alloc<MotionStateNotifier>(tr);
-        this->body = Alloc<btRigidBody>(0.0f, this->state, nullptr);
+        auto state = Alloc<MotionStateNotifier>(tr);
+        this->body = Alloc<btRigidBody>(0.0f, state, nullptr);
 
         Physics::AddRigidBody(this->body, this->group, this->mask);
     }
@@ -101,18 +92,14 @@ namespace MxEngine
     NativeRigidBody::NativeRigidBody(NativeRigidBody&& other) noexcept
     {
         this->body = other.body;
-        this->state = other.state;
         other.body = nullptr;
-        other.state = nullptr;
     }
 
     NativeRigidBody& NativeRigidBody::operator=(NativeRigidBody&& other) noexcept
     {
         this->DestroyBody();
         this->body = other.body;
-        this->state = other.state;
         other.body = nullptr;
-        other.state = nullptr;
         return *this;
     }
 
@@ -133,12 +120,12 @@ namespace MxEngine
 
     btMotionState* NativeRigidBody::GetMotionState()
     {
-        return this->state;
+        return this->body->getMotionState();
     }
 
     const btMotionState* NativeRigidBody::GetMotionState() const
     {
-        return this->state;
+        return this->body->getMotionState();
     }
 
     btCollisionShape* NativeRigidBody::GetCollisionShape()
@@ -175,12 +162,12 @@ namespace MxEngine
 
     bool NativeRigidBody::HasTransformUpdate() const
     {
-        return static_cast<MotionStateNotifier*>(this->state)->TransformUpdated;
+        return static_cast<const MotionStateNotifier*>(this->GetMotionState())->TransformUpdated;
     }
 
     void NativeRigidBody::SetTransformUpdateFlag(bool value)
     {
-        static_cast<MotionStateNotifier*>(this->state)->TransformUpdated = value;
+        static_cast<MotionStateNotifier*>(this->GetMotionState())->TransformUpdated = value;
     }
 
     Vector3 NativeRigidBody::GetScale() const
@@ -201,7 +188,6 @@ namespace MxEngine
         {
             this->body->setCollisionFlags(this->body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
             this->SetActivationState(ActivationState::DISABLE_DEACTIVATION);
-            this->Activate();
         }
         else
         {
@@ -230,7 +216,6 @@ namespace MxEngine
     void NativeRigidBody::SetActivationState(ActivationState state)
     {
         this->body->forceActivationState((int)state);
-        this->Activate();
     }
 
     ActivationState NativeRigidBody::GetActivationState() const

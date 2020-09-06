@@ -81,13 +81,13 @@ FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D n
 	FragmentInfo fragment;
 
 	fragment.albedo = texture(albedoTexture, texCoord).rgb;
-	fragment.normal = 2.0f * texture(normalTexture, texCoord).rgb - vec3(1.0f);
+	fragment.normal = normalize(texture(normalTexture, texCoord).rgb - vec3(0.5f));
 	vec4 material = texture(materialTexture, texCoord).rgba;
 	fragment.depth = texture(depthTexture, texCoord).r;
 
 	fragment.emmisionFactor = material.r / (1.0f - material.r);
 	fragment.reflection = material.g;
-	fragment.specularIntensity = 1.0f / material.b;
+	fragment.specularIntensity = exp(1.0f / material.b) - 1.0f;
 	fragment.specularFactor = material.a;
 
 	fragment.position = reconstructWorldPosition(fragment.depth, texCoord, invProjection, invView);

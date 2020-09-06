@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-7.5.2-red)
+![](https://img.shields.io/badge/version-7.5.3-red)
 ![](https://img.shields.io/badge/build-cmake-green)
 ![GitHub](https://img.shields.io/github/license/asc-community/MxEngine?color=yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
@@ -47,8 +47,8 @@ cube->AddComponent<MeshRenderer>();
 MxEngine is using Assimp library which can load any popular object format. To load materials simply pass same path to object file
 ```cs
 auto object = MxObject::Create();
-object.AddComponent<MeshSource>(AssetManager::LoadMesh("objects/your_object.obj"));
-object.AddComponent<MeshRenderer>(AssetManager::LoadMaterials("objects/your_object.obj"));
+object->AddComponent<MeshSource>(AssetManager::LoadMesh("objects/your_object.obj"));
+object->AddComponent<MeshRenderer>(AssetManager::LoadMaterials("objects/your_object.obj"));
 ```
 ### Creating lights
 Dynamic directional lights, spot lights and point lights are supported. Each has simular interface and is created in a uniform way
@@ -124,7 +124,7 @@ if(object.IsValid())
 ### Setting up timers and events
 You can sign up for event or create timer with specific call interval in one line of code
 ```cs
-Timer::Shedule([]() { MXLOG_INFO("MyTimer", "I am called every 500ms!"); }, TimerMode::UPDATE_EACH_DELTA, 0.5f);
+Timer::CallEachDelta([]() { MXLOG_INFO("MyTimer", "I am called every 500ms!"); }, 0.5f);
 
 Event::AddEventListener("MyEvent", [](UpdateEvent& e) { MXLOG_INFO("MyEvent", "I am called every frame!"); });
 ```

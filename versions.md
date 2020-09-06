@@ -210,3 +210,6 @@
 - added more random utilities
 - fixed kinematic objects interaction
 - added more timer utilities
+### 7.5.3
+- added vignette camera effect
+- multiple bug fixes in physics and graphics

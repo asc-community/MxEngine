@@ -17,7 +17,7 @@ vec3 calcColorUnderDirLight(FragmentInfo fragment, vec3 reflectionColor, DirLigh
 	float shadowFactor = calcShadowFactor2D(fragLightSpace, shadowMap, 0.005f, pcfDistance);
 
 	float diffuseCoef = max(dot(lightDir, fragment.normal), 0.0f);
-	float specularCoef = pow(clamp(dot(Hdir, fragment.normal), 0.0f, 1.0f), fragment.specularIntensity);
+	float specularCoef = pow(max(dot(Hdir, fragment.normal), 0.0f), fragment.specularIntensity);
 
 	vec3 ambientColor = fragment.albedo;
 	vec3 diffuseColor = fragment.albedo * diffuseCoef;
