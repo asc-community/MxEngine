@@ -38,7 +38,7 @@ namespace MxEngine
     objects are accessed by index in array and references should not be stored (as any allocation can potentially invalidate them)
     to check if object is allocated before access, use IsAllocated(index). To allocate use Allocate(args), to deallocate - Deallocate(index)
     */
-    template<typename T, template<typename> typename Container = MxVector>
+    template<typename T, template<typename, typename...> typename Container = MxVector>
     class VectorPool
     {
     public:

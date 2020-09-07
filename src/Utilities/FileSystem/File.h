@@ -89,11 +89,6 @@ namespace MxEngine
         \param mode how to treat file (see FileMode documentation)
         */
         File(const char* path, int mode = FileMode::READ);
-        File(const File&) = default;
-        File(File&&) = default;
-        File& operator=(const File&) = default;
-        File& operator=(File&&) = default;
-        ~File() = default;
 
         /*!
         fileStream member getter
