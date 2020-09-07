@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Core/Components/Instancing/InstanceFactory.h"
-
+#include "Core/Runtime/RuntimeEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 
 namespace MxEngine::GUI

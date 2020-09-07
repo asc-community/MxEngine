@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Core/Application/Application.h"
+#include "Core/Runtime/RuntimeEditor.h"
 
 namespace MxEngine
 {

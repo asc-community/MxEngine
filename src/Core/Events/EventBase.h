@@ -28,11 +28,9 @@
 
 #pragma once
 
-#include "Utilities/EventDispatcher/EventDispatcher.h"
+#include "Utilities/EventDispatcher/EventDispatcherFwd.h"
 
 namespace MxEngine
 {
 	MAKE_EVENT_BASE(EventBase);
-
-	using EventDispatcher = EventDispatcherImpl<EventBase>;
 }

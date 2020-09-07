@@ -49,6 +49,26 @@ namespace MxEngine
     {
         return MxString{ value.c_str() };
     }
+
+    using TimeStep = float;
+    /*!
+    creates human-readable time string (10ms, 1.3s and etc.)
+    \param time timestep to convert to string
+    \returns string object with beautifies timestep
+    */
+    inline MxString BeautifyTime(TimeStep time)
+    {
+        if (time > 1.0f)
+        {
+            int timeInt = int(time * 100);
+            return ToMxString(timeInt / 100) + '.' + ToMxString(timeInt % 100) + 's';
+        }
+        else
+        {
+            int timeInt = int(time * 1000 * 100);
+            return ToMxString(timeInt / 100) + '.' + ToMxString(timeInt % 100) + "ms";
+        }
+    }
 }
 
 namespace EA::StdC

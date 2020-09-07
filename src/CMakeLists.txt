@@ -142,6 +142,7 @@ set(MXENGINE_HEADERS
     "Utilities/Array/Array2D.h" 
     "Utilities/Array/ArrayView.h" 
     "Utilities/EventDispatcher/EventDispatcher.h" 
+    "Utilities/EventDispatcher/EventDispatcherFwd.h" 
     "Utilities/Format/Format.h" 
     "Utilities/Image/ImageLoader.h" 
     "Utilities/Math/Math.h" 
@@ -394,7 +395,7 @@ set(MxEngine_INCLUDE_DIR ${MXENGINE_INCLUDE_DIRS} PARENT_SCOPE)
 set(MxEngine_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 
 set(LIBRARY_NAME MxEngine)
-add_library(${LIBRARY_NAME} STATIC ${MXENGINE_SOURCES} ${MXENGINE_HEADERS} )
+add_library(${LIBRARY_NAME} STATIC ${MXENGINE_SOURCES} ${MXENGINE_HEADERS})
 add_library(${LIBRARY_NAME}::${LIBRARY_NAME} ALIAS ${LIBRARY_NAME})
 
 link_directories(${THIRD_PARTY_BINARY_DIRS})

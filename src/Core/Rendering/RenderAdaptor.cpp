@@ -43,6 +43,7 @@
 #include "Core/Components/Instancing/InstanceFactory.h"
 #include "Core/BoundingObjects/Cone.h"
 #include "Core/BoundingObjects/Frustrum.h"
+#include "Utilities/Profiler/Profiler.h"
 
 namespace MxEngine
 {

@@ -26,44 +26,23 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include <cstdint>
+#include "Utilities/String/String.h"
 
 namespace MxEngine
 {
-	using TimeStep = float;
-	using SystemTime = int64_t;
-
-	/*!
-	time is a small utility class which uses application window timer to retrieve timestep since engine start
+	/*
+	creates base event class and adds GetEventType() pure virtual method. Used for EventDispatcher class
 	*/
-	struct Time
-	{
-		/*!
-		gets current time since engine start
-		\returns timestep measured in 1/100 of millisecond (depends on GLFW implementation)
-		*/
-		static TimeStep Current();
-		/*!
-		gets current system time (may not be fast, try avoiding calling it each frame)
-		/returns system time (uses chrono std library)
-		*/
-		static SystemTime System();
-		/*!
-		gets time passed between frames
-		\returns timestep measured in seconds
-		*/
-		static TimeStep Delta();
-		/*!
-		gets unscaled time passed since last frame
-		\returns timestep measured in seconds
-		*/
-		static TimeStep UnscaledDelta();
-		/*!
-		gets average frames per second since last second
-		\returns amount of frames per second
-		*/
-		static size_t FPS();
-	};
+	#define MAKE_EVENT_BASE(name) struct name { inline virtual uint32_t GetEventType() const = 0; virtual ~name() = default; }
+
+	/*
+	inserted into class body of derived classes from base event. Using compile-time hash from class name to generate type id
+	*/
+	#define MAKE_EVENT(class_name) \
+	template<typename T> friend class MxEngine::EventDispatcherImpl;\
+	public: inline virtual uint32_t GetEventType() const override { return eventType; } private:\
+	constexpr static uint32_t eventType = STRING_ID(#class_name)
+
+	template<typename EventBase>
+	class EventDispatcherImpl;
 }

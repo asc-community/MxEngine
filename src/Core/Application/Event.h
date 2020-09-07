@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Core/Application/Application.h"
+#include "Utilities/EventDispatcher/EventDispatcher.h"
 
 namespace MxEngine
 {

@@ -30,6 +30,8 @@
 #include "Utilities/Logging/Logger.h"
 #include "Utilities/FileSystem/FileManager.h"
 #include "Core/Application/Application.h"
+#include "Core/Runtime/RuntimeEditor.h"
+#include "Utilities/Profiler/Profiler.h"
 
 namespace MxEngine
 {

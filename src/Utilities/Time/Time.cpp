@@ -63,18 +63,4 @@ namespace MxEngine
 	{
 		return Application::Get()->GetCurrentFPS();
 	}
-
-	MxString BeautifyTime(TimeStep time)
-	{
-		if (time > 1.0f)
-		{
-			int timeInt = int(time * 100);
-			return ToMxString(timeInt / 100) + "." + ToMxString(timeInt % 100) + "s";
-		}
-		else
-		{
-			int timeInt = int(time * 1000 * 100);
-			return ToMxString(timeInt / 100) + "." + ToMxString(timeInt % 100) + "ms";
-		}
-	}
 }

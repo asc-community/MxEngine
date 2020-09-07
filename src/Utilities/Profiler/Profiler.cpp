@@ -27,6 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Profiler.h"
+#include "Utilities/STL/MxString.h"
 
 namespace MxEngine
 {
@@ -86,5 +87,12 @@ namespace MxEngine
 		if (!this->IsValid()) return;
 		this->WriteJsonFooter();
 		output.Close();
+	}
+
+	ScopeTimer::~ScopeTimer()
+	{
+		TimeStep end = Time::Current();
+		MxString delta = BeautifyTime(end - start);
+		MXLOG_INFO(this->invoker.data(), this->function + " finished in " + delta);
 	}
 }

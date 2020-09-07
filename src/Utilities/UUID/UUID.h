@@ -88,18 +88,14 @@ namespace MxEngine
 }
 
 #define HASH_ALGORITHM(NAMESPACE)\
-namespace NAMESPACE\
+template <>\
+struct NAMESPACE::hash<MxEngine::UUID>\
 {\
-    template<typename T> struct hash;\
-    template <>\
-    struct hash<MxEngine::UUID>\
+    std::size_t operator()(const MxEngine::UUID& Id) const\
     {\
-        std::size_t operator()(const MxEngine::UUID& Id) const\
-        {\
-            return Id.GetHashCode();\
-        }\
-    };\
-}
+        return Id.GetHashCode();\
+    }\
+};
 
 HASH_ALGORITHM(std)
 HASH_ALGORITHM(eastl)

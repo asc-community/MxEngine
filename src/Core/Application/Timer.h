@@ -42,7 +42,7 @@ namespace MxEngine
             auto object = MxObject::Create();
             object->SetDisplayInRuntimeEditor(false);
             auto behaviour = object->AddComponent<Behaviour>(
-            [callback = std::forward<F>(func)](MxObject& self, float dt)
+            [callback = std::forward<F>(func)](MxObject& self, float dt) mutable
             {
                 callback();
                 // destroy object if timer was set to single update mode
@@ -82,7 +82,7 @@ namespace MxEngine
         template<typename F>
         static void RepeatAfterDelta(F&& func, float delta, float duration)
         {
-            Timer::CallAfterDelta([f = std::forward<F>(func)]() { Timer::Repeat(std::move(f), duration); }, delta);
+            Timer::CallAfterDelta([f = std::forward<F>(func), duration]() { Timer::Repeat(std::move(f), duration); }, delta);
         }
     };
 }

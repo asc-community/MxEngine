@@ -29,6 +29,7 @@
 #include "InputControl.h"
 #include "Core/Application/Event.h"
 #include "Core/Events/MouseEvent.h"
+#include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
 {

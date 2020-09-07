@@ -162,12 +162,7 @@ namespace MxEngine
 		/*!
 		destroys scope timer, writing to debug log stream that the function execution is ended
 		*/
-		~ScopeTimer()
-		{
-			TimeStep end = Time::Current();
-			MxString delta = BeautifyTime(end - start);
-			MXLOG_INFO(this->invoker.data(), this->function + " finished in " + delta);
-		}
+		~ScopeTimer();
 	};
 
 	#if defined(MXENGINE_PROFILING_ENABLED)

@@ -60,3 +60,4 @@ external_libraries/*.lib
 python
 boost_headers
 Vendors
+*.etl

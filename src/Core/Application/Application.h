@@ -30,19 +30,20 @@
 
 #include "Utilities/Time/Time.h"
 #include "Core/Events/EventBase.h"
-#include "Core/Runtime/RuntimeEditor.h"
 #include "Core/Rendering/RenderAdaptor.h"
 #include "Core/MxObject/MxObject.h"
 #include "Utilities/FileSystem/File.h"
 #include "Core/Components/Script.h"
 #include "Core/Config/Config.h"
-
+#include "Utilities/Profiler/Profiler.h"
 #include "Platform/Window/Window.h"
 
 GENERATE_METHOD_CHECK(OnUpdate, OnUpdate(float()));
 
 namespace MxEngine
 {
+	class RuntimeEditor;
+
 	class Application
 	{
 		struct ModuleManager
@@ -56,8 +57,8 @@ namespace MxEngine
 		static inline Application* Current = nullptr;
 		UniqueRef<Window> window;
 		RenderAdaptor renderAdaptor;
-		EventDispatcher dispatcher;
-		RuntimeEditor console;
+		EventDispatcherImpl<EventBase>* dispatcher;
+		RuntimeEditor* editor;
 		CallbackList updateCallbacks;
 		Config config;
 		TimeStep timeDelta = 0.0f;
@@ -66,7 +67,7 @@ namespace MxEngine
 		bool isRunning = false;
 
 		void InitializeConfig(Config& config);
-		void InitializeRuntime(RuntimeEditor& console);
+		void InitializeRuntime(RuntimeEditor& editor);
 		void InitializeRenderAdaptor(RenderAdaptor& adaptor);
 		void UpdateTimeDelta(TimeStep& lastFrameEnd, TimeStep& lastSecondEnd, size_t& framesPerSecond);
 		void DrawObjects();
@@ -91,7 +92,7 @@ namespace MxEngine
 		void ToggleWindowUpdates(bool isPolled);
 		void CloseOnKeyPress(KeyCode key);
 
-		EventDispatcher& GetEventDispatcher();
+		EventDispatcherImpl<EventBase>& GetEventDispatcher();
 		RenderAdaptor& GetRenderAdaptor();
 		RuntimeEditor& GetRuntimeEditor();
 		Config& GetConfig();

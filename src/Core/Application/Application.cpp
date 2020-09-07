@@ -50,10 +50,14 @@
 // components
 #include "Core/Components/Components.h"
 
+// editor
+#include "Core/Runtime/RuntimeEditor.h"
+
 namespace MxEngine
 {
 	Application::Application()
-		: manager(this), window(MakeUnique<Window>(1600, 900, "MxEngine Application"))
+		: manager(this), window(MakeUnique<Window>(1600, 900, "MxEngine Application")), 
+		  dispatcher(Alloc<EventDispatcherImpl<EventBase>>()), editor(Alloc<RuntimeEditor>())
 	{
 		this->CreateContext();
 	}
@@ -98,9 +102,9 @@ namespace MxEngine
 		return this->counterFPS;
 	}
 
-	EventDispatcher& Application::GetEventDispatcher()
+	EventDispatcherImpl<EventBase>& Application::GetEventDispatcher()
 	{
-		return this->dispatcher;
+		return *this->dispatcher;
 	}
 
 	RenderAdaptor& Application::GetRenderAdaptor()
@@ -116,7 +120,7 @@ namespace MxEngine
 
 	void Application::ToggleWindowUpdates(bool isPolled)
 	{
-		this->GetWindow().UseEventDispatcher(isPolled ? &this->dispatcher : nullptr);
+		this->GetWindow().UseEventDispatcher(isPolled ? this->dispatcher : nullptr);
 	}
 
 	void Application::CloseOnKeyPress(KeyCode key)
@@ -239,7 +243,7 @@ namespace MxEngine
 		FileManager::SetRoot(ToFilePath(config.ProjectRootDirectory));
 
 		this->GetWindow()
-			.UseEventDispatcher(&this->dispatcher)
+			.UseEventDispatcher(this->dispatcher)
 			.UseProfile((int)this->config.GraphicAPIMajorVersion, (int)this->config.GraphicAPIMinorVersion, this->config.GraphicAPIProfile)
 			.UseCursorMode(this->config.Cursor)
 			.UseDoubleBuffering(this->config.DoubleBuffering)
@@ -267,7 +271,7 @@ namespace MxEngine
 
 	RuntimeEditor& Application::GetRuntimeEditor()
 	{
-		return this->console;
+		return *this->editor;
 	}
 
     Config& Application::GetConfig()

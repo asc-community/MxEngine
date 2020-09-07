@@ -34,24 +34,10 @@
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/Memory/Memory.h"
 #include "Utilities/STL/MxHashMap.h"
-#include "Utilities/String/String.h" // is used in macro, so analyzer may say it is unused, but its not
 #include "Utilities/STL/MxVector.h"
 
 namespace MxEngine
 {
-	/*
-	creates base event class and adds GetEventType() pure virtual method. Used for EventDispatcher class
-	*/
-	#define MAKE_EVENT_BASE(name) struct name { inline virtual uint32_t GetEventType() const = 0; virtual ~name() = default; }
-
-	/*
-	inserted into class body of derived classes from base event. Using compile-time hash from class name to generate type id
-	*/
-	#define MAKE_EVENT(class_name) \
-	template<typename T> friend class MxEngine::EventDispatcherImpl;\
-	public: inline virtual uint32_t GetEventType() const override { return eventType; } private:\
-	constexpr static uint32_t eventType = STRING_ID(#class_name)
-
 	/*!
 	EventDispatcher class is used to handle all events inside MxEngine. Events can either be dispatch for Application (global) or
 	for currently active scene. Note that events are NOT dispatched when developer console is opened and instead sheduled until it close

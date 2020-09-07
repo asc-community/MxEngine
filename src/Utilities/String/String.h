@@ -31,8 +31,6 @@
 #include <cstdint>
 #include <type_traits>
 
-#include "Utilities/STL/MxString.h"
-
 namespace MxEngine
 {
 	/*!
