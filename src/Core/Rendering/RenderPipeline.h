@@ -34,6 +34,7 @@
 #include "RenderObjects/RenderHelperObject.h"
 #include "RenderObjects/PointLightInstancedObject.h"
 #include "RenderObjects/SpotLightInstancedObject.h"
+#include "Core/Resources/ACESCurve.h"
 
 namespace MxEngine
 {
@@ -64,15 +65,20 @@ namespace MxEngine
         Matrix3x3 InversedSkyboxRotation;
         CubeMapHandle SkyboxMap;
         float BloomWeight;
-        float Exposure;
-        float Gamma;
         float VignetteIntensity;
         float VignetteRadius;
 
         bool EnableFXAA;
+        bool EnableToneMapping;
         bool IsPerspective;
         bool RenderToTexture;
         uint8_t BloomIterations;
+
+        float Gamma;
+        float Exposure;
+        ACES ACESCoefficients;
+        float ColorScale;
+        float WhitePoint;
     };
 
     struct EnvironmentUnit
@@ -93,10 +99,13 @@ namespace MxEngine
         ShaderHandle BloomIterationShader;
         ShaderHandle ImageForwardShader;
         ShaderHandle DebugDrawShader;
+        ShaderHandle AverageWhiteShader;
 
         TextureHandle DefaultMaterialMap;
         TextureHandle DefaultNormalMap;
         TextureHandle DefaultBlackMap;
+        TextureHandle DefaultGreyMap;
+        TextureHandle AverageWhiteTexture;
         CubeMapHandle DefaultBlackCubeMap;
 
         FrameBufferHandle DepthFrameBuffer;

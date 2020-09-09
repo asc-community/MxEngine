@@ -28,16 +28,15 @@
 
 #pragma once
 
-#include "Platform/GraphicAPI.h"
-#include "Utilities/ECS/Component.h"
-
 namespace MxEngine
 {
-    class Skybox
-    {
-        MAKE_COMPONENT(Skybox);
-    public:
-        CubeMapHandle Texture;
-        float LuminanceFactor = 1.0f;
-    };
+	struct ACES
+	{
+		float A = 0.250f;
+		float B = 0.306f;
+		float C = 0.099f;
+		float D = 0.350f;
+		float E = 0.025f;
+		float F = 0.400f;
+	};
 }

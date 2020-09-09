@@ -80,7 +80,7 @@ namespace MxEngine
 
         Event::RemoveEventListener(uuid);
 
-        Event::AddEventListener(uuid, [object = MxObject::GetHandleByComponent(*this)](UpdateEvent& e) mutable
+        Event::AddEventListener<UpdateEvent>(uuid, [object = MxObject::GetHandleByComponent(*this)](auto& e) mutable
         {
             auto viewport = Rendering::GetViewport();
             if (viewport.IsValid()) 

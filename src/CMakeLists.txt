@@ -19,6 +19,7 @@ set(MXENGINE_HEADERS
     "Core/Components/Audio/AudioSource.h" 
     "Core/Components/Camera/CameraBase.h" 
     "Core/Components/Camera/CameraController.h" 
+    "Core/Components/Camera/CameraEffects.h" 
     "Core/Components/Camera/FrustrumCamera.h" 
     "Core/Components/Camera/InputControl.h" 
     "Core/Components/Camera/OrthographicCamera.h" 
@@ -175,6 +176,7 @@ set(MXENGINE_SOURCES
     "Core/Components/Audio/AudioSource.cpp" 
     "Core/Components/Camera/CameraBase.cpp" 
     "Core/Components/Camera/CameraController.cpp" 
+    "Core/Components/Camera/CameraEffects.cpp" 
     "Core/Components/Camera/FrustrumCamera.cpp" 
     "Core/Components/Camera/InputControl.cpp" 
     "Core/Components/Camera/OrthographicCamera.cpp" 
@@ -395,7 +397,7 @@ set(MxEngine_INCLUDE_DIR ${MXENGINE_INCLUDE_DIRS} PARENT_SCOPE)
 set(MxEngine_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 
 set(LIBRARY_NAME MxEngine)
-add_library(${LIBRARY_NAME} STATIC ${MXENGINE_SOURCES} ${MXENGINE_HEADERS})
+add_library(${LIBRARY_NAME} STATIC ${MXENGINE_SOURCES} ${MXENGINE_HEADERS} "Core/Components/Camera/CameraEffects.h")
 add_library(${LIBRARY_NAME}::${LIBRARY_NAME} ALIAS ${LIBRARY_NAME})
 
 link_directories(${THIRD_PARTY_BINARY_DIRS})

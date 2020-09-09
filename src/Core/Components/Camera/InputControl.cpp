@@ -52,8 +52,8 @@ namespace MxEngine
 
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object movement: " + object.Name);
 	
-		Event::AddEventListener(uuid,
-			[forward, back, right, left, up, down, camera, object = MxObject::GetHandleByComponent(*this)](KeyEvent& event) mutable
+		Event::AddEventListener<KeyEvent>(uuid,
+			[forward, back, right, left, up, down, camera, object = MxObject::GetHandleByComponent(*this)](auto& event) mutable
 		{
 			auto vecForward = MakeVector3( 0.0f, 0.0f, 1.0f);
 			auto vecRight   = MakeVector3(-1.0f, 0.0f, 0.0f);
@@ -117,7 +117,7 @@ namespace MxEngine
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
 		MxString uuid = object.GetComponent<InputControl>().GetUUID(); 
 
-		Event::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
+		Event::AddEventListener<MouseMoveEvent>(uuid, [camera](auto& event) mutable
 		{
 			if (!camera.IsValid()) return;
 			static Vector2 oldPos = event.position;
@@ -141,7 +141,7 @@ namespace MxEngine
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
 		MxString uuid = object.GetComponent<InputControl>().GetUUID();
 	
-		Event::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
+		Event::AddEventListener<MouseMoveEvent>(uuid, [camera](auto& event) mutable
 		{
 				if (!camera.IsValid()) return;
 				static Vector2 oldPos = event.position;
@@ -165,7 +165,7 @@ namespace MxEngine
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
 		MxString uuid = object.GetComponent<InputControl>().GetUUID();
 	
-		Event::AddEventListener(uuid, [camera](MouseMoveEvent& event) mutable
+		Event::AddEventListener<MouseMoveEvent>(uuid, [camera](auto& event) mutable
 		{
 				if (!camera.IsValid()) return;
 				static Vector2 oldPos = event.position;

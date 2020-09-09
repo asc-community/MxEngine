@@ -94,7 +94,8 @@ namespace MxEngine
 		void Load(RawDataPointer data, int width, int height, TextureFormat format = TextureFormat::RGB, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true);
 		void Load(const Image& image, TextureFormat format = TextureFormat::RGB, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true);
 		void LoadDepth(int width, int height, TextureFormat format = TextureFormat::DEPTH, TextureWrap wrap = TextureWrap::CLAMP_TO_BORDER);
-		void LoadMultisample(int width, int height, TextureFormat format, int samples, TextureWrap wrap = TextureWrap::REPEAT);
+		void SetSamplingFromLOD(size_t lod);
+		size_t GetMaxTextureLOD() const;
 		Image GetRawTextureData() const;
 		void GenerateMipmaps();
 		void SetBorderColor(const Vector3& color);

@@ -29,6 +29,12 @@
 #include "RenderController.h"
 #include "Utilities/Format/Format.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
+#include "Core/Components/Camera/CameraController.h"
+#include "Core/Components/Camera/CameraEffects.h"
+#include "Core/Components/Lighting/DirectionalLight.h"
+#include "Core/Components/Lighting/SpotLight.h"
+#include "Core/Components/Lighting/PointLight.h"
+#include "Core/Components/Rendering/Skybox.h"
 #include "Utilities/Profiler/Profiler.h"
 
 namespace MxEngine
@@ -194,7 +200,7 @@ namespace MxEngine
 		this->GetRenderEngine().DrawTrianglesInstanced(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
 	}
 
-	void RenderController::ApplyBloomEffect(CameraUnit& camera)
+	void RenderController::ComputeBloomEffect(CameraUnit& camera)
 	{
 		auto iterations = camera.BloomIterations - camera.BloomIterations % 2;
 		if (iterations == 0) return;
@@ -238,6 +244,20 @@ namespace MxEngine
 		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
+	TextureHandle RenderController::ComputeAverageWhite(TextureHandle hdrTexture)
+	{
+		MAKE_SCOPE_PROFILER("RenderController::ComputeAverageWhite()");
+		hdrTexture->GenerateMipmaps();
+
+		auto& shader = this->Pipeline.Environment.AverageWhiteShader;
+		auto& output = this->Pipeline.Environment.AverageWhiteTexture;
+		hdrTexture->Bind(0);
+		shader->SetUniformInt("tex", 0);
+		this->RenderToTexture(output, shader);
+		output->GenerateMipmaps();
+		return output;
+	}
+
 	void RenderController::PerformPostProcessing(CameraUnit& camera)
 	{
 		MAKE_SCOPE_PROFILER("RenderController::PerformPostProcessing()");
@@ -251,7 +271,7 @@ namespace MxEngine
 		this->GetRenderEngine().UseDepthBufferMask(true);
 		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
 
-		this->ApplyBloomEffect(camera);
+		this->ComputeBloomEffect(camera);
 		this->ApplyFogEffect(camera, camera.HDRTexture, camera.SwapTexture);
 		this->ApplyHDRToLDRConversion(camera, camera.HDRTexture, camera.SwapTexture);
 		this->ApplyFXAA(camera, camera.HDRTexture, camera.SwapTexture);
@@ -404,9 +424,19 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::ApplyHDRToLDRConversion()");
 
 		auto& HDRToLDRShader = this->Pipeline.Environment.HDRToLDRShader;
+		auto averageWhite = camera.EnableToneMapping ? this->ComputeAverageWhite(camera.HDRTexture) : this->Pipeline.Environment.DefaultGreyMap;
+
 		input->Bind(0);
+		averageWhite->Bind(1);
 		HDRToLDRShader->SetUniformInt("HDRTex", 0);
+		HDRToLDRShader->SetUniformInt("averageWhiteTex", 1);
+
 		HDRToLDRShader->SetUniformFloat("exposure", camera.Exposure);
+		HDRToLDRShader->SetUniformFloat("colorMultiplier", camera.ColorScale);
+		HDRToLDRShader->SetUniformFloat("whitePoint", camera.WhitePoint);
+		HDRToLDRShader->SetUniformVec3("ABCcoefsACES", { camera.ACESCoefficients.A, camera.ACESCoefficients.B, camera.ACESCoefficients.C });
+		HDRToLDRShader->SetUniformVec3("DEFcoefsACES", { camera.ACESCoefficients.D, camera.ACESCoefficients.E, camera.ACESCoefficients.F });
+
 		HDRToLDRShader->SetUniformFloat("gamma", camera.Gamma);
 
 		this->RenderToTexture(output, HDRToLDRShader);
@@ -429,7 +459,7 @@ namespace MxEngine
 
 	void RenderController::ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
-		if (camera.VignetteRadius == 0.0f) return;
+		if (camera.VignetteRadius <= 0.0f) return;
 		MAKE_SCOPE_PROFILER("RenderController::ApplyVignette");
 
 		auto& vignetteShader = this->Pipeline.Environment.VignetteShader;
@@ -692,11 +722,20 @@ namespace MxEngine
 		auto& shader = *this->Pipeline.Environment.SkyboxShader;
 		auto& skybox = this->Pipeline.Environment.SkyboxCubeObject;
 
+		float skyLuminance = 0.0f;
+		Vector3 luminanceRGB(0.2125f, 0.7154f, 0.0721f);
+		for (size_t i = 0; i < Min(this->Pipeline.Lighting.DirectionalLights.size(), MaxDirLightCount); i++)
+		{
+			const auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
+			skyLuminance += Dot(luminanceRGB, dirLight.AmbientColor + dirLight.DiffuseColor);
+		}
+
 		this->BindFogInformation(shader);
 
 		shader.SetUniformMat4("StaticViewProjection", camera.StaticViewProjectionMatrix);
 		shader.SetUniformMat3("Rotation", Transpose(camera.InversedSkyboxRotation));
 		shader.SetUniformFloat("gamma", camera.Gamma);
+		shader.SetUniformFloat("luminance", skyLuminance);
 
 		camera.SkyboxMap->Bind(0);
 		shader.SetUniformInt("skybox", 0);
@@ -820,7 +859,7 @@ namespace MxEngine
 		baseLightData->OuterAngle = light.GetOuterCos();
 	}
 
-	void RenderController::SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, const Skybox& skybox)
+	void RenderController::SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, const Skybox& skybox, const CameraEffects& effects)
 	{
 		auto& camera = this->Pipeline.Cameras.emplace_back();
 
@@ -838,17 +877,21 @@ namespace MxEngine
 		camera.DepthTexture               = controller.GetDepthTexture();
 		camera.HDRTexture                 = controller.GetHDRTexture();
 		camera.SwapTexture                = controller.GetSwapHDRTexture();
-		camera.BloomIterations            = (uint8_t)controller.GetBloomIterations();
-		camera.BloomWeight                = controller.GetBloomWeight();
-		camera.Exposure                   = controller.GetExposure();
-		camera.Gamma                      = controller.GetGamma();
-		camera.VignetteRadius             = controller.GetVignetteRadius();
-		camera.VignetteIntensity          = controller.GetVignetteIntensity();
+		camera.BloomIterations            = (uint8_t)effects.GetBloomIterations();
+		camera.BloomWeight                = effects.GetBloomWeight();
+		camera.Exposure                   = effects.GetExposure();
+		camera.ACESCoefficients           = effects.GetACESCoefficients();
+		camera.ColorScale                 = effects.GetColorScale();
+		camera.WhitePoint                 = effects.GetWhitePoint();
+		camera.Gamma                      = effects.GetGamma();
+		camera.VignetteRadius             = effects.GetVignetteRadius();
+		camera.VignetteIntensity          = effects.GetVignetteIntensity();
+		camera.EnableFXAA                 = effects.IsFXAAEnabled();
+		camera.EnableToneMapping          = effects.IsToneMappingEnabled();
 		camera.SkyboxMap                  = skybox.Texture.IsValid() ? skybox.Texture : this->Pipeline.Environment.DefaultBlackCubeMap;
 		camera.InversedSkyboxRotation     = Transpose(ToMatrix(parentTransform.GetRotation()));
 		camera.OutputTexture              = controller.GetRenderTexture();
 		camera.RenderToTexture            = controller.IsRendered();
-		camera.EnableFXAA                 = controller.IsFXAAEnabled();
 	}
 
     void RenderController::SubmitPrimitive(const SubMesh& object, const Material& material, const TransformComponent& parentTransform, size_t instanceCount)

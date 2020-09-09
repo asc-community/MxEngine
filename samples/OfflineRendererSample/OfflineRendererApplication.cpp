@@ -29,7 +29,8 @@ namespace OfflineRendererSample
             auto controller = cameraObject->AddComponent<CameraController>();
             controller->SetDirection(Vector3(0.0f, -0.333f, 1.0f));
             controller->SetCameraType(CameraType::FRUSTRUM);
-            controller->SetVignetterRadius(0.0f);
+            auto effects = cameraObject->AddComponent<CameraEffects>();
+            effects->SetVignetteRadius(0.0f);
             auto skybox = cameraObject->AddComponent<Skybox>();
             skybox->Texture = AssetManager::LoadCubeMap("Resources/dawn.jpg");
 

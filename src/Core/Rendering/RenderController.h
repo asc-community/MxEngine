@@ -28,12 +28,6 @@
 
 #pragma once
 
-#include "Core/Components/Camera/CameraController.h"
-#include "Core/Components/Lighting/DirectionalLight.h"
-#include "Core/Components/Lighting/PointLight.h"
-#include "Core/Components/Lighting/SpotLight.h"
-#include "Core/Components/Rendering/Skybox.h"
-#include "Core/Components/Rendering/MeshSource.h"
 #include "Core/Resources/Material.h"
 #include "Platform/OpenGL/Renderer.h"
 #include "RenderPipeline.h"
@@ -41,6 +35,15 @@
 
 namespace MxEngine
 {
+	class DirectionalLight;
+	class PointLight;
+	class SpotLight;
+	class CameraController;
+	class CameraEffects;
+	class Skybox;
+	class SubMesh;
+	class TransformComponent;
+
 	class RenderController
 	{
 		Renderer renderer;
@@ -56,7 +59,8 @@ namespace MxEngine
 		void DrawShadowMap(const RenderUnit& unit, const PointLightUnit& pointLight, const Shader& shader);
 		void AttachDepthMap(const TextureHandle& texture);
 		void AttachDepthMap(const CubeMapHandle& cubemap);
-		void ApplyBloomEffect(CameraUnit& camera);
+		void ComputeBloomEffect(CameraUnit& camera);
+		TextureHandle ComputeAverageWhite(TextureHandle HDRTexture);
 		void PerformPostProcessing(CameraUnit& camera);
 		void DrawDirectionalLights(CameraUnit& camera);
 		void PerformLightPass(CameraUnit& camera);
@@ -97,7 +101,7 @@ namespace MxEngine
 		void SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform);
 		void SubmitLightSource(const PointLight& light, const TransformComponent& parentTransform);
 		void SubmitLightSource(const SpotLight& light, const TransformComponent& parentTransform);
-		void SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, const Skybox& skybox);
+		void SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, const Skybox& skybox, const CameraEffects& effects);
 		void SubmitPrimitive(const SubMesh& object, const Material& material, const TransformComponent& parentTransform, size_t instanceCount);
 		void SubmitImage(const TextureHandle& texture);
 		void StartPipeline();

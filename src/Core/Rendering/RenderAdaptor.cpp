@@ -41,6 +41,11 @@
 #include "Core/Components/Physics/CapsuleCollider.h"
 #include "Core/Components/Physics/RigidBody.h"
 #include "Core/Components/Instancing/InstanceFactory.h"
+#include "Core/Components/Lighting/DirectionalLight.h"
+#include "Core/Components/Lighting/SpotLight.h"
+#include "Core/Components/Lighting/PointLight.h"
+#include "Core/Components/Camera/CameraEffects.h"
+#include "Core/Components/Rendering/Skybox.h"
 #include "Core/BoundingObjects/Cone.h"
 #include "Core/BoundingObjects/Frustrum.h"
 #include "Utilities/Profiler/Profiler.h"
@@ -91,11 +96,17 @@ namespace MxEngine
         environment.DefaultBlackMap = Colors::MakeTexture(Colors::BLACK);
         environment.DefaultNormalMap = Colors::MakeTexture(Colors::FLAT_NORMAL);
         environment.DefaultMaterialMap = Colors::MakeTexture(Colors::WHITE);
+        environment.DefaultGreyMap = Colors::MakeTexture(Colors::GREY);
         environment.DefaultBlackCubeMap = Colors::MakeCubeMap(Colors::BLACK);
 
         environment.DefaultBlackMap->SetPath("[[black color]]");
         environment.DefaultNormalMap->SetPath("[[default normal]]");
         environment.DefaultMaterialMap->SetPath("[[white color]]");
+
+        environment.AverageWhiteTexture = GraphicFactory::Create<Texture>();
+        environment.AverageWhiteTexture->Load(nullptr, (int)GlobalConfig::GetBloomTextureSize(), (int)GlobalConfig::GetBloomTextureSize(), HDRTextureFormat);
+        environment.AverageWhiteTexture->SetSamplingFromLOD(environment.AverageWhiteTexture->GetMaxTextureLOD());
+        environment.AverageWhiteTexture->SetPath("[[average white]]");
 
         // shaders
         environment.GBufferShader = GraphicFactory::Create<Shader>();
@@ -212,6 +223,13 @@ namespace MxEngine
             #include "Platform/OpenGL/Shaders/debug_fragment.glsl"
         );
 
+        environment.AverageWhiteShader = GraphicFactory::Create<Shader>();
+        environment.AverageWhiteShader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/average_white_fragment.glsl"
+        );
+
         // framebuffers
         environment.DepthFrameBuffer = GraphicFactory::Create<FrameBuffer>();
         environment.DepthFrameBuffer->UseOnlyDepth();
@@ -265,8 +283,10 @@ namespace MxEngine
                 auto& object = MxObject::GetByComponent(camera);
                 auto& transform = object.Transform;
                 auto skyboxComponent = object.GetComponent<Skybox>();
+                auto effectsComponent = object.GetComponent<CameraEffects>();
                 Skybox skybox = skyboxComponent.IsValid() ? *skyboxComponent.GetUnchecked() : Skybox();
-                this->Renderer.SubmitCamera(camera, transform, skybox);
+                CameraEffects effects = effectsComponent.IsValid() ? *effectsComponent.GetUnchecked() : CameraEffects();
+                this->Renderer.SubmitCamera(camera, transform, skybox, effects);
                 TrackMainCameraIndex(camera);
             }
         }

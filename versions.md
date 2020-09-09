@@ -211,5 +211,6 @@
 - fixed kinematic objects interaction
 - added more timer utilities
 ### 7.5.3
-- added vignette camera effect
+- added vignette effect and tone-mapping
+- added camera effects component
 - multiple bug fixes in physics and graphics

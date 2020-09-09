@@ -501,7 +501,7 @@ namespace MxEngine
 	*/
 	inline constexpr size_t Log2(size_t n)
 	{
-		return ((n == 1) ? 0 : 1 + Log2(n / 2));
+		return ((n <= 1) ? 0 : 1 + Log2(n / 2));
 	}
 
 	/*!

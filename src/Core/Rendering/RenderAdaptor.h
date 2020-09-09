@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Core/Rendering/RenderController.h"
+#include "Core/Components/Camera/CameraController.h"
 
 namespace MxEngine
 {

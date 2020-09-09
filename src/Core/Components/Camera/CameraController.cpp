@@ -193,16 +193,6 @@ namespace MxEngine
 		return this->renderingEnabled;
     }
 
-	void CameraController::ToggleFXAA(bool value)
-	{
-		this->isFXAAEnabled = value;
-	}
-
-    bool CameraController::IsFXAAEnabled() const
-    {
-		return this->isFXAAEnabled;
-    }
-
     void CameraController::ToggleRendering(bool value)
 	{
 		if (this->renderingEnabled != value)
@@ -295,66 +285,6 @@ namespace MxEngine
 	float CameraController::GetVerticalAngle() const
 	{
 		return this->verticalAngle;
-	}
-
-    void CameraController::SetBloomWeight(float weight)
-    {
-		this->bloomWeight = Max(0.0f, weight);
-    }
-
-	float CameraController::GetBloomWeight() const
-	{
-		return this->bloomWeight;
-	}
-
-	size_t CameraController::GetBloomIterations() const
-	{
-		return (size_t)this->bloomIterations;
-	}
-
-	void CameraController::SetBloomIterations(size_t iterCount)
-	{
-		this->bloomIterations = (uint8_t)Min(iterCount, (size_t)std::numeric_limits<uint8_t>::max());
-	}
-
-	float CameraController::GetExposure() const
-	{
-		return this->exposure;
-	}
-
-	void CameraController::SetExposure(float exp)
-	{
-		this->exposure = Max(0.0f, exp);
-	}
-
-	float CameraController::GetGamma() const
-	{
-		return this->gamma;
-	}
-
-	void CameraController::SetGamma(float gamma)
-	{
-		this->gamma = Max(0.0f, gamma);
-	}
-
-	float CameraController::GetVignetteRadius() const
-	{
-		return this->vignetteRadius;
-	}
-
-	void CameraController::SetVignetterRadius(float radius)
-	{
-		this->vignetteRadius = Max(0.0f, radius);
-	}
-
-	float CameraController::GetVignetteIntensity() const
-	{
-		return this->vignetteIntensity;
-	}
-
-	void CameraController::SetVignetteIntensity(float intensity)
-	{
-		this->vignetteIntensity = Max(0.0f, intensity);
 	}
 
 	float CameraController::GetMoveSpeed() const

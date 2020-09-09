@@ -187,8 +187,8 @@ namespace MxEngine
 	void RuntimeEditor::AddKeyBinding(KeyCode openKey)
 	{
 		MXLOG_INFO("MxEngine::ConsoleBinding", MxFormat("bound console to keycode: {0}", EnumToString(openKey)));
-		Event::AddEventListener("RuntimeEditor", 
-		[cursorPos = Vector2(), cursorModeCached = CursorMode::DISABLED, openKey, savedStateKeyHeld = false](UpdateEvent& event) mutable
+		Event::AddEventListener<UpdateEvent>("RuntimeEditor", 
+		[cursorPos = Vector2(), cursorModeCached = CursorMode::DISABLED, openKey, savedStateKeyHeld = false](auto& event) mutable
 		{
 			bool isHeld = Application::Get()->GetWindow().IsKeyHeldUnchecked(openKey);
 			if (isHeld != savedStateKeyHeld) savedStateKeyHeld = false;

@@ -8,6 +8,13 @@ void InitCamera(MxObject& object)
 	auto controller = object.AddComponent<CameraController>();
 	auto skybox = object.AddComponent<Skybox>();
 	auto input = object.AddComponent<InputControl>();
+	auto effects = object.AddComponent<CameraEffects>();
+
+	effects->SetVignetteRadius(0.15f);
+	effects->SetBloomIterations(6);
+	effects->SetWhitePoint(0.75f);
+	effects->ToggleToneMapping(true);
+
 	skybox->Texture = AssetManager::LoadCubeMap("textures/dawn.jpg"_id);
 
 	controller->Camera.SetZFar(100000.0f);

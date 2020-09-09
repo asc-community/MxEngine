@@ -28,8 +28,9 @@
 
 #pragma once
 
-#include <fmt/format.h>
 #include "Utilities/STL/MxString.h"
+#undef char8_t
+#include <fmt/format.h>
 
 namespace MxEngine
 {

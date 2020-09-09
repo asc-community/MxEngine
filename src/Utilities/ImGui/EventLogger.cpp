@@ -51,19 +51,19 @@ namespace MxEngine
 
     void EventLogger::Init()
     {
-        Event::AddEventListener("EventLogger", [this](UpdateEvent& e)
+        Event::AddEventListener<UpdateEvent>("EventLogger", [this](auto& e)
         {
             if(this->UpdateEvents)
                 this->AddEventEntry("update event: " + ToMxString(e.TimeDelta) + "s");
         });
 
-        Event::AddEventListener("EventLogger", [this](FpsUpdateEvent& e)
+        Event::AddEventListener<FpsUpdateEvent>("EventLogger", [this](auto& e)
         {
             if(this->FpsUpdateEvents)
                 this->AddEventEntry("fps update: " + ToMxString(e.FPS));
         });
 
-        Event::AddEventListener("EventLogger", [this](KeyEvent& e)
+        Event::AddEventListener<KeyEvent>("EventLogger", [this](auto& e)
         {
             for (size_t i = 0; i < 350; i++)
             {
@@ -75,13 +75,13 @@ namespace MxEngine
             }
         });
 
-        Event::AddEventListener("EventLogger", [this](MouseMoveEvent& e)
+        Event::AddEventListener<MouseMoveEvent>("EventLogger", [this](auto& e)
         {
             if(this->MouseMoveEvents)
                 this->AddEventEntry(MxFormat("mouse position: ({0}, {1})", e.position.x, e.position.y));
         });
 
-        Event::AddEventListener("EventLogger", [this](MousePressEvent& e)
+        Event::AddEventListener<MousePressEvent>("EventLogger", [this](auto& e)
         {
             for (size_t i = 0; i < 8; i++)
             {
@@ -93,13 +93,13 @@ namespace MxEngine
             }
         });
 
-        Event::AddEventListener("EventLogger", [this](RenderEvent& e)
+        Event::AddEventListener<RenderEvent>("EventLogger", [this](auto& e)
         {
             if(this->RenderEvents)
                 this->AddEventEntry("render event");
         });
 
-        Event::AddEventListener("EventLogger", [this](WindowResizeEvent& e)
+        Event::AddEventListener<WindowResizeEvent>("EventLogger", [this](auto& e)
         {
             this->AddEventEntry(MxFormat("window resize: ({0}, {1})", e.New.x, e.New.y));
         });

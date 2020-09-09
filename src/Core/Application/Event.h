@@ -54,10 +54,10 @@ namespace MxEngine
 		\param name name of listener (used for deleting listener)
 		\param func listener callback functor
 		*/
-		template<typename FunctionType>
+		template<typename T, typename FunctionType>
 		static void AddEventListener(const MxString& name, FunctionType&& func)
 		{
-			Application::Get()->GetEventDispatcher().AddEventListener(name, std::forward<FunctionType>(func));
+			Application::Get()->GetEventDispatcher().AddEventListener<T>(name, std::forward<FunctionType>(func));
 		}
 
 		/*!

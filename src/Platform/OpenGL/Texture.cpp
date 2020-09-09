@@ -197,22 +197,17 @@ namespace MxEngine
 		this->SetBorderColor(MakeVector4(1.0f));
 	}
 
-    void Texture::LoadMultisample(int width, int height, TextureFormat format, int samples, TextureWrap wrap)
-    {
-		this->filepath = "[[multisample]]";
-		this->width = width;
-		this->height = height;
-		this->textureType = GL_TEXTURE_2D_MULTISAMPLE;
-		this->format = format;
-		this->wrapType = wrap;
-		this->samples = samples;
-
+	void Texture::SetSamplingFromLOD(size_t lod)
+	{
 		this->Bind();
+		GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, (float)lod));
+		GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, (float)lod));
+	}
 
-		GLenum glFormat = formatTable[(int)this->format];
-
-		GLCALL(glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, glFormat, width, height, GL_TRUE));
-    }
+	size_t Texture::GetMaxTextureLOD() const
+	{
+		return Log2(Max(this->width, this->height));
+	}
 
     Image Texture::GetRawTextureData() const
     {

@@ -27,6 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Core/Components/Camera/CameraController.h"
+#include "Core/Components/Camera/CameraEffects.h"
 #include "Core/Components/Camera/InputControl.h"
 #include "Core/Components/Camera/VRCameraController.h"
 #include "Core/Components/Camera/FrustrumCamera.h"
@@ -40,6 +41,50 @@ namespace MxEngine::GUI
 	#define REMOVE_COMPONENT_BUTTON(comp) \
 	if(ImGui::Button("remove component")) {\
 		MxObject::GetByComponent(comp).RemoveComponent<std::remove_reference_t<decltype(comp)>>(); return; }
+
+	void CameraEffectsEditor(CameraEffects& cameraEffects)
+	{
+		TREE_NODE_PUSH("CameraEffects");
+		REMOVE_COMPONENT_BUTTON(cameraEffects);
+
+		int bloomIterations = (int)cameraEffects.GetBloomIterations();
+		float exposure = cameraEffects.GetExposure();
+		float colorScale = cameraEffects.GetColorScale();
+		float whitePoint = cameraEffects.GetWhitePoint();
+		ACES acesCoefficients = cameraEffects.GetACESCoefficients();
+
+		float gamma = cameraEffects.GetGamma();
+		float bloomWeight = cameraEffects.GetBloomWeight();
+		float vignetteRadius = cameraEffects.GetVignetteRadius();
+		float vignetteIntensity = cameraEffects.GetVignetteIntensity();
+		bool isFXAAEnabled = cameraEffects.IsFXAAEnabled();
+		bool isToneMappingEnabled = cameraEffects.IsToneMappingEnabled();
+
+		if (ImGui::DragFloat("exposure", &exposure, 0.01f))
+			cameraEffects.SetExposure(exposure);
+		if (ImGui::DragFloat("color scale", &colorScale, 0.01f))
+			cameraEffects.SetColorScale(colorScale);
+		if (ImGui::DragFloat("white point", &whitePoint, 0.01f))
+			cameraEffects.SetWhitePoint(whitePoint);
+		if (ImGui::DragScalarN("ACES coefficients", ImGuiDataType_Float, &acesCoefficients.A, 6, 0.01f))
+			cameraEffects.SetACESCoefficients(acesCoefficients);
+		if (ImGui::DragFloat("gamma", &gamma, 0.01f, 0.0f, 5.0f))
+			cameraEffects.SetGamma(gamma);
+		if (ImGui::DragFloat("bloom weight", &bloomWeight, 0.1f))
+			cameraEffects.SetBloomWeight(bloomWeight);
+		if (ImGui::DragInt("bloom iterations", &bloomIterations))
+			cameraEffects.SetBloomIterations((size_t)Max(0, bloomIterations));
+		if (ImGui::DragFloat("vignette radius", &vignetteRadius, 0.01f))
+			cameraEffects.SetVignetteRadius(vignetteRadius);
+		if (ImGui::DragFloat("vignette intensity", &vignetteIntensity, 0.1f))
+			cameraEffects.SetVignetteIntensity(vignetteIntensity);
+		
+		if (ImGui::Checkbox("uses FXAA", &isFXAAEnabled))
+			cameraEffects.ToggleFXAA(isFXAAEnabled);
+		ImGui::SameLine();
+		if (ImGui::Checkbox("uses tone mapping", &isToneMappingEnabled))
+			cameraEffects.ToggleToneMapping(isToneMappingEnabled);
+	}
 
 	void CameraControllerEditor(CameraController& cameraController)
 	{
@@ -91,12 +136,6 @@ namespace MxEngine::GUI
 				cameraController.GetCamera<FrustrumCamera>().SetBounds(bounds.x, bounds.y, bounds.z);
 		}
 
-		int bloomIterations = (int)cameraController.GetBloomIterations();
-		float exposure = cameraController.GetExposure();
-		float gamma = cameraController.GetGamma();
-		float bloomWeight = cameraController.GetBloomWeight();
-		float vignetteRadius = cameraController.GetVignetteRadius();
-		float vignetteIntensity = cameraController.GetVignetteIntensity();
 		auto direction = cameraController.GetDirectionDenormalized();
 		float moveSpeed = cameraController.GetMoveSpeed();
 		float rotateSpeed = cameraController.GetRotateSpeed();
@@ -108,26 +147,11 @@ namespace MxEngine::GUI
 
 		if (ImGui::DragFloat3("direction", &direction[0], 0.01f))
 			cameraController.SetDirection(direction);
-		if (ImGui::DragFloat("exposure", &exposure, 0.1f))
-			cameraController.SetExposure(exposure);
-		if (ImGui::DragFloat("gamma", &gamma, 0.01f, 0.0f, 5.0f))
-			cameraController.SetGamma(gamma);
-		if (ImGui::DragFloat("bloom weight", &bloomWeight, 0.1f))
-			cameraController.SetBloomWeight(bloomWeight);
-		if (ImGui::DragInt("bloom iterations", &bloomIterations))
-			cameraController.SetBloomIterations((size_t)Max(0, bloomIterations));
-		if (ImGui::DragFloat("vignette radius", &vignetteRadius, 0.01f))
-			cameraController.SetVignetterRadius(vignetteRadius);
-		if (ImGui::DragFloat("vignette intensity", &vignetteIntensity, 0.1f))
-			cameraController.SetVignetteIntensity(vignetteIntensity);
 
 		bool isRendered = cameraController.IsRendered();
 		if (ImGui::Checkbox("is rendering", &isRendered))
 			cameraController.ToggleRendering(isRendered);
 		ImGui::SameLine();
-		bool isFXAAEnabled = cameraController.IsFXAAEnabled();
-		if (ImGui::Checkbox("uses FXAA", &isFXAAEnabled))
-			cameraController.ToggleFXAA(isFXAAEnabled);
 
 		if (ImGui::Button("listen window resize"))
 		{

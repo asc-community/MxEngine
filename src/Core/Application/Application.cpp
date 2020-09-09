@@ -126,7 +126,7 @@ namespace MxEngine
 	void Application::CloseOnKeyPress(KeyCode key)
 	{
 		MXLOG_INFO("MxEngine::AppCloseBinding", MxFormat("bound app close to keycode: {0}", EnumToString(key)));
-		Event::AddEventListener("AppCloseEvent", [key](KeyEvent& event)
+		Event::AddEventListener<KeyEvent>("AppCloseEvent", [key](auto& event)
 		{
 			auto context = Application::Get();
 			if (event.IsHeld(key))
@@ -474,6 +474,7 @@ namespace MxEngine
 		editor.RegisterComponentEditor("PointLight",         GUI::PointLightEditor);
 		editor.RegisterComponentEditor("SpotLight",          GUI::SpotLightEditor);
 		editor.RegisterComponentEditor("CameraController",   GUI::CameraControllerEditor);
+		editor.RegisterComponentEditor("CameraEffects",      GUI::CameraEffectsEditor);
 		editor.RegisterComponentEditor("VRCameraController", GUI::VRCameraControllerEditor);
 		editor.RegisterComponentEditor("InputControl",       GUI::InputControlEditor);
 		editor.RegisterComponentEditor("AudioSource",        GUI::AudioSourceEditor);

@@ -13,12 +13,14 @@ namespace GrassSample
         void InstanciateGrass()
         {
             auto field = MxObject::Create();
+            field->Name = "Grass Field";
             field->AddComponent<MeshSource>(Primitives::CreatePlane(20));
             auto fieldMaterial = field->AddComponent<MeshRenderer>()->GetMaterial();
             fieldMaterial->AlbedoMap = AssetManager::LoadTexture("field.png"_id);
             fieldMaterial->SpecularFactor = 0.05f;
 
             this->grass = MxObject::Create();
+            grass->Name = "Grass Instances";
             grass->Transform.TranslateY(0.3f);
             grass->Transform.ScaleZ(0.75f);
 
@@ -50,9 +52,11 @@ namespace GrassSample
         void AddLighting()
         {
             this->lights = MxObject::Create();
+            this->lights->Name = "Light Instances";
             this->lights->AddComponent<MeshSource>(Primitives::CreateCube());
             auto material = this->lights->AddComponent<MeshRenderer>()->GetMaterial();
             material->CastsShadow = false;
+            material->Emmision = 10.0f;
             auto lightFactory = this->lights->AddComponent<InstanceFactory>();
 
             constexpr size_t lightRowSize = 100;
@@ -90,11 +94,18 @@ namespace GrassSample
             cameraObject->Name = "Player Camera";
             cameraObject->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("dawn.jpg"_id);
             cameraObject->Transform.TranslateY(2.0f);
+            
+            auto effects = cameraObject->AddComponent<CameraEffects>();
+            effects->SetBloomIterations(6);
+            effects->ToggleToneMapping(true);
+
             auto controller = cameraObject->AddComponent<CameraController>();
-            auto input = cameraObject->AddComponent<InputControl>();
             controller->ListenWindowResizeEvent();
+
+            auto input = cameraObject->AddComponent<InputControl>();
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
+            
             Rendering::SetViewport(controller);
 
             // create global directional light

@@ -44,6 +44,7 @@ namespace MxEngine
 	class PointLight;
 	class SpotLight;
 	class CameraController;
+	class CameraEffects;
 	class VRCameraController;
 	class InputControl;
 	class AudioSource;
@@ -71,6 +72,7 @@ namespace MxEngine::GUI
 	void PointLightEditor(PointLight& pointLight);
 	void SpotLightEditor(SpotLight& spotLight);
 	void CameraControllerEditor(CameraController& camera);
+	void CameraEffectsEditor(CameraEffects& effects);
 	void VRCameraControllerEditor(VRCameraController& vrCameraController);
 	void InputControlEditor(InputControl& inputControl);
 	void AudioSourceEditor(AudioSource& audioSource);
