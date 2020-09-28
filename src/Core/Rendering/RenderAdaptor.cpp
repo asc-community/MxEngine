@@ -102,6 +102,7 @@ namespace MxEngine
         environment.DefaultBlackMap->SetPath("[[black color]]");
         environment.DefaultNormalMap->SetPath("[[default normal]]");
         environment.DefaultMaterialMap->SetPath("[[white color]]");
+        environment.DefaultGreyMap->SetPath("[[grey color]]");
 
         environment.AverageWhiteTexture = GraphicFactory::Create<Texture>();
         environment.AverageWhiteTexture->Load(nullptr, (int)GlobalConfig::GetBloomTextureSize(), (int)GlobalConfig::GetBloomTextureSize(), HDRTextureFormat);
@@ -109,85 +110,85 @@ namespace MxEngine
         environment.AverageWhiteTexture->SetPath("[[average white]]");
 
         // shaders
-        environment.GBufferShader = GraphicFactory::Create<Shader>();
-        environment.GBufferShader->LoadFromString(
+        environment.Shaders["GBuffer"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["GBuffer"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/gbuffer_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/gbuffer_fragment.glsl"
         );
 
-        environment.TransparentShader = GraphicFactory::Create<Shader>();
-        environment.TransparentShader->LoadFromString(
+        environment.Shaders["Transparent"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["Transparent"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/gbuffer_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/transparent_fragment.glsl"
         );
 
-        environment.GlobalIlluminationShader = GraphicFactory::Create<Shader>();
-        environment.GlobalIlluminationShader->LoadFromString(
+        environment.Shaders["GlobalIllumination"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["GlobalIllumination"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/global_illum_fragment.glsl"
         );
 
-        environment.SpotLightShader = GraphicFactory::Create<Shader>();
-        environment.SpotLightShader->LoadFromString(
+        environment.Shaders["SpotLight"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["SpotLight"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/spotlight_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/spotlight_fragment.glsl"
         );
 
-        environment.PointLightShader = GraphicFactory::Create<Shader>();
-        environment.PointLightShader->LoadFromString(
+        environment.Shaders["PointLight"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["PointLight"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/pointlight_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/pointlight_fragment.glsl"
         );
 
-        environment.HDRToLDRShader = GraphicFactory::Create<Shader>();
-        environment.HDRToLDRShader->LoadFromString(
+        environment.Shaders["HDRToLDR"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["HDRToLDR"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/hdr_to_ldr_fragment.glsl"
         );
 
-        environment.FXAAShader = GraphicFactory::Create<Shader>();
-        environment.FXAAShader->LoadFromString(
+        environment.Shaders["FXAA"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["FXAA"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/fxaa_fragment.glsl"
         );
 
-        environment.FogShader = GraphicFactory::Create<Shader>();
-        environment.FogShader->LoadFromString(
+        environment.Shaders["Fog"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["Fog"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/fog_fragment.glsl"
         );
 
-        environment.VignetteShader = GraphicFactory::Create<Shader>();
-        environment.VignetteShader->LoadFromString(
+        environment.Shaders["Vignette"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["Vignette"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/vignette_fragment.glsl"
         );
 
-        environment.SkyboxShader = GraphicFactory::Create<Shader>();
-        environment.SkyboxShader->LoadFromString(
+        environment.Shaders["Skybox"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["Skybox"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/skybox_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/skybox_fragment.glsl"
         );
 
-        environment.ShadowMapShader = GraphicFactory::Create<Shader>();
-        environment.ShadowMapShader->LoadFromString(
+        environment.Shaders["DepthTexture"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["DepthTexture"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/depthtexture_vertex.glsl"
             , 
             #include "Platform/OpenGL/Shaders/depthtexture_fragment.glsl"
         );
 
-        environment.ShadowCubeMapShader = GraphicFactory::Create<Shader>();
-        environment.ShadowCubeMapShader->LoadFromString(
+        environment.Shaders["DepthCubeMap"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["DepthCubeMap"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/depthcubemap_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/depthcubemap_geometry.glsl"
@@ -195,39 +196,46 @@ namespace MxEngine
             #include "Platform/OpenGL/Shaders/depthcubemap_fragment.glsl"
         );
 
-        environment.BloomIterationShader = GraphicFactory::Create<Shader>();
-        environment.BloomIterationShader->LoadFromString(
+        environment.Shaders["BloomIteration"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["BloomIteration"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/bloom_iter_fragment.glsl"
         );
 
-        environment.BloomSplitShader = GraphicFactory::Create<Shader>();
-        environment.BloomSplitShader->LoadFromString(
+        environment.Shaders["BloomSplit"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["BloomSplit"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/bloom_split_fragment.glsl"
         );
 
-        environment.ImageForwardShader = GraphicFactory::Create<Shader>();
-        environment.ImageForwardShader->LoadFromString(
+        environment.Shaders["ImageForward"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["ImageForward"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/rect_fragment.glsl"
         );
 
-        environment.DebugDrawShader = GraphicFactory::Create<Shader>();
-        environment.DebugDrawShader->LoadFromString(
+        environment.Shaders["DebugDraw"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["DebugDraw"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/debug_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/debug_fragment.glsl"
         );
 
-        environment.AverageWhiteShader = GraphicFactory::Create<Shader>();
-        environment.AverageWhiteShader->LoadFromString(
+        environment.Shaders["AverageWhite"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["AverageWhite"_id]->LoadFromString(
             #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
             ,
             #include "Platform/OpenGL/Shaders/average_white_fragment.glsl"
+        );
+
+        environment.Shaders["SSR"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["SSR"_id]->LoadFromString(
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/ssr_fragment.glsl"
         );
 
         // framebuffers
@@ -319,7 +327,8 @@ namespace MxEngine
                 auto& submeshes = mesh->GetSubmeshes();
                 for (const auto& submesh : submeshes)
                 {
-                    auto materialId = submesh.GetMaterialId() < meshRenderer->Materials.size() ? submesh.GetMaterialId() : 0;
+                    auto materialId = submesh.GetMaterialId();
+                    if (materialId >= meshRenderer->Materials.size()) continue;
                     auto material = meshRenderer->Materials[materialId];
 
                     this->Renderer.SubmitPrimitive(submesh, *material, transform, instanceCount);
@@ -439,6 +448,8 @@ namespace MxEngine
             environment.OverlayDebugDraws = this->DebugDrawer.DrawAsScreenOverlay;
             this->DebugDrawer.SubmitBuffer();
             this->DebugDrawer.ClearBuffer();
+
+            environment.TimeDelta = Time::Delta();
         }
 
         this->Renderer.StartPipeline();

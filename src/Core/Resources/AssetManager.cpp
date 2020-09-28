@@ -144,6 +144,32 @@ namespace MxEngine
         return AssetManager::LoadShader(MxString(vertex), MxString(geometry), MxString(fragment));
     }
 
+    ShaderHandle AssetManager::LoadScreenSpaceShader(StringId fragment)
+    {
+        return AssetManager::LoadScreenSpaceShader(FileManager::GetFilePath(fragment));
+    }
+
+    ShaderHandle AssetManager::LoadScreenSpaceShader(const FilePath& fragment)
+    {
+        return AssetManager::LoadScreenSpaceShader(ToMxString(fragment));
+    }
+
+    ShaderHandle AssetManager::LoadScreenSpaceShader(const MxString& fragment)
+    {
+        auto shader = GraphicFactory::Create<Shader>();
+        shader->LoadFromString(
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
+            ,
+            File(fragment).ReadAllText()
+        );
+        return shader;
+    }
+
+    ShaderHandle AssetManager::LoadScreenSpaceShader(const char* fragment)
+    {
+        return AssetManager::LoadScreenSpaceShader(MxString(fragment));
+    }
+
     MeshHandle AssetManager::LoadMesh(StringId hash)
     {
         return AssetManager::LoadMesh(FileManager::GetFilePath(hash));

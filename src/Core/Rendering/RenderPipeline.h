@@ -36,6 +36,9 @@
 #include "RenderObjects/SpotLightInstancedObject.h"
 #include "Core/Resources/ACESCurve.h"
 
+#include "Utilities/STL/MxHashMap.h"
+#include "Utilities/String/String.h"
+
 namespace MxEngine
 {
     struct DebugBufferUnit
@@ -51,12 +54,12 @@ namespace MxEngine
         TextureHandle NormalTexture;
         TextureHandle MaterialTexture;
         TextureHandle DepthTexture;
+        TextureHandle AverageWhiteTexture;
         TextureHandle HDRTexture;
         TextureHandle SwapTexture;
 
         FrustrumCuller Culler;
-        Matrix4x4 InverseViewMatrix;
-        Matrix4x4 InverseProjectionMatrix;
+        Matrix4x4 InverseViewProjMatrix;
         Matrix4x4 ViewProjectionMatrix;
         Matrix4x4 StaticViewProjectionMatrix;
 
@@ -76,6 +79,7 @@ namespace MxEngine
 
         float Gamma;
         float Exposure;
+        float EyeAdaptation;
         ACES ACESCoefficients;
         float ColorScale;
         float WhitePoint;
@@ -83,23 +87,7 @@ namespace MxEngine
 
     struct EnvironmentUnit
     {
-        ShaderHandle GBufferShader;
-        ShaderHandle TransparentShader;
-        ShaderHandle GlobalIlluminationShader;
-        ShaderHandle SpotLightShader;
-        ShaderHandle PointLightShader;
-        ShaderHandle HDRToLDRShader;
-        ShaderHandle FXAAShader;
-        ShaderHandle FogShader;
-        ShaderHandle VignetteShader;
-        ShaderHandle SkyboxShader;
-        ShaderHandle ShadowMapShader;
-        ShaderHandle ShadowCubeMapShader;
-        ShaderHandle BloomSplitShader;
-        ShaderHandle BloomIterationShader;
-        ShaderHandle ImageForwardShader;
-        ShaderHandle DebugDrawShader;
-        ShaderHandle AverageWhiteShader;
+        MxHashMap<StringId, ShaderHandle> Shaders;
 
         TextureHandle DefaultMaterialMap;
         TextureHandle DefaultNormalMap;
@@ -120,6 +108,7 @@ namespace MxEngine
         Vector3 FogColor;
         float FogDistance;
         float FogDensity;
+        float TimeDelta;
 
         uint8_t ShadowBlurIterations;
         uint8_t MainCameraIndex;

@@ -67,6 +67,11 @@ namespace MxEngine
         static ShaderHandle LoadShader(const MxString& vertex, const MxString& geometry, const MxString& fragment);
         static ShaderHandle LoadShader(const char* vertex, const char* geometry, const char* fragment);
 
+        static ShaderHandle LoadScreenSpaceShader(StringId fragment);
+        static ShaderHandle LoadScreenSpaceShader(const FilePath& fragment);
+        static ShaderHandle LoadScreenSpaceShader(const MxString& fragment);
+        static ShaderHandle LoadScreenSpaceShader(const char* fragment);
+
         static MeshHandle LoadMesh(StringId hash);
         static MeshHandle LoadMesh(const FilePath& path);
         static MeshHandle LoadMesh(const MxString& path);

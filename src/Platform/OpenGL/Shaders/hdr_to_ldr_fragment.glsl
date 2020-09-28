@@ -32,8 +32,8 @@ vec3 toneMapACES(float A, float B, float C, float D, float E, float F, vec3 colo
 void main()
 {
 	vec3 HDRColor = texture(HDRTex, TexCoord).rgb;
-	float avgLuminance = texture(averageWhiteTex, vec2(0.0f)).r;
 
+	float avgLuminance = texture(averageWhiteTex, vec2(0.0f)).r;
     avgLuminance = max(avgLuminance, 0.01f);
 
     float scaledWhitePoint = whitePoint * 11.2f;

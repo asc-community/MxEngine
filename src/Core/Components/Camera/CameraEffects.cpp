@@ -81,6 +81,16 @@ namespace MxEngine
         return this->toneMapping;
     }
 
+    float CameraEffects::GetEyeAdaptation() const
+    {
+        return this->eyeAdaptation;
+    }
+
+    void CameraEffects::SetEyeAdaptation(float adaptation)
+    {
+        this->eyeAdaptation = Max(adaptation, 0.0f);
+    }
+
     size_t CameraEffects::GetBloomIterations() const
     {
         return size_t(this->bloomIterations);

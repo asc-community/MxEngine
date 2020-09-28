@@ -35,6 +35,7 @@
 #include "Core/Application/Physics.h"
 #include "Core/Application/Timer.h"
 #include "Core/MxObject/MxObject.h"
+#include "Core/Config/GlobalConfig.h"
 #include "Core/Components/Camera/PerspectiveCamera.h"
 #include "Core/Components/Camera/OrthographicCamera.h"
 #include "Core/Components/Camera/FrustrumCamera.h"

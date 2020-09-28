@@ -60,12 +60,13 @@ namespace MxEngine
 		void AttachDepthMap(const TextureHandle& texture);
 		void AttachDepthMap(const CubeMapHandle& cubemap);
 		void ComputeBloomEffect(CameraUnit& camera);
-		TextureHandle ComputeAverageWhite(TextureHandle HDRTexture);
+		TextureHandle ComputeAverageWhite(CameraUnit& camera);
 		void PerformPostProcessing(CameraUnit& camera);
 		void DrawDirectionalLights(CameraUnit& camera);
 		void PerformLightPass(CameraUnit& camera);
 		void DrawTransparentObjects(CameraUnit& camera);
 		void ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+		void ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output);

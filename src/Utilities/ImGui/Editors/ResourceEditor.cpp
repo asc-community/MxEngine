@@ -415,12 +415,12 @@ namespace MxEngine::GUI
         }
         ImGui::Text("total vertex count: %d, total index count: %d", (int)vertexCount, (int)indexCount);
 
-        int id = 0;
-        for (auto& submesh : mesh->GetSubmeshes())
+        for (int id = 0; id < (int)mesh->GetSubmeshes().size(); id++)
         {
+            auto& submesh = mesh->GetSubmeshes()[id];
             if (!ImGui::CollapsingHeader(submesh.Name.c_str())) continue;
             GUI::Indent _(5.0f);
-            ImGui::PushID(id++);
+            ImGui::PushID(id);
 
             ImGui::Text("vertex count: %d", (int)submesh.Data.GetVertecies().size());
             ImGui::Text("index count: %d", (int)submesh.Data.GetIndicies().size());
@@ -434,8 +434,13 @@ namespace MxEngine::GUI
             if (ImGui::Button("buffer vertecies"))
                 submesh.Data.BufferVertecies();
             ImGui::SameLine();
-            if (ImGui::Button("free mesh data copy"))
-                submesh.Data.FreeMeshDataCopy();
+            if (ImGui::Button("delete submesh"))
+            {
+                mesh->GetSubmeshes().erase(mesh->GetSubmeshes().begin() + id);
+                id--; // compensate erased mesh
+                ImGui::PopID();
+                continue; // skip other ui as current mesh is deleted
+            }
 
             if (ImGui::Button("regenerate normals"))
                 submesh.Data.RegenerateNormals();

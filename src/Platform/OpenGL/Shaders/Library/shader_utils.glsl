@@ -1,11 +1,10 @@
 EMBEDDED_SHADER(
 
-vec3 reconstructWorldPosition(float depth, vec2 texcoord, mat4 invProjection, mat4 invView)
+vec3 reconstructWorldPosition(float depth, vec2 texcoord, mat4 invViewProjMatrix)
 {
 	vec4 normPosition = vec4(2.0f * texcoord - vec2(1.0f), depth, 1.0f);
-	vec4 viewSpacePosition = invProjection * normPosition;
-	viewSpacePosition /= viewSpacePosition.w;
-	vec4 worldPosition = invView * viewSpacePosition;
+	vec4 worldPosition = invViewProjMatrix * normPosition;
+	worldPosition /= worldPosition.w;
 	return worldPosition.xyz;
 }
 
@@ -55,8 +54,11 @@ float CalcShadowFactor3D(vec3 fragToLightRay, vec3 viewDist, float zfar, float b
 	return shadowFactor;
 }
 
-vec3 calcReflectionColor(float reflectionFactor, samplerCube reflectionMap, mat3 reflectionMapTransform, vec3 viewDir, vec3 normal)
+vec3 calcReflectionColor(vec3 baseColor, samplerCube reflectionMap, mat3 reflectionMapTransform, vec3 viewDir, vec3 normal)
 {
+	vec3 luminance = vec3(0.2125f, 0.7154f, 0.0721f);
+	float reflectionFactor = dot(luminance, baseColor);
+
 	vec3 I = -viewDir;
 	vec3 reflectionRay = reflect(I, normal);
 	reflectionRay = reflectionMapTransform * reflectionRay;
@@ -76,7 +78,7 @@ struct FragmentInfo
 	vec3 position;
 };
 
-FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D normalTexture, sampler2D materialTexture, sampler2D depthTexture, mat4 invView, mat4 invProjection)
+FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D normalTexture, sampler2D materialTexture, sampler2D depthTexture, mat4 invViewProjMatrix)
 {
 	FragmentInfo fragment;
 
@@ -90,7 +92,7 @@ FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D n
 	fragment.specularIntensity = exp(1.0f / material.b) - 1.0f;
 	fragment.specularFactor = material.a;
 
-	fragment.position = reconstructWorldPosition(fragment.depth, texCoord, invProjection, invView);
+	fragment.position = reconstructWorldPosition(fragment.depth, texCoord, invViewProjMatrix);
 
 	return fragment;
 }

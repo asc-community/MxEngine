@@ -1,5 +1,5 @@
-#include "shader_utils.glsl"
-#include "fog.glsl"
+#include "Library/shader_utils.glsl"
+#include "Library/fog.glsl"
 EMBEDDED_SHADER(
 
 in vec2 TexCoord;
@@ -13,8 +13,7 @@ uniform sampler2D depthTex;
 struct Camera
 {
 	vec3 position;
-	mat4 invProjMatrix;
-	mat4 invViewMatrix;
+	mat4 invViewProjMatrix;
 	mat4 viewProjMatrix;
 };
 
@@ -24,7 +23,7 @@ uniform Camera camera;
 
 void main()
 {
-	FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewMatrix, camera.invProjMatrix);
+	FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
 	float fragDistance = length(camera.position - fragment.position);
 
 	vec3 currentColor = texture(cameraOutput, TexCoord).rgb;

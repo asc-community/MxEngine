@@ -45,6 +45,7 @@ namespace MxEngine
 		ACES coefficients;
 		float vignetteRadius = 0.0f;
 		float vignetteIntensity = 100.0f;
+		float eyeAdaptation = 0.0f;
 
 		bool enableFXAA = false;
 		bool toneMapping = false;
@@ -58,6 +59,7 @@ namespace MxEngine
 		const ACES& GetACESCoefficients() const;
 		float GetVignetteIntensity() const;
 		float GetVignetteRadius() const;
+		float GetEyeAdaptation() const;
 		bool IsFXAAEnabled() const;
 		bool IsToneMappingEnabled() const;
 		size_t GetBloomIterations() const;
@@ -67,6 +69,7 @@ namespace MxEngine
 		void SetExposure(float exposure);
 		void SetColorScale(float mult);
 		void SetWhitePoint(float point);
+		void SetEyeAdaptation(float point);
 		void SetACESCoefficients(const ACES& aces);
 		void SetVignetteRadius(float radius);
 		void SetVignetteIntensity(float intensity);

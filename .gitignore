@@ -52,6 +52,11 @@ cmake-build-release
 build
 out
 
+#Visual Studio
+*.vcxproj
+*.sln
+cmake_install.cmake
+
 # MxEngine
 imgui.ini
 profile_log.json

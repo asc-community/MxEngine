@@ -395,6 +395,11 @@ namespace MxEngine
 		return this->renderBuffers->Depth;
 	}
 
+	TextureHandle CameraController::GetAverageWhiteTexture() const
+	{
+		return this->renderBuffers->AverageWhite;
+	}
+
 	TextureHandle CameraController::GetHDRTexture() const
 	{
 		return this->renderBuffers->HDR;
@@ -412,6 +417,7 @@ namespace MxEngine
 		this->Normal = GraphicFactory::Create<Texture>();
 		this->Material = GraphicFactory::Create<Texture>();
 		this->Depth = GraphicFactory::Create<Texture>();
+		this->AverageWhite = GraphicFactory::Create<Texture>();
 		this->HDR = GraphicFactory::Create<Texture>();
 		this->SwapHDR = GraphicFactory::Create<Texture>();
 
@@ -437,6 +443,7 @@ namespace MxEngine
 		this->Normal->Load(nullptr, width, height, TextureFormat::RGBA16, TextureWrap::CLAMP_TO_EDGE);
 		this->Material->Load(nullptr, width, height, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
 		this->Depth->LoadDepth(width, height, TextureFormat::DEPTH32F, TextureWrap::CLAMP_TO_EDGE);
+		this->AverageWhite->Load(nullptr, 1, 1, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
 		this->HDR->Load(nullptr, width, height, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
 		this->SwapHDR->Load(nullptr, width, height, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
 
@@ -444,6 +451,7 @@ namespace MxEngine
 		this->Normal->SetPath("[[cam normal]]");
 		this->Material->SetPath("[[cam material]]");
 		this->Depth->SetPath("[[cam depth]]");
+		this->AverageWhite->SetPath("[[cam avg white]]");
 		this->HDR->SetPath("[[cam hdr]]");
 		this->SwapHDR->SetPath("[[cam swap hdr]]");
 	}

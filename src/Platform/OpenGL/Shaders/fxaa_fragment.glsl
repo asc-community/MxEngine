@@ -1,4 +1,4 @@
-#include "fxaa.glsl"
+#include "Library/fxaa.glsl"
 EMBEDDED_SHADER(
 
 in vec2 TexCoord;

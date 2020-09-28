@@ -54,6 +54,7 @@ namespace MxEngine::GUI
 		ACES acesCoefficients = cameraEffects.GetACESCoefficients();
 
 		float gamma = cameraEffects.GetGamma();
+		float eyeAdaptation = cameraEffects.GetEyeAdaptation();
 		float bloomWeight = cameraEffects.GetBloomWeight();
 		float vignetteRadius = cameraEffects.GetVignetteRadius();
 		float vignetteIntensity = cameraEffects.GetVignetteIntensity();
@@ -70,6 +71,8 @@ namespace MxEngine::GUI
 			cameraEffects.SetACESCoefficients(acesCoefficients);
 		if (ImGui::DragFloat("gamma", &gamma, 0.01f, 0.0f, 5.0f))
 			cameraEffects.SetGamma(gamma);
+		if (ImGui::DragFloat("eye adaptation", &eyeAdaptation))
+			cameraEffects.SetEyeAdaptation(eyeAdaptation);
 		if (ImGui::DragFloat("bloom weight", &bloomWeight, 0.1f))
 			cameraEffects.SetBloomWeight(bloomWeight);
 		if (ImGui::DragInt("bloom iterations", &bloomIterations))

@@ -1,4 +1,4 @@
-#include "directional_light.glsl"
+#include "Library/directional_light.glsl"
 EMBEDDED_SHADER(
 
 out vec4 OutColor;
@@ -40,8 +40,6 @@ struct Camera
 uniform int lightCount;
 uniform int pcfDistance;
 uniform vec3 viewportPosition;
-uniform mat3 skyboxTransform;
-uniform samplerCube skyboxTex;
 
 const int MaxLightCount = 4;
 uniform DirLight lights[MaxLightCount];
@@ -72,14 +70,13 @@ void main()
 	float fragDistance = length(viewportPosition - fragment.position);
 
 	vec3 viewDirection = normalize(viewportPosition - fragment.position);
-	vec3 reflectionColor = calcReflectionColor(fragment.reflection, skyboxTex, skyboxTransform, viewDirection, fragment.normal);
 
 	vec3 totalColor = vec3(0.0f);
 	totalColor += fragment.albedo * fragment.emmisionFactor;
 	for (int i = 0; i < lightCount; i++)
 	{
 		vec4 fragLightSpace = lights[i].transform * vec4(fragment.position, 1.0f);
-		totalColor += calcColorUnderDirLight(fragment, reflectionColor, lights[i], viewDirection, pcfDistance, fragLightSpace, lightDepthMaps[i]);
+		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, pcfDistance, fragLightSpace, lightDepthMaps[i]);
 	}
 
 	OutColor = vec4(totalColor, transparency);

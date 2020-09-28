@@ -22,8 +22,7 @@ out SpotLightInfo
 struct Camera
 {
 	vec3 position;
-	mat4 invProjMatrix;
-	mat4 invViewMatrix;
+	mat4 invViewProjMatrix;
 	mat4 viewProjMatrix;
 };
 

@@ -1,4 +1,4 @@
-#include "shader_utils.glsl"
+#include "Library/shader_utils.glsl"
 EMBEDDED_SHADER(
 
 out vec4 OutColor;
@@ -33,8 +33,7 @@ struct SpotLight
 struct Camera
 {
 	vec3 position;
-	mat4 invProjMatrix;
-	mat4 invViewMatrix;
+	mat4 invViewProjMatrix;
 	mat4 viewProjMatrix;
 };
 
@@ -74,7 +73,7 @@ vec3 calcColorUnderSpotLight(FragmentInfo fragment, SpotLight light, vec3 viewDi
 void main()
 {
 	vec2 TexCoord = gl_FragCoord.xy / viewportSize;
-	FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewMatrix, camera.invProjMatrix);
+	FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
 
 	float fragDistance = length(camera.position - fragment.position);
 	vec3 viewDirection = normalize(camera.position - fragment.position);

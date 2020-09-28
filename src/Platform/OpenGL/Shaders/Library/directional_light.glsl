@@ -10,7 +10,7 @@ struct DirLight
 	vec3 direction;
 };
 
-vec3 calcColorUnderDirLight(FragmentInfo fragment, vec3 reflectionColor, DirLight light, vec3 viewDir, int pcfDistance, vec4 fragLightSpace, sampler2D shadowMap)
+vec3 calcColorUnderDirLight(FragmentInfo fragment, DirLight light, vec3 viewDir, int pcfDistance, vec4 fragLightSpace, sampler2D shadowMap)
 {
 	vec3 lightDir = normalize(light.direction);
 	vec3 Hdir = normalize(lightDir + viewDir);
@@ -26,9 +26,8 @@ vec3 calcColorUnderDirLight(FragmentInfo fragment, vec3 reflectionColor, DirLigh
 	ambientColor = ambientColor * light.ambient;
 	diffuseColor = diffuseColor * light.diffuse;
 	specularColor = specularColor * light.specular;
-	reflectionColor = diffuseCoef * reflectionColor;
 
-	return vec3(ambientColor + shadowFactor * (specularColor + mix(diffuseColor, reflectionColor, fragment.reflection)));
+	return vec3(ambientColor + shadowFactor * (specularColor + diffuseColor));
 }
 
 )
