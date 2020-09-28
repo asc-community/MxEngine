@@ -69,7 +69,9 @@ namespace MxEngine
     {
         #if defined(MXENGINE_WINDOWS)
         std::aligned_storage_t<8> generator;
-        #else // boost random generator has members only on win platform
+        #elif defined(MXENGINE_MACOS)
+        std::aligned_storage_t<4> generator;
+        #else
         std::aligned_storage_t<1, 1> generator;
         #endif
         boost::uuids::random_generator_pure& GetGeneratorImpl();
