@@ -14,7 +14,7 @@
     #define MXENGINE_MACOS
 #endif
 
-#if defined(NDEBUG) || !defined(_DEBUG)
+#if defined(NDEBUG) && !defined(_DEBUG)
     #define MXENGINE_RELEASE
 #else 
     #define MXENGINE_DEBUG
@@ -41,12 +41,6 @@
 // model loader
 #define MXENGINE_USE_ASSIMP
 
-// #if defined(MXENGINE_USE_OPENGL)
-//     #define PLATFORM_SHADER_PATH Platform/OpenGL/Shaders/
-//     #define PLATFORM_SHADER_EXTENSION .glsl
-// #endif
-// #define MAKE_PLATFORM_SHADER(name) MXENGINE_STRING(MXENGINE_CONCAT(MXENGINE_CONCAT(PLATFORM_SHADER_PATH, name), PLATFORM_SHADER_EXTENSION))
-
 #define MXENGINE_CONCAT_IMPL(x, y) x##y
 #define MXENGINE_CONCAT(x, y) MXENGINE_CONCAT_IMPL(x, y)
 
@@ -64,7 +58,9 @@
 #if defined(MXENGINE_DEBUG)
     #if defined(MX_ASSERT_EXCEPTION)
             #include <exception>
-            namespace MxEngine { class assert_exception : public std::exception { public: assert_exception(const char* msg) : std::exception(msg) {} }; }
+            namespace MxEngine { class assert_exception : public std::exception { \
+                public: const char* message; assert_exception(const char* msg) {}\
+                        const char* what() const noexcept { return message; } }; }
         #define MX_ASSERT(expr) if(!(expr)) throw MxEngine::assert_exception(#expr) 
     #else
         #define MX_ASSERT(expr) assert(expr)

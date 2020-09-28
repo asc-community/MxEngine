@@ -19,7 +19,7 @@ float calcShadowFactor2D(vec4 fragPosLight, sampler2D depthMap, float bias, int 
 		for (int y = -blurIterations; y <= blurIterations; y++)
 		{
 			float pcfDepth = texture(depthMap, projCoords.xy + vec2(x, y) * texelSize).r;
-			shadowFactor += currentDepth > pcfDepth ? 0.0f : 1.0f;
+			shadowFactor += (currentDepth > pcfDepth) ? 0.0f : 1.0f;
 		}
 	}
 	int iterations = 2 * blurIterations + 1;
@@ -48,7 +48,7 @@ float CalcShadowFactor3D(vec3 fragToLightRay, vec3 viewDist, float zfar, float b
 	for (int i = 0; i < POINT_LIGHT_SAMPLES; i++)
 	{
 		float closestDepth = texture(depthMap, sampleOffsetDirections[i] * diskRadius - fragToLightRay).r;
-		shadowFactor += (currentDepth < closestDepth) ? 1.0f : 0.0f;
+		shadowFactor += (currentDepth > closestDepth) ? 0.0f : 1.0f;
 	}
 	shadowFactor /= float(POINT_LIGHT_SAMPLES);
 	return shadowFactor;
