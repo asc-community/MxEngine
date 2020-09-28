@@ -11,7 +11,11 @@
 #endif
 
 #if defined(MXENGINE_USE_BOOST)
+    #if defined(MXENGINE_MACOS)
+    #define _GNU_SOURCE
+    #endif
 #include <boost/stacktrace.hpp>
+
 #endif
 #include <string>
 

@@ -107,10 +107,10 @@ namespace MxEngine
 			}
 		}
 
-		template<typename Func>
+		template<typename T, typename Func>
 		void RegisterComponentEditor(const char* name, Func&& callback)
 		{
-			this->RegisterComponentEditor(name, std::function{ std::forward<Func>(callback) });
+			this->RegisterComponentEditor(name, std::function<void(T&)>(std::forward<Func>(callback)));
 		}
 	};
 }

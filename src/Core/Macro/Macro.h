@@ -8,6 +8,10 @@
         #define MXENGINE_WINDOWS32
         #error MxEngine can target only x64 platform
     #endif
+#elif defined(__linux__)
+    #define MXENGINE_LINUX
+#elif defined(__APPLE__)
+    #define MXENGINE_MACOS
 #endif
 
 #if defined(NDEBUG) || !defined(_DEBUG)
