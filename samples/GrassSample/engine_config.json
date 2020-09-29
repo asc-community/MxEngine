@@ -14,7 +14,7 @@
     "debug-line-width": 3,
     "dir-light-texture-size": 4096,
     "major-version": 4,
-    "minor-version": 0,
+    "minor-version": 5,
     "msaa-samples": 4,
     "point-light-texture-size": 512,
     "profile": "CORE",

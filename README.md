@@ -27,7 +27,8 @@ For full version list see [versions.md](versions.md) file
 
 ## Installing and running MxEngine
 Right now MxEngine is distributed in source code with configurable CMake files. Here are the steps you need to do to compile and run MxEngine sample projects:
-1. clone this repo to your system using `git clone --recurse-submodules https://github.com/asc-community/MxEngine`
+1. clone this repo to your system using `git clone https://github.com/asc-community/MxEngine`
+2. initialize submodules with `cd MxEngine && git submodule update --init`
 2. install [Boost](https://www.boost.org) and provide path to the library by setting `Boost_INCLUDE_DIR` in `CMakeLists.txt`
 2. build project by running `CMakeLists.txt` located in root directory (set up necessary options if needed)
 3. go to `samples/<any_sample>` and run the executable file
