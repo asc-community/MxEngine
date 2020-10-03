@@ -28,7 +28,7 @@
 
 #include "Core/Components/Camera/CameraController.h"
 #include "Core/Components/Camera/CameraEffects.h"
-#include "Core/Components/Camera/InputControl.h"
+#include "Core/Components/Camera/InputController.h"
 #include "Core/Components/Camera/VRCameraController.h"
 #include "Core/Components/Camera/FrustrumCamera.h"
 #include "Core/Components/Camera/OrthographicCamera.h"
@@ -238,9 +238,9 @@ namespace MxEngine::GUI
 		}
 	}
 
-	void InputControlEditor(InputControl& inputControl)
+	void InputControllerEditor(InputController& inputControl)
 	{
-		TREE_NODE_PUSH("InputControl");
+		TREE_NODE_PUSH("InputController");
 		REMOVE_COMPONENT_BUTTON(inputControl);
 
 		// TODO: custom keys input
@@ -274,8 +274,8 @@ namespace MxEngine::GUI
 		if (ImGui::Button("unbind all"))
 		{
 			auto& object = MxObject::GetByComponent(inputControl);
-			object.RemoveComponent<InputControl>();
-			object.AddComponent<InputControl>();
+			object.RemoveComponent<InputController>();
+			object.AddComponent<InputController>();
 		}
 	}
 }

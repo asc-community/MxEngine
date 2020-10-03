@@ -7,7 +7,7 @@ void InitCamera(MxObject& object)
 	auto listener = object.AddComponent<AudioListener>();
 	auto controller = object.AddComponent<CameraController>();
 	auto skybox = object.AddComponent<Skybox>();
-	auto input = object.AddComponent<InputControl>();
+	auto input = object.AddComponent<InputController>();
 	auto effects = object.AddComponent<CameraEffects>();
 
 	effects->SetVignetteRadius(0.15f);

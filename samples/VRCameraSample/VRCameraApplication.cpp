@@ -42,7 +42,7 @@ namespace VRCameraSample
             controller->SetMoveSpeed(5.0f);
             controller->SetRotateSpeed(5.0f);
 
-            auto input = VRCamera->AddComponent<InputControl>();
+            auto input = VRCamera->AddComponent<InputController>();
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
 

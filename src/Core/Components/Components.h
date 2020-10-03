@@ -11,7 +11,7 @@
 #include "Rendering/DebugDraw.h"
 #include "Camera/CameraController.h"
 #include "Camera/CameraEffects.h"
-#include "Camera/InputControl.h"
+#include "Camera/InputController.h"
 #include "Camera/VRCameraController.h"
 #include "Audio/AudioListener.h"
 #include "Audio/AudioSource.h"

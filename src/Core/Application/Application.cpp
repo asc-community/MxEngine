@@ -476,14 +476,14 @@ namespace MxEngine
 		editor.RegisterComponentEditor<CameraController>  ("CameraController",   GUI::CameraControllerEditor);
 		editor.RegisterComponentEditor<CameraEffects>     ("CameraEffects",      GUI::CameraEffectsEditor);
 		editor.RegisterComponentEditor<VRCameraController>("VRCameraController", GUI::VRCameraControllerEditor);
-		editor.RegisterComponentEditor<InputControl>    ("InputControl",       GUI::InputControlEditor);
-		editor.RegisterComponentEditor<AudioSource>     ("AudioSource",        GUI::AudioSourceEditor);
-		editor.RegisterComponentEditor<AudioListener>   ("AudioListener",      GUI::AudioListenerEditor);
-		editor.RegisterComponentEditor<RigidBody>       ("RigidBody",          GUI::RigidBodyEditor);
-		editor.RegisterComponentEditor<BoxCollider>     ("BoxCollider",        GUI::BoxColliderEditor);
-		editor.RegisterComponentEditor<SphereCollider>  ("SphereCollider",     GUI::SphereColliderEditor);
-		editor.RegisterComponentEditor<CylinderCollider>("CylinderCollider",   GUI::CylinderColliderEditor);
-		editor.RegisterComponentEditor<CapsuleCollider> ("CapsuleCollider",    GUI::CapsuleColliderEditor);
+		editor.RegisterComponentEditor<InputController>   ("InputController",    GUI::InputControllerEditor);
+		editor.RegisterComponentEditor<AudioSource>       ("AudioSource",        GUI::AudioSourceEditor);
+		editor.RegisterComponentEditor<AudioListener>     ("AudioListener",      GUI::AudioListenerEditor);
+		editor.RegisterComponentEditor<RigidBody>         ("RigidBody",          GUI::RigidBodyEditor);
+		editor.RegisterComponentEditor<BoxCollider>       ("BoxCollider",        GUI::BoxColliderEditor);
+		editor.RegisterComponentEditor<SphereCollider>    ("SphereCollider",     GUI::SphereColliderEditor);
+		editor.RegisterComponentEditor<CylinderCollider>  ("CylinderCollider",   GUI::CylinderColliderEditor);
+		editor.RegisterComponentEditor<CapsuleCollider>   ("CapsuleCollider",    GUI::CapsuleColliderEditor);
 
 		this->RegisterComponentUpdate<Behaviour>();
 		this->RegisterComponentUpdate<InstanceFactory>();

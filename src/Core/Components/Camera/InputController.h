@@ -33,11 +33,11 @@
 
 namespace MxEngine
 {
-	class InputControl
+	class InputController
 	{
-		MAKE_COMPONENT(InputControl);
+		MAKE_COMPONENT(InputController);
 	public:
-		~InputControl();
+		~InputController();
 
 		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right);
 		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down);

@@ -25,3 +25,10 @@ SandboxApp::SandboxApp()
 {
 	scene = new SandboxScene();
 }
+
+int main()
+{
+	SandboxApp app;
+	app.Run();
+	return 0;
+}

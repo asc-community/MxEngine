@@ -26,29 +26,29 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "InputControl.h"
+#include "InputController.h"
 #include "Core/Application/Event.h"
 #include "Core/Events/MouseEvent.h"
 #include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
 {
-	InputControl::~InputControl()
+	InputController::~InputController()
 	{	
 		MxString uuid = MxObject::GetComponentUUID(*this);
 		Event::RemoveEventListener(uuid);
 	}
 
-	void InputControl::BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right)
+	void InputController::BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right)
 	{
 		this->BindMovement(forward, left, back, right, KeyCode::UNKNOWN, KeyCode::UNKNOWN);
 	}
 	
-	void InputControl::BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down)
+	void InputController::BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down)
 	{
 		auto& object = MxObject::GetByComponent(*this);
 		auto camera = object.GetComponent<CameraController>();
-		MxString uuid = object.GetComponent<InputControl>().GetUUID();
+		MxString uuid = object.GetComponent<InputController>().GetUUID();
 
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object movement: " + object.Name);
 	
@@ -104,7 +104,7 @@ namespace MxEngine
 		});
 	}
 	
-	void InputControl::BindRotation()
+	void InputController::BindRotation()
 	{
 		auto& object = MxObject::GetByComponent(*this);
 		auto camera = object.GetComponent<CameraController>();
@@ -115,7 +115,7 @@ namespace MxEngine
 		}
 
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
-		MxString uuid = object.GetComponent<InputControl>().GetUUID(); 
+		MxString uuid = object.GetComponent<InputController>().GetUUID();
 
 		Event::AddEventListener<MouseMoveEvent>(uuid, [camera](auto& event) mutable
 		{
@@ -128,7 +128,7 @@ namespace MxEngine
 		});
 	}
 	
-	void InputControl::BindHorizontalRotation()
+	void InputController::BindHorizontalRotation()
 	{
 		auto& object = MxObject::GetByComponent(*this);
 		auto camera = object.GetComponent<CameraController>();
@@ -139,7 +139,7 @@ namespace MxEngine
 		}
 
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
-		MxString uuid = object.GetComponent<InputControl>().GetUUID();
+		MxString uuid = object.GetComponent<InputController>().GetUUID();
 	
 		Event::AddEventListener<MouseMoveEvent>(uuid, [camera](auto& event) mutable
 		{
@@ -152,7 +152,7 @@ namespace MxEngine
 		});
 	}
 	
-	void InputControl::BindVerticalRotation()
+	void InputController::BindVerticalRotation()
 	{
 		auto& object = MxObject::GetByComponent(*this);
 		auto camera = object.GetComponent<CameraController>();
@@ -163,7 +163,7 @@ namespace MxEngine
 		}
 
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
-		MxString uuid = object.GetComponent<InputControl>().GetUUID();
+		MxString uuid = object.GetComponent<InputController>().GetUUID();
 	
 		Event::AddEventListener<MouseMoveEvent>(uuid, [camera](auto& event) mutable
 		{

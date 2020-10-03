@@ -23,6 +23,7 @@ uniform Camera camera;
 
 uniform int   steps;
 uniform float thickness;
+uniform float maxDistance;
 uniform int sampleCount;
 
 vec2 RANDOM_SAMPLES[16] = vec2[]
@@ -47,20 +48,21 @@ void main()
     vec3 viewDistance = camera.position - fragment.position;
     vec3 viewDirection = normalize(viewDistance);
 
+    vec3 objectColor = texture(HDRTex, TexCoord).rgb;
+    vec3 environmentReflection = calcReflectionColor(objectColor, skyboxMap, skyboxTransform, viewDirection, fragment.normal);
+
     vec3 pivot = normalize(reflect(-viewDirection, fragment.normal));
-    vec3 startPos = fragment.position + (pivot * 0.0001f);
+    vec3 startPos = fragment.position + (pivot * 0.001f);
 
     int hit = 0;
     float currentLength = 1.0f;
     vec2 currentUV = vec2(0.0f);
     vec2 invTexSize = 1.0f / textureSize(depthTex, 0);
 
-    if (dot(viewDirection, pivot) < 0.9f)
+    if (dot(viewDirection, pivot) < 0.5f)
     {
         for (int i = 0; i < steps; i++)
         {
-            if (hit == 1) break;
-
             vec3 currentPosition = startPos + pivot * currentLength;
             vec4 projectedPosition = toFragSpace(vec4(currentPosition, 1.0f), camera.viewProjMatrix);
             currentUV = projectedPosition.xy;
@@ -84,10 +86,16 @@ void main()
         }
     }
 
-    currentUV = mix(TexCoord, currentUV, hit);
-    vec3 ssrReflection = texture(HDRTex, currentUV).rgb;
-    vec3 objectColor = texture(HDRTex, TexCoord).rgb;
-    OutColor = vec4(mix(objectColor, ssrReflection, fragment.reflection), 1.0f);
+    if (hit != 0)
+    {
+        vec3 ssrReflection = texture(HDRTex, currentUV).rgb;
+        float fromReflectionPoint = length(currentUV - TexCoord) / maxDistance;
+        float fromScreenCenter = length(currentUV - vec2(0.5f)) / maxDistance;
+        float fadingFactor = 1.0f - clamp(max(fromReflectionPoint, fromScreenCenter), 0.0f, 1.0f);
+        environmentReflection = mix(environmentReflection, ssrReflection, fadingFactor);
+    }
+
+    OutColor = vec4(mix(objectColor, environmentReflection, fragment.reflection), 1.0f);
 }
 
 )

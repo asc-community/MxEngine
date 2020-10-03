@@ -46,7 +46,7 @@ namespace MxEngine
 	class CameraController;
 	class CameraEffects;
 	class VRCameraController;
-	class InputControl;
+	class InputController;
 	class AudioSource;
 	class AudioListener;
 	class RigidBody;
@@ -74,7 +74,7 @@ namespace MxEngine::GUI
 	void CameraControllerEditor(CameraController& camera);
 	void CameraEffectsEditor(CameraEffects& effects);
 	void VRCameraControllerEditor(VRCameraController& vrCameraController);
-	void InputControlEditor(InputControl& inputControl);
+	void InputControllerEditor(InputController& inputControl);
 	void AudioSourceEditor(AudioSource& audioSource);
 	void AudioListenerEditor(AudioListener& audioListener);
 	void RigidBodyEditor(RigidBody& rigidBody);

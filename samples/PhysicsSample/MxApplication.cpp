@@ -103,7 +103,7 @@ namespace PhysicsSample
             cameraObject->Transform.SetPosition(Vector3(30, 30, 30));
             auto controller = cameraObject->AddComponent<CameraController>();
             controller->SetMoveSpeed(50);
-            auto input = cameraObject->AddComponent<InputControl>();
+            auto input = cameraObject->AddComponent<InputController>();
             controller->ListenWindowResizeEvent();
             controller->SetMoveSpeed(30);
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);

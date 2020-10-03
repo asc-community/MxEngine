@@ -18,7 +18,7 @@ namespace ProjectTemplate
             // add CameraController component which handles camera image rendering
             auto controller = cameraObject->AddComponent<CameraController>();
             // add InpitControl which handles keyboard and mouse input events
-            auto input = cameraObject->AddComponent<InputControl>();
+            auto input = cameraObject->AddComponent<InputController>();
             // set camera to change ratio automatically depending on application window size
             controller->ListenWindowResizeEvent();
             // bind player movement to classic WASD mode and space/shift to fly, rotation is done with mouse
