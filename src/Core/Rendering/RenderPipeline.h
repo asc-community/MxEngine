@@ -83,6 +83,8 @@ namespace MxEngine
         ACES ACESCoefficients;
         float ColorScale;
         float WhitePoint;
+        float MaxLuminance;
+        float MinLuminance;
     };
 
     struct EnvironmentUnit

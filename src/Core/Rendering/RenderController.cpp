@@ -126,6 +126,7 @@ namespace MxEngine
 		Texture::TextureBindId textureBindIndex = 0;
 		const auto& material = this->Pipeline.MaterialUnits[unit.materialIndex];
 		shader.IgnoreNonExistingUniform("material.transparency");
+		shader.IgnoreNonExistingUniform("material.reflection");
 
 		material.AlbedoMap->Bind(textureBindIndex);
 		shader.SetUniformInt("map_albedo", textureBindIndex);
@@ -213,10 +214,6 @@ namespace MxEngine
 		float fogReduceFactor = this->Pipeline.Environment.FogDistance * std::exp(-25.0f * this->Pipeline.Environment.FogDensity);
 		float bloomWeight = camera.BloomWeight * fogReduceFactor;
 
-		// first get bloom mask from camera G-buffer
-		camera.AlbedoTexture->GenerateMipmaps();
-		camera.MaterialTexture->GenerateMipmaps();
-
 		camera.AlbedoTexture->Bind(0);
 		splitShader->SetUniformInt("albedoTex", 0);
 		camera.MaterialTexture->Bind(1);
@@ -268,6 +265,12 @@ namespace MxEngine
 	{
 		MAKE_SCOPE_PROFILER("RenderController::PerformPostProcessing()");
 
+		camera.AlbedoTexture->GenerateMipmaps();
+		camera.MaterialTexture->GenerateMipmaps();
+
+		// we need to perform SSR before transparent objects, as they do not update material buffer
+		this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture);
+
 		// render skybox & debug buffer (HDR texture is already attached)
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.DepthTexture, Attachment::DEPTH_ATTACHMENT);
 		this->GetRenderEngine().UseDepthBufferMask(false);
@@ -278,7 +281,6 @@ namespace MxEngine
 		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
 
 		this->ComputeBloomEffect(camera);
-		this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture);
 		this->ApplyFogEffect(camera, camera.HDRTexture, camera.SwapTexture);
 		this->ApplyHDRToLDRConversion(camera, camera.HDRTexture, camera.SwapTexture);
 		this->ApplyFXAA(camera, camera.HDRTexture, camera.SwapTexture);
@@ -354,14 +356,10 @@ namespace MxEngine
 
 		auto& shader = this->Pipeline.Environment.Shaders["Transparent"_id];
 
-		shader->SetUniformMat3("skyboxTransform", camera.InversedSkyboxRotation);
 		shader->SetUniformVec3("viewportPosition", camera.ViewportPosition);
 		shader->SetUniformFloat("gamma", camera.Gamma);
 
 		Texture::TextureBindId textureId = 6; // assume there are 6 textures in material structure
-		camera.SkyboxMap->Bind(textureId);
-		shader->SetUniformInt("skyboxTex", textureId);
-		textureId++;
 
 		// submit directional light information
 		const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
@@ -425,9 +423,10 @@ namespace MxEngine
 	{
 		MAKE_SCOPE_PROFILER("RenderController::ApplySSR()");
 
+		input->GenerateMipmaps();
+
 		auto& SSRShader = this->Pipeline.Environment.Shaders["SSR"_id];
 		SSRShader->IgnoreNonExistingUniform("albedoTex");
-		SSRShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
 		
 		this->BindGBuffer(camera, *SSRShader);
 		this->BindCameraInformation(camera, *SSRShader);
@@ -456,6 +455,8 @@ namespace MxEngine
 		HDRToLDRShader->SetUniformFloat("exposure", camera.Exposure);
 		HDRToLDRShader->SetUniformFloat("colorMultiplier", camera.ColorScale);
 		HDRToLDRShader->SetUniformFloat("whitePoint", camera.WhitePoint);
+		HDRToLDRShader->SetUniformFloat("minLuminance", camera.MinLuminance);
+		HDRToLDRShader->SetUniformFloat("maxLuminance", camera.MaxLuminance);
 		HDRToLDRShader->SetUniformVec3("ABCcoefsACES", { camera.ACESCoefficients.A, camera.ACESCoefficients.B, camera.ACESCoefficients.C });
 		HDRToLDRShader->SetUniformVec3("DEFcoefsACES", { camera.ACESCoefficients.D, camera.ACESCoefficients.E, camera.ACESCoefficients.F });
 
@@ -902,6 +903,8 @@ namespace MxEngine
 		camera.ACESCoefficients           = effects.GetACESCoefficients();
 		camera.ColorScale                 = effects.GetColorScale();
 		camera.WhitePoint                 = effects.GetWhitePoint();
+		camera.MinLuminance               = effects.GetMinLuminance();
+		camera.MaxLuminance               = effects.GetMaxLuminance();
 		camera.Gamma                      = effects.GetGamma();
 		camera.VignetteRadius             = effects.GetVignetteRadius();
 		camera.VignetteIntensity          = effects.GetVignetteIntensity();

@@ -165,9 +165,14 @@ namespace MxEngine
 
 	void Shader::IgnoreNonExistingUniform(const MxString& name) const
 	{
-		if (uniformCache.find(name) == uniformCache.end())
+		this->IgnoreNonExistingUniform(name.c_str());
+	}
+
+	void Shader::IgnoreNonExistingUniform(const char* name) const
+	{
+		if (uniformCache.find_as(name) == uniformCache.end())
 		{
-			GLCALL(int location = glGetUniformLocation(this->id, name.c_str()));
+			GLCALL(int location = glGetUniformLocation(this->id, name));
 			uniformCache[name] = location;
 		}
 	}

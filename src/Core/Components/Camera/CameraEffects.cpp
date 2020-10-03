@@ -86,9 +86,30 @@ namespace MxEngine
         return this->eyeAdaptation;
     }
 
+    float CameraEffects::GetMinLuminance() const
+    {
+        return this->minLuminance;
+    }
+
+    float CameraEffects::GetMaxLuminance() const
+    {
+        return this->maxLuminance;
+    }
+
     void CameraEffects::SetEyeAdaptation(float adaptation)
     {
         this->eyeAdaptation = Max(adaptation, 0.0f);
+    }
+
+    void CameraEffects::SetMinLuminance(float lum)
+    {
+        this->minLuminance = Clamp(lum, 0.0f, this->maxLuminance);
+    }
+
+    void CameraEffects::SetMaxLuminance(float lum)
+    {
+        this->maxLuminance = Max(lum, 0.0f);
+        this->SetMinLuminance(this->GetMinLuminance());
     }
 
     size_t CameraEffects::GetBloomIterations() const

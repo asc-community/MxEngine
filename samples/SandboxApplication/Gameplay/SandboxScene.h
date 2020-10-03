@@ -10,6 +10,10 @@ class SandboxScene
 public:
     void OnCreate()
     {
+		auto camera = MxObject::Create();
+		InitCamera(*camera);
+		Rendering::SetViewport(camera->GetComponent<CameraController>());
+
 		auto cube = MxObject::Create();
 		InitCube(*cube);
 		
@@ -43,17 +47,27 @@ public:
 		auto spotLight = MxObject::Create();
 		InitSpotLight(*spotLight);
 
-		auto camera = MxObject::Create();
-		InitCamera(*camera);
-
 		// auto sound = MxObject::Create();
 		// InitSound(*sound);
-
-		Rendering::SetViewport(camera->GetComponent<CameraController>());
     }
 
 	void OnUpdate()
 	{
-		
+		static float thickness = 0.5f;
+		static int steps = 10;
+		auto shader = Rendering::GetController().GetEnvironment().Shaders["SSR"_id];
+
+		if (Runtime::IsEditorActive())
+		{
+			ImGui::Begin("SSR");
+
+			ImGui::DragFloat("thickness", &thickness, 0.01f);
+			ImGui::DragInt("steps", &steps, 0.1f);
+
+			ImGui::End();
+		}
+
+		shader->SetUniformFloat("thickness", thickness);
+		shader->SetUniformInt("steps", steps);
 	}
 };

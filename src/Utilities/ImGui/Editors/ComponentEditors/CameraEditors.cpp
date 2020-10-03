@@ -51,6 +51,8 @@ namespace MxEngine::GUI
 		float exposure = cameraEffects.GetExposure();
 		float colorScale = cameraEffects.GetColorScale();
 		float whitePoint = cameraEffects.GetWhitePoint();
+		float minLuminance = cameraEffects.GetMinLuminance();
+		float maxLuminance = cameraEffects.GetMaxLuminance();
 		ACES acesCoefficients = cameraEffects.GetACESCoefficients();
 
 		float gamma = cameraEffects.GetGamma();
@@ -67,6 +69,10 @@ namespace MxEngine::GUI
 			cameraEffects.SetColorScale(colorScale);
 		if (ImGui::DragFloat("white point", &whitePoint, 0.01f))
 			cameraEffects.SetWhitePoint(whitePoint);
+		if (ImGui::DragFloat("min luminance", &minLuminance, 0.1f))
+			cameraEffects.SetMinLuminance(minLuminance);
+		if (ImGui::DragFloat("max luminance", &maxLuminance, 0.1f))
+			cameraEffects.SetMaxLuminance(maxLuminance);
 		if (ImGui::DragScalarN("ACES coefficients", ImGuiDataType_Float, &acesCoefficients.A, 6, 0.01f))
 			cameraEffects.SetACESCoefficients(acesCoefficients);
 		if (ImGui::DragFloat("gamma", &gamma, 0.01f, 0.0f, 5.0f))
