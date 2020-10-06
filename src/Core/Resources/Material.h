@@ -49,7 +49,7 @@ namespace MxEngine
 		float SpecularIntensity = 128.0f;
 		float Emmision = 0.0f;
 		float Displacement = 0.025f;
-		float Reflection = 0.1f;
+		float Reflection = 0.0f;
 
 		Vector3 BaseColor{ 1.0f };
 		bool CastsShadow = true;

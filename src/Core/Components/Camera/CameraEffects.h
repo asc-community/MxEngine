@@ -33,6 +33,7 @@
 
 namespace MxEngine
 {
+	// TODO: split into multiple components
 	class CameraEffects
 	{
 		MAKE_COMPONENT(CameraEffects);
@@ -48,6 +49,10 @@ namespace MxEngine
 		float eyeAdaptation = 100.0f;
 		float minLuminance = 0.0f;
 		float maxLuminance = 100000.0f;
+		float ssrThickness = 0.5f;
+		float ssrMaxCosAngle = 0.5f;
+		size_t ssrSteps = 0;
+		float ssrMaxDistance = 3.0f;
 
 		bool enableFXAA = false;
 		bool toneMapping = false;
@@ -68,6 +73,10 @@ namespace MxEngine
 		bool IsFXAAEnabled() const;
 		bool IsToneMappingEnabled() const;
 		size_t GetBloomIterations() const;
+		float GetSSRThickness() const;
+		float GetSSRMaxCosAngle() const;
+		float GetSSRSteps() const;
+		float GetSSRMaxDistance() const;
 
 		void SetGamma(float gamma);
 		void SetBloomWeight(float weight);
@@ -83,5 +92,9 @@ namespace MxEngine
 		void ToggleFXAA(bool value);
 		void ToggleToneMapping(bool value);
 		void SetBloomIterations(size_t iterations);
+		void SetSSRThickness(float thickness);
+		void SetSSRMaxCosAngle(float angle);
+		void SetSSRSteps(size_t steps);
+		void SetSSRMaxDistance(float distance);
 	};
 }

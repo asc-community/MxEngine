@@ -6,13 +6,14 @@ void InitCamera(MxObject& object)
 
 	auto listener = object.AddComponent<AudioListener>();
 	auto controller = object.AddComponent<CameraController>();
+	auto effects = object.AddComponent<CameraEffects>();
 	auto skybox = object.AddComponent<Skybox>();
 	auto input = object.AddComponent<InputController>();
-	auto effects = object.AddComponent<CameraEffects>();
 
 	effects->SetVignetteRadius(0.15f);
 	effects->SetBloomIterations(6);
 	effects->SetWhitePoint(0.75f);
+	effects->SetMinLuminance(0.3f);
 	effects->ToggleToneMapping(true);
 
 	skybox->Texture = AssetManager::LoadCubeMap("textures/dawn.jpg"_id);

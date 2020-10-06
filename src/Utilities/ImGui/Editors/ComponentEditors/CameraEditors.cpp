@@ -63,6 +63,11 @@ namespace MxEngine::GUI
 		bool isFXAAEnabled = cameraEffects.IsFXAAEnabled();
 		bool isToneMappingEnabled = cameraEffects.IsToneMappingEnabled();
 
+		float ssrThickness = cameraEffects.GetSSRThickness();
+		float ssrMaxCosAngle = cameraEffects.GetSSRMaxCosAngle();
+		int ssrSteps = (int)cameraEffects.GetSSRSteps();
+		float ssrMaxDistance = cameraEffects.GetSSRMaxDistance();
+
 		if (ImGui::DragFloat("exposure", &exposure, 0.01f))
 			cameraEffects.SetExposure(exposure);
 		if (ImGui::DragFloat("color scale", &colorScale, 0.01f))
@@ -87,6 +92,20 @@ namespace MxEngine::GUI
 			cameraEffects.SetVignetteRadius(vignetteRadius);
 		if (ImGui::DragFloat("vignette intensity", &vignetteIntensity, 0.1f))
 			cameraEffects.SetVignetteIntensity(vignetteIntensity);
+
+		if (ImGui::TreeNode("Screen Space Reflections"))
+		{
+			if (ImGui::DragFloat("thickness", &ssrThickness, 0.1f))
+				cameraEffects.SetSSRThickness(ssrThickness);
+			if (ImGui::DragFloat("max angle cos", &ssrMaxCosAngle, 0.1f))
+				cameraEffects.SetSSRMaxCosAngle(ssrMaxCosAngle);
+			if (ImGui::DragInt("steps", &ssrSteps, 0.1f))
+				cameraEffects.SetSSRSteps(Min((size_t)ssrSteps, 1000));
+			if (ImGui::DragFloat("max distance", &ssrMaxDistance, 0.1f))
+				cameraEffects.SetSSRMaxDistance(ssrMaxDistance);
+
+			ImGui::TreePop();
+		}
 		
 		if (ImGui::Checkbox("uses FXAA", &isFXAAEnabled))
 			cameraEffects.ToggleFXAA(isFXAAEnabled);

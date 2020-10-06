@@ -47,6 +47,7 @@ namespace MxEngine
         size_t VertexCount;
     };
 
+    // TODO: split into multiple classes
     struct CameraUnit
     {
         FrameBufferHandle GBuffer;
@@ -85,6 +86,10 @@ namespace MxEngine
         float WhitePoint;
         float MaxLuminance;
         float MinLuminance;
+        float SSRThickness;
+        float SSRMaxCosAngle;
+        size_t SSRSteps;
+        float SSRMaxDistance;
     };
 
     struct EnvironmentUnit

@@ -31,7 +31,7 @@ void main()
 
 	vec3 viewDirection = normalize(camera.position - fragment.position);
 
-	vec3 totalColor = vec3(0.0f);
+	vec3 totalColor = 0.0001f * fragment.albedo;
 	for (int i = 0; i < lightCount; i++)
 	{
 		vec4 fragLightSpace = lights[i].transform * vec4(fragment.position, 1.0f);

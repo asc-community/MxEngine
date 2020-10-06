@@ -24,15 +24,7 @@ uniform Camera camera;
 uniform int   steps;
 uniform float thickness;
 uniform float maxDistance;
-uniform int sampleCount;
-
-vec2 RANDOM_SAMPLES[16] = vec2[]
-(
-    vec2(0.2222f, 0.3333f), vec2(-0.4343f, 0.7676), vec2(-0.5500f, -0.4545f), vec2(0.1000f, -0.9999f),
-    vec2(0.6666f, 0.1111f), vec2(-0.7878f, 0.1212), vec2(-0.4433f, -0.8888f), vec2(0.4000f, -0.7000f),
-    vec2(0.4444f, 0.7777f), vec2(-0.7337f, 0.5353), vec2(-0.2233f, -0.6699f), vec2(0.2000f, -0.8000f),
-    vec2(0.9999f, 0.5555f), vec2(-0.8448f, 0.1919), vec2(-0.4455f, -0.8833f), vec2(0.6000f, -0.6000f)
-);
+uniform float maxCosAngle;
 
 vec4 toFragSpace(vec4 v, mat4 viewProj)
 {
@@ -45,55 +37,62 @@ vec4 toFragSpace(vec4 v, mat4 viewProj)
 void main()
 {
     FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
+    vec3 objectColor = texture(HDRTex, TexCoord).rgb;
+    if (fragment.reflection == 0.0f)
+    {
+        OutColor = vec4(objectColor, 1.0f);
+        return;
+    }
+
     vec3 viewDistance = camera.position - fragment.position;
     vec3 viewDirection = normalize(viewDistance);
-
-    vec3 objectColor = texture(HDRTex, TexCoord).rgb;
-    vec3 environmentReflection = calcReflectionColor(objectColor, skyboxMap, skyboxTransform, viewDirection, fragment.normal);
 
     vec3 pivot = normalize(reflect(-viewDirection, fragment.normal));
     vec3 startPos = fragment.position + (pivot * 0.001f);
 
-    int hit = 0;
     float currentLength = 1.0f;
-    vec2 currentUV = vec2(0.0f);
-    vec2 invTexSize = 1.0f / textureSize(depthTex, 0);
+    float bestDepth = 10000.0f;
+    vec2 bestUV = vec2(0.0f);
+    float rayCosAngle = dot(viewDirection, pivot);
 
-    if (dot(viewDirection, pivot) < 0.5f)
+    for (int i = 0; i < steps; i++)
     {
-        for (int i = 0; i < steps; i++)
+        vec3 currentPosition = startPos + pivot * currentLength;
+        vec4 projectedPosition = toFragSpace(vec4(currentPosition, 1.0f), camera.viewProjMatrix);
+        vec2 currentUV = projectedPosition.xy;
+        float projectedDepth = projectedPosition.z;
+
+        float currentFragDepth = texture(depthTex, currentUV).r;
+        float depthDiff = abs(1.0f / projectedDepth - 1.0f / currentFragDepth);
+        if (depthDiff < bestDepth)
         {
-            vec3 currentPosition = startPos + pivot * currentLength;
-            vec4 projectedPosition = toFragSpace(vec4(currentPosition, 1.0f), camera.viewProjMatrix);
-            currentUV = projectedPosition.xy;
-
-            if (currentUV.x < 0.0f || currentUV.x > 1.0f ||
-                currentUV.y < 0.0f || currentUV.y > 1.0f)
+            bestUV = currentUV;
+            bestDepth = depthDiff;
+            if(depthDiff < thickness)
                 break;
-
-            float currentFragDepth = texture(depthTex, currentUV).r;
-            float depthDiff = 1.0f / projectedPosition.z - 1.0f / currentFragDepth;
-            if (abs(depthDiff) < thickness)
-            {
-                hit = 1;
-                break;
-            }
-            else
-            {
-                vec3 newPosition = reconstructWorldPosition(currentFragDepth, currentUV, camera.invViewProjMatrix);
-                currentLength = length(startPos - newPosition);
-            }
+        }
+        else
+        {
+            vec3 newPosition = reconstructWorldPosition(currentFragDepth, currentUV, camera.invViewProjMatrix);
+            currentLength = length(startPos - newPosition);
         }
     }
 
-    if (hit != 0)
-    {
-        vec3 ssrReflection = texture(HDRTex, currentUV).rgb;
-        float fromReflectionPoint = length(currentUV - TexCoord) / maxDistance;
-        float fromScreenCenter = length(currentUV - vec2(0.5f)) / maxDistance;
-        float fadingFactor = 1.0f - clamp(max(fromReflectionPoint, fromScreenCenter), 0.0f, 1.0f);
-        environmentReflection = mix(environmentReflection, ssrReflection, fadingFactor);
-    }
+    vec3 environmentReflection = calcReflectionColor(skyboxMap, skyboxTransform, viewDirection, fragment.normal);
+    vec3 ssrReflection = texture(HDRTex, bestUV).rgb;
+    vec2 screenCenterDiff = 2.0f * abs(bestUV - vec2(0.5f));
+
+    float fromReflectionPoint = length(bestUV - TexCoord) / maxDistance;
+    float fromScreenCenter = max(screenCenterDiff.x, screenCenterDiff.y) * 10.0f - 9.0f;
+    float fromRequiredThickness = (bestDepth - thickness) / (bestDepth + thickness);
+    float fromCameraAngle = rayCosAngle / maxCosAngle;
+    float maxFactor = max(max(fromReflectionPoint, fromScreenCenter), max(fromRequiredThickness, fromCameraAngle));
+    float fadingFactor = 1.0f - clamp(maxFactor, 0.0f, 1.0f);
+
+    environmentReflection = mix(environmentReflection, ssrReflection, fadingFactor);
+    const vec3 luminance = vec3(0.2125f, 0.7154f, 0.0721f);
+    float reflectionFactor = dot(luminance, mix(objectColor, environmentReflection, fragment.reflection));
+    environmentReflection *= reflectionFactor;
 
     OutColor = vec4(mix(objectColor, environmentReflection, fragment.reflection), 1.0f);
 }

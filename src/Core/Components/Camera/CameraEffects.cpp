@@ -117,6 +117,26 @@ namespace MxEngine
         return size_t(this->bloomIterations);
     }
 
+    float CameraEffects::GetSSRThickness() const
+    {
+        return this->ssrThickness;
+    }
+
+    float CameraEffects::GetSSRMaxCosAngle() const
+    {
+        return this->ssrMaxCosAngle;
+    }
+
+    float CameraEffects::GetSSRSteps() const
+    {
+        return this->ssrSteps;
+    }
+
+    float CameraEffects::GetSSRMaxDistance() const
+    {
+        return this->ssrMaxDistance;
+    }
+
     void CameraEffects::SetGamma(float gamma)
     {
         this->gamma = Max(0.0f, gamma);
@@ -174,5 +194,25 @@ namespace MxEngine
     void CameraEffects::SetBloomIterations(size_t iterations)
     {
         this->bloomIterations = (uint8_t)Min(100, iterations);
+    }
+
+    void CameraEffects::SetSSRThickness(float thickness)
+    {
+        this->ssrThickness = Max(thickness, 0.0f);
+    }
+
+    void CameraEffects::SetSSRMaxCosAngle(float angle)
+    {
+        this->ssrMaxCosAngle = Clamp(angle, -1.0f, 1.0f);
+    }
+
+    void CameraEffects::SetSSRSteps(size_t steps)
+    {
+        this->ssrSteps = steps;
+    }
+
+    void CameraEffects::SetSSRMaxDistance(float distance)
+    {
+        this->ssrMaxDistance = Max(distance, 0.0f);
     }
 }
