@@ -44,7 +44,8 @@ namespace MxEngine
 		ObjectInfo objectInfo = ObjectLoader::Load(filepath);
 		MxVector<TransformComponent::Handle> submeshTransforms;
 
-		for (const auto& group : objectInfo.meshes)
+		submeshTransforms.reserve(objectInfo.meshes.size());
+		for (size_t i = 0; i < objectInfo.meshes.size(); i++)
 		{
 			submeshTransforms.push_back(ComponentFactory::CreateComponent<TransformComponent>());
 		}

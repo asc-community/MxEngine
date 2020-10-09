@@ -135,7 +135,6 @@ namespace MxEngine
 			MX_ASSERT(mesh->mNormals != nullptr);
 			MX_ASSERT(mesh->mVertices != nullptr);
 			MX_ASSERT(mesh->mNumFaces > 0);
-			constexpr size_t VertexSize = (3 + 2 + 3 + 3 + 3);
 
 			MxVector<Vertex> vertex;
 			vertex.resize((size_t)mesh->mNumVertices);

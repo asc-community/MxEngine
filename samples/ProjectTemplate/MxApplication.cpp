@@ -1,5 +1,8 @@
 #include <MxEngine.h>
 
+#include <iostream>
+
+
 namespace ProjectTemplate
 {
     using namespace MxEngine;
@@ -14,7 +17,8 @@ namespace ProjectTemplate
         {
             // create camera object
             auto cameraObject = MxObject::Create();
-            cameraObject->Name = "Player Camera";
+            cameraObject->Name = "Camera Object";
+
             // add CameraController component which handles camera image rendering
             auto controller = cameraObject->AddComponent<CameraController>();
             // add InpitControl which handles keyboard and mouse input events

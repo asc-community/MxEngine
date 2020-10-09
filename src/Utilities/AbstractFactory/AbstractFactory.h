@@ -42,7 +42,7 @@ namespace MxEngine
 
         template<typename... Args>
         ManagedResource(UUID uuid, Args&&... value)
-            : value(std::forward<Args>(value)...), uuid(uuid)
+            : uuid(uuid), value(std::forward<Args>(value)...)
         {
         }
 

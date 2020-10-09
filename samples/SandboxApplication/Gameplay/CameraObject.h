@@ -15,6 +15,8 @@ void InitCamera(MxObject& object)
 	effects->SetWhitePoint(0.75f);
 	effects->SetMinLuminance(0.3f);
 	effects->ToggleToneMapping(true);
+	effects->SetSSRSteps(10);
+	effects->SetSSRSkyboxMultiplier(0.3f);
 
 	skybox->Texture = AssetManager::LoadCubeMap("textures/dawn.jpg"_id);
 

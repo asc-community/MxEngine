@@ -7,13 +7,17 @@
 
 #if defined(MXENGINE_WINDOWS)
 #include <Windows.h>
-#define BOOST_STACKTRACE_USE_WINDBG_CACHED
 #endif
 
 #if defined(MXENGINE_USE_BOOST)
     #if defined(MXENGINE_MACOS)
-    #define _GNU_SOURCE
+        #define _GNU_SOURCE
+    #elif defined(MXENGINE_WINDOWS)
+        #define BOOST_STACKTRACE_USE_WINDBG_CACHED
+        #pragma comment(lib, "ole32.lib")
+        #pragma comment(lib, "Dbgeng.lib")
     #endif
+
 #include <boost/stacktrace.hpp>
 
 #endif

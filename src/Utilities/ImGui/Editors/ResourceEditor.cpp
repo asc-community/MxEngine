@@ -262,12 +262,12 @@ namespace MxEngine::GUI
                 cylinder.Orientation = Cylinder::Axis::X;
                 ImGui::SetItemDefaultFocus();
             }
-            if (ImGui::Selectable("y axis", &axisX))
+            if (ImGui::Selectable("y axis", &axisY))
             {
                 cylinder.Orientation = Cylinder::Axis::Y;
                 ImGui::SetItemDefaultFocus();
             }
-            if (ImGui::Selectable("z axis", &axisX))
+            if (ImGui::Selectable("z axis", &axisZ))
             {
                 cylinder.Orientation = Cylinder::Axis::Z;
                 ImGui::SetItemDefaultFocus();
@@ -295,12 +295,12 @@ namespace MxEngine::GUI
                 capsule.Orientation = Capsule::Axis::X;
                 ImGui::SetItemDefaultFocus();
             }
-            if (ImGui::Selectable("y axis", &axisX))
+            if (ImGui::Selectable("y axis", &axisY))
             {
                 capsule.Orientation = Capsule::Axis::Y;
                 ImGui::SetItemDefaultFocus();
             }
-            if (ImGui::Selectable("z axis", &axisX))
+            if (ImGui::Selectable("z axis", &axisZ))
             {
                 capsule.Orientation = Capsule::Axis::Z;
                 ImGui::SetItemDefaultFocus();

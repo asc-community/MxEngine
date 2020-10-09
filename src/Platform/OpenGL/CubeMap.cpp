@@ -131,7 +131,6 @@ namespace MxEngine
 		this->height = img.GetHeight();
 
 		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
-		int glChannels = 3;
 		for (size_t i = 0; i < 6; i++)
 		{
 			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGB, 

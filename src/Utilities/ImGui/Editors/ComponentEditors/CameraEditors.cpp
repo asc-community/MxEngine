@@ -67,6 +67,7 @@ namespace MxEngine::GUI
 		float ssrMaxCosAngle = cameraEffects.GetSSRMaxCosAngle();
 		int ssrSteps = (int)cameraEffects.GetSSRSteps();
 		float ssrMaxDistance = cameraEffects.GetSSRMaxDistance();
+		float ssrSkyboxMultiplier = cameraEffects.GetSSRSkyboxMultiplier();
 
 		if (ImGui::DragFloat("exposure", &exposure, 0.01f))
 			cameraEffects.SetExposure(exposure);
@@ -103,6 +104,8 @@ namespace MxEngine::GUI
 				cameraEffects.SetSSRSteps(Min((size_t)ssrSteps, 1000));
 			if (ImGui::DragFloat("max distance", &ssrMaxDistance, 0.1f))
 				cameraEffects.SetSSRMaxDistance(ssrMaxDistance);
+			if (ImGui::DragFloat("skybox multiplier", &ssrSkyboxMultiplier, 0.1f))
+				cameraEffects.SetSSRSkyboxMultiplier(ssrSkyboxMultiplier);
 
 			ImGui::TreePop();
 		}

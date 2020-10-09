@@ -89,6 +89,12 @@ namespace GrassSample
 
         virtual void OnCreate() override
         {
+            Event::AddEventListener<FpsUpdateEvent>("CountFPS",
+                [](auto& e)
+                {
+                    WindowManager::SetTitle(MxFormat("Grass Sample {0} FPS", e.FPS));
+                });
+
             // setup camera
             cameraObject = MxObject::Create();
             cameraObject->Name = "Player Camera";

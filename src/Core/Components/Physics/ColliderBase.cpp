@@ -49,7 +49,7 @@ namespace MxEngine
             auto uuid = mesh.GetUUID();
             if (this->savedMeshState != uuid)
             {
-                auto& meshAABB = mesh->GetBoundingBox();
+                (void)mesh->GetBoundingBox();
                 this->savedMeshState = uuid;
                 return true; // ask to update collider to new meshAABB
             }

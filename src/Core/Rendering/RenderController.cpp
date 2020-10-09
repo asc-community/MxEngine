@@ -435,6 +435,7 @@ namespace MxEngine
 		SSRShader->SetUniformInt("HDRTex", 4);
 		SSRShader->SetUniformInt("skyboxMap", 5);
 		SSRShader->SetUniformMat3("skyboxTransform", camera.InversedSkyboxRotation);
+		SSRShader->SetUniformFloat("skyboxMultiplier", camera.SSRSkyboxMultiplier);
 		SSRShader->SetUniformFloat("thickness", camera.SSRThickness);
 		SSRShader->SetUniformFloat("maxCosAngle", camera.SSRMaxCosAngle);
 		SSRShader->SetUniformInt("steps", (int)camera.SSRSteps);
@@ -914,6 +915,7 @@ namespace MxEngine
 		camera.VignetteIntensity          = effects.GetVignetteIntensity();
 		camera.SSRThickness               = effects.GetSSRThickness();
 		camera.SSRMaxCosAngle             = effects.GetSSRMaxCosAngle();
+		camera.SSRSkyboxMultiplier        = effects.GetSSRSkyboxMultiplier();
 		camera.SSRSteps                   = effects.GetSSRSteps();
 		camera.SSRMaxDistance             = effects.GetSSRMaxDistance();
 		camera.EnableFXAA                 = effects.IsFXAAEnabled();

@@ -53,6 +53,7 @@ namespace MxEngine
 		float ssrMaxCosAngle = 0.5f;
 		size_t ssrSteps = 0;
 		float ssrMaxDistance = 3.0f;
+		float ssrSkyboxMultiplier = 1.0f;
 
 		bool enableFXAA = false;
 		bool toneMapping = false;
@@ -77,6 +78,7 @@ namespace MxEngine
 		float GetSSRMaxCosAngle() const;
 		float GetSSRSteps() const;
 		float GetSSRMaxDistance() const;
+		float GetSSRSkyboxMultiplier() const;
 
 		void SetGamma(float gamma);
 		void SetBloomWeight(float weight);
@@ -96,5 +98,6 @@ namespace MxEngine
 		void SetSSRMaxCosAngle(float angle);
 		void SetSSRSteps(size_t steps);
 		void SetSSRMaxDistance(float distance);
+		void SetSSRSkyboxMultiplier(float multiplier);
 	};
 }

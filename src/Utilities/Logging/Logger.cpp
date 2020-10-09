@@ -105,25 +105,37 @@ namespace MxEngine
     void Logger::LogToConsole(const char* text)
     {
         if (Logger::IsLogToConsole())
+        {
             std::cout << text;
+            std::cout.flush();
+        }
     }
 
     void Logger::LogToFile(const char* text)
     {
         if (Logger::IsLogToFile())
+        {
             logger->LogFile << text;
+            logger->LogFile.flush();
+        }
     }
 
     void Logger::LogLineToConsole(const char* text)
     {
         if (Logger::IsLogToConsole())
+        {
             std::cout << text << '\n';
+            std::cout.flush();
+        }
     }
 
     void Logger::LogLineToFile(const char* text)
     {
         if (Logger::IsLogToFile())
+        {
             logger->LogFile << text << '\n';
+            logger->LogFile.flush();
+        }
     }
 
     void Logger::Log(VerbosityType type, const char* text)

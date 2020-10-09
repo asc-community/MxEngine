@@ -89,7 +89,7 @@ namespace MxEngine
 
     const Matrix3x3& TransformComponent::GetNormalMatrix() const
     {
-        auto _ = GetMatrix();
+        (void)this->GetMatrix();
         return this->normalMatrix;
     }
 

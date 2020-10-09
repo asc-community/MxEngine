@@ -1,169 +1,3 @@
-set(MXENGINE_HEADERS
-    "Core/Application/Application.h" 
-    "Core/Application/Event.h" 
-    "Core/Application/Physics.h" 
-    "Core/Application/Rendering.h" 
-    "Core/Application/Runtime.h" 
-    "Core/Application/Timer.h" 
-    "Core/Config/Config.h" 
-    "Core/Config/GlobalConfig.h" 
-    "Core/BoundingObjects/AABB.h" 
-    "Core/BoundingObjects/BoundingBox.h" 
-    "Core/BoundingObjects/BoundingSphere.h" 
-    "Core/BoundingObjects/Capsule.h" 
-    "Core/BoundingObjects/Cone.h" 
-    "Core/BoundingObjects/Cylinder.h" 
-    "Core/BoundingObjects/Frustrum.h" 
-    "Core/BoundingObjects/Line.h" 
-    "Core/Components/Audio/AudioListener.h" 
-    "Core/Components/Audio/AudioSource.h" 
-    "Core/Components/Camera/CameraBase.h" 
-    "Core/Components/Camera/CameraController.h" 
-    "Core/Components/Camera/CameraEffects.h" 
-    "Core/Components/Camera/FrustrumCamera.h" 
-    "Core/Components/Camera/InputController.h" 
-    "Core/Components/Camera/OrthographicCamera.h" 
-    "Core/Components/Camera/PerspectiveCamera.h" 
-    "Core/Components/Camera/VRCameraController.h" 
-    "Core/Components/Components.h" 
-    "Core/Components/Instancing/Instance.h" 
-    "Core/Components/Instancing/InstanceFactory.h" 
-    "Core/Components/Lighting/LightBase.h" 
-    "Core/Components/Physics/BoxCollider.h" 
-    "Core/Components/Physics/CapsuleCollider.h" 
-    "Core/Components/Physics/ColliderBase.h" 
-    "Core/Components/Physics/CylinderCollider.h" 
-    "Core/Components/Physics/RigidBody.h" 
-    "Core/Components/Physics/SphereCollider.h" 
-    "Core/Components/Rendering/DebugDraw.h" 
-    "Core/Components/Rendering/MeshLOD.h" 
-    "Core/Components/Rendering/MeshRenderer.h" 
-    "Core/Components/Rendering/MeshSource.h" 
-    "Core/Components/Rendering/Skybox.h" 
-    "Core/Components/Lighting/DirectionalLight.h" 
-    "Core/Components/Lighting/PointLight.h" 
-    "Core/Components/Lighting/SpotLight.h" 
-    "Core/Components/Script.h" 
-    "Core/Components/Transform.h" 
-    "Core/Components/Behaviour.h" 
-    "Core/Rendering/RenderObjects/DebugBuffer.h" 
-    "Core/Rendering/RenderObjects/Rectangle.h" 
-    "Core/Rendering/RenderObjects/RenderHelperObject.h" 
-    "Core/Rendering/RenderObjects/SpotLightInstancedObject.h" 
-    "Core/Rendering/RenderObjects/PointLightInstancedObject.h" 
-    "Core/Rendering/RenderObjects/SkyboxObject.h" 
-    "Core/Rendering/RenderAdaptor.h" 
-    "Core/Rendering/RenderPipeline.h" 
-    "Core/Rendering/RenderController.h" 
-    "Core/Runtime/RuntimeEditor.h" 
-    "Core/Events/AppDestroyEvent.h" 
-    "Core/Events/Events.h" 
-    "Core/Events/RenderEvent.h" 
-    "Core/Events/FpsUpdateEvent.h" 
-    "Core/Events/UpdateEvent.h" 
-    "Core/Events/KeyEvent.h" 
-    "Core/Events/MouseEvent.h" 
-    "Core/Events/WindowResizeEvent.h" 
-    "Core/Events/EventBase.h" 
-    "Core/Macro/Macro.h" 
-    "Core/Resources/Mesh.h" 
-    "Core/Resources/MeshData.h" 
-    "Core/Resources/AssetManager.h" 
-    "Core/Resources/SubMesh.h" 
-    "Core/Resources/Material.h" 
-    "Core/MxObject/MxObject.h" 
-    "Platform/AudioAPI.h" 
-    "Platform/GraphicAPI.h" 
-    "Platform/PhysicsAPI.h" 
-    "Platform/Modules/GraphicModule.h" 
-    "Platform/Modules/AudioModule.h" 
-    "Platform/Modules/PhysicsModule.h" 
-    "Platform/OpenAL/ALUtilities.h" 
-    "Platform/OpenAL/AudioBuffer.h" 
-    "Platform/OpenAL/AudioPlayer.h" 
-    "Platform/Bullet3/BoxShape.h" 
-    "Platform/Bullet3/CapsuleShape.h" 
-    "Platform/Bullet3/CylinderShape.h" 
-    "Platform/Bullet3/NativeRigidBody.h" 
-    "Platform/Bullet3/ShapeBase.h" 
-    "Platform/Bullet3/SphereShape.h" 
-    "Platform/Bullet3/Bullet3Utils.h"
-    "Platform/OpenGL/CubeMap.h" 
-    "Platform/OpenGL/FrameBuffer.h" 
-    "Platform/OpenGL/RenderBuffer.h" 
-    "Platform/OpenGL/GLUtilities.h" 
-    "Platform/OpenGL/IndexBuffer.h" 
-    "Platform/OpenGL/Shader.h" 
-    "Platform/OpenGL/Texture.h" 
-    "Platform/OpenGL/VertexArray.h" 
-    "Platform/OpenGL/VertexBufferLayout.h" 
-    "Platform/OpenGL/VertexBuffer.h" 
-    "Platform/OpenGL/Renderer.h" 
-    "Platform/Window/Window.h" 
-    "Platform/Window/Input.h" 
-    "Platform/Window/WindowManager.h" 
-    "Library/Scripting/Python/PythonEngine.h"  
-    "Library/Primitives/Primitives.h" 
-    "Library/Primitives/Colors.h" 
-    "Utilities/Audio/SupportedAudioTypes.h" 
-    "Utilities/Audio/AudioLoader.h" 
-    "Utilities/AbstractFactory/AbstractFactory.h" 
-    "Utilities/ECS/Component.h" 
-    "Utilities/ECS/ComponentFactory.h" 
-    "Utilities/ECS/ComponentView.h" 
-    "Utilities/FileSystem/FileManager.h" 
-    "Utilities/FileSystem/File.h" 
-    "Utilities/Image/Image.h" 
-    "Utilities/Image/ImageManager.h" 
-    "Utilities/Image/ImageConverter.h" 
-    "Utilities/ImGui/Editors/ApplicationEditor.h" 
-    "Utilities/ImGui/Editors/ComponentEditor.h" 
-    "Utilities/ImGui/Editors/MxObjectEditor.h" 
-    "Utilities/ImGui/Editors/RenderEditor.h" 
-    "Utilities/ImGui/Editors/ResourceEditor.h" 
-    "Utilities/ImGui/EventLogger.h" 
-    "Utilities/ImGui/Viewport.h" 
-    "Utilities/ImGui/GraphicConsole.h" 
-    "Utilities/ImGui/ImGuiBase.h" 
-    "Utilities/ImGui/ImGuiUtils.h" 
-    "Utilities/ImGui/Layout.h" 
-    "Utilities/ImGui/ProfilerGraph.h" 
-    "Utilities/Json/Json.h" 
-    "Utilities/LODGenerator/LODGenerator.h" 
-    "Utilities/Logging/Logger.h" 
-    "Utilities/Logging/LoggerData.h" 
-    "Utilities/Logging/LogSettings.h" 
-    "Utilities/Logging/Platform.h" 
-    "Utilities/Memory/ChunkAllocator.h" 
-    "Utilities/Memory/LinearAllocator.h" 
-    "Utilities/Memory/Memory.h" 
-    "Utilities/Memory/PoolAllocator.h" 
-    "Utilities/Memory/RandomAllocator.h" 
-    "Utilities/Memory/StackAllocator.h" 
-    "Utilities/Array/Array2D.h" 
-    "Utilities/Array/ArrayView.h" 
-    "Utilities/EventDispatcher/EventDispatcher.h" 
-    "Utilities/EventDispatcher/EventDispatcherFwd.h" 
-    "Utilities/Format/Format.h" 
-    "Utilities/Image/ImageLoader.h" 
-    "Utilities/Math/Math.h" 
-    "Utilities/ObjectLoader/ObjectLoader.h"  
-    "Utilities/Profiler/Profiler.h" 
-    "Utilities/Random/Random.h" 
-    "Utilities/STL/MxFunction.h" 
-    "Utilities/STL/MxHashMap.h" 
-    "Utilities/STL/MxHashSet.h" 
-    "Utilities/STL/MxMap.h" 
-    "Utilities/STL/MxSet.h" 
-    "Utilities/STL/MxString.h" 
-    "Utilities/STL/MxVector.h" 
-    "Utilities/UUID/UUID.h" 
-    "Utilities/String/String.h" 
-    "Utilities/Time/Time.h" 
-    "Utilities/VectorPool/VectorPool.h" 
-    "MxEngine.h"
-)
-
 set(MXENGINE_SOURCES
     "Core/Config/Config.cpp" 
     "Core/Config/GlobalConfig.cpp" 
@@ -300,13 +134,13 @@ if (NOT Boost_FOUND)
     return()
 endif()
 
-if(MSVC)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     add_compile_definitions(_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
-endif()
-
-add_compile_definitions(MXENGINE_BUILD_FROM_CMAKE)
-if(MXENGINE_BUILD_SHIPPING)
-    add_compile_definitions(MXENGINE_SHIPPING)
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(CMAKE_STATIC_LINKER_FLAGS "/Zi /VERBOSE")
+    else()
+        set(CMAKE_STATIC_LINKER_FLAGS "/CGTHREADS:8")
+    endif()
 endif()
 
 # bullet3
@@ -319,11 +153,14 @@ set(BUILD_CLSOCKET OFF CACHE BOOL "" FORCE)
 set(BUILD_ENET OFF CACHE BOOL "" FORCE)
 set(USE_GTEST OFF CACHE BOOL "" FORCE)
 set(BUILD_EXTRAS OFF CACHE BOOL "" FORCE)
+if(MSVC)
+    set(USE_MSVC_RUNTIME_LIBRARY_DLL ON CACHE BOOL "" FORCE)
+endif()
 
 # assimp
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
-set(ASSIMP_INSTALL OF CACHE BOOL "" FORCEF)
+set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 
 # glew
 set(glew-cmake_BUILD_SHARED OFF CACHE BOOL "" FORCE)
@@ -397,19 +234,10 @@ set(MxEngine_INCLUDE_DIR ${MXENGINE_INCLUDE_DIRS} PARENT_SCOPE)
 set(MxEngine_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
 
 set(LIBRARY_NAME MxEngine)
-add_library(${LIBRARY_NAME} STATIC ${MXENGINE_SOURCES} ${MXENGINE_HEADERS})
-add_library(${LIBRARY_NAME}::${LIBRARY_NAME} ALIAS ${LIBRARY_NAME})
+add_library(${LIBRARY_NAME} STATIC ${MXENGINE_SOURCES})
 
 link_directories(${THIRD_PARTY_BINARY_DIRS})
 target_link_libraries(${LIBRARY_NAME} ${THIRD_PARTY_LIBRARIES})
-
-if (MSVC)
-    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(CMAKE_STATIC_LINKER_FLAGS "/DEBUG /INCREMENTAL /Zi /VERBOSE")
-    else()
-        set(CMAKE_STATIC_LINKER_FLAGS "/CGTHREADS:8")
-    endif()
-endif()
 
 set(SHARED_LIBRARIES_PATHS
     ${openal_binary_dir}/OpenAL32${CMAKE_SHARED_LIBRARY_SUFFIX}

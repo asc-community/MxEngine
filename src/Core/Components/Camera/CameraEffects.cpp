@@ -117,6 +117,11 @@ namespace MxEngine
         return size_t(this->bloomIterations);
     }
 
+    float CameraEffects::GetSSRSkyboxMultiplier() const
+    {
+        return this->ssrSkyboxMultiplier;
+    }
+
     float CameraEffects::GetSSRThickness() const
     {
         return this->ssrThickness;
@@ -214,5 +219,10 @@ namespace MxEngine
     void CameraEffects::SetSSRMaxDistance(float distance)
     {
         this->ssrMaxDistance = Max(distance, 0.0f);
+    }
+
+    void CameraEffects::SetSSRSkyboxMultiplier(float multiplier)
+    {
+        this->ssrSkyboxMultiplier = Max(multiplier, 0.0f);
     }
 }

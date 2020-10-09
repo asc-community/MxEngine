@@ -90,6 +90,7 @@ namespace MxEngine
         float SSRMaxCosAngle;
         size_t SSRSteps;
         float SSRMaxDistance;
+        float SSRSkyboxMultiplier;
     };
 
     struct EnvironmentUnit

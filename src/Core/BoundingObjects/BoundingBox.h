@@ -35,9 +35,9 @@ namespace MxEngine
     class BoundingBox
     {
     public:
+        Vector3 Center{ 0.0f, 0.0f, 0.0f };
         Vector3 Min = MakeVector3(0.0f);
         Vector3 Max = MakeVector3(0.0f);
-        Vector3 Center{ 0.0f, 0.0f, 0.0f };
         Quaternion Rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
 
         constexpr BoundingBox() = default;

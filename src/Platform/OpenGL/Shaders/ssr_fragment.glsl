@@ -25,6 +25,7 @@ uniform int   steps;
 uniform float thickness;
 uniform float maxDistance;
 uniform float maxCosAngle;
+uniform float skyboxMultiplier;
 
 vec4 toFragSpace(vec4 v, mat4 viewProj)
 {
@@ -64,7 +65,7 @@ void main()
 
         float currentFragDepth = texture(depthTex, currentUV).r;
         float depthDiff = abs(1.0f / projectedDepth - 1.0f / currentFragDepth);
-        if (depthDiff < bestDepth)
+        if (!isnan(depthDiff) && depthDiff < bestDepth)
         {
             bestUV = currentUV;
             bestDepth = depthDiff;
@@ -78,7 +79,7 @@ void main()
         }
     }
 
-    vec3 environmentReflection = calcReflectionColor(skyboxMap, skyboxTransform, viewDirection, fragment.normal);
+    vec3 environmentReflection = skyboxMultiplier * calcReflectionColor(skyboxMap, skyboxTransform, viewDirection, fragment.normal);
     vec3 ssrReflection = texture(HDRTex, bestUV).rgb;
     vec2 screenCenterDiff = 2.0f * abs(bestUV - vec2(0.5f));
 
@@ -91,7 +92,7 @@ void main()
 
     environmentReflection = mix(environmentReflection, ssrReflection, fadingFactor);
     const vec3 luminance = vec3(0.2125f, 0.7154f, 0.0721f);
-    float reflectionFactor = dot(luminance, mix(objectColor, environmentReflection, fragment.reflection));
+    float reflectionFactor = mix(dot(luminance, objectColor), 1.0f, fragment.reflection);
     environmentReflection *= reflectionFactor;
 
     OutColor = vec4(mix(objectColor, environmentReflection, fragment.reflection), 1.0f);

@@ -34,7 +34,6 @@ namespace MxEngine
 {
     class Cone
     {
-        Vector3 direction;
         float angle;
         float length;
     public:
