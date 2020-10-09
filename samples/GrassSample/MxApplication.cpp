@@ -102,8 +102,9 @@ namespace GrassSample
             cameraObject->Transform.TranslateY(2.0f);
             
             auto effects = cameraObject->AddComponent<CameraEffects>();
-            effects->SetBloomIterations(6);
-            effects->ToggleToneMapping(true);
+            effects->SetBloomIterations(3);
+
+            auto toneMapping = cameraObject->AddComponent<CameraToneMapping>();
 
             auto controller = cameraObject->AddComponent<CameraController>();
             controller->ListenWindowResizeEvent();

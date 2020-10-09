@@ -51,7 +51,8 @@ namespace PhysicsSample
                 auto rigidBody = object->AddComponent<RigidBody>();
                 rigidBody->MakeDynamic();
                 rigidBody->SetMass(100.0f);
-                rigidBody->SetAngularForceFactor(Vector3(0.01f));
+                rigidBody->SetAngularForceFactor(Vector3(0.1f));
+                rigidBody->SetActivationState(ActivationState::ISLAND_SLEEPING);
 
                 if (debugPhysics)
                 {
@@ -100,6 +101,7 @@ namespace PhysicsSample
             cameraObject = MxObject::Create();
             cameraObject->Name = "Player Camera";
             cameraObject->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("dawn.jpg"_id);
+            cameraObject->AddComponent<CameraToneMapping>();
             cameraObject->Transform.SetPosition(Vector3(30, 30, 30));
             auto controller = cameraObject->AddComponent<CameraController>();
             controller->SetMoveSpeed(50);

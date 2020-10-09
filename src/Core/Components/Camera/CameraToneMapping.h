@@ -28,33 +28,40 @@
 
 #pragma once
 
-#include "Core/Resources/ACESCurve.h"
 #include "Utilities/ECS/Component.h"
+#include "Core/Resources/ACESCurve.h"
 
 namespace MxEngine
 {
-	// TODO: split into multiple components
-	class CameraEffects
+	class CameraToneMapping
 	{
-		MAKE_COMPONENT(CameraEffects);
+		MAKE_COMPONENT(CameraToneMapping);
 
-		float bloomWeight = 0.5f;
-		float vignetteRadius = 0.0f;
-		float vignetteIntensity = 100.0f;
-
-		bool enableFXAA = false;
-		uint8_t bloomIterations = 0;
+		float gamma = 2.2f;
+		float exposure = 1.0f;
+		float whitePoint = 1.0f;
+		float colorMultiplier = 1.0f;
+		ACES coefficients;
+		float eyeAdaptation = 100.0f;
+		float minLuminance = 0.0f;
+		float maxLuminance = 100000.0f;
 	public:
-		float GetBloomWeight() const;
-		float GetVignetteIntensity() const;
-		float GetVignetteRadius() const;
-		bool IsFXAAEnabled() const;
-		size_t GetBloomIterations() const;
+		float GetGamma() const;
+		float GetExposure() const;
+		float GetColorScale() const;
+		float GetWhitePoint() const;
+		const ACES& GetACESCoefficients() const;
+		float GetEyeAdaptation() const;
+		float GetMinLuminance() const;
+		float GetMaxLuminance() const;
 
-		void SetBloomWeight(float weight);
-		void SetVignetteRadius(float radius);
-		void SetVignetteIntensity(float intensity);
-		void ToggleFXAA(bool value);
-		void SetBloomIterations(size_t iterations);
+		void SetGamma(float gamma);
+		void SetExposure(float exposure);
+		void SetColorScale(float mult);
+		void SetWhitePoint(float point);
+		void SetEyeAdaptation(float point);
+		void SetMinLuminance(float lum);
+		void SetMaxLuminance(float lum);
+		void SetACESCoefficients(const ACES& aces);
 	};
 }

@@ -31,6 +31,8 @@
 #include "Core/Components/Rendering/MeshRenderer.h"
 #include "Core/Components/Camera/CameraController.h"
 #include "Core/Components/Camera/CameraEffects.h"
+#include "Core/Components/Camera/CameraToneMapping.h"
+#include "Core/Components/Camera/CameraSSR.h"
 #include "Core/Components/Lighting/DirectionalLight.h"
 #include "Core/Components/Lighting/SpotLight.h"
 #include "Core/Components/Lighting/PointLight.h"
@@ -203,7 +205,8 @@ namespace MxEngine
 
 	void RenderController::ComputeBloomEffect(CameraUnit& camera)
 	{
-		auto iterations = camera.BloomIterations - camera.BloomIterations % 2;
+		if (camera.Effects == nullptr) return;
+		auto iterations = 2 * camera.Effects->GetBloomIterations();
 		if (iterations == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::PerformBloomIterarations()");
 
@@ -212,7 +215,7 @@ namespace MxEngine
 		auto& iterShader = this->Pipeline.Environment.Shaders["BloomIteration"_id];
 
 		float fogReduceFactor = this->Pipeline.Environment.FogDistance * std::exp(-25.0f * this->Pipeline.Environment.FogDensity);
-		float bloomWeight = camera.BloomWeight * fogReduceFactor;
+		float bloomWeight = camera.Effects->GetBloomWeight() * fogReduceFactor;
 
 		camera.AlbedoTexture->Bind(0);
 		splitShader->SetUniformInt("albedoTex", 0);
@@ -244,9 +247,10 @@ namespace MxEngine
 	TextureHandle RenderController::ComputeAverageWhite(CameraUnit& camera)
 	{
 		MAKE_SCOPE_PROFILER("RenderController::ComputeAverageWhite()");
+		MX_ASSERT(camera.ToneMapping != nullptr);
 		camera.HDRTexture->GenerateMipmaps();
 
-		float eyeAdaptation = 1.0f - std::exp(-camera.EyeAdaptation * this->Pipeline.Environment.TimeDelta);
+		float eyeAdaptation = 1.0f - std::exp(-camera.ToneMapping->GetEyeAdaptation() * this->Pipeline.Environment.TimeDelta);
 
 		auto& shader = this->Pipeline.Environment.Shaders["AverageWhite"_id];
 		auto& output = this->Pipeline.Environment.AverageWhiteTexture;
@@ -421,8 +425,8 @@ namespace MxEngine
 
 	void RenderController::ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
+		if (camera.SSR == nullptr) return;
 		MAKE_SCOPE_PROFILER("RenderController::ApplySSR()");
-
 		input->GenerateMipmaps();
 
 		auto& SSRShader = this->Pipeline.Environment.Shaders["SSR"_id];
@@ -431,15 +435,15 @@ namespace MxEngine
 		this->BindGBuffer(camera, *SSRShader);
 		this->BindCameraInformation(camera, *SSRShader);
 		input->Bind(4);
-		camera.SkyboxMap->Bind(5);
+		camera.SkyboxTexture->Bind(5);
 		SSRShader->SetUniformInt("HDRTex", 4);
 		SSRShader->SetUniformInt("skyboxMap", 5);
-		SSRShader->SetUniformMat3("skyboxTransform", camera.InversedSkyboxRotation);
-		SSRShader->SetUniformFloat("skyboxMultiplier", camera.SSRSkyboxMultiplier);
-		SSRShader->SetUniformFloat("thickness", camera.SSRThickness);
-		SSRShader->SetUniformFloat("maxCosAngle", camera.SSRMaxCosAngle);
-		SSRShader->SetUniformInt("steps", (int)camera.SSRSteps);
-		SSRShader->SetUniformFloat("maxDistance", camera.SSRMaxDistance);
+		SSRShader->SetUniformMat3("skyboxTransform", camera.InverseSkyboxRotation);
+		SSRShader->SetUniformFloat("skyboxMultiplier", camera.SSR->GetSkyboxMultiplier());
+		SSRShader->SetUniformFloat("thickness", camera.SSR->GetThickness());
+		SSRShader->SetUniformFloat("maxCosAngle", camera.SSR->GetMaxCosAngle());
+		SSRShader->SetUniformInt("steps", (int)camera.SSR->GetSteps());
+		SSRShader->SetUniformFloat("maxDistance", camera.SSR->GetMaxDistance());
 
 		this->RenderToTexture(output, SSRShader);
 		std::swap(input, output);
@@ -447,23 +451,25 @@ namespace MxEngine
 
 	void RenderController::ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
+		if (camera.ToneMapping == nullptr) return;
 		MAKE_SCOPE_PROFILER("RenderController::ApplyHDRToLDRConversion()");
 
 		auto& HDRToLDRShader = this->Pipeline.Environment.Shaders["HDRToLDR"_id];
-		auto averageWhite = camera.EnableToneMapping ? this->ComputeAverageWhite(camera) : this->Pipeline.Environment.DefaultGreyMap;
+		auto averageWhite = this->ComputeAverageWhite(camera);
+		auto aces = camera.ToneMapping->GetACESCoefficients();
 
 		input->Bind(0);
 		averageWhite->Bind(1);
 		HDRToLDRShader->SetUniformInt("HDRTex", 0);
 		HDRToLDRShader->SetUniformInt("averageWhiteTex", 1);
 
-		HDRToLDRShader->SetUniformFloat("exposure", camera.Exposure);
-		HDRToLDRShader->SetUniformFloat("colorMultiplier", camera.ColorScale);
-		HDRToLDRShader->SetUniformFloat("whitePoint", camera.WhitePoint);
-		HDRToLDRShader->SetUniformFloat("minLuminance", camera.MinLuminance);
-		HDRToLDRShader->SetUniformFloat("maxLuminance", camera.MaxLuminance);
-		HDRToLDRShader->SetUniformVec3("ABCcoefsACES", { camera.ACESCoefficients.A, camera.ACESCoefficients.B, camera.ACESCoefficients.C });
-		HDRToLDRShader->SetUniformVec3("DEFcoefsACES", { camera.ACESCoefficients.D, camera.ACESCoefficients.E, camera.ACESCoefficients.F });
+		HDRToLDRShader->SetUniformFloat("exposure", camera.ToneMapping->GetExposure());
+		HDRToLDRShader->SetUniformFloat("colorMultiplier", camera.ToneMapping->GetColorScale());
+		HDRToLDRShader->SetUniformFloat("whitePoint", camera.ToneMapping->GetWhitePoint());
+		HDRToLDRShader->SetUniformFloat("minLuminance", camera.ToneMapping->GetMinLuminance());
+		HDRToLDRShader->SetUniformFloat("maxLuminance", camera.ToneMapping->GetMaxLuminance());
+		HDRToLDRShader->SetUniformVec3("ABCcoefsACES", { aces.A, aces.B, aces.C });
+		HDRToLDRShader->SetUniformVec3("DEFcoefsACES", { aces.D, aces.E, aces.F });
 
 		HDRToLDRShader->SetUniformFloat("gamma", camera.Gamma);
 
@@ -473,7 +479,7 @@ namespace MxEngine
 
 	void RenderController::ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
-		if (!camera.EnableFXAA) return;
+		if (camera.Effects == nullptr || !camera.Effects->IsFXAAEnabled()) return;
 		MAKE_SCOPE_PROFILER("RenderController::ApplyFXAA");
 
 		auto& fxaaShader = this->Pipeline.Environment.Shaders["FXAA"_id];
@@ -487,15 +493,15 @@ namespace MxEngine
 
 	void RenderController::ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
-		if (camera.VignetteRadius <= 0.0f) return;
+		if (camera.Effects == nullptr || camera.Effects->GetVignetteRadius() <= 0.0f) return;
 		MAKE_SCOPE_PROFILER("RenderController::ApplyVignette");
 
 		auto& vignetteShader = this->Pipeline.Environment.Shaders["Vignette"_id];
 		input->Bind(0);
 		vignetteShader->SetUniformInt("tex", 0);
 
-		vignetteShader->SetUniformFloat("radius", camera.VignetteRadius);
-		vignetteShader->SetUniformFloat("intensity", camera.VignetteIntensity);
+		vignetteShader->SetUniformFloat("radius", camera.Effects->GetVignetteRadius());
+		vignetteShader->SetUniformFloat("intensity", camera.Effects->GetVignetteIntensity());
 
 		this->RenderToTexture(output, vignetteShader);
 		std::swap(input, output);
@@ -758,11 +764,11 @@ namespace MxEngine
 		}
 
 		shader.SetUniformMat4("StaticViewProjection", camera.StaticViewProjectionMatrix);
-		shader.SetUniformMat3("Rotation", Transpose(camera.InversedSkyboxRotation));
+		shader.SetUniformMat3("Rotation", Transpose(camera.InverseSkyboxRotation));
 		shader.SetUniformFloat("gamma", camera.Gamma);
 		shader.SetUniformFloat("luminance", skyLuminance);
 
-		camera.SkyboxMap->Bind(0);
+		camera.SkyboxTexture->Bind(0);
 		shader.SetUniformInt("skybox", 0);
 
 		this->GetRenderEngine().DrawTriangles(skybox.GetVAO(), skybox.VertexCount, shader);
@@ -884,7 +890,8 @@ namespace MxEngine
 		baseLightData->OuterAngle = light.GetOuterCos();
 	}
 
-	void RenderController::SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, const Skybox& skybox, const CameraEffects& effects)
+	void RenderController::SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
+		const Skybox& skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping, const CameraSSR* ssr)
 	{
 		auto& camera = this->Pipeline.Cameras.emplace_back();
 
@@ -902,29 +909,14 @@ namespace MxEngine
 		camera.AverageWhiteTexture        = controller.GetAverageWhiteTexture();
 		camera.HDRTexture                 = controller.GetHDRTexture();
 		camera.SwapTexture                = controller.GetSwapHDRTexture();
-		camera.BloomIterations            = (uint8_t)effects.GetBloomIterations();
-		camera.BloomWeight                = effects.GetBloomWeight();
-		camera.Exposure                   = effects.GetExposure();
-		camera.ACESCoefficients           = effects.GetACESCoefficients();
-		camera.ColorScale                 = effects.GetColorScale();
-		camera.WhitePoint                 = effects.GetWhitePoint();
-		camera.MinLuminance               = effects.GetMinLuminance();
-		camera.MaxLuminance               = effects.GetMaxLuminance();
-		camera.Gamma                      = effects.GetGamma();
-		camera.VignetteRadius             = effects.GetVignetteRadius();
-		camera.VignetteIntensity          = effects.GetVignetteIntensity();
-		camera.SSRThickness               = effects.GetSSRThickness();
-		camera.SSRMaxCosAngle             = effects.GetSSRMaxCosAngle();
-		camera.SSRSkyboxMultiplier        = effects.GetSSRSkyboxMultiplier();
-		camera.SSRSteps                   = effects.GetSSRSteps();
-		camera.SSRMaxDistance             = effects.GetSSRMaxDistance();
-		camera.EnableFXAA                 = effects.IsFXAAEnabled();
-		camera.EnableToneMapping          = effects.IsToneMappingEnabled();
-		camera.EyeAdaptation              = effects.GetEyeAdaptation();
-		camera.SkyboxMap                  = skybox.Texture.IsValid() ? skybox.Texture : this->Pipeline.Environment.DefaultBlackCubeMap;
-		camera.InversedSkyboxRotation     = Transpose(ToMatrix(parentTransform.GetRotation()));
 		camera.OutputTexture              = controller.GetRenderTexture();
 		camera.RenderToTexture            = controller.IsRendered();
+		camera.InverseSkyboxRotation      = Transpose(ToMatrix(parentTransform.GetRotation()));
+		camera.SkyboxTexture              = skybox.Texture.IsValid() ? skybox.Texture : this->Pipeline.Environment.DefaultBlackCubeMap;
+		camera.Gamma                      = toneMapping == nullptr ? 1.0f : toneMapping->GetGamma();
+		camera.Effects                    = effects;
+		camera.ToneMapping                = toneMapping;
+		camera.SSR                        = ssr;
 	}
 
     void RenderController::SubmitPrimitive(const SubMesh& object, const Material& material, const TransformComponent& parentTransform, size_t instanceCount)

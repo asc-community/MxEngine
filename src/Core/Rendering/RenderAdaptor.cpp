@@ -30,22 +30,7 @@
 #include "Library/Primitives/Colors.h"
 #include "Library/Primitives/Primitives.h"
 #include "Core/Config/GlobalConfig.h"
-#include "Core/Components/Rendering/MeshRenderer.h"
-#include "Core/Components/Rendering/MeshSource.h"
-#include "Core/Components/Rendering/MeshLOD.h"
-#include "Core/Components/Rendering/DebugDraw.h"
-#include "Core/Components/Audio/AudioSource.h"
-#include "Core/Components/Physics/BoxCollider.h"
-#include "Core/Components/Physics/SphereCollider.h"
-#include "Core/Components/Physics/CylinderCollider.h"
-#include "Core/Components/Physics/CapsuleCollider.h"
-#include "Core/Components/Physics/RigidBody.h"
-#include "Core/Components/Instancing/InstanceFactory.h"
-#include "Core/Components/Lighting/DirectionalLight.h"
-#include "Core/Components/Lighting/SpotLight.h"
-#include "Core/Components/Lighting/PointLight.h"
-#include "Core/Components/Camera/CameraEffects.h"
-#include "Core/Components/Rendering/Skybox.h"
+#include "Core/Components/Components.h"
 #include "Core/BoundingObjects/Cone.h"
 #include "Core/BoundingObjects/Frustrum.h"
 #include "Utilities/Profiler/Profiler.h"
@@ -290,11 +275,17 @@ namespace MxEngine
             {
                 auto& object = MxObject::GetByComponent(camera);
                 auto& transform = object.Transform;
+
                 auto skyboxComponent = object.GetComponent<Skybox>();
                 auto effectsComponent = object.GetComponent<CameraEffects>();
-                Skybox skybox = skyboxComponent.IsValid() ? *skyboxComponent.GetUnchecked() : Skybox();
-                CameraEffects effects = effectsComponent.IsValid() ? *effectsComponent.GetUnchecked() : CameraEffects();
-                this->Renderer.SubmitCamera(camera, transform, skybox, effects);
+                auto toneMappingComponent = object.GetComponent<CameraToneMapping>();
+                auto ssrComponent = object.GetComponent<CameraSSR>();
+                Skybox skybox                  = skyboxComponent.IsValid()      ? *skyboxComponent.GetUnchecked()     : Skybox();
+                CameraEffects* effects         = effectsComponent.IsValid()     ? effectsComponent.GetUnchecked()     : nullptr;
+                CameraToneMapping* toneMapping = toneMappingComponent.IsValid() ? toneMappingComponent.GetUnchecked() : nullptr;
+                CameraSSR* ssr                 = ssrComponent.IsValid()         ? ssrComponent.GetUnchecked()         : nullptr;
+
+                this->Renderer.SubmitCamera(camera, transform, skybox, effects, toneMapping, ssr);
                 TrackMainCameraIndex(camera);
             }
         }

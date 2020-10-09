@@ -31,34 +31,9 @@
 
 namespace MxEngine
 {
-    float CameraEffects::GetGamma() const
-    {
-        return this->gamma;
-    }
-
     float CameraEffects::GetBloomWeight() const
     {
         return this->bloomWeight;
-    }
-
-    float CameraEffects::GetExposure() const
-    {
-        return this->exposure;
-    }
-
-    float CameraEffects::GetColorScale() const
-    {
-        return this->colorMultiplier;
-    }
-
-    float CameraEffects::GetWhitePoint() const
-    {
-        return this->whitePoint;
-    }
-
-    const ACES& CameraEffects::GetACESCoefficients() const
-    {
-        return this->coefficients;
     }
 
     float CameraEffects::GetVignetteIntensity() const
@@ -76,104 +51,14 @@ namespace MxEngine
         return this->enableFXAA;
     }
 
-    bool CameraEffects::IsToneMappingEnabled() const
-    {
-        return this->toneMapping;
-    }
-
-    float CameraEffects::GetEyeAdaptation() const
-    {
-        return this->eyeAdaptation;
-    }
-
-    float CameraEffects::GetMinLuminance() const
-    {
-        return this->minLuminance;
-    }
-
-    float CameraEffects::GetMaxLuminance() const
-    {
-        return this->maxLuminance;
-    }
-
-    void CameraEffects::SetEyeAdaptation(float adaptation)
-    {
-        this->eyeAdaptation = Max(adaptation, 0.0f);
-    }
-
-    void CameraEffects::SetMinLuminance(float lum)
-    {
-        this->minLuminance = Clamp(lum, 0.0f, this->maxLuminance);
-    }
-
-    void CameraEffects::SetMaxLuminance(float lum)
-    {
-        this->maxLuminance = Max(lum, 0.0f);
-        this->SetMinLuminance(this->GetMinLuminance());
-    }
-
     size_t CameraEffects::GetBloomIterations() const
     {
         return size_t(this->bloomIterations);
     }
 
-    float CameraEffects::GetSSRSkyboxMultiplier() const
-    {
-        return this->ssrSkyboxMultiplier;
-    }
-
-    float CameraEffects::GetSSRThickness() const
-    {
-        return this->ssrThickness;
-    }
-
-    float CameraEffects::GetSSRMaxCosAngle() const
-    {
-        return this->ssrMaxCosAngle;
-    }
-
-    float CameraEffects::GetSSRSteps() const
-    {
-        return this->ssrSteps;
-    }
-
-    float CameraEffects::GetSSRMaxDistance() const
-    {
-        return this->ssrMaxDistance;
-    }
-
-    void CameraEffects::SetGamma(float gamma)
-    {
-        this->gamma = Max(0.0f, gamma);
-    }
-
     void CameraEffects::SetBloomWeight(float weight)
     {
         this->bloomWeight = Max(0.0f, weight);
-    }
-
-    void CameraEffects::SetExposure(float exposure)
-    {
-        this->exposure = Max(0.0f, exposure);
-    }
-
-    void CameraEffects::SetColorScale(float mult)
-    {
-        this->colorMultiplier = Max(0.0f, mult);
-    }
-
-    void CameraEffects::SetWhitePoint(float point)
-    {
-        this->whitePoint = point;
-    }
-
-    void CameraEffects::SetACESCoefficients(const ACES& aces)
-    {
-        this->coefficients = {
-            Max(0.0f, aces.A), Max(0.0f, aces.B),
-            Max(0.0f, aces.C), Max(0.0f, aces.D),
-            Max(0.0f, aces.E), Max(0.0f, aces.F),
-        };
     }
 
     void CameraEffects::SetVignetteRadius(float radius)
@@ -191,38 +76,8 @@ namespace MxEngine
         this->enableFXAA = value;
     }
 
-    void CameraEffects::ToggleToneMapping(bool value)
-    {
-        this->toneMapping = value;
-    }
-
     void CameraEffects::SetBloomIterations(size_t iterations)
     {
         this->bloomIterations = (uint8_t)Min(100, iterations);
-    }
-
-    void CameraEffects::SetSSRThickness(float thickness)
-    {
-        this->ssrThickness = Max(thickness, 0.0f);
-    }
-
-    void CameraEffects::SetSSRMaxCosAngle(float angle)
-    {
-        this->ssrMaxCosAngle = Clamp(angle, -1.0f, 1.0f);
-    }
-
-    void CameraEffects::SetSSRSteps(size_t steps)
-    {
-        this->ssrSteps = steps;
-    }
-
-    void CameraEffects::SetSSRMaxDistance(float distance)
-    {
-        this->ssrMaxDistance = Max(distance, 0.0f);
-    }
-
-    void CameraEffects::SetSSRSkyboxMultiplier(float multiplier)
-    {
-        this->ssrSkyboxMultiplier = Max(multiplier, 0.0f);
     }
 }

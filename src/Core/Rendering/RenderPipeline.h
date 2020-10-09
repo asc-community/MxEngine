@@ -41,13 +41,17 @@
 
 namespace MxEngine
 {
+    class Skybox;
+    class CameraEffects;
+    class CameraToneMapping;
+    class CameraSSR;
+    
     struct DebugBufferUnit
     {
         VertexArrayHandle VAO;
         size_t VertexCount;
     };
 
-    // TODO: split into multiple classes
     struct CameraUnit
     {
         FrameBufferHandle GBuffer;
@@ -66,31 +70,18 @@ namespace MxEngine
 
         Vector3 ViewportPosition;
         TextureHandle OutputTexture;
-        Matrix3x3 InversedSkyboxRotation;
-        CubeMapHandle SkyboxMap;
-        float BloomWeight;
-        float VignetteIntensity;
-        float VignetteRadius;
 
-        bool EnableFXAA;
-        bool EnableToneMapping;
-        bool IsPerspective;
-        bool RenderToTexture;
-        uint8_t BloomIterations;
+        Matrix3x3 InverseSkyboxRotation;
+        CubeMapHandle SkyboxTexture;
 
         float Gamma;
-        float Exposure;
-        float EyeAdaptation;
-        ACES ACESCoefficients;
-        float ColorScale;
-        float WhitePoint;
-        float MaxLuminance;
-        float MinLuminance;
-        float SSRThickness;
-        float SSRMaxCosAngle;
-        size_t SSRSteps;
-        float SSRMaxDistance;
-        float SSRSkyboxMultiplier;
+
+        bool IsPerspective;
+        bool RenderToTexture;
+
+        const CameraEffects* Effects;
+        const CameraToneMapping* ToneMapping;
+        const CameraSSR* SSR;
     };
 
     struct EnvironmentUnit

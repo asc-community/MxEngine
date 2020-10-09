@@ -26,35 +26,58 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Core/Resources/ACESCurve.h"
-#include "Utilities/ECS/Component.h"
+#include "CameraSSR.h"
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-	// TODO: split into multiple components
-	class CameraEffects
-	{
-		MAKE_COMPONENT(CameraEffects);
+    float CameraSSR::GetSkyboxMultiplier() const
+    {
+        return this->skyboxMultiplier;
+    }
 
-		float bloomWeight = 0.5f;
-		float vignetteRadius = 0.0f;
-		float vignetteIntensity = 100.0f;
+    float CameraSSR::GetThickness() const
+    {
+        return this->thickness;
+    }
 
-		bool enableFXAA = false;
-		uint8_t bloomIterations = 0;
-	public:
-		float GetBloomWeight() const;
-		float GetVignetteIntensity() const;
-		float GetVignetteRadius() const;
-		bool IsFXAAEnabled() const;
-		size_t GetBloomIterations() const;
+    float CameraSSR::GetMaxCosAngle() const
+    {
+        return this->maxCosAngle;
+    }
 
-		void SetBloomWeight(float weight);
-		void SetVignetteRadius(float radius);
-		void SetVignetteIntensity(float intensity);
-		void ToggleFXAA(bool value);
-		void SetBloomIterations(size_t iterations);
-	};
+    float CameraSSR::GetSteps() const
+    {
+        return this->steps;
+    }
+
+    float CameraSSR::GetMaxDistance() const
+    {
+        return this->maxDistance;
+    }
+
+    void CameraSSR::SetThickness(float thickness)
+    {
+        this->thickness = Max(thickness, 0.0f);
+    }
+
+    void CameraSSR::SetMaxCosAngle(float angle)
+    {
+        this->maxCosAngle = Clamp(angle, -1.0f, 1.0f);
+    }
+
+    void CameraSSR::SetSteps(size_t steps)
+    {
+        this->steps = steps;
+    }
+
+    void CameraSSR::SetMaxDistance(float distance)
+    {
+        this->maxDistance = Max(distance, 0.0f);
+    }
+
+    void CameraSSR::SetSkyboxMultiplier(float multiplier)
+    {
+        this->skyboxMultiplier = Max(multiplier, 0.0f);
+    }
 }

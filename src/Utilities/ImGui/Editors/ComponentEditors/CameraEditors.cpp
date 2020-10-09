@@ -28,6 +28,8 @@
 
 #include "Core/Components/Camera/CameraController.h"
 #include "Core/Components/Camera/CameraEffects.h"
+#include "Core/Components/Camera/CameraSSR.h"
+#include "Core/Components/Camera/CameraToneMapping.h"
 #include "Core/Components/Camera/InputController.h"
 #include "Core/Components/Camera/VRCameraController.h"
 #include "Core/Components/Camera/FrustrumCamera.h"
@@ -48,43 +50,11 @@ namespace MxEngine::GUI
 		REMOVE_COMPONENT_BUTTON(cameraEffects);
 
 		int bloomIterations = (int)cameraEffects.GetBloomIterations();
-		float exposure = cameraEffects.GetExposure();
-		float colorScale = cameraEffects.GetColorScale();
-		float whitePoint = cameraEffects.GetWhitePoint();
-		float minLuminance = cameraEffects.GetMinLuminance();
-		float maxLuminance = cameraEffects.GetMaxLuminance();
-		ACES acesCoefficients = cameraEffects.GetACESCoefficients();
-
-		float gamma = cameraEffects.GetGamma();
-		float eyeAdaptation = cameraEffects.GetEyeAdaptation();
 		float bloomWeight = cameraEffects.GetBloomWeight();
 		float vignetteRadius = cameraEffects.GetVignetteRadius();
 		float vignetteIntensity = cameraEffects.GetVignetteIntensity();
 		bool isFXAAEnabled = cameraEffects.IsFXAAEnabled();
-		bool isToneMappingEnabled = cameraEffects.IsToneMappingEnabled();
 
-		float ssrThickness = cameraEffects.GetSSRThickness();
-		float ssrMaxCosAngle = cameraEffects.GetSSRMaxCosAngle();
-		int ssrSteps = (int)cameraEffects.GetSSRSteps();
-		float ssrMaxDistance = cameraEffects.GetSSRMaxDistance();
-		float ssrSkyboxMultiplier = cameraEffects.GetSSRSkyboxMultiplier();
-
-		if (ImGui::DragFloat("exposure", &exposure, 0.01f))
-			cameraEffects.SetExposure(exposure);
-		if (ImGui::DragFloat("color scale", &colorScale, 0.01f))
-			cameraEffects.SetColorScale(colorScale);
-		if (ImGui::DragFloat("white point", &whitePoint, 0.01f))
-			cameraEffects.SetWhitePoint(whitePoint);
-		if (ImGui::DragFloat("min luminance", &minLuminance, 0.1f))
-			cameraEffects.SetMinLuminance(minLuminance);
-		if (ImGui::DragFloat("max luminance", &maxLuminance, 0.1f))
-			cameraEffects.SetMaxLuminance(maxLuminance);
-		if (ImGui::DragScalarN("ACES coefficients", ImGuiDataType_Float, &acesCoefficients.A, 6, 0.01f))
-			cameraEffects.SetACESCoefficients(acesCoefficients);
-		if (ImGui::DragFloat("gamma", &gamma, 0.01f, 0.0f, 5.0f))
-			cameraEffects.SetGamma(gamma);
-		if (ImGui::DragFloat("eye adaptation", &eyeAdaptation))
-			cameraEffects.SetEyeAdaptation(eyeAdaptation);
 		if (ImGui::DragFloat("bloom weight", &bloomWeight, 0.1f))
 			cameraEffects.SetBloomWeight(bloomWeight);
 		if (ImGui::DragInt("bloom iterations", &bloomIterations))
@@ -93,28 +63,65 @@ namespace MxEngine::GUI
 			cameraEffects.SetVignetteRadius(vignetteRadius);
 		if (ImGui::DragFloat("vignette intensity", &vignetteIntensity, 0.1f))
 			cameraEffects.SetVignetteIntensity(vignetteIntensity);
-
-		if (ImGui::TreeNode("Screen Space Reflections"))
-		{
-			if (ImGui::DragFloat("thickness", &ssrThickness, 0.1f))
-				cameraEffects.SetSSRThickness(ssrThickness);
-			if (ImGui::DragFloat("max angle cos", &ssrMaxCosAngle, 0.1f))
-				cameraEffects.SetSSRMaxCosAngle(ssrMaxCosAngle);
-			if (ImGui::DragInt("steps", &ssrSteps, 0.1f))
-				cameraEffects.SetSSRSteps(Min((size_t)ssrSteps, 1000));
-			if (ImGui::DragFloat("max distance", &ssrMaxDistance, 0.1f))
-				cameraEffects.SetSSRMaxDistance(ssrMaxDistance);
-			if (ImGui::DragFloat("skybox multiplier", &ssrSkyboxMultiplier, 0.1f))
-				cameraEffects.SetSSRSkyboxMultiplier(ssrSkyboxMultiplier);
-
-			ImGui::TreePop();
-		}
 		
 		if (ImGui::Checkbox("uses FXAA", &isFXAAEnabled))
 			cameraEffects.ToggleFXAA(isFXAAEnabled);
-		ImGui::SameLine();
-		if (ImGui::Checkbox("uses tone mapping", &isToneMappingEnabled))
-			cameraEffects.ToggleToneMapping(isToneMappingEnabled);
+	}
+
+	void CameraToneMappingEditor(CameraToneMapping& cameraToneMapping)
+	{
+		TREE_NODE_PUSH("CameraToneMapping");
+		REMOVE_COMPONENT_BUTTON(cameraToneMapping);
+
+		float exposure = cameraToneMapping.GetExposure();
+		float colorScale = cameraToneMapping.GetColorScale();
+		float whitePoint = cameraToneMapping.GetWhitePoint();
+		float minLuminance = cameraToneMapping.GetMinLuminance();
+		float maxLuminance = cameraToneMapping.GetMaxLuminance();
+		ACES acesCoefficients = cameraToneMapping.GetACESCoefficients();
+
+		float gamma = cameraToneMapping.GetGamma();
+		float eyeAdaptation = cameraToneMapping.GetEyeAdaptation();
+
+		if (ImGui::DragFloat("exposure", &exposure, 0.01f))
+			cameraToneMapping.SetExposure(exposure);
+		if (ImGui::DragFloat("color scale", &colorScale, 0.01f))
+			cameraToneMapping.SetColorScale(colorScale);
+		if (ImGui::DragFloat("white point", &whitePoint, 0.01f))
+			cameraToneMapping.SetWhitePoint(whitePoint);
+		if (ImGui::DragFloat("min luminance", &minLuminance, 0.1f))
+			cameraToneMapping.SetMinLuminance(minLuminance);
+		if (ImGui::DragFloat("max luminance", &maxLuminance, 0.1f))
+			cameraToneMapping.SetMaxLuminance(maxLuminance);
+		if (ImGui::DragScalarN("ACES coefficients", ImGuiDataType_Float, &acesCoefficients.A, 6, 0.01f))
+			cameraToneMapping.SetACESCoefficients(acesCoefficients);
+		if (ImGui::DragFloat("gamma", &gamma, 0.01f, 0.0f, 5.0f))
+			cameraToneMapping.SetGamma(gamma);
+		if (ImGui::DragFloat("eye adaptation", &eyeAdaptation))
+			cameraToneMapping.SetEyeAdaptation(eyeAdaptation);
+	}
+
+	void CameraSSREditor(CameraSSR& cameraSSR)
+	{
+		TREE_NODE_PUSH("CameraSSR");
+		REMOVE_COMPONENT_BUTTON(cameraSSR);
+
+		float ssrThickness = cameraSSR.GetThickness();
+		float ssrMaxCosAngle = cameraSSR.GetMaxCosAngle();
+		int ssrSteps = (int)cameraSSR.GetSteps();
+		float ssrMaxDistance = cameraSSR.GetMaxDistance();
+		float ssrSkyboxMultiplier = cameraSSR.GetSkyboxMultiplier();
+
+		if (ImGui::DragFloat("thickness", &ssrThickness, 0.1f))
+			cameraSSR.SetThickness(ssrThickness);
+		if (ImGui::DragFloat("max angle cos", &ssrMaxCosAngle, 0.1f))
+			cameraSSR.SetMaxCosAngle(ssrMaxCosAngle);
+		if (ImGui::DragInt("steps", &ssrSteps, 0.1f))
+			cameraSSR.SetSteps(Min((size_t)ssrSteps, 1000));
+		if (ImGui::DragFloat("max distance", &ssrMaxDistance, 0.1f))
+			cameraSSR.SetMaxDistance(ssrMaxDistance);
+		if (ImGui::DragFloat("skybox multiplier", &ssrSkyboxMultiplier, 0.1f))
+			cameraSSR.SetSkyboxMultiplier(ssrSkyboxMultiplier);
 	}
 
 	void CameraControllerEditor(CameraController& cameraController)

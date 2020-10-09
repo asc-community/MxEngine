@@ -9,14 +9,17 @@ void InitCamera(MxObject& object)
 	auto effects = object.AddComponent<CameraEffects>();
 	auto skybox = object.AddComponent<Skybox>();
 	auto input = object.AddComponent<InputController>();
+	auto toneMapping = object.AddComponent<CameraToneMapping>();
+	auto ssr = object.AddComponent<CameraSSR>();
 
 	effects->SetVignetteRadius(0.15f);
 	effects->SetBloomIterations(6);
-	effects->SetWhitePoint(0.75f);
-	effects->SetMinLuminance(0.3f);
-	effects->ToggleToneMapping(true);
-	effects->SetSSRSteps(10);
-	effects->SetSSRSkyboxMultiplier(0.3f);
+
+	toneMapping->SetWhitePoint(0.75f);
+	toneMapping->SetMinLuminance(0.3f);
+
+	ssr->SetSteps(10);
+	ssr->SetSkyboxMultiplier(0.3f);
 
 	skybox->Texture = AssetManager::LoadCubeMap("textures/dawn.jpg"_id);
 

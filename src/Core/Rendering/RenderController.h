@@ -40,6 +40,8 @@ namespace MxEngine
 	class SpotLight;
 	class CameraController;
 	class CameraEffects;
+	class CameraToneMapping;
+	class CameraSSR;
 	class Skybox;
 	class SubMesh;
 	class TransformComponent;
@@ -102,7 +104,8 @@ namespace MxEngine
 		void SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform);
 		void SubmitLightSource(const PointLight& light, const TransformComponent& parentTransform);
 		void SubmitLightSource(const SpotLight& light, const TransformComponent& parentTransform);
-		void SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, const Skybox& skybox, const CameraEffects& effects);
+		void SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
+			const Skybox& skybox, const CameraEffects* effects = nullptr, const CameraToneMapping* toneMapping = nullptr, const CameraSSR* ssr = nullptr);
 		void SubmitPrimitive(const SubMesh& object, const Material& material, const TransformComponent& parentTransform, size_t instanceCount);
 		void SubmitImage(const TextureHandle& texture);
 		void StartPipeline();

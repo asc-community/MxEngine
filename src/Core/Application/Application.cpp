@@ -475,6 +475,8 @@ namespace MxEngine
 		editor.RegisterComponentEditor<SpotLight>         ("SpotLight",          GUI::SpotLightEditor);
 		editor.RegisterComponentEditor<CameraController>  ("CameraController",   GUI::CameraControllerEditor);
 		editor.RegisterComponentEditor<CameraEffects>     ("CameraEffects",      GUI::CameraEffectsEditor);
+		editor.RegisterComponentEditor<CameraSSR>         ("CameraSSR",          GUI::CameraSSREditor);
+		editor.RegisterComponentEditor<CameraToneMapping> ("CameraToneMapping",  GUI::CameraToneMappingEditor);
 		editor.RegisterComponentEditor<VRCameraController>("VRCameraController", GUI::VRCameraControllerEditor);
 		editor.RegisterComponentEditor<InputController>   ("InputController",    GUI::InputControllerEditor);
 		editor.RegisterComponentEditor<AudioSource>       ("AudioSource",        GUI::AudioSourceEditor);

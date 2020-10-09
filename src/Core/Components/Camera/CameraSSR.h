@@ -28,33 +28,30 @@
 
 #pragma once
 
-#include "Core/Resources/ACESCurve.h"
 #include "Utilities/ECS/Component.h"
 
 namespace MxEngine
 {
-	// TODO: split into multiple components
-	class CameraEffects
+	class CameraSSR
 	{
-		MAKE_COMPONENT(CameraEffects);
+		MAKE_COMPONENT(CameraSSR);
 
-		float bloomWeight = 0.5f;
-		float vignetteRadius = 0.0f;
-		float vignetteIntensity = 100.0f;
-
-		bool enableFXAA = false;
-		uint8_t bloomIterations = 0;
+		float thickness = 0.5f;
+		float maxCosAngle = 0.5f;
+		size_t steps = 0;
+		float maxDistance = 3.0f;
+		float skyboxMultiplier = 1.0f;
 	public:
-		float GetBloomWeight() const;
-		float GetVignetteIntensity() const;
-		float GetVignetteRadius() const;
-		bool IsFXAAEnabled() const;
-		size_t GetBloomIterations() const;
+		float GetThickness() const;
+		float GetMaxCosAngle() const;
+		float GetSteps() const;
+		float GetMaxDistance() const;
+		float GetSkyboxMultiplier() const;
 
-		void SetBloomWeight(float weight);
-		void SetVignetteRadius(float radius);
-		void SetVignetteIntensity(float intensity);
-		void ToggleFXAA(bool value);
-		void SetBloomIterations(size_t iterations);
+		void SetThickness(float thickness);
+		void SetMaxCosAngle(float angle);
+		void SetSteps(size_t steps);
+		void SetMaxDistance(float distance);
+		void SetSkyboxMultiplier(float multiplier);
 	};
 }
