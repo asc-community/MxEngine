@@ -30,9 +30,17 @@
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/Memory/Memory.h"
 #include "Utilities/Format/Format.h"
+#include <portable-file-dialogs.h>
+#undef CreateDirectory
+
 
 namespace MxEngine
 {
+
+
+
+
+
     void FileManager::AddDirectory(const FilePath& directory)
     {
         if (!File::Exists(directory))

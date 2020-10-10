@@ -134,8 +134,12 @@ namespace MxEngine::GUI
         if (withTextureLoader)
         {
             static MxString path;
-            if (GUI::InputTextOnClick(nullptr, path, 128, "load from file"))
+ //         if (GUI::InputTextOnClick(nullptr, path, 128, "load from file"))
+            if (ImGui::Button("load from file"))
+            {
                 texture = AssetManager::LoadTexture(path);
+
+            }
             
             static int id = 0;
             if(GUI::InputIntOnClick("", &id, "load from id"))
