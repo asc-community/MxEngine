@@ -88,11 +88,12 @@ namespace MxEngine::GUI
 		bool eachFrame = timer == TimerMode::UPDATE_EACH_FRAME;
 		bool eachDelta = timer == TimerMode::UPDATE_EACH_DELTA;
 		bool onceDelta = timer == TimerMode::UPDATE_AFTER_DELTA;
+		bool nSecDelta = timer == TimerMode::UPDATE_FOR_N_SECONDS;
 		static auto timeDelta = 0.0f;
 
 		ImGui::InputFloat("time delta", &timeDelta, 0.01f);
 
-		if (ImGui::BeginCombo("timer mode", eachFrame ? "per frame" : (eachDelta ? "per delta" : "once")))
+		if (ImGui::BeginCombo("timer mode", eachFrame ? "per frame" : (eachDelta ? "per delta" : (onceDelta ? "once" : "per n seconds"))))
 		{
 			if (ImGui::Selectable("per frame", &eachFrame))
 			{
@@ -102,9 +103,13 @@ namespace MxEngine::GUI
 			{
 				behaviour.Schedule(TimerMode::UPDATE_EACH_DELTA, timeDelta);
 			}
-			if (ImGui::Selectable("once"))
+			if (ImGui::Selectable("once", &onceDelta))
 			{
 				behaviour.Schedule(TimerMode::UPDATE_AFTER_DELTA, timeDelta);
+			}
+			if (ImGui::Selectable("for n seconds", &nSecDelta))
+			{
+				behaviour.Schedule(TimerMode::UPDATE_FOR_N_SECONDS, timeDelta);
 			}
 			ImGui::EndCombo();
 		}

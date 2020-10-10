@@ -49,7 +49,6 @@ namespace MxEngine
             auto uuid = mesh.GetUUID();
             if (this->savedMeshState != uuid)
             {
-                auto& meshAABB = mesh->GetBoundingBox();
                 this->savedMeshState = uuid;
                 return true; // ask to update collider to new meshAABB
             }
@@ -66,13 +65,13 @@ namespace MxEngine
     const AABB& ColliderBase::GetAABB(MxObject& self)
     {
         auto meshSource = GetCurrentlyUsedMesh(self); 
-        return meshSource->Mesh->GetBoundingBox();
+        return meshSource->Mesh->BoundingBox;
     }
 
     const BoundingSphere& ColliderBase::GetBoundingSphere(MxObject& self)
     {
         auto meshSource = GetCurrentlyUsedMesh(self);
-        return meshSource->Mesh->GetBoundingSphere();
+        return meshSource->Mesh->BoundingSphere;
     }
 
     void ColliderBase::SetColliderChangedFlag(bool value)

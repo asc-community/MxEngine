@@ -10,6 +10,10 @@ class SandboxScene
 public:
     void OnCreate()
     {
+		auto camera = MxObject::Create();
+		InitCamera(*camera);
+		Rendering::SetViewport(camera->GetComponent<CameraController>());
+
 		auto cube = MxObject::Create();
 		InitCube(*cube);
 		
@@ -30,9 +34,6 @@ public:
 
 		// auto& destroyer = this->AddObject("Destroyer", MakeUnique<MxObject>());
 		// InitDestroyer(destroyer);
-
-		// auto object = MxObject::Create();
-		// object->AddComponent<MeshSource>(AssetManager::LoadMesh("D:/repos/glTF-Sample-Models/2.0/Sponza/glTF/Sponza.gltf"));
 		
 		auto dirLight = MxObject::Create();
 		InitDirLight(*dirLight);
@@ -43,17 +44,12 @@ public:
 		auto spotLight = MxObject::Create();
 		InitSpotLight(*spotLight);
 
-		auto camera = MxObject::Create();
-		InitCamera(*camera);
-
 		// auto sound = MxObject::Create();
 		// InitSound(*sound);
-
-		Rendering::SetViewport(camera->GetComponent<CameraController>());
     }
 
 	void OnUpdate()
 	{
-		
+
 	}
 };

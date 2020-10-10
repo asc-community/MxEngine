@@ -30,22 +30,7 @@
 #include "Library/Primitives/Colors.h"
 #include "Library/Primitives/Primitives.h"
 #include "Core/Config/GlobalConfig.h"
-#include "Core/Components/Rendering/MeshRenderer.h"
-#include "Core/Components/Rendering/MeshSource.h"
-#include "Core/Components/Rendering/MeshLOD.h"
-#include "Core/Components/Rendering/DebugDraw.h"
-#include "Core/Components/Audio/AudioSource.h"
-#include "Core/Components/Physics/BoxCollider.h"
-#include "Core/Components/Physics/SphereCollider.h"
-#include "Core/Components/Physics/CylinderCollider.h"
-#include "Core/Components/Physics/CapsuleCollider.h"
-#include "Core/Components/Physics/RigidBody.h"
-#include "Core/Components/Instancing/InstanceFactory.h"
-#include "Core/Components/Lighting/DirectionalLight.h"
-#include "Core/Components/Lighting/SpotLight.h"
-#include "Core/Components/Lighting/PointLight.h"
-#include "Core/Components/Camera/CameraEffects.h"
-#include "Core/Components/Rendering/Skybox.h"
+#include "Core/Components/Components.h"
 #include "Core/BoundingObjects/Cone.h"
 #include "Core/BoundingObjects/Frustrum.h"
 #include "Utilities/Profiler/Profiler.h"
@@ -73,22 +58,22 @@ namespace MxEngine
 
         // light bounding objects
         auto pyramid = Primitives::CreatePyramid();
-        auto& pyramidMesh = pyramid->GetSubmeshes().front();
+        auto& pyramidMesh = pyramid->Submeshes.front();
         this->Renderer.GetLightInformation().PyramidLight =
             RenderHelperObject(pyramidMesh.Data.GetVBO(), pyramidMesh.Data.GetVAO(), pyramidMesh.Data.GetIBO());
 
         auto sphere = Primitives::CreateSphere(8);
-        auto& sphereMesh = sphere->GetSubmeshes().front();
+        auto& sphereMesh = sphere->Submeshes.front();
         this->Renderer.GetLightInformation().SphereLight =
             RenderHelperObject(sphereMesh.Data.GetVBO(), sphereMesh.Data.GetVAO(), sphereMesh.Data.GetIBO());
 
         auto pyramidInstanced = Primitives::CreatePyramid();
-        auto& pyramidInstancedMesh = pyramidInstanced->GetSubmeshes().front();
+        auto& pyramidInstancedMesh = pyramidInstanced->Submeshes.front();
         this->Renderer.GetLightInformation().SpotLightsInstanced = 
             SpotLightInstancedObject(pyramidInstancedMesh.Data.GetVBO(), pyramidInstancedMesh.Data.GetVAO(), pyramidInstancedMesh.Data.GetIBO());
 
         auto sphereInstanced = Primitives::CreateSphere(8);
-        auto& sphereInstancedMesh = sphereInstanced->GetSubmeshes().front();
+        auto& sphereInstancedMesh = sphereInstanced->Submeshes.front();
         this->Renderer.GetLightInformation().PointLigthsInstanced =
             PointLightInstancedObject(sphereInstancedMesh.Data.GetVBO(), sphereInstancedMesh.Data.GetVAO(), sphereInstancedMesh.Data.GetIBO());
 
@@ -290,11 +275,17 @@ namespace MxEngine
             {
                 auto& object = MxObject::GetByComponent(camera);
                 auto& transform = object.Transform;
+
                 auto skyboxComponent = object.GetComponent<Skybox>();
                 auto effectsComponent = object.GetComponent<CameraEffects>();
-                Skybox skybox = skyboxComponent.IsValid() ? *skyboxComponent.GetUnchecked() : Skybox();
-                CameraEffects effects = effectsComponent.IsValid() ? *effectsComponent.GetUnchecked() : CameraEffects();
-                this->Renderer.SubmitCamera(camera, transform, skybox, effects);
+                auto toneMappingComponent = object.GetComponent<CameraToneMapping>();
+                auto ssrComponent = object.GetComponent<CameraSSR>();
+                Skybox skybox                  = skyboxComponent.IsValid()      ? *skyboxComponent.GetUnchecked()     : Skybox();
+                CameraEffects* effects         = effectsComponent.IsValid()     ? effectsComponent.GetUnchecked()     : nullptr;
+                CameraToneMapping* toneMapping = toneMappingComponent.IsValid() ? toneMappingComponent.GetUnchecked() : nullptr;
+                CameraSSR* ssr                 = ssrComponent.IsValid()         ? ssrComponent.GetUnchecked()         : nullptr;
+
+                this->Renderer.SubmitCamera(camera, transform, skybox, effects, toneMapping, ssr);
                 TrackMainCameraIndex(camera);
             }
         }
@@ -324,7 +315,7 @@ namespace MxEngine
                     mesh = meshLOD->GetMeshLOD();
                 }
 
-                auto& submeshes = mesh->GetSubmeshes();
+                auto& submeshes = mesh->Submeshes;
                 for (const auto& submesh : submeshes)
                 {
                     auto materialId = submesh.GetMaterialId();
@@ -386,15 +377,21 @@ namespace MxEngine
                 {
                     if (debugDraw.RenderBoundingBox)
                     {
-                        auto box = meshSource->Mesh->GetBoundingBox() * object.Transform.GetMatrix();
-                        this->DebugDrawer.Submit(box, debugDraw.BoundingBoxColor);
+                        for (const auto& submesh : meshSource->Mesh->Submeshes)
+                        {
+                            auto box = submesh.GetBoundingBox() * object.Transform.GetMatrix() * submesh.GetTransform()->GetMatrix();
+                            this->DebugDrawer.Submit(box, debugDraw.BoundingBoxColor);
+                        }
                     }
                     if (debugDraw.RenderBoundingSphere)
                     {
-                        auto sphere = meshSource->Mesh->GetBoundingSphere();
-                        sphere.Center += object.Transform.GetPosition();
-                        sphere.Radius *= ComponentMax(object.Transform.GetScale());
-                        this->DebugDrawer.Submit(sphere, debugDraw.BoundingSphereColor);
+                        for (const auto& submesh : meshSource->Mesh->Submeshes)
+                        {
+                            auto sphere = submesh.GetBoundingSphere();
+                            sphere.Center += object.Transform.GetPosition() + submesh.GetTransform()->GetPosition();
+                            sphere.Radius *= ComponentMax(object.Transform.GetScale() * submesh.GetTransform()->GetScale());
+                            this->DebugDrawer.Submit(sphere, debugDraw.BoundingSphereColor);
+                        }
                     }
                 }
                 if (debugDraw.RenderLightingBounds && pointLight.IsValid())

@@ -31,11 +31,14 @@
 #include "Core/Components/Rendering/MeshRenderer.h"
 #include "Core/Components/Camera/CameraController.h"
 #include "Core/Components/Camera/CameraEffects.h"
+#include "Core/Components/Camera/CameraToneMapping.h"
+#include "Core/Components/Camera/CameraSSR.h"
 #include "Core/Components/Lighting/DirectionalLight.h"
 #include "Core/Components/Lighting/SpotLight.h"
 #include "Core/Components/Lighting/PointLight.h"
 #include "Core/Components/Rendering/Skybox.h"
 #include "Utilities/Profiler/Profiler.h"
+#include "RenderUtilities/ShadowMapGenerator.h"
 
 namespace MxEngine
 {
@@ -45,64 +48,22 @@ namespace MxEngine
 	{
 		MAKE_SCOPE_PROFILER("RenderController::PrepareShadowMaps()");
 
-		this->ToggleReversedDepth(false);
-		this->ToggleDepthOnlyMode(true);
+		ShadowMapGenerator generator(this->Pipeline.ShadowCasterUnits, this->Pipeline.MaterialUnits);
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PrepareDirectionalLightMaps()");
-			const auto& directionalLightShader = *this->Pipeline.Environment.Shaders["DepthTexture"_id];
-			for (auto& directionalLight : this->Pipeline.Lighting.DirectionalLights)
-			{
-				this->AttachDepthMap(directionalLight.ShadowMap);
-				directionalLightShader.SetUniformMat4("LightProjMatrix", directionalLight.ProjectionMatrix);
-
-				for (const auto& renderUnit : this->Pipeline.ShadowCasterUnits)
-				{
-					this->DrawShadowMap(renderUnit, directionalLight, directionalLightShader);
-				}
-				directionalLight.ShadowMap->GenerateMipmaps();
-			}
+			generator.GenerateFor(*this->Pipeline.Environment.Shaders["DepthTexture"_id], this->Pipeline.Lighting.DirectionalLights);
 		}
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PrepareSpotLightMaps()");
-			const auto& spotLightShader = *this->Pipeline.Environment.Shaders["DepthTexture"_id];
-			for (auto& spotLight : this->Pipeline.Lighting.SpotLights)
-			{
-				this->AttachDepthMap(spotLight.ShadowMap);
-				spotLightShader.SetUniformMat4("LightProjMatrix", spotLight.ProjectionMatrix);
-
-				for (const auto& renderUnit : this->Pipeline.ShadowCasterUnits)
-				{
-					this->DrawShadowMap(renderUnit, spotLight, spotLightShader);
-				}
-				spotLight.ShadowMap->GenerateMipmaps();
-			}
+			generator.GenerateFor(*this->Pipeline.Environment.Shaders["DepthTexture"_id], this->Pipeline.Lighting.SpotLights);
 		}
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PreparePointLightMaps()");
-			const auto& pointLightShader = *this->Pipeline.Environment.Shaders["DepthCubeMap"_id];
-			for (auto& pointLight : this->Pipeline.Lighting.PointLights)
-			{
-				this->AttachDepthMap(pointLight.ShadowMap);
-				pointLightShader.SetUniformMat4("LightProjMatrix[0]", pointLight.ProjectionMatrices[0]);
-				pointLightShader.SetUniformMat4("LightProjMatrix[1]", pointLight.ProjectionMatrices[1]);
-				pointLightShader.SetUniformMat4("LightProjMatrix[2]", pointLight.ProjectionMatrices[2]);
-				pointLightShader.SetUniformMat4("LightProjMatrix[3]", pointLight.ProjectionMatrices[3]);
-				pointLightShader.SetUniformMat4("LightProjMatrix[4]", pointLight.ProjectionMatrices[4]);
-				pointLightShader.SetUniformMat4("LightProjMatrix[5]", pointLight.ProjectionMatrices[5]);
-				pointLightShader.SetUniformFloat("zFar", pointLight.Radius);
-				pointLightShader.SetUniformVec3("lightPos", pointLight.Position);
-
-				for (const auto& renderUnit : this->Pipeline.ShadowCasterUnits)
-				{
-					this->DrawShadowMap(renderUnit, pointLight, pointLightShader);
-				}
-				pointLight.ShadowMap->GenerateMipmaps();
-			}
+			generator.GenerateFor(*this->Pipeline.Environment.Shaders["DepthCubeMap"_id], this->Pipeline.Lighting.PointLights);
 		}
-		this->ToggleDepthOnlyMode(false);
 	}
 
 	void RenderController::DrawObjects(const CameraUnit& camera, const Shader& shader, const MxVector<RenderUnit>& objects)
@@ -126,30 +87,21 @@ namespace MxEngine
 		Texture::TextureBindId textureBindIndex = 0;
 		const auto& material = this->Pipeline.MaterialUnits[unit.materialIndex];
 		shader.IgnoreNonExistingUniform("material.transparency");
+		shader.IgnoreNonExistingUniform("material.reflection");
 
-		material.AlbedoMap->Bind(textureBindIndex);
-		shader.SetUniformInt("map_albedo", textureBindIndex);
-		textureBindIndex++;
+		material.AlbedoMap->Bind(textureBindIndex++);
+		material.SpecularMap->Bind(textureBindIndex++);
+		material.EmmisiveMap->Bind(textureBindIndex++);
+		material.NormalMap->Bind(textureBindIndex++);
+		material.HeightMap->Bind(textureBindIndex++);
+		material.TransparencyMap->Bind(textureBindIndex++);
 
-		material.SpecularMap->Bind(textureBindIndex);
-		shader.SetUniformInt("map_specular", textureBindIndex);
-		textureBindIndex++;
-
-		material.EmmisiveMap->Bind(textureBindIndex);
-		shader.SetUniformInt("map_emmisive", textureBindIndex);
-		textureBindIndex++;
-
-		material.NormalMap->Bind(textureBindIndex);
-		shader.SetUniformInt("map_normal", textureBindIndex);
-		textureBindIndex++;
-
-		material.HeightMap->Bind(textureBindIndex);
-		shader.SetUniformInt("map_height", textureBindIndex);
-		textureBindIndex++;
-
-		material.TransparencyMap->Bind(textureBindIndex);
-		shader.SetUniformInt("map_transparency", textureBindIndex);
-		textureBindIndex++;
+		shader.SetUniformInt("map_albedo", material.AlbedoMap->GetBoundId());
+		shader.SetUniformInt("map_specular", material.SpecularMap->GetBoundId());
+		shader.SetUniformInt("map_emmisive", material.EmmisiveMap->GetBoundId());
+		shader.SetUniformInt("map_normal", material.NormalMap->GetBoundId());
+		shader.SetUniformInt("map_height", material.HeightMap->GetBoundId());
+		shader.SetUniformInt("map_transparency", material.TransparencyMap->GetBoundId());
 
 		shader.SetUniformFloat("material.specularFactor", material.SpecularFactor);
 		shader.SetUniformFloat("material.specularIntensity", material.SpecularIntensity);
@@ -165,44 +117,10 @@ namespace MxEngine
 		this->GetRenderEngine().DrawTrianglesInstanced(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
 	}
 
-	void RenderController::DrawShadowMap(const RenderUnit& unit, const DirectionalLigthUnit& dirLight, const Shader& shader)
-	{
-		const auto& material = this->Pipeline.MaterialUnits[unit.materialIndex];
-		shader.SetUniformFloat("displacement", material.Displacement);
-		material.HeightMap->Bind(0);
-		shader.SetUniformInt("map_height", 0);
-
-		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
-		this->GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
-		this->GetRenderEngine().DrawTrianglesInstanced(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
-	}
-
-	void RenderController::DrawShadowMap(const RenderUnit& unit, const SpotLightUnit& spotLight, const Shader& shader)
-	{
-		const auto& material = this->Pipeline.MaterialUnits[unit.materialIndex];
-		shader.SetUniformFloat("displacement", material.Displacement);
-		material.HeightMap->Bind(0);
-		shader.SetUniformInt("map_height", 0);
-
-		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
-		this->GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
-		this->GetRenderEngine().DrawTrianglesInstanced(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
-	}
-
-	void RenderController::DrawShadowMap(const RenderUnit& unit, const PointLightUnit& pointLight, const Shader& shader)
-	{
-		const auto& material = this->Pipeline.MaterialUnits[unit.materialIndex];
-		shader.SetUniformFloat("displacement", material.Displacement);
-		material.HeightMap->Bind(0);
-		shader.SetUniformInt("map_height", 0);
-
-		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix);
-		this->GetRenderEngine().DrawTrianglesInstanced(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
-	}
-
 	void RenderController::ComputeBloomEffect(CameraUnit& camera)
 	{
-		auto iterations = camera.BloomIterations - camera.BloomIterations % 2;
+		if (camera.Effects == nullptr) return;
+		auto iterations = 2 * camera.Effects->GetBloomIterations();
 		if (iterations == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::PerformBloomIterarations()");
 
@@ -211,16 +129,12 @@ namespace MxEngine
 		auto& iterShader = this->Pipeline.Environment.Shaders["BloomIteration"_id];
 
 		float fogReduceFactor = this->Pipeline.Environment.FogDistance * std::exp(-25.0f * this->Pipeline.Environment.FogDensity);
-		float bloomWeight = camera.BloomWeight * fogReduceFactor;
-
-		// first get bloom mask from camera G-buffer
-		camera.AlbedoTexture->GenerateMipmaps();
-		camera.MaterialTexture->GenerateMipmaps();
+		float bloomWeight = camera.Effects->GetBloomWeight() * fogReduceFactor;
 
 		camera.AlbedoTexture->Bind(0);
-		splitShader->SetUniformInt("albedoTex", 0);
 		camera.MaterialTexture->Bind(1);
-		splitShader->SetUniformInt("materialTex", 1);
+		splitShader->SetUniformInt("albedoTex", camera.AlbedoTexture->GetBoundId());
+		splitShader->SetUniformInt("materialTex", camera.MaterialTexture->GetBoundId());
 		splitShader->SetUniformFloat("weight", bloomWeight);
 		this->RenderToFrameBuffer(bloomBuffers.back(), splitShader);
 
@@ -247,9 +161,10 @@ namespace MxEngine
 	TextureHandle RenderController::ComputeAverageWhite(CameraUnit& camera)
 	{
 		MAKE_SCOPE_PROFILER("RenderController::ComputeAverageWhite()");
+		MX_ASSERT(camera.ToneMapping != nullptr);
 		camera.HDRTexture->GenerateMipmaps();
 
-		float eyeAdaptation = 1.0f - std::exp(-camera.EyeAdaptation * this->Pipeline.Environment.TimeDelta);
+		float eyeAdaptation = 1.0f - std::exp(-camera.ToneMapping->GetEyeAdaptation() * this->Pipeline.Environment.TimeDelta);
 
 		auto& shader = this->Pipeline.Environment.Shaders["AverageWhite"_id];
 		auto& output = this->Pipeline.Environment.AverageWhiteTexture;
@@ -268,6 +183,12 @@ namespace MxEngine
 	{
 		MAKE_SCOPE_PROFILER("RenderController::PerformPostProcessing()");
 
+		camera.AlbedoTexture->GenerateMipmaps();
+		camera.MaterialTexture->GenerateMipmaps();
+
+		// we need to perform SSR before transparent objects, as they do not update material buffer
+		this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture);
+
 		// render skybox & debug buffer (HDR texture is already attached)
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.DepthTexture, Attachment::DEPTH_ATTACHMENT);
 		this->GetRenderEngine().UseDepthBufferMask(false);
@@ -278,7 +199,6 @@ namespace MxEngine
 		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
 
 		this->ComputeBloomEffect(camera);
-		this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture);
 		this->ApplyFogEffect(camera, camera.HDRTexture, camera.SwapTexture);
 		this->ApplyHDRToLDRConversion(camera, camera.HDRTexture, camera.SwapTexture);
 		this->ApplyFXAA(camera, camera.HDRTexture, camera.SwapTexture);
@@ -308,9 +228,8 @@ namespace MxEngine
 		{
 			auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
 
-			dirLight.ShadowMap->Bind(textureId);
-			illumShader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i), textureId);
-			textureId++;
+			dirLight.ShadowMap->Bind(textureId++);
+			illumShader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i), dirLight.ShadowMap->GetBoundId());
 
 			illumShader->SetUniformMat4(MxFormat("lights[{}].transform", i), dirLight.BiasedProjectionMatrix);
 			illumShader->SetUniformVec3(MxFormat("lights[{}].ambient", i), dirLight.AmbientColor);
@@ -318,11 +237,12 @@ namespace MxEngine
 			illumShader->SetUniformVec3(MxFormat("lights[{}].specular", i), dirLight.SpecularColor);
 			illumShader->SetUniformVec3(MxFormat("lights[{}].direction", i), dirLight.Direction);
 		}
+
+		this->Pipeline.Environment.DefaultBlackMap->Bind(textureId);
 		for (size_t i = lightCount; i < MaxDirLightCount; i++)
 		{
-			this->Pipeline.Environment.DefaultBlackMap->Bind(textureId);
-			illumShader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i), textureId);
-			textureId++;
+			illumShader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i), 
+				this->Pipeline.Environment.DefaultBlackMap->GetBoundId());
 		}
 		// render global illumination
 		this->RenderToTexture(camera.HDRTexture, illumShader);
@@ -354,14 +274,10 @@ namespace MxEngine
 
 		auto& shader = this->Pipeline.Environment.Shaders["Transparent"_id];
 
-		shader->SetUniformMat3("skyboxTransform", camera.InversedSkyboxRotation);
 		shader->SetUniformVec3("viewportPosition", camera.ViewportPosition);
 		shader->SetUniformFloat("gamma", camera.Gamma);
 
 		Texture::TextureBindId textureId = 6; // assume there are 6 textures in material structure
-		camera.SkyboxMap->Bind(textureId);
-		shader->SetUniformInt("skyboxTex", textureId);
-		textureId++;
 
 		// submit directional light information
 		const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
@@ -374,9 +290,8 @@ namespace MxEngine
 		{
 			auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
 
-			dirLight.ShadowMap->Bind(textureId);
-			shader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i), textureId);
-			textureId++;
+			dirLight.ShadowMap->Bind(textureId++);
+			shader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i), dirLight.ShadowMap->GetBoundId());
 
 			shader->SetUniformMat4(MxFormat("lights[{}].transform", i), dirLight.BiasedProjectionMatrix);
 			shader->SetUniformVec3(MxFormat("lights[{}].ambient", i), dirLight.AmbientColor);
@@ -384,11 +299,12 @@ namespace MxEngine
 			shader->SetUniformVec3(MxFormat("lights[{}].specular", i), dirLight.SpecularColor);
 			shader->SetUniformVec3(MxFormat("lights[{}].direction", i), dirLight.Direction);
 		}
+
+		this->Pipeline.Environment.DefaultBlackMap->Bind(textureId);
 		for (size_t i = lightCount; i < MaxDirLightCount; i++)
 		{
-			this->Pipeline.Environment.DefaultBlackMap->Bind(textureId);
-			shader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i), textureId);
-			textureId++;
+			shader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i), 
+				this->Pipeline.Environment.DefaultBlackMap->GetBoundId());
 		}
 
 		this->DrawObjects(camera, *shader, this->Pipeline.TransparentRenderUnits);
@@ -411,7 +327,7 @@ namespace MxEngine
 		fogShader->IgnoreNonExistingUniform("materialTex");
 
 		input->Bind(4);
-		fogShader->SetUniformInt("cameraOutput", 4);
+		fogShader->SetUniformInt("cameraOutput", input->GetBoundId());
 
 		this->BindGBuffer(camera, *fogShader);
 		this->BindFogInformation(*fogShader);
@@ -423,19 +339,26 @@ namespace MxEngine
 
 	void RenderController::ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
+		if (camera.SSR == nullptr) return;
 		MAKE_SCOPE_PROFILER("RenderController::ApplySSR()");
+		input->GenerateMipmaps();
 
 		auto& SSRShader = this->Pipeline.Environment.Shaders["SSR"_id];
 		SSRShader->IgnoreNonExistingUniform("albedoTex");
-		SSRShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
 		
 		this->BindGBuffer(camera, *SSRShader);
 		this->BindCameraInformation(camera, *SSRShader);
 		input->Bind(4);
-		camera.SkyboxMap->Bind(5);
-		SSRShader->SetUniformInt("HDRTex", 4);
-		SSRShader->SetUniformInt("skyboxMap", 5);
-		SSRShader->SetUniformMat3("skyboxTransform", camera.InversedSkyboxRotation);
+		camera.SkyboxTexture->Bind(5);
+		SSRShader->SetUniformInt("HDRTex", input->GetBoundId());
+		SSRShader->SetUniformInt("skyboxMap", camera.SkyboxTexture->GetBoundId());
+
+		SSRShader->SetUniformMat3("skyboxTransform", camera.InverseSkyboxRotation);
+		SSRShader->SetUniformFloat("skyboxMultiplier", camera.SSR->GetSkyboxMultiplier());
+		SSRShader->SetUniformFloat("thickness", camera.SSR->GetThickness());
+		SSRShader->SetUniformFloat("maxCosAngle", camera.SSR->GetMaxCosAngle());
+		SSRShader->SetUniformInt("steps", (int)camera.SSR->GetSteps());
+		SSRShader->SetUniformFloat("maxDistance", camera.SSR->GetMaxDistance());
 
 		this->RenderToTexture(output, SSRShader);
 		std::swap(input, output);
@@ -443,21 +366,25 @@ namespace MxEngine
 
 	void RenderController::ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
+		if (camera.ToneMapping == nullptr) return;
 		MAKE_SCOPE_PROFILER("RenderController::ApplyHDRToLDRConversion()");
 
 		auto& HDRToLDRShader = this->Pipeline.Environment.Shaders["HDRToLDR"_id];
-		auto averageWhite = camera.EnableToneMapping ? this->ComputeAverageWhite(camera) : this->Pipeline.Environment.DefaultGreyMap;
+		auto averageWhite = this->ComputeAverageWhite(camera);
+		auto aces = camera.ToneMapping->GetACESCoefficients();
 
 		input->Bind(0);
 		averageWhite->Bind(1);
-		HDRToLDRShader->SetUniformInt("HDRTex", 0);
-		HDRToLDRShader->SetUniformInt("averageWhiteTex", 1);
+		HDRToLDRShader->SetUniformInt("HDRTex", input->GetBoundId());
+		HDRToLDRShader->SetUniformInt("averageWhiteTex", averageWhite->GetBoundId());
 
-		HDRToLDRShader->SetUniformFloat("exposure", camera.Exposure);
-		HDRToLDRShader->SetUniformFloat("colorMultiplier", camera.ColorScale);
-		HDRToLDRShader->SetUniformFloat("whitePoint", camera.WhitePoint);
-		HDRToLDRShader->SetUniformVec3("ABCcoefsACES", { camera.ACESCoefficients.A, camera.ACESCoefficients.B, camera.ACESCoefficients.C });
-		HDRToLDRShader->SetUniformVec3("DEFcoefsACES", { camera.ACESCoefficients.D, camera.ACESCoefficients.E, camera.ACESCoefficients.F });
+		HDRToLDRShader->SetUniformFloat("exposure", camera.ToneMapping->GetExposure());
+		HDRToLDRShader->SetUniformFloat("colorMultiplier", camera.ToneMapping->GetColorScale());
+		HDRToLDRShader->SetUniformFloat("whitePoint", camera.ToneMapping->GetWhitePoint());
+		HDRToLDRShader->SetUniformFloat("minLuminance", camera.ToneMapping->GetMinLuminance());
+		HDRToLDRShader->SetUniformFloat("maxLuminance", camera.ToneMapping->GetMaxLuminance());
+		HDRToLDRShader->SetUniformVec3("ABCcoefsACES", { aces.A, aces.B, aces.C });
+		HDRToLDRShader->SetUniformVec3("DEFcoefsACES", { aces.D, aces.E, aces.F });
 
 		HDRToLDRShader->SetUniformFloat("gamma", camera.Gamma);
 
@@ -467,13 +394,13 @@ namespace MxEngine
 
 	void RenderController::ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
-		if (!camera.EnableFXAA) return;
+		if (camera.Effects == nullptr || !camera.Effects->IsFXAAEnabled()) return;
 		MAKE_SCOPE_PROFILER("RenderController::ApplyFXAA");
 
 		auto& fxaaShader = this->Pipeline.Environment.Shaders["FXAA"_id];
 		input->GenerateMipmaps();
 		input->Bind(0);
-		fxaaShader->SetUniformInt("tex", 0);
+		fxaaShader->SetUniformInt("tex", input->GetBoundId());
 		
 		this->RenderToTexture(output, fxaaShader);
 		std::swap(input, output);
@@ -481,15 +408,15 @@ namespace MxEngine
 
 	void RenderController::ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
-		if (camera.VignetteRadius <= 0.0f) return;
+		if (camera.Effects == nullptr || camera.Effects->GetVignetteRadius() <= 0.0f) return;
 		MAKE_SCOPE_PROFILER("RenderController::ApplyVignette");
 
 		auto& vignetteShader = this->Pipeline.Environment.Shaders["Vignette"_id];
 		input->Bind(0);
-		vignetteShader->SetUniformInt("tex", 0);
+		vignetteShader->SetUniformInt("tex", input->GetBoundId());
 
-		vignetteShader->SetUniformFloat("radius", camera.VignetteRadius);
-		vignetteShader->SetUniformFloat("intensity", camera.VignetteIntensity);
+		vignetteShader->SetUniformFloat("radius", camera.Effects->GetVignetteRadius());
+		vignetteShader->SetUniformFloat("intensity", camera.Effects->GetVignetteIntensity());
 
 		this->RenderToTexture(output, vignetteShader);
 		std::swap(input, output);
@@ -510,15 +437,17 @@ namespace MxEngine
 		this->BindGBuffer(camera, *shader);
 		this->BindCameraInformation(camera, *shader);
 
+		Texture::TextureBindId textureId = 4;
+		shader->SetUniformInt("lightDepthMap", textureId);
+		shader->SetUniformInt("castsShadows", true);
+
 		for (size_t i = 0; i < spotLights.size(); i++)
 		{
 			const auto& spotLight = spotLights[i];
 
-			spotLight.ShadowMap->Bind(4);
-			shader->SetUniformInt("lightDepthMap", 4);
+			spotLight.ShadowMap->Bind(textureId);
 
 			shader->SetUniformMat4("worldToLightTransform", spotLight.BiasedProjectionMatrix);
-			shader->SetUniformInt("castsShadows", true);
 
 			this->GetRenderEngine().SetDefaultVertexAttribute(5,  spotLight.Transform);
 			this->GetRenderEngine().SetDefaultVertexAttribute(9,  Vector4(spotLight.Position, spotLight.InnerAngle));
@@ -545,13 +474,15 @@ namespace MxEngine
 		this->BindGBuffer(camera, *shader);
 		this->BindCameraInformation(camera, *shader);
 
+		Texture::TextureBindId textureId = 4;
+		shader->SetUniformInt("lightDepthMap", textureId);
+		shader->SetUniformInt("castsShadows", true);
+
 		for (size_t i = 0; i < pointLights.size(); i++)
 		{
 			const auto& pointLight = pointLights[i];
 
-			pointLight.ShadowMap->Bind(4);
-			shader->SetUniformInt("lightDepthMap", 4);
-			shader->SetUniformInt("castsShadows", true);
+			pointLight.ShadowMap->Bind(textureId);
 
 			this->GetRenderEngine().SetDefaultVertexAttribute(5,  pointLight.Transform);
 			this->GetRenderEngine().SetDefaultVertexAttribute(9,  Vector4(pointLight.Position, pointLight.Radius));
@@ -577,7 +508,7 @@ namespace MxEngine
 
 		this->Pipeline.Environment.DefaultBlackCubeMap->Bind(4);
 		shader->SetUniformVec2("viewportSize", viewportSize);
-		shader->SetUniformInt("lightDepthMap", 4);
+		shader->SetUniformInt("lightDepthMap", this->Pipeline.Environment.DefaultBlackCubeMap->GetBoundId());
 		shader->SetUniformInt("castsShadows", false);
 
 		instancedPointLights.SubmitToVBO();
@@ -598,7 +529,7 @@ namespace MxEngine
 
 		this->Pipeline.Environment.DefaultBlackCubeMap->Bind(4);
 		shader->SetUniformVec2("viewportSize", viewportSize);
-		shader->SetUniformInt("lightDepthMap", 4);
+		shader->SetUniformInt("lightDepthMap", this->Pipeline.Environment.DefaultBlackCubeMap->GetBoundId());
 		shader->SetUniformInt("castsShadows", false);
 
 		instancedSpotLights.SubmitToVBO();
@@ -622,16 +553,14 @@ namespace MxEngine
 	void RenderController::BindGBuffer(const CameraUnit& camera, const Shader& shader)
 	{
 		camera.AlbedoTexture->Bind(0);
-		shader.SetUniformInt("albedoTex", 0);
-
 		camera.NormalTexture->Bind(1);
-		shader.SetUniformInt("normalTex", 1);
-
 		camera.MaterialTexture->Bind(2);
-		shader.SetUniformInt("materialTex", 2);
-
 		camera.DepthTexture->Bind(3);
-		shader.SetUniformInt("depthTex", 3);
+
+		shader.SetUniformInt("albedoTex", camera.AlbedoTexture->GetBoundId());
+		shader.SetUniformInt("normalTex", camera.NormalTexture->GetBoundId());
+		shader.SetUniformInt("materialTex", camera.MaterialTexture->GetBoundId());
+		shader.SetUniformInt("depthTex", camera.DepthTexture->GetBoundId());
 	}
 
 	const Renderer& RenderController::GetRenderEngine() const
@@ -752,12 +681,12 @@ namespace MxEngine
 		}
 
 		shader.SetUniformMat4("StaticViewProjection", camera.StaticViewProjectionMatrix);
-		shader.SetUniformMat3("Rotation", Transpose(camera.InversedSkyboxRotation));
+		shader.SetUniformMat3("Rotation", Transpose(camera.InverseSkyboxRotation));
 		shader.SetUniformFloat("gamma", camera.Gamma);
 		shader.SetUniformFloat("luminance", skyLuminance);
 
-		camera.SkyboxMap->Bind(0);
-		shader.SetUniformInt("skybox", 0);
+		camera.SkyboxTexture->Bind(0);
+		shader.SetUniformInt("skybox", camera.SkyboxTexture->GetBoundId());
 
 		this->GetRenderEngine().DrawTriangles(skybox.GetVAO(), skybox.VertexCount, shader);
 	}
@@ -878,7 +807,8 @@ namespace MxEngine
 		baseLightData->OuterAngle = light.GetOuterCos();
 	}
 
-	void RenderController::SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, const Skybox& skybox, const CameraEffects& effects)
+	void RenderController::SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
+		const Skybox& skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping, const CameraSSR* ssr)
 	{
 		auto& camera = this->Pipeline.Cameras.emplace_back();
 
@@ -896,22 +826,14 @@ namespace MxEngine
 		camera.AverageWhiteTexture        = controller.GetAverageWhiteTexture();
 		camera.HDRTexture                 = controller.GetHDRTexture();
 		camera.SwapTexture                = controller.GetSwapHDRTexture();
-		camera.BloomIterations            = (uint8_t)effects.GetBloomIterations();
-		camera.BloomWeight                = effects.GetBloomWeight();
-		camera.Exposure                   = effects.GetExposure();
-		camera.ACESCoefficients           = effects.GetACESCoefficients();
-		camera.ColorScale                 = effects.GetColorScale();
-		camera.WhitePoint                 = effects.GetWhitePoint();
-		camera.Gamma                      = effects.GetGamma();
-		camera.VignetteRadius             = effects.GetVignetteRadius();
-		camera.VignetteIntensity          = effects.GetVignetteIntensity();
-		camera.EnableFXAA                 = effects.IsFXAAEnabled();
-		camera.EnableToneMapping          = effects.IsToneMappingEnabled();
-		camera.EyeAdaptation              = effects.GetEyeAdaptation();
-		camera.SkyboxMap                  = skybox.Texture.IsValid() ? skybox.Texture : this->Pipeline.Environment.DefaultBlackCubeMap;
-		camera.InversedSkyboxRotation     = Transpose(ToMatrix(parentTransform.GetRotation()));
 		camera.OutputTexture              = controller.GetRenderTexture();
 		camera.RenderToTexture            = controller.IsRendered();
+		camera.InverseSkyboxRotation      = Transpose(ToMatrix(parentTransform.GetRotation()));
+		camera.SkyboxTexture              = skybox.Texture.IsValid() ? skybox.Texture : this->Pipeline.Environment.DefaultBlackCubeMap;
+		camera.Gamma                      = toneMapping == nullptr ? 1.0f : toneMapping->GetGamma();
+		camera.Effects                    = effects;
+		camera.ToneMapping                = toneMapping;
+		camera.SSR                        = ssr;
 	}
 
     void RenderController::SubmitPrimitive(const SubMesh& object, const Material& material, const TransformComponent& parentTransform, size_t instanceCount)

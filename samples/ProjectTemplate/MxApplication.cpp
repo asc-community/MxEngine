@@ -1,5 +1,8 @@
 #include <MxEngine.h>
 
+#include <iostream>
+
+
 namespace ProjectTemplate
 {
     using namespace MxEngine;
@@ -14,11 +17,12 @@ namespace ProjectTemplate
         {
             // create camera object
             auto cameraObject = MxObject::Create();
-            cameraObject->Name = "Player Camera";
+            cameraObject->Name = "Camera Object";
+
             // add CameraController component which handles camera image rendering
             auto controller = cameraObject->AddComponent<CameraController>();
             // add InpitControl which handles keyboard and mouse input events
-            auto input = cameraObject->AddComponent<InputControl>();
+            auto input = cameraObject->AddComponent<InputController>();
             // set camera to change ratio automatically depending on application window size
             controller->ListenWindowResizeEvent();
             // bind player movement to classic WASD mode and space/shift to fly, rotation is done with mouse
@@ -42,7 +46,7 @@ namespace ProjectTemplate
             lightObject->Name = "Global Light";
             // add DirectionalLight component with custom light direction
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
-            dirLight->Direction = MakeVector3(0.5f, 1.0f, 1.0f);
+            dirLight->Direction     = MakeVector3(0.5f, 1.0f, 1.0f);
             // make directional light to be centered at current viewport position (is set by RenderManager::SetViewport)
             dirLight->FollowViewport();
         }

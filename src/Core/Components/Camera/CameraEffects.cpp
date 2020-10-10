@@ -31,34 +31,9 @@
 
 namespace MxEngine
 {
-    float CameraEffects::GetGamma() const
-    {
-        return this->gamma;
-    }
-
     float CameraEffects::GetBloomWeight() const
     {
         return this->bloomWeight;
-    }
-
-    float CameraEffects::GetExposure() const
-    {
-        return this->exposure;
-    }
-
-    float CameraEffects::GetColorScale() const
-    {
-        return this->colorMultiplier;
-    }
-
-    float CameraEffects::GetWhitePoint() const
-    {
-        return this->whitePoint;
-    }
-
-    const ACES& CameraEffects::GetACESCoefficients() const
-    {
-        return this->coefficients;
     }
 
     float CameraEffects::GetVignetteIntensity() const
@@ -76,58 +51,14 @@ namespace MxEngine
         return this->enableFXAA;
     }
 
-    bool CameraEffects::IsToneMappingEnabled() const
-    {
-        return this->toneMapping;
-    }
-
-    float CameraEffects::GetEyeAdaptation() const
-    {
-        return this->eyeAdaptation;
-    }
-
-    void CameraEffects::SetEyeAdaptation(float adaptation)
-    {
-        this->eyeAdaptation = Max(adaptation, 0.0f);
-    }
-
     size_t CameraEffects::GetBloomIterations() const
     {
         return size_t(this->bloomIterations);
     }
 
-    void CameraEffects::SetGamma(float gamma)
-    {
-        this->gamma = Max(0.0f, gamma);
-    }
-
     void CameraEffects::SetBloomWeight(float weight)
     {
         this->bloomWeight = Max(0.0f, weight);
-    }
-
-    void CameraEffects::SetExposure(float exposure)
-    {
-        this->exposure = Max(0.0f, exposure);
-    }
-
-    void CameraEffects::SetColorScale(float mult)
-    {
-        this->colorMultiplier = Max(0.0f, mult);
-    }
-
-    void CameraEffects::SetWhitePoint(float point)
-    {
-        this->whitePoint = point;
-    }
-
-    void CameraEffects::SetACESCoefficients(const ACES& aces)
-    {
-        this->coefficients = {
-            Max(0.0f, aces.A), Max(0.0f, aces.B),
-            Max(0.0f, aces.C), Max(0.0f, aces.D),
-            Max(0.0f, aces.E), Max(0.0f, aces.F),
-        };
     }
 
     void CameraEffects::SetVignetteRadius(float radius)
@@ -143,11 +74,6 @@ namespace MxEngine
     void CameraEffects::ToggleFXAA(bool value)
     {
         this->enableFXAA = value;
-    }
-
-    void CameraEffects::ToggleToneMapping(bool value)
-    {
-        this->toneMapping = value;
     }
 
     void CameraEffects::SetBloomIterations(size_t iterations)

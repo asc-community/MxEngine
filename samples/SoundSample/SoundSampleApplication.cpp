@@ -22,7 +22,7 @@ namespace SoundSample
             controller->ListenWindowResizeEvent();
             Rendering::SetViewport(controller);
 
-            auto input = cameraObject->AddComponent<InputControl>();
+            auto input = cameraObject->AddComponent<InputController>();
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
 

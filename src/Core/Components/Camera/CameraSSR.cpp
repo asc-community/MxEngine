@@ -26,23 +26,58 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Utilities/ECS/Component.h"
-#include "Core/Events/KeyEvent.h"
+#include "CameraSSR.h"
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-	class InputControl
-	{
-		MAKE_COMPONENT(InputControl);
-	public:
-		~InputControl();
+    float CameraSSR::GetSkyboxMultiplier() const
+    {
+        return this->skyboxMultiplier;
+    }
 
-		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right);
-		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down);
-		void BindRotation();
-		void BindHorizontalRotation();
-		void BindVerticalRotation();
-	};
+    float CameraSSR::GetThickness() const
+    {
+        return this->thickness;
+    }
+
+    float CameraSSR::GetMaxCosAngle() const
+    {
+        return this->maxCosAngle;
+    }
+
+    float CameraSSR::GetSteps() const
+    {
+        return this->steps;
+    }
+
+    float CameraSSR::GetMaxDistance() const
+    {
+        return this->maxDistance;
+    }
+
+    void CameraSSR::SetThickness(float thickness)
+    {
+        this->thickness = Max(thickness, 0.0f);
+    }
+
+    void CameraSSR::SetMaxCosAngle(float angle)
+    {
+        this->maxCosAngle = Clamp(angle, -1.0f, 1.0f);
+    }
+
+    void CameraSSR::SetSteps(size_t steps)
+    {
+        this->steps = steps;
+    }
+
+    void CameraSSR::SetMaxDistance(float distance)
+    {
+        this->maxDistance = Max(distance, 0.0f);
+    }
+
+    void CameraSSR::SetSkyboxMultiplier(float multiplier)
+    {
+        this->skyboxMultiplier = Max(multiplier, 0.0f);
+    }
 }

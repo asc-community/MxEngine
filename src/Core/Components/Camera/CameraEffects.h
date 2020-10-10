@@ -33,48 +33,28 @@
 
 namespace MxEngine
 {
+	// TODO: split into multiple components
 	class CameraEffects
 	{
 		MAKE_COMPONENT(CameraEffects);
 
-		float gamma = 2.2f;
 		float bloomWeight = 0.5f;
-		float exposure = 1.0f;
-		float colorMultiplier = 1.0f;
-		float whitePoint = 1.0f;
-		ACES coefficients;
 		float vignetteRadius = 0.0f;
 		float vignetteIntensity = 100.0f;
-		float eyeAdaptation = 0.0f;
 
 		bool enableFXAA = false;
-		bool toneMapping = false;
 		uint8_t bloomIterations = 0;
 	public:
-		float GetGamma() const;
 		float GetBloomWeight() const;
-		float GetExposure() const;
-		float GetColorScale() const;
-		float GetWhitePoint() const;
-		const ACES& GetACESCoefficients() const;
 		float GetVignetteIntensity() const;
 		float GetVignetteRadius() const;
-		float GetEyeAdaptation() const;
 		bool IsFXAAEnabled() const;
-		bool IsToneMappingEnabled() const;
 		size_t GetBloomIterations() const;
 
-		void SetGamma(float gamma);
 		void SetBloomWeight(float weight);
-		void SetExposure(float exposure);
-		void SetColorScale(float mult);
-		void SetWhitePoint(float point);
-		void SetEyeAdaptation(float point);
-		void SetACESCoefficients(const ACES& aces);
 		void SetVignetteRadius(float radius);
 		void SetVignetteIntensity(float intensity);
 		void ToggleFXAA(bool value);
-		void ToggleToneMapping(bool value);
 		void SetBloomIterations(size_t iterations);
 	};
 }

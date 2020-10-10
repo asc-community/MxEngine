@@ -100,7 +100,8 @@ namespace MxEngine
 
 			auto component = this->components.AddComponent<T>(std::forward<Args>(args)...);
 			component->UserData = reinterpret_cast<void*>(this->handle);
-			if constexpr (has_method_Init<T>::value) component->Init();
+			if constexpr (has_method_Init<T>::value) 
+				component->Init();
 			return component;
 		}
 

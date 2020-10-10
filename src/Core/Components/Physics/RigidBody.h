@@ -70,6 +70,9 @@ namespace MxEngine
         void SetCollisionFilter(CollisionMask::Mask mask, CollisionGroup::Group group = CollisionGroup::ALL);
         uint32_t GetCollisionGroup() const;
         uint32_t GetCollisionMask() const;
+        void SetActivationState(ActivationState state);
+        ActivationState GetActivationState() const;
+        void Activate();
         void ClearForces();
         float GetMass() const;
         void SetMass(float mass);

@@ -69,7 +69,8 @@ namespace MxEngine
     void PhysicsModule::PerformSimulationStep(float dt)
     {
         MAKE_SCOPE_PROFILER("Physics::SimulationStep()");
-        data->World->stepSimulation(dt);
+        constexpr int maxSubSteps = 10;
+        data->World->stepSimulation(dt, maxSubSteps);
     }
 
     void PhysicsModule::SetSimulationStep(float timedelta)

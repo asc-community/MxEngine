@@ -154,7 +154,7 @@ namespace MxEngine
 		\param function function name which is executed
 		*/
 		ScopeTimer(std::string_view invoker, std::string_view function)
-			: start(Time::Current()), invoker(invoker), function(function.data())
+			: start(Time::Current()), function(function.data()), invoker(invoker)
 		{
 			MXLOG_INFO(this->invoker.data(), "calling " + this->function);
 		}

@@ -32,6 +32,8 @@
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Utilities/FileSystem/File.h"
 #include "Core/Config/GlobalConfig.h"
+#include "Platform/OpenGL/Texture.h"
+#include "Platform/OpenGL/CubeMap.h"
 
 namespace MxEngine
 {
@@ -165,9 +167,14 @@ namespace MxEngine
 
 	void Shader::IgnoreNonExistingUniform(const MxString& name) const
 	{
-		if (uniformCache.find(name) == uniformCache.end())
+		this->IgnoreNonExistingUniform(name.c_str());
+	}
+
+	void Shader::IgnoreNonExistingUniform(const char* name) const
+	{
+		if (uniformCache.find_as(name) == uniformCache.end())
 		{
-			GLCALL(int location = glGetUniformLocation(this->id, name.c_str()));
+			GLCALL(int location = glGetUniformLocation(this->id, name));
 			uniformCache[name] = location;
 		}
 	}

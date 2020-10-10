@@ -200,21 +200,13 @@ namespace MxEngine
 		if (value)
 		{
 			GLCALL(glClearDepth(0.0f));
-			#if !defined(MXENGINE_MACOS)
 			GLCALL(glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE));
-			#else
-			GLCALL(glClipControlEXT(GL_LOWER_LEFT, GL_ZERO_TO_ONE));
-			#endif
 			this->UseDepthFunction(DepthFunction::GREATER_EQUAL);
 		}
 		else
 		{
 			GLCALL(glClearDepth(1.0f));
-			#if !defined(MXENGINE_MACOS)
 			GLCALL(glClipControl(GL_LOWER_LEFT, GL_NEGATIVE_ONE_TO_ONE));
-			#else
-			GLCALL(glClipControlEXT(GL_LOWER_LEFT, GL_NEGATIVE_ONE_TO_ONE));
-			#endif
 			this->UseDepthFunction(DepthFunction::LESS);
 		}
 		return *this;

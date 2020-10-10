@@ -43,6 +43,9 @@ namespace MxEngine
 		MeshData Data;
 		MxString Name = "Main";
 
+		const AABB& GetBoundingBox() const;
+		const BoundingSphere& GetBoundingSphere() const;
+
 		SubMesh(size_t materiaId, const TransformComponent::Handle& transform);
 
 		TransformComponent::Handle GetTransform() const;

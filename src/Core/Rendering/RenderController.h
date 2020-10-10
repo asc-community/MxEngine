@@ -40,6 +40,8 @@ namespace MxEngine
 	class SpotLight;
 	class CameraController;
 	class CameraEffects;
+	class CameraToneMapping;
+	class CameraSSR;
 	class Skybox;
 	class SubMesh;
 	class TransformComponent;
@@ -54,11 +56,6 @@ namespace MxEngine
 		void DrawObjects(const CameraUnit& camera, const Shader& shader, const MxVector<RenderUnit>& objects);
 		void DrawDebugBuffer(const CameraUnit& camera);
 		void DrawObject(const RenderUnit& unit, const Shader& shader);
-		void DrawShadowMap(const RenderUnit& unit, const DirectionalLigthUnit& dirLight, const Shader& shader);
-		void DrawShadowMap(const RenderUnit& unit, const SpotLightUnit& spotLight, const Shader& shader);
-		void DrawShadowMap(const RenderUnit& unit, const PointLightUnit& pointLight, const Shader& shader);
-		void AttachDepthMap(const TextureHandle& texture);
-		void AttachDepthMap(const CubeMapHandle& cubemap);
 		void ComputeBloomEffect(CameraUnit& camera);
 		TextureHandle ComputeAverageWhite(CameraUnit& camera);
 		void PerformPostProcessing(CameraUnit& camera);
@@ -90,6 +87,8 @@ namespace MxEngine
 		void AttachFrameBuffer(const FrameBufferHandle& framebuffer);
 		void AttachFrameBufferNoClear(const FrameBufferHandle& framebuffer);
 		void AttachDefaultFrameBuffer();
+		void AttachDepthMap(const TextureHandle& texture);
+		void AttachDepthMap(const CubeMapHandle& cubemap);
 		void RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
 		void RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
 		void CopyTexture(const TextureHandle& input, const TextureHandle& output);
@@ -102,7 +101,8 @@ namespace MxEngine
 		void SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform);
 		void SubmitLightSource(const PointLight& light, const TransformComponent& parentTransform);
 		void SubmitLightSource(const SpotLight& light, const TransformComponent& parentTransform);
-		void SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, const Skybox& skybox, const CameraEffects& effects);
+		void SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
+			const Skybox& skybox, const CameraEffects* effects = nullptr, const CameraToneMapping* toneMapping = nullptr, const CameraSSR* ssr = nullptr);
 		void SubmitPrimitive(const SubMesh& object, const Material& material, const TransformComponent& parentTransform, size_t instanceCount);
 		void SubmitImage(const TextureHandle& texture);
 		void StartPipeline();

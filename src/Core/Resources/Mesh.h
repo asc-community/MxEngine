@@ -42,16 +42,16 @@ namespace MxEngine
 	class Mesh
 	{
 		using SubmeshList = MxVector<SubMesh>;
-
-		AABB boundingBox;
-		BoundingSphere boundingSphere;
 		
-		SubmeshList submeshes;
 		MxVector<VertexBufferHandle> VBOs;
 		MxVector<VertexBufferLayoutHandle> VBLs;
 
 		void LoadFromFile(const MxString& filepath);
 	public:
+		AABB BoundingBox;
+		BoundingSphere BoundingSphere;
+		SubmeshList Submeshes;
+
 		explicit Mesh() = default;
 		Mesh(const MxString& path);
 		Mesh(Mesh&) = delete;
@@ -60,12 +60,6 @@ namespace MxEngine
 		Mesh& operator=(Mesh&&) = default;
 		
 		void Load(const MxString& filepath);
-		SubmeshList& GetSubmeshes();
-		const SubmeshList& GetSubmeshes() const;
-		const AABB& GetBoundingBox() const;
-		const BoundingSphere& GetBoundingSphere() const;
-		void SetBoundingBox(const AABB& boundingBox);
-		void SetBoundingSphere(const BoundingSphere& boundingSphere);
 		void UpdateBoundingGeometry();
 		size_t AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl);
 		VertexBufferHandle GetBufferByIndex(size_t index) const; 

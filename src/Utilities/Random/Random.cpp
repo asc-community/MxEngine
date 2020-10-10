@@ -47,7 +47,7 @@ namespace MxEngine
 
     float Random::GetFloat()
     {
-        return (float)mersenne64() / (mersenne64.max() - 1);
+        return float(mersenne64()) / float(mersenne64.max() - 1);
     }
 
     bool Random::GetBool(float probability)

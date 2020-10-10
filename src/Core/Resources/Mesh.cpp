@@ -44,7 +44,8 @@ namespace MxEngine
 		ObjectInfo objectInfo = ObjectLoader::Load(filepath);
 		MxVector<TransformComponent::Handle> submeshTransforms;
 
-		for (const auto& group : objectInfo.meshes)
+		submeshTransforms.reserve(objectInfo.meshes.size());
+		for (size_t i = 0; i < objectInfo.meshes.size(); i++)
 		{
 			submeshTransforms.push_back(ComponentFactory::CreateComponent<TransformComponent>());
 		}
@@ -85,7 +86,7 @@ namespace MxEngine
 			submesh.Data.UpdateBoundingGeometry();
 			submesh.Name = std::move(meshData.name);
 
-			submeshes.push_back(std::move(submesh));
+			this->Submeshes.push_back(std::move(submesh));
 		}
 		this->UpdateBoundingGeometry(); // use submeshes boundings to update mesh boundings
 	}
@@ -100,66 +101,36 @@ namespace MxEngine
 		this->LoadFromFile(filepath);
 	}
 
-	Mesh::SubmeshList& Mesh::GetSubmeshes()
-	{
-		return this->submeshes;
-	}
-
-	const Mesh::SubmeshList& Mesh::GetSubmeshes() const
-	{
-		return this->submeshes;
-	}
-
-	const AABB& Mesh::GetBoundingBox() const
-	{
-		return this->boundingBox;
-	}
-
-	const BoundingSphere& Mesh::GetBoundingSphere() const
-	{
-		return this->boundingSphere;
-	}
-
-	void Mesh::SetBoundingBox(const AABB& boundingBox)
-	{
-		this->boundingBox = boundingBox;
-	}
-
-	void Mesh::SetBoundingSphere(const BoundingSphere& boundingSphere)
-	{
-		this->boundingSphere = boundingSphere;
-	}
-
 	void Mesh::UpdateBoundingGeometry()
 	{
 		// compute bounding box, taking min and max points from each sub-box
-		this->boundingBox = { MakeVector3(0.0f), MakeVector3(0.0f) };
-		if (!this->submeshes.empty()) 
-			this->boundingBox = this->submeshes.front().Data.GetBoundingBox();
+		this->BoundingBox = { MakeVector3(0.0f), MakeVector3(0.0f) };
+		if (!this->Submeshes.empty()) 
+			this->BoundingBox = this->Submeshes.front().Data.GetBoundingBox();
 
-		for (const auto& submesh : this->submeshes)
+		for (const auto& submesh : this->Submeshes)
 		{
-			this->boundingBox.Min = VectorMin(this->boundingBox.Min, submesh.Data.GetBoundingBox().Min);
-			this->boundingBox.Max = VectorMax(this->boundingBox.Max, submesh.Data.GetBoundingBox().Max);
+			this->BoundingBox.Min = VectorMin(this->BoundingBox.Min, submesh.Data.GetBoundingBox().Min);
+			this->BoundingBox.Max = VectorMax(this->BoundingBox.Max, submesh.Data.GetBoundingBox().Max);
 		}
 
 		// compute bounding sphere, taking sun of max sub-sphere radius and distance to it
 		auto center = MakeVector3(0.0f);
 		auto maxRadius = 0.0f;
-		for (const auto& submesh : this->submeshes)
+		for (const auto& submesh : this->Submeshes)
 		{
 			auto sphere = submesh.Data.GetBoundingSphere();
 			auto distanceToCenter = Length(sphere.Center);
 			maxRadius = Max(maxRadius, distanceToCenter + sphere.Radius);
 		}
-		this->boundingSphere = BoundingSphere(center, maxRadius);
+		this->BoundingSphere = MxEngine::BoundingSphere(center, maxRadius);
 	}
 
 	size_t Mesh::AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl)
 	{
 		this->VBOs.push_back(std::move(vbo));
 		this->VBLs.push_back(std::move(vbl));
-		for (auto& mesh : submeshes)
+		for (auto& mesh : this->Submeshes)
 		{
 			mesh.Data.GetVAO()->AddInstancedBuffer(*this->VBOs.back(), *this->VBLs.back());
 		}
@@ -186,7 +157,7 @@ namespace MxEngine
     void Mesh::PopInstancedBuffer()
     {
 		MX_ASSERT(!this->VBOs.empty());
-		for (auto& mesh : submeshes)
+		for (auto& mesh : this->Submeshes)
 		{
 			mesh.Data.GetVAO()->PopBuffer(*this->VBLs.back());
 		}

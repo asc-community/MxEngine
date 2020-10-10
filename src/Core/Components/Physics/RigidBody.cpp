@@ -194,6 +194,21 @@ namespace MxEngine
         return this->rigidBody->GetCollisionMask();
     }
 
+    void RigidBody::SetActivationState(ActivationState state)
+    {
+        this->rigidBody->SetActivationState(state);
+    }
+
+    ActivationState RigidBody::GetActivationState() const
+    {
+        return this->rigidBody->GetActivationState();
+    }
+
+    void RigidBody::Activate()
+    {
+        this->rigidBody->Activate();
+    }
+
     void RigidBody::ClearForces()
     {
         this->rigidBody->GetNativeHandle()->clearForces();

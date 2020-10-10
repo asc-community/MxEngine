@@ -89,6 +89,12 @@ namespace GrassSample
 
         virtual void OnCreate() override
         {
+            Event::AddEventListener<FpsUpdateEvent>("CountFPS",
+                [](auto& e)
+                {
+                    WindowManager::SetTitle(MxFormat("Grass Sample {0} FPS", e.FPS));
+                });
+
             // setup camera
             cameraObject = MxObject::Create();
             cameraObject->Name = "Player Camera";
@@ -96,13 +102,14 @@ namespace GrassSample
             cameraObject->Transform.TranslateY(2.0f);
             
             auto effects = cameraObject->AddComponent<CameraEffects>();
-            effects->SetBloomIterations(6);
-            effects->ToggleToneMapping(true);
+            effects->SetBloomIterations(3);
+
+            auto toneMapping = cameraObject->AddComponent<CameraToneMapping>();
 
             auto controller = cameraObject->AddComponent<CameraController>();
             controller->ListenWindowResizeEvent();
 
-            auto input = cameraObject->AddComponent<InputControl>();
+            auto input = cameraObject->AddComponent<InputController>();
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
             

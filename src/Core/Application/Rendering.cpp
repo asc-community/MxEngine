@@ -31,12 +31,14 @@
 
 namespace MxEngine
 {
-    CameraController::Handle MxEngine::Rendering::GetViewport()
+    static_assert(std::is_same_v<CameraControllerHandle, CameraController::Handle>, "forward-declared type mismatch");
+
+    CameraControllerHandle& MxEngine::Rendering::GetViewport()
     {
         return Application::Get()->GetRenderAdaptor().Viewport;
     }
 
-    void Rendering::SetViewport(const CameraController::Handle& viewport)
+    void Rendering::SetViewport(const CameraControllerHandle& viewport)
     {
         Application::Get()->GetRenderAdaptor().Viewport = viewport;
     }
@@ -61,6 +63,12 @@ namespace MxEngine
             size.y = (int)texture->GetHeight();
         }
         return size;
+    }
+
+    TextureHandle Rendering::GetRenderTexture()
+    {
+        auto viewport = Rendering::GetViewport();
+        return viewport.IsValid() ? viewport.GetUnchecked()->GetRenderTexture() : TextureHandle{ };
     }
 
     RenderController& Rendering::GetController()

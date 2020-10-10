@@ -45,8 +45,10 @@ namespace MxEngine
 	class SpotLight;
 	class CameraController;
 	class CameraEffects;
+	class CameraSSR;
+	class CameraToneMapping;
 	class VRCameraController;
-	class InputControl;
+	class InputController;
 	class AudioSource;
 	class AudioListener;
 	class RigidBody;
@@ -73,8 +75,10 @@ namespace MxEngine::GUI
 	void SpotLightEditor(SpotLight& spotLight);
 	void CameraControllerEditor(CameraController& camera);
 	void CameraEffectsEditor(CameraEffects& effects);
+	void CameraSSREditor(CameraSSR& effects);
+	void CameraToneMappingEditor(CameraToneMapping& effects);
 	void VRCameraControllerEditor(VRCameraController& vrCameraController);
-	void InputControlEditor(InputControl& inputControl);
+	void InputControllerEditor(InputController& inputControl);
 	void AudioSourceEditor(AudioSource& audioSource);
 	void AudioListenerEditor(AudioListener& audioListener);
 	void RigidBodyEditor(RigidBody& rigidBody);

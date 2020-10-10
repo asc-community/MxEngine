@@ -38,7 +38,6 @@
 namespace MxEngine
 {
 	static std::set<int> ExistingErrors;
-	static float lastErrorTime = -10.0f;
 
 	void GlClearErrors()
 	{
