@@ -58,22 +58,22 @@ namespace MxEngine
 
         // light bounding objects
         auto pyramid = Primitives::CreatePyramid();
-        auto& pyramidMesh = pyramid->GetSubmeshes().front();
+        auto& pyramidMesh = pyramid->Submeshes.front();
         this->Renderer.GetLightInformation().PyramidLight =
             RenderHelperObject(pyramidMesh.Data.GetVBO(), pyramidMesh.Data.GetVAO(), pyramidMesh.Data.GetIBO());
 
         auto sphere = Primitives::CreateSphere(8);
-        auto& sphereMesh = sphere->GetSubmeshes().front();
+        auto& sphereMesh = sphere->Submeshes.front();
         this->Renderer.GetLightInformation().SphereLight =
             RenderHelperObject(sphereMesh.Data.GetVBO(), sphereMesh.Data.GetVAO(), sphereMesh.Data.GetIBO());
 
         auto pyramidInstanced = Primitives::CreatePyramid();
-        auto& pyramidInstancedMesh = pyramidInstanced->GetSubmeshes().front();
+        auto& pyramidInstancedMesh = pyramidInstanced->Submeshes.front();
         this->Renderer.GetLightInformation().SpotLightsInstanced = 
             SpotLightInstancedObject(pyramidInstancedMesh.Data.GetVBO(), pyramidInstancedMesh.Data.GetVAO(), pyramidInstancedMesh.Data.GetIBO());
 
         auto sphereInstanced = Primitives::CreateSphere(8);
-        auto& sphereInstancedMesh = sphereInstanced->GetSubmeshes().front();
+        auto& sphereInstancedMesh = sphereInstanced->Submeshes.front();
         this->Renderer.GetLightInformation().PointLigthsInstanced =
             PointLightInstancedObject(sphereInstancedMesh.Data.GetVBO(), sphereInstancedMesh.Data.GetVAO(), sphereInstancedMesh.Data.GetIBO());
 
@@ -315,7 +315,7 @@ namespace MxEngine
                     mesh = meshLOD->GetMeshLOD();
                 }
 
-                auto& submeshes = mesh->GetSubmeshes();
+                auto& submeshes = mesh->Submeshes;
                 for (const auto& submesh : submeshes)
                 {
                     auto materialId = submesh.GetMaterialId();
@@ -377,15 +377,21 @@ namespace MxEngine
                 {
                     if (debugDraw.RenderBoundingBox)
                     {
-                        auto box = meshSource->Mesh->GetBoundingBox() * object.Transform.GetMatrix();
-                        this->DebugDrawer.Submit(box, debugDraw.BoundingBoxColor);
+                        for (const auto& submesh : meshSource->Mesh->Submeshes)
+                        {
+                            auto box = submesh.GetBoundingBox() * object.Transform.GetMatrix() * submesh.GetTransform()->GetMatrix();
+                            this->DebugDrawer.Submit(box, debugDraw.BoundingBoxColor);
+                        }
                     }
                     if (debugDraw.RenderBoundingSphere)
                     {
-                        auto sphere = meshSource->Mesh->GetBoundingSphere();
-                        sphere.Center += object.Transform.GetPosition();
-                        sphere.Radius *= ComponentMax(object.Transform.GetScale());
-                        this->DebugDrawer.Submit(sphere, debugDraw.BoundingSphereColor);
+                        for (const auto& submesh : meshSource->Mesh->Submeshes)
+                        {
+                            auto sphere = submesh.GetBoundingSphere();
+                            sphere.Center += object.Transform.GetPosition() + submesh.GetTransform()->GetPosition();
+                            sphere.Radius *= ComponentMax(object.Transform.GetScale() * submesh.GetTransform()->GetScale());
+                            this->DebugDrawer.Submit(sphere, debugDraw.BoundingSphereColor);
+                        }
                     }
                 }
                 if (debugDraw.RenderLightingBounds && pointLight.IsValid())

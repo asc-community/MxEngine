@@ -104,7 +104,9 @@ set(MXENGINE_SOURCES
 "Library/Primitives/Primitives.cpp" 
 "Library/Scripting/Python/PythonEngine.cpp"   
  "Core/Components/Camera/CameraSSR.cpp" 
- "Core/Components/Camera/CameraToneMapping.cpp")
+ "Core/Components/Camera/CameraToneMapping.cpp" 
+ "Core/Rendering/RenderUtilities/TextureBlur.cpp"  
+ "Core/Rendering/RenderUtilities/ShadowMapGenerator.cpp")
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)

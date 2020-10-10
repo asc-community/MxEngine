@@ -30,6 +30,16 @@
 
 namespace MxEngine
 {
+    const AABB& SubMesh::GetBoundingBox() const
+    {
+        return this->Data.GetBoundingBox();
+    }
+
+    const BoundingSphere& SubMesh::GetBoundingSphere() const
+    {
+        this->Data.GetBoundingSphere();
+    }
+
     SubMesh::SubMesh(size_t materiaId, const TransformComponent::Handle& transform)
         :  materialId(materiaId), transform(transform) { }
 

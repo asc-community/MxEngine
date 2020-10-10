@@ -387,12 +387,8 @@ namespace MxEngine::GUI
     {
         SCOPE_TREE_NODE(name);
 
-        auto aabb = mesh->GetBoundingBox();
-        auto sphere = mesh->GetBoundingSphere();
-        DrawAABBEditor("bounding box", aabb);
-        DrawSphereEditor("bounding sphere", sphere);
-        mesh->SetBoundingBox(aabb);
-        mesh->SetBoundingSphere(sphere);
+        DrawAABBEditor("bounding box", mesh->BoundingBox);
+        DrawSphereEditor("bounding sphere", mesh->BoundingSphere);
 
         if (ImGui::Button("update mesh boundings"))
             mesh->UpdateBoundingGeometry();
@@ -408,16 +404,16 @@ namespace MxEngine::GUI
         static MxString submeshName;
         
         size_t vertexCount = 0, indexCount = 0;
-        for (auto& submesh : mesh->GetSubmeshes())
+        for (auto& submesh : mesh->Submeshes)
         {
             vertexCount += submesh.Data.GetVertecies().size();
             indexCount += submesh.Data.GetIndicies().size();
         }
         ImGui::Text("total vertex count: %d, total index count: %d", (int)vertexCount, (int)indexCount);
 
-        for (int id = 0; id < (int)mesh->GetSubmeshes().size(); id++)
+        for (int id = 0; id < (int)mesh->Submeshes.size(); id++)
         {
-            auto& submesh = mesh->GetSubmeshes()[id];
+            auto& submesh = mesh->Submeshes[id];
             if (!ImGui::CollapsingHeader(submesh.Name.c_str())) continue;
             GUI::Indent _(5.0f);
             ImGui::PushID(id);
@@ -436,7 +432,7 @@ namespace MxEngine::GUI
             ImGui::SameLine();
             if (ImGui::Button("delete submesh"))
             {
-                mesh->GetSubmeshes().erase(mesh->GetSubmeshes().begin() + id);
+                mesh->Submeshes.erase(mesh->Submeshes.begin() + id);
                 id--; // compensate erased mesh
                 ImGui::PopID();
                 continue; // skip other ui as current mesh is deleted

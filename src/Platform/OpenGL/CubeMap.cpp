@@ -116,6 +116,11 @@ namespace MxEngine
 		this->Bind();
 	}
 
+	CubeMap::BindableId CubeMap::GetBoundId() const
+	{
+		return this->activeId;
+	}
+
 	void CubeMap::Load(const MxString& filepath, bool genMipmaps, bool flipImage)
 	{
 		Image img = ImageLoader::LoadImage(filepath, flipImage);

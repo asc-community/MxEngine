@@ -26,45 +26,27 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Core/Components/Transform.h"
-#include "Utilities/String/String.h"
-#include "Utilities/FileSystem/File.h"
-#include "Utilities/Memory/Memory.h"
-#include "Platform/GraphicAPI.h"
-#include "Core/Resources/SubMesh.h"
+#include "Utilities/Array/ArrayView.h"
 
 namespace MxEngine
 {
-	class MeshRenderer;
-	
-	class Mesh
-	{
-		using SubmeshList = MxVector<SubMesh>;
-		
-		MxVector<VertexBufferHandle> VBOs;
-		MxVector<VertexBufferLayoutHandle> VBLs;
+    class Shader;
+    struct DirectionalLightUnit;
+    struct PointLightUnit;
+    struct SpotLightUnit;
+    struct RenderUnit;
+    struct Material;
 
-		void LoadFromFile(const MxString& filepath);
-	public:
-		AABB BoundingBox;
-		BoundingSphere BoundingSphere;
-		SubmeshList Submeshes;
+    class ShadowMapGenerator
+    {
+        ArrayView<RenderUnit> shadowCasters;
+        ArrayView<Material> materials;
+    public:
+        ShadowMapGenerator(ArrayView<RenderUnit> shadowCasters, ArrayView<Material> materials);
+        ~ShadowMapGenerator();
 
-		explicit Mesh() = default;
-		Mesh(const MxString& path);
-		Mesh(Mesh&) = delete;
-		Mesh(Mesh&&) = default;
-		Mesh& operator=(const Mesh&) = delete;
-		Mesh& operator=(Mesh&&) = default;
-		
-		void Load(const MxString& filepath);
-		void UpdateBoundingGeometry();
-		size_t AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl);
-		VertexBufferHandle GetBufferByIndex(size_t index) const; 
-		VertexBufferLayoutHandle GetBufferLayoutByIndex(size_t index) const;
-		size_t GetBufferCount() const;
-		void PopInstancedBuffer();
-	};
+        void GenerateFor(const Shader& shader, ArrayView<DirectionalLightUnit> directionalLights);
+        void GenerateFor(const Shader& shader, ArrayView<PointLightUnit> pointLights);
+        void GenerateFor(const Shader& shader, ArrayView<SpotLightUnit> spotLights);
+    };
 }

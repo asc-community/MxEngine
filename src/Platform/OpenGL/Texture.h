@@ -88,7 +88,9 @@ namespace MxEngine
 		~Texture();
 
 		void Bind() const;
+		void Bind(TextureBindId id) const;
 		void Unbind() const;
+		BindableId GetBoundId() const;
 		BindableId GetNativeHandle() const;
 		void Load(const MxString& filepath, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
 		void Load(RawDataPointer data, int width, int height, TextureFormat format = TextureFormat::RGB, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true);
@@ -106,7 +108,6 @@ namespace MxEngine
 		size_t GetPixelSize() const;
 		TextureFormat GetFormat() const;
 		TextureWrap GetWrapType() const;
-		void Bind(TextureBindId id) const;
 		const MxString& GetPath() const;
 		void SetPath(const MxString& newPath);
 		unsigned int GetTextureType() const;

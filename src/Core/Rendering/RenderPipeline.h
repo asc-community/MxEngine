@@ -115,7 +115,7 @@ namespace MxEngine
         bool RenderToDefaultFrameBuffer;
     };
 
-    struct DirectionalLigthUnit
+    struct DirectionalLightUnit
     {
         TextureHandle ShadowMap;
         Matrix4x4 ProjectionMatrix;
@@ -141,7 +141,7 @@ namespace MxEngine
 
     struct LightingSystem
     {
-        MxVector<DirectionalLigthUnit> DirectionalLights;
+        MxVector<DirectionalLightUnit> DirectionalLights;
         MxVector<PointLightUnit> PointLights;
         MxVector<SpotLightUnit> SpotLights;
         SpotLightInstancedObject SpotLightsInstanced;

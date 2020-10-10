@@ -32,6 +32,8 @@
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Utilities/FileSystem/File.h"
 #include "Core/Config/GlobalConfig.h"
+#include "Platform/OpenGL/Texture.h"
+#include "Platform/OpenGL/CubeMap.h"
 
 namespace MxEngine
 {

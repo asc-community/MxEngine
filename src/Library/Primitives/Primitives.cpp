@@ -9,7 +9,7 @@ namespace MxEngine
         SubMesh::MaterialId materialId = 0;
         auto transform = ComponentFactory::CreateComponent<TransformComponent>();
 
-        auto& submeshes = mesh->GetSubmeshes();
+        auto& submeshes = mesh->Submeshes;
         auto& submesh = submeshes.emplace_back(materialId, transform);
         submesh.Data = std::move(meshData);
         submesh.Data.BufferVertecies();

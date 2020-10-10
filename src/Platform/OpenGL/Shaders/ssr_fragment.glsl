@@ -53,7 +53,7 @@ void main()
 
     float currentLength = 1.0f;
     float bestDepth = 10000.0f;
-    vec2 bestUV = vec2(0.0f);
+    vec2 bestUV = vec2(-10.0f);
     float rayCosAngle = dot(viewDirection, pivot);
 
     for (int i = 0; i < steps; i++)
@@ -65,7 +65,7 @@ void main()
 
         float currentFragDepth = texture(depthTex, currentUV).r;
         float depthDiff = abs(1.0f / projectedDepth - 1.0f / currentFragDepth);
-        if (!isnan(depthDiff) && depthDiff < bestDepth)
+        if (currentFragDepth != 0.0f && depthDiff < bestDepth)
         {
             bestUV = currentUV;
             bestDepth = depthDiff;
@@ -79,21 +79,22 @@ void main()
         }
     }
 
-    vec3 environmentReflection = skyboxMultiplier * calcReflectionColor(skyboxMap, skyboxTransform, viewDirection, fragment.normal);
+    vec3 environmentReflection = calcReflectionColor(skyboxMap, skyboxTransform, viewDirection, fragment.normal);
     vec3 ssrReflection = texture(HDRTex, bestUV).rgb;
+
     vec2 screenCenterDiff = 2.0f * abs(bestUV - vec2(0.5f));
+    float fromScreenCenter = max(screenCenterDiff.x, screenCenterDiff.y);
+    fromScreenCenter = mix(0.0f, 0.85f, fromScreenCenter >= 1.0f);
 
     float fromReflectionPoint = length(bestUV - TexCoord) / maxDistance;
-    float fromScreenCenter = max(screenCenterDiff.x, screenCenterDiff.y) * 10.0f - 9.0f;
     float fromRequiredThickness = (bestDepth - thickness) / (bestDepth + thickness);
     float fromCameraAngle = rayCosAngle / maxCosAngle;
     float maxFactor = max(max(fromReflectionPoint, fromScreenCenter), max(fromRequiredThickness, fromCameraAngle));
     float fadingFactor = 1.0f - clamp(maxFactor, 0.0f, 1.0f);
 
-    environmentReflection = mix(environmentReflection, ssrReflection, fadingFactor);
     const vec3 luminance = vec3(0.2125f, 0.7154f, 0.0721f);
-    float reflectionFactor = mix(dot(luminance, objectColor), 1.0f, fragment.reflection);
-    environmentReflection *= reflectionFactor;
+    environmentReflection *= skyboxMultiplier * dot(luminance, objectColor);
+    environmentReflection = mix(environmentReflection, ssrReflection, fadingFactor);
 
     OutColor = vec4(mix(objectColor, environmentReflection, fragment.reflection), 1.0f);
 }

@@ -53,8 +53,9 @@ namespace MxEngine
 
        void Bind() const;
        void Unbind() const;
-       BindableId GetNativeHandle() const;
        void Bind(CubeMapId id) const;
+       BindableId GetBoundId() const;
+       BindableId GetNativeHandle() const;
        void Load(const MxString& filepath, bool genMipmaps = true, bool flipImage = false);
        void Load(const MxString& right, const MxString& left, const MxString& top, 
                  const MxString& bottom, const MxString& front, const MxString& back, bool genMipmaps = true, bool flipImage = false);

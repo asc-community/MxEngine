@@ -56,11 +56,6 @@ namespace MxEngine
 		void DrawObjects(const CameraUnit& camera, const Shader& shader, const MxVector<RenderUnit>& objects);
 		void DrawDebugBuffer(const CameraUnit& camera);
 		void DrawObject(const RenderUnit& unit, const Shader& shader);
-		void DrawShadowMap(const RenderUnit& unit, const DirectionalLigthUnit& dirLight, const Shader& shader);
-		void DrawShadowMap(const RenderUnit& unit, const SpotLightUnit& spotLight, const Shader& shader);
-		void DrawShadowMap(const RenderUnit& unit, const PointLightUnit& pointLight, const Shader& shader);
-		void AttachDepthMap(const TextureHandle& texture);
-		void AttachDepthMap(const CubeMapHandle& cubemap);
 		void ComputeBloomEffect(CameraUnit& camera);
 		TextureHandle ComputeAverageWhite(CameraUnit& camera);
 		void PerformPostProcessing(CameraUnit& camera);
@@ -92,6 +87,8 @@ namespace MxEngine
 		void AttachFrameBuffer(const FrameBufferHandle& framebuffer);
 		void AttachFrameBufferNoClear(const FrameBufferHandle& framebuffer);
 		void AttachDefaultFrameBuffer();
+		void AttachDepthMap(const TextureHandle& texture);
+		void AttachDepthMap(const CubeMapHandle& cubemap);
 		void RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
 		void RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
 		void CopyTexture(const TextureHandle& input, const TextureHandle& output);

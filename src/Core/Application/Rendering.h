@@ -29,19 +29,24 @@
 #pragma once
 
 #include "Core/Rendering/RenderController.h"
-#include "Core/Components/Camera/CameraController.h"
 
 namespace MxEngine
 {
     struct RenderAdaptor;
+    
+    template<typename, typename> class Resource;
+    class CameraController;
+    class ComponentFactory;
+    using CameraControllerHandle = Resource<CameraController, ComponentFactory>;
 
 	class Rendering
 	{
     public:
-		static CameraController::Handle GetViewport();
-		static void SetViewport(const CameraController::Handle& viewport);
+		static CameraControllerHandle& GetViewport();
+		static void SetViewport(const CameraControllerHandle& viewport);
         static void ResizeViewport(size_t width, size_t height);
         static VectorInt2 GetViewportSize();
+        static TextureHandle GetRenderTexture();
 		static RenderController& GetController();
         static RenderAdaptor& GetAdaptor();
         static void SetRenderToDefaultFrameBuffer(bool value = true);
