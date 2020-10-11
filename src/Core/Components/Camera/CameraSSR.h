@@ -38,7 +38,7 @@ namespace MxEngine
 
 		float thickness = 0.5f;
 		float maxCosAngle = 0.5f;
-		size_t steps = 0;
+		size_t steps = 10;
 		float maxDistance = 3.0f;
 		float skyboxMultiplier = 1.0f;
 	public:

@@ -41,6 +41,9 @@ namespace MxEngine
 		float bloomWeight = 0.5f;
 		float vignetteRadius = 0.0f;
 		float vignetteIntensity = 100.0f;
+		float chromaticAbberationIntensity = 0.0f;
+		float chromaticAbberationMinDistance = 0.8f;
+		float chromaticAbberationDistortion = 0.8f;
 
 		bool enableFXAA = false;
 		uint8_t bloomIterations = 0;
@@ -48,12 +51,18 @@ namespace MxEngine
 		float GetBloomWeight() const;
 		float GetVignetteIntensity() const;
 		float GetVignetteRadius() const;
+		float GetChromaticAbberationMinDistance() const;
+		float GetChromaticAbberationIntensity() const;
+		float GetChromaticAbberationDistortion() const;
 		bool IsFXAAEnabled() const;
 		size_t GetBloomIterations() const;
 
 		void SetBloomWeight(float weight);
 		void SetVignetteRadius(float radius);
 		void SetVignetteIntensity(float intensity);
+		void SetChromaticAbberationMinDistance(float distance);
+		void SetChromaticAbberationIntensity(float intensity);
+		void SetChromaticAbberationDistortion(float distortion);
 		void ToggleFXAA(bool value);
 		void SetBloomIterations(size_t iterations);
 	};

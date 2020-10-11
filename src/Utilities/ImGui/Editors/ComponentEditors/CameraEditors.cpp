@@ -53,16 +53,39 @@ namespace MxEngine::GUI
 		float bloomWeight = cameraEffects.GetBloomWeight();
 		float vignetteRadius = cameraEffects.GetVignetteRadius();
 		float vignetteIntensity = cameraEffects.GetVignetteIntensity();
+		float chromaticAbberationMinDistance = cameraEffects.GetChromaticAbberationMinDistance();
+		float chromaticAbberationIntensity = cameraEffects.GetChromaticAbberationIntensity();
+		float chromaticAbberationDistortion = cameraEffects.GetChromaticAbberationDistortion();
 		bool isFXAAEnabled = cameraEffects.IsFXAAEnabled();
 
-		if (ImGui::DragFloat("bloom weight", &bloomWeight, 0.1f))
-			cameraEffects.SetBloomWeight(bloomWeight);
-		if (ImGui::DragInt("bloom iterations", &bloomIterations))
-			cameraEffects.SetBloomIterations((size_t)Max(0, bloomIterations));
-		if (ImGui::DragFloat("vignette radius", &vignetteRadius, 0.01f))
-			cameraEffects.SetVignetteRadius(vignetteRadius);
-		if (ImGui::DragFloat("vignette intensity", &vignetteIntensity, 0.1f))
-			cameraEffects.SetVignetteIntensity(vignetteIntensity);
+		if (ImGui::TreeNode("bloom"))
+		{
+			if (ImGui::DragFloat("weight", &bloomWeight, 0.1f))
+				cameraEffects.SetBloomWeight(bloomWeight);
+			if (ImGui::DragInt("iterations", &bloomIterations))
+				cameraEffects.SetBloomIterations((size_t)Max(0, bloomIterations));
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("vignette"))
+		{
+			if (ImGui::DragFloat("radius", &vignetteRadius, 0.01f))
+				cameraEffects.SetVignetteRadius(vignetteRadius);
+			if (ImGui::DragFloat("intensity", &vignetteIntensity, 0.1f))
+				cameraEffects.SetVignetteIntensity(vignetteIntensity);
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("chromatic abberation"))
+		{
+			if (ImGui::DragFloat("min distance", &chromaticAbberationMinDistance, 0.01f))
+				cameraEffects.SetChromaticAbberationMinDistance(chromaticAbberationMinDistance);
+			if (ImGui::DragFloat("intensity", &chromaticAbberationIntensity, 0.01f))
+				cameraEffects.SetChromaticAbberationIntensity(chromaticAbberationIntensity);
+			if (ImGui::DragFloat("distortion", &chromaticAbberationDistortion, 0.01f))
+				cameraEffects.SetChromaticAbberationDistortion(chromaticAbberationDistortion);
+			ImGui::TreePop();
+		}
 		
 		if (ImGui::Checkbox("uses FXAA", &isFXAAEnabled))
 			cameraEffects.ToggleFXAA(isFXAAEnabled);

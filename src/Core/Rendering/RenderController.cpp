@@ -183,8 +183,7 @@ namespace MxEngine
 
 		camera.AlbedoTexture->GenerateMipmaps();
 		camera.MaterialTexture->GenerateMipmaps();
-
-		// we need to perform SSR before transparent objects, as they do not update material buffer
+		camera.DepthTexture->GenerateMipmaps();
 		this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture);
 
 		// render skybox & debug buffer (HDR texture is already attached)
@@ -197,8 +196,11 @@ namespace MxEngine
 		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
 
 		this->ComputeBloomEffect(camera);
+		this->ApplyChromaticAbberation(camera, camera.HDRTexture, camera.SwapTexture);
 		this->ApplyFogEffect(camera, camera.HDRTexture, camera.SwapTexture);
+
 		this->ApplyHDRToLDRConversion(camera, camera.HDRTexture, camera.SwapTexture);
+
 		this->ApplyFXAA(camera, camera.HDRTexture, camera.SwapTexture);
 		this->ApplyVignette(camera, camera.HDRTexture, camera.SwapTexture);
 	}
@@ -335,6 +337,24 @@ namespace MxEngine
 		std::swap(input, output);
 	}
 
+	void RenderController::ApplyChromaticAbberation(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
+	{
+		if (camera.Effects == nullptr || camera.Effects->GetChromaticAbberationIntensity() <= 0.0f) return;
+		MAKE_SCOPE_PROFILER("RenderController::ApplyChromaticAbberation()");
+
+		auto& shader = this->Pipeline.Environment.Shaders["ChromaticAbberation"_id];
+		input->Bind(0);
+		shader->SetUniformInt("tex", input->GetBoundId());
+		shader->SetUniformVec3("chromaticAbberationParams", {
+			camera.Effects->GetChromaticAbberationMinDistance(),
+			camera.Effects->GetChromaticAbberationIntensity(),
+			camera.Effects->GetChromaticAbberationDistortion()
+		});
+
+		this->RenderToTexture(output, shader);
+		std::swap(input, output);
+	}
+
 	void RenderController::ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
 		if (camera.SSR == nullptr) return;
@@ -396,7 +416,6 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::ApplyFXAA");
 
 		auto& fxaaShader = this->Pipeline.Environment.Shaders["FXAA"_id];
-		input->GenerateMipmaps();
 		input->Bind(0);
 		fxaaShader->SetUniformInt("tex", input->GetBoundId());
 		

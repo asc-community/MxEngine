@@ -14,11 +14,11 @@ void InitCamera(MxObject& object)
 
 	effects->SetVignetteRadius(0.15f);
 	effects->SetBloomIterations(6);
+	effects->SetChromaticAbberationIntensity(0.08f);
 
 	toneMapping->SetWhitePoint(0.75f);
 	toneMapping->SetMinLuminance(0.3f);
 
-	ssr->SetSteps(10);
 	ssr->SetSkyboxMultiplier(0.3f);
 
 	skybox->Texture = AssetManager::LoadCubeMap("textures/dawn.jpg"_id);

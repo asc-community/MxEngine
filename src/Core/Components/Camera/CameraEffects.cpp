@@ -46,6 +46,21 @@ namespace MxEngine
         return this->vignetteRadius;
     }
 
+    float CameraEffects::GetChromaticAbberationMinDistance() const
+    {
+        return this->chromaticAbberationMinDistance;
+    }
+
+    float CameraEffects::GetChromaticAbberationIntensity() const
+    {
+        return this->chromaticAbberationIntensity;
+    }
+
+    float CameraEffects::GetChromaticAbberationDistortion() const
+    {
+        return this->chromaticAbberationDistortion;
+    }
+
     bool CameraEffects::IsFXAAEnabled() const
     {
         return this->enableFXAA;
@@ -69,6 +84,21 @@ namespace MxEngine
     void CameraEffects::SetVignetteIntensity(float intensity)
     {
         this->vignetteIntensity = Max(0.0f, intensity);
+    }
+
+    void CameraEffects::SetChromaticAbberationMinDistance(float distance)
+    {
+        this->chromaticAbberationMinDistance = Max(distance, 0.0f);
+    }
+
+    void CameraEffects::SetChromaticAbberationIntensity(float intensity)
+    {
+        this->chromaticAbberationIntensity = Max(intensity, 0.0f);
+    }
+
+    void CameraEffects::SetChromaticAbberationDistortion(float distortion)
+    {
+        this->chromaticAbberationDistortion = Max(distortion, 0.0f);
     }
 
     void CameraEffects::ToggleFXAA(bool value)

@@ -223,6 +223,13 @@ namespace MxEngine
             #include "Platform/OpenGL/Shaders/ssr_fragment.glsl"
         );
 
+        environment.Shaders["ChromaticAbberation"_id] = GraphicFactory::Create<Shader>();
+        environment.Shaders["ChromaticAbberation"_id]->LoadFromString(
+            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
+            ,
+            #include "Platform/OpenGL/Shaders/chromatic_abberation_fragment.glsl"
+        );
+
         // framebuffers
         environment.DepthFrameBuffer = GraphicFactory::Create<FrameBuffer>();
         environment.DepthFrameBuffer->UseOnlyDepth();

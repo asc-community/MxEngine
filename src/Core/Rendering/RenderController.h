@@ -63,6 +63,7 @@ namespace MxEngine
 		void PerformLightPass(CameraUnit& camera);
 		void DrawTransparentObjects(CameraUnit& camera);
 		void ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+		void ApplyChromaticAbberation(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
