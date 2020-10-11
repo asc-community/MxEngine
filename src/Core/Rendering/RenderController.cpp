@@ -94,14 +94,12 @@ namespace MxEngine
 		material.EmmisiveMap->Bind(textureBindIndex++);
 		material.NormalMap->Bind(textureBindIndex++);
 		material.HeightMap->Bind(textureBindIndex++);
-		material.TransparencyMap->Bind(textureBindIndex++);
 
 		shader.SetUniformInt("map_albedo", material.AlbedoMap->GetBoundId());
 		shader.SetUniformInt("map_specular", material.SpecularMap->GetBoundId());
 		shader.SetUniformInt("map_emmisive", material.EmmisiveMap->GetBoundId());
 		shader.SetUniformInt("map_normal", material.NormalMap->GetBoundId());
 		shader.SetUniformInt("map_height", material.HeightMap->GetBoundId());
-		shader.SetUniformInt("map_transparency", material.TransparencyMap->GetBoundId());
 
 		shader.SetUniformFloat("material.specularFactor", material.SpecularFactor);
 		shader.SetUniformFloat("material.specularIntensity", material.SpecularIntensity);
@@ -866,7 +864,6 @@ namespace MxEngine
 		if (!renderMaterial.AlbedoMap.IsValid())       renderMaterial.AlbedoMap       = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!renderMaterial.SpecularMap.IsValid())     renderMaterial.SpecularMap     = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!renderMaterial.EmmisiveMap.IsValid())     renderMaterial.EmmisiveMap     = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!renderMaterial.TransparencyMap.IsValid()) renderMaterial.TransparencyMap = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!renderMaterial.NormalMap.IsValid())       renderMaterial.NormalMap       = this->Pipeline.Environment.DefaultNormalMap;
 		if (!renderMaterial.HeightMap.IsValid())       renderMaterial.HeightMap       = this->Pipeline.Environment.DefaultBlackMap;
 

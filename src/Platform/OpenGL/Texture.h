@@ -84,7 +84,7 @@ namespace MxEngine
 		Texture(Texture&& texture) noexcept;
 		Texture& operator=(const Texture& texture) = delete;
 		Texture& operator=(Texture&& texture) noexcept;
-		Texture(const MxString& filepath, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
+		Texture(const MxString& filepath, TextureFormat format, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
 		~Texture();
 
 		void Bind() const;
@@ -92,7 +92,7 @@ namespace MxEngine
 		void Unbind() const;
 		BindableId GetBoundId() const;
 		BindableId GetNativeHandle() const;
-		void Load(const MxString& filepath, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
+		void Load(const MxString& filepath, TextureFormat format, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
 		void Load(RawDataPointer data, int width, int height, TextureFormat format = TextureFormat::RGB, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true);
 		void Load(const Image& image, TextureFormat format = TextureFormat::RGB, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true);
 		void LoadDepth(int width, int height, TextureFormat format = TextureFormat::DEPTH, TextureWrap wrap = TextureWrap::CLAMP_TO_BORDER);

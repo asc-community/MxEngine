@@ -84,24 +84,24 @@ namespace MxEngine
         );
     }
 
-    TextureHandle AssetManager::LoadTexture(StringId hash)
+    TextureHandle AssetManager::LoadTexture(StringId hash, TextureFormat format)
     {
-        return AssetManager::LoadTexture(FileManager::GetFilePath(hash));
+        return AssetManager::LoadTexture(FileManager::GetFilePath(hash), format);
     }
 
-    TextureHandle AssetManager::LoadTexture(const FilePath& path)
+    TextureHandle AssetManager::LoadTexture(const FilePath& path, TextureFormat format)
     {
-        return AssetManager::LoadTexture(ToMxString(path));
+        return AssetManager::LoadTexture(ToMxString(path), format);
     }
 
-    TextureHandle AssetManager::LoadTexture(const MxString& path)
+    TextureHandle AssetManager::LoadTexture(const MxString& path, TextureFormat format)
     {
-        return GraphicFactory::Create<Texture>(path);
+        return GraphicFactory::Create<Texture>(path, format);
     }
 
-    TextureHandle AssetManager::LoadTexture(const char* path)
+    TextureHandle AssetManager::LoadTexture(const char* path, TextureFormat format)
     {
-        return AssetManager::LoadTexture(MxString(path));
+        return AssetManager::LoadTexture(MxString(path), format);
     }
 
     ShaderHandle AssetManager::LoadShader(StringId vertex, StringId fragment)

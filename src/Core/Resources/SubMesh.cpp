@@ -37,7 +37,7 @@ namespace MxEngine
 
     const BoundingSphere& SubMesh::GetBoundingSphere() const
     {
-        this->Data.GetBoundingSphere();
+        return this->Data.GetBoundingSphere();
     }
 
     SubMesh::SubMesh(size_t materiaId, const TransformComponent::Handle& transform)

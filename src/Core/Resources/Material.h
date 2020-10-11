@@ -40,7 +40,6 @@ namespace MxEngine
 		TextureHandle AlbedoMap;
 		TextureHandle SpecularMap;
 		TextureHandle EmmisiveMap;
-		TextureHandle TransparencyMap;
 		TextureHandle NormalMap;
 		TextureHandle HeightMap;
 

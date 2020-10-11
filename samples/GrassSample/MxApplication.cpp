@@ -27,8 +27,7 @@ namespace GrassSample
             grass->AddComponent<MeshSource>(Primitives::CreatePlane());
 
             auto material = grass->AddComponent<MeshRenderer>()->GetMaterial();
-            material->AlbedoMap = AssetManager::LoadTexture("grass_al.png"_id);
-            material->TransparencyMap = AssetManager::LoadTexture("grass_tr.png"_id);
+            material->AlbedoMap = AssetManager::LoadTexture("grass_al.png"_id, TextureFormat::RGBA);
             material->SpecularFactor = 0.05f;
             material->CastsShadow = false;
 

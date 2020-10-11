@@ -51,7 +51,7 @@ namespace MxEngine::GUI
             if (GUI::InputTextOnClick("load from path", path, 128))
             {
                 auto newTexture = GraphicFactory::Create<Texture>();
-                newTexture->Load(path);
+                newTexture->Load(path, TextureFormat::RGBA);
                 newTexture.MakeStatic();
             }
 
@@ -135,7 +135,7 @@ namespace MxEngine::GUI
         {
             static MxString path;
             if (GUI::InputTextOnClick(nullptr, path, 128, "load from file"))
-                texture = AssetManager::LoadTexture(path);
+                texture = AssetManager::LoadTexture(path, TextureFormat::RGBA);
             
             static int id = 0;
             if(GUI::InputIntOnClick("", &id, "load from id"))
@@ -203,7 +203,6 @@ namespace MxEngine::GUI
         DrawTextureEditor("emmisive map", material->EmmisiveMap, true);
         DrawTextureEditor("normal map", material->NormalMap, true);
         DrawTextureEditor("height map", material->HeightMap, true);
-        DrawTextureEditor("transparency map", material->TransparencyMap, true);
 
         ImGui::Checkbox("casts shadows", &material->CastsShadow);
         ImGui::DragFloat("specular factor", &material->SpecularFactor, 0.01f, 0.0f, 1.0f);

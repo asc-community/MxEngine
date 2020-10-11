@@ -109,7 +109,6 @@ namespace MxEngine
 			GET_TEXTURE(aiTextureType_EMISSIVE, EmmisiveMap);
 			GET_TEXTURE(aiTextureType_HEIGHT, HeightMap);
 			GET_TEXTURE(aiTextureType_NORMALS, NormalMap);
-			GET_TEXTURE(aiTextureType_OPACITY, TransparencyMap);
 		}
 
 		Vector3 minCoords = MakeVector3(std::numeric_limits<float>::max());
@@ -205,7 +204,6 @@ namespace MxEngine
 			material.AlbedoMap        = json["AlbedoMap"      ].get<MxString>();
 			material.SpecularMap      = json["SpecularMap"    ].get<MxString>();
 			material.EmmisiveMap      = json["EmmisiveMap"    ].get<MxString>();
-			material.TransparencyMap  = json["TransparencyMap"].get<MxString>();
 			material.HeightMap        = json["HeightMap"      ].get<MxString>();
 			material.NormalMap        = json["NormalMap"      ].get<MxString>();
 			material.Name             = json["Name"           ].get<MxString>();
@@ -233,7 +231,6 @@ namespace MxEngine
 			DUMP(i, AlbedoMap);
 			DUMP(i, SpecularMap);
 			DUMP(i, EmmisiveMap);
-			DUMP(i, TransparencyMap);
 			DUMP(i, HeightMap);
 			DUMP(i, NormalMap);
 

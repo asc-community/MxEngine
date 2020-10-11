@@ -53,10 +53,10 @@ namespace MxEngine
         static CubeMapHandle LoadCubeMap(const MxString& right, const MxString& left, const MxString& top, const MxString& bottom, const MxString& front, const MxString& back);
         static CubeMapHandle LoadCubeMap(const char* right, const char* left, const char* top, const char* bottom, const char* front, const char* back);
 
-        static TextureHandle LoadTexture(StringId hash);
-        static TextureHandle LoadTexture(const FilePath& path);
-        static TextureHandle LoadTexture(const MxString& path);
-        static TextureHandle LoadTexture(const char* path);
+        static TextureHandle LoadTexture(StringId hash, TextureFormat format = TextureFormat::RGB);
+        static TextureHandle LoadTexture(const FilePath& path, TextureFormat format = TextureFormat::RGB);
+        static TextureHandle LoadTexture(const MxString& path, TextureFormat format = TextureFormat::RGB);
+        static TextureHandle LoadTexture(const char* path, TextureFormat format = TextureFormat::RGB);
 
         static ShaderHandle LoadShader(StringId vertex, StringId fragment);
         static ShaderHandle LoadShader(const FilePath& vertex, const FilePath& fragment);

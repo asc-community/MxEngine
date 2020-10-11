@@ -44,8 +44,8 @@ namespace MxEngine
 
 		stbi_set_flip_vertically_on_load(flipImage);
 		int width, height, channels;
-		uint8_t* data = stbi_load(filepath.c_str(), &width, &height, &channels, STBI_rgb);
-		channels = 3;
+		uint8_t* data = stbi_load(filepath.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+		channels = 4;
 		return Image(data, (size_t)width, (size_t)height, (size_t)channels);
 	}
 
@@ -66,7 +66,7 @@ namespace MxEngine
 	ImageLoader::ImageArray ImageLoader::CreateCubemap(const Image& image)
 	{
 		ImageArray result;
-		size_t channels = 3; 
+		size_t channels = 4; 
 		size_t width = image.GetWidth() / 4; //-V112
 		size_t height = image.GetHeight() / 3;
 		if (width != height)

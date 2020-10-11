@@ -32,23 +32,27 @@
 
 namespace MxEngine
 {
+	void MakeTexture(TextureHandle& currentTexture, MxHashMap<StringId, TextureHandle>& textures, const MxString& path, TextureFormat format)
+	{
+		if (!path.empty()) 
+		{
+			auto id = MakeStringId(path);
+			if (textures.find(id) == textures.end())
+				textures[id] = GraphicFactory::Create<Texture>(path, format);
+			currentTexture = textures[id];
+		}
+	}
+
 	MaterialHandle ConvertMaterial(const MaterialInfo& mat, MxHashMap<StringId, TextureHandle>& textures)
 	{
 		auto materialResource = ResourceFactory::Create<Material>();
 		auto& material = *materialResource;
 
-		#define MAKE_TEX(tex) if(!mat.tex.empty()) {\
-		auto id = MakeStringId(mat.tex);\
-		if(textures.find(id) == textures.end())\
-			textures[id] = GraphicFactory::Create<Texture>(mat.tex);\
-		material.tex = textures[id];}
-
-		MAKE_TEX(AlbedoMap);
-		MAKE_TEX(SpecularMap);
-		MAKE_TEX(EmmisiveMap);
-		MAKE_TEX(TransparencyMap);
-		MAKE_TEX(HeightMap);
-		MAKE_TEX(NormalMap);
+		MakeTexture(material.AlbedoMap, textures, mat.AlbedoMap, TextureFormat::RGBA);
+		MakeTexture(material.SpecularMap, textures, mat.SpecularMap, TextureFormat::RGB);
+		MakeTexture(material.EmmisiveMap, textures, mat.EmmisiveMap, TextureFormat::RGB);
+		MakeTexture(material.HeightMap, textures, mat.HeightMap, TextureFormat::RGB);
+		MakeTexture(material.NormalMap, textures, mat.NormalMap, TextureFormat::RGB);
 
 		material.Emmision = mat.Emmision;
 		material.SpecularFactor = mat.SpecularFactor;

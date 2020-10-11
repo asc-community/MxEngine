@@ -54,8 +54,10 @@ vec3 calcNormal(vec2 texcoord, mat3 TBN, sampler2D normalMap)
 
 void main()
 {
+	vec4 albedoAlphaTex = texture(map_albedo, fsin.TexCoord).rgba;
+
 	FragmentInfo fragment;
-	fragment.albedo = pow(fsin.RenderColor * texture(map_albedo, fsin.TexCoord).rgb, vec3(gamma));
+	fragment.albedo = pow(fsin.RenderColor * albedoAlphaTex.rgb, vec3(gamma));
 	fragment.specularIntensity = material.specularIntensity;
 	fragment.specularFactor = material.specularFactor * texture(map_specular, fsin.TexCoord).r;
 	fragment.emmisionFactor = material.emmisive * texture(map_emmisive, fsin.TexCoord).r;
@@ -64,8 +66,7 @@ void main()
 	fragment.normal = calcNormal(fsin.TexCoord, fsin.TBN, map_normal);
 	fragment.position = fsin.Position;
 
-	float transparency = material.transparency * texture(map_transparency, fsin.TexCoord).r;
-	transparency = pow(transparency, gamma);
+	float transparency = material.transparency * albedoAlphaTex.a;
 
 	float fragDistance = length(viewportPosition - fragment.position);
 
