@@ -133,7 +133,6 @@ namespace MxEngine::GUI
 		float ssrMaxCosAngle = cameraSSR.GetMaxCosAngle();
 		int ssrSteps = (int)cameraSSR.GetSteps();
 		float ssrMaxDistance = cameraSSR.GetMaxDistance();
-		float ssrSkyboxMultiplier = cameraSSR.GetSkyboxMultiplier();
 
 		if (ImGui::DragFloat("thickness", &ssrThickness, 0.1f))
 			cameraSSR.SetThickness(ssrThickness);
@@ -143,8 +142,6 @@ namespace MxEngine::GUI
 			cameraSSR.SetSteps(Min((size_t)ssrSteps, 1000));
 		if (ImGui::DragFloat("max distance", &ssrMaxDistance, 0.1f))
 			cameraSSR.SetMaxDistance(ssrMaxDistance);
-		if (ImGui::DragFloat("skybox multiplier", &ssrSkyboxMultiplier, 0.1f))
-			cameraSSR.SetSkyboxMultiplier(ssrSkyboxMultiplier);
 	}
 
 	void CameraControllerEditor(CameraController& cameraController)

@@ -92,7 +92,9 @@ namespace MxEngine
 
         // Filesystem settings
         MxString ProjectRootDirectory = "Resources";
+        MxString ShaderSourceDirectory = "../../src/Platform/OpenGL/Shaders";
 
+        // Debug settings
         bool GraphicAPIDebug = true;
         EditorStyle Style = EditorStyle::MXENGINE;
         KeyCode ApplicationCloseKey = KeyCode::ESCAPE;

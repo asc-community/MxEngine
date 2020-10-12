@@ -39,20 +39,8 @@ namespace MxEngine
 	class GraphicConsole;
 	class EventLogger;
 
-	#if defined(MXENGINE_USE_PYTHON)
-	class PythonEngine;
-	#endif
-
-
 	class RuntimeEditor
 	{
-		#if defined(MXENGINE_USE_PYTHON)
-		using ScriptEngine = PythonEngine;
-		#else
-		using ScriptEngine = int; // stub
-		#endif
-
-		ScriptEngine* engine = nullptr;
 		GraphicConsole* console = nullptr;
 		EventLogger* logger = nullptr;
 		Vector2 cachedWindowSize{ 0.0f };
@@ -76,16 +64,13 @@ namespace MxEngine
 		void SetSize(const Vector2& size);
 		void Toggle(bool isVisible = true);
 		void AddKeyBinding(KeyCode openKey);
+		template<typename ShaderHandle>
+		void AddShaderUpdateListener(ShaderHandle shader);
 
 		void DrawMxObject(const MxString& treeName, MxObject& object);
 
-		ScriptEngine& GetEngine();
 		Vector2 GetSize() const;
 		bool IsActive() const;
-
-		void ExecuteScript(const MxString& code);
-		bool HasErrorsInExecution() const;
-		const MxString& GetLastErrorMessage() const;
 
 		template<typename T>
 		void RegisterComponentEditor(const char* name, std::function<void(T&)> callback)

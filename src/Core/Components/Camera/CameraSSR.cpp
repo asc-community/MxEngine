@@ -31,11 +31,6 @@
 
 namespace MxEngine
 {
-    float CameraSSR::GetSkyboxMultiplier() const
-    {
-        return this->skyboxMultiplier;
-    }
-
     float CameraSSR::GetThickness() const
     {
         return this->thickness;
@@ -74,10 +69,5 @@ namespace MxEngine
     void CameraSSR::SetMaxDistance(float distance)
     {
         this->maxDistance = Max(distance, 0.0f);
-    }
-
-    void CameraSSR::SetSkyboxMultiplier(float multiplier)
-    {
-        this->skyboxMultiplier = Max(multiplier, 0.0f);
     }
 }

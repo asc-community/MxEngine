@@ -121,6 +121,11 @@ namespace MxEngine
         return CFG(ProjectRootDirectory);
     }
 
+    const MxString& GlobalConfig::GetShaderSourceDirectory()
+    {
+        return CFG(ShaderSourceDirectory);
+    }
+
     EditorStyle GlobalConfig::GetEditorStyle()
     {
         return CFG(Style);

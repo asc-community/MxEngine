@@ -32,19 +32,19 @@
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Utilities/Format/Format.h"
+#include "Utilities/FileSystem/FileManager.h"
 #include "Core/Events/WindowResizeEvent.h"
 #include "Core/Events/UpdateEvent.h"
 #include "Core/Application/Event.h"
 #include "Core/Application/Rendering.h"
 #include "Platform/Window/WindowManager.h"
 #include "Platform/Window/Input.h"
-#include "Library/Scripting/Python/PythonEngine.h"
+#include "Core/Events/FpsUpdateEvent.h"
 
 namespace MxEngine
 {
 	RuntimeEditor::~RuntimeEditor()
 	{
-		Free(this->engine);
 		Free(this->console);
 		Free(this->logger);
 	}
@@ -119,6 +119,7 @@ namespace MxEngine
 
 			GUI::DrawRenderEditor("Render Editor", &isRenderEditorOpened);
 			GUI::DrawApplicationEditor("Application Editor", &isApplicationEditorOpened);
+			GUI::DrawTextureList("Texture Viewer", &isTextureListOpened);
 
 			{
 				ImGui::Begin("Object Editor", &isObjectEditorOpened);
@@ -139,8 +140,6 @@ namespace MxEngine
 				}
 			}
 
-			// should be rendered after object editor, as user can delete drawn textures in this editor
-			GUI::DrawTextureList("Texture Viewer", &isTextureListOpened);
 			GUI::DrawViewportWindow("Viewport", this->cachedWindowSize, &isViewportOpened);
 
 			{
@@ -215,15 +214,77 @@ namespace MxEngine
 		});
 	}
 
+	template<>
+	void RuntimeEditor::AddShaderUpdateListener(ShaderHandle shader)
+	{
+		#if !defined(MXENGINE_DEBUG)
+		MXLOG_WARNING("RuntimeEditor::AddShaderUpdateListener", "cannot add listener in non-debug mode");
+		#else
+		auto shaderDirectory = FileManager::GetWorkingDirectory() / ToFilePath(Application::Get()->GetConfig().ShaderSourceDirectory);
+
+		auto& vertex = shader->GetVertexShaderDebugFilePath();
+		auto& geometry = shader->GetGeometryShaderDebugFilePath();
+		auto& fragment = shader->GetFragmentShaderDebugFilePath();
+
+		auto vertexPath = FileManager::SearchInDirectory(shaderDirectory, ToFilePath(vertex).filename());
+		auto geometryPath = FileManager::SearchInDirectory(shaderDirectory, ToFilePath(geometry).filename());
+		auto fragmentPath = FileManager::SearchInDirectory(shaderDirectory, ToFilePath(fragment).filename());
+
+		if (vertexPath.empty() || fragmentPath.empty())
+		{
+			MXLOG_WARNING("Application::InitializeShaderDebug",
+				"cannot debug shader, vertex or fragment path not found: " + vertex + " | " + fragment
+			);
+		}
+		else
+		{
+			if (!geometryPath.empty())
+			{
+				auto vertexEditTime = File::LastModifiedTime(vertexPath);
+				auto geometryEditTime = File::LastModifiedTime(geometryPath);
+				auto fragmentEditTime = File::LastModifiedTime(fragmentPath);
+
+				Event::AddEventListener<FpsUpdateEvent>("ShaderDebugEvent", [=](FpsUpdateEvent&) mutable
+					{
+						auto newVT = File::LastModifiedTime(vertexPath);
+						auto newGT = File::LastModifiedTime(geometryPath);
+						auto newFT = File::LastModifiedTime(fragmentPath);
+
+						if (vertexEditTime < newVT || geometryEditTime < newGT || fragmentEditTime < newFT)
+						{
+							shader->Load(ToMxString(vertexPath), ToMxString(geometryPath), ToMxString(fragmentPath));
+							vertexEditTime = newVT;
+							geometryEditTime = newGT;
+							fragmentEditTime = newFT;
+						}
+					});
+			}
+			else
+			{
+				auto vertexEditTime = File::LastModifiedTime(vertexPath);
+				auto fragmentEditTime = File::LastModifiedTime(fragmentPath);
+
+				Event::AddEventListener<FpsUpdateEvent>("ShaderDebugEvent", [=](FpsUpdateEvent&) mutable
+					{
+						auto newVT = File::LastModifiedTime(vertexPath);
+						auto newFT = File::LastModifiedTime(fragmentPath);
+
+						if (vertexEditTime < newVT || fragmentEditTime < newFT)
+						{
+							shader->Load(ToMxString(vertexPath), ToMxString(fragmentPath));
+							vertexEditTime = newVT;
+							fragmentEditTime = newFT;
+						}
+					});
+			}
+		}
+		#endif
+	}
+
     void RuntimeEditor::DrawMxObject(const MxString& treeName, MxObject& object)
     {
 		GUI::DrawMxObjectEditor(treeName.c_str(), object, this->componentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
     }
-
-	RuntimeEditor::ScriptEngine& RuntimeEditor::GetEngine()
-	{
-		return *this->engine;
-	}
 
 	Vector2 RuntimeEditor::GetSize() const
 	{
@@ -235,58 +296,11 @@ namespace MxEngine
 		return this->shouldRender;
 	}
 
-	void RuntimeEditor::ExecuteScript(const MxString& code)
-	{
-		#if defined(MXENGINE_USE_PYTHON)
-		MAKE_SCOPE_PROFILER("RuntimeEditor::ExecuteScript");
-		this->GetEngine().Execute(code.c_str());
-		#endif
-	}
-
-	const MxString& RuntimeEditor::GetLastErrorMessage() const
-	{
-		#if defined(MXENGINE_USE_PYTHON)
-		return this->engine->GetErrorMessage();
-		#else
-		static MxString empty;
-		return empty;
-		#endif
-	}
-
-	bool RuntimeEditor::HasErrorsInExecution() const
-	{
-		#if defined(MXENGINE_USE_PYTHON)
-		return this->engine->HasErrors();
-		#else
-		return false;
-		#endif
-	}
-
 	RuntimeEditor::RuntimeEditor()
 	{
 		MAKE_SCOPE_PROFILER("DeveloperConsole::Init");
 		MAKE_SCOPE_TIMER("MxEngine::DeveloperConsole", "DeveloperConsole::Init");
 		this->console = Alloc<GraphicConsole>();
 		this->logger = Alloc<EventLogger>();
-
-		#if defined(MXENGINE_USE_PYTHON)
-		this->engine = Alloc<PythonEngine>();
-
-		this->engine->Execute("from mx_engine import *");
-		this->engine->Execute("dt = lambda: mx.dt()");
-
-		this->console->SetEventCallback([this](const char* text)
-		{
-			this->engine->Execute(text);
-			if (this->engine->HasErrors())
-			{
-				this->Log("[error]: " + this->engine->GetErrorMessage());
-			}
-			else if (!this->engine->GetOutput().empty())
-			{
-				this->Log(this->engine->GetOutput());
-			}
-		});
-		#endif
 	}
 }

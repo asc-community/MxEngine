@@ -40,18 +40,15 @@ namespace MxEngine
 		float maxCosAngle = 0.5f;
 		size_t steps = 10;
 		float maxDistance = 3.0f;
-		float skyboxMultiplier = 1.0f;
 	public:
 		float GetThickness() const;
 		float GetMaxCosAngle() const;
 		float GetSteps() const;
 		float GetMaxDistance() const;
-		float GetSkyboxMultiplier() const;
 
 		void SetThickness(float thickness);
 		void SetMaxCosAngle(float angle);
 		void SetSteps(size_t steps);
 		void SetMaxDistance(float distance);
-		void SetSkyboxMultiplier(float multiplier);
 	};
 }

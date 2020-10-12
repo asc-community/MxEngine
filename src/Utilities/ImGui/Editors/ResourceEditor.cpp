@@ -61,7 +61,7 @@ namespace MxEngine::GUI
             if (ImGui::Button("create texture"))
             {
                 auto colorTexture = Colors::MakeTexture(color);
-                colorTexture->SetPath("[[color runtime]]");
+                colorTexture->SetPath("color.runtime");
                 colorTexture.MakeStatic();
             }
         }
@@ -102,13 +102,19 @@ namespace MxEngine::GUI
         }
     }
 
+    bool IsInternalEngineTexture(const TextureHandle& tex)
+    {
+        auto& path = tex->GetPath();
+        return path.find("[[") != path.npos && path.find("]]") != path.npos;
+    }
+
     void DrawTextureEditor(const char* name, TextureHandle& texture, bool withTextureLoader)
     {
         SCOPE_TREE_NODE(name);
 
         if (texture.IsValid())
         {
-            if (ImGui::Button("delete"))
+            if (!IsInternalEngineTexture(texture) && ImGui::Button("delete"))
             {
                 GraphicFactory::Destroy(texture);
                 return;

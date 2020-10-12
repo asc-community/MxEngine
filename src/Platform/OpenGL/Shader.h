@@ -83,5 +83,9 @@ namespace MxEngine
 		void SetUniformMat3(const MxString& name, const Matrix3x3& matrix) const;
 		void SetUniformInt(const MxString& name, int i) const;
 		void SetUniformBool(const MxString& name, bool b) const;
+
+		const MxString& GetVertexShaderDebugFilePath() const;
+		const MxString& GetGeometryShaderDebugFilePath() const;
+		const MxString& GetFragmentShaderDebugFilePath() const;
 	};
 }

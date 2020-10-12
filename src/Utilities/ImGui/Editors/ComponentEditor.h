@@ -32,7 +32,6 @@ namespace MxEngine
 {
 	class TransformComponent;
 	class Behaviour;
-	class Script;
 	class InstanceFactory;
 	class Instance;
 	class Skybox;
@@ -62,7 +61,6 @@ namespace MxEngine::GUI
 {
 	void TransformEditor(TransformComponent& transform);
 	void BehaviourEditor(Behaviour& behaviour);
-	void ScriptEditor(Script& script);
 	void InstanceFactoryEditor(InstanceFactory& instanceFactory);
 	void InstanceEditor(Instance& instance);
 	void SkyboxEditor(Skybox& skybox);

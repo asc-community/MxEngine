@@ -19,8 +19,6 @@ void InitCamera(MxObject& object)
 	toneMapping->SetWhitePoint(0.75f);
 	toneMapping->SetMinLuminance(0.3f);
 
-	ssr->SetSkyboxMultiplier(0.3f);
-
 	skybox->Texture = AssetManager::LoadCubeMap("textures/dawn.jpg"_id);
 
 	controller->Camera.SetZFar(100000.0f);

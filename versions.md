@@ -218,3 +218,5 @@
 - added screen space reflections
 - set-up building with clang on Windows
 - added chromatic aberration effect
+- runtime shader editing is back!
+- more bug fixes (ssr, editor, logging)

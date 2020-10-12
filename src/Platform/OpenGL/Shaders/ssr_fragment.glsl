@@ -24,7 +24,6 @@ uniform int   steps;
 uniform float thickness;
 uniform float maxDistance;
 uniform float maxCosAngle;
-uniform float skyboxMultiplier;
 
 vec4 toFragSpace(vec4 v, mat4 viewProj)
 {
@@ -48,11 +47,11 @@ void main()
     vec3 viewDirection = normalize(viewDistance);
 
     vec3 pivot = normalize(reflect(-viewDirection, fragment.normal));
-    vec3 startPos = fragment.position + (pivot * 0.001f);
+    vec3 startPos = fragment.position + (pivot * 0.0001f);
 
     float currentLength = 1.0f;
     float bestDepth = 10000.0f;
-    vec2 bestUV = vec2(-10.0f);
+    vec2 bestUV = vec2(0.0f);
     float rayCosAngle = dot(viewDirection, pivot);
 
     for (int i = 0; i < steps; i++)
@@ -62,9 +61,12 @@ void main()
         vec2 currentUV = projectedPosition.xy;
         float projectedDepth = projectedPosition.z;
 
+        if (currentUV.x > 1.0f || currentUV.y > 1.0f ||
+            currentUV.x < 0.0f || currentUV.y < 0.0f) break;
+
         float currentFragDepth = texture(depthTex, currentUV).r;
         float depthDiff = abs(1.0f / projectedDepth - 1.0f / currentFragDepth);
-        if (currentFragDepth != 0.0f && depthDiff < bestDepth)
+        if (depthDiff < bestDepth)
         {
             bestUV = currentUV;
             bestDepth = depthDiff;
@@ -88,12 +90,15 @@ void main()
     float fromReflectionPoint = length(bestUV - TexCoord) / maxDistance;
     float fromRequiredThickness = (bestDepth - thickness) / (bestDepth + thickness);
     float fromCameraAngle = rayCosAngle / maxCosAngle;
-    float maxFactor = max(max(fromReflectionPoint, fromScreenCenter), max(fromRequiredThickness, fromCameraAngle));
+    float maxFactor = 0.0f;
+    maxFactor = max(maxFactor, max(fromReflectionPoint, fromScreenCenter));
+    maxFactor = max(maxFactor, max(fromRequiredThickness, fromCameraAngle));
+    maxFactor = max(maxFactor, float(isinf(currentLength) || isnan(currentLength)));
     float fadingFactor = 1.0f - clamp(maxFactor, 0.0f, 1.0f);
 
     const vec3 luminance = vec3(0.2125f, 0.7154f, 0.0721f);
-    environmentReflection *= skyboxMultiplier * dot(luminance, objectColor);
     environmentReflection = mix(environmentReflection, ssrReflection, fadingFactor);
+    environmentReflection *= dot(objectColor, luminance);
 
     OutColor = vec4(mix(objectColor, environmentReflection, fragment.reflection), 1.0f);
 }

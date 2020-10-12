@@ -372,7 +372,6 @@ namespace MxEngine
 		SSRShader->SetUniformInt("skyboxMap", camera.SkyboxTexture->GetBoundId());
 
 		SSRShader->SetUniformMat3("skyboxTransform", camera.InverseSkyboxRotation);
-		SSRShader->SetUniformFloat("skyboxMultiplier", camera.SSR->GetSkyboxMultiplier());
 		SSRShader->SetUniformFloat("thickness", camera.SSR->GetThickness());
 		SSRShader->SetUniformFloat("maxCosAngle", camera.SSR->GetMaxCosAngle());
 		SSRShader->SetUniformInt("steps", (int)camera.SSR->GetSteps());

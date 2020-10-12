@@ -26,9 +26,6 @@
 // audio api
 #define MXENGINE_USE_OPENAL
 
-// // scripting
-// #define MXENGINE_USE_PYTHON
-
 // physics
 #define MXENGINE_USE_BULLET3
 

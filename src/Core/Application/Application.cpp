@@ -267,6 +267,7 @@ namespace MxEngine
 		this->InitializeRuntime(this->GetRuntimeEditor());
 		this->CloseOnKeyPress(config.ApplicationCloseKey);
 		this->InitializeRenderAdaptor(this->GetRenderAdaptor());
+		this->InitializeShaderDebug();
 	}
 
 	RuntimeEditor& Application::GetRuntimeEditor()
@@ -375,6 +376,25 @@ namespace MxEngine
 		adaptor.InitRendererEnvironment();
 	}
 
+	void Application::InitializeShaderDebug()
+	{
+		#if defined(MXENGINE_DEBUG)
+		MAKE_SCOPE_PROFILER("Application::InitializeShaderDebug()");
+		MAKE_SCOPE_TIMER("MxEngine::Application", "InitializeShaderDebug()");
+		auto& shaders = this->GetRenderAdaptor().Renderer.GetEnvironment().Shaders;
+		if (shaders.empty())
+		{
+			MXLOG_WARNING("Application::InitializeShaderDebug", "method is called before InitializeRenderAdaptor()");
+		}
+		auto shaderDirectory = FileManager::GetWorkingDirectory() / ToFilePath(this->config.ShaderSourceDirectory);
+
+		for (auto it = shaders.begin(); it != shaders.end(); it++)
+		{
+			this->GetRuntimeEditor().AddShaderUpdateListener(it->second);
+		}
+		#endif
+	}
+
 	void Application::UpdateTimeDelta(TimeStep& lastFrameEnd, TimeStep& lastSecondEnd, size_t& framesPerSecond)
 	{
 		if (this->IsPaused)
@@ -455,14 +475,8 @@ namespace MxEngine
 		auto& editor = this->GetRuntimeEditor();
 
 		editor.Log("Welcome to MxEngine developer console!");
-		#if defined(MXENGINE_USE_PYTHON)
-		editor.Log("This console is powered by Python: https://www.python.org");
-		#endif
-
-		editor.ExecuteScript("InitializeOpenGL()");
 
 		editor.RegisterComponentEditor<Behaviour>         ("Behaviour",          GUI::BehaviourEditor);
-		editor.RegisterComponentEditor<Script>            ("Script",             GUI::ScriptEditor);
 		editor.RegisterComponentEditor<InstanceFactory>   ("InstanceFactory",    GUI::InstanceFactoryEditor);
 		editor.RegisterComponentEditor<Instance>          ("Instance",           GUI::InstanceEditor);
 		editor.RegisterComponentEditor<Skybox>            ("Skybox",             GUI::SkyboxEditor);

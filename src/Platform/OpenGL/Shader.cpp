@@ -1,4 +1,5 @@
 // Copyright(c) 2019 - 2020, #Momo
+// Copyright(c) 2019 - 2020, #Momo
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -113,6 +114,7 @@ namespace MxEngine
 	void Shader::Load(const MxString& vertex, const MxString& fragment)
 	{
 		this->InvalidateUniformCache();
+		this->FreeShader();
 		#if defined(MXENGINE_DEBUG)
 		this->vertexShaderPath = vertex;
 		this->fragmentShaderPath = fragment;
@@ -137,6 +139,7 @@ namespace MxEngine
 	void Shader::Load(const MxString& vertex, const MxString& geometry, const MxString& fragment)
 	{
 		this->InvalidateUniformCache();
+		this->FreeShader();
 		#if defined(MXENGINE_DEBUG)
 		this->vertexShaderPath = vertex;
 		this->geometryShaderPath = geometry;
@@ -265,6 +268,33 @@ namespace MxEngine
 	void Shader::SetUniformBool(const MxString& name, bool b) const
 	{
 		this->SetUniformInt(name, (int)b);
+	}
+
+	const MxString& Shader::GetVertexShaderDebugFilePath() const
+	{
+		#if defined(MXENGINE_DEBUG)
+		return this->vertexShaderPath;
+		#else
+		return { };
+		#endif
+	}
+
+	const MxString& Shader::GetGeometryShaderDebugFilePath() const
+	{
+		#if defined(MXENGINE_DEBUG)
+		return this->geometryShaderPath;
+		#else
+		return { };
+		#endif
+	}
+
+	const MxString& Shader::GetFragmentShaderDebugFilePath() const
+	{
+		#if defined(MXENGINE_DEBUG)
+		return this->fragmentShaderPath;
+		#else
+		return { };
+		#endif
 	}
 
 	Shader::ShaderId Shader::CompileShader(unsigned int type, const MxString& source, const MxString& path) const

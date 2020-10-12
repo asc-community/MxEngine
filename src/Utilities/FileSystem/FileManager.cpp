@@ -33,7 +33,7 @@
 
 namespace MxEngine
 {
-    void FileManager::AddDirectory(const FilePath& directory)
+    void FileManager::InitializeRootDirectory(const FilePath& directory)
     {
         if (!File::Exists(directory))
         {
@@ -70,6 +70,34 @@ namespace MxEngine
     bool FileManager::FileExists(StringId filename)
     {
         return manager->filetable.find(filename) != manager->filetable.end();
+    }
+
+    FilePath FileManager::SearchInDirectory(const FilePath& directory, const MxString& filename)
+    {
+        namespace fs = std::filesystem;
+        auto it = fs::recursive_directory_iterator(directory);
+        for (const auto& entry : it)
+        {
+            if (entry.path().filename() == filename.c_str())
+            {
+                return entry.path();
+            }
+        }
+        return FilePath();
+    }
+
+    FilePath FileManager::SearchInDirectory(const FilePath& directory, const FilePath& filename)
+    {
+        namespace fs = std::filesystem;
+        auto it = fs::recursive_directory_iterator(directory);
+        for (const auto& entry : it)
+        {
+            if (entry.path().filename() == filename)
+            {
+                return entry.path();
+            }
+        }
+        return FilePath();
     }
 
     void FileManager::AddFile(const FilePath& file)
@@ -131,6 +159,6 @@ namespace MxEngine
         MXLOG_DEBUG("MxEngine::FileManager", "setting root directory to: " + ToMxString(manager->root));
 
         manager->rootPathSize = rootPath.string().size();
-        FileManager::AddDirectory(rootPath);
+        FileManager::InitializeRootDirectory(rootPath);
     }
 }

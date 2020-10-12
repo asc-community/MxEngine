@@ -26,7 +26,6 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Core/Components/Script.h"
 #include "Core/Components/Behaviour.h"
 #include "Core/Components/Transform.h"
 
@@ -119,15 +118,5 @@ namespace MxEngine::GUI
 		ImGui::SameLine();
 		if (ImGui::Button("remove")) 
 			behaviour.RemoveBehaviour();
-	}
-
-	// TODO: runtime editing of script file
-	// TODO: last time of file editing
-	void ScriptEditor(Script& script)
-	{
-		TREE_NODE_PUSH("Script");
-		REMOVE_COMPONENT_BUTTON(script);
-		ImGui::Text("path: %s", script.GetFilePath().c_str()); //-V111
-		ImGui::Text("contents:\n %s", script.GetContent().c_str());
 	}
 }

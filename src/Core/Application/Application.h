@@ -33,7 +33,6 @@
 #include "Core/Rendering/RenderAdaptor.h"
 #include "Core/MxObject/MxObject.h"
 #include "Utilities/FileSystem/File.h"
-#include "Core/Components/Script.h"
 #include "Core/Config/Config.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Platform/Window/Window.h"
@@ -69,6 +68,7 @@ namespace MxEngine
 		void InitializeConfig(Config& config);
 		void InitializeRuntime(RuntimeEditor& editor);
 		void InitializeRenderAdaptor(RenderAdaptor& adaptor);
+		void InitializeShaderDebug();
 		void UpdateTimeDelta(TimeStep& lastFrameEnd, TimeStep& lastSecondEnd, size_t& framesPerSecond);
 		void DrawObjects();
 		void InvokeUpdate();
