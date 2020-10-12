@@ -14,7 +14,7 @@ void InitCamera(MxObject& object)
 
 	effects->SetVignetteRadius(0.15f);
 	effects->SetBloomIterations(6);
-	effects->SetChromaticAbberationIntensity(0.08f);
+	effects->SetChromaticAberrationIntensity(0.08f);
 
 	toneMapping->SetWhitePoint(0.75f);
 	toneMapping->SetMinLuminance(0.3f);

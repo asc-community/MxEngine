@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-
 in vec4 FragPos;
 
 uniform vec3 lightPos;
@@ -11,5 +9,3 @@ void main()
     lightDistance = lightDistance / zFar;
     gl_FragDepth = lightDistance;
 }
-
-)

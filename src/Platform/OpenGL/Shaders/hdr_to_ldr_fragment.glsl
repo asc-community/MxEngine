@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-
 out vec4 OutColor;
 in vec2 TexCoord;
 
@@ -53,5 +51,3 @@ void main()
 	vec3 gammaCorrectedColor = pow(LDRColor.rgb, vec3(1.0f / gamma));
 	OutColor = vec4(gammaCorrectedColor.rgb, 1.0f);
 }
-
-)

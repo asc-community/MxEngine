@@ -26,36 +26,18 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "File.h"
-#include "Utilities/String/String.h"
-#include "Utilities/STL/MxHashMap.h"
+#include "Utilities/FileSystem/File.h"
 
 namespace MxEngine
 {
-    struct FileManagerImpl
+    class ShaderPreprocessor
     {
-        MxHashMap<StringId, FilePath> filetable;
-        FilePath root;
-        size_t rootPathSize;
-    };
-
-    class FileManager
-    {
-        inline static FileManagerImpl* manager = nullptr;
-        static void AddDirectory(const FilePath& directory);
+        MxString source;
     public:
-        static void Init();
-        static void AddFile(const FilePath& file);
-        static const FilePath& GetFilePath(StringId filename);
-        static FilePath GetEngineShaderFolder();
-        static bool FileExists(StringId filename);
-
-        static void Clone(FileManagerImpl* other);
-        static FileManagerImpl* GetImpl();
-        static FilePath& GetRoot();
-        static FilePath GetWorkingDirectory();
-        static void SetRoot(const FilePath& rootPath);
+        ShaderPreprocessor(const MxString& shaderSource);
+        ShaderPreprocessor& LoadIncludes(const FilePath& lookupPath);
+        ShaderPreprocessor& EmitPrefixLine(const MxString& line);
+        ShaderPreprocessor& EmitPostfixLine(const MxString& line);
+        const MxString& GetResult();
     };
 }

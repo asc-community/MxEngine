@@ -53,8 +53,6 @@ namespace MxEngine
 		BindableId CreateProgram(ShaderId vertexShader, ShaderId geometryShader, ShaderId fragmentShader) const;
 		UniformType GetUniformLocation(const MxString& uniformName) const;
 		void FreeShader();
-
-		static MxString SetCurrentShaderVersion(const MxString& shaderSource);
 	public:
 		static MxString GetShaderVersionString();
 

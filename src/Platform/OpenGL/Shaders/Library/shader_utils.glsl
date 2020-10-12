@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-
 vec3 reconstructWorldPosition(float depth, vec2 texcoord, mat4 invViewProjMatrix)
 {
 	vec4 normPosition = vec4(2.0f * texcoord - vec2(1.0f), depth, 1.0f);
@@ -93,5 +91,3 @@ FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D n
 
 	return fragment;
 }
-
-)

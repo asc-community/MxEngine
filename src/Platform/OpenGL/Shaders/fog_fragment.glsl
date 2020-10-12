@@ -1,6 +1,5 @@
 #include "Library/shader_utils.glsl"
 #include "Library/fog.glsl"
-EMBEDDED_SHADER(
 
 in vec2 TexCoord;
 out vec4 OutColor;
@@ -31,5 +30,3 @@ void main()
 
 	OutColor = vec4(currentColor, 1.0f);
 }
-
-)

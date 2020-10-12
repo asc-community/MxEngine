@@ -1,5 +1,4 @@
-#include "shader_utils.glsl"
-EMBEDDED_SHADER(
+#include "Library/shader_utils.glsl"
 
 struct DirLight
 {
@@ -29,5 +28,3 @@ vec3 calcColorUnderDirLight(FragmentInfo fragment, DirLight light, vec3 viewDir,
 
 	return vec3(ambientColor + shadowFactor * (specularColor + diffuseColor));
 }
-
-)

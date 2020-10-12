@@ -32,8 +32,7 @@
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Utilities/FileSystem/File.h"
 #include "Core/Config/GlobalConfig.h"
-#include "Platform/OpenGL/Texture.h"
-#include "Platform/OpenGL/CubeMap.h"
+#include "Utilities/Parsing/ShaderPreprocessor.h"
 
 namespace MxEngine
 {
@@ -183,10 +182,10 @@ namespace MxEngine
     {
 		this->InvalidateUniformCache();
 
-		MXLOG_DEBUG("OpenGL::Shader", "compiling vertex shader: [[raw source]]");
-		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, "[[raw source]]");
-		MXLOG_DEBUG("OpenGL::Shader", "compiling fragment shader: [[raw source]]");
-		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fragment, "[[raw source]]");
+		MXLOG_DEBUG("OpenGL::Shader", "compiling vertex shader: vertex.glsl");
+		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, "vertex.glsl");
+		MXLOG_DEBUG("OpenGL::Shader", "compiling fragment shader: fragment.glsl");
+		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fragment, "fragment.glsl");
 
 		id = CreateProgram(vertexShader, fragmentShader);
 		MXLOG_DEBUG("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
@@ -196,12 +195,12 @@ namespace MxEngine
 	{
 		this->InvalidateUniformCache();
 
-		MXLOG_DEBUG("OpenGL::Shader", "compiling vertex shader: [[raw source]]");
-		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, "[[raw source]]");
-		MXLOG_DEBUG("OpenGL::Shader", "compiling geometry shader: [[raw source]]");
-		unsigned int geometryShader = CompileShader((GLenum)ShaderType::GEOMETRY_SHADER, geometry, "[[raw source]]");
-		MXLOG_DEBUG("OpenGL::Shader", "compiling fragment shader: [[raw source]]");
-		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fragment, "[[raw source]]");
+		MXLOG_DEBUG("OpenGL::Shader", "compiling vertex shader: vertex.glsl");
+		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, "vertex.glsl");
+		MXLOG_DEBUG("OpenGL::Shader", "compiling geometry shader: geometry.glsl");
+		unsigned int geometryShader = CompileShader((GLenum)ShaderType::GEOMETRY_SHADER, geometry, "geometry.glsl");
+		MXLOG_DEBUG("OpenGL::Shader", "compiling fragment shader: fragment.glsl");
+		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fragment, "fragment.glsl");
 
 		id = CreateProgram(vertexShader, geometryShader, fragmentShader);
 		MXLOG_DEBUG("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
@@ -268,10 +267,16 @@ namespace MxEngine
 		this->SetUniformInt(name, (int)b);
 	}
 
-	Shader::ShaderId Shader::CompileShader(unsigned int type, const MxString& source, const MxString& name) const
+	Shader::ShaderId Shader::CompileShader(unsigned int type, const MxString& source, const MxString& path) const
 	{
 		GLCALL(GLuint shaderId = glCreateShader((GLenum)type));
-		auto sourceModified = Shader::SetCurrentShaderVersion(source);
+
+		auto sourceModified = ShaderPreprocessor(source)
+			.LoadIncludes(FilePath(path.c_str()).parent_path())
+			.EmitPrefixLine(Shader::GetShaderVersionString())
+			.GetResult()
+			;
+
 		auto cStringSource = sourceModified.c_str();
 		GLCALL(glShaderSource(shaderId, 1, &cStringSource, nullptr));
 		GLCALL(glCompileShader(shaderId));
@@ -299,7 +304,7 @@ namespace MxEngine
 				typeName = "fragment";
 				break;
 			}
-			MXLOG_ERROR("OpenGL::Shader", "failed to compile " + typeName + " shader: " + name);
+			MXLOG_ERROR("OpenGL::Shader", "failed to compile " + typeName + " shader: " + path);
 			MXLOG_ERROR("OpenGL::ErrorHandler", msg);
 		}
 
@@ -362,27 +367,6 @@ namespace MxEngine
     {
 		return "#version " + ToMxString(GlobalConfig::GetGraphicAPIMajorVersion() * 100 + GlobalConfig::GetGraphicAPIMinorVersion() * 10);
     }
+	
 
-	MxString Shader::SetCurrentShaderVersion(const MxString& shaderSource)
-	{
-		MxString copy = shaderSource;
-		auto version = Shader::GetShaderVersionString();
-		auto versionOffset = copy.find("#version ");
-		if (versionOffset != copy.npos) // check if there is version directive
-		{
-			auto versionItBegin = copy.begin() + versionOffset;
-			// find version number end (sub 1 to not include null char)
-			auto versionItEnd = versionItBegin + (std::size("#version XXX") - 1);
-			if (versionItEnd <= copy.end())
-				copy.erase(versionItBegin, versionItEnd);
-			// insert new version directive
-			copy.insert(versionItBegin, version.begin(), version.end());
-		}
-		else // if version directive was not found, just include one
-		{
-			version += '\n';
-			copy.insert(copy.begin(), version.begin(), version.end());
-		}
-		return copy;
-	}
 }

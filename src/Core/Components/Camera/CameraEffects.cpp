@@ -46,19 +46,19 @@ namespace MxEngine
         return this->vignetteRadius;
     }
 
-    float CameraEffects::GetChromaticAbberationMinDistance() const
+    float CameraEffects::GetChromaticAberrationMinDistance() const
     {
-        return this->chromaticAbberationMinDistance;
+        return this->chromaticAberrationMinDistance;
     }
 
-    float CameraEffects::GetChromaticAbberationIntensity() const
+    float CameraEffects::GetChromaticAberrationIntensity() const
     {
-        return this->chromaticAbberationIntensity;
+        return this->chromaticAberrationIntensity;
     }
 
-    float CameraEffects::GetChromaticAbberationDistortion() const
+    float CameraEffects::GetChromaticAberrationDistortion() const
     {
-        return this->chromaticAbberationDistortion;
+        return this->chromaticAberrationDistortion;
     }
 
     bool CameraEffects::IsFXAAEnabled() const
@@ -86,19 +86,19 @@ namespace MxEngine
         this->vignetteIntensity = Max(0.0f, intensity);
     }
 
-    void CameraEffects::SetChromaticAbberationMinDistance(float distance)
+    void CameraEffects::SetChromaticAberrationMinDistance(float distance)
     {
-        this->chromaticAbberationMinDistance = Max(distance, 0.0f);
+        this->chromaticAberrationMinDistance = Max(distance, 0.0f);
     }
 
-    void CameraEffects::SetChromaticAbberationIntensity(float intensity)
+    void CameraEffects::SetChromaticAberrationIntensity(float intensity)
     {
-        this->chromaticAbberationIntensity = Max(intensity, 0.0f);
+        this->chromaticAberrationIntensity = Max(intensity, 0.0f);
     }
 
-    void CameraEffects::SetChromaticAbberationDistortion(float distortion)
+    void CameraEffects::SetChromaticAberrationDistortion(float distortion)
     {
-        this->chromaticAbberationDistortion = Max(distortion, 0.0f);
+        this->chromaticAberrationDistortion = Max(distortion, 0.0f);
     }
 
     void CameraEffects::ToggleFXAA(bool value)

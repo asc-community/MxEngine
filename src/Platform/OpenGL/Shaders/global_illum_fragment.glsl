@@ -1,5 +1,4 @@
 #include "Library/directional_light.glsl"
-EMBEDDED_SHADER(
 
 out vec4 OutColor;
 in vec2 TexCoord;
@@ -40,5 +39,3 @@ void main()
 
 	OutColor = vec4(totalColor, 1.0f);
 }
-
-)

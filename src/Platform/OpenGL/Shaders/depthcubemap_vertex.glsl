@@ -1,5 +1,4 @@
 #include "Library/displacement.glsl"
-EMBEDDED_SHADER(
 
 layout(location = 0)  in vec4 position;
 layout(location = 1)  in vec2 texCoord;
@@ -17,5 +16,3 @@ void main()
     modelPos.xyz += normalObjectSpace * getDisplacement(texCoord, map_height, displacement);
     gl_Position = modelPos;
 }
-
-)

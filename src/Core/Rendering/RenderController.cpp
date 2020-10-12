@@ -339,16 +339,16 @@ namespace MxEngine
 
 	void RenderController::ApplyChromaticAbberation(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
-		if (camera.Effects == nullptr || camera.Effects->GetChromaticAbberationIntensity() <= 0.0f) return;
+		if (camera.Effects == nullptr || camera.Effects->GetChromaticAberrationIntensity() <= 0.0f) return;
 		MAKE_SCOPE_PROFILER("RenderController::ApplyChromaticAbberation()");
 
 		auto& shader = this->Pipeline.Environment.Shaders["ChromaticAbberation"_id];
 		input->Bind(0);
 		shader->SetUniformInt("tex", input->GetBoundId());
 		shader->SetUniformVec3("chromaticAbberationParams", {
-			camera.Effects->GetChromaticAbberationMinDistance(),
-			camera.Effects->GetChromaticAbberationIntensity(),
-			camera.Effects->GetChromaticAbberationDistortion()
+			camera.Effects->GetChromaticAberrationMinDistance(),
+			camera.Effects->GetChromaticAberrationIntensity(),
+			camera.Effects->GetChromaticAberrationDistortion()
 		});
 
 		this->RenderToTexture(output, shader);

@@ -62,6 +62,11 @@ namespace MxEngine
         return manager->filetable[filename];
     }
 
+    FilePath FileManager::GetEngineShaderFolder()
+    {
+        return FileManager::GetWorkingDirectory() / "Engine" / "Shaders";
+    }
+
     bool FileManager::FileExists(StringId filename)
     {
         return manager->filetable.find(filename) != manager->filetable.end();

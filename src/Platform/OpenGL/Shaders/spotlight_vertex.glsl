@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-
 layout(location = 0)  in vec4 position;
 layout(location = 5)  in mat4 transform;
 layout(location = 9)  in vec4 lightPosition;
@@ -41,5 +39,3 @@ void main()
 	spotLight.diffuse = diffuseColor;
 	spotLight.specular = specularColor;
 }
-
-)

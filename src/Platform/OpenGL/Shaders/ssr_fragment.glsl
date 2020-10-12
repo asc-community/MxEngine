@@ -1,5 +1,4 @@
 #include "Library/shader_utils.glsl"
-EMBEDDED_SHADER(
 
 in vec2 TexCoord;
 out vec4 OutColor;
@@ -98,5 +97,3 @@ void main()
 
     OutColor = vec4(mix(objectColor, environmentReflection, fragment.reflection), 1.0f);
 }
-
-)

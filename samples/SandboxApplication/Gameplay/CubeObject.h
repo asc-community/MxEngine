@@ -11,7 +11,7 @@ struct CubeBehaviour
 		auto instances = object.GetComponent<InstanceFactory>();
 		if (!instances.IsValid()) return;
 		float maxHeight = 0.5f * (instances->GetCount() - 1);
-
+		
 		auto pool = instances->GetInstances();
 		for (auto& instance : pool)
 		{

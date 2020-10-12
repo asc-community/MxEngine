@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-
 in vec2 TexCoord;
 out vec4 OutColor;
 
@@ -42,5 +40,3 @@ void main()
     vec3 outputColor  = applyChromaticAbberation(inputColor, TexCoord, tex, minDistance, intensity, distortion);
     OutColor = vec4(outputColor, 1.0f);
 }
-
-)

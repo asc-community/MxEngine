@@ -35,6 +35,7 @@
 #include "RenderObjects/PointLightInstancedObject.h"
 #include "RenderObjects/SpotLightInstancedObject.h"
 #include "Core/Resources/ACESCurve.h"
+#include "Core/Resources/Material.h"
 
 #include "Utilities/STL/MxHashMap.h"
 #include "Utilities/String/String.h"

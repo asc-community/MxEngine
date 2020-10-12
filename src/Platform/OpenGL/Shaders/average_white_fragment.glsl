@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-
 in vec2 TexCoord;
 out vec4 OutColor;
 
@@ -17,5 +15,3 @@ void main()
     float white = oldWhite + (curWhite - oldWhite) * eyeAdaptation;
     OutColor = vec4(vec3(white), 1.0f);
 }
-
-)

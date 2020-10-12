@@ -214,3 +214,7 @@
 - added vignette effect and tone-mapping
 - added camera effects component
 - multiple bug fixes in physics and graphics
+### 7.5.4
+- added screen space reflections
+- set-up building with clang on Windows
+- added chromatic aberration effect

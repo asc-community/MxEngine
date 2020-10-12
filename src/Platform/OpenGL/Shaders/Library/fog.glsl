@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-	
 struct Fog
 {
 	float distance;
@@ -14,5 +12,3 @@ vec3 applyFog(vec3 color, float fragDistance, Fog fog)
 	fogFactor = clamp(fogFactor, 0.0f, 1.0f);
 	return mix(color, fog.color, fogFactor);
 }
-
-)

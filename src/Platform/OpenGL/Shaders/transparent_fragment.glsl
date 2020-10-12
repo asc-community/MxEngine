@@ -1,5 +1,4 @@
 #include "Library/directional_light.glsl"
-EMBEDDED_SHADER(
 
 out vec4 OutColor;
 
@@ -82,5 +81,3 @@ void main()
 
 	OutColor = vec4(totalColor, transparency);
 }
-
-)

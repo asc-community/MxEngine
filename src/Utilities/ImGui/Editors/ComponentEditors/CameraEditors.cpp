@@ -53,9 +53,9 @@ namespace MxEngine::GUI
 		float bloomWeight = cameraEffects.GetBloomWeight();
 		float vignetteRadius = cameraEffects.GetVignetteRadius();
 		float vignetteIntensity = cameraEffects.GetVignetteIntensity();
-		float chromaticAbberationMinDistance = cameraEffects.GetChromaticAbberationMinDistance();
-		float chromaticAbberationIntensity = cameraEffects.GetChromaticAbberationIntensity();
-		float chromaticAbberationDistortion = cameraEffects.GetChromaticAbberationDistortion();
+		float chromaticAbberationMinDistance = cameraEffects.GetChromaticAberrationMinDistance();
+		float chromaticAbberationIntensity = cameraEffects.GetChromaticAberrationIntensity();
+		float chromaticAbberationDistortion = cameraEffects.GetChromaticAberrationDistortion();
 		bool isFXAAEnabled = cameraEffects.IsFXAAEnabled();
 
 		if (ImGui::TreeNode("bloom"))
@@ -79,11 +79,11 @@ namespace MxEngine::GUI
 		if (ImGui::TreeNode("chromatic abberation"))
 		{
 			if (ImGui::DragFloat("min distance", &chromaticAbberationMinDistance, 0.01f))
-				cameraEffects.SetChromaticAbberationMinDistance(chromaticAbberationMinDistance);
+				cameraEffects.SetChromaticAberrationMinDistance(chromaticAbberationMinDistance);
 			if (ImGui::DragFloat("intensity", &chromaticAbberationIntensity, 0.01f))
-				cameraEffects.SetChromaticAbberationIntensity(chromaticAbberationIntensity);
+				cameraEffects.SetChromaticAberrationIntensity(chromaticAbberationIntensity);
 			if (ImGui::DragFloat("distortion", &chromaticAbberationDistortion, 0.01f))
-				cameraEffects.SetChromaticAbberationDistortion(chromaticAbberationDistortion);
+				cameraEffects.SetChromaticAberrationDistortion(chromaticAbberationDistortion);
 			ImGui::TreePop();
 		}
 		

@@ -93,11 +93,6 @@ namespace MxEngine
 
     void VRCameraController::Init()
     {
-        this->shaderVR = GraphicFactory::Create<Shader>();
-        this->shaderVR->LoadFromString(
-            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/vr_fragment.glsl"
-        );
+        this->shaderVR = Rendering::GetController().GetEnvironment().Shaders["VRCamera"_id];
     }
 }

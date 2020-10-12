@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-
 out vec4 Color;
 in vec3 TexCoords;
 
@@ -14,5 +12,3 @@ void main()
 	skyboxColor = luminance * skyboxColor;
 	Color = vec4(skyboxColor, 1.0f);
 }
-
-)
