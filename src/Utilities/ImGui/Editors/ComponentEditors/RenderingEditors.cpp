@@ -31,6 +31,7 @@
 #include "Core/Components/Rendering/MeshRenderer.h"
 #include "Core/Components/Rendering/MeshSource.h"
 #include "Core/Components/Rendering/Skybox.h"
+#include "Utilities/FileSystem/FileManager.h"
 
 #include "Utilities/ImGui/ImGuiUtils.h"
 
@@ -70,8 +71,14 @@ namespace MxEngine::GUI
 		REMOVE_COMPONENT_BUTTON(meshRenderer);
 
 		static MxString path;
-		if (GUI::InputTextOnClick("", path, 128, "load materials"))
-			meshRenderer.Materials = AssetManager::LoadMaterials(path);
+		if (ImGui::Button("load from file"))
+		{
+			path = FileManager::OpenFileDialog();
+			if (!path.empty() && File::Exists(path))
+				meshRenderer = AssetManager::LoadMaterials(path);
+
+
+		}
 
 		int id = 0;
 		for (auto& material : meshRenderer.Materials)

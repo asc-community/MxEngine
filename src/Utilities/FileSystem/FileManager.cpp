@@ -37,7 +37,20 @@
 namespace MxEngine
 {
 
+    MxString FileManager::OpenFileDialog()
+    {
+        auto selection = pfd::open_file("Select a file", ".",
+            { "Image Files", "*.png *.jpg *.jpeg *.bmp *.tga *.hdr",
+              "All Files", "*" },
+            pfd::opt::multiselect).result();
+        return selection.empty() ? "" : ToMxString(selection.front());
 
+    }
+    MxString FileManager::OpenFileDialogForMesh()
+    {
+        auto selection = pfd::open_file("Select a file").result();
+        return selection.empty() ? "" : ToMxString(selection.front());
+    }
 
 
 
