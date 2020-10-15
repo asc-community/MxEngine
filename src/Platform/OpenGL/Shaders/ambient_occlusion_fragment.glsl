@@ -8,6 +8,8 @@ uniform sampler2D normalTex;
 uniform sampler2D materialTex;
 uniform sampler2D depthTex;
 
+uniform sampler2D inputTex;
+
 struct Camera
 {
     mat4 invViewProjMatrix;
@@ -16,10 +18,8 @@ struct Camera
 uniform Camera camera;
 
 uniform sampler2D noiseTex;
-// uniform int sampleCount;
-// uniform float radius;
-int sampleCount = 32;
-float radius = 0.5f;
+uniform int sampleCount;
+uniform float radius;
 
 const int MAX_SAMPLES = 32;
 vec3 kernel[MAX_SAMPLES] = vec3[]
@@ -90,6 +90,9 @@ void main()
         totalOcclusion += ((currentDepth < projectedDepth - bias) ? 1.0f : 0.0f) * rangeCheck;
     }
     totalOcclusion /= samples;
+    totalOcclusion = fragment.ambientOcclusion * (1.0f - totalOcclusion);
 
-    OutColor = vec4(vec3(1.0f - totalOcclusion), 1.0f);
+    vec3 inputColor = texture(inputTex, TexCoord).rgb;
+
+    OutColor = vec4(inputColor * totalOcclusion, 1.0f);
 }

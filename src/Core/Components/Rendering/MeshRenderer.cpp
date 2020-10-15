@@ -53,6 +53,7 @@ namespace MxEngine
 		MakeTexture(material.EmmisiveMap, textures, mat.EmmisiveMap, TextureFormat::RGB);
 		MakeTexture(material.HeightMap, textures, mat.HeightMap, TextureFormat::RGB);
 		MakeTexture(material.NormalMap, textures, mat.NormalMap, TextureFormat::RGB);
+		MakeTexture(material.AmbientOcclusionMap, textures, mat.AmbientOcclusionMap, TextureFormat::RGB);
 
 		material.Emmision = mat.Emmision;
 		material.SpecularFactor = mat.SpecularFactor;

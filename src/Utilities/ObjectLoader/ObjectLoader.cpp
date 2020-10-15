@@ -109,6 +109,7 @@ namespace MxEngine
 			GET_TEXTURE(aiTextureType_EMISSIVE, EmmisiveMap);
 			GET_TEXTURE(aiTextureType_HEIGHT, HeightMap);
 			GET_TEXTURE(aiTextureType_NORMALS, NormalMap);
+			GET_TEXTURE(aiTextureType_AMBIENT_OCCLUSION, AmbientOcclusionMap);
 		}
 
 		Vector3 minCoords = MakeVector3(std::numeric_limits<float>::max());
@@ -196,17 +197,18 @@ namespace MxEngine
 			auto& json = materialList[i];
 			auto& material = materials[i];
 
-			material.Transparency     = json["Transparency"  ].get<float>();
-			material.Displacement     = json["Displacement"  ].get<float>();
-			material.SpecularFactor   = json["SpecularFactor"].get<float>();
-			material.Emmision         = json["Emmision"      ].get<float>();
+			material.Transparency     = json["Transparency"       ].get<float>();
+			material.Displacement     = json["Displacement"       ].get<float>();
+			material.SpecularFactor   = json["SpecularFactor"     ].get<float>();
+			material.Emmision         = json["Emmision"           ].get<float>();
 
-			material.AlbedoMap        = json["AlbedoMap"      ].get<MxString>();
-			material.SpecularMap      = json["SpecularMap"    ].get<MxString>();
-			material.EmmisiveMap      = json["EmmisiveMap"    ].get<MxString>();
-			material.HeightMap        = json["HeightMap"      ].get<MxString>();
-			material.NormalMap        = json["NormalMap"      ].get<MxString>();
-			material.Name             = json["Name"           ].get<MxString>();
+			material.AlbedoMap        = json["AlbedoMap"          ].get<MxString>();
+			material.SpecularMap      = json["SpecularMap"        ].get<MxString>();
+			material.EmmisiveMap      = json["EmmisiveMap"        ].get<MxString>();
+			material.HeightMap        = json["HeightMap"          ].get<MxString>();
+			material.NormalMap        = json["NormalMap"          ].get<MxString>();
+			material.NormalMap        = json["AmbientOcclusionMap"].get<MxString>();
+			material.Name             = json["Name"               ].get<MxString>();
 		}													   
 
 		return materials;
@@ -233,6 +235,7 @@ namespace MxEngine
 			DUMP(i, EmmisiveMap);
 			DUMP(i, HeightMap);
 			DUMP(i, NormalMap);
+			DUMP(i, AmbientOcclusionMap);
 
 			DUMP(i, Name);
 		}

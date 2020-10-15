@@ -25,6 +25,7 @@ uniform sampler2D map_specular;
 uniform sampler2D map_emmisive;
 uniform sampler2D map_normal;
 uniform sampler2D map_transparency;
+uniform sampler2D map_occlusion;
 uniform Material material;
 uniform float gamma;
 
@@ -57,6 +58,7 @@ void main()
 
 	FragmentInfo fragment;
 	fragment.albedo = pow(fsin.RenderColor * albedoAlphaTex.rgb, vec3(gamma));
+	fragment.ambientOcclusion = texture(map_occlusion, fsin.TexCoord).r;
 	fragment.specularIntensity = material.specularIntensity;
 	fragment.specularFactor = material.specularFactor * texture(map_specular, fsin.TexCoord).r;
 	fragment.emmisionFactor = material.emmisive * texture(map_emmisive, fsin.TexCoord).r;
@@ -78,6 +80,7 @@ void main()
 		vec4 fragLightSpace = lights[i].transform * vec4(fragment.position, 1.0f);
 		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, pcfDistance, fragLightSpace, lightDepthMaps[i]);
 	}
+	totalColor *= fragment.ambientOcclusion;
 
 	OutColor = vec4(totalColor, transparency);
 }

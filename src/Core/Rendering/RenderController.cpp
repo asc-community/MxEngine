@@ -94,12 +94,14 @@ namespace MxEngine
 		material.EmmisiveMap->Bind(textureBindIndex++);
 		material.NormalMap->Bind(textureBindIndex++);
 		material.HeightMap->Bind(textureBindIndex++);
+		material.AmbientOcclusionMap->Bind(textureBindIndex++);
 
 		shader.SetUniformInt("map_albedo", material.AlbedoMap->GetBoundId());
 		shader.SetUniformInt("map_specular", material.SpecularMap->GetBoundId());
 		shader.SetUniformInt("map_emmisive", material.EmmisiveMap->GetBoundId());
 		shader.SetUniformInt("map_normal", material.NormalMap->GetBoundId());
 		shader.SetUniformInt("map_height", material.HeightMap->GetBoundId());
+		shader.SetUniformInt("map_occlusion", material.AmbientOcclusionMap->GetBoundId());
 
 		shader.SetUniformFloat("material.specularFactor", material.SpecularFactor);
 		shader.SetUniformFloat("material.specularIntensity", material.SpecularIntensity);
@@ -156,20 +158,27 @@ namespace MxEngine
 		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
-	void RenderController::ComputeAmbientOcclusion(CameraUnit& camera)
+	void RenderController::ApplyAmbientOcclusion(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
+		if (camera.Effects == nullptr || camera.Effects->GetAmbientOcclusionSamples() == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::ComputeAmbientOcclusion()");
 
 		auto& shader = this->Pipeline.Environment.Shaders["AmbientOcclusion"_id];
 		shader->IgnoreNonExistingUniform("camera.position");
+		shader->IgnoreNonExistingUniform("materialTex");
 		this->BindGBuffer(camera, *shader);
 		this->BindCameraInformation(camera, *shader);
 		
-		this->Pipeline.Environment.NoiseTexture->Bind(4);
-		shader->SetUniformInt("noiseTex", this->Pipeline.Environment.NoiseTexture->GetBoundId());
+		input->Bind(4);
+		this->Pipeline.Environment.NoiseTexture->Bind(5);
 
-		this->RenderToTexture(this->Pipeline.Environment.AmbientOcclusionTexture, shader);
-		this->Pipeline.Environment.AmbientOcclusionTexture->GenerateMipmaps();
+		shader->SetUniformInt("noiseTex", this->Pipeline.Environment.NoiseTexture->GetBoundId());
+		shader->SetUniformInt("inputTex", input->GetBoundId());
+		shader->SetUniformInt("sampleCount", (int)camera.Effects->GetAmbientOcclusionSamples());
+		shader->SetUniformFloat("radius", camera.Effects->GetAmbientOcclusionRadius());
+
+		this->RenderToTexture(output, shader);
+		std::swap(input, output);
 	}
 
 	TextureHandle RenderController::ComputeAverageWhite(CameraUnit& camera)
@@ -201,11 +210,14 @@ namespace MxEngine
 		camera.MaterialTexture->GenerateMipmaps();
 		camera.NormalTexture->GenerateMipmaps();
 		camera.DepthTexture->GenerateMipmaps();
-		this->ComputeAmbientOcclusion(camera);
+
+		this->ApplyAmbientOcclusion(camera, camera.HDRTexture, camera.SwapTexture);
 		this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture);
 
 		// render skybox & debug buffer (HDR texture is already attached)
+		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.HDRTexture, Attachment::COLOR_ATTACHMENT0);
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.DepthTexture, Attachment::DEPTH_ATTACHMENT);
+		this->AttachFrameBufferNoClear(this->Pipeline.Environment.PostProcessFrameBuffer);
 		this->GetRenderEngine().UseDepthBufferMask(false);
 		this->DrawSkybox(camera);
 		this->DrawTransparentObjects(camera);
@@ -270,8 +282,8 @@ namespace MxEngine
 	{
 		this->DrawDirectionalLights(camera);
 
-		this->ToggleFaceCulling(true, true, false);
 		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ONE);
+		this->ToggleFaceCulling(true, true, false);
 
 		this->DrawShadowedSpotLights(camera);
 		this->DrawNonShadowedSpotLights(camera);
@@ -897,11 +909,12 @@ namespace MxEngine
 		// we need to change displacement to account object scale, so we take average of object scale components as multiplier
 		renderMaterial.Displacement *= Dot(parentTransform.GetScale() * object.GetTransform()->GetScale(), MakeVector3(1.0f / 3.0f));
 		// set default textures if they are not exist
-		if (!renderMaterial.AlbedoMap.IsValid())       renderMaterial.AlbedoMap       = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!renderMaterial.SpecularMap.IsValid())     renderMaterial.SpecularMap     = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!renderMaterial.EmmisiveMap.IsValid())     renderMaterial.EmmisiveMap     = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!renderMaterial.NormalMap.IsValid())       renderMaterial.NormalMap       = this->Pipeline.Environment.DefaultNormalMap;
-		if (!renderMaterial.HeightMap.IsValid())       renderMaterial.HeightMap       = this->Pipeline.Environment.DefaultBlackMap;
+		if (!renderMaterial.AlbedoMap.IsValid())           renderMaterial.AlbedoMap           = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!renderMaterial.SpecularMap.IsValid())         renderMaterial.SpecularMap         = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!renderMaterial.EmmisiveMap.IsValid())         renderMaterial.EmmisiveMap         = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!renderMaterial.AmbientOcclusionMap.IsValid()) renderMaterial.AmbientOcclusionMap = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!renderMaterial.NormalMap.IsValid())           renderMaterial.NormalMap           = this->Pipeline.Environment.DefaultNormalMap;
+		if (!renderMaterial.HeightMap.IsValid())           renderMaterial.HeightMap           = this->Pipeline.Environment.DefaultBlackMap;
 
 		if (renderMaterial.CastsShadow) this->Pipeline.ShadowCasterUnits.push_back(primitive);
     }
@@ -942,6 +955,7 @@ namespace MxEngine
 			this->PerformPostProcessing(camera);
 
 			this->CopyTexture(camera.HDRTexture, camera.OutputTexture);
+			//this->CopyTexture(this->Pipeline.Environment.AmbientOcclusionTexture, camera.OutputTexture);
 			camera.OutputTexture->GenerateMipmaps();
 		}
 	}

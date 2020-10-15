@@ -72,6 +72,7 @@ vec4 worldToFragSpace(vec3 v, mat4 viewProj)
 struct FragmentInfo
 {
 	vec3 albedo;
+	float ambientOcclusion;
 	float specularIntensity;
 	float specularFactor;
 	float emmisionFactor;
@@ -85,11 +86,13 @@ FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D n
 {
 	FragmentInfo fragment;
 
-	fragment.albedo = texture(albedoTexture, texCoord).rgb;
 	fragment.normal = normalize(texture(normalTexture, texCoord).rgb - vec3(0.5f));
+	vec4 albedo = texture(albedoTexture, texCoord).rgba;
 	vec4 material = texture(materialTexture, texCoord).rgba;
 	fragment.depth = texture(depthTexture, texCoord).r;
 
+	fragment.albedo = albedo.rgb;
+	fragment.ambientOcclusion = albedo.a;
 	fragment.emmisionFactor = material.r / (1.0f - material.r);
 	fragment.reflection = material.g;
 	fragment.specularIntensity = exp(1.0f / material.b) - 1.0f;

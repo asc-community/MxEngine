@@ -166,6 +166,7 @@ namespace PhysicsSample
                 float fraction = 0.0f;
                 auto lookingAt = Physics::RayCast(pos, end, fraction);
                 float distance = Length(end - pos) * fraction;
+                auto gravity = Physics::GetGravity();
 
                 Rendering::Draw(BoundingBox(pos + dir * distance, MakeVector3(1.0f)), Colors::Create(Colors::RED, 1.0f));
 
@@ -194,6 +195,9 @@ namespace PhysicsSample
                 ImGui::InputInt("X", &x);
                 ImGui::InputInt("Y", &y);
                 ImGui::InputInt("Z", &z);
+
+                if (ImGui::DragFloat3("gravity", &gravity[0], 0.01f, 0.0f, 10000.0f))
+                    Physics::SetGravity(gravity);
 
                 cubeConstraintsA = Max(0, x), cubeConstraintsB = Max(0, y), cubeConstraintsC = Max(0, z);
 

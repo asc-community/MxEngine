@@ -57,7 +57,6 @@ namespace MxEngine
 		void DrawDebugBuffer(const CameraUnit& camera);
 		void DrawObject(const RenderUnit& unit, const Shader& shader);
 		void ComputeBloomEffect(CameraUnit& camera);
-		void ComputeAmbientOcclusion(CameraUnit& camera);
 		TextureHandle ComputeAverageWhite(CameraUnit& camera);
 		void PerformPostProcessing(CameraUnit& camera);
 		void DrawDirectionalLights(CameraUnit& camera);
@@ -65,6 +64,7 @@ namespace MxEngine
 		void DrawTransparentObjects(CameraUnit& camera);
 		void ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyChromaticAbberation(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+		void ApplyAmbientOcclusion(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output);

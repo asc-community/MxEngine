@@ -42,6 +42,7 @@ namespace MxEngine
 		TextureHandle EmmisiveMap;
 		TextureHandle NormalMap;
 		TextureHandle HeightMap;
+		TextureHandle AmbientOcclusionMap;
 
 		float Transparency = 1.0f;
 		float SpecularFactor = 0.2f;
