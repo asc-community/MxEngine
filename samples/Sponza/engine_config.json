@@ -11,9 +11,9 @@
   },
   "renderer": {
     "anisothropic-filtering": 16,
-    "bloom-texture-size": 512,
     "debug-line-width": 3,
     "dir-light-texture-size": 4096,
+    "engine-texture-size": 512,
     "major-version": 4,
     "minor-version": 5,
     "point-light-texture-size": 512,

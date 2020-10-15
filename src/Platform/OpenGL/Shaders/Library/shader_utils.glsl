@@ -61,6 +61,14 @@ vec3 calcReflectionColor(samplerCube reflectionMap, mat3 reflectionMapTransform,
 	return color;
 }
 
+vec4 worldToFragSpace(vec3 v, mat4 viewProj)
+{
+	vec4 proj = viewProj * vec4(v, 1.0f);
+	proj.xyz /= proj.w;
+	proj.xy = proj.xy * 0.5f + vec2(0.5f);
+	return proj;
+}
+
 struct FragmentInfo
 {
 	vec3 albedo;

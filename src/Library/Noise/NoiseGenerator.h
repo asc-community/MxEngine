@@ -26,35 +26,14 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Config.h"
+#include "Platform/GraphicAPI.h"
 
 namespace MxEngine
 {
-	class GlobalConfig
-	{
-	public:
-        static BuildType GetBuildType();
-        static const Vector2& GetWindowPosition();
-        static const Vector2& GetWindowSize();
-        static const MxString& GetWindowTitle();
-        static CursorMode GetCursorMode();
-        static bool HasDoubleBuffering();
-        static RenderProfile GetGraphicAPIProfile();
-        static size_t GetGraphicAPIMajorVersion();
-        static size_t GetGraphicAPIMinorVersion();
-        static size_t GetAnisothropicFiltering();
-        static size_t GetDebugLineWidth();
-        static size_t GetDirectionalLightTextureSize();
-        static size_t GetPointLightTextureSize();
-        static size_t GetSpotLightTextureSize();
-        static size_t GetEngineTextureSize();
-        static const MxString& GetProjectRootDirectory();
-        static const MxString& GetShaderSourceDirectory();
-        static EditorStyle GetEditorStyle();
-        static bool HasGraphicAPIDebug();
-        static KeyCode GetApplicationCloseKey();
-        static KeyCode GetEditorOpenKey();
-	};
+    class NoiseGenerator
+    {
+    public:
+        static TextureHandle MakeRandomOneChannelTexture(size_t width, size_t height);
+        static TextureHandle MakeRandomTexture(size_t width, size_t height);
+    };
 }

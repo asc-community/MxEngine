@@ -57,6 +57,7 @@ namespace MxEngine
 		void DrawDebugBuffer(const CameraUnit& camera);
 		void DrawObject(const RenderUnit& unit, const Shader& shader);
 		void ComputeBloomEffect(CameraUnit& camera);
+		void ComputeAmbientOcclusion(CameraUnit& camera);
 		TextureHandle ComputeAverageWhite(CameraUnit& camera);
 		void PerformPostProcessing(CameraUnit& camera);
 		void DrawDirectionalLights(CameraUnit& camera);

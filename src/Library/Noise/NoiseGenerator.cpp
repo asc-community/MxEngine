@@ -26,35 +26,41 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Config.h"
+#include "NoiseGenerator.h"
+#include "Utilities/Random/Random.h"
 
 namespace MxEngine
 {
-	class GlobalConfig
-	{
-	public:
-        static BuildType GetBuildType();
-        static const Vector2& GetWindowPosition();
-        static const Vector2& GetWindowSize();
-        static const MxString& GetWindowTitle();
-        static CursorMode GetCursorMode();
-        static bool HasDoubleBuffering();
-        static RenderProfile GetGraphicAPIProfile();
-        static size_t GetGraphicAPIMajorVersion();
-        static size_t GetGraphicAPIMinorVersion();
-        static size_t GetAnisothropicFiltering();
-        static size_t GetDebugLineWidth();
-        static size_t GetDirectionalLightTextureSize();
-        static size_t GetPointLightTextureSize();
-        static size_t GetSpotLightTextureSize();
-        static size_t GetEngineTextureSize();
-        static const MxString& GetProjectRootDirectory();
-        static const MxString& GetShaderSourceDirectory();
-        static EditorStyle GetEditorStyle();
-        static bool HasGraphicAPIDebug();
-        static KeyCode GetApplicationCloseKey();
-        static KeyCode GetEditorOpenKey();
-	};
+    TextureHandle NoiseGenerator::MakeRandomOneChannelTexture(size_t width, size_t height)
+    {
+        TextureHandle result = GraphicFactory::Create<Texture>();
+        MxVector<std::array<uint8_t, 3>> noise;
+        noise.resize(width * height);
+
+        for (auto& pix : noise)
+        {
+            auto randomValue = (uint8_t)Random::Range(0, 255);
+            pix[0] = pix[1] = pix[2] = randomValue;
+        }
+
+        result->Load(noise[0].data(), (int)width, (int)height);
+        return result;
+    }
+
+    TextureHandle NoiseGenerator::MakeRandomTexture(size_t width, size_t height)
+    {
+        TextureHandle result = GraphicFactory::Create<Texture>();
+        MxVector<std::array<uint8_t, 3>> noise;
+        noise.resize(width * height);
+
+        for (auto& pix : noise)
+        {
+            pix[0] = (uint8_t)Random::Range(0, 255);
+            pix[1] = (uint8_t)Random::Range(0, 255);
+            pix[2] = (uint8_t)Random::Range(0, 255);
+        }
+
+        result->Load(noise[0].data(), (int)width, (int)height);
+        return result;
+    }
 }

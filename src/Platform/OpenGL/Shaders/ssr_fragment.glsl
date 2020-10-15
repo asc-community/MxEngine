@@ -25,14 +25,6 @@ uniform float thickness;
 uniform float maxDistance;
 uniform float maxCosAngle;
 
-vec4 toFragSpace(vec4 v, mat4 viewProj)
-{
-    vec4 proj = viewProj * v;
-    proj.xyz /= proj.w;
-    proj.xy = proj.xy * 0.5f + vec2(0.5f);
-    return proj;
-}
-
 void main()
 {
     FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
@@ -57,7 +49,7 @@ void main()
     for (int i = 0; i < steps; i++)
     {
         vec3 currentPosition = startPos + pivot * currentLength;
-        vec4 projectedPosition = toFragSpace(vec4(currentPosition, 1.0f), camera.viewProjMatrix);
+        vec4 projectedPosition = worldToFragSpace(currentPosition, camera.viewProjMatrix);
         vec2 currentUV = projectedPosition.xy;
         float projectedDepth = projectedPosition.z;
 

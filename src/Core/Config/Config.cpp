@@ -115,7 +115,7 @@ namespace MxEngine
         FromJson(config.DirLightTextureSize,    json["renderer"],    "dir-light-texture-size"  );
         FromJson(config.PointLightTextureSize,  json["renderer"],    "point-light-texture-size");
         FromJson(config.SpotLightTextureSize,   json["renderer"],    "spot-light-texture-size" );
-        FromJson(config.BloomTextureSize,       json["renderer"],    "bloom-texture-size"      );
+        FromJson(config.EngineTextureSize,      json["renderer"],    "engine-texture-size"     );
         FromJson(config.ProjectRootDirectory,   json["filesystem"],  "root"                    );
         FromJson(config.ShaderSourceDirectory,  json["filesystem"], " shader-source-directory" );
         FromJson(config.ApplicationCloseKey,    json["debug-build"], "app-close-key"           );
@@ -139,7 +139,7 @@ namespace MxEngine
         json["renderer"   ]["dir-light-texture-size"  ] = config.DirLightTextureSize;
         json["renderer"   ]["point-light-texture-size"] = config.PointLightTextureSize;
         json["renderer"   ]["spot-light-texture-size" ] = config.SpotLightTextureSize;
-        json["renderer"   ]["bloom-texture-size"      ] = config.BloomTextureSize;
+        json["renderer"   ]["engine-texture-size"     ] = config.EngineTextureSize;
         json["filesystem" ]["root"                    ] = config.ProjectRootDirectory;
         json["filesystem" ]["shader-source-directory" ] = config.ShaderSourceDirectory;
         json["debug-build"]["app-close-key"           ] = config.ApplicationCloseKey;

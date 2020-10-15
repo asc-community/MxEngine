@@ -66,6 +66,8 @@ namespace MxEngine
 		void AddKeyBinding(KeyCode openKey);
 		template<typename ShaderHandle>
 		void AddShaderUpdateListener(ShaderHandle shader);
+		template<typename ShaderHandle, typename FilePath>
+		void AddShaderUpdateListener(ShaderHandle shader, const FilePath& lookupDirectory);
 
 		void DrawMxObject(const MxString& treeName, MxObject& object);
 

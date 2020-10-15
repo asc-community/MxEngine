@@ -30,8 +30,6 @@
 
 namespace MxEngine
 {
-    static Matrix4x4 I(1.0f);
-
     static Vector3 ForwardVec = MakeVector3( 0.0f, 0.0f, 1.0f);
     static Vector3 RightVec   = MakeVector3(-1.0f, 0.0f, 0.0f);
     static Vector3 UpVec      = MakeVector3( 0.0f, 1.0f, 0.0f);
@@ -74,9 +72,9 @@ namespace MxEngine
     {
         if (this->needTransformUpdate)
         {
-            Matrix4x4 Translation = MxEngine::Translate(I, this->translation);
+            Matrix4x4 Translation = MxEngine::Translate(Matrix4x4(1.0f), this->translation);
             Matrix4x4 Rotation = ToMatrix(this->rotation);
-            Matrix4x4 Scale = MxEngine::Scale(I, this->scale);
+            Matrix4x4 Scale = MxEngine::Scale(Matrix4x4(1.0f), this->scale);
             this->transform = Translation * Rotation * Scale;
             if (this->scale.x == this->scale.y && this->scale.y == this->scale.z)
                 this->normalMatrix = Rotation;
@@ -95,9 +93,9 @@ namespace MxEngine
 
     void TransformComponent::GetMatrix(Matrix4x4& inPlaceMatrix) const
     {
-        Matrix4x4 Translation = MxEngine::Translate(I, this->translation);
+        Matrix4x4 Translation = MxEngine::Translate(Matrix4x4(1.0f), this->translation);
         Matrix4x4 Rotation = ToMatrix(this->rotation);
-        Matrix4x4 Scale = MxEngine::Scale(I, this->scale);
+        Matrix4x4 Scale = MxEngine::Scale(Matrix4x4(1.0f), this->scale);
         inPlaceMatrix = Translation * Rotation * Scale;
     }
 

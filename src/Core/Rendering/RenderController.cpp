@@ -156,6 +156,22 @@ namespace MxEngine
 		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
+	void RenderController::ComputeAmbientOcclusion(CameraUnit& camera)
+	{
+		MAKE_SCOPE_PROFILER("RenderController::ComputeAmbientOcclusion()");
+
+		auto& shader = this->Pipeline.Environment.Shaders["AmbientOcclusion"_id];
+		shader->IgnoreNonExistingUniform("camera.position");
+		this->BindGBuffer(camera, *shader);
+		this->BindCameraInformation(camera, *shader);
+		
+		this->Pipeline.Environment.NoiseTexture->Bind(4);
+		shader->SetUniformInt("noiseTex", this->Pipeline.Environment.NoiseTexture->GetBoundId());
+
+		this->RenderToTexture(this->Pipeline.Environment.AmbientOcclusionTexture, shader);
+		this->Pipeline.Environment.AmbientOcclusionTexture->GenerateMipmaps();
+	}
+
 	TextureHandle RenderController::ComputeAverageWhite(CameraUnit& camera)
 	{
 		MAKE_SCOPE_PROFILER("RenderController::ComputeAverageWhite()");
@@ -183,7 +199,9 @@ namespace MxEngine
 
 		camera.AlbedoTexture->GenerateMipmaps();
 		camera.MaterialTexture->GenerateMipmaps();
+		camera.NormalTexture->GenerateMipmaps();
 		camera.DepthTexture->GenerateMipmaps();
+		this->ComputeAmbientOcclusion(camera);
 		this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture);
 
 		// render skybox & debug buffer (HDR texture is already attached)
