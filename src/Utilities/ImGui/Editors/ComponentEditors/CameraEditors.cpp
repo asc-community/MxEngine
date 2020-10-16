@@ -56,6 +56,9 @@ namespace MxEngine::GUI
 		float chromaticAbberationMinDistance = cameraEffects.GetChromaticAberrationMinDistance();
 		float chromaticAbberationIntensity = cameraEffects.GetChromaticAberrationIntensity();
 		float chromaticAbberationDistortion = cameraEffects.GetChromaticAberrationDistortion();
+		float ambientOcclusionRadius = cameraEffects.GetAmbientOcclusionRadius();
+		float ambientOcclusionIntensity = cameraEffects.GetAmbientOcclusionIntensity();
+		int ambientOcclusionSamples = (int)cameraEffects.GetAmbientOcclusionSamples();
 		bool isFXAAEnabled = cameraEffects.IsFXAAEnabled();
 
 		if (ImGui::TreeNode("bloom"))
@@ -84,6 +87,18 @@ namespace MxEngine::GUI
 				cameraEffects.SetChromaticAberrationIntensity(chromaticAbberationIntensity);
 			if (ImGui::DragFloat("distortion", &chromaticAbberationDistortion, 0.01f))
 				cameraEffects.SetChromaticAberrationDistortion(chromaticAbberationDistortion);
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("ambient occlusion"))
+		{
+			if (ImGui::DragFloat("radius", &ambientOcclusionRadius, 0.01f))
+				cameraEffects.SetAmbientOcclusionRadius(ambientOcclusionRadius);
+			if (ImGui::DragFloat("intensity", &ambientOcclusionIntensity, 0.01f))
+				cameraEffects.SetAmbientOcclusionIntensity(ambientOcclusionIntensity);
+			if (ImGui::DragInt("samples", &ambientOcclusionSamples))
+				cameraEffects.SetAmbientOcclusionSamples((size_t)Max(ambientOcclusionSamples, 0));
+
 			ImGui::TreePop();
 		}
 		

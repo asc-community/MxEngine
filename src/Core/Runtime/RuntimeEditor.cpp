@@ -215,20 +215,19 @@ namespace MxEngine
 	}
 
 	template<>
-	void RuntimeEditor::AddShaderUpdateListener(ShaderHandle shader)
+	void RuntimeEditor::AddShaderUpdateListener(ShaderHandle shader, const FilePath& lookupDirectory)
 	{
 		#if !defined(MXENGINE_DEBUG)
 		MXLOG_WARNING("RuntimeEditor::AddShaderUpdateListener", "cannot add listener in non-debug mode");
 		#else
-		auto shaderDirectory = FileManager::GetWorkingDirectory() / ToFilePath(Application::Get()->GetConfig().ShaderSourceDirectory);
 
 		auto& vertex = shader->GetVertexShaderDebugFilePath();
 		auto& geometry = shader->GetGeometryShaderDebugFilePath();
 		auto& fragment = shader->GetFragmentShaderDebugFilePath();
 
-		auto vertexPath = FileManager::SearchInDirectory(shaderDirectory, ToFilePath(vertex).filename());
-		auto geometryPath = FileManager::SearchInDirectory(shaderDirectory, ToFilePath(geometry).filename());
-		auto fragmentPath = FileManager::SearchInDirectory(shaderDirectory, ToFilePath(fragment).filename());
+		auto vertexPath = FileManager::SearchInDirectory(lookupDirectory, ToFilePath(vertex).filename());
+		auto geometryPath = FileManager::SearchInDirectory(lookupDirectory, ToFilePath(geometry).filename());
+		auto fragmentPath = FileManager::SearchInDirectory(lookupDirectory, ToFilePath(fragment).filename());
 
 		if (vertexPath.empty() || fragmentPath.empty())
 		{
@@ -278,6 +277,17 @@ namespace MxEngine
 					});
 			}
 		}
+		#endif
+	}
+
+	template<>
+	void RuntimeEditor::AddShaderUpdateListener(ShaderHandle shader)
+	{
+		#if !defined(MXENGINE_DEBUG)
+		MXLOG_WARNING("RuntimeEditor::AddShaderUpdateListener", "cannot add listener in non-debug mode");
+		#else
+		auto lookupDirectory = ToFilePath(shader->GetVertexShaderDebugFilePath()).parent_path();
+		RuntimeEditor::AddShaderUpdateListener<ShaderHandle, FilePath>(std::move(shader), lookupDirectory);
 		#endif
 	}
 

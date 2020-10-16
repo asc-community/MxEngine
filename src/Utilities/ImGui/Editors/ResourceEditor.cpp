@@ -209,6 +209,7 @@ namespace MxEngine::GUI
         DrawTextureEditor("emmisive map", material->EmmisiveMap, true);
         DrawTextureEditor("normal map", material->NormalMap, true);
         DrawTextureEditor("height map", material->HeightMap, true);
+        DrawTextureEditor("ambient occlusion map", material->AmbientOcclusionMap, true);
 
         ImGui::Checkbox("casts shadows", &material->CastsShadow);
         ImGui::DragFloat("specular factor", &material->SpecularFactor, 0.01f, 0.0f, 1.0f);

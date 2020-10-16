@@ -106,7 +106,7 @@ set(MXENGINE_SOURCES
 "Core/Rendering/RenderUtilities/TextureBlur.cpp"  
 "Core/Rendering/RenderUtilities/ShadowMapGenerator.cpp" 
 "Utilities/Parsing/ShaderPreprocessor.cpp"
- )
+  "Library/Noise/NoiseGenerator.cpp")
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)

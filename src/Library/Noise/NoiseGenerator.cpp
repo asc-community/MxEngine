@@ -26,28 +26,41 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Core/MxObject/MxObject.h"
-#include "Platform/PhysicsAPI.h"
+#include "NoiseGenerator.h"
+#include "Utilities/Random/Random.h"
 
 namespace MxEngine
 {
-    class Physics
+    TextureHandle NoiseGenerator::MakeRandomOneChannelTexture(size_t width, size_t height)
     {
-    public:
-        static void AddRigidBody(void* body);
-        static void AddRigidBody(void* body, int group, int mask);
-        static void RemoveRigidBody(void* body);
-        static void SetRigidBodyParent(void* body, MxObject& parent);
+        TextureHandle result = GraphicFactory::Create<Texture>();
+        MxVector<std::array<uint8_t, 3>> noise;
+        noise.resize(width * height);
 
-        static MxObject::Handle GetRigidBodyParent(const void* body);
-        static MxObject::Handle RayCast(const Vector3& from, const Vector3& to);
-        static MxObject::Handle RayCast(const Vector3& from, const Vector3& to, float& rayFraction);
-        static Vector3 GetGravity();
+        for (auto& pix : noise)
+        {
+            auto randomValue = (uint8_t)Random::Range(0, 255);
+            pix[0] = pix[1] = pix[2] = randomValue;
+        }
 
-        static void SetGravity(const Vector3& gravity);
-        static void PerformExtraSimulationStep(float timeDelta);
-        static void SetSimulationStep(float timeDelta);
-    };
+        result->Load(noise[0].data(), (int)width, (int)height);
+        return result;
+    }
+
+    TextureHandle NoiseGenerator::MakeRandomTexture(size_t width, size_t height)
+    {
+        TextureHandle result = GraphicFactory::Create<Texture>();
+        MxVector<std::array<uint8_t, 3>> noise;
+        noise.resize(width * height);
+
+        for (auto& pix : noise)
+        {
+            pix[0] = (uint8_t)Random::Range(0, 255);
+            pix[1] = (uint8_t)Random::Range(0, 255);
+            pix[2] = (uint8_t)Random::Range(0, 255);
+        }
+
+        result->Load(noise[0].data(), (int)width, (int)height);
+        return result;
+    }
 }

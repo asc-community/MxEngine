@@ -29,6 +29,7 @@
 #include "RenderAdaptor.h"
 #include "Library/Primitives/Colors.h"
 #include "Library/Primitives/Primitives.h"
+#include "Library/Noise/NoiseGenerator.h"
 #include "Core/Config/GlobalConfig.h"
 #include "Core/Components/Components.h"
 #include "Core/BoundingObjects/Cone.h"
@@ -84,16 +85,22 @@ namespace MxEngine
         environment.DefaultMaterialMap = Colors::MakeTexture(Colors::WHITE);
         environment.DefaultGreyMap = Colors::MakeTexture(Colors::GREY);
         environment.DefaultBlackCubeMap = Colors::MakeCubeMap(Colors::BLACK);
+        environment.NoiseTexture = NoiseGenerator::MakeRandomTexture(16, 16);
 
         environment.DefaultBlackMap->SetPath("[[black color]]");
         environment.DefaultNormalMap->SetPath("[[default normal]]");
         environment.DefaultMaterialMap->SetPath("[[white color]]");
         environment.DefaultGreyMap->SetPath("[[grey color]]");
+        environment.NoiseTexture->SetPath("[[noise 16x16]]");
 
         environment.AverageWhiteTexture = GraphicFactory::Create<Texture>();
-        environment.AverageWhiteTexture->Load(nullptr, (int)GlobalConfig::GetBloomTextureSize(), (int)GlobalConfig::GetBloomTextureSize(), HDRTextureFormat);
+        environment.AverageWhiteTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), HDRTextureFormat);
         environment.AverageWhiteTexture->SetSamplingFromLOD(environment.AverageWhiteTexture->GetMaxTextureLOD());
         environment.AverageWhiteTexture->SetPath("[[average white]]");
+
+        environment.AmbientOcclusionTexture = GraphicFactory::Create<Texture>();
+        environment.AmbientOcclusionTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize());
+        environment.AmbientOcclusionTexture->SetPath("[[ambient occlusion]]");
         
         // shaders
         auto shaderFolder = FileManager::GetEngineShaderFolder();
@@ -203,12 +210,22 @@ namespace MxEngine
             shaderFolder / "chromatic_abberation_fragment.glsl"
         );
 
+        environment.Shaders["AmbientOcclusion"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "ambient_occlusion_fragment.glsl"
+        );
+
+        environment.Shaders["ApplyAmbientOcclusion"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "apply_ambient_occlusion_fragment.glsl"
+        );
+
         // framebuffers
         environment.DepthFrameBuffer = GraphicFactory::Create<FrameBuffer>();
         environment.DepthFrameBuffer->UseOnlyDepth();
         environment.PostProcessFrameBuffer = GraphicFactory::Create<FrameBuffer>();
 
-        auto bloomBufferSize = (int)GlobalConfig::GetBloomTextureSize();
+        auto bloomBufferSize = (int)GlobalConfig::GetEngineTextureSize();
         for (auto& bloomBuffer : environment.BloomBuffers)
         {
             auto bloomTexture = GraphicFactory::Create<Texture>();

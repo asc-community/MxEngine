@@ -1,6 +1,7 @@
 [
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\5061699253647017043.png",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -14,6 +15,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\8006627369776289000.png",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -27,6 +29,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\7268504077753552595.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -40,6 +43,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\8750083169368950601.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -53,6 +57,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\5792855332885324923.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -66,6 +71,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\14650633544276105767.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -79,6 +85,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\15295713303328085182.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -92,6 +99,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\6047387724914829168.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -105,6 +113,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\5823059166183034438.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -118,6 +127,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\7441062115984513793.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -131,6 +141,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\11490520546946913238.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -144,6 +155,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\6151467286084645207.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -157,6 +169,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\white.png",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -170,6 +183,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\4975155472559461469.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -183,6 +197,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\4675343432951571524.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -196,6 +211,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\2775690330959970771.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -209,6 +225,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\2185409758123873465.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -222,6 +239,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\17876391417123941155.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -235,6 +253,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\11474523244911310074.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -248,6 +267,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\9288698199695299068.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -261,6 +281,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\16275776544635328252.png",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -274,6 +295,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\755318871556304029.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -287,6 +309,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\8481240838833932244.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -300,6 +323,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\6772804448157695701.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -313,6 +337,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\2969916736137545357.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -326,6 +351,7 @@
   },
   {
     "AlbedoMap": "",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",

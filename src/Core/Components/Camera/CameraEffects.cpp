@@ -71,6 +71,21 @@ namespace MxEngine
         return size_t(this->bloomIterations);
     }
 
+    float CameraEffects::GetAmbientOcclusionRadius() const
+    {
+        return this->ambientOcclusionRadius;
+    }
+
+    float CameraEffects::GetAmbientOcclusionIntensity() const
+    {
+        return this->ambientOcclusionIntensity;
+    }
+
+    size_t CameraEffects::GetAmbientOcclusionSamples() const
+    {
+        return (size_t)this->ambientOcclusionSamples;
+    }
+
     void CameraEffects::SetBloomWeight(float weight)
     {
         this->bloomWeight = Max(0.0f, weight);
@@ -109,5 +124,20 @@ namespace MxEngine
     void CameraEffects::SetBloomIterations(size_t iterations)
     {
         this->bloomIterations = (uint8_t)Min(100, iterations);
+    }
+
+    void CameraEffects::SetAmbientOcclusionRadius(float radius)
+    {
+        this->ambientOcclusionRadius = Max(radius, 0.0f);
+    }
+
+    void CameraEffects::SetAmbientOcclusionIntensity(float intensity)
+    {
+        this->ambientOcclusionIntensity = Max(intensity, 0.0f);
+    }
+
+    void CameraEffects::SetAmbientOcclusionSamples(size_t samples)
+    {
+        this->ambientOcclusionSamples = (uint8_t)Min(samples, 32);
     }
 }

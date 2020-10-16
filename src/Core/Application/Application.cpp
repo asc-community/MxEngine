@@ -390,7 +390,7 @@ namespace MxEngine
 
 		for (auto it = shaders.begin(); it != shaders.end(); it++)
 		{
-			this->GetRuntimeEditor().AddShaderUpdateListener(it->second);
+			this->GetRuntimeEditor().AddShaderUpdateListener(it->second, shaderDirectory);
 		}
 		#endif
 	}

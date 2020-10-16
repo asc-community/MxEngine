@@ -26,28 +26,14 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Core/MxObject/MxObject.h"
-#include "Platform/PhysicsAPI.h"
+#include "Platform/GraphicAPI.h"
 
 namespace MxEngine
 {
-    class Physics
+    class NoiseGenerator
     {
     public:
-        static void AddRigidBody(void* body);
-        static void AddRigidBody(void* body, int group, int mask);
-        static void RemoveRigidBody(void* body);
-        static void SetRigidBodyParent(void* body, MxObject& parent);
-
-        static MxObject::Handle GetRigidBodyParent(const void* body);
-        static MxObject::Handle RayCast(const Vector3& from, const Vector3& to);
-        static MxObject::Handle RayCast(const Vector3& from, const Vector3& to, float& rayFraction);
-        static Vector3 GetGravity();
-
-        static void SetGravity(const Vector3& gravity);
-        static void PerformExtraSimulationStep(float timeDelta);
-        static void SetSimulationStep(float timeDelta);
+        static TextureHandle MakeRandomOneChannelTexture(size_t width, size_t height);
+        static TextureHandle MakeRandomTexture(size_t width, size_t height);
     };
 }

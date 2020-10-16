@@ -103,6 +103,11 @@ namespace MxEngine
         return callback.GetResult();
     }
 
+    Vector3 Physics::GetGravity()
+    {
+        return FromBulletVector3(WORLD->getGravity());
+    }
+
     void Physics::SetGravity(const Vector3& gravity)
     {
         WORLD->setGravity(ToBulletVector3(gravity));

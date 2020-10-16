@@ -16,6 +16,7 @@ function(install_mxengine_project EXECUTABLE_NAME)
         copy "${FULL_EXECUTABLE_FILENAME}" "${CMAKE_CURRENT_SOURCE_DIR}"
     )
 
+    message(STATUS "copying shaders into '${EXECUTABLE_NAME}' project directory")
     # copy shader files to the executable folder
     add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E

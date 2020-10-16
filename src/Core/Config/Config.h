@@ -88,7 +88,7 @@ namespace MxEngine
         size_t DirLightTextureSize = 4096;
         size_t PointLightTextureSize = 512;
         size_t SpotLightTextureSize = 512;
-        size_t BloomTextureSize = 512;
+        size_t EngineTextureSize = 512;
 
         // Filesystem settings
         MxString ProjectRootDirectory = "Resources";

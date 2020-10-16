@@ -69,6 +69,10 @@ namespace MxEngine
 		normal texture path
 		*/
 		MxString NormalMap;
+		/*!
+		ambient occlusion texture path
+		*/
+		MxString AmbientOcclusionMap;
 
 		/*!
 		specular factor value
