@@ -8,8 +8,6 @@ uniform sampler2D normalTex;
 uniform sampler2D materialTex;
 uniform sampler2D depthTex;
 
-uniform sampler2D inputTex;
-
 struct Camera
 {
     mat4 invViewProjMatrix;
@@ -20,6 +18,7 @@ uniform Camera camera;
 uniform sampler2D noiseTex;
 uniform int sampleCount;
 uniform float radius;
+uniform float intensity;
 
 const int MAX_SAMPLES = 32;
 vec3 kernel[MAX_SAMPLES] = vec3[]
@@ -58,10 +57,16 @@ vec3 kernel[MAX_SAMPLES] = vec3[]
    vec3(0.0623, 0.1574, 0.0438   )
 );
 
+float random(vec2 co)
+{
+    return fract(sin(dot(co, vec2(12.9898f, 78.233f))) * 43758.5453f);
+}
+
 mat3 computeTBN(vec3 normal)
 {
     vec2 noiseTexScale = textureSize(depthTex, 0) / textureSize(noiseTex, 0);
-    vec3 randomVec = texture(noiseTex, noiseTexScale * TexCoord).rgb;
+    vec2 noiseCoord = noiseTexScale * TexCoord + vec2(random(TexCoord)) / textureSize(noiseTex, 0);
+    vec3 randomVec = texture(noiseTex, noiseCoord).rgb;
     randomVec = vec3(randomVec.xy, 0.0f);
 
     vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
@@ -74,7 +79,7 @@ void main()
     FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
     mat3 TBN = computeTBN(fragment.normal);
 
-    const float bias = 0.001f;
+    const float bias = 0.1f;
     int samples = min(sampleCount, MAX_SAMPLES);
     float totalOcclusion = 0.0f;
     for (int i = 0; i < samples; i++)
@@ -85,14 +90,12 @@ void main()
         vec4 frag = worldToFragSpace(sampleVec, camera.viewProjMatrix);
         float currentDepth = 1.0f / texture(depthTex, frag.xy).r;
         float projectedDepth = 1.0f / frag.z;
-        float rangeCheck = smoothstep(0.0f, 1.0f, radius / (abs(currentDepth - projectedDepth) + bias));
+        float rangeCheck = smoothstep(0.0f, 1.0f, radius / abs(currentDepth - projectedDepth));
 
         totalOcclusion += ((currentDepth < projectedDepth - bias) ? 1.0f : 0.0f) * rangeCheck;
     }
     totalOcclusion /= samples;
-    totalOcclusion = fragment.ambientOcclusion * (1.0f - totalOcclusion);
-
-    vec3 inputColor = texture(inputTex, TexCoord).rgb;
-
-    OutColor = vec4(inputColor * totalOcclusion, 1.0f);
+    totalOcclusion = fragment.ambientOcclusion * pow(1.0f - totalOcclusion, intensity);
+    
+    OutColor = vec4(vec3(totalOcclusion), 1.0f);
 }

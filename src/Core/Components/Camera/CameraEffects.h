@@ -44,8 +44,9 @@ namespace MxEngine
 		float chromaticAberrationIntensity = 0.0f;
 		float chromaticAberrationMinDistance = 0.8f;
 		float chromaticAberrationDistortion = 0.8f;
-		float ambientOcclusionRadius = 0.5f;
-		uint8_t ambientOcclusionSamples = 32;
+		float ambientOcclusionRadius = 5.0f;
+		float ambientOcclusionIntensity = 1.0f;
+		uint8_t ambientOcclusionSamples = 16;
 
 		bool enableFXAA = false;
 		uint8_t bloomIterations = 0;
@@ -59,6 +60,7 @@ namespace MxEngine
 		bool IsFXAAEnabled() const;
 		size_t GetBloomIterations() const;
 		float GetAmbientOcclusionRadius() const;
+		float GetAmbientOcclusionIntensity() const;
 		size_t GetAmbientOcclusionSamples() const;
 
 		void SetBloomWeight(float weight);
@@ -70,6 +72,7 @@ namespace MxEngine
 		void ToggleFXAA(bool value);
 		void SetBloomIterations(size_t iterations);
 		void SetAmbientOcclusionRadius(float radius);
+		void SetAmbientOcclusionIntensity(float intensity);
 		void SetAmbientOcclusionSamples(size_t samples);
 	};
 }

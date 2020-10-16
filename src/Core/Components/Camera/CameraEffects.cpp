@@ -76,6 +76,11 @@ namespace MxEngine
         return this->ambientOcclusionRadius;
     }
 
+    float CameraEffects::GetAmbientOcclusionIntensity() const
+    {
+        return this->ambientOcclusionIntensity;
+    }
+
     size_t CameraEffects::GetAmbientOcclusionSamples() const
     {
         return (size_t)this->ambientOcclusionSamples;
@@ -124,6 +129,11 @@ namespace MxEngine
     void CameraEffects::SetAmbientOcclusionRadius(float radius)
     {
         this->ambientOcclusionRadius = Max(radius, 0.0f);
+    }
+
+    void CameraEffects::SetAmbientOcclusionIntensity(float intensity)
+    {
+        this->ambientOcclusionIntensity = Max(intensity, 0.0f);
     }
 
     void CameraEffects::SetAmbientOcclusionSamples(size_t samples)

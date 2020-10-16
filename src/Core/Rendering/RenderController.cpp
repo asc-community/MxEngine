@@ -163,21 +163,29 @@ namespace MxEngine
 		if (camera.Effects == nullptr || camera.Effects->GetAmbientOcclusionSamples() == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::ComputeAmbientOcclusion()");
 
-		auto& shader = this->Pipeline.Environment.Shaders["AmbientOcclusion"_id];
-		shader->IgnoreNonExistingUniform("camera.position");
-		shader->IgnoreNonExistingUniform("materialTex");
-		this->BindGBuffer(camera, *shader);
-		this->BindCameraInformation(camera, *shader);
+		auto& computeShader = this->Pipeline.Environment.Shaders["AmbientOcclusion"_id];
+		computeShader->IgnoreNonExistingUniform("camera.position");
+		computeShader->IgnoreNonExistingUniform("materialTex");
+		this->BindGBuffer(camera, *computeShader);
+		this->BindCameraInformation(camera, *computeShader);
 		
-		input->Bind(4);
 		this->Pipeline.Environment.NoiseTexture->Bind(5);
 
-		shader->SetUniformInt("noiseTex", this->Pipeline.Environment.NoiseTexture->GetBoundId());
-		shader->SetUniformInt("inputTex", input->GetBoundId());
-		shader->SetUniformInt("sampleCount", (int)camera.Effects->GetAmbientOcclusionSamples());
-		shader->SetUniformFloat("radius", camera.Effects->GetAmbientOcclusionRadius());
+		computeShader->SetUniformInt("noiseTex", this->Pipeline.Environment.NoiseTexture->GetBoundId());
+		computeShader->SetUniformInt("sampleCount", (int)camera.Effects->GetAmbientOcclusionSamples());
+		computeShader->SetUniformFloat("radius", camera.Effects->GetAmbientOcclusionRadius());
+		computeShader->SetUniformFloat("intensity", camera.Effects->GetAmbientOcclusionIntensity());
 
-		this->RenderToTexture(output, shader);
+		this->RenderToTexture(this->Pipeline.Environment.AmbientOcclusionTexture, computeShader);
+		this->Pipeline.Environment.AmbientOcclusionTexture->GenerateMipmaps();
+
+		auto& applyShader = this->Pipeline.Environment.Shaders["ApplyAmbientOcclusion"_id];
+		input->Bind(0);
+		this->Pipeline.Environment.AmbientOcclusionTexture->Bind(1);
+		applyShader->SetUniformInt("inputTex", input->GetBoundId());
+		applyShader->SetUniformInt("aoTex", this->Pipeline.Environment.AmbientOcclusionTexture->GetBoundId());
+
+		this->RenderToTexture(output, applyShader);
 		std::swap(input, output);
 	}
 
