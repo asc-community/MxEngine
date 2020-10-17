@@ -53,7 +53,7 @@ namespace MxEngine::GUI
             static MxString path;
             if (ImGui::Button("load from file"))
             {
-                path = FileManager::OpenFileDialog();
+                path = FileManager::OpenFileDialog(0);
                 if (!path.empty() && File::Exists(path)) {
                     auto newTexture = GraphicFactory::Create<Texture>();
                     newTexture->Load(path);
@@ -145,7 +145,7 @@ namespace MxEngine::GUI
             static MxString path;
             if (ImGui::Button("load from file"))
             {
-                path = FileManager::OpenFileDialog();
+                path = FileManager::OpenFileDialog(0);
                 if (!path.empty() && File::Exists(path))
                     texture = AssetManager::LoadTexture(path);
 
@@ -200,7 +200,7 @@ namespace MxEngine::GUI
         static MxString path;
         if (ImGui::Button("load from file"))
         {
-            path = FileManager::OpenFileDialog();
+            path = FileManager::OpenFileDialog(0);
             if (!path.empty() && File::Exists(path))
                 cubemap = AssetManager::LoadCubeMap(path);
 
@@ -421,7 +421,7 @@ namespace MxEngine::GUI
         static MxString path;
         if (ImGui::Button("load from file"))
         {
-            path = FileManager::OpenFileDialogForMesh();
+            path = FileManager::OpenFileDialog(1);
             if (!path.empty() && File::Exists(path))
                 mesh = AssetManager::LoadMesh(path);
 

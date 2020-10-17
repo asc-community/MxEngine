@@ -47,8 +47,7 @@ namespace MxEngine
         inline static FileManagerImpl* manager = nullptr;
         static void AddDirectory(const FilePath& directory);
     public:
-        static MxString OpenFileDialog();
-        static MxString OpenFileDialogForMesh();
+        static MxString OpenFileDialog(bool ForMesh);
         static void Init();
         static void AddFile(const FilePath& file);
         static const FilePath& GetFilePath(StringId filename);

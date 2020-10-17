@@ -73,7 +73,7 @@ namespace MxEngine::GUI
 		static MxString path;
 		if (ImGui::Button("load from file"))
 		{
-			path = FileManager::OpenFileDialog();
+			path = FileManager::OpenFileDialog(1);
 			if (!path.empty() && File::Exists(path))
 				meshRenderer = AssetManager::LoadMaterials(path);
 
