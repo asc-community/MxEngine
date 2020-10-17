@@ -21,6 +21,7 @@
 #include "Physics/SphereCollider.h"
 #include "Physics/CylinderCollider.h"
 #include "Physics/CapsuleCollider.h"
+#include "Physics/CharacterController.h"
 #include "Physics/RigidBody.h"
 #include "Transform.h"
 #include "Behaviour.h"

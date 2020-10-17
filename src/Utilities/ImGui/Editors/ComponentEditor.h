@@ -51,6 +51,7 @@ namespace MxEngine
 	class AudioSource;
 	class AudioListener;
 	class RigidBody;
+	class CharacterController;
 	class BoxCollider;
 	class SphereCollider;
 	class CylinderCollider;
@@ -80,6 +81,7 @@ namespace MxEngine::GUI
 	void AudioSourceEditor(AudioSource& audioSource);
 	void AudioListenerEditor(AudioListener& audioListener);
 	void RigidBodyEditor(RigidBody& rigidBody);
+	void CharacterControllerEditor(CharacterController& characterController);
 	void BoxColliderEditor(BoxCollider& boxCollider);
 	void SphereColliderEditor(SphereCollider& sphereCollider);
 	void CylinderColliderEditor(CylinderCollider& cylinderCollider);

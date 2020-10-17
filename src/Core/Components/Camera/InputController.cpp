@@ -29,6 +29,8 @@
 #include "InputController.h"
 #include "Core/Application/Event.h"
 #include "Core/Events/MouseEvent.h"
+#include "Core/Events/UpdateEvent.h"
+#include "Platform/Window/Input.h"
 #include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
@@ -48,12 +50,12 @@ namespace MxEngine
 	{
 		auto& object = MxObject::GetByComponent(*this);
 		auto camera = object.GetComponent<CameraController>();
-		MxString uuid = object.GetComponent<InputController>().GetUUID();
+		auto input = object.GetComponent<InputController>();
 
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object movement: " + object.Name);
 	
-		Event::AddEventListener<KeyEvent>(uuid,
-			[forward, back, right, left, up, down, camera, object = MxObject::GetHandleByComponent(*this)](auto& event) mutable
+		Event::AddEventListener<UpdateEvent>(input.GetUUID(),
+			[forward, back, right, left, up, down, camera, input, object = MxObject::GetHandleByComponent(*this)](auto& event) mutable
 		{
 			auto vecForward = MakeVector3( 0.0f, 0.0f, 1.0f);
 			auto vecRight   = MakeVector3(-1.0f, 0.0f, 0.0f);
@@ -75,32 +77,40 @@ namespace MxEngine
 			}
 
 			auto dt = Application::Get()->GetUnscaledTimeDelta();
-			if (event.IsHeld(forward))
+			if (Input::IsKeyHeld(forward))
 			{
 				moveDirection += vecForward;
 			}
-			if (event.IsHeld(back))
+			if (Input::IsKeyHeld(back))
 			{
 				moveDirection -= vecForward;
 			}
-			if (event.IsHeld(right))
+			if (Input::IsKeyHeld(right))
 			{
 				moveDirection += vecRight;
 			}
-			if (event.IsHeld(left))
+			if (Input::IsKeyHeld(left))
 			{
 				moveDirection -= vecRight;
 			}
-			if (event.IsHeld(up))
+			if (Input::IsKeyHeld(up))
 			{
 				moveDirection += vecUp;
 			}
-			if (event.IsHeld(down))
+			if (Input::IsKeyHeld(down))
 			{
 				moveDirection -= vecUp;
 			}
-			if(moveDirection != MakeVector3(0.0f))
+
+			if (moveDirection != MakeVector3(0.0f))
+			{
 				object->Transform.Translate(Normalize(moveDirection) * moveSpeed * dt);
+				input->motion = Normalize(moveDirection);
+			}
+			else
+			{
+				input->motion = MakeVector3(0.0f);
+			}
 		});
 	}
 	
@@ -174,5 +184,10 @@ namespace MxEngine
 				camera->Rotate(0.0f, diff.y);
 				oldPos = event.position;
 		});
+	}
+
+	const Vector3& InputController::GetMotionVector() const
+	{
+		return this->motion;
 	}
 }

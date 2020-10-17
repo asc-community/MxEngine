@@ -14,7 +14,7 @@ namespace PhysicsSample
     */
     class PhysicsApplication : public Application
     {
-        MxObject::Handle cameraObject;
+        MxObject::Handle player;
         InstanceFactory::Handle physicalObjectFactory;
         InstanceFactory::Handle shotFactory;
         bool debugPhysics = false;
@@ -83,35 +83,52 @@ namespace PhysicsSample
                 object->AddComponent<DebugDraw>()->RenderPhysicsCollider = true;
             }
 
-            auto dir = cameraObject->GetComponent<CameraController>()->GetDirection();
+            auto dir = player->GetComponent<CameraController>()->GetDirection();
             object->Transform.SetScale(shotSize);
-            object->Transform.SetPosition(cameraObject->Transform.GetPosition());
+            object->Transform.SetPosition(player->Transform.GetPosition() + 5.0f * dir);
             object->AddComponent<SphereCollider>();
             auto rigidBody = object->AddComponent<RigidBody>();
             rigidBody->MakeDynamic();
             rigidBody->SetLinearVelocity(dir * 180.0f);
             rigidBody->SetMass(50.0f);
             rigidBody->SetBounceFactor(0.5f);
+
+            Timer::CallAfterDelta([object]() mutable { MxObject::Destroy(object); }, 10.0f);
+        }
+
+        void InitializePlayer()
+        {
+            player = MxObject::Create();
+            player->Name = "Player";
+            player->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("dawn.jpg"_id);
+            player->AddComponent<CameraToneMapping>();
+            player->Transform.SetPosition(Vector3(30, 30, 30));
+
+            auto controller = player->AddComponent<CameraController>();
+            controller->ListenWindowResizeEvent();
+            controller->SetMoveSpeed(30);
+            Rendering::SetViewport(controller);
+            Rendering::SetFogDensity(0.0f);
+
+            auto input = player->AddComponent<InputController>();
+            input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::UNKNOWN);
+            input->BindRotation();
+
+            auto collider = player->AddComponent<CapsuleCollider>();
+            collider->SetBoundingCapsule(Capsule(5.0f, 5.0f, Capsule::Axis::Y));
+
+            auto rigidBody = player->AddComponent<RigidBody>();
+            rigidBody->SetMass(100.0f);
+
+            auto characterController = player->AddComponent<CharacterController>();
+            characterController->SetJumpPower(20.0f);
+            characterController->SetJumpSpeed(10.0f);
         }
 
     public:
         virtual void OnCreate() override
         {
-            // setup camera
-            cameraObject = MxObject::Create();
-            cameraObject->Name = "Player Camera";
-            cameraObject->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("dawn.jpg"_id);
-            cameraObject->AddComponent<CameraToneMapping>();
-            cameraObject->Transform.SetPosition(Vector3(30, 30, 30));
-            auto controller = cameraObject->AddComponent<CameraController>();
-            controller->SetMoveSpeed(50);
-            auto input = cameraObject->AddComponent<InputController>();
-            controller->ListenWindowResizeEvent();
-            controller->SetMoveSpeed(30);
-            input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
-            input->BindRotation();
-            Rendering::SetViewport(controller);
-            Rendering::SetFogDensity(0.0f);
+            this->InitializePlayer();
 
             // create global directional light
             auto lightObject = MxObject::Create();
@@ -160,8 +177,8 @@ namespace PhysicsSample
             // draw small red box where player is looking at
             if (Runtime::IsEditorActive())
             {
-                auto dir = cameraObject->GetComponent<CameraController>()->GetDirection();
-                auto pos = cameraObject->Transform.GetPosition();
+                auto dir = player->GetComponent<CameraController>()->GetDirection();
+                auto pos = player->Transform.GetPosition();
                 auto end = pos + dir * 1000.0f;
                 float fraction = 0.0f;
                 auto lookingAt = Physics::RayCast(pos, end, fraction);

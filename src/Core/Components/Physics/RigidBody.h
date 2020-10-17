@@ -72,6 +72,7 @@ namespace MxEngine
         uint32_t GetCollisionMask() const;
         void SetActivationState(ActivationState state);
         ActivationState GetActivationState() const;
+        AABB GetAABB() const;
         void Activate();
         void ClearForces();
         float GetMass() const;

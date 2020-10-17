@@ -204,6 +204,21 @@ namespace MxEngine
         return this->rigidBody->GetActivationState();
     }
 
+    AABB RigidBody::GetAABB() const
+    {
+        AABB result{ };
+        auto collider = this->rigidBody->GetCollisionShape();
+        if (collider != nullptr)
+        {
+            btVector3 min, max;
+            auto& tr = this->rigidBody->GetNativeHandle()->getWorldTransform();
+            collider->getAabb(tr, min, max);
+            result.Min = FromBulletVector3(min);
+            result.Max = FromBulletVector3(max);
+        }
+        return result;
+    }
+
     void RigidBody::Activate()
     {
         this->rigidBody->Activate();

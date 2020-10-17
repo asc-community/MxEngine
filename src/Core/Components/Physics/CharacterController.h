@@ -26,28 +26,36 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
 #include "Utilities/ECS/Component.h"
-#include "Core/Events/KeyEvent.h"
 #include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-	class InputController
-	{
-		MAKE_COMPONENT(InputController);
+    class KeyEvent;
 
-		Vector3 motion{ 0.0f };
-	public:
-		~InputController();
+    class CharacterController
+    {
+        MAKE_COMPONENT(CharacterController);
 
-		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right);
-		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down);
-		void BindRotation();
-		void BindHorizontalRotation();
-		void BindVerticalRotation();
+        bool AreAllComponentsPresent() const;
+        const Vector3& GetMotionVector() const;
+        
+        float jumpPower = 1.0f;
+        float jumpSpeed = 0.25f;
+        bool isGrounded = false;
 
-		const Vector3& GetMotionVector() const;
-	};
+    public:
+        void OnUpdate(float dt);
+
+        void SetJumpPower(float power);
+        void SetJumpSpeed(float speed);
+        float GetJumpPower() const;
+        float GetJumpSpeed() const;
+        bool IsGrounded() const;
+        Vector3 GetCurrentMotion() const;
+        float GetMoveSpeed() const;
+        void SetMoveSpeed(float speed);
+        float GetRotateSpeed() const;
+        void SetRotateSpeed(float speed);
+    };
 }

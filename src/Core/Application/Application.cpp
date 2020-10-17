@@ -476,30 +476,31 @@ namespace MxEngine
 
 		editor.Log("Welcome to MxEngine developer console!");
 
-		editor.RegisterComponentEditor<Behaviour>         ("Behaviour",          GUI::BehaviourEditor);
-		editor.RegisterComponentEditor<InstanceFactory>   ("InstanceFactory",    GUI::InstanceFactoryEditor);
-		editor.RegisterComponentEditor<Instance>          ("Instance",           GUI::InstanceEditor);
-		editor.RegisterComponentEditor<Skybox>            ("Skybox",             GUI::SkyboxEditor);
-		editor.RegisterComponentEditor<DebugDraw>         ("DebugDraw",          GUI::DebugDrawEditor);
-		editor.RegisterComponentEditor<MeshRenderer>      ("MeshRenderer",       GUI::MeshRendererEditor);
-		editor.RegisterComponentEditor<MeshSource>        ("MeshSource",         GUI::MeshSourceEditor);
-		editor.RegisterComponentEditor<MeshLOD>           ("MeshLOD",            GUI::MeshLODEditor);
-		editor.RegisterComponentEditor<DirectionalLight>  ("DirectionalLight",   GUI::DirectionalLightEditor);
-		editor.RegisterComponentEditor<PointLight>        ("PointLight",         GUI::PointLightEditor);
-		editor.RegisterComponentEditor<SpotLight>         ("SpotLight",          GUI::SpotLightEditor);
-		editor.RegisterComponentEditor<CameraController>  ("CameraController",   GUI::CameraControllerEditor);
-		editor.RegisterComponentEditor<CameraEffects>     ("CameraEffects",      GUI::CameraEffectsEditor);
-		editor.RegisterComponentEditor<CameraSSR>         ("CameraSSR",          GUI::CameraSSREditor);
-		editor.RegisterComponentEditor<CameraToneMapping> ("CameraToneMapping",  GUI::CameraToneMappingEditor);
-		editor.RegisterComponentEditor<VRCameraController>("VRCameraController", GUI::VRCameraControllerEditor);
-		editor.RegisterComponentEditor<InputController>   ("InputController",    GUI::InputControllerEditor);
-		editor.RegisterComponentEditor<AudioSource>       ("AudioSource",        GUI::AudioSourceEditor);
-		editor.RegisterComponentEditor<AudioListener>     ("AudioListener",      GUI::AudioListenerEditor);
-		editor.RegisterComponentEditor<RigidBody>         ("RigidBody",          GUI::RigidBodyEditor);
-		editor.RegisterComponentEditor<BoxCollider>       ("BoxCollider",        GUI::BoxColliderEditor);
-		editor.RegisterComponentEditor<SphereCollider>    ("SphereCollider",     GUI::SphereColliderEditor);
-		editor.RegisterComponentEditor<CylinderCollider>  ("CylinderCollider",   GUI::CylinderColliderEditor);
-		editor.RegisterComponentEditor<CapsuleCollider>   ("CapsuleCollider",    GUI::CapsuleColliderEditor);
+		editor.RegisterComponentEditor<Behaviour>          ("Behaviour",           GUI::BehaviourEditor);
+		editor.RegisterComponentEditor<InstanceFactory>    ("InstanceFactory",     GUI::InstanceFactoryEditor);
+		editor.RegisterComponentEditor<Instance>           ("Instance",            GUI::InstanceEditor);
+		editor.RegisterComponentEditor<Skybox>             ("Skybox",              GUI::SkyboxEditor);
+		editor.RegisterComponentEditor<DebugDraw>          ("DebugDraw",           GUI::DebugDrawEditor);
+		editor.RegisterComponentEditor<MeshRenderer>       ("MeshRenderer",        GUI::MeshRendererEditor);
+		editor.RegisterComponentEditor<MeshSource>         ("MeshSource",          GUI::MeshSourceEditor);
+		editor.RegisterComponentEditor<MeshLOD>            ("MeshLOD",             GUI::MeshLODEditor);
+		editor.RegisterComponentEditor<DirectionalLight>   ("DirectionalLight",    GUI::DirectionalLightEditor);
+		editor.RegisterComponentEditor<PointLight>         ("PointLight",          GUI::PointLightEditor);
+		editor.RegisterComponentEditor<SpotLight>          ("SpotLight",           GUI::SpotLightEditor);
+		editor.RegisterComponentEditor<CameraController>   ("CameraController",    GUI::CameraControllerEditor);
+		editor.RegisterComponentEditor<CameraEffects>      ("CameraEffects",       GUI::CameraEffectsEditor);
+		editor.RegisterComponentEditor<CameraSSR>          ("CameraSSR",           GUI::CameraSSREditor);
+		editor.RegisterComponentEditor<CameraToneMapping>  ("CameraToneMapping",   GUI::CameraToneMappingEditor);
+		editor.RegisterComponentEditor<VRCameraController> ("VRCameraController",  GUI::VRCameraControllerEditor);
+		editor.RegisterComponentEditor<InputController>    ("InputController",     GUI::InputControllerEditor);
+		editor.RegisterComponentEditor<AudioSource>        ("AudioSource",         GUI::AudioSourceEditor);
+		editor.RegisterComponentEditor<AudioListener>      ("AudioListener",       GUI::AudioListenerEditor);
+		editor.RegisterComponentEditor<RigidBody>          ("RigidBody",           GUI::RigidBodyEditor);
+		editor.RegisterComponentEditor<CharacterController>("CharacterController", GUI::CharacterControllerEditor);
+		editor.RegisterComponentEditor<BoxCollider>        ("BoxCollider",         GUI::BoxColliderEditor);
+		editor.RegisterComponentEditor<SphereCollider>     ("SphereCollider",      GUI::SphereColliderEditor);
+		editor.RegisterComponentEditor<CylinderCollider>   ("CylinderCollider",    GUI::CylinderColliderEditor);
+		editor.RegisterComponentEditor<CapsuleCollider>    ("CapsuleCollider",     GUI::CapsuleColliderEditor);
 
 		this->RegisterComponentUpdate<Behaviour>();
 		this->RegisterComponentUpdate<InstanceFactory>();
@@ -507,5 +508,6 @@ namespace MxEngine
 		this->RegisterComponentUpdate<AudioListener>();
 		this->RegisterComponentUpdate<AudioSource>();
 		this->RegisterComponentUpdate<RigidBody>();
+		this->RegisterComponentUpdate<CharacterController>();
 	}
 }

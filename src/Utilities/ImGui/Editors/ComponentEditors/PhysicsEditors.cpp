@@ -27,6 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Core/Components/Physics/RigidBody.h"
+#include "Core/Components/Physics/CharacterController.h"
 #include "Core/Components/Physics/BoxCollider.h"
 #include "Core/Components/Physics/SphereCollider.h"
 #include "Core/Components/Physics/CapsuleCollider.h"
@@ -39,6 +40,35 @@ namespace MxEngine::GUI
 	#define REMOVE_COMPONENT_BUTTON(comp) \
 	if(ImGui::Button("remove component")) {\
 		MxObject::GetByComponent(comp).RemoveComponent<std::remove_reference_t<decltype(comp)>>(); return; }
+
+	void CharacterControllerEditor(CharacterController& characterController)
+	{
+		TREE_NODE_PUSH("CharacterController");
+		REMOVE_COMPONENT_BUTTON(characterController);
+
+		auto motion = characterController.GetCurrentMotion();
+		auto jump = characterController.GetJumpPower();
+		auto jumpSpeed = characterController.GetJumpSpeed();
+		auto moveSpeed = characterController.GetMoveSpeed();
+		auto rotateSpeed = characterController.GetRotateSpeed();
+
+		// (-0.0f, -0.0f, -0.0f) -> (0.0f, 0.0f, 0.0f)
+		motion.x = std::abs(motion.x) < 0.001f ? 0.0f : motion.x;
+		motion.y = std::abs(motion.y) < 0.001f ? 0.0f : motion.y;
+		motion.z = std::abs(motion.z) < 0.001f ? 0.0f : motion.z;
+
+		ImGui::Text("is grounded: %s", BOOL_STRING(characterController.IsGrounded()));
+		ImGui::Text("current motion: (%f, %f, %f)", motion.x, motion.y, motion.z);
+
+		if (ImGui::DragFloat("jump power", &jump))
+			characterController.SetJumpPower(jump);
+		if (ImGui::DragFloat("jump speed", &jumpSpeed))
+			characterController.SetJumpSpeed(jumpSpeed);
+		if (ImGui::DragFloat("move speed", &moveSpeed))
+			characterController.SetMoveSpeed(moveSpeed);
+		if (ImGui::DragFloat("rotate speed", &rotateSpeed))
+			characterController.SetRotateSpeed(rotateSpeed);
+	}
 
 	void RigidBodyEditor(RigidBody& rigidBody)
 	{
