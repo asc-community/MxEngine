@@ -70,10 +70,9 @@ namespace MxEngine::GUI
 		TREE_NODE_PUSH("MeshRenderer");
 		REMOVE_COMPONENT_BUTTON(meshRenderer);
 
-		static MxString path;
 		if (ImGui::Button("load from file"))
 		{
-			path = FileManager::OpenFileDialog(1);
+			MxString path = FileManager::OpenFileDialog("");
 			if (!path.empty() && File::Exists(path))
 				meshRenderer = AssetManager::LoadMaterials(path);
 

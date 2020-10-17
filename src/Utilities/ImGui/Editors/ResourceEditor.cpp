@@ -50,10 +50,9 @@ namespace MxEngine::GUI
 
         if (ImGui::CollapsingHeader("create new texture"))
         {
-            static MxString path;
             if (ImGui::Button("load from file"))
             {
-                path = FileManager::OpenFileDialog(0);
+                MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr");
                 if (!path.empty() && File::Exists(path)) {
                     auto newTexture = GraphicFactory::Create<Texture>();
                     newTexture->Load(path);
@@ -142,10 +141,9 @@ namespace MxEngine::GUI
 
         if (withTextureLoader)
         {
-            static MxString path;
             if (ImGui::Button("load from file"))
             {
-                path = FileManager::OpenFileDialog(0);
+                MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr");
                 if (!path.empty() && File::Exists(path))
                     texture = AssetManager::LoadTexture(path);
 
@@ -197,10 +195,9 @@ namespace MxEngine::GUI
             ImGui::Text("empty resource");
         }
         
-        static MxString path;
         if (ImGui::Button("load from file"))
         {
-            path = FileManager::OpenFileDialog(0);
+            MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr");
             if (!path.empty() && File::Exists(path))
                 cubemap = AssetManager::LoadCubeMap(path);
 
@@ -418,10 +415,9 @@ namespace MxEngine::GUI
         if (ImGui::Button("update mesh boundings"))
             mesh->UpdateBoundingGeometry();
 
-        static MxString path;
         if (ImGui::Button("load from file"))
         {
-            path = FileManager::OpenFileDialog(1);
+            MxString path = FileManager::OpenFileDialog("");
             if (!path.empty() && File::Exists(path))
                 mesh = AssetManager::LoadMesh(path);
 

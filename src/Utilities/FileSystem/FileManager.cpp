@@ -37,15 +37,15 @@
 namespace MxEngine
 {
 
-    MxString FileManager::OpenFileDialog(bool ForMesh)
+    MxString FileManager::OpenFileDialog(const std::string& types)
     {
         std::vector<std::string> selection;
-        if (ForMesh) {
+        if (!types.size()) {
             selection = pfd::open_file("Select a file").result();
         }
         else {
             selection = pfd::open_file("Select a file", ".",
-                { "Image Files", "*.png *.jpg *.jpeg *.bmp *.tga *.hdr",
+                { "Image Files", types,
                   "All Files", "*" },
                 pfd::opt::multiselect).result();
         }
