@@ -31,9 +31,19 @@
 #include "Library/Primitives/Primitives.h"
 #include "Library/Noise/NoiseGenerator.h"
 #include "Core/Config/GlobalConfig.h"
-#include "Core/Components/Components.h"
-#include "Core/BoundingObjects/Cone.h"
-#include "Core/BoundingObjects/Frustrum.h"
+#include "Core/Components/Rendering/MeshSource.h"
+#include "Core/Components/Rendering/MeshRenderer.h"
+#include "Core/Components/Rendering/Skybox.h"
+#include "Core/Components/Rendering/MeshLOD.h"
+#include "Core/Components/Rendering/DebugDraw.h"
+#include "Core/Components/Camera/CameraEffects.h"
+#include "Core/Components/Camera/CameraSSR.h"
+#include "Core/Components/Camera/CameraToneMapping.h"
+#include "Core/Components/Lighting/DirectionalLight.h"
+#include "Core/Components/Lighting/PointLight.h"
+#include "Core/Components/Lighting/SpotLight.h"
+#include "Core/Components/Instancing/InstanceFactory.h"
+#include "Core/Rendering/DebugDataSubmitter.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/FileSystem/FileManager.h"
 
@@ -351,93 +361,15 @@ namespace MxEngine
         {
             MAKE_SCOPE_PROFILER("RenderAdaptor::SubmitDebugData()");
 
+            DebugDataSubmitter debugProcessor(this->DebugDrawer);
+
             auto debugDrawView = ComponentFactory::GetView<DebugDraw>();
             for (auto& debugDraw : debugDrawView)
             {
                 auto& object = MxObject::GetByComponent(debugDraw);
-                auto instanceFactory = object.GetComponent<InstanceFactory>();
-                auto instance = object.GetComponent<Instance>();
-                auto meshSource = object.GetComponent<MeshSource>();
-                auto spotLight = object.GetComponent<SpotLight>();
-                auto pointLight = object.GetComponent<PointLight>();
-                auto cameraController = object.GetComponent<CameraController>();
-                auto audioSource = object.GetComponent<AudioSource>();
-                auto boxCollider = object.GetComponent<BoxCollider>();
-                auto sphereCollider = object.GetComponent<SphereCollider>();
-                auto cylinderCollider = object.GetComponent<CylinderCollider>();
-                auto capsuleCollider = object.GetComponent<CapsuleCollider>();
-                auto rigidBody = object.GetComponent<RigidBody>();
-
-                if(instance.IsValid()) meshSource = instance->GetParent()->GetComponent<MeshSource>();
-
-                if (meshSource.IsValid() && !instanceFactory.IsValid())
-                {
-                    if (debugDraw.RenderBoundingBox)
-                    {
-                        for (const auto& submesh : meshSource->Mesh->Submeshes)
-                        {
-                            auto box = submesh.GetBoundingBox() * object.Transform.GetMatrix() * submesh.GetTransform()->GetMatrix();
-                            this->DebugDrawer.Submit(box, debugDraw.BoundingBoxColor);
-                        }
-                    }
-                    if (debugDraw.RenderBoundingSphere)
-                    {
-                        for (const auto& submesh : meshSource->Mesh->Submeshes)
-                        {
-                            auto sphere = submesh.GetBoundingSphere();
-                            sphere.Center += object.Transform.GetPosition() + submesh.GetTransform()->GetPosition();
-                            sphere.Radius *= ComponentMax(object.Transform.GetScale() * submesh.GetTransform()->GetScale());
-                            this->DebugDrawer.Submit(sphere, debugDraw.BoundingSphereColor);
-                        }
-                    }
-                }
-                if (debugDraw.RenderLightingBounds && pointLight.IsValid())
-                {
-                    BoundingSphere sphere(object.Transform.GetPosition(), pointLight->GetRadius());
-                    this->DebugDrawer.Submit(sphere, debugDraw.LightSourceColor);
-                }
-                if (debugDraw.RenderLightingBounds && spotLight.IsValid())
-                {
-                    Cone cone(object.Transform.GetPosition(), spotLight->Direction, 3.0f, spotLight->GetOuterAngle());
-                    this->DebugDrawer.Submit(cone, debugDraw.LightSourceColor);
-                }
-                if (debugDraw.RenderSoundBounds && audioSource.IsValid())
-                {
-                    if (!audioSource->IsRelative())
-                    {
-                        if (audioSource->IsOmnidirectional())
-                        {
-                            BoundingSphere sphere(object.Transform.GetPosition(), 3.0f);
-                            this->DebugDrawer.Submit(sphere, debugDraw.SoundSourceColor);
-                        }
-                        else
-                        {
-                            Cone cone(object.Transform.GetPosition(), audioSource->GetDirection(), 3.0f, audioSource->GetOuterAngle());
-                            this->DebugDrawer.Submit(cone, debugDraw.SoundSourceColor);
-                        }
-                    }
-                }
-                if (debugDraw.RenderFrustrumBounds && cameraController.IsValid())
-                {
-                    auto direction = cameraController->GetDirection();
-                    auto up = cameraController->GetDirectionUp();
-                    auto aspect = cameraController->Camera.GetAspectRatio();
-                    auto zoom = cameraController->Camera.GetZoom() * 65.0f;
-                    Frustrum frustrum(object.Transform.GetPosition() + Normalize(direction), direction, up, zoom, aspect);
-                    this->DebugDrawer.Submit(frustrum, debugDraw.FrustrumColor);
-                }
-                if (rigidBody.IsValid() && debugDraw.RenderPhysicsCollider)
-                {
-                    if (boxCollider.IsValid())
-                        this->DebugDrawer.Submit(boxCollider->GetBoundingBox(), debugDraw.BoundingBoxColor);
-                    if (sphereCollider.IsValid())
-                        this->DebugDrawer.Submit(sphereCollider->GetBoundingSphere(), debugDraw.BoundingSphereColor);
-                    if (cylinderCollider.IsValid())
-                        this->DebugDrawer.Submit(cylinderCollider->GetBoundingCylinder(), debugDraw.BoundingBoxColor);
-                    if (capsuleCollider.IsValid())
-                        this->DebugDrawer.Submit(capsuleCollider->GetBoundingCapsule(), debugDraw.BoundingSphereColor);
-                }
+                debugProcessor.ProcessObject(object);
             }
+                
             environment.DebugBufferObject.VertexCount = this->DebugDrawer.GetSize();
             environment.OverlayDebugDraws = this->DebugDrawer.DrawAsScreenOverlay;
             this->DebugDrawer.SubmitBuffer();

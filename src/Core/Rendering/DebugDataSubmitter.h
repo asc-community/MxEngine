@@ -28,51 +28,17 @@
 
 #pragma once
 
-#include "Core/Resources/ACESCurve.h"
-#include "Utilities/ECS/Component.h"
-
 namespace MxEngine
 {
-	// TODO: split into multiple components
-	class CameraEffects
-	{
-		MAKE_COMPONENT(CameraEffects);
+    class MxObject;
+    class DebugBuffer;
 
-		float bloomWeight = 0.5f;
-		float vignetteRadius = 0.1f;
-		float vignetteIntensity = 100.0f;
-		float chromaticAberrationIntensity = 0.08f;
-		float chromaticAberrationMinDistance = 0.8f;
-		float chromaticAberrationDistortion = 0.8f;
-		float ambientOcclusionRadius = 5.0f;
-		float ambientOcclusionIntensity = 1.0f;
-		uint8_t ambientOcclusionSamples = 16;
+    class DebugDataSubmitter
+    {
+        DebugBuffer& debug;
+    public:
+        DebugDataSubmitter(DebugBuffer& debug) : debug(debug) { }
 
-		bool enableFXAA = false;
-		uint8_t bloomIterations = 3;
-	public:
-		float GetBloomWeight() const;
-		float GetVignetteIntensity() const;
-		float GetVignetteRadius() const;
-		float GetChromaticAberrationMinDistance() const;
-		float GetChromaticAberrationIntensity() const;
-		float GetChromaticAberrationDistortion() const;
-		bool IsFXAAEnabled() const;
-		size_t GetBloomIterations() const;
-		float GetAmbientOcclusionRadius() const;
-		float GetAmbientOcclusionIntensity() const;
-		size_t GetAmbientOcclusionSamples() const;
-
-		void SetBloomWeight(float weight);
-		void SetVignetteRadius(float radius);
-		void SetVignetteIntensity(float intensity);
-		void SetChromaticAberrationMinDistance(float distance);
-		void SetChromaticAberrationIntensity(float intensity);
-		void SetChromaticAberrationDistortion(float distortion);
-		void ToggleFXAA(bool value);
-		void SetBloomIterations(size_t iterations);
-		void SetAmbientOcclusionRadius(float radius);
-		void SetAmbientOcclusionIntensity(float intensity);
-		void SetAmbientOcclusionSamples(size_t samples);
-	};
+        void ProcessObject(MxObject& object);
+    };
 }

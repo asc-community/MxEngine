@@ -61,8 +61,10 @@ namespace MxEngine
 		MXLOG_INFO("Assimp::Importer", "loading object from file: " + filename);
 
 		static Assimp::Importer importer; // TODO: not thread safe
-		const aiScene* scene = importer.ReadFile(filename.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices 
-			| aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes | aiProcess_ImproveCacheLocality | aiProcess_GenUVCoords | aiProcess_CalcTangentSpace);
+		const aiScene* scene = importer.ReadFile(filename.c_str(), 
+			aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices |
+			aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes |
+			aiProcess_ImproveCacheLocality | aiProcess_GenUVCoords | aiProcess_CalcTangentSpace);
 		if (scene == nullptr)
 		{
 			MXLOG_ERROR("Assimp::Importer", importer.GetErrorString());

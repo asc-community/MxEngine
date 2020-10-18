@@ -37,7 +37,10 @@ namespace MxEngine
     class SphereShape : public ShapeBase
     {
     public:
+        using NativeHandle = btSphereShape*;
+
         SphereShape(float radius);
+        SphereShape(const BoundingSphere& sphere);
         SphereShape(const SphereShape&) = delete;
         SphereShape(SphereShape&&) noexcept;
         SphereShape& operator=(const SphereShape&) = delete;

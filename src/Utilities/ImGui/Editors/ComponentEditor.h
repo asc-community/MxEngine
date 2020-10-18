@@ -56,6 +56,7 @@ namespace MxEngine
 	class SphereCollider;
 	class CylinderCollider;
 	class CapsuleCollider;
+	class CompoundCollider;
 }
 
 namespace MxEngine::GUI
@@ -86,4 +87,5 @@ namespace MxEngine::GUI
 	void SphereColliderEditor(SphereCollider& sphereCollider);
 	void CylinderColliderEditor(CylinderCollider& cylinderCollider);
 	void CapsuleColliderEditor(CapsuleCollider& capsuleCollider);
+	void CompoundColliderEditor(CompoundCollider& compoundCollider);
 }

@@ -108,7 +108,10 @@ set(MXENGINE_SOURCES
 "Utilities/Parsing/ShaderPreprocessor.cpp"
 "Library/Noise/NoiseGenerator.cpp"
 "Core/Components/Physics/CharacterController.cpp"
-)
+ "Platform/Bullet3/CompoundShape.cpp" 
+ "Core/Components/Physics/CompoundCollider.cpp"
+ "Core/Rendering/DebugDataSubmitter.cpp"
+ )
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)

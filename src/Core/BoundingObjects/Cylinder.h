@@ -72,4 +72,15 @@ namespace MxEngine
         }
         return Cylinder(height, radiusX, radiusZ, axis);
     }
+
+    inline constexpr bool operator==(const Cylinder& b1, const Cylinder& b2)
+    {
+        return b1.Center == b2.Center && b1.Height == b2.Height && b1.Orientation == b2.Orientation &&
+            b1.RadiusX == b2.RadiusX && b1.RadiusZ == b2.RadiusZ && b1.Rotation == b2.Rotation;
+    }
+
+    inline constexpr bool operator!=(const Cylinder& b1, const Cylinder& b2)
+    {
+        return !(b1 == b2);
+    }
 }

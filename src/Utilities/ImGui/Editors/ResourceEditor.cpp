@@ -233,8 +233,20 @@ namespace MxEngine::GUI
     void DrawBoxEditor(const char* name, BoundingBox& box)
     {
         SCOPE_TREE_NODE(name);
+
+        ImGui::DragFloat3("center", &box.Center[0]);
         ImGui::DragFloat3("min", &box.Min[0], 0.01f);
         ImGui::DragFloat3("max", &box.Max[0], 0.01f);
+        
+        auto rotation = DegreesVec(MakeEulerAngles(box.Rotation));
+        auto newRotation = rotation;
+        if (ImGui::DragFloat("rotate x", &newRotation.x))
+            box.Rotation *= MakeQuaternion(Radians(newRotation.x - rotation.x), MakeVector3(1.0f, 0.0f, 0.0f));
+        if (ImGui::DragFloat("rotate y", &newRotation.y))
+            box.Rotation *= MakeQuaternion(Radians(newRotation.y - rotation.y), MakeVector3(0.0f, 1.0f, 0.0f));
+        if (ImGui::DragFloat("rotate z", &newRotation.z))
+            box.Rotation *= MakeQuaternion(Radians(newRotation.z - rotation.z), MakeVector3(0.0f, 0.0f, 1.0f));
+
         box.Min = VectorMin(box.Min, box.Max);
         box.Max = VectorMax(box.Min, box.Max);
     }

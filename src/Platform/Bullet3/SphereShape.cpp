@@ -37,6 +37,12 @@ namespace MxEngine
         this->CreateShape<btSphereShape>(radius);
     }
 
+    SphereShape::SphereShape(const BoundingSphere& sphere)
+        : SphereShape(sphere.Radius)
+    {
+
+    }
+
     SphereShape::SphereShape(SphereShape&& other) noexcept
     {
         this->collider = other.collider;

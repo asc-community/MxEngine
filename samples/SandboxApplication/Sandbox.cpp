@@ -1,6 +1,8 @@
 #include "Sandbox.h"
 #include "Gameplay/SandboxScene.h"
 
+#include "Platform/Bullet3/CompoundShape.h"
+
 void SandboxApp::OnCreate()
 {
 	Event::AddEventListener<FpsUpdateEvent>("CountFPS",

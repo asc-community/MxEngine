@@ -58,4 +58,14 @@ namespace MxEngine
         result.Min = aabb.Min;
         return result;
     }
+
+    inline constexpr bool operator==(const BoundingBox& b1, const BoundingBox& b2)
+    {
+        return b1.Center == b2.Center && b1.Max == b2.Max && b1.Min == b2.Min && b1.Rotation == b2.Rotation;
+    }
+
+    inline constexpr bool operator!=(const BoundingBox& b1, const BoundingBox& b2)
+    {
+        return !(b1 == b2);
+    }
 }

@@ -76,4 +76,14 @@ namespace MxEngine
         }
         return Capsule(height, radius, axis);
     }
+
+    inline constexpr bool operator==(const Capsule& b1, const Capsule& b2)
+    {
+        return b1.Center == b2.Center && b1.Height == b2.Height && b1.Orientation == b2.Orientation && b1.Radius == b2.Radius && b1.Rotation == b2.Rotation;
+    }
+
+    inline constexpr bool operator!=(const Capsule& b1, const Capsule& b2)
+    {
+        return !(b1 == b2);
+    }
 }

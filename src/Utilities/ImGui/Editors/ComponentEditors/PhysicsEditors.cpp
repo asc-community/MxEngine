@@ -32,8 +32,11 @@
 #include "Core/Components/Physics/SphereCollider.h"
 #include "Core/Components/Physics/CapsuleCollider.h"
 #include "Core/Components/Physics/CylinderCollider.h"
+#include "Core/Components/Physics/CompoundCollider.h"
 
 #include "Utilities/ImGui/ImGuiUtils.h"
+#include "Utilities/ImGui/Editors/ComponentEditor.h"
+#include "Utilities/Format/Format.h"
 
 namespace MxEngine::GUI
 {
@@ -51,6 +54,7 @@ namespace MxEngine::GUI
 		auto jumpSpeed = characterController.GetJumpSpeed();
 		auto moveSpeed = characterController.GetMoveSpeed();
 		auto rotateSpeed = characterController.GetRotateSpeed();
+		auto mass = characterController.GetMass();
 
 		// (-0.0f, -0.0f, -0.0f) -> (0.0f, 0.0f, 0.0f)
 		motion.x = std::abs(motion.x) < 0.001f ? 0.0f : motion.x;
@@ -68,6 +72,8 @@ namespace MxEngine::GUI
 			characterController.SetMoveSpeed(moveSpeed);
 		if (ImGui::DragFloat("rotate speed", &rotateSpeed))
 			characterController.SetRotateSpeed(rotateSpeed);
+		if (ImGui::DragFloat("mass", &mass))
+			characterController.SetMass(mass);
 	}
 
 	void RigidBodyEditor(RigidBody& rigidBody)
@@ -244,5 +250,99 @@ namespace MxEngine::GUI
 		auto boundingCapsule = capsuleCollider.GetNativeHandle()->GetBoundingCapsuleUnchanged();
 		DrawCapsuleEditor("bounding capsule", boundingCapsule);
 		capsuleCollider.SetBoundingCapsule(boundingCapsule);
+	}
+
+	void CompoundColliderEditor(CompoundCollider& compoundCollider)
+	{
+		TREE_NODE_PUSH("CompoundCollider");
+		REMOVE_COMPONENT_BUTTON(compoundCollider);
+
+		if (ImGui::BeginCombo("add shape", "press to select..."))
+		{
+			if (ImGui::Selectable("box shape"))
+			{
+				compoundCollider.AddShape<BoxShape>({ }, BoundingBox{ });
+			}
+			if (ImGui::Selectable("sphere shape"))
+			{
+				compoundCollider.AddShape<SphereShape>({ }, BoundingSphere{ });
+			}
+			if (ImGui::Selectable("capsule shape"))
+			{
+				compoundCollider.AddShape<CapsuleShape>({ }, Capsule{ });
+			}
+			if (ImGui::Selectable("cylinder shape"))
+			{
+				compoundCollider.AddShape<CylinderShape>({ }, Cylinder{ });
+			}
+			
+			ImGui::EndCombo();
+		}
+
+		for (size_t i = 0; i < compoundCollider.GetShapeCount(); i++)
+		{
+			ImGui::PushID(i);
+
+			auto name = MxFormat("shape #{}", i);
+
+			if (ImGui::CollapsingHeader(name.c_str()))
+			{
+				GUI::Indent _(5.0f);
+
+				auto relativeTransform = compoundCollider.GetShapeTransformByIndex(i);
+
+				TransformEditor(relativeTransform);
+				if (relativeTransform != compoundCollider.GetShapeTransformByIndex(i))
+					compoundCollider.SetShapeTransformByIndex(i, relativeTransform);
+
+				auto box = compoundCollider.GetShapeByIndex<BoxShape>(i);
+				auto sphere = compoundCollider.GetShapeByIndex<SphereShape>(i);
+				auto cylinder = compoundCollider.GetShapeByIndex<CylinderShape>(i);
+				auto capsule = compoundCollider.GetShapeByIndex<CapsuleShape>(i);
+
+				if (box.IsValid())
+				{
+					auto bounding = box->GetBoundingBoxUnchanged();
+					DrawBoxEditor("box shape", bounding);
+					if (bounding != box->GetBoundingBoxUnchanged())
+					{
+						compoundCollider.RemoveShapeByIndex(i);
+						compoundCollider.AddShape<BoxShape>(relativeTransform, bounding);
+					}
+				}
+				else if (sphere.IsValid())
+				{
+					auto bounding = sphere->GetBoundingSphereUnchanged();
+					DrawSphereEditor("sphere shape", bounding);
+					if (bounding != sphere->GetBoundingSphereUnchanged())
+					{
+						compoundCollider.RemoveShapeByIndex(i);
+						compoundCollider.AddShape<SphereShape>(relativeTransform, bounding);
+					}
+				}
+				else if (cylinder.IsValid())
+				{
+					auto bounding = cylinder->GetBoundingCylinderUnchanged();
+					DrawCylinderEditor("cylinder shape", bounding);
+					if (bounding != cylinder->GetBoundingCylinderUnchanged())
+					{
+						compoundCollider.RemoveShapeByIndex(i);
+						compoundCollider.AddShape<CylinderShape>(relativeTransform, bounding);
+					}
+				}
+				else if (capsule.IsValid())
+				{
+					auto bounding = capsule->GetBoundingCapsuleUnchanged();
+					DrawCapsuleEditor("capsule shape", bounding);
+					if (bounding != capsule->GetBoundingCapsuleUnchanged())
+					{
+						compoundCollider.RemoveShapeByIndex(i);
+						compoundCollider.AddShape<CapsuleShape>(relativeTransform, bounding);
+					}
+				}
+			}
+
+			ImGui::PopID();
+		}
 	}
 }

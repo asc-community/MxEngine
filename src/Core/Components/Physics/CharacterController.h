@@ -47,15 +47,19 @@ namespace MxEngine
     public:
         void OnUpdate(float dt);
 
-        void SetJumpPower(float power);
-        void SetJumpSpeed(float speed);
-        float GetJumpPower() const;
-        float GetJumpSpeed() const;
         bool IsGrounded() const;
         Vector3 GetCurrentMotion() const;
-        float GetMoveSpeed() const;
+
+        void SetJumpPower(float power);
+        void SetJumpSpeed(float speed);
         void SetMoveSpeed(float speed);
-        float GetRotateSpeed() const;
         void SetRotateSpeed(float speed);
+        void SetMass(float mass);
+
+        float GetJumpPower() const;
+        float GetJumpSpeed() const;
+        float GetMoveSpeed() const;
+        float GetRotateSpeed() const;
+        float GetMass() const;
     };
 }

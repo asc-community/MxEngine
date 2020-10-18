@@ -32,6 +32,7 @@
 #include "Core/Components/Physics/SphereCollider.h"
 #include "Core/Components/Physics/CylinderCollider.h"
 #include "Core/Components/Physics/CapsuleCollider.h"
+#include "Core/Components/Physics/CompoundCollider.h"
 #include "Utilities/Logging/Logger.h"
 #include "Platform/Bullet3/Bullet3Utils.h"
 #include "Core/Application/Physics.h"
@@ -110,6 +111,7 @@ namespace MxEngine
         InvalidateCollider<SphereCollider>(self);
         InvalidateCollider<CylinderCollider>(self);
         InvalidateCollider<CapsuleCollider>(self);
+        InvalidateCollider<CompoundCollider>(self);
     }
 
     void RigidBody::UpdateCollider()
@@ -120,6 +122,7 @@ namespace MxEngine
         if(TestCollider(this->rigidBody, self.GetComponent<SphereCollider>()))   return;
         if(TestCollider(this->rigidBody, self.GetComponent<CylinderCollider>())) return;
         if(TestCollider(this->rigidBody, self.GetComponent<CapsuleCollider>()))  return;
+        if(TestCollider(this->rigidBody, self.GetComponent<CompoundCollider>()))  return;
 
         this->rigidBody->SetCollisionShape(nullptr); // no collider
     }

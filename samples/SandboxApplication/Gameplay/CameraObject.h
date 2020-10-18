@@ -12,10 +12,6 @@ void InitCamera(MxObject& object)
 	auto toneMapping = object.AddComponent<CameraToneMapping>();
 	auto ssr = object.AddComponent<CameraSSR>();
 
-	effects->SetVignetteRadius(0.15f);
-	effects->SetBloomIterations(6);
-	effects->SetChromaticAberrationIntensity(0.08f);
-
 	toneMapping->SetWhitePoint(0.75f);
 	toneMapping->SetMinLuminance(0.3f);
 

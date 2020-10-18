@@ -32,17 +32,19 @@
 #include "Bullet3/SphereShape.h"
 #include "Bullet3/CylinderShape.h"
 #include "Bullet3/CapsuleShape.h"
+#include "Bullet3/CompoundShape.h"
 #include "Bullet3/NativeRigidBody.h"
 #include "Utilities/AbstractFactory/AbstractFactory.h"
 
 namespace MxEngine
 {
-    using PhysicsFactory = AbstractFactoryImpl<BoxShape, SphereShape, CylinderShape, CapsuleShape, NativeRigidBody>;
+    using PhysicsFactory = AbstractFactoryImpl<BoxShape, SphereShape, CylinderShape, CapsuleShape, CompoundShape, NativeRigidBody>;
 
     using BoxShapeHandle = Resource<BoxShape, PhysicsFactory>;
     using SphereShapeHandle = Resource<SphereShape, PhysicsFactory>;
     using CylinderShapeHandle = Resource<CylinderShape, PhysicsFactory>;
     using CapsuleShapeHandle = Resource<CapsuleShape, PhysicsFactory>;
+    using CompoundShapeHandle = Resource<CompoundShape, PhysicsFactory>;
     using NativeRigidBodyHandle = Resource<NativeRigidBody, PhysicsFactory>;
 
     // Physics: how to add new collider

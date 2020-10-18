@@ -501,6 +501,7 @@ namespace MxEngine
 		editor.RegisterComponentEditor<SphereCollider>     ("SphereCollider",      GUI::SphereColliderEditor);
 		editor.RegisterComponentEditor<CylinderCollider>   ("CylinderCollider",    GUI::CylinderColliderEditor);
 		editor.RegisterComponentEditor<CapsuleCollider>    ("CapsuleCollider",     GUI::CapsuleColliderEditor);
+		editor.RegisterComponentEditor<CompoundCollider>   ("CompoundCollider",    GUI::CompoundColliderEditor);
 
 		this->RegisterComponentUpdate<Behaviour>();
 		this->RegisterComponentUpdate<InstanceFactory>();

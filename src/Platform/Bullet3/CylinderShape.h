@@ -31,12 +31,16 @@
 #include "ShapeBase.h"
 #include "Core/BoundingObjects/Cylinder.h"
 
+class btCylinderShape;
+
 namespace MxEngine
 {
     class CylinderShape : public ShapeBase
     {
         Cylinder::Axis orientation = Cylinder::Axis::Y;
     public:
+        using NativeHandle = btCylinderShape*;
+
         CylinderShape(const Cylinder& cylinder);
         CylinderShape(const CylinderShape&) = delete;
         CylinderShape(CylinderShape&&) noexcept;

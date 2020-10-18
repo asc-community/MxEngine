@@ -1,6 +1,7 @@
 [
   {
     "AlbedoMap": "",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -10,11 +11,11 @@
     "SpecularFactor": 1.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
-    "Transparency": 1.0,
-    "TransparencyMap": ""
+    "Transparency": 1.0
   },
   {
-    "AlbedoMap": "D:\\repos\\MxEngine\\samples\\SandboxApplication\\Resources\\objects\\arc170\\arc170.jpg",
+    "AlbedoMap": "Resources\\objects\\arc170\\arc170.jpg",
+    "AmbientOcclusionMap": "",
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
@@ -23,8 +24,7 @@
     "NormalMap": "",
     "SpecularFactor": 1.0,
     "SpecularIntensity": 128.0,
-    "SpecularMap": "D:\\repos\\MxEngine\\samples\\SandboxApplication\\Resources\\objects\\arc170\\arc170.jpg",
-    "Transparency": 1.0,
-    "TransparencyMap": ""
+    "SpecularMap": "Resources\\objects\\arc170\\arc170.jpg",
+    "Transparency": 1.0
   }
 ]

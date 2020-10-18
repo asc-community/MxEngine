@@ -51,4 +51,14 @@ namespace MxEngine
         float radius = ComponentMax(length) * 0.5f;
         return BoundingSphere(center, radius);
     }
+
+    inline constexpr bool operator==(const BoundingSphere& b1, const BoundingSphere& b2)
+    {
+        return b1.Center == b2.Center && b1.Radius == b2.Radius;
+    }
+
+    inline constexpr bool operator!=(const BoundingSphere& b1, const BoundingSphere& b2)
+    {
+        return !(b1 == b2);
+    }
 }

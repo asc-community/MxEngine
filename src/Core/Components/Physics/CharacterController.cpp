@@ -71,7 +71,7 @@ namespace MxEngine
         if (rigidBody.GetFriction() != 0.0f) rigidBody.SetFriction(0.0f);
         if (!rigidBody.IsDynamic()) rigidBody.MakeDynamic();
         
-        auto colliderSize = rigidBody.GetAABB().Length() * 0.55f;
+        auto colliderSize = VectorMax(rigidBody.GetAABB().Length() * 0.51f, MakeVector3(0.1f));
         this->isGrounded = CheckIfPlayerIsOnGround(self.Transform.GetPosition(), colliderSize * camera.GetUpVector());
 
         // update rigid body position
@@ -142,9 +142,21 @@ namespace MxEngine
         return camera.IsValid() ? camera->GetRotateSpeed() : 0.0f;
     }
 
+    float CharacterController::GetMass() const
+    {
+        auto rigidBody = MxObject::GetByComponent(*this).GetComponent<RigidBody>();
+        return rigidBody.IsValid() ? rigidBody->GetMass() : 0.0f;
+    }
+
     void CharacterController::SetRotateSpeed(float speed)
     {
         auto camera = MxObject::GetByComponent(*this).GetComponent<CameraController>();
         if (camera.IsValid()) camera->SetRotateSpeed(speed);
+    }
+
+    void CharacterController::SetMass(float mass)
+    {
+        auto rigidBody = MxObject::GetByComponent(*this).GetComponent<RigidBody>();
+        if (rigidBody.IsValid()) rigidBody->SetMass(Max(mass, 0.001f));
     }
 }

@@ -68,6 +68,25 @@ namespace MxEngine
         return *this;
     }
 
+    bool TransformComponent::operator==(const TransformComponent& other) const
+    {
+        return this->translation == other.translation && this->rotation == other.rotation && this->scale == other.scale;
+    }
+
+    bool TransformComponent::operator!=(const TransformComponent& other) const
+    {
+        return !(*this == other);
+    }
+
+    TransformComponent TransformComponent::operator*(const TransformComponent& other) const
+    {
+        TransformComponent result;
+        result.scale = this->scale * other.scale;
+        result.translation = this->translation + other.translation;
+        result.rotation = this->rotation * other.rotation;
+        return result;
+    }
+
     const Matrix4x4& TransformComponent::GetMatrix() const
     {
         if (this->needTransformUpdate)
