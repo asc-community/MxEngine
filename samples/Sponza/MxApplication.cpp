@@ -6,6 +6,27 @@ namespace Sponza
 
     class SponzaApplication : public Application
     {
+        MxObject::Handle sphereFactory;
+
+        void ShootSphere()
+        {
+            auto controller = Rendering::GetViewport();
+            auto& player = MxObject::GetByComponent(*Rendering::GetViewport());
+            
+            auto shootPosition = player.Transform.GetPosition() + controller->GetDirection() * 3.0f;
+
+            auto sphere = this->sphereFactory->GetComponent<InstanceFactory>()->MakeInstance();
+            sphere->Transform.SetPosition(shootPosition);
+
+            sphere->AddComponent<SphereCollider>();
+
+            auto body = sphere->AddComponent<RigidBody>();
+            body->MakeDynamic();
+            body->SetLinearVelocity(controller->GetDirection() * 50.0f);
+
+            Timer::CallAfterDelta([sphere]() mutable { MxObject::Destroy(sphere); }, 10.0f);
+        }
+
         virtual void OnCreate() override
         {
             auto camera = MxObject::Create();
@@ -15,7 +36,9 @@ namespace Sponza
             controller->SetMoveSpeed(10.0f);
 
             camera->Transform.TranslateY(15.0f);
-
+            
+            camera->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("skybox.png"_id);
+            
             auto input = camera->AddComponent<InputController>();
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
@@ -27,8 +50,9 @@ namespace Sponza
 
             auto ssr = camera->AddComponent<CameraSSR>();
             ssr->SetSteps(10);
+            ssr->SetSkyboxLuminance(0.1f);
 
-            camera->AddComponent<CameraEffects>();
+            auto effects = camera->AddComponent<CameraEffects>();
 
             camera->AddComponent<CapsuleCollider>()->SetBoundingCapsule(Capsule(4.5f, 0.75f, Capsule::Axis::Y));
             camera->AddComponent<RigidBody>();
@@ -44,6 +68,13 @@ namespace Sponza
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->ProjectionSize = 150.0f;
             dirLight->FollowViewport();
+
+            this->sphereFactory = MxObject::Create();
+            this->sphereFactory->Name = "Sphere Factory";
+            this->sphereFactory->AddComponent<InstanceFactory>();
+            this->sphereFactory->AddComponent<MeshSource>(Primitives::CreateSphere(20));
+            auto renderer = this->sphereFactory->AddComponent<MeshRenderer>();
+            renderer->GetMaterial()->AlbedoMap = AssetManager::LoadTexture("moon.jpg"_id);
 
             auto sponza = MxObject::Create();
             sponza->Name = "Sponza";
@@ -154,7 +185,15 @@ namespace Sponza
 
         virtual void OnUpdate() override
         {
-           
+            static float timeSinceShoot = 0.0f;
+            timeSinceShoot += Time::Delta();
+
+            if (timeSinceShoot > 0.3f && Input::IsMouseHeld(MouseButton::LEFT))
+            {
+                this->ShootSphere();
+            }
+            if (Input::IsKeyPressed(KeyCode::ESCAPE))
+                this->CloseApplication();
         }
     };
 }

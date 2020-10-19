@@ -18,6 +18,7 @@ uniform sampler2D HDRTex;
 
 uniform samplerCube skyboxMap;
 uniform mat3 skyboxTransform;
+uniform float skyboxLuminance;
 uniform Camera camera;
 
 uniform int   steps;
@@ -72,7 +73,7 @@ void main()
         }
     }
 
-    vec3 environmentReflection = calcReflectionColor(skyboxMap, skyboxTransform, viewDirection, fragment.normal);
+    vec3 environmentReflection = skyboxLuminance * calcReflectionColor(skyboxMap, skyboxTransform, viewDirection, fragment.normal);
     vec3 ssrReflection = texture(HDRTex, bestUV).rgb;
 
     vec2 screenCenterDiff = 2.0f * abs(bestUV - vec2(0.5f));

@@ -126,7 +126,7 @@ namespace MxEngine
 		Image img = ImageLoader::LoadImage(filepath, flipImage);
 		if (img.GetRawData() == nullptr)
 		{
-			MXLOG_DEBUG("OpenGL::CubeMap", "file with name '" + filepath + "' was not found");
+			MXLOG_WARNING("OpenGL::CubeMap", "file with name '" + filepath + "' was not found");
 			return;
 		}
 		auto images = ImageLoader::CreateCubemap(img);

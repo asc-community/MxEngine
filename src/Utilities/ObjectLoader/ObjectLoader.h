@@ -94,6 +94,10 @@ namespace MxEngine
 		light emmision value
 		*/
 		float Emmision = 0.0f;
+		/*!
+		object reflectance value
+		*/
+		float Reflection = 0.0f;
 	};
 
 	/*!

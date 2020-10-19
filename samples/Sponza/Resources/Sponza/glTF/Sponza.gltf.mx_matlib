@@ -8,7 +8,8 @@
     "HeightMap": "",
     "Name": "material #0",
     "NormalMap": "Resources\\Sponza\\glTF\\8773302468495022225.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -22,7 +23,8 @@
     "HeightMap": "",
     "Name": "material #1",
     "NormalMap": "Resources\\Sponza\\glTF\\12501374198249454378.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -36,7 +38,8 @@
     "HeightMap": "",
     "Name": "material #2",
     "NormalMap": "Resources\\Sponza\\glTF\\4477655471536070370.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -50,7 +53,8 @@
     "HeightMap": "",
     "Name": "material #3",
     "NormalMap": "Resources\\Sponza\\glTF\\13982482287905699490.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -64,7 +68,8 @@
     "HeightMap": "",
     "Name": "material #4",
     "NormalMap": "Resources\\Sponza\\glTF\\16299174074766089871.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -78,7 +83,8 @@
     "HeightMap": "",
     "Name": "material #5",
     "NormalMap": "Resources\\Sponza\\glTF\\2051777328469649772.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -92,7 +98,8 @@
     "HeightMap": "",
     "Name": "material #6",
     "NormalMap": "Resources\\Sponza\\glTF\\10388182081421875623.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -106,7 +113,8 @@
     "HeightMap": "",
     "Name": "material #7",
     "NormalMap": "Resources\\Sponza\\glTF\\15722799267630235092.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -120,7 +128,8 @@
     "HeightMap": "",
     "Name": "material #8",
     "NormalMap": "Resources\\Sponza\\glTF\\14267839433702832875.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -134,7 +143,8 @@
     "HeightMap": "",
     "Name": "material #9",
     "NormalMap": "Resources\\Sponza\\glTF\\6667038893015345571.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -148,7 +158,8 @@
     "HeightMap": "",
     "Name": "material #10",
     "NormalMap": "Resources\\Sponza\\glTF\\3628158980083700836.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -162,7 +173,8 @@
     "HeightMap": "",
     "Name": "material #11",
     "NormalMap": "Resources\\Sponza\\glTF\\7645212358685992005.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -176,7 +188,8 @@
     "HeightMap": "",
     "Name": "material #12",
     "NormalMap": "",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -190,7 +203,8 @@
     "HeightMap": "",
     "Name": "material #13",
     "NormalMap": "Resources\\Sponza\\glTF\\2299742237651021498.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -204,7 +218,8 @@
     "HeightMap": "",
     "Name": "material #14",
     "NormalMap": "Resources\\Sponza\\glTF\\7056944414013900257.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -218,7 +233,8 @@
     "HeightMap": "",
     "Name": "material #15",
     "NormalMap": "Resources\\Sponza\\glTF\\2374361008830720677.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -232,7 +248,8 @@
     "HeightMap": "",
     "Name": "material #16",
     "NormalMap": "Resources\\Sponza\\glTF\\332936164838540657.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -246,7 +263,8 @@
     "HeightMap": "",
     "Name": "material #17",
     "NormalMap": "Resources\\Sponza\\glTF\\6593109234861095314.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -260,7 +278,8 @@
     "HeightMap": "",
     "Name": "material #18",
     "NormalMap": "Resources\\Sponza\\glTF\\4601176305987539675.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -274,7 +293,8 @@
     "HeightMap": "",
     "Name": "material #19",
     "NormalMap": "Resources\\Sponza\\glTF\\4910669866631290573.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -288,7 +308,8 @@
     "HeightMap": "",
     "Name": "material #20",
     "NormalMap": "Resources\\Sponza\\glTF\\14170708867020035030.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -302,7 +323,8 @@
     "HeightMap": "",
     "Name": "material #21",
     "NormalMap": "Resources\\Sponza\\glTF\\3827035219084910048.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -316,7 +338,8 @@
     "HeightMap": "",
     "Name": "material #22",
     "NormalMap": "Resources\\Sponza\\glTF\\10381718147657362067.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -330,7 +353,8 @@
     "HeightMap": "",
     "Name": "material #23",
     "NormalMap": "Resources\\Sponza\\glTF\\759203620573749278.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -344,7 +368,8 @@
     "HeightMap": "",
     "Name": "material #24",
     "NormalMap": "Resources\\Sponza\\glTF\\14118779221266351425.jpg",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0
@@ -358,7 +383,8 @@
     "HeightMap": "",
     "Name": "material #25",
     "NormalMap": "",
-    "SpecularFactor": 1.0,
+    "Reflection": 0.0,
+    "SpecularFactor": 0.0,
     "SpecularIntensity": 128.0,
     "SpecularMap": "",
     "Transparency": 1.0

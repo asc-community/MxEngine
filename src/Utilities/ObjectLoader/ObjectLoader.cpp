@@ -91,8 +91,9 @@ namespace MxEngine
 			}
 
 			GET_FLOAT(OPACITY, Transparency);
-			GET_FLOAT(SHININESS_STRENGTH, SpecularFactor);
+			GET_FLOAT(SHININESS, SpecularFactor);
 			GET_FLOAT(SHININESS_STRENGTH, SpecularIntensity);
+			GET_FLOAT(REFLECTIVITY, Reflection);
 
 			// TODO: this is workaround, because some object formats export alpha channel as 0, but its actually means 1
 			if (materialInfo.Transparency == 0.0f) materialInfo.Transparency = 1.0f;
@@ -203,6 +204,7 @@ namespace MxEngine
 			material.Displacement     = json["Displacement"       ].get<float>();
 			material.SpecularFactor   = json["SpecularFactor"     ].get<float>();
 			material.Emmision         = json["Emmision"           ].get<float>();
+			material.Reflection       = json["Reflection"         ].get<float>();
 
 			material.AlbedoMap        = json["AlbedoMap"          ].get<MxString>();
 			material.SpecularMap      = json["SpecularMap"        ].get<MxString>();
@@ -231,6 +233,7 @@ namespace MxEngine
 			DUMP(i, SpecularFactor);
 			DUMP(i, SpecularIntensity);
 			DUMP(i, Emmision);
+			DUMP(i, Reflection);
 
 			DUMP(i, AlbedoMap);
 			DUMP(i, SpecularMap);

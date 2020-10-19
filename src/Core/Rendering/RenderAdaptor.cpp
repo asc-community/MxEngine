@@ -109,7 +109,7 @@ namespace MxEngine
         environment.AverageWhiteTexture->SetPath("[[average white]]");
 
         environment.AmbientOcclusionTexture = GraphicFactory::Create<Texture>();
-        environment.AmbientOcclusionTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize());
+        environment.AmbientOcclusionTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), TextureFormat::RGBA);
         environment.AmbientOcclusionTexture->SetPath("[[ambient occlusion]]");
         
         // shaders

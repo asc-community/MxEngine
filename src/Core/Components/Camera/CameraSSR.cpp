@@ -51,6 +51,11 @@ namespace MxEngine
         return this->maxDistance;
     }
 
+    float CameraSSR::GetSkyboxLuminance() const
+    {
+        return this->skyboxLuminance;
+    }
+
     void CameraSSR::SetThickness(float thickness)
     {
         this->thickness = Max(thickness, 0.0f);
@@ -69,5 +74,10 @@ namespace MxEngine
     void CameraSSR::SetMaxDistance(float distance)
     {
         this->maxDistance = Max(distance, 0.0f);
+    }
+
+    void CameraSSR::SetSkyboxLuminance(float luminance)
+    {
+        this->skyboxLuminance = Max(luminance, 0.0f);
     }
 }

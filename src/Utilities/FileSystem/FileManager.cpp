@@ -88,6 +88,8 @@ namespace MxEngine
 
     FilePath FileManager::SearchInDirectory(const FilePath& directory, const FilePath& filename)
     {
+        if (!File::Exists(directory)) return FilePath();
+
         namespace fs = std::filesystem;
         auto it = fs::recursive_directory_iterator(directory);
         for (const auto& entry : it)

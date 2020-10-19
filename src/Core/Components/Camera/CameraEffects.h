@@ -44,7 +44,7 @@ namespace MxEngine
 		float chromaticAberrationIntensity = 0.08f;
 		float chromaticAberrationMinDistance = 0.8f;
 		float chromaticAberrationDistortion = 0.8f;
-		float ambientOcclusionRadius = 5.0f;
+		float ambientOcclusionRadius = 0.5f;
 		float ambientOcclusionIntensity = 1.0f;
 		uint8_t ambientOcclusionSamples = 16;
 

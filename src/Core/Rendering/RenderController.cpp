@@ -410,6 +410,7 @@ namespace MxEngine
 		SSRShader->SetUniformInt("skyboxMap", camera.SkyboxTexture->GetBoundId());
 
 		SSRShader->SetUniformMat3("skyboxTransform", camera.InverseSkyboxRotation);
+		SSRShader->SetUniformFloat("skyboxLuminance", camera.SSR->GetSkyboxLuminance());
 		SSRShader->SetUniformFloat("thickness", camera.SSR->GetThickness());
 		SSRShader->SetUniformFloat("maxCosAngle", camera.SSR->GetMaxCosAngle());
 		SSRShader->SetUniformInt("steps", (int)camera.SSR->GetSteps());
@@ -882,7 +883,7 @@ namespace MxEngine
 		camera.SwapTexture                = controller.GetSwapHDRTexture();
 		camera.OutputTexture              = controller.GetRenderTexture();
 		camera.RenderToTexture            = controller.IsRendered();
-		camera.InverseSkyboxRotation      = Transpose(ToMatrix(parentTransform.GetRotation()));
+		camera.InverseSkyboxRotation      = Transpose(ToMatrix(skybox.GetRotation()));
 		camera.SkyboxTexture              = skybox.Texture.IsValid() ? skybox.Texture : this->Pipeline.Environment.DefaultBlackCubeMap;
 		camera.Gamma                      = toneMapping == nullptr ? 1.0f : toneMapping->GetGamma();
 		camera.Effects                    = effects;

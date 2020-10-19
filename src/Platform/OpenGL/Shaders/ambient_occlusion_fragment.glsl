@@ -81,21 +81,27 @@ void main()
 
     const float bias = 0.1f;
     int samples = min(sampleCount, MAX_SAMPLES);
-    float totalOcclusion = 0.0f;
+    vec4 totalOcclusion = vec4(0.0f);
     for (int i = 0; i < samples; i++)
     {
         vec3 sampleVec = TBN * kernel[i];
         sampleVec = fragment.position + sampleVec * radius;
 
         vec4 frag = worldToFragSpace(sampleVec, camera.viewProjMatrix);
-        float currentDepth = 1.0f / texture(depthTex, frag.xy).r;
-        float projectedDepth = 1.0f / frag.z;
-        float rangeCheck = smoothstep(0.0f, 1.0f, radius / abs(currentDepth - projectedDepth));
+        float currentDepth = texture(depthTex, frag.xy).r;
+        float projectedDepth = frag.z;
+        if (currentDepth > projectedDepth)
+        {
+            float occlusion = inversesqrt(1.0f - projectedDepth) - inversesqrt(1.0f - currentDepth);
+            occlusion = 1.0f / (1.0f + occlusion * occlusion);
 
-        totalOcclusion += ((currentDepth < projectedDepth - bias) ? 1.0f : 0.0f) * rangeCheck;
+            totalOcclusion.rgb += texture(albedoTex, frag.xy).rgb;
+            totalOcclusion.a += occlusion;
+        }
     }
     totalOcclusion /= samples;
-    totalOcclusion = fragment.ambientOcclusion * pow(1.0f - totalOcclusion, intensity);
+    totalOcclusion.a = pow(1.0f - totalOcclusion.a, intensity);
+    totalOcclusion.a *= fragment.ambientOcclusion;
     
-    OutColor = vec4(vec3(totalOcclusion), 1.0f);
+    OutColor = totalOcclusion;
 }

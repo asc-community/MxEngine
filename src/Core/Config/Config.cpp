@@ -117,7 +117,7 @@ namespace MxEngine
         FromJson(config.SpotLightTextureSize,   json["renderer"],    "spot-light-texture-size" );
         FromJson(config.EngineTextureSize,      json["renderer"],    "engine-texture-size"     );
         FromJson(config.ProjectRootDirectory,   json["filesystem"],  "root"                    );
-        FromJson(config.ShaderSourceDirectory,  json["filesystem"], " shader-source-directory" );
+        FromJson(config.ShaderSourceDirectory,  json["filesystem"],  "shader-source-directory" );
         FromJson(config.ApplicationCloseKey,    json["debug-build"], "app-close-key"           );
         FromJson(config.Style,                  json["debug-build"], "editor-style"            );
         FromJson(config.EditorOpenKey,          json["debug-build"], "editor-key"              );
