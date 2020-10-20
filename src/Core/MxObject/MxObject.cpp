@@ -71,6 +71,11 @@ namespace MxEngine
 		return MxObject::Handle{ };
 	}
 
+	MxObject::Handle MxObject::GetHandle(MxObject& object)
+	{
+		return MxObject::GetByHandle(object.GetNativeHandle());
+	}
+
 	MxObject::Handle MxObject::GetByHandle(EngineHandle handle)
 	{
 		MX_ASSERT(handle != InvalidHandle);

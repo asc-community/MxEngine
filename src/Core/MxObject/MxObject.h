@@ -63,6 +63,7 @@ namespace MxEngine
 
 		static ComponentView<MxObject> GetObjects();
 		static Handle GetByName(const MxString& name);
+		static Handle GetHandle(MxObject& object);
 
 		template<typename T>
 		static MxObject& GetByComponent(T& component)

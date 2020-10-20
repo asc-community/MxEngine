@@ -107,9 +107,9 @@ namespace MxEngine
     void FrameBuffer::DetachRenderTarget()
     {
         if (this->currentAttachment == AttachmentType::TEXTURE)
-            reinterpret_cast<TextureHandle*>(&this->attachmentStorage)->~Resource();
+            std::launder(reinterpret_cast<TextureHandle*>(&this->attachmentStorage))->~Resource();
         else if (this->currentAttachment == AttachmentType::CUBEMAP)
-            reinterpret_cast<CubeMapHandle*>(&this->attachmentStorage)->~Resource();
+            std::launder(reinterpret_cast<CubeMapHandle*>(&this->attachmentStorage))->~Resource();
 
         this->currentAttachment = AttachmentType::NONE;
 
@@ -158,9 +158,9 @@ namespace MxEngine
         auto* texture = reinterpret_cast<const Resource<Texture, GraphicFactory>*>(&this->attachmentStorage);
         auto* cubemap = reinterpret_cast<const Resource<CubeMap, GraphicFactory>*>(&this->attachmentStorage);
 
-        if (this->currentAttachment == AttachmentType::TEXTURE && texture->IsValid())
+        if (this->currentAttachment == AttachmentType::TEXTURE && std::launder(texture)->IsValid())
             return (*texture)->GetWidth();
-        if (this->currentAttachment == AttachmentType::CUBEMAP && cubemap->IsValid())
+        if (this->currentAttachment == AttachmentType::CUBEMAP && std::launder(cubemap)->IsValid())
             return (*cubemap)->GetWidth();
 
         return 0;
@@ -171,10 +171,10 @@ namespace MxEngine
         auto* texture = reinterpret_cast<const Resource<Texture, GraphicFactory>*>(&this->attachmentStorage);
         auto* cubemap = reinterpret_cast<const Resource<CubeMap, GraphicFactory>*>(&this->attachmentStorage);
 
-        if (this->currentAttachment == AttachmentType::TEXTURE && texture->IsValid())
-            return (*texture)->GetHeight();
-        if (this->currentAttachment == AttachmentType::CUBEMAP && cubemap->IsValid())
-            return (*cubemap)->GetHeight();
+        if (this->currentAttachment == AttachmentType::TEXTURE && std::launder(texture)->IsValid())
+            return (*std::launder(texture))->GetHeight();
+        if (this->currentAttachment == AttachmentType::CUBEMAP && std::launder(cubemap)->IsValid())
+            return (*std::launder(cubemap))->GetHeight();
 
         return 0;
     }

@@ -50,19 +50,24 @@ namespace MxEngine
 
     void NativeRigidBody::DestroyBody()
     {
-        if (this->body != nullptr)
+        if (this->bodyAllocation != nullptr)
         {
-            Physics::RemoveRigidBody(this->body);
+            auto body = this->GetNativeHandle();
 
-            Free(this->body->getMotionState());
-            Free(this->body);
+            Physics::ActiveRigidBodyIsland(body);
+            Physics::RemoveRigidBody(body);
+
+            ((MotionStateNotifier*)body->getMotionState())->~MotionStateNotifier();
+            body->~btRigidBody();
+
+            delete this->bodyAllocation;
         }
     }
 
     void NativeRigidBody::ReAddRigidBody()
     {
-        Physics::RemoveRigidBody(this->body);
-        Physics::AddRigidBody(this->body, this->group, this->mask);
+        Physics::RemoveRigidBody(this->GetNativeHandle());
+        Physics::AddRigidBody(this->GetNativeHandle(), this->group, this->mask);
     }
 
     void NativeRigidBody::UpdateRigidBodyCollider(float mass, btCollisionShape* collider)
@@ -71,10 +76,10 @@ namespace MxEngine
         if (collider != nullptr && mass != 0.0f)
             collider->calculateLocalInertia(mass, inertia);
 
-        this->body->setMassProps(mass, inertia);
+        this->GetNativeHandle()->setMassProps(mass, inertia);
         if (collider != this->GetCollisionShape())
         {
-            this->body->setCollisionShape(collider);
+            this->GetNativeHandle()->setCollisionShape(collider);
             this->ReAddRigidBody();
         }
     }
@@ -83,23 +88,28 @@ namespace MxEngine
     {
         btTransform tr;
         ToBulletTransform(tr, transform);
-        auto state = Alloc<MotionStateNotifier>(tr);
-        this->body = Alloc<btRigidBody>(0.0f, state, nullptr);
 
-        Physics::AddRigidBody(this->body, this->group, this->mask);
+        static_assert(AssertEquality<NativeRigidBody::AllocationSize, sizeof(btRigidBody) + sizeof(MotionStateNotifier)>::value,
+            "allocation for btRigidBody and MotionStateNotifier must fit objects sizes");
+
+        this->bodyAllocation = new uint8_t[NativeRigidBody::AllocationSize];
+        auto state = new(this->bodyAllocation + sizeof(btRigidBody)) MotionStateNotifier(tr);
+        auto body = new(this->bodyAllocation) btRigidBody(0.0f, state, nullptr);
+
+        Physics::AddRigidBody(body, this->group, this->mask);
     }
 
     NativeRigidBody::NativeRigidBody(NativeRigidBody&& other) noexcept
     {
-        this->body = other.body;
-        other.body = nullptr;
+        this->bodyAllocation = other.bodyAllocation;
+        other.bodyAllocation = nullptr;
     }
 
     NativeRigidBody& NativeRigidBody::operator=(NativeRigidBody&& other) noexcept
     {
         this->DestroyBody();
-        this->body = other.body;
-        other.body = nullptr;
+        this->bodyAllocation = other.bodyAllocation;
+        other.bodyAllocation = nullptr;
         return *this;
     }
 
@@ -110,32 +120,32 @@ namespace MxEngine
 
     btRigidBody* NativeRigidBody::GetNativeHandle()
     {
-        return this->body;
+        return reinterpret_cast<btRigidBody*>(this->bodyAllocation);
     }
 
     const btRigidBody* NativeRigidBody::GetNativeHandle() const
     {
-        return this->body;
+        return reinterpret_cast<const btRigidBody*>(this->bodyAllocation);
     }
 
     btMotionState* NativeRigidBody::GetMotionState()
     {
-        return this->body->getMotionState();
+        return this->GetNativeHandle()->getMotionState();
     }
 
     const btMotionState* NativeRigidBody::GetMotionState() const
     {
-        return this->body->getMotionState();
+        return this->GetNativeHandle()->getMotionState();
     }
 
     btCollisionShape* NativeRigidBody::GetCollisionShape()
     {
-        return this->body->getCollisionShape();
+        return this->GetNativeHandle()->getCollisionShape();
     }
 
     const btCollisionShape* NativeRigidBody::GetCollisionShape() const
     {
-        return this->body->getCollisionShape();
+        return this->GetNativeHandle()->getCollisionShape();
     }
 
     void NativeRigidBody::SetCollisionShape(btCollisionShape* shape)
@@ -179,19 +189,26 @@ namespace MxEngine
             return MakeVector3(0.0f);
     }
 
+    bool NativeRigidBody::IsMoving() const
+    {
+        auto collider = this->GetCollisionShape();
+        return collider != nullptr && !collider->isNonMoving();
+    }
+
     #undef DISABLE_DEACTIVATION
     #undef ACTIVE_TAG
 
     void NativeRigidBody::SetKinematicFlag(bool flag)
     {
+        auto body = GetNativeHandle();
         if (flag)
         {
-            this->body->setCollisionFlags(this->body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+            body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
             this->SetActivationState(ActivationState::DISABLE_DEACTIVATION);
         }
         else
         {
-            this->body->setCollisionFlags(this->body->getCollisionFlags() & ~btCollisionObject::CF_KINEMATIC_OBJECT);
+            body->setCollisionFlags(body->getCollisionFlags() & ~btCollisionObject::CF_KINEMATIC_OBJECT);
             this->SetActivationState(ActivationState::ACTIVE_TAG);
         }
     }
@@ -205,7 +222,7 @@ namespace MxEngine
 
     float NativeRigidBody::GetMass() const
     {
-        return this->body->getMass();
+        return this->GetNativeHandle()->getMass();
     }
 
     void NativeRigidBody::SetMass(float mass)
@@ -215,22 +232,22 @@ namespace MxEngine
 
     void NativeRigidBody::SetActivationState(ActivationState state)
     {
-        this->body->forceActivationState((int)state);
+        this->GetNativeHandle()->forceActivationState((int)state);
     }
 
     ActivationState NativeRigidBody::GetActivationState() const
     {
-        return ActivationState(this->body->getActivationState());
+        return ActivationState(this->GetNativeHandle()->getActivationState());
     }
 
     void NativeRigidBody::Activate()
     {
-        this->body->activate(true);
+        this->GetNativeHandle()->activate(true);
     }
 
     bool NativeRigidBody::IsActive() const
     {
-        return this->body->isActive();
+        return this->GetNativeHandle()->isActive();
     }
 
     const char* EnumToString(CollisionMask::Mask mask)

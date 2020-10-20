@@ -30,6 +30,7 @@
 
 #include "Platform/PhysicsAPI.h"
 #include "Utilities/ECS/Component.h"
+#include "Utilities/STL/MxFunction.h"
 
 namespace MxEngine
 {
@@ -47,6 +48,7 @@ namespace MxEngine
         MAKE_COMPONENT(RigidBody);
 
         NativeRigidBodyHandle rigidBody;
+        MxFunction<void(MxObject&, MxObject&)>::type collisionCallback;
 
         void UpdateTransform();
     public:
@@ -57,6 +59,8 @@ namespace MxEngine
         void Init();
         void OnUpdate(float dt);
         void UpdateCollider();
+        void InvokeCollisionEvent(MxObject& object);
+        void InvokeCollisionEvent(MxObject& self, MxObject& object);
 
         void MakeKinematic();
         void MakeDynamic();
@@ -66,10 +70,21 @@ namespace MxEngine
         bool IsStatic() const;
         bool IsRayCastable() const;
         void ToggleRayCasting(bool value);
+        bool IsMoving() const;
+
+        template<typename F>
+        void SetCollisionCallback(F&& func)
+        {
+            static_assert(std::is_convertible_v<F, decltype(collisionCallback)>, 
+                "callback must be in form `void callback(MxObject& self, MxObject& object)`");
+            this->collisionCallback = std::forward<F>(func);
+        }
+
         void SetCollisionFilter(uint32_t mask, uint32_t group = CollisionGroup::ALL);
         void SetCollisionFilter(CollisionMask::Mask mask, CollisionGroup::Group group = CollisionGroup::ALL);
         uint32_t GetCollisionGroup() const;
         uint32_t GetCollisionMask() const;
+        void ActivateParentIsland();
         void SetActivationState(ActivationState state);
         ActivationState GetActivationState() const;
         AABB GetAABB() const;

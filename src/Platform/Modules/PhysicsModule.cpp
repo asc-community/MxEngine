@@ -33,6 +33,9 @@
 
 namespace MxEngine
 {
+    // defined in Core/Application/Physics.cpp
+    void OnCollisionCallback(btDynamicsWorld* world, btScalar delta);
+
     void PhysicsModule::Init()
     {
         data = Alloc<PhysicsModuleData>();
@@ -46,6 +49,7 @@ namespace MxEngine
         );
 
         data->World->setGravity(btVector3(0.0f, -9.8f, 0.0f));
+        data->World->setInternalTickCallback(OnCollisionCallback);
     }
 
     void PhysicsModule::Destroy()

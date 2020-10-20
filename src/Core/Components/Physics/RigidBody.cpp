@@ -39,6 +39,19 @@
 
 namespace MxEngine
 {
+    // called from Core/Application/Physics.cpp
+    void InvokeCollisionCallback(MxObject& object1, MxObject& object2)
+    {
+        auto handle1 = MxObject::GetByHandle(object1.GetNativeHandle());
+        auto handle2 = MxObject::GetByHandle(object2.GetNativeHandle());
+
+        object1.GetComponent<RigidBody>()->InvokeCollisionEvent(object1, object2);
+        if (handle1.IsValid() && handle2.IsValid())
+        {   // objects may be deleted agyer user collision event, so check is required
+            object2.GetComponent<RigidBody>()->InvokeCollisionEvent(object2, object1);
+        }
+    }
+
     void RigidBody::UpdateTransform()
     {
         auto& self = MxObject::GetByComponent(*this);
@@ -127,6 +140,17 @@ namespace MxEngine
         this->rigidBody->SetCollisionShape(nullptr); // no collider
     }
 
+    void RigidBody::InvokeCollisionEvent(MxObject& object)
+    {
+        this->InvokeCollisionEvent(MxObject::GetByComponent(*this), object);
+    }
+
+    void RigidBody::InvokeCollisionEvent(MxObject& self, MxObject& object)
+    {
+        if (this->collisionCallback)
+            this->collisionCallback(self, object);
+    }
+
     void RigidBody::MakeKinematic()
     {
         this->SetMass(0.0f);
@@ -177,6 +201,11 @@ namespace MxEngine
             this->SetCollisionFilter(this->GetCollisionMask(), this->GetCollisionGroup() & ~CollisionGroup::RAYCAST_ONLY);
     }
 
+    bool RigidBody::IsMoving() const
+    {
+        return this->rigidBody->IsMoving();
+    }
+
     void RigidBody::SetCollisionFilter(uint32_t mask, uint32_t group)
     {
         this->rigidBody->SetCollisionFilter(group, mask);
@@ -195,6 +224,11 @@ namespace MxEngine
     uint32_t RigidBody::GetCollisionMask() const
     {
         return this->rigidBody->GetCollisionMask();
+    }
+
+    void RigidBody::ActivateParentIsland()
+    {
+        Physics::ActiveRigidBodyIsland(this->rigidBody->GetNativeHandle());
     }
 
     void RigidBody::SetActivationState(ActivationState state)

@@ -32,10 +32,32 @@
 #include "Platform/Modules/PhysicsModule.h"
 #include "Platform/Bullet3/Bullet3Utils.h"
 #include "Utilities/Profiler/Profiler.h"
+#include "Core/Application/Application.h"
 
 namespace MxEngine
 {
     #define WORLD PhysicsModule::GetImpl()->World
+
+    void OnCollisionCallback(btDynamicsWorld* world, btScalar delta)
+    {
+        auto dispatcher = WORLD->getDispatcher();
+        int numManiforlds = dispatcher->getNumManifolds();
+        for (int i = 0; i < numManiforlds; i++)
+        {
+            btPersistentManifold* contactManifold = dispatcher->getManifoldByIndexInternal(i);
+            const btCollisionObject* collider1 = contactManifold->getBody0();
+            const btCollisionObject* collider2 = contactManifold->getBody1();
+
+            if (!collider1->getCollisionShape()->isNonMoving() && !collider2->getCollisionShape()->isNonMoving())
+            {
+                auto object1 = Physics::GetRigidBodyParent(collider1);
+                auto object2 = Physics::GetRigidBodyParent(collider2);
+
+                Application::Get()->AddCollisionEntry(object1, object2);
+            }
+        }
+    }
+
 
     struct CustomRayCastCallback : public btCollisionWorld::ClosestRayResultCallback
     {
@@ -71,6 +93,18 @@ namespace MxEngine
     void Physics::RemoveRigidBody(void* body) //-V813
     {
         WORLD->removeRigidBody((btRigidBody*)body);
+    }
+
+    void Physics::ActiveRigidBodyIsland(void* body)
+    {
+        int islandTag = ((btRigidBody*)body)->getIslandTag();
+        int numberOfObjects = WORLD->getNumCollisionObjects();
+        auto& objectArray = WORLD->getCollisionObjectArray();
+        for (int i = 0; i < numberOfObjects; i++)
+        {
+            if (objectArray[i]->getIslandTag() == islandTag)
+                objectArray[i]->setActivationState(ACTIVE_TAG);
+        }
     }
 
     void Physics::SetRigidBodyParent(void* body, MxObject& parent)

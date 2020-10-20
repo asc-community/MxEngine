@@ -48,7 +48,7 @@ namespace MxEngine
             static_assert(sizeof(CResource<T>) == sizeof(Component::resource), "storage must fit resource size");
 
             this->type = type;
-            this->deleter = [](void* ptr) { ComponentFactory::Destroy(*static_cast<CResource<T>*>(ptr)); };
+            this->deleter = [](void* ptr) { ComponentFactory::Destroy(*std::launder(reinterpret_cast<CResource<T>*>(ptr))); };
             auto* replace = new (&resource) CResource<T>();
             *replace = std::move(component);
         }
@@ -75,7 +75,7 @@ namespace MxEngine
             auto component = ComponentFactory::CreateComponent<T>(std::forward<Args>(args)...);
             auto& data = components.emplace_back();
             Component* result = new (&data) Component(T::ComponentId, std::move(component));
-            return *reinterpret_cast<CResource<T>*>(&result->resource);
+            return *std::launder(reinterpret_cast<CResource<T>*>(&result->resource));
         }
 
         template<typename T>
@@ -86,7 +86,7 @@ namespace MxEngine
                 const auto& componentRef = *reinterpret_cast<const Component*>(&component);
                 if (componentRef.type == T::ComponentId)
                 {
-                    return *reinterpret_cast<const CResource<T>*>(&componentRef.resource);
+                    return *std::launder(reinterpret_cast<const CResource<T>*>(&componentRef.resource));
                 }
             }
             return CResource<T>{ };
@@ -100,7 +100,7 @@ namespace MxEngine
                 auto& componentRef = *reinterpret_cast<Component*>(&*it);
                 if (componentRef.type == T::ComponentId)
                 {
-                    auto& resource = *reinterpret_cast<CResource<T>*>(&componentRef.resource);
+                    auto& resource = *std::launder(reinterpret_cast<CResource<T>*>(&componentRef.resource));
                     if (resource.IsValid())
                     {
                         ComponentFactory::Destroy(resource);
@@ -121,7 +121,7 @@ namespace MxEngine
         {
             for (auto& component : components)
             {
-                auto& componentRef = *reinterpret_cast<Component*>(&component);
+                auto& componentRef = *std::launder(reinterpret_cast<Component*>(&component));
                 componentRef.deleter(static_cast<void*>(&componentRef.resource));
             }
             components.clear();

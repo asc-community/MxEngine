@@ -102,6 +102,11 @@ namespace MxEngine
 		return this->counterFPS;
 	}
 
+	void Application::AddCollisionEntry(const MxObject::Handle& object1, const MxObject::Handle& object2)
+	{
+		this->collisions.emplace_back(object1, object2);
+	}
+
 	EventDispatcherImpl<EventBase>& Application::GetEventDispatcher()
 	{
 		return *this->dispatcher;
@@ -168,7 +173,7 @@ namespace MxEngine
 			}
 
 			// update physics simulation
-			PhysicsModule::OnUpdate(this->timeDelta);
+			this->InvokePhysics();
 		}
 
 		// update runtime editor
@@ -196,6 +201,20 @@ namespace MxEngine
 				this->OnUpdate();
 			}
 		}
+	}
+
+	void Application::InvokePhysics()
+	{
+		PhysicsModule::OnUpdate(this->timeDelta);
+
+		for (auto& [object1, object2] : this->collisions)
+		{
+			if (object1.IsValid() && object2.IsValid())
+				object1->GetComponent<RigidBody>()->InvokeCollisionEvent(*object1, *object2);
+			if (object1.IsValid() && object2.IsValid())
+				object2->GetComponent<RigidBody>()->InvokeCollisionEvent(*object2, *object1);
+		}
+		this->collisions.clear();
 	}
 
 	void Application::InvokeCreate()

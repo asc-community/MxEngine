@@ -71,7 +71,7 @@ namespace MxEngine
             
             static_assert(AssertEquality<sizeof(storage), sizeof(shape)>::value, "storage must fit shape size");
             new(&storage) ShapeHandleType(shape);
-            deleter = [](void* ptr) { reinterpret_cast<ShapeHandleType*>(ptr)->~ShapeHandleType(); };
+            deleter = [](void* ptr) { std::launder(reinterpret_cast<ShapeHandleType*>(ptr))->~ShapeHandleType(); };
 
             this->compoundShape->AddShape(std::move(shape), relativeTransform);
         }

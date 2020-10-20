@@ -41,6 +41,7 @@ namespace PhysicsSample
                 float z = i % cubeConstraintsC * size;                                         //-V104 //-V636
 
                 auto object = physicalObjectFactory->MakeInstance();
+                object->Name = "Cube Instance";
 
                 object->Transform.SetPosition(Vector3(x, y + offset, z));
                 object->GetComponent<Instance>()->SetColor(Vector3(x / cubeConstraintsA / size, y / cubeConstraintsB / size, z / cubeConstraintsC / size));
@@ -92,6 +93,11 @@ namespace PhysicsSample
             rigidBody->SetLinearVelocity(dir * 180.0f);
             rigidBody->SetMass(50.0f);
             rigidBody->SetBounceFactor(0.5f);
+            rigidBody->SetCollisionCallback([](MxObject& self, MxObject& obj)
+            {
+                if(obj.Name == "Cube Instance")
+                    MxObject::Destroy(obj);
+            });
 
             Timer::CallAfterDelta([object]() mutable { MxObject::Destroy(object); }, 10.0f);
         }
