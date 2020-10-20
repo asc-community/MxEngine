@@ -220,3 +220,8 @@
 - added chromatic aberration effect
 - runtime shader editing is back!
 - more bug fixes (ssr, editor, logging)
+### 7.5.5
+- SSAO effect + light propogation
+- compound colliders, physical character controller
+- file dialog to peek files from file system
+- minor changes in editor & small improvements

@@ -6,7 +6,7 @@ out vec4 OutColor;
 uniform sampler2D inputTex;
 uniform sampler2D aoTex;
 
-vec4 applyBlurFilterFloat(sampler2D tex, vec2 coords)
+vec4 applyBlurFilter(sampler2D tex, vec2 coords)
 {
     vec2 invSize = vec2(1.0f) / textureSize(tex, 0);
     
@@ -23,7 +23,7 @@ void main()
 {
     vec3 inputColor = texture(inputTex, TexCoord).rgb;
 
-    vec4 ao = applyBlurFilterFloat(aoTex, TexCoord);
+    vec4 ao = applyBlurFilter(aoTex, TexCoord);
 
     OutColor = vec4(ao.a * (inputColor + (1.0f - ao.a) * ao.rgb), 1.0f);
 }

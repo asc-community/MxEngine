@@ -279,19 +279,28 @@ namespace MxEngine::GUI
 			ImGui::EndCombo();
 		}
 
+		auto& parentTransform = MxObject::GetByComponent(compoundCollider).Transform;
+
 		for (size_t i = 0; i < compoundCollider.GetShapeCount(); i++)
 		{
-			ImGui::PushID(i);
-
 			auto name = MxFormat("shape #{}", i);
 
 			if (ImGui::CollapsingHeader(name.c_str()))
 			{
+				if (ImGui::Button("delete"))
+				{
+					compoundCollider.RemoveShapeByIndex(i);
+					continue;
+				}
+
 				GUI::Indent _(5.0f);
+				ImGui::PushID(i);
 
 				auto relativeTransform = compoundCollider.GetShapeTransformByIndex(i);
+				relativeTransform.SetPosition(relativeTransform.GetPosition() / parentTransform.GetScale());
 
 				TransformEditor(relativeTransform);
+				relativeTransform.SetPosition(relativeTransform.GetPosition() * parentTransform.GetScale());
 				if (relativeTransform != compoundCollider.GetShapeTransformByIndex(i))
 					compoundCollider.SetShapeTransformByIndex(i, relativeTransform);
 
@@ -340,9 +349,9 @@ namespace MxEngine::GUI
 						compoundCollider.AddShape<CapsuleShape>(relativeTransform, bounding);
 					}
 				}
-			}
 
-			ImGui::PopID();
+				ImGui::PopID();
+			}
 		}
 	}
 }
