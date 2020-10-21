@@ -37,6 +37,8 @@
 
 namespace MxEngine
 {
+	MxString EmptyPath;
+
 	enum class ShaderType
 	{
 		VERTEX_SHADER   = GL_VERTEX_SHADER,
@@ -275,7 +277,7 @@ namespace MxEngine
 		#if defined(MXENGINE_DEBUG)
 		return this->vertexShaderPath;
 		#else
-		return { };
+		return EmptyPath;
 		#endif
 	}
 
@@ -284,7 +286,7 @@ namespace MxEngine
 		#if defined(MXENGINE_DEBUG)
 		return this->geometryShaderPath;
 		#else
-		return { };
+		return EmptyPath;
 		#endif
 	}
 
@@ -293,7 +295,7 @@ namespace MxEngine
 		#if defined(MXENGINE_DEBUG)
 		return this->fragmentShaderPath;
 		#else
-		return { };
+		return EmptyPath;
 		#endif
 	}
 

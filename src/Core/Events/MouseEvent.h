@@ -56,9 +56,9 @@ namespace MxEngine
 		}
 	}
 
-	class MousePressEvent : public EventBase
+	class MouseButtonEvent : public EventBase
 	{
-		MAKE_EVENT(MousePressEvent);
+		MAKE_EVENT(MouseButtonEvent);
 
 		using MouseVectorPointer = const std::bitset<8>*;
 
@@ -67,11 +67,26 @@ namespace MxEngine
 		MouseVectorPointer mousePressed;
 		MouseVectorPointer mouseReleased;
 	public:
-		inline MousePressEvent(MouseVectorPointer held, MouseVectorPointer pressed, MouseVectorPointer released) noexcept
+		inline MouseButtonEvent(MouseVectorPointer held, MouseVectorPointer pressed, MouseVectorPointer released) noexcept
 			: mouseHeld(held), mousePressed(pressed), mouseReleased(released) { }
 
 		inline bool IsHeld(MouseButton button)     const { return (*mouseHeld)[size_t(button)]; }
 		inline bool IsPressed(MouseButton button)  const { return (*mousePressed)[size_t(button)]; }
 		inline bool IsReleased(MouseButton button) const { return (*mouseReleased)[size_t(button)]; }
+	};
+
+	class LeftMouseButtonPressedEvent : public EventBase
+	{
+		MAKE_EVENT(LeftMouseButtonPressedEvent);
+	};
+
+	class RightMouseButtonPressedEvent : public EventBase
+	{
+		MAKE_EVENT(RightMouseButtonPressedEvent);
+	};
+
+	class MiddleMouseButtonPressedEvent : public EventBase
+	{
+		MAKE_EVENT(MiddleMouseButtonPressedEvent);
 	};
 }

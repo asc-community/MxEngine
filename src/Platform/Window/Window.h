@@ -53,6 +53,8 @@ namespace MxEngine
 		mutable std::bitset<8> mousePressed;
 		mutable std::bitset<8> mouseReleased;
 		CursorMode cursorMode = CursorMode::NORMAL;
+		bool anyKeyEvent = false;
+		bool anyMouseEvent = false;
 		bool doubleBuffer = false;
 		Vector2 windowPosition{ 0.0f, 0.0f };
 
