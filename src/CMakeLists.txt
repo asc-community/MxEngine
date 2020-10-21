@@ -129,6 +129,7 @@ set(eastl ${SUBMODULES_PATH}/EASTL)
 set(eabase ${SUBMODULES_PATH}/EABase)
 set(assimp ${SUBMODULES_PATH}/assimp)
 set(bullet3 ${SUBMODULES_PATH}/bullet3)
+set(portable_file_dialogs ${SUBMODULES_PATH}/portable-file-dialogs)
 
 set(THIRD_PARTY_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH "")
@@ -189,6 +190,7 @@ set(THIRD_PARTY_INCLUDE_DIRS
     ${glm}
     ${stb}
     ${Boost_INCLUDE_DIRS}
+    ${portable_file_dialogs}
 )
 
 set(fmt_binary_dir ${THIRD_PARTY_BUILD_DIR}/fmt)

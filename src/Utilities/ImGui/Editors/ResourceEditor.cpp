@@ -35,11 +35,14 @@
 #include "Utilities/Image/ImageManager.h"
 #include "Library/Primitives/Colors.h"
 #include "Library/Primitives/Primitives.h"
+#include "Utilities/FileSystem/FileManager.h"
 
 namespace MxEngine::GUI
 {
     void DrawTextureList(const char* name, bool* isOpen)
     {
+
+
         ImGui::Begin(name, isOpen);
 
         static char filter[128] = { '\0' };
@@ -47,12 +50,13 @@ namespace MxEngine::GUI
 
         if (ImGui::CollapsingHeader("create new texture"))
         {
-            static MxString path;
-            if (GUI::InputTextOnClick("load from path", path, 128))
+            if (ImGui::Button("load from file"))
             {
-                auto newTexture = GraphicFactory::Create<Texture>();
-                newTexture->Load(path, TextureFormat::RGBA);
-                newTexture.MakeStatic();
+                MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
+                if (!path.empty() && File::Exists(path)) {
+                    auto newTexture = AssetManager::LoadTexture(path, TextureFormat::RGBA);
+                    newTexture.MakeStatic();
+                }
             }
 
             static Vector3 color{ 0.0f };
@@ -139,15 +143,18 @@ namespace MxEngine::GUI
 
         if (withTextureLoader)
         {
-            static MxString path;
-            if (GUI::InputTextOnClick(nullptr, path, 128, "load from file"))
-                texture = AssetManager::LoadTexture(path, TextureFormat::RGBA);
+            if (ImGui::Button("load from file"))
+            {
+                MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
+                if (!path.empty() && File::Exists(path))
+                    texture = AssetManager::LoadTexture(path, TextureFormat::RGBA);
+            }
             
             static int id = 0;
             if(GUI::InputIntOnClick("", &id, "load from id"))
                 LoadFromInputId(texture, id);
         }
-
+        
         if (texture.IsValid())
         {   
             DrawImageSaver(texture);
@@ -188,9 +195,14 @@ namespace MxEngine::GUI
             ImGui::Text("empty resource");
         }
         
-        static MxString path;
-        if (GUI::InputTextOnClick(nullptr, path, 128, "load cubemap"))
-            cubemap = AssetManager::LoadCubeMap(path);
+        if (ImGui::Button("load from file"))
+        {
+            MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
+            if (!path.empty() && File::Exists(path))
+                cubemap = AssetManager::LoadCubeMap(path);
+
+
+        }
         // TODO: support cubemap preview
     }
 
@@ -411,9 +423,14 @@ namespace MxEngine::GUI
         if (ImGui::Button("update mesh boundings"))
             mesh->UpdateBoundingGeometry();
 
-        static MxString path;
-        if (GUI::InputTextOnClick("", path, 128, "load mesh"))
-            mesh = AssetManager::LoadMesh(path);
+        if (ImGui::Button("load from file"))
+        {
+            MxString path = FileManager::OpenFileDialog();
+            if (!path.empty() && File::Exists(path))
+                mesh = AssetManager::LoadMesh(path);
+
+
+        }
         
         ImGui::Indent(9.0f);
         LoadFromPrimitive(mesh);

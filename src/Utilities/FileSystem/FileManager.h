@@ -34,6 +34,7 @@
 
 namespace MxEngine
 {
+
     struct FileManagerImpl
     {
         MxHashMap<StringId, FilePath> filetable;
@@ -47,6 +48,7 @@ namespace MxEngine
         static void InitializeRootDirectory(const FilePath& directory);
         static void AddFile(const FilePath& file);
     public:
+        static MxString OpenFileDialog(const MxString& types = "", const MxString& description = "All Files");
         static void Init();
         static const FilePath& GetFilePath(StringId filename);
         static FilePath GetEngineShaderFolder();

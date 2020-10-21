@@ -30,9 +30,20 @@
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/Memory/Memory.h"
 #include "Utilities/Format/Format.h"
+#include <portable-file-dialogs.h>
+#undef CreateDirectory
+
 
 namespace MxEngine
 {
+    MxString FileManager::OpenFileDialog(const MxString& types, const MxString& description)
+    {
+        std::vector<std::string> selection = pfd::open_file("Select a file", FileManager::GetRoot().string(),
+            { description.c_str(), types.c_str(), "All Files", "*" }, pfd::opt::multiselect).result();
+        return selection.empty() ? "" : ToMxString(selection.front());
+
+    }
+
     void FileManager::InitializeRootDirectory(const FilePath& directory)
     {
         if (!File::Exists(directory))
