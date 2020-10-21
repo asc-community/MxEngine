@@ -37,18 +37,12 @@
 namespace MxEngine
 {
 
-    MxString FileManager::OpenFileDialog(const std::string& types)
+    MxString FileManager::OpenFileDialog(const MxString& types, const MxString& description)
     {
-        std::vector<std::string> selection;
-        if (!types.size()) {
-            selection = pfd::open_file("Select a file").result();
-        }
-        else {
-            selection = pfd::open_file("Select a file", ".",
-                { "Image Files", types,
-                  "All Files", "*" },
-                pfd::opt::multiselect).result();
-        }
+        std::vector<std::string> selection = pfd::open_file("Select a file", FileManager::GetRoot().string(),
+            { description.c_str(), types.c_str(),
+              "All Files", "*" },
+        pfd::opt::multiselect).result();
         return selection.empty() ? "" : ToMxString(selection.front());
 
     }
