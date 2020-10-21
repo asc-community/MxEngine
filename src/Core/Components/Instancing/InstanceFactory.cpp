@@ -12,8 +12,8 @@ namespace MxEngine
         {
             auto& mesh = *meshSource->Mesh;
             auto modelBufferIndex = this->AddInstancedBuffer(mesh, this->GetModelData());
-            auto normalBufferIndex = this->AddInstancedBuffer(mesh, this->GetNormalData());
-            auto colorBufferIndex = this->AddInstancedBuffer(mesh, this->GetColorData());
+            (void)this->AddInstancedBuffer(mesh, this->GetNormalData());
+            (void)this->AddInstancedBuffer(mesh, this->GetColorData());
             this->bufferIndex = modelBufferIndex; // others will be `bufferIndex + 1`, `bufferIndex + 2`
         }
     }
@@ -68,14 +68,14 @@ namespace MxEngine
 
     MxObject::Handle InstanceFactory::MakeInstance()
     {
+        auto instance = MxObject::Create();
         auto object = MxObject::GetHandleByComponent(*this);
 
-        auto instance = MxObject::Create();
         this->pool.Allocate(instance);
         instance->SetDisplayInRuntimeEditor(false);
         instance->Transform = object->Transform;
         auto component = instance->AddComponent<Instance>(object);
-        return std::move(instance);
+        return instance;
     }
 
     void InstanceFactory::DestroyInstances()

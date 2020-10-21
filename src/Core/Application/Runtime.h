@@ -32,19 +32,20 @@
 #include "Core/Runtime/RuntimeEditor.h"
 #include "Utilities/EventDispatcher/EventDispatcher.h"
 
-namespace MxEngine {
-    class Runtime {
-        // callback must be in format `MxString Func(EventType& e)`
-        template<typename R, typename T>
-        static T DeduceEventTypeFromCallback(std::function<R(T &)>) { return std::declval<T>(); };
+namespace MxEngine 
+{
+    class Runtime 
+    {
     public:
         template<typename Func>
-        static void RegisterComponentEditor(const char *name, Func &&callback) {
+        static void RegisterComponentEditor(const char *name, Func &&callback) 
+        {
             Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
         }
 
         template<typename T>
-        static void RegisterComponentUpdate() {
+        static void RegisterComponentUpdate() 
+        {
             Application::Get()->RegisterComponentUpdate<T>();
         }
 
@@ -53,25 +54,35 @@ namespace MxEngine {
         {
             Application::Get()->GetEventDispatcher().AddEventListener<EventType>(
                     "EventLogger",
-                    [f = std::forward<Func>(callback)](EventType &e) {
+                    [f = std::forward<Func>(callback)](EventType &e) 
+                    {
                         Runtime::AddEventLogEntry(f(e));
                     }
             );
         }
 
-        static void AddEventLogEntry(const MxString &entry) {
+        static void AddShaderUpdateListener(const ShaderHandle& shader)
+        {
+            Application::Get()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle>(shader);
+        }
+
+        static void AddShaderUpdateListener(const ShaderHandle& shader, const FilePath& lookupDirectory)
+        {
+            Application::Get()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle, FilePath>(shader, lookupDirectory);
+        }
+
+        static void AddEventLogEntry(const MxString &entry)
+        {
             Application::Get()->GetRuntimeEditor().AddEventEntry(entry);
         }
 
-        static bool IsEditorActive() {
+        static bool IsEditorActive()
+        {
             return Application::Get()->GetRuntimeEditor().IsActive();
         }
 
-        static void ExecuteScript(const MxString &script) {
-            Application::Get()->GetRuntimeEditor().ExecuteScript(script);
-        }
-
-        static void CloseApplication() {
+        static void CloseApplication() 
+        {
             Application::Get()->CloseApplication();
         }
     };

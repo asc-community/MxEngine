@@ -35,9 +35,9 @@ namespace MxEngine
     class BoundingBox
     {
     public:
+        Vector3 Center{ 0.0f, 0.0f, 0.0f };
         Vector3 Min = MakeVector3(0.0f);
         Vector3 Max = MakeVector3(0.0f);
-        Vector3 Center{ 0.0f, 0.0f, 0.0f };
         Quaternion Rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
 
         constexpr BoundingBox() = default;
@@ -57,5 +57,15 @@ namespace MxEngine
         result.Max = aabb.Max;
         result.Min = aabb.Min;
         return result;
+    }
+
+    inline constexpr bool operator==(const BoundingBox& b1, const BoundingBox& b2)
+    {
+        return b1.Center == b2.Center && b1.Max == b2.Max && b1.Min == b2.Min && b1.Rotation == b2.Rotation;
+    }
+
+    inline constexpr bool operator!=(const BoundingBox& b1, const BoundingBox& b2)
+    {
+        return !(b1 == b2);
     }
 }

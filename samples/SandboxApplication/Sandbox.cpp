@@ -4,10 +4,11 @@
 void SandboxApp::OnCreate()
 {
 	Event::AddEventListener<FpsUpdateEvent>("CountFPS",
-		[this](auto& e)
+		[](auto& e)
 		{
 			WindowManager::SetTitle(MxFormat("Sandbox App {0} FPS", e.FPS));
 		});
+
 	scene->OnCreate();
 }
 
@@ -24,4 +25,11 @@ void SandboxApp::OnDestroy()
 SandboxApp::SandboxApp()
 {
 	scene = new SandboxScene();
+}
+
+int main()
+{
+	SandboxApp app;
+	app.Run();
+	return 0;
 }

@@ -7,8 +7,9 @@ void InitGrid(MxObject& object)
 	object.Name = "Grid";
 	object.AddComponent<MeshSource>(Primitives::CreatePlane(1000));
 
-	auto gridTexture = AssetManager::LoadTexture("textures/brick.jpg"_id);
 	auto material = object.GetOrAddComponent<MeshRenderer>()->GetMaterial();
-	material->AlbedoMap = gridTexture;
+	material->AlbedoMap = AssetManager::LoadTexture("textures/brick.jpg"_id);
 	material->NormalMap = AssetManager::LoadTexture("textures/brick_normal.jpg"_id);
+	material->AmbientOcclusionMap = AssetManager::LoadTexture("textures/brick_ao.jpg"_id);
+	material->Reflection = 0.75f;
 }

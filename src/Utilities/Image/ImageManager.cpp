@@ -131,13 +131,13 @@ namespace MxEngine
 
     void ImageManager::TakeScreenShot(const MxString& filePath, ImageType type)
     {
-        auto viewport = Rendering::GetViewport();
-        if (!viewport.IsValid())
+        auto screenshot = Rendering::GetRenderTexture();
+        if (!screenshot.IsValid())
         {
             MXLOG_WARNING("MxEngine::ImageManager", "cannot take screenshot at there is no viewport attached");
             return;
         }
-        ImageManager::SaveTexture(filePath, viewport->GetRenderTexture(), type);
+        ImageManager::SaveTexture(filePath, screenshot, type);
     }
 
     void ImageManager::TakeScreenShot(const char* filePath, ImageType type)

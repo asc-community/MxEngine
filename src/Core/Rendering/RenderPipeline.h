@@ -35,12 +35,18 @@
 #include "RenderObjects/PointLightInstancedObject.h"
 #include "RenderObjects/SpotLightInstancedObject.h"
 #include "Core/Resources/ACESCurve.h"
+#include "Core/Resources/Material.h"
 
 #include "Utilities/STL/MxHashMap.h"
 #include "Utilities/String/String.h"
 
 namespace MxEngine
 {
+    class Skybox;
+    class CameraEffects;
+    class CameraToneMapping;
+    class CameraSSR;
+    
     struct DebugBufferUnit
     {
         VertexArrayHandle VAO;
@@ -65,24 +71,18 @@ namespace MxEngine
 
         Vector3 ViewportPosition;
         TextureHandle OutputTexture;
-        Matrix3x3 InversedSkyboxRotation;
-        CubeMapHandle SkyboxMap;
-        float BloomWeight;
-        float VignetteIntensity;
-        float VignetteRadius;
 
-        bool EnableFXAA;
-        bool EnableToneMapping;
-        bool IsPerspective;
-        bool RenderToTexture;
-        uint8_t BloomIterations;
+        Matrix3x3 InverseSkyboxRotation;
+        CubeMapHandle SkyboxTexture;
 
         float Gamma;
-        float Exposure;
-        float EyeAdaptation;
-        ACES ACESCoefficients;
-        float ColorScale;
-        float WhitePoint;
+
+        bool IsPerspective;
+        bool RenderToTexture;
+
+        const CameraEffects* Effects;
+        const CameraToneMapping* ToneMapping;
+        const CameraSSR* SSR;
     };
 
     struct EnvironmentUnit
@@ -94,6 +94,8 @@ namespace MxEngine
         TextureHandle DefaultBlackMap;
         TextureHandle DefaultGreyMap;
         TextureHandle AverageWhiteTexture;
+        TextureHandle AmbientOcclusionTexture;
+        TextureHandle NoiseTexture;
         CubeMapHandle DefaultBlackCubeMap;
 
         FrameBufferHandle DepthFrameBuffer;
@@ -116,7 +118,7 @@ namespace MxEngine
         bool RenderToDefaultFrameBuffer;
     };
 
-    struct DirectionalLigthUnit
+    struct DirectionalLightUnit
     {
         TextureHandle ShadowMap;
         Matrix4x4 ProjectionMatrix;
@@ -142,7 +144,7 @@ namespace MxEngine
 
     struct LightingSystem
     {
-        MxVector<DirectionalLigthUnit> DirectionalLights;
+        MxVector<DirectionalLightUnit> DirectionalLights;
         MxVector<PointLightUnit> PointLights;
         MxVector<SpotLightUnit> SpotLights;
         SpotLightInstancedObject SpotLightsInstanced;

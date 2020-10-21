@@ -31,12 +31,16 @@
 #include "ShapeBase.h"
 #include "Core/BoundingObjects/Capsule.h"
 
+class btCapsuleShape;
+
 namespace MxEngine
 {
     class CapsuleShape : public ShapeBase
     {
         Capsule::Axis orientation = Capsule::Axis::Y;
     public:
+        using NativeHandle = btCapsuleShape*;
+
         CapsuleShape(const Capsule &capsule);
         CapsuleShape(const CapsuleShape&) = delete;
         CapsuleShape(CapsuleShape&&) noexcept;

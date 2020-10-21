@@ -34,8 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // this file was modified by @MomoDeve for MxEngine project (https://github.com/asc-community/MxEngine)
 
-EMBEDDED_SHADER(
-
 const float FXAA_REDUCE_MIN = 1.0f / 128.0f;
 const float FXAA_REDUCE_MUL = 1.0f / 8.0f;
 const float FXAA_SPAN_MAX = 8.0f;
@@ -92,5 +90,3 @@ vec4 fxaa(sampler2D tex, vec2 texCoord)
         color = vec4(rgbB, texColor.a);
     return color;
 }
-
-)

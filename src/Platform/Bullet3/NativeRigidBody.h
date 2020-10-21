@@ -76,7 +76,9 @@ namespace MxEngine
 
     class NativeRigidBody
     {
-        btRigidBody* body = nullptr;
+        constexpr static size_t AllocationSize = 1024;
+        uint8_t* bodyAllocation = nullptr;
+        
         uint32_t group = CollisionGroup::NO_STATIC_COLLISIONS;
         uint32_t mask = CollisionMask::STATIC;
 
@@ -105,7 +107,11 @@ namespace MxEngine
         uint32_t GetCollisionGroup() const;
         uint32_t GetCollisionMask() const;
         Vector3 GetScale() const;
-        void SetKinematicFlag(bool flag);
+        bool IsMoving() const;
+        bool HasCollisionResponce() const;
+        void SetKinematicFlag();
+        void SetTriggerFlag();
+        void UnsetAllFlags();
         void SetScale(const Vector3& scale);
         float GetMass() const;
         void SetMass(float mass);

@@ -30,8 +30,6 @@
 
 namespace MxEngine
 {
-    static Matrix4x4 I(1.0f);
-
     static Vector3 ForwardVec = MakeVector3( 0.0f, 0.0f, 1.0f);
     static Vector3 RightVec   = MakeVector3(-1.0f, 0.0f, 0.0f);
     static Vector3 UpVec      = MakeVector3( 0.0f, 1.0f, 0.0f);
@@ -70,13 +68,32 @@ namespace MxEngine
         return *this;
     }
 
+    bool TransformComponent::operator==(const TransformComponent& other) const
+    {
+        return this->translation == other.translation && this->rotation == other.rotation && this->scale == other.scale;
+    }
+
+    bool TransformComponent::operator!=(const TransformComponent& other) const
+    {
+        return !(*this == other);
+    }
+
+    TransformComponent TransformComponent::operator*(const TransformComponent& other) const
+    {
+        TransformComponent result;
+        result.scale = this->scale * other.scale;
+        result.translation = this->translation + other.translation;
+        result.rotation = this->rotation * other.rotation;
+        return result;
+    }
+
     const Matrix4x4& TransformComponent::GetMatrix() const
     {
         if (this->needTransformUpdate)
         {
-            Matrix4x4 Translation = MxEngine::Translate(I, this->translation);
+            Matrix4x4 Translation = MxEngine::Translate(Matrix4x4(1.0f), this->translation);
             Matrix4x4 Rotation = ToMatrix(this->rotation);
-            Matrix4x4 Scale = MxEngine::Scale(I, this->scale);
+            Matrix4x4 Scale = MxEngine::Scale(Matrix4x4(1.0f), this->scale);
             this->transform = Translation * Rotation * Scale;
             if (this->scale.x == this->scale.y && this->scale.y == this->scale.z)
                 this->normalMatrix = Rotation;
@@ -89,15 +106,15 @@ namespace MxEngine
 
     const Matrix3x3& TransformComponent::GetNormalMatrix() const
     {
-        auto _ = GetMatrix();
+        (void)this->GetMatrix();
         return this->normalMatrix;
     }
 
     void TransformComponent::GetMatrix(Matrix4x4& inPlaceMatrix) const
     {
-        Matrix4x4 Translation = MxEngine::Translate(I, this->translation);
+        Matrix4x4 Translation = MxEngine::Translate(Matrix4x4(1.0f), this->translation);
         Matrix4x4 Rotation = ToMatrix(this->rotation);
-        Matrix4x4 Scale = MxEngine::Scale(I, this->scale);
+        Matrix4x4 Scale = MxEngine::Scale(Matrix4x4(1.0f), this->scale);
         inPlaceMatrix = Translation * Rotation * Scale;
     }
 

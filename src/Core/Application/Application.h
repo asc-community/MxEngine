@@ -33,7 +33,6 @@
 #include "Core/Rendering/RenderAdaptor.h"
 #include "Core/MxObject/MxObject.h"
 #include "Utilities/FileSystem/File.h"
-#include "Core/Components/Script.h"
 #include "Core/Config/Config.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Platform/Window/Window.h"
@@ -53,6 +52,7 @@ namespace MxEngine
 		} manager;
 
 		using CallbackList = MxVector<std::function<void(TimeStep)>>;
+		using CollisionList = MxVector<std::pair<MxObject::Handle, MxObject::Handle>>;
 	private:
 		static inline Application* Current = nullptr;
 		UniqueRef<Window> window;
@@ -60,6 +60,7 @@ namespace MxEngine
 		EventDispatcherImpl<EventBase>* dispatcher;
 		RuntimeEditor* editor;
 		CallbackList updateCallbacks;
+		CollisionList collisions;
 		Config config;
 		TimeStep timeDelta = 0.0f;
 		size_t counterFPS = 0;
@@ -69,9 +70,11 @@ namespace MxEngine
 		void InitializeConfig(Config& config);
 		void InitializeRuntime(RuntimeEditor& editor);
 		void InitializeRenderAdaptor(RenderAdaptor& adaptor);
+		void InitializeShaderDebug();
 		void UpdateTimeDelta(TimeStep& lastFrameEnd, TimeStep& lastSecondEnd, size_t& framesPerSecond);
 		void DrawObjects();
 		void InvokeUpdate();
+		void InvokePhysics();
 		void InvokeCreate();
 		bool VerifyApplicationState();
 	protected:
@@ -92,6 +95,7 @@ namespace MxEngine
 		void ToggleWindowUpdates(bool isPolled);
 		void CloseOnKeyPress(KeyCode key);
 
+		void AddCollisionEntry(const MxObject::Handle& object1, const MxObject::Handle& object2);
 		EventDispatcherImpl<EventBase>& GetEventDispatcher();
 		RenderAdaptor& GetRenderAdaptor();
 		RuntimeEditor& GetRuntimeEditor();

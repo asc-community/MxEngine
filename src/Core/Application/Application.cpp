@@ -102,6 +102,11 @@ namespace MxEngine
 		return this->counterFPS;
 	}
 
+	void Application::AddCollisionEntry(const MxObject::Handle& object1, const MxObject::Handle& object2)
+	{
+		this->collisions.emplace_back(object1, object2);
+	}
+
 	EventDispatcherImpl<EventBase>& Application::GetEventDispatcher()
 	{
 		return *this->dispatcher;
@@ -168,7 +173,7 @@ namespace MxEngine
 			}
 
 			// update physics simulation
-			PhysicsModule::OnUpdate(this->timeDelta);
+			this->InvokePhysics();
 		}
 
 		// update runtime editor
@@ -196,6 +201,20 @@ namespace MxEngine
 				this->OnUpdate();
 			}
 		}
+	}
+
+	void Application::InvokePhysics()
+	{
+		PhysicsModule::OnUpdate(this->timeDelta);
+
+		for (auto& [object1, object2] : this->collisions)
+		{
+			if (object1.IsValid() && object2.IsValid())
+				object1->GetComponent<RigidBody>()->InvokeCollisionEvent(*object1, *object2);
+			if (object1.IsValid() && object2.IsValid())
+				object2->GetComponent<RigidBody>()->InvokeCollisionEvent(*object2, *object1);
+		}
+		this->collisions.clear();
 	}
 
 	void Application::InvokeCreate()
@@ -267,6 +286,7 @@ namespace MxEngine
 		this->InitializeRuntime(this->GetRuntimeEditor());
 		this->CloseOnKeyPress(config.ApplicationCloseKey);
 		this->InitializeRenderAdaptor(this->GetRenderAdaptor());
+		this->InitializeShaderDebug();
 	}
 
 	RuntimeEditor& Application::GetRuntimeEditor()
@@ -375,6 +395,30 @@ namespace MxEngine
 		adaptor.InitRendererEnvironment();
 	}
 
+	void Application::InitializeShaderDebug()
+	{
+		#if defined(MXENGINE_DEBUG)
+		MAKE_SCOPE_PROFILER("Application::InitializeShaderDebug()");
+		MAKE_SCOPE_TIMER("MxEngine::Application", "InitializeShaderDebug()");
+		auto& shaders = this->GetRenderAdaptor().Renderer.GetEnvironment().Shaders;
+		if (shaders.empty())
+		{
+			MXLOG_WARNING("Application::InitializeShaderDebug", "method is called before InitializeRenderAdaptor()");
+		}
+		auto shaderDirectory = FileManager::GetWorkingDirectory() / ToFilePath(this->config.ShaderSourceDirectory);
+		if (!File::Exists(shaderDirectory))
+		{
+			MXLOG_WARNING("Application::InitializeShaderDebug", "shader debug directory does not exists: " + ToMxString(shaderDirectory));
+			return;
+		}
+
+		for (auto it = shaders.begin(); it != shaders.end(); it++)
+		{
+			this->GetRuntimeEditor().AddShaderUpdateListener(it->second, shaderDirectory);
+		}
+		#endif
+	}
+
 	void Application::UpdateTimeDelta(TimeStep& lastFrameEnd, TimeStep& lastSecondEnd, size_t& framesPerSecond)
 	{
 		if (this->IsPaused)
@@ -455,35 +499,33 @@ namespace MxEngine
 		auto& editor = this->GetRuntimeEditor();
 
 		editor.Log("Welcome to MxEngine developer console!");
-		#if defined(MXENGINE_USE_PYTHON)
-		editor.Log("This console is powered by Python: https://www.python.org");
-		#endif
 
-		editor.ExecuteScript("InitializeOpenGL()");
-
-		editor.RegisterComponentEditor<Behaviour>         ("Behaviour",          GUI::BehaviourEditor);
-		editor.RegisterComponentEditor<Script>            ("Script",             GUI::ScriptEditor);
-		editor.RegisterComponentEditor<InstanceFactory>   ("InstanceFactory",    GUI::InstanceFactoryEditor);
-		editor.RegisterComponentEditor<Instance>          ("Instance",           GUI::InstanceEditor);
-		editor.RegisterComponentEditor<Skybox>            ("Skybox",             GUI::SkyboxEditor);
-		editor.RegisterComponentEditor<DebugDraw>         ("DebugDraw",          GUI::DebugDrawEditor);
-		editor.RegisterComponentEditor<MeshRenderer>      ("MeshRenderer",       GUI::MeshRendererEditor);
-		editor.RegisterComponentEditor<MeshSource>        ("MeshSource",         GUI::MeshSourceEditor);
-		editor.RegisterComponentEditor<MeshLOD>           ("MeshLOD",            GUI::MeshLODEditor);
-		editor.RegisterComponentEditor<DirectionalLight>  ("DirectionalLight",   GUI::DirectionalLightEditor);
-		editor.RegisterComponentEditor<PointLight>        ("PointLight",         GUI::PointLightEditor);
-		editor.RegisterComponentEditor<SpotLight>         ("SpotLight",          GUI::SpotLightEditor);
-		editor.RegisterComponentEditor<CameraController>  ("CameraController",   GUI::CameraControllerEditor);
-		editor.RegisterComponentEditor<CameraEffects>     ("CameraEffects",      GUI::CameraEffectsEditor);
-		editor.RegisterComponentEditor<VRCameraController>("VRCameraController", GUI::VRCameraControllerEditor);
-		editor.RegisterComponentEditor<InputControl>    ("InputControl",       GUI::InputControlEditor);
-		editor.RegisterComponentEditor<AudioSource>     ("AudioSource",        GUI::AudioSourceEditor);
-		editor.RegisterComponentEditor<AudioListener>   ("AudioListener",      GUI::AudioListenerEditor);
-		editor.RegisterComponentEditor<RigidBody>       ("RigidBody",          GUI::RigidBodyEditor);
-		editor.RegisterComponentEditor<BoxCollider>     ("BoxCollider",        GUI::BoxColliderEditor);
-		editor.RegisterComponentEditor<SphereCollider>  ("SphereCollider",     GUI::SphereColliderEditor);
-		editor.RegisterComponentEditor<CylinderCollider>("CylinderCollider",   GUI::CylinderColliderEditor);
-		editor.RegisterComponentEditor<CapsuleCollider> ("CapsuleCollider",    GUI::CapsuleColliderEditor);
+		editor.RegisterComponentEditor<Behaviour>          ("Behaviour",           GUI::BehaviourEditor);
+		editor.RegisterComponentEditor<InstanceFactory>    ("InstanceFactory",     GUI::InstanceFactoryEditor);
+		editor.RegisterComponentEditor<Instance>           ("Instance",            GUI::InstanceEditor);
+		editor.RegisterComponentEditor<Skybox>             ("Skybox",              GUI::SkyboxEditor);
+		editor.RegisterComponentEditor<DebugDraw>          ("DebugDraw",           GUI::DebugDrawEditor);
+		editor.RegisterComponentEditor<MeshRenderer>       ("MeshRenderer",        GUI::MeshRendererEditor);
+		editor.RegisterComponentEditor<MeshSource>         ("MeshSource",          GUI::MeshSourceEditor);
+		editor.RegisterComponentEditor<MeshLOD>            ("MeshLOD",             GUI::MeshLODEditor);
+		editor.RegisterComponentEditor<DirectionalLight>   ("DirectionalLight",    GUI::DirectionalLightEditor);
+		editor.RegisterComponentEditor<PointLight>         ("PointLight",          GUI::PointLightEditor);
+		editor.RegisterComponentEditor<SpotLight>          ("SpotLight",           GUI::SpotLightEditor);
+		editor.RegisterComponentEditor<CameraController>   ("CameraController",    GUI::CameraControllerEditor);
+		editor.RegisterComponentEditor<CameraEffects>      ("CameraEffects",       GUI::CameraEffectsEditor);
+		editor.RegisterComponentEditor<CameraSSR>          ("CameraSSR",           GUI::CameraSSREditor);
+		editor.RegisterComponentEditor<CameraToneMapping>  ("CameraToneMapping",   GUI::CameraToneMappingEditor);
+		editor.RegisterComponentEditor<VRCameraController> ("VRCameraController",  GUI::VRCameraControllerEditor);
+		editor.RegisterComponentEditor<InputController>    ("InputController",     GUI::InputControllerEditor);
+		editor.RegisterComponentEditor<AudioSource>        ("AudioSource",         GUI::AudioSourceEditor);
+		editor.RegisterComponentEditor<AudioListener>      ("AudioListener",       GUI::AudioListenerEditor);
+		editor.RegisterComponentEditor<RigidBody>          ("RigidBody",           GUI::RigidBodyEditor);
+		editor.RegisterComponentEditor<CharacterController>("CharacterController", GUI::CharacterControllerEditor);
+		editor.RegisterComponentEditor<BoxCollider>        ("BoxCollider",         GUI::BoxColliderEditor);
+		editor.RegisterComponentEditor<SphereCollider>     ("SphereCollider",      GUI::SphereColliderEditor);
+		editor.RegisterComponentEditor<CylinderCollider>   ("CylinderCollider",    GUI::CylinderColliderEditor);
+		editor.RegisterComponentEditor<CapsuleCollider>    ("CapsuleCollider",     GUI::CapsuleColliderEditor);
+		editor.RegisterComponentEditor<CompoundCollider>   ("CompoundCollider",    GUI::CompoundColliderEditor);
 
 		this->RegisterComponentUpdate<Behaviour>();
 		this->RegisterComponentUpdate<InstanceFactory>();
@@ -491,5 +533,6 @@ namespace MxEngine
 		this->RegisterComponentUpdate<AudioListener>();
 		this->RegisterComponentUpdate<AudioSource>();
 		this->RegisterComponentUpdate<RigidBody>();
+		this->RegisterComponentUpdate<CharacterController>();
 	}
 }

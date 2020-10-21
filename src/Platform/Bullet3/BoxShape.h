@@ -31,11 +31,15 @@
 #include "ShapeBase.h"
 #include "Core/BoundingObjects/BoundingBox.h"
 
+class btBoxShape;
+
 namespace MxEngine
 {
     class BoxShape : public ShapeBase
     {
     public:
+        using NativeHandle = btBoxShape*;
+
         BoxShape(const BoundingBox& boundingBox);
         BoxShape(const BoxShape&) = delete;
         BoxShape(BoxShape&&) noexcept;

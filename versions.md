@@ -214,3 +214,14 @@
 - added vignette effect and tone-mapping
 - added camera effects component
 - multiple bug fixes in physics and graphics
+### 7.5.4
+- added screen space reflections
+- set-up building with clang on Windows
+- added chromatic aberration effect
+- runtime shader editing is back!
+- more bug fixes (ssr, editor, logging)
+### 7.5.5
+- SSAO effect + light propogation
+- compound colliders, physical character controller
+- file dialog to peek files from file system
+- minor changes in editor & small improvements

@@ -36,8 +36,18 @@ namespace MxEngine
     class Skybox
     {
         MAKE_COMPONENT(Skybox);
+
+        Quaternion rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
     public:
         CubeMapHandle Texture;
-        float LuminanceFactor = 1.0f;
+
+        const Quaternion& GetRotation() const { return this->rotation; }
+        void SetRotation(const Quaternion& rotation) { this->rotation = rotation; }
+        Vector3 GetEulerRotation() const { return MakeEulerAngles(this->rotation); }
+        void Rotate(const Quaternion& q) { this->rotation *= q; }
+        void Rotate(float angle, const Vector3& axis) { this->Rotate(MakeQuaternion(Radians(angle), axis)); }
+        void RotateX(float angle) { this->Rotate(angle, MakeVector3(1.0f, 0.0f, 0.0f)); }
+        void RotateY(float angle) { this->Rotate(angle, MakeVector3(0.0f, 1.0f, 0.0f)); }
+        void RotateZ(float angle) { this->Rotate(angle, MakeVector3(0.0f, 0.0f, 1.0f)); }
     };
 }

@@ -55,6 +55,10 @@ namespace MxEngine
 		TransformComponent& operator=(const TransformComponent&);
 		TransformComponent& operator=(TransformComponent&&) noexcept;
 
+		bool operator==(const TransformComponent& other) const;
+		bool operator!=(const TransformComponent& other) const;
+		TransformComponent operator*(const TransformComponent& other) const;
+
 		const Matrix4x4& GetMatrix() const;
 		const Matrix3x3& GetNormalMatrix() const;
 		void GetMatrix(Matrix4x4& inPlaceMatrix) const;

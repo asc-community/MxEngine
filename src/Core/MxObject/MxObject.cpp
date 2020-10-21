@@ -46,7 +46,7 @@ namespace MxEngine
 
 	void MxObject::Destroy(MxObject::Handle& object)
 	{
-		Factory::Destroy(object);
+		if(object.IsValid()) Factory::Destroy(object);
 	}
 
     void MxObject::Destroy(MxObject& object)
@@ -69,6 +69,11 @@ namespace MxEngine
 				return MxObject::Handle{ resource.uuid, factory.IndexOf(resource) };
 		}
 		return MxObject::Handle{ };
+	}
+
+	MxObject::Handle MxObject::GetHandle(MxObject& object)
+	{
+		return MxObject::GetByHandle(object.GetNativeHandle());
 	}
 
 	MxObject::Handle MxObject::GetByHandle(EngineHandle handle)

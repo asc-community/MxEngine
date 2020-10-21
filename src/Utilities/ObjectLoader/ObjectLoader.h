@@ -62,10 +62,6 @@ namespace MxEngine
 		*/
 		MxString EmmisiveMap;
 		/*!
-		transparency texture path
-		*/
-		MxString TransparencyMap;
-		/*!
 		height texture path
 		*/
 		MxString HeightMap;
@@ -73,6 +69,10 @@ namespace MxEngine
 		normal texture path
 		*/
 		MxString NormalMap;
+		/*!
+		ambient occlusion texture path
+		*/
+		MxString AmbientOcclusionMap;
 
 		/*!
 		specular factor value
@@ -94,6 +94,10 @@ namespace MxEngine
 		light emmision value
 		*/
 		float Emmision = 0.0f;
+		/*!
+		object reflectance value
+		*/
+		float Reflection = 0.0f;
 	};
 
 	/*!

@@ -129,11 +129,11 @@ namespace MxEngine
 		this->Bind();
 		const auto& elements = vbl.GetElements();
 		size_t offset = 0;
-		for (const auto& element : elements)
+		for (size_t i = 0; i < elements.size(); i++)
 		{
 			this->attributeIndex--;
 			GLCALL(glDisableVertexAttribArray(this->attributeIndex));
-			offset -= element.count * GetGLTypeSize(element.type);
+			offset -= elements[i].count * GetGLTypeSize(elements[i].type);
 		}
 	}
 

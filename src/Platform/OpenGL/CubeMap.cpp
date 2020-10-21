@@ -116,12 +116,17 @@ namespace MxEngine
 		this->Bind();
 	}
 
+	CubeMap::BindableId CubeMap::GetBoundId() const
+	{
+		return this->activeId;
+	}
+
 	void CubeMap::Load(const MxString& filepath, bool genMipmaps, bool flipImage)
 	{
 		Image img = ImageLoader::LoadImage(filepath, flipImage);
 		if (img.GetRawData() == nullptr)
 		{
-			MXLOG_DEBUG("OpenGL::CubeMap", "file with name '" + filepath + "' was not found");
+			MXLOG_WARNING("OpenGL::CubeMap", "file with name '" + filepath + "' was not found");
 			return;
 		}
 		auto images = ImageLoader::CreateCubemap(img);
@@ -131,11 +136,10 @@ namespace MxEngine
 		this->height = img.GetHeight();
 
 		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
-		int glChannels = 3;
 		for (size_t i = 0; i < 6; i++)
 		{
 			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGB, 
-				(GLsizei)images[i].width(), (GLsizei)images[i].height() / (GLsizei)this->channels, 0, GL_RGB, GL_UNSIGNED_BYTE, images[i].data()));
+				(GLsizei)images[i].width(), (GLsizei)images[i].height() / (GLsizei)this->channels, 0, GL_RGBA, GL_UNSIGNED_BYTE, images[i].data()));
 		}
 
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
@@ -174,7 +178,7 @@ namespace MxEngine
 		for (size_t i = 0; i < images.size(); i++)
 		{
 			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGB,
-				(GLsizei)this->width, (GLsizei)this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, images[i].GetRawData()));
+				(GLsizei)this->width, (GLsizei)this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, images[i].GetRawData()));
 		}
 
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
@@ -198,7 +202,7 @@ namespace MxEngine
 		for (size_t i = 0; i < data.size(); i++)
 		{
 			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGB,
-				(GLsizei)this->width, (GLsizei)this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, data[i]));
+				(GLsizei)this->width, (GLsizei)this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data[i]));
 		}
 
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));

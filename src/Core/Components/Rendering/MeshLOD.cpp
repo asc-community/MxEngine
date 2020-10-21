@@ -51,11 +51,11 @@ namespace MxEngine
         for (auto factor : config.Factors)
         {
             auto meshLODhandle = this->LODs.emplace_back(ResourceFactory::Create<Mesh>());
-            auto& meshLODsubmeshes = meshLODhandle->GetSubmeshes();
-            meshLODsubmeshes.reserve(mesh->GetSubmeshes().size());
+            auto& meshLODsubmeshes = meshLODhandle->Submeshes;
+            meshLODsubmeshes.reserve(mesh->Submeshes.size());
 
             size_t totalIndicies = 0;
-            for (const auto& submesh : mesh->GetSubmeshes())
+            for (const auto& submesh : mesh->Submeshes)
             {
                 LODGenerator lod(submesh.Data);
                 auto& submeshLOD = meshLODsubmeshes.emplace_back(submesh.GetMaterialId(), submesh.GetTransform());
@@ -78,7 +78,7 @@ namespace MxEngine
             return;
         }
 
-        auto box = meshSource->Mesh->GetBoundingBox() * object.Transform.GetMatrix();
+        auto box = meshSource->Mesh->BoundingBox * object.Transform.GetMatrix();
 
         float distance = Length(box.GetCenter() - viewportPosition);
         Vector3 length = box.Length();

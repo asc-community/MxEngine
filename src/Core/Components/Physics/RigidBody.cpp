@@ -32,6 +32,7 @@
 #include "Core/Components/Physics/SphereCollider.h"
 #include "Core/Components/Physics/CylinderCollider.h"
 #include "Core/Components/Physics/CapsuleCollider.h"
+#include "Core/Components/Physics/CompoundCollider.h"
 #include "Utilities/Logging/Logger.h"
 #include "Platform/Bullet3/Bullet3Utils.h"
 #include "Core/Application/Physics.h"
@@ -110,6 +111,7 @@ namespace MxEngine
         InvalidateCollider<SphereCollider>(self);
         InvalidateCollider<CylinderCollider>(self);
         InvalidateCollider<CapsuleCollider>(self);
+        InvalidateCollider<CompoundCollider>(self);
     }
 
     void RigidBody::UpdateCollider()
@@ -120,15 +122,28 @@ namespace MxEngine
         if(TestCollider(this->rigidBody, self.GetComponent<SphereCollider>()))   return;
         if(TestCollider(this->rigidBody, self.GetComponent<CylinderCollider>())) return;
         if(TestCollider(this->rigidBody, self.GetComponent<CapsuleCollider>()))  return;
+        if(TestCollider(this->rigidBody, self.GetComponent<CompoundCollider>()))  return;
 
         this->rigidBody->SetCollisionShape(nullptr); // no collider
+    }
+
+    void RigidBody::InvokeCollisionEvent(MxObject& object)
+    {
+        this->InvokeCollisionEvent(MxObject::GetByComponent(*this), object);
+    }
+
+    void RigidBody::InvokeCollisionEvent(MxObject& self, MxObject& object)
+    {
+        if (this->collisionCallback)
+            this->collisionCallback(self, object);
     }
 
     void RigidBody::MakeKinematic()
     {
         this->SetMass(0.0f);
         this->SetCollisionFilter(CollisionMask::KINEMATIC, CollisionGroup::NO_STATIC_COLLISIONS);
-        this->rigidBody->SetKinematicFlag(true);
+        this->rigidBody->UnsetAllFlags();
+        this->rigidBody->SetKinematicFlag();
         // from bullet3 manual (see https://github.com/bulletphysics/bullet3/blob/master/docs/Bullet_User_Manual.pdf page 22)
     }
 
@@ -136,14 +151,22 @@ namespace MxEngine
     {
         if(this->GetMass() == 0.0f) this->SetMass(1.0f);
         this->SetCollisionFilter(CollisionMask::DYNAMIC, CollisionGroup::ALL);
-        this->rigidBody->SetKinematicFlag(false);
+        this->rigidBody->UnsetAllFlags();
     }
 
     void RigidBody::MakeStatic()
     {
         this->SetMass(0.0f);
         this->SetCollisionFilter(CollisionMask::STATIC, CollisionGroup::NO_STATIC_COLLISIONS);
-        this->rigidBody->SetKinematicFlag(false);
+        this->rigidBody->UnsetAllFlags();
+    }
+
+    void RigidBody::MakeTrigger()
+    {
+        this->SetMass(0.0f);
+        this->SetCollisionFilter(CollisionMask::STATIC, CollisionGroup::NO_STATIC_COLLISIONS);
+        this->rigidBody->UnsetAllFlags();
+        this->rigidBody->SetTriggerFlag();
     }
 
     bool RigidBody::IsKinematic() const
@@ -161,6 +184,11 @@ namespace MxEngine
         return this->GetCollisionMask() & CollisionMask::STATIC;
     }
 
+    bool RigidBody::IsTrigger() const
+    {
+        return !this->rigidBody->HasCollisionResponce();
+    }
+
     bool RigidBody::IsRayCastable() const
     {
         return this->GetCollisionGroup() & CollisionGroup::RAYCAST_ONLY;
@@ -172,6 +200,11 @@ namespace MxEngine
             this->SetCollisionFilter(this->GetCollisionMask(), this->GetCollisionGroup() | CollisionGroup::RAYCAST_ONLY);
         else
             this->SetCollisionFilter(this->GetCollisionMask(), this->GetCollisionGroup() & ~CollisionGroup::RAYCAST_ONLY);
+    }
+
+    bool RigidBody::IsMoving() const
+    {
+        return this->rigidBody->IsMoving();
     }
 
     void RigidBody::SetCollisionFilter(uint32_t mask, uint32_t group)
@@ -192,6 +225,41 @@ namespace MxEngine
     uint32_t RigidBody::GetCollisionMask() const
     {
         return this->rigidBody->GetCollisionMask();
+    }
+
+    void RigidBody::ActivateParentIsland()
+    {
+        Physics::ActiveRigidBodyIsland(this->rigidBody->GetNativeHandle());
+    }
+
+    void RigidBody::SetActivationState(ActivationState state)
+    {
+        this->rigidBody->SetActivationState(state);
+    }
+
+    ActivationState RigidBody::GetActivationState() const
+    {
+        return this->rigidBody->GetActivationState();
+    }
+
+    AABB RigidBody::GetAABB() const
+    {
+        AABB result{ };
+        auto collider = this->rigidBody->GetCollisionShape();
+        if (collider != nullptr)
+        {
+            btVector3 min, max;
+            auto& tr = this->rigidBody->GetNativeHandle()->getWorldTransform();
+            collider->getAabb(tr, min, max);
+            result.Min = FromBulletVector3(min);
+            result.Max = FromBulletVector3(max);
+        }
+        return result;
+    }
+
+    void RigidBody::Activate()
+    {
+        this->rigidBody->Activate();
     }
 
     void RigidBody::ClearForces()

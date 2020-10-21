@@ -49,8 +49,9 @@ namespace MxEngine
         static size_t GetDirectionalLightTextureSize();
         static size_t GetPointLightTextureSize();
         static size_t GetSpotLightTextureSize();
-        static size_t GetBloomTextureSize();
+        static size_t GetEngineTextureSize();
         static const MxString& GetProjectRootDirectory();
+        static const MxString& GetShaderSourceDirectory();
         static EditorStyle GetEditorStyle();
         static bool HasGraphicAPIDebug();
         static KeyCode GetApplicationCloseKey();

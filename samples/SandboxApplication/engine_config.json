@@ -6,16 +6,16 @@
     "editor-style": "MXENGINE"
   },
   "filesystem": {
-    "root": "Resources"
+    "root": "Resources",
+    "shader-source-directory": "../../src/Platform/OpenGL/Shaders"
   },
   "renderer": {
     "anisothropic-filtering": 16,
-    "bloom-texture-size": 512,
     "debug-line-width": 3,
     "dir-light-texture-size": 4096,
+    "engine-texture-size": 512,
     "major-version": 4,
     "minor-version": 5,
-    "msaa-samples": 4,
     "point-light-texture-size": 512,
     "profile": "CORE",
     "spot-light-texture-size": 512

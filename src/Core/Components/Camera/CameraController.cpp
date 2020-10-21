@@ -117,7 +117,7 @@ namespace MxEngine
 	{
 		if (this->Camera.UpdateProjection) this->SubmitMatrixProjectionChanges();
 
-		auto& _ = this->GetViewMatrix(position);
+		(void)this->GetViewMatrix(position);
 		return this->Camera.GetMatrix();
 	}
 
@@ -237,7 +237,6 @@ namespace MxEngine
 	{
 		auto normDir = this->GetDirection();
 		float verticalAngle = std::asin(normDir.y);
-		auto normDirXZ = Normalize(MakeVector3(normDir.x, 0.0f, normDir.z));
 		float horizontalAngle = std::acos(Dot(normDir, MakeVector3(0.0f, 0.0f, 1.0f)));
 
 		auto x = std::sin(horizontalAngle);

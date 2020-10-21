@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-
 in vec2 TexCoord;
 out vec4 OutColor;
 
@@ -22,5 +20,3 @@ void main()
     color = applyVignette(color, TexCoord, radius, intensity);
     OutColor = vec4(color, 1.0f);
 }
-
-)

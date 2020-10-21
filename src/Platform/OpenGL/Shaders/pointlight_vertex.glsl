@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-
 layout(location = 0)  in vec4 position;
 layout(location = 5)  in mat4 transform;
 layout(location = 9)  in vec4 sphereParameters;
@@ -36,5 +34,3 @@ void main()
 	pointLight.diffuse = diffuseColor;
 	pointLight.specular = specularColor;
 }
-
-)

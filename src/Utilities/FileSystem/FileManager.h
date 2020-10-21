@@ -45,13 +45,16 @@ namespace MxEngine
     class FileManager
     {
         inline static FileManagerImpl* manager = nullptr;
-        static void AddDirectory(const FilePath& directory);
+        static void InitializeRootDirectory(const FilePath& directory);
+        static void AddFile(const FilePath& file);
     public:
         static MxString OpenFileDialog(const MxString& types = "", const MxString& description = "All Files");
         static void Init();
-        static void AddFile(const FilePath& file);
         static const FilePath& GetFilePath(StringId filename);
+        static FilePath GetEngineShaderFolder();
         static bool FileExists(StringId filename);
+        static FilePath SearchInDirectory(const FilePath& directory, const MxString& filename);
+        static FilePath SearchInDirectory(const FilePath& directory, const FilePath& filename);
 
         static void Clone(FileManagerImpl* other);
         static FileManagerImpl* GetImpl();

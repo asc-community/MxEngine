@@ -27,18 +27,54 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Core/Components/Physics/RigidBody.h"
+#include "Core/Components/Physics/CharacterController.h"
 #include "Core/Components/Physics/BoxCollider.h"
 #include "Core/Components/Physics/SphereCollider.h"
 #include "Core/Components/Physics/CapsuleCollider.h"
 #include "Core/Components/Physics/CylinderCollider.h"
+#include "Core/Components/Physics/CompoundCollider.h"
 
 #include "Utilities/ImGui/ImGuiUtils.h"
+#include "Utilities/ImGui/Editors/ComponentEditor.h"
+#include "Utilities/Format/Format.h"
 
 namespace MxEngine::GUI
 {
 	#define REMOVE_COMPONENT_BUTTON(comp) \
 	if(ImGui::Button("remove component")) {\
 		MxObject::GetByComponent(comp).RemoveComponent<std::remove_reference_t<decltype(comp)>>(); return; }
+
+	void CharacterControllerEditor(CharacterController& characterController)
+	{
+		TREE_NODE_PUSH("CharacterController");
+		REMOVE_COMPONENT_BUTTON(characterController);
+
+		auto motion = characterController.GetCurrentMotion();
+		auto jump = characterController.GetJumpPower();
+		auto jumpSpeed = characterController.GetJumpSpeed();
+		auto moveSpeed = characterController.GetMoveSpeed();
+		auto rotateSpeed = characterController.GetRotateSpeed();
+		auto mass = characterController.GetMass();
+
+		// (-0.0f, -0.0f, -0.0f) -> (0.0f, 0.0f, 0.0f)
+		motion.x = std::abs(motion.x) < 0.001f ? 0.0f : motion.x;
+		motion.y = std::abs(motion.y) < 0.001f ? 0.0f : motion.y;
+		motion.z = std::abs(motion.z) < 0.001f ? 0.0f : motion.z;
+
+		ImGui::Text("is grounded: %s", BOOL_STRING(characterController.IsGrounded()));
+		ImGui::Text("current motion: (%f, %f, %f)", motion.x, motion.y, motion.z);
+
+		if (ImGui::DragFloat("jump power", &jump))
+			characterController.SetJumpPower(jump);
+		if (ImGui::DragFloat("jump speed", &jumpSpeed))
+			characterController.SetJumpSpeed(jumpSpeed);
+		if (ImGui::DragFloat("move speed", &moveSpeed))
+			characterController.SetMoveSpeed(moveSpeed);
+		if (ImGui::DragFloat("rotate speed", &rotateSpeed))
+			characterController.SetRotateSpeed(rotateSpeed);
+		if (ImGui::DragFloat("mass", &mass))
+			characterController.SetMass(mass);
+	}
 
 	void RigidBodyEditor(RigidBody& rigidBody)
 	{
@@ -51,8 +87,10 @@ namespace MxEngine::GUI
 		auto collisionGroup = rigidBody.GetCollisionGroup();
 		auto collisionMask = rigidBody.GetCollisionMask();
 
-		ImGui::Text("is kinematic: %s, is static: %s, is dynamic: %s", 
-			BOOL_STRING(rigidBody.IsKinematic()), BOOL_STRING(rigidBody.IsStatic()), BOOL_STRING(rigidBody.IsDynamic()));
+		if (rigidBody.IsDynamic()) ImGui::Text("object type: dynamic");
+		if (rigidBody.IsStatic()) ImGui::Text("object type: static");
+		if (rigidBody.IsKinematic()) ImGui::Text("object type: kinematic");
+		if (rigidBody.IsTrigger()) ImGui::Text("object type: trigger");
 
 		ImGui::Text("collision group: %s, collision mask: %s", 
 			EnumToString((CollisionGroup::Group)collisionGroup), 
@@ -67,9 +105,12 @@ namespace MxEngine::GUI
 		ImGui::SameLine();
 		if (ImGui::Button("make kinematic"))
 			rigidBody.MakeKinematic();
-		ImGui::SameLine();
+
 		if (ImGui::Button("make static"))
 			rigidBody.MakeStatic();
+		ImGui::SameLine();
+		if (ImGui::Button("make trigger"))
+			rigidBody.MakeTrigger();
 
 		if (ImGui::Button("clear forces"))
 			rigidBody.ClearForces(); //-V111
@@ -214,5 +255,108 @@ namespace MxEngine::GUI
 		auto boundingCapsule = capsuleCollider.GetNativeHandle()->GetBoundingCapsuleUnchanged();
 		DrawCapsuleEditor("bounding capsule", boundingCapsule);
 		capsuleCollider.SetBoundingCapsule(boundingCapsule);
+	}
+
+	void CompoundColliderEditor(CompoundCollider& compoundCollider)
+	{
+		TREE_NODE_PUSH("CompoundCollider");
+		REMOVE_COMPONENT_BUTTON(compoundCollider);
+
+		if (ImGui::BeginCombo("add shape", "press to select..."))
+		{
+			if (ImGui::Selectable("box shape"))
+			{
+				compoundCollider.AddShape<BoxShape>({ }, BoundingBox{ });
+			}
+			if (ImGui::Selectable("sphere shape"))
+			{
+				compoundCollider.AddShape<SphereShape>({ }, BoundingSphere{ });
+			}
+			if (ImGui::Selectable("capsule shape"))
+			{
+				compoundCollider.AddShape<CapsuleShape>({ }, Capsule{ });
+			}
+			if (ImGui::Selectable("cylinder shape"))
+			{
+				compoundCollider.AddShape<CylinderShape>({ }, Cylinder{ });
+			}
+			
+			ImGui::EndCombo();
+		}
+
+		auto& parentTransform = MxObject::GetByComponent(compoundCollider).Transform;
+
+		for (size_t i = 0; i < compoundCollider.GetShapeCount(); i++)
+		{
+			auto name = MxFormat("shape #{}", i);
+
+			if (ImGui::CollapsingHeader(name.c_str()))
+			{
+				if (ImGui::Button("delete"))
+				{
+					compoundCollider.RemoveShapeByIndex(i);
+					continue;
+				}
+
+				GUI::Indent _(5.0f);
+				ImGui::PushID(i);
+
+				auto relativeTransform = compoundCollider.GetShapeTransformByIndex(i);
+				relativeTransform.SetPosition(relativeTransform.GetPosition() / parentTransform.GetScale());
+
+				TransformEditor(relativeTransform);
+				relativeTransform.SetPosition(relativeTransform.GetPosition() * parentTransform.GetScale());
+				if (relativeTransform != compoundCollider.GetShapeTransformByIndex(i))
+					compoundCollider.SetShapeTransformByIndex(i, relativeTransform);
+
+				auto box = compoundCollider.GetShapeByIndex<BoxShape>(i);
+				auto sphere = compoundCollider.GetShapeByIndex<SphereShape>(i);
+				auto cylinder = compoundCollider.GetShapeByIndex<CylinderShape>(i);
+				auto capsule = compoundCollider.GetShapeByIndex<CapsuleShape>(i);
+
+				if (box.IsValid())
+				{
+					auto bounding = box->GetBoundingBoxUnchanged();
+					DrawBoxEditor("box shape", bounding);
+					if (bounding != box->GetBoundingBoxUnchanged())
+					{
+						compoundCollider.RemoveShapeByIndex(i);
+						compoundCollider.AddShape<BoxShape>(relativeTransform, bounding);
+					}
+				}
+				else if (sphere.IsValid())
+				{
+					auto bounding = sphere->GetBoundingSphereUnchanged();
+					DrawSphereEditor("sphere shape", bounding);
+					if (bounding != sphere->GetBoundingSphereUnchanged())
+					{
+						compoundCollider.RemoveShapeByIndex(i);
+						compoundCollider.AddShape<SphereShape>(relativeTransform, bounding);
+					}
+				}
+				else if (cylinder.IsValid())
+				{
+					auto bounding = cylinder->GetBoundingCylinderUnchanged();
+					DrawCylinderEditor("cylinder shape", bounding);
+					if (bounding != cylinder->GetBoundingCylinderUnchanged())
+					{
+						compoundCollider.RemoveShapeByIndex(i);
+						compoundCollider.AddShape<CylinderShape>(relativeTransform, bounding);
+					}
+				}
+				else if (capsule.IsValid())
+				{
+					auto bounding = capsule->GetBoundingCapsuleUnchanged();
+					DrawCapsuleEditor("capsule shape", bounding);
+					if (bounding != capsule->GetBoundingCapsuleUnchanged())
+					{
+						compoundCollider.RemoveShapeByIndex(i);
+						compoundCollider.AddShape<CapsuleShape>(relativeTransform, bounding);
+					}
+				}
+
+				ImGui::PopID();
+			}
+		}
 	}
 }

@@ -33,48 +33,46 @@
 
 namespace MxEngine
 {
+	// TODO: split into multiple components
 	class CameraEffects
 	{
 		MAKE_COMPONENT(CameraEffects);
 
-		float gamma = 2.2f;
 		float bloomWeight = 0.5f;
-		float exposure = 1.0f;
-		float colorMultiplier = 1.0f;
-		float whitePoint = 1.0f;
-		ACES coefficients;
-		float vignetteRadius = 0.0f;
+		float vignetteRadius = 0.1f;
 		float vignetteIntensity = 100.0f;
-		float eyeAdaptation = 0.0f;
+		float chromaticAberrationIntensity = 0.08f;
+		float chromaticAberrationMinDistance = 0.8f;
+		float chromaticAberrationDistortion = 0.8f;
+		float ambientOcclusionRadius = 0.5f;
+		float ambientOcclusionIntensity = 1.0f;
+		uint8_t ambientOcclusionSamples = 16;
 
 		bool enableFXAA = false;
-		bool toneMapping = false;
-		uint8_t bloomIterations = 0;
+		uint8_t bloomIterations = 3;
 	public:
-		float GetGamma() const;
 		float GetBloomWeight() const;
-		float GetExposure() const;
-		float GetColorScale() const;
-		float GetWhitePoint() const;
-		const ACES& GetACESCoefficients() const;
 		float GetVignetteIntensity() const;
 		float GetVignetteRadius() const;
-		float GetEyeAdaptation() const;
+		float GetChromaticAberrationMinDistance() const;
+		float GetChromaticAberrationIntensity() const;
+		float GetChromaticAberrationDistortion() const;
 		bool IsFXAAEnabled() const;
-		bool IsToneMappingEnabled() const;
 		size_t GetBloomIterations() const;
+		float GetAmbientOcclusionRadius() const;
+		float GetAmbientOcclusionIntensity() const;
+		size_t GetAmbientOcclusionSamples() const;
 
-		void SetGamma(float gamma);
 		void SetBloomWeight(float weight);
-		void SetExposure(float exposure);
-		void SetColorScale(float mult);
-		void SetWhitePoint(float point);
-		void SetEyeAdaptation(float point);
-		void SetACESCoefficients(const ACES& aces);
 		void SetVignetteRadius(float radius);
 		void SetVignetteIntensity(float intensity);
+		void SetChromaticAberrationMinDistance(float distance);
+		void SetChromaticAberrationIntensity(float intensity);
+		void SetChromaticAberrationDistortion(float distortion);
 		void ToggleFXAA(bool value);
-		void ToggleToneMapping(bool value);
 		void SetBloomIterations(size_t iterations);
+		void SetAmbientOcclusionRadius(float radius);
+		void SetAmbientOcclusionIntensity(float intensity);
+		void SetAmbientOcclusionSamples(size_t samples);
 	};
 }

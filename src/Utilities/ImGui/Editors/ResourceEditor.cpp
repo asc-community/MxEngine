@@ -54,14 +54,10 @@ namespace MxEngine::GUI
             {
                 MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
                 if (!path.empty() && File::Exists(path)) {
-                    auto newTexture = GraphicFactory::Create<Texture>();
-                    newTexture->Load(path);
+                    auto newTexture = AssetManager::LoadTexture(path, TextureFormat::RGBA);
                     newTexture.MakeStatic();
                 }
-
-
             }
-
 
             static Vector3 color{ 0.0f };
             ImGui::ColorEdit3("", &color[0]);
@@ -69,7 +65,7 @@ namespace MxEngine::GUI
             if (ImGui::Button("create texture"))
             {
                 auto colorTexture = Colors::MakeTexture(color);
-                colorTexture->SetPath("[[color runtime]]");
+                colorTexture->SetPath("color.runtime");
                 colorTexture.MakeStatic();
             }
         }
@@ -110,13 +106,19 @@ namespace MxEngine::GUI
         }
     }
 
+    bool IsInternalEngineTexture(const TextureHandle& tex)
+    {
+        auto& path = tex->GetPath();
+        return path.find("[[") != path.npos && path.find("]]") != path.npos;
+    }
+
     void DrawTextureEditor(const char* name, TextureHandle& texture, bool withTextureLoader)
     {
         SCOPE_TREE_NODE(name);
 
         if (texture.IsValid())
         {
-            if (ImGui::Button("delete"))
+            if (!IsInternalEngineTexture(texture) && ImGui::Button("delete"))
             {
                 GraphicFactory::Destroy(texture);
                 return;
@@ -145,9 +147,7 @@ namespace MxEngine::GUI
             {
                 MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
                 if (!path.empty() && File::Exists(path))
-                    texture = AssetManager::LoadTexture(path);
-
-
+                    texture = AssetManager::LoadTexture(path, TextureFormat::RGBA);
             }
             
             static int id = 0;
@@ -221,7 +221,7 @@ namespace MxEngine::GUI
         DrawTextureEditor("emmisive map", material->EmmisiveMap, true);
         DrawTextureEditor("normal map", material->NormalMap, true);
         DrawTextureEditor("height map", material->HeightMap, true);
-        DrawTextureEditor("transparency map", material->TransparencyMap, true);
+        DrawTextureEditor("ambient occlusion map", material->AmbientOcclusionMap, true);
 
         ImGui::Checkbox("casts shadows", &material->CastsShadow);
         ImGui::DragFloat("specular factor", &material->SpecularFactor, 0.01f, 0.0f, 1.0f);
@@ -245,8 +245,20 @@ namespace MxEngine::GUI
     void DrawBoxEditor(const char* name, BoundingBox& box)
     {
         SCOPE_TREE_NODE(name);
+
+        ImGui::DragFloat3("center", &box.Center[0]);
         ImGui::DragFloat3("min", &box.Min[0], 0.01f);
         ImGui::DragFloat3("max", &box.Max[0], 0.01f);
+        
+        auto rotation = DegreesVec(MakeEulerAngles(box.Rotation));
+        auto newRotation = rotation;
+        if (ImGui::DragFloat("rotate x", &newRotation.x))
+            box.Rotation *= MakeQuaternion(Radians(newRotation.x - rotation.x), MakeVector3(1.0f, 0.0f, 0.0f));
+        if (ImGui::DragFloat("rotate y", &newRotation.y))
+            box.Rotation *= MakeQuaternion(Radians(newRotation.y - rotation.y), MakeVector3(0.0f, 1.0f, 0.0f));
+        if (ImGui::DragFloat("rotate z", &newRotation.z))
+            box.Rotation *= MakeQuaternion(Radians(newRotation.z - rotation.z), MakeVector3(0.0f, 0.0f, 1.0f));
+
         box.Min = VectorMin(box.Min, box.Max);
         box.Max = VectorMax(box.Min, box.Max);
     }
@@ -280,12 +292,12 @@ namespace MxEngine::GUI
                 cylinder.Orientation = Cylinder::Axis::X;
                 ImGui::SetItemDefaultFocus();
             }
-            if (ImGui::Selectable("y axis", &axisX))
+            if (ImGui::Selectable("y axis", &axisY))
             {
                 cylinder.Orientation = Cylinder::Axis::Y;
                 ImGui::SetItemDefaultFocus();
             }
-            if (ImGui::Selectable("z axis", &axisX))
+            if (ImGui::Selectable("z axis", &axisZ))
             {
                 cylinder.Orientation = Cylinder::Axis::Z;
                 ImGui::SetItemDefaultFocus();
@@ -313,12 +325,12 @@ namespace MxEngine::GUI
                 capsule.Orientation = Capsule::Axis::X;
                 ImGui::SetItemDefaultFocus();
             }
-            if (ImGui::Selectable("y axis", &axisX))
+            if (ImGui::Selectable("y axis", &axisY))
             {
                 capsule.Orientation = Capsule::Axis::Y;
                 ImGui::SetItemDefaultFocus();
             }
-            if (ImGui::Selectable("z axis", &axisX))
+            if (ImGui::Selectable("z axis", &axisZ))
             {
                 capsule.Orientation = Capsule::Axis::Z;
                 ImGui::SetItemDefaultFocus();
@@ -405,12 +417,8 @@ namespace MxEngine::GUI
     {
         SCOPE_TREE_NODE(name);
 
-        auto aabb = mesh->GetBoundingBox();
-        auto sphere = mesh->GetBoundingSphere();
-        DrawAABBEditor("bounding box", aabb);
-        DrawSphereEditor("bounding sphere", sphere);
-        mesh->SetBoundingBox(aabb);
-        mesh->SetBoundingSphere(sphere);
+        DrawAABBEditor("bounding box", mesh->BoundingBox);
+        DrawSphereEditor("bounding sphere", mesh->BoundingSphere);
 
         if (ImGui::Button("update mesh boundings"))
             mesh->UpdateBoundingGeometry();
@@ -431,16 +439,16 @@ namespace MxEngine::GUI
         static MxString submeshName;
         
         size_t vertexCount = 0, indexCount = 0;
-        for (auto& submesh : mesh->GetSubmeshes())
+        for (auto& submesh : mesh->Submeshes)
         {
             vertexCount += submesh.Data.GetVertecies().size();
             indexCount += submesh.Data.GetIndicies().size();
         }
         ImGui::Text("total vertex count: %d, total index count: %d", (int)vertexCount, (int)indexCount);
 
-        for (int id = 0; id < (int)mesh->GetSubmeshes().size(); id++)
+        for (int id = 0; id < (int)mesh->Submeshes.size(); id++)
         {
-            auto& submesh = mesh->GetSubmeshes()[id];
+            auto& submesh = mesh->Submeshes[id];
             if (!ImGui::CollapsingHeader(submesh.Name.c_str())) continue;
             GUI::Indent _(5.0f);
             ImGui::PushID(id);
@@ -459,7 +467,7 @@ namespace MxEngine::GUI
             ImGui::SameLine();
             if (ImGui::Button("delete submesh"))
             {
-                mesh->GetSubmeshes().erase(mesh->GetSubmeshes().begin() + id);
+                mesh->Submeshes.erase(mesh->Submeshes.begin() + id);
                 id--; // compensate erased mesh
                 ImGui::PopID();
                 continue; // skip other ui as current mesh is deleted

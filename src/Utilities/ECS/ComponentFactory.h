@@ -50,7 +50,8 @@ namespace MxEngine
             {
                 new (&(*factories)[T::ComponentId]) FactoryImpl<T>();
             }
-            return *reinterpret_cast<FactoryImpl<T>*>(&(*factories)[T::ComponentId]);
+            auto factory = std::launder(reinterpret_cast<FactoryImpl<T>*>(&(*factories)[T::ComponentId]));
+            return *factory;
         }
 
         template<typename T>

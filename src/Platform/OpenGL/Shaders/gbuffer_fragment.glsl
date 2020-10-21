@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-
 in VSout
 {
 	vec2 TexCoord;
@@ -26,7 +24,7 @@ uniform sampler2D map_albedo;
 uniform sampler2D map_specular;
 uniform sampler2D map_emmisive;
 uniform sampler2D map_normal;
-uniform sampler2D map_transparency;
+uniform sampler2D map_occlusion;
 uniform Material material;
 uniform float gamma;
 
@@ -39,12 +37,13 @@ vec3 calcNormal(vec2 texcoord, mat3 TBN, sampler2D normalMap)
 
 void main()
 {
-	vec3 transparencyTex = texture(map_transparency, fsin.TexCoord).rgb;
-	if (transparencyTex.x + transparencyTex.y + transparencyTex.z < 0.1f) discard; // mask fragments with low opacity
+	vec4 albedoAlphaTex = texture(map_albedo, fsin.TexCoord).rgba;
+	if (albedoAlphaTex.a != 1.0f) discard; // mask fragments with low opacity
 
 	vec3 normal = calcNormal(fsin.TexCoord, fsin.TBN, map_normal);
 
-	vec3 albedoTex   = texture(map_albedo,   fsin.TexCoord).rgb;
+	vec3 albedoTex = albedoAlphaTex.rgb;
+	float occlusion = texture(map_occlusion, fsin.TexCoord).r;
 	float specularTex = texture(map_specular, fsin.TexCoord).r;
 	float emmisiveTex = texture(map_emmisive, fsin.TexCoord).r;
 
@@ -55,9 +54,7 @@ void main()
 
 	vec3 albedo = pow(fsin.RenderColor * albedoTex, vec3(gamma));
 
-	OutAlbedo = vec4(fsin.RenderColor * albedo, 1.0f);
+	OutAlbedo = vec4(fsin.RenderColor * albedo, occlusion);
 	OutNormal = vec4(0.5f * normal + 0.5f, 1.0f);
 	OutMaterial = vec4(emmisive / (emmisive + 1.0f), reflection, 1.0f / log(specularIntensity + 1.0f), specularFactor);
 }
-
-)

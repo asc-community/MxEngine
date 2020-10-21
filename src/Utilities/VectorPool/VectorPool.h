@@ -254,6 +254,15 @@ namespace MxEngine
         }
 
         /*!
+        gets total number in bytes allocated for container
+        \returns how many bytes are allocated for pool
+        */
+        size_t CapacityInBytes() const
+        {
+            return memoryStorage.size();
+        }
+
+        /*!
         reference getter for element. Element must be contructed before call
         \returns reference to element in vector Pool
         */

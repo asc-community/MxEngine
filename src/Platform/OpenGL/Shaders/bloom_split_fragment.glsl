@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-
 in vec2 TexCoord;
 
 out vec4 Color;
@@ -15,5 +13,3 @@ void main()
     emmision = emmision / (1.0f - emmision);
     Color = vec4(weight * emmision * albedo, 1.0f);
 }
-
-)

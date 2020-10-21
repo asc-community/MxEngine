@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 18) out;
 
@@ -39,5 +37,3 @@ void main()
     gl_Layer = 5;
     emitFace(LightProjMatrix[5]);
 }
-
-)

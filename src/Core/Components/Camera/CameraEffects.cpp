@@ -31,34 +31,9 @@
 
 namespace MxEngine
 {
-    float CameraEffects::GetGamma() const
-    {
-        return this->gamma;
-    }
-
     float CameraEffects::GetBloomWeight() const
     {
         return this->bloomWeight;
-    }
-
-    float CameraEffects::GetExposure() const
-    {
-        return this->exposure;
-    }
-
-    float CameraEffects::GetColorScale() const
-    {
-        return this->colorMultiplier;
-    }
-
-    float CameraEffects::GetWhitePoint() const
-    {
-        return this->whitePoint;
-    }
-
-    const ACES& CameraEffects::GetACESCoefficients() const
-    {
-        return this->coefficients;
     }
 
     float CameraEffects::GetVignetteIntensity() const
@@ -71,24 +46,24 @@ namespace MxEngine
         return this->vignetteRadius;
     }
 
+    float CameraEffects::GetChromaticAberrationMinDistance() const
+    {
+        return this->chromaticAberrationMinDistance;
+    }
+
+    float CameraEffects::GetChromaticAberrationIntensity() const
+    {
+        return this->chromaticAberrationIntensity;
+    }
+
+    float CameraEffects::GetChromaticAberrationDistortion() const
+    {
+        return this->chromaticAberrationDistortion;
+    }
+
     bool CameraEffects::IsFXAAEnabled() const
     {
         return this->enableFXAA;
-    }
-
-    bool CameraEffects::IsToneMappingEnabled() const
-    {
-        return this->toneMapping;
-    }
-
-    float CameraEffects::GetEyeAdaptation() const
-    {
-        return this->eyeAdaptation;
-    }
-
-    void CameraEffects::SetEyeAdaptation(float adaptation)
-    {
-        this->eyeAdaptation = Max(adaptation, 0.0f);
     }
 
     size_t CameraEffects::GetBloomIterations() const
@@ -96,38 +71,24 @@ namespace MxEngine
         return size_t(this->bloomIterations);
     }
 
-    void CameraEffects::SetGamma(float gamma)
+    float CameraEffects::GetAmbientOcclusionRadius() const
     {
-        this->gamma = Max(0.0f, gamma);
+        return this->ambientOcclusionRadius;
+    }
+
+    float CameraEffects::GetAmbientOcclusionIntensity() const
+    {
+        return this->ambientOcclusionIntensity;
+    }
+
+    size_t CameraEffects::GetAmbientOcclusionSamples() const
+    {
+        return (size_t)this->ambientOcclusionSamples;
     }
 
     void CameraEffects::SetBloomWeight(float weight)
     {
         this->bloomWeight = Max(0.0f, weight);
-    }
-
-    void CameraEffects::SetExposure(float exposure)
-    {
-        this->exposure = Max(0.0f, exposure);
-    }
-
-    void CameraEffects::SetColorScale(float mult)
-    {
-        this->colorMultiplier = Max(0.0f, mult);
-    }
-
-    void CameraEffects::SetWhitePoint(float point)
-    {
-        this->whitePoint = point;
-    }
-
-    void CameraEffects::SetACESCoefficients(const ACES& aces)
-    {
-        this->coefficients = {
-            Max(0.0f, aces.A), Max(0.0f, aces.B),
-            Max(0.0f, aces.C), Max(0.0f, aces.D),
-            Max(0.0f, aces.E), Max(0.0f, aces.F),
-        };
     }
 
     void CameraEffects::SetVignetteRadius(float radius)
@@ -140,18 +101,43 @@ namespace MxEngine
         this->vignetteIntensity = Max(0.0f, intensity);
     }
 
+    void CameraEffects::SetChromaticAberrationMinDistance(float distance)
+    {
+        this->chromaticAberrationMinDistance = Max(distance, 0.0f);
+    }
+
+    void CameraEffects::SetChromaticAberrationIntensity(float intensity)
+    {
+        this->chromaticAberrationIntensity = Max(intensity, 0.0f);
+    }
+
+    void CameraEffects::SetChromaticAberrationDistortion(float distortion)
+    {
+        this->chromaticAberrationDistortion = Max(distortion, 0.0f);
+    }
+
     void CameraEffects::ToggleFXAA(bool value)
     {
         this->enableFXAA = value;
     }
 
-    void CameraEffects::ToggleToneMapping(bool value)
-    {
-        this->toneMapping = value;
-    }
-
     void CameraEffects::SetBloomIterations(size_t iterations)
     {
         this->bloomIterations = (uint8_t)Min(100, iterations);
+    }
+
+    void CameraEffects::SetAmbientOcclusionRadius(float radius)
+    {
+        this->ambientOcclusionRadius = Max(radius, 0.0f);
+    }
+
+    void CameraEffects::SetAmbientOcclusionIntensity(float intensity)
+    {
+        this->ambientOcclusionIntensity = Max(intensity, 0.0f);
+    }
+
+    void CameraEffects::SetAmbientOcclusionSamples(size_t samples)
+    {
+        this->ambientOcclusionSamples = (uint8_t)Min(samples, 32);
     }
 }

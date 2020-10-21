@@ -14,7 +14,7 @@ namespace PhysicsSample
     */
     class PhysicsApplication : public Application
     {
-        MxObject::Handle cameraObject;
+        MxObject::Handle player;
         InstanceFactory::Handle physicalObjectFactory;
         InstanceFactory::Handle shotFactory;
         bool debugPhysics = false;
@@ -41,6 +41,7 @@ namespace PhysicsSample
                 float z = i % cubeConstraintsC * size;                                         //-V104 //-V636
 
                 auto object = physicalObjectFactory->MakeInstance();
+                object->Name = "Cube Instance";
 
                 object->Transform.SetPosition(Vector3(x, y + offset, z));
                 object->GetComponent<Instance>()->SetColor(Vector3(x / cubeConstraintsA / size, y / cubeConstraintsB / size, z / cubeConstraintsC / size));
@@ -51,7 +52,8 @@ namespace PhysicsSample
                 auto rigidBody = object->AddComponent<RigidBody>();
                 rigidBody->MakeDynamic();
                 rigidBody->SetMass(100.0f);
-                rigidBody->SetAngularForceFactor(Vector3(0.01f));
+                rigidBody->SetAngularForceFactor(Vector3(0.1f));
+                rigidBody->SetActivationState(ActivationState::ISLAND_SLEEPING);
 
                 if (debugPhysics)
                 {
@@ -76,40 +78,83 @@ namespace PhysicsSample
         void CreateShot()
         {
             auto object = shotFactory->MakeInstance();
+            object->Name = "Bullet Instance";
 
             if (debugPhysics)
             {
                 object->AddComponent<DebugDraw>()->RenderPhysicsCollider = true;
             }
 
-            auto dir = cameraObject->GetComponent<CameraController>()->GetDirection();
+            auto dir = player->GetComponent<CameraController>()->GetDirection();
             object->Transform.SetScale(shotSize);
-            object->Transform.SetPosition(cameraObject->Transform.GetPosition());
+            object->Transform.SetPosition(player->Transform.GetPosition() + 5.0f * dir);
             object->AddComponent<SphereCollider>();
             auto rigidBody = object->AddComponent<RigidBody>();
             rigidBody->MakeDynamic();
             rigidBody->SetLinearVelocity(dir * 180.0f);
             rigidBody->SetMass(50.0f);
             rigidBody->SetBounceFactor(0.5f);
+
+            Timer::CallAfterDelta([object]() mutable { MxObject::Destroy(object); }, 10.0f);
+        }
+
+        void InitializePlayer()
+        {
+            player = MxObject::Create();
+            player->Name = "Player";
+            player->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("dawn.jpg"_id);
+            player->AddComponent<CameraToneMapping>();
+            player->Transform.SetPosition(Vector3(30, 30, 30));
+
+            auto controller = player->AddComponent<CameraController>();
+            controller->ListenWindowResizeEvent();
+            controller->SetMoveSpeed(30);
+            Rendering::SetViewport(controller);
+            Rendering::SetFogDensity(0.0f);
+
+            auto input = player->AddComponent<InputController>();
+            input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::UNKNOWN);
+            input->BindRotation();
+
+            auto collider = player->AddComponent<CapsuleCollider>();
+            collider->SetBoundingCapsule(Capsule(5.0f, 5.0f, Capsule::Axis::Y));
+
+            auto rigidBody = player->AddComponent<RigidBody>();
+            rigidBody->SetMass(100.0f);
+
+            auto characterController = player->AddComponent<CharacterController>();
+            characterController->SetJumpPower(20.0f);
+            characterController->SetJumpSpeed(10.0f);
+        }
+
+        void AddTrigger()
+        {
+            auto object = MxObject::Create();
+            object->Name = "Trigger";
+            object->Transform.SetPosition(Vector3(40.0f, 15.0f, -40.0f));
+            object->Transform.SetScale(30.0f);
+
+            auto mr = object->AddComponent<MeshRenderer>();
+            auto ms = object->AddComponent<MeshSource>();
+            auto rb = object->AddComponent<RigidBody>();
+            auto cl = object->AddComponent<SphereCollider>();
+
+            mr->GetMaterial()->BaseColor = Colors::Create(Colors::GREEN);
+            mr->GetMaterial()->Transparency = 0.3f;
+            ms->Mesh = Primitives::CreateSphere();
+            rb->MakeTrigger();
+            rb->SetCollisionCallback([](MxObject& self, MxObject& other)
+            {
+                Logger::Log(VerbosityType::INFO, self.Name, "collided with: " + other.Name);
+                if (other.Name == "Cube Instance")
+                    MxObject::Destroy(other);
+            });
         }
 
     public:
         virtual void OnCreate() override
         {
-            // setup camera
-            cameraObject = MxObject::Create();
-            cameraObject->Name = "Player Camera";
-            cameraObject->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("dawn.jpg"_id);
-            cameraObject->Transform.SetPosition(Vector3(30, 30, 30));
-            auto controller = cameraObject->AddComponent<CameraController>();
-            controller->SetMoveSpeed(50);
-            auto input = cameraObject->AddComponent<InputControl>();
-            controller->ListenWindowResizeEvent();
-            controller->SetMoveSpeed(30);
-            input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
-            input->BindRotation();
-            Rendering::SetViewport(controller);
-            Rendering::SetFogDensity(0.0f);
+            this->InitializePlayer();
 
             // create global directional light
             auto lightObject = MxObject::Create();
@@ -127,7 +172,7 @@ namespace PhysicsSample
             physicalObjectFactory = instances->AddComponent<InstanceFactory>();
 
             auto shots = MxObject::Create();
-            shots->Name = "Shots Instances";
+            shots->Name = "Bullet Instances";
             shots->AddComponent<MeshSource>(Primitives::CreateSphere());
             shots->AddComponent<MeshRenderer>();
             shotFactory = shots->AddComponent<InstanceFactory>();
@@ -139,6 +184,8 @@ namespace PhysicsSample
             InitializeWall(coordinateOffset, Vector3(0, 1, 1), Vector3( 1,  0,  0), wallSize, wallThickness, 0.4f);
             InitializeWall(coordinateOffset, Vector3(1, 1, 0), Vector3( 0,  0, -1), wallSize, wallThickness, 0.4f);
             InitializeWall(coordinateOffset, Vector3(1, 1, 0), Vector3( 0,  0,  1), wallSize, wallThickness, 0.4f);
+
+            this->AddTrigger();
 
             this->ResetSimulation();
         }
@@ -158,12 +205,13 @@ namespace PhysicsSample
             // draw small red box where player is looking at
             if (Runtime::IsEditorActive())
             {
-                auto dir = cameraObject->GetComponent<CameraController>()->GetDirection();
-                auto pos = cameraObject->Transform.GetPosition();
+                auto dir = player->GetComponent<CameraController>()->GetDirection();
+                auto pos = player->Transform.GetPosition();
                 auto end = pos + dir * 1000.0f;
                 float fraction = 0.0f;
                 auto lookingAt = Physics::RayCast(pos, end, fraction);
                 float distance = Length(end - pos) * fraction;
+                auto gravity = Physics::GetGravity();
 
                 Rendering::Draw(BoundingBox(pos + dir * distance, MakeVector3(1.0f)), Colors::Create(Colors::RED, 1.0f));
 
@@ -192,6 +240,9 @@ namespace PhysicsSample
                 ImGui::InputInt("X", &x);
                 ImGui::InputInt("Y", &y);
                 ImGui::InputInt("Z", &z);
+
+                if (ImGui::DragFloat3("gravity", &gravity[0], 0.01f, 0.0f, 10000.0f))
+                    Physics::SetGravity(gravity);
 
                 cubeConstraintsA = Max(0, x), cubeConstraintsB = Max(0, y), cubeConstraintsC = Max(0, z);
 

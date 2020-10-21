@@ -1,5 +1,4 @@
 #include "Library/fxaa.glsl"
-EMBEDDED_SHADER(
 
 in vec2 TexCoord;
 out vec4 OutColor;
@@ -10,5 +9,3 @@ void main()
 {
     OutColor = fxaa(tex, TexCoord).rgba;
 }
-
-)

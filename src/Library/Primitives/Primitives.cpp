@@ -9,7 +9,7 @@ namespace MxEngine
         SubMesh::MaterialId materialId = 0;
         auto transform = ComponentFactory::CreateComponent<TransformComponent>();
 
-        auto& submeshes = mesh->GetSubmeshes();
+        auto& submeshes = mesh->Submeshes;
         auto& submesh = submeshes.emplace_back(materialId, transform);
         submesh.Data = std::move(meshData);
         submesh.Data.BufferVertecies();
@@ -408,7 +408,6 @@ namespace MxEngine
         MX_ASSERT(heights.size() > 0);
         size_t xsize = heights.width();
         size_t ysize = heights.height();
-        size_t triangleCount = 2 * (xsize - 1) * (ysize - 1);
 
         auto& vertecies = meshData.GetVertecies();
         auto& indicies = meshData.GetIndicies();

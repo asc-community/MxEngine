@@ -111,14 +111,19 @@ namespace MxEngine
         return CFG(SpotLightTextureSize);
     }
 
-    size_t GlobalConfig::GetBloomTextureSize()
+    size_t GlobalConfig::GetEngineTextureSize()
     {
-        return CFG(BloomTextureSize);
+        return CFG(EngineTextureSize);
     }
 
     const MxString& GlobalConfig::GetProjectRootDirectory()
     {
         return CFG(ProjectRootDirectory);
+    }
+
+    const MxString& GlobalConfig::GetShaderSourceDirectory()
+    {
+        return CFG(ShaderSourceDirectory);
     }
 
     EditorStyle GlobalConfig::GetEditorStyle()

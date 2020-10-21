@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-
 in vec2 TexCoord;
 out vec4 OutColor;
 
@@ -14,8 +12,6 @@ void main()
     vec3 color = texture(curFrameHDR, TexCoord).rgb;
     float oldWhite = texture(prevFrameWhite, vec2(0.0f)).r;
     float curWhite = dot(luminance, color);
-    float white = curWhite + (oldWhite - curWhite) * eyeAdaptation;
+    float white = oldWhite + (curWhite - oldWhite) * eyeAdaptation;
     OutColor = vec4(vec3(white), 1.0f);
 }
-
-)

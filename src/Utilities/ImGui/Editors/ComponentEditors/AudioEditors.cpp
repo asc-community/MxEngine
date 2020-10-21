@@ -82,6 +82,8 @@ namespace MxEngine::GUI
 		auto rollofFactor = audioSource.GetRollofFactor();
 		auto referenceDistance = audioSource.GetReferenceDistance();
 
+		ImGui::Text("is playing: %s", BOOL_STRING(isPlaying));
+		ImGui::SameLine();
 
 		if (ImGui::Checkbox("is looping", &isLooping))
 			audioSource.SetLooping(isLooping);

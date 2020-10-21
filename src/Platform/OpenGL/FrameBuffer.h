@@ -155,7 +155,7 @@ namespace MxEngine
             if (!this->HasTextureAttached())
                 return Resource<Texture, Factory>{ };
 
-            const auto& texture = *reinterpret_cast<const Resource<Texture, Factory>*>(&this->attachmentStorage);
+            const auto& texture = *std::launder(reinterpret_cast<const Resource<Texture, Factory>*>(&this->attachmentStorage));
 
             #if defined(MXENGINE_DEBUG)
             this->_texturePtr = texture.GetUnchecked();
@@ -170,7 +170,7 @@ namespace MxEngine
             if (!this->HasCubeMapAttached())
                 return Resource<CubeMap, Factory>{ };
 
-            const auto& cubemap = *reinterpret_cast<const Resource<CubeMap, Factory>*>(&this->attachmentStorage);
+            const auto& cubemap = *std::launder(reinterpret_cast<const Resource<CubeMap, Factory>*>(&this->attachmentStorage));
 
             #if defined(MXENGINE_DEBUG)
             this->_cubemapPtr = cubemap.GetUnchecked();

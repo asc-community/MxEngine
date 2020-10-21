@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-
 out vec4 OutColor;
 in vec2 TexCoord;
 
@@ -8,6 +6,8 @@ uniform sampler2D averageWhiteTex;
 uniform float gamma;
 uniform float colorMultiplier;
 uniform float whitePoint;
+uniform float minLuminance;
+uniform float maxLuminance;
 uniform float exposure;
 uniform vec3 ABCcoefsACES;
 uniform vec3 DEFcoefsACES;
@@ -33,8 +33,9 @@ void main()
 {
 	vec3 HDRColor = texture(HDRTex, TexCoord).rgb;
 
-	float avgLuminance = texture(averageWhiteTex, vec2(0.0f)).r;
-    avgLuminance = max(avgLuminance, 0.01f);
+    float avgLuminance = texture(averageWhiteTex, vec2(0.0f)).r;
+    avgLuminance = clamp(avgLuminance, minLuminance, maxLuminance);
+    avgLuminance = max(avgLuminance, 0.0001f);
 
     float scaledWhitePoint = whitePoint * 11.2f;
     float luma = avgLuminance / scaledWhitePoint;
@@ -50,5 +51,3 @@ void main()
 	vec3 gammaCorrectedColor = pow(LDRColor.rgb, vec3(1.0f / gamma));
 	OutColor = vec4(gammaCorrectedColor.rgb, 1.0f);
 }
-
-)

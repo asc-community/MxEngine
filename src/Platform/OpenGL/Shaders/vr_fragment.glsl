@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-
 in vec2 TexCoord;
 out vec4 Color;
 
@@ -22,5 +20,3 @@ void main()
     }
     Color = vec4(color, 1.0f);
 }
-
-)

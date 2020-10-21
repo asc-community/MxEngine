@@ -32,7 +32,6 @@ namespace MxEngine
 {
 	class TransformComponent;
 	class Behaviour;
-	class Script;
 	class InstanceFactory;
 	class Instance;
 	class Skybox;
@@ -45,22 +44,25 @@ namespace MxEngine
 	class SpotLight;
 	class CameraController;
 	class CameraEffects;
+	class CameraSSR;
+	class CameraToneMapping;
 	class VRCameraController;
-	class InputControl;
+	class InputController;
 	class AudioSource;
 	class AudioListener;
 	class RigidBody;
+	class CharacterController;
 	class BoxCollider;
 	class SphereCollider;
 	class CylinderCollider;
 	class CapsuleCollider;
+	class CompoundCollider;
 }
 
 namespace MxEngine::GUI
 {
 	void TransformEditor(TransformComponent& transform);
 	void BehaviourEditor(Behaviour& behaviour);
-	void ScriptEditor(Script& script);
 	void InstanceFactoryEditor(InstanceFactory& instanceFactory);
 	void InstanceEditor(Instance& instance);
 	void SkyboxEditor(Skybox& skybox);
@@ -73,13 +75,17 @@ namespace MxEngine::GUI
 	void SpotLightEditor(SpotLight& spotLight);
 	void CameraControllerEditor(CameraController& camera);
 	void CameraEffectsEditor(CameraEffects& effects);
+	void CameraSSREditor(CameraSSR& effects);
+	void CameraToneMappingEditor(CameraToneMapping& effects);
 	void VRCameraControllerEditor(VRCameraController& vrCameraController);
-	void InputControlEditor(InputControl& inputControl);
+	void InputControllerEditor(InputController& inputControl);
 	void AudioSourceEditor(AudioSource& audioSource);
 	void AudioListenerEditor(AudioListener& audioListener);
 	void RigidBodyEditor(RigidBody& rigidBody);
+	void CharacterControllerEditor(CharacterController& characterController);
 	void BoxColliderEditor(BoxCollider& boxCollider);
 	void SphereColliderEditor(SphereCollider& sphereCollider);
 	void CylinderColliderEditor(CylinderCollider& cylinderCollider);
 	void CapsuleColliderEditor(CapsuleCollider& capsuleCollider);
+	void CompoundColliderEditor(CompoundCollider& compoundCollider);
 }

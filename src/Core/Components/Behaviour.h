@@ -87,7 +87,7 @@ namespace MxEngine
             this->RemoveBehaviour();
 
             this->userBehaviour = std::malloc(sizeof(T));
-            auto* _ = new(this->userBehaviour) T(std::move(customBehaviour)); //-V799
+            (void)new(this->userBehaviour) T(std::move(customBehaviour)); //-V799
 
             this->deleteCallback = [](void* behaviour) { reinterpret_cast<T*>(behaviour)->~T(); };
 

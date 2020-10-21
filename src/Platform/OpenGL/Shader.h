@@ -53,8 +53,6 @@ namespace MxEngine
 		BindableId CreateProgram(ShaderId vertexShader, ShaderId geometryShader, ShaderId fragmentShader) const;
 		UniformType GetUniformLocation(const MxString& uniformName) const;
 		void FreeShader();
-
-		static MxString SetCurrentShaderVersion(const MxString& shaderSource);
 	public:
 		static MxString GetShaderVersionString();
 
@@ -74,6 +72,7 @@ namespace MxEngine
 		void Load(const MxString& vertex, const MxString& fragment);
 		void Load(const MxString& vertex, const MxString& geometry, const MxString& fragment);
 		void IgnoreNonExistingUniform(const MxString& name) const;
+		void IgnoreNonExistingUniform(const char* name) const;
 		void LoadFromString(const MxString& vertex, const MxString& fragment);
 		void LoadFromString(const MxString& vertex, const MxString& geometry, const MxString& fragment);
 		void SetUniformFloat(const MxString& name, float f) const;
@@ -84,5 +83,9 @@ namespace MxEngine
 		void SetUniformMat3(const MxString& name, const Matrix3x3& matrix) const;
 		void SetUniformInt(const MxString& name, int i) const;
 		void SetUniformBool(const MxString& name, bool b) const;
+
+		const MxString& GetVertexShaderDebugFilePath() const;
+		const MxString& GetGeometryShaderDebugFilePath() const;
+		const MxString& GetFragmentShaderDebugFilePath() const;
 	};
 }

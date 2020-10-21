@@ -1,8 +1,6 @@
-
-
 cmake_minimum_required(VERSION 3.3)
 
-project(MxEngine LANGUAGES CXX)
+project(MxEngine)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -12,9 +10,10 @@ option(MXENGINE_BUILD_SHIPPING OFF)
 
 if(MXENGINE_BUILD_SHIPPING)
     set(CMAKE_BUILD_TYPE "Release")
+    add_compile_definitions(MXENGINE_SHIPPING)
 endif()
 
-if (MSVC)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     add_compile_options("/MP")
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
         add_compile_options("/MDd")
@@ -38,4 +37,5 @@ if (MXENGINE_BUILD_SAMPLES)
     add_subdirectory(samples/VRCameraSample)
     add_subdirectory(samples/GrassSample)
     add_subdirectory(samples/FluidSimulation)
+    add_subdirectory(samples/Sponza)
 endif()

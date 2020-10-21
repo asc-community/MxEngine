@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-7.5.3-red)
+![](https://img.shields.io/badge/version-7.5.5-red)
 ![](https://img.shields.io/badge/build-cmake-green)
 ![GitHub](https://img.shields.io/github/license/asc-community/MxEngine?color=yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)

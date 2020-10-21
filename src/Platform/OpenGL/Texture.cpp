@@ -114,10 +114,10 @@ namespace MxEngine
 		return *this;
 	}
 
-	Texture::Texture(const MxString& filepath, TextureWrap wrap, bool genMipmaps, bool flipImage)
+	Texture::Texture(const MxString& filepath, TextureFormat format, TextureWrap wrap, bool genMipmaps, bool flipImage)
 		: Texture()
 	{
-		this->Load(filepath, wrap, genMipmaps, flipImage);
+		this->Load(filepath, format, wrap, genMipmaps, flipImage);
 	}
 
 	Texture::~Texture()
@@ -125,12 +125,12 @@ namespace MxEngine
 		this->FreeTexture();
 	}
 
-	void Texture::Load(const MxString& filepath, TextureWrap wrap, bool genMipmaps, bool flipImage)
+	void Texture::Load(const MxString& filepath, TextureFormat format, TextureWrap wrap, bool genMipmaps, bool flipImage)
 	{
 		Image image = ImageLoader::LoadImage(filepath, flipImage);
 		this->filepath = filepath;
 		this->wrapType = wrap;
-		this->format = TextureFormat::RGB;
+		this->format = format;
 
 		if (image.GetRawData() == nullptr)
 		{
@@ -142,7 +142,7 @@ namespace MxEngine
 		this->textureType = GL_TEXTURE_2D;
 
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
-		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.GetRawData()));
+		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.GetRawData()));
 
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
@@ -227,7 +227,7 @@ namespace MxEngine
 	void Texture::GenerateMipmaps()
 	{
 		this->Bind(0);
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST));
+		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 		GLCALL(glGenerateMipmap(GL_TEXTURE_2D));
 	}
@@ -310,6 +310,11 @@ namespace MxEngine
 	{
 		GLCALL(glActiveTexture(GL_TEXTURE0 + this->activeId));
 		GLCALL(glBindTexture(this->textureType, 0));
+	}
+
+	Texture::BindableId Texture::GetBoundId() const
+	{
+		return this->activeId;
 	}
 
 	Texture::BindableId Texture::GetNativeHandle() const

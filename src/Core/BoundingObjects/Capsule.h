@@ -62,18 +62,28 @@ namespace MxEngine
         switch (axis)
         {
         case Capsule::Axis::X:
-            radius = Max(length.y, length.z) * 0.5f;
-            height = Max(0.01f, length.x - 2.0f * radius);
+            radius = (length.y + length.z) * 0.25f;
+            height = Max(0.0f, length.x - 2.0f * radius);
             break;
         case Capsule::Axis::Y:
-            radius = Max(length.x, length.z) * 0.5f;
-            height = Max(0.01f, length.y - 2.0f * radius);
+            radius = (length.x + length.z) * 0.25f;
+            height = Max(0.0f, length.y - 2.0f * radius);
             break;
         case Capsule::Axis::Z:
-            radius = Max(length.x, length.y) * 0.5f;
-            height = Max(0.01f, length.z - 2.0f * radius);
+            radius = (length.x + length.y) * 0.25f;
+            height = Max(0.0f, length.z - 2.0f * radius);
             break;
         }
         return Capsule(height, radius, axis);
+    }
+
+    inline constexpr bool operator==(const Capsule& b1, const Capsule& b2)
+    {
+        return b1.Center == b2.Center && b1.Height == b2.Height && b1.Orientation == b2.Orientation && b1.Radius == b2.Radius && b1.Rotation == b2.Rotation;
+    }
+
+    inline constexpr bool operator!=(const Capsule& b1, const Capsule& b2)
+    {
+        return !(b1 == b2);
     }
 }

@@ -1,5 +1,4 @@
 #include "Library/shader_utils.glsl"
-EMBEDDED_SHADER(
 
 out vec4 OutColor;
 
@@ -89,5 +88,3 @@ void main()
 
 	OutColor = vec4(totalColor, 1.0f);
 }
-
-)

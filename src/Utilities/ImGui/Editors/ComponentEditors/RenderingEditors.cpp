@@ -45,6 +45,16 @@ namespace MxEngine::GUI
 	{
 		TREE_NODE_PUSH("Skybox");
 		REMOVE_COMPONENT_BUTTON(skybox);
+
+		auto rotation = DegreesVec(skybox.GetEulerRotation());
+		auto newRotation = rotation;
+		if (ImGui::DragFloat("rotate x", &newRotation.x))
+			skybox.RotateX(newRotation.x - rotation.x);
+		if (ImGui::DragFloat("rotate y", &newRotation.y))
+			skybox.RotateY(newRotation.y - rotation.y);
+		if (ImGui::DragFloat("rotate z", &newRotation.z))
+			skybox.RotateZ(newRotation.z - rotation.z);
+
 		DrawCubeMapEditor("cubemap", skybox.Texture);
 	}
 

@@ -52,7 +52,7 @@ namespace MxEngine
 		adds new event listener to dispatcher (listener is placed in waiting queue until next frame).
 		Note that multiple listeners may have same name. If so, deleting by name will result in removing all of them
 		\param name name of listener (used for deleting listener)
-		\param func listener callback functor
+		\param func listener callback functor (should be with signature `void callback(EventType& e)`
 		*/
 		template<typename T, typename FunctionType>
 		static void AddEventListener(const MxString& name, FunctionType&& func)

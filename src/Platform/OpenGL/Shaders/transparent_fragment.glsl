@@ -1,5 +1,4 @@
 #include "Library/directional_light.glsl"
-EMBEDDED_SHADER(
 
 out vec4 OutColor;
 
@@ -26,6 +25,7 @@ uniform sampler2D map_specular;
 uniform sampler2D map_emmisive;
 uniform sampler2D map_normal;
 uniform sampler2D map_transparency;
+uniform sampler2D map_occlusion;
 uniform Material material;
 uniform float gamma;
 
@@ -54,8 +54,11 @@ vec3 calcNormal(vec2 texcoord, mat3 TBN, sampler2D normalMap)
 
 void main()
 {
+	vec4 albedoAlphaTex = texture(map_albedo, fsin.TexCoord).rgba;
+
 	FragmentInfo fragment;
-	fragment.albedo = pow(fsin.RenderColor * texture(map_albedo, fsin.TexCoord).rgb, vec3(gamma));
+	fragment.albedo = pow(fsin.RenderColor * albedoAlphaTex.rgb, vec3(gamma));
+	fragment.ambientOcclusion = texture(map_occlusion, fsin.TexCoord).r;
 	fragment.specularIntensity = material.specularIntensity;
 	fragment.specularFactor = material.specularFactor * texture(map_specular, fsin.TexCoord).r;
 	fragment.emmisionFactor = material.emmisive * texture(map_emmisive, fsin.TexCoord).r;
@@ -64,8 +67,7 @@ void main()
 	fragment.normal = calcNormal(fsin.TexCoord, fsin.TBN, map_normal);
 	fragment.position = fsin.Position;
 
-	float transparency = material.transparency * texture(map_transparency, fsin.TexCoord).r;
-	transparency = pow(transparency, gamma);
+	float transparency = material.transparency * albedoAlphaTex.a;
 
 	float fragDistance = length(viewportPosition - fragment.position);
 
@@ -78,8 +80,7 @@ void main()
 		vec4 fragLightSpace = lights[i].transform * vec4(fragment.position, 1.0f);
 		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, pcfDistance, fragLightSpace, lightDepthMaps[i]);
 	}
+	totalColor *= fragment.ambientOcclusion;
 
 	OutColor = vec4(totalColor, transparency);
 }
-
-)

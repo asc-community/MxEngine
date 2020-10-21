@@ -29,26 +29,23 @@
 #include "RenderAdaptor.h"
 #include "Library/Primitives/Colors.h"
 #include "Library/Primitives/Primitives.h"
+#include "Library/Noise/NoiseGenerator.h"
 #include "Core/Config/GlobalConfig.h"
-#include "Core/Components/Rendering/MeshRenderer.h"
 #include "Core/Components/Rendering/MeshSource.h"
+#include "Core/Components/Rendering/MeshRenderer.h"
+#include "Core/Components/Rendering/Skybox.h"
 #include "Core/Components/Rendering/MeshLOD.h"
 #include "Core/Components/Rendering/DebugDraw.h"
-#include "Core/Components/Audio/AudioSource.h"
-#include "Core/Components/Physics/BoxCollider.h"
-#include "Core/Components/Physics/SphereCollider.h"
-#include "Core/Components/Physics/CylinderCollider.h"
-#include "Core/Components/Physics/CapsuleCollider.h"
-#include "Core/Components/Physics/RigidBody.h"
-#include "Core/Components/Instancing/InstanceFactory.h"
-#include "Core/Components/Lighting/DirectionalLight.h"
-#include "Core/Components/Lighting/SpotLight.h"
-#include "Core/Components/Lighting/PointLight.h"
 #include "Core/Components/Camera/CameraEffects.h"
-#include "Core/Components/Rendering/Skybox.h"
-#include "Core/BoundingObjects/Cone.h"
-#include "Core/BoundingObjects/Frustrum.h"
+#include "Core/Components/Camera/CameraSSR.h"
+#include "Core/Components/Camera/CameraToneMapping.h"
+#include "Core/Components/Lighting/DirectionalLight.h"
+#include "Core/Components/Lighting/PointLight.h"
+#include "Core/Components/Lighting/SpotLight.h"
+#include "Core/Components/Instancing/InstanceFactory.h"
+#include "Core/Rendering/DebugDataSubmitter.h"
 #include "Utilities/Profiler/Profiler.h"
+#include "Utilities/FileSystem/FileManager.h"
 
 namespace MxEngine
 {
@@ -73,22 +70,22 @@ namespace MxEngine
 
         // light bounding objects
         auto pyramid = Primitives::CreatePyramid();
-        auto& pyramidMesh = pyramid->GetSubmeshes().front();
+        auto& pyramidMesh = pyramid->Submeshes.front();
         this->Renderer.GetLightInformation().PyramidLight =
             RenderHelperObject(pyramidMesh.Data.GetVBO(), pyramidMesh.Data.GetVAO(), pyramidMesh.Data.GetIBO());
 
         auto sphere = Primitives::CreateSphere(8);
-        auto& sphereMesh = sphere->GetSubmeshes().front();
+        auto& sphereMesh = sphere->Submeshes.front();
         this->Renderer.GetLightInformation().SphereLight =
             RenderHelperObject(sphereMesh.Data.GetVBO(), sphereMesh.Data.GetVAO(), sphereMesh.Data.GetIBO());
 
         auto pyramidInstanced = Primitives::CreatePyramid();
-        auto& pyramidInstancedMesh = pyramidInstanced->GetSubmeshes().front();
+        auto& pyramidInstancedMesh = pyramidInstanced->Submeshes.front();
         this->Renderer.GetLightInformation().SpotLightsInstanced = 
             SpotLightInstancedObject(pyramidInstancedMesh.Data.GetVBO(), pyramidInstancedMesh.Data.GetVAO(), pyramidInstancedMesh.Data.GetIBO());
 
         auto sphereInstanced = Primitives::CreateSphere(8);
-        auto& sphereInstancedMesh = sphereInstanced->GetSubmeshes().front();
+        auto& sphereInstancedMesh = sphereInstanced->Submeshes.front();
         this->Renderer.GetLightInformation().PointLigthsInstanced =
             PointLightInstancedObject(sphereInstancedMesh.Data.GetVBO(), sphereInstancedMesh.Data.GetVAO(), sphereInstancedMesh.Data.GetIBO());
 
@@ -98,144 +95,139 @@ namespace MxEngine
         environment.DefaultMaterialMap = Colors::MakeTexture(Colors::WHITE);
         environment.DefaultGreyMap = Colors::MakeTexture(Colors::GREY);
         environment.DefaultBlackCubeMap = Colors::MakeCubeMap(Colors::BLACK);
+        environment.NoiseTexture = NoiseGenerator::MakeRandomTexture(16, 16);
 
         environment.DefaultBlackMap->SetPath("[[black color]]");
         environment.DefaultNormalMap->SetPath("[[default normal]]");
         environment.DefaultMaterialMap->SetPath("[[white color]]");
         environment.DefaultGreyMap->SetPath("[[grey color]]");
+        environment.NoiseTexture->SetPath("[[noise 16x16]]");
 
         environment.AverageWhiteTexture = GraphicFactory::Create<Texture>();
-        environment.AverageWhiteTexture->Load(nullptr, (int)GlobalConfig::GetBloomTextureSize(), (int)GlobalConfig::GetBloomTextureSize(), HDRTextureFormat);
+        environment.AverageWhiteTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), HDRTextureFormat);
         environment.AverageWhiteTexture->SetSamplingFromLOD(environment.AverageWhiteTexture->GetMaxTextureLOD());
         environment.AverageWhiteTexture->SetPath("[[average white]]");
 
+        environment.AmbientOcclusionTexture = GraphicFactory::Create<Texture>();
+        environment.AmbientOcclusionTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), TextureFormat::RGBA);
+        environment.AmbientOcclusionTexture->SetPath("[[ambient occlusion]]");
+        
         // shaders
-        environment.Shaders["GBuffer"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["GBuffer"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/gbuffer_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/gbuffer_fragment.glsl"
+        auto shaderFolder = FileManager::GetEngineShaderFolder();
+        if (!File::Exists(shaderFolder))
+        {
+            MXLOG_FATAL("MxEngine::Application", "there is not Engine/Shaders folder in root directory. Try rebuilding your application");
+        }
+
+        environment.Shaders["GBuffer"_id] = AssetManager::LoadShader(
+            shaderFolder / "gbuffer_vertex.glsl", 
+            shaderFolder / "gbuffer_fragment.glsl"
         );
 
-        environment.Shaders["Transparent"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["Transparent"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/gbuffer_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/transparent_fragment.glsl"
+        environment.Shaders["Transparent"_id] = AssetManager::LoadShader(
+            shaderFolder / "gbuffer_vertex.glsl", 
+            shaderFolder / "transparent_fragment.glsl"
         );
 
-        environment.Shaders["GlobalIllumination"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["GlobalIllumination"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/global_illum_fragment.glsl"
+        environment.Shaders["GlobalIllumination"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "global_illum_fragment.glsl"
         );
 
-        environment.Shaders["SpotLight"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["SpotLight"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/spotlight_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/spotlight_fragment.glsl"
+        environment.Shaders["SpotLight"_id] = AssetManager::LoadShader(
+            shaderFolder / "spotlight_vertex.glsl",
+            shaderFolder / "spotlight_fragment.glsl"
         );
 
-        environment.Shaders["PointLight"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["PointLight"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/pointlight_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/pointlight_fragment.glsl"
+        environment.Shaders["PointLight"_id] = AssetManager::LoadShader(
+            shaderFolder / "pointlight_vertex.glsl",
+            shaderFolder / "pointlight_fragment.glsl"
         );
 
-        environment.Shaders["HDRToLDR"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["HDRToLDR"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/hdr_to_ldr_fragment.glsl"
+        environment.Shaders["HDRToLDR"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "hdr_to_ldr_fragment.glsl"
         );
 
-        environment.Shaders["FXAA"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["FXAA"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/fxaa_fragment.glsl"
+        environment.Shaders["FXAA"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "fxaa_fragment.glsl"
         );
 
-        environment.Shaders["Fog"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["Fog"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/fog_fragment.glsl"
+        environment.Shaders["Fog"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "fog_fragment.glsl"
         );
 
-        environment.Shaders["Vignette"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["Vignette"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/vignette_fragment.glsl"
+        environment.Shaders["Vignette"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "vignette_fragment.glsl"
         );
 
-        environment.Shaders["Skybox"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["Skybox"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/skybox_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/skybox_fragment.glsl"
+        environment.Shaders["Skybox"_id] = AssetManager::LoadShader(
+            shaderFolder / "skybox_vertex.glsl",
+            shaderFolder / "skybox_fragment.glsl"
         );
 
-        environment.Shaders["DepthTexture"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["DepthTexture"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/depthtexture_vertex.glsl"
-            , 
-            #include "Platform/OpenGL/Shaders/depthtexture_fragment.glsl"
+        environment.Shaders["DepthTexture"_id] = AssetManager::LoadShader(
+            shaderFolder / "depthtexture_vertex.glsl", 
+            shaderFolder / "depthtexture_fragment.glsl"
         );
 
-        environment.Shaders["DepthCubeMap"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["DepthCubeMap"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/depthcubemap_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/depthcubemap_geometry.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/depthcubemap_fragment.glsl"
+        environment.Shaders["DepthCubeMap"_id] = AssetManager::LoadShader(
+            shaderFolder / "depthcubemap_vertex.glsl",
+            shaderFolder / "depthcubemap_geometry.glsl",
+            shaderFolder / "depthcubemap_fragment.glsl"
         );
 
-        environment.Shaders["BloomIteration"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["BloomIteration"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/bloom_iter_fragment.glsl"
+        environment.Shaders["BloomIteration"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "bloom_iter_fragment.glsl"
         );
 
-        environment.Shaders["BloomSplit"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["BloomSplit"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/bloom_split_fragment.glsl"
+        environment.Shaders["BloomSplit"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "bloom_split_fragment.glsl"
         );
 
-        environment.Shaders["ImageForward"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["ImageForward"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/rect_fragment.glsl"
+        environment.Shaders["ImageForward"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "rect_fragment.glsl"
         );
 
-        environment.Shaders["DebugDraw"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["DebugDraw"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/debug_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/debug_fragment.glsl"
+        environment.Shaders["DebugDraw"_id] = AssetManager::LoadShader(
+            shaderFolder / "debug_vertex.glsl",
+            shaderFolder / "debug_fragment.glsl"
         );
 
-        environment.Shaders["AverageWhite"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["AverageWhite"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/average_white_fragment.glsl"
+        environment.Shaders["VRCamera"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "vr_fragment.glsl"
         );
 
-        environment.Shaders["SSR"_id] = GraphicFactory::Create<Shader>();
-        environment.Shaders["SSR"_id]->LoadFromString(
-            #include "Platform/OpenGL/Shaders/rect_vertex.glsl"
-            ,
-            #include "Platform/OpenGL/Shaders/ssr_fragment.glsl"
+        environment.Shaders["AverageWhite"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "average_white_fragment.glsl"
+        );
+
+        environment.Shaders["SSR"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "ssr_fragment.glsl"
+        );
+
+        environment.Shaders["ChromaticAbberation"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "chromatic_abberation_fragment.glsl"
+        );
+
+        environment.Shaders["AmbientOcclusion"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "ambient_occlusion_fragment.glsl"
+        );
+
+        environment.Shaders["ApplyAmbientOcclusion"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "apply_ambient_occlusion_fragment.glsl"
         );
 
         // framebuffers
@@ -243,7 +235,7 @@ namespace MxEngine
         environment.DepthFrameBuffer->UseOnlyDepth();
         environment.PostProcessFrameBuffer = GraphicFactory::Create<FrameBuffer>();
 
-        auto bloomBufferSize = (int)GlobalConfig::GetBloomTextureSize();
+        auto bloomBufferSize = (int)GlobalConfig::GetEngineTextureSize();
         for (auto& bloomBuffer : environment.BloomBuffers)
         {
             auto bloomTexture = GraphicFactory::Create<Texture>();
@@ -290,11 +282,17 @@ namespace MxEngine
             {
                 auto& object = MxObject::GetByComponent(camera);
                 auto& transform = object.Transform;
+
                 auto skyboxComponent = object.GetComponent<Skybox>();
                 auto effectsComponent = object.GetComponent<CameraEffects>();
-                Skybox skybox = skyboxComponent.IsValid() ? *skyboxComponent.GetUnchecked() : Skybox();
-                CameraEffects effects = effectsComponent.IsValid() ? *effectsComponent.GetUnchecked() : CameraEffects();
-                this->Renderer.SubmitCamera(camera, transform, skybox, effects);
+                auto toneMappingComponent = object.GetComponent<CameraToneMapping>();
+                auto ssrComponent = object.GetComponent<CameraSSR>();
+                Skybox skybox                  = skyboxComponent.IsValid()      ? *skyboxComponent.GetUnchecked()     : Skybox();
+                CameraEffects* effects         = effectsComponent.IsValid()     ? effectsComponent.GetUnchecked()     : nullptr;
+                CameraToneMapping* toneMapping = toneMappingComponent.IsValid() ? toneMappingComponent.GetUnchecked() : nullptr;
+                CameraSSR* ssr                 = ssrComponent.IsValid()         ? ssrComponent.GetUnchecked()         : nullptr;
+
+                this->Renderer.SubmitCamera(camera, transform, skybox, effects, toneMapping, ssr);
                 TrackMainCameraIndex(camera);
             }
         }
@@ -324,7 +322,7 @@ namespace MxEngine
                     mesh = meshLOD->GetMeshLOD();
                 }
 
-                auto& submeshes = mesh->GetSubmeshes();
+                auto& submeshes = mesh->Submeshes;
                 for (const auto& submesh : submeshes)
                 {
                     auto materialId = submesh.GetMaterialId();
@@ -363,87 +361,15 @@ namespace MxEngine
         {
             MAKE_SCOPE_PROFILER("RenderAdaptor::SubmitDebugData()");
 
+            DebugDataSubmitter debugProcessor(this->DebugDrawer);
+
             auto debugDrawView = ComponentFactory::GetView<DebugDraw>();
             for (auto& debugDraw : debugDrawView)
             {
                 auto& object = MxObject::GetByComponent(debugDraw);
-                auto instanceFactory = object.GetComponent<InstanceFactory>();
-                auto instance = object.GetComponent<Instance>();
-                auto meshSource = object.GetComponent<MeshSource>();
-                auto spotLight = object.GetComponent<SpotLight>();
-                auto pointLight = object.GetComponent<PointLight>();
-                auto cameraController = object.GetComponent<CameraController>();
-                auto audioSource = object.GetComponent<AudioSource>();
-                auto boxCollider = object.GetComponent<BoxCollider>();
-                auto sphereCollider = object.GetComponent<SphereCollider>();
-                auto cylinderCollider = object.GetComponent<CylinderCollider>();
-                auto capsuleCollider = object.GetComponent<CapsuleCollider>();
-                auto rigidBody = object.GetComponent<RigidBody>();
-
-                if(instance.IsValid()) meshSource = instance->GetParent()->GetComponent<MeshSource>();
-
-                if (meshSource.IsValid() && !instanceFactory.IsValid())
-                {
-                    if (debugDraw.RenderBoundingBox)
-                    {
-                        auto box = meshSource->Mesh->GetBoundingBox() * object.Transform.GetMatrix();
-                        this->DebugDrawer.Submit(box, debugDraw.BoundingBoxColor);
-                    }
-                    if (debugDraw.RenderBoundingSphere)
-                    {
-                        auto sphere = meshSource->Mesh->GetBoundingSphere();
-                        sphere.Center += object.Transform.GetPosition();
-                        sphere.Radius *= ComponentMax(object.Transform.GetScale());
-                        this->DebugDrawer.Submit(sphere, debugDraw.BoundingSphereColor);
-                    }
-                }
-                if (debugDraw.RenderLightingBounds && pointLight.IsValid())
-                {
-                    BoundingSphere sphere(object.Transform.GetPosition(), pointLight->GetRadius());
-                    this->DebugDrawer.Submit(sphere, debugDraw.LightSourceColor);
-                }
-                if (debugDraw.RenderLightingBounds && spotLight.IsValid())
-                {
-                    Cone cone(object.Transform.GetPosition(), spotLight->Direction, 3.0f, spotLight->GetOuterAngle());
-                    this->DebugDrawer.Submit(cone, debugDraw.LightSourceColor);
-                }
-                if (debugDraw.RenderSoundBounds && audioSource.IsValid())
-                {
-                    if (!audioSource->IsRelative())
-                    {
-                        if (audioSource->IsOmnidirectional())
-                        {
-                            BoundingSphere sphere(object.Transform.GetPosition(), 3.0f);
-                            this->DebugDrawer.Submit(sphere, debugDraw.SoundSourceColor);
-                        }
-                        else
-                        {
-                            Cone cone(object.Transform.GetPosition(), audioSource->GetDirection(), 3.0f, audioSource->GetOuterAngle());
-                            this->DebugDrawer.Submit(cone, debugDraw.SoundSourceColor);
-                        }
-                    }
-                }
-                if (debugDraw.RenderFrustrumBounds && cameraController.IsValid())
-                {
-                    auto direction = cameraController->GetDirection();
-                    auto up = cameraController->GetDirectionUp();
-                    auto aspect = cameraController->Camera.GetAspectRatio();
-                    auto zoom = cameraController->Camera.GetZoom() * 65.0f;
-                    Frustrum frustrum(object.Transform.GetPosition() + Normalize(direction), direction, up, zoom, aspect);
-                    this->DebugDrawer.Submit(frustrum, debugDraw.FrustrumColor);
-                }
-                if (rigidBody.IsValid() && debugDraw.RenderPhysicsCollider)
-                {
-                    if (boxCollider.IsValid())
-                        this->DebugDrawer.Submit(boxCollider->GetBoundingBox(), debugDraw.BoundingBoxColor);
-                    if (sphereCollider.IsValid())
-                        this->DebugDrawer.Submit(sphereCollider->GetBoundingSphere(), debugDraw.BoundingSphereColor);
-                    if (cylinderCollider.IsValid())
-                        this->DebugDrawer.Submit(cylinderCollider->GetBoundingCylinder(), debugDraw.BoundingBoxColor);
-                    if (capsuleCollider.IsValid())
-                        this->DebugDrawer.Submit(capsuleCollider->GetBoundingCapsule(), debugDraw.BoundingSphereColor);
-                }
+                debugProcessor.ProcessObject(object);
             }
+                
             environment.DebugBufferObject.VertexCount = this->DebugDrawer.GetSize();
             environment.OverlayDebugDraws = this->DebugDrawer.DrawAsScreenOverlay;
             this->DebugDrawer.SubmitBuffer();

@@ -26,7 +26,6 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Core/Components/Script.h"
 #include "Core/Components/Behaviour.h"
 #include "Core/Components/Transform.h"
 
@@ -88,11 +87,12 @@ namespace MxEngine::GUI
 		bool eachFrame = timer == TimerMode::UPDATE_EACH_FRAME;
 		bool eachDelta = timer == TimerMode::UPDATE_EACH_DELTA;
 		bool onceDelta = timer == TimerMode::UPDATE_AFTER_DELTA;
+		bool nSecDelta = timer == TimerMode::UPDATE_FOR_N_SECONDS;
 		static auto timeDelta = 0.0f;
 
 		ImGui::InputFloat("time delta", &timeDelta, 0.01f);
 
-		if (ImGui::BeginCombo("timer mode", eachFrame ? "per frame" : (eachDelta ? "per delta" : "once")))
+		if (ImGui::BeginCombo("timer mode", eachFrame ? "per frame" : (eachDelta ? "per delta" : (onceDelta ? "once" : "per n seconds"))))
 		{
 			if (ImGui::Selectable("per frame", &eachFrame))
 			{
@@ -102,9 +102,13 @@ namespace MxEngine::GUI
 			{
 				behaviour.Schedule(TimerMode::UPDATE_EACH_DELTA, timeDelta);
 			}
-			if (ImGui::Selectable("once"))
+			if (ImGui::Selectable("once", &onceDelta))
 			{
 				behaviour.Schedule(TimerMode::UPDATE_AFTER_DELTA, timeDelta);
+			}
+			if (ImGui::Selectable("for n seconds", &nSecDelta))
+			{
+				behaviour.Schedule(TimerMode::UPDATE_FOR_N_SECONDS, timeDelta);
 			}
 			ImGui::EndCombo();
 		}
@@ -114,15 +118,5 @@ namespace MxEngine::GUI
 		ImGui::SameLine();
 		if (ImGui::Button("remove")) 
 			behaviour.RemoveBehaviour();
-	}
-
-	// TODO: runtime editing of script file
-	// TODO: last time of file editing
-	void ScriptEditor(Script& script)
-	{
-		TREE_NODE_PUSH("Script");
-		REMOVE_COMPONENT_BUTTON(script);
-		ImGui::Text("path: %s", script.GetFilePath().c_str()); //-V111
-		ImGui::Text("contents:\n %s", script.GetContent().c_str());
 	}
 }

@@ -35,8 +35,8 @@ namespace MxEngine
     class LightBase
     {
     public:
-        Vector3 AmbientColor  = MakeVector3(1.0f);
-        Vector3 DiffuseColor  = MakeVector3(1.0f);
+        Vector3 AmbientColor  = MakeVector3(0.3f);
+        Vector3 DiffuseColor  = MakeVector3(0.7f);
         Vector3 SpecularColor = MakeVector3(1.0f);
     };
 }

@@ -1,5 +1,3 @@
-EMBEDDED_SHADER(
-
 vec3 reconstructWorldPosition(float depth, vec2 texcoord, mat4 invViewProjMatrix)
 {
 	vec4 normPosition = vec4(2.0f * texcoord - vec2(1.0f), depth, 1.0f);
@@ -54,21 +52,27 @@ float CalcShadowFactor3D(vec3 fragToLightRay, vec3 viewDist, float zfar, float b
 	return shadowFactor;
 }
 
-vec3 calcReflectionColor(vec3 baseColor, samplerCube reflectionMap, mat3 reflectionMapTransform, vec3 viewDir, vec3 normal)
+vec3 calcReflectionColor(samplerCube reflectionMap, mat3 reflectionMapTransform, vec3 viewDir, vec3 normal)
 {
-	vec3 luminance = vec3(0.2125f, 0.7154f, 0.0721f);
-	float reflectionFactor = dot(luminance, baseColor);
-
 	vec3 I = -viewDir;
 	vec3 reflectionRay = reflect(I, normal);
 	reflectionRay = reflectionMapTransform * reflectionRay;
-	vec3 color = reflectionFactor * texture(reflectionMap, reflectionRay).rgb;
+	vec3 color = texture(reflectionMap, reflectionRay).rgb;
 	return color;
+}
+
+vec4 worldToFragSpace(vec3 v, mat4 viewProj)
+{
+	vec4 proj = viewProj * vec4(v, 1.0f);
+	proj.xyz /= proj.w;
+	proj.xy = proj.xy * 0.5f + vec2(0.5f);
+	return proj;
 }
 
 struct FragmentInfo
 {
 	vec3 albedo;
+	float ambientOcclusion;
 	float specularIntensity;
 	float specularFactor;
 	float emmisionFactor;
@@ -82,11 +86,13 @@ FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D n
 {
 	FragmentInfo fragment;
 
-	fragment.albedo = texture(albedoTexture, texCoord).rgb;
 	fragment.normal = normalize(texture(normalTexture, texCoord).rgb - vec3(0.5f));
+	vec4 albedo = texture(albedoTexture, texCoord).rgba;
 	vec4 material = texture(materialTexture, texCoord).rgba;
 	fragment.depth = texture(depthTexture, texCoord).r;
 
+	fragment.albedo = albedo.rgb;
+	fragment.ambientOcclusion = albedo.a;
 	fragment.emmisionFactor = material.r / (1.0f - material.r);
 	fragment.reflection = material.g;
 	fragment.specularIntensity = exp(1.0f / material.b) - 1.0f;
@@ -96,5 +102,3 @@ FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D n
 
 	return fragment;
 }
-
-)

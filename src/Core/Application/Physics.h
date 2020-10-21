@@ -39,11 +39,13 @@ namespace MxEngine
         static void AddRigidBody(void* body);
         static void AddRigidBody(void* body, int group, int mask);
         static void RemoveRigidBody(void* body);
+        static void ActiveRigidBodyIsland(void* body);
         static void SetRigidBodyParent(void* body, MxObject& parent);
 
         static MxObject::Handle GetRigidBodyParent(const void* body);
         static MxObject::Handle RayCast(const Vector3& from, const Vector3& to);
         static MxObject::Handle RayCast(const Vector3& from, const Vector3& to, float& rayFraction);
+        static Vector3 GetGravity();
 
         static void SetGravity(const Vector3& gravity);
         static void PerformExtraSimulationStep(float timeDelta);

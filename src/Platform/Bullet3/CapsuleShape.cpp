@@ -79,15 +79,15 @@ namespace MxEngine
         {
         case Capsule::Axis::X:
             capsule.Height *= scale.x;
-            capsule.Radius *= Max(scale.y, scale.z);
+            capsule.Radius *= (scale.y + scale.z) * 0.5f;
             break;
         case Capsule::Axis::Y:
             capsule.Height *= scale.y;
-            capsule.Radius *= Max(scale.x, scale.z);
+            capsule.Radius *= (scale.x + scale.z) * 0.5f;
             break;
         case Capsule::Axis::Z:
             capsule.Height *= scale.z;
-            capsule.Radius *= Max(scale.x, scale.y);
+            capsule.Radius *= (scale.x + scale.y) * 0.5f;
             break;
         }
         return capsule;
@@ -96,7 +96,25 @@ namespace MxEngine
     Capsule CapsuleShape::GetBoundingCapsuleUnchanged() const
     {
         auto box = this->GetAABBUnchanged();
+        auto scale = this->GetScale();
+        box.Min *= scale;
+        box.Max *= scale;
         auto capsule = ToCapsule(box, this->orientation);
+        switch (this->orientation)
+        {
+        case Capsule::Axis::X:
+            capsule.Radius /= (scale.y + scale.z) * 0.5f;
+            capsule.Height /= scale.x;
+            break;
+        case Capsule::Axis::Y:
+            capsule.Radius /= (scale.x + scale.z) * 0.5f;
+            capsule.Height /= scale.y;
+            break;
+        case Capsule::Axis::Z:
+            capsule.Radius /= (scale.x + scale.y) * 0.5f;
+            capsule.Height /= scale.z;
+            break;
+        }
         return capsule;
     }
 
