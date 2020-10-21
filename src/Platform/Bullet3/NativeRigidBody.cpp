@@ -195,22 +195,33 @@ namespace MxEngine
         return collider != nullptr && !collider->isNonMoving();
     }
 
+    bool NativeRigidBody::HasCollisionResponce() const
+    {
+        return !(this->GetNativeHandle()->getCollisionFlags() & btCollisionObject::CF_NO_CONTACT_RESPONSE);
+    }
+
     #undef DISABLE_DEACTIVATION
     #undef ACTIVE_TAG
 
-    void NativeRigidBody::SetKinematicFlag(bool flag)
+    void NativeRigidBody::SetKinematicFlag()
     {
-        auto body = GetNativeHandle();
-        if (flag)
-        {
-            body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
-            this->SetActivationState(ActivationState::DISABLE_DEACTIVATION);
-        }
-        else
-        {
-            body->setCollisionFlags(body->getCollisionFlags() & ~btCollisionObject::CF_KINEMATIC_OBJECT);
-            this->SetActivationState(ActivationState::ACTIVE_TAG);
-        }
+        auto body = this->GetNativeHandle();
+        body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+        this->SetActivationState(ActivationState::DISABLE_DEACTIVATION);
+    }
+
+    void NativeRigidBody::SetTriggerFlag()
+    {
+        auto body = this->GetNativeHandle();
+        body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+    }
+
+    void NativeRigidBody::UnsetAllFlags()
+    {
+        auto body = this->GetNativeHandle();
+        body->setCollisionFlags(body->getCollisionFlags() &
+            ~(btCollisionObject::CF_KINEMATIC_OBJECT | btCollisionObject::CF_NO_CONTACT_RESPONSE));
+        this->SetActivationState(ActivationState::ACTIVE_TAG);
     }
 
     void NativeRigidBody::SetScale(const Vector3& scale)

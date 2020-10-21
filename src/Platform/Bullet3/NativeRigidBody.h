@@ -108,7 +108,10 @@ namespace MxEngine
         uint32_t GetCollisionMask() const;
         Vector3 GetScale() const;
         bool IsMoving() const;
-        void SetKinematicFlag(bool flag);
+        bool HasCollisionResponce() const;
+        void SetKinematicFlag();
+        void SetTriggerFlag();
+        void UnsetAllFlags();
         void SetScale(const Vector3& scale);
         float GetMass() const;
         void SetMass(float mass);

@@ -65,9 +65,11 @@ namespace MxEngine
         void MakeKinematic();
         void MakeDynamic();
         void MakeStatic();
+        void MakeTrigger();
         bool IsKinematic() const;
         bool IsDynamic() const;
         bool IsStatic() const;
+        bool IsTrigger() const;
         bool IsRayCastable() const;
         void ToggleRayCasting(bool value);
         bool IsMoving() const;

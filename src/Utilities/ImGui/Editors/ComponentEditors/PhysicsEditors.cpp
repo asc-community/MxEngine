@@ -87,8 +87,10 @@ namespace MxEngine::GUI
 		auto collisionGroup = rigidBody.GetCollisionGroup();
 		auto collisionMask = rigidBody.GetCollisionMask();
 
-		ImGui::Text("is kinematic: %s, is static: %s, is dynamic: %s", 
-			BOOL_STRING(rigidBody.IsKinematic()), BOOL_STRING(rigidBody.IsStatic()), BOOL_STRING(rigidBody.IsDynamic()));
+		if (rigidBody.IsDynamic()) ImGui::Text("object type: dynamic");
+		if (rigidBody.IsStatic()) ImGui::Text("object type: static");
+		if (rigidBody.IsKinematic()) ImGui::Text("object type: kinematic");
+		if (rigidBody.IsTrigger()) ImGui::Text("object type: trigger");
 
 		ImGui::Text("collision group: %s, collision mask: %s", 
 			EnumToString((CollisionGroup::Group)collisionGroup), 
@@ -103,9 +105,12 @@ namespace MxEngine::GUI
 		ImGui::SameLine();
 		if (ImGui::Button("make kinematic"))
 			rigidBody.MakeKinematic();
-		ImGui::SameLine();
+
 		if (ImGui::Button("make static"))
 			rigidBody.MakeStatic();
+		ImGui::SameLine();
+		if (ImGui::Button("make trigger"))
+			rigidBody.MakeTrigger();
 
 		if (ImGui::Button("clear forces"))
 			rigidBody.ClearForces(); //-V111

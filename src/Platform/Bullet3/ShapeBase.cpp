@@ -91,7 +91,7 @@ namespace MxEngine
         this->collider->getBoundingSphere(center, r);
         if (scale == MakeVector3(0.0f))
             scale = MakeVector3(1.0f);
-        r /= ComponentMax(scale);
+        r /= (scale.x * RootThree<float>());
         return BoundingSphere(FromBulletVector3(center), r);
     }
 }

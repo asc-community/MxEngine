@@ -78,6 +78,7 @@ namespace PhysicsSample
         void CreateShot()
         {
             auto object = shotFactory->MakeInstance();
+            object->Name = "Bullet Instance";
 
             if (debugPhysics)
             {
@@ -93,11 +94,6 @@ namespace PhysicsSample
             rigidBody->SetLinearVelocity(dir * 180.0f);
             rigidBody->SetMass(50.0f);
             rigidBody->SetBounceFactor(0.5f);
-            rigidBody->SetCollisionCallback([](MxObject& self, MxObject& obj)
-            {
-                if(obj.Name == "Cube Instance")
-                    MxObject::Destroy(obj);
-            });
 
             Timer::CallAfterDelta([object]() mutable { MxObject::Destroy(object); }, 10.0f);
         }
@@ -131,6 +127,30 @@ namespace PhysicsSample
             characterController->SetJumpSpeed(10.0f);
         }
 
+        void AddTrigger()
+        {
+            auto object = MxObject::Create();
+            object->Name = "Trigger";
+            object->Transform.SetPosition(Vector3(40.0f, 15.0f, -40.0f));
+            object->Transform.SetScale(30.0f);
+
+            auto mr = object->AddComponent<MeshRenderer>();
+            auto ms = object->AddComponent<MeshSource>();
+            auto rb = object->AddComponent<RigidBody>();
+            auto cl = object->AddComponent<SphereCollider>();
+
+            mr->GetMaterial()->BaseColor = Colors::Create(Colors::GREEN);
+            mr->GetMaterial()->Transparency = 0.3f;
+            ms->Mesh = Primitives::CreateSphere();
+            rb->MakeTrigger();
+            rb->SetCollisionCallback([](MxObject& self, MxObject& other)
+            {
+                Logger::Log(VerbosityType::INFO, self.Name, "collided with: " + other.Name);
+                if (other.Name == "Cube Instance")
+                    MxObject::Destroy(other);
+            });
+        }
+
     public:
         virtual void OnCreate() override
         {
@@ -152,7 +172,7 @@ namespace PhysicsSample
             physicalObjectFactory = instances->AddComponent<InstanceFactory>();
 
             auto shots = MxObject::Create();
-            shots->Name = "Shots Instances";
+            shots->Name = "Bullet Instances";
             shots->AddComponent<MeshSource>(Primitives::CreateSphere());
             shots->AddComponent<MeshRenderer>();
             shotFactory = shots->AddComponent<InstanceFactory>();
@@ -164,6 +184,8 @@ namespace PhysicsSample
             InitializeWall(coordinateOffset, Vector3(0, 1, 1), Vector3( 1,  0,  0), wallSize, wallThickness, 0.4f);
             InitializeWall(coordinateOffset, Vector3(1, 1, 0), Vector3( 0,  0, -1), wallSize, wallThickness, 0.4f);
             InitializeWall(coordinateOffset, Vector3(1, 1, 0), Vector3( 0,  0,  1), wallSize, wallThickness, 0.4f);
+
+            this->AddTrigger();
 
             this->ResetSimulation();
         }

@@ -39,19 +39,6 @@
 
 namespace MxEngine
 {
-    // called from Core/Application/Physics.cpp
-    void InvokeCollisionCallback(MxObject& object1, MxObject& object2)
-    {
-        auto handle1 = MxObject::GetByHandle(object1.GetNativeHandle());
-        auto handle2 = MxObject::GetByHandle(object2.GetNativeHandle());
-
-        object1.GetComponent<RigidBody>()->InvokeCollisionEvent(object1, object2);
-        if (handle1.IsValid() && handle2.IsValid())
-        {   // objects may be deleted agyer user collision event, so check is required
-            object2.GetComponent<RigidBody>()->InvokeCollisionEvent(object2, object1);
-        }
-    }
-
     void RigidBody::UpdateTransform()
     {
         auto& self = MxObject::GetByComponent(*this);
@@ -155,7 +142,8 @@ namespace MxEngine
     {
         this->SetMass(0.0f);
         this->SetCollisionFilter(CollisionMask::KINEMATIC, CollisionGroup::NO_STATIC_COLLISIONS);
-        this->rigidBody->SetKinematicFlag(true);
+        this->rigidBody->UnsetAllFlags();
+        this->rigidBody->SetKinematicFlag();
         // from bullet3 manual (see https://github.com/bulletphysics/bullet3/blob/master/docs/Bullet_User_Manual.pdf page 22)
     }
 
@@ -163,14 +151,22 @@ namespace MxEngine
     {
         if(this->GetMass() == 0.0f) this->SetMass(1.0f);
         this->SetCollisionFilter(CollisionMask::DYNAMIC, CollisionGroup::ALL);
-        this->rigidBody->SetKinematicFlag(false);
+        this->rigidBody->UnsetAllFlags();
     }
 
     void RigidBody::MakeStatic()
     {
         this->SetMass(0.0f);
         this->SetCollisionFilter(CollisionMask::STATIC, CollisionGroup::NO_STATIC_COLLISIONS);
-        this->rigidBody->SetKinematicFlag(false);
+        this->rigidBody->UnsetAllFlags();
+    }
+
+    void RigidBody::MakeTrigger()
+    {
+        this->SetMass(0.0f);
+        this->SetCollisionFilter(CollisionMask::STATIC, CollisionGroup::NO_STATIC_COLLISIONS);
+        this->rigidBody->UnsetAllFlags();
+        this->rigidBody->SetTriggerFlag();
     }
 
     bool RigidBody::IsKinematic() const
@@ -186,6 +182,11 @@ namespace MxEngine
     bool RigidBody::IsStatic() const
     {
         return this->GetCollisionMask() & CollisionMask::STATIC;
+    }
+
+    bool RigidBody::IsTrigger() const
+    {
+        return !this->rigidBody->HasCollisionResponce();
     }
 
     bool RigidBody::IsRayCastable() const
