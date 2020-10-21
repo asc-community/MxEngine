@@ -136,6 +136,10 @@ set(CMAKE_DEBUG_POSTFIX "")
 set(CMAKE_RELEASE_POSTFIX "")
 set(CMAKE_RELWITHDEBINFO_POSTFIX "")
 
+cmake_policy(SET CMP0074 NEW)
+set(BOOST_ROOT "D:/main/installers/boost_1_74_0")
+set(Boost_INCLUDE_DIR "D:/main/installers/boost_1_74_0/boost_1_74_0")
+
 find_package(Boost)
 if (NOT Boost_FOUND)
     message(SEND_ERROR "Boost package was not found, please add boost to environment variables by setting BOOST_ROOT or set Boost_INCLUDE_DIR variable in CMake project")

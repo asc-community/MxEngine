@@ -27,6 +27,6 @@ void main()
 
 	vec3 currentColor = texture(cameraOutput, TexCoord).rgb;
 	currentColor = applyFog(currentColor, fragDistance, fog);
-
+	
 	OutColor = vec4(currentColor, 1.0f);
 }
