@@ -81,7 +81,7 @@ namespace MxEngine
                 this->AddEventEntry(MxFormat("mouse position: ({0}, {1})", e.position.x, e.position.y));
         });
 
-        Event::AddEventListener<MousePressEvent>("EventLogger", [this](auto& e)
+        Event::AddEventListener<MouseButtonEvent>("EventLogger", [this](auto& e)
         {
             for (size_t i = 0; i < 8; i++)
             {

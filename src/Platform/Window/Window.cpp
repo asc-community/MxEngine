@@ -169,23 +169,45 @@ namespace MxEngine
 				this->width =  (int)currentSize.x;
 				this->height = (int)currentSize.y;
 			}
-			auto cursor = this->GetCursorPosition();
+
 			auto keyEvent = MakeUnique<KeyEvent>(&this->keyHeld, &this->keyPressed, &this->keyReleased);
 			this->dispatcher->AddEvent(std::move(keyEvent));
+			auto mousePress = MakeUnique<MouseButtonEvent>(&this->mouseHeld, &this->mousePressed, &this->mouseReleased);
+			this->dispatcher->AddEvent(std::move(mousePress));
+
+			if (this->mousePressed.test(GLFW_MOUSE_BUTTON_1))
+			{
+				auto lbmEvent = MakeUnique<LeftMouseButtonPressedEvent>();
+				this->dispatcher->AddEvent(std::move(lbmEvent));
+			}
+			if (this->mousePressed.test(GLFW_MOUSE_BUTTON_2))
+			{
+				auto rbmEvent = MakeUnique<RightMouseButtonPressedEvent>();
+				this->dispatcher->AddEvent(std::move(rbmEvent));
+			}
+			if (this->mousePressed.test(GLFW_MOUSE_BUTTON_3))
+			{
+				auto mbmEvent = MakeUnique<MiddleMouseButtonPressedEvent>();
+				this->dispatcher->AddEvent(std::move(mbmEvent));
+			}
+
+			auto cursor = this->GetCursorPosition();
 			auto mouseMoveEvent = MakeUnique<MouseMoveEvent>(cursor.x, cursor.y);
 			this->dispatcher->AddEvent(std::move(mouseMoveEvent));
-			auto mousePress = MakeUnique<MousePressEvent>(&this->mouseHeld, &this->mousePressed, &this->mouseReleased);
-			this->dispatcher->AddEvent(std::move(mousePress));
 		}
 		else // do not store key and mouse states if dispatcher is nullptr
 		{
 			this->keyPressed.reset();
 			this->keyReleased.reset();
 			this->keyHeld.reset();
+
 			this->mousePressed.reset();
 			this->mouseReleased.reset();
 			this->mouseHeld.reset();
 		}
+
+		this->anyKeyEvent = false;
+		this->anyMouseEvent = false;
 	}
 
 	Window& Window::Close()
@@ -282,6 +304,7 @@ namespace MxEngine
 
 					Window& window = *(Window*)glfwGetWindowUserPointer(w);
 					if ((size_t)key >= 350) return; // TODO: handle all key input
+					window.anyKeyEvent = true;
 					window.keyPressed[(size_t)key] = (action == GLFW_PRESS);
 					window.keyReleased[(size_t)key] = (action == GLFW_RELEASE);
 					window.keyHeld[(size_t)key] = (action == GLFW_PRESS);
@@ -296,6 +319,7 @@ namespace MxEngine
 
 					Window& window = *(Window*)glfwGetWindowUserPointer(w);
 					if (button >= 8) return;
+					window.anyMouseEvent = true;
 					window.mousePressed[(size_t)button] = (action == GLFW_PRESS);
 					window.mouseReleased[(size_t)button] = (action == GLFW_RELEASE);
 					window.mouseHeld[(size_t)button] = (action == GLFW_PRESS);

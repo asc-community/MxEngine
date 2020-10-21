@@ -46,7 +46,7 @@ namespace MxEngine
         Resource<Shape, Factory> GetShapeByIndexDeduced(size_t index, Resource<Shape, Factory>*)
         {
             auto shape = this->GetShapeImpl(index);
-            auto handle = reinterpret_cast<size_t>(GetShapeUserHandle(shape));
+            auto handle = CompoundShape::GetShapeUserHandle(shape);
             auto& pool = Factory::template Get<Shape>();
 
             if (pool.Capacity() <= handle) return { };
