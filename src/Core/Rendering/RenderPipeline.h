@@ -120,9 +120,9 @@ namespace MxEngine
 
     struct DirectionalLightUnit
     {
-        TextureHandle ShadowMap;
-        Matrix4x4 ProjectionMatrix;
-        Matrix4x4 BiasedProjectionMatrix;
+        std::array<TextureHandle, 3> ShadowMaps;
+        std::array<Matrix4x4, 3> ProjectionMatrices;
+        std::array<Matrix4x4, 3> BiasedProjectionMatrices;
         Vector3 Direction;
         Vector3 AmbientColor;
         Vector3 DiffuseColor;

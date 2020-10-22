@@ -266,21 +266,27 @@ namespace MxEngine
 		{
 			auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
 
-			dirLight.ShadowMap->Bind(textureId++);
-			illumShader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i), dirLight.ShadowMap->GetBoundId());
-
-			illumShader->SetUniformMat4(MxFormat("lights[{}].transform", i), dirLight.BiasedProjectionMatrix);
 			illumShader->SetUniformVec3(MxFormat("lights[{}].ambient", i), dirLight.AmbientColor);
 			illumShader->SetUniformVec3(MxFormat("lights[{}].diffuse", i), dirLight.DiffuseColor);
 			illumShader->SetUniformVec3(MxFormat("lights[{}].specular", i), dirLight.SpecularColor);
 			illumShader->SetUniformVec3(MxFormat("lights[{}].direction", i), dirLight.Direction);
+
+			for (size_t j = 0; j < dirLight.ShadowMaps.size(); j++)
+			{
+				dirLight.ShadowMaps[j]->Bind(textureId++);
+				illumShader->SetUniformInt(MxFormat("lightDepthMaps[{}][{}]", i, j), dirLight.ShadowMaps[j]->GetBoundId());
+				illumShader->SetUniformMat4(MxFormat("lights[{}].transform[{}]", i, j), dirLight.BiasedProjectionMatrices[j]);
+			}
 		}
 
 		this->Pipeline.Environment.DefaultBlackMap->Bind(textureId);
 		for (size_t i = lightCount; i < MaxDirLightCount; i++)
 		{
-			illumShader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i), 
-				this->Pipeline.Environment.DefaultBlackMap->GetBoundId());
+			for (size_t j = 0; j < DirectionalLight::TextureCount; j++)
+			{
+				illumShader->SetUniformInt(MxFormat("lightDepthMaps[{}][{}]", i, j),
+					this->Pipeline.Environment.DefaultBlackMap->GetBoundId());
+			}
 		}
 		// render global illumination
 		this->RenderToTexture(camera.HDRTexture, illumShader);
@@ -328,21 +334,27 @@ namespace MxEngine
 		{
 			auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
 
-			dirLight.ShadowMap->Bind(textureId++);
-			shader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i), dirLight.ShadowMap->GetBoundId());
-
-			shader->SetUniformMat4(MxFormat("lights[{}].transform", i), dirLight.BiasedProjectionMatrix);
 			shader->SetUniformVec3(MxFormat("lights[{}].ambient", i), dirLight.AmbientColor);
 			shader->SetUniformVec3(MxFormat("lights[{}].diffuse", i), dirLight.DiffuseColor);
 			shader->SetUniformVec3(MxFormat("lights[{}].specular", i), dirLight.SpecularColor);
 			shader->SetUniformVec3(MxFormat("lights[{}].direction", i), dirLight.Direction);
+
+			for (size_t j = 0; j < dirLight.ShadowMaps.size(); j++)
+			{
+				dirLight.ShadowMaps[j]->Bind(textureId++);
+				shader->SetUniformInt(MxFormat("lightDepthMaps[{}][{}]", i, j), dirLight.ShadowMaps[j]->GetBoundId());
+				shader->SetUniformMat4(MxFormat("lights[{}].transform[{}]", i, j), dirLight.BiasedProjectionMatrices[j]);
+			}
 		}
 
 		this->Pipeline.Environment.DefaultBlackMap->Bind(textureId);
 		for (size_t i = lightCount; i < MaxDirLightCount; i++)
 		{
-			shader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i), 
-				this->Pipeline.Environment.DefaultBlackMap->GetBoundId());
+			for (size_t j = 0; j < DirectionalLight::TextureCount; j++)
+			{
+				shader->SetUniformInt(MxFormat("lightDepthMaps[{}][{}]", i, j),
+					this->Pipeline.Environment.DefaultBlackMap->GetBoundId());
+			}
 		}
 
 		this->DrawObjects(camera, *shader, this->Pipeline.TransparentRenderUnits);
@@ -798,14 +810,19 @@ namespace MxEngine
 	void RenderController::SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform)
 	{
 		auto& dirLight = this->Pipeline.Lighting.DirectionalLights.emplace_back();
+		MX_ASSERT(dirLight.ShadowMaps.size() == DirectionalLight::TextureCount);
 
 		dirLight.AmbientColor = light.AmbientColor;
 		dirLight.DiffuseColor = light.DiffuseColor;
 		dirLight.SpecularColor = light.SpecularColor;
 		dirLight.Direction = light.Direction;
-		dirLight.ShadowMap = light.GetDepthTexture();
-		dirLight.ProjectionMatrix = light.GetMatrix(parentTransform.GetPosition());
-		dirLight.BiasedProjectionMatrix = MakeBiasMatrix() * light.GetMatrix(parentTransform.GetPosition());
+
+		for (size_t i = 0; i < DirectionalLight::TextureCount; i++)
+		{
+			dirLight.ShadowMaps[i] = light.GetDepthTexture(i);
+			dirLight.ProjectionMatrices[i] = light.GetMatrix(parentTransform.GetPosition(), i);
+			dirLight.BiasedProjectionMatrices[i] = MakeBiasMatrix() * dirLight.ProjectionMatrices[i];
+		}
 	}
 
 	void RenderController::SubmitLightSource(const PointLight& light, const TransformComponent& parentTransform)

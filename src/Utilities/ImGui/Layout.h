@@ -83,7 +83,9 @@ namespace MxEngine::GUI
         ImGui::AlignTextToFramePadding();
         ImGui::Text("%s", title);
         ImGui::SameLine();
+        ImGui::PushItemWidth(100.0f);
         ImGui::InputInt("", v); 
+        ImGui::PopItemWidth();
         ImGui::SameLine();
         bool result = ImGui::Button(buttonText);
         ImGui::PopID();

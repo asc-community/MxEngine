@@ -37,17 +37,21 @@ namespace MxEngine
     class DirectionalLight : public LightBase
     {
         MAKE_COMPONENT(DirectionalLight);
-        TextureHandle texture;
     public:
+        constexpr static size_t TextureCount = 3;
+    private:
+        std::array<TextureHandle, TextureCount> textures;
+    public:
+
         DirectionalLight();
         ~DirectionalLight();
 
-        Vector3 Direction        = MakeVector3(0.0f, 1.0f, 0.0f);
-        float ProjectionSize     = 50.0f;
+        Vector3 Direction = MakeVector3(0.0f, 1.0f, 0.0f);
+        std::array<float, TextureCount> Projections = { 15.0f, 150.0f, 1500.0f };
 
-        [[nodiscard]] TextureHandle GetDepthTexture() const;
-        void AttachDepthTexture(const TextureHandle& texture);
-        [[nodiscard]] Matrix4x4 GetMatrix(const Vector3& center) const;
+        [[nodiscard]] TextureHandle GetDepthTexture(size_t index) const;
+        void SetDepthTexture(const TextureHandle& texture, size_t index);
+        [[nodiscard]] Matrix4x4 GetMatrix(const Vector3& center, size_t index) const;
         void FollowViewport();
     };
 }

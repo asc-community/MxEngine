@@ -65,11 +65,14 @@ namespace MxEngine
 
         for (auto& directionalLight : directionalLights)
         {
-            controller.AttachDepthMap(directionalLight.ShadowMap);
-            shader.SetUniformMat4("LightProjMatrix", directionalLight.ProjectionMatrix);
+            for (size_t i = 0; i < directionalLight.ShadowMaps.size(); i++)
+            {
+                controller.AttachDepthMap(directionalLight.ShadowMaps[i]);
+                shader.SetUniformMat4("LightProjMatrix", directionalLight.ProjectionMatrices[i]);
 
-            CastShadows(shader, this->shadowCasters, this->materials);
-            directionalLight.ShadowMap->GenerateMipmaps();
+                CastShadows(shader, this->shadowCasters, this->materials);
+                directionalLight.ShadowMaps[i]->GenerateMipmaps();
+            }
         }
     }
 

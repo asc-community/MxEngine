@@ -12,7 +12,7 @@
   "renderer": {
     "anisothropic-filtering": 16,
     "debug-line-width": 3,
-    "dir-light-texture-size": 4096,
+    "dir-light-texture-size": 2048,
     "engine-texture-size": 512,
     "major-version": 4,
     "minor-version": 5,

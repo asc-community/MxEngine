@@ -9,6 +9,7 @@ vec3 reconstructWorldPosition(float depth, vec2 texcoord, mat4 invViewProjMatrix
 float calcShadowFactor2D(vec4 fragPosLight, sampler2D depthMap, float bias, int blurIterations)
 {
 	vec3 projCoords = fragPosLight.xyz / fragPosLight.w;
+	if (projCoords.z > 0.99f) return 1.0f; // do not handle corner cases, assume now shadows
 	float currentDepth = projCoords.z - bias;
 	float shadowFactor = 0.0f;
 	vec2 texelSize = 1.0f / textureSize(depthMap, 0);

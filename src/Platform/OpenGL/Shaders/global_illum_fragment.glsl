@@ -21,7 +21,7 @@ uniform Camera camera;
 
 const int MaxLightCount = 4;
 uniform DirLight lights[MaxLightCount];
-uniform sampler2D lightDepthMaps[MaxLightCount];
+uniform sampler2D lightDepthMaps[MaxLightCount][DirLightCascadeMapCount];
 
 void main()
 {
@@ -33,8 +33,8 @@ void main()
 	vec3 totalColor = 0.0001f * fragment.albedo;
 	for (int i = 0; i < lightCount; i++)
 	{
-		vec4 fragLightSpace = lights[i].transform * vec4(fragment.position, 1.0f);
-		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, pcfDistance, fragLightSpace, lightDepthMaps[i]);
+		float shadowFactor = calcShadowFactorCascade(vec4(fragment.position, 1.0f), lights[i], lightDepthMaps[i], pcfDistance);
+		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, shadowFactor);
 	}
 
 	OutColor = vec4(totalColor, 1.0f);

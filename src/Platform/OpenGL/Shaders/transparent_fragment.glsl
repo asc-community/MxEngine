@@ -43,7 +43,7 @@ uniform vec3 viewportPosition;
 
 const int MaxLightCount = 4;
 uniform DirLight lights[MaxLightCount];
-uniform sampler2D lightDepthMaps[MaxLightCount];
+uniform sampler2D lightDepthMaps[MaxLightCount][DirLightCascadeMapCount];
 
 vec3 calcNormal(vec2 texcoord, mat3 TBN, sampler2D normalMap)
 {
@@ -77,8 +77,8 @@ void main()
 	totalColor += fragment.albedo * fragment.emmisionFactor;
 	for (int i = 0; i < lightCount; i++)
 	{
-		vec4 fragLightSpace = lights[i].transform * vec4(fragment.position, 1.0f);
-		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, pcfDistance, fragLightSpace, lightDepthMaps[i]);
+		float shadowFactor = calcShadowFactorCascade(vec4(fragment.position, 1.0f), lights[i], lightDepthMaps[i], pcfDistance);
+		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, shadowFactor);
 	}
 	totalColor *= fragment.ambientOcclusion;
 

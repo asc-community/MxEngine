@@ -115,6 +115,7 @@ namespace MxEngine::GUI
     void DrawTextureEditor(const char* name, TextureHandle& texture, bool withTextureLoader)
     {
         SCOPE_TREE_NODE(name);
+        ImGui::PushID((int)texture.GetHandle());
 
         if (texture.IsValid())
         {
@@ -151,6 +152,7 @@ namespace MxEngine::GUI
             }
             
             static int id = 0;
+            ImGui::SameLine();
             if(GUI::InputIntOnClick("", &id, "load from id"))
                 LoadFromInputId(texture, id);
         }
@@ -176,11 +178,13 @@ namespace MxEngine::GUI
                 ImGui::Image((void*)(uintptr_t)texture->GetNativeHandle(), ImVec2(width, height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
             }
         }
+        ImGui::PopID();
     }
 
     void DrawCubeMapEditor(const char* name, CubeMapHandle& cubemap)
     {
         SCOPE_TREE_NODE(name);
+        ImGui::PushID((int)cubemap.GetHandle());
 
         if (cubemap.IsValid())
         {
@@ -204,6 +208,7 @@ namespace MxEngine::GUI
 
         }
         // TODO: support cubemap preview
+        ImGui::PopID();
     }
 
     void DrawMaterialEditor(MaterialHandle& material)
@@ -416,21 +421,21 @@ namespace MxEngine::GUI
     void DrawMeshEditor(const char* name, MeshHandle& mesh)
     {
         SCOPE_TREE_NODE(name);
+        ImGui::PushID((int)mesh.GetHandle());
 
         DrawAABBEditor("bounding box", mesh->BoundingBox);
         DrawSphereEditor("bounding sphere", mesh->BoundingSphere);
-
-        if (ImGui::Button("update mesh boundings"))
-            mesh->UpdateBoundingGeometry();
 
         if (ImGui::Button("load from file"))
         {
             MxString path = FileManager::OpenFileDialog();
             if (!path.empty() && File::Exists(path))
                 mesh = AssetManager::LoadMesh(path);
-
-
         }
+
+        ImGui::SameLine();
+        if (ImGui::Button("update mesh boundings"))
+            mesh->UpdateBoundingGeometry();
         
         ImGui::Indent(9.0f);
         LoadFromPrimitive(mesh);
@@ -496,5 +501,6 @@ namespace MxEngine::GUI
             }
             ImGui::PopID();
         }
+        ImGui::PopID();
     }
 }

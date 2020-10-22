@@ -44,17 +44,23 @@ namespace MxEngine::GUI
 		REMOVE_COMPONENT_BUTTON(dirLight);
 
 		DrawLightBaseEditor(dirLight);
-		ImGui::DragFloat("projection size", &dirLight.ProjectionSize, 1.0f, 0.0f, 10000.0f);
+		ImGui::DragFloat3("projection sizes", dirLight.Projections.data(), 1.0f, 0.0f, 10000.0f);
 		ImGui::DragFloat3("direction", &dirLight.Direction[0], 0.01f);
 		if (ImGui::Button("follow viewport"))
 			dirLight.FollowViewport();
 
-		auto texture = dirLight.GetDepthTexture();
-		static int depthMapSize = (int)texture->GetWidth();
-		if (GUI::InputIntOnClick("depth map size", &depthMapSize))
-			texture->LoadDepth(depthMapSize, depthMapSize);
+		for (size_t i = 0; i < DirectionalLight::TextureCount; i++)
+		{
+			ImGui::Text("cascade shadow map #%d", (int)i);
+			ImGui::PushID(i);
+			auto texture = dirLight.GetDepthTexture(i);
+			static int depthMapSize = (int)texture->GetWidth();
+			if (GUI::InputIntOnClick("depth map size", &depthMapSize))
+				texture->LoadDepth(depthMapSize, depthMapSize);
 
-		DrawTextureEditor("depth map", texture, false);
+			DrawTextureEditor("depth map", texture, false);
+			ImGui::PopID();
+		}
 	}
 
 	void PointLightEditor(PointLight& pointLight)

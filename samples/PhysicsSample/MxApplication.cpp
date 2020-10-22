@@ -160,7 +160,6 @@ namespace PhysicsSample
             auto lightObject = MxObject::Create();
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
-            dirLight->ProjectionSize = 250.0f;
             dirLight->Direction = MakeVector3(0.1f, 1.0f, 0.0f);
             dirLight->FollowViewport();
 

@@ -66,7 +66,7 @@ namespace Sponza
             auto lightObject = MxObject::Create();
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
-            dirLight->ProjectionSize = 150.0f;
+            dirLight->Projections[1] = 100.0f;
             dirLight->FollowViewport();
 
             this->sphereFactory = MxObject::Create();

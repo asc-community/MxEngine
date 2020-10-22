@@ -36,11 +36,14 @@ namespace MxEngine
 {
     DirectionalLight::DirectionalLight()
     { 
-        auto depthTextureSize = (int)GlobalConfig::GetDirectionalLightTextureSize();
-        auto texture = GraphicFactory::Create<Texture>();
-        texture->LoadDepth(depthTextureSize, depthTextureSize);
-        texture->SetPath("[[directional light]]");
-        this->AttachDepthTexture(texture);
+        for (size_t i = 0; i < DirectionalLight::TextureCount; i++)
+        {
+            auto depthTextureSize = (int)GlobalConfig::GetDirectionalLightTextureSize();
+            auto texture = GraphicFactory::Create<Texture>();
+            texture->LoadDepth(depthTextureSize, depthTextureSize);
+            texture->SetPath("[[directional light]]");
+            this->SetDepthTexture(texture, i);
+        }
     }
 
     DirectionalLight::~DirectionalLight()
@@ -49,21 +52,23 @@ namespace MxEngine
         Event::RemoveEventListener(eventName);
     }
 
-    TextureHandle DirectionalLight::GetDepthTexture() const
+    TextureHandle DirectionalLight::GetDepthTexture(size_t index) const
     {
-        return this->texture;
+        MX_ASSERT(index < this->textures.size());
+        return this->textures[index];
     }
 
-    void DirectionalLight::AttachDepthTexture(const TextureHandle& texture)
+    void DirectionalLight::SetDepthTexture(const TextureHandle& texture, size_t index)
     {
-        this->texture = texture;
+        MX_ASSERT(index < this->textures.size());
+        this->textures[index] = texture;
     }
 
-    Matrix4x4 DirectionalLight::GetMatrix(const Vector3& center) const
+    Matrix4x4 DirectionalLight::GetMatrix(const Vector3& center, size_t index) const
     {
-        Vector3 Low  = MakeVector3(-this->ProjectionSize);
-        Vector3 High = MakeVector3( this->ProjectionSize);
-        
+        Vector3 Low  = MakeVector3(-this->Projections[index]);
+        Vector3 High = MakeVector3( this->Projections[index]);
+
         Matrix4x4 OrthoProjection = MakeOrthographicMatrix(Low.x, High.x, Low.y, High.y, Low.z, High.z);
         Matrix4x4 LightView = MakeViewMatrix(
             center + this->Direction,
