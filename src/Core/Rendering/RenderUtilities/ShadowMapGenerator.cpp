@@ -51,6 +51,7 @@ namespace MxEngine
             const auto& material = materials[unit.materialIndex];
             material.HeightMap->Bind(0);
             shader.SetUniformFloat("displacement", material.Displacement);
+            shader.SetUniformVec2("uvMultipliers", material.UVMultipliers);
             shader.SetUniformInt("map_height", material.HeightMap->GetBoundId());
 
             Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807

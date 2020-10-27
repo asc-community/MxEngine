@@ -98,6 +98,14 @@ namespace MxEngine
 		object reflectance value
 		*/
 		float Reflection = 0.0f;
+		/*!
+		object base color
+		*/
+		Vector3 BaseColor = MakeVector3(1.0f);
+		/*!
+		uv index scale
+		*/
+		Vector2 UVMultipliers = MakeVector2(1.0f);
 	};
 
 	/*!

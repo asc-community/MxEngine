@@ -41,3 +41,6 @@
 [submodule "submodules/portable-file-dialogs"]
 	path = submodules/portable-file-dialogs
 	url = https://github.com/samhocevar/portable-file-dialogs
+[submodule "submodules/RuntimeCompiledCPlusPlus"]
+	path = submodules/RuntimeCompiledCPlusPlus
+	url = https://github.com/MomoDeve/RuntimeCompiledCPlusPlus

@@ -27,6 +27,7 @@ uniform sampler2D map_normal;
 uniform sampler2D map_transparency;
 uniform sampler2D map_occlusion;
 uniform Material material;
+uniform vec2 uvMultipliers;
 uniform float gamma;
 
 struct Camera
@@ -54,17 +55,18 @@ vec3 calcNormal(vec2 texcoord, mat3 TBN, sampler2D normalMap)
 
 void main()
 {
-	vec4 albedoAlphaTex = texture(map_albedo, fsin.TexCoord).rgba;
+	vec2 TexCoord = uvMultipliers * fsin.TexCoord;
+	vec4 albedoAlphaTex = texture(map_albedo, TexCoord).rgba;
 
 	FragmentInfo fragment;
 	fragment.albedo = pow(fsin.RenderColor * albedoAlphaTex.rgb, vec3(gamma));
-	fragment.ambientOcclusion = texture(map_occlusion, fsin.TexCoord).r;
+	fragment.ambientOcclusion = texture(map_occlusion, TexCoord).r;
 	fragment.specularIntensity = material.specularIntensity;
-	fragment.specularFactor = material.specularFactor * texture(map_specular, fsin.TexCoord).r;
-	fragment.emmisionFactor = material.emmisive * texture(map_emmisive, fsin.TexCoord).r;
+	fragment.specularFactor = material.specularFactor * texture(map_specular, TexCoord).r;
+	fragment.emmisionFactor = material.emmisive * texture(map_emmisive, TexCoord).r;
 	fragment.reflection = material.reflection;
 	fragment.depth = gl_FragCoord.z;
-	fragment.normal = calcNormal(fsin.TexCoord, fsin.TBN, map_normal);
+	fragment.normal = calcNormal(TexCoord, fsin.TBN, map_normal);
 	fragment.position = fsin.Position;
 
 	float transparency = material.transparency * albedoAlphaTex.a;

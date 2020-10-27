@@ -226,7 +226,10 @@ namespace MxEngine
                 vertex.TexCoord.x = 1.0f - static_cast<float>(n) / polygons;
                 vertex.TexCoord.y = static_cast<float>(m) / polygons;
 
-                vertex.Tangent = MakeVector3(-z, 0, x);
+                if (z == 0.0f && x == 0.0f)
+                    vertex.Tangent = MakeVector3(-1.0f, 0.0f, 1.0f);
+                else
+                    vertex.Tangent =  MakeVector3(-z, 0, x);
                 vertex.Bitangent = Cross(vertex.Normal, vertex.Tangent);
             }
         }

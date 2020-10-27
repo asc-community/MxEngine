@@ -125,6 +125,16 @@ namespace MxEngine
 		InitializeGLFW();
 	}
 
+	void* GraphicModule::GetImpl()
+	{
+		return nullptr;
+	}
+
+	void GraphicModule::Clone(void*)
+	{
+		// stub for generic usage
+	}
+
 	void GraphicModule::OnWindowCreate(WindowHandle window)
 	{
 		InitializeGLEW(window);

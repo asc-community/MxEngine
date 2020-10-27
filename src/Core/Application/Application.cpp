@@ -37,6 +37,9 @@
 #include "Platform/PhysicsAPI.h"
 #include "Platform/Modules/PhysicsModule.h"
 
+// global serializer
+#include "Core/Application/GlobalContextSerializer.h"
+
 // event system
 #include "Core/Events/Events.h"
 #include "Core/Application/Event.h"
@@ -363,19 +366,7 @@ namespace MxEngine
 
 		MX_ASSERT(Application::Get() == nullptr);
 		Application::Set(app);
-
-		Logger::Init();
-		FileManager::Init();
-		AudioModule::Init();
-		GraphicModule::Init();
-		PhysicsModule::Init();
-		UUIDGenerator::Init();
-		GraphicFactory::Init();
-		ComponentFactory::Init();
-		ResourceFactory::Init();
-		AudioFactory::Init();
-		PhysicsFactory::Init();
-		MxObject::Factory::Init();
+		GlobalContextSerializer::Initialize();
 	}
 
 	Application::ModuleManager::~ModuleManager()

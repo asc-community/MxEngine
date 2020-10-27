@@ -214,7 +214,7 @@ namespace MxEngine
             shaderFolder / "rect_vertex.glsl",
             shaderFolder / "ssr_fragment.glsl"
         );
-
+        
         environment.Shaders["ChromaticAbberation"_id] = AssetManager::LoadShader(
             shaderFolder / "rect_vertex.glsl",
             shaderFolder / "chromatic_abberation_fragment.glsl"

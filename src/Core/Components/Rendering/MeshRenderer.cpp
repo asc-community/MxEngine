@@ -60,6 +60,8 @@ namespace MxEngine
 		material.SpecularIntensity = mat.SpecularIntensity;
 		material.Transparency = mat.Transparency;
 		material.Reflection = mat.Reflection;
+		material.BaseColor = mat.BaseColor;
+		material.UVMultipliers = mat.UVMultipliers;
 		material.Name = mat.Name;
 
 		return materialResource;

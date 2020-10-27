@@ -206,6 +206,9 @@ namespace MxEngine
 			material.Emmision         = json["Emmision"           ].get<float>();
 			material.Reflection       = json["Reflection"         ].get<float>();
 
+			material.BaseColor        = json["BaseColor"          ].get<Vector3>();
+			material.UVMultipliers    = json["UVMultipliers"      ].get<Vector2>();
+
 			material.AlbedoMap        = json["AlbedoMap"          ].get<MxString>();
 			material.SpecularMap      = json["SpecularMap"        ].get<MxString>();
 			material.EmmisiveMap      = json["EmmisiveMap"        ].get<MxString>();
@@ -234,6 +237,9 @@ namespace MxEngine
 			DUMP(i, SpecularIntensity);
 			DUMP(i, Emmision);
 			DUMP(i, Reflection);
+
+			DUMP(i, BaseColor);
+			DUMP(i, UVMultipliers);
 
 			DUMP(i, AlbedoMap);
 			DUMP(i, SpecularMap);

@@ -26,6 +26,7 @@ uniform sampler2D map_emmisive;
 uniform sampler2D map_normal;
 uniform sampler2D map_occlusion;
 uniform Material material;
+uniform vec2 uvMultipliers;
 uniform float gamma;
 
 vec3 calcNormal(vec2 texcoord, mat3 TBN, sampler2D normalMap)
@@ -37,15 +38,17 @@ vec3 calcNormal(vec2 texcoord, mat3 TBN, sampler2D normalMap)
 
 void main()
 {
-	vec4 albedoAlphaTex = texture(map_albedo, fsin.TexCoord).rgba;
+	vec2 TexCoord = uvMultipliers * fsin.TexCoord;
+
+	vec4 albedoAlphaTex = texture(map_albedo, TexCoord).rgba;
 	if (albedoAlphaTex.a != 1.0f) discard; // mask fragments with low opacity
 
-	vec3 normal = calcNormal(fsin.TexCoord, fsin.TBN, map_normal);
+	vec3 normal = calcNormal(TexCoord, fsin.TBN, map_normal);
 
 	vec3 albedoTex = albedoAlphaTex.rgb;
-	float occlusion = texture(map_occlusion, fsin.TexCoord).r;
-	float specularTex = texture(map_specular, fsin.TexCoord).r;
-	float emmisiveTex = texture(map_emmisive, fsin.TexCoord).r;
+	float occlusion = texture(map_occlusion, TexCoord).r;
+	float specularTex = texture(map_specular, TexCoord).r;
+	float emmisiveTex = texture(map_emmisive, TexCoord).r;
 
 	float emmisive = material.emmisive * emmisiveTex;
 	float reflection = material.reflection;

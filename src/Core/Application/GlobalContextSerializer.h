@@ -9,7 +9,7 @@
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
 // this list of conditions and the following disclaimer in the documentation
-// and /or other materials provided with the distribution.
+// and /or other materials provided wfith the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
 // contributors may be used to endorse or promote products derived from
@@ -28,26 +28,32 @@
 
 #pragma once
 
-struct ALCdevice;
-struct ALCcontext;
-using AudioDevice = ALCdevice*;
-using AudioContext = ALCcontext*;
+#include "Utilities/StaticSerializer/StaticSerializer.h"
+#include "Utilities/Logging/Logger.h"
+#include "Utilities/FileSystem/FileManager.h"
+#include "Platform/AudioAPI.h"
+#include "Platform/PhysicsAPI.h"
+#include "Platform/GraphicAPI.h"
+#include "Platform/Modules/PhysicsModule.h"
+#include "Platform/Modules/GraphicModule.h"
+#include "Platform/Modules/AudioModule.h"
+#include "Core/MxObject/MxObject.h"
+#include "Core/Resources/AssetManager.h"
 
 namespace MxEngine
 {
-	struct AudioModuleData
-	{
-		AudioDevice device = nullptr;
-		AudioContext context = nullptr;
-	};
-
-	class AudioModule
-	{
-		inline static AudioModuleData* data = nullptr;
-	public:
-		static void Init();
-		static void Destroy();
-		static AudioModuleData* GetImpl();
-		static void Clone(AudioModuleData* impl);
-	};
+	using GlobalContextSerializer = StaticSerializer<
+		Logger,
+		FileManager,
+		AudioModule,
+		GraphicModule,
+		PhysicsModule,
+		UUIDGenerator,
+		GraphicFactory,
+		ComponentFactory,
+		ResourceFactory,
+		AudioFactory,
+		PhysicsFactory,
+		MxObject::Factory
+	>;
 }

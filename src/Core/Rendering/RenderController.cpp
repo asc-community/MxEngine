@@ -108,7 +108,9 @@ namespace MxEngine
 		shader.SetUniformFloat("material.emmisive", material.Emmision);
 		shader.SetUniformFloat("material.reflection", material.Reflection);
 		shader.SetUniformFloat("material.transparency", material.Transparency);
+
 		shader.SetUniformFloat("displacement", material.Displacement);
+		shader.SetUniformVec2("uvMultipliers", material.UVMultipliers);
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
 		this->GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);

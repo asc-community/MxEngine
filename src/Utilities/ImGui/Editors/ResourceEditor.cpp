@@ -41,8 +41,6 @@ namespace MxEngine::GUI
 {
     void DrawTextureList(const char* name, bool* isOpen)
     {
-
-
         ImGui::Begin(name, isOpen);
 
         static char filter[128] = { '\0' };
@@ -121,6 +119,7 @@ namespace MxEngine::GUI
         {
             if (!IsInternalEngineTexture(texture) && ImGui::Button("delete"))
             {
+                ImGui::PopID();
                 GraphicFactory::Destroy(texture);
                 return;
             }
@@ -235,6 +234,7 @@ namespace MxEngine::GUI
         ImGui::DragFloat("displacement", &material->Displacement, 0.01f);
         ImGui::DragFloat("reflection", &material->Reflection, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("transparency", &material->Transparency, 0.01f, 0.0f, 1.0f);
+        ImGui::DragFloat2("UV multipliers", &material->UVMultipliers[0], 0.01f);
         ImGui::ColorEdit3("base color", &material->BaseColor[0], ImGuiColorEditFlags_HDR);
     }
 

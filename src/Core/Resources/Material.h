@@ -52,6 +52,7 @@ namespace MxEngine
 		float Reflection = 0.0f;
 
 		Vector3 BaseColor{ 1.0f };
+		Vector2 UVMultipliers{ 1.0f };
 		bool CastsShadow = true;
 		MxString Name = "DefaultMaterial";
 	};

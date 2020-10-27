@@ -35,6 +35,8 @@ namespace MxEngine
 		using WindowHandle = void*;
 	public:
 		static void Init();
+		static void* GetImpl();
+		static void Clone(void*);
 		static void OnWindowCreate(WindowHandle window);
 		static void OnWindowUpdate(WindowHandle window);
 		static void OnWindowDestroy(WindowHandle window);

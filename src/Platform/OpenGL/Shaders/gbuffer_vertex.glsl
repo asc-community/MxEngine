@@ -11,6 +11,7 @@ layout(location = 12) in vec3 renderColor;
 
 uniform mat4 ViewProjMatrix;
 uniform float displacement;
+uniform vec2 uvMultipliers;
 uniform sampler2D map_height;
 
 out VSout
@@ -34,7 +35,7 @@ void main()
 	vsout.Normal = N;
 	vsout.RenderColor = renderColor;
 
-	modelPos.xyz += vsout.Normal * getDisplacement(texCoord, map_height, displacement);
+	modelPos.xyz += vsout.Normal * getDisplacement(uvMultipliers * texCoord, uvMultipliers, map_height, displacement);
 	vsout.Position = modelPos.xyz;
 
 	gl_Position = ViewProjMatrix * modelPos;
