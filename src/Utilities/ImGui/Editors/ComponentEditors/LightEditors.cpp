@@ -52,7 +52,7 @@ namespace MxEngine::GUI
 		for (size_t i = 0; i < DirectionalLight::TextureCount; i++)
 		{
 			ImGui::Text("cascade shadow map #%d", (int)i);
-			ImGui::PushID(i);
+			ImGui::PushID((int)i);
 			auto texture = dirLight.GetDepthTexture(i);
 			static int depthMapSize = (int)texture->GetWidth();
 			if (GUI::InputIntOnClick("depth map size", &depthMapSize))

@@ -41,7 +41,7 @@ namespace MxEngine
         return this->maxCosAngle;
     }
 
-    float CameraSSR::GetSteps() const
+    size_t CameraSSR::GetSteps() const
     {
         return this->steps;
     }

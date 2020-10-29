@@ -65,9 +65,9 @@ float random(vec2 co)
 mat3 computeTBN(vec3 normal)
 {
     vec2 noiseTexScale = textureSize(depthTex, 0) / textureSize(noiseTex, 0);
-    vec2 noiseCoord = noiseTexScale * TexCoord + vec2(random(TexCoord)) / textureSize(noiseTex, 0);
+    vec2 noiseCoord = noiseTexScale * (TexCoord + 0.01f * vec2(random(TexCoord)));
     vec3 randomVec = texture(noiseTex, noiseCoord).rgb;
-    randomVec = normalize(vec3(2.0f * randomVec.xy - 1.0f, 0.0f));
+    randomVec = vec3(2.0f * randomVec.xy - 1.0f, 0.0f);
 
     vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
     vec3 bitangent = cross(normal, tangent);
@@ -79,7 +79,6 @@ void main()
     FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
     mat3 TBN = computeTBN(fragment.normal);
 
-    const float bias = 0.5f;
     const float sampleDepth = 1.0f / fragment.depth;
     int samples = min(sampleCount, MAX_SAMPLES);
     vec4 totalOcclusion = vec4(0.0f);
@@ -91,6 +90,7 @@ void main()
         vec4 frag = worldToFragSpace(sampleVec, camera.viewProjMatrix);
         float currentDepth = 1.0f / texture(depthTex, frag.xy).r;
 
+        float bias = 1.5f * max(1.0f - dot(fragment.normal, -fragment.position), 0.2f);
         float rangeCheck = smoothstep(0.0f, 1.0f, radius / abs(sampleDepth - currentDepth));
         float occlusion = (sampleDepth >= currentDepth + bias ? 1.0f : 0.0f) * rangeCheck;
 

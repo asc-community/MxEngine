@@ -299,7 +299,7 @@ namespace MxEngine::GUI
 				}
 
 				GUI::Indent _(5.0f);
-				ImGui::PushID(i);
+				ImGui::PushID((int)i);
 
 				auto relativeTransform = compoundCollider.GetShapeTransformByIndex(i);
 				relativeTransform.SetPosition(relativeTransform.GetPosition() / parentTransform.GetScale());

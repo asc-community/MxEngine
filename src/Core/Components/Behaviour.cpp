@@ -33,7 +33,8 @@ namespace MxEngine
 {
     void Behaviour::InvokeUserBehaviour(TimeDelta dt)
     {
-        this->userBehaviour(MxObject::GetByComponent(*this), dt);
+        if(this->userBehaviour)
+            this->userBehaviour(MxObject::GetByComponent(*this), dt);
     }
 
     Behaviour::~Behaviour()

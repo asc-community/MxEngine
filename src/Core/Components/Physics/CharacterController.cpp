@@ -56,7 +56,8 @@ namespace MxEngine
         float fraction = 0.0f;
         auto rayCastMask = CollisionMask::Mask(CollisionMask::STATIC | CollisionMask::KINEMATIC | CollisionMask::DYNAMIC);
         auto rayCastResult = Physics::RayCast(playerPosition, playerPosition - maxDistanceToGround, fraction, rayCastMask);
-        return rayCastResult.IsValid();
+        // if we hit object and it is not a trigger, we stand on ground
+        return rayCastResult.IsValid() && !rayCastResult->GetComponent<RigidBody>()->IsTrigger();
     }
 
     void CharacterController::OnUpdate(float dt)

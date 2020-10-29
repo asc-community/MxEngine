@@ -23,10 +23,15 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     endif()
 endif()
 
-set(MxEngine_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-set(MxEngine_CMAKE_UTILS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
 add_subdirectory(src)
+
+set(MxEngine_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(MxEngine_ROOT_DIR ${MxEngine_ROOT_DIR} PARENT_SCOPE)
+set(MxEngine_CMAKE_UTILS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+set(MxEngine_CMAKE_UTILS_DIR ${MxEngine_CMAKE_UTILS_DIR} PARENT_SCOPE)
+set(MxEngine_SHARED_LIBRARIES ${MxEngine_SHARED_LIBRARIES} PARENT_SCOPE)
+set(MxEngine_INCLUDE_DIR ${MxEngine_INCLUDE_DIR} PARENT_SCOPE)
+set(MxEngine_BINARY_DIR ${MxEngine_BINARY_DIR} PARENT_SCOPE)
 
 if (MXENGINE_BUILD_SAMPLES)
     add_subdirectory(samples/SandboxApplication)

@@ -44,7 +44,7 @@ namespace MxEngine
 	public:
 		float GetThickness() const;
 		float GetMaxCosAngle() const;
-		float GetSteps() const;
+		size_t GetSteps() const;
 		float GetMaxDistance() const;
 		float GetSkyboxLuminance() const;
 

@@ -35,47 +35,27 @@ namespace MxEngine
     template<typename... Args>
     class StaticSerializer
     {
-        template<typename T, typename... Other>
-        static void InitializeImpl()
+        template<typename Tuple, size_t... I>
+        static void DeserializeImpl(Tuple& t, std::index_sequence<I...>)
         {
-            T::Init();
-            if constexpr(sizeof...(Other) > 0)
-                InitializeImpl<Other...>();
-        }
-
-        template<typename T, typename... Other>
-        static auto SerializeImpl()
-        {
-            auto current = std::make_tuple(T::GetImpl());
-            if constexpr (sizeof...(Other) > 0)
-                return std::tuple_cat(current, SerializeImpl<Other...>());
-            else
-                return current;
-        }
-
-        template<size_t CurrentIndex, typename T, typename... Other, typename Tuple>
-        static void DeserializeImpl(Tuple& t)
-        {
-            T::Clone(std::get<CurrentIndex>(t));
-            if constexpr (sizeof...(Other) > 0)
-                DeserializeImpl<CurrentIndex + 1, Other...>(t);
+            (..., Args::Clone(std::get<I>(t)));
         }
 
     public:
         static void Initialize()
         {
-            InitializeImpl<Args...>();
+            (..., Args::Init());
         }
 
         static auto Serialize()
         {
-            return SerializeImpl<Args...>();
+            return std::make_tuple(Args::GetImpl()...);
         }
 
         template<typename Tuple>
         static void Deserialize(Tuple& staticData)
         {
-            DeserializeImpl<0, Args...>(staticData);
+            DeserializeImpl(staticData, std::make_index_sequence<sizeof...(Args)>{ });
         }
 
         static void Deserialize(void* erasedTuple)

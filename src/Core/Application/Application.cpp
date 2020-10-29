@@ -403,6 +403,8 @@ namespace MxEngine
 		MX_ASSERT(Application::Get() == nullptr);
 		Application::Set(app);
 		GlobalContextSerializer::Initialize();
+		auto t = GlobalContextSerializer::Serialize();
+		GlobalContextSerializer::Deserialize(t);
 	}
 
 	Application::ModuleManager::~ModuleManager()
