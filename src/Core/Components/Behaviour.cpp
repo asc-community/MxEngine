@@ -33,10 +33,7 @@ namespace MxEngine
 {
     void Behaviour::InvokeUserBehaviour(TimeDelta dt)
     {
-        if (this->userBehaviour != nullptr)
-        {
-            this->updateCallback(this->userBehaviour, MxObject::GetByComponent(*this), dt);
-        }
+        this->userBehaviour(MxObject::GetByComponent(*this), dt);
     }
 
     Behaviour::~Behaviour()
@@ -78,12 +75,7 @@ namespace MxEngine
 
     void Behaviour::RemoveBehaviour()
     {
-        if (this->HasBehaviour())
-        {
-            this->deleteCallback(this->userBehaviour);
-            std::free(this->userBehaviour);
-            this->userBehaviour = nullptr;
-        }
+        this->userBehaviour = { };
     }
 
     bool Behaviour::HasBehaviour() const

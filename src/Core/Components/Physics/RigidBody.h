@@ -47,8 +47,12 @@ namespace MxEngine
     {
         MAKE_COMPONENT(RigidBody);
 
+        using CollisionCallback = MxFunction<void(MxObject&, MxObject&)>::type;
+
         NativeRigidBodyHandle rigidBody;
-        MxFunction<void(MxObject&, MxObject&)>::type collisionCallback;
+        CollisionCallback onCollision;
+        CollisionCallback onCollisionEnter;
+        CollisionCallback onCollisionExit;
 
         void UpdateTransform();
     public:
@@ -59,8 +63,9 @@ namespace MxEngine
         void Init();
         void OnUpdate(float dt);
         void UpdateCollider();
-        void InvokeCollisionEvent(MxObject& object);
-        void InvokeCollisionEvent(MxObject& self, MxObject& object);
+        void InvokeOnCollisionCallback(MxObject& self, MxObject& object);
+        void InvokeOnCollisionEnterCallback(MxObject& self, MxObject& object);
+        void InvokeOnCollisionExitCallback(MxObject& self, MxObject& object);
 
         void MakeKinematic();
         void MakeDynamic();
@@ -75,11 +80,27 @@ namespace MxEngine
         bool IsMoving() const;
 
         template<typename F>
-        void SetCollisionCallback(F&& func)
+        void SetOnCollisionCallback(F&& func)
         {
-            static_assert(std::is_convertible_v<F, decltype(collisionCallback)>, 
+            static_assert(std::is_convertible_v<F, CollisionCallback>,
                 "callback must be in form `void callback(MxObject& self, MxObject& object)`");
-            this->collisionCallback = std::forward<F>(func);
+            this->onCollision = std::forward<F>(func);
+        }
+
+        template<typename F>
+        void SetOnCollisionEnterCallback(F&& func)
+        {
+            static_assert(std::is_convertible_v<F, CollisionCallback>,
+                "callback must be in form `void callback(MxObject& self, MxObject& object)`");
+            this->onCollisionEnter = std::forward<F>(func);
+        }
+
+        template<typename F>
+        void SetOnCollisionExitCallback(F&& func)
+        {
+            static_assert(std::is_convertible_v<F, CollisionCallback>,
+                "callback must be in form `void callback(MxObject& self, MxObject& object)`");
+            this->onCollisionExit = std::forward<F>(func);
         }
 
         void SetCollisionFilter(uint32_t mask, uint32_t group = CollisionGroup::ALL);

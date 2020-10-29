@@ -12,5 +12,7 @@ MxEngine is not a huge framework so multiple third-party libraries are used. Her
 - [miniaudio](https://github.com/dr-soft/miniaudio) - header-only audio file loader collection
 - [OpenAL](https://github.com/kcat/openal-soft) - cross-platform, software implementation of the OpenAL 3D audio API
 - [Bullet3](https://github.com/bulletphysics/bullet3) - real-time collision detection and multi-physics simulation library
+- [PFD](https://github.com/samhocevar/portable-file-dialogs) - cross-platform file dialog library
+- [RCC++](https://github.com/RuntimeCompiledCPlusPlus/RuntimeCompiledCPlusPlus) - cross-platform library for C++ runtime code compilation
 
 Note that MxEngine may include more additional libraries in further releases. It also uses [Boost library](https://www.boost.org) in its core, but does not expose it to user-code. Engine requires at least C++17-compatable compiler as it depends on some new STL features. All source files were successfully compiled and tested using MSVC through CMake on Windows and Linux

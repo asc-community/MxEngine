@@ -234,6 +234,26 @@ namespace MxEngine
             return !(*this == wrapper);
         }
 
+        [[nodiscard]] bool operator<(const Resource& wrapper) const
+        {
+            return (this->handle != wrapper.handle) ? (this->handle < wrapper.handle) : (this->uuid < wrapper.uuid);
+        }
+
+        [[nodiscard]] bool operator>(const Resource& wrapper) const
+        {
+            return wrapper < *this;
+        }
+
+        [[nodiscard]] bool operator<=(const Resource& wrapper) const
+        {
+            return !(wrapper < *this);
+        }
+
+        [[nodiscard]] bool operator>=(const Resource& wrapper) const
+        {
+            return !(*this < wrapper);
+        }
+
         ~Resource()
         {
             this->DecRef();

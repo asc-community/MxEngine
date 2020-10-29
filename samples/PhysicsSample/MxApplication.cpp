@@ -143,11 +143,15 @@ namespace PhysicsSample
             mr->GetMaterial()->Transparency = 0.3f;
             ms->Mesh = Primitives::CreateSphere();
             rb->MakeTrigger();
-            rb->SetCollisionCallback([](MxObject& self, MxObject& other)
+            rb->SetOnCollisionEnterCallback([](MxObject& self, MxObject& other)
             {
-                Logger::Log(VerbosityType::INFO, self.Name, "collided with: " + other.Name);
+                Logger::Log(VerbosityType::INFO, self.Name, "enter collision with: " + other.Name);
                 if (other.Name == "Cube Instance")
                     MxObject::Destroy(other);
+            });
+            rb->SetOnCollisionExitCallback([](MxObject& self, MxObject& other)
+            {
+                Logger::Log(VerbosityType::INFO, self.Name, "exit collision with: " + other.Name);
             });
         }
 

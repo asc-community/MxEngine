@@ -107,7 +107,8 @@ namespace MxEngine
 
 	void Application::AddCollisionEntry(const MxObject::Handle& object1, const MxObject::Handle& object2)
 	{
-		this->collisions.emplace_back(object1, object2);
+		auto& [currentCollisions, previousCollisions] = this->collisions;
+		currentCollisions.emplace_back(object1, object2);
 	}
 
 	EventDispatcherImpl<EventBase>& Application::GetEventDispatcher()
@@ -210,14 +211,49 @@ namespace MxEngine
 	{
 		PhysicsModule::OnUpdate(this->timeDelta);
 
-		for (auto& [object1, object2] : this->collisions)
+		// TODO: refactor, move collision logic to separate function
+
+		auto& [currentCollisions, previousCollisions] = this->collisions;
+		std::sort(currentCollisions.begin(), currentCollisions.end());
+		auto previousCollisionEntry = previousCollisions.begin();
+
+		constexpr auto CollisionCallback = [](MxObject::Handle& object1, MxObject::Handle& object2, auto callbackMethod)
 		{
 			if (object1.IsValid() && object2.IsValid())
-				object1->GetComponent<RigidBody>()->InvokeCollisionEvent(*object1, *object2);
+				std::invoke(callbackMethod, object1->GetComponent<RigidBody>(), *object1, *object2);
 			if (object1.IsValid() && object2.IsValid())
-				object2->GetComponent<RigidBody>()->InvokeCollisionEvent(*object2, *object1);
+				std::invoke(callbackMethod, object2->GetComponent<RigidBody>(), *object2, *object1);
+		};
+
+		for (auto it = currentCollisions.begin(); it != currentCollisions.end(); it++)
+		{
+			auto& [object1, object2] = *it;
+
+			while (previousCollisionEntry != previousCollisions.end() && *previousCollisionEntry < *it)
+			{
+				auto& [obj1, obj2] = *previousCollisionEntry;
+				CollisionCallback(obj1, obj2, &RigidBody::InvokeOnCollisionExitCallback);
+				previousCollisionEntry++;
+			}
+			
+			if (previousCollisionEntry == previousCollisions.end() || *previousCollisionEntry != *it)
+				CollisionCallback(object1, object2, &RigidBody::InvokeOnCollisionEnterCallback);
+
+			if (previousCollisionEntry != previousCollisions.end() && *previousCollisionEntry == *it) 
+				previousCollisionEntry++;
+
+			CollisionCallback(object1, object2, &RigidBody::InvokeOnCollisionCallback);
 		}
-		this->collisions.clear();
+
+		while (previousCollisionEntry != previousCollisions.end())
+		{
+			auto& [obj1, obj2] = *previousCollisionEntry;
+			CollisionCallback(obj1, obj2, &RigidBody::InvokeOnCollisionExitCallback);
+			previousCollisionEntry++;
+		}
+
+		std::swap(currentCollisions, previousCollisions);
+		currentCollisions.clear();
 	}
 
 	void Application::InvokeCreate()

@@ -67,7 +67,7 @@ mat3 computeTBN(vec3 normal)
     vec2 noiseTexScale = textureSize(depthTex, 0) / textureSize(noiseTex, 0);
     vec2 noiseCoord = noiseTexScale * TexCoord + vec2(random(TexCoord)) / textureSize(noiseTex, 0);
     vec3 randomVec = texture(noiseTex, noiseCoord).rgb;
-    randomVec = vec3(randomVec.xy, 0.0f);
+    randomVec = normalize(vec3(2.0f * randomVec.xy - 1.0f, 0.0f));
 
     vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
     vec3 bitangent = cross(normal, tangent);
@@ -79,7 +79,8 @@ void main()
     FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
     mat3 TBN = computeTBN(fragment.normal);
 
-    const float bias = 0.1f;
+    const float bias = 0.5f;
+    const float sampleDepth = 1.0f / fragment.depth;
     int samples = min(sampleCount, MAX_SAMPLES);
     vec4 totalOcclusion = vec4(0.0f);
     for (int i = 0; i < samples; i++)
@@ -88,16 +89,13 @@ void main()
         sampleVec = fragment.position + sampleVec * radius;
 
         vec4 frag = worldToFragSpace(sampleVec, camera.viewProjMatrix);
-        float currentDepth = texture(depthTex, frag.xy).r;
-        float projectedDepth = frag.z;
-        if (currentDepth > projectedDepth)
-        {
-            float occlusion = inversesqrt(1.0f - projectedDepth) - inversesqrt(1.0f - currentDepth);
-            occlusion = 1.0f / (1.0f + occlusion * occlusion);
+        float currentDepth = 1.0f / texture(depthTex, frag.xy).r;
 
-            totalOcclusion.rgb += texture(albedoTex, frag.xy).rgb;
-            totalOcclusion.a += occlusion;
-        }
+        float rangeCheck = smoothstep(0.0f, 1.0f, radius / abs(sampleDepth - currentDepth));
+        float occlusion = (sampleDepth >= currentDepth + bias ? 1.0f : 0.0f) * rangeCheck;
+
+        totalOcclusion.rgb += occlusion / currentDepth * texture(albedoTex, frag.xy).rgb;
+        totalOcclusion.a += occlusion;
     }
     totalOcclusion /= samples;
     totalOcclusion.a = pow(1.0f - totalOcclusion.a, intensity);

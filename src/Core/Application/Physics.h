@@ -45,6 +45,7 @@ namespace MxEngine
         static MxObject::Handle GetRigidBodyParent(const void* body);
         static MxObject::Handle RayCast(const Vector3& from, const Vector3& to);
         static MxObject::Handle RayCast(const Vector3& from, const Vector3& to, float& rayFraction);
+        static MxObject::Handle RayCast(const Vector3& from, const Vector3& to, float& rayFraction, CollisionMask::Mask rayCastMask);
         static Vector3 GetGravity();
 
         static void SetGravity(const Vector3& gravity);

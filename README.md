@@ -133,7 +133,7 @@ Event::AddEventListener("MyEvent", [](UpdateEvent& e) { MXLOG_INFO("MyEvent", "I
 To read input, you can add event listener or just retrieve state in update method. Also, there are binders for player controls
 ```cs
 auto player = MxObject::Create();
-auto control = player->AddComponent<InputControl>();
+auto control = player->AddComponent<InputController>();
 control->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D);
 
 if (Input::IsMousePressed(MouseButton::LEFT))

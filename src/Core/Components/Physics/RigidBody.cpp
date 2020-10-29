@@ -127,15 +127,22 @@ namespace MxEngine
         this->rigidBody->SetCollisionShape(nullptr); // no collider
     }
 
-    void RigidBody::InvokeCollisionEvent(MxObject& object)
+    void RigidBody::InvokeOnCollisionEnterCallback(MxObject& self, MxObject& object)
     {
-        this->InvokeCollisionEvent(MxObject::GetByComponent(*this), object);
+        if (this->onCollisionEnter)
+            this->onCollisionEnter(self, object);
     }
 
-    void RigidBody::InvokeCollisionEvent(MxObject& self, MxObject& object)
+    void RigidBody::InvokeOnCollisionExitCallback(MxObject& self, MxObject& object)
     {
-        if (this->collisionCallback)
-            this->collisionCallback(self, object);
+        if (this->onCollisionExit)
+            this->onCollisionExit(self, object);
+    }
+
+    void RigidBody::InvokeOnCollisionCallback(MxObject& self, MxObject& object)
+    {
+        if (this->onCollision)
+            this->onCollision(self, object);
     }
 
     void RigidBody::MakeKinematic()

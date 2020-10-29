@@ -38,7 +38,7 @@ namespace MxEngine
 {
     #define WORLD PhysicsModule::GetImpl()->World
 
-    void OnCollisionCallback(btDynamicsWorld* world, btScalar delta)
+    void OnCollisionCallback()
     {
         auto dispatcher = WORLD->getDispatcher();
         int numManiforlds = dispatcher->getNumManifolds();
@@ -61,11 +61,11 @@ namespace MxEngine
 
     struct CustomRayCastCallback : public btCollisionWorld::ClosestRayResultCallback
     {
-        CustomRayCastCallback(const btVector3& from, const btVector3& to)
+        CustomRayCastCallback(const btVector3& from, const btVector3& to, CollisionMask::Mask rayCastMask)
             : btCollisionWorld::ClosestRayResultCallback(from, to)
         {
             this->m_collisionFilterGroup = CollisionGroup::ALL;
-            this->m_collisionFilterMask = CollisionMask::RAYCAST_ONLY;
+            this->m_collisionFilterMask = rayCastMask;
         }
 
         MxObject::Handle GetResult() const
@@ -121,16 +121,21 @@ namespace MxEngine
 
     MxObject::Handle Physics::RayCast(const Vector3& from, const Vector3& to)
     {
-        float rayDistance = 0.0f;
-        return Physics::RayCast(from, to, rayDistance);
+        float rayFraction = 0.0f;
+        return Physics::RayCast(from, to, rayFraction);
     }
 
     MxObject::Handle Physics::RayCast(const Vector3& from, const Vector3& to, float& rayFraction)
     {
+        return Physics::RayCast(from, to, rayFraction, CollisionMask::RAYCAST_ONLY);
+    }
+
+    MxObject::Handle Physics::RayCast(const Vector3& from, const Vector3& to, float& rayFraction, CollisionMask::Mask rayCastMask)
+    {
         auto btFrom = ToBulletVector3(from);
         auto btTo = ToBulletVector3(to);
 
-        CustomRayCastCallback callback(btFrom, btTo);
+        CustomRayCastCallback callback(btFrom, btTo, rayCastMask);
 
         WORLD->rayTest(btFrom, btTo, callback);
         rayFraction = callback.GetRayFraction();

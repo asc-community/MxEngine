@@ -50,12 +50,10 @@ namespace MxEngine
         MAKE_COMPONENT(Behaviour);
 
         using TimeDelta = float;
-        using UpdateCallbackType = MxFunction<void(void*, MxObject&, TimeDelta)>::type;
-        using DeleteCallbackType = MxFunction<void(void*)>::type;
 
-        UpdateCallbackType updateCallback;
-        DeleteCallbackType deleteCallback;
-        void* userBehaviour = nullptr;
+        using BehaviourImpl = MxFunction<void(MxObject&, TimeDelta)>::type;
+
+        BehaviourImpl userBehaviour;
         TimeDelta timeLeft = 0.0f;
         TimeDelta timeRequested = 0.0f;
         TimerMode timerMode = TimerMode::UPDATE_EACH_FRAME;
@@ -86,30 +84,10 @@ namespace MxEngine
 
             this->RemoveBehaviour();
 
-            this->userBehaviour = std::malloc(sizeof(T));
-            (void)new(this->userBehaviour) T(std::move(customBehaviour)); //-V799
-
-            this->deleteCallback = [](void* behaviour) { reinterpret_cast<T*>(behaviour)->~T(); };
-
-            if constexpr(has_method_BehaviourUpdate<T>::value)
-                this->updateCallback = [](void* behaviour, MxObject& self, TimeDelta dt) mutable { ((T*)behaviour)->OnUpdate(self, dt); };
+            if constexpr (has_method_BehaviourUpdate<T>::value)
+                this->userBehaviour = [object = std::move(customBehaviour)](MxObject& self, TimeDelta dt) mutable { object.OnUpdate(self, dt); };
             else
-                this->updateCallback = [](void* behaviour, MxObject& self, TimeDelta dt) mutable { (*(T*)behaviour)(self, dt); };
-        }
-
-
-        template<typename T>
-        T& GetBehaviour()
-        {
-            MX_ASSERT(this->HasBehaviour());
-            return *reinterpret_cast<T*>(this->userBehaviour);
-        }
-
-        template<typename T>
-        const T& GetBehaviour() const
-        {
-            MX_ASSERT(this->HasBehaviour());
-            return *reinterpret_cast<const T*>(this->userBehaviour);
+                this->userBehaviour = std::move(customBehaviour);
         }
     };
 }

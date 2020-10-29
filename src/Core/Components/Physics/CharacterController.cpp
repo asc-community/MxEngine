@@ -53,7 +53,9 @@ namespace MxEngine
 
     bool CheckIfPlayerIsOnGround(const Vector3& playerPosition, const Vector3 maxDistanceToGround)
     {
-        auto rayCastResult = Physics::RayCast(playerPosition, playerPosition - maxDistanceToGround);
+        float fraction = 0.0f;
+        auto rayCastMask = CollisionMask::Mask(CollisionMask::STATIC | CollisionMask::KINEMATIC | CollisionMask::DYNAMIC);
+        auto rayCastResult = Physics::RayCast(playerPosition, playerPosition - maxDistanceToGround, fraction, rayCastMask);
         return rayCastResult.IsValid();
     }
 
@@ -76,16 +78,15 @@ namespace MxEngine
 
         // update rigid body position
         auto motion = this->GetMotionVector();
+        auto gravity = rigidBody.GetGravity();
         if (this->IsGrounded())
         {
             auto jumpImpulse = motion * camera.GetUpVector() * this->GetJumpPower();
             motion -= motion * camera.GetUpVector();
-            rigidBody.SetLinearVelocity(motion * camera.GetMoveSpeed() + jumpImpulse);
+            rigidBody.SetLinearVelocity(motion * camera.GetMoveSpeed() + jumpImpulse + gravity * dt);
         }
         else
         {
-
-            auto gravity = rigidBody.GetGravity();
             auto velocity = rigidBody.GetLinearVelocity(); 
             motion -= motion * camera.GetUpVector();
 

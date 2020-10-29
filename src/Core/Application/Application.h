@@ -53,6 +53,7 @@ namespace MxEngine
 
 		using CallbackList = MxVector<std::function<void(TimeStep)>>;
 		using CollisionList = MxVector<std::pair<MxObject::Handle, MxObject::Handle>>;
+		using CollisionSwapPair = std::pair<CollisionList, CollisionList>;
 	private:
 		static inline Application* Current = nullptr;
 		UniqueRef<Window> window;
@@ -60,7 +61,7 @@ namespace MxEngine
 		EventDispatcherImpl<EventBase>* dispatcher;
 		RuntimeEditor* editor;
 		CallbackList updateCallbacks;
-		CollisionList collisions;
+		CollisionSwapPair collisions;
 		Config config;
 		TimeStep timeDelta = 0.0f;
 		size_t counterFPS = 0;
