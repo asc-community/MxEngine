@@ -26,62 +26,42 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "WindowManager.h"
-#include "Core/Application/Application.h"
+#pragma once
+
+#include <RuntimeObjectSystem/ObjectInterfacePerModule.h>
+#include <RuntimeObjectSystem/RuntimeProtector.h>
+#include <RuntimeObjectSystem/IObject.h>
+
+#include "Core/Application/GlobalContextSerializer.h"
+
+#if defined(MXENGINE_WINDOWS)
+#define MXENGINE_RUNTIME_LINKLIBRARY(library) RUNTIME_COMPILER_LINKLIBRARY(library)
+#elif defined(MXENGINE_LINUX)
+#define MXENGINE_RUNTIME_LINKLIBRARY(library) RUNTIME_COMPILER_LINKLIBRARY("-l" library)
+#elif defined(MXENGINE_MACOS)
+#define MXENGINE_RUNTIME_LINKLIBRARY(library) RUNTIME_COMPILER_LINKLIBRARY("-framework " library)
+#endif
+
+// #if !defined(MXENGINE_CMAKE_BUILD)
+// #include "Engine/Runtime/LinkLibraries.h"
+// #endif
 
 namespace MxEngine
-{   
-    #define WND(func, ...) Application::GetImpl()->GetWindow().func(__VA_ARGS__)
+{
+	struct SciptableInterface : public IObject, public RuntimeProtector
+	{
+		enum ScriptableID : InterfaceID
+		{
+			ID = IID_ENDInterfaceID,
+		};
 
-    Vector2 WindowManager::GetSize()
-    {
-        auto width  = (float)WND(GetWidth);
-        auto height = (float)WND(GetHeight);
-        return MakeVector2(width, height);
-    }
+		virtual void InitializeModuleContext(void* context) { GlobalContextSerializer::Deserialize(context); }
 
-    float WindowManager::GetWidth()
-    {
-        return (float)WND(GetWidth);
-    }
+		virtual void OnUpdate() = 0;
+		virtual void ProtectedFunc() override { this->OnUpdate(); }
+	};
 
-    void WindowManager::SetWidth(float width)
-    {
-        WindowManager::SetSize(MakeVector2(width, WindowManager::GetHeight()));
-    }
+	class Scriptable : public TInterface<SciptableInterface::ID, SciptableInterface> { };
 
-    void WindowManager::SetHeight(float height)
-    {
-        WindowManager::SetSize(MakeVector2(WindowManager::GetWidth(), height));
-    }
-
-    float WindowManager::GetHeight()
-    {
-        return (float)WND(GetHeight);
-    }
-
-    Vector2 WindowManager::GetPosition()
-    {
-        return WND(GetWindowPosition);
-    }
-
-    const MxString& WindowManager::GetTitle()
-    {
-        return WND(GetTitle);
-    }
-
-    void WindowManager::SetTitle(const MxString& title)
-    {
-        WND(UseTitle, title);
-    }
-
-    void WindowManager::SetPosition(const Vector2& pos)
-    {
-        WND(UseWindowPosition, (int)pos.x, (int)pos.y);
-    }
-
-    void WindowManager::SetSize(const Vector2& size)
-    {
-        WND(UseWindowSize, (int)size.x, (int)size.y);
-    }
+	#define MXENGINE_RUNTIME_EDITOR(...) REGISTERCLASS(__VA_ARGS__)
 }

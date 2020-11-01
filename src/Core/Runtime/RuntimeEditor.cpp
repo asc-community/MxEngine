@@ -121,24 +121,7 @@ namespace MxEngine
 			GUI::DrawApplicationEditor("Application Editor", &isApplicationEditorOpened);
 			GUI::DrawTextureList("Texture Viewer", &isTextureListOpened);
 
-			{
-				ImGui::Begin("Object Editor", &isObjectEditorOpened);
-
-				if (ImGui::Button("create new MxObject"))
-					MxObject::Create();
-
-				auto objects = MxObject::GetObjects();
-				int id = 0;
-				for (auto& object : objects)
-				{
-					if (object.IsDisplayedInRuntimeEditor())
-					{
-						ImGui::PushID(id++);
-						this->DrawMxObject(object.Name, object);
-						ImGui::PopID();
-					}
-				}
-			}
+			this->DrawMxObjectList(&isObjectEditorOpened);
 
 			GUI::DrawViewportWindow("Viewport", this->cachedWindowSize, &isViewportOpened);
 
@@ -189,17 +172,17 @@ namespace MxEngine
 		Event::AddEventListener<UpdateEvent>("RuntimeEditor", 
 		[cursorPos = Vector2(), cursorModeCached = CursorMode::DISABLED, openKey, savedStateKeyHeld = false](auto& event) mutable
 		{
-			bool isHeld = Application::Get()->GetWindow().IsKeyHeldUnchecked(openKey);
+			bool isHeld = Application::GetImpl()->GetWindow().IsKeyHeldUnchecked(openKey);
 			if (isHeld != savedStateKeyHeld) savedStateKeyHeld = false;
 
 
 			if (isHeld && !savedStateKeyHeld)
 			{
 				savedStateKeyHeld = true;
-				if (Application::Get()->GetRuntimeEditor().IsActive())
+				if (Application::GetImpl()->GetRuntimeEditor().IsActive())
 				{
 					Input::SetCursorMode(cursorModeCached);
-					Application::Get()->ToggleRuntimeEditor(false);
+					Application::GetImpl()->ToggleRuntimeEditor(false);
 					Input::SetCursorPosition(cursorPos);
 				}
 				else
@@ -207,7 +190,7 @@ namespace MxEngine
 					cursorPos = Input::GetCursorPosition();
 					cursorModeCached = Input::GetCursorMode();
 					Input::SetCursorMode(CursorMode::NORMAL);
-					Application::Get()->ToggleRuntimeEditor(true);
+					Application::GetImpl()->ToggleRuntimeEditor(true);
 					Input::SetCursorPosition(WindowManager::GetSize() * 0.5f);
 				}
 			}
@@ -304,6 +287,30 @@ namespace MxEngine
 	bool RuntimeEditor::IsActive() const
 	{
 		return this->shouldRender;
+	}
+
+	void RuntimeEditor::DrawMxObjectList(bool* isOpen)
+	{
+		ImGui::Begin("Object Editor", isOpen);
+
+		static char filter[128] = { '\0' };
+		ImGui::InputText("search filter", filter, std::size(filter));
+
+		if (ImGui::Button("create new MxObject"))
+			MxObject::Create();
+
+		auto objects = MxObject::GetObjects();
+		int id = 0;
+		for (auto& object : objects)
+		{
+			bool shouldDisplay = object.IsDisplayedInRuntimeEditor() && object.Name.find(filter) != object.Name.npos;
+			if (shouldDisplay)
+			{
+				ImGui::PushID(id++);
+				this->DrawMxObject(object.Name, object);
+				ImGui::PopID();
+			}
+		}
 	}
 
 	RuntimeEditor::RuntimeEditor()

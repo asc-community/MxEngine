@@ -26,62 +26,60 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "WindowManager.h"
-#include "Core/Application/Application.h"
+#include "Script.h"
+#include <RuntimeObjectSystem/IObject.h>
+#include "Core/Runtime/RuntimeCompiler.h"
 
 namespace MxEngine
-{   
-    #define WND(func, ...) Application::GetImpl()->GetWindow().func(__VA_ARGS__)
-
-    Vector2 WindowManager::GetSize()
+{
+    Script::Script()
+        : scriptImpl(nullptr)
     {
-        auto width  = (float)WND(GetWidth);
-        auto height = (float)WND(GetHeight);
-        return MakeVector2(width, height);
+        (void)new(&this->handleImpl)ObjectId();
     }
 
-    float WindowManager::GetWidth()
+    Script::Script(const MxString& className)
     {
-        return (float)WND(GetWidth);
+        (void)new(&this->handleImpl)ObjectId();
+        this->SetScriptableObject(className);
     }
 
-    void WindowManager::SetWidth(float width)
+    Script::~Script()
     {
-        WindowManager::SetSize(MakeVector2(width, WindowManager::GetHeight()));
+        std::launder(reinterpret_cast<ObjectId*>(&this->handleImpl))->~ObjectId();
     }
 
-    void WindowManager::SetHeight(float height)
+    void Script::OnUpdate(float dt)
     {
-        WindowManager::SetSize(MakeVector2(WindowManager::GetWidth(), height));
+        if (this->scriptImpl != nullptr)
+        {
+            RuntimeCompiler::UpdateScriptableObject(this->scriptImpl);
+        }
     }
 
-    float WindowManager::GetHeight()
+    const ObjectId& Script::GetNativeHandle() const
     {
-        return (float)WND(GetHeight);
+        return *std::launder(reinterpret_cast<const ObjectId*>(&this->handleImpl));
     }
 
-    Vector2 WindowManager::GetPosition()
+    void Script::SetScriptableObject(const MxString& className)
     {
-        return WND(GetWindowPosition);
+        ObjectId* id = std::launder(reinterpret_cast<ObjectId*>(&this->handleImpl));
+        this->scriptImpl = RuntimeCompiler::CreateScriptableObject(className.c_str(), id);
     }
 
-    const MxString& WindowManager::GetTitle()
+    void Script::SetScriptableObject(Scriptable* script)
     {
-        return WND(GetTitle);
+        this->scriptImpl = script;
     }
 
-    void WindowManager::SetTitle(const MxString& title)
+    Scriptable* Script::GetScriptableObject()
     {
-        WND(UseTitle, title);
+        return this->scriptImpl;
     }
 
-    void WindowManager::SetPosition(const Vector2& pos)
+    const Scriptable* Script::GetScriptableObject() const
     {
-        WND(UseWindowPosition, (int)pos.x, (int)pos.y);
-    }
-
-    void WindowManager::SetSize(const Vector2& size)
-    {
-        WND(UseWindowSize, (int)size.x, (int)size.y);
+        return this->scriptImpl;
     }
 }

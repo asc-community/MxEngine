@@ -37,6 +37,7 @@
 #include "Core/Components/Camera/PerspectiveCamera.h"
 
 #include "Utilities/ImGui/ImGuiUtils.h"
+#include "Core/Application/Rendering.h"
 
 namespace MxEngine::GUI
 {
@@ -237,7 +238,7 @@ namespace MxEngine::GUI
 		if (ImGui::Button("set as main viewport"))
 		{
 			auto cameraComponent = MxObject::GetComponentHandle(cameraController);
-			Application::Get()->GetRenderAdaptor().Viewport = cameraComponent;
+			Rendering::SetViewport(cameraComponent);
 		}
 
 		auto texture = cameraController.GetRenderTexture();

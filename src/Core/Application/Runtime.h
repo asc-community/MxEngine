@@ -63,27 +63,27 @@ namespace MxEngine
 
         static void AddShaderUpdateListener(const ShaderHandle& shader)
         {
-            Application::Get()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle>(shader);
+            Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle>(shader);
         }
 
         static void AddShaderUpdateListener(const ShaderHandle& shader, const FilePath& lookupDirectory)
         {
-            Application::Get()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle, FilePath>(shader, lookupDirectory);
+            Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle, FilePath>(shader, lookupDirectory);
         }
 
         static void AddEventLogEntry(const MxString &entry)
         {
-            Application::Get()->GetRuntimeEditor().AddEventEntry(entry);
+            Application::GetImpl()->GetRuntimeEditor().AddEventEntry(entry);
         }
 
         static bool IsEditorActive()
         {
-            return Application::Get()->GetRuntimeEditor().IsActive();
+            return Application::GetImpl()->GetRuntimeEditor().IsActive();
         }
 
         static void CloseApplication() 
         {
-            Application::Get()->CloseApplication();
+            Application::GetImpl()->CloseApplication();
         }
     };
 }

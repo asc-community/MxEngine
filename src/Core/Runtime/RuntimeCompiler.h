@@ -26,62 +26,40 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "WindowManager.h"
-#include "Core/Application/Application.h"
+#pragma once
+
+// forward-declarations of RCC++ interfaces
+struct ICompilerLogger;
+class RuntimeObjectSystem;
+struct ObjectId;
 
 namespace MxEngine
-{   
-    #define WND(func, ...) Application::GetImpl()->GetWindow().func(__VA_ARGS__)
+{
+    class UpdateListener;
+    class Scriptable;
 
-    Vector2 WindowManager::GetSize()
+    struct RuntimeCompilerImpl
     {
-        auto width  = (float)WND(GetWidth);
-        auto height = (float)WND(GetHeight);
-        return MakeVector2(width, height);
-    }
+        UpdateListener* updateListener = nullptr;
+        ICompilerLogger* compilerLogger = nullptr;
+        RuntimeObjectSystem* runtimeObjectSystem = nullptr;
+    };
 
-    float WindowManager::GetWidth()
+    class RuntimeCompiler
     {
-        return (float)WND(GetWidth);
-    }
+        inline static RuntimeCompilerImpl* impl = nullptr;
 
-    void WindowManager::SetWidth(float width)
-    {
-        WindowManager::SetSize(MakeVector2(width, WindowManager::GetHeight()));
-    }
+    public:
+        static void Init();
+        static void Clone(RuntimeCompilerImpl* other);
+        static RuntimeCompilerImpl* GetImpl();
 
-    void WindowManager::SetHeight(float height)
-    {
-        WindowManager::SetSize(MakeVector2(WindowManager::GetWidth(), height));
-    }
+        static bool HasNewCompiledModules();
+        static bool HasCompilationTaskInProcess();
+        static void LoadCompiledModules();
+        static void OnUpdate(float dt);
 
-    float WindowManager::GetHeight()
-    {
-        return (float)WND(GetHeight);
-    }
-
-    Vector2 WindowManager::GetPosition()
-    {
-        return WND(GetWindowPosition);
-    }
-
-    const MxString& WindowManager::GetTitle()
-    {
-        return WND(GetTitle);
-    }
-
-    void WindowManager::SetTitle(const MxString& title)
-    {
-        WND(UseTitle, title);
-    }
-
-    void WindowManager::SetPosition(const Vector2& pos)
-    {
-        WND(UseWindowPosition, (int)pos.x, (int)pos.y);
-    }
-
-    void WindowManager::SetSize(const Vector2& size)
-    {
-        WND(UseWindowSize, (int)size.x, (int)size.y);
-    }
+        static Scriptable* CreateScriptableObject(const char* className, ObjectId* id);
+        static void UpdateScriptableObject(Scriptable* script);
+    };
 }

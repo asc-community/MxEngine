@@ -31,7 +31,7 @@
 
 namespace MxEngine
 {
-    #define CFG(name) Application::Get()->GetConfig().name
+    #define CFG(name) Application::GetImpl()->GetConfig().name
 
     BuildType GlobalConfig::GetBuildType()
     {

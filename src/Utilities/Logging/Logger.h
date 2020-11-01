@@ -53,17 +53,17 @@ namespace MxEngine
         #define MXLOG_INFO(caller, ...)   
         #define MXLOG_WARNING(caller, ...)
         #define MXLOG_ERROR(caller, ...)  
-        #define MXLOG_FATAL(caller, ...) AbortApplication()
+        #define MXLOG_FATAL(caller, ...) MxEngine::AbortApplication()
     #else
         #if defined(MXENGINE_RELEASE)
             #define MXLOG_DEBUG(caller, ...)
         #else
-            #define MXLOG_DEBUG(caller, ...) Logger::Log(VerbosityType::DEBUG, caller, __VA_ARGS__)
+            #define MXLOG_DEBUG(caller, ...) MxEngine::Logger::Log(MxEngine::VerbosityType::DEBUG, caller, __VA_ARGS__)
         #endif
 
-        #define MXLOG_INFO(caller, ...)    Logger::Log(VerbosityType::INFO,    caller, __VA_ARGS__)
-        #define MXLOG_WARNING(caller, ...) Logger::Log(VerbosityType::WARNING, caller, __VA_ARGS__)
-        #define MXLOG_ERROR(caller, ...)   Logger::Log(VerbosityType::ERROR,   caller, __VA_ARGS__)
-        #define MXLOG_FATAL(caller, ...)   Logger::Log(VerbosityType::FATAL,   caller, __VA_ARGS__)
+        #define MXLOG_INFO(caller, ...)    MxEngine::Logger::Log(MxEngine::VerbosityType::INFO,    caller, __VA_ARGS__)
+        #define MXLOG_WARNING(caller, ...) MxEngine::Logger::Log(MxEngine::VerbosityType::WARNING, caller, __VA_ARGS__)
+        #define MXLOG_ERROR(caller, ...)   MxEngine::Logger::Log(MxEngine::VerbosityType::ERROR,   caller, __VA_ARGS__)
+        #define MXLOG_FATAL(caller, ...)   MxEngine::Logger::Log(MxEngine::VerbosityType::FATAL,   caller, __VA_ARGS__)
     #endif
 }

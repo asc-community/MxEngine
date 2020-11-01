@@ -29,20 +29,20 @@
 #pragma once
 
 #include "Utilities/StaticSerializer/StaticSerializer.h"
-#include "Utilities/Logging/Logger.h"
+#include "Core/Application/Application.h"
+#include "Core/MxObject/MxObject.h"
+#include "Core/Resources/AssetManager.h"
+#include "Core/Runtime/RuntimeCompiler.h"
 #include "Utilities/FileSystem/FileManager.h"
-#include "Platform/AudioAPI.h"
-#include "Platform/PhysicsAPI.h"
-#include "Platform/GraphicAPI.h"
 #include "Platform/Modules/PhysicsModule.h"
 #include "Platform/Modules/GraphicModule.h"
 #include "Platform/Modules/AudioModule.h"
-#include "Core/MxObject/MxObject.h"
-#include "Core/Resources/AssetManager.h"
+#include "Platform/PhysicsAPI.h"
 
 namespace MxEngine
 {
 	using GlobalContextSerializer = StaticSerializer<
+		Application,
 		Logger,
 		FileManager,
 		AudioModule,
@@ -54,6 +54,7 @@ namespace MxEngine
 		ResourceFactory,
 		AudioFactory,
 		PhysicsFactory,
-		MxObject::Factory
+		MxObject::Factory,
+		RuntimeCompiler
 	>;
 }

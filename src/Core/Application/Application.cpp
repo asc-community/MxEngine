@@ -137,10 +137,9 @@ namespace MxEngine
 		MXLOG_INFO("MxEngine::AppCloseBinding", MxFormat("bound app close to keycode: {0}", EnumToString(key)));
 		Event::AddEventListener<KeyEvent>("AppCloseEvent", [key](auto& event)
 		{
-			auto context = Application::Get();
-			if (event.IsHeld(key))
+			if (event.IsPressed(key))
 			{
-				context->CloseApplication();
+				Application::GetImpl()->CloseApplication();
 			}
 		});
 	}
@@ -384,12 +383,16 @@ namespace MxEngine
 		MXLOG_INFO("MxEngine::Application", "application destroyed");
 	}
 
-	Application* Application::Get()
+	void Application::Init()
+	{
+	}
+
+	Application* Application::GetImpl()
 	{
 		return Application::Current;
 	}
 
-	void Application::Set(Application* application)
+	void Application::Clone(Application* application)
 	{
 		Application::Current = application;
 	}
@@ -400,11 +403,8 @@ namespace MxEngine
 		Profiler::Start("profile_log.json");
 		#endif
 
-		MX_ASSERT(Application::Get() == nullptr);
-		Application::Set(app);
+		Application::Current = app;
 		GlobalContextSerializer::Initialize();
-		auto t = GlobalContextSerializer::Serialize();
-		GlobalContextSerializer::Deserialize(t);
 	}
 
 	Application::ModuleManager::~ModuleManager()
@@ -525,6 +525,9 @@ namespace MxEngine
 
 	void Application::InitializeRuntime(RuntimeEditor& console)
 	{
+		this->GetEventDispatcher().AddEventListener<FpsUpdateEvent>("RuntimeCompiler", 
+			[](auto&) { RuntimeCompiler::OnUpdate(1.0f); });
+
 		auto& editor = this->GetRuntimeEditor();
 
 		editor.Log("Welcome to MxEngine developer console!");
@@ -557,6 +560,7 @@ namespace MxEngine
 		editor.RegisterComponentEditor<CompoundCollider>   ("CompoundCollider",    GUI::CompoundColliderEditor);
 
 		this->RegisterComponentUpdate<Behaviour>();
+		this->RegisterComponentUpdate<Script>();
 		this->RegisterComponentUpdate<InstanceFactory>();
 		this->RegisterComponentUpdate<VRCameraController>();
 		this->RegisterComponentUpdate<AudioListener>();

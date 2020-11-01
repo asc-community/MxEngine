@@ -79,6 +79,12 @@ namespace MxEngine
                 MXLOG_ERROR("MxEngine::File", "file was not found: " + ToMxString(this->filePath));
                 return;
             }
+            else
+            {
+                auto directory = this->filePath.parent_path();
+                if (!File::Exists(directory))
+                    File::CreateDirectory(directory);
+            }
         }
         if (this->IsOpen()) this->Close();
         this->fileStream.open(this->filePath, (std::ios_base::openmode)FileModeTable[mode]);

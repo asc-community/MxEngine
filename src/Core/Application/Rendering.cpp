@@ -35,12 +35,12 @@ namespace MxEngine
 
     CameraControllerHandle& MxEngine::Rendering::GetViewport()
     {
-        return Application::Get()->GetRenderAdaptor().Viewport;
+        return Application::GetImpl()->GetRenderAdaptor().Viewport;
     }
 
     void Rendering::SetViewport(const CameraControllerHandle& viewport)
     {
-        Application::Get()->GetRenderAdaptor().Viewport = viewport;
+        Application::GetImpl()->GetRenderAdaptor().Viewport = viewport;
     }
 
     void Rendering::ResizeViewport(size_t width, size_t height)
@@ -73,15 +73,15 @@ namespace MxEngine
 
     RenderController& Rendering::GetController()
     {
-        return Application::Get()->GetRenderAdaptor().Renderer;
+        return Application::GetImpl()->GetRenderAdaptor().Renderer;
     }
 
     RenderAdaptor& Rendering::GetAdaptor()
     {
-        return Application::Get()->GetRenderAdaptor();
+        return Application::GetImpl()->GetRenderAdaptor();
     }
 
-    #define FWD(func_name, ...) Application::Get()->GetRenderAdaptor().func_name(__VA_ARGS__)
+    #define FWD(func_name, ...) Application::GetImpl()->GetRenderAdaptor().func_name(__VA_ARGS__)
 
     void Rendering::SetRenderToDefaultFrameBuffer(bool value)
     {
@@ -133,7 +133,7 @@ namespace MxEngine
         return FWD(GetShadowBlurIterations);
     }
 
-    #define DRW Application::Get()->GetRenderAdaptor().DebugDrawer
+    #define DRW Application::GetImpl()->GetRenderAdaptor().DebugDrawer
 
     void Rendering::Draw(const Line& line, const Vector4& color)
     {

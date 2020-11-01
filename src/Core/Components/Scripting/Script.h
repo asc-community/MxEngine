@@ -26,62 +26,32 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "WindowManager.h"
-#include "Core/Application/Application.h"
+#pragma once
+
+#include "Utilities/ECS/Component.h"
+
+struct ObjectId;
 
 namespace MxEngine
-{   
-    #define WND(func, ...) Application::GetImpl()->GetWindow().func(__VA_ARGS__)
+{
+	class Scriptable;
 
-    Vector2 WindowManager::GetSize()
-    {
-        auto width  = (float)WND(GetWidth);
-        auto height = (float)WND(GetHeight);
-        return MakeVector2(width, height);
-    }
+	class Script
+	{
+		MAKE_COMPONENT(Script);
 
-    float WindowManager::GetWidth()
-    {
-        return (float)WND(GetWidth);
-    }
+		std::aligned_storage_t<16> handleImpl;
+		Scriptable* scriptImpl;
+	public:
+		Script();
+		Script(const MxString& className);
+		void OnUpdate(float dt);
+		~Script();
 
-    void WindowManager::SetWidth(float width)
-    {
-        WindowManager::SetSize(MakeVector2(width, WindowManager::GetHeight()));
-    }
-
-    void WindowManager::SetHeight(float height)
-    {
-        WindowManager::SetSize(MakeVector2(WindowManager::GetWidth(), height));
-    }
-
-    float WindowManager::GetHeight()
-    {
-        return (float)WND(GetHeight);
-    }
-
-    Vector2 WindowManager::GetPosition()
-    {
-        return WND(GetWindowPosition);
-    }
-
-    const MxString& WindowManager::GetTitle()
-    {
-        return WND(GetTitle);
-    }
-
-    void WindowManager::SetTitle(const MxString& title)
-    {
-        WND(UseTitle, title);
-    }
-
-    void WindowManager::SetPosition(const Vector2& pos)
-    {
-        WND(UseWindowPosition, (int)pos.x, (int)pos.y);
-    }
-
-    void WindowManager::SetSize(const Vector2& size)
-    {
-        WND(UseWindowSize, (int)size.x, (int)size.y);
-    }
+		const ObjectId& GetNativeHandle() const;
+		void SetScriptableObject(Scriptable* script);
+		void SetScriptableObject(const MxString& name);
+		Scriptable* GetScriptableObject();
+		const Scriptable* GetScriptableObject() const;
+	};
 }

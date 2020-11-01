@@ -50,6 +50,8 @@ namespace MxEngine
 		MxVector<std::function<void(MxObject&)>> componentEditorCallbacks;
 		MxVector<std::function<void(MxObject&)>> componentAdderCallbacks;
 		MxVector<const char*> componentNames;
+
+		void DrawMxObjectList(bool* isOpen = nullptr);
   	public:
 		RuntimeEditor();
 		RuntimeEditor(const RuntimeEditor&) = delete;
@@ -69,10 +71,10 @@ namespace MxEngine
 		template<typename ShaderHandle, typename FilePath>
 		void AddShaderUpdateListener(ShaderHandle shader, const FilePath& lookupDirectory);
 
-		void DrawMxObject(const MxString& treeName, MxObject& object);
-
 		Vector2 GetSize() const;
 		bool IsActive() const;
+
+		void DrawMxObject(const MxString& name, MxObject& object);
 
 		template<typename T>
 		void RegisterComponentEditor(const char* name, std::function<void(T&)> callback)

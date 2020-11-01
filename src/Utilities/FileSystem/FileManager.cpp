@@ -78,23 +78,34 @@ namespace MxEngine
         return FileManager::GetWorkingDirectory() / "Engine" / "Shaders";
     }
 
+    FilePath FileManager::GetEngineRuntimeFolder()
+    {
+        return FileManager::GetWorkingDirectory() / "Engine" / "Runtime";
+    }
+
     bool FileManager::FileExists(StringId filename)
     {
         return manager->filetable.find(filename) != manager->filetable.end();
     }
 
-    FilePath FileManager::SearchInDirectory(const FilePath& directory, const MxString& filename)
+    FilePath FileManager::SearchForExtensionsInDirectory(const FilePath& directory, const MxString& extension)
     {
         namespace fs = std::filesystem;
+        FilePath ext = ToFilePath(extension);
         auto it = fs::recursive_directory_iterator(directory);
         for (const auto& entry : it)
         {
-            if (entry.path().filename() == filename.c_str())
+            if (entry.path().extension() == ext)
             {
                 return entry.path();
             }
         }
         return FilePath();
+    }
+
+    FilePath FileManager::SearchInDirectory(const FilePath& directory, const MxString& filename)
+    {
+        return SearchInDirectory(directory, ToFilePath(filename));
     }
 
     FilePath FileManager::SearchInDirectory(const FilePath& directory, const FilePath& filename)

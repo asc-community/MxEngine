@@ -52,7 +52,9 @@ namespace MxEngine
         static void Init();
         static const FilePath& GetFilePath(StringId filename);
         static FilePath GetEngineShaderFolder();
+        static FilePath GetEngineRuntimeFolder();
         static bool FileExists(StringId filename);
+        static FilePath SearchForExtensionsInDirectory(const FilePath& directory, const MxString& extension);
         static FilePath SearchInDirectory(const FilePath& directory, const MxString& filename);
         static FilePath SearchInDirectory(const FilePath& directory, const FilePath& filename);
 
