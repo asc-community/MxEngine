@@ -40,19 +40,19 @@ namespace MxEngine
         template<typename Func>
         static void RegisterComponentEditor(const char *name, Func &&callback) 
         {
-            Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
+            Application::GetImpl()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
         }
 
         template<typename T>
         static void RegisterComponentUpdate() 
         {
-            Application::Get()->RegisterComponentUpdate<T>();
+            Application::GetImpl()->RegisterComponentUpdate<T>();
         }
 
         template<typename EventType, typename Func>
         static void RegisterEventLogger(Func &&callback)
         {
-            Application::Get()->GetEventDispatcher().AddEventListener<EventType>(
+            Application::GetImpl()->GetEventDispatcher().AddEventListener<EventType>(
                     "EventLogger",
                     [f = std::forward<Func>(callback)](EventType &e) 
                     {

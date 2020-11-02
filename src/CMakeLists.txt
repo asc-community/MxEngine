@@ -289,10 +289,17 @@ foreach(LIB_NAME ${LIBRARY_NAME} ${THIRD_PARTY_LIBRARIES})
 endforeach()
 target_compile_definitions(${LIBRARY_NAME} PUBLIC MXENGINE_RCCPP_LIBRARY_COUNT=${LIBRARY_COUNT})
 
-set(SHARED_LIBRARIES_PATHS
-    ${openal_binary_dir}/OpenAL32${CMAKE_SHARED_LIBRARY_SUFFIX}
-    ${glfw_binary_dir}/src/glfw3${CMAKE_SHARED_LIBRARY_SUFFIX}
-)
+if(WIN32)
+    set(SHARED_LIBRARIES_PATHS
+        ${openal_binary_dir}/OpenAL32.dll
+        ${glfw_binary_dir}/src/glfw3.dll
+    )
+else()
+    set(SHARED_LIBRARIES_PATHS
+        ${openal_binary_dir}/libopenal.so.1
+        ${glfw_binary_dir}/src/libglfw.so.3
+    )
+endif()
 
 set(MxEngine_SHARED_LIBRARIES ${SHARED_LIBRARIES_PATHS} PARENT_SCOPE)
 set(MxEngine_INCLUDE_DIR ${MXENGINE_INCLUDE_DIRS} PARENT_SCOPE)

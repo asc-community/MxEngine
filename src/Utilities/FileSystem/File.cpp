@@ -82,7 +82,7 @@ namespace MxEngine
             else
             {
                 auto directory = this->filePath.parent_path();
-                if (!File::Exists(directory))
+                if (!directory.empty() && !File::Exists(directory))
                     File::CreateDirectory(directory);
             }
         }

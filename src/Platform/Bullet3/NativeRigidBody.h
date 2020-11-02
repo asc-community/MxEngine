@@ -76,7 +76,6 @@ namespace MxEngine
 
     class NativeRigidBody
     {
-        constexpr static size_t AllocationSize = 1024;
         uint8_t* bodyAllocation = nullptr;
         
         uint32_t group = CollisionGroup::NO_STATIC_COLLISIONS;

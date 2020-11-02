@@ -89,10 +89,7 @@ namespace MxEngine
         btTransform tr;
         ToBulletTransform(tr, transform);
 
-        static_assert(AssertEquality<NativeRigidBody::AllocationSize, sizeof(btRigidBody) + sizeof(MotionStateNotifier)>::value,
-            "allocation for btRigidBody and MotionStateNotifier must fit objects sizes");
-
-        this->bodyAllocation = new uint8_t[NativeRigidBody::AllocationSize];
+        this->bodyAllocation = new uint8_t[sizeof(btRigidBody) + sizeof(MotionStateNotifier)];
         auto state = new(this->bodyAllocation + sizeof(btRigidBody)) MotionStateNotifier(tr);
         auto body = new(this->bodyAllocation) btRigidBody(0.0f, state, nullptr);
 
