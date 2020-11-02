@@ -6,7 +6,6 @@
         #define MXENGINE_WINDOWS64
     #else
         #define MXENGINE_WINDOWS32
-        #error MxEngine can target only x64 platform
     #endif
 #elif defined(__linux__)
     #define MXENGINE_LINUX
@@ -18,6 +17,10 @@
     #define MXENGINE_RELEASE
 #else 
     #define MXENGINE_DEBUG
+#endif
+
+#if INTPTR_MAX != INT64_MAX
+#error MxEngine supports only x64 builds
 #endif
 
 // graphic api

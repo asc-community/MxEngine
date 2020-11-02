@@ -37,6 +37,14 @@ namespace MxEngine
 {
     class UpdateListener;
     class Scriptable;
+    class MxObject;
+
+    enum class ScriptableMethod
+    {
+        ON_CREATE,
+        ON_RELOAD,
+        ON_UPDATE,
+    };
 
     struct RuntimeCompilerImpl
     {
@@ -60,6 +68,6 @@ namespace MxEngine
         static void OnUpdate(float dt);
 
         static Scriptable* CreateScriptableObject(const char* className, ObjectId* id);
-        static void UpdateScriptableObject(Scriptable* script);
+        static void InvokeScriptableObject(Scriptable* script, ScriptableMethod method, MxObject& scriptParent);
     };
 }

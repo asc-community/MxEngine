@@ -224,6 +224,9 @@ add_subdirectory(${runtime_compiled_cpp} ${runtime_compiled_cpp_binary_dir})
 
 set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
 add_subdirectory(${glfw} ${glfw_binary_dir})
+if(WIN32)
+    set_target_properties(glfw PROPERTIES IMPORT_SUFFIX ".lib")
+endif()
 
 set(THIRD_PARTY_BINARY_DIRS
     ${fmt_binary_dir}

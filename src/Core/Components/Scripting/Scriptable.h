@@ -42,12 +42,13 @@
 #define MXENGINE_RUNTIME_LINKLIBRARY(library) RUNTIME_COMPILER_LINKLIBRARY("-framework " library)
 #endif
 
-// #if !defined(MXENGINE_CMAKE_BUILD)
-// #include "Engine/Runtime/LinkLibraries.h"
-// #endif
-
 namespace MxEngine
 {
+	namespace
+	{
+		auto suppressUnusedFunction = GetTrackingInfoFunc<0>(0);
+	}
+
 	struct SciptableInterface : public IObject, public RuntimeProtector
 	{
 		enum ScriptableID : InterfaceID
@@ -55,10 +56,36 @@ namespace MxEngine
 			ID = IID_ENDInterfaceID,
 		};
 
+		struct
+		{
+			ScriptableMethod Method = ScriptableMethod::ON_CREATE;
+			MxObject* Self = nullptr;
+		} CurrentState;
+
 		virtual void InitializeModuleContext(void* context) { GlobalContextSerializer::Deserialize(context); }
 
-		virtual void OnUpdate() = 0;
-		virtual void ProtectedFunc() override { this->OnUpdate(); }
+		virtual void ProtectedFunc()
+		{
+			switch (this->CurrentState.Method)
+			{
+			case ScriptableMethod::ON_CREATE:
+				this->OnCreate(*this->CurrentState.Self);
+				break;
+			case ScriptableMethod::ON_RELOAD:
+				this->OnReload(*this->CurrentState.Self);
+				break;
+			case ScriptableMethod::ON_UPDATE:
+				this->OnUpdate(*this->CurrentState.Self);
+				break;
+			default:
+				break;
+			}
+		}
+
+		// overriten in derived classes
+		virtual void OnCreate(MxObject& self) { }
+		virtual void OnReload(MxObject& self) { }
+		virtual void OnUpdate(MxObject& self) { }
 	};
 
 	class Scriptable : public TInterface<SciptableInterface::ID, SciptableInterface> { };

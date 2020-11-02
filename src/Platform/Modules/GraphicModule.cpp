@@ -127,13 +127,13 @@ namespace MxEngine
 
 	void* GraphicModule::GetImpl()
 	{
-		return (void*)glfwGetCurrentContext();
+		return ImGui::GetCurrentContext();
 	}
 
 	void GraphicModule::Clone(void* context)
 	{
-		
-		glfwMakeContextCurrent((GLFWwindow*)context);
+		glewInit();
+		ImGui::SetCurrentContext((ImGuiContext*)context);
 	}
 
 	void GraphicModule::OnWindowCreate(WindowHandle window)

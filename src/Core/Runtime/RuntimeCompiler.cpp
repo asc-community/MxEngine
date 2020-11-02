@@ -131,16 +131,29 @@ namespace MxEngine
         return directory;
     }
 
-    void CreateRuntimeLibraryHeader()
-    {        
-        auto filepath = FileManager::GetEngineRuntimeFolder() / "LinkLibraries.h";
-        File header;
-        header.Open(filepath, File::WRITE);
-        for (const auto& library : LibraryNames)
+    auto GetLibraryNames()
+    {
+        MxVector<MxString> result;
+        for (const auto& libraryName : LibraryNames)
         {
-            header << "MXENGINE_RUNTIME_LINKLIBRARY(\"" << library << "\");\n";
+            auto& lib = result.emplace_back(libraryName);
+            size_t extenstionIndex = lib.find(".dll");
+            if (extenstionIndex != lib.npos)
+            {
+                lib[extenstionIndex + 1] = 'l';
+                lib[extenstionIndex + 2] = 'i';
+                lib[extenstionIndex + 3] = 'b';
+            }
         }
-        MXLOG_DEBUG("MxEngine::RuntimeCompiler", "runtime linkage info written to: " + ToMxString(filepath));
+        // TODO: try building this code on other platforms
+        #if defined(MXENGINE_WINDOWS) // extra Windows-specific libraries
+        result.insert(result.end(), {
+            "opengl32.lib", "kernel32.lib", "user32.lib", "gdi32.lib",
+            "winspool.lib", "comdlg32.lib", "advapi32.lib", "shell32.lib",
+            "ole32.lib", "oleaut32.lib", "uuid.lib", "odbc32.lib", "odbccp32.lib"
+        });
+        #endif
+        return result;
     }
 
     class CompilerLogger : public ICompilerLogger
@@ -238,9 +251,20 @@ namespace MxEngine
             impl->runtimeObjectSystem->AddLibraryDir(libraryDirectory.c_str());
         }
 
-        CreateRuntimeLibraryHeader();
-        
-        impl->runtimeObjectSystem->CleanObjectFiles();
+        auto libraryNames = GetLibraryNames();
+        MxString linkOptions;
+        for (const auto& libraryName : libraryNames)
+        {
+            #if defined(MXENGINE_WINDOWS)
+            linkOptions += ' ';
+            #elif defined(MXENGINE_LINUX)
+            linkOptions += " -";
+            #else
+            linkOptions += " -framework ";
+            #endif
+            linkOptions += libraryName;
+        }
+        impl->runtimeObjectSystem->SetAdditionalLinkOptions(linkOptions.c_str());
     }
 
     void RuntimeCompiler::Clone(RuntimeCompilerImpl* other)
@@ -265,6 +289,8 @@ namespace MxEngine
 
     void RuntimeCompiler::LoadCompiledModules()
     {
+        MAKE_SCOPE_PROFILER("RuntimeCompiler::LoadCompiledModules");
+        MAKE_SCOPE_TIMER("MxEngine::RuntimeCompiler", "RuntimeCompiler::LoadCompiledModules");
         impl->runtimeObjectSystem->LoadCompiledModule();
     }
 
@@ -307,11 +333,14 @@ namespace MxEngine
         script->InitializeModuleContext(reinterpret_cast<void*>(&context));
 
         *id = object->GetObjectId();
+
         return script;
     }
 
-    void RuntimeCompiler::UpdateScriptableObject(Scriptable* script)
+    void RuntimeCompiler::InvokeScriptableObject(Scriptable* script, ScriptableMethod method, MxObject& scriptParent)
     {
+        script->CurrentState.Method = method;
+        script->CurrentState.Self = std::addressof(scriptParent);
         impl->runtimeObjectSystem->TryProtectedFunction(script);
     }
 }

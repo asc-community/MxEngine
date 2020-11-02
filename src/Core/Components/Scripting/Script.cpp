@@ -29,6 +29,7 @@
 #include "Script.h"
 #include <RuntimeObjectSystem/IObject.h>
 #include "Core/Runtime/RuntimeCompiler.h"
+#include "Core/Components/Scripting/Scriptable.h"
 
 namespace MxEngine
 {
@@ -53,13 +54,25 @@ namespace MxEngine
     {
         if (this->scriptImpl != nullptr)
         {
-            RuntimeCompiler::UpdateScriptableObject(this->scriptImpl);
+            RuntimeCompiler::InvokeScriptableObject(
+                this->scriptImpl, ScriptableMethod::ON_UPDATE, MxObject::GetByComponent(*this)
+            );
         }
     }
 
     const ObjectId& Script::GetNativeHandle() const
     {
         return *std::launder(reinterpret_cast<const ObjectId*>(&this->handleImpl));
+    }
+
+    void Script::Init()
+    {
+        if (this->scriptImpl != nullptr)
+        {
+            RuntimeCompiler::InvokeScriptableObject(
+                this->scriptImpl, ScriptableMethod::ON_CREATE, MxObject::GetByComponent(*this)
+            );
+        }
     }
 
     void Script::SetScriptableObject(const MxString& className)
@@ -71,6 +84,12 @@ namespace MxEngine
     void Script::SetScriptableObject(Scriptable* script)
     {
         this->scriptImpl = script;
+        if (this->scriptImpl != nullptr)
+        {
+            RuntimeCompiler::InvokeScriptableObject(
+                this->scriptImpl, ScriptableMethod::ON_RELOAD, MxObject::GetByComponent(*this)
+            );
+        }
     }
 
     Scriptable* Script::GetScriptableObject()

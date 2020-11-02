@@ -45,6 +45,7 @@ namespace MxEngine
 	public:
 		Script();
 		Script(const MxString& className);
+		void Init();
 		void OnUpdate(float dt);
 		~Script();
 

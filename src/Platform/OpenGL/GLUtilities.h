@@ -33,7 +33,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-
 namespace MxEngine
 {
 	#if defined(MXENGINE_DEBUG)

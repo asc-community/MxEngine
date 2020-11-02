@@ -51,7 +51,8 @@ namespace MxEngine::GUI
             if (ImGui::Button("load from file"))
             {
                 MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
-                if (!path.empty() && File::Exists(path)) {
+                if (!path.empty() && File::Exists(path))
+                {
                     auto newTexture = AssetManager::LoadTexture(path, TextureFormat::RGBA);
                     newTexture.MakeStatic();
                 }
@@ -147,7 +148,9 @@ namespace MxEngine::GUI
             {
                 MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
                 if (!path.empty() && File::Exists(path))
+                {
                     texture = AssetManager::LoadTexture(path, TextureFormat::RGBA);
+                }
             }
             
             static int id = 0;
@@ -202,9 +205,9 @@ namespace MxEngine::GUI
         {
             MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
             if (!path.empty() && File::Exists(path))
+            {
                 cubemap = AssetManager::LoadCubeMap(path);
-
-
+            }
         }
         // TODO: support cubemap preview
         ImGui::PopID();
