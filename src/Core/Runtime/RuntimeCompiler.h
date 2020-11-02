@@ -33,6 +33,11 @@ struct ICompilerLogger;
 class RuntimeObjectSystem;
 struct ObjectId;
 
+#include "Utilities/STL/MxVector.h"
+#include "Utilities/String/String.h"
+#include "Utilities/STL/MxString.h"
+#include "Utilities/STL/MxHashMap.h"
+
 namespace MxEngine
 {
     class UpdateListener;
@@ -46,17 +51,29 @@ namespace MxEngine
         ON_UPDATE,
     };
 
+    struct ScriptInfo
+    {
+        using ScriptId = std::aligned_storage_t<16>;
+
+        MxString FileName;
+        MxString Name;
+        Scriptable* ScriptHandle = nullptr;
+        ScriptId ScriptHandleId{ };
+    };
+
     struct RuntimeCompilerImpl
     {
         UpdateListener* updateListener = nullptr;
         ICompilerLogger* compilerLogger = nullptr;
         RuntimeObjectSystem* runtimeObjectSystem = nullptr;
+        MxHashMap<StringId, ScriptInfo> registeredScripts;
     };
 
     class RuntimeCompiler
     {
         inline static RuntimeCompilerImpl* impl = nullptr;
 
+        static void RegisterExistingScripts();
     public:
         static void Init();
         static void Clone(RuntimeCompilerImpl* other);
@@ -67,7 +84,9 @@ namespace MxEngine
         static void LoadCompiledModules();
         static void OnUpdate(float dt);
 
-        static Scriptable* CreateScriptableObject(const char* className, ObjectId* id);
+        static const ScriptInfo& GetScriptInfo(const MxString& scriptName);
         static void InvokeScriptableObject(Scriptable* script, ScriptableMethod method, MxObject& scriptParent);
+        static const MxHashMap<StringId, ScriptInfo>& GetRegisteredScripts();
+        static void UpdateScriptableObject(const MxString& scriptName, Scriptable* script);
     };
 }

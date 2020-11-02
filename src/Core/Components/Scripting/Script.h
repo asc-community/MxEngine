@@ -34,25 +34,24 @@ struct ObjectId;
 
 namespace MxEngine
 {
+	struct ScriptInfo;
 	class Scriptable;
 
 	class Script
 	{
 		MAKE_COMPONENT(Script);
 
-		std::aligned_storage_t<16> handleImpl;
-		Scriptable* scriptImpl;
+		StringId scriptName = 0;
+		Scriptable* scriptImpl = nullptr;
 	public:
-		Script();
-		Script(const MxString& className);
+		Script(const MxString& scriptName);
 		void Init();
 		void OnUpdate(float dt);
-		~Script();
 
-		const ObjectId& GetNativeHandle() const;
-		void SetScriptableObject(Scriptable* script);
-		void SetScriptableObject(const MxString& name);
+		void SetScriptableObject(const ScriptInfo& scriptInfo);
+		void SetScriptableObject(const MxString& scriptName);
 		Scriptable* GetScriptableObject();
+		StringId GetHashedScriptName() const;
 		const Scriptable* GetScriptableObject() const;
 	};
 }

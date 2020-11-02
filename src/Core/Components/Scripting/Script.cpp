@@ -33,21 +33,9 @@
 
 namespace MxEngine
 {
-    Script::Script()
-        : scriptImpl(nullptr)
-    {
-        (void)new(&this->handleImpl)ObjectId();
-    }
-
     Script::Script(const MxString& className)
     {
-        (void)new(&this->handleImpl)ObjectId();
         this->SetScriptableObject(className);
-    }
-
-    Script::~Script()
-    {
-        std::launder(reinterpret_cast<ObjectId*>(&this->handleImpl))->~ObjectId();
     }
 
     void Script::OnUpdate(float dt)
@@ -58,11 +46,6 @@ namespace MxEngine
                 this->scriptImpl, ScriptableMethod::ON_UPDATE, MxObject::GetByComponent(*this)
             );
         }
-    }
-
-    const ObjectId& Script::GetNativeHandle() const
-    {
-        return *std::launder(reinterpret_cast<const ObjectId*>(&this->handleImpl));
     }
 
     void Script::Init()
@@ -77,19 +60,26 @@ namespace MxEngine
 
     void Script::SetScriptableObject(const MxString& className)
     {
-        ObjectId* id = std::launder(reinterpret_cast<ObjectId*>(&this->handleImpl));
-        this->scriptImpl = RuntimeCompiler::CreateScriptableObject(className.c_str(), id);
+        auto& info = RuntimeCompiler::GetScriptInfo(className);
+        this->scriptImpl = info.ScriptHandle;
+        this->scriptName = MakeStringId(info.Name);
     }
 
-    void Script::SetScriptableObject(Scriptable* script)
+    void Script::SetScriptableObject(const ScriptInfo& scriptInfo)
     {
-        this->scriptImpl = script;
+        this->scriptImpl = scriptInfo.ScriptHandle;
+        this->scriptName = MakeStringId(scriptInfo.Name);
         if (this->scriptImpl != nullptr)
         {
             RuntimeCompiler::InvokeScriptableObject(
                 this->scriptImpl, ScriptableMethod::ON_RELOAD, MxObject::GetByComponent(*this)
             );
         }
+    }
+
+    StringId Script::GetHashedScriptName() const
+    {
+        return this->scriptName;
     }
 
     Scriptable* Script::GetScriptableObject()

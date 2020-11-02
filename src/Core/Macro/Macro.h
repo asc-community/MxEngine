@@ -74,12 +74,15 @@
     template<typename> constexpr static bool check(...) { return false; } public:\
     static constexpr bool value = check<T>(0); }; }
 
-template<int X, int Y>
-struct AssertEquality
+namespace MxEngine
 {
-    static_assert(X == Y, "equality check failed");
-    static constexpr bool value = X == Y;
-};
+    template<int X, int Y>
+    struct AssertEquality
+    {
+        static_assert(X == Y, "equality check failed");
+        static constexpr bool value = X == Y;
+    };
+}
 
 #if !defined(MXENGINE_SHIPPING)
     #define MXENGINE_PROFILING_ENABLED

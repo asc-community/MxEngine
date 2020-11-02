@@ -295,6 +295,9 @@ namespace MxEngine
         }
     };
 
+    static_assert(AssertEquality<sizeof(ObjectId), sizeof(ScriptInfo::ScriptHandleId)>::value,
+        "object storage must fit type size");
+
     class UpdateListener : public IObjectFactoryListener
     {
     public:
@@ -306,23 +309,75 @@ namespace MxEngine
             auto view = ComponentFactory::GetView<Script>();
             for (auto& script : view)
             {
-                auto id = script.GetNativeHandle();
-                IObject* newObject = RuntimeCompiler::GetImpl()->runtimeObjectSystem->GetObjectFactorySystem()->GetObject(id);
-                if (newObject != nullptr)
+                auto scriptableObject = script.GetScriptableObject();
+                if (scriptableObject != nullptr)
                 {
-                    Scriptable* newScript = nullptr;
-                    newObject->GetInterface(&newScript);
-                    if (newScript != nullptr)
+                    auto scriptName = script.GetHashedScriptName();
+                    auto& info = RuntimeCompiler::GetRegisteredScripts().at(scriptName);
+                    auto& id = *std::launder(reinterpret_cast<const ObjectId*>(&info.ScriptHandleId));
+                    IObject* newObject = RuntimeCompiler::GetImpl()->runtimeObjectSystem->GetObjectFactorySystem()->GetObject(id);
+
+                    if (newObject != nullptr)
                     {
-                        auto context = GlobalContextSerializer::Serialize();
-                        newScript->InitializeModuleContext(reinterpret_cast<void*>(&context));
-                        script.SetScriptableObject(newScript);
+                        Scriptable* newScript = nullptr;
+                        newObject->GetInterface(&newScript);
+                        if (newScript != nullptr)
+                        {
+                            if (newScript != info.ScriptHandle)
+                                RuntimeCompiler::UpdateScriptableObject(info.Name, newScript);
+
+                            auto context = GlobalContextSerializer::Serialize();
+                            newScript->InitializeModuleContext(reinterpret_cast<void*>(&context));
+                            script.SetScriptableObject(info);
+                        }
                     }
                 }
             }
         }
 
     };
+
+    void RuntimeCompiler::RegisterExistingScripts()
+    {
+        AUDynArray<IObjectConstructor*> constructors;
+        RuntimeCompiler::GetImpl()->runtimeObjectSystem->GetObjectFactorySystem()->GetAll(constructors);
+        for (size_t i = 0; i < constructors.Size(); i++)
+        {
+            auto& constructor = constructors[i];
+            const char* filename = constructor->GetFileName();
+            const char* name = constructor->GetName();
+            if (name != nullptr)
+            {
+                ScriptInfo info;
+                info.Name = name;
+                info.FileName = (filename == nullptr ? "" : filename);
+                auto hash = MakeStringId(info.Name);
+
+                auto object = constructor->Construct();
+                if (object == nullptr)
+                {
+                    MXLOG_ERROR("MxEngine::RuntimeCompiler", "cannot create Scriptable object: object construction failed");
+                    continue;
+                }
+                object->GetInterface(&info.ScriptHandle);
+                if (info.ScriptHandle == nullptr)
+                {
+                    MXLOG_ERROR("MxEngine::RuntimeCompiler", "cannot create Scriptable object: object has not Scriptable interface");
+                    continue;
+                }
+                if (impl->registeredScripts.find(hash) != impl->registeredScripts.end())
+                {
+                    MXLOG_ERROR("MxEngine::RuntimeCompiler", "hash collision or script name dublicate: " + info.Name);
+                    continue;
+                }
+
+                auto context = GlobalContextSerializer::Serialize();
+                info.ScriptHandle->InitializeModuleContext(reinterpret_cast<void*>(&context));
+                (void) new(&info.ScriptHandleId) ObjectId(object->GetObjectId());
+                impl->registeredScripts[hash] = std::move(info);
+            }
+        }
+    }
 
     void RuntimeCompiler::Init()
     {
@@ -361,11 +416,23 @@ namespace MxEngine
             linkOptions += libraryName;
         }
         impl->runtimeObjectSystem->SetAdditionalLinkOptions(linkOptions.c_str());
+
+        RuntimeCompiler::RegisterExistingScripts();
     }
 
     void RuntimeCompiler::Clone(RuntimeCompilerImpl* other)
     {
         impl = other;
+    }
+
+    const MxHashMap<StringId, ScriptInfo>& RuntimeCompiler::GetRegisteredScripts()
+    {
+        return impl->registeredScripts;
+    }
+
+    void RuntimeCompiler::UpdateScriptableObject(const MxString& scriptName, Scriptable* script)
+    {
+        impl->registeredScripts[MakeStringId(scriptName)].ScriptHandle = script;
     }
 
     RuntimeCompilerImpl* RuntimeCompiler::GetImpl()
@@ -401,36 +468,16 @@ namespace MxEngine
         impl->runtimeObjectSystem->GetFileChangeNotifier()->Update(dt);
     }
 
-    Scriptable* RuntimeCompiler::CreateScriptableObject(const char* className, ObjectId* id)
+    const ScriptInfo& RuntimeCompiler::GetScriptInfo(const MxString& scriptName)
     {
-        auto constructor = impl->runtimeObjectSystem->GetObjectFactorySystem()->GetConstructor(className);
-        if (constructor == nullptr)
+        auto cacheEntry = impl->registeredScripts.find(MakeStringId(scriptName));
+        if (cacheEntry == impl->registeredScripts.end())
         {
-            MXLOG_ERROR("MxEngine::RuntimeCompiler", "cannot create Scriptable object: no constructor was found");
-            return nullptr;
+            static ScriptInfo defaultScriptInfo;
+            MXLOG_ERROR("MxEngine::RuntimeCompiler", "cannot find script: " + scriptName);
+            return defaultScriptInfo;
         }
-
-        auto object = constructor->Construct();
-        if (object == nullptr)
-        {
-            MXLOG_ERROR("MxEngine::RuntimeCompiler", "cannot create Scriptable object: object construction failed");
-            return nullptr;
-        }
-
-        Scriptable* script = nullptr;
-        object->GetInterface(&script);
-        if (script == nullptr)
-        {
-            MXLOG_ERROR("MxEngine::RuntimeCompiler", "cannot create Scriptable object: object has not Scriptable interface");
-            return nullptr;
-        }
-
-        auto context = GlobalContextSerializer::Serialize();
-        script->InitializeModuleContext(reinterpret_cast<void*>(&context));
-
-        *id = object->GetObjectId();
-
-        return script;
+        return cacheEntry->second;
     }
 
     void RuntimeCompiler::InvokeScriptableObject(Scriptable* script, ScriptableMethod method, MxObject& scriptParent)

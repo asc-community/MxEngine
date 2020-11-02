@@ -30,40 +30,51 @@
 
 #include "Core/Application/Application.h"
 #include "Core/Runtime/RuntimeEditor.h"
+#include "Core/Runtime/RuntimeCompiler.h"
 #include "Utilities/EventDispatcher/EventDispatcher.h"
 
 namespace MxEngine 
 {
-    class Runtime 
+    class Runtime
     {
     public:
         template<typename Func>
-        static void RegisterComponentEditor(const char *name, Func &&callback) 
+        static void RegisterComponentEditor(const char* name, Func&& callback)
         {
             Application::GetImpl()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
         }
 
         template<typename T>
-        static void RegisterComponentUpdate() 
+        static void RegisterComponentUpdate()
         {
             Application::GetImpl()->RegisterComponentUpdate<T>();
         }
 
         template<typename EventType, typename Func>
-        static void RegisterEventLogger(Func &&callback)
+        static void RegisterEventLogger(Func&& callback)
         {
             Application::GetImpl()->GetEventDispatcher().AddEventListener<EventType>(
-                    "EventLogger",
-                    [f = std::forward<Func>(callback)](EventType &e) 
-                    {
-                        Runtime::AddEventLogEntry(f(e));
-                    }
+                "EventLogger",
+                [f = std::forward<Func>(callback)](EventType& e)
+            {
+                Runtime::AddEventLogEntry(f(e));
+            }
             );
         }
 
         static void AddShaderUpdateListener(const ShaderHandle& shader)
         {
             Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle>(shader);
+        }
+
+        static const MxHashMap<StringId, ScriptInfo>& GetRegisteredScripts()
+        {
+            return RuntimeCompiler::GetRegisteredScripts();
+        }
+
+        static bool HasCompilationTaskInProcess()
+        {
+            return RuntimeCompiler::HasCompilationTaskInProcess();
         }
 
         static void AddShaderUpdateListener(const ShaderHandle& shader, const FilePath& lookupDirectory)
