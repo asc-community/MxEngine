@@ -1,5 +1,4 @@
 #include <MxEngine.h>
-
 #include <Core/Components/Scripting/Scriptable.h>
 
 using namespace MxEngine;
@@ -19,7 +18,7 @@ public:
     
     virtual void OnUpdate(MxObject& self) override
     {
-        Rendering::GetController().GetRenderEngine().UseReversedDepth(true);
+        
     }
 };
 

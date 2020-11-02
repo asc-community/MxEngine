@@ -426,8 +426,8 @@ namespace MxEngine::GUI
         SCOPE_TREE_NODE(name);
         ImGui::PushID((int)mesh.GetHandle());
 
-        DrawAABBEditor("bounding box", mesh->BoundingBox);
-        DrawSphereEditor("bounding sphere", mesh->BoundingSphere);
+        DrawAABBEditor("bounding box", mesh->BoxBounding);
+        DrawSphereEditor("bounding sphere", mesh->SphereBounding);
 
         if (ImGui::Button("load from file"))
         {

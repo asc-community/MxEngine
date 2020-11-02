@@ -48,39 +48,135 @@
 namespace MxEngine
 {
     std::array LibraryNames = {
+        #if defined(MXENGINE_LIB_NAME0)
         MXENGINE_LIB_NAME0,
+        #endif
+        #if defined(MXENGINE_LIB_NAME1)
         MXENGINE_LIB_NAME1,
+        #endif
+        #if defined(MXENGINE_LIB_NAME2)
         MXENGINE_LIB_NAME2,
+        #endif
+        #if defined(MXENGINE_LIB_NAME3)
         MXENGINE_LIB_NAME3,
+        #endif
+        #if defined(MXENGINE_LIB_NAME4)
         MXENGINE_LIB_NAME4,
+        #endif
+        #if defined(MXENGINE_LIB_NAME5)
         MXENGINE_LIB_NAME5,
+        #endif
+        #if defined(MXENGINE_LIB_NAME6)
         MXENGINE_LIB_NAME6,
+        #endif
+        #if defined(MXENGINE_LIB_NAME7)
         MXENGINE_LIB_NAME7,
+        #endif
+        #if defined(MXENGINE_LIB_NAME8)
         MXENGINE_LIB_NAME8,
+        #endif
+        #if defined(MXENGINE_LIB_NAME9)
         MXENGINE_LIB_NAME9,
+        #endif
+        #if defined(MXENGINE_LIB_NAME10)
         MXENGINE_LIB_NAME10,
+        #endif
+        #if defined(MXENGINE_LIB_NAME11)
         MXENGINE_LIB_NAME11,
+        #endif
+        #if defined(MXENGINE_LIB_NAME12)
         MXENGINE_LIB_NAME12,
+        #endif
+        #if defined(MXENGINE_LIB_NAME13)
         MXENGINE_LIB_NAME13,
+        #endif
+        #if defined(MXENGINE_LIB_NAME14)
         MXENGINE_LIB_NAME14,
+        #endif
+        #if defined(MXENGINE_LIB_NAME15)
+        MXENGINE_LIB_NAME15,
+        #endif
+        #if defined(MXENGINE_LIB_NAME16)
+        MXENGINE_LIB_NAME16,
+        #endif
+        #if defined(MXENGINE_LIB_NAME17)
+        MXENGINE_LIB_NAME17,
+        #endif
+        #if defined(MXENGINE_LIB_NAME18)
+        MXENGINE_LIB_NAME18,
+        #endif
+        #if defined(MXENGINE_LIB_NAME19)
+        MXENGINE_LIB_NAME19,
+        #endif
+        #if defined(MXENGINE_LIB_NAME20)
+        MXENGINE_LIB_NAME20,
+        #endif
     };
 
     std::array LibraryDirectories = {
+        #if defined(MXENGINE_LIB_DIR0)
         MXENGINE_LIB_DIR0,
+        #endif
+        #if defined(MXENGINE_LIB_DIR1)
         MXENGINE_LIB_DIR1,
+        #endif
+        #if defined(MXENGINE_LIB_DIR2)
         MXENGINE_LIB_DIR2,
+        #endif
+        #if defined(MXENGINE_LIB_DIR3)
         MXENGINE_LIB_DIR3,
+        #endif
+        #if defined(MXENGINE_LIB_DIR4)
         MXENGINE_LIB_DIR4,
+        #endif
+        #if defined(MXENGINE_LIB_DIR5)
         MXENGINE_LIB_DIR5,
+        #endif
+        #if defined(MXENGINE_LIB_DIR6)
         MXENGINE_LIB_DIR6,
+        #endif
+        #if defined(MXENGINE_LIB_DIR7)
         MXENGINE_LIB_DIR7,
+        #endif
+        #if defined(MXENGINE_LIB_DIR8)
         MXENGINE_LIB_DIR8,
+        #endif
+        #if defined(MXENGINE_LIB_DIR9)
         MXENGINE_LIB_DIR9,
+        #endif
+        #if defined(MXENGINE_LIB_DIR10)
         MXENGINE_LIB_DIR10,
+        #endif
+        #if defined(MXENGINE_LIB_DIR11)
         MXENGINE_LIB_DIR11,
+        #endif
+        #if defined(MXENGINE_LIB_DIR12)
         MXENGINE_LIB_DIR12,
+        #endif
+        #if defined(MXENGINE_LIB_DIR13)
         MXENGINE_LIB_DIR13,
+        #endif
+        #if defined(MXENGINE_LIB_DIR14)
         MXENGINE_LIB_DIR14,
+        #endif
+        #if defined(MXENGINE_LIB_DIR15)
+        MXENGINE_LIB_DIR15,
+        #endif
+        #if defined(MXENGINE_LIB_DIR16)
+        MXENGINE_LIB_DIR16,
+        #endif
+        #if defined(MXENGINE_LIB_DIR17)
+        MXENGINE_LIB_DIR17,
+        #endif
+        #if defined(MXENGINE_LIB_DIR18)
+        MXENGINE_LIB_DIR18,
+        #endif
+        #if defined(MXENGINE_LIB_DIR19)
+        MXENGINE_LIB_DIR19,
+        #endif
+        #if defined(MXENGINE_LIB_DIR20)
+        MXENGINE_LIB_DIR20,
+        #endif
     };
 
     static_assert(AssertEquality<LibraryNames.size(), LibraryDirectories.size()>::value,

@@ -246,7 +246,6 @@ set(THIRD_PARTY_LIBRARIES
     libglew_static
     assimp
     IrrXML
-    zlibstatic
     glfw
     imgui
     EASTL
@@ -254,6 +253,16 @@ set(THIRD_PARTY_LIBRARIES
     BulletDynamics BulletCollision LinearMath
     RuntimeObjectSystem RuntimeCompiler
 )
+
+if(TARGET zlibstatic)
+    set(THIRD_PARTY_LIBRARIES ${THIRD_PARTY_LIBRARIES} zlibstatic)
+endif()
+
+
+if(TARGET IrrXML)
+    set(THIRD_PARTY_LIBRARIES ${THIRD_PARTY_LIBRARIES} IrrXML)
+endif()
+
 
 set(MXENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${THIRD_PARTY_INCLUDE_DIRS})
 include_directories(${MXENGINE_INCLUDE_DIRS})
