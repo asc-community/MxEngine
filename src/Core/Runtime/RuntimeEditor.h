@@ -50,7 +50,6 @@ namespace MxEngine
 		MxVector<std::function<void(MxObject&)>> componentEditorCallbacks;
 		MxVector<std::function<void(MxObject&)>> componentAdderCallbacks;
 		MxVector<const char*> componentNames;
-		MxVector<const char*> scriptNames;
 
 		void DrawMxObjectList(bool* isOpen = nullptr);
   	public:
@@ -94,6 +93,11 @@ namespace MxEngine
 					if(!object.HasComponent<T>())
 						object.AddComponent<T>();
 				});
+			}
+			else
+			{
+				MXLOG_WARNING("MxEngine::RuntimEditor",
+					"component cannot be added in runtime as it has no default constructor: " + (MxString)name);
 			}
 		}
 

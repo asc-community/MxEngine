@@ -82,6 +82,21 @@ namespace MxEngine
         return this->scriptName;
     }
 
+    bool Script::HasScriptableObject() const
+    {
+        return this->scriptImpl != nullptr;
+    }
+
+    const MxString& Script::GetScriptName() const
+    {
+        return RuntimeCompiler::GetScriptInfo(this->GetHashedScriptName()).Name;
+    }
+
+    const MxString& Script::GetScriptFileName() const
+    {
+        return RuntimeCompiler::GetScriptInfo(this->GetHashedScriptName()).FileName;
+    }
+
     Scriptable* Script::GetScriptableObject()
     {
         return this->scriptImpl;

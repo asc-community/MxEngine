@@ -313,7 +313,7 @@ namespace MxEngine
                 if (scriptableObject != nullptr)
                 {
                     auto scriptName = script.GetHashedScriptName();
-                    auto& info = RuntimeCompiler::GetRegisteredScripts().at(scriptName);
+                    auto& info = RuntimeCompiler::GetScriptInfo(scriptName);
                     auto& id = *std::launder(reinterpret_cast<const ObjectId*>(&info.ScriptHandleId));
                     IObject* newObject = RuntimeCompiler::GetImpl()->runtimeObjectSystem->GetObjectFactorySystem()->GetObject(id);
 
@@ -470,11 +470,20 @@ namespace MxEngine
 
     const ScriptInfo& RuntimeCompiler::GetScriptInfo(const MxString& scriptName)
     {
-        auto cacheEntry = impl->registeredScripts.find(MakeStringId(scriptName));
+        const ScriptInfo& info = RuntimeCompiler::GetScriptInfo(MakeStringId(scriptName));
+        if (info.ScriptHandle == nullptr)
+        {
+            MXLOG_ERROR("MxEngine::RuntimeCompiler", "cannot find script with name: " + scriptName);
+        }
+        return info;
+    }
+
+    const ScriptInfo& RuntimeCompiler::GetScriptInfo(StringId scriptName)
+    {
+        auto cacheEntry = impl->registeredScripts.find(scriptName);
         if (cacheEntry == impl->registeredScripts.end())
         {
             static ScriptInfo defaultScriptInfo;
-            MXLOG_ERROR("MxEngine::RuntimeCompiler", "cannot find script: " + scriptName);
             return defaultScriptInfo;
         }
         return cacheEntry->second;

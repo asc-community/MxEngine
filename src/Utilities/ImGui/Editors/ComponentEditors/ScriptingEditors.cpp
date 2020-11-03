@@ -26,36 +26,47 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+#include "Utilities/ImGui/Editors/ComponentEditor.h"
+#include "Utilities/ImGui/ImGuiUtils.h"
 
-#include "Utilities/ECS/Component.h"
+#include "Core/Components/Scripting/Script.h"
+#include "Core/Runtime/RuntimeCompiler.h"
 
-struct ObjectId;
+#define REMOVE_COMPONENT_BUTTON(comp) \
+	if(ImGui::Button("remove component")) {\
+		MxObject::GetByComponent(comp).RemoveComponent<std::remove_reference_t<decltype(comp)>>(); return; }
 
-namespace MxEngine
+namespace MxEngine::GUI
 {
-	struct ScriptInfo;
-	class Scriptable;
+    void ScriptEditor(Script& script)
+    {
+        TREE_NODE_PUSH("Script");
+        REMOVE_COMPONENT_BUTTON(script);
 
-	class Script
-	{
-		MAKE_COMPONENT(Script);
+        if (!script.HasScriptableObject())
+        {
+            ImGui::Text("no script attached");
+        }
+        else
+        {
+            ImGui::Text("current script: %s", script.GetScriptName().c_str());
+            ImGui::Text("script filename: %s", script.GetScriptFileName().c_str());
+        }
 
-		StringId scriptName = 0;
-		Scriptable* scriptImpl = nullptr;
-	public:
-		Script() = default;
-		Script(const MxString& scriptName);
-		void Init();
-		void OnUpdate(float dt);
+        auto& scripts = RuntimeCompiler::GetRegisteredScripts();
 
-		void SetScriptableObject(const ScriptInfo& scriptInfo);
-		void SetScriptableObject(const MxString& scriptName);
-		bool HasScriptableObject() const;
-		Scriptable* GetScriptableObject();
-		StringId GetHashedScriptName() const;
-		const MxString& GetScriptName() const;
-		const MxString& GetScriptFileName() const;
-		const Scriptable* GetScriptableObject() const;
-	};
+        if (ImGui::BeginCombo("select script", "click to expand"))
+        {
+            for (const auto& scriptInfo : scripts)
+            {
+                const auto& name = scriptInfo.second.Name;
+                if (ImGui::Selectable(name.c_str()))
+                {
+                    script.SetScriptableObject(name);
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+            ImGui::EndCombo();
+        }
+    }
 }

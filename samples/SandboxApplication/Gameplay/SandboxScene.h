@@ -46,9 +46,6 @@ public:
 
 		// auto sound = MxObject::Create();
 		// InitSound(*sound);
-
-		auto scriptObject = MxObject::Create();
-		scriptObject->AddComponent<Script>("ScriptExample");
     }
 
 	void OnUpdate()

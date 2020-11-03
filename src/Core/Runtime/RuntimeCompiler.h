@@ -85,6 +85,7 @@ namespace MxEngine
         static void OnUpdate(float dt);
 
         static const ScriptInfo& GetScriptInfo(const MxString& scriptName);
+        static const ScriptInfo& GetScriptInfo(StringId scriptName);
         static void InvokeScriptableObject(Scriptable* script, ScriptableMethod method, MxObject& scriptParent);
         static const MxHashMap<StringId, ScriptInfo>& GetRegisteredScripts();
         static void UpdateScriptableObject(const MxString& scriptName, Scriptable* script);
