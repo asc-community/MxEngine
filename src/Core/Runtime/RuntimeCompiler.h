@@ -30,6 +30,7 @@
 
 // forward-declarations of RCC++ interfaces
 struct ICompilerLogger;
+struct IObjectConstructor;
 class RuntimeObjectSystem;
 struct ObjectId;
 
@@ -74,6 +75,7 @@ namespace MxEngine
         inline static RuntimeCompilerImpl* impl = nullptr;
 
         static void RegisterExistingScripts();
+        static void RegisterNewScript(IObjectConstructor* constructor);
     public:
         static void Init();
         static void Clone(RuntimeCompilerImpl* other);
@@ -87,6 +89,7 @@ namespace MxEngine
         static const ScriptInfo& GetScriptInfo(const MxString& scriptName);
         static const ScriptInfo& GetScriptInfo(StringId scriptName);
         static void InvokeScriptableObject(Scriptable* script, ScriptableMethod method, MxObject& scriptParent);
+        static void AddScriptFile(const MxString& scriptName, const MxString& scriptFileName);
         static const MxHashMap<StringId, ScriptInfo>& GetRegisteredScripts();
         static void UpdateScriptableObject(const MxString& scriptName, Scriptable* script);
     };

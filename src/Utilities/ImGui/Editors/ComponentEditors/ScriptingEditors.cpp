@@ -28,6 +28,7 @@
 
 #include "Utilities/ImGui/Editors/ComponentEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
+#include "Utilities/FileSystem/FileManager.h"
 
 #include "Core/Components/Scripting/Script.h"
 #include "Core/Runtime/RuntimeCompiler.h"
@@ -38,6 +39,31 @@
 
 namespace MxEngine::GUI
 {
+    void CreateNewScript(const MxString& scriptName, const MxString& filepath)
+    {
+        File script(filepath, File::WRITE);
+
+        script << "#include <MxEngine.h>\n\n";
+        script << "using namespace MxEngine;\n\n";
+        script << "class " << scriptName << " : public MxEngine::Scriptable\n";
+        script << "{\n";
+        script << "public:\n";
+        script << "    virtual void OnCreate(MxEngine::MxObject& self) override\n";
+        script << "    {\n";
+        script << "        \n";
+        script << "    }\n\n";
+        script << "    virtual void OnReload(MxEngine::MxObject& self) override\n";
+        script << "    {\n";
+        script << "        \n";
+        script << "    }\n\n";
+        script << "    virtual void OnUpdate(MxEngine::MxObject& self) override\n";
+        script << "    {\n";
+        script << "        \n";
+        script << "    }\n";
+        script << "};\n\n";
+        script << "MXENGINE_RUNTIME_EDITOR(" << scriptName << ");\n";
+    }
+
     void ScriptEditor(Script& script)
     {
         TREE_NODE_PUSH("Script");
@@ -67,6 +93,25 @@ namespace MxEngine::GUI
                 }
             }
             ImGui::EndCombo();
+        }
+
+        if (ImGui::Button("create new script file"))
+        {
+            auto path = FileManager::SaveFileDialog("*.cpp", "MxEngine script files");
+            if (!path.empty())
+            {
+                auto scriptFileName = ToFilePath(path).stem();
+                if (!scriptFileName.empty())
+                {
+                    auto scriptName = ToMxString(scriptFileName);
+                    CreateNewScript(scriptName, path);
+                    RuntimeCompiler::AddScriptFile(scriptName, path);
+                }
+                else
+                {
+                    MXLOG_ERROR("MxEngine::FileManager", "cannot create script file with empty name");
+                }
+            }
         }
     }
 }

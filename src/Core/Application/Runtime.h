@@ -72,6 +72,16 @@ namespace MxEngine
             return RuntimeCompiler::GetRegisteredScripts();
         }
 
+        static void AddScriptFile(const MxString& scriptName, const MxString& scriptFileName)
+        {
+            RuntimeCompiler::AddScriptFile(scriptName, scriptFileName);
+        }
+
+        static void AddScriptFile(const MxString& scriptName, const FilePath& scriptFileName)
+        {
+            Runtime::AddScriptFile(scriptName, ToMxString(scriptFileName));
+        }
+
         static bool HasCompilationTaskInProcess()
         {
             return RuntimeCompiler::HasCompilationTaskInProcess();

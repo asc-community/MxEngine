@@ -49,6 +49,7 @@ namespace MxEngine
         static void AddFile(const FilePath& file);
     public:
         static MxString OpenFileDialog(const MxString& types = "", const MxString& description = "All Files");
+        static MxString SaveFileDialog(const MxString& types = "", const MxString& description = "All Files");
         static void Init();
         static const FilePath& GetFilePath(StringId filename);
         static FilePath GetEngineShaderFolder();

@@ -38,10 +38,17 @@ namespace MxEngine
 {
     MxString FileManager::OpenFileDialog(const MxString& types, const MxString& description)
     {
-        std::vector<std::string> selection = pfd::open_file("Select a file", FileManager::GetRoot().string(),
+        auto selection = pfd::open_file("Select file", FileManager::GetRoot().string(),
             { description.c_str(), types.c_str(), "All Files", "*" }, pfd::opt::multiselect).result();
         return selection.empty() ? "" : ToMxString(selection.front());
 
+    }
+
+    MxString FileManager::SaveFileDialog(const MxString& types, const MxString& description)
+    {
+        auto selection = pfd::save_file("Save file", FileManager::GetRoot().string(),
+            { description.c_str(), types.c_str(), "All Files", "*" }).result();
+        return ToMxString(selection);
     }
 
     void FileManager::InitializeRootDirectory(const FilePath& directory)

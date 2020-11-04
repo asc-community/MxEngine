@@ -1,5 +1,4 @@
 #include <MxEngine.h>
-#include <Core/Components/Scripting/Scriptable.h>
 
 using namespace MxEngine;
 

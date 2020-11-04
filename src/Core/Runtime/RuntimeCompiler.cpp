@@ -340,42 +340,44 @@ namespace MxEngine
     void RuntimeCompiler::RegisterExistingScripts()
     {
         AUDynArray<IObjectConstructor*> constructors;
-        RuntimeCompiler::GetImpl()->runtimeObjectSystem->GetObjectFactorySystem()->GetAll(constructors);
+
+        impl->runtimeObjectSystem->GetObjectFactorySystem()->GetAll(constructors);
         for (size_t i = 0; i < constructors.Size(); i++)
         {
-            auto& constructor = constructors[i];
-            const char* filename = constructor->GetFileName();
-            const char* name = constructor->GetName();
-            if (name != nullptr)
+            auto constructor = constructors[i];
+            RuntimeCompiler::RegisterNewScript(constructor);
+        }
+    }
+
+    void RuntimeCompiler::RegisterNewScript(IObjectConstructor* constructor)
+    {
+        const char* filename = constructor->GetFileName();
+        const char* name = constructor->GetName();
+        MxString scriptName = (name == nullptr ? "" : name);
+        StringId scriptNameHash = MakeStringId(scriptName);
+        if (!scriptName.empty() && impl->registeredScripts.find(scriptNameHash) == impl->registeredScripts.end())
+        {
+            ScriptInfo info;
+            info.Name = scriptName;
+            info.FileName = (filename == nullptr ? "" : filename);
+
+            auto object = constructor->Construct();
+            if (object == nullptr)
             {
-                ScriptInfo info;
-                info.Name = name;
-                info.FileName = (filename == nullptr ? "" : filename);
-                auto hash = MakeStringId(info.Name);
-
-                auto object = constructor->Construct();
-                if (object == nullptr)
-                {
-                    MXLOG_ERROR("MxEngine::RuntimeCompiler", "cannot create Scriptable object: object construction failed");
-                    continue;
-                }
-                object->GetInterface(&info.ScriptHandle);
-                if (info.ScriptHandle == nullptr)
-                {
-                    MXLOG_ERROR("MxEngine::RuntimeCompiler", "cannot create Scriptable object: object has not Scriptable interface");
-                    continue;
-                }
-                if (impl->registeredScripts.find(hash) != impl->registeredScripts.end())
-                {
-                    MXLOG_ERROR("MxEngine::RuntimeCompiler", "hash collision or script name dublicate: " + info.Name);
-                    continue;
-                }
-
-                auto context = GlobalContextSerializer::Serialize();
-                info.ScriptHandle->InitializeModuleContext(reinterpret_cast<void*>(&context));
-                (void) new(&info.ScriptHandleId) ObjectId(object->GetObjectId());
-                impl->registeredScripts[hash] = std::move(info);
+                MXLOG_ERROR("MxEngine::RuntimeCompiler", "cannot create Scriptable object: object construction failed");
+                return;
             }
+            object->GetInterface(&info.ScriptHandle);
+            if (info.ScriptHandle == nullptr)
+            {
+                MXLOG_ERROR("MxEngine::RuntimeCompiler", "cannot create Scriptable object: object has not Scriptable interface");
+                return;
+            }
+
+            auto context = GlobalContextSerializer::Serialize();
+            info.ScriptHandle->InitializeModuleContext(reinterpret_cast<void*>(&context));
+            (void) new(&info.ScriptHandleId) ObjectId(object->GetObjectId());
+            impl->registeredScripts[scriptNameHash] = std::move(info);
         }
     }
 
@@ -455,6 +457,7 @@ namespace MxEngine
         MAKE_SCOPE_PROFILER("RuntimeCompiler::LoadCompiledModules");
         MAKE_SCOPE_TIMER("MxEngine::RuntimeCompiler", "RuntimeCompiler::LoadCompiledModules");
         impl->runtimeObjectSystem->LoadCompiledModule();
+        RuntimeCompiler::RegisterExistingScripts();
     }
 
     void RuntimeCompiler::OnUpdate(float dt)
@@ -494,5 +497,10 @@ namespace MxEngine
         script->CurrentState.Method = method;
         script->CurrentState.Self = std::addressof(scriptParent);
         impl->runtimeObjectSystem->TryProtectedFunction(script);
+    }
+
+    void RuntimeCompiler::AddScriptFile(const MxString& scriptName, const MxString& scriptFileName)
+    {
+        impl->runtimeObjectSystem->AddToRuntimeFileList(scriptFileName.c_str());
     }
 }
