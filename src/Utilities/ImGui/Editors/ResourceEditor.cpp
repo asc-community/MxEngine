@@ -160,6 +160,13 @@ namespace MxEngine::GUI
         {   
             DrawImageSaver(texture);
 
+            ImGui::SameLine();
+            if (ImGui::Button("flip image")) {
+                auto image = texture->GetRawTextureData();
+                ImageManager::FlipImage(image);
+                texture->Load(image, texture->GetFormat(), texture->GetWrapType());
+            }
+
             auto nativeHeight = texture->GetHeight();
             auto nativeWidth = texture->GetWidth();
 

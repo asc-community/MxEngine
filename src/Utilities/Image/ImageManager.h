@@ -67,6 +67,8 @@ namespace MxEngine
 		static void TakeScreenShot(const MxString& filePath);
 		static void TakeScreenShot(const char*     filePath);
 
+		static void FlipImage(Image& image);
+
 		// write order:		
 		// 7 8 9
 		// 4 5 6
