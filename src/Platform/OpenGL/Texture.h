@@ -93,7 +93,7 @@ namespace MxEngine
 		BindableId GetBoundId() const;
 		BindableId GetNativeHandle() const;
 		void Load(const MxString& filepath, TextureFormat format, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
-		void Load(RawDataPointer data, int width, int height, TextureFormat format = TextureFormat::RGB, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true);
+		void Load(RawDataPointer data, int width, int height, int channels, TextureFormat format = TextureFormat::RGB, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true);
 		void Load(const Image& image, TextureFormat format = TextureFormat::RGB, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true);
 		void LoadDepth(int width, int height, TextureFormat format = TextureFormat::DEPTH, TextureWrap wrap = TextureWrap::CLAMP_TO_BORDER);
 		void SetSamplingFromLOD(size_t lod);
