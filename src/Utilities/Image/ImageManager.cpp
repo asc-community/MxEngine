@@ -189,6 +189,30 @@ namespace MxEngine
         ImageManager::TakeScreenShot(FilePath(filePath));
     }
 
+    void ImageManager::FlipImage(Image& image)
+    {
+        auto imageByteRow = image.GetRawData();
+        auto rowByteSize = image.GetWidth() * image.GetChannels();
+        uint8_t* swapRow = new uint8_t[rowByteSize];
+
+        for (size_t i = 0; i < image.GetHeight() * rowByteSize / 2; i += rowByteSize)
+        {
+            auto currentRow = imageByteRow + i;
+            auto symmetricRow = imageByteRow + (rowByteSize * (image.GetHeight() - 1) - i);
+
+            // Copying current row to the swap memory allocated for it
+            std::memcpy(swapRow, currentRow, rowByteSize);
+
+            // Copying destination to source
+            std::memcpy(currentRow, symmetricRow, rowByteSize);
+
+            // Putting content of the swap (previously current row) to the symmetric row
+            std::memcpy(symmetricRow, swapRow, rowByteSize);
+        }
+
+        delete[] swapRow;
+    }
+
     Image ImageManager::CombineImages(ArrayView<Image> images, size_t imagesPerRaw)
     {
         #if defined(MXENGINE_DEBUG)

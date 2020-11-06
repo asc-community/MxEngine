@@ -65,7 +65,7 @@ namespace MxEngine
             auto texture = GraphicFactory::Create<Texture>();
             texture->SetPath("[[color]]");
             uint8_t buffer[] = { r, g, b };
-            texture->Load(buffer, 1, 1);
+            texture->Load(buffer, 1, 1, 3);
             return texture;
         }
 
