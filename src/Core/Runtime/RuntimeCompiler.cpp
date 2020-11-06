@@ -306,35 +306,43 @@ namespace MxEngine
             MAKE_SCOPE_PROFILER("RuntimeCompiler::OnNewModuleCompiled");
             MAKE_SCOPE_TIMER("MxEngine::RuntimeCompiler", "RuntimeCompiler::OnNewModuleCompiled");
 
+            // first poll all sciptables to check if any was updated by new loaded module
+            const auto& scriptables = RuntimeCompiler::GetRegisteredScripts();
+            for (const auto& scriptable : scriptables)
+            {
+                auto& handle = scriptable.second.ScriptHandleId;
+                auto& name = scriptable.second.Name;
+                auto& id = *std::launder(reinterpret_cast<const ObjectId*>(&handle));
+                IObject* newObject = RuntimeCompiler::GetImpl()->runtimeObjectSystem->GetObjectFactorySystem()->GetObject(id);
+
+                if (newObject != nullptr)
+                {
+                    Scriptable* newScript = nullptr;
+                    newObject->GetInterface(&newScript);
+                    if (newScript != nullptr)
+                    {
+                        auto context = GlobalContextSerializer::Serialize();
+                        newScript->InitializeModuleContext(reinterpret_cast<void*>(&context));
+                        RuntimeCompiler::UpdateScriptableObject(name, newScript);
+                    }
+                }
+            }
+            
+            // then go through all scripts to check which scriptables were changed
             auto view = ComponentFactory::GetView<Script>();
             for (auto& script : view)
             {
                 auto scriptableObject = script.GetScriptableObject();
                 if (scriptableObject != nullptr)
                 {
-                    auto scriptName = script.GetHashedScriptName();
-                    auto& info = RuntimeCompiler::GetScriptInfo(scriptName);
-                    auto& id = *std::launder(reinterpret_cast<const ObjectId*>(&info.ScriptHandleId));
-                    IObject* newObject = RuntimeCompiler::GetImpl()->runtimeObjectSystem->GetObjectFactorySystem()->GetObject(id);
-
-                    if (newObject != nullptr)
+                    auto& updatedScript = RuntimeCompiler::GetScriptInfo(script.GetHashedScriptName());
+                    if (updatedScript.ScriptHandle != scriptableObject)
                     {
-                        Scriptable* newScript = nullptr;
-                        newObject->GetInterface(&newScript);
-                        if (newScript != nullptr)
-                        {
-                            if (newScript != info.ScriptHandle)
-                                RuntimeCompiler::UpdateScriptableObject(info.Name, newScript);
-
-                            auto context = GlobalContextSerializer::Serialize();
-                            newScript->InitializeModuleContext(reinterpret_cast<void*>(&context));
-                            script.SetScriptableObject(info);
-                        }
+                        script.SetScriptableObject(updatedScript);
                     }
                 }
             }
         }
-
     };
 
     void RuntimeCompiler::RegisterExistingScripts()
@@ -447,9 +455,24 @@ namespace MxEngine
         return impl->runtimeObjectSystem->GetIsCompiledComplete();
     }
 
+    void RuntimeCompiler::StartCompilationTask()
+    {
+        impl->runtimeObjectSystem->CompileAll(false);
+    }
+
     bool RuntimeCompiler::HasCompilationTaskInProcess()
     {
         return impl->runtimeObjectSystem->GetIsCompiling();
+    }
+
+    bool RuntimeCompiler::IsAutoCompilationEnabled()
+    {
+        return impl->runtimeObjectSystem->GetAutoCompile();
+    }
+
+    void RuntimeCompiler::ToggleAutoCompilation(bool autoCompile)
+    {
+        impl->runtimeObjectSystem->SetAutoCompile(autoCompile);
     }
 
     void RuntimeCompiler::LoadCompiledModules()
@@ -457,7 +480,6 @@ namespace MxEngine
         MAKE_SCOPE_PROFILER("RuntimeCompiler::LoadCompiledModules");
         MAKE_SCOPE_TIMER("MxEngine::RuntimeCompiler", "RuntimeCompiler::LoadCompiledModules");
         impl->runtimeObjectSystem->LoadCompiledModule();
-        RuntimeCompiler::RegisterExistingScripts();
     }
 
     void RuntimeCompiler::OnUpdate(float dt)
@@ -465,6 +487,7 @@ namespace MxEngine
         if (RuntimeCompiler::HasNewCompiledModules())
         {
             RuntimeCompiler::LoadCompiledModules();
+            RuntimeCompiler::RegisterExistingScripts();
         }
 
         MAKE_SCOPE_PROFILER("RuntimeCompiler::OnUpdate()");

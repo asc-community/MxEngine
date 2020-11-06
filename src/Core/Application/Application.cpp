@@ -525,11 +525,29 @@ namespace MxEngine
 
 	void Application::InitializeRuntime(RuntimeEditor& console)
 	{
-		this->GetEventDispatcher().AddEventListener<FpsUpdateEvent>("RuntimeCompiler", 
+		// initialize runtime compiler
+		this->GetEventDispatcher().AddEventListener<FpsUpdateEvent>("RuntimeCompiler",
 			[](auto&) { RuntimeCompiler::OnUpdate(1.0f); });
 
-		auto& editor = this->GetRuntimeEditor();
+		if (!this->config.AutoRecompileFiles)
+		{
+			RuntimeCompiler::ToggleAutoCompilation(false);
+			this->GetEventDispatcher().AddEventListener<UpdateEvent>("RuntimeCompiler", 
+				[timeSinceLastCompile = 0.0f](UpdateEvent& e) mutable
+				{ 
+					timeSinceLastCompile += e.TimeDelta;
+					auto app = Application::GetImpl();
+					auto key = app->GetConfig().RecompileFilesKey;
+					if (timeSinceLastCompile > 5.0f && app->GetWindow().IsKeyHeldUnchecked(key))
+					{
+						RuntimeCompiler::StartCompilationTask();
+						timeSinceLastCompile = 0.0f;
+					}
+				});
+		}
 
+		// initialize editor and component update callbacks
+		auto& editor = this->GetRuntimeEditor();
 		editor.Log("Welcome to MxEngine developer console!");
 
 		editor.RegisterComponentEditor<Behaviour>          ("Behaviour",           GUI::BehaviourEditor);

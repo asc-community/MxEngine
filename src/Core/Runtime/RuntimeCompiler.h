@@ -39,6 +39,10 @@ struct ObjectId;
 #include "Utilities/STL/MxString.h"
 #include "Utilities/STL/MxHashMap.h"
 
+#if defined(MXENGINE_SHIPPING)
+#define RCCPPOFF // turn off runtime compilation
+#endif
+
 namespace MxEngine
 {
     class UpdateListener;
@@ -82,7 +86,10 @@ namespace MxEngine
         static RuntimeCompilerImpl* GetImpl();
 
         static bool HasNewCompiledModules();
+        static void StartCompilationTask();
         static bool HasCompilationTaskInProcess();
+        static bool IsAutoCompilationEnabled();
+        static void ToggleAutoCompilation(bool autoCompile);
         static void LoadCompiledModules();
         static void OnUpdate(float dt);
 

@@ -175,7 +175,6 @@ namespace MxEngine
 			bool isHeld = Application::GetImpl()->GetWindow().IsKeyHeldUnchecked(openKey);
 			if (isHeld != savedStateKeyHeld) savedStateKeyHeld = false;
 
-
 			if (isHeld && !savedStateKeyHeld)
 			{
 				savedStateKeyHeld = true;

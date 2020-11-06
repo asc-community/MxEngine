@@ -79,6 +79,11 @@ namespace MxEngine::GUI
             ImGui::Text("script filename: %s", script.GetScriptFileName().c_str());
         }
 
+        if (RuntimeCompiler::HasCompilationTaskInProcess())
+        {
+            ImGui::Text("[note]: recompile task is started...");
+        }
+
         auto& scripts = RuntimeCompiler::GetRegisteredScripts();
 
         if (ImGui::BeginCombo("select script", "click to expand"))

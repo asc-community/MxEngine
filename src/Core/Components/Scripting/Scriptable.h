@@ -28,11 +28,12 @@
 
 #pragma once
 
+#include "Core/Application/GlobalContextSerializer.h"
+
 #include <RuntimeObjectSystem/ObjectInterfacePerModule.h>
 #include <RuntimeObjectSystem/RuntimeProtector.h>
 #include <RuntimeObjectSystem/IObject.h>
 
-#include "Core/Application/GlobalContextSerializer.h"
 
 #if defined(MXENGINE_WINDOWS)
 #define MXENGINE_RUNTIME_LINKLIBRARY(library) RUNTIME_COMPILER_LINKLIBRARY(library)
@@ -44,10 +45,12 @@
 
 namespace MxEngine
 {
+	#if !defined(RCCPPOFF)
 	namespace
 	{
 		auto suppressUnusedFunction = GetTrackingInfoFunc<0>(0);
 	}
+	#endif
 
 	struct SciptableInterface : public IObject, public RuntimeProtector
 	{

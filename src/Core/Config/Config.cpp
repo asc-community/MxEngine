@@ -122,6 +122,8 @@ namespace MxEngine
         FromJson(config.Style,                  json["debug-build"], "editor-style"            );
         FromJson(config.EditorOpenKey,          json["debug-build"], "editor-key"              );
         FromJson(config.GraphicAPIDebug,        json["debug-build"], "debug-graphics"          );
+        FromJson(config.RecompileFilesKey,      json["debug-build"], "recompile-files-key"     );
+        FromJson(config.AutoRecompileFiles,     json["debug-build"], "auto-recompile-files"    );
     }
 
     void Serialize(JsonFile& json, const Config& config)
@@ -146,6 +148,8 @@ namespace MxEngine
         json["debug-build"]["editor-style"            ] = config.Style;
         json["debug-build"]["editor-key"              ] = config.EditorOpenKey;
         json["debug-build"]["debug-graphics"          ] = config.GraphicAPIDebug;
+        json["debug-build"]["recompile-files-key"     ] = config.RecompileFilesKey;
+        json["debug-build"]["auto-recompile-files"    ] = config.AutoRecompileFiles;
     }
 
     void to_json(JsonFile& j, MxEngine::CursorMode mode)

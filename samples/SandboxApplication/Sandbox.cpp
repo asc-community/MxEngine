@@ -17,6 +17,11 @@ void SandboxApp::OnUpdate()
 	scene->OnUpdate();
 }
 
+void SandboxApp::OnRender()
+{
+
+}
+
 void SandboxApp::OnDestroy()
 {
 

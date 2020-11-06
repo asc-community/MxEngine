@@ -81,11 +81,11 @@ namespace MxEngine
 		bool IsKeyHeld(KeyCode key) const;
 		bool IsKeyPressed(KeyCode key) const;
 		bool IsKeyReleased(KeyCode key) const;
-		bool IsMouseHeld(MouseButton button);
-		bool IsMousePressed(MouseButton button);
-		bool IsMouseReleased(MouseButton button);
-		bool IsKeyHeldUnchecked(KeyCode key);
-		bool IsMouseHeldUnchecked(MouseButton button);
+		bool IsMouseHeld(MouseButton button) const;
+		bool IsMousePressed(MouseButton button) const;
+		bool IsMouseReleased(MouseButton button) const;
+		bool IsKeyHeldUnchecked(KeyCode key) const;
+		bool IsMouseHeldUnchecked(MouseButton button) const;
 		WindowHandle GetNativeHandle();
 		EventDispatcherImpl<EventBase>& GetEventDispatcher();
 		bool IsCreated() const;

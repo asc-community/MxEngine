@@ -136,6 +136,11 @@ namespace MxEngine
         return CFG(GraphicAPIDebug);
     }
 
+    bool GlobalConfig::HasAutoRecompileFiles()
+    {
+        return CFG(AutoRecompileFiles);
+    }
+
     KeyCode GlobalConfig::GetApplicationCloseKey()
     {
         return CFG(ApplicationCloseKey);
@@ -144,5 +149,10 @@ namespace MxEngine
     KeyCode GlobalConfig::GetEditorOpenKey()
     {
         return CFG(EditorOpenKey);
+    }
+
+    KeyCode GlobalConfig::GetRecompileFilesKey()
+    {
+        return CFG(RecompileFilesKey);
     }
 }
