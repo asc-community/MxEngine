@@ -29,7 +29,7 @@ set(MXENGINE_SOURCES
 "Core/Components/Transform.cpp" 
 "Core/Components/Behaviour.cpp" 
 "Core/Rendering/RenderObjects/DebugBuffer.cpp" 
-"Core/Rendering/RenderObjects/Rectangle.cpp" 
+"Core/Rendering/RenderObjects/RectangleObject.cpp" 
 "Core/Rendering/RenderAdaptor.cpp" 
 "Core/Rendering/RenderController.cpp" 
 "Core/Rendering/RenderObjects/SkyboxObject.cpp"

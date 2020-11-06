@@ -26,55 +26,31 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Platform/GraphicAPI.h"
-
-#pragma once
+#include "RectangleObject.h"
 
 namespace MxEngine
 {
-	class AABB;
-	class BoundingBox;
-	class BoundingSphere;
-	class Cone;
-	class Cylinder;
-	class Capsule;
-	class Frustrum;
-	class Line;
-	class Rectangle;
-	class Circle;
+    void RectangleObject::Init(float halfSize)
+    {
+        std::array vertecies =
+        {
+            Vector4(-halfSize, -halfSize, 0.5f, 1.0f),
+            Vector4( halfSize, -halfSize, 0.5f, 1.0f),
+            Vector4(-halfSize,  halfSize, 0.5f, 1.0f),
+            Vector4(-halfSize,  halfSize, 0.5f, 1.0f),
+            Vector4( halfSize, -halfSize, 0.5f, 1.0f),
+            Vector4( halfSize,  halfSize, 0.5f, 1.0f),
+        };
 
-	class DebugBuffer
-	{
-		struct Point
-		{
-			Vector3 position;
-			Vector4 color;
-		};
-
-		using FrontendStorage = MxVector<Point>;
-
-		VertexBufferHandle VBO;
-		VertexArrayHandle VAO;
-
-		FrontendStorage storage;
-	public:
-		bool DrawAsScreenOverlay = false;
-
-		void Init();
-		void Submit(const Line& line, const Vector4& color);
-		void Submit(const AABB& box, const Vector4& color);
-		void Submit(const BoundingBox& box, const Vector4 color);
-		void Submit(const BoundingSphere& sphere, const Vector4 color);
-		void Submit(const Cone& cone, const Vector4& color);
-		void Submit(const Frustrum& frustrum, const Vector4& color);
-		void Submit(const Cylinder& cylinder, const Vector4& color);
-		void Submit(const Capsule& capsule, const Vector4& color);
-		void Submit(const Rectangle& rectangle, const Vector4& color);
-		void Submit(const Circle& circle, const Vector4& color);
-
-		void ClearBuffer(); 
-		void SubmitBuffer();
-		size_t GetSize() const;
-		VertexArrayHandle GetVAO() const;
-	};
+        this->VBO = GraphicFactory::Create<VertexBuffer>((float*)vertecies.data(), vertecies.size() * sizeof(float), UsageType::STATIC_DRAW);
+        auto VBL = GraphicFactory::Create<VertexBufferLayout>();
+        VBL->PushFloat(4); //-V112
+        this->VAO = GraphicFactory::Create<VertexArray>();
+        VAO->AddBuffer(*VBO, *VBL);
+    }
+    
+    const VertexArray& RectangleObject::GetVAO() const
+    {
+        return *this->VAO;
+    }
 }

@@ -28,18 +28,31 @@
 
 #pragma once
 
-#include "Platform/GraphicAPI.h"
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-	class Rectangle
+	class Circle
 	{
-		VertexBufferHandle VBO;
-		VertexArrayHandle VAO;
 	public:
-		static constexpr size_t VertexCount = 2 * 3; // 2 triangles, each with 3 vertecies
+		Vector3 Center;
+		Quaternion Rotation;
+		float Radius;
 
-		void Init(float halfSize);
-		const VertexArray& GetVAO() const;
+		Circle() = default;
+		Circle(Vector3 center, Quaternion rotation, float radius) 
+			: Center(center), Rotation(rotation), Radius(radius) { }
+
+		inline constexpr bool operator==(const Circle& o) const
+		{
+			return this->Center == o.Center &&
+				this->Rotation == o.Rotation &&
+				this->Radius == o.Radius;
+		}
+
+		inline constexpr bool operator!=(const Circle& o) const
+		{
+			return !(*this == o);
+		}
 	};
 }

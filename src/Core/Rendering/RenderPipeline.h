@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Core/BoundingObjects/FrustrumCuller.h"
-#include "RenderObjects/Rectangle.h"
+#include "RenderObjects/RectangleObject.h"
 #include "RenderObjects/SkyboxObject.h"
 #include "RenderObjects/RenderHelperObject.h"
 #include "RenderObjects/PointLightInstancedObject.h"
@@ -104,7 +104,7 @@ namespace MxEngine
 
         SkyboxObject SkyboxCubeObject;
         DebugBufferUnit DebugBufferObject;
-        Rectangle RectangularObject;
+        RectangleObject RectangularObject;
         VectorInt2 Viewport;
 
         Vector3 FogColor;
