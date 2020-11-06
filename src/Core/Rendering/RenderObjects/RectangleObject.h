@@ -26,31 +26,20 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Rectangle.h"
+#pragma once
+
+#include "Platform/GraphicAPI.h"
 
 namespace MxEngine
 {
-    void Rectangle::Init(float halfSize)
-    {
-        std::array vertecies =
-        {
-            Vector4(-halfSize, -halfSize, 0.5f, 1.0f),
-            Vector4( halfSize, -halfSize, 0.5f, 1.0f),
-            Vector4(-halfSize,  halfSize, 0.5f, 1.0f),
-            Vector4(-halfSize,  halfSize, 0.5f, 1.0f),
-            Vector4( halfSize, -halfSize, 0.5f, 1.0f),
-            Vector4( halfSize,  halfSize, 0.5f, 1.0f),
-        };
+	class RectangleObject
+	{
+		VertexBufferHandle VBO;
+		VertexArrayHandle VAO;
+	public:
+		static constexpr size_t VertexCount = 2 * 3; // 2 triangles, each with 3 vertecies
 
-        this->VBO = GraphicFactory::Create<VertexBuffer>((float*)vertecies.data(), vertecies.size() * sizeof(float), UsageType::STATIC_DRAW);
-        auto VBL = GraphicFactory::Create<VertexBufferLayout>();
-        VBL->PushFloat(4); //-V112
-        this->VAO = GraphicFactory::Create<VertexArray>();
-        VAO->AddBuffer(*VBO, *VBL);
-    }
-    
-    const VertexArray& Rectangle::GetVAO() const
-    {
-        return *this->VAO;
-    }
+		void Init(float halfSize);
+		const VertexArray& GetVAO() const;
+	};
 }

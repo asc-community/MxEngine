@@ -35,6 +35,8 @@
 #include "Core/BoundingObjects/Cone.h"
 #include "Core/BoundingObjects/Frustrum.h"
 #include "Core/BoundingObjects/Line.h"
+#include "Core/BoundingObjects/Rectangle.h"
+#include "Core/BoundingObjects/Circle.h"
 
 namespace MxEngine
 {
@@ -419,6 +421,67 @@ namespace MxEngine
         this->storage.push_back({ ovale1.front(), color });
         this->storage.push_back({ ovale2.back(), color });
         this->storage.push_back({ ovale2.front(), color });
+    }
+
+    void DebugBuffer::Submit(const Rectangle& rectangle, const Vector4& color)
+    {
+        std::array points = {
+            rectangle.Center + rectangle.Rotation * Vector3(-0.5f * rectangle.Width, 0.0f, +0.5f * rectangle.Height),      // Left top
+            rectangle.Center + rectangle.Rotation * Vector3(+0.5f * rectangle.Width, 0.0f, +0.5f * rectangle.Height),      // Right top
+            rectangle.Center + rectangle.Rotation * Vector3(+0.5f * rectangle.Width, 0.0f, -0.5f * rectangle.Height),      // Right bottom
+            rectangle.Center + rectangle.Rotation * Vector3(-0.5f * rectangle.Width, 0.0f, -0.5f * rectangle.Height),      // Left bottom
+        };
+
+        for (size_t i = 0; i < points.size() - 1; i++) {
+            auto pointFrom = points[i];
+            auto pointTo = points[i + 1];
+
+            this->storage.push_back({ pointFrom, color });
+            this->storage.push_back({ pointTo, color });
+        }
+
+        this->storage.push_back({ points.back(), color });
+        this->storage.push_back({ points.front(), color });
+    }
+
+    void DebugBuffer::Submit(const Circle& circle, const Vector4& color)
+    {
+        constexpr std::array circlePoints =
+        {
+            Vector3(0.0f, 0.0f, 1.0f),
+            Vector3(0.5f, 0.0f, RootThree<float>() * 0.5f),
+            Vector3(OneOverRootTwo<float>(), 0.0f, OneOverRootTwo<float>()),
+            Vector3(RootThree<float>() * 0.5f, 0.0f, 0.5f),
+            Vector3(1.0f, 0.0f, 0.0f),
+            Vector3(RootThree<float>() * 0.5f, 0.0f, -0.5f),
+            Vector3(OneOverRootTwo<float>(), 0, -OneOverRootTwo<float>()),
+            Vector3(0.5f, 0.0f, -RootThree<float>() * 0.5f),
+            Vector3(0.0f, 0.0f, -1.0f),
+            Vector3(-0.5f, 0.0f, -RootThree<float>() * 0.5f),
+            Vector3(-OneOverRootTwo<float>(), 0.0f, -OneOverRootTwo<float>()),
+            Vector3(-RootThree<float>() * 0.5f, 0.0f, -0.5f),
+            Vector3(-1.0f, 0.0f, 0.0f),
+            Vector3(-RootThree<float>() * 0.5f, 0.0f, 0.5f),
+            Vector3(-OneOverRootTwo<float>(), 0.0f, OneOverRootTwo<float>()),
+            Vector3(-0.5f, 0.0f, RootThree<float>() * 0.5f),
+        };
+
+        std::array<Vector3, circlePoints.size()> circleArray;
+        for (size_t i = 0; i < circlePoints.size(); i++)
+        {
+            circleArray[i] = circle.Center + circle.Rotation * circlePoints[i] * circle.Radius;
+        }
+
+        for (size_t i = 0; i < circleArray.size() - 1; i++) {
+            auto pointFrom = circleArray[i];
+            auto pointTo = circleArray[i + 1];
+
+            this->storage.push_back({ pointFrom, color });
+            this->storage.push_back({ pointTo, color });
+        }
+
+        this->storage.push_back({ circleArray.back(), color });
+        this->storage.push_back({ circleArray.front(), color });
     }
 
     void DebugBuffer::ClearBuffer()

@@ -174,4 +174,14 @@ namespace MxEngine
     {
         DRW.Submit(cylinder, color);
     }
+
+    void Rendering::Draw(const Rectangle& rectangle, const Vector4& color)
+    {
+        DRW.Submit(rectangle, color);
+    }
+
+    void Rendering::Draw(const Circle& circle, const Vector4& color)
+    {
+        DRW.Submit(circle, color);
+    }
 }
