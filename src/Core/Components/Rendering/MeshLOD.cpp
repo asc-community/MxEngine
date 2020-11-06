@@ -78,7 +78,7 @@ namespace MxEngine
             return;
         }
 
-        auto box = meshSource->Mesh->BoundingBox * object.Transform.GetMatrix();
+        auto box = meshSource->Mesh->BoxBounding * object.Transform.GetMatrix();
 
         float distance = Length(box.GetCenter() - viewportPosition);
         Vector3 length = box.Length();

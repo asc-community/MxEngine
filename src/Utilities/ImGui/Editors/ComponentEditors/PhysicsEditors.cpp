@@ -267,18 +267,22 @@ namespace MxEngine::GUI
 			if (ImGui::Selectable("box shape"))
 			{
 				compoundCollider.AddShape<BoxShape>({ }, BoundingBox{ });
+				ImGui::SetItemDefaultFocus();
 			}
 			if (ImGui::Selectable("sphere shape"))
 			{
 				compoundCollider.AddShape<SphereShape>({ }, BoundingSphere{ });
+				ImGui::SetItemDefaultFocus();
 			}
 			if (ImGui::Selectable("capsule shape"))
 			{
 				compoundCollider.AddShape<CapsuleShape>({ }, Capsule{ });
+				ImGui::SetItemDefaultFocus();
 			}
 			if (ImGui::Selectable("cylinder shape"))
 			{
 				compoundCollider.AddShape<CylinderShape>({ }, Cylinder{ });
+				ImGui::SetItemDefaultFocus();
 			}
 			
 			ImGui::EndCombo();

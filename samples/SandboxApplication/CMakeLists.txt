@@ -16,6 +16,7 @@ set(PROJECT_HEADER_FILES
 
 set(PROJECT_SOURCE_FILES
     "Sandbox.cpp"
+    "Runtime/ScriptExample.cpp"
 )
 
 set(EXECUTABLE_NAME "SandboxApplication")

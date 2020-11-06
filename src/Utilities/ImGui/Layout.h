@@ -67,7 +67,7 @@ namespace MxEngine::GUI
     #define SCOPE_TREE_NODE(name) if (!ImGui::CollapsingHeader(name)) return; GUI::Indent _(5.0f)
 
     struct TreeNodeAutoPop { ~TreeNodeAutoPop() { ImGui::TreePop(); } };
-    #define TREE_NODE_PUSH(name) if(!ImGui::TreeNode(name)) return; TreeNodeAutoPop _pop_
+    #define TREE_NODE_PUSH(name) if(!ImGui::TreeNode(name)) return; MxEngine::GUI::TreeNodeAutoPop _pop_
 
     /*!
     creates input field for an int and apply-button next to it

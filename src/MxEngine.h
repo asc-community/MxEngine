@@ -60,6 +60,7 @@
 #include "Utilities/FileSystem/FileManager.h"
 #include "Library/Primitives/Primitives.h"
 #include "Library/Primitives/Colors.h"
+#include "Core/Components/Scripting/Scriptable.h"
 
 /*!
 Main namespace of MxEngine framework. All classes are located here or in nested namespaces

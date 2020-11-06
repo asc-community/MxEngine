@@ -24,5 +24,6 @@
 #include "Physics/CompoundCollider.h"
 #include "Physics/CharacterController.h"
 #include "Physics/RigidBody.h"
+#include "Scripting/Script.h"
 #include "Transform.h"
 #include "Behaviour.h"

@@ -34,7 +34,7 @@ namespace MxEngine::GUI
 {
     void DrawApplicationEditor(const char* name, bool* isOpen)
     {
-        auto app = Application::Get();
+        auto app = Application::GetImpl();
 
         ImGui::Begin(name, isOpen);
         ImGui::AlignTextToFramePadding();

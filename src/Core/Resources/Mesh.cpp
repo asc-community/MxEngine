@@ -104,17 +104,17 @@ namespace MxEngine
 	void Mesh::UpdateBoundingGeometry()
 	{
 		// compute bounding box, taking min and max points from each sub-box
-		this->BoundingBox = { MakeVector3(0.0f), MakeVector3(0.0f) };
+		this->BoxBounding = { MakeVector3(0.0f), MakeVector3(0.0f) };
 		if (!this->Submeshes.empty()) 
-			this->BoundingBox = this->Submeshes.front().Data.GetBoundingBox();
+			this->BoxBounding = this->Submeshes.front().Data.GetBoundingBox();
 
 		for (const auto& submesh : this->Submeshes)
 		{
-			this->BoundingBox.Min = VectorMin(this->BoundingBox.Min, submesh.Data.GetBoundingBox().Min);
-			this->BoundingBox.Max = VectorMax(this->BoundingBox.Max, submesh.Data.GetBoundingBox().Max);
+			this->BoxBounding.Min = VectorMin(this->BoxBounding.Min, submesh.Data.GetBoundingBox().Min);
+			this->BoxBounding.Max = VectorMax(this->BoxBounding.Max, submesh.Data.GetBoundingBox().Max);
 		}
 
-		// compute bounding sphere, taking sun of max sub-sphere radius and distance to it
+		// compute bounding sphere, taking sum of max sub-sphere radius and distance to it
 		auto center = MakeVector3(0.0f);
 		auto maxRadius = 0.0f;
 		for (const auto& submesh : this->Submeshes)
@@ -123,7 +123,7 @@ namespace MxEngine
 			auto distanceToCenter = Length(sphere.Center);
 			maxRadius = Max(maxRadius, distanceToCenter + sphere.Radius);
 		}
-		this->BoundingSphere = MxEngine::BoundingSphere(center, maxRadius);
+		this->SphereBounding = MxEngine::BoundingSphere(center, maxRadius);
 	}
 
 	size_t Mesh::AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl)

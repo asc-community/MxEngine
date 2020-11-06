@@ -62,4 +62,5 @@ imgui.ini
 profile_log.json
 compile_commands.json
 Engine
+DEBUG_DEBUG
 *.etl

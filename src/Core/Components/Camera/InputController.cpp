@@ -76,7 +76,7 @@ namespace MxEngine
 				vecUp      = object->Transform.GetRotation() * vecUp;
 			}
 
-			auto dt = Application::Get()->GetUnscaledTimeDelta();
+			auto dt = Application::GetImpl()->GetUnscaledTimeDelta();
 			if (Input::IsKeyHeld(forward))
 			{
 				moveDirection += vecForward;
@@ -131,7 +131,7 @@ namespace MxEngine
 		{
 			if (!camera.IsValid()) return;
 			static Vector2 oldPos = event.position;
-			auto dt = Application::Get()->GetUnscaledTimeDelta();
+			auto dt = Application::GetImpl()->GetUnscaledTimeDelta();
 			Vector2 diff(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
 			camera->Rotate(diff.x, diff.y);
 			oldPos = event.position;
@@ -155,7 +155,7 @@ namespace MxEngine
 		{
 				if (!camera.IsValid()) return;
 				static Vector2 oldPos = event.position;
-				auto dt = Application::Get()->GetUnscaledTimeDelta();
+				auto dt = Application::GetImpl()->GetUnscaledTimeDelta();
 				Vector2 diff(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
 				camera->Rotate(diff.x, 0.0f);
 				oldPos = event.position;
@@ -179,7 +179,7 @@ namespace MxEngine
 		{
 				if (!camera.IsValid()) return;
 				static Vector2 oldPos = event.position;
-				auto dt = Application::Get()->GetUnscaledTimeDelta();
+				auto dt = Application::GetImpl()->GetUnscaledTimeDelta();
 				Vector2 diff(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
 				camera->Rotate(0.0f, diff.y);
 				oldPos = event.position;

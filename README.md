@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-7.5.5-red)
+![](https://img.shields.io/badge/version-7.6.0-red)
 ![](https://img.shields.io/badge/build-cmake-green)
 ![GitHub](https://img.shields.io/github/license/asc-community/MxEngine?color=yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
@@ -60,17 +60,38 @@ object->AddComponent<MeshRenderer>(AssetManager::LoadMaterials("objects/your_obj
 Dynamic directional lights, spot lights and point lights are supported. Each has simular interface and is created in a uniform way
 ```cs
 auto object = MxObject::Create();
-auto light = object.AddComponent<SpotLight>();
+auto light = object->AddComponent<SpotLight>();
 light->AmbientColor  = { 1.0f,  1.0f, 1.0f };
 light->DiffuseColor  = { 1.0f,  1.0f, 1.0f };
 light->SpecularColor = { 1.0f,  1.0f, 1.0f };
 light->Direction     = { 1.0f, -1.3f, 1.0f };
 light->UseOuterAngle(45.0f);
 ```
+### Using scripts for runtime code compilation
+by creating a seperate file with special macro definition you are able to add scripts to objects and
+then edit them in runtime - the scripts will be recompiled automatically:
+```cs
+#include <MxEngine.h>
+using namespace MxEngine
+
+class YourScript : public Scriptable
+{
+public:
+    virtual void OnCreate(MxObject& self) override { }
+    virtual void OnReload(MxObject& self) override { }
+    virtual void OnUpdate(MxObject& self) override { }
+};
+MXENGINE_RUNTIME_EDITOR(YourScript);
+```
+```cs
+// you can add it as a component by name:
+auto object = MxObject::Create();
+object->AddComponent<Script>("YourScript");
+```
 ### Creating multiple objects using GPU instancing
 you can create MxObjects which share same mesh and material. They all can have different position and color, but still rendered in one draw call
 ```cs
-auto factory = object.AddComponent<InstanceFactory>();
+auto factory = object->AddComponent<InstanceFactory>();
 
 auto instance1 = factory->MakeInstance();
 instance1->Transform.SetPosition({0.0f, 1.0f, 0.0f});

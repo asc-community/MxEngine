@@ -250,7 +250,7 @@ namespace MxEngine
 		this->verticalAngle = verticalAngle;
 	}
 
-	const UUID& CameraController::GetEventUUID() const
+	UUID CameraController::GetEventUUID() const
 	{
 		return this->GetGBuffer().GetUUID();
 	}

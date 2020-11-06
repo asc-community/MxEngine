@@ -41,6 +41,6 @@ namespace MxEngine
         bool IsDrawn = true;
 
         MeshSource() : Mesh(ResourceFactory::Create<MxEngine::Mesh>()) { }
-        MeshSource(Resource<MxEngine::Mesh, ResourceFactory> mesh) : Mesh(mesh) { }
+        MeshSource(MeshHandle mesh) : Mesh(mesh) { }
     };
 }

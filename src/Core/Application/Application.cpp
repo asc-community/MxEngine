@@ -137,10 +137,9 @@ namespace MxEngine
 		MXLOG_INFO("MxEngine::AppCloseBinding", MxFormat("bound app close to keycode: {0}", EnumToString(key)));
 		Event::AddEventListener<KeyEvent>("AppCloseEvent", [key](auto& event)
 		{
-			auto context = Application::Get();
-			if (event.IsHeld(key))
+			if (event.IsPressed(key))
 			{
-				context->CloseApplication();
+				Application::GetImpl()->CloseApplication();
 			}
 		});
 	}
@@ -384,12 +383,16 @@ namespace MxEngine
 		MXLOG_INFO("MxEngine::Application", "application destroyed");
 	}
 
-	Application* Application::Get()
+	void Application::Init()
+	{
+	}
+
+	Application* Application::GetImpl()
 	{
 		return Application::Current;
 	}
 
-	void Application::Set(Application* application)
+	void Application::Clone(Application* application)
 	{
 		Application::Current = application;
 	}
@@ -400,11 +403,8 @@ namespace MxEngine
 		Profiler::Start("profile_log.json");
 		#endif
 
-		MX_ASSERT(Application::Get() == nullptr);
-		Application::Set(app);
+		Application::Current = app;
 		GlobalContextSerializer::Initialize();
-		auto t = GlobalContextSerializer::Serialize();
-		GlobalContextSerializer::Deserialize(t);
 	}
 
 	Application::ModuleManager::~ModuleManager()
@@ -525,8 +525,29 @@ namespace MxEngine
 
 	void Application::InitializeRuntime(RuntimeEditor& console)
 	{
-		auto& editor = this->GetRuntimeEditor();
+		// initialize runtime compiler
+		this->GetEventDispatcher().AddEventListener<FpsUpdateEvent>("RuntimeCompiler",
+			[](auto&) { RuntimeCompiler::OnUpdate(1.0f); });
 
+		if (!this->config.AutoRecompileFiles)
+		{
+			RuntimeCompiler::ToggleAutoCompilation(false);
+			this->GetEventDispatcher().AddEventListener<UpdateEvent>("RuntimeCompiler", 
+				[timeSinceLastCompile = 0.0f](UpdateEvent& e) mutable
+				{ 
+					timeSinceLastCompile += e.TimeDelta;
+					auto app = Application::GetImpl();
+					auto key = app->GetConfig().RecompileFilesKey;
+					if (timeSinceLastCompile > 5.0f && app->GetWindow().IsKeyHeldUnchecked(key))
+					{
+						RuntimeCompiler::StartCompilationTask();
+						timeSinceLastCompile = 0.0f;
+					}
+				});
+		}
+
+		// initialize editor and component update callbacks
+		auto& editor = this->GetRuntimeEditor();
 		editor.Log("Welcome to MxEngine developer console!");
 
 		editor.RegisterComponentEditor<Behaviour>          ("Behaviour",           GUI::BehaviourEditor);
@@ -555,8 +576,10 @@ namespace MxEngine
 		editor.RegisterComponentEditor<CylinderCollider>   ("CylinderCollider",    GUI::CylinderColliderEditor);
 		editor.RegisterComponentEditor<CapsuleCollider>    ("CapsuleCollider",     GUI::CapsuleColliderEditor);
 		editor.RegisterComponentEditor<CompoundCollider>   ("CompoundCollider",    GUI::CompoundColliderEditor);
+		editor.RegisterComponentEditor<Script>             ("Script",              GUI::ScriptEditor);
 
 		this->RegisterComponentUpdate<Behaviour>();
+		this->RegisterComponentUpdate<Script>();
 		this->RegisterComponentUpdate<InstanceFactory>();
 		this->RegisterComponentUpdate<VRCameraController>();
 		this->RegisterComponentUpdate<AudioListener>();

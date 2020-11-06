@@ -28,35 +28,34 @@
 
 #pragma once
 
-#include "Config.h"
+#include "Utilities/ECS/Component.h"
+
+struct ObjectId;
 
 namespace MxEngine
 {
-	class GlobalConfig
+	struct ScriptInfo;
+	class Scriptable;
+
+	class Script
 	{
+		MAKE_COMPONENT(Script);
+
+		StringId scriptName = 0;
+		Scriptable* scriptImpl = nullptr;
 	public:
-        static BuildType GetBuildType();
-        static const Vector2& GetWindowPosition();
-        static const Vector2& GetWindowSize();
-        static const MxString& GetWindowTitle();
-        static CursorMode GetCursorMode();
-        static bool HasDoubleBuffering();
-        static RenderProfile GetGraphicAPIProfile();
-        static size_t GetGraphicAPIMajorVersion();
-        static size_t GetGraphicAPIMinorVersion();
-        static size_t GetAnisothropicFiltering();
-        static size_t GetDebugLineWidth();
-        static size_t GetDirectionalLightTextureSize();
-        static size_t GetPointLightTextureSize();
-        static size_t GetSpotLightTextureSize();
-        static size_t GetEngineTextureSize();
-        static const MxString& GetProjectRootDirectory();
-        static const MxString& GetShaderSourceDirectory();
-        static EditorStyle GetEditorStyle();
-        static bool HasGraphicAPIDebug();
-        static bool HasAutoRecompileFiles();
-        static KeyCode GetApplicationCloseKey();
-        static KeyCode GetEditorOpenKey();
-        static KeyCode GetRecompileFilesKey();
+		Script() = default;
+		Script(const MxString& scriptName);
+		void Init();
+		void OnUpdate(float dt);
+
+		void SetScriptableObject(const ScriptInfo& scriptInfo);
+		void SetScriptableObject(const MxString& scriptName);
+		bool HasScriptableObject() const;
+		Scriptable* GetScriptableObject();
+		StringId GetHashedScriptName() const;
+		const MxString& GetScriptName() const;
+		const MxString& GetScriptFileName() const;
+		const Scriptable* GetScriptableObject() const;
 	};
 }
