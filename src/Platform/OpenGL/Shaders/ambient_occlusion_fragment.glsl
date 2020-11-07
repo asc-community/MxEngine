@@ -12,6 +12,7 @@ struct Camera
 {
     mat4 invViewProjMatrix;
     mat4 viewProjMatrix;
+    vec3 position;
 };
 uniform Camera camera;
 
@@ -64,10 +65,8 @@ float random(vec2 co)
 
 mat3 computeTBN(vec3 normal)
 {
-    vec2 noiseTexScale = textureSize(depthTex, 0) / textureSize(noiseTex, 0);
-    vec2 noiseCoord = noiseTexScale * (TexCoord + 0.01f * vec2(random(TexCoord)));
-    vec3 randomVec = texture(noiseTex, noiseCoord).rgb;
-    randomVec = vec3(2.0f * randomVec.xy - 1.0f, 0.0f);
+    vec2 r = vec2(random(TexCoord.xy), random(TexCoord.yx));
+    vec3 randomVec = vec3(2.0f * r - 1.0f, 0.0f);
 
     vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
     vec3 bitangent = cross(normal, tangent);
@@ -79,27 +78,32 @@ void main()
     FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
     mat3 TBN = computeTBN(fragment.normal);
 
+    vec3 viewDirection = normalize(camera.position - fragment.position);
+    
     const float sampleDepth = 1.0f / fragment.depth;
     int samples = min(sampleCount, MAX_SAMPLES);
-    vec4 totalOcclusion = vec4(0.0f);
+    float totalOcclusion = 0.0f;
     for (int i = 0; i < samples; i++)
     {
-        vec3 sampleVec = TBN * kernel[i];
-        sampleVec = fragment.position + sampleVec * radius;
+        vec3 kernelWorldSpace = TBN * kernel[i];
+        vec3 sampleVec = fragment.position + kernelWorldSpace * radius;
 
         vec4 frag = worldToFragSpace(sampleVec, camera.viewProjMatrix);
         float currentDepth = 1.0f / texture(depthTex, frag.xy).r;
 
-        float bias = 1.5f * max(1.0f - dot(fragment.normal, -fragment.position), 0.2f);
-        float rangeCheck = smoothstep(0.0f, 1.0f, radius / abs(sampleDepth - currentDepth));
+        vec3 currentNormal = normalize(2.0f * texture(normalTex, frag.xy).rgb - 1.0f);
+        float Nn = dot(fragment.normal, currentNormal);
+        float Nd = 1.0f - dot(fragment.normal, viewDirection);
+        float bias = Nn * Nn * Nd * Nd + 0.1f;
+
+        float rangeCheck = float(sampleDepth - currentDepth < radius);
         float occlusion = (sampleDepth >= currentDepth + bias ? 1.0f : 0.0f) * rangeCheck;
 
-        totalOcclusion.rgb += occlusion / currentDepth * texture(albedoTex, frag.xy).rgb;
-        totalOcclusion.a += occlusion;
+        totalOcclusion += occlusion;
     }
     totalOcclusion /= samples;
-    totalOcclusion.a = pow(1.0f - totalOcclusion.a, intensity);
-    totalOcclusion.a *= fragment.ambientOcclusion;
+    totalOcclusion = pow(1.0f - totalOcclusion, intensity);
+    totalOcclusion *= fragment.ambientOcclusion;
     
-    OutColor = totalOcclusion;
+    OutColor = vec4(totalOcclusion, 0.0f, 0.0f, 1.0f);
 }

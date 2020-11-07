@@ -166,14 +166,10 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::ComputeAmbientOcclusion()");
 
 		auto& computeShader = this->Pipeline.Environment.Shaders["AmbientOcclusion"_id];
-		computeShader->IgnoreNonExistingUniform("camera.position");
 		computeShader->IgnoreNonExistingUniform("materialTex");
 		this->BindGBuffer(camera, *computeShader);
 		this->BindCameraInformation(camera, *computeShader);
-		
-		this->Pipeline.Environment.NoiseTexture->Bind(5);
 
-		computeShader->SetUniformInt("noiseTex", this->Pipeline.Environment.NoiseTexture->GetBoundId());
 		computeShader->SetUniformInt("sampleCount", (int)camera.Effects->GetAmbientOcclusionSamples());
 		computeShader->SetUniformFloat("radius", camera.Effects->GetAmbientOcclusionRadius());
 		computeShader->SetUniformFloat("intensity", camera.Effects->GetAmbientOcclusionIntensity());

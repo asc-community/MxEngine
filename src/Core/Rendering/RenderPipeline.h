@@ -95,7 +95,6 @@ namespace MxEngine
         TextureHandle DefaultGreyMap;
         TextureHandle AverageWhiteTexture;
         TextureHandle AmbientOcclusionTexture;
-        TextureHandle NoiseTexture;
         CubeMapHandle DefaultBlackCubeMap;
 
         FrameBufferHandle DepthFrameBuffer;

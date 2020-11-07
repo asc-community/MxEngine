@@ -95,13 +95,11 @@ namespace MxEngine
         environment.DefaultMaterialMap = Colors::MakeTexture(Colors::WHITE);
         environment.DefaultGreyMap = Colors::MakeTexture(Colors::GREY);
         environment.DefaultBlackCubeMap = Colors::MakeCubeMap(Colors::BLACK);
-        environment.NoiseTexture = NoiseGenerator::MakeRandomTexture(16, 16);
 
         environment.DefaultBlackMap->SetPath("[[black color]]");
         environment.DefaultNormalMap->SetPath("[[default normal]]");
         environment.DefaultMaterialMap->SetPath("[[white color]]");
         environment.DefaultGreyMap->SetPath("[[grey color]]");
-        environment.NoiseTexture->SetPath("[[noise 16x16]]");
 
         environment.AverageWhiteTexture = GraphicFactory::Create<Texture>();
         environment.AverageWhiteTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), HDRTextureFormat);
