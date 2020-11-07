@@ -36,6 +36,6 @@ void main()
 		float shadowFactor = calcShadowFactorCascade(vec4(fragment.position, 1.0f), lights[i], lightDepthMaps[i], pcfDistance);
 		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, shadowFactor);
 	}
-
+	
 	OutColor = vec4(totalColor, 1.0f);
 }

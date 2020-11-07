@@ -38,11 +38,11 @@ public:
 		auto dirLight = MxObject::Create();
 		InitDirLight(*dirLight);
 
-		auto pointLight = MxObject::Create();
-		InitPointLight(*pointLight);
-		
-		auto spotLight = MxObject::Create();
-		InitSpotLight(*spotLight);
+		// auto pointLight = MxObject::Create();
+		// InitPointLight(*pointLight);
+		// 
+		// auto spotLight = MxObject::Create();
+		// InitSpotLight(*spotLight);
 
 		auto pbr = MxObject::Create();
 		InitPBRObject(*pbr);

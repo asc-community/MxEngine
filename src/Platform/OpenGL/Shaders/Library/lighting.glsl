@@ -1,12 +1,16 @@
 #include "Library/shader_utils.glsl"
+#include "Library/pbr_lighting.glsl"
 
 vec3 calculateLighting(FragmentInfo fragment, vec3 viewDirection,
     vec3 lightDirection, vec3 lightAmbient, vec3 lightDiffuse, vec3 lightSpecular, float shadowFactor)
 {
-	vec3 lightDir = normalize(lightDirection);
-	vec3 Hdir = normalize(lightDir + viewDirection);
+	vec3 normLightDirection = normalize(lightDirection);
 
-	float diffuseCoef = max(dot(lightDir, fragment.normal), 0.0f);
+	return GGXCookTorrance(fragment.normal, normLightDirection, viewDirection, 1.0f - fragment.specularFactor);
+
+	vec3 Hdir = normalize(normLightDirection + viewDirection);
+
+	float diffuseCoef = max(dot(normLightDirection, fragment.normal), 0.0f);
 	float specularCoef = pow(max(dot(Hdir, fragment.normal), 0.0f), fragment.specularIntensity);
 
 	vec3 ambientColor = fragment.albedo;
