@@ -102,12 +102,12 @@ namespace MxEngine
         environment.DefaultGreyMap->SetPath("[[grey color]]");
 
         environment.AverageWhiteTexture = GraphicFactory::Create<Texture>();
-        environment.AverageWhiteTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), 3, HDRTextureFormat);
+        environment.AverageWhiteTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), 1, TextureFormat::R16F);
         environment.AverageWhiteTexture->SetSamplingFromLOD(environment.AverageWhiteTexture->GetMaxTextureLOD());
         environment.AverageWhiteTexture->SetPath("[[average white]]");
 
         environment.AmbientOcclusionTexture = GraphicFactory::Create<Texture>();
-        environment.AmbientOcclusionTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), 3, TextureFormat::RGBA);
+        environment.AmbientOcclusionTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), 1, TextureFormat::R);
         environment.AmbientOcclusionTexture->SetPath("[[ambient occlusion]]");
         
         // shaders

@@ -37,6 +37,14 @@ namespace MxEngine
 {
 	enum class TextureFormat : uint8_t
 	{
+		R,
+		R16,
+		RG,
+		RG16,
+		R16F,
+		R32F,
+		RG16F,
+		RG32F,
 		RGB,
 		RGBA,
 		RGB16,

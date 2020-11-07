@@ -200,22 +200,22 @@ namespace MxEngine
 			auto& json = materialList[i];
 			auto& material = materials[i];
 
-			material.Transparency     = json["Transparency"       ].get<float>();
-			material.Displacement     = json["Displacement"       ].get<float>();
-			material.SpecularFactor   = json["SpecularFactor"     ].get<float>();
-			material.Emmision         = json["Emmision"           ].get<float>();
-			material.Reflection       = json["Reflection"         ].get<float>();
-
-			material.BaseColor        = json["BaseColor"          ].get<Vector3>();
-			material.UVMultipliers    = json["UVMultipliers"      ].get<Vector2>();
-
-			material.AlbedoMap        = json["AlbedoMap"          ].get<MxString>();
-			material.SpecularMap      = json["SpecularMap"        ].get<MxString>();
-			material.EmmisiveMap      = json["EmmisiveMap"        ].get<MxString>();
-			material.HeightMap        = json["HeightMap"          ].get<MxString>();
-			material.NormalMap        = json["NormalMap"          ].get<MxString>();
-			material.NormalMap        = json["AmbientOcclusionMap"].get<MxString>();
-			material.Name             = json["Name"               ].get<MxString>();
+			material.Transparency        = json["Transparency"       ].get<float>();
+			material.Displacement        = json["Displacement"       ].get<float>();
+			material.SpecularFactor      = json["SpecularFactor"     ].get<float>();
+			material.Emmision            = json["Emmision"           ].get<float>();
+			material.Reflection          = json["Reflection"         ].get<float>();
+									    
+			material.BaseColor           = json["BaseColor"          ].get<Vector3>();
+			material.UVMultipliers       = json["UVMultipliers"      ].get<Vector2>();
+									    
+			material.AlbedoMap           = json["AlbedoMap"          ].get<MxString>();
+			material.SpecularMap         = json["SpecularMap"        ].get<MxString>();
+			material.EmmisiveMap         = json["EmmisiveMap"        ].get<MxString>();
+			material.HeightMap           = json["HeightMap"          ].get<MxString>();
+			material.NormalMap           = json["NormalMap"          ].get<MxString>();
+			material.AmbientOcclusionMap = json["AmbientOcclusionMap"].get<MxString>();
+			material.Name                = json["Name"               ].get<MxString>();
 		}													   
 
 		return materials;

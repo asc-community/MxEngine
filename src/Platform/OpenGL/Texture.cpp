@@ -36,6 +36,14 @@ namespace MxEngine
 {
 	GLenum formatTable[] =
 	{
+		GL_R8,
+		GL_R16,
+		GL_RG8,
+		GL_RG16,
+		GL_R16F,
+		GL_R32F,
+		GL_RG16F,
+		GL_RG32F,
 		GL_RGB,
 		GL_RGBA,
 		GL_RGB16,
@@ -165,7 +173,7 @@ namespace MxEngine
 		switch (channels)
 		{
 		case 1:
-			dataChannels = GL_R;
+			dataChannels = GL_RED;
 			break;
 		case 2:
 			dataChannels = GL_RG;
@@ -266,9 +274,47 @@ namespace MxEngine
 
 	bool Texture::IsFloatingPoint() const
 	{
-		return (format == TextureFormat::RGB16F ) || (format == TextureFormat::RGB32F ) ||
-			   (format == TextureFormat::RGBA16F) || (format == TextureFormat::RGBA32F) ||
-			   (format == TextureFormat::DEPTH32F);
+		switch (this->format)
+		{
+		case MxEngine::TextureFormat::R:
+			return false;
+		case MxEngine::TextureFormat::R16:
+			return false;
+		case MxEngine::TextureFormat::RG:
+			return false;
+		case MxEngine::TextureFormat::RG16:
+			return false;
+		case MxEngine::TextureFormat::R16F:
+			return true;
+		case MxEngine::TextureFormat::R32F:
+			return true;
+		case MxEngine::TextureFormat::RG16F:
+			return true;
+		case MxEngine::TextureFormat::RG32F:
+			return true;
+		case MxEngine::TextureFormat::RGB:
+			return false;
+		case MxEngine::TextureFormat::RGBA:
+			return false;
+		case MxEngine::TextureFormat::RGB16:
+			return false;
+		case MxEngine::TextureFormat::RGB16F:
+			return true;
+		case MxEngine::TextureFormat::RGBA16:
+			return false;
+		case MxEngine::TextureFormat::RGBA16F:
+			return true;
+		case MxEngine::TextureFormat::RGB32F:
+			return true;
+		case MxEngine::TextureFormat::RGBA32F:
+			return true;
+		case MxEngine::TextureFormat::DEPTH:
+			return false;
+		case MxEngine::TextureFormat::DEPTH32F:
+			return true;
+		default:
+			return false;
+		}
 	}
 
 	bool Texture::IsDepthOnly() const
@@ -285,26 +331,42 @@ namespace MxEngine
 	{
 		switch (this->format)
 		{
+		case MxEngine::TextureFormat::R:
+			return 1;
+		case MxEngine::TextureFormat::R16:
+			return 2;
+		case MxEngine::TextureFormat::RG:
+			return 2;
+		case MxEngine::TextureFormat::RG16:
+			return 4;
+		case MxEngine::TextureFormat::R16F:
+			return 2;
+		case MxEngine::TextureFormat::R32F:
+			return 4;
+		case MxEngine::TextureFormat::RG16F:
+			return 4;
+		case MxEngine::TextureFormat::RG32F:
+			return 8;
 		case MxEngine::TextureFormat::RGB:
-			return 3 * sizeof(uint8_t);
+			return 3;
 		case MxEngine::TextureFormat::RGBA:
-			return 4 * sizeof(uint8_t);
+			return 4;
 		case MxEngine::TextureFormat::RGB16:
-			return 3 * sizeof(uint16_t); //-V1037
+			return 6;
 		case MxEngine::TextureFormat::RGB16F:
-			return 3 * sizeof(uint16_t);
+			return 6;
 		case MxEngine::TextureFormat::RGBA16:
-			return 4 * sizeof(uint16_t); //-V1037
+			return 8;
 		case MxEngine::TextureFormat::RGBA16F:
-			return 4 * sizeof(uint16_t);
+			return 8;
 		case MxEngine::TextureFormat::RGB32F:
-			return 3 * sizeof(uint32_t);
+			return 12;
 		case MxEngine::TextureFormat::RGBA32F:
-			return 4 * sizeof(uint32_t);
+			return 16;
 		case MxEngine::TextureFormat::DEPTH:
-			return 1 * sizeof(uint8_t);
+			return 1;
 		case MxEngine::TextureFormat::DEPTH32F:
-			return 1 * sizeof(uint32_t);
+			return 4;
 		default:
 			return 0;
 		}
@@ -377,6 +439,22 @@ namespace MxEngine
 	{
 		switch (this->format)
 		{
+		case MxEngine::TextureFormat::R:
+			return 1;
+		case MxEngine::TextureFormat::R16:
+			return 1;
+		case MxEngine::TextureFormat::RG:
+			return 2;
+		case MxEngine::TextureFormat::RG16:
+			return 2;
+		case MxEngine::TextureFormat::R16F:
+			return 1;
+		case MxEngine::TextureFormat::R32F:
+			return 1;
+		case MxEngine::TextureFormat::RG16F:
+			return 2;
+		case MxEngine::TextureFormat::RG32F:
+			return 2;
 		case MxEngine::TextureFormat::RGB:
 			return 3;
 		case MxEngine::TextureFormat::RGBA:
@@ -384,7 +462,7 @@ namespace MxEngine
 		case MxEngine::TextureFormat::RGB16:
 			return 3;
 		case MxEngine::TextureFormat::RGB16F:
-			return 4;
+			return 3;
 		case MxEngine::TextureFormat::RGBA16:
 			return 4;
 		case MxEngine::TextureFormat::RGBA16F:
@@ -407,6 +485,14 @@ namespace MxEngine
 		#define TEX_FMT_STR(val) case TextureFormat::val: return #val
 		switch (format)
 		{
+			TEX_FMT_STR(R);
+			TEX_FMT_STR(R16);
+			TEX_FMT_STR(RG);
+			TEX_FMT_STR(RG16);
+			TEX_FMT_STR(R16F);
+			TEX_FMT_STR(R32F);
+			TEX_FMT_STR(RG16F);
+			TEX_FMT_STR(RG32F);
 			TEX_FMT_STR(RGB);
 			TEX_FMT_STR(RGBA);
 			TEX_FMT_STR(RGB16);
@@ -417,8 +503,7 @@ namespace MxEngine
 			TEX_FMT_STR(RGBA32F);
 			TEX_FMT_STR(DEPTH);
 			TEX_FMT_STR(DEPTH32F);
-		default:
-			return "INVALID_FORMAT";
+			default: return "INVALID_FORMAT";
 		}
     }
 
