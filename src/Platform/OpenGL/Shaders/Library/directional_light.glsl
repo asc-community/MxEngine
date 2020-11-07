@@ -5,15 +5,13 @@ const int DirLightCascadeMapCount = 3;
 struct DirLight
 {
 	mat4 transform[DirLightCascadeMapCount];
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
+	vec4 color;
 	vec3 direction;
 };
 
 vec3 calcColorUnderDirLight(FragmentInfo fragment, DirLight light, vec3 viewDir, float shadowFactor)
 {
-	return calculateLighting(fragment, viewDir, light.direction, light.ambient, light.diffuse, light.specular, shadowFactor);
+	return calculateLighting(fragment, viewDir, light.direction, light.color.rgb, light.color.a, shadowFactor);
 }
 
 float calcShadowFactorCascade(vec4 position, DirLight light, sampler2D shadowMaps[DirLightCascadeMapCount], int pcfDistance)

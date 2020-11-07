@@ -29,7 +29,7 @@ void main()
 	float fragDistance = length(camera.position - fragment.position);
 
 	vec3 viewDirection = normalize(camera.position - fragment.position);
-
+	
 	vec3 totalColor = 0.0001f * fragment.albedo;
 	for (int i = 0; i < lightCount; i++)
 	{

@@ -25,7 +25,7 @@ vec3 fresnelSchlick(vec3 angles, float normalLightAngle)
     return angles + (vec3(1.0f) - angles) * pow(1.0f - clamp(normalLightAngle, 0.0f, 1.0f), 5.0f);
 }
 
-vec3 GGXCookTorrance(vec3 normal, vec3 lightDirection, vec3 viewDirection, float roughness)
+vec3 GGXCookTorrance(vec3 normal, vec3 lightDirection, vec3 viewDirection, float roughness, vec3 albedo)
 {
     vec3 H = normalize(viewDirection + lightDirection);
     float roughness2 = roughness * roughness;
@@ -39,8 +39,9 @@ vec3 GGXCookTorrance(vec3 normal, vec3 lightDirection, vec3 viewDirection, float
 
     float G = GGXPartialGeometry(NV, roughness2) * GGXPartialGeometry(NL, roughness2);
     float D = GGXDistribution(NH, roughness2);
-    vec3 F = fresnelSchlick(vec3(1.0f, 0.86f, 0.56f), HV);
+    vec3 F = fresnelSchlick(vec3(0.4f), HV);
 
     vec3 specular = G * D * F * 0.25f / NV;
-    return max(vec3(0.0f), specular);
+    vec3 diffuse = clamp(1.0 - F, 0.0f, 1.0f);
+    return max(vec3(0.0), albedo * diffuse * NL / PI + specular);
 }

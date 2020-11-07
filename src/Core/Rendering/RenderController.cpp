@@ -264,9 +264,8 @@ namespace MxEngine
 		{
 			auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
 
-			illumShader->SetUniformVec3(MxFormat("lights[{}].ambient", i), dirLight.AmbientColor);
-			illumShader->SetUniformVec3(MxFormat("lights[{}].diffuse", i), dirLight.DiffuseColor);
-			illumShader->SetUniformVec3(MxFormat("lights[{}].specular", i), dirLight.SpecularColor);
+			Vector4 colorPacked = Vector4(dirLight.Color * dirLight.Intensity, dirLight.AmbientIntensity);
+			illumShader->SetUniformVec4(MxFormat("lights[{}].color", i), colorPacked);
 			illumShader->SetUniformVec3(MxFormat("lights[{}].direction", i), dirLight.Direction);
 
 			for (size_t j = 0; j < dirLight.ShadowMaps.size(); j++)
@@ -332,9 +331,8 @@ namespace MxEngine
 		{
 			auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
 
-			shader->SetUniformVec3(MxFormat("lights[{}].ambient", i), dirLight.AmbientColor);
-			shader->SetUniformVec3(MxFormat("lights[{}].diffuse", i), dirLight.DiffuseColor);
-			shader->SetUniformVec3(MxFormat("lights[{}].specular", i), dirLight.SpecularColor);
+			Vector4 colorPacked = Vector4(dirLight.Color * dirLight.Intensity, dirLight.AmbientIntensity);
+			shader->SetUniformVec4(MxFormat("lights[{}].color", i), colorPacked);
 			shader->SetUniformVec3(MxFormat("lights[{}].direction", i), dirLight.Direction);
 
 			for (size_t j = 0; j < dirLight.ShadowMaps.size(); j++)
@@ -517,9 +515,7 @@ namespace MxEngine
 			this->GetRenderEngine().SetDefaultVertexAttribute(5,  spotLight.Transform);
 			this->GetRenderEngine().SetDefaultVertexAttribute(9,  Vector4(spotLight.Position, spotLight.InnerAngle));
 			this->GetRenderEngine().SetDefaultVertexAttribute(10, Vector4(spotLight.Direction, spotLight.OuterAngle));
-			this->GetRenderEngine().SetDefaultVertexAttribute(11, spotLight.AmbientColor);
-			this->GetRenderEngine().SetDefaultVertexAttribute(12, spotLight.DiffuseColor);
-			this->GetRenderEngine().SetDefaultVertexAttribute(13, spotLight.SpecularColor);
+			this->GetRenderEngine().SetDefaultVertexAttribute(11, Vector4(spotLight.Color, spotLight.AmbientIntensity));
 
 			this->GetRenderEngine().DrawTriangles(pyramid.GetVAO(), pyramid.GetIBO(), *shader);
 		}
@@ -551,9 +547,7 @@ namespace MxEngine
 
 			this->GetRenderEngine().SetDefaultVertexAttribute(5,  pointLight.Transform);
 			this->GetRenderEngine().SetDefaultVertexAttribute(9,  Vector4(pointLight.Position, pointLight.Radius));
-			this->GetRenderEngine().SetDefaultVertexAttribute(10, pointLight.AmbientColor);
-			this->GetRenderEngine().SetDefaultVertexAttribute(11, pointLight.DiffuseColor);
-			this->GetRenderEngine().SetDefaultVertexAttribute(12, pointLight.SpecularColor);
+			this->GetRenderEngine().SetDefaultVertexAttribute(10, Vector4(pointLight.Color, pointLight.AmbientIntensity));
 
 			this->GetRenderEngine().DrawTriangles(sphere.GetVAO(), sphere.GetIBO(), *shader);
 		}
@@ -738,11 +732,10 @@ namespace MxEngine
 		auto& skybox = this->Pipeline.Environment.SkyboxCubeObject;
 
 		float skyLuminance = 0.0f;
-		Vector3 luminanceRGB(0.2125f, 0.7154f, 0.0721f);
 		for (size_t i = 0; i < Min(this->Pipeline.Lighting.DirectionalLights.size(), MaxDirLightCount); i++)
 		{
 			const auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
-			skyLuminance += Dot(luminanceRGB, dirLight.AmbientColor + dirLight.DiffuseColor);
+			skyLuminance += dirLight.Intensity;
 		}
 
 		shader.SetUniformMat4("StaticViewProjection", camera.StaticViewProjectionMatrix);
@@ -810,9 +803,9 @@ namespace MxEngine
 		auto& dirLight = this->Pipeline.Lighting.DirectionalLights.emplace_back();
 		MX_ASSERT(dirLight.ShadowMaps.size() == DirectionalLight::TextureCount);
 
-		dirLight.AmbientColor = light.AmbientColor;
-		dirLight.DiffuseColor = light.DiffuseColor;
-		dirLight.SpecularColor = light.SpecularColor;
+		dirLight.AmbientIntensity = light.GetAmbientIntensity();
+		dirLight.Intensity = light.GetIntensity();
+		dirLight.Color = light.GetColor();
 		dirLight.Direction = light.Direction;
 
 		for (size_t i = 0; i < DirectionalLight::TextureCount; i++)
@@ -841,9 +834,8 @@ namespace MxEngine
 			baseLightData = &pointLight;
 		}
 
-		baseLightData->AmbientColor = light.AmbientColor;
-		baseLightData->DiffuseColor = light.DiffuseColor;
-		baseLightData->SpecularColor = light.SpecularColor;
+		baseLightData->AmbientIntensity = light.GetAmbientIntensity();
+		baseLightData->Color = light.GetIntensity() * light.GetColor();
 		baseLightData->Position = parentTransform.GetPosition();
 		baseLightData->Radius = light.GetRadius();
 		baseLightData->Transform = light.GetSphereTransform(parentTransform.GetPosition());
@@ -867,9 +859,8 @@ namespace MxEngine
 			baseLightData = &spotLight;
 		}
 
-		baseLightData->AmbientColor = light.AmbientColor;
-		baseLightData->DiffuseColor = light.DiffuseColor;
-		baseLightData->SpecularColor = light.SpecularColor;
+		baseLightData->AmbientIntensity = light.GetAmbientIntensity();
+		baseLightData->Color = light.GetIntensity() * light.GetColor();
 		baseLightData->Position = parentTransform.GetPosition();
 		baseLightData->Direction = light.Direction;
 		baseLightData->Transform = light.GetPyramidTransform(parentTransform.GetPosition());

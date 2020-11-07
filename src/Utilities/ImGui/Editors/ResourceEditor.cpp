@@ -360,13 +360,17 @@ namespace MxEngine::GUI
 
     void DrawLightBaseEditor(LightBase& base)
     {
-        ImGui::ColorEdit3("ambient color",  &base.AmbientColor[0],  ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
-        ImGui::ColorEdit3("diffuse color",  &base.DiffuseColor[0],  ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
-        ImGui::ColorEdit3("specular color", &base.SpecularColor[0], ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
+        float ambientIntensity = base.GetAmbientIntensity();
+        float intensity = base.GetIntensity();
+        Vector3 color = base.GetColor();
 
-        base.AmbientColor  = VectorMax(MakeVector3(0.0f), base.AmbientColor );
-        base.DiffuseColor  = VectorMax(MakeVector3(0.0f), base.DiffuseColor );
-        base.SpecularColor = VectorMax(MakeVector3(0.0f), base.SpecularColor);
+        ImGui::ColorEdit3("color", &color[0]);
+        ImGui::DragFloat("intensity", &intensity, 0.1f);
+        ImGui::DragFloat("ambient intensity", &ambientIntensity, 0.01f);
+
+        base.SetAmbientIntensity(ambientIntensity);
+        base.SetColor(color);
+        base.SetIntensity(intensity);
     }
 
     void DrawVertexEditor(Vertex& vertex)

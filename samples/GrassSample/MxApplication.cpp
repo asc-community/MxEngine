@@ -71,15 +71,13 @@ namespace GrassSample
                     auto pointLight = object->AddComponent<PointLight>();
                     pointLight->UseRadius(0.4f);
 
-                    float factor = 10.0f;
-                    float r = factor * Random::GetFloat();
-                    float g = factor * Random::GetFloat();
-                    float b = factor * Random::GetFloat();
-                    pointLight->AmbientColor = MakeVector3(0.0f);
-                    pointLight->DiffuseColor = { r, g, b };
-                    pointLight->SpecularColor = pointLight->DiffuseColor;
+                    float r = Random::GetFloat();
+                    float g = Random::GetFloat();
+                    float b = Random::GetFloat();
+                    pointLight->SetColor({ r, g, b });
+                    pointLight->SetIntensity(10.0f);
 
-                    object->GetComponent<Instance>()->SetColor(pointLight->DiffuseColor / factor);
+                    object->GetComponent<Instance>()->SetColor({ r, g, b });
                 }
             }
             lightFactory->SubmitInstances();

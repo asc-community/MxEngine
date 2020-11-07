@@ -39,11 +39,10 @@ namespace MxEngine
 		float InnerAngle;
 		Vector3 Direction;
 		float OuterAngle;
-		Vector3 AmbientColor;
-		Vector3 DiffuseColor;
-		Vector3 SpecularColor;
+		Vector3 Color;
+		float AmbientIntensity;
 
-		constexpr static size_t Size = 16 + 3 + 1 + 3 + 1 + 3 + 3 + 3;
+		constexpr static size_t Size = 16 + 3 + 1 + 3 + 1 + 3 + 1;
 	};
 
 	class SpotLightInstancedObject : public RenderHelperObject
@@ -63,9 +62,7 @@ namespace MxEngine
 			VBL->Push<Matrix4x4>(); // transform
 			VBL->Push<Vector4>(); // position + innerAngle
 			VBL->Push<Vector4>(); // direction + outerAngle
-			VBL->Push<Vector3>(); // ambient
-			VBL->Push<Vector3>(); // diffuse
-			VBL->Push<Vector3>(); // specular
+			VBL->Push<Vector4>(); // intensity * color + ambient intensity
 
 			this->VAO->AddInstancedBuffer(*this->instancedVBO, *VBL);
 		}

@@ -11,18 +11,14 @@ in PointLightInfo
 {
 	vec3 position;
 	float radius;
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
+	vec4 color;
 } pointLight;
 
 struct PointLight
 {
 	vec3 position;
 	float radius;
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
+	vec4 color;
 };
 
 struct Camera
@@ -51,7 +47,7 @@ vec3 calcColorUnderPointLight(FragmentInfo fragment, PointLight light, vec3 view
 
 	float intensity = (light.radius - lightDistance) / light.radius;
 
-	return calculateLighting(fragment, viewDir, lightPath, intensity * light.ambient, intensity * light.diffuse, intensity * light.specular, shadowFactor);
+	return calculateLighting(fragment, viewDir, lightPath, light.color.rgb, light.color.a, shadowFactor);
 }
 
 void main()
@@ -65,9 +61,7 @@ void main()
 	PointLight light;
 	light.position = pointLight.position;
 	light.radius = pointLight.radius;
-	light.ambient = pointLight.ambient;
-	light.diffuse = pointLight.diffuse;
-	light.specular = pointLight.specular;
+	light.color = pointLight.color;
 
 	vec3 totalColor = vec3(0.0f);
 	totalColor += calcColorUnderPointLight(fragment, light, viewDirection, lightDepthMap, castsShadows);

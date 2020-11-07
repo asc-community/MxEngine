@@ -13,9 +13,7 @@ in SpotLightInfo
 	float innerAngle;
 	vec3 direction;
 	float outerAngle;
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
+	vec4 color;
 } spotLight;
 
 struct SpotLight
@@ -24,9 +22,7 @@ struct SpotLight
 	float innerAngle;
 	vec3 direction;
 	float outerAngle;
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
+	vec4 color;
 };
 
 struct Camera
@@ -54,7 +50,7 @@ vec3 calcColorUnderSpotLight(FragmentInfo fragment, SpotLight light, vec3 viewDi
 	float epsilon = light.innerAngle - light.outerAngle;
 	float intensity = clamp((fragAngle - light.outerAngle) / epsilon, 0.0f, 1.0f);
 
-	return calculateLighting(fragment, viewDir, lightPath, intensity * light.ambient, intensity * light.diffuse, intensity * light.specular, shadowFactor);
+	return calculateLighting(fragment, viewDir, lightPath, light.color.rgb, light.color.a, shadowFactor);
 }
 
 void main()
@@ -70,9 +66,7 @@ void main()
 	light.innerAngle = spotLight.innerAngle;
 	light.direction = spotLight.direction;
 	light.outerAngle = spotLight.outerAngle;
-	light.ambient = spotLight.ambient;
-	light.diffuse = spotLight.diffuse;
-	light.specular = spotLight.specular;
+	light.color = spotLight.color;
 
 	vec3 totalColor = vec3(0.0f);
 	vec4 fragLightSpace = worldToLightTransform * vec4(fragment.position, 1.0f);
