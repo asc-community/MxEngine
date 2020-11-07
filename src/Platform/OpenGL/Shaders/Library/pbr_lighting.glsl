@@ -38,7 +38,7 @@ vec3 GGXCookTorrance(vec3 normal, vec3 lightDirection, vec3 viewDirection, float
 
     const vec3 luminance = vec3(0.2125f, 0.7154f, 0.0721f);
     vec3 trueAlbedo = mix(albedo, vec3(0.0f), metallic);
-    vec3 F0 = mix(vec3(dot(luminance, albedo)), albedo, metallic);
+    vec3 F0 = mix(vec3(0.04f), albedo, metallic);
 
     float G = GGXPartialGeometry(NV, roughness2) * GGXPartialGeometry(NL, roughness2);
     float D = GGXDistribution(NH, roughness2);

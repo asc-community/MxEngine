@@ -93,6 +93,7 @@ namespace MxEngine
         TextureHandle DefaultNormalMap;
         TextureHandle DefaultBlackMap;
         TextureHandle DefaultGreyMap;
+        TextureHandle DefaultShadowMap;
         TextureHandle AverageWhiteTexture;
         TextureHandle AmbientOcclusionTexture;
         CubeMapHandle DefaultBlackCubeMap;

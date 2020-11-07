@@ -103,7 +103,6 @@ void main()
     }
     totalOcclusion /= samples;
     totalOcclusion = pow(1.0f - totalOcclusion, intensity);
-    totalOcclusion *= fragment.ambientOcclusion;
     
     OutColor = vec4(totalOcclusion, 0.0f, 0.0f, 1.0f);
 }

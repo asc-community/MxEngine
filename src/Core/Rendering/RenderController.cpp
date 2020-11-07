@@ -167,6 +167,7 @@ namespace MxEngine
 
 		auto& computeShader = this->Pipeline.Environment.Shaders["AmbientOcclusion"_id];
 		computeShader->IgnoreNonExistingUniform("materialTex");
+		computeShader->IgnoreNonExistingUniform("albedoTex");
 		this->BindGBuffer(camera, *computeShader);
 		this->BindCameraInformation(camera, *computeShader);
 
@@ -276,13 +277,13 @@ namespace MxEngine
 			}
 		}
 
-		this->Pipeline.Environment.DefaultBlackMap->Bind(textureId);
+		this->Pipeline.Environment.DefaultShadowMap->Bind(textureId);
 		for (size_t i = lightCount; i < MaxDirLightCount; i++)
 		{
 			for (size_t j = 0; j < DirectionalLight::TextureCount; j++)
 			{
 				illumShader->SetUniformInt(MxFormat("lightDepthMaps[{}][{}]", i, j),
-					this->Pipeline.Environment.DefaultBlackMap->GetBoundId());
+					this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
 			}
 		}
 		// render global illumination
@@ -318,7 +319,7 @@ namespace MxEngine
 		shader->SetUniformVec3("viewportPosition", camera.ViewportPosition);
 		shader->SetUniformFloat("gamma", camera.Gamma);
 
-		Texture::TextureBindId textureId = 6; // assume there are 6 textures in material structure
+		Texture::TextureBindId textureId = Material::TextureCount;
 
 		// submit directional light information
 		const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
@@ -343,13 +344,13 @@ namespace MxEngine
 			}
 		}
 
-		this->Pipeline.Environment.DefaultBlackMap->Bind(textureId);
+		this->Pipeline.Environment.DefaultShadowMap->Bind(textureId);
 		for (size_t i = lightCount; i < MaxDirLightCount; i++)
 		{
 			for (size_t j = 0; j < DirectionalLight::TextureCount; j++)
 			{
 				shader->SetUniformInt(MxFormat("lightDepthMaps[{}][{}]", i, j),
-					this->Pipeline.Environment.DefaultBlackMap->GetBoundId());
+					this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
 			}
 		}
 
@@ -925,11 +926,11 @@ namespace MxEngine
 		renderMaterial.Displacement *= Dot(parentTransform.GetScale() * object.GetTransform()->GetScale(), MakeVector3(1.0f / 3.0f));
 		// set default textures if they are not exist
 		if (!renderMaterial.AlbedoMap.IsValid())           renderMaterial.AlbedoMap           = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!renderMaterial.MetallicMap.IsValid())         renderMaterial.MetallicMap         = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!renderMaterial.RoughnessMap.IsValid())        renderMaterial.RoughnessMap        = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!renderMaterial.EmmisiveMap.IsValid())         renderMaterial.EmmisiveMap         = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!renderMaterial.AmbientOcclusionMap.IsValid()) renderMaterial.AmbientOcclusionMap = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!renderMaterial.NormalMap.IsValid())           renderMaterial.NormalMap           = this->Pipeline.Environment.DefaultNormalMap;
+		if (!renderMaterial.MetallicMap.IsValid())         renderMaterial.MetallicMap         = this->Pipeline.Environment.DefaultBlackMap;
 		if (!renderMaterial.HeightMap.IsValid())           renderMaterial.HeightMap           = this->Pipeline.Environment.DefaultBlackMap;
 
 		if (renderMaterial.CastsShadow) this->Pipeline.ShadowCasterUnits.push_back(primitive);

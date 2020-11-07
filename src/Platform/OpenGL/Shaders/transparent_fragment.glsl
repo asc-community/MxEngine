@@ -73,13 +73,12 @@ void main()
 	vec3 viewDirection = normalize(viewportPosition - fragment.position);
 
 	vec3 totalColor = vec3(0.0f);
-	totalColor += fragment.albedo * fragment.emmisionFactor;
+	totalColor += fragment.albedo * (fragment.emmisionFactor + 0.0001f);
 	for (int i = 0; i < lightCount; i++)
 	{
 		float shadowFactor = calcShadowFactorCascade(vec4(fragment.position, 1.0f), lights[i], lightDepthMaps[i], pcfDistance);
 		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, shadowFactor);
 	}
-	totalColor *= fragment.ambientOcclusion;
 
 	OutColor = vec4(totalColor, transparency);
 }

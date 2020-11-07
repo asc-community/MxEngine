@@ -90,6 +90,7 @@ namespace MxEngine
             PointLightInstancedObject(sphereInstancedMesh.Data.GetVBO(), sphereInstancedMesh.Data.GetVAO(), sphereInstancedMesh.Data.GetIBO());
 
         // default textures
+        environment.DefaultShadowMap = Colors::MakeTexture(Colors::BLACK);
         environment.DefaultBlackMap = Colors::MakeTexture(Colors::BLACK);
         environment.DefaultNormalMap = Colors::MakeTexture(Colors::FLAT_NORMAL);
         environment.DefaultMaterialMap = Colors::MakeTexture(Colors::WHITE);

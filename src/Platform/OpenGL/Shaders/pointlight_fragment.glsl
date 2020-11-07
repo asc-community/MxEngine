@@ -47,7 +47,7 @@ vec3 calcColorUnderPointLight(FragmentInfo fragment, PointLight light, vec3 view
 
 	float intensity = (light.radius - lightDistance) / light.radius;
 
-	return calculateLighting(fragment, viewDir, lightPath, light.color.rgb, light.color.a, shadowFactor);
+	return calculateLighting(fragment, viewDir, lightPath, intensity * light.color.rgb, light.color.a, shadowFactor);
 }
 
 void main()

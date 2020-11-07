@@ -5,5 +5,5 @@ vec3 calculateLighting(FragmentInfo fragment, vec3 viewDirection, vec3 lightDire
 {
 	vec3 normLightDirection = normalize(lightDirection);
 	vec3 ggx = GGXCookTorrance(fragment.normal, normLightDirection, viewDirection, fragment.roughnessFactor, fragment.metallicFactor, fragment.albedo);
-	return (fragment.albedo * ambientFactor + ggx * shadowFactor) * lightColor;
+	return (fragment.albedo * ambientFactor + ggx * shadowFactor) * lightColor * fragment.ambientOcclusion;
 }

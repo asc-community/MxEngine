@@ -50,7 +50,7 @@ vec3 calcColorUnderSpotLight(FragmentInfo fragment, SpotLight light, vec3 viewDi
 	float epsilon = light.innerAngle - light.outerAngle;
 	float intensity = clamp((fragAngle - light.outerAngle) / epsilon, 0.0f, 1.0f);
 
-	return calculateLighting(fragment, viewDir, lightPath, light.color.rgb, light.color.a, shadowFactor);
+	return calculateLighting(fragment, viewDir, lightPath, intensity * light.color.rgb, light.color.a, shadowFactor);
 }
 
 void main()
