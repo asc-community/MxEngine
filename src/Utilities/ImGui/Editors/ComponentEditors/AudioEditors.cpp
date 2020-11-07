@@ -30,6 +30,7 @@
 #include "Core/Components/Audio/AudioSource.h"
 
 #include "Utilities/ImGui/ImGuiUtils.h"
+#include "Utilities/FileSystem/FileManager.h"
 
 namespace MxEngine::GUI
 {
@@ -45,10 +46,14 @@ namespace MxEngine::GUI
 		if (ImGui::TreeNode("source"))
 		{
 			auto source = audioSource.GetLoadedSource();
-			static MxString path;
-			if (GUI::InputTextOnClick(nullptr, path, 128, "load audio"))
-				audioSource.Load(AssetManager::LoadAudio(path));
-
+			if (ImGui::Button("load from file"))
+			{
+				MxString path = FileManager::OpenFileDialog("*.flac *.ogg *.wav *.mp3", "Image Files");
+				if (!path.empty() && File::Exists(path))
+				{
+					audioSource.Load(AssetManager::LoadAudio(path));
+				}
+			}
 
 			if (!source.IsValid())
 			{
@@ -60,7 +65,7 @@ namespace MxEngine::GUI
 				ImGui::Text("native format: %d", (int)source->GetNativeFormat());
 				ImGui::Text("audio format: %s", EnumToString(source->GetAudioType())); //-V111
 				ImGui::Text("channel count: %d", (int)source->GetChannelCount());
-				ImGui::Text("length (in seconds): %d", int(source->GetSampleCount() / source->GetFrequency()));
+				ImGui::Text("length (in seconds): %d", int(source->GetSampleCount() / Max(source->GetFrequency(), 1)));
 				ImGui::Text("sample count: %d", (int)source->GetSampleCount());
 				ImGui::Text("sampling frequency: %d", (int)source->GetFrequency());
 				ImGui::Text("path to file: %s", source->GetFilePath().c_str());

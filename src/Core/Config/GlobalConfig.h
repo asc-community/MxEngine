@@ -54,7 +54,9 @@ namespace MxEngine
         static const MxString& GetShaderSourceDirectory();
         static EditorStyle GetEditorStyle();
         static bool HasGraphicAPIDebug();
+        static bool HasAutoRecompileFiles();
         static KeyCode GetApplicationCloseKey();
         static KeyCode GetEditorOpenKey();
+        static KeyCode GetRecompileFilesKey();
 	};
 }

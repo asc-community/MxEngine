@@ -40,6 +40,8 @@ namespace MxEngine
 	class Capsule;
 	class Frustrum;
 	class Line;
+	class Rectangle;
+	class Circle;
 
 	class DebugBuffer
 	{
@@ -67,6 +69,9 @@ namespace MxEngine
 		void Submit(const Frustrum& frustrum, const Vector4& color);
 		void Submit(const Cylinder& cylinder, const Vector4& color);
 		void Submit(const Capsule& capsule, const Vector4& color);
+		void Submit(const Rectangle& rectangle, const Vector4& color);
+		void Submit(const Circle& circle, const Vector4& color);
+
 		void ClearBuffer(); 
 		void SubmitBuffer();
 		size_t GetSize() const;

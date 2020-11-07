@@ -255,29 +255,29 @@ namespace MxEngine
 		return key != KeyCode::UNKNOWN && this->keyReleased[(size_t)key];
 	}
 
-	bool Window::IsMouseHeld(MouseButton button)
+	bool Window::IsMouseHeld(MouseButton button) const
 	{
 		return this->mouseHeld[(size_t)button];
 	}
 
-    bool Window::IsMousePressed(MouseButton button)
+    bool Window::IsMousePressed(MouseButton button) const
     {
 		return this->mousePressed[(size_t)button];
     }
 
-	bool Window::IsMouseReleased(MouseButton button)
+	bool Window::IsMouseReleased(MouseButton button) const
 	{
 		return this->mouseReleased[(size_t)button];
 	}
 
-    bool Window::IsKeyHeldUnchecked(KeyCode key)
+    bool Window::IsKeyHeldUnchecked(KeyCode key) const
     {
 		if (this->window == nullptr) return false;
 		auto state = glfwGetKey(this->window, (int)key);
 		return state == GLFW_PRESS;
     }
 
-	bool Window::IsMouseHeldUnchecked(MouseButton button)
+	bool Window::IsMouseHeldUnchecked(MouseButton button) const
 	{
 		if (this->window == nullptr) return false;
 		auto state = glfwGetMouseButton(this->window, buttonTable[(size_t)button]);

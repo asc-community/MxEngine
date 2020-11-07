@@ -38,10 +38,17 @@ namespace MxEngine
 {
     MxString FileManager::OpenFileDialog(const MxString& types, const MxString& description)
     {
-        std::vector<std::string> selection = pfd::open_file("Select a file", FileManager::GetRoot().string(),
+        auto selection = pfd::open_file("Select file", FileManager::GetRoot().string(),
             { description.c_str(), types.c_str(), "All Files", "*" }, pfd::opt::multiselect).result();
         return selection.empty() ? "" : ToMxString(selection.front());
 
+    }
+
+    MxString FileManager::SaveFileDialog(const MxString& types, const MxString& description)
+    {
+        auto selection = pfd::save_file("Save file", FileManager::GetRoot().string(),
+            { description.c_str(), types.c_str(), "All Files", "*" }).result();
+        return ToMxString(selection);
     }
 
     void FileManager::InitializeRootDirectory(const FilePath& directory)
@@ -78,23 +85,34 @@ namespace MxEngine
         return FileManager::GetWorkingDirectory() / "Engine" / "Shaders";
     }
 
+    FilePath FileManager::GetEngineRuntimeFolder()
+    {
+        return FileManager::GetWorkingDirectory() / "Engine" / "Runtime";
+    }
+
     bool FileManager::FileExists(StringId filename)
     {
         return manager->filetable.find(filename) != manager->filetable.end();
     }
 
-    FilePath FileManager::SearchInDirectory(const FilePath& directory, const MxString& filename)
+    FilePath FileManager::SearchForExtensionsInDirectory(const FilePath& directory, const MxString& extension)
     {
         namespace fs = std::filesystem;
+        FilePath ext = ToFilePath(extension);
         auto it = fs::recursive_directory_iterator(directory);
         for (const auto& entry : it)
         {
-            if (entry.path().filename() == filename.c_str())
+            if (entry.path().extension() == ext)
             {
                 return entry.path();
             }
         }
         return FilePath();
+    }
+
+    FilePath FileManager::SearchInDirectory(const FilePath& directory, const MxString& filename)
+    {
+        return SearchInDirectory(directory, ToFilePath(filename));
     }
 
     FilePath FileManager::SearchInDirectory(const FilePath& directory, const FilePath& filename)

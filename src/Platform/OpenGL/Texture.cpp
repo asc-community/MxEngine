@@ -150,7 +150,7 @@ namespace MxEngine
 		if (genMipmaps) this->GenerateMipmaps();
 	}
 
-	void Texture::Load(RawDataPointer data, int width, int height, TextureFormat format, TextureWrap wrap, bool genMipmaps)
+	void Texture::Load(RawDataPointer data, int width, int height, int channels, TextureFormat format, TextureWrap wrap, bool genMipmaps)
 	{
 		this->filepath = "[[raw data]]";
 		this->width = width;
@@ -161,8 +161,28 @@ namespace MxEngine
 
 		GLenum type = this->IsFloatingPoint() ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
+		GLenum dataChannels = GL_RGB;
+		switch (channels)
+		{
+		case 1:
+			dataChannels = GL_R;
+			break;
+		case 2:
+			dataChannels = GL_RG;
+			break;
+		case 3:
+			dataChannels = GL_RGB;
+			break;
+		case 4:
+			dataChannels = GL_RGBA;
+			break;
+		default:
+			MXLOG_ERROR("MxEngine::Texture", "invalid channel count: " + ToMxString(channels));
+			break;
+		}
+
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
-		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, GL_RGB, type, data));
+		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, dataChannels, type, data));
 
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
@@ -172,7 +192,7 @@ namespace MxEngine
 
     void Texture::Load(const Image& image, TextureFormat format, TextureWrap wrap, bool genMipmaps)
     {
-		this->Load(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), format, wrap, genMipmaps);
+		this->Load(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), image.GetChannels(), format, wrap, genMipmaps);
     }
 
 	void Texture::LoadDepth(int width, int height, TextureFormat format, TextureWrap wrap)

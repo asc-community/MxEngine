@@ -45,6 +45,8 @@
 #include "Core/BoundingObjects/Line.h"
 #include "Core/BoundingObjects/Frustrum.h"
 #include "Core/BoundingObjects/Cone.h"
+#include "Core/BoundingObjects/Rectangle.h"
+#include "Core/BoundingObjects/Circle.h"
 #include "Platform/GraphicAPI.h"
 #include "Platform/Window/Input.h"
 #include "Platform/Window/WindowManager.h"
@@ -60,6 +62,7 @@
 #include "Utilities/FileSystem/FileManager.h"
 #include "Library/Primitives/Primitives.h"
 #include "Library/Primitives/Colors.h"
+#include "Core/Components/Scripting/Scriptable.h"
 
 /*!
 Main namespace of MxEngine framework. All classes are located here or in nested namespaces

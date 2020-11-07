@@ -28,18 +28,34 @@
 
 #pragma once
 
-#include "Platform/GraphicAPI.h"
+#include "Utilities/ECS/Component.h"
+
+struct ObjectId;
 
 namespace MxEngine
 {
-	class Rectangle
-	{
-		VertexBufferHandle VBO;
-		VertexArrayHandle VAO;
-	public:
-		static constexpr size_t VertexCount = 2 * 3; // 2 triangles, each with 3 vertecies
+	struct ScriptInfo;
+	class Scriptable;
 
-		void Init(float halfSize);
-		const VertexArray& GetVAO() const;
+	class Script
+	{
+		MAKE_COMPONENT(Script);
+
+		StringId scriptName = 0;
+		Scriptable* scriptImpl = nullptr;
+	public:
+		Script() = default;
+		Script(const MxString& scriptName);
+		void Init();
+		void OnUpdate(float dt);
+
+		void SetScriptableObject(const ScriptInfo& scriptInfo);
+		void SetScriptableObject(const MxString& scriptName);
+		bool HasScriptableObject() const;
+		Scriptable* GetScriptableObject();
+		StringId GetHashedScriptName() const;
+		const MxString& GetScriptName() const;
+		const MxString& GetScriptFileName() const;
+		const Scriptable* GetScriptableObject() const;
 	};
 }

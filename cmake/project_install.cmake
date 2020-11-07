@@ -26,4 +26,9 @@ function(install_mxengine_project EXECUTABLE_NAME)
         COMMAND ${CMAKE_COMMAND} -E
         copy_directory "${MxEngine_ROOT_DIR}/src/Platform/OpenGL/Shaders" "${CMAKE_CURRENT_BINARY_DIR}/Engine/Shaders"
     )
+
+    target_compile_definitions(${EXECUTABLE_NAME} PUBLIC MXENGINE_CMAKE_BUILD)
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        target_compile_definitions(${EXECUTABLE_NAME} PUBLIC MXENGINE_SHIPPING)
+    endif()
 endfunction()

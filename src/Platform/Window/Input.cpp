@@ -3,7 +3,7 @@
 
 namespace MxEngine
 {
-    #define WND(func, ...) Application::Get()->GetWindow().func(__VA_ARGS__)
+    #define WND(func, ...) Application::GetImpl()->GetWindow().func(__VA_ARGS__)
 
     Vector2 Input::GetCursorPosition()
     {

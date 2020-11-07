@@ -67,5 +67,7 @@ namespace MxEngine
         static void Draw(const Cone& cone, const Vector4& color);
         static void Draw(const Capsule& capsule, const Vector4& color);
         static void Draw(const Cylinder& cylinder, const Vector4& color);
+        static void Draw(const Rectangle& rectangle, const Vector4& color);
+        static void Draw(const Circle& circle, const Vector4& color);
 	};
 }

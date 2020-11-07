@@ -1,9 +1,11 @@
 {
   "debug-build": {
     "app-close-key": "ESCAPE",
+    "auto-recompile-files": false,
     "debug-graphics": true,
     "editor-key": "GRAVE_ACCENT",
-    "editor-style": "MXENGINE"
+    "editor-style": "MXENGINE",
+    "recompile-files-key": "F5"
   },
   "filesystem": {
     "root": "Resources",

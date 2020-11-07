@@ -217,7 +217,7 @@ namespace PhysicsSample
                 auto gravity = Physics::GetGravity();
 
                 Rendering::Draw(BoundingBox(pos + dir * distance, MakeVector3(1.0f)), Colors::Create(Colors::RED, 1.0f));
-
+                
                 ImGui::Begin("physics");
 
                 ImGui::Text("raycast");

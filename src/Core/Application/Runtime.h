@@ -30,60 +30,81 @@
 
 #include "Core/Application/Application.h"
 #include "Core/Runtime/RuntimeEditor.h"
+#include "Core/Runtime/RuntimeCompiler.h"
 #include "Utilities/EventDispatcher/EventDispatcher.h"
 
 namespace MxEngine 
 {
-    class Runtime 
+    class Runtime
     {
     public:
         template<typename Func>
-        static void RegisterComponentEditor(const char *name, Func &&callback) 
+        static void RegisterComponentEditor(const char* name, Func&& callback)
         {
-            Application::Get()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
+            Application::GetImpl()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
         }
 
         template<typename T>
-        static void RegisterComponentUpdate() 
+        static void RegisterComponentUpdate()
         {
-            Application::Get()->RegisterComponentUpdate<T>();
+            Application::GetImpl()->RegisterComponentUpdate<T>();
         }
 
         template<typename EventType, typename Func>
-        static void RegisterEventLogger(Func &&callback)
+        static void RegisterEventLogger(Func&& callback)
         {
-            Application::Get()->GetEventDispatcher().AddEventListener<EventType>(
-                    "EventLogger",
-                    [f = std::forward<Func>(callback)](EventType &e) 
-                    {
-                        Runtime::AddEventLogEntry(f(e));
-                    }
+            Application::GetImpl()->GetEventDispatcher().AddEventListener<EventType>(
+                "EventLogger",
+                [f = std::forward<Func>(callback)](EventType& e)
+            {
+                Runtime::AddEventLogEntry(f(e));
+            }
             );
         }
 
         static void AddShaderUpdateListener(const ShaderHandle& shader)
         {
-            Application::Get()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle>(shader);
+            Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle>(shader);
+        }
+
+        static const MxHashMap<StringId, ScriptInfo>& GetRegisteredScripts()
+        {
+            return RuntimeCompiler::GetRegisteredScripts();
+        }
+
+        static void AddScriptFile(const MxString& scriptName, const MxString& scriptFileName)
+        {
+            RuntimeCompiler::AddScriptFile(scriptName, scriptFileName);
+        }
+
+        static void AddScriptFile(const MxString& scriptName, const FilePath& scriptFileName)
+        {
+            Runtime::AddScriptFile(scriptName, ToMxString(scriptFileName));
+        }
+
+        static bool HasCompilationTaskInProcess()
+        {
+            return RuntimeCompiler::HasCompilationTaskInProcess();
         }
 
         static void AddShaderUpdateListener(const ShaderHandle& shader, const FilePath& lookupDirectory)
         {
-            Application::Get()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle, FilePath>(shader, lookupDirectory);
+            Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle, FilePath>(shader, lookupDirectory);
         }
 
         static void AddEventLogEntry(const MxString &entry)
         {
-            Application::Get()->GetRuntimeEditor().AddEventEntry(entry);
+            Application::GetImpl()->GetRuntimeEditor().AddEventEntry(entry);
         }
 
         static bool IsEditorActive()
         {
-            return Application::Get()->GetRuntimeEditor().IsActive();
+            return Application::GetImpl()->GetRuntimeEditor().IsActive();
         }
 
         static void CloseApplication() 
         {
-            Application::Get()->CloseApplication();
+            Application::GetImpl()->CloseApplication();
         }
     };
 }

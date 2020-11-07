@@ -111,8 +111,9 @@ namespace MxEngine
 		void CreateContext();
 		virtual ~Application();
 
-		static Application* Get();
-		static void Set(Application* application);
+		static void Init();
+		static Application* GetImpl();
+		static void Clone(Application* application);
 	};
 	
 	template<typename T>

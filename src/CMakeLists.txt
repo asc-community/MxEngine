@@ -29,7 +29,7 @@ set(MXENGINE_SOURCES
 "Core/Components/Transform.cpp" 
 "Core/Components/Behaviour.cpp" 
 "Core/Rendering/RenderObjects/DebugBuffer.cpp" 
-"Core/Rendering/RenderObjects/Rectangle.cpp" 
+"Core/Rendering/RenderObjects/RectangleObject.cpp" 
 "Core/Rendering/RenderAdaptor.cpp" 
 "Core/Rendering/RenderController.cpp" 
 "Core/Rendering/RenderObjects/SkyboxObject.cpp"
@@ -108,10 +108,13 @@ set(MXENGINE_SOURCES
 "Utilities/Parsing/ShaderPreprocessor.cpp"
 "Library/Noise/NoiseGenerator.cpp"
 "Core/Components/Physics/CharacterController.cpp"
- "Platform/Bullet3/CompoundShape.cpp" 
- "Core/Components/Physics/CompoundCollider.cpp"
- "Core/Rendering/DebugDataSubmitter.cpp"
- )
+"Platform/Bullet3/CompoundShape.cpp" 
+"Core/Components/Physics/CompoundCollider.cpp"
+"Core/Rendering/DebugDataSubmitter.cpp"
+"Core/Components/Scripting/Script.cpp" 
+"Core/Runtime/RuntimeCompiler.cpp"
+"Utilities/ImGui/Editors/ComponentEditors/ScriptingEditors.cpp"
+)
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)
@@ -130,6 +133,7 @@ set(eabase ${SUBMODULES_PATH}/EABase)
 set(assimp ${SUBMODULES_PATH}/assimp)
 set(bullet3 ${SUBMODULES_PATH}/bullet3)
 set(portable_file_dialogs ${SUBMODULES_PATH}/portable-file-dialogs)
+set(runtime_compiled_cpp ${SUBMODULES_PATH}/RuntimeCompiledCPlusPlus/Aurora)
 
 set(THIRD_PARTY_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH "")
@@ -176,6 +180,9 @@ set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 set(glew-cmake_BUILD_SHARED OFF CACHE BOOL "" FORCE)
 set(glew-cmake_BUILD_STATIC ON CACHE BOOL "" FORCE)
 
+# rcc++
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
 set(THIRD_PARTY_INCLUDE_DIRS
     ${nlohmann_json}/single_include
     ${eabase}/include/Common  
@@ -187,11 +194,12 @@ set(THIRD_PARTY_INCLUDE_DIRS
     ${bullet3}/src
     ${assimp}/include
     ${miniaudio}/extras
+    ${portable_file_dialogs}
+    ${runtime_compiled_cpp}
     ${imgui}
     ${glm}
     ${stb}
     ${Boost_INCLUDE_DIRS}
-    ${portable_file_dialogs}
 )
 
 set(fmt_binary_dir ${THIRD_PARTY_BUILD_DIR}/fmt)
@@ -203,16 +211,23 @@ set(imgui_binary_dir ${THIRD_PARTY_BUILD_DIR}/imgui)
 set(eastl_binary_dir ${THIRD_PARTY_BUILD_DIR}/eastl)
 set(eabase_binary_dir ${THIRD_PARTY_BUILD_DIR}/eabase)
 set(openal_binary_dir ${THIRD_PARTY_BUILD_DIR}/openal)
+set(runtime_compiled_cpp_binary_dir ${THIRD_PARTY_BUILD_DIR}/runtime_compiled_cpp)
 
 add_subdirectory(${fmt} ${fmt_binary_dir})
 add_subdirectory(${bullet3} ${bullet3_binary_dir})
 add_subdirectory(${assimp} ${assimp_binary_dir})
-add_subdirectory(${glfw} ${glfw_binary_dir})
 add_subdirectory(${glew} ${glew_binary_dir})
 add_subdirectory(${imgui} ${imgui_binary_dir})
 add_subdirectory(${eastl} ${eastl_binary_dir})
 add_subdirectory(${eabase} ${eabase_binary_dir})
 add_subdirectory(${openal} ${openal_binary_dir})
+add_subdirectory(${runtime_compiled_cpp} ${runtime_compiled_cpp_binary_dir})
+
+set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
+add_subdirectory(${glfw} ${glfw_binary_dir})
+if(WIN32)
+    set_target_properties(glfw PROPERTIES IMPORT_SUFFIX ".lib")
+endif()
 
 set(THIRD_PARTY_BINARY_DIRS
     ${fmt_binary_dir}
@@ -224,20 +239,31 @@ set(THIRD_PARTY_BINARY_DIRS
     ${eastl_binary_dir}
     ${eabase_binary_dir} 
     ${openal_binary_dir}
+    ${runtime_compiled_cpp_binary_dir}
 )
 
 set(THIRD_PARTY_LIBRARIES
     fmt
     libglew_static
     assimp
+    IrrXML
     glfw
     imgui
     EASTL
     OpenAL
-    BulletDynamics
-    BulletCollision
-    LinearMath
+    BulletDynamics BulletCollision LinearMath
+    RuntimeObjectSystem RuntimeCompiler
 )
+
+if(TARGET zlibstatic)
+    set(THIRD_PARTY_LIBRARIES ${THIRD_PARTY_LIBRARIES} zlibstatic)
+endif()
+
+
+if(TARGET IrrXML)
+    set(THIRD_PARTY_LIBRARIES ${THIRD_PARTY_LIBRARIES} IrrXML)
+endif()
+
 
 set(MXENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${THIRD_PARTY_INCLUDE_DIRS})
 include_directories(${MXENGINE_INCLUDE_DIRS})
@@ -248,9 +274,33 @@ add_library(${LIBRARY_NAME} STATIC ${MXENGINE_SOURCES})
 link_directories(${THIRD_PARTY_BINARY_DIRS})
 target_link_libraries(${LIBRARY_NAME} ${THIRD_PARTY_LIBRARIES})
 
-set(SHARED_LIBRARIES_PATHS
-    ${openal_binary_dir}/OpenAL32${CMAKE_SHARED_LIBRARY_SUFFIX}
+list(JOIN MXENGINE_INCLUDE_DIRS "," RCCPP_INCLUDE_DIRS)
+target_compile_definitions(${LIBRARY_NAME} PUBLIC
+    MXENGINE_RCCPP_INCLUDE_DIRS="${RCCPP_INCLUDE_DIRS}"
 )
+
+set(LIBRARY_COUNT 0)
+foreach(LIB_NAME ${LIBRARY_NAME} ${THIRD_PARTY_LIBRARIES})
+
+    target_compile_definitions(${LIBRARY_NAME} PUBLIC
+        MXENGINE_LIB_NAME${LIBRARY_COUNT}="$<TARGET_FILE_NAME:${LIB_NAME}>"
+        MXENGINE_LIB_DIR${LIBRARY_COUNT}="$<TARGET_FILE_DIR:${LIB_NAME}>"
+    )
+    math(EXPR LIBRARY_COUNT "${LIBRARY_COUNT}+1")
+endforeach()
+target_compile_definitions(${LIBRARY_NAME} PUBLIC MXENGINE_RCCPP_LIBRARY_COUNT=${LIBRARY_COUNT})
+
+if(WIN32)
+    set(SHARED_LIBRARIES_PATHS
+        ${openal_binary_dir}/OpenAL32.dll
+        ${glfw_binary_dir}/src/glfw3.dll
+    )
+else()
+    set(SHARED_LIBRARIES_PATHS
+        ${openal_binary_dir}/libopenal.so.1
+        ${glfw_binary_dir}/src/libglfw.so.3
+    )
+endif()
 
 set(MxEngine_SHARED_LIBRARIES ${SHARED_LIBRARIES_PATHS} PARENT_SCOPE)
 set(MxEngine_INCLUDE_DIR ${MXENGINE_INCLUDE_DIRS} PARENT_SCOPE)

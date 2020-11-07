@@ -57,6 +57,7 @@ namespace MxEngine
 	class CylinderCollider;
 	class CapsuleCollider;
 	class CompoundCollider;
+	class Script;
 }
 
 namespace MxEngine::GUI
@@ -73,6 +74,7 @@ namespace MxEngine::GUI
 	void DirectionalLightEditor(DirectionalLight& dirLight);
 	void PointLightEditor(PointLight& pointLight);
 	void SpotLightEditor(SpotLight& spotLight);
+	void ScriptEditor(Script& script);
 	void CameraControllerEditor(CameraController& camera);
 	void CameraEffectsEditor(CameraEffects& effects);
 	void CameraSSREditor(CameraSSR& effects);

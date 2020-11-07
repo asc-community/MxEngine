@@ -278,6 +278,13 @@ namespace MxEngine
         return *this;
     }
 
+    template<>
+    inline File& File::operator<<(const MxString& value)
+    {
+        this->fileStream << value.c_str();
+        return *this;
+    }
+
     inline auto ToMxString(const FilePath& path)
     {
         return ToMxString(path.string());

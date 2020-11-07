@@ -67,4 +67,6 @@ namespace MxEngine
     // add test for collider in RenderAdaptor.cpp DebugDraw component case
     //
     // add editor for collider component, editor for collider and register callbacks in runtime editor
+    //
+    // add check to compound collider if collider can be part of other collider
 }

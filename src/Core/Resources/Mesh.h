@@ -48,8 +48,8 @@ namespace MxEngine
 
 		void LoadFromFile(const MxString& filepath);
 	public:
-		AABB BoundingBox;
-		BoundingSphere BoundingSphere;
+		AABB BoxBounding;
+		BoundingSphere SphereBounding;
 		SubmeshList Submeshes;
 
 		explicit Mesh() = default;

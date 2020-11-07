@@ -51,7 +51,8 @@ namespace MxEngine::GUI
             if (ImGui::Button("load from file"))
             {
                 MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
-                if (!path.empty() && File::Exists(path)) {
+                if (!path.empty() && File::Exists(path))
+                {
                     auto newTexture = AssetManager::LoadTexture(path, TextureFormat::RGBA);
                     newTexture.MakeStatic();
                 }
@@ -147,7 +148,9 @@ namespace MxEngine::GUI
             {
                 MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
                 if (!path.empty() && File::Exists(path))
+                {
                     texture = AssetManager::LoadTexture(path, TextureFormat::RGBA);
+                }
             }
             
             static int id = 0;
@@ -159,6 +162,13 @@ namespace MxEngine::GUI
         if (texture.IsValid())
         {   
             DrawImageSaver(texture);
+
+            ImGui::SameLine();
+            if (ImGui::Button("flip image")) {
+                auto image = texture->GetRawTextureData();
+                ImageManager::FlipImage(image);
+                texture->Load(image, texture->GetFormat(), texture->GetWrapType());
+            }
 
             auto nativeHeight = texture->GetHeight();
             auto nativeWidth = texture->GetWidth();
@@ -202,9 +212,9 @@ namespace MxEngine::GUI
         {
             MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
             if (!path.empty() && File::Exists(path))
+            {
                 cubemap = AssetManager::LoadCubeMap(path);
-
-
+            }
         }
         // TODO: support cubemap preview
         ImGui::PopID();
@@ -423,8 +433,8 @@ namespace MxEngine::GUI
         SCOPE_TREE_NODE(name);
         ImGui::PushID((int)mesh.GetHandle());
 
-        DrawAABBEditor("bounding box", mesh->BoundingBox);
-        DrawSphereEditor("bounding sphere", mesh->BoundingSphere);
+        DrawAABBEditor("bounding box", mesh->BoxBounding);
+        DrawSphereEditor("bounding sphere", mesh->SphereBounding);
 
         if (ImGui::Button("load from file"))
         {

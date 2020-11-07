@@ -96,9 +96,11 @@ namespace MxEngine
 
         // Debug settings
         bool GraphicAPIDebug = true;
+        bool AutoRecompileFiles = false;
         EditorStyle Style = EditorStyle::MXENGINE;
         KeyCode ApplicationCloseKey = KeyCode::ESCAPE;
         KeyCode EditorOpenKey = KeyCode::GRAVE_ACCENT;
+        KeyCode RecompileFilesKey = KeyCode::F5;
     };
 
     void Deserialize(Config& config, const JsonFile& json);

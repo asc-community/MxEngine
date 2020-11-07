@@ -102,12 +102,12 @@ namespace MxEngine
         environment.DefaultGreyMap->SetPath("[[grey color]]");
 
         environment.AverageWhiteTexture = GraphicFactory::Create<Texture>();
-        environment.AverageWhiteTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), HDRTextureFormat);
+        environment.AverageWhiteTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), 3, HDRTextureFormat);
         environment.AverageWhiteTexture->SetSamplingFromLOD(environment.AverageWhiteTexture->GetMaxTextureLOD());
         environment.AverageWhiteTexture->SetPath("[[average white]]");
 
         environment.AmbientOcclusionTexture = GraphicFactory::Create<Texture>();
-        environment.AmbientOcclusionTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), TextureFormat::RGBA);
+        environment.AmbientOcclusionTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), 3, TextureFormat::RGBA);
         environment.AmbientOcclusionTexture->SetPath("[[ambient occlusion]]");
         
         // shaders
@@ -237,7 +237,7 @@ namespace MxEngine
         for (auto& bloomBuffer : environment.BloomBuffers)
         {
             auto bloomTexture = GraphicFactory::Create<Texture>();
-            bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+            bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, 3, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
             bloomTexture->SetPath("[[bloom]]");
 
             bloomBuffer = GraphicFactory::Create<FrameBuffer>();

@@ -61,7 +61,7 @@ namespace MxEngine::GUI
 			GUI::Indent _(5.0f);
 			ImGui::PushID(id);
 			MxString nodeName = "instance #" + ToMxString(id++); //-V127
-			Application::Get()->GetRuntimeEditor().DrawMxObject(nodeName, *self->GetInstancePool()[i]);
+			Application::GetImpl()->GetRuntimeEditor().DrawMxObject(nodeName, *self->GetInstancePool()[i]);
 			ImGui::PopID();
 		}
 	}

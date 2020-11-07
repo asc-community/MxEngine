@@ -76,7 +76,7 @@ namespace MxEngine
 
 		void SubmitMatrixProjectionChanges() const;
 		void RecalculateRotationAngles();
-		const UUID& GetEventUUID() const;
+		UUID GetEventUUID() const;
 
 		CameraType cameraType = CameraType::PERSPECTIVE;
 		bool renderingEnabled = true;

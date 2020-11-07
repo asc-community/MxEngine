@@ -45,7 +45,7 @@ namespace MxEngine
 		template<typename EventType>
 		static void AddEventListener(const MxString& name, std::function<void(EventType&)> func)
 		{
-			Application::Get()->GetEventDispatcher().AddEventListener(name, std::move(func));
+			Application::GetImpl()->GetEventDispatcher().AddEventListener(name, std::move(func));
 		}
 
 		/*!
@@ -57,7 +57,7 @@ namespace MxEngine
 		template<typename T, typename FunctionType>
 		static void AddEventListener(const MxString& name, FunctionType&& func)
 		{
-			Application::Get()->GetEventDispatcher().AddEventListener<T>(name, std::forward<FunctionType>(func));
+			Application::GetImpl()->GetEventDispatcher().AddEventListener<T>(name, std::forward<FunctionType>(func));
 		}
 
 		/*!
@@ -66,7 +66,7 @@ namespace MxEngine
 		*/
 		static void RemoveEventListener(const MxString& name)
 		{
-			Application::Get()->GetEventDispatcher().RemoveEventListener(name);
+			Application::GetImpl()->GetEventDispatcher().RemoveEventListener(name);
 		}
 
 		/*!
@@ -76,7 +76,7 @@ namespace MxEngine
 		template<typename Event>
 		static void Invoke(Event& event)
 		{
-			Application::Get()->GetEventDispatcher().Invoke(event);
+			Application::GetImpl()->GetEventDispatcher().Invoke(event);
 		}
 
 		/*!
@@ -85,7 +85,7 @@ namespace MxEngine
 		*/
 		static void AddEvent(UniqueRef<EventBase> event)
 		{
-			Application::Get()->GetEventDispatcher().AddEvent(std::move(event));
+			Application::GetImpl()->GetEventDispatcher().AddEvent(std::move(event));
 		}
 
 		/*!
@@ -93,7 +93,7 @@ namespace MxEngine
 		*/
 		static void InvokeAll()
 		{
-			Application::Get()->GetEventDispatcher().InvokeAll();
+			Application::GetImpl()->GetEventDispatcher().InvokeAll();
 		}
     };
 }

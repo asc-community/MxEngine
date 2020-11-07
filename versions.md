@@ -225,3 +225,6 @@
 - compound colliders, physical character controller
 - file dialog to peek files from file system
 - minor changes in editor & small improvements
+### 7.6.0
+- runtime scripting via Script component
+- new features in FileManager: save file dialog, implicit directory creation for new files
