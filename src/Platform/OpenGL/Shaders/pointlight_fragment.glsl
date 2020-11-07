@@ -1,4 +1,4 @@
-#include "Library/shader_utils.glsl"
+#include "Library/lighting.glsl"
 
 out vec4 OutColor;
 
@@ -46,26 +46,12 @@ vec3 calcColorUnderPointLight(FragmentInfo fragment, PointLight light, vec3 view
 	if (light.radius < lightDistance || isnan(lightDistance))
 		discard;
 
-	vec3 lightDir = normalize(lightPath);
-	vec3 Hdir = normalize(lightDir + viewDir);
-
 	float shadowFactor = 1.0f;
 	if (computeShadow) { shadowFactor = CalcShadowFactor3D(lightPath, viewDir, light.radius, 0.15f, map_shadow); }
 
 	float intensity = (light.radius - lightDistance) / light.radius;
 
-	float diffuseCoef = max(dot(lightDir, fragment.normal), 0.0f);
-	float specularCoef = pow(max(dot(Hdir, fragment.normal), 0.0f), fragment.specularIntensity);
-
-	vec3 ambientColor = fragment.albedo;
-	vec3 diffuseColor = fragment.albedo * diffuseCoef;
-	vec3 specularColor = vec3(specularCoef * fragment.specularFactor);
-
-	ambientColor  = ambientColor  * intensity * light.ambient;
-	diffuseColor  = diffuseColor  * intensity * light.diffuse;
-	specularColor = specularColor * intensity * light.specular;
-
-	return vec3(ambientColor + shadowFactor * (diffuseColor + specularColor));
+	return calculateLighting(fragment, viewDir, lightPath, intensity * light.ambient, intensity * light.diffuse, intensity * light.specular, shadowFactor);
 }
 
 void main()

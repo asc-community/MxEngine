@@ -1,4 +1,4 @@
-#include "Library/shader_utils.glsl"
+#include "Library/lighting.glsl"
 
 const int DirLightCascadeMapCount = 3;
 
@@ -11,24 +11,9 @@ struct DirLight
 	vec3 direction;
 };
 
-
 vec3 calcColorUnderDirLight(FragmentInfo fragment, DirLight light, vec3 viewDir, float shadowFactor)
 {
-	vec3 lightDir = normalize(light.direction);
-	vec3 Hdir = normalize(lightDir + viewDir);
-
-	float diffuseCoef = max(dot(lightDir, fragment.normal), 0.0f);
-	float specularCoef = pow(max(dot(Hdir, fragment.normal), 0.0f), fragment.specularIntensity);
-
-	vec3 ambientColor = fragment.albedo;
-	vec3 diffuseColor = fragment.albedo * diffuseCoef;
-	vec3 specularColor = vec3(specularCoef * fragment.specularFactor);
-
-	ambientColor = ambientColor * light.ambient;
-	diffuseColor = diffuseColor * light.diffuse;
-	specularColor = specularColor * light.specular;
-
-	return vec3(ambientColor + shadowFactor * (specularColor + diffuseColor));
+	return calculateLighting(fragment, viewDir, light.direction, light.ambient, light.diffuse, light.specular, shadowFactor);
 }
 
 float calcShadowFactorCascade(vec4 position, DirLight light, sampler2D shadowMaps[DirLightCascadeMapCount], int pcfDistance)
