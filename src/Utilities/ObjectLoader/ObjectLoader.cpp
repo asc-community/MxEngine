@@ -92,9 +92,6 @@ namespace MxEngine
 			}
 
 			GET_FLOAT(AI_MATKEY_OPACITY, Transparency);
-			GET_FLOAT(AI_MATKEY_SHININESS, SpecularFactor);
-			GET_FLOAT(AI_MATKEY_SHININESS_STRENGTH, SpecularIntensity);
-			GET_FLOAT(AI_MATKEY_REFLECTIVITY, Reflection);
 			GET_FLOAT(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_METALLIC_FACTOR, MetallicFactor);
 			GET_FLOAT(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_ROUGHNESS_FACTOR, RoughnessFactor);
 
@@ -111,7 +108,6 @@ namespace MxEngine
 				}\
 			}
 			GET_TEXTURE(aiTextureType_DIFFUSE, AlbedoMap);
-			GET_TEXTURE(aiTextureType_SPECULAR, SpecularMap);
 			GET_TEXTURE(aiTextureType_EMISSIVE, EmmisiveMap);
 			GET_TEXTURE(aiTextureType_HEIGHT, HeightMap);
 			GET_TEXTURE(aiTextureType_NORMALS, NormalMap);
@@ -207,9 +203,7 @@ namespace MxEngine
 
 			material.Transparency        = json["Transparency"       ].get<float>();
 			material.Displacement        = json["Displacement"       ].get<float>();
-			material.SpecularFactor      = json["SpecularFactor"     ].get<float>();
 			material.Emmision            = json["Emmision"           ].get<float>();
-			material.Reflection          = json["Reflection"         ].get<float>();
 			material.MetallicFactor      = json["MetallicFactor"     ].get<float>();
 			material.RoughnessFactor     = json["RoughnessFactor"    ].get<float>();
 									    
@@ -217,7 +211,6 @@ namespace MxEngine
 			material.UVMultipliers       = json["UVMultipliers"      ].get<Vector2>();
 									    
 			material.AlbedoMap           = json["AlbedoMap"          ].get<MxString>();
-			material.SpecularMap         = json["SpecularMap"        ].get<MxString>();
 			material.EmmisiveMap         = json["EmmisiveMap"        ].get<MxString>();
 			material.HeightMap           = json["HeightMap"          ].get<MxString>();
 			material.NormalMap           = json["NormalMap"          ].get<MxString>();
@@ -242,18 +235,14 @@ namespace MxEngine
 		{
 			DUMP(i, Transparency);
 			DUMP(i, Displacement);
-			DUMP(i, SpecularFactor);
-			DUMP(i, SpecularIntensity);
 			DUMP(i, MetallicFactor);
 			DUMP(i, RoughnessFactor);
 			DUMP(i, Emmision);
-			DUMP(i, Reflection);
 
 			DUMP(i, BaseColor);
 			DUMP(i, UVMultipliers);
 
 			DUMP(i, AlbedoMap);
-			DUMP(i, SpecularMap);
 			DUMP(i, EmmisiveMap);
 			DUMP(i, HeightMap);
 			DUMP(i, NormalMap);

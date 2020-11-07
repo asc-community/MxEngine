@@ -30,7 +30,7 @@ void main()
 {
     FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
     vec3 objectColor = texture(HDRTex, TexCoord).rgb;
-    if (fragment.reflection == 0.0f)
+    if (fragment.metallicFactor == 0.0f)
     {
         OutColor = vec4(objectColor, 1.0f);
         return;
@@ -93,5 +93,5 @@ void main()
     environmentReflection = mix(environmentReflection, ssrReflection, fadingFactor);
     environmentReflection *= dot(objectColor, luminance);
 
-    OutColor = vec4(mix(objectColor, environmentReflection, fragment.reflection), 1.0f);
+    OutColor = vec4(mix(objectColor, environmentReflection, fragment.metallicFactor), 1.0f);
 }

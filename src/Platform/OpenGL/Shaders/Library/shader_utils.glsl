@@ -74,10 +74,9 @@ struct FragmentInfo
 {
 	vec3 albedo;
 	float ambientOcclusion;
-	float specularIntensity;
-	float specularFactor;
 	float emmisionFactor;
-	float reflection;
+	float roughnessFactor;
+	float metallicFactor;
 	float depth;
 	vec3 normal;
 	vec3 position;
@@ -95,9 +94,8 @@ FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D n
 	fragment.albedo = albedo.rgb;
 	fragment.ambientOcclusion = albedo.a;
 	fragment.emmisionFactor = material.r / (1.0f - material.r);
-	fragment.reflection = material.g;
-	fragment.specularIntensity = exp(1.0f / material.b) - 1.0f;
-	fragment.specularFactor = material.a;
+	fragment.roughnessFactor = material.g;
+	fragment.metallicFactor = material.b;
 
 	fragment.position = reconstructWorldPosition(fragment.depth, texCoord, invViewProjMatrix);
 

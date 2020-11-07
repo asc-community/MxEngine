@@ -11,5 +11,4 @@ void InitGrid(MxObject& object)
 	material->AlbedoMap = AssetManager::LoadTexture("textures/brick.jpg"_id);
 	material->NormalMap = AssetManager::LoadTexture("textures/brick_normal.jpg"_id);
 	material->AmbientOcclusionMap = AssetManager::LoadTexture("textures/brick_ao.jpg"_id);
-	material->Reflection = 0.75f;
 }

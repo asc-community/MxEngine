@@ -233,7 +233,6 @@ namespace MxEngine::GUI
         DrawTextureEditor("albedo map", material->AlbedoMap, true);
         DrawTextureEditor("roughness map", material->RoughnessMap, true);
         DrawTextureEditor("metallic map", material->MetallicMap, true);
-        DrawTextureEditor("specular map", material->SpecularMap, true);
         DrawTextureEditor("emmisive map", material->EmmisiveMap, true);
         DrawTextureEditor("normal map", material->NormalMap, true);
         DrawTextureEditor("height map", material->HeightMap, true);
@@ -242,11 +241,8 @@ namespace MxEngine::GUI
         ImGui::Checkbox("casts shadows", &material->CastsShadow);
         ImGui::DragFloat("roughness factor", &material->RoughnessFactor, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("metallic factor", &material->MetallicFactor, 0.01f, 0.0f, 1.0f);
-        ImGui::DragFloat("specular factor", &material->SpecularFactor, 0.01f, 0.0f, 1.0f);
-        ImGui::DragFloat("specular intensity", &material->SpecularIntensity, 0.1f, 1.0f, FLT_MAX);
         ImGui::DragFloat("emmision", &material->Emmision, 0.01f, 0.0f, FLT_MAX);
         ImGui::DragFloat("displacement", &material->Displacement, 0.01f);
-        ImGui::DragFloat("reflection", &material->Reflection, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("transparency", &material->Transparency, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat2("UV multipliers", &material->UVMultipliers[0], 0.01f);
         ImGui::ColorEdit3("base color", &material->BaseColor[0], ImGuiColorEditFlags_HDR);

@@ -87,26 +87,26 @@ namespace MxEngine
 		Texture::TextureBindId textureBindIndex = 0;
 		const auto& material = this->Pipeline.MaterialUnits[unit.materialIndex];
 		shader.IgnoreNonExistingUniform("material.transparency");
-		shader.IgnoreNonExistingUniform("material.reflection");
 
 		material.AlbedoMap->Bind(textureBindIndex++);
-		material.SpecularMap->Bind(textureBindIndex++);
+		material.MetallicMap->Bind(textureBindIndex++);
+		material.RoughnessMap->Bind(textureBindIndex++);
 		material.EmmisiveMap->Bind(textureBindIndex++);
 		material.NormalMap->Bind(textureBindIndex++);
 		material.HeightMap->Bind(textureBindIndex++);
 		material.AmbientOcclusionMap->Bind(textureBindIndex++);
 
 		shader.SetUniformInt("map_albedo", material.AlbedoMap->GetBoundId());
-		shader.SetUniformInt("map_specular", material.SpecularMap->GetBoundId());
+		shader.SetUniformInt("map_metallic", material.MetallicMap->GetBoundId());
+		shader.SetUniformInt("map_roughness", material.RoughnessMap->GetBoundId());
 		shader.SetUniformInt("map_emmisive", material.EmmisiveMap->GetBoundId());
 		shader.SetUniformInt("map_normal", material.NormalMap->GetBoundId());
 		shader.SetUniformInt("map_height", material.HeightMap->GetBoundId());
 		shader.SetUniformInt("map_occlusion", material.AmbientOcclusionMap->GetBoundId());
 
-		shader.SetUniformFloat("material.specularFactor", material.SpecularFactor);
-		shader.SetUniformFloat("material.specularIntensity", material.SpecularIntensity);
+		shader.SetUniformFloat("material.roughness", material.RoughnessFactor);
+		shader.SetUniformFloat("material.metallic", material.MetallicFactor);
 		shader.SetUniformFloat("material.emmisive", material.Emmision);
-		shader.SetUniformFloat("material.reflection", material.Reflection);
 		shader.SetUniformFloat("material.transparency", material.Transparency);
 
 		shader.SetUniformFloat("displacement", material.Displacement);
@@ -925,7 +925,8 @@ namespace MxEngine
 		renderMaterial.Displacement *= Dot(parentTransform.GetScale() * object.GetTransform()->GetScale(), MakeVector3(1.0f / 3.0f));
 		// set default textures if they are not exist
 		if (!renderMaterial.AlbedoMap.IsValid())           renderMaterial.AlbedoMap           = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!renderMaterial.SpecularMap.IsValid())         renderMaterial.SpecularMap         = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!renderMaterial.MetallicMap.IsValid())         renderMaterial.MetallicMap         = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!renderMaterial.RoughnessMap.IsValid())        renderMaterial.RoughnessMap        = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!renderMaterial.EmmisiveMap.IsValid())         renderMaterial.EmmisiveMap         = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!renderMaterial.AmbientOcclusionMap.IsValid()) renderMaterial.AmbientOcclusionMap = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!renderMaterial.NormalMap.IsValid())           renderMaterial.NormalMap           = this->Pipeline.Environment.DefaultNormalMap;

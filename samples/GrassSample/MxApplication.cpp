@@ -17,7 +17,6 @@ namespace GrassSample
             field->AddComponent<MeshSource>(Primitives::CreatePlane(20));
             auto fieldMaterial = field->AddComponent<MeshRenderer>()->GetMaterial();
             fieldMaterial->AlbedoMap = AssetManager::LoadTexture("field.png"_id);
-            fieldMaterial->SpecularFactor = 0.05f;
 
             this->grass = MxObject::Create();
             grass->Name = "Grass Instances";
@@ -28,7 +27,6 @@ namespace GrassSample
 
             auto material = grass->AddComponent<MeshRenderer>()->GetMaterial();
             material->AlbedoMap = AssetManager::LoadTexture("grass_al.png"_id, TextureFormat::RGBA);
-            material->SpecularFactor = 0.05f;
             material->CastsShadow = false;
 
             auto grassInstances = grass->AddComponent<InstanceFactory>();

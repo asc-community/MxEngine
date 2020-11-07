@@ -14,14 +14,14 @@ in VSout
 struct Material
 {
 	float emmisive;
-	float reflection;
-	float specularFactor;
-	float specularIntensity;
+	float roughness;
+	float metallic;
 	float transparency;
 };
 
 uniform sampler2D map_albedo;
-uniform sampler2D map_specular;
+uniform sampler2D map_metallic;
+uniform sampler2D map_roughness;
 uniform sampler2D map_emmisive;
 uniform sampler2D map_normal;
 uniform sampler2D map_transparency;
@@ -61,18 +61,15 @@ void main()
 	FragmentInfo fragment;
 	fragment.albedo = pow(fsin.RenderColor * albedoAlphaTex.rgb, vec3(gamma));
 	fragment.ambientOcclusion = texture(map_occlusion, TexCoord).r;
-	fragment.specularIntensity = material.specularIntensity;
-	fragment.specularFactor = material.specularFactor * texture(map_specular, TexCoord).r;
+	fragment.roughnessFactor = material.roughness * texture(map_roughness, TexCoord).r;
+	fragment.metallicFactor = material.metallic * texture(map_metallic, TexCoord).r;
 	fragment.emmisionFactor = material.emmisive * texture(map_emmisive, TexCoord).r;
-	fragment.reflection = material.reflection;
 	fragment.depth = gl_FragCoord.z;
 	fragment.normal = calcNormal(TexCoord, fsin.TBN, map_normal);
 	fragment.position = fsin.Position;
 
 	float transparency = material.transparency * albedoAlphaTex.a;
-
 	float fragDistance = length(viewportPosition - fragment.position);
-
 	vec3 viewDirection = normalize(viewportPosition - fragment.position);
 
 	vec3 totalColor = vec3(0.0f);

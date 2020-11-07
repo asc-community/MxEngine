@@ -54,10 +54,6 @@ namespace MxEngine
 		*/
 		MxString AlbedoMap;
 		/*!
-		specular texture path
-		*/
-		MxString SpecularMap;
-		/*!
 		emmisive texture path
 		*/
 		MxString EmmisiveMap;
@@ -75,14 +71,6 @@ namespace MxEngine
 		MxString AmbientOcclusionMap;
 
 		/*!
-		specular factor value
-		*/
-		float SpecularFactor = 1.0f;
-		/*!
-		specular intensity (power) value
-		*/
-		float SpecularIntensity = 128.0f;
-		/*!
 		transparency value
 		*/
 		float Transparency = 0.0f;
@@ -94,10 +82,6 @@ namespace MxEngine
 		light emmision value
 		*/
 		float Emmision = 0.0f;
-		/*!
-		object reflectance value
-		*/
-		float Reflection = 0.0f;
 		/*!
 		object base color
 		*/

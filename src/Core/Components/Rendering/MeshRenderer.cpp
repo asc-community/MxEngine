@@ -49,7 +49,6 @@ namespace MxEngine
 		auto& material = *materialResource;
 
 		MakeTexture(material.AlbedoMap, textures, mat.AlbedoMap, TextureFormat::RGBA);
-		MakeTexture(material.SpecularMap, textures, mat.SpecularMap, TextureFormat::R);
 		MakeTexture(material.EmmisiveMap, textures, mat.EmmisiveMap, TextureFormat::R);
 		MakeTexture(material.HeightMap, textures, mat.HeightMap, TextureFormat::RGB);
 		MakeTexture(material.NormalMap, textures, mat.NormalMap, TextureFormat::RGB);
@@ -58,10 +57,7 @@ namespace MxEngine
 		MakeTexture(material.AmbientOcclusionMap, textures, mat.AmbientOcclusionMap, TextureFormat::R);
 
 		material.Emmision = mat.Emmision;
-		material.SpecularFactor = mat.SpecularFactor;
-		material.SpecularIntensity = mat.SpecularIntensity;
 		material.Transparency = mat.Transparency;
-		material.Reflection = mat.Reflection;
 		material.BaseColor = mat.BaseColor;
 		material.MetallicFactor = mat.MetallicFactor;
 		material.RoughnessFactor = mat.RoughnessFactor;
