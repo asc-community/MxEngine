@@ -106,6 +106,25 @@ namespace MxEngine
 		uv index scale
 		*/
 		Vector2 UVMultipliers = MakeVector2(1.0f);
+
+		// PBR parameters
+
+		/*!
+		metallic texture path
+		*/
+		MxString MetallicMap;
+		/*!
+		roughness texture path
+		*/
+		MxString RoughnessMap;
+		/*!
+		metallic factor value
+		*/
+		float MetallicFactor = 1.0f;
+		/*!
+		roughness factor value
+		*/
+		float RoughnessFactor = 1.0f;
 	};
 
 	/*!

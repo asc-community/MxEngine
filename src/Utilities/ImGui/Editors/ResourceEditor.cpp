@@ -231,6 +231,8 @@ namespace MxEngine::GUI
         SCOPE_TREE_NODE(material->Name.c_str());
 
         DrawTextureEditor("albedo map", material->AlbedoMap, true);
+        DrawTextureEditor("roughness map", material->RoughnessMap, true);
+        DrawTextureEditor("metallic map", material->MetallicMap, true);
         DrawTextureEditor("specular map", material->SpecularMap, true);
         DrawTextureEditor("emmisive map", material->EmmisiveMap, true);
         DrawTextureEditor("normal map", material->NormalMap, true);
@@ -238,6 +240,8 @@ namespace MxEngine::GUI
         DrawTextureEditor("ambient occlusion map", material->AmbientOcclusionMap, true);
 
         ImGui::Checkbox("casts shadows", &material->CastsShadow);
+        ImGui::DragFloat("roughness factor", &material->RoughnessFactor, 0.01f, 0.0f, 1.0f);
+        ImGui::DragFloat("metallic factor", &material->MetallicFactor, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("specular factor", &material->SpecularFactor, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("specular intensity", &material->SpecularIntensity, 0.1f, 1.0f, FLT_MAX);
         ImGui::DragFloat("emmision", &material->Emmision, 0.01f, 0.0f, FLT_MAX);

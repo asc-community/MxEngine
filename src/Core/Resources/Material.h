@@ -43,6 +43,8 @@ namespace MxEngine
 		TextureHandle NormalMap;
 		TextureHandle HeightMap;
 		TextureHandle AmbientOcclusionMap;
+		TextureHandle MetallicMap;
+		TextureHandle RoughnessMap;
 
 		float Transparency = 1.0f;
 		float SpecularFactor = 0.2f;
@@ -50,6 +52,8 @@ namespace MxEngine
 		float Emmision = 0.0f;
 		float Displacement = 0.025f;
 		float Reflection = 0.0f;
+		float RoughnessFactor = 1.0f;
+		float MetallicFactor = 1.0f;
 
 		Vector3 BaseColor{ 1.0f };
 		Vector2 UVMultipliers{ 1.0f };
