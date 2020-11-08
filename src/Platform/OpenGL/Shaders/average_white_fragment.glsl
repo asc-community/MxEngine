@@ -13,5 +13,6 @@ void main()
     float oldWhite = texture(prevFrameWhite, vec2(0.0f)).r;
     float curWhite = dot(luminance, color);
     float white = oldWhite + (curWhite - oldWhite) * eyeAdaptation;
+    white = isnan(white) ? 1.0f : white;
     OutColor = vec4(white, 0.0f, 0.0f, 1.0f);
 }

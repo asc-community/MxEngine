@@ -51,8 +51,6 @@ namespace Sponza
             toneMapping->SetWhitePoint(0.75f);
 
             auto ssr = camera->AddComponent<CameraSSR>();
-            ssr->SetSteps(10);
-            ssr->SetSkyboxLuminance(0.1f);
 
             auto effects = camera->AddComponent<CameraEffects>();
 
@@ -69,6 +67,8 @@ namespace Sponza
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Projections[1] = 100.0f;
+            dirLight->SetIntensity(100.0f);
+            dirLight->SetAmbientIntensity(0.3f);
             dirLight->FollowViewport();
 
             this->sphereFactory = MxObject::Create();
@@ -84,8 +84,11 @@ namespace Sponza
             sponza->AddComponent<MeshRenderer>(AssetManager::LoadMaterials("Sponza/glTF/Sponza.gltf"_id));
             sponza->Transform.SetScale(0.02f);
             sponza->Transform.TranslateY(13.0f);
-            sponza->GetComponent<MeshRenderer>()->Materials[8]->MetallicFactor = 0.75f;
-            // sponza->AddComponent<DebugDraw>()->RenderPhysicsCollider = true;
+            
+            auto floorMaterial = sponza->GetComponent<MeshRenderer>()->Materials[8];
+            floorMaterial->MetallicFactor = 0.75f;
+            floorMaterial->RoughnessFactor = 0.0f;
+
             sponza->AddComponent<RigidBody>();
             auto collider = sponza->AddComponent<CompoundCollider>();
             // ground

@@ -426,12 +426,8 @@ namespace MxEngine
 		this->BindGBuffer(camera, *SSRShader);
 		this->BindCameraInformation(camera, *SSRShader);
 		input->Bind(4);
-		camera.SkyboxTexture->Bind(5);
 		SSRShader->SetUniformInt("HDRTex", input->GetBoundId());
-		SSRShader->SetUniformInt("skyboxMap", camera.SkyboxTexture->GetBoundId());
 
-		SSRShader->SetUniformMat3("skyboxTransform", camera.InverseSkyboxRotation);
-		SSRShader->SetUniformFloat("skyboxLuminance", camera.SSR->GetSkyboxLuminance());
 		SSRShader->SetUniformFloat("thickness", camera.SSR->GetThickness());
 		SSRShader->SetUniformFloat("maxCosAngle", camera.SSR->GetMaxCosAngle());
 		SSRShader->SetUniformInt("steps", (int)camera.SSR->GetSteps());
@@ -510,6 +506,7 @@ namespace MxEngine
 
 		shader->SetUniformVec2("viewportSize", viewportSize);
 		shader->SetUniformInt("pcfDistance", this->Pipeline.Environment.ShadowBlurIterations);
+		shader->SetUniformInt("castsShadows", true);
 		this->BindGBuffer(camera, *shader);
 		this->BindCameraInformation(camera, *shader);
 
@@ -520,6 +517,8 @@ namespace MxEngine
 		shader->SetUniformInt("environment.skybox", camera.SkyboxTexture->GetBoundId());
 		shader->SetUniformInt("environment.irradiance", camera.IrradianceTexture->GetBoundId());
 		shader->SetUniformMat3("environment.skyboxRotation", camera.InverseSkyboxRotation);
+
+		shader->SetUniformInt("lightDepthMap", textureId);
 
 		for (size_t i = 0; i < spotLights.size(); i++)
 		{
@@ -549,6 +548,7 @@ namespace MxEngine
 		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
 
 		shader->SetUniformVec2("viewportSize", viewportSize);
+		shader->SetUniformInt("castsShadows", true);
 		this->BindGBuffer(camera, *shader);
 		this->BindCameraInformation(camera, *shader);
 
@@ -559,6 +559,8 @@ namespace MxEngine
 		shader->SetUniformInt("environment.skybox", camera.SkyboxTexture->GetBoundId());
 		shader->SetUniformInt("environment.irradiance", camera.IrradianceTexture->GetBoundId());
 		shader->SetUniformMat3("environment.skyboxRotation", camera.InverseSkyboxRotation);
+
+		shader->SetUniformInt("lightDepthMap", textureId);
 
 		for (size_t i = 0; i < pointLights.size(); i++)
 		{
@@ -595,8 +597,8 @@ namespace MxEngine
 		shader->SetUniformMat3("environment.skyboxRotation", camera.InverseSkyboxRotation);
 
 		this->Pipeline.Environment.DefaultBlackCubeMap->Bind(textureId);
-		shader->SetUniformVec2("viewportSize", viewportSize);
 		shader->SetUniformInt("lightDepthMap", this->Pipeline.Environment.DefaultBlackCubeMap->GetBoundId());
+		shader->SetUniformVec2("viewportSize", viewportSize);
 		shader->SetUniformInt("castsShadows", false);
 
 		instancedPointLights.SubmitToVBO();
@@ -624,8 +626,8 @@ namespace MxEngine
 		shader->SetUniformMat3("environment.skyboxRotation", camera.InverseSkyboxRotation);
 
 		this->Pipeline.Environment.DefaultBlackCubeMap->Bind(textureId);
-		shader->SetUniformVec2("viewportSize", viewportSize);
 		shader->SetUniformInt("lightDepthMap", this->Pipeline.Environment.DefaultBlackCubeMap->GetBoundId());
+		shader->SetUniformVec2("viewportSize", viewportSize);
 		shader->SetUniformInt("castsShadows", false);
 
 		instancedSpotLights.SubmitToVBO();

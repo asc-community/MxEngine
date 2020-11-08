@@ -73,7 +73,6 @@ void main()
         }
     }
 
-    vec3 environmentReflection = skyboxLuminance * calcReflectionColor(skyboxMap, skyboxTransform, viewDirection, fragment.normal);
     vec3 ssrReflection = texture(HDRTex, bestUV).rgb;
 
     vec2 screenCenterDiff = 2.0f * abs(bestUV - vec2(0.5f));
@@ -89,8 +88,12 @@ void main()
     maxFactor = max(maxFactor, float(isinf(currentLength) || isnan(currentLength)));
     float fadingFactor = 1.0f - clamp(maxFactor, 0.0f, 1.0f);
 
-    ssrReflection *= fadingFactor;
-    ssrReflection *= fragment.metallicFactor;
+    ssrReflection *= fadingFactor * fragment.metallicFactor * (1.0f - fragment.roughnessFactor);
+
+    const vec3 luminance = vec3(0.2125f, 0.7154f, 0.0721f);
+    ssrReflection *= dot(objectColor, luminance);
     
+    if (isnan(ssrReflection.x)) ssrReflection = vec3(0.0f);
+
     OutColor = vec4(objectColor + ssrReflection, 1.0f);
 }

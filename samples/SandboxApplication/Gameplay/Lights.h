@@ -15,7 +15,7 @@ void InitPointLight(MxObject& object)
 
     auto light = object.AddComponent<PointLight>();
     light->SetColor(MakeVector3(1.0f, 0.3f, 0.0f));
-    light->SetIntensity(2.0f);
+    light->SetIntensity(20.0f);
     light->ToggleShadowCast(true);
 
     auto material = object.GetOrAddComponent<MeshRenderer>()->GetMaterial();
@@ -34,6 +34,7 @@ void InitSpotLight(MxObject& object)
 
     auto light = object.AddComponent<SpotLight>();
     light->Direction     = { 1.0f, -1.3f, 1.0f };
+    light->SetIntensity(10.0f);
     light->UseOuterAngle(70.0f);
     light->UseInnerAngle(30.0f);
     light->ToggleShadowCast(true);

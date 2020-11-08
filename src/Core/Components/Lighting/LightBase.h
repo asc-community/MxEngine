@@ -40,7 +40,7 @@ namespace MxEngine
     public:        
         void SetColor(Vector3 color) { this->color = VectorMax(VectorMin(color, MakeVector3(1.0f)), MakeVector3(0.0f)); }
         void SetIntensity(float intensity) { this->intensity = Max(intensity, 0.0f); }
-        void SetAmbientIntensity(float intensity) { this->ambientIntensity = Max(intensity, 0.0f); }
+        void SetAmbientIntensity(float intensity) { this->ambientIntensity = Clamp(intensity, 0.0f, 1.0f); }
 
         float GetIntensity() const { return this->intensity; }
         Vector3 GetColor() const { return this->color; }

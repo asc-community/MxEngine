@@ -8,12 +8,12 @@ void InitCamera(MxObject& object)
 	auto controller = object.AddComponent<CameraController>();
 	auto skybox = object.AddComponent<Skybox>();
 	auto input = object.AddComponent<InputController>();
-	//auto effects = object.AddComponent<CameraEffects>();
-	//auto toneMapping = object.AddComponent<CameraToneMapping>();
-	//auto ssr = object.AddComponent<CameraSSR>();
+	auto effects = object.AddComponent<CameraEffects>();
+	auto toneMapping = object.AddComponent<CameraToneMapping>();
+	auto ssr = object.AddComponent<CameraSSR>();
 
-	//toneMapping->SetWhitePoint(0.75f);
-	//toneMapping->SetMinLuminance(0.3f);
+	toneMapping->SetWhitePoint(0.75f);
+	toneMapping->SetMinLuminance(0.3f);
 
 	skybox->CubeMap = AssetManager::LoadCubeMap("textures/dawn.jpg"_id);
 	skybox->Irradiance = AssetManager::LoadCubeMap("textures/dawn_irradiance.jpg"_id);
