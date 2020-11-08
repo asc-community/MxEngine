@@ -7,5 +7,5 @@ uniform sampler2D tex;
 
 void main()
 {
-    OutColor = fxaa(tex, TexCoord).rgba;
+    OutColor = vec4(fxaa(tex, TexCoord).rgb, 1.0f);
 }

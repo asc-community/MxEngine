@@ -87,7 +87,7 @@ namespace Sponza
             
             auto floorMaterial = sponza->GetComponent<MeshRenderer>()->Materials[8];
             floorMaterial->MetallicFactor = 0.75f;
-            floorMaterial->RoughnessFactor = 0.0f;
+            floorMaterial->RoughnessFactor = 0.75f;
 
             sponza->AddComponent<RigidBody>();
             auto collider = sponza->AddComponent<CompoundCollider>();

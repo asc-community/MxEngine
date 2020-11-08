@@ -418,7 +418,7 @@ namespace MxEngine
 
 	void RenderController::ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
-		if (camera.SSR == nullptr) return;
+		if (camera.SSR == nullptr || camera.SSR->GetSteps() == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::ApplySSR()");
 		input->GenerateMipmaps();
 
@@ -473,6 +473,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::ApplyFXAA");
 
 		auto& fxaaShader = this->Pipeline.Environment.Shaders["FXAA"_id];
+		input->GenerateMipmaps();
 		input->Bind(0);
 		fxaaShader->SetUniformInt("tex", input->GetBoundId());
 		
