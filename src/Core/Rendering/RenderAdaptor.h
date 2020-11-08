@@ -55,5 +55,7 @@ namespace MxEngine
         float GetFogDistance() const;
         void SetShadowBlurIterations(size_t iterations);
         size_t GetShadowBlurIterations() const;
+        void SetLightSamples(size_t samples);
+        size_t GetLightSamples() const;
     };
 }

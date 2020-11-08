@@ -56,11 +56,15 @@ namespace MxEngine
             ImGui::TreePop();
         }
 
-        if (ImGui::TreeNode("shadows settings"))
+        if (ImGui::TreeNode("lighting settings"))
         {
             int blurIterations = (int)Rendering::GetShadowBlurIterations();
-            if(ImGui::DragInt("shadow blur iterations", &blurIterations, 0.01f))
+            if(ImGui::DragInt("shadow blur iterations", &blurIterations, 0.1f))
                 Rendering::SetShadowBlurIterations(Max(0, blurIterations));
+
+            int lightSamples = (int)Rendering::GetLightSamples();
+            if (ImGui::DragInt("PBR light samples", &lightSamples, 0.1f))
+                Rendering::SetLightSamples(Max(0, lightSamples));
 
             ImGui::TreePop();
         }

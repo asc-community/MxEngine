@@ -37,6 +37,7 @@ uniform bool castsShadows;
 uniform sampler2D lightDepthMap;
 uniform Camera camera;
 uniform int pcfDistance;
+uniform int lightSamples;
 uniform vec2 viewportSize;
 
 uniform EnvironmentInfo environment;
@@ -52,7 +53,7 @@ vec3 calcColorUnderSpotLight(FragmentInfo fragment, SpotLight light, vec3 viewDi
 	float epsilon = light.innerAngle - light.outerAngle;
 	float intensity = clamp((fragAngle - light.outerAngle) / epsilon, 0.0f, 1.0f);
 
-	return calculateLighting(fragment, viewDir, lightPath, environment, intensity * light.color.rgb, light.color.a, shadowFactor);
+	return calculateLighting(fragment, viewDir, lightPath, environment, lightSamples, intensity * light.color.rgb, light.color.a, shadowFactor);
 }
 
 void main()

@@ -19,7 +19,7 @@ void InitPointLight(MxObject& object)
     light->ToggleShadowCast(true);
 
     auto material = object.GetOrAddComponent<MeshRenderer>()->GetMaterial();
-    material->BaseColor = light->GetColor();
+    material->BaseColor = Vector3(1.0f, 0.7f, 0.0f);
     material->Emmision = 5.0f;
 
     object.AddComponent<MeshSource>(Primitives::CreateCube());

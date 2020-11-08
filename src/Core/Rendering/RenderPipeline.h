@@ -113,6 +113,7 @@ namespace MxEngine
         float FogDensity;
         float TimeDelta;
 
+        size_t LightSamples;
         uint8_t ShadowBlurIterations;
         uint8_t MainCameraIndex;
         bool OverlayDebugDraws;

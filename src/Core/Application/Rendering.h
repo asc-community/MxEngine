@@ -59,6 +59,8 @@ namespace MxEngine
         static float GetFogDistance();
         static void SetShadowBlurIterations(size_t iterations);
         static size_t GetShadowBlurIterations();
+        static void SetLightSamples(size_t samples);
+        static size_t GetLightSamples();
         static void Draw(const Line& line, const Vector4& color);
         static void Draw(const AABB& box, const Vector4& color);
         static void Draw(const BoundingBox& box, const Vector4& color);

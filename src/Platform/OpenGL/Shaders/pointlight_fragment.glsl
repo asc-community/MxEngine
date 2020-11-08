@@ -32,6 +32,7 @@ uniform samplerCube lightDepthMap;
 uniform bool castsShadows;
 uniform Camera camera;
 uniform int pcfDistance;
+uniform int lightSamples;
 uniform vec2 viewportSize;
 
 uniform EnvironmentInfo environment;
@@ -49,7 +50,7 @@ vec3 calcColorUnderPointLight(FragmentInfo fragment, PointLight light, vec3 view
 
 	float intensity = (light.radius - lightDistance) / light.radius;
 
-	return calculateLighting(fragment, viewDir, lightPath, environment, intensity * light.color.rgb, light.color.a, shadowFactor);
+	return calculateLighting(fragment, viewDir, lightPath, environment, lightSamples, intensity * light.color.rgb, light.color.a, shadowFactor);
 }
 
 void main()

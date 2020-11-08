@@ -1,7 +1,7 @@
 #include "Library/shader_utils.glsl"
 #include "Library/pbr_lighting.glsl"
 
-vec3 calculateLighting(FragmentInfo fragment, vec3 viewDirection, vec3 lightDirection, EnvironmentInfo environment, vec3 lightColor, float ambientFactor, float shadowFactor)
+vec3 calculateLighting(FragmentInfo fragment, vec3 viewDirection, vec3 lightDirection, EnvironmentInfo environment, int GGXSamples, vec3 lightColor, float ambientFactor, float shadowFactor)
 {
 	vec3 normLightDirection = normalize(lightDirection);
     mat3 transformH = computeSampleTransform(fragment.normal);
@@ -11,10 +11,9 @@ vec3 calculateLighting(FragmentInfo fragment, vec3 viewDirection, vec3 lightDire
 
     float roughness = max(fragment.roughnessFactor, 0.01f);
 
-    int environmentSamples = 16;
-    float invEnvironmentSampleCount = 1.0f / float(environmentSamples);
-    float A = computeA(environment.skybox, environmentSamples);
-    for (uint i = 0; i < uint(environmentSamples); i++)
+    float invEnvironmentSampleCount = 1.0f / float(GGXSamples);
+    float A = computeA(environment.skybox, GGXSamples);
+    for (uint i = 0; i < uint(GGXSamples); i++)
     {
         vec3 H = GGXSample(sampleHammersley(i, invEnvironmentSampleCount), roughness * roughness);
         H = transformH * H;

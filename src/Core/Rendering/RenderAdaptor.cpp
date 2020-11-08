@@ -56,6 +56,7 @@ namespace MxEngine
 
         this->SetRenderToDefaultFrameBuffer();
         this->SetShadowBlurIterations(1);
+        this->SetLightSamples(4);
         
         // fog
         this->SetFogColor(MakeVector3(0.5f, 0.6f, 0.7f));
@@ -442,5 +443,18 @@ namespace MxEngine
     size_t RenderAdaptor::GetShadowBlurIterations() const
     {
         return (size_t)this->Renderer.GetEnvironment().ShadowBlurIterations;
+    }
+
+    void RenderAdaptor::SetLightSamples(size_t samples)
+    {
+        auto& environment = this->Renderer.GetEnvironment();
+        using SampleCountType = decltype(environment.LightSamples);
+        constexpr size_t maxSamples = 1024;
+        environment.LightSamples = (SampleCountType)Clamp(samples, (size_t)1, maxSamples);
+    }
+
+    size_t RenderAdaptor::GetLightSamples() const
+    {
+        return (size_t)this->Renderer.GetEnvironment().LightSamples;
     }
 }

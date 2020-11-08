@@ -17,6 +17,7 @@ uniform sampler2D depthTex;
 
 uniform int lightCount;
 uniform int pcfDistance;
+uniform int lightSamples;
 uniform Camera camera;
 
 uniform EnvironmentInfo environment;
@@ -36,7 +37,7 @@ void main()
 	for (int i = 0; i < lightCount; i++)
 	{
 		float shadowFactor = calcShadowFactorCascade(vec4(fragment.position, 1.0f), lights[i], lightDepthMaps[i], pcfDistance);
-		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, shadowFactor, environment);
+		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, shadowFactor, environment, lightSamples);
 	}
 	
 	OutColor = vec4(totalColor, 1.0f);
