@@ -90,6 +90,7 @@ namespace MxEngine
         this->Renderer.GetLightInformation().PointLigthsInstanced =
             PointLightInstancedObject(sphereInstancedMesh.Data.GetVBO(), sphereInstancedMesh.Data.GetVAO(), sphereInstancedMesh.Data.GetIBO());
 
+        int internalTextureSize = (int)GlobalConfig::GetEngineTextureSize();
         // default textures
         environment.DefaultShadowMap = Colors::MakeTexture(Colors::BLACK);
         environment.DefaultBlackMap = Colors::MakeTexture(Colors::BLACK);
@@ -104,12 +105,12 @@ namespace MxEngine
         environment.DefaultGreyMap->SetPath("[[grey color]]");
 
         environment.AverageWhiteTexture = GraphicFactory::Create<Texture>();
-        environment.AverageWhiteTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), 1, TextureFormat::R16F);
+        environment.AverageWhiteTexture->Load(nullptr, internalTextureSize, internalTextureSize, 1, false, TextureFormat::R16F);
         environment.AverageWhiteTexture->SetSamplingFromLOD(environment.AverageWhiteTexture->GetMaxTextureLOD());
         environment.AverageWhiteTexture->SetPath("[[average white]]");
 
         environment.AmbientOcclusionTexture = GraphicFactory::Create<Texture>();
-        environment.AmbientOcclusionTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), 1, TextureFormat::R);
+        environment.AmbientOcclusionTexture->Load(nullptr, internalTextureSize, internalTextureSize, 1, false, TextureFormat::R);
         environment.AmbientOcclusionTexture->SetPath("[[ambient occlusion]]");
         
         // shaders
@@ -239,7 +240,7 @@ namespace MxEngine
         for (auto& bloomBuffer : environment.BloomBuffers)
         {
             auto bloomTexture = GraphicFactory::Create<Texture>();
-            bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, 3, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+            bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, 3, false, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
             bloomTexture->SetPath("[[bloom]]");
 
             bloomBuffer = GraphicFactory::Create<FrameBuffer>();

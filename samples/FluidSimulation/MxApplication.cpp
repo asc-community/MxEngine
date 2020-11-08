@@ -30,13 +30,13 @@ namespace FluidSimulation
             diffuseApplyShader = AssetManager::LoadScreenSpaceShader("diffuse_apply.glsl"_id);
 
             vorticityField = GraphicFactory::Create<Texture>();
-            vorticityField->Load(nullptr, textureSize.x, textureSize.y, 3, TextureFormat::RGBA32F);
+            vorticityField->Load(nullptr, textureSize.x, textureSize.y, 4, false, TextureFormat::RGBA32F);
 
             particleField = GraphicFactory::Create<Texture>();
-            particleField->Load(nullptr, textureSize.x, textureSize.y, 3, TextureFormat::RGBA32F);
+            particleField->Load(nullptr, textureSize.x, textureSize.y, 4, false, TextureFormat::RGBA32F);
 
             particleSwapField = GraphicFactory::Create<Texture>();
-            particleSwapField->Load(nullptr, textureSize.x, textureSize.y, 3, TextureFormat::RGBA32F);
+            particleSwapField->Load(nullptr, textureSize.x, textureSize.y, 4, false, TextureFormat::RGBA32F);
         }
 
         virtual void OnUpdate() override

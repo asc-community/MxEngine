@@ -42,12 +42,13 @@ namespace MxEngine
 		uint8_t* data;
 		size_t width;
 		size_t height;
-		size_t channels;
+		uint8_t channels;
+		bool isFloatingPoint;
 
 		void Free();
 	public:
 		Image();
-		Image(uint8_t* data, size_t width, size_t height, size_t channels);
+		Image(uint8_t* data, size_t width, size_t height, size_t channels, bool isFloatingPoint);
 		~Image();
 		Image(const Image&) = delete;
 		Image& operator=(const Image&) = delete;
@@ -57,9 +58,15 @@ namespace MxEngine
 		uint8_t* GetRawData() const;
 		size_t GetWidth() const;
 		size_t GetHeight() const;
-		size_t GetChannels() const;
+		size_t GetChannelCount() const;
+		size_t GetChannelSize() const;
+		size_t GetPixelSize() const;
+		bool IsFloatingPoint() const;
 
-		void SetPixel(size_t x, size_t y, uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);
-		std::array<uint8_t, 4> GetPixel(size_t x, size_t y);
+		void SetPixelByte(size_t x, size_t y, uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);
+		void SetPixelFloat(size_t x, size_t y, float r, float g, float b, float a = 1.0f);
+		std::array<uint8_t, 4> GetPixelByte(size_t x, size_t y) const;
+		std::array<float, 4> GetPixelFloat(size_t x, size_t y) const;
+
 	};
 }

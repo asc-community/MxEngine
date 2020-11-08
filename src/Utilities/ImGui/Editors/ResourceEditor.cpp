@@ -380,17 +380,14 @@ namespace MxEngine::GUI
 
     void DrawImageSaver(const TextureHandle& texture, const char* name)
     {
-        static MxString path(128, '\0');
-        ImGui::InputText("save path", path.data(), path.size());
-
-        const char* imageTypes[] = { "PNG", "BMP", "TGA", "JPG", "HDR", };
-        static int currentImageType = 0;
         if (ImGui::Button("save image to disk"))
-            ImageManager::SaveTexture(path.c_str(), texture, (ImageType)currentImageType);
-        ImGui::SameLine();
-        ImGui::PushItemWidth(50.0f);
-        ImGui::Combo(" ", &currentImageType, imageTypes, (int)std::size(imageTypes));
-        ImGui::PopItemWidth();
+        {
+            MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
+            if (!path.empty())
+            {
+                ImageManager::SaveTexture(ToFilePath(path), texture);
+            }
+        }
     }
 
     void LoadFromPrimitive(MeshHandle& mesh)

@@ -39,10 +39,10 @@ namespace MxEngine
 			free(this->data);
 	}
 
-	Image::Image() : Image(nullptr, 0, 0, 0) { }
+	Image::Image() : Image(nullptr, 0, 0, 0, false) { }
 
-    Image::Image(uint8_t* data, size_t width, size_t height, size_t channels)
-		: data(data), width(width), height(height), channels(channels)
+    Image::Image(uint8_t* data, size_t width, size_t height, size_t channels, bool isFloatingPoint)
+		: data(data), width(width), height(height), channels((uint8_t)channels), isFloatingPoint(isFloatingPoint)
 	{
 	}
 
@@ -57,8 +57,9 @@ namespace MxEngine
 		this->width = other.width;
 		this->height = other.height;
 		this->channels = other.channels;
+		this->isFloatingPoint = other.isFloatingPoint;
 		other.data = nullptr;
-		other.width = other.height = other.channels = 0;
+		other.width = other.height = other.channels = other.isFloatingPoint = 0;
 	}
 
 	Image& Image::operator=(Image&& other) noexcept
@@ -69,8 +70,9 @@ namespace MxEngine
 		this->width = other.width;
 		this->height = other.height;
 		this->channels = other.channels;
+		this->isFloatingPoint = other.isFloatingPoint;
 		other.data = nullptr;
-		other.width = other.height = other.channels = 0;
+		other.width = other.height = other.channels = other.isFloatingPoint = 0;
 		return *this;
 	}
 
@@ -89,13 +91,34 @@ namespace MxEngine
 		return this->height;
 	}
 
-	size_t Image::GetChannels() const
+	size_t Image::GetChannelCount() const
 	{
-		return this->channels;
+		return (size_t)this->channels;
 	}
 
-    void Image::SetPixel(size_t x, size_t y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+	size_t Image::GetChannelSize() const
+	{
+		return this->isFloatingPoint ? sizeof(float) : sizeof(uint8_t);
+	}
+
+	size_t Image::GetPixelSize() const
+	{
+		return this->GetChannelCount() * this->GetChannelSize();
+	}
+
+	bool Image::IsFloatingPoint() const
+	{
+		return this->isFloatingPoint;
+	}
+
+    void Image::SetPixelByte(size_t x, size_t y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
     {
+		if (this->isFloatingPoint)
+		{
+			this->SetPixelFloat(x, y, (float)r / 255.0f, (float)g / 255.0f, (float)b / 255.0f, (float)a / 255.0f);
+			return;
+		}
+
 		MX_ASSERT(x < this->width && y < this->height);
 		switch (this->channels)
 		{
@@ -118,15 +141,71 @@ namespace MxEngine
 			this->data[(x * this->height + y) * 4 + 3] = a;
 			break;
 		default:
-			MX_ASSERT(false);
+			MX_ASSERT(false); // invalid channel count
 			break;
 		}
     }
 
-	std::array<uint8_t, 4> Image::GetPixel(size_t x, size_t y)
+	template<typename T>
+	T Clamp(T v, T minv, T maxv)
 	{
-		std::array<uint8_t, 4> rgba{ 0, 0, 0, 0 };
+		return (v < minv) ? minv : (v > maxv ? maxv : v);
+	}
+
+	void Image::SetPixelFloat(size_t x, size_t y, float r, float g, float b, float a)
+	{
+		if (!this->isFloatingPoint)
+		{
+			this->SetPixelByte(x, y, 
+				(uint8_t)Clamp(r * 255.0f, 0.0f, 255.0f),
+				(uint8_t)Clamp(g * 255.0f, 0.0f, 255.0f),
+				(uint8_t)Clamp(b * 255.0f, 0.0f, 255.0f),
+				(uint8_t)Clamp(a * 255.0f, 0.0f, 255.0f)
+			);
+			return;
+		}
+
 		MX_ASSERT(x < this->width&& y < this->height);
+		switch (this->channels)
+		{
+		case 1:
+			((float*)this->data)[x * this->height + y] = r;
+			break;
+		case 2:
+			((float*)this->data)[(x * this->height + y) * 2 + 0] = r;
+			((float*)this->data)[(x * this->height + y) * 2 + 1] = g;
+			break;
+		case 3:
+			((float*)this->data)[(x * this->height + y) * 3 + 0] = r;
+			((float*)this->data)[(x * this->height + y) * 3 + 1] = g;
+			((float*)this->data)[(x * this->height + y) * 3 + 2] = b;
+			break;
+		case 4:
+			((float*)this->data)[(x * this->height + y) * 4 + 0] = r;
+			((float*)this->data)[(x * this->height + y) * 4 + 1] = g;
+			((float*)this->data)[(x * this->height + y) * 4 + 2] = b;
+			((float*)this->data)[(x * this->height + y) * 4 + 3] = a;
+			break;
+		default:
+			MX_ASSERT(false); // invalid channel count
+			break;
+		}
+	}
+
+	std::array<uint8_t, 4> Image::GetPixelByte(size_t x, size_t y) const
+	{
+		std::array<uint8_t, 4> rgba{ 0, 0, 0, 1 };
+		if (this->isFloatingPoint)
+		{
+			auto pixel = this->GetPixelFloat(x, y);
+			rgba[0] = (uint8_t)Clamp(pixel[0] * 255.0f, 0.0f, 255.0f);
+			rgba[1] = (uint8_t)Clamp(pixel[1] * 255.0f, 0.0f, 255.0f);
+			rgba[2] = (uint8_t)Clamp(pixel[2] * 255.0f, 0.0f, 255.0f);
+			rgba[3] = (uint8_t)Clamp(pixel[3] * 255.0f, 0.0f, 255.0f);
+			return rgba;
+		}
+
+		MX_ASSERT(x < this->width && y < this->height);
 		switch (this->channels)
 		{
 		case 1:
@@ -148,7 +227,48 @@ namespace MxEngine
 			rgba[3] = this->data[(x * this->height + y) * 4 + 3];
 			break;
 		default:
-			MX_ASSERT(false);
+			MX_ASSERT(false); // invalid channel count
+			break;
+		}
+		return rgba;
+	}
+
+	std::array<float, 4> Image::GetPixelFloat(size_t x, size_t y) const
+	{
+		std::array<float, 4> rgba{ 0.0f, 0.0f, 0.0f, 1.0f };
+		if (!this->isFloatingPoint)
+		{
+			auto pixel = this->GetPixelByte(x, y);
+			rgba[0] = (float)pixel[0] / 255.0f;
+			rgba[1] = (float)pixel[1] / 255.0f;
+			rgba[2] = (float)pixel[2] / 255.0f;
+			rgba[3] = (float)pixel[3] / 255.0f;
+			return rgba;
+		}
+
+		MX_ASSERT(x < this->width && y < this->height);
+		switch (this->channels)
+		{
+		case 1:
+			rgba[0] = ((float*)this->data)[x * this->height + y];
+			break;
+		case 2:
+			rgba[0] = ((float*)this->data)[(x * this->height + y) * 2 + 0];
+			rgba[1] = ((float*)this->data)[(x * this->height + y) * 2 + 1];
+			break;
+		case 3:
+			rgba[0] = ((float*)this->data)[(x * this->height + y) * 3 + 0];
+			rgba[1] = ((float*)this->data)[(x * this->height + y) * 3 + 1];
+			rgba[2] = ((float*)this->data)[(x * this->height + y) * 3 + 2];
+			break;
+		case 4:
+			rgba[0] = ((float*)this->data)[(x * this->height + y) * 4 + 0];
+			rgba[1] = ((float*)this->data)[(x * this->height + y) * 4 + 1];
+			rgba[2] = ((float*)this->data)[(x * this->height + y) * 4 + 2];
+			rgba[3] = ((float*)this->data)[(x * this->height + y) * 4 + 3];
+			break;
+		default:
+			MX_ASSERT(false); // invalid channel count
 			break;
 		}
 		return rgba;

@@ -43,7 +43,7 @@ namespace MxEngine
 		static RawImageData ConvertImageBMP(const uint8_t* imagedata, int width, int height, int channels, bool flipOnSave = true);
 		static RawImageData ConvertImageTGA(const uint8_t* imagedata, int width, int height, int channels, bool flipOnSave = true);
 		static RawImageData ConvertImageJPG(const uint8_t* imagedata, int width, int height, int channels, int  quality = 90, bool flipOnSave = true);
-		static RawImageData ConvertImageHDR(const uint8_t* imagedata, int width, int height, int channels, bool flipOnSave = true);
+		static RawImageData ConvertImageHDR(const float* imagedata, int width, int height, int channels, bool flipOnSave = true);
 
 		static RawImageData ConvertImagePNG(const Image& image, bool flipOnSave = true);
 		static RawImageData ConvertImageBMP(const Image& image, bool flipOnSave = true);
