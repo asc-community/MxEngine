@@ -55,7 +55,8 @@ namespace MxEngine::GUI
 		if (ImGui::DragFloat("rotate z", &newRotation.z))
 			skybox.RotateZ(newRotation.z - rotation.z);
 
-		DrawCubeMapEditor("cubemap", skybox.Texture);
+		DrawCubeMapEditor("cubemap", skybox.CubeMap);
+		DrawCubeMapEditor("irradiance", skybox.Irradiance);
 	}
 
 	void DebugDrawEditor(DebugDraw& debugDraw)

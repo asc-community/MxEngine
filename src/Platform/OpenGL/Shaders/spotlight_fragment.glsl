@@ -39,6 +39,8 @@ uniform Camera camera;
 uniform int pcfDistance;
 uniform vec2 viewportSize;
 
+uniform EnvironmentInfo environment;
+
 vec3 calcColorUnderSpotLight(FragmentInfo fragment, SpotLight light, vec3 viewDir, vec4 fragLightSpace, sampler2D map_shadow, bool computeShadow)
 {
 	vec3 lightPath = light.position - fragment.position;
@@ -50,7 +52,7 @@ vec3 calcColorUnderSpotLight(FragmentInfo fragment, SpotLight light, vec3 viewDi
 	float epsilon = light.innerAngle - light.outerAngle;
 	float intensity = clamp((fragAngle - light.outerAngle) / epsilon, 0.0f, 1.0f);
 
-	return calculateLighting(fragment, viewDir, lightPath, intensity * light.color.rgb, light.color.a, shadowFactor);
+	return calculateLighting(fragment, viewDir, lightPath, environment, intensity * light.color.rgb, light.color.a, shadowFactor);
 }
 
 void main()

@@ -93,8 +93,11 @@ namespace GrassSample
             // setup camera
             cameraObject = MxObject::Create();
             cameraObject->Name = "Player Camera";
-            cameraObject->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("dawn.jpg"_id);
             cameraObject->Transform.TranslateY(2.0f);
+            
+            auto skybox = cameraObject->AddComponent<Skybox>();
+            skybox->CubeMap = AssetManager::LoadCubeMap("dawn.jpg"_id);
+            skybox->Irradiance = AssetManager::LoadCubeMap("dawn_irradiance.jpg"_id);
             
             auto effects = cameraObject->AddComponent<CameraEffects>();
             effects->SetBloomIterations(3);

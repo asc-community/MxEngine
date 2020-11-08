@@ -22,7 +22,7 @@ namespace VRCameraSample
             auto leftEyeObject = MxObject::Create();
             leftEyeObject->Name = "Left Eye";
             auto leftEyeSkybox = leftEyeObject->AddComponent<Skybox>();
-            leftEyeSkybox->Texture = skyboxCubemap;
+            leftEyeSkybox->CubeMap = skyboxCubemap;
             auto leftEye = leftEyeObject->AddComponent<CameraController>();
             leftEye->GetCamera<PerspectiveCamera>().SetFOV(90.0f);
 
@@ -30,7 +30,7 @@ namespace VRCameraSample
             auto rightEyeObject = MxObject::Create();
             rightEyeObject->Name = "Right Eye";
             auto rightEyeSkybox = rightEyeObject->AddComponent<Skybox>();
-            rightEyeSkybox->Texture = skyboxCubemap;
+            rightEyeSkybox->CubeMap = skyboxCubemap;
             auto rightEye = rightEyeObject->AddComponent<CameraController>();
             rightEye->GetCamera<PerspectiveCamera>().SetFOV(90.0f);
 

@@ -74,6 +74,7 @@ namespace MxEngine
 
         Matrix3x3 InverseSkyboxRotation;
         CubeMapHandle SkyboxTexture;
+        CubeMapHandle IrradianceTexture;
 
         float Gamma;
 

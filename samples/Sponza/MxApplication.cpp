@@ -37,7 +37,9 @@ namespace Sponza
 
             camera->Transform.TranslateY(15.0f);
             
-            camera->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("skybox.png"_id);
+            auto skybox = camera->AddComponent<Skybox>();
+            skybox->CubeMap = AssetManager::LoadCubeMap("skybox.png"_id);
+            skybox->Irradiance = AssetManager::LoadCubeMap("skybox_irradiance.png"_id);
             
             auto input = camera->AddComponent<InputController>();
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
@@ -82,7 +84,7 @@ namespace Sponza
             sponza->AddComponent<MeshRenderer>(AssetManager::LoadMaterials("Sponza/glTF/Sponza.gltf"_id));
             sponza->Transform.SetScale(0.02f);
             sponza->Transform.TranslateY(13.0f);
-            // sponza->GetComponent<MeshRenderer>()->Materials[8]->Reflection = 0.75f;
+            sponza->GetComponent<MeshRenderer>()->Materials[8]->MetallicFactor = 0.75f;
             // sponza->AddComponent<DebugDraw>()->RenderPhysicsCollider = true;
             sponza->AddComponent<RigidBody>();
             auto collider = sponza->AddComponent<CompoundCollider>();

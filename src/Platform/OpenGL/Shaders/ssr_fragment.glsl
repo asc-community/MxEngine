@@ -89,9 +89,8 @@ void main()
     maxFactor = max(maxFactor, float(isinf(currentLength) || isnan(currentLength)));
     float fadingFactor = 1.0f - clamp(maxFactor, 0.0f, 1.0f);
 
-    const vec3 luminance = vec3(0.2125f, 0.7154f, 0.0721f);
-    environmentReflection = mix(environmentReflection, ssrReflection, fadingFactor);
-    environmentReflection *= dot(objectColor, luminance);
-
-    OutColor = vec4(mix(objectColor, environmentReflection, fragment.metallicFactor), 1.0f);
+    ssrReflection *= fadingFactor;
+    ssrReflection *= fragment.metallicFactor;
+    
+    OutColor = vec4(objectColor + ssrReflection, 1.0f);
 }

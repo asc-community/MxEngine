@@ -152,6 +152,15 @@ namespace MxEngine
 		GLCALL(glViewport(x, y, width, height));
 	}
 
+	Renderer& Renderer::UseSeamlessCubeMaps(bool value)
+	{
+		if (value)
+			glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+		else
+			glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+		return *this;
+	}
+
 	Renderer& Renderer::UseColorMask(bool r, bool g, bool b, bool a)
 	{
 		GLCALL(glColorMask(r, g, b, a));

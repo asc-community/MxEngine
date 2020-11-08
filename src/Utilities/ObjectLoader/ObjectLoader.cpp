@@ -114,6 +114,10 @@ namespace MxEngine
 			GET_TEXTURE(aiTextureType_AMBIENT_OCCLUSION, AmbientOcclusionMap);
 			GET_TEXTURE(aiTextureType_METALNESS, MetallicMap);
 			GET_TEXTURE(aiTextureType_DIFFUSE_ROUGHNESS, RoughnessMap);
+
+			// if no pbr textures provided, set all pbr parameters to default value
+			if (materialInfo.MetallicMap.empty()) materialInfo.MetallicFactor = 0.0f;
+			if (materialInfo.RoughnessMap.empty()) materialInfo.RoughnessFactor = 0.5f;
 		}
 
 		Vector3 minCoords = MakeVector3(std::numeric_limits<float>::max());

@@ -82,6 +82,13 @@ struct FragmentInfo
 	vec3 position;
 };
 
+struct EnvironmentInfo
+{
+	samplerCube skybox;
+	samplerCube irradiance;
+	mat3 skyboxRotation;
+};
+
 FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D normalTexture, sampler2D materialTexture, sampler2D depthTexture, mat4 invViewProjMatrix)
 {
 	FragmentInfo fragment;

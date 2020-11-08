@@ -9,9 +9,9 @@ struct DirLight
 	vec3 direction;
 };
 
-vec3 calcColorUnderDirLight(FragmentInfo fragment, DirLight light, vec3 viewDir, float shadowFactor)
+vec3 calcColorUnderDirLight(FragmentInfo fragment, DirLight light, vec3 viewDir, float shadowFactor, EnvironmentInfo environment)
 {
-	return calculateLighting(fragment, viewDir, light.direction, light.color.rgb, light.color.a, shadowFactor);
+	return calculateLighting(fragment, viewDir, light.direction, environment, light.color.rgb, light.color.a, shadowFactor);
 }
 
 float calcShadowFactorCascade(vec4 position, DirLight light, sampler2D shadowMaps[DirLightCascadeMapCount], int pcfDistance)
@@ -22,7 +22,7 @@ float calcShadowFactorCascade(vec4 position, DirLight light, sampler2D shadowMap
 		vec4 fragLightSpace = light.transform[i] * position;
 		float shadowFactor = calcShadowFactor2D(fragLightSpace, shadowMaps[i], 0.005f, pcfDistance);
 		shadowFactor = min(shadowFactor * float(i + 1), 1.0f);
-		totalFactor = (totalFactor == 1.0f ? shadowFactor : totalFactor * shadowFactor);
+		totalFactor *= shadowFactor;
 	}
 	return totalFactor;
 }

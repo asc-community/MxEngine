@@ -39,7 +39,8 @@ namespace MxEngine
 
         Quaternion rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
     public:
-        CubeMapHandle Texture;
+        CubeMapHandle CubeMap;
+        CubeMapHandle Irradiance;
 
         const Quaternion& GetRotation() const { return this->rotation; }
         void SetRotation(const Quaternion& rotation) { this->rotation = rotation; }

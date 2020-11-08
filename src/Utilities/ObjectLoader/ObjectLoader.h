@@ -104,11 +104,11 @@ namespace MxEngine
 		/*!
 		metallic factor value
 		*/
-		float MetallicFactor = 1.0f;
+		float MetallicFactor = 0.0f;
 		/*!
 		roughness factor value
 		*/
-		float RoughnessFactor = 1.0f;
+		float RoughnessFactor = 0.5f;
 	};
 
 	/*!

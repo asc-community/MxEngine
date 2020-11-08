@@ -42,6 +42,8 @@ uniform int lightCount;
 uniform int pcfDistance;
 uniform vec3 viewportPosition;
 
+uniform EnvironmentInfo environment;
+
 const int MaxLightCount = 4;
 uniform DirLight lights[MaxLightCount];
 uniform sampler2D lightDepthMaps[MaxLightCount][DirLightCascadeMapCount];
@@ -77,7 +79,7 @@ void main()
 	for (int i = 0; i < lightCount; i++)
 	{
 		float shadowFactor = calcShadowFactorCascade(vec4(fragment.position, 1.0f), lights[i], lightDepthMaps[i], pcfDistance);
-		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, shadowFactor);
+		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, shadowFactor, environment);
 	}
 
 	OutColor = vec4(totalColor, transparency);
