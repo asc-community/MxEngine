@@ -84,9 +84,13 @@ namespace Sponza
             sponza->Transform.SetScale(0.02f);
             sponza->Transform.TranslateY(13.0f);
             
-            auto floorMaterial = sponza->GetComponent<MeshRenderer>()->Materials[8];
-            floorMaterial->MetallicFactor = 0.75f;
-            floorMaterial->RoughnessFactor = 0.75f;
+            auto& materials = sponza->GetComponent<MeshRenderer>()->Materials;
+            if (!materials.empty())
+            {
+                // floor material
+                materials[8]->MetallicFactor = 0.75f;
+                materials[8]->RoughnessFactor = 0.75f;
+            }
 
             sponza->AddComponent<RigidBody>();
             auto collider = sponza->AddComponent<CompoundCollider>();

@@ -36,7 +36,8 @@ void main()
 	vec3 totalColor = 0.0001f * fragment.albedo;
 	for (int i = 0; i < lightCount; i++)
 	{
-		float shadowFactor = calcShadowFactorCascade(vec4(fragment.position, 1.0f), lights[i], lightDepthMaps[i], pcfDistance);
+		vec4 pos = vec4(fragment.position, 1.0f);
+		float shadowFactor = calcShadowFactorCascade(pos, lights[i], lightDepthMaps[i], pcfDistance);
 		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, shadowFactor, environment, lightSamples);
 	}
 	

@@ -9,7 +9,8 @@ vec3 calculateLighting(FragmentInfo fragment, vec3 viewDirection, vec3 lightDire
     vec3 specularColor = vec3(0.0f);
     vec3 FKtotal = vec3(0.0f);
 
-    float roughness = max(fragment.roughnessFactor, 0.01f);
+    float roughness =  clamp(fragment.roughnessFactor, 0.01f, 0.99f);
+    float metallic = clamp(fragment.metallicFactor, 0.01f, 0.99f);
 
     float invEnvironmentSampleCount = 1.0f / float(GGXSamples);
     float A = computeA(environment.skybox, GGXSamples);
@@ -26,18 +27,21 @@ vec3 calculateLighting(FragmentInfo fragment, vec3 viewDirection, vec3 lightDire
         FKtotal += FK;
         float lod = computeLOD(A, pdf, direction);
 
+        float energyLossCompensate = pow(roughness + 0.5f, 2.5f);
+        energyLossCompensate = max(energyLossCompensate, 1.0f);
+
         vec3 sampleDirection = environment.skyboxRotation * direction;
-        vec3 sampledColor = textureLod(environment.skybox, sampleDirection, lod).rgb;
+        vec3 sampledColor = energyLossCompensate * textureLod(environment.skybox, sampleDirection, lod).rgb;
         specularColor += specularK * sampledColor;
     }
     specularColor *= invEnvironmentSampleCount;
     FKtotal *= invEnvironmentSampleCount;
     vec3 irradianceColor = calcReflectionColor(environment.irradiance, environment.skyboxRotation, viewDirection, fragment.normal);
    
-    vec3 diffuseColor = fragment.albedo * (1.0f - fragment.metallicFactor) * clamp(1.0f - FKtotal, 0.0f, 1.0f) * irradianceColor;
+    vec3 diffuseColor = fragment.albedo * (1.0f - metallic) * clamp(1.0f - FKtotal, 0.0f, 1.0f) * irradianceColor;
     vec3 ambientColor = diffuseColor * ambientFactor;
 
-    diffuseColor *= max(dot(lightDirection, fragment.normal), 0.0f);
+    diffuseColor *= max(dot(lightDirection, fragment.normal),  0.0f);
     specularColor *= max(dot(lightDirection, fragment.normal), 0.0f);
 
     vec3 totalColor = ambientColor + shadowFactor * (diffuseColor + specularColor);

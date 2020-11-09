@@ -308,7 +308,7 @@ namespace MxEngine
 		auto normalized = Clamp(color, MakeVector3(0.0f), MakeVector3(1.0f));
 		GLCALL(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &normalized[0]));
     }
-
+	
     bool Texture::IsMultisampled() const
     {
 		return this->textureType == GL_TEXTURE_2D_MULTISAMPLE;

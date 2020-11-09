@@ -43,7 +43,7 @@ namespace MxEngine
 		float colorMultiplier = 1.0f;
 		ACES coefficients;
 		float eyeAdaptationSpeed = 0.1f;
-		float eyeAdaptationThreshold = 0.5f;
+		float eyeAdaptationThreshold = 0.1f;
 		float minLuminance = 0.0f;
 		float maxLuminance = 100000.0f;
 	public:
