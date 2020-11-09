@@ -199,66 +199,83 @@ namespace MxEngine
 	template<>
 	void RuntimeEditor::AddShaderUpdateListener(ShaderHandle shader, const FilePath& lookupDirectory)
 	{
+		// we need shader stages to reload shader correctly
+		enum ShaderStages : uint8_t
+		{
+			NONE = 0,
+			HAS_VERTEX_STAGE = 1 << 0,
+			HAS_GEOMETRY_STAGE = 1 << 1,
+			HAS_FRAGMENT_STAGE = 1 << 2,
+		};
+
 		#if !defined(MXENGINE_DEBUG)
 		MXLOG_WARNING("RuntimeEditor::AddShaderUpdateListener", "cannot add listener in non-debug mode");
 		#else
+		// list of all files shader depend on
+		MxVector<std::pair<FilePath, FileSystemTime>> dependencies;
 
 		auto& vertex = shader->GetVertexShaderDebugFilePath();
 		auto& geometry = shader->GetGeometryShaderDebugFilePath();
 		auto& fragment = shader->GetFragmentShaderDebugFilePath();
+		auto& includes = shader->GetIncludedFilePaths();
+		
+		// add all filenames to list. File paths and modified time will be resolved later
+		if (!vertex.empty()) dependencies.emplace_back(ToFilePath(vertex).filename(), FileSystemTime());
+		if (!geometry.empty()) dependencies.emplace_back(ToFilePath(geometry).filename(), FileSystemTime());
+		if (!fragment.empty()) dependencies.emplace_back(ToFilePath(fragment).filename(), FileSystemTime());
+		for (const auto& include : includes) dependencies.emplace_back(ToFilePath(include).filename(), FileSystemTime());
 
-		auto vertexPath = FileManager::SearchInDirectory(lookupDirectory, ToFilePath(vertex).filename());
-		auto geometryPath = FileManager::SearchInDirectory(lookupDirectory, ToFilePath(geometry).filename());
-		auto fragmentPath = FileManager::SearchInDirectory(lookupDirectory, ToFilePath(fragment).filename());
-
-		if (vertexPath.empty() || fragmentPath.empty())
+		// resolve file paths, if file was not found - skip whole shader to avoid crashing in listener
+		for (auto& [filepath, modifiedTime] : dependencies)
 		{
-			MXLOG_WARNING("Application::InitializeShaderDebug",
-				"cannot debug shader, vertex or fragment path not found: " + vertex + " | " + fragment
-			);
-		}
-		else
-		{
-			if (!geometryPath.empty())
+			auto resolvedFilePath = FileManager::SearchInDirectory(lookupDirectory, filepath);
+			if (resolvedFilePath.empty())
 			{
-				auto vertexEditTime = File::LastModifiedTime(vertexPath);
-				auto geometryEditTime = File::LastModifiedTime(geometryPath);
-				auto fragmentEditTime = File::LastModifiedTime(fragmentPath);
-
-				Event::AddEventListener<FpsUpdateEvent>("ShaderDebugEvent", [=](FpsUpdateEvent&) mutable
-					{
-						auto newVT = File::LastModifiedTime(vertexPath);
-						auto newGT = File::LastModifiedTime(geometryPath);
-						auto newFT = File::LastModifiedTime(fragmentPath);
-
-						if (vertexEditTime < newVT || geometryEditTime < newGT || fragmentEditTime < newFT)
-						{
-							shader->Load(ToMxString(vertexPath), ToMxString(geometryPath), ToMxString(fragmentPath));
-							vertexEditTime = newVT;
-							geometryEditTime = newGT;
-							fragmentEditTime = newFT;
-						}
-					});
+				MXLOG_WARNING("MxEngine::Runtime", "cannot find shader file for debug: " + ToMxString(filepath));
+				return;
 			}
-			else
-			{
-				auto vertexEditTime = File::LastModifiedTime(vertexPath);
-				auto fragmentEditTime = File::LastModifiedTime(fragmentPath);
-
-				Event::AddEventListener<FpsUpdateEvent>("ShaderDebugEvent", [=](FpsUpdateEvent&) mutable
-					{
-						auto newVT = File::LastModifiedTime(vertexPath);
-						auto newFT = File::LastModifiedTime(fragmentPath);
-
-						if (vertexEditTime < newVT || fragmentEditTime < newFT)
-						{
-							shader->Load(ToMxString(vertexPath), ToMxString(fragmentPath));
-							vertexEditTime = newVT;
-							fragmentEditTime = newFT;
-						}
-					});
-			}
+			filepath = resolvedFilePath.lexically_normal();
+			modifiedTime = File::LastModifiedTime(filepath);
 		}
+
+		// check for all shader stages
+		uint8_t stages = ShaderStages::NONE;
+		if (!vertex.empty())   stages |= ShaderStages::HAS_VERTEX_STAGE;
+		if (!geometry.empty()) stages |= ShaderStages::HAS_GEOMETRY_STAGE;
+		if (!fragment.empty()) stages |= ShaderStages::HAS_FRAGMENT_STAGE;
+		
+		Event::AddEventListener<FpsUpdateEvent>("ShaderDebugEvent", 
+			[shader, dependencies = std::move(dependencies), stages](FpsUpdateEvent&) mutable
+			{
+				bool alreadyModified = false;
+				for (auto& [filepath, modifiedTime] : dependencies)
+				{
+					auto lastModified = File::LastModifiedTime(filepath);
+					if(!alreadyModified && modifiedTime < lastModified)
+					{
+						alreadyModified = true;
+						// check for shader stages combinations: vertex & fragment are required,
+						// other stages are optional
+						constexpr uint8_t VF = ShaderStages::HAS_VERTEX_STAGE | ShaderStages::HAS_FRAGMENT_STAGE;
+						constexpr uint8_t VGF = VF | ShaderStages::HAS_GEOMETRY_STAGE;
+
+						switch(stages)
+						{
+						case VF:
+							shader->Load(
+								ToMxString(dependencies[0].first), ToMxString(dependencies[1].first)
+							);
+							break;
+						case VGF:
+							shader->Load(
+								ToMxString(dependencies[0].first), ToMxString(dependencies[1].first), ToMxString(dependencies[2].first)
+							);
+							break;
+						}
+					}
+					modifiedTime = lastModified;
+				}
+			});
 		#endif
 	}
 

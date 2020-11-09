@@ -36,11 +36,13 @@ namespace MxEngine
     ShaderPreprocessor::ShaderPreprocessor(const MxString& shaderSource)
         : source(shaderSource)
     {
+        
     }
 
-    MxVector<std::pair<MxString, MxString>> FindAllIncludePaths(const MxString& source)
+    auto FindAllIncludePaths(const MxString& source)
     {
-        MxVector<std::pair<MxString, MxString>> paths;
+        // path, #include string
+        MxVector<std::pair<MxString, MxString>> includes;
 
         std::regex r(R"(#include\s+\"(.+)\")");
         std::regex_iterator pathIt(source.begin(), source.end(), r);
@@ -50,14 +52,18 @@ namespace MxEngine
         {
             MxString includeCommand(source.begin() + pathIt->position(0), source.begin() + pathIt->position(0) + pathIt->length(0));
             MxString filepath      (source.begin() + pathIt->position(1), source.begin() + pathIt->position(1) + pathIt->length(1));
-            paths.emplace_back(std::move(filepath), std::move(includeCommand));
+            includes.emplace_back(std::move(filepath), std::move(includeCommand));
         }
 
-        return paths;
+        return includes;
     }
 
     ShaderPreprocessor& ShaderPreprocessor::LoadIncludes(const FilePath& lookupPath)
     {
+        #if defined(MXENGINE_DEBUG)
+        this->areIncludeFilePathsLoaded = true;
+        #endif
+
         auto paths = FindAllIncludePaths(this->source);
         for (const auto& [path, include] : paths)
         {
@@ -67,6 +73,10 @@ namespace MxEngine
                 MXLOG_ERROR("ShaderPreprocessor::LoadIncludes", "included file was not found: " + path);
                 continue;
             }
+            #if defined(MXENGINE_DEBUG)
+            this->includeFilePaths.push_back(path);
+            #endif
+
             auto it = this->source.find(include);
             if (it != this->source.npos) this->source.erase(it, include.size());
             
@@ -89,6 +99,23 @@ namespace MxEngine
         this->source += '\n';
         this->source += line;
         return *this;
+    }
+
+
+    MxVector<MxString> emptyFilePathList;
+
+    const MxVector<MxString>& ShaderPreprocessor::GetIncludeFiles() const
+    {
+        #if defined(MXENGINE_DEBUG)
+        if (!this->areIncludeFilePathsLoaded)
+        {
+            MXLOG_WARNING("MxEngine::ShaderPreprocessor", "included filepaths are not loaded as LoadIncludes() was not called");
+        }
+        return this->includeFilePaths;
+        #else
+        MXLOG_WARNING("MxEngine::ShaderPreprocessor", "included filepaths are not saved in non-debug build");
+        return emptyFilePathList;
+        #endif
     }
 
     const MxString& ShaderPreprocessor::GetResult()

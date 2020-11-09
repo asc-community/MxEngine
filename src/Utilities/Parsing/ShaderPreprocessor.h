@@ -27,17 +27,25 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Utilities/FileSystem/File.h"
+#include "Core/Macro/Macro.h"
 
 namespace MxEngine
 {
     class ShaderPreprocessor
     {
+    public:
+    private:
         MxString source;
+        #if defined(MXENGINE_DEBUG)
+        MxVector<MxString> includeFilePaths;
+        bool areIncludeFilePathsLoaded = false;
+        #endif
     public:
         ShaderPreprocessor(const MxString& shaderSource);
         ShaderPreprocessor& LoadIncludes(const FilePath& lookupPath);
         ShaderPreprocessor& EmitPrefixLine(const MxString& line);
         ShaderPreprocessor& EmitPostfixLine(const MxString& line);
+        const MxVector<MxString>& GetIncludeFiles() const;
         const MxString& GetResult();
     };
 }

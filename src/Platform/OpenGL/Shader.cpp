@@ -38,6 +38,7 @@
 namespace MxEngine
 {
 	MxString EmptyPath;
+	MxVector<MxString> EmptyVector;
 
 	enum class ShaderType
 	{
@@ -299,15 +300,31 @@ namespace MxEngine
 		#endif
 	}
 
-	Shader::ShaderId Shader::CompileShader(unsigned int type, const MxString& source, const MxString& path) const
+	const MxVector<MxString>& Shader::GetIncludedFilePaths() const
+	{
+		#if defined(MXENGINE_DEBUG)
+		return this->includedFilePaths;
+		#else
+		return EmptyVector;
+		#endif
+	}
+
+	Shader::ShaderId Shader::CompileShader(unsigned int type, const MxString& source, const MxString& path)
 	{
 		GLCALL(GLuint shaderId = glCreateShader((GLenum)type));
 
-		auto sourceModified = ShaderPreprocessor(source)
+		ShaderPreprocessor preprocessor(source);
+
+		auto sourceModified = preprocessor
 			.LoadIncludes(FilePath(path.c_str()).parent_path())
 			.EmitPrefixLine(Shader::GetShaderVersionString())
 			.GetResult()
 			;
+
+		#if defined(MXENGINE_DEBUG)
+		auto& includes = preprocessor.GetIncludeFiles();
+		this->includedFilePaths.insert(this->includedFilePaths.end(), includes.begin(), includes.end());
+		#endif
 
 		auto cStringSource = sourceModified.c_str();
 		GLCALL(glShaderSource(shaderId, 1, &cStringSource, nullptr));

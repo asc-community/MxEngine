@@ -31,6 +31,7 @@
 #include "Utilities/Math/Math.h"
 #include "Core/Macro/Macro.h"
 #include "Utilities/STL/MxString.h"
+#include "Utilities/STL/MxVector.h"
 #include "Utilities/STL/MxHashMap.h"
 
 namespace MxEngine
@@ -38,7 +39,10 @@ namespace MxEngine
 	class Shader
 	{
 		#if defined(MXENGINE_DEBUG)
-		MxString vertexShaderPath, geometryShaderPath, fragmentShaderPath;
+		MxString vertexShaderPath;
+		MxString geometryShaderPath;
+		MxString fragmentShaderPath;
+		MxVector<MxString> includedFilePaths;
 		#endif
 		using UniformType = int;
 		using UniformCache = MxHashMap<MxString, UniformType>;
@@ -48,7 +52,7 @@ namespace MxEngine
 		BindableId id = 0;
 		mutable UniformCache uniformCache;
 
-		ShaderId CompileShader(unsigned int type, const MxString& source, const MxString& name) const;
+		ShaderId CompileShader(unsigned int type, const MxString& source, const MxString& name);
 		BindableId CreateProgram(ShaderId vertexShader, ShaderId fragmentShader) const;
 		BindableId CreateProgram(ShaderId vertexShader, ShaderId geometryShader, ShaderId fragmentShader) const;
 		UniformType GetUniformLocation(const MxString& uniformName) const;
@@ -87,5 +91,6 @@ namespace MxEngine
 		const MxString& GetVertexShaderDebugFilePath() const;
 		const MxString& GetGeometryShaderDebugFilePath() const;
 		const MxString& GetFragmentShaderDebugFilePath() const;
+		const MxVector<MxString>& GetIncludedFilePaths() const;
 	};
 }

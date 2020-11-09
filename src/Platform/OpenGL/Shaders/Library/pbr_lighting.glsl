@@ -54,7 +54,7 @@ float computeA(samplerCube tex, int sampleCount)
 
 float computeLOD(float A, float pdf, vec3 lightDirection)
 {
-    float du = 2.0f * 1.2f * abs(lightDirection.z + 1.0f);
+    float du = 2.0f * 1.2f * abs(lightDirection.y + 1.0f);
     return max(0.0f, A - 0.5f * log2(pdf * du * du) + 1.0f);
 }
 
