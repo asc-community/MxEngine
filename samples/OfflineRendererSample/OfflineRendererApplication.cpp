@@ -32,7 +32,8 @@ namespace OfflineRendererSample
             auto effects = cameraObject->AddComponent<CameraEffects>();
             effects->SetVignetteRadius(0.0f);
             auto skybox = cameraObject->AddComponent<Skybox>();
-            skybox->Texture = AssetManager::LoadCubeMap("Resources/dawn.jpg");
+            skybox->CubeMap = AssetManager::LoadCubeMap("dawn.jpg"_id);
+            skybox->Irradiance = AssetManager::LoadCubeMap("dawn_irradiance.jpg"_id);
 
             Rendering::SetViewport(controller);
             Rendering::ResizeViewport(viewportSize.x, viewportSize.y);

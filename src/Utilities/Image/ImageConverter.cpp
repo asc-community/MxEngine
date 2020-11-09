@@ -92,7 +92,7 @@ namespace MxEngine
         return data;
     }
 
-    ImageConverter::RawImageData ImageConverter::ConvertImageHDR(const uint8_t* imagedata, int width, int height, int channels, bool flipOnConvert)
+    ImageConverter::RawImageData ImageConverter::ConvertImageHDR(const float* imagedata, int width, int height, int channels, bool flipOnConvert)
     {
         ImageConverter::RawImageData data;
 
@@ -106,26 +106,31 @@ namespace MxEngine
 
     ImageConverter::RawImageData ImageConverter::ConvertImagePNG(const Image& image, bool flipOnSave)
     {
-        return ImageConverter::ConvertImagePNG(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannels(), flipOnSave);
+        if (image.IsFloatingPoint()) return { };
+        return ImageConverter::ConvertImagePNG(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannelCount(), flipOnSave);
     }
 
     ImageConverter::RawImageData ImageConverter::ConvertImageBMP(const Image& image, bool flipOnSave)
     {
-        return ImageConverter::ConvertImageBMP(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannels(), flipOnSave);
+        if (image.IsFloatingPoint()) return { };
+        return ImageConverter::ConvertImageBMP(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannelCount(), flipOnSave);
     }
 
     ImageConverter::RawImageData ImageConverter::ConvertImageTGA(const Image& image, bool flipOnSave)
     {
-        return ImageConverter::ConvertImageTGA(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannels(), flipOnSave);
+        if (image.IsFloatingPoint()) return { };
+        return ImageConverter::ConvertImageTGA(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannelCount(), flipOnSave);
     }
 
     ImageConverter::RawImageData ImageConverter::ConvertImageJPG(const Image& image, int quality, bool flipOnSave)
     {
-        return ImageConverter::ConvertImageJPG(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannels(), quality, flipOnSave);
+        if (image.IsFloatingPoint()) return { };
+        return ImageConverter::ConvertImageJPG(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannelCount(), quality, flipOnSave);
     }
 
     ImageConverter::RawImageData ImageConverter::ConvertImageHDR(const Image& image, bool flipOnSave)
     {
-        return ImageConverter::ConvertImageHDR(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannels(), flipOnSave);
+        if (!image.IsFloatingPoint()) return { };
+        return ImageConverter::ConvertImageHDR((float*)image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannelCount(), flipOnSave);
     }
 }

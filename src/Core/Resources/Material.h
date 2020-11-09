@@ -38,22 +38,24 @@ namespace MxEngine
 	struct Material
 	{
 		TextureHandle AlbedoMap;
-		TextureHandle SpecularMap;
 		TextureHandle EmmisiveMap;
 		TextureHandle NormalMap;
 		TextureHandle HeightMap;
 		TextureHandle AmbientOcclusionMap;
+		TextureHandle MetallicMap;
+		TextureHandle RoughnessMap;
 
 		float Transparency = 1.0f;
-		float SpecularFactor = 0.2f;
-		float SpecularIntensity = 128.0f;
 		float Emmision = 0.0f;
 		float Displacement = 0.025f;
-		float Reflection = 0.0f;
+		float RoughnessFactor = 0.5f;
+		float MetallicFactor = 0.0f;
 
 		Vector3 BaseColor{ 1.0f };
 		Vector2 UVMultipliers{ 1.0f };
 		bool CastsShadow = true;
 		MxString Name = "DefaultMaterial";
+
+		constexpr static size_t TextureCount = 7;
 	};
 }

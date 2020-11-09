@@ -382,7 +382,13 @@ namespace MxEngine
 
 		GLCALL(int location = glGetUniformLocation(id, uniformName.c_str()));
 		if (location == -1)
+		{
+			#if defined(MXENGINE_DEBUG)
+			MXLOG_WARNING("OpenGL::Shader", '[' + this->fragmentShaderPath + "]: " + "uniform was not found: " + uniformName);
+			#else
 			MXLOG_WARNING("OpenGL::Shader", "uniform was not found: " + uniformName);
+			#endif
+		}
 		uniformCache[uniformName] = location;
 		return location;
 	}

@@ -74,6 +74,7 @@ namespace MxEngine
 
         Matrix3x3 InverseSkyboxRotation;
         CubeMapHandle SkyboxTexture;
+        CubeMapHandle IrradianceTexture;
 
         float Gamma;
 
@@ -93,9 +94,11 @@ namespace MxEngine
         TextureHandle DefaultNormalMap;
         TextureHandle DefaultBlackMap;
         TextureHandle DefaultGreyMap;
+        TextureHandle DefaultShadowMap;
         TextureHandle AverageWhiteTexture;
         TextureHandle AmbientOcclusionTexture;
-        CubeMapHandle DefaultBlackCubeMap;
+        CubeMapHandle DefaultShadowCubeMap;
+        CubeMapHandle DefaultSkybox;
 
         FrameBufferHandle DepthFrameBuffer;
         FrameBufferHandle PostProcessFrameBuffer;
@@ -111,6 +114,7 @@ namespace MxEngine
         float FogDensity;
         float TimeDelta;
 
+        size_t LightSamples;
         uint8_t ShadowBlurIterations;
         uint8_t MainCameraIndex;
         bool OverlayDebugDraws;
@@ -123,9 +127,9 @@ namespace MxEngine
         std::array<Matrix4x4, 3> ProjectionMatrices;
         std::array<Matrix4x4, 3> BiasedProjectionMatrices;
         Vector3 Direction;
-        Vector3 AmbientColor;
-        Vector3 DiffuseColor;
-        Vector3 SpecularColor;
+        float AmbientIntensity;
+        float Intensity;
+        Vector3 Color;
     };
 
     struct PointLightUnit : PointLightBaseData

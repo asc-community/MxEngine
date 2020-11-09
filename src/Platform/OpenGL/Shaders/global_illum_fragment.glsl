@@ -17,7 +17,10 @@ uniform sampler2D depthTex;
 
 uniform int lightCount;
 uniform int pcfDistance;
+uniform int lightSamples;
 uniform Camera camera;
+
+uniform EnvironmentInfo environment;
 
 const int MaxLightCount = 4;
 uniform DirLight lights[MaxLightCount];
@@ -27,15 +30,16 @@ void main()
 {
 	FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
 	float fragDistance = length(camera.position - fragment.position);
-
+	
 	vec3 viewDirection = normalize(camera.position - fragment.position);
-
+	
 	vec3 totalColor = 0.0001f * fragment.albedo;
 	for (int i = 0; i < lightCount; i++)
 	{
-		float shadowFactor = calcShadowFactorCascade(vec4(fragment.position, 1.0f), lights[i], lightDepthMaps[i], pcfDistance);
-		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, shadowFactor);
+		vec4 pos = vec4(fragment.position, 1.0f);
+		float shadowFactor = calcShadowFactorCascade(pos, lights[i], lightDepthMaps[i], pcfDistance);
+		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, shadowFactor, environment, lightSamples);
 	}
-
+	
 	OutColor = vec4(totalColor, 1.0f);
 }

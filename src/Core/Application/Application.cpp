@@ -314,11 +314,11 @@ namespace MxEngine
 		renderingEngine
 			.UseCulling()
 			.UseDepthBuffer()
+			.UseSeamlessCubeMaps()
 			.UseLineWidth(this->config.DebugLineWidth)
 			.UseClearColor(0.0f, 0.0f, 0.0f, 1.0f)
 			.UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA)
-			.UseAnisotropicFiltering((float)this->config.AnisothropicFiltering)
-			;
+			.UseAnisotropicFiltering((float)this->config.AnisothropicFiltering);
 
 		this->GetRuntimeEditor().AddKeyBinding(config.EditorOpenKey);
 		this->InitializeRuntime(this->GetRuntimeEditor());

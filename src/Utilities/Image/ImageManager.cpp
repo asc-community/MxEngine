@@ -105,7 +105,7 @@ namespace MxEngine
         }
         else
         {
-            MXLOG_WARNING("MxEngine::ImageManager", "image was not saved because extenstion was invalid: " + MxString(ext.string().c_str()));
+            MXLOG_WARNING("MxEngine::ImageManager", "image was not saved because extenstion was invalid: " + ToMxString(ext));
         }
     }
 
@@ -192,8 +192,8 @@ namespace MxEngine
     void ImageManager::FlipImage(Image& image)
     {
         auto imageByteRow = image.GetRawData();
-        auto rowByteSize = image.GetWidth() * image.GetChannels();
-        uint8_t* swapRow = new uint8_t[rowByteSize];
+        auto rowByteSize = image.GetWidth() * image.GetPixelSize();
+        uint8_t* swapRow = (uint8_t*)std::malloc(rowByteSize);
 
         for (size_t i = 0; i < image.GetHeight() * rowByteSize / 2; i += rowByteSize)
         {
@@ -209,8 +209,7 @@ namespace MxEngine
             // Putting content of the swap (previously current row) to the symmetric row
             std::memcpy(symmetricRow, swapRow, rowByteSize);
         }
-
-        delete[] swapRow;
+        std::free((void*)rowByteSize);
     }
 
     Image ImageManager::CombineImages(ArrayView<Image> images, size_t imagesPerRaw)
@@ -220,20 +219,22 @@ namespace MxEngine
         {
             MX_ASSERT(images[i - 1].GetWidth()    == images[i].GetWidth());
             MX_ASSERT(images[i - 1].GetHeight()   == images[i].GetHeight());
-            MX_ASSERT(images[i - 1].GetChannels() == images[i].GetChannels());
+            MX_ASSERT(images[i - 1].GetPixelSize() == images[i].GetPixelSize());
+            MX_ASSERT(images[i - 1].IsFloatingPoint() == images[i].IsFloatingPoint());
         }
         #endif
         MX_ASSERT(images.size() > 1);
 
         size_t width = images[0].GetWidth();
         size_t height = images[0].GetHeight();
-        size_t channels = images[0].GetChannels();
+        size_t pixelSize = images[0].GetPixelSize();
+        bool isFloatingPoint = images[0].IsFloatingPoint();
 
-        auto result = (uint8_t*)std::malloc(width * height * channels * images.size());
+        auto result = (uint8_t*)std::malloc(width * height * pixelSize * images.size());
         MX_ASSERT(result != nullptr);
 
         const size_t imagesPerColumn = images.size() / imagesPerRaw;
-        const size_t rawWidth = width * channels;
+        const size_t rawWidth = width * pixelSize;
         size_t offset = 0;
 
         for (size_t t1 = 0; t1 < imagesPerColumn; t1++)
@@ -249,7 +250,7 @@ namespace MxEngine
                 }
             }
         }
-        return Image(result, width * imagesPerRaw, height * imagesPerColumn, channels);
+        return Image(result, width * imagesPerRaw, height * imagesPerColumn, pixelSize, isFloatingPoint);
     }
 
     Image ImageManager::CombineImages(Array2D<Image>& images)

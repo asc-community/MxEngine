@@ -10,3 +10,4 @@
 #include "CameraObject.h"
 #include "Lights.h"
 #include "SoundObject.h"
+#include "PBRObject.h"

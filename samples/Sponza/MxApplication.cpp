@@ -37,20 +37,19 @@ namespace Sponza
 
             camera->Transform.TranslateY(15.0f);
             
-            camera->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("skybox.png"_id);
+            auto skybox = camera->AddComponent<Skybox>();
+            skybox->CubeMap = AssetManager::LoadCubeMap("skybox.png"_id);
+            skybox->Irradiance = AssetManager::LoadCubeMap("skybox_irradiance.png"_id);
             
             auto input = camera->AddComponent<InputController>();
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
 
             auto toneMapping = camera->AddComponent<CameraToneMapping>();
-            toneMapping->SetEyeAdaptation(0.05f);
             toneMapping->SetMinLuminance(0.3f);
             toneMapping->SetWhitePoint(0.75f);
 
             auto ssr = camera->AddComponent<CameraSSR>();
-            ssr->SetSteps(10);
-            ssr->SetSkyboxLuminance(0.1f);
 
             auto effects = camera->AddComponent<CameraEffects>();
 
@@ -67,6 +66,8 @@ namespace Sponza
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Projections[1] = 100.0f;
+            dirLight->SetIntensity(100.0f);
+            dirLight->SetAmbientIntensity(0.3f);
             dirLight->FollowViewport();
 
             this->sphereFactory = MxObject::Create();
@@ -82,8 +83,15 @@ namespace Sponza
             sponza->AddComponent<MeshRenderer>(AssetManager::LoadMaterials("Sponza/glTF/Sponza.gltf"_id));
             sponza->Transform.SetScale(0.02f);
             sponza->Transform.TranslateY(13.0f);
-            sponza->GetComponent<MeshRenderer>()->Materials[8]->Reflection = 0.75f;
-            // sponza->AddComponent<DebugDraw>()->RenderPhysicsCollider = true;
+            
+            auto& materials = sponza->GetComponent<MeshRenderer>()->Materials;
+            if (!materials.empty())
+            {
+                // floor material
+                materials[8]->MetallicFactor = 0.75f;
+                materials[8]->RoughnessFactor = 0.75f;
+            }
+
             sponza->AddComponent<RigidBody>();
             auto collider = sponza->AddComponent<CompoundCollider>();
             // ground

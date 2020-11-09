@@ -123,6 +123,7 @@ namespace MxEngine
 
 	void CubeMap::Load(const MxString& filepath, bool genMipmaps, bool flipImage)
 	{
+		// TODO: support floating point textures
 		Image img = ImageLoader::LoadImage(filepath, flipImage);
 		if (img.GetRawData() == nullptr)
 		{
@@ -131,7 +132,7 @@ namespace MxEngine
 		}
 		auto images = ImageLoader::CreateCubemap(img);
 		this->filepath = filepath;
-		this->channels = img.GetChannels();
+		this->channels = img.GetChannelCount();
 		this->width = img.GetWidth();
 		this->height = img.GetHeight();
 
@@ -171,14 +172,35 @@ namespace MxEngine
 	{
 		this->width = images.front().GetWidth();
 		this->height = images.front().GetHeight();
-		this->channels = images.front().GetChannels();
+		this->channels = images.front().GetChannelCount();
 		this->filepath = "[[raw data]]";
+
+		GLenum pixelType = images.front().IsFloatingPoint() ? GL_FLOAT : GL_UNSIGNED_BYTE;
+		GLenum pixelFormat = GL_RGBA;
+		switch (this->channels)
+		{
+		case 1:
+			pixelFormat = GL_RED;
+			break;
+		case 2:
+			pixelFormat = GL_RG;
+			break;
+		case 3:
+			pixelFormat = GL_RGB;
+			break;
+		case 4:
+			pixelFormat = GL_RGBA;
+			break;
+		default:
+			MXLOG_ERROR("OpenGL::Texture", "invalid channel count: " + ToMxString(this->channels));
+			break;
+		}
 
 		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
 		for (size_t i = 0; i < images.size(); i++)
 		{
 			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGB,
-				(GLsizei)this->width, (GLsizei)this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, images[i].GetRawData()));
+				(GLsizei)this->width, (GLsizei)this->height, 0, pixelFormat, pixelType, images[i].GetRawData()));
 		}
 
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
@@ -229,8 +251,6 @@ namespace MxEngine
 				width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr));
 		}
 
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER));
@@ -262,6 +282,8 @@ namespace MxEngine
 	void CubeMap::GenerateMipmaps()
 	{
 		this->Bind(0);
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 		GLCALL(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
 	}
 }

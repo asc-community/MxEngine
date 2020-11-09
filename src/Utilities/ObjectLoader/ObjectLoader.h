@@ -54,10 +54,6 @@ namespace MxEngine
 		*/
 		MxString AlbedoMap;
 		/*!
-		specular texture path
-		*/
-		MxString SpecularMap;
-		/*!
 		emmisive texture path
 		*/
 		MxString EmmisiveMap;
@@ -75,14 +71,6 @@ namespace MxEngine
 		MxString AmbientOcclusionMap;
 
 		/*!
-		specular factor value
-		*/
-		float SpecularFactor = 1.0f;
-		/*!
-		specular intensity (power) value
-		*/
-		float SpecularIntensity = 128.0f;
-		/*!
 		transparency value
 		*/
 		float Transparency = 0.0f;
@@ -95,10 +83,6 @@ namespace MxEngine
 		*/
 		float Emmision = 0.0f;
 		/*!
-		object reflectance value
-		*/
-		float Reflection = 0.0f;
-		/*!
 		object base color
 		*/
 		Vector3 BaseColor = MakeVector3(1.0f);
@@ -106,6 +90,25 @@ namespace MxEngine
 		uv index scale
 		*/
 		Vector2 UVMultipliers = MakeVector2(1.0f);
+
+		// PBR parameters
+
+		/*!
+		metallic texture path
+		*/
+		MxString MetallicMap;
+		/*!
+		roughness texture path
+		*/
+		MxString RoughnessMap;
+		/*!
+		metallic factor value
+		*/
+		float MetallicFactor = 0.0f;
+		/*!
+		roughness factor value
+		*/
+		float RoughnessFactor = 0.5f;
 	};
 
 	/*!

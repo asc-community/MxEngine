@@ -133,6 +133,16 @@ namespace MxEngine
         return FWD(GetShadowBlurIterations);
     }
 
+    void Rendering::SetLightSamples(size_t samples)
+    {
+        FWD(SetLightSamples, samples);
+    }
+
+    size_t Rendering::GetLightSamples()
+    {
+        return FWD(GetLightSamples);
+    }
+
     #define DRW Application::GetImpl()->GetRenderAdaptor().DebugDrawer
 
     void Rendering::Draw(const Line& line, const Vector4& color)

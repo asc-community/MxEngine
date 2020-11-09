@@ -56,9 +56,14 @@ namespace MxEngine
         return this->coefficients;
     }
 
-    float CameraToneMapping::GetEyeAdaptation() const
+    float CameraToneMapping::GetEyeAdaptationSpeed() const
     {
-        return this->eyeAdaptation;
+        return this->eyeAdaptationSpeed;
+    }
+
+    float CameraToneMapping::GetEyeAdaptationThreshold() const
+    {
+        return this->eyeAdaptationThreshold;
     }
 
     float CameraToneMapping::GetMinLuminance() const
@@ -69,11 +74,6 @@ namespace MxEngine
     float CameraToneMapping::GetMaxLuminance() const
     {
         return this->maxLuminance;
-    }
-
-    void CameraToneMapping::SetEyeAdaptation(float adaptation)
-    {
-        this->eyeAdaptation = Max(adaptation, 0.0f);
     }
 
     void CameraToneMapping::SetMinLuminance(float lum)
@@ -105,6 +105,16 @@ namespace MxEngine
     void CameraToneMapping::SetWhitePoint(float point)
     {
         this->whitePoint = point;
+    }
+
+    void CameraToneMapping::SetEyeAdaptationThreshold(float threshold)
+    {
+        this->eyeAdaptationThreshold = Max(threshold, 0.0f);
+    }
+
+    void CameraToneMapping::SetEyeAdaptationSpeed(float speed)
+    {
+        this->eyeAdaptationSpeed = Max(speed, 0.0f);
     }
 
     void CameraToneMapping::SetACESCoefficients(const ACES& aces)

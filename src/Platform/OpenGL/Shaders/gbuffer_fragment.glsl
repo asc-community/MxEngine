@@ -14,14 +14,14 @@ layout(location = 2) out vec4 OutMaterial;
 struct Material
 {
 	float emmisive;
-	float reflection;
-	float specularFactor;
-	float specularIntensity;
+	float roughness;
+	float metallic;
 	float transparency;
 };
 
 uniform sampler2D map_albedo;
-uniform sampler2D map_specular;
+uniform sampler2D map_roughness;
+uniform sampler2D map_metallic;
 uniform sampler2D map_emmisive;
 uniform sampler2D map_normal;
 uniform sampler2D map_occlusion;
@@ -47,17 +47,17 @@ void main()
 
 	vec3 albedoTex = albedoAlphaTex.rgb;
 	float occlusion = texture(map_occlusion, TexCoord).r;
-	float specularTex = texture(map_specular, TexCoord).r;
 	float emmisiveTex = texture(map_emmisive, TexCoord).r;
+	float metallicTex = texture(map_metallic, TexCoord).r;
+	float roughnessTex = texture(map_roughness, TexCoord).r;
 
 	float emmisive = material.emmisive * emmisiveTex;
-	float reflection = material.reflection;
-	float specularFactor = material.specularFactor * specularTex;
-	float specularIntensity = material.specularIntensity;
+	float roughness = material.roughness * roughnessTex;
+	float metallic = material.metallic * metallicTex;
 
 	vec3 albedo = pow(fsin.RenderColor * albedoTex, vec3(gamma));
 
 	OutAlbedo = vec4(fsin.RenderColor * albedo, occlusion);
 	OutNormal = vec4(0.5f * normal + 0.5f, 1.0f);
-	OutMaterial = vec4(emmisive / (emmisive + 1.0f), reflection, 1.0f / log(specularIntensity + 1.0f), specularFactor);
+	OutMaterial = vec4(emmisive / (emmisive + 1.0f), roughness, metallic, 1.0f);
 }

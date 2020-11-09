@@ -43,7 +43,7 @@ namespace MxEngine
             pix[0] = pix[1] = pix[2] = randomValue;
         }
 
-        result->Load(noise[0].data(), (int)width, (int)height, 3);
+        result->Load(noise[0].data(), (int)width, (int)height, 3, false);
         return result;
     }
 
@@ -60,7 +60,7 @@ namespace MxEngine
             pix[2] = (uint8_t)Random::Range(0, 255);
         }
 
-        result->Load(noise[0].data(), (int)width, (int)height, 3);
+        result->Load(noise[0].data(), (int)width, (int)height, 3, false);
         return result;
     }
 }

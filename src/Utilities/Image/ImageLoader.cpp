@@ -46,7 +46,7 @@ namespace MxEngine
 		int width, height, channels;
 		uint8_t* data = stbi_load(filepath.c_str(), &width, &height, &channels, STBI_rgb_alpha);
 		channels = 4;
-		return Image(data, (size_t)width, (size_t)height, (size_t)channels);
+		return Image(data, (size_t)width, (size_t)height, (size_t)channels, false);
 	}
 
 	/*

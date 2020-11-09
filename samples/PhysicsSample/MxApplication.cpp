@@ -102,10 +102,13 @@ namespace PhysicsSample
         {
             player = MxObject::Create();
             player->Name = "Player";
-            player->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("dawn.jpg"_id);
             player->AddComponent<CameraToneMapping>();
             player->Transform.SetPosition(Vector3(30, 30, 30));
 
+            auto skybox = player->AddComponent<Skybox>();
+            skybox->CubeMap = AssetManager::LoadCubeMap("dawn.jpg"_id);
+            skybox->Irradiance = AssetManager::LoadCubeMap("dawn_irradiance.jpg"_id);
+            
             auto controller = player->AddComponent<CameraController>();
             controller->ListenWindowResizeEvent();
             controller->SetMoveSpeed(30);

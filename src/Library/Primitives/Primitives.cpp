@@ -477,7 +477,7 @@ namespace MxEngine
         };
 
         draw_border(textureData, static_cast<size_t>(textureSize * borderScale));
-        gridTexture->Load(textureData.data(), (int)textureSize, (int)textureSize, 3, TextureFormat::RGB);
+        gridTexture->Load(textureData.data(), (int)textureSize, (int)textureSize, 3, false, TextureFormat::RGB);
         return gridTexture;
     }
 }

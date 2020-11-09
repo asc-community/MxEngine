@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-7.6.0-red)
+![](https://img.shields.io/badge/version-7.7.0-red)
 ![](https://img.shields.io/badge/build-cmake-green)
 ![GitHub](https://img.shields.io/github/license/asc-community/MxEngine?color=yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
@@ -30,7 +30,7 @@ For full version list see [versions.md](versions.md) file
 Right now MxEngine is distributed in source code with configurable CMake files. Here are the steps you need to do to compile and run MxEngine sample projects:
 1. clone this repo to your system using `git clone https://github.com/asc-community/MxEngine`
 2. initialize submodules with `cd MxEngine && git submodule update --init`
-2. install [Boost](https://www.boost.org) and provide path to the library by setting `Boost_INCLUDE_DIR` in `CMakeLists.txt`
+2. install Boost on your machine from website or by package manager. You may also need to set environment variable **BOOST_ROOT** to be equal the Boost installation folder or provide **Boost_ROOT** and **Boost_INCLUDE_DIR** in CMake if you are building on Windows
 2. build project by running `CMakeLists.txt` located in root directory (set up necessary options if needed)
 3. go to `samples/<any_sample>` and run the executable file
 4. to create your own project, consider taking ProjectTemplate sample as starting point, it has everything already configured for build
@@ -40,6 +40,53 @@ Right now MxEngine is distributed in source code with configurable CMake files. 
 #### As a user (if you want to develop your own application)
 To develop your own applications using MxEngine you can use template project with already setup dependencies:
 [MxEngineTemplate](https://github.com/MomoDeve/MxEngineTemplate) (make sure it contains up-to-date version of the engine)
+
+## Feature list
+<details>
+	<summary><b>Rendering features</b></summary>
+
+	- Physically Based Rendering (Cook-Torrance GGX)
+	- Screen Space Reflection, Screen Space Ambient Occlusion
+	- Cascade shadow maps, omnidirectional shadow maps
+	- directional, point and spot dynamic lights
+	- Adaptive tone mapping, FXAA, fog, bloom effects
+	- 2D debug utilities: light, sound, object bounds, lines, rectangles and etc.
+
+</details>
+<details>
+	<summary><b>Physics features</b></summary>
+
+	- Rigid body dynamics: static, dynamic and kinematic bodies
+	- Collision detection with triggers and callbacks
+	- Raycasting with object type filtering
+
+</details>
+<details>
+	<summary><b>Audio features</b></summary>
+
+	- 3D sounds with distance attenuation
+	- Support of popular audio formats: .mp3, .ogg, .wav 
+
+</details>
+<details>
+	<summary><b>Programmable API</b></summary>
+
+	- Entity Component System (20+ different components)
+	- Safe to use handle system (RAII or by managable object pools)
+	- 50+ supported objects formats via Assimp library (with automatic normal & tangent generation)
+	- Event system with ability to add your own event types
+	- Logging, image & cubemap loading, json reading, UUID, random generators and more
+
+</details>
+<details>
+	<summary><b>Scripting & runtime editing</b></summary>
+
+	- Runtime C++ code compilation via dynamically load libraries
+	- Runtime GLSL shader editing (both engines and your own)
+	- ImGui editor with multiple draggable windows (docking)
+	- Load/save file dialog, texture viewer, mesh, material & component editors
+
+</details>
 
 ## Code snippets
 ### Primitive creation
@@ -61,10 +108,9 @@ Dynamic directional lights, spot lights and point lights are supported. Each has
 ```cs
 auto object = MxObject::Create();
 auto light = object->AddComponent<SpotLight>();
-light->AmbientColor  = { 1.0f,  1.0f, 1.0f };
-light->DiffuseColor  = { 1.0f,  1.0f, 1.0f };
-light->SpecularColor = { 1.0f,  1.0f, 1.0f };
-light->Direction     = { 1.0f, -1.3f, 1.0f };
+light->SetColor(Vector3(1.0f, 0.7f, 0.0f));
+light->SetIntensity(100.0f);
+light->SetAmbientIntensity(0.3f);
 light->UseOuterAngle(45.0f);
 ```
 ### Using scripts for runtime code compilation
@@ -118,7 +164,7 @@ You can create cameras and render scene from different angles. The results can b
 ```cs
 auto object = MxObject::Create();
 auto camera = object->AddComponent<CameraController>();
-camera->SetCameraType(CameraType::PERSPECTIVE);
+camera->SetDirection(Vector3(1.0f, 0.0f, 0.0f));
 ```
 ### Creating physical objects
 MxEngine supports realtime physics simulation. Just add RigidBody component and attach suitable collider
@@ -215,11 +261,11 @@ If you are interesed in libraries MxEngine depend on, consider reading [dependen
 <img src="preview_images/readme_additional1.png">
 <i>physics simulation with colliders turned on</i>
 
+<img src="preview_images/readme_additional3.png">
+<i>Sponza scene with one point light</i>
+
 <img src="preview_images/readme_additional2.png">
 <i>light and sound bounds, other debug utilities</i>
-
-<img src="preview_images/readme_additional3.png">
-<i>VR camera rendering scene for each eye</i>
 </p>
 
 ## Projects based on MxEngine

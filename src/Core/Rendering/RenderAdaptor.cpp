@@ -56,6 +56,7 @@ namespace MxEngine
 
         this->SetRenderToDefaultFrameBuffer();
         this->SetShadowBlurIterations(1);
+        this->SetLightSamples(4);
         
         // fog
         this->SetFogColor(MakeVector3(0.5f, 0.6f, 0.7f));
@@ -89,25 +90,29 @@ namespace MxEngine
         this->Renderer.GetLightInformation().PointLigthsInstanced =
             PointLightInstancedObject(sphereInstancedMesh.Data.GetVBO(), sphereInstancedMesh.Data.GetVAO(), sphereInstancedMesh.Data.GetIBO());
 
+        int internalTextureSize = (int)GlobalConfig::GetEngineTextureSize();
         // default textures
+        environment.DefaultShadowMap = Colors::MakeTexture(Colors::BLACK);
         environment.DefaultBlackMap = Colors::MakeTexture(Colors::BLACK);
         environment.DefaultNormalMap = Colors::MakeTexture(Colors::FLAT_NORMAL);
         environment.DefaultMaterialMap = Colors::MakeTexture(Colors::WHITE);
         environment.DefaultGreyMap = Colors::MakeTexture(Colors::GREY);
-        environment.DefaultBlackCubeMap = Colors::MakeCubeMap(Colors::BLACK);
+        environment.DefaultShadowCubeMap = Colors::MakeCubeMap(Colors::BLACK);
+        environment.DefaultSkybox = Colors::MakeCubeMap(Colors::GREY);
 
         environment.DefaultBlackMap->SetPath("[[black color]]");
         environment.DefaultNormalMap->SetPath("[[default normal]]");
         environment.DefaultMaterialMap->SetPath("[[white color]]");
         environment.DefaultGreyMap->SetPath("[[grey color]]");
+        environment.DefaultShadowMap->SetPath("[[default shadow map]]");
 
         environment.AverageWhiteTexture = GraphicFactory::Create<Texture>();
-        environment.AverageWhiteTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), 1, TextureFormat::R16F);
+        environment.AverageWhiteTexture->Load(nullptr, internalTextureSize, internalTextureSize, 1, false, TextureFormat::R16F);
         environment.AverageWhiteTexture->SetSamplingFromLOD(environment.AverageWhiteTexture->GetMaxTextureLOD());
         environment.AverageWhiteTexture->SetPath("[[average white]]");
 
         environment.AmbientOcclusionTexture = GraphicFactory::Create<Texture>();
-        environment.AmbientOcclusionTexture->Load(nullptr, (int)GlobalConfig::GetEngineTextureSize(), (int)GlobalConfig::GetEngineTextureSize(), 1, TextureFormat::R);
+        environment.AmbientOcclusionTexture->Load(nullptr, internalTextureSize, internalTextureSize, 1, false, TextureFormat::R);
         environment.AmbientOcclusionTexture->SetPath("[[ambient occlusion]]");
         
         // shaders
@@ -237,7 +242,7 @@ namespace MxEngine
         for (auto& bloomBuffer : environment.BloomBuffers)
         {
             auto bloomTexture = GraphicFactory::Create<Texture>();
-            bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, 3, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+            bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, 3, false, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
             bloomTexture->SetPath("[[bloom]]");
 
             bloomBuffer = GraphicFactory::Create<FrameBuffer>();
@@ -441,5 +446,18 @@ namespace MxEngine
     size_t RenderAdaptor::GetShadowBlurIterations() const
     {
         return (size_t)this->Renderer.GetEnvironment().ShadowBlurIterations;
+    }
+
+    void RenderAdaptor::SetLightSamples(size_t samples)
+    {
+        auto& environment = this->Renderer.GetEnvironment();
+        using SampleCountType = decltype(environment.LightSamples);
+        constexpr size_t maxSamples = 1024;
+        environment.LightSamples = (SampleCountType)Clamp(samples, (size_t)1, maxSamples);
+    }
+
+    size_t RenderAdaptor::GetLightSamples() const
+    {
+        return (size_t)this->Renderer.GetEnvironment().LightSamples;
     }
 }

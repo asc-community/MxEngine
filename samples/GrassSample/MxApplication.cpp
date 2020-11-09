@@ -17,7 +17,6 @@ namespace GrassSample
             field->AddComponent<MeshSource>(Primitives::CreatePlane(20));
             auto fieldMaterial = field->AddComponent<MeshRenderer>()->GetMaterial();
             fieldMaterial->AlbedoMap = AssetManager::LoadTexture("field.png"_id);
-            fieldMaterial->SpecularFactor = 0.05f;
 
             this->grass = MxObject::Create();
             grass->Name = "Grass Instances";
@@ -28,7 +27,6 @@ namespace GrassSample
 
             auto material = grass->AddComponent<MeshRenderer>()->GetMaterial();
             material->AlbedoMap = AssetManager::LoadTexture("grass_al.png"_id, TextureFormat::RGBA);
-            material->SpecularFactor = 0.05f;
             material->CastsShadow = false;
 
             auto grassInstances = grass->AddComponent<InstanceFactory>();
@@ -71,15 +69,13 @@ namespace GrassSample
                     auto pointLight = object->AddComponent<PointLight>();
                     pointLight->UseRadius(0.4f);
 
-                    float factor = 10.0f;
-                    float r = factor * Random::GetFloat();
-                    float g = factor * Random::GetFloat();
-                    float b = factor * Random::GetFloat();
-                    pointLight->AmbientColor = MakeVector3(0.0f);
-                    pointLight->DiffuseColor = { r, g, b };
-                    pointLight->SpecularColor = pointLight->DiffuseColor;
+                    float r = Random::GetFloat();
+                    float g = Random::GetFloat();
+                    float b = Random::GetFloat();
+                    pointLight->SetColor({ r, g, b });
+                    pointLight->SetIntensity(10.0f);
 
-                    object->GetComponent<Instance>()->SetColor(pointLight->DiffuseColor / factor);
+                    object->GetComponent<Instance>()->SetColor({ r, g, b });
                 }
             }
             lightFactory->SubmitInstances();
@@ -97,8 +93,11 @@ namespace GrassSample
             // setup camera
             cameraObject = MxObject::Create();
             cameraObject->Name = "Player Camera";
-            cameraObject->AddComponent<Skybox>()->Texture = AssetManager::LoadCubeMap("dawn.jpg"_id);
             cameraObject->Transform.TranslateY(2.0f);
+            
+            auto skybox = cameraObject->AddComponent<Skybox>();
+            skybox->CubeMap = AssetManager::LoadCubeMap("dawn.jpg"_id);
+            skybox->Irradiance = AssetManager::LoadCubeMap("dawn_irradiance.jpg"_id);
             
             auto effects = cameraObject->AddComponent<CameraEffects>();
             effects->SetBloomIterations(3);

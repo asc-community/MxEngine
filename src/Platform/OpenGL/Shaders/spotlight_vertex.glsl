@@ -2,9 +2,7 @@ layout(location = 0)  in vec4 position;
 layout(location = 5)  in mat4 transform;
 layout(location = 9)  in vec4 lightPosition;
 layout(location = 10) in vec4 lightDirection;
-layout(location = 11) in vec3 ambientColor;
-layout(location = 12) in vec3 diffuseColor;
-layout(location = 13) in vec3 specularColor;
+layout(location = 11) in vec4 colorParameters;
 
 out SpotLightInfo
 {
@@ -12,9 +10,7 @@ out SpotLightInfo
 	float innerAngle;
 	vec3 direction;
 	float outerAngle;
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
+	vec4 color;
 } spotLight;
 
 struct Camera
@@ -35,7 +31,5 @@ void main()
 	spotLight.innerAngle = lightPosition.w;
 	spotLight.direction = lightDirection.xyz;
 	spotLight.outerAngle = lightDirection.w;
-	spotLight.ambient = ambientColor;
-	spotLight.diffuse = diffuseColor;
-	spotLight.specular = specularColor;
+	spotLight.color = colorParameters;
 }

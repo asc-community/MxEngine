@@ -34,9 +34,16 @@ namespace MxEngine
 {
     class LightBase
     {
-    public:
-        Vector3 AmbientColor  = MakeVector3(0.3f);
-        Vector3 DiffuseColor  = MakeVector3(0.7f);
-        Vector3 SpecularColor = MakeVector3(1.0f);
+        float ambientIntensity = 0.1f;
+        float intensity = 1.0f;
+        Vector3 color{ 1.0f };
+    public:        
+        void SetColor(Vector3 color) { this->color = VectorMax(VectorMin(color, MakeVector3(1.0f)), MakeVector3(0.0f)); }
+        void SetIntensity(float intensity) { this->intensity = Max(intensity, 0.0f); }
+        void SetAmbientIntensity(float intensity) { this->ambientIntensity = Clamp(intensity, 0.0f, 1.0f); }
+
+        float GetIntensity() const { return this->intensity; }
+        Vector3 GetColor() const { return this->color; }
+        float GetAmbientIntensity() const { return this->ambientIntensity; }
     };
 }

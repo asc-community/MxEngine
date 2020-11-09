@@ -14,14 +14,14 @@ in VSout
 struct Material
 {
 	float emmisive;
-	float reflection;
-	float specularFactor;
-	float specularIntensity;
+	float roughness;
+	float metallic;
 	float transparency;
 };
 
 uniform sampler2D map_albedo;
-uniform sampler2D map_specular;
+uniform sampler2D map_metallic;
+uniform sampler2D map_roughness;
 uniform sampler2D map_emmisive;
 uniform sampler2D map_normal;
 uniform sampler2D map_transparency;
@@ -39,8 +39,11 @@ struct Camera
 };
 
 uniform int lightCount;
+uniform int lightSamples;
 uniform int pcfDistance;
 uniform vec3 viewportPosition;
+
+uniform EnvironmentInfo environment;
 
 const int MaxLightCount = 4;
 uniform DirLight lights[MaxLightCount];
@@ -61,28 +64,24 @@ void main()
 	FragmentInfo fragment;
 	fragment.albedo = pow(fsin.RenderColor * albedoAlphaTex.rgb, vec3(gamma));
 	fragment.ambientOcclusion = texture(map_occlusion, TexCoord).r;
-	fragment.specularIntensity = material.specularIntensity;
-	fragment.specularFactor = material.specularFactor * texture(map_specular, TexCoord).r;
+	fragment.roughnessFactor = material.roughness * texture(map_roughness, TexCoord).r;
+	fragment.metallicFactor = material.metallic * texture(map_metallic, TexCoord).r;
 	fragment.emmisionFactor = material.emmisive * texture(map_emmisive, TexCoord).r;
-	fragment.reflection = material.reflection;
 	fragment.depth = gl_FragCoord.z;
 	fragment.normal = calcNormal(TexCoord, fsin.TBN, map_normal);
 	fragment.position = fsin.Position;
 
 	float transparency = material.transparency * albedoAlphaTex.a;
-
 	float fragDistance = length(viewportPosition - fragment.position);
-
 	vec3 viewDirection = normalize(viewportPosition - fragment.position);
 
 	vec3 totalColor = vec3(0.0f);
-	totalColor += fragment.albedo * fragment.emmisionFactor;
+	totalColor += fragment.albedo * (fragment.emmisionFactor + 0.0001f);
 	for (int i = 0; i < lightCount; i++)
 	{
 		float shadowFactor = calcShadowFactorCascade(vec4(fragment.position, 1.0f), lights[i], lightDepthMaps[i], pcfDistance);
-		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, shadowFactor);
+		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, shadowFactor, environment, lightSamples);
 	}
-	totalColor *= fragment.ambientOcclusion;
 
 	OutColor = vec4(totalColor, transparency);
 }

@@ -17,7 +17,7 @@ float calcShadowFactor2D(vec4 fragPosLight, sampler2D depthMap, float bias, int 
 	{
 		for (int y = -blurIterations; y <= blurIterations; y++)
 		{
-			float pcfDepth = texture(depthMap, projCoords.xy + vec2(x, y) * texelSize).r;
+			float pcfDepth = textureLod(depthMap, projCoords.xy + vec2(x, y) * 1.5f * texelSize, 0).r;
 			shadowFactor += (currentDepth > pcfDepth) ? 0.0f : 1.0f;
 		}
 	}
@@ -46,7 +46,7 @@ float CalcShadowFactor3D(vec3 fragToLightRay, vec3 viewDist, float zfar, float b
 
 	for (int i = 0; i < POINT_LIGHT_SAMPLES; i++)
 	{
-		float closestDepth = texture(depthMap, sampleOffsetDirections[i] * diskRadius - fragToLightRay).r;
+		float closestDepth = textureLod(depthMap, sampleOffsetDirections[i] * diskRadius - fragToLightRay, 0).r;
 		shadowFactor += (currentDepth > closestDepth) ? 0.0f : 1.0f;
 	}
 	shadowFactor /= float(POINT_LIGHT_SAMPLES);
@@ -74,13 +74,19 @@ struct FragmentInfo
 {
 	vec3 albedo;
 	float ambientOcclusion;
-	float specularIntensity;
-	float specularFactor;
 	float emmisionFactor;
-	float reflection;
+	float roughnessFactor;
+	float metallicFactor;
 	float depth;
 	vec3 normal;
 	vec3 position;
+};
+
+struct EnvironmentInfo
+{
+	samplerCube skybox;
+	samplerCube irradiance;
+	mat3 skyboxRotation;
 };
 
 FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D normalTexture, sampler2D materialTexture, sampler2D depthTexture, mat4 invViewProjMatrix)
@@ -95,9 +101,8 @@ FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D n
 	fragment.albedo = albedo.rgb;
 	fragment.ambientOcclusion = albedo.a;
 	fragment.emmisionFactor = material.r / (1.0f - material.r);
-	fragment.reflection = material.g;
-	fragment.specularIntensity = exp(1.0f / material.b) - 1.0f;
-	fragment.specularFactor = material.a;
+	fragment.roughnessFactor = material.g;
+	fragment.metallicFactor = material.b;
 
 	fragment.position = reconstructWorldPosition(fragment.depth, texCoord, invViewProjMatrix);
 

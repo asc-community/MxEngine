@@ -231,18 +231,18 @@ namespace MxEngine::GUI
         SCOPE_TREE_NODE(material->Name.c_str());
 
         DrawTextureEditor("albedo map", material->AlbedoMap, true);
-        DrawTextureEditor("specular map", material->SpecularMap, true);
+        DrawTextureEditor("roughness map", material->RoughnessMap, true);
+        DrawTextureEditor("metallic map", material->MetallicMap, true);
         DrawTextureEditor("emmisive map", material->EmmisiveMap, true);
         DrawTextureEditor("normal map", material->NormalMap, true);
         DrawTextureEditor("height map", material->HeightMap, true);
         DrawTextureEditor("ambient occlusion map", material->AmbientOcclusionMap, true);
 
         ImGui::Checkbox("casts shadows", &material->CastsShadow);
-        ImGui::DragFloat("specular factor", &material->SpecularFactor, 0.01f, 0.0f, 1.0f);
-        ImGui::DragFloat("specular intensity", &material->SpecularIntensity, 0.1f, 1.0f, FLT_MAX);
+        ImGui::DragFloat("roughness factor", &material->RoughnessFactor, 0.01f, 0.0f, 1.0f);
+        ImGui::DragFloat("metallic factor", &material->MetallicFactor, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("emmision", &material->Emmision, 0.01f, 0.0f, FLT_MAX);
         ImGui::DragFloat("displacement", &material->Displacement, 0.01f);
-        ImGui::DragFloat("reflection", &material->Reflection, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("transparency", &material->Transparency, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat2("UV multipliers", &material->UVMultipliers[0], 0.01f);
         ImGui::ColorEdit3("base color", &material->BaseColor[0], ImGuiColorEditFlags_HDR);
@@ -356,13 +356,17 @@ namespace MxEngine::GUI
 
     void DrawLightBaseEditor(LightBase& base)
     {
-        ImGui::ColorEdit3("ambient color",  &base.AmbientColor[0],  ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
-        ImGui::ColorEdit3("diffuse color",  &base.DiffuseColor[0],  ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
-        ImGui::ColorEdit3("specular color", &base.SpecularColor[0], ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float);
+        float ambientIntensity = base.GetAmbientIntensity();
+        float intensity = base.GetIntensity();
+        Vector3 color = base.GetColor();
 
-        base.AmbientColor  = VectorMax(MakeVector3(0.0f), base.AmbientColor );
-        base.DiffuseColor  = VectorMax(MakeVector3(0.0f), base.DiffuseColor );
-        base.SpecularColor = VectorMax(MakeVector3(0.0f), base.SpecularColor);
+        ImGui::ColorEdit3("color", &color[0]);
+        ImGui::DragFloat("intensity", &intensity, 0.1f);
+        ImGui::DragFloat("ambient intensity", &ambientIntensity, 0.01f);
+
+        base.SetAmbientIntensity(ambientIntensity);
+        base.SetColor(color);
+        base.SetIntensity(intensity);
     }
 
     void DrawVertexEditor(Vertex& vertex)
@@ -376,17 +380,14 @@ namespace MxEngine::GUI
 
     void DrawImageSaver(const TextureHandle& texture, const char* name)
     {
-        static MxString path(128, '\0');
-        ImGui::InputText("save path", path.data(), path.size());
-
-        const char* imageTypes[] = { "PNG", "BMP", "TGA", "JPG", "HDR", };
-        static int currentImageType = 0;
         if (ImGui::Button("save image to disk"))
-            ImageManager::SaveTexture(path.c_str(), texture, (ImageType)currentImageType);
-        ImGui::SameLine();
-        ImGui::PushItemWidth(50.0f);
-        ImGui::Combo(" ", &currentImageType, imageTypes, (int)std::size(imageTypes));
-        ImGui::PopItemWidth();
+        {
+            MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
+            if (!path.empty())
+            {
+                ImageManager::SaveTexture(ToFilePath(path), texture);
+            }
+        }
     }
 
     void LoadFromPrimitive(MeshHandle& mesh)
@@ -499,11 +500,12 @@ namespace MxEngine::GUI
                 if (ImGui::CollapsingHeader("vertecies"))
                 {
                     GUI::Indent _(5.0f);
-                    int id = 0;
-                    for (auto& vertex : submesh.Data.GetVertecies())
+                    auto& vertecies = submesh.Data.GetVertecies();
+                    size_t maxVertecies = Min(1000, vertecies.size());
+                    for (size_t i = 0; i < maxVertecies; i++)
                     {
-                        ImGui::PushID(id++);
-                        DrawVertexEditor(vertex);
+                        ImGui::PushID((int)i);
+                        DrawVertexEditor(vertecies[i]);
                         ImGui::Separator();
                         ImGui::PopID();
                     }

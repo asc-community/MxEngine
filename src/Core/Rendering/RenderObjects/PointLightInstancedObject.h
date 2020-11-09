@@ -37,11 +37,10 @@ namespace MxEngine
 		Matrix4x4 Transform;
 		Vector3 Position;
 		float Radius;
-		Vector3 AmbientColor;
-		Vector3 DiffuseColor;
-		Vector3 SpecularColor;
+		Vector3 Color;
+		float AmbientIntensity;
 
-		constexpr static size_t Size = 16 + 3 + 1 + 3 + 3 + 3;
+		constexpr static size_t Size = 16 + 3 + 1 + 3 + 1;
 	};
 
 	class PointLightInstancedObject : public RenderHelperObject
@@ -60,9 +59,7 @@ namespace MxEngine
 			auto VBL = GraphicFactory::Create<VertexBufferLayout>();
 			VBL->Push<Matrix4x4>(); // transform
 			VBL->Push<Vector4>(); // position + radius
-			VBL->Push<Vector3>(); // ambient
-			VBL->Push<Vector3>(); // diffuse
-			VBL->Push<Vector3>(); // specular
+			VBL->Push<Vector4>(); // intensity * color + ambient intensity
 
 			this->VAO->AddInstancedBuffer(*this->instancedVBO, *VBL);
 		}

@@ -44,12 +44,15 @@ public:
 		auto spotLight = MxObject::Create();
 		InitSpotLight(*spotLight);
 
+		auto pbr = MxObject::Create();
+		InitPBRObject(*pbr);
+
 		// auto sound = MxObject::Create();
 		// InitSound(*sound);
     }
 
 	void OnUpdate()
 	{
-
+		
 	}
 };

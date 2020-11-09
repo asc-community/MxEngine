@@ -41,6 +41,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/pbrmaterial.h>
 
 namespace MxEngine
 {
@@ -84,16 +85,15 @@ namespace MxEngine
 			
 			#define GET_FLOAT(type, field)\
 			{ ai_real val;\
-				if (material->Get(AI_MATKEY_##type, val) == aiReturn_SUCCESS)\
+				if (material->Get(type, val) == aiReturn_SUCCESS)\
 				{\
 					materialInfo.field = (float)val;\
 				}\
 			}
 
-			GET_FLOAT(OPACITY, Transparency);
-			GET_FLOAT(SHININESS, SpecularFactor);
-			GET_FLOAT(SHININESS_STRENGTH, SpecularIntensity);
-			GET_FLOAT(REFLECTIVITY, Reflection);
+			GET_FLOAT(AI_MATKEY_OPACITY, Transparency);
+			GET_FLOAT(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_METALLIC_FACTOR, MetallicFactor);
+			GET_FLOAT(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_ROUGHNESS_FACTOR, RoughnessFactor);
 
 			// TODO: this is workaround, because some object formats export alpha channel as 0, but its actually means 1
 			if (materialInfo.Transparency == 0.0f) materialInfo.Transparency = 1.0f;
@@ -108,11 +108,16 @@ namespace MxEngine
 				}\
 			}
 			GET_TEXTURE(aiTextureType_DIFFUSE, AlbedoMap);
-			GET_TEXTURE(aiTextureType_SPECULAR, SpecularMap);
 			GET_TEXTURE(aiTextureType_EMISSIVE, EmmisiveMap);
 			GET_TEXTURE(aiTextureType_HEIGHT, HeightMap);
 			GET_TEXTURE(aiTextureType_NORMALS, NormalMap);
 			GET_TEXTURE(aiTextureType_AMBIENT_OCCLUSION, AmbientOcclusionMap);
+			GET_TEXTURE(aiTextureType_METALNESS, MetallicMap);
+			GET_TEXTURE(aiTextureType_DIFFUSE_ROUGHNESS, RoughnessMap);
+
+			// if no pbr textures provided, set all pbr parameters to default value
+			if (materialInfo.MetallicMap.empty()) materialInfo.MetallicFactor = 0.0f;
+			if (materialInfo.RoughnessMap.empty()) materialInfo.RoughnessFactor = 0.5f;
 		}
 
 		Vector3 minCoords = MakeVector3(std::numeric_limits<float>::max());
@@ -159,6 +164,12 @@ namespace MxEngine
 					vertex[i].Tangent = ((Vector3*)mesh->mTangents)[i];
 					vertex[i].Bitangent = ((Vector3*)mesh->mBitangents)[i];
 				}
+				else
+				{
+					auto randomVec = Random::GetUnitVector3();
+					vertex[i].Tangent = Cross(vertex[i].Normal, randomVec);
+					vertex[i].Bitangent = Cross(vertex[i].Normal, vertex[i].Tangent);
+				}
 			}
 
 			meshInfo.indicies.resize((size_t)mesh->mNumFaces * 3);
@@ -202,19 +213,20 @@ namespace MxEngine
 
 			material.Transparency        = json["Transparency"       ].get<float>();
 			material.Displacement        = json["Displacement"       ].get<float>();
-			material.SpecularFactor      = json["SpecularFactor"     ].get<float>();
 			material.Emmision            = json["Emmision"           ].get<float>();
-			material.Reflection          = json["Reflection"         ].get<float>();
+			material.MetallicFactor      = json["MetallicFactor"     ].get<float>();
+			material.RoughnessFactor     = json["RoughnessFactor"    ].get<float>();
 									    
 			material.BaseColor           = json["BaseColor"          ].get<Vector3>();
 			material.UVMultipliers       = json["UVMultipliers"      ].get<Vector2>();
 									    
 			material.AlbedoMap           = json["AlbedoMap"          ].get<MxString>();
-			material.SpecularMap         = json["SpecularMap"        ].get<MxString>();
 			material.EmmisiveMap         = json["EmmisiveMap"        ].get<MxString>();
 			material.HeightMap           = json["HeightMap"          ].get<MxString>();
 			material.NormalMap           = json["NormalMap"          ].get<MxString>();
 			material.AmbientOcclusionMap = json["AmbientOcclusionMap"].get<MxString>();
+			material.RoughnessMap        = json["RoughnessMap"       ].get<MxString>();
+			material.MetallicMap         = json["MetallicMap"        ].get<MxString>();
 			material.Name                = json["Name"               ].get<MxString>();
 		}													   
 
@@ -233,19 +245,19 @@ namespace MxEngine
 		{
 			DUMP(i, Transparency);
 			DUMP(i, Displacement);
-			DUMP(i, SpecularFactor);
-			DUMP(i, SpecularIntensity);
+			DUMP(i, MetallicFactor);
+			DUMP(i, RoughnessFactor);
 			DUMP(i, Emmision);
-			DUMP(i, Reflection);
 
 			DUMP(i, BaseColor);
 			DUMP(i, UVMultipliers);
 
 			DUMP(i, AlbedoMap);
-			DUMP(i, SpecularMap);
 			DUMP(i, EmmisiveMap);
 			DUMP(i, HeightMap);
 			DUMP(i, NormalMap);
+			DUMP(i, MetallicMap);
+			DUMP(i, RoughnessMap);
 			DUMP(i, AmbientOcclusionMap);
 
 			DUMP(i, Name);
