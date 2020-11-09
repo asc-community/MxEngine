@@ -43,7 +43,7 @@ To develop your own applications using MxEngine you can use template project wit
 
 ## Feature list
 <details>
-	<summary>**Rendering features**</summary>
+	**<summary>Rendering features</summary>**
 
 	- Physically Based Rendering (Cook-Torrance GGX)
 	- Screen Space Reflection, Screen Space Ambient Occlusion
@@ -54,7 +54,7 @@ To develop your own applications using MxEngine you can use template project wit
 
 </details>
 <details>
-	<summary>**Physics features**</summary>
+	**<summary>Physics features<summary>**
 
 	- Rigid body dynamics: static, dynamic and kinematic bodies
 	- Collision detection with triggers and callbacks
@@ -62,14 +62,14 @@ To develop your own applications using MxEngine you can use template project wit
 
 </details>
 <details>
-	<summary>**Audio features**</summary>
+	**<summary>Audio features</summary>**
 
 	- 3D sounds with distance attenuation
 	- Support of popular audio formats: .mp3, .ogg, .wav 
 
 </details>
 <details>
-	<summary>**Programmable API**</summary>
+	**<summary>Programmable API</summary>**
 
 	- Entity Component System (20+ different components)
 	- Safe to use handle system (RAII or by managable object pools)
@@ -79,7 +79,7 @@ To develop your own applications using MxEngine you can use template project wit
 
 </details>
 <details>
-	<summary>**Scripting & runtime editing**</summary>
+	**<summary>Scripting & runtime editing<summary>**
 
 	- Runtime C++ code compilation via dynamically load libraries
 	- Runtime GLSL shader editing (both engines and your own)
@@ -261,12 +261,12 @@ If you are interesed in libraries MxEngine depend on, consider reading [dependen
 <img src="preview_images/readme_additional1.png">
 <i>physics simulation with colliders turned on</i>
 
-<img src="preview_images/readme_additional2.png">
-<i>light and sound bounds, other debug utilities</i>
-
 <img src="preview_images/readme_additional3.png">
 <i>Sponza scene with one point light</i>
 </p>
+
+<img src="preview_images/readme_additional2.png">
+<i>light and sound bounds, other debug utilities</i>
 
 ## Projects based on MxEngine
 Here is the list of some projects using MxEngine. If you want to see yours here, [contact me](https://github.com/MomoDeve).
