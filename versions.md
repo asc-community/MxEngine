@@ -228,3 +228,6 @@
 ### 7.6.0
 - runtime scripting via Script component
 - new features in FileManager: save file dialog, implicit directory creation for new files
+# 7.7.0
+- engine switched to physically based rendering
+- fixes in object loading, SSAO & SSR shaders, texture loading

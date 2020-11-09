@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-7.6.0-red)
+![](https://img.shields.io/badge/version-7.7.0-red)
 ![](https://img.shields.io/badge/build-cmake-green)
 ![GitHub](https://img.shields.io/github/license/asc-community/MxEngine?color=yellow)
 [![Trello](https://img.shields.io/badge/board-trello-blue.svg)](https://trello.com/b/lfPsihUY/mxengine)
@@ -41,6 +41,53 @@ Right now MxEngine is distributed in source code with configurable CMake files. 
 To develop your own applications using MxEngine you can use template project with already setup dependencies:
 [MxEngineTemplate](https://github.com/MomoDeve/MxEngineTemplate) (make sure it contains up-to-date version of the engine)
 
+## Feature list
+<details>
+	<summary>**Rendering features**</summary>
+
+	- Physically Based Rendering (Cook-Torrance GGX)
+	- Screen Space Reflection, Screen Space Ambient Occlusion
+	- Cascade shadow maps, omnidirectional shadow maps
+	- directional, point and spot dynamic lights
+	- Adaptive tone mapping, FXAA, fog, bloom effects
+	- 2D debug utilities: light, sound, object bounds, lines, rectangles and etc.
+
+</details>
+<details>
+	<summary>**Physics features**</summary>
+
+	- Rigid body dynamics: static, dynamic and kinematic bodies
+	- Collision detection with triggers and callbacks
+	- Raycasting with object type filtering
+
+</details>
+<details>
+	<summary>**Audio features**</summary>
+
+	- 3D sounds with distance attenuation
+	- Support of popular audio formats: .mp3, .ogg, .wav 
+
+</details>
+<details>
+	<summary>**Programmable API**</summary>
+
+	- Entity Component System (20+ different components)
+	- Safe to use handle system (RAII or by managable object pools)
+	- 50+ supported objects formats via Assimp library (with automatic normal & tangent generation)
+	- Event system with ability to add your own event types
+	- Logging, image & cubemap loading, json reading, UUID, random generators and more
+
+</details>
+<details>
+	<summary>**Scripting & runtime editing**</summary>
+
+	- Runtime C++ code compilation via dynamically load libraries
+	- Runtime GLSL shader editing (both engines and your own)
+	- ImGui editor with multiple draggable windows (docking)
+	- Load/save file dialog, texture viewer, mesh, material & component editors
+
+</details>
+
 ## Code snippets
 ### Primitive creation
 You can easily create spheres, planes, cylinders and etc. Custom number of vertecies for displacement maps are supported out of box
@@ -61,10 +108,9 @@ Dynamic directional lights, spot lights and point lights are supported. Each has
 ```cs
 auto object = MxObject::Create();
 auto light = object->AddComponent<SpotLight>();
-light->AmbientColor  = { 1.0f,  1.0f, 1.0f };
-light->DiffuseColor  = { 1.0f,  1.0f, 1.0f };
-light->SpecularColor = { 1.0f,  1.0f, 1.0f };
-light->Direction     = { 1.0f, -1.3f, 1.0f };
+light->SetColor(Vector3(1.0f, 0.7f, 0.0f));
+light->SetIntensity(100.0f);
+light->SetAmbientIntensity(0.3f);
 light->UseOuterAngle(45.0f);
 ```
 ### Using scripts for runtime code compilation
@@ -118,7 +164,7 @@ You can create cameras and render scene from different angles. The results can b
 ```cs
 auto object = MxObject::Create();
 auto camera = object->AddComponent<CameraController>();
-camera->SetCameraType(CameraType::PERSPECTIVE);
+camera->SetDirection(Vector3(1.0f, 0.0f, 0.0f));
 ```
 ### Creating physical objects
 MxEngine supports realtime physics simulation. Just add RigidBody component and attach suitable collider
@@ -219,7 +265,7 @@ If you are interesed in libraries MxEngine depend on, consider reading [dependen
 <i>light and sound bounds, other debug utilities</i>
 
 <img src="preview_images/readme_additional3.png">
-<i>VR camera rendering scene for each eye</i>
+<i>Sponza scene with one point light</i>
 </p>
 
 ## Projects based on MxEngine

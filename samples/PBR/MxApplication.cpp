@@ -15,6 +15,7 @@ namespace PBR
                 for (size_t y = 0; y <= sphereCount; y++)
                 {
                     auto sphere = MxObject::Create();
+                    sphere->Name = MxFormat("Sphere ({}, {})", x, y);
                     sphere->AddComponent<MeshSource>(sphereMesh);
 
                     auto material = sphere->AddComponent<MeshRenderer>()->GetMaterial();
