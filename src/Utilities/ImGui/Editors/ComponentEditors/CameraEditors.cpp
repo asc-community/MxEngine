@@ -120,24 +120,56 @@ namespace MxEngine::GUI
 		ACES acesCoefficients = cameraToneMapping.GetACESCoefficients();
 
 		float gamma = cameraToneMapping.GetGamma();
-		float eyeAdaptation = cameraToneMapping.GetEyeAdaptation();
+		float adaptationSpeed = cameraToneMapping.GetEyeAdaptationSpeed();
+		float adaptationThreshold = cameraToneMapping.GetEyeAdaptationThreshold();
 
-		if (ImGui::DragFloat("exposure", &exposure, 0.01f))
-			cameraToneMapping.SetExposure(exposure);
-		if (ImGui::DragFloat("color scale", &colorScale, 0.01f))
-			cameraToneMapping.SetColorScale(colorScale);
-		if (ImGui::DragFloat("white point", &whitePoint, 0.01f))
-			cameraToneMapping.SetWhitePoint(whitePoint);
-		if (ImGui::DragFloat("min luminance", &minLuminance, 0.1f))
-			cameraToneMapping.SetMinLuminance(minLuminance);
-		if (ImGui::DragFloat("max luminance", &maxLuminance, 0.1f))
-			cameraToneMapping.SetMaxLuminance(maxLuminance);
-		if (ImGui::DragScalarN("ACES coefficients", ImGuiDataType_Float, &acesCoefficients.A, 6, 0.01f))
+		if (ImGui::TreeNode("luminance"))
+		{
+			if (ImGui::DragFloat("white point", &whitePoint, 0.01f))
+				cameraToneMapping.SetWhitePoint(whitePoint);
+			if (ImGui::DragFloat("min luminance", &minLuminance, 0.1f))
+				cameraToneMapping.SetMinLuminance(minLuminance);
+			if (ImGui::DragFloat("max luminance", &maxLuminance, 0.1f))
+				cameraToneMapping.SetMaxLuminance(maxLuminance);
+
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("ACES curve"))
+		{
+			ImGui::DragFloat("A", &acesCoefficients.A, 0.01f, 0.0f, FLT_MAX);
+			ImGui::DragFloat("B", &acesCoefficients.B, 0.01f, 0.0f, FLT_MAX);
+			ImGui::DragFloat("C", &acesCoefficients.C, 0.01f, 0.0f, FLT_MAX);
+			ImGui::DragFloat("D", &acesCoefficients.D, 0.01f, 0.0f, FLT_MAX);
+			ImGui::DragFloat("E", &acesCoefficients.E, 0.01f, 0.0f, FLT_MAX);
+			ImGui::DragFloat("F", &acesCoefficients.F, 0.01f, 0.0f, FLT_MAX);
+
 			cameraToneMapping.SetACESCoefficients(acesCoefficients);
-		if (ImGui::DragFloat("gamma", &gamma, 0.01f, 0.0f, 5.0f))
-			cameraToneMapping.SetGamma(gamma);
-		if (ImGui::DragFloat("eye adaptation", &eyeAdaptation))
-			cameraToneMapping.SetEyeAdaptation(eyeAdaptation);
+
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("exposure"))
+		{
+			if (ImGui::DragFloat("exposure", &exposure, 0.01f))
+				cameraToneMapping.SetExposure(exposure);
+			if (ImGui::DragFloat("color scale", &colorScale, 0.01f))
+				cameraToneMapping.SetColorScale(colorScale);
+			if (ImGui::DragFloat("gamma", &gamma, 0.01f, 0.0f, 5.0f))
+				cameraToneMapping.SetGamma(gamma);
+
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("eye adaptation"))
+		{
+			if (ImGui::DragFloat("speed", &adaptationSpeed, 0.01f))
+				cameraToneMapping.SetEyeAdaptationSpeed(adaptationSpeed);
+			if (ImGui::DragFloat("threshold", &adaptationThreshold, 0.01f))
+				cameraToneMapping.SetEyeAdaptationThreshold(adaptationThreshold);
+
+			ImGui::TreePop();
+		}
 	}
 
 	void CameraSSREditor(CameraSSR& cameraSSR)

@@ -164,6 +164,12 @@ namespace MxEngine
 					vertex[i].Tangent = ((Vector3*)mesh->mTangents)[i];
 					vertex[i].Bitangent = ((Vector3*)mesh->mBitangents)[i];
 				}
+				else
+				{
+					auto randomVec = Random::GetUnitVector3();
+					vertex[i].Tangent = Cross(vertex[i].Normal, randomVec);
+					vertex[i].Bitangent = Cross(vertex[i].Normal, vertex[i].Tangent);
+				}
 			}
 
 			meshInfo.indicies.resize((size_t)mesh->mNumFaces * 3);

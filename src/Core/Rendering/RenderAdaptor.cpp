@@ -97,12 +97,14 @@ namespace MxEngine
         environment.DefaultNormalMap = Colors::MakeTexture(Colors::FLAT_NORMAL);
         environment.DefaultMaterialMap = Colors::MakeTexture(Colors::WHITE);
         environment.DefaultGreyMap = Colors::MakeTexture(Colors::GREY);
-        environment.DefaultBlackCubeMap = Colors::MakeCubeMap(Colors::BLACK);
+        environment.DefaultShadowCubeMap = Colors::MakeCubeMap(Colors::BLACK);
+        environment.DefaultSkybox = Colors::MakeCubeMap(Colors::GREY);
 
         environment.DefaultBlackMap->SetPath("[[black color]]");
         environment.DefaultNormalMap->SetPath("[[default normal]]");
         environment.DefaultMaterialMap->SetPath("[[white color]]");
         environment.DefaultGreyMap->SetPath("[[grey color]]");
+        environment.DefaultShadowMap->SetPath("[[default shadow map]]");
 
         environment.AverageWhiteTexture = GraphicFactory::Create<Texture>();
         environment.AverageWhiteTexture->Load(nullptr, internalTextureSize, internalTextureSize, 1, false, TextureFormat::R16F);

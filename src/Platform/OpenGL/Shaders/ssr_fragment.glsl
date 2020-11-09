@@ -72,7 +72,7 @@ void main()
             currentLength = length(startPos - newPosition);
         }
     }
-
+    
     vec3 ssrReflection = texture(HDRTex, bestUV).rgb;
 
     vec2 screenCenterDiff = 2.0f * abs(bestUV - vec2(0.5f));
@@ -95,5 +95,5 @@ void main()
     
     if (isnan(ssrReflection.x)) ssrReflection = vec3(0.0f);
 
-    OutColor = vec4(objectColor + ssrReflection, 1.0f);
+    OutColor = vec4(objectColor + fragment.albedo * ssrReflection, 1.0f);
 }

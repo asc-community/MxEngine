@@ -42,7 +42,8 @@ namespace MxEngine
 		float whitePoint = 1.0f;
 		float colorMultiplier = 1.0f;
 		ACES coefficients;
-		float eyeAdaptation = 0.1f;
+		float eyeAdaptationSpeed = 0.1f;
+		float eyeAdaptationThreshold = 0.5f;
 		float minLuminance = 0.0f;
 		float maxLuminance = 100000.0f;
 	public:
@@ -51,7 +52,8 @@ namespace MxEngine
 		float GetColorScale() const;
 		float GetWhitePoint() const;
 		const ACES& GetACESCoefficients() const;
-		float GetEyeAdaptation() const;
+		float GetEyeAdaptationSpeed() const;
+		float GetEyeAdaptationThreshold() const;
 		float GetMinLuminance() const;
 		float GetMaxLuminance() const;
 
@@ -59,7 +61,8 @@ namespace MxEngine
 		void SetExposure(float exposure);
 		void SetColorScale(float mult);
 		void SetWhitePoint(float point);
-		void SetEyeAdaptation(float point);
+		void SetEyeAdaptationThreshold(float threshold);
+		void SetEyeAdaptationSpeed(float speed);
 		void SetMinLuminance(float lum);
 		void SetMaxLuminance(float lum);
 		void SetACESCoefficients(const ACES& aces);

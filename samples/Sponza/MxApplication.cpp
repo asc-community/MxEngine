@@ -46,7 +46,6 @@ namespace Sponza
             input->BindRotation();
 
             auto toneMapping = camera->AddComponent<CameraToneMapping>();
-            toneMapping->SetEyeAdaptation(0.05f);
             toneMapping->SetMinLuminance(0.3f);
             toneMapping->SetWhitePoint(0.75f);
 

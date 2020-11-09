@@ -194,7 +194,9 @@ namespace MxEngine
 		MX_ASSERT(camera.ToneMapping != nullptr);
 		camera.HDRTexture->GenerateMipmaps();
 
-		float eyeAdaptation = 1.0f - std::exp(-camera.ToneMapping->GetEyeAdaptation() * this->Pipeline.Environment.TimeDelta);
+		float dt = this->Pipeline.Environment.TimeDelta;
+		float fadingAdaptationSpeed = 1.0f - std::exp(-camera.ToneMapping->GetEyeAdaptationSpeed() * dt);
+		float adaptationThreshold = camera.ToneMapping->GetEyeAdaptationThreshold();
 
 		auto& shader = this->Pipeline.Environment.Shaders["AverageWhite"_id];
 		auto& output = this->Pipeline.Environment.AverageWhiteTexture;
@@ -202,7 +204,8 @@ namespace MxEngine
 		camera.AverageWhiteTexture->Bind(1);
 		shader->SetUniformInt("curFrameHDR", 0);
 		shader->SetUniformInt("prevFrameWhite", 1);
-		shader->SetUniformFloat("eyeAdaptation", eyeAdaptation);
+		shader->SetUniformFloat("adaptSpeed", fadingAdaptationSpeed);
+		shader->SetUniformFloat("adaptThreshold", adaptationThreshold);
 		this->RenderToTexture(output, shader);
 		output->GenerateMipmaps();
 		this->CopyTexture(output, camera.AverageWhiteTexture);
@@ -601,8 +604,8 @@ namespace MxEngine
 		shader->SetUniformInt("environment.irradiance", camera.IrradianceTexture->GetBoundId());
 		shader->SetUniformMat3("environment.skyboxRotation", camera.InverseSkyboxRotation);
 
-		this->Pipeline.Environment.DefaultBlackCubeMap->Bind(textureId);
-		shader->SetUniformInt("lightDepthMap", this->Pipeline.Environment.DefaultBlackCubeMap->GetBoundId());
+		this->Pipeline.Environment.DefaultShadowCubeMap->Bind(textureId);
+		shader->SetUniformInt("lightDepthMap", this->Pipeline.Environment.DefaultShadowCubeMap->GetBoundId());
 		shader->SetUniformInt("lightSamples", this->Pipeline.Environment.LightSamples);
 		shader->SetUniformVec2("viewportSize", viewportSize);
 		shader->SetUniformInt("castsShadows", false);
@@ -631,8 +634,8 @@ namespace MxEngine
 		shader->SetUniformInt("environment.irradiance", camera.IrradianceTexture->GetBoundId());
 		shader->SetUniformMat3("environment.skyboxRotation", camera.InverseSkyboxRotation);
 
-		this->Pipeline.Environment.DefaultBlackCubeMap->Bind(textureId);
-		shader->SetUniformInt("lightDepthMap", this->Pipeline.Environment.DefaultBlackCubeMap->GetBoundId());
+		this->Pipeline.Environment.DefaultShadowCubeMap->Bind(textureId);
+		shader->SetUniformInt("lightDepthMap", this->Pipeline.Environment.DefaultShadowCubeMap->GetBoundId());
 		shader->SetUniformInt("lightSamples", this->Pipeline.Environment.LightSamples);
 		shader->SetUniformVec2("viewportSize", viewportSize);
 		shader->SetUniformInt("castsShadows", false);
@@ -936,7 +939,7 @@ namespace MxEngine
 		camera.OutputTexture              = controller.GetRenderTexture();
 		camera.RenderToTexture            = controller.IsRendered();
 		camera.InverseSkyboxRotation      = Transpose(ToMatrix(skybox.GetRotation()));
-		camera.SkyboxTexture              = skybox.CubeMap.IsValid() ? skybox.CubeMap : this->Pipeline.Environment.DefaultBlackCubeMap;
+		camera.SkyboxTexture              = skybox.CubeMap.IsValid() ? skybox.CubeMap : this->Pipeline.Environment.DefaultSkybox;
 		camera.IrradianceTexture          = skybox.Irradiance.IsValid() ? skybox.Irradiance : camera.SkyboxTexture;
 		camera.Gamma                      = toneMapping == nullptr ? 1.0f : toneMapping->GetGamma();
 		camera.Effects                    = effects;

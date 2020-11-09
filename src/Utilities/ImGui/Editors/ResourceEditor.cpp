@@ -500,11 +500,12 @@ namespace MxEngine::GUI
                 if (ImGui::CollapsingHeader("vertecies"))
                 {
                     GUI::Indent _(5.0f);
-                    int id = 0;
-                    for (auto& vertex : submesh.Data.GetVertecies())
+                    auto& vertecies = submesh.Data.GetVertecies();
+                    size_t maxVertecies = Min(1000, vertecies.size());
+                    for (size_t i = 0; i < maxVertecies; i++)
                     {
-                        ImGui::PushID(id++);
-                        DrawVertexEditor(vertex);
+                        ImGui::PushID((int)i);
+                        DrawVertexEditor(vertecies[i]);
                         ImGui::Separator();
                         ImGui::PopID();
                     }
