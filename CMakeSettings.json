@@ -91,7 +91,7 @@
           "value": "True",
           "type": "BOOL"
         },
-		{
+        {
           "name": "USE_MSVC_RUNTIME_LIBRARY_DLL",
           "value": "True",
           "type": "BOOL"

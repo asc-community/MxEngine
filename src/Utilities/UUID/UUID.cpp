@@ -29,22 +29,25 @@
 #include "UUID.h"
 #include "Utilities/Memory/Memory.h"
 
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <boost/uuid/random_generator.hpp>
-#include <boost/uuid/nil_generator.hpp>
+// do not include system headers or link platform-specific libraries
+#undef _WIN32
+#undef __linux__
+#undef __unix__
+#undef __APPLE__
+#include <gsl>
+#include <uuid.h>
 
 namespace MxEngine
 {
     void UUIDGenerator::Init()
     {
-        static_assert(AssertEquality<sizeof(storage->generator), sizeof(boost::uuids::random_generator)>::value,
+        static_assert(AssertEquality<sizeof(storage->generator), sizeof(uuids::uuid_random_generator)>::value,
                 "aligned storage must fit implementation size");
-        static_assert(AssertEquality<sizeof(std::declval<UUID>().uuidImpl), sizeof(boost::uuids::uuid)>::value,
+        static_assert(AssertEquality<sizeof(std::declval<UUID>().uuidImpl), sizeof(uuids::uuid)>::value,
                 "aligned storage must fit implementation size");
 
         storage = Alloc<UUIDGeneratorImpl>();
-        new(&storage->generator) boost::uuids::random_generator();
+        (void)new(&storage->generator) UUIDGeneratorImpl::type(Random::GetImpl());
     }
 
     UUID UUIDGenerator::Get()
@@ -56,10 +59,7 @@ namespace MxEngine
 
     UUID UUIDGenerator::GetNull()
     {
-        UUID uuid;
-        boost::uuids::nil_generator nullGenerator;
-        uuid.GetImpl() = nullGenerator();
-        return uuid;
+        return UUID{ };
     }
 
     void UUIDGenerator::Clone(UUIDGeneratorImpl* other)
@@ -73,19 +73,19 @@ namespace MxEngine
     }
 
 
-    boost::uuids::uuid& UUID::GetImpl()
+    uuids::uuid& UUID::GetImpl()
     {
-        return *reinterpret_cast<boost::uuids::uuid*>(&uuidImpl);
+        return *std::launder(reinterpret_cast<uuids::uuid*>(&uuidImpl));
     }
 
-    const boost::uuids::uuid& UUID::GetImpl() const
+    const uuids::uuid& UUID::GetImpl() const
     {
-        return *reinterpret_cast<const boost::uuids::uuid*>(&uuidImpl);
+        return *std::launder(reinterpret_cast<const uuids::uuid*>(&uuidImpl));
     }
 
     size_t UUID::GetHashCode() const
     {
-        return boost::uuids::hash_value(this->GetImpl());
+        return std::hash<uuids::uuid>{ }(this->GetImpl());
     }
 
     bool UUID::operator==(const UUID& other) const
@@ -93,64 +93,46 @@ namespace MxEngine
         return this->GetImpl() == other.GetImpl();
     }
 
-    bool UUID::operator<(const UUID& other) const
-    {
-        return this->GetImpl() < other.GetImpl();
-    }
-
     bool UUID::operator!=(const UUID& other) const
     {
-        return this->GetImpl() != other.GetImpl();
+        return !(*this == other);
+    }
+
+    bool UUID::operator<(const UUID& other) const
+    {
+        auto b1 = this->GetImpl().as_bytes();
+        auto b2 = other.GetImpl().as_bytes();
+
+        return std::memcmp(std::addressof(b1), std::addressof(b2), sizeof(b1)) < 0;
     }
 
     bool UUID::operator>(const UUID& other) const
     {
-        return this->GetImpl() > other.GetImpl();
+        return other < *this;
     }
 
     bool UUID::operator<=(const UUID& other) const
     {
-        return this->GetImpl() <= other.GetImpl();
+        return !(other < *this);
     }
 
     bool UUID::operator>=(const UUID& other) const
     {
-        return this->GetImpl() >= other.GetImpl();
+        return !(*this < other);
     }
 
     UUID::operator MxString() const
     {
-        // copied from boost::uuids::to_string
-        MxString result;
-        result.reserve(36);
-
-        std::size_t i = 0;
-        for (auto it = this->GetImpl().begin(); it != this->GetImpl().end(); ++it, ++i) {
-            const size_t hi = ((*it) >> 4) & 0x0F;
-            result += boost::uuids::detail::to_char(hi);
-
-            const size_t lo = (*it) & 0x0F;
-            result += boost::uuids::detail::to_char(lo);
-
-            if (i == 3 || i == 5 || i == 7 || i == 9) {
-                result += '-';
-            }
-        }
-        return result;
+        return ToMxString(uuids::to_string(this->GetImpl()));
     }
 
-    boost::uuids::random_generator_pure& UUIDGeneratorImpl::GetGeneratorImpl()
+    UUIDGeneratorImpl::type& UUIDGeneratorImpl::GetGeneratorImpl()
     {
-        return *reinterpret_cast<boost::uuids::random_generator*>(&generator);
+        return *std::launder(reinterpret_cast<UUIDGeneratorImpl::type*>(&generator));
     }
 
     std::ostream& operator<<(std::ostream& out, const UUID& uuid)
     {
         return out << uuid.GetImpl();
-    }
-
-    std::istream& operator>>(std::istream& in, UUID& uuid)
-    {
-        return in >> uuid.GetImpl();
     }
 }

@@ -34,7 +34,6 @@ set(MXENGINE_SOURCES
 "Core/Rendering/RenderController.cpp" 
 "Core/Rendering/RenderObjects/SkyboxObject.cpp"
 "Core/Runtime/RuntimeEditor.cpp"  
-"Core/Macro/Macro.cpp"
 "Core/MxObject/MxObject.cpp" 
 "Core/Resources/Mesh.cpp" 
 "Core/Resources/MeshData.cpp" 
@@ -133,6 +132,7 @@ set(eabase ${SUBMODULES_PATH}/EABase)
 set(assimp ${SUBMODULES_PATH}/assimp)
 set(bullet3 ${SUBMODULES_PATH}/bullet3)
 set(portable_file_dialogs ${SUBMODULES_PATH}/portable-file-dialogs)
+set(stduuid ${SUBMODULES_PATH}/stduuid)
 set(runtime_compiled_cpp ${SUBMODULES_PATH}/RuntimeCompiledCPlusPlus/Aurora)
 
 set(THIRD_PARTY_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
@@ -140,12 +140,6 @@ set(LIBRARY_OUTPUT_PATH "")
 set(CMAKE_DEBUG_POSTFIX "")
 set(CMAKE_RELEASE_POSTFIX "")
 set(CMAKE_RELWITHDEBINFO_POSTFIX "")
-
-find_package(Boost)
-if (NOT Boost_FOUND)
-    message(SEND_ERROR "Boost package was not found, please add boost to environment variables by setting BOOST_ROOT or set Boost_INCLUDE_DIR variable in CMake project")
-    return()
-endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     add_compile_definitions(_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
@@ -191,6 +185,8 @@ set(THIRD_PARTY_INCLUDE_DIRS
     ${fmt}/include
     ${glfw}/include
     ${glew}/include
+    ${stduuid}/include
+    ${stduuid}/gsl
     ${bullet3}/src
     ${assimp}/include
     ${miniaudio}/extras
@@ -199,7 +195,6 @@ set(THIRD_PARTY_INCLUDE_DIRS
     ${imgui}
     ${glm}
     ${stb}
-    ${Boost_INCLUDE_DIRS}
 )
 
 set(fmt_binary_dir ${THIRD_PARTY_BUILD_DIR}/fmt)
@@ -258,12 +253,9 @@ set(THIRD_PARTY_LIBRARIES
 if(TARGET zlibstatic)
     set(THIRD_PARTY_LIBRARIES ${THIRD_PARTY_LIBRARIES} zlibstatic)
 endif()
-
-
 if(TARGET IrrXML)
     set(THIRD_PARTY_LIBRARIES ${THIRD_PARTY_LIBRARIES} IrrXML)
 endif()
-
 
 set(MXENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${THIRD_PARTY_INCLUDE_DIRS})
 include_directories(${MXENGINE_INCLUDE_DIRS})
@@ -274,6 +266,16 @@ add_library(${LIBRARY_NAME} STATIC ${MXENGINE_SOURCES})
 link_directories(${THIRD_PARTY_BINARY_DIRS})
 target_link_libraries(${LIBRARY_NAME} ${THIRD_PARTY_LIBRARIES})
 
+# Boost library - optional, only in engine core
+find_package(Boost)
+if (NOT MXENGINE_NO_BOOST AND Boost_FOUND)
+    target_include_directories(${LIBRARY_NAME} PUBLIC ${Boost_INCLUDE_DIR})
+    target_compile_definitions(${LIBRARY_NAME} PUBLIC MXENGINE_USE_BOOST)
+else()
+    message(WARNING "Boost library is not used in build, some engine utilities are disabled")
+endif()
+
+# RCCPP setup
 list(JOIN MXENGINE_INCLUDE_DIRS "," RCCPP_INCLUDE_DIRS)
 target_compile_definitions(${LIBRARY_NAME} PUBLIC
     MXENGINE_RCCPP_INCLUDE_DIRS="${RCCPP_INCLUDE_DIRS}"
@@ -290,6 +292,7 @@ foreach(LIB_NAME ${LIBRARY_NAME} ${THIRD_PARTY_LIBRARIES})
 endforeach()
 target_compile_definitions(${LIBRARY_NAME} PUBLIC MXENGINE_RCCPP_LIBRARY_COUNT=${LIBRARY_COUNT})
 
+# shared library setup (for copying into folder with executable)
 if(WIN32)
     set(SHARED_LIBRARIES_PATHS
         ${openal_binary_dir}/OpenAL32.dll

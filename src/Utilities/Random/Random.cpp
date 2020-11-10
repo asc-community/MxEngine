@@ -40,6 +40,11 @@ namespace MxEngine
         return lower + number % period;
     }
 
+    Random::Generator* Random::GetImpl()
+    {
+        return std::addressof(mersenne64);
+    }
+
     void Random::SetSeed(Generator::result_type seed)
     {
         Random::mersenne64.seed(seed);

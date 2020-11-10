@@ -59,11 +59,16 @@ namespace MxEngine
         /*!
         max value which random generator can produce
         */
-        static constexpr RandomReturnType Max = std::numeric_limits<RandomReturnType>::max();
+        static constexpr RandomReturnType Max = std::numeric_limits<RandomReturnType>::max() / 2 - 1;
         /*!
         min value which random generator can produce
         */
-        static constexpr RandomReturnType Min = std::numeric_limits<RandomReturnType>::min();
+        static constexpr RandomReturnType Min = std::numeric_limits<RandomReturnType>::min() / 2 - 1;
+        
+        /*!
+        pointer to underlying generator
+        */
+        static Generator* GetImpl();
 
         /*!
         sets seed for generator. Affects only current thread of execution

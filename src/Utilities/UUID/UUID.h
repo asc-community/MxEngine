@@ -30,15 +30,16 @@
 
 #include <utility>
 #include <ostream>
-#include <istream>
+#include <random>
 
 #include "Utilities/STL/MxString.h"
+#include "Utilities/Random/Random.h"
 #include "Core/Macro/Macro.h"
 
-namespace boost::uuids
+namespace uuids
 {
-    struct uuid;
-    class random_generator_pure;
+    class uuid;
+    template<typename> class basic_uuid_random_generator;
 }
 
 namespace MxEngine
@@ -49,13 +50,13 @@ namespace MxEngine
 
         friend class UUIDGenerator;
     public:
-        boost::uuids::uuid& GetImpl();
-        const boost::uuids::uuid& GetImpl() const;
+        uuids::uuid& GetImpl();
+        const uuids::uuid& GetImpl() const;
         size_t GetHashCode() const;
         bool operator==(const UUID& other) const;
-        bool operator< (const UUID& other) const;
         bool operator!=(const UUID& other) const;
-        bool operator> (const UUID& other) const;
+        bool operator<(const UUID& other) const;
+        bool operator>(const UUID& other) const;
         bool operator<=(const UUID& other) const;
         bool operator>=(const UUID& other) const;
 
@@ -63,18 +64,12 @@ namespace MxEngine
     };
 
     std::ostream& operator<<(std::ostream& out, const UUID& uuid);
-    std::istream& operator>>(std::istream& in, UUID& uuid);
 
     struct UUIDGeneratorImpl
     {
-        #if defined(MXENGINE_WINDOWS)
-        std::aligned_storage_t<8> generator;
-        #elif defined(MXENGINE_MACOS)
-        std::aligned_storage_t<4> generator;
-        #else
-        std::aligned_storage_t<1, 1> generator;
-        #endif
-        boost::uuids::random_generator_pure& GetGeneratorImpl();
+        using type = uuids::basic_uuid_random_generator<Random::Generator>;
+        std::aligned_storage_t<24> generator;
+        type& GetGeneratorImpl();
     };
 
     class UUIDGenerator

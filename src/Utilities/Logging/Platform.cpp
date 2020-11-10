@@ -92,6 +92,8 @@ namespace MxEngine
                 out << " | " << st[i].address() << '\n';
             }
         }
+    #else
+        out << "  stacktrace is unavailable, as engine was compiled without Boost.StackTrace\n";
     #endif
     }
 

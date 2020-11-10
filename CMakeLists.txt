@@ -6,7 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(MXENGINE_BUILD_SAMPLES "build sample projects" ON)
-option(MXENGINE_BUILD_SHIPPING OFF)
+option(MXENGINE_BUILD_SHIPPING "shipping build for end user" OFF)
+option(MXENGINE_NO_BOOST "forcely disable boost library" OFF)
 
 if(MXENGINE_BUILD_SHIPPING)
     set(CMAKE_BUILD_TYPE "Release")
@@ -46,7 +47,9 @@ if (MXENGINE_BUILD_SAMPLES)
     add_subdirectory(samples/SoundSample)
     add_subdirectory(samples/VRCameraSample)
     add_subdirectory(samples/GrassSample)
-    add_subdirectory(samples/FluidSimulation)
     add_subdirectory(samples/Sponza)
     add_subdirectory(samples/PBR)
+    
+    # not implemnted yet
+    #add_subdirectory(samples/FluidSimulation)
 endif()

@@ -17,9 +17,9 @@
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
 
 <Type Name="MxEngine::UUID">
-  <DisplayString>{{ uuid={*(boost::uuids::uuid*)&amp;uuidImpl} }}</DisplayString>
+  <DisplayString>{{ uuid={*(uuids::uuid*)&amp;uuidImpl} }}</DisplayString>
   <Expand>
-    <Item Name="[uuid]">*(boost::uuids::uuid*)&amp;uuidImpl</Item>
+    <Item Name="[uuid]">*(uuids::uuid*)&amp;uuidImpl</Item>
   </Expand>
 </Type>
   

@@ -35,8 +35,8 @@
 // assert handling 
 #define MX_ASSERT_EXCEPTION
 
-// engine code subsystems
-#define MXENGINE_USE_BOOST
+// boost library is optional for stacktrace
+// #define MXENGINE_USE_BOOST
 
 // model loader
 #define MXENGINE_USE_ASSIMP
