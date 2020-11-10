@@ -101,10 +101,14 @@ namespace MxEngine
 		{
 			MXLOG_FATAL("OpenGL::InitGLEW", "OpenGL init failed");
 		}
-		else
-		{
-			MXLOG_INFO("OpenGL::InitGLEW", "OpenGL version: " + MxString((char*)glGetString(GL_VERSION)));
-		}
+
+		GLCALL(const char* vendor = (const char*)glGetString(GL_VENDOR));
+		GLCALL(const char* renderer = (const char*)glGetString(GL_RENDERER));
+		GLCALL(const char* version = (const char*)glGetString(GL_VERSION));
+
+		if (vendor != nullptr)   MXLOG_INFO("OpenGL::InitGLEW", "OpenGL vendor: " + MxString(vendor));
+		if (renderer != nullptr) MXLOG_INFO("OpenGL::InitGLEW", "OpenGL renderer: " + MxString(renderer));
+		if (version != nullptr)  MXLOG_INFO("OpenGL::InitGLEW", "OpenGL version: " + MxString(version));
 	}
 
 	void InitializeDebug(void* window)

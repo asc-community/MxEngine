@@ -96,7 +96,6 @@ namespace MxEngine
 		Renderer& UseClearColor(float r, float g, float b, float a = 0.0f);
 		Renderer& UseBlending(BlendFactor src, BlendFactor dist);
 		Renderer& UseAnisotropicFiltering(float factor);
-		Renderer& UseLineWidth(size_t width);
 		float GetLargestAnisotropicFactor() const;
 	};
 }

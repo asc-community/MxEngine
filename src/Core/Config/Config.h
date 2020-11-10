@@ -84,7 +84,6 @@ namespace MxEngine
         size_t GraphicAPIMajorVersion = 4;
         size_t GraphicAPIMinorVersion = 5;
         size_t AnisothropicFiltering = 16;
-        size_t DebugLineWidth = 3;
         size_t DirLightTextureSize = 2048;
         size_t PointLightTextureSize = 512;
         size_t SpotLightTextureSize = 512;

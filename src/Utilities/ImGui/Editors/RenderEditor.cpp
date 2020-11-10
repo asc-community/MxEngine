@@ -120,10 +120,6 @@ namespace MxEngine
 
         if (ImGui::TreeNode("debug settings"))
         {
-            static int lineWidth = 3;
-            if (GUI::InputIntOnClick("line width", &lineWidth))
-                Rendering::GetController().GetRenderEngine().UseLineWidth(Max(1, lineWidth));
-
             auto& drawOverlay = Rendering::GetAdaptor().DebugDrawer.DrawAsScreenOverlay;
             ImGui::Checkbox("overlay debug", &drawOverlay);
 

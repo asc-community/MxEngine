@@ -91,11 +91,6 @@ namespace MxEngine
         return CFG(AnisothropicFiltering);
     }
 
-    size_t GlobalConfig::GetDebugLineWidth()
-    {
-        return CFG(DebugLineWidth);
-    }
-
     size_t GlobalConfig::GetDirectionalLightTextureSize()
     {
         return CFG(DirLightTextureSize);
