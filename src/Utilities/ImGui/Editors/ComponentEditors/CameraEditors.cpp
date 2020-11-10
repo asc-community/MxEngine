@@ -112,15 +112,16 @@ namespace MxEngine::GUI
 		TREE_NODE_PUSH("CameraToneMapping");
 		REMOVE_COMPONENT_BUTTON(cameraToneMapping);
 
-		float exposure = cameraToneMapping.GetExposure();
-		float colorScale = cameraToneMapping.GetColorScale();
-		float whitePoint = cameraToneMapping.GetWhitePoint();
-		float minLuminance = cameraToneMapping.GetMinLuminance();
-		float maxLuminance = cameraToneMapping.GetMaxLuminance();
+		float exposure		  = cameraToneMapping.GetExposure();
+		float colorScale	  = cameraToneMapping.GetColorScale();
+		float whitePoint	  = cameraToneMapping.GetWhitePoint();
+		float minLuminance	  = cameraToneMapping.GetMinLuminance();
+		float maxLuminance	  = cameraToneMapping.GetMaxLuminance();
+		auto channels		  = cameraToneMapping.GetColorGrading();
 		ACES acesCoefficients = cameraToneMapping.GetACESCoefficients();
 
-		float gamma = cameraToneMapping.GetGamma();
-		float adaptationSpeed = cameraToneMapping.GetEyeAdaptationSpeed();
+		float gamma               = cameraToneMapping.GetGamma();
+		float adaptationSpeed     = cameraToneMapping.GetEyeAdaptationSpeed();
 		float adaptationThreshold = cameraToneMapping.GetEyeAdaptationThreshold();
 
 		if (ImGui::TreeNode("luminance"))
@@ -167,6 +168,18 @@ namespace MxEngine::GUI
 				cameraToneMapping.SetEyeAdaptationSpeed(adaptationSpeed);
 			if (ImGui::DragFloat("threshold", &adaptationThreshold, 0.01f))
 				cameraToneMapping.SetEyeAdaptationThreshold(adaptationThreshold);
+
+			ImGui::TreePop();
+		}
+
+		if (ImGui::TreeNode("color grading"))
+		{
+			if (ImGui::ColorEdit3("channel R", &channels.R[0], 0.01f))
+				cameraToneMapping.SetColorGrading(channels);
+			if (ImGui::ColorEdit3("channel G", &channels.G[0], 0.01f))
+				cameraToneMapping.SetColorGrading(channels);
+			if (ImGui::ColorEdit3("channel B", &channels.B[0], 0.01f))
+				cameraToneMapping.SetColorGrading(channels);
 
 			ImGui::TreePop();
 		}

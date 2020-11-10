@@ -233,6 +233,11 @@ namespace MxEngine
             shaderFolder / "apply_ambient_occlusion_fragment.glsl"
         );
 
+        environment.Shaders["ColorGrading"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "color_grading_fragment.glsl"
+        );
+
         // framebuffers
         environment.DepthFrameBuffer = GraphicFactory::Create<FrameBuffer>();
         environment.DepthFrameBuffer->UseOnlyDepth();

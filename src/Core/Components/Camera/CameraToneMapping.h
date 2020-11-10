@@ -36,7 +36,14 @@ namespace MxEngine
 	class CameraToneMapping
 	{
 		MAKE_COMPONENT(CameraToneMapping);
-
+	
+	public:
+		struct ColorChannels
+		{
+			Vector3 R{}, G{}, B{};
+		};
+	
+	private:
 		float gamma = 2.2f;
 		float exposure = 1.0f;
 		float whitePoint = 1.0f;
@@ -46,8 +53,15 @@ namespace MxEngine
 		float eyeAdaptationThreshold = 0.1f;
 		float minLuminance = 0.0f;
 		float maxLuminance = 100000.0f;
+		ColorChannels colorChannels = {
+			Vector3{1.0f, 0.0f, 0.0f},
+			Vector3{0.0f, 1.0f, 0.0f},
+			Vector3{0.0f, 0.0f, 1.0f},
+		};
+
 	public:
 		float GetGamma() const;
+		const ColorChannels& GetColorGrading() const;
 		float GetExposure() const;
 		float GetColorScale() const;
 		float GetWhitePoint() const;
@@ -57,6 +71,7 @@ namespace MxEngine
 		float GetMinLuminance() const;
 		float GetMaxLuminance() const;
 
+		void SetColorGrading(const ColorChannels& channels);
 		void SetGamma(float gamma);
 		void SetExposure(float exposure);
 		void SetColorScale(float mult);

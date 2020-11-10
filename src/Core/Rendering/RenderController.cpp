@@ -242,6 +242,7 @@ namespace MxEngine
 		this->ApplyHDRToLDRConversion(camera, camera.HDRTexture, camera.SwapTexture);
 
 		this->ApplyFXAA(camera, camera.HDRTexture, camera.SwapTexture);
+		this->ApplyColorGrading(camera, camera.HDRTexture, camera.SwapTexture);
 		this->ApplyVignette(camera, camera.HDRTexture, camera.SwapTexture);
 	}
 
@@ -497,6 +498,24 @@ namespace MxEngine
 		vignetteShader->SetUniformFloat("intensity", camera.Effects->GetVignetteIntensity());
 
 		this->RenderToTexture(output, vignetteShader);
+		std::swap(input, output);
+	}
+
+	void RenderController::ApplyColorGrading(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
+	{
+		if (camera.ToneMapping == nullptr) return;
+		MAKE_SCOPE_PROFILER("RenderController::ApplyColorGrading");
+
+		auto& colorGradingShader = this->Pipeline.Environment.Shaders["ColorGrading"_id];
+		input->Bind(0);
+		colorGradingShader->SetUniformInt("tex", input->GetBoundId());
+
+		auto& colorGrading = camera.ToneMapping->GetColorGrading();
+		colorGradingShader->SetUniformVec3("channelR", colorGrading.R);
+		colorGradingShader->SetUniformVec3("channelG", colorGrading.G);
+		colorGradingShader->SetUniformVec3("channelB", colorGrading.B);
+
+		this->RenderToTexture(output, colorGradingShader);
 		std::swap(input, output);
 	}
 
