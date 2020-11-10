@@ -38,7 +38,9 @@ namespace MxEngine
 		{
 			auto id = MakeStringId(path);
 			if (textures.find(id) == textures.end())
+			{
 				textures[id] = GraphicFactory::Create<Texture>(path, format);
+			}
 			currentTexture = textures[id];
 		}
 	}
@@ -71,8 +73,12 @@ namespace MxEngine
 	{
 		MaterialArray materials;
 		MxHashMap<StringId, TextureHandle> textures;
-		auto materialLibPath = path + MeshRenderer::GetMaterialFileSuffix();
-		auto materialLibrary = ObjectLoader::LoadMaterials(materialLibPath);
+		auto matlibExtenstion = MeshRenderer::GetMaterialFileSuffix();
+		MxString actualPath = path;
+		if (ToFilePath(path).extension() != ToFilePath(matlibExtenstion))
+			actualPath = path + matlibExtenstion;
+
+		auto materialLibrary = ObjectLoader::LoadMaterials(actualPath);
 
 		materials.resize(materialLibrary.size());
 		for (size_t i = 0; i < materialLibrary.size(); i++)

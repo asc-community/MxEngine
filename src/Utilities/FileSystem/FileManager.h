@@ -58,6 +58,7 @@ namespace MxEngine
         static FilePath SearchForExtensionsInDirectory(const FilePath& directory, const MxString& extension);
         static FilePath SearchInDirectory(const FilePath& directory, const MxString& filename);
         static FilePath SearchInDirectory(const FilePath& directory, const FilePath& filename);
+        static FilePath GetRelativePath(const FilePath& path, const FilePath& directory);
 
         static void Clone(FileManagerImpl* other);
         static FileManagerImpl* GetImpl();

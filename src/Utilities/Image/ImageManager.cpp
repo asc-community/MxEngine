@@ -34,6 +34,47 @@
 
 namespace MxEngine
 {
+    void ImageManager::SaveImage(StringId fileHash, const Image& image, ImageType type)
+    {
+        ImageManager::SaveImage(FileManager::GetFilePath(fileHash), image, type);
+    }
+
+    void ImageManager::SaveImage(const FilePath& filePath, const Image& image, ImageType type)
+    {
+        ImageManager::SaveImage(ToMxString(filePath), image, type);
+    }
+
+    void ImageManager::SaveImage(const MxString& filePath, const Image& image, ImageType type)
+    {
+        File file(filePath, File::WRITE | File::BINARY);
+        ImageConverter::RawImageData imageByteData;
+        switch (type)
+        {
+        case ImageType::PNG:
+            imageByteData = ImageConverter::ConvertImagePNG(image);
+            break;
+        case ImageType::BMP:
+            imageByteData = ImageConverter::ConvertImageBMP(image);
+            break;
+        case ImageType::TGA:
+            imageByteData = ImageConverter::ConvertImageTGA(image);
+            break;
+        case ImageType::JPG:
+            imageByteData = ImageConverter::ConvertImageJPG(image);
+            break;
+        case ImageType::HDR:
+            // TODO: support HDR images
+            MXLOG_WARNING("MxEngine::ImageManager", "HDR texture format is not supported through ImageManager, use ImageConverter::ConvertImageHDR");
+            break;
+        }
+        file.WriteBytes(imageByteData.data(), imageByteData.size());
+    }
+
+    void ImageManager::SaveImage(const char* filePath, const Image& image, ImageType type)
+    {
+        ImageManager::SaveImage(MxString(filePath), image, type);
+    }
+
     void ImageManager::SaveTexture(StringId fileHash, const TextureHandle& texture, ImageType type)
     {
         ImageManager::SaveTexture(FileManager::GetFilePath(fileHash), texture, type);
@@ -46,28 +87,7 @@ namespace MxEngine
 
     void ImageManager::SaveTexture(const MxString& filePath, const TextureHandle& texture, ImageType type)
     {
-        File file(filePath, File::WRITE | File::BINARY);
-        ImageConverter::RawImageData imageByteData;
-        auto imageData = texture->GetRawTextureData();
-        switch (type)
-        {
-        case ImageType::PNG:
-            imageByteData = ImageConverter::ConvertImagePNG(imageData);
-            break;
-        case ImageType::BMP:
-            imageByteData = ImageConverter::ConvertImageBMP(imageData);
-            break;
-        case ImageType::TGA:
-            imageByteData = ImageConverter::ConvertImageTGA(imageData);
-            break;
-        case ImageType::JPG:
-            imageByteData = ImageConverter::ConvertImageJPG(imageData);
-            break;
-        case ImageType::HDR:
-            MXLOG_WARNING("MxEngine::ImageManager", "HDR texture format is not supported through ImageManager, use ImageConverter::ConvertImageHDR");
-            break;
-        }
-        file.WriteBytes(imageByteData.data(), imageByteData.size());
+        ImageManager::SaveImage(filePath, texture->GetRawTextureData(), type);
     }
 
     void ImageManager::SaveTexture(const char* filePath, const TextureHandle& texture, ImageType type)

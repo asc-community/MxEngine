@@ -34,6 +34,8 @@
 #include "Utilities/Format/Format.h"
 #include "Utilities/Random/Random.h"
 #include "Utilities/Json/Json.h"
+#include "Utilities/Image/ImageLoader.h"
+#include "Utilities/Image/ImageManager.h"
 
 #include <algorithm>
 
@@ -45,6 +47,41 @@
 
 namespace MxEngine
 {
+	MxString GetActualTexturePath(const FilePath& lookupDirectory, const char* name, const aiScene* scene, const aiMaterial* material, aiTextureType type)
+	{
+		constexpr ImageType PreferredFormat = ImageType::PNG;
+		const char* PreferredExtension = ".png";
+
+		auto path = ToMxString(lookupDirectory / name) + PreferredExtension;
+		if (File::Exists(path)) return path; // check if texture already on disk
+
+		if (material->GetTextureCount(type) > 0)
+		{
+			aiString assimpPath;
+			if (material->GetTexture(type, 0, &assimpPath) == aiReturn_SUCCESS)
+			{
+				const char* filepath = assimpPath.C_Str();
+
+				// check if texture is embedded into object file
+				// if no - just return path to a texture
+				const aiTexture* data = scene->GetEmbeddedTexture(filepath);
+				if (data == nullptr) return ToMxString(lookupDirectory / filepath);
+
+				// if texture data is embedded, we need to create a file from it
+				Image image;
+				if (data->mHeight == 0.0f) // compressed data (jpg)
+					image = ImageLoader::LoadImageFromMemory((const uint8_t*)data->pcData, data->mWidth);
+				else
+					image = ImageLoader::LoadImageFromMemory((const uint8_t*)data->pcData, data->mWidth * data->mHeight * sizeof(aiTexel));
+
+				// create image on disk to later load it
+				ImageManager::SaveImage(path, image, PreferredFormat);
+				return path;
+			}
+		}
+		return MxString();
+	}
+
 	ObjectInfo ObjectLoader::Load(const MxString& filename)
 	{
 		auto filepath = FilePath(filename.c_str());
@@ -98,26 +135,20 @@ namespace MxEngine
 			// TODO: this is workaround, because some object formats export alpha channel as 0, but its actually means 1
 			if (materialInfo.Transparency == 0.0f) materialInfo.Transparency = 1.0f;
 
-			#define GET_TEXTURE(type, field)\
-			if (material->GetTextureCount(type) > 0)\
-			{\
-				aiString path;\
-				if (material->GetTexture(type, 0, &path) == aiReturn_SUCCESS)\
-				{\
-					materialInfo.field = MxString((directory / path.C_Str()).string().c_str());\
-				}\
-			}
-			GET_TEXTURE(aiTextureType_DIFFUSE, AlbedoMap);
-			GET_TEXTURE(aiTextureType_EMISSIVE, EmmisiveMap);
-			GET_TEXTURE(aiTextureType_HEIGHT, HeightMap);
-			GET_TEXTURE(aiTextureType_NORMALS, NormalMap);
-			GET_TEXTURE(aiTextureType_AMBIENT_OCCLUSION, AmbientOcclusionMap);
-			GET_TEXTURE(aiTextureType_METALNESS, MetallicMap);
-			GET_TEXTURE(aiTextureType_DIFFUSE_ROUGHNESS, RoughnessMap);
+			materialInfo.AlbedoMap           = GetActualTexturePath(directory, "albedo",    scene, material, aiTextureType_DIFFUSE);
+			materialInfo.EmmisiveMap         = GetActualTexturePath(directory, "emmisive",  scene, material, aiTextureType_EMISSIVE);
+			materialInfo.HeightMap           = GetActualTexturePath(directory, "height",    scene, material, aiTextureType_HEIGHT);
+			materialInfo.NormalMap           = GetActualTexturePath(directory, "normal",    scene, material, aiTextureType_NORMALS);
+			materialInfo.AmbientOcclusionMap = GetActualTexturePath(directory, "ao",        scene, material, aiTextureType_AMBIENT_OCCLUSION);
+			materialInfo.RoughnessMap        = GetActualTexturePath(directory, "roughness", scene, material, aiTextureType_DIFFUSE_ROUGHNESS);
+			materialInfo.MetallicMap         = GetActualTexturePath(directory, "metallic",  scene, material, aiTextureType_METALNESS);
+			auto _ = GetActualTexturePath(directory, "roughness-metallic", scene, material, aiTextureType_UNKNOWN); // let user load it
 
 			// if no pbr textures provided, set all pbr parameters to default value
 			if (materialInfo.MetallicMap.empty()) materialInfo.MetallicFactor = 0.0f;
 			if (materialInfo.RoughnessMap.empty()) materialInfo.RoughnessFactor = 0.5f;
+			// if emmision texture provided, set emmision to some non-zero value
+			if (!materialInfo.EmmisiveMap.empty()) materialInfo.Emmision = 100.0f;
 		}
 
 		Vector3 minCoords = MakeVector3(std::numeric_limits<float>::max());

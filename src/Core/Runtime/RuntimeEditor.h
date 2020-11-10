@@ -85,6 +85,7 @@ namespace MxEngine
 				if (component.IsValid())
 					func(*component);
 			});
+			// Note: if component has no default constructor, it cannot be added to component list in runtime editor
 			if constexpr (std::is_default_constructible_v<T>)
 			{
 				this->componentNames.push_back(name);
@@ -93,11 +94,6 @@ namespace MxEngine
 					if(!object.HasComponent<T>())
 						object.AddComponent<T>();
 				});
-			}
-			else
-			{
-				MXLOG_WARNING("MxEngine::RuntimEditor",
-					"component cannot be added in runtime as it has no default constructor: " + (MxString)name);
 			}
 		}
 

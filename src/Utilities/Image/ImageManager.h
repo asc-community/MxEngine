@@ -47,6 +47,11 @@ namespace MxEngine
 	class ImageManager
 	{
 	public:
+		static void SaveImage(StringId        fileHash, const Image& image, ImageType type);
+		static void SaveImage(const FilePath& filePath, const Image& image, ImageType type);
+		static void SaveImage(const MxString& filePath, const Image& image, ImageType type);
+		static void SaveImage(const char*     filePath, const Image& image, ImageType type);
+
 		static void SaveTexture(StringId        fileHash, const TextureHandle& texture, ImageType type);
 		static void SaveTexture(const FilePath& filePath, const TextureHandle& texture, ImageType type);
 		static void SaveTexture(const MxString& filePath, const TextureHandle& texture, ImageType type);

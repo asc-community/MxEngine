@@ -49,6 +49,19 @@ namespace MxEngine
 		return Image(data, (size_t)width, (size_t)height, (size_t)channels, false);
 	}
 
+	Image ImageLoader::LoadImageFromMemory(const uint8_t* memory, size_t byteSize, bool flipImage)
+	{
+		MAKE_SCOPE_PROFILER("ImageLoader::LoadImage");
+		MAKE_SCOPE_TIMER("MxEngine::ImageLoader", "ImageLoader::LoadImage()");
+		MXLOG_INFO("MxEngine::ImageLoader", "loading image from memory");
+
+		stbi_set_flip_vertically_on_load(flipImage);
+		int width, height, channels;
+		uint8_t* data = stbi_load_from_memory(memory, (int)byteSize, &width, &height, &channels, STBI_rgb_alpha);
+		channels = 4;
+		return Image(data, (size_t)width, (size_t)height, (size_t)channels, false);
+	}
+
 	/*
 	    0X00
 	    XXXX -> format of input

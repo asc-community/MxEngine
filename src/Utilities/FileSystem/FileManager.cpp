@@ -131,6 +131,11 @@ namespace MxEngine
         return FilePath();
     }
 
+    FilePath FileManager::GetRelativePath(const FilePath& path, const FilePath& directory)
+    {
+        return std::filesystem::relative(path, directory);
+    }
+
     void FileManager::AddFile(const FilePath& file)
     {
         auto filename = file.string(); // we need to transform Resources\path\to.something -> path/to.something

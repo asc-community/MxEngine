@@ -44,10 +44,19 @@ namespace MxEngine
 		/*!
 		loads image from disk. As OpenGL treats images differently as expected, all images are flipped automatically
 		\param filepath path to an image on disk
-		\param flipImage should the image be vertically flipped. As MxEngine uses primarily OpenGL, usually you want to do this
+		\param flipImage should the image be vertically flipped. As MxEngine uses OpenGL, usually you want to do this
 		\returns Image object if image file exists or nullptr data and width = height = channels = 0 if not
 		*/
 		static Image LoadImage(const MxString& filepath, bool flipImage = true);
+
+		/*!
+		loads image from memory. As OpenGL treats images differently as expected, all images are flipped automatically
+		\param memory pointer to the image data
+		\param byteSize size of memory in bytes
+		\param flipImage should the image be vertically flipped. As MxEngine uses OpenGL, usually you want to do this
+		\returns Image object if image file exists or nullptr data and width = height = channels = 0 if not
+		*/
+		static Image LoadImageFromMemory(const uint8_t* memory, size_t byteSize, bool flipImage = true);
 
 		using ImageArray = std::array<Array2D<unsigned char>, 6>;
 		/*!
