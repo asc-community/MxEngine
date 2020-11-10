@@ -38,10 +38,13 @@ namespace MxEngine
         MAKE_COMPONENT(Skybox);
 
         Quaternion rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
+        float intensity = 1.0f;
     public:
         CubeMapHandle CubeMap;
         CubeMapHandle Irradiance;
 
+        void SetIntensity(float intensity) { this->intensity = Max(intensity, 0.0f); }
+        float GetIntensity() const { return this->intensity; }
         const Quaternion& GetRotation() const { return this->rotation; }
         void SetRotation(const Quaternion& rotation) { this->rotation = rotation; }
         Vector3 GetEulerRotation() const { return MakeEulerAngles(this->rotation); }

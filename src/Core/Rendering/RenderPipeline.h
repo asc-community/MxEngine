@@ -69,9 +69,10 @@ namespace MxEngine
         Matrix4x4 ViewProjectionMatrix;
         Matrix4x4 StaticViewProjectionMatrix;
 
-        Vector3 ViewportPosition;
         TextureHandle OutputTexture;
+        Vector3 ViewportPosition;
 
+        float SkyboxIntensity;
         Matrix3x3 InverseSkyboxRotation;
         CubeMapHandle SkyboxTexture;
         CubeMapHandle IrradianceTexture;

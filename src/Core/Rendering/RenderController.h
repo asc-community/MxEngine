@@ -73,9 +73,10 @@ namespace MxEngine
 		void DrawShadowedSpotLights(CameraUnit& camera);
 		void DrawNonShadowedPointLights(CameraUnit& camera);
 		void DrawNonShadowedSpotLights(CameraUnit& camera);
-		void BindGBuffer(const CameraUnit& camera, const Shader& shader);
-		void BindFogInformation(const Shader& shader);
+		void BindGBuffer(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
+		void BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
 		void BindCameraInformation(const CameraUnit& camera, const Shader& shader);
+		void BindFogInformation(const Shader& shader);
 	public:
 		const Renderer& GetRenderEngine() const;
 		Renderer& GetRenderEngine();

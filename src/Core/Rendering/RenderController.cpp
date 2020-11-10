@@ -168,7 +168,9 @@ namespace MxEngine
 		auto& computeShader = this->Pipeline.Environment.Shaders["AmbientOcclusion"_id];
 		computeShader->IgnoreNonExistingUniform("materialTex");
 		computeShader->IgnoreNonExistingUniform("albedoTex");
-		this->BindGBuffer(camera, *computeShader);
+
+		Texture::TextureBindId textureId = 0;
+		this->BindGBuffer(camera, *computeShader, textureId);
 		this->BindCameraInformation(camera, *computeShader);
 
 		computeShader->SetUniformInt("sampleCount", (int)camera.Effects->GetAmbientOcclusionSamples());
@@ -251,21 +253,17 @@ namespace MxEngine
 		auto& shader = this->Pipeline.Environment.Shaders["GlobalIllumination"_id];
 
 		shader->IgnoreNonExistingUniform("camera.viewProjMatrix");
-		this->BindGBuffer(camera, *shader);
-		this->BindCameraInformation(camera, *shader);
 
-		Texture::TextureBindId textureId = 4;
+		Texture::TextureBindId textureId = 0;
+		this->BindGBuffer(camera, *shader, textureId);
+		this->BindCameraInformation(camera, *shader);
+		this->BindSkyboxInformation(camera, *shader, textureId);
 
 		// submit directional light information
 		constexpr size_t MaxDirLightCount = 4;
 		const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
 		size_t lightCount = Min(MaxDirLightCount, dirLights.size());
 
-		camera.SkyboxTexture->Bind(textureId++);
-		camera.IrradianceTexture->Bind(textureId++);
-		shader->SetUniformInt("environment.skybox", camera.SkyboxTexture->GetBoundId());
-		shader->SetUniformInt("environment.irradiance", camera.IrradianceTexture->GetBoundId());
-		shader->SetUniformMat3("environment.skyboxRotation", camera.InverseSkyboxRotation);
 
 		shader->SetUniformInt("lightCount", (int)lightCount);
 		shader->SetUniformInt("pcfDistance", this->Pipeline.Environment.ShadowBlurIterations);
@@ -330,16 +328,11 @@ namespace MxEngine
 		shader->SetUniformFloat("gamma", camera.Gamma);
 
 		Texture::TextureBindId textureId = Material::TextureCount;
+		this->BindSkyboxInformation(camera, *shader, textureId);
 
 		// submit directional light information
 		const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
 		size_t lightCount = Min(MaxDirLightCount, dirLights.size());
-
-		camera.SkyboxTexture->Bind(textureId++);
-		camera.IrradianceTexture->Bind(textureId++);
-		shader->SetUniformInt("environment.skybox", camera.SkyboxTexture->GetBoundId());
-		shader->SetUniformInt("environment.irradiance", camera.IrradianceTexture->GetBoundId());
-		shader->SetUniformMat3("environment.skyboxRotation", camera.InverseSkyboxRotation);
 
 		shader->SetUniformInt("lightCount", (int)lightCount);
 		shader->SetUniformInt("pcfDistance", this->Pipeline.Environment.ShadowBlurIterations);
@@ -390,12 +383,13 @@ namespace MxEngine
 		fogShader->IgnoreNonExistingUniform("albedoTex");
 		fogShader->IgnoreNonExistingUniform("materialTex");
 
-		input->Bind(4);
-		fogShader->SetUniformInt("cameraOutput", input->GetBoundId());
-
-		this->BindGBuffer(camera, *fogShader);
+		Texture::TextureBindId textureId = 0;
+		this->BindGBuffer(camera, *fogShader, textureId);
 		this->BindFogInformation(*fogShader);
 		this->BindCameraInformation(camera, *fogShader);
+
+		input->Bind(textureId++);
+		fogShader->SetUniformInt("cameraOutput", input->GetBoundId());
 
 		this->RenderToTexture(output, fogShader);
 		std::swap(input, output);
@@ -428,9 +422,11 @@ namespace MxEngine
 		auto& SSRShader = this->Pipeline.Environment.Shaders["SSR"_id];
 		SSRShader->IgnoreNonExistingUniform("albedoTex");
 		
-		this->BindGBuffer(camera, *SSRShader);
+		Texture::TextureBindId textureId = 0;
+		this->BindGBuffer(camera, *SSRShader, textureId);
 		this->BindCameraInformation(camera, *SSRShader);
-		input->Bind(4);
+
+		input->Bind(textureId++);
 		SSRShader->SetUniformInt("HDRTex", input->GetBoundId());
 
 		SSRShader->SetUniformFloat("thickness", camera.SSR->GetThickness());
@@ -514,16 +510,11 @@ namespace MxEngine
 		shader->SetUniformInt("lightSamples", this->Pipeline.Environment.LightSamples);
 		shader->SetUniformInt("pcfDistance", this->Pipeline.Environment.ShadowBlurIterations);
 		shader->SetUniformInt("castsShadows", true);
-		this->BindGBuffer(camera, *shader);
+
+		Texture::TextureBindId textureId = 0;
+		this->BindGBuffer(camera, *shader, textureId);
+		this->BindSkyboxInformation(camera, *shader, textureId);
 		this->BindCameraInformation(camera, *shader);
-
-		Texture::TextureBindId textureId = 4;
-
-		camera.SkyboxTexture->Bind(textureId++);
-		camera.IrradianceTexture->Bind(textureId++);
-		shader->SetUniformInt("environment.skybox", camera.SkyboxTexture->GetBoundId());
-		shader->SetUniformInt("environment.irradiance", camera.IrradianceTexture->GetBoundId());
-		shader->SetUniformMat3("environment.skyboxRotation", camera.InverseSkyboxRotation);
 
 		shader->SetUniformInt("lightDepthMap", textureId);
 
@@ -557,16 +548,11 @@ namespace MxEngine
 		shader->SetUniformVec2("viewportSize", viewportSize);
 		shader->SetUniformInt("lightSamples", this->Pipeline.Environment.LightSamples);
 		shader->SetUniformInt("castsShadows", true);
-		this->BindGBuffer(camera, *shader);
+
+		Texture::TextureBindId textureId = 0;
+		this->BindGBuffer(camera, *shader, textureId);
+		this->BindSkyboxInformation(camera, *shader, textureId);
 		this->BindCameraInformation(camera, *shader);
-
-		Texture::TextureBindId textureId = 4;
-
-		camera.SkyboxTexture->Bind(textureId++);
-		camera.IrradianceTexture->Bind(textureId++);
-		shader->SetUniformInt("environment.skybox", camera.SkyboxTexture->GetBoundId());
-		shader->SetUniformInt("environment.irradiance", camera.IrradianceTexture->GetBoundId());
-		shader->SetUniformMat3("environment.skyboxRotation", camera.InverseSkyboxRotation);
 
 		shader->SetUniformInt("lightDepthMap", textureId);
 
@@ -593,16 +579,10 @@ namespace MxEngine
 		auto shader = this->Pipeline.Environment.Shaders["PointLight"_id];
 		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
 
-		this->BindGBuffer(camera, *shader);
+		Texture::TextureBindId textureId = 0;
+		this->BindGBuffer(camera, *shader, textureId);
+		this->BindSkyboxInformation(camera, *shader, textureId);
 		this->BindCameraInformation(camera, *shader);
-
-		Texture::TextureBindId textureId = 4;
-
-		camera.SkyboxTexture->Bind(textureId++);
-		camera.IrradianceTexture->Bind(textureId++);
-		shader->SetUniformInt("environment.skybox", camera.SkyboxTexture->GetBoundId());
-		shader->SetUniformInt("environment.irradiance", camera.IrradianceTexture->GetBoundId());
-		shader->SetUniformMat3("environment.skyboxRotation", camera.InverseSkyboxRotation);
 
 		this->Pipeline.Environment.DefaultShadowCubeMap->Bind(textureId);
 		shader->SetUniformInt("lightDepthMap", this->Pipeline.Environment.DefaultShadowCubeMap->GetBoundId());
@@ -623,16 +603,10 @@ namespace MxEngine
 		auto shader = this->Pipeline.Environment.Shaders["SpotLight"_id];
 		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
 
-		this->BindGBuffer(camera, *shader);
+		Texture::TextureBindId textureId = 0;
+		this->BindGBuffer(camera, *shader, textureId);
+		this->BindSkyboxInformation(camera, *shader, textureId);
 		this->BindCameraInformation(camera, *shader);
-
-		Texture::TextureBindId textureId = 4;
-
-		camera.SkyboxTexture->Bind(textureId++);
-		camera.IrradianceTexture->Bind(textureId++);
-		shader->SetUniformInt("environment.skybox", camera.SkyboxTexture->GetBoundId());
-		shader->SetUniformInt("environment.irradiance", camera.IrradianceTexture->GetBoundId());
-		shader->SetUniformMat3("environment.skyboxRotation", camera.InverseSkyboxRotation);
 
 		this->Pipeline.Environment.DefaultShadowCubeMap->Bind(textureId);
 		shader->SetUniformInt("lightDepthMap", this->Pipeline.Environment.DefaultShadowCubeMap->GetBoundId());
@@ -651,6 +625,16 @@ namespace MxEngine
 		shader.SetUniformVec3("fog.color", this->Pipeline.Environment.FogColor);
 	}
 
+	void RenderController::BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId)
+	{
+		camera.SkyboxTexture->Bind(startId++);
+		camera.IrradianceTexture->Bind(startId++);
+		shader.SetUniformInt("environment.skybox", camera.SkyboxTexture->GetBoundId());
+		shader.SetUniformInt("environment.irradiance", camera.IrradianceTexture->GetBoundId());
+		shader.SetUniformMat3("environment.skyboxRotation", camera.InverseSkyboxRotation);
+		shader.SetUniformFloat("environment.intensity", camera.SkyboxIntensity);
+	}
+
 	void RenderController::BindCameraInformation(const CameraUnit& camera, const Shader& shader)
 	{
 		shader.SetUniformVec3("camera.position", camera.ViewportPosition);
@@ -658,12 +642,12 @@ namespace MxEngine
 		shader.SetUniformMat4("camera.invViewProjMatrix", camera.InverseViewProjMatrix);
 	}
 
-	void RenderController::BindGBuffer(const CameraUnit& camera, const Shader& shader)
+	void RenderController::BindGBuffer(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId)
 	{
-		camera.AlbedoTexture->Bind(0);
-		camera.NormalTexture->Bind(1);
-		camera.MaterialTexture->Bind(2);
-		camera.DepthTexture->Bind(3);
+		camera.AlbedoTexture->Bind(startId++);
+		camera.NormalTexture->Bind(startId++);
+		camera.MaterialTexture->Bind(startId++);
+		camera.DepthTexture->Bind(startId++);
 
 		shader.SetUniformInt("albedoTex", camera.AlbedoTexture->GetBoundId());
 		shader.SetUniformInt("normalTex", camera.NormalTexture->GetBoundId());
@@ -790,7 +774,7 @@ namespace MxEngine
 		shader.SetUniformMat4("StaticViewProjection", camera.StaticViewProjectionMatrix);
 		shader.SetUniformMat3("Rotation", Transpose(camera.InverseSkyboxRotation));
 		shader.SetUniformFloat("gamma", camera.Gamma);
-		shader.SetUniformFloat("luminance", skyLuminance);
+		shader.SetUniformFloat("luminance", skyLuminance * camera.SkyboxIntensity);
 
 		camera.SkyboxTexture->Bind(0);
 		shader.SetUniformInt("skybox", camera.SkyboxTexture->GetBoundId());
@@ -941,6 +925,7 @@ namespace MxEngine
 		camera.InverseSkyboxRotation      = Transpose(ToMatrix(skybox.GetRotation()));
 		camera.SkyboxTexture              = skybox.CubeMap.IsValid() ? skybox.CubeMap : this->Pipeline.Environment.DefaultSkybox;
 		camera.IrradianceTexture          = skybox.Irradiance.IsValid() ? skybox.Irradiance : camera.SkyboxTexture;
+		camera.SkyboxIntensity            = skybox.GetIntensity();
 		camera.Gamma                      = toneMapping == nullptr ? 1.0f : toneMapping->GetGamma();
 		camera.Effects                    = effects;
 		camera.ToneMapping                = toneMapping;

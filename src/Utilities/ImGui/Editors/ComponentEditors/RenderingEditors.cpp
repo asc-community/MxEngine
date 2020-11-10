@@ -55,6 +55,10 @@ namespace MxEngine::GUI
 		if (ImGui::DragFloat("rotate z", &newRotation.z))
 			skybox.RotateZ(newRotation.z - rotation.z);
 
+		auto intensity = skybox.GetIntensity();
+		if (ImGui::DragFloat("intensity", &intensity, 0.01f))
+			skybox.SetIntensity(intensity);
+
 		DrawCubeMapEditor("cubemap", skybox.CubeMap);
 		DrawCubeMapEditor("irradiance", skybox.Irradiance);
 	}

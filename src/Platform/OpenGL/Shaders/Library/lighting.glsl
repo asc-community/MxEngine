@@ -27,12 +27,12 @@ vec3 calculateLighting(FragmentInfo fragment, vec3 viewDirection, vec3 lightDire
         FKtotal += FK;
         float lod = computeLOD(A, pdf, direction);
 
-        float energyLossCompensate = pow(roughness + 0.5f, 2.5f);
-        energyLossCompensate = max(energyLossCompensate, 1.0f);
+        float energyCompensate = pow(roughness + 0.5f, 2.5f);
+        energyCompensate = max(energyCompensate, 1.0f);
 
         vec3 sampleDirection = environment.skyboxRotation * direction;
-        vec3 sampledColor = energyLossCompensate * textureLod(environment.skybox, sampleDirection, lod).rgb;
-        specularColor += specularK * sampledColor;
+        vec3 sampledColor = energyCompensate * textureLod(environment.skybox, sampleDirection, lod).rgb;
+        specularColor += specularK * sampledColor * environment.intensity;
     }
     specularColor *= invEnvironmentSampleCount;
     FKtotal *= invEnvironmentSampleCount;
