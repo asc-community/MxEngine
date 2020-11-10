@@ -36,6 +36,11 @@ namespace MxEngine
         return this->gamma;
     }
 
+    const CameraToneMapping::ColorChannels& CameraToneMapping::GetColorGrading() const
+    {
+        return colorChannels;
+    }
+
     float CameraToneMapping::GetExposure() const
     {
         return this->exposure;
@@ -85,6 +90,17 @@ namespace MxEngine
     {
         this->maxLuminance = Max(lum, 0.0f);
         this->SetMinLuminance(this->GetMinLuminance());
+    }
+
+    void CameraToneMapping::SetColorGrading(const ColorChannels& colorChannels)
+    {
+        Vector3 zeroVector3 = { 0.0f, 0.0f, 0.0f };
+        Vector3 oneVector3  = { 1.0f, 1.0f, 1.0f };
+        this->colorChannels = {
+            VectorMax(zeroVector3, VectorMin(oneVector3, colorChannels.R)), // Please, write Clamp function for that purposes!
+            VectorMax(zeroVector3, VectorMin(oneVector3, colorChannels.G)),
+            VectorMax(zeroVector3, VectorMin(oneVector3, colorChannels.B)),
+        };
     }
 
     void CameraToneMapping::SetGamma(float gamma)
