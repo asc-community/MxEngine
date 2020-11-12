@@ -40,7 +40,10 @@ namespace MxEngine
     public:
         constexpr static size_t TextureCount = 3;
     private:
+        using TimerHandle = std::aligned_storage_t<sizeof(DirectionalLight::Handle)>;
+
         std::array<TextureHandle, TextureCount> textures;
+        TimerHandle timerHandle;
     public:
 
         DirectionalLight();
@@ -52,6 +55,6 @@ namespace MxEngine
         [[nodiscard]] TextureHandle GetDepthTexture(size_t index) const;
         void SetDepthTexture(const TextureHandle& texture, size_t index);
         [[nodiscard]] Matrix4x4 GetMatrix(const Vector3& center, size_t index) const;
-        void FollowViewport();
+        void FollowViewport(float updateInterval = 0.5f);
     };
 }

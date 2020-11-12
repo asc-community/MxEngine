@@ -373,7 +373,7 @@ namespace MxEngine
 
 	void RenderController::ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
-		if (camera.Effects->GetFogDistance() == 1.0 && camera.Effects->GetFogDensity() == 0.0f)
+		if (camera.Effects == nullptr || (camera.Effects->GetFogDistance() == 1.0 && camera.Effects->GetFogDensity() == 0.0f))
 			return; // such parameters produce no fog. Do not do extra work calling this shader
 
 		MAKE_SCOPE_PROFILER("RenderController::ApplyFogEffect()");

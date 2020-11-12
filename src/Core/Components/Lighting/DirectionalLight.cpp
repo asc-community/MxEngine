@@ -28,9 +28,9 @@
 
 #include "DirectionalLight.h"
 #include "Core/Application/Rendering.h"
-#include "Core/Application/Event.h"
 #include "Core/Config/GlobalConfig.h"
-#include "Core/Events/UpdateEvent.h"
+#include "Core/Application/Timer.h"
+#include "Core/Components/Camera/CameraController.h"
 
 namespace MxEngine
 {
@@ -44,12 +44,16 @@ namespace MxEngine
             texture->SetPath("[[directional light]]");
             this->SetDepthTexture(texture, i);
         }
+        // create empty reference to timer
+        (void)new(&this->timerHandle) MxObject::Handle();
     }
 
     DirectionalLight::~DirectionalLight()
     {
-        MxString eventName = MxObject::GetComponentUUID(*this);
-        Event::RemoveEventListener(eventName);
+        // destroy reference to timer & timer itself
+        auto* timer = std::launder(reinterpret_cast<MxObject::Handle*>(&this->timerHandle));
+        MxObject::Destroy(*timer);
+        timer->~Resource();
     }
 
     TextureHandle DirectionalLight::GetDepthTexture(size_t index) const
@@ -78,18 +82,17 @@ namespace MxEngine
         return OrthoProjection * LightView;
     }
 
-    void DirectionalLight::FollowViewport()
+    void DirectionalLight::FollowViewport(float updateInterval)
     {
-        auto& object = MxObject::GetByComponent(*this);
-        MxString uuid = object.GetComponent<DirectionalLight>().GetUUID();
+        // get reference to timer and replace it with new one
+        auto& timer = *std::launder(reinterpret_cast<MxObject::Handle*>(&this->timerHandle));
+        MxObject::Destroy(timer);
 
-        Event::RemoveEventListener(uuid);
-
-        Event::AddEventListener<UpdateEvent>(uuid, [object = MxObject::GetHandleByComponent(*this)](auto& e) mutable
+        timer = Timer::CallEachDelta([object = MxObject::GetHandleByComponent(*this)]() mutable
         {
             auto viewport = Rendering::GetViewport();
             if (viewport.IsValid()) 
                 object->Transform.SetPosition(MxObject::GetByComponent(*viewport).Transform.GetPosition());
-        });
+        }, updateInterval);
     }
 }

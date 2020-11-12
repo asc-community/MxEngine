@@ -37,10 +37,11 @@ namespace MxEngine
     {
     public:
         template<typename F>
-        static void Schedule(F&& func, TimerMode mode = TimerMode::UPDATE_EACH_FRAME, float timeInSeconds = 0.0f)
+        static MxObject::Handle Schedule(F&& func, TimerMode mode = TimerMode::UPDATE_EACH_FRAME, float timeInSeconds = 0.0f)
         {
             auto object = MxObject::Create();
             object->SetDisplayInRuntimeEditor(false);
+            object->Name = "__Timer";
             auto behaviour = object->AddComponent<Behaviour>(
             [callback = std::forward<F>(func)](MxObject& self, float dt) mutable
             {
@@ -53,36 +54,37 @@ namespace MxEngine
                 if(shouldDestroy) MxObject::Destroy(self);
             });
             behaviour->Schedule(mode, timeInSeconds);
+            return object;
         }
 
         template<typename F>
-        static void CallEachFrame(F&& func)
+        static MxObject::Handle CallEachFrame(F&& func)
         {
-            Timer::Schedule(std::forward<F>(func), TimerMode::UPDATE_EACH_FRAME);
+            return Timer::Schedule(std::forward<F>(func), TimerMode::UPDATE_EACH_FRAME);
         }
 
         template<typename F>
-        static void CallEachDelta(F&& func, float delta)
+        static MxObject::Handle CallEachDelta(F&& func, float delta)
         {
-            Timer::Schedule(std::forward<F>(func), TimerMode::UPDATE_EACH_DELTA, delta);
+            return Timer::Schedule(std::forward<F>(func), TimerMode::UPDATE_EACH_DELTA, delta);
         }
 
         template<typename F>
-        static void CallAfterDelta(F&& func, float delta)
+        static MxObject::Handle CallAfterDelta(F&& func, float delta)
         {
-            Timer::Schedule(std::forward<F>(func), TimerMode::UPDATE_AFTER_DELTA, delta);
+            return Timer::Schedule(std::forward<F>(func), TimerMode::UPDATE_AFTER_DELTA, delta);
         }
 
         template<typename F>
-        static void Repeat(F&& func, float duration)
+        static MxObject::Handle Repeat(F&& func, float duration)
         {
-            Timer::Schedule(std::forward<F>(func), TimerMode::UPDATE_FOR_N_SECONDS, duration);
+            return Timer::Schedule(std::forward<F>(func), TimerMode::UPDATE_FOR_N_SECONDS, duration);
         }
         
         template<typename F>
-        static void RepeatAfterDelta(F&& func, float delta, float duration)
+        static MxObject::Handle RepeatAfterDelta(F&& func, float delta, float duration)
         {
-            Timer::CallAfterDelta([f = std::forward<F>(func), duration]() { Timer::Repeat(std::move(f), duration); }, delta);
+            return Timer::CallAfterDelta([f = std::forward<F>(func), duration]() { Timer::Repeat(std::move(f), duration); }, delta);
         }
     };
 }

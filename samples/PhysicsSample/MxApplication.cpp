@@ -168,6 +168,7 @@ namespace PhysicsSample
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Direction = MakeVector3(0.1f, 1.0f, 0.0f);
             dirLight->FollowViewport();
+            dirLight->Projections[1] = 200.0f;
 
             // create factories for physical objects and player shots
             auto instances = MxObject::Create();
