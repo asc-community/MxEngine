@@ -1,0 +1,7 @@
+language: cpp
+sudo: required
+dist: bionic
+compiler:
+- clang
+os:
+- linux
