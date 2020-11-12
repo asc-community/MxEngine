@@ -51,5 +51,6 @@ namespace MxEngine
         static void SetGravity(const Vector3& gravity);
         static void PerformExtraSimulationStep(float timeDelta);
         static void SetSimulationStep(float timeDelta);
+        static float GetSimulationStep();
     };
 }

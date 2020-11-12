@@ -61,6 +61,7 @@ namespace MxEngine
 		size_t GetChannelCount() const;
 		size_t GetChannelSize() const;
 		size_t GetPixelSize() const;
+		size_t GetTotalByteSize() const;
 		bool IsFloatingPoint() const;
 
 		void SetPixelByte(size_t x, size_t y, uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);

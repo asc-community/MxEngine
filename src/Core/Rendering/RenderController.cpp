@@ -130,7 +130,7 @@ namespace MxEngine
 		auto& splitShader = this->Pipeline.Environment.Shaders["BloomSplit"_id];
 		auto& iterShader = this->Pipeline.Environment.Shaders["BloomIteration"_id];
 
-		float fogReduceFactor = this->Pipeline.Environment.FogDistance * std::exp(-25.0f * this->Pipeline.Environment.FogDensity);
+		float fogReduceFactor = camera.Effects->GetFogDistance() * std::exp(-25.0f * camera.Effects->GetFogDensity());
 		float bloomWeight = camera.Effects->GetBloomWeight() * fogReduceFactor;
 
 		camera.AlbedoTexture->Bind(0);
@@ -373,7 +373,7 @@ namespace MxEngine
 
 	void RenderController::ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
-		if (this->Pipeline.Environment.FogDistance == 1.0 && this->Pipeline.Environment.FogDensity == 0.0f)
+		if (camera.Effects->GetFogDistance() == 1.0 && camera.Effects->GetFogDensity() == 0.0f)
 			return; // such parameters produce no fog. Do not do extra work calling this shader
 
 		MAKE_SCOPE_PROFILER("RenderController::ApplyFogEffect()");
@@ -386,7 +386,7 @@ namespace MxEngine
 
 		Texture::TextureBindId textureId = 0;
 		this->BindGBuffer(camera, *fogShader, textureId);
-		this->BindFogInformation(*fogShader);
+		this->BindFogInformation(camera, *fogShader);
 		this->BindCameraInformation(camera, *fogShader);
 
 		input->Bind(textureId++);
@@ -637,11 +637,12 @@ namespace MxEngine
 		this->GetRenderEngine().DrawTrianglesInstanced(instancedSpotLights.GetVAO(), instancedSpotLights.GetIBO(), *shader, instancedSpotLights.Instances.size());
 	}
 
-	void RenderController::BindFogInformation(const Shader& shader)
+	void RenderController::BindFogInformation(const CameraUnit& camera, const Shader& shader)
 	{
-		shader.SetUniformFloat("fog.distance", this->Pipeline.Environment.FogDistance);
-		shader.SetUniformFloat("fog.density", this->Pipeline.Environment.FogDensity);
-		shader.SetUniformVec3("fog.color", this->Pipeline.Environment.FogColor);
+		MX_ASSERT(camera.Effects != nullptr);
+		shader.SetUniformFloat("fog.distance", camera.Effects->GetFogDistance());
+		shader.SetUniformFloat("fog.density", camera.Effects->GetFogDensity());
+		shader.SetUniformVec3("fog.color", camera.Effects->GetFogColor());
 	}
 
 	void RenderController::BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId)

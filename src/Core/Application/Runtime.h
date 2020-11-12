@@ -106,5 +106,25 @@ namespace MxEngine
         {
             Application::GetImpl()->CloseApplication();
         }
+
+        static bool IsApplicationPaused()
+        {
+            return Application::GetImpl()->IsPaused;
+        }
+
+        static void SetApplicationPaused(bool value)
+        {
+            Application::GetImpl()->IsPaused = value;
+        }
+
+        static float GetApplicationTimeScale()
+        {
+            return Application::GetImpl()->TimeScale;
+        }
+
+        static void SetApplicationTimeScale(float scale)
+        {
+            Application::GetImpl()->TimeScale = scale;
+        }
     };
 }

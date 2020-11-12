@@ -589,6 +589,24 @@ namespace MxEngine
 	}
 
 	/*!
+	clamps vector components between min and max
+	\param v vector to clamp
+	\param min min value of each component
+	\param max max value of each component
+	\returns clamped vector
+	*/
+	template<typename T>
+	inline T VectorClamp(const T& v, const T& min, const T& max)
+	{
+		T result(0.0f);
+		for (typename T::length_type i = 0; i < result.length(); i++)
+		{
+			result[i] = Clamp(v[i], min[i], max[i]);
+		}
+		return result;
+	}
+
+	/*!
 	computes pair of vectors with min and max coords inside verteces array
 	\param verteces pointer to an array of Vector3
 	\param size number of verteces to compute

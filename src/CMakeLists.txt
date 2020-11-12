@@ -113,7 +113,9 @@ set(MXENGINE_SOURCES
 "Core/Components/Scripting/Script.cpp" 
 "Core/Runtime/RuntimeCompiler.cpp"
 "Utilities/ImGui/Editors/ComponentEditors/ScriptingEditors.cpp"
-)
+ "Core/Serialization/SceneSerializer.cpp" 
+ "Core/Serialization/MxObjectSerializer.cpp"
+ "Core/Serialization/ComponentSerializer.cpp")
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)

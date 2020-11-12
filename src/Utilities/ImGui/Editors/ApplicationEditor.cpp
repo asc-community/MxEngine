@@ -29,6 +29,8 @@
 #include "ApplicationEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Core/Config/GlobalConfig.h"
+#include "Utilities/FileSystem/FileManager.h"
+#include "Core/Serialization/SceneSerializer.h"
 
 namespace MxEngine::GUI
 {
@@ -45,6 +47,17 @@ namespace MxEngine::GUI
         ImGui::DragFloat("time scale", &app->TimeScale, 0.01f);
         ImGui::Text("current FPS: %d | total elapsed time: %f seconds", (int)Time::FPS(), Time::Current());
         ImGui::Text("time delta: %fms | frame interval: %fms", Time::Delta() * 1000.0f, Time::UnscaledDelta() * 1000.0f);
+
+        if (ImGui::Button("serialize scene"))
+        {
+            MxString path = FileManager::SaveFileDialog("*.json", "MxEngine scene files");
+            if (!path.empty())
+            {
+                auto serializedScene = SceneSerializer::Serialize();
+                File scene(path, File::WRITE);
+                SaveJson(scene, serializedScene);
+            }
+        }
 
         ImGui::End();
     }

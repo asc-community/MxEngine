@@ -60,6 +60,8 @@ namespace MxEngine
 
         void InvokeUserBehaviour(TimeDelta dt);
     public:
+        MxString Tag = "Behaviour";
+
         Behaviour() = default;
         ~Behaviour();
         void OnUpdate(TimeDelta dt);

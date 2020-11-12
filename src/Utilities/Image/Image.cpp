@@ -106,6 +106,11 @@ namespace MxEngine
 		return this->GetChannelCount() * this->GetChannelSize();
 	}
 
+	size_t Image::GetTotalByteSize() const
+	{
+		return this->GetHeight() * this->GetWidth() * this->GetPixelSize();
+	}
+
 	bool Image::IsFloatingPoint() const
 	{
 		return this->isFloatingPoint;
@@ -194,7 +199,7 @@ namespace MxEngine
 
 	std::array<uint8_t, 4> Image::GetPixelByte(size_t x, size_t y) const
 	{
-		std::array<uint8_t, 4> rgba{ 0, 0, 0, 1 };
+		std::array<uint8_t, 4> rgba{ 0, 0, 0, 255 };
 		if (this->isFloatingPoint)
 		{
 			auto pixel = this->GetPixelFloat(x, y);

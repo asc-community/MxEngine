@@ -57,11 +57,6 @@ namespace MxEngine
         this->SetRenderToDefaultFrameBuffer();
         this->SetShadowBlurIterations(1);
         this->SetLightSamples(4);
-        
-        // fog
-        this->SetFogColor(MakeVector3(0.5f, 0.6f, 0.7f));
-        this->SetFogDistance(1.0f);
-        this->SetFogDensity(0.001f);
 
         // helper objects
         environment.RectangularObject.Init(1.0f);
@@ -408,36 +403,6 @@ namespace MxEngine
     bool RenderAdaptor::IsRenderedToDefaultFrameBuffer() const
     {
         return this->Renderer.GetEnvironment().RenderToDefaultFrameBuffer;
-    }
-        
-    void RenderAdaptor::SetFogColor(const Vector3& color)
-    {
-        this->Renderer.GetEnvironment().FogColor = Clamp(color, MakeVector3(0.0f), MakeVector3(1.0f));
-    }
-
-    const Vector3& RenderAdaptor::GetFogColor() const
-    {
-        return this->Renderer.GetEnvironment().FogColor;
-    }
-
-    void RenderAdaptor::SetFogDensity(float density)
-    {
-        this->Renderer.GetEnvironment().FogDensity = Max(0.0f, density);
-    }
-
-    float RenderAdaptor::GetFogDensity() const
-    {
-        return this->Renderer.GetEnvironment().FogDensity;
-    }
-
-    void RenderAdaptor::SetFogDistance(float distance)
-    {
-        this->Renderer.GetEnvironment().FogDistance = Clamp(distance, 0.0f, 1.0f);
-    }
-
-    float RenderAdaptor::GetFogDistance() const
-    {
-        return this->Renderer.GetEnvironment().FogDistance;
     }
 
     void RenderAdaptor::SetShadowBlurIterations(size_t iterations)

@@ -31,6 +31,21 @@
 
 namespace MxEngine
 {
+    const Vector3& CameraEffects::GetFogColor() const
+    {
+        return this->fogColor;
+    }
+
+    float CameraEffects::GetFogDistance() const
+    {
+        return this->fogDistance;
+    }
+
+    float CameraEffects::GetFogDensity() const
+    {
+        return this->fogDensity;
+    }
+
     float CameraEffects::GetBloomWeight() const
     {
         return this->bloomWeight;
@@ -84,6 +99,21 @@ namespace MxEngine
     size_t CameraEffects::GetAmbientOcclusionSamples() const
     {
         return (size_t)this->ambientOcclusionSamples;
+    }
+
+    void CameraEffects::SetFogColor(const Vector3& color)
+    {
+        this->fogColor = VectorClamp(color, MakeVector3(0.0f), MakeVector3(1.0f));
+    }
+
+    void CameraEffects::SetFogDistance(float distance)
+    {
+        this->fogDistance = Clamp(distance, 0.0f, 1.0f);
+    }
+
+    void CameraEffects::SetFogDensity(float density)
+    {
+        this->fogDensity = Max(density, 0.0f);
     }
 
     void CameraEffects::SetBloomWeight(float weight)

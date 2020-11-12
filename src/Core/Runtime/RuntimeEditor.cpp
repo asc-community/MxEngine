@@ -74,7 +74,7 @@ namespace MxEngine
 
 		inited = true;
 		const float viewportRatio = 0.7f;
-		const float editorRatio = 0.1f;
+		const float editorRatio = 0.15f;
 
 		ImGuiID leftDockspace = 0; 
 		ImGuiID rightDockspace = 0;

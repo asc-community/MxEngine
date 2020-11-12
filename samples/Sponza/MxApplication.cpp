@@ -52,6 +52,7 @@ namespace Sponza
             auto ssr = camera->AddComponent<CameraSSR>();
 
             auto effects = camera->AddComponent<CameraEffects>();
+            effects->SetFogDensity(0.0f);
 
             camera->AddComponent<CapsuleCollider>()->SetBoundingCapsule(Capsule(4.5f, 0.75f, Capsule::Axis::Y));
             camera->AddComponent<RigidBody>();
@@ -60,7 +61,6 @@ namespace Sponza
             character->SetJumpPower(12.0f);
 
             Rendering::SetViewport(controller);
-            Rendering::SetFogDensity(0.0f);
 
             auto lightObject = MxObject::Create();
             lightObject->Name = "Global Light";

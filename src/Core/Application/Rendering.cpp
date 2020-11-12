@@ -81,6 +81,16 @@ namespace MxEngine
         return Application::GetImpl()->GetRenderAdaptor();
     }
 
+    bool Rendering::IsDebugOverlayed()
+    {
+        return Rendering::GetAdaptor().DebugDrawer.DrawAsScreenOverlay;
+    }
+
+    void Rendering::SetDebugOverlay(bool value)
+    {
+        Rendering::GetAdaptor().DebugDrawer.DrawAsScreenOverlay = value;
+    }
+
     #define FWD(func_name, ...) Application::GetImpl()->GetRenderAdaptor().func_name(__VA_ARGS__)
 
     void Rendering::SetRenderToDefaultFrameBuffer(bool value)
@@ -91,36 +101,6 @@ namespace MxEngine
     bool Rendering::IsRenderedToDefaultFrameBuffer()
     {
         return FWD(IsRenderedToDefaultFrameBuffer);
-    }
-
-    void Rendering::SetFogColor(const Vector3& color)
-    {
-        FWD(SetFogColor, color);
-    }
-
-    const Vector3& Rendering::GetFogColor()
-    {
-        return FWD(GetFogColor);
-    }
-
-    void Rendering::SetFogDensity(float density)
-    {
-        FWD(SetFogDensity, density);
-    }
-
-    float Rendering::GetFogDensity()
-    {
-        return FWD(GetFogDensity);
-    }
-
-    void Rendering::SetFogDistance(float distance)
-    {
-        FWD(SetFogDistance, distance);
-    }
-
-    float Rendering::GetFogDistance()
-    {
-        return FWD(GetFogDistance);
     }
 
     void Rendering::SetShadowBlurIterations(size_t iterations)

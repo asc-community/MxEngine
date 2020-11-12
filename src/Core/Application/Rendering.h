@@ -49,14 +49,10 @@ namespace MxEngine
         static TextureHandle GetRenderTexture();
 		static RenderController& GetController();
         static RenderAdaptor& GetAdaptor();
+        static bool IsDebugOverlayed();
+        static void SetDebugOverlay(bool value = true);
         static void SetRenderToDefaultFrameBuffer(bool value = true);
         static bool IsRenderedToDefaultFrameBuffer();
-        static void SetFogColor(const Vector3& color);
-        static const Vector3& GetFogColor();
-        static void SetFogDensity(float density);
-        static float GetFogDensity();
-        static void SetFogDistance(float distance);
-        static float GetFogDistance();
         static void SetShadowBlurIterations(size_t iterations);
         static size_t GetShadowBlurIterations();
         static void SetLightSamples(size_t samples);

@@ -113,7 +113,6 @@ namespace PhysicsSample
             controller->ListenWindowResizeEvent();
             controller->SetMoveSpeed(30);
             Rendering::SetViewport(controller);
-            Rendering::SetFogDensity(0.0f);
 
             auto input = player->AddComponent<InputController>();
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::UNKNOWN);

@@ -108,11 +108,8 @@ namespace MxEngine
         SkyboxObject SkyboxCubeObject;
         DebugBufferUnit DebugBufferObject;
         RectangleObject RectangularObject;
-        VectorInt2 Viewport;
 
-        Vector3 FogColor;
-        float FogDistance;
-        float FogDensity;
+        VectorInt2 Viewport;
         float TimeDelta;
 
         size_t LightSamples;

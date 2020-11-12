@@ -162,4 +162,9 @@ namespace MxEngine
     {
         PhysicsModule::SetSimulationStep(timeDelta);
     }
+
+    float Physics::GetSimulationStep()
+    {
+        return PhysicsModule::GetSimulationStep();
+    }
 }

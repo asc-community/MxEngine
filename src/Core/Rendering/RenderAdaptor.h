@@ -47,12 +47,6 @@ namespace MxEngine
         void SetRenderToDefaultFrameBuffer(bool value = true);
         bool IsRenderedToDefaultFrameBuffer() const;
 
-        void SetFogColor(const Vector3& color);
-        const Vector3& GetFogColor() const;
-        void SetFogDensity(float density);
-        float GetFogDensity() const;
-        void SetFogDistance(float distance);
-        float GetFogDistance() const;
         void SetShadowBlurIterations(size_t iterations);
         size_t GetShadowBlurIterations() const;
         void SetLightSamples(size_t samples);

@@ -18,6 +18,8 @@ namespace glm
     void from_json(const MxEngine::JsonFile& j, MxEngine::Vector3& v);
     void to_json(MxEngine::JsonFile& j, const MxEngine::Vector2& v);
     void from_json(const MxEngine::JsonFile& j, MxEngine::Vector2& v);
+    void to_json(MxEngine::JsonFile& j, const MxEngine::Quaternion& q);
+    void from_json(const MxEngine::JsonFile& j, MxEngine::Quaternion& q);
 }
 
 namespace eastl

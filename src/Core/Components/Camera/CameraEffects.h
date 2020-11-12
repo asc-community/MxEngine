@@ -38,12 +38,19 @@ namespace MxEngine
 	{
 		MAKE_COMPONENT(CameraEffects);
 
+		Vector3 fogColor = MakeVector3(0.5f, 0.6f, 0.7f);
+		float fogDistance = 1.0f;
+		float fogDensity = 0.001f;
+
 		float bloomWeight = 0.5f;
+
 		float vignetteRadius = 0.1f;
 		float vignetteIntensity = 100.0f;
+
 		float chromaticAberrationIntensity = 0.08f;
 		float chromaticAberrationMinDistance = 0.8f;
 		float chromaticAberrationDistortion = 0.8f;
+
 		float ambientOcclusionRadius = 0.5f;
 		float ambientOcclusionIntensity = 1.0f;
 		uint8_t ambientOcclusionSamples = 16;
@@ -51,26 +58,42 @@ namespace MxEngine
 		bool enableFXAA = false;
 		uint8_t bloomIterations = 3;
 	public:
+		const Vector3& GetFogColor() const;
+		float GetFogDistance() const;
+		float GetFogDensity() const;
+
 		float GetBloomWeight() const;
+		size_t GetBloomIterations() const;
+
 		float GetVignetteIntensity() const;
 		float GetVignetteRadius() const;
+
 		float GetChromaticAberrationMinDistance() const;
 		float GetChromaticAberrationIntensity() const;
 		float GetChromaticAberrationDistortion() const;
+
 		bool IsFXAAEnabled() const;
-		size_t GetBloomIterations() const;
+
 		float GetAmbientOcclusionRadius() const;
 		float GetAmbientOcclusionIntensity() const;
 		size_t GetAmbientOcclusionSamples() const;
 
+		void SetFogColor(const Vector3& color);
+		void SetFogDistance(float distance);
+		void SetFogDensity(float density);
+
 		void SetBloomWeight(float weight);
+		void SetBloomIterations(size_t iterations);
+
 		void SetVignetteRadius(float radius);
 		void SetVignetteIntensity(float intensity);
+
 		void SetChromaticAberrationMinDistance(float distance);
 		void SetChromaticAberrationIntensity(float intensity);
 		void SetChromaticAberrationDistortion(float distortion);
+
 		void ToggleFXAA(bool value);
-		void SetBloomIterations(size_t iterations);
+
 		void SetAmbientOcclusionRadius(float radius);
 		void SetAmbientOcclusionIntensity(float intensity);
 		void SetAmbientOcclusionSamples(size_t samples);

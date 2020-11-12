@@ -82,6 +82,11 @@ namespace MxEngine
         data->simulationStep = timedelta;
     }
 
+    float PhysicsModule::GetSimulationStep()
+    {
+        return data->simulationStep;
+    }
+
     PhysicsModuleData* PhysicsModule::GetImpl()
     {
         return PhysicsModule::data;

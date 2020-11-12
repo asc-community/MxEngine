@@ -89,6 +89,10 @@ namespace MxEngine::GUI
 		bool onceDelta = timer == TimerMode::UPDATE_AFTER_DELTA;
 		bool nSecDelta = timer == TimerMode::UPDATE_FOR_N_SECONDS;
 		static auto timeDelta = 0.0f;
+		static MxString tag;
+
+		if (GUI::InputTextOnClick("tag", tag, 128))
+			behaviour.Tag = tag;
 
 		ImGui::InputFloat("time delta", &timeDelta, 0.01f);
 
@@ -113,6 +117,7 @@ namespace MxEngine::GUI
 			ImGui::EndCombo();
 		}
 
+		ImGui::Text("tag: %s", behaviour.Tag.c_str());
 		ImGui::AlignTextToFramePadding();
 		ImGui::Text("has update callback: %s", BOOL_STRING(behaviour.HasBehaviour()));
 		ImGui::SameLine();

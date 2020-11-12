@@ -67,6 +67,17 @@ namespace glm
         auto a = j.get<std::array<float, 2>>();
         v = MakeVector2(a[0], a[1]);
     }
+
+    void to_json(MxEngine::JsonFile& j, const MxEngine::Quaternion& q)
+    {
+        j = JsonFile{ q.x, q.y, q.z, q.w };
+    }
+
+    void from_json(const MxEngine::JsonFile& j, MxEngine::Quaternion& q)
+    {
+        auto a = j.get<std::array<float, 4>>();
+        q = Quaternion{ a[0], a[1], a[2], a[3] };
+    }
 }
 
 namespace eastl

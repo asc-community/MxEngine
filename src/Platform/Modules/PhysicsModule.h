@@ -56,6 +56,7 @@ namespace MxEngine
 		static void OnUpdate(float dt);
 		static void PerformSimulationStep(float dt);
 		static void SetSimulationStep(float timedelta);
+		static float GetSimulationStep();
 
 		static PhysicsModuleData* GetImpl();
 		static void Clone(PhysicsModuleData* impl);

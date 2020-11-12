@@ -38,24 +38,6 @@ namespace MxEngine
     {
         ImGui::Begin(name, isOpen);
 
-        if (ImGui::TreeNode("fog settings"))
-        {
-            auto fogColor = Rendering::GetFogColor();
-            auto fogDensity = Rendering::GetFogDensity();
-            auto fogDistance = Rendering::GetFogDistance();
-
-            if (ImGui::ColorEdit3("fog color", &fogColor[0]))
-                Rendering::SetFogColor(fogColor);
-
-            if (ImGui::DragFloat("fog density", &fogDensity, 0.001f, 0.0f, 10000.0f))
-                Rendering::SetFogDensity(fogDensity);
-
-            if (ImGui::DragFloat("fog distance", &fogDistance, 0.01f, 0.0f, 1.0f))
-                Rendering::SetFogDistance(fogDistance);
-
-            ImGui::TreePop();
-        }
-
         if (ImGui::TreeNode("lighting settings"))
         {
             int blurIterations = (int)Rendering::GetShadowBlurIterations();
@@ -120,8 +102,9 @@ namespace MxEngine
 
         if (ImGui::TreeNode("debug settings"))
         {
-            auto& drawOverlay = Rendering::GetAdaptor().DebugDrawer.DrawAsScreenOverlay;
-            ImGui::Checkbox("overlay debug", &drawOverlay);
+            auto drawOverlay = Rendering::IsDebugOverlayed();
+            if (ImGui::Checkbox("overlay debug", &drawOverlay))
+                Rendering::SetDebugOverlay(drawOverlay);
 
             ImGui::TreePop();
         }

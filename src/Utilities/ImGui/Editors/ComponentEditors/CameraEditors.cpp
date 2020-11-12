@@ -52,15 +52,37 @@ namespace MxEngine::GUI
 
 		int bloomIterations = (int)cameraEffects.GetBloomIterations();
 		float bloomWeight = cameraEffects.GetBloomWeight();
+
 		float vignetteRadius = cameraEffects.GetVignetteRadius();
 		float vignetteIntensity = cameraEffects.GetVignetteIntensity();
+
 		float chromaticAbberationMinDistance = cameraEffects.GetChromaticAberrationMinDistance();
 		float chromaticAbberationIntensity = cameraEffects.GetChromaticAberrationIntensity();
 		float chromaticAbberationDistortion = cameraEffects.GetChromaticAberrationDistortion();
+
 		float ambientOcclusionRadius = cameraEffects.GetAmbientOcclusionRadius();
 		float ambientOcclusionIntensity = cameraEffects.GetAmbientOcclusionIntensity();
 		int ambientOcclusionSamples = (int)cameraEffects.GetAmbientOcclusionSamples();
+
 		bool isFXAAEnabled = cameraEffects.IsFXAAEnabled();
+
+		Vector3 fogColor = cameraEffects.GetFogColor();
+		float fogDensity = cameraEffects.GetFogDensity();
+		float fogDistance = cameraEffects.GetFogDistance();
+
+		if (ImGui::TreeNode("fog"))
+		{
+			if (ImGui::ColorEdit3("fog color", &fogColor[0]))
+				cameraEffects.SetFogColor(fogColor);
+
+			if (ImGui::DragFloat("fog density", &fogDensity, 0.001f))
+				cameraEffects.SetFogDensity(fogDensity);
+
+			if (ImGui::DragFloat("fog distance", &fogDistance, 0.01f))
+				cameraEffects.SetFogDistance(fogDistance);
+
+			ImGui::TreePop();
+		}
 
 		if (ImGui::TreeNode("bloom"))
 		{
@@ -174,11 +196,11 @@ namespace MxEngine::GUI
 
 		if (ImGui::TreeNode("color grading"))
 		{
-			if (ImGui::ColorEdit3("channel R", &channels.R[0], 0.01f))
+			if (ImGui::ColorEdit3("channel R", &channels.R[0]))
 				cameraToneMapping.SetColorGrading(channels);
-			if (ImGui::ColorEdit3("channel G", &channels.G[0], 0.01f))
+			if (ImGui::ColorEdit3("channel G", &channels.G[0]))
 				cameraToneMapping.SetColorGrading(channels);
-			if (ImGui::ColorEdit3("channel B", &channels.B[0], 0.01f))
+			if (ImGui::ColorEdit3("channel B", &channels.B[0]))
 				cameraToneMapping.SetColorGrading(channels);
 
 			ImGui::TreePop();

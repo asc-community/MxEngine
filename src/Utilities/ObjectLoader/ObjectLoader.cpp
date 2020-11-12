@@ -47,11 +47,57 @@
 
 namespace MxEngine
 {
+	const char* const AlbedoTexName = "albedo";
+	const char* const EmmisiveTexName = "emmisive";
+	const char* const HeightTexName = "height";
+	const char* const NormalTexName = "normal";
+	const char* const AOTexName = "ao";
+	const char* const RoughnessTexName = "roughness";
+	const char* const MetallicTexName = "metallic";
+	const char* const RoughnessMetallicTexName = "roughness-metallic";
+	constexpr ImageType PreferredFormat = ImageType::PNG;
+	const char* const PreferredExtension = ".png";
+
+	void SaveRoughnessMetallicTexture(const Image& image, const char* roughnessName, const char* metallicName, const FilePath& saveDirectory)
+	{
+		auto roughnessPath = ToMxString(saveDirectory / roughnessName) + PreferredExtension;
+		auto metallicPath  = ToMxString(saveDirectory /  metallicName) + PreferredExtension;
+		if (File::Exists(roughnessPath) || File::Exists(metallicPath))
+			return; // avoid rewriting existing textures
+
+		auto roughnessData = (uint8_t*)std::malloc(image.GetTotalByteSize());
+		auto metallicData = (uint8_t*)std::malloc(image.GetTotalByteSize());
+		Image roughness(roughnessData, image.GetWidth(), image.GetHeight(), 1, image.IsFloatingPoint());
+		Image metallic(metallicData, image.GetWidth(), image.GetHeight(), 1, image.IsFloatingPoint());
+
+		for (size_t x = 0; x < image.GetWidth(); x++)
+		{
+			for (size_t y = 0; y < image.GetHeight(); y++)
+			{
+				if (image.IsFloatingPoint())
+				{
+					auto pixel = image.GetPixelFloat(x, y);
+					// G channel
+					roughness.SetPixelFloat(x, y, pixel[1], 0.0f, 0.0f, 0.0f);
+					// B channel
+					metallic.SetPixelFloat(x, y, pixel[2], 0.0f, 0.0f, 0.0f);
+				}
+				else
+				{
+					auto pixel = image.GetPixelByte(x, y);
+					// G channel
+					roughness.SetPixelByte(x, y, pixel[1], 0, 0, 0);
+					// B channel
+					metallic.SetPixelByte(x, y, pixel[2], 0, 0, 0);
+				}
+			}
+		}
+		ImageManager::SaveImage(roughnessPath, roughness, PreferredFormat);
+		ImageManager::SaveImage(metallicPath, metallic, PreferredFormat);
+	}
+
 	MxString GetActualTexturePath(const FilePath& lookupDirectory, const char* name, const aiScene* scene, const aiMaterial* material, aiTextureType type)
 	{
-		constexpr ImageType PreferredFormat = ImageType::PNG;
-		const char* PreferredExtension = ".png";
-
 		auto path = ToMxString(lookupDirectory / name) + PreferredExtension;
 		if (File::Exists(path)) return path; // check if texture already on disk
 
@@ -74,8 +120,16 @@ namespace MxEngine
 				else
 					image = ImageLoader::LoadImageFromMemory((const uint8_t*)data->pcData, data->mWidth * data->mHeight * sizeof(aiTexel));
 
-				// create image on disk to later load it
-				ImageManager::SaveImage(path, image, PreferredFormat);
+				// PBR roughness & metallic texture encoded in G & B channels
+				if (type == aiTextureType_UNKNOWN)
+				{
+					SaveRoughnessMetallicTexture(image, RoughnessTexName, MetallicTexName, lookupDirectory);
+				}
+				else
+				{				
+					// create image on disk to later load it
+					ImageManager::SaveImage(path, image, PreferredFormat);
+				}
 				return path;
 			}
 		}
@@ -135,14 +189,16 @@ namespace MxEngine
 			// TODO: this is workaround, because some object formats export alpha channel as 0, but its actually means 1
 			if (materialInfo.Transparency == 0.0f) materialInfo.Transparency = 1.0f;
 
-			materialInfo.AlbedoMap           = GetActualTexturePath(directory, "albedo",    scene, material, aiTextureType_DIFFUSE);
-			materialInfo.EmmisiveMap         = GetActualTexturePath(directory, "emmisive",  scene, material, aiTextureType_EMISSIVE);
-			materialInfo.HeightMap           = GetActualTexturePath(directory, "height",    scene, material, aiTextureType_HEIGHT);
-			materialInfo.NormalMap           = GetActualTexturePath(directory, "normal",    scene, material, aiTextureType_NORMALS);
-			materialInfo.AmbientOcclusionMap = GetActualTexturePath(directory, "ao",        scene, material, aiTextureType_AMBIENT_OCCLUSION);
-			materialInfo.RoughnessMap        = GetActualTexturePath(directory, "roughness", scene, material, aiTextureType_DIFFUSE_ROUGHNESS);
-			materialInfo.MetallicMap         = GetActualTexturePath(directory, "metallic",  scene, material, aiTextureType_METALNESS);
-			auto _ = GetActualTexturePath(directory, "roughness-metallic", scene, material, aiTextureType_UNKNOWN); // let user load it
+			// process first to make sure metallic / roughness will present when checking for existing textures in GetActualTexturePath
+			auto _ = GetActualTexturePath(directory, RoughnessMetallicTexName, scene, material, aiTextureType_UNKNOWN);
+
+			materialInfo.AlbedoMap           = GetActualTexturePath(directory, AlbedoTexName,    scene, material, aiTextureType_DIFFUSE);
+			materialInfo.EmmisiveMap         = GetActualTexturePath(directory, EmmisiveTexName,  scene, material, aiTextureType_EMISSIVE);
+			materialInfo.HeightMap           = GetActualTexturePath(directory, HeightTexName,    scene, material, aiTextureType_HEIGHT);
+			materialInfo.NormalMap           = GetActualTexturePath(directory, NormalTexName,    scene, material, aiTextureType_NORMALS);
+			materialInfo.AmbientOcclusionMap = GetActualTexturePath(directory, AOTexName,        scene, material, aiTextureType_AMBIENT_OCCLUSION);
+			materialInfo.RoughnessMap        = GetActualTexturePath(directory, RoughnessTexName, scene, material, aiTextureType_DIFFUSE_ROUGHNESS);
+			materialInfo.MetallicMap         = GetActualTexturePath(directory, MetallicTexName,  scene, material, aiTextureType_METALNESS);
 
 			// if no pbr textures provided, set all pbr parameters to default value
 			if (materialInfo.MetallicMap.empty()) materialInfo.MetallicFactor = 0.0f;
