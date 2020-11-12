@@ -1,6 +1,6 @@
 language: cpp
 sudo: required
-dist: bionic
+dist: trusty
 git:
   submodules: false
   
@@ -15,7 +15,7 @@ matrix:
         - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-8.0 main'
           key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
         packages:
-        - clang-8.0
+        - clang-8
         - libstdc++6
     env:
     - MATRIX_EVAL="CC=clang-8.0 && CXX=clang-8.0"
