@@ -3,9 +3,30 @@ sudo: required
 dist: bionic
 git:
   submodules: false
+  
+matrix:
+  include:
+  - os: linux
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        - llvm-toolchain-trusty-8.0
+        - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-8.0 main'
+          key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+        packages:
+        - clang-8.0
+        - libstdc++8
+        - libpng-dev
+    env:
+    - MATRIX_EVAL="CC=clang-8.0 && CXX=clang-8.0"
+    - LINKER_FLAGS="-stdlib=libc++ -lc++abi"
+    
 before_install:
     - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
     - git submodule update --init
+    - eval "${MATRIX_EVAL}"
+    
 script:
 - sudo apt-get install -y xorg-dev
 - sudo apt-get install -y libgl1-mesa-dev
