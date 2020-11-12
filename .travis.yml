@@ -19,7 +19,7 @@ matrix:
         - libstdc++6
     env:
     - MATRIX_EVAL="CC=clang-8 && CXX=clang-8"
-    - LINKER_FLAGS="-stdlib=libc++ -lc++abi"
+    - LINKER_FLAGS="-std=c++17 -stdlib=libc++ -lc++abi"
     
 before_install:
     - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
