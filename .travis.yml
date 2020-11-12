@@ -7,8 +7,10 @@ before_install:
     - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
     - git submodule update --init
 script:
+- sudo apt-get install -y xorg-dev
 - sudo apt-get install -y libgl1-mesa-dev
 - sudo apt-get install -y libxrandr-dev
+- sudo apt-get install -y libxinerama-dev 
 - cmake .
 - cmake --build .
 compiler:
