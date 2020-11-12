@@ -16,8 +16,7 @@ matrix:
           key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
         packages:
         - clang-8.0
-        - libstdc++7-dev
-        - libpng-dev
+        - libstdc++6
     env:
     - MATRIX_EVAL="CC=clang-8.0 && CXX=clang-8.0"
     - LINKER_FLAGS="-stdlib=libc++ -lc++abi"
