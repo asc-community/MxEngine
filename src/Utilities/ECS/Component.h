@@ -63,9 +63,9 @@ namespace MxEngine
     public:
         ComponentManager() = default;
         ComponentManager(const ComponentManager&) = delete;
-        ComponentManager(ComponentManager&&) noexcept = default;
+        ComponentManager(ComponentManager&&) = default;
         ComponentManager& operator=(const ComponentManager&) = delete;
-        ComponentManager& operator=(ComponentManager&&) noexcept = default;
+        ComponentManager& operator=(ComponentManager&&) = default;
 
         template<typename T, typename... Args>
         CResource<T> AddComponent(Args&&... args)
