@@ -31,6 +31,7 @@
 #include <utility>
 #include <ostream>
 #include <random>
+#include <memory>
 
 #include "Utilities/STL/MxString.h"
 #include "Utilities/Random/Random.h"
