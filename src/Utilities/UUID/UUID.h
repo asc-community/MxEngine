@@ -68,11 +68,7 @@ namespace MxEngine
     struct UUIDGeneratorImpl
     {
         using type = uuids::basic_uuid_random_generator<Random::Generator>;
-        #if defined(MXENGINE_WINDOWS)
         std::aligned_storage_t<24> generator;
-        #else
-        std::aligned_storage_t<32> generator;
-        #endif
         type& GetGeneratorImpl();
     };
 
