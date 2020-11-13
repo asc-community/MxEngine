@@ -26,6 +26,10 @@ before_install:
     - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
     - git submodule update --init
     - eval "${MATRIX_EVAL}"
+    - sudo apt-get install -y xorg-dev
+    - sudo apt-get install -y libgl1-mesa-dev
+    - sudo apt-get install -y libxrandr-dev
+    - sudo apt-get install -y libxinerama-dev 
     
 script:
 - cmake -D_GLIBCXX_USE_CXX11_ABI=0 .
