@@ -32,7 +32,7 @@ script:
 - sudo apt-get install -y libxrandr-dev
 - sudo apt-get install -y libxinerama-dev 
 - cmake .
-- cmake --build . -j 4
+- cmake --build .
 compiler:
 - clang
 os:
