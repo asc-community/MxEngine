@@ -26,48 +26,49 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "SceneSerializer.h"
-#include "Core/Application/Rendering.h"
-#include "Core/Application/Runtime.h"
-#include "Core/Application/Physics.h"
 #include "Core/MxObject/MxObject.h"
+#include "Core/Components/Behaviour.h"
+#include "Core/Components/Lighting/DirectionalLight.h"
+#include "Core/Components/Lighting/PointLight.h"
+#include "Core/Components/Lighting/SpotLight.h"
+#include "Core/Serialization/SceneSerializer.h"
 
 namespace MxEngine
 {
-    void SceneSerializer::SerializeGlobals(JsonFile& json)
+    void Serialize(JsonFile& json, LightBase& light)
     {
-        json["globals"]["viewport-id"    ] = Rendering::GetViewport().GetHandle();
-        json["globals"]["light-samples"  ] = Rendering::GetLightSamples();
-        json["globals"]["blur-iterations"] = Rendering::GetShadowBlurIterations();
-        json["globals"]["overlay-debug"  ] = Rendering::IsDebugOverlayed();
-        json["globals"]["paused"         ] = Runtime::IsApplicationPaused();
-        json["globals"]["time-scale"     ] = Runtime::GetApplicationTimeScale();
-        json["globals"]["gravity"        ] = Physics::GetGravity();
-        json["globals"]["physics-step"   ] = Physics::GetSimulationStep();
-        json["globals"]["total-time"     ] = Time::Current();
+        json["ambient-intensity"] = light.GetAmbientIntensity();
+        json["intensity"] = light.GetIntensity();
+        json["color"] = light.GetColor();
     }
 
-    void SceneSerializer::SerializeObjects(JsonFile& json)
+    void Serialize(JsonFile& json, DirectionalLight& light)
     {
-        auto& objects = json["mxobjects"];
-        auto view = MxObject::GetObjects();
-        for (auto& object : view)
+        Serialize(json, (LightBase&)light);
+        json["direction"] = light.Direction;
+        json["projections"] = light.Projections;
+
+        json["follow-viewport"] = light.IsFollowingViewport();
+        if (light.IsFollowingViewport())
         {
-            if (object.IsSerialized)
-            {
-                auto& j = objects.emplace_back();
-                MxEngine::Serialize(j, object);
-            }
+            json["update-interval"] = light.GetUpdateTimerHandle().GetComponent<Behaviour>()->GetTimeRequest();
         }
     }
 
-    JsonFile SceneSerializer::Serialize()
+    void Serialize(JsonFile& json, PointLight& light)
     {
-        JsonFile json;
+        Serialize(json, (LightBase&)light);
+        json["radius"] = light.GetRadius();
+        json["casts-shadows"] = light.IsCastingShadows();
+    }
 
-        SceneSerializer::SerializeGlobals(json);
-        SceneSerializer::SerializeObjects(json);
-
-        return json;
+    void Serialize(JsonFile& json, SpotLight& light)
+    {
+        Serialize(json, (LightBase&)light);
+        json["outer-angle"] = light.GetOuterAngle();
+        json["inner-angle"] = light.GetInnerAngle();
+        json["max-distance"] = light.GetMaxDistance();
+        json["casts-shadows"] = light.IsCastingShadows();
+        json["direction"] = light.Direction;
     }
 }

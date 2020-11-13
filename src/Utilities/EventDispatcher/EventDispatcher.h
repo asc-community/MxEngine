@@ -223,5 +223,24 @@ namespace MxEngine
 			}
 			this->events.clear();
 		}
+
+		/*!
+		Checks if event with specific name is in listener queue 
+		\param name name of event
+		\returns true if event listener present, false otherwise
+		*/
+		bool HasEventListenerWithName(const MxString& name) 
+		{
+			this->FlushEvents();
+			for (const auto& [event, callbacks] : this->callbacks)
+			{
+				for (const auto& [callbackName, func] : callbacks)
+				{
+					if (callbackName == name)
+						return true;
+				}
+			}
+			return false;
+		}
 	};
 }

@@ -63,7 +63,7 @@ void main()
         {
             bestUV = currentUV;
             bestDepth = depthDiff;
-            if(depthDiff < thickness)
+            if (depthDiff < thickness)
                 break;
         }
         else
@@ -72,8 +72,9 @@ void main()
             currentLength = length(startPos - newPosition);
         }
     }
-    
-    vec3 ssrReflection = texture(HDRTex, bestUV).rgb;
+
+    float lod = fragment.roughnessFactor * fragment.roughnessFactor * 6.0f;
+    vec3 ssrReflection = textureLod(HDRTex, bestUV, lod).rgb;
 
     vec2 screenCenterDiff = 2.0f * abs(bestUV - vec2(0.5f));
     float fromScreenCenter = max(screenCenterDiff.x, screenCenterDiff.y);
@@ -83,16 +84,18 @@ void main()
     float fromRequiredThickness = (bestDepth - thickness) / (bestDepth + thickness);
     float fromCameraAngle = rayCosAngle / maxCosAngle;
     float maxFactor = 0.0f;
-    maxFactor = max(maxFactor, max(fromReflectionPoint, fromScreenCenter));
-    maxFactor = max(maxFactor, max(fromRequiredThickness, fromCameraAngle));
+    maxFactor = max(maxFactor, fromReflectionPoint);
+    maxFactor = max(maxFactor, fromScreenCenter);
+    maxFactor = max(maxFactor, fromRequiredThickness);
+    maxFactor = max(maxFactor, fromCameraAngle);
     maxFactor = max(maxFactor, float(isinf(currentLength) || isnan(currentLength)));
     float fadingFactor = 1.0f - clamp(maxFactor, 0.0f, 1.0f);
 
-    ssrReflection *= fadingFactor * fragment.metallicFactor * (1.0f - fragment.roughnessFactor);
+    ssrReflection *= fadingFactor * fragment.metallicFactor;
 
     const vec3 luminance = vec3(0.2125f, 0.7154f, 0.0721f);
     ssrReflection *= dot(objectColor, luminance);
-    
+
     if (isnan(ssrReflection.x)) ssrReflection = vec3(0.0f);
 
     OutColor = vec4(objectColor + fragment.albedo * ssrReflection, 1.0f);

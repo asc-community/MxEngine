@@ -34,6 +34,16 @@
 
 namespace MxEngine
 {
+    bool DirectionalLight::IsFollowingViewport() const
+    {
+        return std::launder(reinterpret_cast<const MxObject::Handle*>(&this->timerHandle))->IsValid();
+    }
+
+    const MxObject& DirectionalLight::GetUpdateTimerHandle() const
+    {
+        return **std::launder(reinterpret_cast<const MxObject::Handle*>(&this->timerHandle));
+    }
+
     DirectionalLight::DirectionalLight()
     { 
         for (size_t i = 0; i < DirectionalLight::TextureCount; i++)
