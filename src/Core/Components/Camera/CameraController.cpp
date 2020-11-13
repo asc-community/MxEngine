@@ -170,6 +170,11 @@ namespace MxEngine
 		});
 	}
 
+	bool CameraController::ListensWindowResizeEvent() const
+	{
+		return Event::HasEventListenerWithName(this->GetEventUUID());
+	}
+
 	void CameraController::ResizeRenderTexture(size_t w, size_t h)
 	{
 		this->renderTexture->Load(nullptr, (int)w, (int)h, 3, false, this->renderTexture->GetFormat(), this->renderTexture->GetWrapType());

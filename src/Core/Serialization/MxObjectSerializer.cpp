@@ -27,11 +27,17 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Core/MxObject/MxObject.h"
-#include "Core/Components/Instancing/Instance.h"
 #include "Core/Serialization/SceneSerializer.h"
+#include "Core/Components/Components.h"
 
 namespace MxEngine
 {
+    template<typename T>
+    void SerializeComponentBase(JsonFile& json, T& component)
+    {
+        json["id"] = MxObject::GetComponentHandle(component).GetHandle();
+    }
+
     void Serialize(JsonFile& json, MxObject& object)
     {
         json["id"] = object.GetNativeHandle();
@@ -39,9 +45,34 @@ namespace MxEngine
         json["name"] = object.Name;
         Serialize(json["transform"], object.Transform);
 
-        auto instance = object.GetComponent<Instance>();
-        json["parent-id"] = instance.IsValid() ? instance->GetParent().GetHandle() : size_t(-1);
+        #define REGISTER(name) (void(*)(JsonFile&, MxObject&))[](JsonFile& json, MxObject& object) {\
+            auto c = object.GetComponent<name>();\
+            if(c.IsValid()) {\
+                SerializeComponentBase(json[#name], *c);\
+                MxEngine::Serialize(json[#name], *c);\
+            }\
+        }
 
-        // TODO: component serializer
+        std::array callbacks =
+        {
+            REGISTER(Behaviour),
+            REGISTER(DirectionalLight),
+            REGISTER(SpotLight),
+            REGISTER(PointLight),
+            REGISTER(Instance),
+            REGISTER(InstanceFactory),
+            REGISTER(CameraController),
+            REGISTER(CameraEffects),
+            REGISTER(CameraToneMapping),
+            REGISTER(VRCameraController),
+            REGISTER(InputController),
+            REGISTER(CameraSSR),
+        };
+       
+        auto& components = json["components"];
+        for (const auto& callback : callbacks)
+        {
+            callback(components, object);
+        }
     }
 }

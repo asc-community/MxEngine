@@ -35,10 +35,32 @@ namespace MxEngine
     class MxObject;
     class TransformComponent;
     class Behaviour;
+    class DirectionalLight;
+    class PointLight;
+    class SpotLight;
+    class InstanceFactory;
+    class Instance;
+    class CameraController;
+    class CameraSSR;
+    class CameraEffects;
+    class CameraToneMapping;
+    class VRCameraController;
+    class InputController;
 
-    void Serialize(JsonFile& json, MxObject& object);
-    void Serialize(JsonFile& json, TransformComponent& object);
-    void Serialize(JsonFile& json, Behaviour& object);
+    void Serialize(JsonFile& json, MxObject&);
+    void Serialize(JsonFile& json, TransformComponent&);
+    void Serialize(JsonFile& json, Behaviour&);
+    void Serialize(JsonFile& json, DirectionalLight&);
+    void Serialize(JsonFile& json, PointLight&);
+    void Serialize(JsonFile& json, SpotLight&);
+    void Serialize(JsonFile& json, InstanceFactory&);
+    void Serialize(JsonFile& json, Instance&);
+    void Serialize(JsonFile& json, CameraController&);
+    void Serialize(JsonFile& json, CameraSSR&);
+    void Serialize(JsonFile& json, CameraToneMapping&);
+    void Serialize(JsonFile& json, CameraEffects&);
+    void Serialize(JsonFile& json, VRCameraController&);
+    void Serialize(JsonFile& json, InputController&);
 
     class SceneSerializer
     {

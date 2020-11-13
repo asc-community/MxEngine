@@ -102,6 +102,7 @@ namespace MxEngine
 		Matrix4x4 GetStaticViewMatrix() const;
 		TextureHandle GetRenderTexture() const;
 		void ListenWindowResizeEvent();
+		bool ListensWindowResizeEvent() const;
 		void ResizeRenderTexture(size_t width, size_t height);
 		void SetRenderTexture(const TextureHandle& texture);
 		bool IsRendered() const;

@@ -26,48 +26,24 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "SceneSerializer.h"
-#include "Core/Application/Rendering.h"
-#include "Core/Application/Runtime.h"
-#include "Core/Application/Physics.h"
-#include "Core/MxObject/MxObject.h"
+#include "Core/Serialization/SceneSerializer.h"
+#include "Core/Components/Instancing/InstanceFactory.h"
 
 namespace MxEngine
 {
-    void SceneSerializer::SerializeGlobals(JsonFile& json)
+    void Serialize(JsonFile& json, InstanceFactory& factory)
     {
-        json["globals"]["viewport-id"    ] = Rendering::GetViewport().GetHandle();
-        json["globals"]["light-samples"  ] = Rendering::GetLightSamples();
-        json["globals"]["blur-iterations"] = Rendering::GetShadowBlurIterations();
-        json["globals"]["overlay-debug"  ] = Rendering::IsDebugOverlayed();
-        json["globals"]["paused"         ] = Runtime::IsApplicationPaused();
-        json["globals"]["time-scale"     ] = Runtime::GetApplicationTimeScale();
-        json["globals"]["gravity"        ] = Physics::GetGravity();
-        json["globals"]["physics-step"   ] = Physics::GetSimulationStep();
-        json["globals"]["total-time"     ] = Time::Current();
-    }
-
-    void SceneSerializer::SerializeObjects(JsonFile& json)
-    {
-        auto& objects = json["mxobjects"];
-        auto view = MxObject::GetObjects();
-        for (auto& object : view)
+        json["is-static"] = factory.IsStatic;
+        auto instances = factory.GetInstances();
+        auto& jInstances = json["instances"];
+        for (auto& instance : instances)
         {
-            if (object.IsSerialized)
-            {
-                auto& j = objects.emplace_back();
-                MxEngine::Serialize(j, object);
-            }
+            Serialize(jInstances.emplace_back(), *instance);
         }
     }
 
-    JsonFile SceneSerializer::Serialize()
+    void Serialize(JsonFile& json, Instance& instance)
     {
-        JsonFile json;
-
-        SceneSerializer::SerializeGlobals(json);
-        SceneSerializer::SerializeObjects(json);
-
-        return json;
+        json["color"] = instance.GetColor();
     }
 }

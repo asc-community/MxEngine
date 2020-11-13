@@ -39,6 +39,10 @@ namespace MxEngine
 		MAKE_COMPONENT(InputController);
 
 		Vector3 motion{ 0.0f };
+		std::array<KeyCode, 6> keybindings = {
+			KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN,
+		};
+		bool bindHorizontalRotation = false, bindVerticalRotation = false;
 	public:
 		~InputController();
 
@@ -49,5 +53,13 @@ namespace MxEngine
 		void BindVerticalRotation();
 
 		const Vector3& GetMotionVector() const;
+		KeyCode GetForwardKeyBinding() const;
+		KeyCode GetBackKeyBinding() const;
+		KeyCode GetLeftKeyBinding() const;
+		KeyCode GetRightKeyBinding() const;
+		KeyCode GetUpKeyBinding() const;
+		KeyCode GetDownKeyBinding() const;
+		bool IsVerticalRotationBound() const;
+		bool IsHorizontalRotationBound() const;
 	};
 }

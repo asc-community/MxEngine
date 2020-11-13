@@ -40,6 +40,7 @@ namespace MxEngine
         static MxObject::Handle Schedule(F&& func, TimerMode mode = TimerMode::UPDATE_EACH_FRAME, float timeInSeconds = 0.0f)
         {
             auto object = MxObject::Create();
+            object->IsSerialized = false;
             object->SetDisplayInRuntimeEditor(false);
             object->Name = "__Timer";
             auto behaviour = object->AddComponent<Behaviour>(

@@ -34,6 +34,8 @@
 
 namespace MxEngine
 {
+    class MxObject;
+
     class DirectionalLight : public LightBase
     {
         MAKE_COMPONENT(DirectionalLight);
@@ -45,6 +47,8 @@ namespace MxEngine
         std::array<TextureHandle, TextureCount> textures;
         TimerHandle timerHandle;
     public:
+        [[nodiscard]] bool IsFollowingViewport() const;
+        [[nodiscard]] const MxObject& GetUpdateTimerHandle() const;
 
         DirectionalLight();
         ~DirectionalLight();

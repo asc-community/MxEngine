@@ -48,14 +48,16 @@ namespace MxEngine
 	
 	void InputController::BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down)
 	{
-		auto& object = MxObject::GetByComponent(*this);
-		auto camera = object.GetComponent<CameraController>();
-		auto input = object.GetComponent<InputController>();
+		auto object = MxObject::GetHandleByComponent(*this);
+		auto camera = object->GetComponent<CameraController>();
+		auto input = object->GetComponent<InputController>();
 
-		MXLOG_DEBUG("MxEngine::InputControl", "bound object movement: " + object.Name);
+		MXLOG_DEBUG("MxEngine::InputControl", "bound object movement: " + object->Name);
+
+		this->keybindings = { forward, back, left, right, up, down };
 	
 		Event::AddEventListener<UpdateEvent>(input.GetUUID(),
-			[forward, back, right, left, up, down, camera, input, object = MxObject::GetHandleByComponent(*this)](auto& event) mutable
+			[camera, input, object](auto& event) mutable
 		{
 			auto vecForward = MakeVector3( 0.0f, 0.0f, 1.0f);
 			auto vecRight   = MakeVector3(-1.0f, 0.0f, 0.0f);
@@ -77,27 +79,27 @@ namespace MxEngine
 			}
 
 			auto dt = Application::GetImpl()->GetUnscaledTimeDelta();
-			if (Input::IsKeyHeld(forward))
+			if (Input::IsKeyHeld(input->GetForwardKeyBinding()))
 			{
 				moveDirection += vecForward;
 			}
-			if (Input::IsKeyHeld(back))
+			if (Input::IsKeyHeld(input->GetBackKeyBinding()))
 			{
 				moveDirection -= vecForward;
 			}
-			if (Input::IsKeyHeld(right))
+			if (Input::IsKeyHeld(input->GetRightKeyBinding()))
 			{
 				moveDirection += vecRight;
 			}
-			if (Input::IsKeyHeld(left))
+			if (Input::IsKeyHeld(input->GetLeftKeyBinding()))
 			{
 				moveDirection -= vecRight;
 			}
-			if (Input::IsKeyHeld(up))
+			if (Input::IsKeyHeld(input->GetUpKeyBinding()))
 			{
 				moveDirection += vecUp;
 			}
-			if (Input::IsKeyHeld(down))
+			if (Input::IsKeyHeld(input->GetDownKeyBinding()))
 			{
 				moveDirection -= vecUp;
 			}
@@ -126,6 +128,7 @@ namespace MxEngine
 
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
 		MxString uuid = object.GetComponent<InputController>().GetUUID();
+		this->bindHorizontalRotation = this->bindVerticalRotation = true;
 
 		Event::AddEventListener<MouseMoveEvent>(uuid, [camera](auto& event) mutable
 		{
@@ -150,15 +153,16 @@ namespace MxEngine
 
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
 		MxString uuid = object.GetComponent<InputController>().GetUUID();
+		this->bindHorizontalRotation = true;
 	
 		Event::AddEventListener<MouseMoveEvent>(uuid, [camera](auto& event) mutable
 		{
-				if (!camera.IsValid()) return;
-				static Vector2 oldPos = event.position;
-				auto dt = Application::GetImpl()->GetUnscaledTimeDelta();
-				Vector2 diff(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
-				camera->Rotate(diff.x, 0.0f);
-				oldPos = event.position;
+			if (!camera.IsValid()) return;
+			static Vector2 oldPos = event.position;
+			auto dt = Application::GetImpl()->GetUnscaledTimeDelta();
+			Vector2 diff(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
+			camera->Rotate(diff.x, 0.0f);
+			oldPos = event.position;
 		});
 	}
 	
@@ -174,20 +178,61 @@ namespace MxEngine
 
 		MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
 		MxString uuid = object.GetComponent<InputController>().GetUUID();
+		this->bindVerticalRotation = true;
 	
 		Event::AddEventListener<MouseMoveEvent>(uuid, [camera](auto& event) mutable
 		{
-				if (!camera.IsValid()) return;
-				static Vector2 oldPos = event.position;
-				auto dt = Application::GetImpl()->GetUnscaledTimeDelta();
-				Vector2 diff(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
-				camera->Rotate(0.0f, diff.y);
-				oldPos = event.position;
+			if (!camera.IsValid()) return;
+			static Vector2 oldPos = event.position;
+			auto dt = Application::GetImpl()->GetUnscaledTimeDelta();
+			Vector2 diff(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
+			camera->Rotate(0.0f, diff.y);
+			oldPos = event.position;
 		});
 	}
 
 	const Vector3& InputController::GetMotionVector() const
 	{
 		return this->motion;
+	}
+
+	KeyCode InputController::GetForwardKeyBinding() const
+	{
+		return this->keybindings[0];
+	}
+
+	KeyCode InputController::GetBackKeyBinding() const
+	{
+		return this->keybindings[1];
+	}
+
+	KeyCode InputController::GetLeftKeyBinding() const
+	{
+		return this->keybindings[2];
+	}
+
+	KeyCode InputController::GetRightKeyBinding() const
+	{
+		return this->keybindings[3];
+	}
+
+	KeyCode InputController::GetUpKeyBinding() const
+	{
+		return this->keybindings[4];
+	}
+
+	KeyCode InputController::GetDownKeyBinding() const
+	{
+		return this->keybindings[5];
+	}
+
+	bool InputController::IsVerticalRotationBound() const
+	{
+		return this->bindVerticalRotation;
+	}
+
+	bool InputController::IsHorizontalRotationBound() const
+	{
+		return this->bindHorizontalRotation;
 	}
 }

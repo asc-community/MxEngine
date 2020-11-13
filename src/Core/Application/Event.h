@@ -95,5 +95,15 @@ namespace MxEngine
 		{
 			Application::GetImpl()->GetEventDispatcher().InvokeAll();
 		}
+
+		/*!
+		Checks if event with specific name is in listener queue 
+		\param name name of event
+		\returns true if event listener present, false otherwise
+		*/
+		static bool HasEventListenerWithName(const MxString& name)
+		{
+			return Application::GetImpl()->GetEventDispatcher().HasEventListenerWithName(name);
+		}
     };
 }
