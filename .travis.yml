@@ -20,15 +20,11 @@ matrix:
         - libstdc++-8-dev
     env:
     - MATRIX_EVAL="CC=clang-10 && CXX=clang-10"
-    - LINKER_FLAGS="-std=c++17 -lstdc++ -lc++abi"
+    - LINKER_FLAGS="-std=c++17 -stdlib=libstdc++"
     
 before_install:
     - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
     - git submodule update --init
-    - sudo apt-get install -y xorg-dev
-    - sudo apt-get install -y libgl1-mesa-dev
-    - sudo apt-get install -y libxrandr-dev
-    - sudo apt-get install -y libxinerama-dev 
     - eval "${MATRIX_EVAL}"
     
 script:
