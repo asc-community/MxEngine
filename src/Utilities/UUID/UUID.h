@@ -31,7 +31,6 @@
 #include <utility>
 #include <ostream>
 #include <random>
-#include <memory>
 
 #include "Utilities/STL/MxString.h"
 #include "Utilities/Random/Random.h"
@@ -69,8 +68,11 @@ namespace MxEngine
     struct UUIDGeneratorImpl
     {
         using type = uuids::basic_uuid_random_generator<Random::Generator>;
-        constexpr static size_t StorageSize = sizeof(std::uniform_int_distribution<uint32_t>) + sizeof(std::shared_ptr<Random::Generator>);
-        std::aligned_storage_t<StorageSize> generator;
+        #if defined(MXENGINE_WINDOWS)
+        std::aligned_storage_t<24> generator;
+        #else
+        std::aligned_storage_t<32> generator;
+        #endif
         type& GetGeneratorImpl();
     };
 
