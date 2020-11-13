@@ -19,7 +19,7 @@ matrix:
         - lld-10
         - libstdc++-8-dev
     env:
-    - MATRIX_EVAL="CC=clang-10 && CXX=clang++"
+    - MATRIX_EVAL="CC=clang-10 && CXX=clang-10++"
     - LINKER_FLAGS="-std=c++17 -stdlib=libstdc++"
     
 before_install:
