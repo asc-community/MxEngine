@@ -17,7 +17,7 @@ matrix:
         - clang-10
         - lldb-10
         - lld-10
-        - libstdc++8-dev
+        - libstdc++-8-dev
     env:
     - MATRIX_EVAL="CC=clang-10 && CXX=clang-10"
     - LINKER_FLAGS="-std=c++17 -stdlib=libc++ -lc++abi"
