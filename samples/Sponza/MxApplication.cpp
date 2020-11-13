@@ -88,7 +88,7 @@ namespace Sponza
             if (!materials.empty())
             {
                 // floor material
-                materials[8]->MetallicFactor = 0.75f;
+                materials[8]->MetallicFactor = 0.5f;
                 materials[8]->RoughnessFactor = 0.75f;
             }
 

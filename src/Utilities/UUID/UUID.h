@@ -68,7 +68,8 @@ namespace MxEngine
     struct UUIDGeneratorImpl
     {
         using type = uuids::basic_uuid_random_generator<Random::Generator>;
-        std::aligned_storage_t<24> generator;
+        constexpr static size_t StorageSize = sizeof(std::uniform_int_distribution<uint32_t>) + sizeof(std::shared_ptr<Random::Generator>);
+        std::aligned_storage_t<StorageSize> generator;
         type& GetGeneratorImpl();
     };
 

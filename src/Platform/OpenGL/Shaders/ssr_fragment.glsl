@@ -73,30 +73,33 @@ void main()
         }
     }
 
-    float lod = fragment.roughnessFactor * fragment.roughnessFactor * 6.0f;
+    float lod = fragment.roughnessFactor * fragment.roughnessFactor * 5.0f;
     vec3 ssrReflection = textureLod(HDRTex, bestUV, lod).rgb;
 
     vec2 screenCenterDiff = 2.0f * abs(bestUV - vec2(0.5f));
     float fromScreenCenter = max(screenCenterDiff.x, screenCenterDiff.y);
     fromScreenCenter = mix(0.0f, 0.85f, fromScreenCenter >= 1.0f);
 
-    float fromReflectionPoint = length(bestUV - TexCoord) / maxDistance;
-    float fromRequiredThickness = (bestDepth - thickness) / (bestDepth + thickness);
-    float fromCameraAngle = rayCosAngle / maxCosAngle;
+    const float fromReflectionPoint = length(bestUV - TexCoord) / maxDistance;
+    const float fromRequiredThickness = (bestDepth - thickness) / (bestDepth + thickness);
+    const float fromCameraAngle = rayCosAngle / maxCosAngle;
+    const float fromValidLength = float(isinf(currentLength) || isnan(currentLength));
     float maxFactor = 0.0f;
     maxFactor = max(maxFactor, fromReflectionPoint);
     maxFactor = max(maxFactor, fromScreenCenter);
     maxFactor = max(maxFactor, fromRequiredThickness);
     maxFactor = max(maxFactor, fromCameraAngle);
-    maxFactor = max(maxFactor, float(isinf(currentLength) || isnan(currentLength)));
+    maxFactor = max(maxFactor, fromValidLength);
+   
     float fadingFactor = 1.0f - clamp(maxFactor, 0.0f, 1.0f);
+    fadingFactor *= fragment.metallicFactor;
+    ssrReflection *= fadingFactor;
 
-    ssrReflection *= fadingFactor * fragment.metallicFactor;
+    if (isnan(ssrReflection.x))
+    {
+        ssrReflection = vec3(0.0f);
+        fadingFactor = 0.0f;
+    }
 
-    const vec3 luminance = vec3(0.2125f, 0.7154f, 0.0721f);
-    ssrReflection *= dot(objectColor, luminance);
-
-    if (isnan(ssrReflection.x)) ssrReflection = vec3(0.0f);
-
-    OutColor = vec4(objectColor + fragment.albedo * ssrReflection, 1.0f);
+    OutColor = vec4(mix(objectColor, ssrReflection, fadingFactor), 1.0f);
 }
