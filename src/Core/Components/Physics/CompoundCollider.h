@@ -53,11 +53,11 @@ namespace MxEngine
 
         size_t GetShapeCount() const;
         void RemoveShapeByIndex(size_t index);
-        TransformComponent GetShapeTransformByIndex(size_t index);
+        TransformComponent GetShapeTransformByIndex(size_t index) const;
         void SetShapeTransformByIndex(size_t index, const TransformComponent& relativeTransform);
 
         template<typename T>
-        decltype(auto) GetShapeByIndex(size_t index)
+        decltype(auto) GetShapeByIndex(size_t index) const
         {
             return this->compoundShape->GetShapeByIndex<Resource<T, PhysicsFactory>>(index);
         }

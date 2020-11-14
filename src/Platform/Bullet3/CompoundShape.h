@@ -38,12 +38,12 @@ namespace MxEngine
 
     class CompoundShape : public ShapeBase
     {
-        btCollisionShape* GetShapeImpl(size_t index);
+        btCollisionShape* GetShapeImpl(size_t index) const;
         void AddShapeImpl(btCollisionShape* ptr, size_t userIndex, const TransformComponent& relativeTransform);
         static size_t GetShapeUserHandle(btCollisionShape* ptr);
 
         template<typename Shape, typename Factory>
-        Resource<Shape, Factory> GetShapeByIndexDeduced(size_t index, Resource<Shape, Factory>*)
+        Resource<Shape, Factory> GetShapeByIndexDeduced(size_t index, Resource<Shape, Factory>*) const
         {
             auto shape = this->GetShapeImpl(index);
             auto handle = CompoundShape::GetShapeUserHandle(shape);
@@ -72,11 +72,11 @@ namespace MxEngine
 
         size_t GetShapeCount() const;
         void RemoveShapeByIndex(size_t index);
-        TransformComponent GetShapeTransformByIndex(size_t index);
+        TransformComponent GetShapeTransformByIndex(size_t index) const;
         void SetShapeTransformByIndex(size_t index, const TransformComponent& relativeTransform);
 
         template<typename T>
-        decltype(auto) GetShapeByIndex(size_t index)
+        decltype(auto) GetShapeByIndex(size_t index) const
         {
             return this->GetShapeByIndexDeduced(index, (T*)nullptr);
         }

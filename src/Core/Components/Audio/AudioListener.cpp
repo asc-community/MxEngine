@@ -8,24 +8,37 @@ namespace MxEngine
     void AudioListener::OnUpdate(float timeDelta)
     {
         auto& object = MxObject::GetByComponent(*this);
-        auto position = object.Transform.GetPosition();
         auto camera = object.GetComponent<CameraController>();
 
         if (camera.IsValid())
         {
-            Vector3 orientation[] = {
-                camera->GetDirection(),
-                camera->GetDirectionUp()
-            };
-            ALCALL(alListener3f(AL_POSITION, position.x, position.y, position.z));
-            ALCALL(alListenerfv(AL_ORIENTATION, &orientation[0][0]));
+            this->SetOrientation(camera->GetDirection(), camera->GetUpVector());
         }
+        this->SetPosition(object.Transform.GetPosition());
+    }
+
+    void AudioListener::SetPosition(const Vector3& position)
+    {
+        ALCALL(alListener3f(AL_POSITION, position.x, position.y, position.z));
+    }
+
+    void AudioListener::SetOrientation(const Vector3& direction, const Vector3& up)
+    {
+        Vector3 orientation[] = {
+            direction, up,
+        };
+        ALCALL(alListenerfv(AL_ORIENTATION, &orientation[0][0]));
     }
 
     void AudioListener::SetVolume(float volume)
     {
         this->volume = Max(0.001f, volume);
         ALCALL(alListenerf(AL_GAIN, this->volume));
+    }
+
+    const Vector3& AudioListener::GetPosition() const
+    {
+        return MxObject::GetByComponent(*this).Transform.GetPosition();
     }
 
     float AudioListener::GetVolume() const

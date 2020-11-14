@@ -121,11 +121,11 @@ namespace MxEngine
         void SetSpinningFriction(float value);
         float GetRollingFriction() const;
         void SetRollingFriction(float value);
-        void SetLinearVelocity(const Vector3& velocity);
         float GetBounceFactor() const;
         void SetBounceFactor(float value);
-        Vector3 GetGravity() const;
         void SetGravity(const Vector3& gravity);
+        Vector3 GetGravity() const;
+        void SetLinearVelocity(const Vector3& velocity);
         Vector3 GetLinearVelocity() const;
         void SetAngularVelocity(const Vector3& velocity);
         Vector3 GetAngularVelocity() const;

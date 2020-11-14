@@ -26,47 +26,32 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Utilities/Math/Math.h"
-#include "Utilities/ECS/Component.h"
+#include "Core/Serialization/SceneSerializer.h"
+#include "Core/Components/Audio/AudioListener.h"
+#include "Core/Components/Audio/AudioSource.h"
 
 namespace MxEngine
 {
-    enum class SoundModel
+    void Serialize(JsonFile& json, const AudioListener& listener)
     {
-        NONE,
-        INVERSE_DISTANCE,
-        INVERSE_DISTANCE_CLAMPED,
-        LINEAR_DISTANCE,
-        LINEAR_DISTANCE_CLAMPED,
-        EXPONENT_DISTANCE,
-        EXPONENT_DISTANCE_CLAMPED,
-    };
+        json["doppler"] = listener.GetDopplerFactor();
+        json["sound-speed"] = listener.GetSoundSpeed();
+        json["velocity"] = listener.GetVelocity();
+        json["volume"] = listener.GetVolume();
+    }
 
-    class AudioListener
+    void Serialize(JsonFile& json, const AudioSource& source)
     {
-        MAKE_COMPONENT(AudioListener);
-
-        float volume = 1.0f;
-        Vector3 velocity{ 0.0f, 0.0f, 0.0f };
-        float soundSpeed = 343.3f;
-        float dopplerFactor = 1.0f;
-    public:
-        void OnUpdate(float timeDelta);
-
-        void SetPosition(const Vector3& position);
-        void SetOrientation(const Vector3& direction, const Vector3& up);
-        void SetVolume(float speed);
-        void SetVelocity(const Vector3& velocity);
-        void SetSoundSpeed(float value);
-        void SetDopplerFactor(float factor);
-        void SetSoundModel(SoundModel model);
-
-        const Vector3& GetPosition() const;
-        float GetVolume() const; 
-        const Vector3& GetVelocity() const;
-        float GetSoundSpeed() const;
-        float GetDopplerFactor() const;
-    };
+        auto buffer = source.GetLoadedSource();
+        json["source-id"] = buffer.IsValid() ? buffer.GetHandle() : size_t(-1);
+        json["direction"] = source.GetDirection();
+        json["inner-angle"] = source.GetInnerAngle();
+        json["outer-angle"] = source.GetOuterAngle();
+        json["outer-angle-volume"] = source.GetOuterAngleVolume();
+        json["reference-distance"] = source.GetReferenceDistance();
+        json["rollof-factor"] = source.GetRollofFactor();
+        json["speed"] = source.GetSpeed();
+        json["velocity"] = source.GetVelocity();
+        json["volume"] = source.GetVolume();
+    }
 }

@@ -61,14 +61,14 @@ namespace MxEngine
     {
         json["intensity"] = skybox.GetIntensity();
         json["rotation"] = skybox.GetRotation();
-        json["irradiance-id"] = skybox.Irradiance.GetHandle();
-        json["cubemap-id"] = skybox.CubeMap.GetHandle();
+        json["irradiance-id"] = skybox.Irradiance.IsValid() ? skybox.Irradiance.GetHandle() : size_t(-1);
+        json["cubemap-id"] = skybox.CubeMap.IsValid() ? skybox.CubeMap.GetHandle() : size_t(-1);
     }
 
     void Serialize(JsonFile& json, const MeshSource& source)
     {
         json["is-drawn"] = source.IsDrawn;
-        json["mesh-id"] = source.Mesh.GetHandle();
+        json["mesh-id"] = source.Mesh.IsValid() ? source.Mesh.GetHandle() : size_t(-1);
     }
 
     void Serialize(JsonFile& json, const MeshRenderer& renderer)
@@ -76,7 +76,8 @@ namespace MxEngine
         auto& jMaterials = json["material-ids"];
         for (auto& material : renderer.Materials)
         {
-            jMaterials.emplace_back(material.GetHandle());
+            auto handle = material.IsValid() ? material.GetHandle() : size_t(-1);
+            jMaterials.emplace_back(handle);
         }
     }
 }

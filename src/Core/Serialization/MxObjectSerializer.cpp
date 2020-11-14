@@ -73,6 +73,15 @@ namespace MxEngine
             REGISTER(DebugDraw),
             REGISTER(Skybox),
             REGISTER(MeshLOD),
+            REGISTER(AudioListener),
+            REGISTER(AudioSource),
+            REGISTER(RigidBody),
+            REGISTER(CharacterController),
+            REGISTER(BoxCollider),
+            REGISTER(SphereCollider),
+            REGISTER(CapsuleCollider),
+            REGISTER(CylinderCollider),
+            REGISTER(CompoundCollider),
         };
        
         auto& components = json["components"];

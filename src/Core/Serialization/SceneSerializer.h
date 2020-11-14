@@ -51,6 +51,15 @@ namespace MxEngine
     class MeshSource;
     class Skybox;
     class MeshLOD;
+    class AudioListener;
+    class AudioSource;
+    class RigidBody;
+    class CharacterController;
+    class BoxCollider;
+    class SphereCollider;
+    class CapsuleCollider;
+    class CylinderCollider;
+    class CompoundCollider;
 
     void Serialize(JsonFile& json, const MxObject&);
     void Serialize(JsonFile& json, const TransformComponent&);
@@ -71,6 +80,15 @@ namespace MxEngine
     void Serialize(JsonFile& json, const Skybox&);
     void Serialize(JsonFile& json, const MeshLOD&);
     void Serialize(JsonFile& json, const DebugDraw&);
+    void Serialize(JsonFile& json, const AudioListener&);
+    void Serialize(JsonFile& json, const AudioSource&);
+    void Serialize(JsonFile& json, const RigidBody&);
+    void Serialize(JsonFile& json, const CharacterController&);
+    void Serialize(JsonFile& json, const BoxCollider&);
+    void Serialize(JsonFile& json, const SphereCollider&);
+    void Serialize(JsonFile& json, const CapsuleCollider&);
+    void Serialize(JsonFile& json, const CylinderCollider&);
+    void Serialize(JsonFile& json, const CompoundCollider&);
 
     class SceneSerializer
     {

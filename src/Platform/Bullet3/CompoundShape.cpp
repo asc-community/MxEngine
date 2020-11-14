@@ -31,7 +31,7 @@
 
 namespace MxEngine
 {
-    btCollisionShape* CompoundShape::GetShapeImpl(size_t index)
+    btCollisionShape* CompoundShape::GetShapeImpl(size_t index) const
     {
         MX_ASSERT(index < this->GetShapeCount());
         return ((btCompoundShape*)this->collider)->getChildShape((int)index);
@@ -84,7 +84,7 @@ namespace MxEngine
         ((btCompoundShape*)this->collider)->removeChildShapeByIndex((int)index);
     }
 
-    TransformComponent CompoundShape::GetShapeTransformByIndex(size_t index)
+    TransformComponent CompoundShape::GetShapeTransformByIndex(size_t index) const
     {
         MX_ASSERT(index < this->GetShapeCount());
         TransformComponent result;

@@ -119,7 +119,10 @@ set(MXENGINE_SOURCES
  "Core/Serialization/LightingSerializer.cpp" 
  "Core/Serialization/InstancingSerializer.cpp" 
  "Core/Serialization/CameraSerializer.cpp" 
- "Core/Serialization/RenderingSerializer.cpp")
+ "Core/Serialization/RenderingSerializer.cpp" 
+ "Core/Serialization/AudioSerializer.cpp" 
+ "Core/Serialization/PhysicsSerializer.cpp"
+ )
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)

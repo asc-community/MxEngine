@@ -97,8 +97,8 @@ namespace MxEngine
     {
         json["eye-distance"] = vr.EyeDistance;
         json["focus-distance"] = vr.FocusDistance;
-        json["left-eye-id"] = vr.LeftEye.GetHandle();
-        json["right-eye-id"] = vr.RightEye.GetHandle();
+        json["left-eye-id"] = vr.LeftEye.IsValid() ? vr.LeftEye.GetHandle() : size_t(-1);
+        json["right-eye-id"] = vr.RightEye.IsValid() ? vr.RightEye.GetHandle() : size_t(-1);
     }
 
     void Serialize(JsonFile& json, const InputController& input)

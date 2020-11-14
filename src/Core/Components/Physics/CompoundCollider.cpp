@@ -78,7 +78,7 @@ namespace MxEngine
         this->children.erase(this->children.begin() + index);
     }
 
-    TransformComponent CompoundCollider::GetShapeTransformByIndex(size_t index)
+    TransformComponent CompoundCollider::GetShapeTransformByIndex(size_t index) const
     {
         return this->compoundShape->GetShapeTransformByIndex(index);
     }

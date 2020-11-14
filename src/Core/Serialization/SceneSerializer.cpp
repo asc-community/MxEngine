@@ -36,7 +36,9 @@ namespace MxEngine
 {
     void SceneSerializer::SerializeGlobals(JsonFile& json)
     {
-        json["globals"]["viewport-id"    ] = Rendering::GetViewport().GetHandle();
+        auto viewport = Rendering::GetViewport();
+
+        json["globals"]["viewport-id"    ] = viewport.IsValid() ? viewport.GetHandle() : size_t(-1);
         json["globals"]["light-samples"  ] = Rendering::GetLightSamples();
         json["globals"]["blur-iterations"] = Rendering::GetShadowBlurIterations();
         json["globals"]["overlay-debug"  ] = Rendering::IsDebugOverlayed();
