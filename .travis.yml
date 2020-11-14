@@ -28,20 +28,16 @@ matrix:
         - ubuntu-toolchain-r-test
         packages:
         - software-properties-common
-        - g++-8
+        - g++-10
     env:
-    - MATRIX_EVAL="CC=gcc && CXX=g++"
+    - MATRIX_EVAL="CC=gcc-10 && CXX=g++-10"
     - LINKER_FLAGS="-std=c++17 -lstdc++fs -stdlib=libstdc++" 
     
 before_install:
     - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
     - git submodule update --init
     - eval "${MATRIX_EVAL}"
-    - sudo apt-get install -y xorg-dev
-    - sudo apt-get install -y libgl1-mesa-dev
-    - sudo apt-get install -y libxrandr-dev
-    - sudo apt-get install -y libxinerama-dev 
-    
+    - sudo apt-get install -y xorg-dev && sudo apt-get install -y libgl1-mesa-dev && sudo apt-get install -y libxrandr-dev && sudo apt-get install -y libxinerama-dev
 script:
 - cmake .
 - cmake --build . -j 4
