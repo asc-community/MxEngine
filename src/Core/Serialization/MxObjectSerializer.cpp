@@ -33,19 +33,20 @@
 namespace MxEngine
 {
     template<typename T>
-    void SerializeComponentBase(JsonFile& json, T& component)
+    void SerializeComponentBase(JsonFile& json, const T& component)
     {
         json["id"] = MxObject::GetComponentHandle(component).GetHandle();
     }
 
-    void Serialize(JsonFile& json, MxObject& object)
+    void Serialize(JsonFile& json, const MxObject& object)
     {
         json["id"] = object.GetNativeHandle();
         json["displayed"] = object.IsDisplayedInRuntimeEditor();
         json["name"] = object.Name;
         Serialize(json["transform"], object.Transform);
 
-        #define REGISTER(name) (void(*)(JsonFile&, MxObject&))[](JsonFile& json, MxObject& object) {\
+        using CallbackType = void(*)(JsonFile&, const MxObject&);
+        #define REGISTER(name) (CallbackType)[](JsonFile& json, const MxObject& object) {\
             auto c = object.GetComponent<name>();\
             if(c.IsValid()) {\
                 SerializeComponentBase(json[#name], *c);\
@@ -67,6 +68,11 @@ namespace MxEngine
             REGISTER(VRCameraController),
             REGISTER(InputController),
             REGISTER(CameraSSR),
+            REGISTER(MeshRenderer),
+            REGISTER(MeshSource),
+            REGISTER(DebugDraw),
+            REGISTER(Skybox),
+            REGISTER(MeshLOD),
         };
        
         auto& components = json["components"];

@@ -211,6 +211,7 @@ namespace MxEngine
 		PhysicsModule::OnUpdate(this->timeDelta);
 
 		// TODO: refactor, move collision logic to separate function
+		MAKE_SCOPE_PROFILER("Physics::InvokeCollionsCallbacks()");
 
 		auto& [currentCollisions, previousCollisions] = this->collisions;
 		std::sort(currentCollisions.begin(), currentCollisions.end());

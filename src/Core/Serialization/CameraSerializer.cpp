@@ -39,7 +39,7 @@
 
 namespace MxEngine
 {
-    void Serialize(JsonFile& json, CameraBase& base)
+    void Serialize(JsonFile& json, const CameraBase& base)
     {
         json["aspect-ratio"] = base.GetAspectRatio();
         json["center"] = base.GetProjectionCenter();
@@ -48,7 +48,7 @@ namespace MxEngine
         json["zoom"] = base.GetZoom();
     }
 
-    void Serialize(JsonFile& json, CameraController& controller)
+    void Serialize(JsonFile& json, const CameraController& controller)
     {
         json["move-speed"] = controller.GetMoveSpeed();
         json["rotate-speed"] = controller.GetRotateSpeed();
@@ -62,7 +62,7 @@ namespace MxEngine
         Serialize(json["base"], controller.Camera);
     }
 
-    void Serialize(JsonFile& json, CameraSSR& ssr)
+    void Serialize(JsonFile& json, const CameraSSR& ssr)
     {
         json["steps"] = ssr.GetSteps();
         json["max-angle"] = ssr.GetMaxCosAngle();
@@ -70,7 +70,7 @@ namespace MxEngine
         json["thickness"] = ssr.GetThickness();
     }
 
-    void Serialize(JsonFile& json, CameraToneMapping& mapping)
+    void Serialize(JsonFile& json, const CameraToneMapping& mapping)
     {
         auto& aces = mapping.GetACESCoefficients();
         auto& grading = mapping.GetColorGrading();
@@ -93,7 +93,7 @@ namespace MxEngine
         json["white-point"] = mapping.GetWhitePoint();
     }
 
-    void Serialize(JsonFile& json, VRCameraController& vr)
+    void Serialize(JsonFile& json, const VRCameraController& vr)
     {
         json["eye-distance"] = vr.EyeDistance;
         json["focus-distance"] = vr.FocusDistance;
@@ -101,7 +101,7 @@ namespace MxEngine
         json["right-eye-id"] = vr.RightEye.GetHandle();
     }
 
-    void Serialize(JsonFile& json, InputController& input)
+    void Serialize(JsonFile& json, const InputController& input)
     {
         json["horizontal-rotation"] = input.IsHorizontalRotationBound();
         json["vertical-rotation"] = input.IsVerticalRotationBound();
@@ -113,7 +113,7 @@ namespace MxEngine
         json["back-key"] = input.GetBackKeyBinding();
     }
 
-    void Serialize(JsonFile& json, CameraEffects& effects)
+    void Serialize(JsonFile& json, const CameraEffects& effects)
     {
         json["fxxa-enabled"] = effects.IsFXAAEnabled();
         json["ao-intensity"] = effects.GetAmbientOcclusionIntensity();

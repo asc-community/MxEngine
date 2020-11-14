@@ -104,6 +104,7 @@ namespace MxEngine
 	{
 		if (this->shouldRender)
 		{
+			MAKE_SCOPE_PROFILER("RuntimeEditor::OnUpdate()");
 			auto dockspaceID = ImGui::DockSpaceOverViewport();
 			InitDockspace(dockspaceID);
 

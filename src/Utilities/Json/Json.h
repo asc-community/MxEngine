@@ -14,6 +14,8 @@ namespace MxEngine
 
 namespace glm
 {
+    void to_json(MxEngine::JsonFile& j, const MxEngine::Vector4& v);
+    void from_json(const MxEngine::JsonFile& j, MxEngine::Vector4& v);
     void to_json(MxEngine::JsonFile& j, const MxEngine::Vector3& v);
     void from_json(const MxEngine::JsonFile& j, MxEngine::Vector3& v);
     void to_json(MxEngine::JsonFile& j, const MxEngine::Vector2& v);

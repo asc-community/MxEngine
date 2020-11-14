@@ -31,7 +31,7 @@
 
 namespace MxEngine
 {
-    void Serialize(JsonFile& json, InstanceFactory& factory)
+    void Serialize(JsonFile& json, const InstanceFactory& factory)
     {
         json["is-static"] = factory.IsStatic;
         auto instances = factory.GetInstances();
@@ -42,7 +42,7 @@ namespace MxEngine
         }
     }
 
-    void Serialize(JsonFile& json, Instance& instance)
+    void Serialize(JsonFile& json, const Instance& instance)
     {
         json["color"] = instance.GetColor();
     }

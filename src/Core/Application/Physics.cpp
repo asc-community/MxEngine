@@ -40,6 +40,7 @@ namespace MxEngine
 
     void OnCollisionCallback()
     {
+        MAKE_SCOPE_PROFILER("Physics::SubmitCollisions()");
         auto dispatcher = WORLD->getDispatcher();
         int numManiforlds = dispatcher->getNumManifolds();
         for (int i = 0; i < numManiforlds; i++)

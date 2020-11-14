@@ -46,21 +46,31 @@ namespace MxEngine
     class CameraToneMapping;
     class VRCameraController;
     class InputController;
+    class DebugDraw;
+    class MeshRenderer;
+    class MeshSource;
+    class Skybox;
+    class MeshLOD;
 
-    void Serialize(JsonFile& json, MxObject&);
-    void Serialize(JsonFile& json, TransformComponent&);
-    void Serialize(JsonFile& json, Behaviour&);
-    void Serialize(JsonFile& json, DirectionalLight&);
-    void Serialize(JsonFile& json, PointLight&);
-    void Serialize(JsonFile& json, SpotLight&);
-    void Serialize(JsonFile& json, InstanceFactory&);
-    void Serialize(JsonFile& json, Instance&);
-    void Serialize(JsonFile& json, CameraController&);
-    void Serialize(JsonFile& json, CameraSSR&);
-    void Serialize(JsonFile& json, CameraToneMapping&);
-    void Serialize(JsonFile& json, CameraEffects&);
-    void Serialize(JsonFile& json, VRCameraController&);
-    void Serialize(JsonFile& json, InputController&);
+    void Serialize(JsonFile& json, const MxObject&);
+    void Serialize(JsonFile& json, const TransformComponent&);
+    void Serialize(JsonFile& json, const Behaviour&);
+    void Serialize(JsonFile& json, const DirectionalLight&);
+    void Serialize(JsonFile& json, const PointLight&);
+    void Serialize(JsonFile& json, const SpotLight&);
+    void Serialize(JsonFile& json, const InstanceFactory&);
+    void Serialize(JsonFile& json, const Instance&);
+    void Serialize(JsonFile& json, const CameraController&);
+    void Serialize(JsonFile& json, const CameraSSR&);
+    void Serialize(JsonFile& json, const CameraToneMapping&);
+    void Serialize(JsonFile& json, const CameraEffects&);
+    void Serialize(JsonFile& json, const VRCameraController&);
+    void Serialize(JsonFile& json, const InputController&);
+    void Serialize(JsonFile& json, const MeshRenderer&);
+    void Serialize(JsonFile& json, const MeshSource&);
+    void Serialize(JsonFile& json, const Skybox&);
+    void Serialize(JsonFile& json, const MeshLOD&);
+    void Serialize(JsonFile& json, const DebugDraw&);
 
     class SceneSerializer
     {

@@ -35,14 +35,14 @@
 
 namespace MxEngine
 {
-    void Serialize(JsonFile& json, LightBase& light)
+    void Serialize(JsonFile& json, const LightBase& light)
     {
         json["ambient-intensity"] = light.GetAmbientIntensity();
         json["intensity"] = light.GetIntensity();
         json["color"] = light.GetColor();
     }
 
-    void Serialize(JsonFile& json, DirectionalLight& light)
+    void Serialize(JsonFile& json, const DirectionalLight& light)
     {
         Serialize(json, (LightBase&)light);
         json["direction"] = light.Direction;
@@ -55,14 +55,14 @@ namespace MxEngine
         }
     }
 
-    void Serialize(JsonFile& json, PointLight& light)
+    void Serialize(JsonFile& json, const PointLight& light)
     {
         Serialize(json, (LightBase&)light);
         json["radius"] = light.GetRadius();
         json["casts-shadows"] = light.IsCastingShadows();
     }
 
-    void Serialize(JsonFile& json, SpotLight& light)
+    void Serialize(JsonFile& json, const SpotLight& light)
     {
         Serialize(json, (LightBase&)light);
         json["outer-angle"] = light.GetOuterAngle();

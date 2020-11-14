@@ -32,14 +32,14 @@
 
 namespace MxEngine
 {
-    void Serialize(JsonFile& json, TransformComponent& transform)
+    void Serialize(JsonFile& json, const TransformComponent& transform)
     {
         json["position"] = transform.GetPosition();
         json["rotation"] = transform.GetRotation();
         json["scale"] = transform.GetScale();
     }
 
-    void Serialize(JsonFile& json, Behaviour& behaviour)
+    void Serialize(JsonFile& json, const Behaviour& behaviour)
     {
         json["tag"] = behaviour.Tag;
         json["has-behaviour"] = behaviour.HasBehaviour();
