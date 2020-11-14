@@ -17,7 +17,7 @@ matrix:
         - clang-10
         - lldb-10
         - lld-10
-        - libstdc++-8-dev
+        - libstdc++-10-dev
     env:
     - MATRIX_EVAL="CC=clang-10 && CXX=clang++-10"
     - LINKER_FLAGS="-std=c++17 -lstdc++fs -stdlib=libstdc++"
@@ -32,7 +32,7 @@ before_install:
     - sudo apt-get install -y libxinerama-dev 
     
 script:
-- cmake -D_GLIBCXX_USE_CXX11_ABI=0 .
+- cmake .
 - cmake --build . -j 4
 compiler:
 - clang
