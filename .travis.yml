@@ -28,7 +28,7 @@ matrix:
         - ubuntu-toolchain-r-test
         packages:
         - software-properties-common
-        - g++
+        - g++-8
     env:
     - MATRIX_EVAL="CC=gcc && CXX=g++"
     - LINKER_FLAGS="-std=c++17 -lstdc++fs -stdlib=libstdc++" 
@@ -46,7 +46,6 @@ script:
 - cmake .
 - cmake --build . -j 4
 compiler:
-- clang
 - g++
 os:
 - linux
