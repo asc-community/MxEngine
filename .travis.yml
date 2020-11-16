@@ -40,6 +40,13 @@ matrix:
     env:
     - MATRIX_EVAL="CC=gcc-10 && CXX=g++-10"
     - LINKER_FLAGS="-std=c++17 -lstdc++fs -stdlib=libstdc++" 
+  - os: windows
+    env:
+    - MSBUILD_PATH="C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin"
+    install:
+    - choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
+    - choco install dotnetcore-sdk
+    - dotnet restore
     
 before_install:
     - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
