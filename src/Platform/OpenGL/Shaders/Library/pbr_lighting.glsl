@@ -2,47 +2,54 @@
 
 #define PI 3.1415926535f
 
-float GGXPartialGeometry(float normalLightAngle, float roughnessSquared)
+float GGXPartialGeometry(float NV, float roughness)
 {
-    float alpha2 = roughnessSquared * roughnessSquared;
-    float theta2 = clamp(normalLightAngle * normalLightAngle, 0.0f, 1.0f);
-    float tan2 = (1.0f - theta2) / theta2;
-    tan2 = clamp(tan2, 0.0f, 10.0f);
-    float GP = 2.0f / (1.0f + sqrt(1.0f + alpha2 * tan2));
-    return GP;
+    float k = (roughness + 1.0f) * (roughness + 1.0f) / 8.0f;
+    return NV / (NV * (1.0f - k) + k);
 }
 
-float GGXDistribution(float normalLightAngle, float roughnessSquared)
+float GGXDistribution(float NH, float roughness)
 {
-    float alpha2 = roughnessSquared * roughnessSquared;
-    float theta2 = clamp(normalLightAngle * normalLightAngle, 0.0f, 1.0f);
-    float distr = theta2 * alpha2 + (1.0f - theta2);
-    float totalDistr = alpha2 / (PI * distr * distr);
+    float roughness2 = roughness * roughness;
+    float alpha2 = roughness2 * roughness2;
+    float distr = (NH * NH) * (alpha2 - 1.0f) + 1.0f;
+    float distr2 = distr * distr;
+    float totalDistr = alpha2 / (PI * distr2);
     return totalDistr;
 }
 
-vec3 fresnelSchlick(vec3 angles, float normalLightAngle)
+float GGXSmith(float NV, float NL, float roughness)
 {
-    return angles + (vec3(1.0f) - angles) * pow(1.0f - clamp(normalLightAngle, 0.0f, 1.0f), 5.0f);
+    return GGXPartialGeometry(NV, roughness)* GGXPartialGeometry(NL, roughness);
 }
 
-vec3 GGXSample(vec2 angles, float roughnessSquared)
+vec3 fresnelSchlick(vec3 F0, float HV)
 {
-    float phi = 2.0f * PI * angles.x;
-    float alpha2 = roughnessSquared * roughnessSquared;
-    float cosTheta = clamp(sqrt(1.0f - angles.y) / (1.0f + alpha2 * angles.y - angles.y), 0.0f, 1.0f);
-    float sinTheta = sqrt(1.0f - cosTheta * cosTheta);
-    return vec3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
+    float p = (-5.55473f * HV - 6.98136f) * HV;
+    return F0 + (vec3(1.0f) - F0) * pow(2.0f, p);
 }
 
 mat3 computeSampleTransform(vec3 normal)
 {
+    vec3 up = abs(normal.z) < 0.999f ? vec3(0.0f, 0.0f, 1.0f) : vec3(1.0f, 0.0f, 0.0f);
+
     mat3 w;
-    vec3 up = abs(normal.y) < 0.99f ? vec3(0.0f, 1.0f, 0.0f) : vec3(1.0f, 0.0f, 0.0f);
     w[0] = normalize(cross(normal, up));
     w[1] = cross(normal, w[0]);
     w[2] = normal;
     return w;
+}
+
+vec3 GGXImportanceSample(vec2 Xi, float roughness, vec3 normal)
+{
+    mat3 transform = computeSampleTransform(normal);
+
+    float alpha = roughness * roughness;
+    float phi = 2.0f * PI * Xi.x;
+    float cosTheta = sqrt((1.0f - Xi.y) / (1.0f + (alpha * alpha - 1.0f) * Xi.y));
+    float sinTheta = sqrt(1.0f - cosTheta * cosTheta);
+    vec3 H = vec3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
+    return transform * H;
 }
 
 float computeA(samplerCube tex, int sampleCount)
@@ -76,7 +83,6 @@ vec2 sampleHammersley(uint i, float invSampleCount)
 vec3 GGXCookTorranceSampled(vec3 normal, vec3 lightDirection, vec3 viewDirection, float roughness, float metallic, vec3 albedo, out vec3 FK, out float pdf)
 {
     vec3 H = normalize(viewDirection + lightDirection);
-    float roughness2 = roughness * roughness;
     float NV = dot(normal, viewDirection);
     float NL = dot(normal, lightDirection);
     float NH = dot(normal, H);
@@ -87,8 +93,8 @@ vec3 GGXCookTorranceSampled(vec3 normal, vec3 lightDirection, vec3 viewDirection
 
     vec3 F0 = mix(vec3(0.04f), albedo, metallic);
 
-    float G = GGXPartialGeometry(NV, roughness2) * GGXPartialGeometry(NL, roughness2);
-    float D = GGXDistribution(NH, roughness2);
+    float G = GGXSmith(NV, NL, roughness);
+    float D = GGXDistribution(NH, roughness);
     vec3 F = fresnelSchlick(F0, HV);
 
     FK = F;

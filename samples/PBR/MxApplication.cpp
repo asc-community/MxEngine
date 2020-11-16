@@ -58,10 +58,10 @@ namespace PBR
 
             sphereMesh = Primitives::CreateSphere();
             
-            this->GenerateSpheres(MakeVector3(0.0f,  0.0f, 0.0f ), 5, MakeVector3(1.0f,  0.25f, 0.25f));
-            this->GenerateSpheres(MakeVector3(15.0f, 0.0f, 0.0f ), 5, MakeVector3(0.25,  0.25f, 1.0f ));
-            this->GenerateSpheres(MakeVector3(0.0f,  0.0f, 15.0f), 5, MakeVector3(0.25,  1.0f,  0.25f));
-            this->GenerateSpheres(MakeVector3(15.0f, 0.0f, 15.0f), 5, MakeVector3(0.25f, 0.25f, 0.25f));
+            this->GenerateSpheres(MakeVector3(0.0f,  0.0f, 0.0f ), 5, MakeVector3(1.0f,  0.3f, 0.3f));
+            this->GenerateSpheres(MakeVector3(15.0f, 0.0f, 0.0f ), 5, MakeVector3(0.3f,  0.3f, 1.0f));
+            this->GenerateSpheres(MakeVector3(0.0f,  0.0f, 15.0f), 5, MakeVector3(1.0f,  1.0f, 1.0f));
+            this->GenerateSpheres(MakeVector3(15.0f, 0.0f, 15.0f), 5, MakeVector3(0.4f,  0.4f, 0.4f));
         }
     };
 }
