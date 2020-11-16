@@ -46,8 +46,7 @@ matrix:
     install:
     - choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
     - choco install dotnetcore-sdk
-    - dotnet restore
-    
+   
 before_install:
     - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
     - git submodule update --init
