@@ -952,8 +952,8 @@ namespace MxEngine
 		camera.SSR                        = ssr;
 	}
 
-    void RenderController::SubmitPrimitive(const SubMesh& object, const Material& material, const TransformComponent& parentTransform, size_t instanceCount)
-    {
+	void RenderController::SubmitPrimitive(const SubMesh& object, const Material& material, bool castsShadows, const TransformComponent& parentTransform, size_t instanceCount)
+	{
 		RenderUnit* primitivePtr = nullptr;
 		// filter transparent object to render in separate order
 		if (material.Transparency < 1.0f)
@@ -965,7 +965,7 @@ namespace MxEngine
 		primitive.VAO = object.Data.GetVAO();
 		primitive.IBO = object.Data.GetIBO();
 		primitive.materialIndex = this->Pipeline.MaterialUnits.size();
-		primitive.ModelMatrix  = parentTransform.GetMatrix() * object.GetTransform()->GetMatrix(); //-V807
+		primitive.ModelMatrix = parentTransform.GetMatrix() * object.GetTransform()->GetMatrix(); //-V807
 		primitive.NormalMatrix = parentTransform.GetNormalMatrix() * object.GetTransform()->GetNormalMatrix();
 		primitive.InstanceCount = instanceCount;
 
@@ -983,16 +983,16 @@ namespace MxEngine
 		if (renderMaterial.MetallicMap.IsValid())          renderMaterial.MetallicFactor = 1.0f;
 
 		// set default textures if they are not exist
-		if (!renderMaterial.AlbedoMap.IsValid())           renderMaterial.AlbedoMap           = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!renderMaterial.RoughnessMap.IsValid())        renderMaterial.RoughnessMap        = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!renderMaterial.MetallicMap.IsValid())         renderMaterial.MetallicMap         = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!renderMaterial.EmmisiveMap.IsValid())         renderMaterial.EmmisiveMap         = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!renderMaterial.AlbedoMap.IsValid())           renderMaterial.AlbedoMap = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!renderMaterial.RoughnessMap.IsValid())        renderMaterial.RoughnessMap = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!renderMaterial.MetallicMap.IsValid())         renderMaterial.MetallicMap = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!renderMaterial.EmmisiveMap.IsValid())         renderMaterial.EmmisiveMap = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!renderMaterial.AmbientOcclusionMap.IsValid()) renderMaterial.AmbientOcclusionMap = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!renderMaterial.NormalMap.IsValid())           renderMaterial.NormalMap           = this->Pipeline.Environment.DefaultNormalMap;
-		if (!renderMaterial.HeightMap.IsValid())           renderMaterial.HeightMap           = this->Pipeline.Environment.DefaultBlackMap;
+		if (!renderMaterial.NormalMap.IsValid())           renderMaterial.NormalMap = this->Pipeline.Environment.DefaultNormalMap;
+		if (!renderMaterial.HeightMap.IsValid())           renderMaterial.HeightMap = this->Pipeline.Environment.DefaultBlackMap;
 
-		if (renderMaterial.CastsShadow) this->Pipeline.ShadowCasterUnits.push_back(primitive);
-    }
+		if(castsShadows) this->Pipeline.ShadowCasterUnits.push_back(primitive);
+	}
 
 	void RenderController::SubmitImage(const TextureHandle& texture)
 	{

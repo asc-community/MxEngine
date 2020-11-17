@@ -129,7 +129,7 @@ namespace MxEngine
 
         environment.Shaders["GlobalIllumination"_id] = AssetManager::LoadShader(
             shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "global_illum_fragment.glsl"
+            shaderFolder / "dirlight_fragment.glsl"
         );
 
         environment.Shaders["SpotLight"_id] = AssetManager::LoadShader(
@@ -315,6 +315,7 @@ namespace MxEngine
                 size_t instanceCount = 0;
                 if (instances.IsValid()) instanceCount = instances->GetCount();
                 auto mesh = meshSource.Mesh;
+                bool castsShadow = meshSource.CastsShadow;
 
                 if (!meshSource.IsDrawn || !meshRenderer.IsValid()) continue;
 
@@ -332,7 +333,7 @@ namespace MxEngine
                     if (materialId >= meshRenderer->Materials.size()) continue;
                     auto material = meshRenderer->Materials[materialId];
 
-                    this->Renderer.SubmitPrimitive(submesh, *material, transform, instanceCount);
+                    this->Renderer.SubmitPrimitive(submesh, *material, castsShadow, transform, instanceCount);
                 }
             }
         }

@@ -50,8 +50,10 @@ namespace MxEngine
 		MxVector<std::function<void(MxObject&)>> componentEditorCallbacks;
 		MxVector<std::function<void(MxObject&)>> componentAdderCallbacks;
 		MxVector<const char*> componentNames;
+		MxObject::Handle currentlySelectedObject{ };
 
 		void DrawMxObjectList(bool* isOpen = nullptr);
+		void DrawMxObjectEditorWindow(bool* isOpen = nullptr);
   	public:
 		RuntimeEditor();
 		RuntimeEditor(const RuntimeEditor&) = delete;

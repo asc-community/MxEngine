@@ -75,27 +75,32 @@ namespace MxEngine
 		inited = true;
 		const float viewportRatio = 0.7f;
 		const float editorRatio = 0.15f;
+		const float objectListRatio = 0.5f;
 
-		ImGuiID leftDockspace = 0; 
-		ImGuiID rightDockspace = 0;
-		ImGui::DockBuilderSplitNode(dockspaceId, ImGuiDir_Left, viewportRatio, &leftDockspace, &rightDockspace);
+		ImGuiID viewportDockspace = 0; 
+		ImGuiID editorDockspace = 0;
+		ImGui::DockBuilderSplitNode(dockspaceId, ImGuiDir_Left, viewportRatio, &viewportDockspace, &editorDockspace);
 
 		ImGuiID viewportId = 0;
 		ImGuiID profilerId = 0;
-		ImGui::DockBuilderSplitNode(leftDockspace, ImGuiDir_Up, viewportRatio, &viewportId, &profilerId);
+		ImGui::DockBuilderSplitNode(viewportDockspace, ImGuiDir_Up, viewportRatio, &viewportId, &profilerId);
 
-		ImGuiID rightUpDockspace = 0;
-		ImGuiID rightDownDockspace = 0;
-		ImGui::DockBuilderSplitNode(rightDockspace, ImGuiDir_Up, editorRatio, &rightUpDockspace, &rightDownDockspace);
+		ImGuiID applicationId = 0;
+		ImGuiID objectEditorDockspace = 0;
+		ImGui::DockBuilderSplitNode(editorDockspace, ImGuiDir_Up, editorRatio, &applicationId, &objectEditorDockspace);
+
+		ImGuiID objectListId = 0;
+		ImGuiID objectEditorId = 0;
+		ImGui::DockBuilderSplitNode(objectEditorDockspace, ImGuiDir_Up, objectListRatio, &objectListId, &objectEditorId);
 
 		ImGui::DockBuilderDockWindow("Viewport", viewportId);
 		ImGui::DockBuilderDockWindow("Profiling Tools", profilerId);
-		ImGui::DockBuilderDockWindow("Application Editor", rightUpDockspace);
-		ImGui::DockBuilderDockWindow("Object Editor", rightDownDockspace);
-		ImGui::DockBuilderDockWindow("Developer Console", rightDownDockspace);
-		ImGui::DockBuilderDockWindow("Object Editor", rightDownDockspace);
-		ImGui::DockBuilderDockWindow("Render Editor", rightDownDockspace);
-		ImGui::DockBuilderDockWindow("Texture Viewer", rightDownDockspace);
+		ImGui::DockBuilderDockWindow("Application Editor", applicationId);
+		ImGui::DockBuilderDockWindow("Object Editor", objectEditorId);
+		ImGui::DockBuilderDockWindow("Object List", objectListId);
+		ImGui::DockBuilderDockWindow("Developer Console", objectListId);
+		ImGui::DockBuilderDockWindow("Render Editor", objectListId);
+		ImGui::DockBuilderDockWindow("Texture Viewer", objectListId);
 
 		ImGui::DockBuilderFinish(dockspaceId);
 	}
@@ -109,6 +114,7 @@ namespace MxEngine
 			InitDockspace(dockspaceID);
 
 			static bool isRenderEditorOpened = false;
+			static bool isObjectListOpened = false;
 			static bool isObjectEditorOpened = false;
 			static bool isApplicationEditorOpened = true;
 			static bool isTextureListOpened = true;
@@ -122,7 +128,8 @@ namespace MxEngine
 			GUI::DrawApplicationEditor("Application Editor", &isApplicationEditorOpened);
 			GUI::DrawTextureList("Texture Viewer", &isTextureListOpened);
 
-			this->DrawMxObjectList(&isObjectEditorOpened);
+			this->DrawMxObjectList(&isObjectListOpened);
+			this->DrawMxObjectEditorWindow(&isObjectEditorOpened);
 
 			GUI::DrawViewportWindow("Viewport", this->cachedWindowSize, &isViewportOpened);
 
@@ -293,7 +300,7 @@ namespace MxEngine
 
     void RuntimeEditor::DrawMxObject(const MxString& treeName, MxObject& object)
     {
-		GUI::DrawMxObjectEditor(treeName.c_str(), object, this->componentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
+		GUI::DrawMxObjectEditor(treeName.c_str(), object, true, this->componentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
     }
 
 	Vector2 RuntimeEditor::GetSize() const
@@ -308,13 +315,16 @@ namespace MxEngine
 
 	void RuntimeEditor::DrawMxObjectList(bool* isOpen)
 	{
-		ImGui::Begin("Object Editor", isOpen);
+		ImGui::Begin("Object List", isOpen);
 
 		static char filter[128] = { '\0' };
 		ImGui::InputText("search filter", filter, std::size(filter));
 
 		if (ImGui::Button("create new MxObject"))
 			MxObject::Create();
+		ImGui::SameLine();
+		if (ImGui::Button("delete currently selected"))
+			MxObject::Destroy(this->currentlySelectedObject);
 
 		auto objects = MxObject::GetObjects();
 		int id = 0;
@@ -324,10 +334,25 @@ namespace MxEngine
 			if (shouldDisplay)
 			{
 				ImGui::PushID(id++);
-				this->DrawMxObject(object.Name, object);
+				bool isSelected = this->currentlySelectedObject == MxObject::GetHandle(object);
+				if (ImGui::Selectable(object.Name.c_str(), &isSelected))
+				{
+					if (isSelected) this->currentlySelectedObject = MxObject::GetHandle(object);
+					else this->currentlySelectedObject = { };
+				}
 				ImGui::PopID();
 			}
 		}
+	}
+
+	void RuntimeEditor::DrawMxObjectEditorWindow(bool* isOpen)
+	{
+		ImGui::Begin("Object Editor", isOpen);
+		if (!this->currentlySelectedObject.IsValid())
+			ImGui::Text("no object selected");
+		else
+			this->DrawMxObject(this->currentlySelectedObject->Name, *this->currentlySelectedObject);
+		ImGui::End();
 	}
 
 	RuntimeEditor::RuntimeEditor()

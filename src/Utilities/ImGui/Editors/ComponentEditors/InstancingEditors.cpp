@@ -61,7 +61,18 @@ namespace MxEngine::GUI
 			GUI::Indent _(5.0f);
 			ImGui::PushID(id);
 			MxString nodeName = "instance #" + ToMxString(id++); //-V127
-			Application::GetImpl()->GetRuntimeEditor().DrawMxObject(nodeName, *self->GetInstancePool()[i]);
+			if (ImGui::CollapsingHeader(nodeName.c_str()))
+			{
+				GUI::Indent _(5.0f);
+				if (ImGui::Button("destroy instance"))
+				{
+					MxObject::Destroy(self->GetInstancePool()[i]);
+				}
+				else
+				{
+					Application::GetImpl()->GetRuntimeEditor().DrawMxObject(nodeName, *self->GetInstancePool()[i]);
+				}
+			}
 			ImGui::PopID();
 		}
 	}

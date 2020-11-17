@@ -238,7 +238,6 @@ namespace MxEngine::GUI
         DrawTextureEditor("height map", material->HeightMap, true);
         DrawTextureEditor("ambient occlusion map", material->AmbientOcclusionMap, true);
 
-        ImGui::Checkbox("casts shadows", &material->CastsShadow);
         ImGui::DragFloat("roughness factor", &material->RoughnessFactor, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("metallic factor", &material->MetallicFactor, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("emmision", &material->Emmision, 0.01f, 0.0f, FLT_MAX);

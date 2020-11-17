@@ -47,7 +47,7 @@ namespace Sponza
 
             auto toneMapping = camera->AddComponent<CameraToneMapping>();
             toneMapping->SetMinLuminance(0.3f);
-            toneMapping->SetWhitePoint(0.75f);
+            toneMapping->SetWhitePoint(0.5f);
 
             auto ssr = camera->AddComponent<CameraSSR>();
 
@@ -67,7 +67,7 @@ namespace Sponza
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Projections[1] = 100.0f;
             dirLight->SetIntensity(100.0f);
-            dirLight->SetAmbientIntensity(0.3f);
+            dirLight->SetAmbientIntensity(0.2f);
             dirLight->FollowViewport();
 
             this->sphereFactory = MxObject::Create();

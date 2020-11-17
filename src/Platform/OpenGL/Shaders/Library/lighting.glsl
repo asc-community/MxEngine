@@ -37,8 +37,10 @@ vec3 calculateLighting(FragmentInfo fragment, vec3 viewDirection, vec3 lightDire
     vec3 diffuseColor = fragment.albedo * (1.0f - metallic) * (1.0f - FKtotal) * irradianceColor;
     vec3 ambientColor = diffuseColor * ambientFactor;
 
-    diffuseColor *= max(dot(normLightDirection, fragment.normal),  0.0f);
-    specularColor *= max(dot(normLightDirection, fragment.normal), 0.0f);
+    float NL = max(dot(normLightDirection, fragment.normal), 0.0f);
+
+    diffuseColor *= NL;
+    specularColor *= NL;
 
     vec3 totalColor = ambientColor + shadowFactor * (diffuseColor + specularColor);
     return totalColor * lightColor * fragment.ambientOcclusion;

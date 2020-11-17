@@ -23,11 +23,11 @@ namespace GrassSample
             grass->Transform.TranslateY(0.3f);
             grass->Transform.ScaleZ(0.75f);
 
-            grass->AddComponent<MeshSource>(Primitives::CreatePlane());
+            auto source = grass->AddComponent<MeshSource>(Primitives::CreatePlane());
+            source->CastsShadow = false;
 
             auto material = grass->AddComponent<MeshRenderer>()->GetMaterial();
             material->AlbedoMap = AssetManager::LoadTexture("grass_al.png"_id, TextureFormat::RGBA);
-            material->CastsShadow = false;
 
             auto grassInstances = grass->AddComponent<InstanceFactory>();
             for (size_t i = 0; i < 2500; i++)
@@ -50,10 +50,10 @@ namespace GrassSample
         {
             this->lights = MxObject::Create();
             this->lights->Name = "Light Instances";
-            this->lights->AddComponent<MeshSource>(Primitives::CreateCube());
+            auto source = this->lights->AddComponent<MeshSource>(Primitives::CreateCube());
+            source->CastsShadow = false;
             auto material = this->lights->AddComponent<MeshRenderer>()->GetMaterial();
-            material->CastsShadow = false;
-            material->Emmision = 10.0f;
+            material->Emmision = 100.0f;
             auto lightFactory = this->lights->AddComponent<InstanceFactory>();
 
             constexpr size_t lightRowSize = 100;
@@ -67,13 +67,13 @@ namespace GrassSample
                     object->Transform.Scale(0.1f);
 
                     auto pointLight = object->AddComponent<PointLight>();
-                    pointLight->UseRadius(0.4f);
+                    pointLight->UseRadius(0.2f);
 
                     float r = Random::GetFloat();
                     float g = Random::GetFloat();
                     float b = Random::GetFloat();
                     pointLight->SetColor({ r, g, b });
-                    pointLight->SetIntensity(10.0f);
+                    pointLight->SetIntensity(100.0f);
 
                     object->GetComponent<Instance>()->SetColor({ r, g, b });
                 }

@@ -20,7 +20,7 @@ void InitPointLight(MxObject& object)
 
     auto material = object.GetOrAddComponent<MeshRenderer>()->GetMaterial();
     material->BaseColor = Vector3(1.0f, 0.7f, 0.0f);
-    material->Emmision = 5.0f;
+    material->Emmision = 50.0f;
 
     object.AddComponent<MeshSource>(Primitives::CreateCube());
     object.Transform
@@ -41,7 +41,7 @@ void InitSpotLight(MxObject& object)
 
     auto material = object.GetOrAddComponent<MeshRenderer>()->GetMaterial();
     material->BaseColor = light->GetColor();
-    material->Emmision = 5.0f;
+    material->Emmision = 10.0f;
     
     object.AddComponent<MeshSource>(Primitives::CreateCube());
     object.Transform

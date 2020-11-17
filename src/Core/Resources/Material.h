@@ -53,7 +53,6 @@ namespace MxEngine
 
 		Vector3 BaseColor{ 1.0f };
 		Vector2 UVMultipliers{ 1.0f };
-		bool CastsShadow = true;
 		MxString Name = "DefaultMaterial";
 
 		constexpr static size_t TextureCount = 7;

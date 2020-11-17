@@ -68,6 +68,7 @@ namespace MxEngine
     void Serialize(JsonFile& json, const MeshSource& source)
     {
         json["is-drawn"] = source.IsDrawn;
+        json["casts-shadow"] = source.CastsShadow;
         json["mesh-id"] = source.Mesh.IsValid() ? source.Mesh.GetHandle() : size_t(-1);
     }
 

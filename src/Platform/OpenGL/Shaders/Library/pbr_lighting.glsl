@@ -4,7 +4,7 @@
 
 float GGXPartialGeometry(float NV, float roughness)
 {
-    float k = (roughness + 1.0f) * (roughness + 1.0f) / 8.0f;
+    float k = (roughness + 1.0f) * (roughness + 1.0f) * 0.125f;
     return NV / (NV * (1.0f - k) + k);
 }
 

@@ -29,49 +29,62 @@
 #include "MxObjectEditor.h"
 #include "ComponentEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
+#include "Core/BoundingObjects/BoundingBox.h"
+#include "Core/Components/Rendering/MeshSource.h"
+#include "Core/Application/Rendering.h"
 
 namespace MxEngine::GUI
 {
 	void DrawMxObjectEditor(
 		const char* name,
 		MxObject& object,
+		bool withBoundingBox,
 		const MxVector<const char*>& componentNames,
 		MxVector<std::function<void(MxObject&)>>& componentAdderCallbacks,
 		MxVector<std::function<void(MxObject&)>>& componentEditorCallbacks
 	)
 	{
-		if (ImGui::CollapsingHeader(name))
+		static MxString objectName;
+		if (GUI::InputTextOnClick("object name", objectName, 48))
 		{
-			GUI::Indent _(5.0f);
+			if (!objectName.empty()) object.Name = objectName;
+			objectName.clear();
+		}
 
-			if (ImGui::Button("Destroy object"))
-			{
-				MxObject::Destroy(object);
-			}
+		static int currentItem = 0;
+		ImGui::PushID(0xFFAA);
+		ImGui::Combo("", &currentItem, componentNames.data(), (int)componentNames.size());
+		ImGui::PopID();
+		ImGui::SameLine();
+		if (ImGui::Button("add component"))
+		{
+			componentAdderCallbacks[(size_t)currentItem](object);
+		}
+
+		GUI::TransformEditor(object.Transform);
+
+		for (size_t i = 0; i < componentEditorCallbacks.size(); i++)
+		{
+			componentEditorCallbacks[i](object);
+		}
+
+		if (withBoundingBox)
+		{
+			AABB aabb;
+			auto meshSource = object.GetComponent<MeshSource>();
+			if (meshSource.IsValid() && meshSource->Mesh.IsValid())
+				aabb = meshSource->Mesh->BoxBounding;
 			else
-			{
-				static MxString objectName;
-				if (GUI::InputTextOnClick("object name", objectName, 48))
-				{
-					if (!objectName.empty()) object.Name = objectName;
-					objectName.clear();
-				}
+				aabb = { MakeVector3(-0.5f), MakeVector3(0.5f) };
 
-				static int currentItem = 0;
-				ImGui::Combo("", &currentItem, componentNames.data(), (int)componentNames.size());
-				ImGui::SameLine();
-				if (ImGui::Button("add component"))
-				{
-					componentAdderCallbacks[(size_t)currentItem](object);
-				}
+			// add a bit of offset to scale to make boundings visible for cubic objects
+			BoundingBox box = BoundingBox(aabb.GetCenter(), aabb.Length() * 0.6f);
+			box.Rotation = object.Transform.GetRotation();
+			box.Center = object.Transform.GetPosition();
+			box.Max *= object.Transform.GetScale();
+			box.Min *= object.Transform.GetScale();
 
-				GUI::TransformEditor(object.Transform);
-
-				for (size_t i = 0; i < componentEditorCallbacks.size(); i++)
-				{
-					componentEditorCallbacks[i](object);
-				}
-			}
+			Rendering::Draw(box, Vector4(0.0f, 1.0f, 0.0f, 1.0f));
 		}
 	}
 }

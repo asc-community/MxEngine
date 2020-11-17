@@ -73,7 +73,7 @@ void main()
         }
     }
 
-    float lod = fragment.roughnessFactor * fragment.roughnessFactor * 5.0f;
+    float lod = min(fragment.roughnessFactor * 8.0f, 5.0f);
     vec3 ssrReflection = textureLod(HDRTex, bestUV, lod).rgb;
 
     vec2 screenCenterDiff = 2.0f * abs(bestUV - vec2(0.5f));
@@ -101,5 +101,5 @@ void main()
         fadingFactor = 0.0f;
     }
 
-    OutColor = vec4(mix(objectColor, ssrReflection, fadingFactor), 1.0f);
+    OutColor = vec4(mix(objectColor, fragment.albedo * ssrReflection, fadingFactor), 1.0f);
 }
