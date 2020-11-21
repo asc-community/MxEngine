@@ -102,8 +102,11 @@ namespace MxEngine
     {
         auto b1 = this->GetImpl().as_bytes();
         auto b2 = other.GetImpl().as_bytes();
+        
+        const uint64_t* d1 = std::launder(reinterpret_cast<const uint64_t*>(b1.data()));
+        const uint64_t* d2 = std::launder(reinterpret_cast<const uint64_t*>(b2.data()));
 
-        return std::memcmp(std::addressof(b1), std::addressof(b2), sizeof(b1)) < 0;
+        return (d1[0] == d2[0]) ? (d1[1] < d2[1]) : (d1[0] < d2[0]);
     }
 
     bool UUID::operator>(const UUID& other) const
