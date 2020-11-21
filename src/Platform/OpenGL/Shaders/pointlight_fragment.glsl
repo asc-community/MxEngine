@@ -35,9 +35,9 @@ uniform int pcfDistance;
 uniform int lightSamples;
 uniform vec2 viewportSize;
 
-uniform EnvironmentInfo environment;
+uniform sampler2D HDRTex;
 
-vec3 calcColorUnderPointLight(FragmentInfo fragment, PointLight light, vec3 viewDir, samplerCube map_shadow, bool computeShadow)
+vec3 calcColorUnderPointLight(FragmentInfo fragment, vec3 objectColor, PointLight light, vec3 viewDir, samplerCube map_shadow, bool computeShadow)
 {
 	vec3 lightPath = light.position - fragment.position;
 	float lightDistance = length(lightPath);
@@ -49,24 +49,25 @@ vec3 calcColorUnderPointLight(FragmentInfo fragment, PointLight light, vec3 view
 	float intensity = clamp(attenuation * attenuation / (lightDistance * lightDistance + 1.0f), 0.0f, 1.0f);
 	intensity = isnan(lightDistance) || light.radius < lightDistance ? 0.0f : intensity;
 
-	return calculateLighting(fragment, viewDir, lightPath, environment, lightSamples, intensity * light.color.rgb, light.color.a, shadowFactor);
+	return calculateLighting(objectColor, fragment.normal, lightPath, intensity * light.color.rgb, light.color.a, shadowFactor);
 }
 
 void main()
 {
 	vec2 TexCoord = gl_FragCoord.xy / viewportSize;
 	FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
+	vec3 objectColor = texture(HDRTex, TexCoord).rgb;
 
 	float fragDistance = length(camera.position - fragment.position);
 	vec3 viewDirection = normalize(camera.position - fragment.position);
-
+	
 	PointLight light;
 	light.position = pointLight.position;
 	light.radius = pointLight.radius;
 	light.color = pointLight.color;
 
 	vec3 totalColor = vec3(0.0f);
-	totalColor += calcColorUnderPointLight(fragment, light, viewDirection, lightDepthMap, castsShadows);
+	totalColor += calcColorUnderPointLight(fragment, objectColor, light, viewDirection, lightDepthMap, castsShadows);
 
 	OutColor = vec4(totalColor, 1.0f);
 }

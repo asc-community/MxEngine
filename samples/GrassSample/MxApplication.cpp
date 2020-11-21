@@ -30,7 +30,7 @@ namespace GrassSample
             material->AlbedoMap = AssetManager::LoadTexture("grass_al.png"_id, TextureFormat::RGBA);
 
             auto grassInstances = grass->AddComponent<InstanceFactory>();
-            for (size_t i = 0; i < 2500; i++)
+            for (size_t i = 0; i < 10000; i++)
             {
                 auto g1 = grassInstances->MakeInstance();
                 auto g2 = grassInstances->MakeInstance();
@@ -118,6 +118,7 @@ namespace GrassSample
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Direction = MakeVector3(0.1f, 1.0f, 0.0f);
+            dirLight->SetIntensity(35.0f);
             dirLight->FollowViewport();
 
             this->InstanciateGrass();

@@ -59,9 +59,9 @@ namespace MxEngine
 		void ComputeBloomEffect(CameraUnit& camera);
 		TextureHandle ComputeAverageWhite(CameraUnit& camera);
 		void PerformPostProcessing(CameraUnit& camera);
-		void DrawDirectionalLights(CameraUnit& camera);
 		void PerformLightPass(CameraUnit& camera);
 		void DrawTransparentObjects(CameraUnit& camera);
+		void ApplyIBL(CameraUnit& camera, TextureHandle& output);
 		void ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyChromaticAbberation(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyAmbientOcclusion(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
@@ -70,10 +70,11 @@ namespace MxEngine
 		void ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyColorGrading(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
-		void DrawShadowedPointLights(CameraUnit& camera);
-		void DrawShadowedSpotLights(CameraUnit& camera);
-		void DrawNonShadowedPointLights(CameraUnit& camera);
-		void DrawNonShadowedSpotLights(CameraUnit& camera);
+		void DrawDirectionalLights(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+		void DrawShadowedPointLights(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+		void DrawShadowedSpotLights(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+		void DrawNonShadowedPointLights(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+		void DrawNonShadowedSpotLights(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void BindGBuffer(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
 		void BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
 		void BindCameraInformation(const CameraUnit& camera, const Shader& shader);

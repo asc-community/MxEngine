@@ -136,7 +136,7 @@ namespace MxEngine
 
     void ImageManager::SaveTexture(const char* filePath, const TextureHandle& texture)
     {
-        ImageManager::SaveTexture(MxString(filePath), texture);
+        ImageManager::SaveTexture(FilePath(filePath), texture);
     }
 
     void ImageManager::TakeScreenShot(StringId fileHash, ImageType type)

@@ -127,7 +127,7 @@ namespace MxEngine
             shaderFolder / "transparent_fragment.glsl"
         );
 
-        environment.Shaders["GlobalIllumination"_id] = AssetManager::LoadShader(
+        environment.Shaders["DirLight"_id] = AssetManager::LoadShader(
             shaderFolder / "rect_vertex.glsl",
             shaderFolder / "dirlight_fragment.glsl"
         );
@@ -231,6 +231,11 @@ namespace MxEngine
         environment.Shaders["ColorGrading"_id] = AssetManager::LoadShader(
             shaderFolder / "rect_vertex.glsl",
             shaderFolder / "color_grading_fragment.glsl"
+        );
+
+        environment.Shaders["IBL"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "ibl_fragment.glsl"
         );
 
         // framebuffers

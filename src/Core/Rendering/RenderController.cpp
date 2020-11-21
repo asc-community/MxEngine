@@ -248,27 +248,30 @@ namespace MxEngine
 		this->ApplyVignette(camera, camera.HDRTexture, camera.SwapTexture);
 	}
 
-	void RenderController::DrawDirectionalLights(CameraUnit& camera)
+	void RenderController::DrawDirectionalLights(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
 		MAKE_SCOPE_PROFILER("RenderController::DrawDirectionalLights()");
-		auto& shader = this->Pipeline.Environment.Shaders["GlobalIllumination"_id];
+		auto& shader = this->Pipeline.Environment.Shaders["DirLight"_id];
 
 		shader->IgnoreNonExistingUniform("camera.viewProjMatrix");
+		shader->IgnoreNonExistingUniform("camera.position");
+		shader->IgnoreNonExistingUniform("albedoTex");
+		shader->IgnoreNonExistingUniform("materialTex");
 
 		Texture::TextureBindId textureId = 0;
 		this->BindGBuffer(camera, *shader, textureId);
 		this->BindCameraInformation(camera, *shader);
-		this->BindSkyboxInformation(camera, *shader, textureId);
+		
+		input->Bind(textureId++);
+		shader->SetUniformInt("HDRTex", input->GetBoundId());
 
 		// submit directional light information
 		constexpr size_t MaxDirLightCount = 4;
 		const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
 		size_t lightCount = Min(MaxDirLightCount, dirLights.size());
 
-
 		shader->SetUniformInt("lightCount", (int)lightCount);
 		shader->SetUniformInt("pcfDistance", this->Pipeline.Environment.ShadowBlurIterations);
-		shader->SetUniformInt("lightSamples", this->Pipeline.Environment.LightSamples);
 
 		for (size_t i = 0; i < lightCount; i++)
 		{
@@ -281,7 +284,7 @@ namespace MxEngine
 			for (size_t j = 0; j < dirLight.ShadowMaps.size(); j++)
 			{
 				dirLight.ShadowMaps[j]->Bind(textureId++);
-				shader->SetUniformInt(MxFormat("lightDepthMaps[{}][{}]", i, j), dirLight.ShadowMaps[j]->GetBoundId());
+				shader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i * DirectionalLight::TextureCount + j), dirLight.ShadowMaps[j]->GetBoundId());
 				shader->SetUniformMat4(MxFormat("lights[{}].transform[{}]", i, j), dirLight.BiasedProjectionMatrices[j]);
 			}
 		}
@@ -291,28 +294,35 @@ namespace MxEngine
 		{
 			for (size_t j = 0; j < DirectionalLight::TextureCount; j++)
 			{
-				shader->SetUniformInt(MxFormat("lightDepthMaps[{}][{}]", i, j),
+				shader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i * DirectionalLight::TextureCount + j),
 					this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
 			}
 		}
-		// render global illumination
-		this->RenderToTexture(camera.HDRTexture, shader);
+
+		this->RenderToTexture(output, shader);
 	}
 
 	void RenderController::PerformLightPass(CameraUnit& camera)
 	{
-		this->DrawDirectionalLights(camera);
+		this->ApplyIBL(camera, camera.HDRTexture);
 
 		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ONE);
+
+		this->DrawDirectionalLights(camera, camera.HDRTexture, camera.SwapTexture);
+
+		// swap culling for light bounds
 		this->ToggleFaceCulling(true, true, false);
-
-		this->DrawShadowedSpotLights(camera);
-		this->DrawNonShadowedSpotLights(camera);
-		this->DrawShadowedPointLights(camera);
-		this->DrawNonShadowedPointLights(camera);
-
+		
+		this->DrawShadowedSpotLights(camera, camera.HDRTexture, camera.SwapTexture);
+		this->DrawNonShadowedSpotLights(camera, camera.HDRTexture, camera.SwapTexture);
+		this->DrawShadowedPointLights(camera, camera.HDRTexture, camera.SwapTexture);
+		this->DrawNonShadowedPointLights(camera, camera.HDRTexture, camera.SwapTexture);
+		
 		this->ToggleFaceCulling(true, true, true);
+
 		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
+
+		std::swap(camera.HDRTexture, camera.SwapTexture);
 	}
 
 	void RenderController::DrawTransparentObjects(CameraUnit& camera)
@@ -350,7 +360,7 @@ namespace MxEngine
 			for (size_t j = 0; j < dirLight.ShadowMaps.size(); j++)
 			{
 				dirLight.ShadowMaps[j]->Bind(textureId++);
-				shader->SetUniformInt(MxFormat("lightDepthMaps[{}][{}]", i, j), dirLight.ShadowMaps[j]->GetBoundId());
+				shader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i * DirectionalLight::TextureCount + j), dirLight.ShadowMaps[j]->GetBoundId());
 				shader->SetUniformMat4(MxFormat("lights[{}].transform[{}]", i, j), dirLight.BiasedProjectionMatrices[j]);
 			}
 		}
@@ -360,7 +370,7 @@ namespace MxEngine
 		{
 			for (size_t j = 0; j < DirectionalLight::TextureCount; j++)
 			{
-				shader->SetUniformInt(MxFormat("lightDepthMaps[{}][{}]", i, j),
+				shader->SetUniformInt(MxFormat("lightDepthMaps[{}]", i * DirectionalLight::TextureCount + j),
 					this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
 			}
 		}
@@ -369,6 +379,23 @@ namespace MxEngine
 
 		this->ToggleFaceCulling(true);
 		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
+	}
+
+	void RenderController::ApplyIBL(CameraUnit& camera, TextureHandle& output)
+	{
+		MAKE_SCOPE_PROFILER("RenderController::ApplyIBL()");
+
+		auto shader = this->Pipeline.Environment.Shaders["IBL"_id];
+		shader->IgnoreNonExistingUniform("camera.viewProjMatrix");
+		Texture::TextureBindId textureId = 0;
+
+		this->BindGBuffer(camera, *shader, textureId);
+		this->BindCameraInformation(camera, *shader);
+		this->BindSkyboxInformation(camera, *shader, textureId);
+		
+		shader->SetUniformInt("lightSamples", (int)this->Pipeline.Environment.LightSamples);
+
+		this->RenderToTexture(output, shader);
 	}
 
 	void RenderController::ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
@@ -515,26 +542,31 @@ namespace MxEngine
 		std::swap(input, output);
 	}
 
-	void RenderController::DrawShadowedSpotLights(CameraUnit& camera)
+	void RenderController::DrawShadowedSpotLights(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
 		const auto& spotLights = this->Pipeline.Lighting.SpotLights;
 		if (spotLights.empty()) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawShadowedSpotLights()");
 
 		auto shader = this->Pipeline.Environment.Shaders["SpotLight"_id];
+		shader->IgnoreNonExistingUniform("camera.position");
+		shader->IgnoreNonExistingUniform("albedoTex");
+		shader->IgnoreNonExistingUniform("materialTex");
+
 		auto& pyramid = this->Pipeline.Lighting.PyramidLight;
 		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
 
 		shader->SetUniformVec2("viewportSize", viewportSize);
-		shader->SetUniformInt("lightSamples", this->Pipeline.Environment.LightSamples);
 		shader->SetUniformInt("pcfDistance", this->Pipeline.Environment.ShadowBlurIterations);
 		shader->SetUniformInt("castsShadows", true);
 
 		Texture::TextureBindId textureId = 0;
 		this->BindGBuffer(camera, *shader, textureId);
-		this->BindSkyboxInformation(camera, *shader, textureId);
 		this->BindCameraInformation(camera, *shader);
 
+		input->Bind(textureId++);
+		shader->SetUniformInt("HDRTex", input->GetBoundId());
+		
 		shader->SetUniformInt("lightDepthMap", textureId);
 
 		for (size_t i = 0; i < spotLights.size(); i++)
@@ -554,24 +586,29 @@ namespace MxEngine
 		}
 	}
 
-	void RenderController::DrawShadowedPointLights(CameraUnit& camera)
+	void RenderController::DrawShadowedPointLights(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
 		const auto& pointLights = this->Pipeline.Lighting.PointLights;
 		if (pointLights.empty()) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawShadowedPointLights()");
 
 		auto shader = this->Pipeline.Environment.Shaders["PointLight"_id];
+		shader->IgnoreNonExistingUniform("camera.position");
+		shader->IgnoreNonExistingUniform("albedoTex");
+		shader->IgnoreNonExistingUniform("materialTex");
+
 		auto& sphere = this->Pipeline.Lighting.SphereLight;
 		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
 
 		shader->SetUniformVec2("viewportSize", viewportSize);
-		shader->SetUniformInt("lightSamples", this->Pipeline.Environment.LightSamples);
 		shader->SetUniformInt("castsShadows", true);
 
 		Texture::TextureBindId textureId = 0;
 		this->BindGBuffer(camera, *shader, textureId);
-		this->BindSkyboxInformation(camera, *shader, textureId);
 		this->BindCameraInformation(camera, *shader);
+
+		input->Bind(textureId++);
+		shader->SetUniformInt("HDRTex", input->GetBoundId());
 
 		shader->SetUniformInt("lightDepthMap", textureId);
 
@@ -589,23 +626,27 @@ namespace MxEngine
 		}
 	}
 
-	void RenderController::DrawNonShadowedPointLights(CameraUnit& camera)
+	void RenderController::DrawNonShadowedPointLights(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
 		auto& instancedPointLights = this->Pipeline.Lighting.PointLigthsInstanced;
 		if (instancedPointLights.Instances.empty()) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawNonShadowedPointLights()");
 
 		auto shader = this->Pipeline.Environment.Shaders["PointLight"_id];
+		shader->IgnoreNonExistingUniform("camera.position");
+		shader->IgnoreNonExistingUniform("albedoTex");
+		shader->IgnoreNonExistingUniform("materialTex");
 		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
 
 		Texture::TextureBindId textureId = 0;
 		this->BindGBuffer(camera, *shader, textureId);
-		this->BindSkyboxInformation(camera, *shader, textureId);
 		this->BindCameraInformation(camera, *shader);
 
-		this->Pipeline.Environment.DefaultShadowCubeMap->Bind(textureId);
+		input->Bind(textureId++);
+		this->Pipeline.Environment.DefaultShadowCubeMap->Bind(textureId++);
+
+		shader->SetUniformInt("HDRTex", input->GetBoundId());
 		shader->SetUniformInt("lightDepthMap", this->Pipeline.Environment.DefaultShadowCubeMap->GetBoundId());
-		shader->SetUniformInt("lightSamples", this->Pipeline.Environment.LightSamples);
 		shader->SetUniformVec2("viewportSize", viewportSize);
 		shader->SetUniformInt("castsShadows", false);
 
@@ -613,23 +654,27 @@ namespace MxEngine
 		this->GetRenderEngine().DrawTrianglesInstanced(instancedPointLights.GetVAO(), instancedPointLights.GetIBO(), *shader, instancedPointLights.Instances.size());
 	}
 
-	void RenderController::DrawNonShadowedSpotLights(CameraUnit& camera)
+	void RenderController::DrawNonShadowedSpotLights(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
 	{
 		auto& instancedSpotLights = this->Pipeline.Lighting.SpotLightsInstanced;
 		if (instancedSpotLights.Instances.empty()) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawNonShadowedSpotLights()");
 
 		auto shader = this->Pipeline.Environment.Shaders["SpotLight"_id];
+		shader->IgnoreNonExistingUniform("camera.position");
+		shader->IgnoreNonExistingUniform("albedoTex");
+		shader->IgnoreNonExistingUniform("materialTex");
 		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
 
 		Texture::TextureBindId textureId = 0;
 		this->BindGBuffer(camera, *shader, textureId);
-		this->BindSkyboxInformation(camera, *shader, textureId);
 		this->BindCameraInformation(camera, *shader);
 
-		this->Pipeline.Environment.DefaultShadowCubeMap->Bind(textureId);
+		input->Bind(textureId++);
+		this->Pipeline.Environment.DefaultShadowCubeMap->Bind(textureId++);
+
+		shader->SetUniformInt("HDRTex", input->GetBoundId());
 		shader->SetUniformInt("lightDepthMap", this->Pipeline.Environment.DefaultShadowCubeMap->GetBoundId());
-		shader->SetUniformInt("lightSamples", this->Pipeline.Environment.LightSamples);
 		shader->SetUniformVec2("viewportSize", viewportSize);
 		shader->SetUniformInt("castsShadows", false);
 
