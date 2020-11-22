@@ -49,6 +49,7 @@ if (MXENGINE_BUILD_SAMPLES)
     add_subdirectory(samples/GrassSample)
     add_subdirectory(samples/Sponza)
     add_subdirectory(samples/PBR)
+    add_subdirectory(samples/RayTracing)
     
     # not implemnted yet
     #add_subdirectory(samples/FluidSimulation)

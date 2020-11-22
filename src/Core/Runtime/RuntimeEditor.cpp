@@ -293,7 +293,7 @@ namespace MxEngine
 		#if !defined(MXENGINE_DEBUG)
 		MXLOG_WARNING("RuntimeEditor::AddShaderUpdateListener", "cannot add listener in non-debug mode");
 		#else
-		auto lookupDirectory = ToFilePath(shader->GetVertexShaderDebugFilePath()).parent_path();
+		auto lookupDirectory = ToFilePath(shader->GetFragmentShaderDebugFilePath()).parent_path();
 		RuntimeEditor::AddShaderUpdateListener<ShaderHandle, FilePath>(std::move(shader), lookupDirectory);
 		#endif
 	}

@@ -829,7 +829,7 @@ namespace MxEngine
 		auto& shader = *this->Pipeline.Environment.Shaders["Skybox"_id];
 		auto& skybox = this->Pipeline.Environment.SkyboxCubeObject;
 
-		float skyLuminance = 0.0f;
+		float skyLuminance = 1.0f;
 		for (size_t i = 0; i < Min(this->Pipeline.Lighting.DirectionalLights.size(), MaxDirLightCount); i++)
 		{
 			const auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
