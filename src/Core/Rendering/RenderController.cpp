@@ -782,10 +782,23 @@ namespace MxEngine
 		this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, *shader);
 	}
 
+	void RenderController::RenderToFrameBufferNoClear(const FrameBufferHandle& framebuffer, const ShaderHandle& shader)
+	{
+		this->AttachFrameBufferNoClear(framebuffer);
+		auto& rectangle = this->Pipeline.Environment.RectangularObject;
+		this->GetRenderEngine().DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, *shader);
+	}
+
 	void RenderController::RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment)
 	{
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(texture, attachment);
 		this->RenderToFrameBuffer(this->Pipeline.Environment.PostProcessFrameBuffer, shader);
+	}
+
+	void RenderController::RenderToTextureNoClear(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment)
+	{
+		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(texture, attachment);
+		this->RenderToFrameBufferNoClear(this->Pipeline.Environment.PostProcessFrameBuffer, shader);
 	}
 
 	void RenderController::CopyTexture(const TextureHandle& input, const TextureHandle& output)

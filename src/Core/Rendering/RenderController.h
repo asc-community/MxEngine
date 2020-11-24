@@ -95,7 +95,9 @@ namespace MxEngine
 		void AttachDepthMap(const TextureHandle& texture);
 		void AttachDepthMap(const CubeMapHandle& cubemap);
 		void RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
+		void RenderToFrameBufferNoClear(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
 		void RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
+		void RenderToTextureNoClear(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
 		void CopyTexture(const TextureHandle& input, const TextureHandle& output);
 
 		EnvironmentUnit& GetEnvironment();

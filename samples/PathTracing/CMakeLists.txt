@@ -5,7 +5,7 @@ set(PROJECT_SOURCE_FILES
     "MxApplication.cpp"
 )
 
-set(EXECUTABLE_NAME "RayTracing")
+set(EXECUTABLE_NAME "PathTracing")
 
 set(PROJECT_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
