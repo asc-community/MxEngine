@@ -94,17 +94,17 @@ void main()
         vec3 currentNormal = normalize(2.0f * texture(normalTex, frag.xy).rgb - 1.0f);
         float Nn = dot(fragment.normal, currentNormal);
         float Nd = dot(fragment.normal, viewDirection);
-        float bias = Nn + 0.1f;
+        float bias = Nn * Nn;
 
-        float localIntensity = 1.0f - Nd + 0.1f;
+        float localIntensity = 1.0f - abs(Nd);
         float depthDiff = abs(sampleDepth - currentDepth);
         float rangeCheck = float(depthDiff < radius);
         float occlusion = (depthDiff > bias ? 1.0f : 0.0f) * rangeCheck;
 
         totalOcclusion += localIntensity * occlusion;
     }
-    totalOcclusion /= samples;
-    totalOcclusion = pow(1.0f - totalOcclusion, intensity);
+    totalOcclusion = 1.0f - totalOcclusion / float(samples);
+    totalOcclusion = pow(totalOcclusion, intensity);
     
     OutColor = vec4(totalOcclusion, 0.0f, 0.0f, 1.0f);
 }

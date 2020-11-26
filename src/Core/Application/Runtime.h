@@ -67,6 +67,11 @@ namespace MxEngine
             Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle>(shader);
         }
 
+        static void AddShaderUpdateListener(const ShaderHandle& shader, const FilePath& lookupDirectory)
+        {
+            Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle>(shader, lookupDirectory);
+        }
+
         static const MxHashMap<StringId, ScriptInfo>& GetRegisteredScripts()
         {
             return RuntimeCompiler::GetRegisteredScripts();
@@ -85,11 +90,6 @@ namespace MxEngine
         static bool HasCompilationTaskInProcess()
         {
             return RuntimeCompiler::HasCompilationTaskInProcess();
-        }
-
-        static void AddShaderUpdateListener(const ShaderHandle& shader, const FilePath& lookupDirectory)
-        {
-            Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle, FilePath>(shader, lookupDirectory);
         }
 
         static void AddEventLogEntry(const MxString &entry)

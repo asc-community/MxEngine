@@ -72,8 +72,7 @@ namespace MxEngine
 		void AddShaderUpdateListener(ShaderHandle shader);
 		template<typename ShaderHandle, typename FilePath>
 		void AddShaderUpdateListener(ShaderHandle shader, const FilePath& lookupDirectory);
-
-		Vector2 GetSize() const;
+		Vector2 GetViewportSize() const;
 		bool IsActive() const;
 
 		void DrawMxObject(const MxString& name, MxObject& object);

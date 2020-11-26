@@ -61,7 +61,6 @@ namespace MxEngine
 		void PerformPostProcessing(CameraUnit& camera);
 		void PerformLightPass(CameraUnit& camera);
 		void DrawTransparentObjects(CameraUnit& camera);
-		void ApplyIBL(CameraUnit& camera, TextureHandle& output);
 		void ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyChromaticAbberation(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyAmbientOcclusion(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
@@ -70,11 +69,12 @@ namespace MxEngine
 		void ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyColorGrading(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
-		void DrawDirectionalLights(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
-		void DrawShadowedPointLights(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
-		void DrawShadowedSpotLights(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
-		void DrawNonShadowedPointLights(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
-		void DrawNonShadowedSpotLights(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+		void DrawIBL(CameraUnit& camera, TextureHandle& output);
+		void DrawDirectionalLights(CameraUnit& camera, TextureHandle& output);
+		void DrawShadowedPointLights(CameraUnit& camera, TextureHandle& output);
+		void DrawShadowedSpotLights(CameraUnit& camera, TextureHandle& output);
+		void DrawNonShadowedPointLights(CameraUnit& camera, TextureHandle& output);
+		void DrawNonShadowedSpotLights(CameraUnit& camera, TextureHandle& output);
 		void BindGBuffer(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
 		void BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
 		void BindCameraInformation(const CameraUnit& camera, const Shader& shader);
@@ -95,7 +95,9 @@ namespace MxEngine
 		void AttachDepthMap(const TextureHandle& texture);
 		void AttachDepthMap(const CubeMapHandle& cubemap);
 		void RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
+		void RenderToFrameBufferNoClear(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
 		void RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
+		void RenderToTextureNoClear(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
 		void CopyTexture(const TextureHandle& input, const TextureHandle& output);
 
 		EnvironmentUnit& GetEnvironment();

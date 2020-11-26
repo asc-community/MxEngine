@@ -25,8 +25,7 @@ float GGXSmith(float NV, float NL, float roughness)
 
 vec3 fresnelSchlick(vec3 F0, float HV)
 {
-    float p = (-5.55473f * HV - 6.98136f) * HV;
-    return F0 + (vec3(1.0f) - F0) * pow(2.0f, p);
+    return F0 + (1.0f - F0) * pow(1.0f - HV, 5.0f);
 }
 
 mat3 computeSampleTransform(vec3 normal)

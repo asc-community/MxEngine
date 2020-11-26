@@ -11,11 +11,11 @@ float applyBlurFilter(sampler2D tex, vec2 coords)
     vec2 invSize = vec2(1.0f) / textureSize(tex, 0);
     
     float r1 = texture(tex, coords + vec2(0.0f, 0.0f) * invSize).r;
-    float r2 = texture(tex, coords + vec2(3.0f, 0.0f) * invSize).r;
-    float r3 = texture(tex, coords + vec2(0.0f, 3.0f) * invSize).r;
-    float r4 = texture(tex, coords - vec2(0.0f, 3.0f) * invSize).r;
-    float r5 = texture(tex, coords - vec2(3.0f, 0.0f) * invSize).r;
-    float result = 0.4f * r1 + (r2 + r3 + r4 + r5) * 0.15f;
+    float r2 = texture(tex, coords + vec2(1.5f, 0.0f) * invSize).r;
+    float r3 = texture(tex, coords + vec2(0.0f, 1.5f) * invSize).r;
+    float r4 = texture(tex, coords - vec2(0.0f, 1.5f) * invSize).r;
+    float r5 = texture(tex, coords - vec2(1.5f, 0.0f) * invSize).r;
+    float result = (r1 + r2 + r3 + r4 + r5) * 0.2f;
 
     return result;
 }

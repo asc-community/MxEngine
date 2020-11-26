@@ -74,7 +74,7 @@ void main()
 	float transparency = material.transparency * albedoAlphaTex.a;
 	float fragDistance = length(viewportPosition - fragment.position);
 	vec3 viewDirection = normalize(viewportPosition - fragment.position);
-
+	
 	vec3 IBLColor = calculateIBL(fragment, viewDirection, environment, lightSamples);
 
 	vec3 totalColor = IBLColor;
@@ -83,7 +83,7 @@ void main()
 	{
 		vec4 pos = vec4(fragment.position, 1.0f);
 		float shadowFactor = calcShadowFactorCascade(pos, lights[i], lightDepthMaps, i, pcfDistance);
-		totalColor += calculateLighting(IBLColor, fragment.normal, lights[i].direction, lights[i].color.rgb, lights[i].color.a, shadowFactor);
+		totalColor += calculateLighting(fragment, viewDirection, lights[i].direction, lights[i].color.rgb, lights[i].color.a, shadowFactor);
 	}
 
 	OutColor = vec4(totalColor, transparency);

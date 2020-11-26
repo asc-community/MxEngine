@@ -293,7 +293,7 @@ namespace MxEngine
 		#if !defined(MXENGINE_DEBUG)
 		MXLOG_WARNING("RuntimeEditor::AddShaderUpdateListener", "cannot add listener in non-debug mode");
 		#else
-		auto lookupDirectory = ToFilePath(shader->GetVertexShaderDebugFilePath()).parent_path();
+		auto lookupDirectory = ToFilePath(shader->GetFragmentShaderDebugFilePath()).parent_path();
 		RuntimeEditor::AddShaderUpdateListener<ShaderHandle, FilePath>(std::move(shader), lookupDirectory);
 		#endif
 	}
@@ -303,9 +303,9 @@ namespace MxEngine
 		GUI::DrawMxObjectEditor(treeName.c_str(), object, true, this->componentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
     }
 
-	Vector2 RuntimeEditor::GetSize() const
+	Vector2 RuntimeEditor::GetViewportSize() const
 	{
-		return Vector2(this->console->GetSize().x, this->console->GetSize().y);
+		return this->IsActive() ? this->cachedWindowSize : (Vector2)Rendering::GetViewportSize();
 	}
 
 	bool RuntimeEditor::IsActive() const
