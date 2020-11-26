@@ -548,7 +548,7 @@ namespace MxEngine
 
 		// initialize editor and component update callbacks
 		auto& editor = this->GetRuntimeEditor();
-		editor.Log("Welcome to MxEngine developer console!");
+		editor.LogToConsole("Welcome to MxEngine developer console!");
 
 		editor.RegisterComponentEditor<Behaviour>          ("Behaviour",           GUI::BehaviourEditor);
 		editor.RegisterComponentEditor<InstanceFactory>    ("InstanceFactory",     GUI::InstanceFactoryEditor);

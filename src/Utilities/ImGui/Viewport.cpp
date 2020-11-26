@@ -34,7 +34,7 @@
 
 namespace MxEngine::GUI
 {
-	void DrawViewportWindow(const char* name, Vector2& viewportSize, bool* isOpen)
+	void DrawViewportWindow(const char* name, Vector2& viewportSize, Vector2& viewportPosition, bool* isOpen)
 	{
 		ImGui::Begin(name, isOpen, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 		auto viewport = Rendering::GetViewport();
@@ -47,7 +47,8 @@ namespace MxEngine::GUI
 				Event::AddEvent(MakeUnique<WindowResizeEvent>(viewportSize, newWindowSize));
 				viewportSize = newWindowSize;
 			}
-			ImGui::SetCursorPos((newWindowSize - viewportSize) * 0.5f);
+			viewportPosition = (newWindowSize - viewportSize) * 0.5f;
+			ImGui::SetCursorPos(viewportPosition);
 			ImGui::Image((void*)(uintptr_t)viewport->GetRenderTexture()->GetNativeHandle(), viewportSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		}
 		ImGui::End();

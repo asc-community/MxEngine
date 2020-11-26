@@ -49,17 +49,17 @@ namespace MxEngine
 		Free(this->logger);
 	}
 
-	void RuntimeEditor::Log(const MxString& message)
+	void RuntimeEditor::LogToConsole(const MxString& message)
 	{
 		this->console->PrintLog(message.c_str()); //-V111
 	}
 
-	void RuntimeEditor::ClearLog()
+	void RuntimeEditor::ClearConsoleLog()
 	{
 		this->console->ClearLog();
 	}
 
-	void RuntimeEditor::PrintHistory()
+	void RuntimeEditor::PrintCommandHistory()
 	{
 		this->console->PrintHistory();
 	}
@@ -131,7 +131,7 @@ namespace MxEngine
 			this->DrawMxObjectList(&isObjectListOpened);
 			this->DrawMxObjectEditorWindow(&isObjectEditorOpened);
 
-			GUI::DrawViewportWindow("Viewport", this->cachedWindowSize, &isViewportOpened);
+			GUI::DrawViewportWindow("Viewport", this->cachedViewportSize, this->cachedViewportPosition, &isViewportOpened);
 
 			{
 				ImGui::Begin("Profiling Tools", &isProfilerOpened);
@@ -151,25 +151,20 @@ namespace MxEngine
 		this->logger->AddEventEntry(entry);
 	}
 
-	void RuntimeEditor::SetSize(const Vector2& size)
-	{
-		this->console->SetSize({ size.x, size.y });
-	}
-
 	void RuntimeEditor::Toggle(bool isVisible)
 	{
 		this->shouldRender = isVisible;
 
 		if (!this->shouldRender) // if developer environment was turned off, we should notify application that viewport returned to normal
 		{
-			Rendering::SetRenderToDefaultFrameBuffer(this->useDefaultFrameBufferCached);
+			Rendering::SetRenderToDefaultFrameBuffer(this->cachedUseDefaultFrameBufferVariable);
 			auto windowSize = WindowManager::GetSize();
-			Event::AddEvent(MakeUnique<WindowResizeEvent>(this->cachedWindowSize, windowSize));
-			this->cachedWindowSize = windowSize;
+			Event::AddEvent(MakeUnique<WindowResizeEvent>(this->cachedViewportSize, windowSize));
+			this->cachedViewportSize = windowSize;
 		}
 		else
 		{
-			this->useDefaultFrameBufferCached = Rendering::IsRenderedToDefaultFrameBuffer();
+			this->cachedUseDefaultFrameBufferVariable = Rendering::IsRenderedToDefaultFrameBuffer();
 			Rendering::SetRenderToDefaultFrameBuffer(false);
 		}
 	}
@@ -305,7 +300,12 @@ namespace MxEngine
 
 	Vector2 RuntimeEditor::GetViewportSize() const
 	{
-		return this->IsActive() ? this->cachedWindowSize : (Vector2)Rendering::GetViewportSize();
+		return this->IsActive() ? this->cachedViewportSize : (Vector2)Rendering::GetViewportSize();
+	}
+
+	Vector2 RuntimeEditor::GetViewportPosition() const
+	{
+		return this->IsActive() ? this->cachedViewportPosition : MakeVector2(0.0f);
 	}
 
 	bool RuntimeEditor::IsActive() const
