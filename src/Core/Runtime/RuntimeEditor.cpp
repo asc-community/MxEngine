@@ -303,9 +303,9 @@ namespace MxEngine
 		GUI::DrawMxObjectEditor(treeName.c_str(), object, true, this->componentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
     }
 
-	Vector2 RuntimeEditor::GetSize() const
+	Vector2 RuntimeEditor::GetViewportSize() const
 	{
-		return Vector2(this->console->GetSize().x, this->console->GetSize().y);
+		return this->IsActive() ? this->cachedWindowSize : (Vector2)Rendering::GetViewportSize();
 	}
 
 	bool RuntimeEditor::IsActive() const

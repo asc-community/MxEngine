@@ -197,6 +197,13 @@ namespace MxEngine::GUI
 
         if (cubemap.IsValid())
         {
+            if (ImGui::Button("delete"))
+            {
+                ImGui::PopID();
+                GraphicFactory::Destroy(cubemap);
+                return;
+            }
+
             ImGui::Text("path: %s", cubemap->GetPath().c_str());
             ImGui::Text("width: %d", (int)cubemap->GetWidth());
             ImGui::Text("height: %d", (int)cubemap->GetHeight());

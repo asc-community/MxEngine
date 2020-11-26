@@ -40,6 +40,7 @@ namespace Sponza
             auto skybox = camera->AddComponent<Skybox>();
             skybox->CubeMap = AssetManager::LoadCubeMap("skybox.png"_id);
             skybox->Irradiance = AssetManager::LoadCubeMap("skybox_irradiance.png"_id);
+            skybox->SetIntensity(50.0f);
             
             auto input = camera->AddComponent<InputController>();
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
@@ -66,7 +67,7 @@ namespace Sponza
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Projections[1] = 100.0f;
-            dirLight->SetIntensity(100.0f);
+            dirLight->SetIntensity(10.0f);
             dirLight->SetAmbientIntensity(0.2f);
             dirLight->FollowViewport();
 
@@ -88,8 +89,18 @@ namespace Sponza
             if (!materials.empty())
             {
                 // floor material
+                materials[8]->Name = "Floor";
                 materials[8]->MetallicFactor = 0.5f;
                 materials[8]->RoughnessFactor = 0.75f;
+
+                // lion materials
+                materials[3]->Name = "Lion";
+                materials[3]->MetallicFactor = 1.0f;
+                materials[3]->RoughnessFactor = 0.0f;
+
+                materials[23]->Name = "Lion Head";
+                materials[23]->MetallicFactor = 1.0f;
+                materials[23]->RoughnessFactor = 0.0f;
             }
 
             sponza->AddComponent<RigidBody>();

@@ -1,4 +1,3 @@
-#include "Library/pbr_lighting.glsl"
 #include "Library/lighting.glsl"
 
 vec3 calculateIBL(FragmentInfo fragment, vec3 viewDirection, EnvironmentInfo environment, int GGXSamples)
@@ -21,7 +20,7 @@ vec3 calculateIBL(FragmentInfo fragment, vec3 viewDirection, EnvironmentInfo env
         vec3 FK;
         float pdf;
 
-        vec3 specularK = GGXCookTorranceSampled(fragment.normal, direction, viewDirection, roughness, fragment.metallicFactor, fragment.albedo, FK, pdf);
+        vec3 specularK = GGXCookTorranceSampled(fragment.normal, direction, viewDirection, roughness, metallic, fragment.albedo, FK, pdf);
         FKtotal += FK;
         float lod = computeLOD(A, pdf, direction);
 

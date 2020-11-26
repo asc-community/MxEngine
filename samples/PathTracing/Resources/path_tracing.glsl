@@ -202,11 +202,17 @@ bool IntersectRaySphere(vec3 origin, vec3 direction, Sphere sphere, out float fr
     float b = 2.0 * dot(L, direction);
     float c = dot(L, L) - sphere.radius * sphere.radius;
     float D = b * b - 4 * a * c;
-    if (D < 0.0)
-        return false;
+
+    if (D < 0.0) return false;
+
+    float r1 = (-b - sqrt(D)) / (2.0 * a);
+    float r2 = (-b + sqrt(D)) / (2.0 * a);
         
-    fraction = (-b - sqrt(D)) / (2.0 * a);
-    if (fraction < -sphere.radius)
+    if (r1 > 0.0)
+        fraction = r1;
+    else if (r2 > 0.0)
+        fraction = r2;
+    else
         return false;
 
     normal = normalize(direction * fraction + L);
@@ -308,8 +314,8 @@ vec3 TracePath(vec3 rayOrigin, vec3 rayDirection, float seed)
             
             newRayDirection = tr * newRayDirection;
 
-            //float refractionProbability = RandomNoise(cos(seed * TexCoord.yx));
-            //bool refracted = material.refraction > refractionProbability;
+            float refractionProbability = RandomNoise(cos(seed * TexCoord.yx));
+            bool refracted = material.refraction > refractionProbability;
             //vec3 idealRefraction = IdealRefract(rayDirection, normal, 1.0, 1.5);
             //newRayDirection = refracted ? -newRayDirection : newRayDirection;
            
@@ -317,7 +323,8 @@ vec3 TracePath(vec3 rayOrigin, vec3 rayDirection, float seed)
             newRayDirection = normalize(mix(newRayDirection, idealDirection, material.roughness));
 
             rayDirection = newRayDirection;
-            rayOrigin = newRayOrigin + normal * 0.8;
+            rayOrigin = newRayOrigin;
+            rayOrigin += normal * 0.8;
 
             L += F * material.emmitance;
             F *= material.reflectance;
