@@ -85,6 +85,7 @@ namespace OfflineRendererSample
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     OfflineRendererSample::OfflineRendererApplication app;
     app.Run();
     return 0;

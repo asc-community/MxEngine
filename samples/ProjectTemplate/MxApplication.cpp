@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-
 namespace ProjectTemplate
 {
     using namespace MxEngine;
@@ -65,6 +64,7 @@ namespace ProjectTemplate
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     ProjectTemplate::MxApplication app;
     app.Run();
     return 0;

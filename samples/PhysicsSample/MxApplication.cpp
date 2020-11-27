@@ -260,6 +260,7 @@ namespace PhysicsSample
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     PhysicsSample::PhysicsApplication app;
     app.Run();
     return 0;

@@ -298,7 +298,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("Application::CreateContext");
 
 		this->InitializeConfig(this->config);
-		FileManager::SetRoot(ToFilePath(config.ProjectRootDirectory));
+		FileManager::SetResourcesFolder(ToFilePath(config.ProjectRootDirectory));
 
 		this->GetWindow()
 			.UseEventDispatcher(this->dispatcher)
@@ -411,7 +411,7 @@ namespace MxEngine
 	{
 		PhysicsModule::Destroy();
 		GraphicModule::Destroy();
-		AudioFactory::DeInit(); // OpenAL is angry when buffers are not deleted
+		AudioFactory::Destroy(); // OpenAL is angry when buffers are not deleted
 		AudioModule::Destroy();
 
 		#if defined(MXENGINE_PROFILING_ENABLED)

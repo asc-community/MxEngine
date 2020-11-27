@@ -34,6 +34,7 @@ SandboxApp::SandboxApp()
 
 int main()
 {
+	MxEngine::LaunchFromSourceDirectory();
 	SandboxApp app;
 	app.Run();
 	return 0;

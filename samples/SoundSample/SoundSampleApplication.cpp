@@ -74,6 +74,7 @@ namespace SoundSample
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     SoundSample::SoundApplication app;
     app.Run();
     return 0;

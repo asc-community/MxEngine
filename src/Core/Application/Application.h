@@ -77,6 +77,7 @@ namespace MxEngine
 		void InvokeUpdate();
 		void InvokePhysics();
 		void InvokeCreate();
+		void CreateContext();
 		bool VerifyApplicationState();
 	protected:
 
@@ -108,7 +109,6 @@ namespace MxEngine
 		void Run();
 		bool IsRunning() const;
 		void CloseApplication();
-		void CreateContext();
 		virtual ~Application();
 
 		static void Init();
@@ -130,4 +130,16 @@ namespace MxEngine
 			}
 		});
 	}
+
+	#if defined(MXENGINE_PROJECT_SOURCE_DIRECTORY) && defined(MXENGINE_PROJECT_BINARY_DIRECTORY)
+	inline void LaunchFromSourceDirectory()
+	{
+		FilePath currentWorkingDirectory = std::filesystem::current_path();
+		FilePath binaryDirectory = MXENGINE_PROJECT_BINARY_DIRECTORY;
+		if (currentWorkingDirectory == binaryDirectory)
+		{
+			std::filesystem::current_path(MXENGINE_PROJECT_SOURCE_DIRECTORY);
+		}
+	}
+	#endif
 }

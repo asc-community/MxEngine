@@ -90,7 +90,7 @@ namespace MxEngine
         size_t EngineTextureSize = 512;
 
         // Filesystem settings
-        MxString ProjectRootDirectory = "Resources";
+        MxString ProjectRootDirectory = "./Resources";
         MxString ShaderSourceDirectory = "../../src/Platform/OpenGL/Shaders";
 
         // Debug settings

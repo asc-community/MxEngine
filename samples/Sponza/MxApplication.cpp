@@ -219,6 +219,7 @@ namespace Sponza
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     Sponza::SponzaApplication app;
     app.Run();
     return 0;

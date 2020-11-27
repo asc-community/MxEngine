@@ -101,6 +101,7 @@ namespace VRCameraSample
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     VRCameraSample::VRCameraApplication app;
     app.Run();
     return 0;

@@ -106,6 +106,7 @@ namespace PathTracing
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     PathTracing::PathTracingApplication app;
     app.Run();
     return 0;

@@ -75,6 +75,7 @@ namespace FluidSimulation
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     FluidSimulation::FluidSimulationApplication app;
     app.Run();
     return 0;

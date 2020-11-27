@@ -38,7 +38,7 @@ namespace MxEngine
 {
     MxString FileManager::OpenFileDialog(const MxString& types, const MxString& description)
     {
-        auto selection = pfd::open_file("Select file", FileManager::GetRoot().string(),
+        auto selection = pfd::open_file("Select file", FileManager::GetResourcesFolder().string(),
             { description.c_str(), types.c_str(), "All Files", "*" }, pfd::opt::multiselect).result();
         return selection.empty() ? "" : ToMxString(selection.front());
 
@@ -46,7 +46,7 @@ namespace MxEngine
 
     MxString FileManager::SaveFileDialog(const MxString& types, const MxString& description)
     {
-        auto selection = pfd::save_file("Save file", FileManager::GetRoot().string(),
+        auto selection = pfd::save_file("Save file", FileManager::GetResourcesFolder().string(),
             { description.c_str(), types.c_str(), "All Files", "*" }).result();
         return ToMxString(selection);
     }
@@ -157,6 +157,7 @@ namespace MxEngine
     void FileManager::Init()
     {
         manager = Alloc<FileManagerImpl>();
+        MXLOG_INFO("MxEngine::FileManager", "project working directory is set to: " + ToMxString(FileManager::GetWorkingDirectory()));
     }
 
     void FileManager::Clone(FileManagerImpl* other)
@@ -169,7 +170,7 @@ namespace MxEngine
         return manager;
     }
 
-    FilePath& FileManager::GetRoot()
+    FilePath& FileManager::GetResourcesFolder()
     {
         return manager->root;
     }
@@ -179,7 +180,7 @@ namespace MxEngine
         return std::filesystem::current_path();
     }
 
-    void FileManager::SetRoot(const FilePath& rootPath)
+    void FileManager::SetResourcesFolder(const FilePath& rootPath)
     {
         MAKE_SCOPE_TIMER("MxEngine::FileManager", "FileManager::Init()");
         MAKE_SCOPE_PROFILER("FileManager::Init()");
@@ -195,6 +196,7 @@ namespace MxEngine
         MXLOG_DEBUG("MxEngine::FileManager", "setting root directory to: " + ToMxString(manager->root));
 
         manager->rootPathSize = rootPath.string().size();
+        manager->filetable.clear();
         FileManager::InitializeRootDirectory(rootPath);
     }
 }

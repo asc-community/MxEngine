@@ -68,6 +68,7 @@ namespace PBR
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     PBR::PBRApplication app;
     app.Run();
     return 0;

@@ -134,6 +134,7 @@ namespace GrassSample
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     GrassSample::GrassRenderApplication app;
     app.Run();
     return 0;
