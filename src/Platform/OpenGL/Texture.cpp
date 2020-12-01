@@ -31,6 +31,7 @@
 #include "Utilities/Logging/Logger.h"
 #include "Utilities/Time/Time.h"
 #include "Utilities/Image/ImageLoader.h"
+#include "Utilities/FileSystem/File.h"
 
 namespace MxEngine
 {
@@ -122,7 +123,7 @@ namespace MxEngine
 		return *this;
 	}
 
-	Texture::Texture(const MxString& filepath, TextureFormat format, TextureWrap wrap, bool genMipmaps, bool flipImage)
+	Texture::Texture(const std::filesystem::path& filepath, TextureFormat format, TextureWrap wrap, bool genMipmaps, bool flipImage)
 		: Texture()
 	{
 		this->Load(filepath, format, wrap, genMipmaps, flipImage);
@@ -133,19 +134,20 @@ namespace MxEngine
 		this->FreeTexture();
 	}
 
-	void Texture::Load(const MxString& filepath, TextureFormat format, TextureWrap wrap, bool genMipmaps, bool flipImage)
+	void Texture::Load(const std::filesystem::path& filepath, TextureFormat format, TextureWrap wrap, bool genMipmaps, bool flipImage)
 	{
 		// TODO: support floating point texture loading
 		Image image = ImageLoader::LoadImage(filepath, flipImage);
-		this->filepath = filepath;
-		this->wrapType = wrap;
-		this->format = format;
 
 		if (image.GetRawData() == nullptr)
 		{
-			MXLOG_ERROR("Texture", "file with name '" + filepath + "' was not found");
+			MXLOG_ERROR("Texture", "file with name '" + ToMxString(filepath) + "' was not found");
 			return;
 		}
+
+		this->filepath = ToMxString(filepath);
+		this->wrapType = wrap;
+		this->format = format;
 		this->width = image.GetWidth();
 		this->height = image.GetHeight();
 		this->textureType = GL_TEXTURE_2D;
@@ -452,7 +454,7 @@ namespace MxEngine
 		this->Bind();
 	}
 
-	const MxString& Texture::GetPath() const
+	const MxString& Texture::GetFilePath() const
 	{
 		return this->filepath;
 	}

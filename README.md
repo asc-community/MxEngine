@@ -31,7 +31,7 @@ Right now MxEngine is distributed in source code with configurable CMake files. 
 1. clone this repo to your system using `git clone https://github.com/asc-community/MxEngine`
 2. initialize submodules with `cd MxEngine && git submodule update --init`
 3. build project by running `CMakeLists.txt` located in root directory (set up necessary options if needed)
-4. go to `samples/<any_sample>` and run the executable file
+4. select one of sample executables and run it to check if everything was built successfully
 5. to create your own project, consider taking ProjectTemplate sample as starting point, it has everything already configured for build
 
 *note: if you are using Visual Studio and want to debug applications, click on executable located in the project directory and select* ***set as startup item***, *then work with VS project as usual*

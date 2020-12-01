@@ -31,6 +31,11 @@
 #include "Utilities/STL/MxString.h"
 #include "Utilities/Image/Image.h"
 
+namespace std::filesystem
+{
+    class path;
+}
+
 namespace MxEngine
 {
     class CubeMap
@@ -44,7 +49,7 @@ namespace MxEngine
         void FreeCubeMap();
     public:
         CubeMap();
-        CubeMap(const MxString& filepath, bool genMipmaps = true, bool flipImage = false);
+        CubeMap(const std::filesystem::path& filepath, bool genMipmaps = true, bool flipImage = false);
         CubeMap(const CubeMap&) = delete;
         CubeMap& operator=(const CubeMap&) = delete;
         CubeMap(CubeMap&&) noexcept;
@@ -56,13 +61,14 @@ namespace MxEngine
        void Bind(CubeMapId id) const;
        BindableId GetBoundId() const;
        BindableId GetNativeHandle() const;
-       void Load(const MxString& filepath, bool genMipmaps = true, bool flipImage = false);
-       void Load(const MxString& right, const MxString& left, const MxString& top, 
-                 const MxString& bottom, const MxString& front, const MxString& back, bool genMipmaps = true, bool flipImage = false);
+       void Load(const std::filesystem::path& filepath, bool genMipmaps = true, bool flipImage = false);
+       void Load(const std::filesystem::path& right, const std::filesystem::path& left, const std::filesystem::path& top,
+                 const std::filesystem::path& bottom, const std::filesystem::path& front, const std::filesystem::path& back, 
+                 bool genMipmaps = true, bool flipImage = false);
        void Load(const std::array<Image, 6>& images, bool genMipmaps = true);
        void Load(const std::array<uint8_t*, 6>& RawDataRGB, size_t width, size_t height, bool genMipmaps = true);
        void LoadDepth(int width, int height);
-       const MxString& GetPath() const;
+       const MxString& GetFilePath() const;
        size_t GetWidth() const;
        size_t GetHeight() const;
        size_t GetChannelCount() const;

@@ -9,7 +9,7 @@ void InitSphere(MxObject& sphere)
     sphere.AddComponent<MeshSource>(Primitives::CreateSphere());
     
     auto material = sphere.GetOrAddComponent<MeshRenderer>()->GetMaterial();
-    material->AlbedoMap = AssetManager::LoadTexture("textures/planet_texture.png"_id);
-    material->HeightMap = AssetManager::LoadTexture("textures/planet_height.png"_id);
-    material->NormalMap = AssetManager::LoadTexture("textures/planet_normal.png"_id);
+    material->AlbedoMap = AssetManager::LoadTexture("Resources/textures/planet_texture.png"_id);
+    material->HeightMap = AssetManager::LoadTexture("Resources/textures/planet_height.png"_id);
+    material->NormalMap = AssetManager::LoadTexture("Resources/textures/planet_normal.png"_id);
 }

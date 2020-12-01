@@ -36,7 +36,7 @@ uniform int uSamples;
 #define HALF_PI (PI / 2.0)
 #define FAR_DISTANCE 1000000.0
 
-#define MAX_DEPTH 6
+#define MAX_DEPTH 8
 #define SPHERE_COUNT 3
 #define BOX_COUNT 8
 
@@ -191,7 +191,7 @@ vec3 RandomHemispherePoint(vec2 rand, vec3 n)
     return dot(v, n) < 0.0 ? -v : v;
 }
 
-vec3 IdealRefract(vec3 direction, vec3 normal, float nIn, float nOut, float probability)
+vec3 IdealRefract(vec3 direction, vec3 normal, float nIn, float nOut)
 {
     bool fromOutside = dot(normal, direction) < 0.0;
     float ratio = fromOutside ? nOut / nIn : nIn / nOut;
@@ -348,7 +348,7 @@ vec3 TracePath(vec3 rayOrigin, vec3 rayDirection, float seed)
 
             if (refracted)
             {
-                vec3 idealRefraction = IdealRefract(rayDirection, normal, 0.99, 1.0, refractionProbability);
+                vec3 idealRefraction = IdealRefract(rayDirection, normal, 0.99, 1.0);
                 newRayDirection = normalize(mix(-newRayDirection, idealRefraction, material.roughness));
                 newRayOrigin += normal * (dot(newRayDirection, normal) < 0.0 ? -0.8 : 0.8);
             }

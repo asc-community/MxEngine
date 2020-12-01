@@ -32,8 +32,8 @@ namespace PathTracing
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
 
-            this->rayTracingShader = AssetManager::LoadScreenSpaceShader("path_tracing.glsl"_id);
-            this->postProcessShader = AssetManager::LoadScreenSpaceShader("post_process.glsl"_id);
+            this->rayTracingShader = AssetManager::LoadScreenSpaceShader("Resources/path_tracing.glsl"_id);
+            this->postProcessShader = AssetManager::LoadScreenSpaceShader("Resources/post_process.glsl"_id);
             Runtime::AddShaderUpdateListener(this->rayTracingShader, FileManager::GetWorkingDirectory());
             Runtime::AddShaderUpdateListener(this->postProcessShader, FileManager::GetWorkingDirectory());
 

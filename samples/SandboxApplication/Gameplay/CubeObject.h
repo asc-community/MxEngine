@@ -46,6 +46,6 @@ void InitCube(MxObject& cube)
 		instances->MakeInstance();
 	}
 
-	auto cubeTexture = AssetManager::LoadTexture("objects/crate/crate.jpg"_id);
+	auto cubeTexture = AssetManager::LoadTexture("Resources/objects/crate/crate.jpg"_id);
 	meshRenderer->GetMaterial()->AlbedoMap = cubeTexture;
 }

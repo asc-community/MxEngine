@@ -36,6 +36,7 @@
 #include "Utilities/STL/MxString.h"
 #include "Utilities/STL/MxVector.h"
 #include "Core/Resources/MeshData.h"
+#include "Utilities/FileSystem/File.h"
 
 namespace MxEngine
 {
@@ -52,23 +53,31 @@ namespace MxEngine
 		/*!
 		albedo texture path
 		*/
-		MxString AlbedoMap;
+		FilePath AlbedoMap;
 		/*!
 		emmisive texture path
 		*/
-		MxString EmmisiveMap;
+		FilePath EmmisiveMap;
 		/*!
 		height texture path
 		*/
-		MxString HeightMap;
+		FilePath HeightMap;
 		/*!
 		normal texture path
 		*/
-		MxString NormalMap;
+		FilePath NormalMap;
 		/*!
 		ambient occlusion texture path
 		*/
-		MxString AmbientOcclusionMap;
+		FilePath AmbientOcclusionMap;
+		/*!
+		metallic texture path
+		*/
+		FilePath MetallicMap;
+		/*!
+		roughness texture path
+		*/
+		FilePath RoughnessMap;
 
 		/*!
 		transparency value
@@ -90,17 +99,6 @@ namespace MxEngine
 		uv index scale
 		*/
 		Vector2 UVMultipliers = MakeVector2(1.0f);
-
-		// PBR parameters
-
-		/*!
-		metallic texture path
-		*/
-		MxString MetallicMap;
-		/*!
-		roughness texture path
-		*/
-		MxString RoughnessMap;
 		/*!
 		metallic factor value
 		*/
@@ -178,8 +176,8 @@ namespace MxEngine
 		\returns ObjectInfo instance
 		\warning this function is not thread safe
 		*/
-		static ObjectInfo Load(const MxString& path);
-		static MaterialLibrary LoadMaterials(const MxString& path);
-		static void DumpMaterials(const MaterialLibrary& materials, const MxString& path);
+		static ObjectInfo Load(const FilePath& path);
+		static MaterialLibrary LoadMaterials(const FilePath& path);
+		static void DumpMaterials(const MaterialLibrary& materials, const FilePath& path);
 	};
 }

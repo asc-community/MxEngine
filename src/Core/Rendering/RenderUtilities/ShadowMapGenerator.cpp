@@ -72,6 +72,13 @@ namespace MxEngine
                 shader.SetUniformMat4("LightProjMatrix", directionalLight.ProjectionMatrices[i]);
 
                 CastShadows(shader, this->shadowCasters, this->materials);
+            }
+        }
+
+        for (auto& directionalLight : directionalLights)
+        {
+            for (size_t i = 0; i < directionalLight.ShadowMaps.size(); i++)
+            {
                 directionalLight.ShadowMaps[i]->GenerateMipmaps();
             }
         }

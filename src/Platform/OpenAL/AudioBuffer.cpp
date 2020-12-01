@@ -30,6 +30,7 @@
 #include "ALUtilities.h"
 #include "Utilities/Logging/Logger.h"
 #include "Utilities/Audio/AudioLoader.h"
+#include "Utilities/FileSystem/File.h"
 
 namespace MxEngine
 {
@@ -84,7 +85,7 @@ namespace MxEngine
         return *this;
     }
 
-    void AudioBuffer::Load(const MxString& path)
+    void AudioBuffer::Load(const std::filesystem::path& path)
     {
         auto audio = AudioLoader::Load(path);
         if (audio.data != nullptr)
@@ -101,7 +102,7 @@ namespace MxEngine
             this->frequency = audio.frequency;
             this->type = audio.type;
             this->sampleCount = audio.sampleCount;
-            this->filepath = path;
+            this->filepath = ToMxString(path);
 
             ALCALL(alBufferData(id, (ALenum) this->nativeFormat, audio.data, ALsizei(audio.sampleCount * sizeof(int16_t)), (ALsizei) audio.frequency));
 
@@ -109,7 +110,7 @@ namespace MxEngine
         }
         else
         {
-            MXLOG_ERROR("MxEngine::AudioLoader", "audio file was not loaded: " + path);
+            MXLOG_ERROR("MxEngine::AudioLoader", "audio file was not loaded: " + ToMxString(path));
         }
     }
 

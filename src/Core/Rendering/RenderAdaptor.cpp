@@ -111,7 +111,7 @@ namespace MxEngine
         environment.AmbientOcclusionTexture->SetPath("[[ambient occlusion]]");
         
         // shaders
-        auto shaderFolder = FileManager::GetEngineShaderFolder();
+        auto shaderFolder = FileManager::GetEngineShaderDirectory();
         if (!File::Exists(shaderFolder))
         {
             MXLOG_FATAL("MxEngine::Application", "there is not Engine/Shaders folder in root directory. Try rebuilding your application");

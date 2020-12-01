@@ -34,6 +34,11 @@
 #include "Utilities/STL/MxVector.h"
 #include "Utilities/STL/MxHashMap.h"
 
+namespace std::filesystem
+{
+	class path;
+}
+
 namespace MxEngine
 {
 	class Shader
@@ -52,7 +57,7 @@ namespace MxEngine
 		BindableId id = 0;
 		mutable UniformCache uniformCache;
 
-		ShaderId CompileShader(unsigned int type, const MxString& source, const MxString& name);
+		ShaderId CompileShader(unsigned int type, const MxString& source, const std::filesystem::path& name);
 		BindableId CreateProgram(ShaderId vertexShader, ShaderId fragmentShader) const;
 		BindableId CreateProgram(ShaderId vertexShader, ShaderId geometryShader, ShaderId fragmentShader) const;
 		UniformType GetUniformLocation(const MxString& uniformName) const;
@@ -61,8 +66,8 @@ namespace MxEngine
 		static MxString GetShaderVersionString();
 
 		Shader();
-		Shader(const MxString& vertexShaderPath, const MxString& fragmentShaderPath);
-		Shader(const MxString& vertexShaderPath, const MxString& geometryShaderPath, const MxString& fragmentShaderPath);
+		Shader(const std::filesystem::path& vertexShaderPath, const std::filesystem::path& fragmentShaderPath);
+		Shader(const std::filesystem::path& vertexShaderPath, const std::filesystem::path& geometryShaderPath, const std::filesystem::path& fragmentShaderPath);
 		Shader(const Shader&) = delete;
 		Shader(Shader&& shader) noexcept;
 		Shader& operator=(const Shader&) = delete;
@@ -73,8 +78,8 @@ namespace MxEngine
 		void Unbind() const;
 		void InvalidateUniformCache();
 		BindableId GetNativeHandle() const;
-		void Load(const MxString& vertex, const MxString& fragment);
-		void Load(const MxString& vertex, const MxString& geometry, const MxString& fragment);
+		void Load(const std::filesystem::path& vertex, const std::filesystem::path& fragment);
+		void Load(const std::filesystem::path& vertex, const std::filesystem::path& geometry, const std::filesystem::path& fragment);
 		void IgnoreNonExistingUniform(const MxString& name) const;
 		void IgnoreNonExistingUniform(const char* name) const;
 		void LoadFromString(const MxString& vertex, const MxString& fragment);

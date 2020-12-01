@@ -116,6 +116,18 @@ namespace MxEngine
 	}
 
 	/*!
+	generates string id hash at runtime
+	\param ptr pointer to string
+	\param size size of string
+	\returns string id hash
+	*/
+	template<typename StringClass>
+	StringId MakeStringId(const char* ptr, size_t size)
+	{
+		return crc32(ptr, size);
+	}
+
+	/*!
 	transforms string literal into hash by appending _id suffix ("str"_id) at runtime
 	*/
 	constexpr StringId operator ""_id(const char* s, size_t size)

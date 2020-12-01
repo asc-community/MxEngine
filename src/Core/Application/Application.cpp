@@ -298,7 +298,6 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("Application::CreateContext");
 
 		this->InitializeConfig(this->config);
-		FileManager::SetResourcesFolder(ToFilePath(config.ProjectRootDirectory));
 
 		this->GetWindow()
 			.UseEventDispatcher(this->dispatcher)

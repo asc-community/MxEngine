@@ -79,7 +79,7 @@ namespace MxEngine::GUI
             ImGui::PushID(id);
 
             auto texture = GraphicFactory::GetHandle(object);
-            auto& texturePath = texture->GetPath();
+            auto& texturePath = texture->GetFilePath();
 
             if (filter[0] == '\0' || texturePath.find(filter) != texturePath.npos)
             {
@@ -107,7 +107,7 @@ namespace MxEngine::GUI
 
     bool IsInternalEngineTexture(const TextureHandle& tex)
     {
-        auto& path = tex->GetPath();
+        auto& path = tex->GetFilePath();
         return path.find("[[") != path.npos && path.find("]]") != path.npos;
     }
 
@@ -125,7 +125,7 @@ namespace MxEngine::GUI
                 return;
             }
 
-            ImGui::Text("path: %s", texture->GetPath().c_str());
+            ImGui::Text("path: %s", texture->GetFilePath().c_str());
             ImGui::Text("width: %d", (int)texture->GetWidth());
             ImGui::Text("height: %d", (int)texture->GetHeight());
             ImGui::Text("channels: %d", (int)texture->GetChannelCount());
@@ -204,7 +204,7 @@ namespace MxEngine::GUI
                 return;
             }
 
-            ImGui::Text("path: %s", cubemap->GetPath().c_str());
+            ImGui::Text("path: %s", cubemap->GetFilePath().c_str());
             ImGui::Text("width: %d", (int)cubemap->GetWidth());
             ImGui::Text("height: %d", (int)cubemap->GetHeight());
             ImGui::Text("channels: %d", (int)cubemap->GetChannelCount());

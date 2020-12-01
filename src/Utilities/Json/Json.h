@@ -29,3 +29,9 @@ namespace eastl
     void to_json(MxEngine::JsonFile& j, const MxEngine::MxString& s);
     void from_json(const MxEngine::JsonFile& j, MxEngine::MxString& s);
 }
+
+namespace std::filesystem
+{
+    void to_json(MxEngine::JsonFile& j, const MxEngine::FilePath& p);
+    void from_json(const MxEngine::JsonFile& j, MxEngine::FilePath& p);
+}

@@ -15,8 +15,8 @@ void InitArc(MxObject& object)
 
 	auto update = object.AddComponent<Behaviour>(ArcBehaviour{ });
 
-	object.AddComponent<MeshSource>(AssetManager::LoadMesh("objects/arc170/arc170.obj"_id));
-	object.AddComponent<MeshRenderer>(AssetManager::LoadMaterials("objects/arc170/arc170.obj"_id));
+	object.AddComponent<MeshSource>(AssetManager::LoadMesh("Resources/objects/arc170/arc170.obj"_id));
+	object.AddComponent<MeshRenderer>(AssetManager::LoadMaterials("Resources/objects/arc170/arc170.obj"_id));
 	object.AddComponent<MeshLOD>(); // LODs can be tweaked and generated at runtime via runtime editor
 	
 	object.Transform.Scale(0.005f);

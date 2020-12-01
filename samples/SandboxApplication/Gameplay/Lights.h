@@ -6,7 +6,7 @@ void InitDirLight(MxObject& object)
 
     auto light = object.AddComponent<DirectionalLight>();
     light->SetIntensity(4.0f);
-    light->FollowViewport();
+    light->FollowViewport(0.0f);
 }
 
 void InitPointLight(MxObject& object)

@@ -1073,7 +1073,6 @@ namespace MxEngine
 			this->PerformPostProcessing(camera);
 
 			this->CopyTexture(camera.HDRTexture, camera.OutputTexture);
-			//this->CopyTexture(this->Pipeline.Environment.AmbientOcclusionTexture, camera.OutputTexture);
 			camera.OutputTexture->GenerateMipmaps();
 		}
 	}

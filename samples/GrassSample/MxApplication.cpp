@@ -16,7 +16,7 @@ namespace GrassSample
             field->Name = "Grass Field";
             field->AddComponent<MeshSource>(Primitives::CreatePlane(20));
             auto fieldMaterial = field->AddComponent<MeshRenderer>()->GetMaterial();
-            fieldMaterial->AlbedoMap = AssetManager::LoadTexture("field.png"_id);
+            fieldMaterial->AlbedoMap = AssetManager::LoadTexture("Resources/field.png"_id);
 
             this->grass = MxObject::Create();
             grass->Name = "Grass Instances";
@@ -27,7 +27,7 @@ namespace GrassSample
             source->CastsShadow = false;
 
             auto material = grass->AddComponent<MeshRenderer>()->GetMaterial();
-            material->AlbedoMap = AssetManager::LoadTexture("grass_al.png"_id, TextureFormat::RGBA);
+            material->AlbedoMap = AssetManager::LoadTexture("Resources/grass_al.png"_id, TextureFormat::RGBA);
 
             auto grassInstances = grass->AddComponent<InstanceFactory>();
             for (size_t i = 0; i < 10000; i++)
@@ -96,8 +96,8 @@ namespace GrassSample
             cameraObject->Transform.TranslateY(2.0f);
             
             auto skybox = cameraObject->AddComponent<Skybox>();
-            skybox->CubeMap = AssetManager::LoadCubeMap("dawn.jpg"_id);
-            skybox->Irradiance = AssetManager::LoadCubeMap("dawn_irradiance.jpg"_id);
+            skybox->CubeMap = AssetManager::LoadCubeMap("Resources/dawn.jpg"_id);
+            skybox->Irradiance = AssetManager::LoadCubeMap("Resources/dawn_irradiance.jpg"_id);
             
             auto effects = cameraObject->AddComponent<CameraEffects>();
             effects->SetBloomIterations(3);

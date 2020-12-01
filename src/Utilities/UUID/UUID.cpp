@@ -41,8 +41,8 @@ namespace MxEngine
 {
     void UUIDGenerator::Init()
     {
-        static_assert(AssertEquality<sizeof(storage->generator), sizeof(uuids::uuid_random_generator)>::value,
-                "aligned storage must fit implementation size");
+        static_assert(sizeof(storage->generator) >= sizeof(uuids::uuid_random_generator),
+            "aligned storage must fit implementation size");
         static_assert(AssertEquality<sizeof(std::declval<UUID>().uuidImpl), sizeof(uuids::uuid)>::value,
                 "aligned storage must fit implementation size");
 

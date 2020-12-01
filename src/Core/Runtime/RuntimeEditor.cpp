@@ -266,12 +266,12 @@ namespace MxEngine
 						{
 						case VF:
 							shader->Load(
-								ToMxString(dependencies[0].first), ToMxString(dependencies[1].first)
+								dependencies[0].first, dependencies[1].first
 							);
 							break;
 						case VGF:
 							shader->Load(
-								ToMxString(dependencies[0].first), ToMxString(dependencies[1].first), ToMxString(dependencies[2].first)
+								dependencies[0].first, dependencies[1].first, dependencies[2].first
 							);
 							break;
 						}

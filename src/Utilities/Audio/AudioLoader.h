@@ -29,7 +29,11 @@
 #pragma once
 
 #include "SupportedAudioTypes.h"
-#include "Utilities/STL/MxString.h"
+
+namespace std::filesystem
+{
+    class path;
+}
 
 namespace MxEngine
 {
@@ -45,7 +49,7 @@ namespace MxEngine
     class AudioLoader
     {
     public:
-        static AudioData Load(const MxString& path);
+        static AudioData Load(const std::filesystem::path& path);
         static AudioData ConvertToMono(AudioData& audio);
         static void Free(AudioData& audio);
     };

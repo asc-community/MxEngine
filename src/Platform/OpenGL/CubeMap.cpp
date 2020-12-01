@@ -30,6 +30,7 @@
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Utilities/Image/ImageLoader.h"
 #include "Utilities/Logging/Logger.h"
+#include "Utilities/FileSystem/File.h"
 
 namespace MxEngine
 {
@@ -49,7 +50,7 @@ namespace MxEngine
 		MXLOG_DEBUG("OpenGL::CubeMap", "created cubemap with id = " + ToMxString(id));
 	}
 
-    CubeMap::CubeMap(const MxString& filepath, bool genMipmaps, bool flipImage)
+    CubeMap::CubeMap(const std::filesystem::path& filepath, bool genMipmaps, bool flipImage)
 		: CubeMap()
     {
 		this->Load(filepath, genMipmaps, flipImage);
@@ -121,17 +122,17 @@ namespace MxEngine
 		return this->activeId;
 	}
 
-	void CubeMap::Load(const MxString& filepath, bool genMipmaps, bool flipImage)
+	void CubeMap::Load(const std::filesystem::path& filepath, bool genMipmaps, bool flipImage)
 	{
 		// TODO: support floating point textures
 		Image img = ImageLoader::LoadImage(filepath, flipImage);
 		if (img.GetRawData() == nullptr)
 		{
-			MXLOG_WARNING("OpenGL::CubeMap", "file with name '" + filepath + "' was not found");
+			MXLOG_WARNING("OpenGL::CubeMap", "file with name '" + ToMxString(filepath) + "' was not found");
 			return;
 		}
 		auto images = ImageLoader::CreateCubemap(img);
-		this->filepath = filepath;
+		this->filepath = ToMxString(filepath);
 		this->channels = img.GetChannelCount();
 		this->width = img.GetWidth();
 		this->height = img.GetHeight();
@@ -153,8 +154,9 @@ namespace MxEngine
 		}
 	}
 
-    void CubeMap::Load(const MxString& right, const MxString& left, const MxString& top,
-		               const MxString& bottom, const MxString& front, const MxString& back, bool genMipmaps, bool flipImage)
+    void CubeMap::Load(const std::filesystem::path& right, const std::filesystem::path& left, const std::filesystem::path& top,
+		               const std::filesystem::path& bottom, const std::filesystem::path& front, const std::filesystem::path& back, 
+					   bool genMipmaps, bool flipImage)
     {
 		std::array<Image, 6> images =
 		{
@@ -259,7 +261,7 @@ namespace MxEngine
 		GLCALL(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border));
 	}
 
-	const MxString& CubeMap::GetPath() const
+	const MxString& CubeMap::GetFilePath() const
 	{
 		return this->filepath;
 	}

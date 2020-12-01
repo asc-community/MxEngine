@@ -2,7 +2,7 @@
 
 void InitDeathStar(MxObject& object)
 {
-	auto objectPath = "objects/death_star/death_star.obj"_id;
+	auto objectPath = "Resources/objects/death_star/death_star.obj"_id;
 
 	object.AddComponent<MeshSource>(AssetManager::LoadMesh(objectPath));
 	object.AddComponent<MeshRenderer>(AssetManager::LoadMaterials(objectPath));

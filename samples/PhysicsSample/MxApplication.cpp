@@ -106,8 +106,8 @@ namespace PhysicsSample
             player->Transform.SetPosition(Vector3(30, 30, 30));
 
             auto skybox = player->AddComponent<Skybox>();
-            skybox->CubeMap = AssetManager::LoadCubeMap("dawn.jpg"_id);
-            skybox->Irradiance = AssetManager::LoadCubeMap("dawn_irradiance.jpg"_id);
+            skybox->CubeMap = AssetManager::LoadCubeMap("Resources/dawn.jpg"_id);
+            skybox->Irradiance = AssetManager::LoadCubeMap("Resources/dawn_irradiance.jpg"_id);
             
             auto controller = player->AddComponent<CameraController>();
             controller->ListenWindowResizeEvent();

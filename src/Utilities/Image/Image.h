@@ -34,9 +34,6 @@
 
 namespace MxEngine
 {
-	/*!
-	Image class is a POD type which contains reference to an existing image
-	*/
 	class Image
 	{
 		uint8_t* data;
@@ -68,6 +65,5 @@ namespace MxEngine
 		void SetPixelFloat(size_t x, size_t y, float r, float g, float b, float a = 1.0f);
 		std::array<uint8_t, 4> GetPixelByte(size_t x, size_t y) const;
 		std::array<float, 4> GetPixelFloat(size_t x, size_t y) const;
-
 	};
 }

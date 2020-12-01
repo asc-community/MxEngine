@@ -38,9 +38,9 @@ namespace Sponza
             camera->Transform.TranslateY(15.0f);
             
             auto skybox = camera->AddComponent<Skybox>();
-            skybox->CubeMap = AssetManager::LoadCubeMap("skybox.png"_id);
-            skybox->Irradiance = AssetManager::LoadCubeMap("skybox_irradiance.png"_id);
-            skybox->SetIntensity(50.0f);
+            skybox->CubeMap = AssetManager::LoadCubeMap("Resources/skybox.png"_id);
+            skybox->Irradiance = AssetManager::LoadCubeMap("Resources/skybox_irradiance.png"_id);
+            skybox->SetIntensity(1.0);
             
             auto input = camera->AddComponent<InputController>();
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
@@ -67,7 +67,6 @@ namespace Sponza
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Projections[1] = 100.0f;
-            dirLight->SetIntensity(10.0f);
             dirLight->SetAmbientIntensity(0.2f);
             dirLight->FollowViewport();
 
@@ -76,12 +75,12 @@ namespace Sponza
             this->sphereFactory->AddComponent<InstanceFactory>();
             this->sphereFactory->AddComponent<MeshSource>(Primitives::CreateSphere(20));
             auto renderer = this->sphereFactory->AddComponent<MeshRenderer>();
-            renderer->GetMaterial()->AlbedoMap = AssetManager::LoadTexture("moon.jpg"_id);
+            renderer->GetMaterial()->AlbedoMap = AssetManager::LoadTexture("Resources/moon.jpg"_id);
 
             auto sponza = MxObject::Create();
             sponza->Name = "Sponza";
-            sponza->AddComponent<MeshSource>(AssetManager::LoadMesh("Sponza/glTF/Sponza.gltf"_id));
-            sponza->AddComponent<MeshRenderer>(AssetManager::LoadMaterials("Sponza/glTF/Sponza.gltf"_id));
+            sponza->AddComponent<MeshSource>(AssetManager::LoadMesh("Resources/Sponza/glTF/Sponza.gltf"_id));
+            sponza->AddComponent<MeshRenderer>(AssetManager::LoadMaterials("Resources/Sponza/glTF/Sponza.gltf"_id));
             sponza->Transform.SetScale(0.02f);
             sponza->Transform.TranslateY(13.0f);
             
