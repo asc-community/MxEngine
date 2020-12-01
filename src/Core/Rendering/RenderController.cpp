@@ -902,7 +902,7 @@ namespace MxEngine
 		dirLight.AmbientIntensity = light.GetAmbientIntensity();
 		dirLight.Intensity = light.GetIntensity();
 		dirLight.Color = light.GetColor();
-		dirLight.Direction = light.Direction;
+		dirLight.Direction = Normalize(light.Direction);
 
 		for (size_t i = 0; i < DirectionalLight::TextureCount; i++)
 		{
@@ -958,7 +958,7 @@ namespace MxEngine
 		baseLightData->AmbientIntensity = light.GetAmbientIntensity();
 		baseLightData->Color = light.GetIntensity() * light.GetColor();
 		baseLightData->Position = parentTransform.GetPosition();
-		baseLightData->Direction = light.Direction;
+		baseLightData->Direction = Normalize(light.Direction);
 		baseLightData->Transform = light.GetPyramidTransform(parentTransform.GetPosition());
 		baseLightData->InnerAngle = light.GetInnerCos();
 		baseLightData->OuterAngle = light.GetOuterCos();

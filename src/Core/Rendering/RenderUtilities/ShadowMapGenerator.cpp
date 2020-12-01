@@ -57,15 +57,7 @@ namespace MxEngine
         Rendering::GetController().GetRenderEngine().DrawTrianglesInstanced(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
     }
 
-    void CastShadowsNoCulling(const Shader& shader, ArrayView<RenderUnit> shadowCasters, ArrayView<Material> materials)
-    {
-        for (const auto& unit : shadowCasters)
-        {
-            CastShadowsUnit(shader, unit, materials);
-        }
-    }
-
-    bool IsInBounds(const Matrix4x4& projection, const Vector3& minAABB, const Vector3& maxAABB)
+    bool InOrthoFrustrum(const Matrix4x4& projection, const Vector3& minAABB, const Vector3& maxAABB)
     {
         auto pmin = projection * Vector4(minAABB, 1.0f);
         auto pmax = projection * Vector4(maxAABB, 1.0f);
@@ -86,13 +78,57 @@ namespace MxEngine
         return !outOfBounds;
     };
 
+    bool InSphereBounds(const PointLightUnit& pointLight, const Vector3& minAABB, const Vector3& maxAABB)
+    {
+        auto halfSize = 0.5f * (maxAABB - minAABB);
+        auto pos = minAABB + halfSize;
+        auto dist = RootThree<float>() * Max(halfSize.x, halfSize.y, halfSize.z);
+
+        auto relative = pointLight.Position - pos;
+        auto radius = dist + pointLight.Radius;
+        return Dot(relative, relative) < radius * radius;
+    }
+
+    bool InConeBounds(const SpotLightUnit& spotLight, const Vector3& minAABB, const Vector3& maxAABB)
+    {
+        auto halfSize = 0.5f * (maxAABB - minAABB);
+        auto pos = minAABB + halfSize;
+        auto dist = RootThree<float>() * Max(halfSize.x, halfSize.y, halfSize.z);
+
+        auto relative = pos - spotLight.Position;
+
+        auto sinAngle = std::sqrt(1.0f - spotLight.OuterAngle * spotLight.OuterAngle);
+        auto relativeWithSize = relative + spotLight.Direction * (dist / sinAngle);
+        bool inside = Dot(Normalize(relativeWithSize), spotLight.Direction) > spotLight.OuterAngle;
+        return inside || (Dot(relative, relative) < dist * dist);
+    }
 
     void CastShadowsWithCulling(const Matrix4x4& orthoProjection, const Shader& shader, ArrayView<RenderUnit> shadowCasters, ArrayView<Material> materials)
     {
         for (const auto& unit : shadowCasters)
         {
             // do not cull instanced objects, as their position may differ
-            if (unit.InstanceCount != 0 || IsInBounds(orthoProjection, unit.MinAABB, unit.MaxAABB))
+            if (unit.InstanceCount != 0 || InOrthoFrustrum(orthoProjection, unit.MinAABB, unit.MaxAABB))
+                CastShadowsUnit(shader, unit, materials);
+        }
+    }
+
+    void CastShadowsWithCulling(const PointLightUnit& pointLight, const Shader& shader, ArrayView<RenderUnit> shadowCasters, ArrayView<Material> materials)
+    {
+        for (const auto& unit : shadowCasters)
+        {
+            // do not cull instanced objects, as their position may differ
+            if (unit.InstanceCount != 0 || InSphereBounds(pointLight, unit.MinAABB, unit.MaxAABB))
+                CastShadowsUnit(shader, unit, materials);
+        }
+    }
+
+    void CastShadowsWithCulling(const SpotLightUnit& spotLight, const Shader& shader, ArrayView<RenderUnit> shadowCasters, ArrayView<Material> materials)
+    {
+        for (const auto& unit : shadowCasters)
+        {
+            // do not cull instanced objects, as their position may differ
+            if (unit.InstanceCount != 0 || InConeBounds(spotLight, unit.MinAABB, unit.MaxAABB))
                 CastShadowsUnit(shader, unit, materials);
         }
     }
@@ -132,7 +168,7 @@ namespace MxEngine
             controller.AttachDepthMap(spotLight.ShadowMap);
             shader.SetUniformMat4("LightProjMatrix", spotLight.ProjectionMatrix);
 
-            CastShadowsNoCulling(shader, this->shadowCasters, this->materials);
+            CastShadowsWithCulling(spotLight, shader, this->shadowCasters, this->materials);
             spotLight.ShadowMap->GenerateMipmaps();
         }
     }
@@ -153,7 +189,7 @@ namespace MxEngine
             shader.SetUniformFloat("zFar", pointLight.Radius);
             shader.SetUniformVec3("lightPos", pointLight.Position);
 
-            CastShadowsNoCulling(shader, this->shadowCasters, this->materials);
+            CastShadowsWithCulling(pointLight, shader, this->shadowCasters, this->materials);
             pointLight.ShadowMap->GenerateMipmaps();
         }
     }
