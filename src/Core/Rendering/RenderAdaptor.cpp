@@ -338,7 +338,7 @@ namespace MxEngine
                     if (materialId >= meshRenderer->Materials.size()) continue;
                     auto material = meshRenderer->Materials[materialId];
 
-                    this->Renderer.SubmitPrimitive(submesh, *material, castsShadow, transform, instanceCount);
+                    this->Renderer.SubmitPrimitive(submesh, *material, castsShadow, transform, instanceCount, object.Name.c_str());
                 }
             }
         }

@@ -995,7 +995,7 @@ namespace MxEngine
 		camera.SSR                        = ssr;
 	}
 
-	void RenderController::SubmitPrimitive(const SubMesh& object, const Material& material, bool castsShadows, const TransformComponent& parentTransform, size_t instanceCount)
+	void RenderController::SubmitPrimitive(const SubMesh& object, const Material& material, bool castsShadows, const TransformComponent& parentTransform, size_t instanceCount, const char* debugName)
 	{
 		RenderUnit* primitivePtr = nullptr;
 		// filter transparent object to render in separate order
@@ -1011,6 +1011,10 @@ namespace MxEngine
 		primitive.ModelMatrix = parentTransform.GetMatrix() * object.GetTransform()->GetMatrix(); //-V807
 		primitive.NormalMatrix = parentTransform.GetNormalMatrix() * object.GetTransform()->GetNormalMatrix();
 		primitive.InstanceCount = instanceCount;
+
+		#if defined(MXENGINE_DEBUG)
+		primitive.DebugName = debugName;
+		#endif
 
 		// compute aabb of primitive object for later frustrum culling
 		auto aabb = object.Data.GetBoundingBox() * primitive.ModelMatrix;

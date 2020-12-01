@@ -126,7 +126,8 @@ namespace MxEngine
             {
                 auto& object = MxObject::GetByComponent(*self);
                 object.Transform.SetPosition(MxObject::GetByComponent(*viewport).Transform.GetPosition());
-                self->CascadeDirection = viewport->GetDirection();
+                auto direction = viewport->GetDirection();
+                self->CascadeDirection = Normalize(Vector3(direction.x, 0.0f, direction.z));
             }
         }, updateInterval);
     }
