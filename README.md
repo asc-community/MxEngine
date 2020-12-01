@@ -269,6 +269,13 @@ If you are interesed in libraries MxEngine depend on, consider reading [dependen
 
 ## Projects based on MxEngine
 Here is the list of some projects using MxEngine. If you want to see yours here, [contact me](https://github.com/MomoDeve).
+
+### PathTracer by MomoDeve
+Path tracing in GLSL shaders, project link: https://github.com/MomoDeve/PathTracer
+<p align="center">
+<img src="https://github.com/MomoDeve/PathTracer/blob/master/preview.png">
+</p>
+
 ### Rainball by WhiteBlackGoose
 3D pseudo water simulation, project link: https://github.com/WhiteBlackGoose/Rainball
 <p align="center">
