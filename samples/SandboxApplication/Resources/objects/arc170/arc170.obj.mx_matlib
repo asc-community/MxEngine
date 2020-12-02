@@ -24,7 +24,7 @@
     ]
   },
   {
-    "AlbedoMap": "D:/repos/MxEngine/samples/SandboxApplication/Resources/objects/arc170\\arc170.jpg",
+    "AlbedoMap": "Resources\\objects\\arc170\\arc170.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,

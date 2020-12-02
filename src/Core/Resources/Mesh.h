@@ -34,11 +34,6 @@
 #include "Platform/GraphicAPI.h"
 #include "Core/Resources/SubMesh.h"
 
-namespace std::filesystem
-{
-	class path;
-}
-
 namespace MxEngine
 {
 	class MeshRenderer;
@@ -50,20 +45,25 @@ namespace MxEngine
 		MxVector<VertexBufferHandle> VBOs;
 		MxVector<VertexBufferLayoutHandle> VBLs;
 
-		void LoadFromFile(const std::filesystem::path& filepath);
+		template<typename FilePath>
+		void LoadFromFile(const FilePath& filepath);
 	public:
 		AABB BoxBounding;
 		BoundingSphere SphereBounding;
 		SubmeshList Submeshes;
 
 		explicit Mesh() = default;
-		Mesh(const std::filesystem::path& path);
 		Mesh(Mesh&) = delete;
 		Mesh(Mesh&&) = default;
 		Mesh& operator=(const Mesh&) = delete;
 		Mesh& operator=(Mesh&&) = default;
+
+		template<typename FilePath>
+		Mesh(const FilePath& path);
 		
-		void Load(const std::filesystem::path& filepath);
+		template<typename FilePath>
+		void Load(const FilePath& filepath);
+
 		void UpdateBoundingGeometry();
 		size_t AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl);
 		VertexBufferHandle GetBufferByIndex(size_t index) const; 

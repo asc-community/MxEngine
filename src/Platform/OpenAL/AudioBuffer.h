@@ -31,11 +31,6 @@
 #include "Utilities/Audio/SupportedAudioTypes.h"
 #include "Utilities/STL/MxString.h"
 
-namespace std::filesystem
-{
-    class path;
-}
-
 namespace MxEngine
 {
     class AudioBuffer
@@ -59,7 +54,12 @@ namespace MxEngine
         AudioBuffer& operator=(const AudioBuffer&) = delete;
         AudioBuffer& operator=(AudioBuffer&&) noexcept;
 
-        void Load(const std::filesystem::path& path);
+        template<typename FilePath>
+        AudioBuffer(const FilePath& path);
+
+        template<typename FilePath>
+        void Load(const FilePath& path);
+
         BindableId GetNativeHandle() const;
         size_t GetChannelCount() const;
         size_t GetFrequency() const;

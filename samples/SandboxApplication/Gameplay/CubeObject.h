@@ -15,6 +15,9 @@ struct CubeBehaviour
 		auto pool = instances->GetInstances();
 		for (auto& instance : pool)
 		{
+			// do not spam cube instances in runtime editor
+			instance->SetDisplayInRuntimeEditor(false);
+
 			int id = int(idx - offset);
 			idx++;
 			counter += 0.0005f * dt;

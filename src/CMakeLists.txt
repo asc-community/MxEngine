@@ -113,16 +113,17 @@ set(MXENGINE_SOURCES
 "Core/Components/Scripting/Script.cpp" 
 "Core/Runtime/RuntimeCompiler.cpp"
 "Utilities/ImGui/Editors/ComponentEditors/ScriptingEditors.cpp"
- "Core/Serialization/SceneSerializer.cpp" 
- "Core/Serialization/MxObjectSerializer.cpp"
- "Core/Serialization/ComponentSerializer.cpp" 
- "Core/Serialization/LightingSerializer.cpp" 
- "Core/Serialization/InstancingSerializer.cpp" 
- "Core/Serialization/CameraSerializer.cpp" 
- "Core/Serialization/RenderingSerializer.cpp" 
- "Core/Serialization/AudioSerializer.cpp" 
- "Core/Serialization/PhysicsSerializer.cpp"
-  "Core/Serialization/ScriptSerializer.cpp")
+"Core/Serialization/SceneSerializer.cpp" 
+"Core/Serialization/MxObjectSerializer.cpp"
+"Core/Serialization/ComponentSerializer.cpp" 
+"Core/Serialization/LightingSerializer.cpp" 
+"Core/Serialization/InstancingSerializer.cpp" 
+"Core/Serialization/CameraSerializer.cpp" 
+"Core/Serialization/RenderingSerializer.cpp" 
+"Core/Serialization/AudioSerializer.cpp" 
+"Core/Serialization/PhysicsSerializer.cpp"
+"Core/Serialization/ScriptSerializer.cpp"
+)
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)
@@ -312,6 +313,11 @@ if(WIN32)
         ${openal_binary_dir}/OpenAL32.dll
         ${glfw_binary_dir}/src/glfw3.dll
     )
+elseif(APPLE)
+    set(SHARED_LIBRARIES_PATHS
+        ${openal_binary_dir}/libopenal.1.dylib
+        ${glfw_binary_dir}/src/libglfw.3.dylib
+    )	
 else()
     set(SHARED_LIBRARIES_PATHS
         ${openal_binary_dir}/libopenal.so.1

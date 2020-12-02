@@ -39,6 +39,7 @@
 
 namespace MxEngine
 {
+	template<>
 	void Mesh::LoadFromFile(const std::filesystem::path& filepath)
 	{
 		ObjectInfo objectInfo = ObjectLoader::Load(filepath);
@@ -91,14 +92,16 @@ namespace MxEngine
 		this->UpdateBoundingGeometry(); // use submeshes boundings to update mesh boundings
 	}
 
+	template<>
     Mesh::Mesh(const std::filesystem::path& path)
     {
-		this->LoadFromFile(path);
+		this->LoadFromFile(std::filesystem::proximate(path));
     }
 
+	template<>
 	void Mesh::Load(const std::filesystem::path& filepath)
 	{
-		this->LoadFromFile(filepath);
+		this->LoadFromFile(std::filesystem::proximate(filepath));
 	}
 
 	void Mesh::UpdateBoundingGeometry()

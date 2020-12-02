@@ -4,7 +4,8 @@
 
 float GGXPartialGeometry(float NV, float roughness)
 {
-    float k = (roughness + 1.0f) * (roughness + 1.0f) * 0.125f;
+    float d = roughness * 0.125 + 0.125;
+    float k = roughness * d + d;
     return NV / (NV * (1.0f - k) + k);
 }
 
@@ -25,7 +26,7 @@ float GGXSmith(float NV, float NL, float roughness)
 
 vec3 fresnelSchlick(vec3 F0, float HV)
 {
-    return F0 + (1.0f - F0) * pow(1.0f - HV, 5.0f);
+    return (1.0f - F0) * pow(1.0f - HV, 5.0f) + F0;
 }
 
 mat3 computeSampleTransform(vec3 normal)
@@ -45,8 +46,8 @@ vec3 GGXImportanceSample(vec2 Xi, float roughness, vec3 normal)
 
     float alpha = roughness * roughness;
     float phi = 2.0f * PI * Xi.x;
-    float cosTheta = sqrt((1.0f - Xi.y) / (1.0f + (alpha * alpha - 1.0f) * Xi.y));
-    float sinTheta = sqrt(1.0f - cosTheta * cosTheta);
+    float cosTheta = sqrt((1.0f - Xi.y) / (1.0 + (alpha * alpha - 1.0f) * Xi.y));
+    float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
     vec3 H = vec3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
     return transform * H;
 }
@@ -100,5 +101,5 @@ vec3 GGXCookTorranceSampled(vec3 normal, vec3 lightDirection, vec3 viewDirection
     pdf = D * NH / (4.0f * HV);
 
     vec3 specular = G * F * HV / (NV * NH);
-    return max(vec3(0.0f), specular);
+    return clamp(specular, vec3(0.0), vec3(1.0));
 }

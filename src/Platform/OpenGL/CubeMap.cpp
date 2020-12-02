@@ -50,6 +50,40 @@ namespace MxEngine
 		MXLOG_DEBUG("OpenGL::CubeMap", "created cubemap with id = " + ToMxString(id));
 	}
 
+	template<>
+	void CubeMap::Load(const std::filesystem::path& filepath, bool genMipmaps, bool flipImage)
+	{
+		// TODO: support floating point textures
+		Image img = ImageLoader::LoadImage(filepath, flipImage);
+		if (img.GetRawData() == nullptr)
+		{
+			MXLOG_WARNING("OpenGL::CubeMap", "file with name '" + ToMxString(filepath) + "' was not found");
+			return;
+		}
+		auto images = ImageLoader::CreateCubemap(img);
+		this->filepath = ToMxString(std::filesystem::proximate(filepath));
+		this->channels = img.GetChannelCount();
+		this->width = img.GetWidth();
+		this->height = img.GetHeight();
+
+		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
+		for (size_t i = 0; i < 6; i++)
+		{
+			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGB,
+				(GLsizei)images[i].width(), (GLsizei)images[i].height() / (GLsizei)this->channels, 0, GL_RGBA, GL_UNSIGNED_BYTE, images[i].data()));
+		}
+
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+
+		if (genMipmaps)
+		{
+			this->GenerateMipmaps();
+		}
+	}
+
+	template<>
     CubeMap::CubeMap(const std::filesystem::path& filepath, bool genMipmaps, bool flipImage)
 		: CubeMap()
     {
@@ -122,38 +156,7 @@ namespace MxEngine
 		return this->activeId;
 	}
 
-	void CubeMap::Load(const std::filesystem::path& filepath, bool genMipmaps, bool flipImage)
-	{
-		// TODO: support floating point textures
-		Image img = ImageLoader::LoadImage(filepath, flipImage);
-		if (img.GetRawData() == nullptr)
-		{
-			MXLOG_WARNING("OpenGL::CubeMap", "file with name '" + ToMxString(filepath) + "' was not found");
-			return;
-		}
-		auto images = ImageLoader::CreateCubemap(img);
-		this->filepath = ToMxString(filepath);
-		this->channels = img.GetChannelCount();
-		this->width = img.GetWidth();
-		this->height = img.GetHeight();
-
-		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
-		for (size_t i = 0; i < 6; i++)
-		{
-			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGB, 
-				(GLsizei)images[i].width(), (GLsizei)images[i].height() / (GLsizei)this->channels, 0, GL_RGBA, GL_UNSIGNED_BYTE, images[i].data()));
-		}
-
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
-
-		if (genMipmaps)
-		{
-			this->GenerateMipmaps();
-		}
-	}
-
+	template<>
     void CubeMap::Load(const std::filesystem::path& right, const std::filesystem::path& left, const std::filesystem::path& top,
 		               const std::filesystem::path& bottom, const std::filesystem::path& front, const std::filesystem::path& back, 
 					   bool genMipmaps, bool flipImage)

@@ -34,11 +34,6 @@
 #include "Utilities/STL/MxVector.h"
 #include "Utilities/STL/MxHashMap.h"
 
-namespace std::filesystem
-{
-	class path;
-}
-
 namespace MxEngine
 {
 	class Shader
@@ -57,7 +52,9 @@ namespace MxEngine
 		BindableId id = 0;
 		mutable UniformCache uniformCache;
 
-		ShaderId CompileShader(unsigned int type, const MxString& source, const std::filesystem::path& name);
+		template<typename FilePath>
+		ShaderId CompileShader(unsigned int type, const MxString& source, const FilePath& name);
+
 		BindableId CreateProgram(ShaderId vertexShader, ShaderId fragmentShader) const;
 		BindableId CreateProgram(ShaderId vertexShader, ShaderId geometryShader, ShaderId fragmentShader) const;
 		UniformType GetUniformLocation(const MxString& uniformName) const;
@@ -66,8 +63,12 @@ namespace MxEngine
 		static MxString GetShaderVersionString();
 
 		Shader();
-		Shader(const std::filesystem::path& vertexShaderPath, const std::filesystem::path& fragmentShaderPath);
-		Shader(const std::filesystem::path& vertexShaderPath, const std::filesystem::path& geometryShaderPath, const std::filesystem::path& fragmentShaderPath);
+
+		template<typename FilePath>
+		Shader(const FilePath& vertexShaderPath, const FilePath& fragmentShaderPath);
+		template<typename FilePath>
+		Shader(const FilePath& vertexShaderPath, const FilePath& geometryShaderPath, const FilePath& fragmentShaderPath);
+
 		Shader(const Shader&) = delete;
 		Shader(Shader&& shader) noexcept;
 		Shader& operator=(const Shader&) = delete;
@@ -78,8 +79,12 @@ namespace MxEngine
 		void Unbind() const;
 		void InvalidateUniformCache();
 		BindableId GetNativeHandle() const;
-		void Load(const std::filesystem::path& vertex, const std::filesystem::path& fragment);
-		void Load(const std::filesystem::path& vertex, const std::filesystem::path& geometry, const std::filesystem::path& fragment);
+
+		template<typename FilePath>
+		void Load(const FilePath& vertex, const FilePath& fragment);
+		template<typename FilePath>
+		void Load(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment);
+
 		void IgnoreNonExistingUniform(const MxString& name) const;
 		void IgnoreNonExistingUniform(const char* name) const;
 		void LoadFromString(const MxString& vertex, const MxString& fragment);

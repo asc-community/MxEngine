@@ -74,17 +74,13 @@ namespace MxEngine
     {
         auto cubemap = GraphicFactory::Create<CubeMap>();
 
-        std::array<std::reference_wrapper<const FilePath>, 6> paths = {
-            FileManager::GetFilePath(right), 
-            FileManager::GetFilePath(left),
-            FileManager::GetFilePath(top),   
-            FileManager::GetFilePath(bottom),
-            FileManager::GetFilePath(front), 
-            FileManager::GetFilePath(back)
-        };
-
         cubemap->Load(
-            paths[0], paths[1], paths[2], paths[3], paths[4], paths[5]
+            FileManager::GetFilePath(right),
+            FileManager::GetFilePath(left),
+            FileManager::GetFilePath(top),
+            FileManager::GetFilePath(bottom),
+            FileManager::GetFilePath(front),
+            FileManager::GetFilePath(back)
         );
         return cubemap;
     }

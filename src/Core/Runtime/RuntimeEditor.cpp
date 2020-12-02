@@ -331,7 +331,7 @@ namespace MxEngine
 		for (auto& object : objects)
 		{
 			bool shouldDisplay = object.IsDisplayedInRuntimeEditor() && object.Name.find(filter) != object.Name.npos;
-			if (shouldDisplay)
+			if (shouldDisplay && id < 10000) // do not display too much objects
 			{
 				ImGui::PushID(id++);
 				bool isSelected = this->currentlySelectedObject == MxObject::GetHandle(object);

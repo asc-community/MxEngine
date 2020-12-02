@@ -85,6 +85,7 @@ namespace MxEngine
         return *this;
     }
 
+    template<>
     void AudioBuffer::Load(const std::filesystem::path& path)
     {
         auto audio = AudioLoader::Load(path);
@@ -112,6 +113,13 @@ namespace MxEngine
         {
             MXLOG_ERROR("MxEngine::AudioLoader", "audio file was not loaded: " + ToMxString(path));
         }
+    }
+
+    template<>
+    AudioBuffer::AudioBuffer(const std::filesystem::path& path)
+        : AudioBuffer()
+    {
+        this->Load(path);
     }
 
     AudioBuffer::BindableId AudioBuffer::GetNativeHandle() const

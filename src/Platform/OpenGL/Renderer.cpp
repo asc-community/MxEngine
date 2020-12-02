@@ -136,7 +136,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("Renderer::Flush");
 		GraphicModule::OnRenderDraw();
 
-		GLCALL(glFlush());
+		glFlush();
 	}
 
 	void Renderer::Finish() const
@@ -144,7 +144,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("Renderer::Finish");
 		GraphicModule::OnRenderDraw();
 
-		GLCALL(glFinish());
+		glFinish();
 	}
 
 	void Renderer::SetViewport(int x, int y, int width, int height) const

@@ -123,17 +123,12 @@ namespace MxEngine
 		return *this;
 	}
 
-	Texture::Texture(const std::filesystem::path& filepath, TextureFormat format, TextureWrap wrap, bool genMipmaps, bool flipImage)
-		: Texture()
-	{
-		this->Load(filepath, format, wrap, genMipmaps, flipImage);
-	}
-
 	Texture::~Texture()
 	{
 		this->FreeTexture();
 	}
 
+	template<>
 	void Texture::Load(const std::filesystem::path& filepath, TextureFormat format, TextureWrap wrap, bool genMipmaps, bool flipImage)
 	{
 		// TODO: support floating point texture loading
@@ -145,7 +140,7 @@ namespace MxEngine
 			return;
 		}
 
-		this->filepath = ToMxString(filepath);
+		this->filepath = ToMxString(std::filesystem::proximate(filepath));
 		this->wrapType = wrap;
 		this->format = format;
 		this->width = image.GetWidth();
@@ -181,6 +176,13 @@ namespace MxEngine
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
 		
 		if (genMipmaps) this->GenerateMipmaps();
+	}
+
+	template<>
+	Texture::Texture(const std::filesystem::path& filepath, TextureFormat format, TextureWrap wrap, bool genMipmaps, bool flipImage)
+		: Texture()
+	{
+		this->Load(filepath, format, wrap, genMipmaps, flipImage);
 	}
 
 	void Texture::Load(RawDataPointer data, int width, int height, int channels, bool isFloating, TextureFormat format, TextureWrap wrap, bool genMipmaps)

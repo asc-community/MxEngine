@@ -346,12 +346,13 @@ namespace MxEngine
 		float frameEnd  = Time::Current();
 		size_t frameCount = 0;
 		{
-			MAKE_SCOPE_PROFILER("Application::Run");
+			MAKE_SCOPE_PROFILER("Application::Run()");
 			MAKE_SCOPE_TIMER("MxEngine::Application", "Application::Run()");
 			MXLOG_INFO("MxEngine::Application", "starting main loop...");
 
 			while (this->GetWindow().IsOpen()) //-V807
 			{
+				MAKE_SCOPE_PROFILER("Application::Frame()");
 				this->UpdateTimeDelta(frameEnd, secondEnd, frameCount);
 				this->InvokeUpdate();
 				this->DrawObjects();
@@ -361,7 +362,7 @@ namespace MxEngine
 
 			// application exit
 			{
-				MAKE_SCOPE_PROFILER("Application::CloseApplication");
+				MAKE_SCOPE_PROFILER("Application::CloseApplication()");
 				MAKE_SCOPE_TIMER("MxEngine::Application", "Application::CloseApplication()");
 				AppDestroyEvent appDestroyEvent;
 				Event::Invoke(appDestroyEvent);

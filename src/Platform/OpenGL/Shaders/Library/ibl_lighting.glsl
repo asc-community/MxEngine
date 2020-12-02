@@ -31,7 +31,8 @@ vec3 calculateIBL(FragmentInfo fragment, vec3 viewDirection, EnvironmentInfo env
     FKtotal *= invEnvironmentSampleCount;
     vec3 irradianceColor = calcReflectionColor(environment.irradiance, environment.skyboxRotation, viewDirection, fragment.normal);
 
-    vec3 diffuseColor = fragment.albedo * (1.0f - metallic) * (1.0f - FKtotal) * irradianceColor;
+    float diffuseCoef = 1.0f - metallic;
+    vec3 diffuseColor = fragment.albedo * (irradianceColor - irradianceColor * FKtotal) * diffuseCoef;
 
-    return (diffuseColor + specularColor) * environment.intensity * fragment.ambientOcclusion;
+    return (diffuseColor + specularColor) * (environment.intensity * fragment.ambientOcclusion);
 }

@@ -52,16 +52,6 @@ namespace MxEngine
 		this->id = 0;
 	}
 
-	Shader::Shader(const std::filesystem::path& vertexShaderPath, const std::filesystem::path& fragmentShaderPath)
-	{
-		this->Load(vertexShaderPath, fragmentShaderPath);
-	}
-
-	Shader::Shader(const std::filesystem::path& vertexShaderPath, const std::filesystem::path& geometryShaderPath, const std::filesystem::path& fragmentShaderPath)
-	{
-		this->Load(vertexShaderPath, geometryShaderPath, fragmentShaderPath);
-	}
-
 	void Shader::Bind() const
 	{
 		GLCALL(glUseProgram(id));
@@ -114,6 +104,59 @@ namespace MxEngine
 		this->FreeShader();
 	}
 
+	template<>
+	Shader::ShaderId Shader::CompileShader(unsigned int type, const MxString& source, const std::filesystem::path& path)
+	{
+		GLCALL(GLuint shaderId = glCreateShader((GLenum)type));
+
+		ShaderPreprocessor preprocessor(source);
+
+		auto sourceModified = preprocessor
+			.LoadIncludes(FilePath(path.c_str()).parent_path())
+			.EmitPrefixLine(Shader::GetShaderVersionString())
+			.GetResult()
+			;
+
+#if defined(MXENGINE_DEBUG)
+		auto& includes = preprocessor.GetIncludeFiles();
+		this->includedFilePaths.insert(this->includedFilePaths.end(), includes.begin(), includes.end());
+#endif
+
+		auto cStringSource = sourceModified.c_str();
+		GLCALL(glShaderSource(shaderId, 1, &cStringSource, nullptr));
+		GLCALL(glCompileShader(shaderId));
+
+		GLint result;
+		GLCALL(glGetShaderiv(shaderId, GL_COMPILE_STATUS, &result));
+		if (result == GL_FALSE)
+		{
+			GLint length;
+			GLCALL(glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &length));
+			MxString msg;
+			msg.resize(length);
+			GLCALL(glGetShaderInfoLog(shaderId, length, &length, &msg[0]));
+			msg.pop_back(); // extra \n character
+			MxString typeName;
+			switch ((ShaderType)type)
+			{
+			case ShaderType::VERTEX_SHADER:
+				typeName = "vertex";
+				break;
+			case ShaderType::GEOMETRY_SHADER:
+				typeName = "geometry";
+				break;
+			case ShaderType::FRAGMENT_SHADER:
+				typeName = "fragment";
+				break;
+			}
+			MXLOG_ERROR("OpenGL::Shader", "failed to compile " + typeName + " shader: " + ToMxString(path));
+			MXLOG_ERROR("OpenGL::ErrorHandler", msg);
+		}
+
+		return shaderId;
+	}
+
+	template<>
 	void Shader::Load(const std::filesystem::path& vertex, const std::filesystem::path& fragment)
 	{
 		this->InvalidateUniformCache();
@@ -139,14 +182,15 @@ namespace MxEngine
 		MXLOG_DEBUG("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
 	}
 
+	template<>
 	void Shader::Load(const std::filesystem::path& vertex, const std::filesystem::path& geometry, const std::filesystem::path& fragment)
 	{
 		this->InvalidateUniformCache();
 		this->FreeShader();
 		#if defined(MXENGINE_DEBUG)
-		this->vertexShaderPath = ToMxString(vertex);
-		this->geometryShaderPath = ToMxString(geometry);
-		this->fragmentShaderPath = ToMxString(fragment);
+		this->vertexShaderPath   = ToMxString(std::filesystem::proximate(vertex));
+		this->geometryShaderPath = ToMxString(std::filesystem::proximate(geometry));
+		this->fragmentShaderPath = ToMxString(std::filesystem::proximate(fragment));
 		#endif
 		MxString vs = File::ReadAllText(vertex);
 		MxString gs = File::ReadAllText(geometry);
@@ -189,9 +233,9 @@ namespace MxEngine
 		this->InvalidateUniformCache();
 
 		MXLOG_DEBUG("OpenGL::Shader", "compiling vertex shader: vertex.glsl");
-		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, "vertex.glsl");
+		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, FilePath("vertex.glsl"));
 		MXLOG_DEBUG("OpenGL::Shader", "compiling fragment shader: fragment.glsl");
-		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fragment, "fragment.glsl");
+		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fragment, FilePath("fragment.glsl"));
 
 		id = CreateProgram(vertexShader, fragmentShader);
 		MXLOG_DEBUG("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
@@ -202,11 +246,11 @@ namespace MxEngine
 		this->InvalidateUniformCache();
 
 		MXLOG_DEBUG("OpenGL::Shader", "compiling vertex shader: vertex.glsl");
-		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, "vertex.glsl");
+		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, FilePath("vertex.glsl"));
 		MXLOG_DEBUG("OpenGL::Shader", "compiling geometry shader: geometry.glsl");
-		unsigned int geometryShader = CompileShader((GLenum)ShaderType::GEOMETRY_SHADER, geometry, "geometry.glsl");
+		unsigned int geometryShader = CompileShader((GLenum)ShaderType::GEOMETRY_SHADER, geometry, FilePath("geometry.glsl"));
 		MXLOG_DEBUG("OpenGL::Shader", "compiling fragment shader: fragment.glsl");
-		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fragment, "fragment.glsl");
+		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fragment, FilePath("fragment.glsl"));
 
 		id = CreateProgram(vertexShader, geometryShader, fragmentShader);
 		MXLOG_DEBUG("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
@@ -309,57 +353,6 @@ namespace MxEngine
 		#endif
 	}
 
-	Shader::ShaderId Shader::CompileShader(unsigned int type, const MxString& source, const std::filesystem::path& path)
-	{
-		GLCALL(GLuint shaderId = glCreateShader((GLenum)type));
-
-		ShaderPreprocessor preprocessor(source);
-
-		auto sourceModified = preprocessor
-			.LoadIncludes(FilePath(path.c_str()).parent_path())
-			.EmitPrefixLine(Shader::GetShaderVersionString())
-			.GetResult()
-			;
-
-		#if defined(MXENGINE_DEBUG)
-		auto& includes = preprocessor.GetIncludeFiles();
-		this->includedFilePaths.insert(this->includedFilePaths.end(), includes.begin(), includes.end());
-		#endif
-
-		auto cStringSource = sourceModified.c_str();
-		GLCALL(glShaderSource(shaderId, 1, &cStringSource, nullptr));
-		GLCALL(glCompileShader(shaderId));
-
-		GLint result;
-		GLCALL(glGetShaderiv(shaderId, GL_COMPILE_STATUS, &result));
-		if (result == GL_FALSE)
-		{
-			GLint length;
-			GLCALL(glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &length));
-			MxString msg;
-			msg.resize(length);
-			GLCALL(glGetShaderInfoLog(shaderId, length, &length, &msg[0]));
-			msg.pop_back(); // extra \n character
-			MxString typeName;
-			switch ((ShaderType)type)
-			{
-			case ShaderType::VERTEX_SHADER:
-				typeName = "vertex";
-				break;
-			case ShaderType::GEOMETRY_SHADER:
-				typeName = "geometry";
-				break;
-			case ShaderType::FRAGMENT_SHADER:
-				typeName = "fragment";
-				break;
-			}
-			MXLOG_ERROR("OpenGL::Shader", "failed to compile " + typeName + " shader: " + ToMxString(path));
-			MXLOG_ERROR("OpenGL::ErrorHandler", msg);
-		}
-
-		return shaderId;
-	}
-
 	Shader::BindableId Shader::CreateProgram(Shader::ShaderId vertexShader, Shader::ShaderId fragmentShader) const
 	{
 		GLCALL(unsigned int program = glCreateProgram());
@@ -408,6 +401,18 @@ namespace MxEngine
 		}
 		uniformCache[uniformName] = location;
 		return location;
+	}
+
+	template<>
+	Shader::Shader(const std::filesystem::path& vertexShaderPath, const std::filesystem::path& fragmentShaderPath)
+	{
+		this->Load(vertexShaderPath, fragmentShaderPath);
+	}
+
+	template<>
+	Shader::Shader(const std::filesystem::path& vertexShaderPath, const std::filesystem::path& geometryShaderPath, const std::filesystem::path& fragmentShaderPath)
+	{
+		this->Load(vertexShaderPath, geometryShaderPath, fragmentShaderPath);
 	}
 
 	void Shader::FreeShader()
