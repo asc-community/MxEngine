@@ -1,6 +1,6 @@
 [
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\5061699253647017043.png",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\5061699253647017043.png",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -14,7 +14,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #0",
-    "NormalMap": "Resources/Sponza/glTF\\8773302468495022225.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\8773302468495022225.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -24,7 +24,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\8006627369776289000.png",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\8006627369776289000.png",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -38,7 +38,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #1",
-    "NormalMap": "Resources/Sponza/glTF\\12501374198249454378.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\12501374198249454378.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -48,7 +48,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\7268504077753552595.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\7268504077753552595.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -62,7 +62,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #2",
-    "NormalMap": "Resources/Sponza/glTF\\4477655471536070370.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\4477655471536070370.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -72,7 +72,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\8750083169368950601.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\8750083169368950601.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -86,7 +86,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #3",
-    "NormalMap": "Resources/Sponza/glTF\\13982482287905699490.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\13982482287905699490.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -96,7 +96,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\5792855332885324923.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\5792855332885324923.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -110,7 +110,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #4",
-    "NormalMap": "Resources/Sponza/glTF\\16299174074766089871.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\16299174074766089871.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -120,7 +120,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\14650633544276105767.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\14650633544276105767.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -134,7 +134,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #5",
-    "NormalMap": "Resources/Sponza/glTF\\2051777328469649772.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\2051777328469649772.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -144,7 +144,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\15295713303328085182.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\15295713303328085182.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -158,7 +158,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #6",
-    "NormalMap": "Resources/Sponza/glTF\\10388182081421875623.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\10388182081421875623.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -168,7 +168,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\6047387724914829168.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\6047387724914829168.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -182,7 +182,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #7",
-    "NormalMap": "Resources/Sponza/glTF\\15722799267630235092.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\15722799267630235092.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -192,7 +192,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\5823059166183034438.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\5823059166183034438.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -206,7 +206,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #8",
-    "NormalMap": "Resources/Sponza/glTF\\14267839433702832875.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\14267839433702832875.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -216,7 +216,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\7441062115984513793.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\7441062115984513793.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -230,7 +230,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #9",
-    "NormalMap": "Resources/Sponza/glTF\\6667038893015345571.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\6667038893015345571.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -240,7 +240,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\11490520546946913238.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\11490520546946913238.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -254,7 +254,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #10",
-    "NormalMap": "Resources/Sponza/glTF\\3628158980083700836.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\3628158980083700836.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -264,7 +264,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\6151467286084645207.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\6151467286084645207.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -278,7 +278,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #11",
-    "NormalMap": "Resources/Sponza/glTF\\7645212358685992005.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\7645212358685992005.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -288,7 +288,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\white.png",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\white.png",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -312,7 +312,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\4975155472559461469.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\4975155472559461469.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -326,7 +326,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #13",
-    "NormalMap": "Resources/Sponza/glTF\\2299742237651021498.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\2299742237651021498.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -336,7 +336,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\4675343432951571524.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\4675343432951571524.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -350,7 +350,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #14",
-    "NormalMap": "Resources/Sponza/glTF\\7056944414013900257.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\7056944414013900257.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -360,7 +360,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\2775690330959970771.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\2775690330959970771.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -374,7 +374,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #15",
-    "NormalMap": "Resources/Sponza/glTF\\2374361008830720677.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\2374361008830720677.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -384,7 +384,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\2185409758123873465.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\2185409758123873465.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -398,7 +398,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #16",
-    "NormalMap": "Resources/Sponza/glTF\\332936164838540657.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\332936164838540657.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -408,7 +408,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\17876391417123941155.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\17876391417123941155.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -422,7 +422,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #17",
-    "NormalMap": "Resources/Sponza/glTF\\6593109234861095314.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\6593109234861095314.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -432,7 +432,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\11474523244911310074.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\11474523244911310074.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -446,7 +446,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #18",
-    "NormalMap": "Resources/Sponza/glTF\\4601176305987539675.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\4601176305987539675.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -456,7 +456,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\9288698199695299068.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\9288698199695299068.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -470,7 +470,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #19",
-    "NormalMap": "Resources/Sponza/glTF\\4910669866631290573.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\4910669866631290573.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -480,7 +480,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\16275776544635328252.png",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\16275776544635328252.png",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -494,7 +494,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #20",
-    "NormalMap": "Resources/Sponza/glTF\\14170708867020035030.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\14170708867020035030.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -504,7 +504,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\755318871556304029.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\755318871556304029.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -518,7 +518,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #21",
-    "NormalMap": "Resources/Sponza/glTF\\3827035219084910048.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\3827035219084910048.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -528,7 +528,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\8481240838833932244.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\8481240838833932244.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -542,7 +542,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #22",
-    "NormalMap": "Resources/Sponza/glTF\\10381718147657362067.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\10381718147657362067.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -552,7 +552,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\6772804448157695701.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\6772804448157695701.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -566,7 +566,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #23",
-    "NormalMap": "Resources/Sponza/glTF\\759203620573749278.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\759203620573749278.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,
@@ -576,7 +576,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources/Sponza/glTF\\2969916736137545357.jpg",
+    "AlbedoMap": "Resources\\Sponza\\glTF\\2969916736137545357.jpg",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -590,7 +590,7 @@
     "MetallicFactor": 0.0,
     "MetallicMap": "",
     "Name": "material #24",
-    "NormalMap": "Resources/Sponza/glTF\\14118779221266351425.jpg",
+    "NormalMap": "Resources\\Sponza\\glTF\\14118779221266351425.jpg",
     "RoughnessFactor": 0.5,
     "RoughnessMap": "",
     "Transparency": 1.0,

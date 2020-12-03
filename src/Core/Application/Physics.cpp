@@ -53,7 +53,7 @@ namespace MxEngine
             {
                 auto object1 = Physics::GetRigidBodyParent(collider1);
                 auto object2 = Physics::GetRigidBodyParent(collider2);
-
+                    
                 Application::GetImpl()->AddCollisionEntry(object1, object2);
             }
         }

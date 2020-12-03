@@ -75,7 +75,7 @@ void main()
 	float fragDistance = length(viewportPosition - fragment.position);
 	vec3 viewDirection = normalize(viewportPosition - fragment.position);
 	
-	vec3 IBLColor = calculateIBL(fragment, viewDirection, environment, lightSamples);
+	vec3 IBLColor = calculateIBL(fragment, viewDirection, environment, lightSamples, gamma);
 
 	vec3 totalColor = IBLColor;
 	totalColor += fragment.albedo * fragment.emmisionFactor;

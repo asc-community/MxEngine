@@ -154,12 +154,15 @@ namespace MxEngine
 
             MXLOG_INFO("MxEngine::FileManager", "path " + ToMxString(absolutePath) + " is not in project directory, copying to working directory");
 
-            File::CreateDirectory(localPath);
+            if(File::IsDirectory(localPath))
+                File::CreateDirectory(localPath);
+
             FileManager::Copy(absolutePath, localPath);
+            localPath = FileManager::GetProximatePath(localPath, workingDirectory);
         }
         else
         {
-            localPath = absolutePath;
+            localPath = FileManager::GetProximatePath(absolutePath, workingDirectory);
         }
 
         if (File::IsFile(localPath))
@@ -194,7 +197,7 @@ namespace MxEngine
 
     void FileManager::Copy(const FilePath& from, const FilePath& to)
     {
-        std::filesystem::copy(from, to, std::filesystem::copy_options::update_existing);
+        std::filesystem::copy(from, to, std::filesystem::copy_options::update_existing | std::filesystem::copy_options::recursive);
     }
 
     StringId FileManager::AddFile(const FilePath& file)

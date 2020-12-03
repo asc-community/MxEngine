@@ -219,9 +219,13 @@ namespace MxEngine
 
 		constexpr auto CollisionCallback = [](MxObject::Handle& object1, MxObject::Handle& object2, auto callbackMethod)
 		{
-			if (object1.IsValid() && object2.IsValid())
+			constexpr auto valid = [](MxObject::Handle& object) -> bool
+			{
+				return object.IsValid() && object->HasComponent<RigidBody>();
+			};
+			if (valid(object1) && valid(object2))
 				std::invoke(callbackMethod, object1->GetComponent<RigidBody>(), *object1, *object2);
-			if (object1.IsValid() && object2.IsValid())
+			if (valid(object2) && valid(object1))
 				std::invoke(callbackMethod, object2->GetComponent<RigidBody>(), *object2, *object1);
 		};
 

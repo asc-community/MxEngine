@@ -26,14 +26,14 @@ void main()
 {
 	FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
 	vec3 viewDirection = normalize(camera.position - fragment.position);
-	
-	vec3 totalColor = vec3(0.0f);
+
+	vec3 totalColor = vec3(0.0);
 	for (int i = 0; i < lightCount; i++)
 	{
-		vec4 pos = vec4(fragment.position, 1.0f);
+		vec4 pos = vec4(fragment.position, 1.0);
 		float shadowFactor = calcShadowFactorCascade(pos, lights[i], lightDepthMaps, i, pcfDistance);
 		totalColor += calculateLighting(fragment, viewDirection, lights[i].direction, lights[i].color.rgb, lights[i].color.a, shadowFactor);
 	}
 	
-	OutColor = vec4(totalColor, 1.0f);
+	OutColor = vec4(totalColor, 1.0);
 }

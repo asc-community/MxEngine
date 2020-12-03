@@ -99,7 +99,9 @@ void main()
         fadingFactor = 0.0f;
     }
 
-    vec3 albedo = mix(fragment.albedo, vec3(1.0f), fragment.metallicFactor * 0.5f);
-
+    vec3 lum = vec3(0.2126, 0.7152, 0.0722);
+    vec3 albedo = mix(fragment.albedo, vec3(1.0), fragment.metallicFactor);
+    ssrReflection = mix(ssrReflection, dot(lum, ssrReflection) * fragment.albedo, fragment.metallicFactor );
+    
     OutColor = vec4(mix(objectColor, albedo * ssrReflection, fadingFactor), 1.0f);
 }

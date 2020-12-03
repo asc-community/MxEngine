@@ -45,8 +45,8 @@ namespace PBR
             input->BindRotation();
 
             auto skybox = cameraObject->AddComponent<Skybox>();
-            skybox->CubeMap = AssetManager::LoadCubeMap("Resources/skybox.png"_id);
-            skybox->Irradiance = AssetManager::LoadCubeMap("Resources/skybox_irradiance.png"_id);
+            skybox->CubeMap = AssetManager::LoadCubeMap("Resources/skybox.jpg"_id);
+            skybox->Irradiance = AssetManager::LoadCubeMap("Resources/skybox_irradiance.jpg"_id);
             skybox->SetIntensity(1.0f);
 
             sphereMesh = Primitives::CreateSphere();
