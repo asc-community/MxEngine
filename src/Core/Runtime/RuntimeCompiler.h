@@ -60,7 +60,7 @@ namespace MxEngine
     {
         using ScriptId = std::aligned_storage_t<16>;
 
-        MxString FileName;
+        MxString FilePath;
         MxString Name;
         Scriptable* ScriptHandle = nullptr;
         ScriptId ScriptHandleId{ };
@@ -93,10 +93,12 @@ namespace MxEngine
         static void LoadCompiledModules();
         static void OnUpdate(float dt);
 
+        template<typename FilePath>
+        static void AddScriptFile(const MxString& scriptName, const FilePath& scriptPath);
+
         static const ScriptInfo& GetScriptInfo(const MxString& scriptName);
         static const ScriptInfo& GetScriptInfo(StringId scriptName);
         static void InvokeScriptableObject(Scriptable* script, ScriptableMethod method, MxObject& scriptParent);
-        static void AddScriptFile(const MxString& scriptName, const MxString& scriptFileName);
         static const MxHashMap<StringId, ScriptInfo>& GetRegisteredScripts();
         static void UpdateScriptableObject(const MxString& scriptName, Scriptable* script);
     };

@@ -29,6 +29,7 @@
 #include "RuntimeCompiler.h"
 #include "Utilities/Logging/Logger.h"
 #include "Utilities/Profiler/Profiler.h"
+#include "Utilities/Format/Format.h"
 #include "Core/Components/Scripting/Script.h"
 #include "Core/Components/Scripting/Scriptable.h"
 
@@ -222,8 +223,7 @@ namespace MxEngine
     auto GetWorkingDirectory()
     {
         MxString directory = ToMxString(FileManager::GetWorkingDirectory());
-        std::transform(directory.begin(), directory.end(), directory.begin(), 
-            [](char c) { return c == '\\' ? '/' : c; });
+        std::replace(directory.begin(), directory.end(), '\\', '/');
         return directory;
     }
 
@@ -345,6 +345,14 @@ namespace MxEngine
         }
     };
 
+    template<>
+    void RuntimeCompiler::AddScriptFile(const MxString& scriptName, const std::filesystem::path& scriptFilePath)
+    {
+        auto hash = FileManager::RegisterExternalResource(scriptFilePath);
+        auto filepath = (FileManager::GetWorkingDirectory() / FileManager::GetFilePath(hash)).lexically_normal();
+        impl->runtimeObjectSystem->AddToRuntimeFileList(filepath.string().c_str());
+    }
+
     void RuntimeCompiler::RegisterExistingScripts()
     {
         AUDynArray<IObjectConstructor*> constructors;
@@ -357,17 +365,41 @@ namespace MxEngine
         }
     }
 
+    MxString GetNormalScriptPath(const FilePath& absolutePath, const FilePath& workingDirectory)
+    {
+        auto result = ToMxString(FileManager::GetProximatePath(absolutePath, workingDirectory));
+        std::replace(result.begin(), result.end(), '\\', '/');
+        return result;
+    }
+
     void RuntimeCompiler::RegisterNewScript(IObjectConstructor* constructor)
     {
-        const char* filename = constructor->GetFileName();
         const char* name = constructor->GetName();
-        MxString scriptName = (name == nullptr ? "" : name);
+        if (name == nullptr)
+        {
+            MXLOG_ERROR("MxEngine::RuntimeCompiler", "cannot register script file: name is nullptr");
+            return;
+        }
+
+        MxString scriptName = name;
         StringId scriptNameHash = MakeStringId(scriptName);
-        if (!scriptName.empty() && impl->registeredScripts.find(scriptNameHash) == impl->registeredScripts.end())
+        
+        auto workingDirectory = FileManager::GetWorkingDirectory();
+        FilePath filepath = FileManager::SearchInDirectory(workingDirectory, ToFilePath(scriptName + ".cpp"));
+        if (filepath.empty())
+        {
+            MXLOG_ERROR("MxEngine::RuntimeCompiler", MxFormat("cannot find {0}.cpp file in project working directory", scriptName));
+            MXLOG_WARNING("MxEngine::RuntimeCompiler", MxFormat("script {0} must be associated with {0}.cpp file in project working directory", scriptName));
+            return;
+        }
+
+        if (impl->registeredScripts.find(scriptNameHash) == impl->registeredScripts.end())
         {
             ScriptInfo info;
             info.Name = scriptName;
-            info.FileName = (filename == nullptr ? "" : filename);
+            info.FilePath = GetNormalScriptPath(filepath, workingDirectory);
+
+            RuntimeCompiler::AddScriptFile(scriptName, filepath);
 
             auto object = constructor->Construct();
             if (object == nullptr)
@@ -520,10 +552,5 @@ namespace MxEngine
         script->CurrentState.Method = method;
         script->CurrentState.Self = std::addressof(scriptParent);
         impl->runtimeObjectSystem->TryProtectedFunction(script);
-    }
-
-    void RuntimeCompiler::AddScriptFile(const MxString& scriptName, const MxString& scriptFileName)
-    {
-        impl->runtimeObjectSystem->AddToRuntimeFileList(scriptFileName.c_str());
     }
 }

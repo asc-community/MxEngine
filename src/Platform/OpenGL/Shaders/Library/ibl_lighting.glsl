@@ -10,10 +10,11 @@ vec3 calculateIBL(FragmentInfo fragment, vec3 viewDirection, EnvironmentInfo env
 
     float invEnvironmentSampleCount = 1.0f / float(GGXSamples);
     float A = computeA(environment.skybox, GGXSamples);
+    mat3 sampleTransform = computeSampleTransform(fragment.normal);
     for (uint i = 0; i < uint(GGXSamples); i++)
     {
         vec2 Xi = sampleHammersley(i, invEnvironmentSampleCount);
-        vec3 H = GGXImportanceSample(Xi, roughness, fragment.normal);
+        vec3 H = GGXImportanceSample(Xi, roughness, fragment.normal, sampleTransform);
         vec3 direction = 2.0f * dot(viewDirection, H) * H - viewDirection;
         vec3 sampleDirection = environment.skyboxRotation * direction;
         

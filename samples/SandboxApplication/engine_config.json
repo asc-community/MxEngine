@@ -1,7 +1,7 @@
 {
   "debug-build": {
     "app-close-key": "ESCAPE",
-    "auto-recompile-files": false,
+    "auto-recompile-files": true,
     "debug-graphics": true,
     "editor-key": "GRAVE_ACCENT",
     "editor-style": "MXENGINE",

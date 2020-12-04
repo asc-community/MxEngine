@@ -31,7 +31,7 @@
 #include "Utilities/FileSystem/FileManager.h"
 
 #include "Core/Components/Scripting/Script.h"
-#include "Core/Runtime/RuntimeCompiler.h"
+#include "Core/Application/Runtime.h"
 
 #define REMOVE_COMPONENT_BUTTON(comp) \
 	if(ImGui::Button("remove component")) {\
@@ -69,16 +69,6 @@ namespace MxEngine::GUI
         TREE_NODE_PUSH("Script");
         REMOVE_COMPONENT_BUTTON(script);
 
-        if (!script.HasScriptableObject())
-        {
-            ImGui::Text("no script attached");
-        }
-        else
-        {
-            ImGui::Text("current script: %s", script.GetScriptName().c_str());
-            ImGui::Text("script filename: %s", script.GetScriptFileName().c_str());
-        }
-
         if (RuntimeCompiler::HasCompilationTaskInProcess())
         {
             ImGui::Text("[note]: recompile task is started...");
@@ -88,6 +78,12 @@ namespace MxEngine::GUI
 
         if (ImGui::BeginCombo("select script", "click to expand"))
         {
+            if (ImGui::Selectable("none"))
+            {
+                script.RemoveScriptableObject();
+                ImGui::SetItemDefaultFocus();
+            }
+
             for (const auto& scriptInfo : scripts)
             {
                 const auto& name = scriptInfo.second.Name;
@@ -100,23 +96,40 @@ namespace MxEngine::GUI
             ImGui::EndCombo();
         }
 
-        if (ImGui::Button("create new script file"))
+        bool addScript = ImGui::Button("add existing script file");
+        ImGui::SameLine();
+        bool newScript = ImGui::Button("create new script file");
+
+        if (addScript || newScript)
         {
-            auto path = FileManager::SaveFileDialog("*.cpp", "MxEngine script files");
+            auto path = newScript ?
+                FileManager::SaveFileDialog("*.cpp", "MxEngine script files") :
+                FileManager::OpenFileDialog("*.cpp", "MxEngine script files");
             if (!path.empty())
             {
                 auto scriptFileName = ToFilePath(path).stem();
                 if (!scriptFileName.empty())
                 {
                     auto scriptName = ToMxString(scriptFileName);
-                    CreateNewScript(scriptName, path);
-                    RuntimeCompiler::AddScriptFile(scriptName, path);
+                    if(newScript) CreateNewScript(scriptName, path);
+                    Runtime::AddScriptFile(scriptName, path);
+                    Runtime::StartCompilationTask();
                 }
                 else
                 {
                     MXLOG_ERROR("MxEngine::FileManager", "cannot create script file with empty name");
                 }
             }
+        }
+
+        if (!script.HasScriptableObject())
+        {
+            ImGui::Text("no script attached");
+        }
+        else
+        {
+            ImGui::Text("current script: %s", script.GetScriptName().c_str());
+            ImGui::Text("script filename: %s", script.GetScriptFileName().c_str());
         }
     }
 }

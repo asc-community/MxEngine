@@ -93,6 +93,5 @@ namespace MxEngine
 
 	class Scriptable : public TInterface<SciptableInterface::ID, SciptableInterface> { };
 
-	#define MXENGINE_RUNTIME_EDITOR(script) REGISTERCLASS(script) \
-		static_assert(MxEngine::AssertEquality<sizeof(script), sizeof(MxEngine::Scriptable)>::value, "scripts must not contains non-static fields")
+	#define MXENGINE_RUNTIME_EDITOR(script) REGISTERCLASS(script)
 }

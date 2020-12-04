@@ -2,11 +2,9 @@
 
 #define PI 3.1415926535f
 
-float GGXPartialGeometry(float NV, float roughness)
+float GGXPartialGeometry(float NV, float roughness2)
 {
-    float d = roughness * 0.125 + 0.125;
-    float k = roughness * d + d;
-    return NV / (NV * (1.0f - k) + k);
+    return NV / (NV * (1.0f - roughness2) + roughness2);
 }
 
 float GGXDistribution(float NH, float roughness)
@@ -21,7 +19,9 @@ float GGXDistribution(float NH, float roughness)
 
 float GGXSmith(float NV, float NL, float roughness)
 {
-    return GGXPartialGeometry(NV, roughness)* GGXPartialGeometry(NL, roughness);
+    float d = roughness * 0.125 + 0.125;
+    float roughness2 = roughness * d + d;
+    return GGXPartialGeometry(NV, roughness2)* GGXPartialGeometry(NL, roughness2);
 }
 
 vec3 fresnelSchlick(vec3 F0, float HV)
@@ -40,10 +40,8 @@ mat3 computeSampleTransform(vec3 normal)
     return w;
 }
 
-vec3 GGXImportanceSample(vec2 Xi, float roughness, vec3 normal)
+vec3 GGXImportanceSample(vec2 Xi, float roughness, vec3 normal, mat3 transform)
 {
-    mat3 transform = computeSampleTransform(normal);
-
     float alpha = roughness * roughness;
     float phi = 2.0f * PI * Xi.x;
     float cosTheta = sqrt((1.0f - Xi.y) / (1.0 + (alpha * alpha - 1.0f) * Xi.y));

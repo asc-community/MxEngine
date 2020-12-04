@@ -32,6 +32,7 @@
 #include "Utilities/Format/Format.h"
 #include <portable-file-dialogs.h>
 #undef CreateDirectory
+#undef ERROR
 
 namespace MxEngine
 {
@@ -197,7 +198,12 @@ namespace MxEngine
 
     void FileManager::Copy(const FilePath& from, const FilePath& to)
     {
-        std::filesystem::copy(from, to, std::filesystem::copy_options::update_existing | std::filesystem::copy_options::recursive);
+        std::error_code ec;
+        std::filesystem::copy(from, to, std::filesystem::copy_options::update_existing | std::filesystem::copy_options::recursive, ec);
+        if (ec)
+        {
+            MXLOG_ERROR("MxEngine::FileManager", MxFormat("cannot copy {0} to {1}", ToMxString(from), ToMxString(to)));
+        }
     }
 
     StringId FileManager::AddFile(const FilePath& file)

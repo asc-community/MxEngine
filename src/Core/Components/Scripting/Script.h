@@ -52,6 +52,7 @@ namespace MxEngine
 		void SetScriptableObject(const ScriptInfo& scriptInfo);
 		void SetScriptableObject(const MxString& scriptName);
 		bool HasScriptableObject() const;
+		void RemoveScriptableObject();
 		Scriptable* GetScriptableObject();
 		StringId GetHashedScriptName() const;
 		const MxString& GetScriptName() const;
