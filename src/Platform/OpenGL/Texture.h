@@ -122,7 +122,7 @@ namespace MxEngine
 		TextureFormat GetFormat() const;
 		TextureWrap GetWrapType() const;
 		const MxString& GetFilePath() const;
-		void SetPath(const MxString& newPath);
+		void SetInternalEngineTag(const MxString& tag);
 		unsigned int GetTextureType() const;
 		size_t GetWidth() const;
 		size_t GetHeight() const;

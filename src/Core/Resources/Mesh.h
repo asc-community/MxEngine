@@ -44,9 +44,11 @@ namespace MxEngine
 		
 		MxVector<VertexBufferHandle> VBOs;
 		MxVector<VertexBufferLayoutHandle> VBLs;
+		MxString filePath;
 
 		template<typename FilePath>
 		void LoadFromFile(const FilePath& filepath);
+
 	public:
 		AABB BoxBounding;
 		BoundingSphere SphereBounding;
@@ -70,5 +72,7 @@ namespace MxEngine
 		VertexBufferLayoutHandle GetBufferLayoutByIndex(size_t index) const;
 		size_t GetBufferCount() const;
 		void PopInstancedBuffer();
+		const MxString& GetFilePath() const;
+		void SetInternalEngineTag(const MxString& tag);
 	};
 }

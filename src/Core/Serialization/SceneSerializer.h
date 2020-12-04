@@ -60,6 +60,7 @@ namespace MxEngine
     class CapsuleCollider;
     class CylinderCollider;
     class CompoundCollider;
+    class Script;
 
     void Serialize(JsonFile& json, const MxObject&);
     void Serialize(JsonFile& json, const TransformComponent&);
@@ -89,11 +90,20 @@ namespace MxEngine
     void Serialize(JsonFile& json, const CapsuleCollider&);
     void Serialize(JsonFile& json, const CylinderCollider&);
     void Serialize(JsonFile& json, const CompoundCollider&);
+    void Serialize(JsonFile& json, const Script&);
+
+    void SerializeScripts(JsonFile& json);
+    void SerializeMaterials(JsonFile& json);
+    void SerializeMeshes(JsonFile& json);
+    void SerializeAudios(JsonFile& json);
+    void SerializeCubeMaps(JsonFile& json);
+    void SerializeTextures(JsonFile& json);
 
     class SceneSerializer
     {
         static void SerializeGlobals(JsonFile& json);
         static void SerializeObjects(JsonFile& json);
+        static void SerializeResources(JsonFile& json);
     public:
         static JsonFile Serialize();
     };

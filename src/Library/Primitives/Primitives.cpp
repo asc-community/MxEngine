@@ -17,6 +17,7 @@ namespace MxEngine
         submesh.Data.UpdateBoundingGeometry();
 
         mesh->UpdateBoundingGeometry();
+        mesh->SetInternalEngineTag("[[primitive]]");
 
         return mesh;
     }

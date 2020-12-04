@@ -67,5 +67,6 @@ namespace MxEngine
         size_t GetSampleCount() const;
         AudioType GetAudioType() const;
         const MxString& GetFilePath() const;
+        void SetInternalEngineTag(const MxString& tag);
     };
 }

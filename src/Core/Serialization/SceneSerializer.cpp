@@ -63,12 +63,23 @@ namespace MxEngine
         }
     }
 
+    void SceneSerializer::SerializeResources(JsonFile& json)
+    {
+        SerializeAudios   (json["audios"   ]);
+        SerializeCubeMaps (json["cubemaps" ]);
+        SerializeMaterials(json["materials"]);
+        SerializeMeshes   (json["meshes"   ]);
+        SerializeTextures (json["textures" ]);
+        SerializeScripts  (json["scripts"  ]);
+    }
+
     JsonFile SceneSerializer::Serialize()
     {
         JsonFile json;
 
         SceneSerializer::SerializeGlobals(json);
         SceneSerializer::SerializeObjects(json);
+        SceneSerializer::SerializeResources(json);
 
         return json;
     }

@@ -42,6 +42,8 @@ namespace MxEngine
 	template<>
 	void Mesh::LoadFromFile(const std::filesystem::path& filepath)
 	{
+		this->filePath = ToMxString(filepath);
+
 		ObjectInfo objectInfo = ObjectLoader::Load(filepath);
 		MxVector<TransformComponent::Handle> submeshTransforms;
 
@@ -167,4 +169,14 @@ namespace MxEngine
 		this->VBOs.pop_back();
 		this->VBLs.pop_back();
     }
+
+	const MxString& Mesh::GetFilePath() const
+	{
+		return this->filePath;
+	}
+
+	void Mesh::SetInternalEngineTag(const MxString& tag)
+	{
+		this->filePath = tag;
+	}
 }

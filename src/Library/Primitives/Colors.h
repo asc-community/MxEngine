@@ -63,9 +63,9 @@ namespace MxEngine
         static inline TextureHandle MakeTexture(uint8_t r, uint8_t g, uint8_t b)
         {
             auto texture = GraphicFactory::Create<Texture>();
-            texture->SetPath("[[color]]");
             uint8_t buffer[] = { r, g, b };
             texture->Load(buffer, 1, 1, 3, false);
+            texture->SetInternalEngineTag("[[color]]");
             return texture;
         }
 
@@ -93,6 +93,7 @@ namespace MxEngine
             uint8_t buffer[] = { r, g, b };
             std::array<uint8_t*, 6> sides = { buffer, buffer, buffer, buffer, buffer, buffer };
             cubemap->Load(sides, 1, 1);
+            cubemap->SetInternalEngineTag("[[color]]");
             return cubemap;
         }
 

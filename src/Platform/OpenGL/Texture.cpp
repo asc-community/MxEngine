@@ -461,9 +461,9 @@ namespace MxEngine
 		return this->filepath;
 	}
 
-	void Texture::SetPath(const MxString& newPath)
+	void Texture::SetInternalEngineTag(const MxString& tag)
 	{
-		this->filepath = newPath;
+		this->filepath = tag;
 	}
 
     unsigned int Texture::GetTextureType() const

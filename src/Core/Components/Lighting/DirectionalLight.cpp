@@ -51,7 +51,7 @@ namespace MxEngine
             auto depthTextureSize = (int)GlobalConfig::GetDirectionalLightTextureSize();
             auto texture = GraphicFactory::Create<Texture>();
             texture->LoadDepth(depthTextureSize, depthTextureSize);
-            texture->SetPath("[[directional light]]");
+            texture->SetInternalEngineTag("[[directional light]]");
             this->SetDepthTexture(texture, i);
         }
         // create empty reference to timer

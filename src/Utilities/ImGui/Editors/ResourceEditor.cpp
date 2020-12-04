@@ -64,7 +64,7 @@ namespace MxEngine::GUI
             if (ImGui::Button("create texture"))
             {
                 auto colorTexture = Colors::MakeTexture(color);
-                colorTexture->SetPath("color.runtime");
+                colorTexture->SetInternalEngineTag("color.runtime");
                 colorTexture.MakeStatic();
             }
         }

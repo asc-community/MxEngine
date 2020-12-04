@@ -156,4 +156,9 @@ namespace MxEngine
     {
         return this->filepath;
     }
+
+    void AudioBuffer::SetInternalEngineTag(const MxString& tag)
+    {
+        this->filepath = tag;
+    }
 }

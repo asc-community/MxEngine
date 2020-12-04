@@ -44,6 +44,7 @@ namespace MxEngine
         }
 
         result->Load(noise[0].data(), (int)width, (int)height, 3, false);
+        result->SetInternalEngineTag("[[noise]]");
         return result;
     }
 
@@ -61,6 +62,7 @@ namespace MxEngine
         }
 
         result->Load(noise[0].data(), (int)width, (int)height, 3, false);
+        result->SetInternalEngineTag("[[noise]]");
         return result;
     }
 }

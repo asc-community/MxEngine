@@ -365,13 +365,6 @@ namespace MxEngine
         }
     }
 
-    MxString GetNormalScriptPath(const FilePath& absolutePath, const FilePath& workingDirectory)
-    {
-        auto result = ToMxString(FileManager::GetProximatePath(absolutePath, workingDirectory));
-        std::replace(result.begin(), result.end(), '\\', '/');
-        return result;
-    }
-
     void RuntimeCompiler::RegisterNewScript(IObjectConstructor* constructor)
     {
         const char* name = constructor->GetName();
@@ -397,7 +390,7 @@ namespace MxEngine
         {
             ScriptInfo info;
             info.Name = scriptName;
-            info.FilePath = GetNormalScriptPath(filepath, workingDirectory);
+            info.FilePath = ToMxString(std::filesystem::proximate(filepath));
 
             RuntimeCompiler::AddScriptFile(scriptName, filepath);
 
