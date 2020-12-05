@@ -23,7 +23,6 @@ environment:
         - TOOLCHAIN: msvc16
 
 install:
-    - call ci\appveyor\set-env.bat %TOOLCHAIN% %PLATFORM%
     - cd MxEngine
     - git submodules update --init
 
