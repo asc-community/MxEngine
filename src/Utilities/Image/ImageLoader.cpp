@@ -36,6 +36,7 @@
 
 namespace MxEngine
 {
+	template<>
 	Image ImageLoader::LoadImage(const std::filesystem::path& filepath, bool flipImage)
 	{
 		MAKE_SCOPE_PROFILER("ImageLoader::LoadImage");

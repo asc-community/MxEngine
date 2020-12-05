@@ -43,6 +43,7 @@
 
 namespace MxEngine
 {
+    template<>
     AudioData AudioLoader::Load(const std::filesystem::path& path)
     {
         MAKE_SCOPE_PROFILER("AudioLoader::Load");

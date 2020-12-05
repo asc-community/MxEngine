@@ -227,7 +227,7 @@ namespace MxEngine
 
     void Texture::Load(const Image& image, TextureFormat format, TextureWrap wrap, bool genMipmaps)
     {
-		this->Load(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), image.GetChannelCount(), image.IsFloatingPoint(), format, wrap, genMipmaps);
+		this->Load(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannelCount(), image.IsFloatingPoint(), format, wrap, genMipmaps);
     }
 
 	void Texture::LoadDepth(int width, int height, TextureFormat format, TextureWrap wrap)

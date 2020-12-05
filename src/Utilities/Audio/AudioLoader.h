@@ -30,11 +30,6 @@
 
 #include "SupportedAudioTypes.h"
 
-namespace std::filesystem
-{
-    class path;
-}
-
 namespace MxEngine
 {
     struct AudioData
@@ -49,7 +44,9 @@ namespace MxEngine
     class AudioLoader
     {
     public:
-        static AudioData Load(const std::filesystem::path& path);
+        template<typename FilePath>
+        static AudioData Load(const FilePath& path);
+
         static AudioData ConvertToMono(AudioData& audio);
         static void Free(AudioData& audio);
     };

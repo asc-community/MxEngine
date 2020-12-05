@@ -343,7 +343,7 @@ namespace MxEngine
 
 		shader->SetUniformInt("lightCount", (int)lightCount);
 		shader->SetUniformInt("pcfDistance", this->Pipeline.Environment.ShadowBlurIterations);
-		shader->SetUniformInt("lightSamples", this->Pipeline.Environment.LightSamples);
+		shader->SetUniformInt("lightSamples", (int)this->Pipeline.Environment.LightSamples);
 
 		for (size_t i = 0; i < lightCount; i++)
 		{
@@ -390,7 +390,7 @@ namespace MxEngine
 		this->BindSkyboxInformation(camera, *shader, textureId);
 		
 		shader->SetUniformInt("lightSamples", (int)this->Pipeline.Environment.LightSamples);
-		shader->SetUniformFloat("gamma", (int)camera.Gamma);
+		shader->SetUniformFloat("gamma", camera.Gamma);
 
 		this->RenderToTexture(output, shader);
 	}
