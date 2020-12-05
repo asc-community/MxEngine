@@ -66,9 +66,9 @@ float random(vec2 co)
 mat3 computeTBN(vec3 normal)
 {
     vec2 r = vec2(random(TexCoord.xy), random(TexCoord.yx));
-    vec3 randomVec = vec3(2.0f * r - 1.0f, 0.0f);
+    vec3 randomVec = normalize(vec3(2.0f * r - 1.0f, 0.0f));
 
-    vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
+    vec3 tangent = cross(randomVec, normal);
     vec3 bitangent = cross(normal, tangent);
     return mat3(tangent, bitangent, normal);
 }
@@ -80,7 +80,7 @@ void main()
 
     vec3 viewDirection = normalize(camera.position - fragment.position);
     
-    const float sampleDepth = 1.0f / fragment.depth;
+    const float sampleDepth = 1.0 / fragment.depth;
     int samples = min(sampleCount, MAX_SAMPLES);
     float totalOcclusion = 0.0f;
     for (int i = 0; i < samples; i++)
@@ -89,20 +89,21 @@ void main()
         vec3 sampleVec = fragment.position + kernelWorldSpace * radius;
 
         vec4 frag = worldToFragSpace(sampleVec, camera.viewProjMatrix);
-        float currentDepth = 1.0f / texture(depthTex, frag.xy).r;
+        float currentDepth = 1.0 / texture(depthTex, frag.xy).r;
 
         vec3 currentNormal = normalize(2.0f * texture(normalTex, frag.xy).rgb - 1.0f);
         float Nn = dot(fragment.normal, currentNormal);
-        float Nd = 1.0f - dot(fragment.normal, viewDirection);
-        float bias = Nn * Nn * Nd * Nd + 0.1f;
+        float Nd = dot(fragment.normal, viewDirection);
 
-        float rangeCheck = float(sampleDepth - currentDepth < radius);
-        float occlusion = (sampleDepth >= currentDepth + bias ? 1.0f : 0.0f) * rangeCheck;
+        float depthDiff = abs(sampleDepth - currentDepth);
+        float bias = pow(Nn, 300.0);
+        float rangeCheck = smoothstep(0.0, 1.0, radius / depthDiff);
+        float occlusion = (sampleDepth > currentDepth + bias ? 1.0f : 0.0f) * rangeCheck;
 
         totalOcclusion += occlusion;
     }
-    totalOcclusion /= samples;
-    totalOcclusion = pow(1.0f - totalOcclusion, intensity);
+    totalOcclusion = 1.0f - totalOcclusion / float(samples);
+    totalOcclusion = pow(totalOcclusion, intensity);
     
     OutColor = vec4(totalOcclusion, 0.0f, 0.0f, 1.0f);
 }

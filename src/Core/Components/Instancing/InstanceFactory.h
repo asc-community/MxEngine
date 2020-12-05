@@ -40,14 +40,11 @@ namespace MxEngine
 
         class InstanceIterator
         {
-        public:
-            using PoolIterator = typename Pool::PoolIterator;
-
-        private:
-            PoolIterator it;
+            using It = Pool::PoolIterator;
+            It it;
 
         public:
-            InstanceIterator(PoolIterator it) : it(it) {}
+            InstanceIterator(It it) : it(it) {}
 
             InstanceIterator operator++(int)
             {
@@ -111,22 +108,22 @@ namespace MxEngine
     public:
         explicit InstanceView(Pool& ref) : ref(ref) {}
 
-        InstanceIterator begin()
+        auto begin()
         {
             return InstanceIterator{ ref.begin() };
         }
-
-        const InstanceIterator begin() const
+        
+        const auto begin() const
         {
             return InstanceIterator{ ref.begin() };
         }
-
-        InstanceIterator end()
+        
+        auto end()
         {
             return InstanceIterator{ ref.end() };
         }
-
-        const InstanceIterator end() const
+        
+        const auto end() const
         {
             return InstanceIterator{ ref.end() };
         }
@@ -142,7 +139,7 @@ namespace MxEngine
 		using ColorData = MxVector<Vector3>;
 		using BufferIndex = uint16_t;
 	private:
-		InstancePool pool;
+		mutable InstancePool pool;
 		ModelData models;
 		NormalData normals;
 		ColorData colors;
@@ -180,7 +177,8 @@ namespace MxEngine
 		const InstancePool& GetInstancePool() const { return this->pool; }
 		InstancePool& GetInstancePool() { return this->pool; };
 		size_t GetCount() const { return this->GetInstancePool().Allocated(); }
-        InstanceView GetInstances() { return InstanceView{ this->GetInstancePool() }; }
+        auto GetInstances() { return InstanceView{ this->pool }; }
+        auto GetInstances() const { return InstanceView{ this->pool }; }
 
 		void Init();
 		void OnUpdate(float timeDelta);

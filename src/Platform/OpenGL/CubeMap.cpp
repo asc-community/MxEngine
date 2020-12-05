@@ -30,6 +30,7 @@
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Utilities/Image/ImageLoader.h"
 #include "Utilities/Logging/Logger.h"
+#include "Utilities/FileSystem/File.h"
 
 namespace MxEngine
 {
@@ -49,7 +50,41 @@ namespace MxEngine
 		MXLOG_DEBUG("OpenGL::CubeMap", "created cubemap with id = " + ToMxString(id));
 	}
 
-    CubeMap::CubeMap(const MxString& filepath, bool genMipmaps, bool flipImage)
+	template<>
+	void CubeMap::Load(const std::filesystem::path& filepath, bool genMipmaps, bool flipImage)
+	{
+		// TODO: support floating point textures
+		Image img = ImageLoader::LoadImage(filepath, flipImage);
+		if (img.GetRawData() == nullptr)
+		{
+			MXLOG_WARNING("OpenGL::CubeMap", "file with name '" + ToMxString(filepath) + "' was not found");
+			return;
+		}
+		auto images = ImageLoader::CreateCubemap(img);
+		this->filepath = ToMxString(std::filesystem::proximate(filepath));
+		this->channels = img.GetChannelCount();
+		this->width = img.GetWidth();
+		this->height = img.GetHeight();
+
+		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
+		for (size_t i = 0; i < 6; i++)
+		{
+			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGB,
+				(GLsizei)images[i].width(), (GLsizei)images[i].height() / (GLsizei)this->channels, 0, GL_RGBA, GL_UNSIGNED_BYTE, images[i].data()));
+		}
+
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+
+		if (genMipmaps)
+		{
+			this->GenerateMipmaps();
+		}
+	}
+
+	template<>
+    CubeMap::CubeMap(const std::filesystem::path& filepath, bool genMipmaps, bool flipImage)
 		: CubeMap()
     {
 		this->Load(filepath, genMipmaps, flipImage);
@@ -121,40 +156,10 @@ namespace MxEngine
 		return this->activeId;
 	}
 
-	void CubeMap::Load(const MxString& filepath, bool genMipmaps, bool flipImage)
-	{
-		// TODO: support floating point textures
-		Image img = ImageLoader::LoadImage(filepath, flipImage);
-		if (img.GetRawData() == nullptr)
-		{
-			MXLOG_WARNING("OpenGL::CubeMap", "file with name '" + filepath + "' was not found");
-			return;
-		}
-		auto images = ImageLoader::CreateCubemap(img);
-		this->filepath = filepath;
-		this->channels = img.GetChannelCount();
-		this->width = img.GetWidth();
-		this->height = img.GetHeight();
-
-		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
-		for (size_t i = 0; i < 6; i++)
-		{
-			GLCALL(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + (GLenum)i, 0, GL_RGB, 
-				(GLsizei)images[i].width(), (GLsizei)images[i].height() / (GLsizei)this->channels, 0, GL_RGBA, GL_UNSIGNED_BYTE, images[i].data()));
-		}
-
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
-
-		if (genMipmaps)
-		{
-			this->GenerateMipmaps();
-		}
-	}
-
-    void CubeMap::Load(const MxString& right, const MxString& left, const MxString& top,
-		               const MxString& bottom, const MxString& front, const MxString& back, bool genMipmaps, bool flipImage)
+	template<>
+    void CubeMap::Load(const std::filesystem::path& right, const std::filesystem::path& left, const std::filesystem::path& top,
+		               const std::filesystem::path& bottom, const std::filesystem::path& front, const std::filesystem::path& back, 
+					   bool genMipmaps, bool flipImage)
     {
 		std::array<Image, 6> images =
 		{
@@ -259,9 +264,14 @@ namespace MxEngine
 		GLCALL(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border));
 	}
 
-	const MxString& CubeMap::GetPath() const
+	const MxString& CubeMap::GetFilePath() const
 	{
 		return this->filepath;
+	}
+
+	void CubeMap::SetInternalEngineTag(const MxString& tag)
+	{
+		this->filepath = tag;
 	}
 
 	size_t CubeMap::GetWidth() const

@@ -210,6 +210,11 @@ namespace MxEngine
 		this->anyMouseEvent = false;
 	}
 
+	float Window::GetTime() const
+	{
+		return (float)glfwGetTime();
+	}
+
 	Window& Window::Close()
 	{
 		if (this->window != nullptr && IsOpen())
@@ -338,6 +343,12 @@ namespace MxEngine
 	Window& Window::SwitchContext()
 	{
 		glfwMakeContextCurrent(this->window);
+		return *this;
+	}
+
+	Window& Window::UseTime(float time)
+	{
+		glfwSetTime((double)time);
 		return *this;
 	}
 

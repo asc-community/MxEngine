@@ -40,7 +40,7 @@ namespace MxEngine
                 next |= LastBit;
             }
 
-            bool IsFree()
+            bool IsFree() const
             {
                 return !(next & LastBit);
             }

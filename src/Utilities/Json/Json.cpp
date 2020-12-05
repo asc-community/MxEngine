@@ -46,6 +46,17 @@ using namespace MxEngine;
 
 namespace glm
 {
+    void to_json(MxEngine::JsonFile& j, const MxEngine::Vector4& v)
+    {
+        j = JsonFile{ v.x, v.y, v.z, v.w };
+    }
+
+    void from_json(const MxEngine::JsonFile& j, MxEngine::Vector4& v)
+    {
+        auto a = j.get < std::array<float, 4>>();
+        v = MakeVector4(a[0], a[1], a[2], a[3]);
+    }
+
     void to_json(JsonFile& j, const Vector3& v)
     {
         j = JsonFile{ v.x, v.y, v.z };
@@ -90,5 +101,18 @@ namespace eastl
     void from_json(const JsonFile& j, MxString& s)
     {
         s = j.get<std::string>().c_str();
+    }
+}
+
+namespace std::filesystem
+{
+    void to_json(MxEngine::JsonFile& j, const MxEngine::FilePath& p)
+    {
+        j = p.string();
+    }
+
+    void from_json(const JsonFile& j, MxEngine::FilePath& p)
+    {
+        p = j.get<std::string>();
     }
 }

@@ -38,32 +38,32 @@ namespace MxEngine
     struct FileManagerImpl
     {
         MxHashMap<StringId, FilePath> filetable;
-        FilePath root;
-        size_t rootPathSize;
     };
 
     class FileManager
     {
         inline static FileManagerImpl* manager = nullptr;
         static void InitializeRootDirectory(const FilePath& directory);
-        static void AddFile(const FilePath& file);
+        static StringId AddFile(const FilePath& file);
     public:
         static MxString OpenFileDialog(const MxString& types = "", const MxString& description = "All Files");
         static MxString SaveFileDialog(const MxString& types = "", const MxString& description = "All Files");
         static void Init();
         static const FilePath& GetFilePath(StringId filename);
-        static FilePath GetEngineShaderFolder();
-        static FilePath GetEngineRuntimeFolder();
+        static FilePath GetEngineShaderDirectory();
+        static FilePath GetEngineRuntimeDirectory();
         static bool FileExists(StringId filename);
         static FilePath SearchForExtensionsInDirectory(const FilePath& directory, const MxString& extension);
         static FilePath SearchInDirectory(const FilePath& directory, const MxString& filename);
         static FilePath SearchInDirectory(const FilePath& directory, const FilePath& filename);
         static FilePath GetRelativePath(const FilePath& path, const FilePath& directory);
+        static FilePath GetProximatePath(const FilePath& path, const FilePath& directory);
+        static StringId RegisterExternalResource(const FilePath& path);
+        static bool IsInDirectory(const FilePath& path, const FilePath& directory);
+        static void Copy(const FilePath& from, const FilePath& to);
 
         static void Clone(FileManagerImpl* other);
         static FileManagerImpl* GetImpl();
-        static FilePath& GetRoot();
         static FilePath GetWorkingDirectory();
-        static void SetRoot(const FilePath& rootPath);
     };
 }

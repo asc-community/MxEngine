@@ -41,7 +41,7 @@ void main()
 	vec2 TexCoord = uvMultipliers * fsin.TexCoord;
 
 	vec4 albedoAlphaTex = texture(map_albedo, TexCoord).rgba;
-	if (albedoAlphaTex.a != 1.0f) discard; // mask fragments with low opacity
+	if (albedoAlphaTex.a < 0.5f) discard; // mask fragments with low opacity
 
 	vec3 normal = calcNormal(TexCoord, fsin.TBN, map_normal);
 

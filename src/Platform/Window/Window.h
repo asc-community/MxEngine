@@ -74,6 +74,7 @@ namespace MxEngine
 		bool IsOpen() const;
 		void PullEvents() const;
 		void OnUpdate();
+		float GetTime() const;
 		Vector2 GetCursorPosition() const;
 		Vector2 GetWindowPosition() const;
 		CursorMode GetCursorMode() const;
@@ -92,6 +93,7 @@ namespace MxEngine
 		Window& Create();
 		Window& Close();
 		Window& SwitchContext();
+		Window& UseTime(float time = 0.0f);
 		Window& UseDebugging(bool value = true);
 		Window& UseDoubleBuffering(bool value = true);
 		Window& UseCursorMode(CursorMode cursor);

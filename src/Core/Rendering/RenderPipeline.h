@@ -166,6 +166,9 @@ namespace MxEngine
 
         Vector3 MinAABB, MaxAABB;
         size_t InstanceCount;
+        #if defined(MXENGINE_DEBUG)
+        const char* DebugName;
+        #endif
     };
 
     struct RenderPipeline

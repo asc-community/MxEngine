@@ -65,6 +65,8 @@ namespace MxEngine
 		Config config;
 		TimeStep timeDelta = 0.0f;
 		size_t counterFPS = 0;
+		TimeStep totalElapsedTime = 0.0f;
+		TimeStep timeSinceLastUpdate = 0.0f;
 		bool shouldClose = false;
 		bool isRunning = false;
 
@@ -77,6 +79,7 @@ namespace MxEngine
 		void InvokeUpdate();
 		void InvokePhysics();
 		void InvokeCreate();
+		void CreateContext();
 		bool VerifyApplicationState();
 	protected:
 
@@ -102,13 +105,14 @@ namespace MxEngine
 		RuntimeEditor& GetRuntimeEditor();
 		Config& GetConfig();
 		Window& GetWindow();
-		float GetTimeDelta() const;
-		float GetUnscaledTimeDelta() const;
+		TimeStep GetTimeDelta() const;
+		TimeStep GetUnscaledTimeDelta() const;
+		TimeStep GetTotalElapsedTime() const;
+		void SetTotalElapsedTime(TimeStep time);
 		size_t GetCurrentFPS() const;
 		void Run();
 		bool IsRunning() const;
 		void CloseApplication();
-		void CreateContext();
 		virtual ~Application();
 
 		static void Init();
@@ -130,4 +134,16 @@ namespace MxEngine
 			}
 		});
 	}
+
+	#if defined(MXENGINE_PROJECT_SOURCE_DIRECTORY) && defined(MXENGINE_PROJECT_BINARY_DIRECTORY)
+	inline void LaunchFromSourceDirectory()
+	{
+		FilePath currentWorkingDirectory = std::filesystem::current_path();
+		FilePath binaryDirectory = MXENGINE_PROJECT_BINARY_DIRECTORY;
+		if (currentWorkingDirectory == binaryDirectory)
+		{
+			std::filesystem::current_path(MXENGINE_PROJECT_SOURCE_DIRECTORY);
+		}
+	}
+	#endif
 }

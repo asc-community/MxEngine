@@ -32,11 +32,11 @@
 
 namespace MxEngine
 {
-	void MakeTexture(TextureHandle& currentTexture, MxHashMap<StringId, TextureHandle>& textures, const MxString& path, TextureFormat format)
+	void MakeTexture(TextureHandle& currentTexture, MxHashMap<StringId, TextureHandle>& textures, const FilePath& path, TextureFormat format)
 	{
 		if (!path.empty()) 
 		{
-			auto id = MakeStringId(path);
+			auto id = MakeStringId(path.string());
 			if (textures.find(id) == textures.end())
 			{
 				textures[id] = GraphicFactory::Create<Texture>(path, format);
@@ -69,14 +69,14 @@ namespace MxEngine
 		return materialResource;
 	}
 
-	MeshRenderer::MaterialArray MeshRenderer::LoadMaterials(const MxString& path)
+	MeshRenderer::MaterialArray MeshRenderer::LoadMaterials(const FilePath& path)
 	{
 		MaterialArray materials;
 		MxHashMap<StringId, TextureHandle> textures;
-		auto matlibExtenstion = MeshRenderer::GetMaterialFileSuffix();
-		MxString actualPath = path;
-		if (ToFilePath(path).extension() != ToFilePath(matlibExtenstion))
-			actualPath = path + matlibExtenstion;
+		auto matlibExtenstion = MeshRenderer::GetMaterialFileExtenstion();
+		FilePath actualPath = path;
+		if (path.extension() != matlibExtenstion)
+			actualPath = path.native() + matlibExtenstion.native();
 
 		auto materialLibrary = ObjectLoader::LoadMaterials(actualPath);
 
@@ -89,8 +89,9 @@ namespace MxEngine
 		return materials;
 	}
 
-	MxString MeshRenderer::GetMaterialFileSuffix()
+	const static FilePath materialFileExtenstion = ".mx_matlib";
+	const FilePath& MeshRenderer::GetMaterialFileExtenstion()
 	{
-		return ".mx_matlib";
+		return materialFileExtenstion;
 	}
 }

@@ -32,8 +32,8 @@ namespace OfflineRendererSample
             auto effects = cameraObject->AddComponent<CameraEffects>();
             effects->SetVignetteRadius(0.0f);
             auto skybox = cameraObject->AddComponent<Skybox>();
-            skybox->CubeMap = AssetManager::LoadCubeMap("dawn.jpg"_id);
-            skybox->Irradiance = AssetManager::LoadCubeMap("dawn_irradiance.jpg"_id);
+            skybox->CubeMap = AssetManager::LoadCubeMap("Resources/dawn.jpg"_id);
+            skybox->Irradiance = AssetManager::LoadCubeMap("Resources/dawn_irradiance.jpg"_id);
 
             Rendering::SetViewport(controller);
             Rendering::ResizeViewport(viewportSize.x, viewportSize.y);
@@ -85,6 +85,7 @@ namespace OfflineRendererSample
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     OfflineRendererSample::OfflineRendererApplication app;
     app.Run();
     return 0;

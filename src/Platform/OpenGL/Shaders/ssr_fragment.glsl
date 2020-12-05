@@ -25,6 +25,8 @@ uniform int   steps;
 uniform float thickness;
 uniform float maxDistance;
 uniform float maxCosAngle;
+uniform float startDistance;
+uniform float fading;
 
 void main()
 {
@@ -42,8 +44,8 @@ void main()
     vec3 pivot = normalize(reflect(-viewDirection, fragment.normal));
     vec3 startPos = fragment.position + (pivot * 0.0001f);
 
-    float currentLength = 1.0f;
-    float bestDepth = 10000.0f;
+    float currentLength = startDistance;
+    float bestDepth = 10000.0;
     vec2 bestUV = vec2(0.0f);
     float rayCosAngle = dot(viewDirection, pivot);
 
@@ -73,33 +75,35 @@ void main()
         }
     }
 
-    float lod = fragment.roughnessFactor * fragment.roughnessFactor * 5.0f;
+    float lod = min(fragment.roughnessFactor * 8.0f, 5.5f);
     vec3 ssrReflection = textureLod(HDRTex, bestUV, lod).rgb;
 
-    vec2 screenCenterDiff = 2.0f * abs(bestUV - vec2(0.5f));
+    vec2 screenCenterDiff = 2.0f * min(abs(bestUV - TexCoord), abs(bestUV - 0.5f));
     float fromScreenCenter = max(screenCenterDiff.x, screenCenterDiff.y);
-    fromScreenCenter = mix(0.0f, 0.85f, fromScreenCenter >= 1.0f);
+    fromScreenCenter = pow(fromScreenCenter, maxDistance);
 
-    const float fromReflectionPoint = length(bestUV - TexCoord) / maxDistance;
     const float fromRequiredThickness = (bestDepth - thickness) / (bestDepth + thickness);
     const float fromCameraAngle = rayCosAngle / maxCosAngle;
     const float fromValidLength = float(isinf(currentLength) || isnan(currentLength));
     float maxFactor = 0.0f;
-    maxFactor = max(maxFactor, fromReflectionPoint);
     maxFactor = max(maxFactor, fromScreenCenter);
     maxFactor = max(maxFactor, fromRequiredThickness);
     maxFactor = max(maxFactor, fromCameraAngle);
     maxFactor = max(maxFactor, fromValidLength);
-   
+
     float fadingFactor = 1.0f - clamp(maxFactor, 0.0f, 1.0f);
     fadingFactor *= fragment.metallicFactor;
     ssrReflection *= fadingFactor;
-
+    
     if (isnan(ssrReflection.x))
     {
         ssrReflection = vec3(0.0f);
         fadingFactor = 0.0f;
     }
 
-    OutColor = vec4(mix(objectColor, ssrReflection, fadingFactor), 1.0f);
+    vec3 lum = vec3(0.2126, 0.7152, 0.0722);
+    vec3 albedo = mix(fragment.albedo, vec3(1.0), fragment.metallicFactor);
+    ssrReflection = mix(ssrReflection, dot(lum, ssrReflection) * fragment.albedo, 0.5 * fragment.metallicFactor );
+    
+    OutColor = vec4(mix(objectColor, albedo * ssrReflection, fadingFactor * fading), 1.0f);
 }

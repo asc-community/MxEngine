@@ -1,6 +1,7 @@
-#include "Library/lighting.glsl"
+#include "Library/ibl_lighting.glsl"
 
 const int DirLightCascadeMapCount = 3;
+const int MaxDirLightCount = 4;
 
 struct DirLight
 {
@@ -9,18 +10,13 @@ struct DirLight
 	vec3 direction;
 };
 
-vec3 calcColorUnderDirLight(FragmentInfo fragment, DirLight light, vec3 viewDir, float shadowFactor, EnvironmentInfo environment, int lightSamples)
-{
-	return calculateLighting(fragment, viewDir, light.direction, environment, lightSamples, light.color.rgb, light.color.a, shadowFactor);
-}
-
-float calcShadowFactorCascade(vec4 position, DirLight light, sampler2D shadowMaps[DirLightCascadeMapCount], int pcfDistance)
+float calcShadowFactorCascade(vec4 position, DirLight light, sampler2D shadowMaps[MaxDirLightCount * DirLightCascadeMapCount], int samplerIndex, int pcfDistance)
 {
 	float totalFactor = 1.0f;
 	for (int i = 0; i < DirLightCascadeMapCount; i++)
 	{
 		vec4 fragLightSpace = light.transform[i] * position;
-		float shadowFactor = calcShadowFactor2D(fragLightSpace, shadowMaps[i], 0.005f, pcfDistance);
+		float shadowFactor = calcShadowFactor2D(fragLightSpace, shadowMaps[DirLightCascadeMapCount * samplerIndex + i], 0.005f, pcfDistance);
 		shadowFactor = min(shadowFactor * float(i + 1), 1.0f);
 		totalFactor *= shadowFactor;
 	}

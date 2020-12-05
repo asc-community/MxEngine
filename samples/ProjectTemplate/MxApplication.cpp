@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-
 namespace ProjectTemplate
 {
     using namespace MxEngine;
@@ -46,6 +45,7 @@ namespace ProjectTemplate
             lightObject->Name = "Global Light";
             // add DirectionalLight component with custom light direction
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
+            dirLight->SetIntensity(0.5f);
             dirLight->Direction     = MakeVector3(0.5f, 1.0f, 1.0f);
             // make directional light to be centered at current viewport position (is set by RenderManager::SetViewport)
             dirLight->FollowViewport();
@@ -65,6 +65,7 @@ namespace ProjectTemplate
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     ProjectTemplate::MxApplication app;
     app.Run();
     return 0;

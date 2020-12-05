@@ -15,8 +15,9 @@ void InitCamera(MxObject& object)
 	toneMapping->SetWhitePoint(0.75f);
 	toneMapping->SetMinLuminance(0.3f);
 
-	skybox->CubeMap = AssetManager::LoadCubeMap("textures/dawn.jpg"_id);
-	skybox->Irradiance = AssetManager::LoadCubeMap("textures/dawn_irradiance.jpg"_id);
+	skybox->CubeMap = AssetManager::LoadCubeMap("Resources/textures/dawn.jpg"_id);
+	skybox->Irradiance = AssetManager::LoadCubeMap("Resources/textures/dawn_irradiance.jpg"_id);
+	skybox->SetIntensity(5.0f);
 
 	controller->Camera.SetZFar(100000.0f);
 	controller->Camera.SetAspectRatio(WindowManager::GetWidth(), WindowManager::GetHeight());

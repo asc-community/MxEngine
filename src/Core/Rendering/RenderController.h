@@ -59,7 +59,6 @@ namespace MxEngine
 		void ComputeBloomEffect(CameraUnit& camera);
 		TextureHandle ComputeAverageWhite(CameraUnit& camera);
 		void PerformPostProcessing(CameraUnit& camera);
-		void DrawDirectionalLights(CameraUnit& camera);
 		void PerformLightPass(CameraUnit& camera);
 		void DrawTransparentObjects(CameraUnit& camera);
 		void ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
@@ -70,10 +69,12 @@ namespace MxEngine
 		void ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyColorGrading(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
-		void DrawShadowedPointLights(CameraUnit& camera);
-		void DrawShadowedSpotLights(CameraUnit& camera);
-		void DrawNonShadowedPointLights(CameraUnit& camera);
-		void DrawNonShadowedSpotLights(CameraUnit& camera);
+		void DrawIBL(CameraUnit& camera, TextureHandle& output);
+		void DrawDirectionalLights(CameraUnit& camera, TextureHandle& output);
+		void DrawShadowedPointLights(CameraUnit& camera, TextureHandle& output);
+		void DrawShadowedSpotLights(CameraUnit& camera, TextureHandle& output);
+		void DrawNonShadowedPointLights(CameraUnit& camera, TextureHandle& output);
+		void DrawNonShadowedSpotLights(CameraUnit& camera, TextureHandle& output);
 		void BindGBuffer(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
 		void BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
 		void BindCameraInformation(const CameraUnit& camera, const Shader& shader);
@@ -94,7 +95,9 @@ namespace MxEngine
 		void AttachDepthMap(const TextureHandle& texture);
 		void AttachDepthMap(const CubeMapHandle& cubemap);
 		void RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
+		void RenderToFrameBufferNoClear(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
 		void RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
+		void RenderToTextureNoClear(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
 		void CopyTexture(const TextureHandle& input, const TextureHandle& output);
 
 		EnvironmentUnit& GetEnvironment();
@@ -107,7 +110,7 @@ namespace MxEngine
 		void SubmitLightSource(const SpotLight& light, const TransformComponent& parentTransform);
 		void SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
 			const Skybox& skybox, const CameraEffects* effects = nullptr, const CameraToneMapping* toneMapping = nullptr, const CameraSSR* ssr = nullptr);
-		void SubmitPrimitive(const SubMesh& object, const Material& material, const TransformComponent& parentTransform, size_t instanceCount);
+		void SubmitPrimitive(const SubMesh& object, const Material& material, bool castsShadows, const TransformComponent& parentTransform, size_t instanceCount, const char* debugName = nullptr);
 		void SubmitImage(const TextureHandle& texture);
 		void StartPipeline();
 		void EndPipeline();

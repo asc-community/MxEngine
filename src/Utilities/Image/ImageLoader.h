@@ -33,6 +33,11 @@
 #include "Utilities/STL/MxString.h"
 #include "Image.h"
 
+namespace std::filesystem
+{
+	class path;
+}
+
 namespace MxEngine
 {
 	/*!
@@ -47,7 +52,7 @@ namespace MxEngine
 		\param flipImage should the image be vertically flipped. As MxEngine uses OpenGL, usually you want to do this
 		\returns Image object if image file exists or nullptr data and width = height = channels = 0 if not
 		*/
-		static Image LoadImage(const MxString& filepath, bool flipImage = true);
+		static Image LoadImage(const std::filesystem::path& filepath, bool flipImage = true);
 
 		/*!
 		loads image from memory. As OpenGL treats images differently as expected, all images are flipped automatically

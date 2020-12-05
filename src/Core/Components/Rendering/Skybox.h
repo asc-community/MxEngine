@@ -38,7 +38,7 @@ namespace MxEngine
         MAKE_COMPONENT(Skybox);
 
         Quaternion rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
-        float intensity = 1.0f;
+        float intensity = 0.5f;
     public:
         CubeMapHandle CubeMap;
         CubeMapHandle Irradiance;

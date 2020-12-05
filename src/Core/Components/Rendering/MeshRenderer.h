@@ -48,7 +48,7 @@ namespace MxEngine
 
         MaterialRef GetMaterial() const { MX_ASSERT(!Materials.empty()); return this->Materials[0]; }
 
-        static MaterialArray LoadMaterials(const MxString& objectFilepath);
-        static MxString GetMaterialFileSuffix();
+        static MaterialArray LoadMaterials(const FilePath& objectFilepath);
+        static const FilePath& GetMaterialFileExtenstion();
     };
 }

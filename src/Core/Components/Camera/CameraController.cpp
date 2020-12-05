@@ -94,7 +94,7 @@ namespace MxEngine
 
 		this->renderTexture = GraphicFactory::Create<Texture>();
 		this->renderTexture->Load(nullptr, viewport.x, viewport.y, 3, false, TextureFormat::RGB, TextureWrap::CLAMP_TO_EDGE);
-		this->renderTexture->SetPath("[[camera output]]");
+		this->renderTexture->SetInternalEngineTag("[[camera output]]");
 	}
 
 	CameraController::~CameraController()
@@ -178,7 +178,7 @@ namespace MxEngine
 	void CameraController::ResizeRenderTexture(size_t w, size_t h)
 	{
 		this->renderTexture->Load(nullptr, (int)w, (int)h, 3, false, this->renderTexture->GetFormat(), this->renderTexture->GetWrapType());
-		this->renderTexture->SetPath("[[camera output]]");
+		this->renderTexture->SetInternalEngineTag("[[camera output]]");
 		if(this->IsRendered())
 			this->renderBuffers->Resize((int)w, (int)h);
 	}
@@ -451,13 +451,13 @@ namespace MxEngine
 		this->HDR->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
 		this->SwapHDR->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
 
-		this->Albedo->SetPath("[[cam albedo]]");
-		this->Normal->SetPath("[[cam normal]]");
-		this->Material->SetPath("[[cam material]]");
-		this->Depth->SetPath("[[cam depth]]");
-		this->AverageWhite->SetPath("[[cam avg white]]");
-		this->HDR->SetPath("[[cam hdr]]");
-		this->SwapHDR->SetPath("[[cam swap hdr]]");
+		this->Albedo->SetInternalEngineTag("[[cam albedo]]");
+		this->Normal->SetInternalEngineTag("[[cam normal]]");
+		this->Material->SetInternalEngineTag("[[cam material]]");
+		this->Depth->SetInternalEngineTag("[[cam depth]]");
+		this->AverageWhite->SetInternalEngineTag("[[cam avg white]]");
+		this->HDR->SetInternalEngineTag("[[cam hdr]]");
+		this->SwapHDR->SetInternalEngineTag("[[cam swap hdr]]");
 	}
 
 	void CameraRender::DeInit()

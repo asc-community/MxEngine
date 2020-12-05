@@ -64,7 +64,7 @@ namespace MxEngine::GUI
             if (ImGui::Button("create texture"))
             {
                 auto colorTexture = Colors::MakeTexture(color);
-                colorTexture->SetPath("color.runtime");
+                colorTexture->SetInternalEngineTag("color.runtime");
                 colorTexture.MakeStatic();
             }
         }
@@ -79,7 +79,7 @@ namespace MxEngine::GUI
             ImGui::PushID(id);
 
             auto texture = GraphicFactory::GetHandle(object);
-            auto& texturePath = texture->GetPath();
+            auto& texturePath = texture->GetFilePath();
 
             if (filter[0] == '\0' || texturePath.find(filter) != texturePath.npos)
             {
@@ -107,7 +107,7 @@ namespace MxEngine::GUI
 
     bool IsInternalEngineTexture(const TextureHandle& tex)
     {
-        auto& path = tex->GetPath();
+        auto& path = tex->GetFilePath();
         return path.find("[[") != path.npos && path.find("]]") != path.npos;
     }
 
@@ -125,7 +125,7 @@ namespace MxEngine::GUI
                 return;
             }
 
-            ImGui::Text("path: %s", texture->GetPath().c_str());
+            ImGui::Text("path: %s", texture->GetFilePath().c_str());
             ImGui::Text("width: %d", (int)texture->GetWidth());
             ImGui::Text("height: %d", (int)texture->GetHeight());
             ImGui::Text("channels: %d", (int)texture->GetChannelCount());
@@ -197,7 +197,14 @@ namespace MxEngine::GUI
 
         if (cubemap.IsValid())
         {
-            ImGui::Text("path: %s", cubemap->GetPath().c_str());
+            if (ImGui::Button("delete"))
+            {
+                ImGui::PopID();
+                GraphicFactory::Destroy(cubemap);
+                return;
+            }
+
+            ImGui::Text("path: %s", cubemap->GetFilePath().c_str());
             ImGui::Text("width: %d", (int)cubemap->GetWidth());
             ImGui::Text("height: %d", (int)cubemap->GetHeight());
             ImGui::Text("channels: %d", (int)cubemap->GetChannelCount());
@@ -238,7 +245,6 @@ namespace MxEngine::GUI
         DrawTextureEditor("height map", material->HeightMap, true);
         DrawTextureEditor("ambient occlusion map", material->AmbientOcclusionMap, true);
 
-        ImGui::Checkbox("casts shadows", &material->CastsShadow);
         ImGui::DragFloat("roughness factor", &material->RoughnessFactor, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("metallic factor", &material->MetallicFactor, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("emmision", &material->Emmision, 0.01f, 0.0f, FLT_MAX);

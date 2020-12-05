@@ -325,7 +325,7 @@ namespace MxEngine
                 factory = new Factory(); // not deleted, but its static member, so it does not matter
         }
 
-        static void DeInit()
+        static void Destroy()
         {
             MX_ASSERT(factory != nullptr);
             delete factory;

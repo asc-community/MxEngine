@@ -47,7 +47,7 @@ uniform EnvironmentInfo environment;
 
 const int MaxLightCount = 4;
 uniform DirLight lights[MaxLightCount];
-uniform sampler2D lightDepthMaps[MaxLightCount][DirLightCascadeMapCount];
+uniform sampler2D lightDepthMaps[MaxLightCount * DirLightCascadeMapCount];
 
 vec3 calcNormal(vec2 texcoord, mat3 TBN, sampler2D normalMap)
 {
@@ -74,13 +74,16 @@ void main()
 	float transparency = material.transparency * albedoAlphaTex.a;
 	float fragDistance = length(viewportPosition - fragment.position);
 	vec3 viewDirection = normalize(viewportPosition - fragment.position);
+	
+	vec3 IBLColor = calculateIBL(fragment, viewDirection, environment, lightSamples, gamma);
 
-	vec3 totalColor = vec3(0.0f);
-	totalColor += fragment.albedo * (fragment.emmisionFactor + 0.0001f);
+	vec3 totalColor = IBLColor;
+	totalColor += fragment.albedo * fragment.emmisionFactor;
 	for (int i = 0; i < lightCount; i++)
 	{
-		float shadowFactor = calcShadowFactorCascade(vec4(fragment.position, 1.0f), lights[i], lightDepthMaps[i], pcfDistance);
-		totalColor += calcColorUnderDirLight(fragment, lights[i], viewDirection, shadowFactor, environment, lightSamples);
+		vec4 pos = vec4(fragment.position, 1.0f);
+		float shadowFactor = calcShadowFactorCascade(pos, lights[i], lightDepthMaps, i, pcfDistance);
+		totalColor += calculateLighting(fragment, viewDirection, lights[i].direction, lights[i].color.rgb, lights[i].color.a, shadowFactor);
 	}
 
 	OutColor = vec4(totalColor, transparency);

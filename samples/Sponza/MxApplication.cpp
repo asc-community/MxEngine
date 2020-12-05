@@ -16,6 +16,8 @@ namespace Sponza
             auto shootPosition = player.Transform.GetPosition() + controller->GetDirection() * 3.0f;
 
             auto sphere = this->sphereFactory->GetComponent<InstanceFactory>()->MakeInstance();
+            sphere->Name = "Sphere Instance";
+            sphere->IsSerialized = false;
             sphere->Transform.SetPosition(shootPosition);
 
             sphere->AddComponent<SphereCollider>();
@@ -38,8 +40,9 @@ namespace Sponza
             camera->Transform.TranslateY(15.0f);
             
             auto skybox = camera->AddComponent<Skybox>();
-            skybox->CubeMap = AssetManager::LoadCubeMap("skybox.png"_id);
-            skybox->Irradiance = AssetManager::LoadCubeMap("skybox_irradiance.png"_id);
+            skybox->CubeMap = AssetManager::LoadCubeMap("Resources/skybox.png"_id);
+            skybox->Irradiance = AssetManager::LoadCubeMap("Resources/skybox_irradiance.png"_id);
+            skybox->SetIntensity(1.0);
             
             auto input = camera->AddComponent<InputController>();
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
@@ -47,7 +50,7 @@ namespace Sponza
 
             auto toneMapping = camera->AddComponent<CameraToneMapping>();
             toneMapping->SetMinLuminance(0.3f);
-            toneMapping->SetWhitePoint(0.75f);
+            toneMapping->SetWhitePoint(0.5f);
 
             auto ssr = camera->AddComponent<CameraSSR>();
 
@@ -66,8 +69,7 @@ namespace Sponza
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Projections[1] = 100.0f;
-            dirLight->SetIntensity(100.0f);
-            dirLight->SetAmbientIntensity(0.3f);
+            dirLight->SetAmbientIntensity(0.2f);
             dirLight->FollowViewport();
 
             this->sphereFactory = MxObject::Create();
@@ -75,12 +77,12 @@ namespace Sponza
             this->sphereFactory->AddComponent<InstanceFactory>();
             this->sphereFactory->AddComponent<MeshSource>(Primitives::CreateSphere(20));
             auto renderer = this->sphereFactory->AddComponent<MeshRenderer>();
-            renderer->GetMaterial()->AlbedoMap = AssetManager::LoadTexture("moon.jpg"_id);
+            renderer->GetMaterial()->AlbedoMap = AssetManager::LoadTexture("Resources/moon.jpg"_id);
 
             auto sponza = MxObject::Create();
             sponza->Name = "Sponza";
-            sponza->AddComponent<MeshSource>(AssetManager::LoadMesh("Sponza/glTF/Sponza.gltf"_id));
-            sponza->AddComponent<MeshRenderer>(AssetManager::LoadMaterials("Sponza/glTF/Sponza.gltf"_id));
+            sponza->AddComponent<MeshSource>(AssetManager::LoadMesh("Resources/Sponza/glTF/Sponza.gltf"_id));
+            sponza->AddComponent<MeshRenderer>(AssetManager::LoadMaterials("Resources/Sponza/glTF/Sponza.gltf"_id));
             sponza->Transform.SetScale(0.02f);
             sponza->Transform.TranslateY(13.0f);
             
@@ -88,8 +90,18 @@ namespace Sponza
             if (!materials.empty())
             {
                 // floor material
+                materials[8]->Name = "Floor";
                 materials[8]->MetallicFactor = 0.5f;
                 materials[8]->RoughnessFactor = 0.75f;
+
+                // lion materials
+                materials[3]->Name = "Lion";
+                materials[3]->MetallicFactor = 1.0f;
+                materials[3]->RoughnessFactor = 0.0f;
+
+                materials[23]->Name = "Lion Head";
+                materials[23]->MetallicFactor = 1.0f;
+                materials[23]->RoughnessFactor = 0.0f;
             }
 
             sponza->AddComponent<RigidBody>();
@@ -208,6 +220,7 @@ namespace Sponza
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     Sponza::SponzaApplication app;
     app.Run();
     return 0;

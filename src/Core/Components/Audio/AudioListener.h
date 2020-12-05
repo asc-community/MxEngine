@@ -55,12 +55,15 @@ namespace MxEngine
     public:
         void OnUpdate(float timeDelta);
 
+        void SetPosition(const Vector3& position);
+        void SetOrientation(const Vector3& direction, const Vector3& up);
         void SetVolume(float speed);
         void SetVelocity(const Vector3& velocity);
         void SetSoundSpeed(float value);
         void SetDopplerFactor(float factor);
         void SetSoundModel(SoundModel model);
 
+        const Vector3& GetPosition() const;
         float GetVolume() const; 
         const Vector3& GetVelocity() const;
         float GetSoundSpeed() const;

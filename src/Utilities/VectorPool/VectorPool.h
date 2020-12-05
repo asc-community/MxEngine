@@ -295,7 +295,7 @@ namespace MxEngine
         \param index index of element in vector Pool
         \returns true if element is constructed, false either
         */
-        bool IsAllocated(size_t index)
+        bool IsAllocated(size_t index) const
         {
             return index < this->Capacity() && !GetBlockByIndex(index)->IsFree();
         }
@@ -357,16 +357,7 @@ namespace MxEngine
         begin of vector Pool container
         \returns iterator to first allocated element or end iterator
         */
-        PoolIterator begin()
-        {
-            return PoolIterator{ 0, *this };
-        }
-
-        /*!
-        begin of vector Pool container
-        \returns const iterator to first allocated element or const end iterator
-        */
-        const PoolIterator begin() const
+        auto begin()
         {
             return PoolIterator{ 0, *this };
         }
@@ -375,16 +366,7 @@ namespace MxEngine
         end of vector Pool container
         \returns iterator to the end of vector container
         */
-        PoolIterator end()
-        {
-            return PoolIterator{ this->Capacity(), *this };
-        }
-
-        /*!
-        end of vector Pool container
-        \returns const iterator to the end of vector container
-        */
-        const PoolIterator end() const
+        auto end()
         {
             return PoolIterator{ this->Capacity(), *this };
         }

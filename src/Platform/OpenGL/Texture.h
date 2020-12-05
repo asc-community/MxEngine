@@ -92,15 +92,20 @@ namespace MxEngine
 		Texture(Texture&& texture) noexcept;
 		Texture& operator=(const Texture& texture) = delete;
 		Texture& operator=(Texture&& texture) noexcept;
-		Texture(const MxString& filepath, TextureFormat format, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
 		~Texture();
+
+		template<typename FilePath>
+		Texture(const FilePath& filepath, TextureFormat format, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
 
 		void Bind() const;
 		void Bind(TextureBindId id) const;
 		void Unbind() const;
 		BindableId GetBoundId() const;
 		BindableId GetNativeHandle() const;
-		void Load(const MxString& filepath, TextureFormat format, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
+		
+		template<typename FilePath>
+		void Load(const FilePath& filepath, TextureFormat format, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
+		
 		void Load(RawDataPointer data, int width, int height, int channels, bool isFloating, TextureFormat format = TextureFormat::RGB, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true);
 		void Load(const Image& image, TextureFormat format = TextureFormat::RGB, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true);
 		void LoadDepth(int width, int height, TextureFormat format = TextureFormat::DEPTH, TextureWrap wrap = TextureWrap::CLAMP_TO_BORDER);
@@ -116,8 +121,8 @@ namespace MxEngine
 		size_t GetPixelSize() const;
 		TextureFormat GetFormat() const;
 		TextureWrap GetWrapType() const;
-		const MxString& GetPath() const;
-		void SetPath(const MxString& newPath);
+		const MxString& GetFilePath() const;
+		void SetInternalEngineTag(const MxString& tag);
 		unsigned int GetTextureType() const;
 		size_t GetWidth() const;
 		size_t GetHeight() const;

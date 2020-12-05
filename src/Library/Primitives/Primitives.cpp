@@ -17,6 +17,7 @@ namespace MxEngine
         submesh.Data.UpdateBoundingGeometry();
 
         mesh->UpdateBoundingGeometry();
+        mesh->SetInternalEngineTag("[[primitive]]");
 
         return mesh;
     }
@@ -415,6 +416,9 @@ namespace MxEngine
         auto& vertecies = meshData.GetVertecies();
         auto& indicies = meshData.GetIndicies();
 
+        float minY = 0.0f;
+        float maxY = 0.0f;
+
         vertecies.reserve(xsize * ysize);
         for (size_t x = 0; x < xsize; x++)
         {
@@ -430,7 +434,14 @@ namespace MxEngine
                 // yes, z component is actually y component, because in such case its easier to think 
                 // of plane as OXY, with heights pointing towards z axis
                 vertex.Position = MakeVector3(fx, fz, fy);
+                minY = Min(minY, fz);
+                maxY = Max(maxY, fz);
             }
+        }
+
+        for (auto& vertex : vertecies)
+        {
+            vertex.Position -= MakeVector3(0.5f, (maxY + minY) * 0.5f, 0.5f);
         }
 
         indicies.reserve((xsize - 1) * (ysize - 1) * 6);

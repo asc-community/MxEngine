@@ -2,29 +2,49 @@
   {
     "AlbedoMap": "",
     "AmbientOcclusionMap": "",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
     "HeightMap": "",
+    "MetallicFactor": 0.0,
+    "MetallicMap": "",
     "Name": "DefaultMaterial",
     "NormalMap": "",
-    "SpecularFactor": 1.0,
-    "SpecularIntensity": 128.0,
-    "SpecularMap": "",
-    "Transparency": 1.0
+    "RoughnessFactor": 0.5,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
   },
   {
     "AlbedoMap": "Resources\\objects\\arc170\\arc170.jpg",
     "AmbientOcclusionMap": "",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
     "Displacement": 0.0,
     "Emmision": 0.0,
     "EmmisiveMap": "",
     "HeightMap": "",
+    "MetallicFactor": 0.0,
+    "MetallicMap": "",
     "Name": "main",
     "NormalMap": "",
-    "SpecularFactor": 1.0,
-    "SpecularIntensity": 128.0,
-    "SpecularMap": "Resources\\objects\\arc170\\arc170.jpg",
-    "Transparency": 1.0
+    "RoughnessFactor": 0.5,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
   }
 ]

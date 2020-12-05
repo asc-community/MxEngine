@@ -25,9 +25,9 @@ namespace FluidSimulation
             controller->ToggleRendering(false);
             controller->SetRenderTexture(Colors::MakeTexture(Colors::RED));
 
-            vorticityComputeShader = AssetManager::LoadScreenSpaceShader("vorticity_compute.glsl"_id);
-            vorticityComputeShader = AssetManager::LoadScreenSpaceShader("vorticity_apply.glsl"_id);
-            diffuseApplyShader = AssetManager::LoadScreenSpaceShader("diffuse_apply.glsl"_id);
+            vorticityComputeShader = AssetManager::LoadScreenSpaceShader("Resources/vorticity_compute.glsl"_id);
+            vorticityComputeShader = AssetManager::LoadScreenSpaceShader("Resources/vorticity_apply.glsl"_id);
+            diffuseApplyShader = AssetManager::LoadScreenSpaceShader("Resources/diffuse_apply.glsl"_id);
 
             vorticityField = GraphicFactory::Create<Texture>();
             vorticityField->Load(nullptr, textureSize.x, textureSize.y, 4, false, TextureFormat::RGBA32F);
@@ -75,6 +75,7 @@ namespace FluidSimulation
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     FluidSimulation::FluidSimulationApplication app;
     app.Run();
     return 0;

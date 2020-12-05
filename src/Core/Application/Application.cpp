@@ -100,6 +100,18 @@ namespace MxEngine
 		return this->timeDelta / this->TimeScale;
 	}
 
+	TimeStep Application::GetTotalElapsedTime() const
+	{
+		auto appCurrent = this->window->GetTime();
+		auto diff = appCurrent - this->timeSinceLastUpdate;
+		return this->totalElapsedTime + diff;
+	}
+
+	void Application::SetTotalElapsedTime(TimeStep time)
+	{
+		this->totalElapsedTime = Max(time, 0.0f);
+	}
+
 	size_t Application::GetCurrentFPS() const
 	{
 		return this->counterFPS;
@@ -211,6 +223,7 @@ namespace MxEngine
 		PhysicsModule::OnUpdate(this->timeDelta);
 
 		// TODO: refactor, move collision logic to separate function
+		MAKE_SCOPE_PROFILER("Physics::InvokeCollionsCallbacks()");
 
 		auto& [currentCollisions, previousCollisions] = this->collisions;
 		std::sort(currentCollisions.begin(), currentCollisions.end());
@@ -218,9 +231,13 @@ namespace MxEngine
 
 		constexpr auto CollisionCallback = [](MxObject::Handle& object1, MxObject::Handle& object2, auto callbackMethod)
 		{
-			if (object1.IsValid() && object2.IsValid())
+			constexpr auto valid = [](MxObject::Handle& object) -> bool
+			{
+				return object.IsValid() && object->HasComponent<RigidBody>();
+			};
+			if (valid(object1) && valid(object2))
 				std::invoke(callbackMethod, object1->GetComponent<RigidBody>(), *object1, *object2);
-			if (object1.IsValid() && object2.IsValid())
+			if (valid(object2) && valid(object1))
 				std::invoke(callbackMethod, object2->GetComponent<RigidBody>(), *object2, *object1);
 		};
 
@@ -297,7 +314,6 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("Application::CreateContext");
 
 		this->InitializeConfig(this->config);
-		FileManager::SetRoot(ToFilePath(config.ProjectRootDirectory));
 
 		this->GetWindow()
 			.UseEventDispatcher(this->dispatcher)
@@ -346,12 +362,13 @@ namespace MxEngine
 		float frameEnd  = Time::Current();
 		size_t frameCount = 0;
 		{
-			MAKE_SCOPE_PROFILER("Application::Run");
+			MAKE_SCOPE_PROFILER("Application::Run()");
 			MAKE_SCOPE_TIMER("MxEngine::Application", "Application::Run()");
 			MXLOG_INFO("MxEngine::Application", "starting main loop...");
 
 			while (this->GetWindow().IsOpen()) //-V807
 			{
+				MAKE_SCOPE_PROFILER("Application::Frame()");
 				this->UpdateTimeDelta(frameEnd, secondEnd, frameCount);
 				this->InvokeUpdate();
 				this->DrawObjects();
@@ -361,7 +378,7 @@ namespace MxEngine
 
 			// application exit
 			{
-				MAKE_SCOPE_PROFILER("Application::CloseApplication");
+				MAKE_SCOPE_PROFILER("Application::CloseApplication()");
 				MAKE_SCOPE_TIMER("MxEngine::Application", "Application::CloseApplication()");
 				AppDestroyEvent appDestroyEvent;
 				Event::Invoke(appDestroyEvent);
@@ -410,7 +427,7 @@ namespace MxEngine
 	{
 		PhysicsModule::Destroy();
 		GraphicModule::Destroy();
-		AudioFactory::DeInit(); // OpenAL is angry when buffers are not deleted
+		AudioFactory::Destroy(); // OpenAL is angry when buffers are not deleted
 		AudioModule::Destroy();
 
 		#if defined(MXENGINE_PROFILING_ENABLED)
@@ -459,7 +476,8 @@ namespace MxEngine
 			return;
 		}
 
-		float currentTime = Time::Current();
+		// query platform time
+		float currentTime = this->GetWindow().GetTime();
 		framesPerSecond++;
 		// check if 1 second passed. If so, update current FPS counter and add event
 		if (lastFrameEnd - lastSecondEnd >= 1.0f)
@@ -471,7 +489,9 @@ namespace MxEngine
 		}
 		// limit dt to be not less than 30fps
 		this->timeDelta = this->TimeScale * Min(currentTime - lastFrameEnd, 1.0f / 30.0f);
+		this->totalElapsedTime += this->timeDelta;
 		lastFrameEnd = currentTime;
+		this->timeSinceLastUpdate = currentTime;
 	}
 
 	void Application::InitializeConfig(Config& config)
@@ -547,7 +567,7 @@ namespace MxEngine
 
 		// initialize editor and component update callbacks
 		auto& editor = this->GetRuntimeEditor();
-		editor.Log("Welcome to MxEngine developer console!");
+		editor.LogToConsole("Welcome to MxEngine developer console!");
 
 		editor.RegisterComponentEditor<Behaviour>          ("Behaviour",           GUI::BehaviourEditor);
 		editor.RegisterComponentEditor<InstanceFactory>    ("InstanceFactory",     GUI::InstanceFactoryEditor);

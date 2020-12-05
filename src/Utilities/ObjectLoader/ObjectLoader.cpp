@@ -58,10 +58,10 @@ namespace MxEngine
 	constexpr ImageType PreferredFormat = ImageType::PNG;
 	const char* const PreferredExtension = ".png";
 
-	void SaveRoughnessMetallicTexture(const Image& image, const char* roughnessName, const char* metallicName, const FilePath& saveDirectory)
+	void SaveRoughnessMetallicTexture(const Image& image, const MxString& roughnessName, const MxString& metallicName, const FilePath& saveDirectory)
 	{
-		auto roughnessPath = ToMxString(saveDirectory / roughnessName) + PreferredExtension;
-		auto metallicPath  = ToMxString(saveDirectory /  metallicName) + PreferredExtension;
+		auto roughnessPath = saveDirectory /  ToFilePath(roughnessName + PreferredExtension);
+		auto metallicPath  = saveDirectory /  ToFilePath(metallicName + PreferredExtension);
 		if (File::Exists(roughnessPath) || File::Exists(metallicPath))
 			return; // avoid rewriting existing textures
 
@@ -96,9 +96,9 @@ namespace MxEngine
 		ImageManager::SaveImage(metallicPath, metallic, PreferredFormat);
 	}
 
-	MxString GetActualTexturePath(const FilePath& lookupDirectory, const char* name, const aiScene* scene, const aiMaterial* material, aiTextureType type)
+	FilePath GetActualTexturePath(const FilePath& lookupDirectory, const MxString& name, const aiScene* scene, const aiMaterial* material, aiTextureType type)
 	{
-		auto path = ToMxString(lookupDirectory / name) + PreferredExtension;
+		auto path = lookupDirectory / ToFilePath(name + PreferredExtension);
 		if (File::Exists(path)) return path; // check if texture already on disk
 
 		if (material->GetTextureCount(type) > 0)
@@ -111,7 +111,7 @@ namespace MxEngine
 				// check if texture is embedded into object file
 				// if no - just return path to a texture
 				const aiTexture* data = scene->GetEmbeddedTexture(filepath);
-				if (data == nullptr) return ToMxString(lookupDirectory / filepath);
+				if (data == nullptr) return lookupDirectory / filepath;
 
 				// if texture data is embedded, we need to create a file from it
 				Image image;
@@ -133,27 +133,26 @@ namespace MxEngine
 				return path;
 			}
 		}
-		return MxString();
+		return FilePath();
 	}
 
-	ObjectInfo ObjectLoader::Load(const MxString& filename)
+	ObjectInfo ObjectLoader::Load(const FilePath& filepath)
 	{
-		auto filepath = FilePath(filename.c_str());
 		auto directory = filepath.parent_path();
 		ObjectInfo object;
 
 		if (!File::Exists(filepath) || !File::IsFile(filepath))
 		{
-			MXLOG_ERROR("Assimp::Importer", "file does not exist: " + filename);
+			MXLOG_ERROR("Assimp::Importer", "file does not exist: " + ToMxString(filepath));
 			return object;
 		}
 
 		MAKE_SCOPE_PROFILER("ObjectLoader::LoadObject");
 		MAKE_SCOPE_TIMER("MxEngine::ObjectLoader", "ObjectLoader::LoadObject");
-		MXLOG_INFO("Assimp::Importer", "loading object from file: " + filename);
+		MXLOG_INFO("Assimp::Importer", "loading object from file: " + ToMxString(filepath));
 
 		static Assimp::Importer importer; // TODO: not thread safe
-		const aiScene* scene = importer.ReadFile(filename.c_str(), 
+		const aiScene* scene = importer.ReadFile(filepath.string().c_str(), 
 			aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices |
 			aiProcess_OptimizeGraph | aiProcess_OptimizeMeshes |
 			aiProcess_ImproveCacheLocality | aiProcess_GenUVCoords | aiProcess_CalcTangentSpace);
@@ -277,17 +276,17 @@ namespace MxEngine
 		return object;
 	}
 
-    MaterialLibrary ObjectLoader::LoadMaterials(const MxString& path)
+    MaterialLibrary ObjectLoader::LoadMaterials(const FilePath& path)
     {
 		MaterialLibrary materials;
 
 		File file(path);
 		if (!file.IsOpen())
 		{
-			MXLOG_ERROR("MxEngine::ObjectLoader", "cannot open file: " + path);
+			MXLOG_ERROR("MxEngine::ObjectLoader", "cannot open file: " + ToMxString(path));
 			return materials;
 		}
-		MXLOG_INFO("MxEngine::ObjectLoader", "loading materials from file: " + path);
+		MXLOG_INFO("MxEngine::ObjectLoader", "loading materials from file: " + ToMxString(path));
 
 		auto materialList = LoadJson(file);
 
@@ -307,24 +306,24 @@ namespace MxEngine
 			material.BaseColor           = json["BaseColor"          ].get<Vector3>();
 			material.UVMultipliers       = json["UVMultipliers"      ].get<Vector2>();
 									    
-			material.AlbedoMap           = json["AlbedoMap"          ].get<MxString>();
-			material.EmmisiveMap         = json["EmmisiveMap"        ].get<MxString>();
-			material.HeightMap           = json["HeightMap"          ].get<MxString>();
-			material.NormalMap           = json["NormalMap"          ].get<MxString>();
-			material.AmbientOcclusionMap = json["AmbientOcclusionMap"].get<MxString>();
-			material.RoughnessMap        = json["RoughnessMap"       ].get<MxString>();
-			material.MetallicMap         = json["MetallicMap"        ].get<MxString>();
+			material.AlbedoMap           = json["AlbedoMap"          ].get<FilePath>();
+			material.EmmisiveMap         = json["EmmisiveMap"        ].get<FilePath>();
+			material.HeightMap           = json["HeightMap"          ].get<FilePath>();
+			material.NormalMap           = json["NormalMap"          ].get<FilePath>();
+			material.AmbientOcclusionMap = json["AmbientOcclusionMap"].get<FilePath>();
+			material.RoughnessMap        = json["RoughnessMap"       ].get<FilePath>();
+			material.MetallicMap         = json["MetallicMap"        ].get<FilePath>();
 			material.Name                = json["Name"               ].get<MxString>();
 		}													   
 
 		return materials;
     }
 
-	void ObjectLoader::DumpMaterials(const MaterialLibrary& materials, const MxString& path)
+	void ObjectLoader::DumpMaterials(const MaterialLibrary& materials, const FilePath& path)
 	{
 		JsonFile json;
 		File file(path, File::WRITE);
-		MXLOG_INFO("MxEngine::ObjectLoader", "dumping materials to file: " + path);
+		MXLOG_INFO("MxEngine::ObjectLoader", "dumping materials to file: " + ToMxString(path));
 
 		#define DUMP(index, name) json[index][#name] = materials[index].name
 
@@ -357,7 +356,7 @@ namespace MxEngine
 
 namespace MxEngine
 {
-	ObjectInfo ObjectLoader::Load(MxString path)
+	ObjectInfo ObjectLoader::Load(const FilePath& path)
 	{
 		MXLOG_ERROR("MxEngine::ObjectLoader", "object cannot be loaded as Assimp library was turned off in engine settings");
 		ObjectInfo object;

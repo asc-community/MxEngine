@@ -109,6 +109,8 @@ namespace MxEngine::GUI
 		REMOVE_COMPONENT_BUTTON(meshSource);
 
 		ImGui::Checkbox("is drawn", &meshSource.IsDrawn);
+		ImGui::SameLine();
+		ImGui::Checkbox("casts shadow", &meshSource.CastsShadow);
 		DrawMeshEditor("mesh", meshSource.Mesh);
 	}
 

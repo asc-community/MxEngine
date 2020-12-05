@@ -30,8 +30,8 @@ namespace SoundSample
             auto lightObject = MxObject::Create();
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
+            dirLight->SetIntensity(0.5f);
             dirLight->FollowViewport();
-
 
             // attach AudioListener component to track movement and rotation of player
             cameraObject->AddComponent<AudioListener>();
@@ -74,6 +74,7 @@ namespace SoundSample
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     SoundSample::SoundApplication app;
     app.Run();
     return 0;

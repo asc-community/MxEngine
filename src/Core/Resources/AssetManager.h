@@ -33,6 +33,7 @@
 #include "Core/Resources/Material.h"
 #include "Platform/GraphicAPI.h"
 #include "Platform/AudioAPI.h"
+#include "Utilities/FileSystem/File.h"
 
 namespace MxEngine
 {

@@ -2,7 +2,7 @@
 
 void InitDestroyer(MxObject& object)
 {
-	auto objectPath = "objects/destroyer/destroyer.obj"_id;
+	auto objectPath = "Resources/objects/destroyer/destroyer.obj"_id;
 
 	object.AddComponent<MeshSource>(AssetManager::LoadMesh(objectPath));
 	object.AddComponent<MeshRenderer>(AssetManager::LoadMaterials(objectPath));

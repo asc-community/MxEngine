@@ -67,6 +67,11 @@ namespace MxEngine
             Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle>(shader);
         }
 
+        static void AddShaderUpdateListener(const ShaderHandle& shader, const FilePath& lookupDirectory)
+        {
+            Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle>(shader, lookupDirectory);
+        }
+
         static const MxHashMap<StringId, ScriptInfo>& GetRegisteredScripts()
         {
             return RuntimeCompiler::GetRegisteredScripts();
@@ -74,12 +79,12 @@ namespace MxEngine
 
         static void AddScriptFile(const MxString& scriptName, const MxString& scriptFileName)
         {
-            RuntimeCompiler::AddScriptFile(scriptName, scriptFileName);
+            RuntimeCompiler::AddScriptFile(scriptName, ToFilePath(scriptFileName));
         }
 
         static void AddScriptFile(const MxString& scriptName, const FilePath& scriptFileName)
         {
-            Runtime::AddScriptFile(scriptName, ToMxString(scriptFileName));
+            RuntimeCompiler::AddScriptFile(scriptName, scriptFileName);
         }
 
         static bool HasCompilationTaskInProcess()
@@ -87,9 +92,9 @@ namespace MxEngine
             return RuntimeCompiler::HasCompilationTaskInProcess();
         }
 
-        static void AddShaderUpdateListener(const ShaderHandle& shader, const FilePath& lookupDirectory)
+        static void StartCompilationTask()
         {
-            Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle, FilePath>(shader, lookupDirectory);
+            RuntimeCompiler::StartCompilationTask();
         }
 
         static void AddEventLogEntry(const MxString &entry)
@@ -125,6 +130,11 @@ namespace MxEngine
         static void SetApplicationTimeScale(float scale)
         {
             Application::GetImpl()->TimeScale = scale;
+        }
+
+        static void SetApplicationTotalTime(float time)
+        {
+            Time::SetCurrent(time);
         }
     };
 }

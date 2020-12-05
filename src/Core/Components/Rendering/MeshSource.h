@@ -39,6 +39,7 @@ namespace MxEngine
     public:
         MeshHandle Mesh;
         bool IsDrawn = true;
+        bool CastsShadow = true;
 
         MeshSource() : Mesh(ResourceFactory::Create<MxEngine::Mesh>()) { }
         MeshSource(MeshHandle mesh) : Mesh(mesh) { }

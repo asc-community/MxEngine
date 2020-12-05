@@ -32,6 +32,23 @@
 
 namespace MxEngine
 {
+    struct DeserializerMappings;
+
+    class SceneSerializer
+    {
+        static void SerializeGlobals(JsonFile& json);
+        static void SerializeObjects(JsonFile& json);
+        static void SerializeResources(JsonFile& json);
+
+        static void DeserializeGlobals(const JsonFile& json, DeserializerMappings& mappings);
+        static void DeserializeObjects(const JsonFile& json, DeserializerMappings& mappings);
+        static void DeserializeResources(const JsonFile& json, DeserializerMappings& mappings);
+    public:
+
+        static JsonFile Serialize();
+        static void Deserialize(const JsonFile& scene);
+    };
+
     class MxObject;
     class TransformComponent;
     class Behaviour;
@@ -46,27 +63,65 @@ namespace MxEngine
     class CameraToneMapping;
     class VRCameraController;
     class InputController;
+    class DebugDraw;
+    class MeshRenderer;
+    class MeshSource;
+    class Skybox;
+    class MeshLOD;
+    class AudioListener;
+    class AudioSource;
+    class RigidBody;
+    class CharacterController;
+    class BoxCollider;
+    class SphereCollider;
+    class CapsuleCollider;
+    class CylinderCollider;
+    class CompoundCollider;
+    class Script;
 
-    void Serialize(JsonFile& json, MxObject&);
-    void Serialize(JsonFile& json, TransformComponent&);
-    void Serialize(JsonFile& json, Behaviour&);
-    void Serialize(JsonFile& json, DirectionalLight&);
-    void Serialize(JsonFile& json, PointLight&);
-    void Serialize(JsonFile& json, SpotLight&);
-    void Serialize(JsonFile& json, InstanceFactory&);
-    void Serialize(JsonFile& json, Instance&);
-    void Serialize(JsonFile& json, CameraController&);
-    void Serialize(JsonFile& json, CameraSSR&);
-    void Serialize(JsonFile& json, CameraToneMapping&);
-    void Serialize(JsonFile& json, CameraEffects&);
-    void Serialize(JsonFile& json, VRCameraController&);
-    void Serialize(JsonFile& json, InputController&);
+    void Serialize(JsonFile& json, const MxObject&);
+    void Serialize(JsonFile& json, const TransformComponent&);
+    void Serialize(JsonFile& json, const Behaviour&);
+    void Serialize(JsonFile& json, const DirectionalLight&);
+    void Serialize(JsonFile& json, const PointLight&);
+    void Serialize(JsonFile& json, const SpotLight&);
+    void Serialize(JsonFile& json, const InstanceFactory&);
+    void Serialize(JsonFile& json, const Instance&);
+    void Serialize(JsonFile& json, const CameraController&);
+    void Serialize(JsonFile& json, const CameraSSR&);
+    void Serialize(JsonFile& json, const CameraToneMapping&);
+    void Serialize(JsonFile& json, const CameraEffects&);
+    void Serialize(JsonFile& json, const VRCameraController&);
+    void Serialize(JsonFile& json, const InputController&);
+    void Serialize(JsonFile& json, const MeshRenderer&);
+    void Serialize(JsonFile& json, const MeshSource&);
+    void Serialize(JsonFile& json, const Skybox&);
+    void Serialize(JsonFile& json, const MeshLOD&);
+    void Serialize(JsonFile& json, const DebugDraw&);
+    void Serialize(JsonFile& json, const AudioListener&);
+    void Serialize(JsonFile& json, const AudioSource&);
+    void Serialize(JsonFile& json, const RigidBody&);
+    void Serialize(JsonFile& json, const CharacterController&);
+    void Serialize(JsonFile& json, const BoxCollider&);
+    void Serialize(JsonFile& json, const SphereCollider&);
+    void Serialize(JsonFile& json, const CapsuleCollider&);
+    void Serialize(JsonFile& json, const CylinderCollider&);
+    void Serialize(JsonFile& json, const CompoundCollider&);
+    void Serialize(JsonFile& json, const Script&);
 
-    class SceneSerializer
-    {
-        static void SerializeGlobals(JsonFile& json);
-        static void SerializeObjects(JsonFile& json);
-    public:
-        static JsonFile Serialize();
-    };
+    void SerializeScripts(JsonFile& json);
+    void SerializeMaterials(JsonFile& json);
+    void SerializeMeshes(JsonFile& json);
+    void SerializeAudios(JsonFile& json);
+    void SerializeCubeMaps(JsonFile& json);
+    void SerializeTextures(JsonFile& json);
+
+    void ClearExistingResources();
+
+    void DeserializeScripts(const JsonFile& json, DeserializerMappings& mappings);
+    void DeserializeMaterials(const JsonFile& json, DeserializerMappings& mappings);
+    void DeserializeMeshes(const JsonFile& json, DeserializerMappings& mappings);
+    void DeserializeAudios(const JsonFile& json, DeserializerMappings& mappings);
+    void DeserializeCubeMaps(const JsonFile& json, DeserializerMappings& mappings);
+    void DeserializeTextures(const JsonFile& json, DeserializerMappings& mappings);
 }

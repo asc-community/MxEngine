@@ -87,6 +87,12 @@ namespace MxEngine
         return this->scriptImpl != nullptr;
     }
 
+    void Script::RemoveScriptableObject()
+    {
+        this->scriptImpl = nullptr;
+        this->scriptName = 0;
+    }
+
     const MxString& Script::GetScriptName() const
     {
         return RuntimeCompiler::GetScriptInfo(this->GetHashedScriptName()).Name;
@@ -94,7 +100,7 @@ namespace MxEngine
 
     const MxString& Script::GetScriptFileName() const
     {
-        return RuntimeCompiler::GetScriptInfo(this->GetHashedScriptName()).FileName;
+        return RuntimeCompiler::GetScriptInfo(this->GetHashedScriptName()).FilePath;
     }
 
     Scriptable* Script::GetScriptableObject()

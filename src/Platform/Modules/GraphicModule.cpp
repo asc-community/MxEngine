@@ -220,7 +220,7 @@ namespace MxEngine
 		colors[ImGuiCol_Button]               = panelColor;
 		colors[ImGuiCol_ButtonHovered]        = panelHoverColor;
 		colors[ImGuiCol_ButtonActive]         = panelHoverColor;
-		colors[ImGuiCol_Header]               = panelColor;
+		colors[ImGuiCol_Header]               = lightBgColor;
 		colors[ImGuiCol_HeaderHovered]        = panelHoverColor;
 		colors[ImGuiCol_HeaderActive]         = panelActiveColor;
 		colors[ImGuiCol_Separator]            = borderColor;

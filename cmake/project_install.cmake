@@ -28,6 +28,8 @@ function(install_mxengine_project EXECUTABLE_NAME)
     )
 
     target_compile_definitions(${EXECUTABLE_NAME} PUBLIC MXENGINE_CMAKE_BUILD)
+    target_compile_definitions(${EXECUTABLE_NAME} PUBLIC MXENGINE_PROJECT_SOURCE_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}")
+    target_compile_definitions(${EXECUTABLE_NAME} PUBLIC MXENGINE_PROJECT_BINARY_DIRECTORY="${CMAKE_CURRENT_BINARY_DIR}")
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
         target_compile_definitions(${EXECUTABLE_NAME} PUBLIC MXENGINE_SHIPPING)
     endif()

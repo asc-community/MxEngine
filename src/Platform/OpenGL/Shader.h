@@ -52,7 +52,9 @@ namespace MxEngine
 		BindableId id = 0;
 		mutable UniformCache uniformCache;
 
-		ShaderId CompileShader(unsigned int type, const MxString& source, const MxString& name);
+		template<typename FilePath>
+		ShaderId CompileShader(unsigned int type, const MxString& source, const FilePath& name);
+
 		BindableId CreateProgram(ShaderId vertexShader, ShaderId fragmentShader) const;
 		BindableId CreateProgram(ShaderId vertexShader, ShaderId geometryShader, ShaderId fragmentShader) const;
 		UniformType GetUniformLocation(const MxString& uniformName) const;
@@ -61,8 +63,12 @@ namespace MxEngine
 		static MxString GetShaderVersionString();
 
 		Shader();
-		Shader(const MxString& vertexShaderPath, const MxString& fragmentShaderPath);
-		Shader(const MxString& vertexShaderPath, const MxString& geometryShaderPath, const MxString& fragmentShaderPath);
+
+		template<typename FilePath>
+		Shader(const FilePath& vertexShaderPath, const FilePath& fragmentShaderPath);
+		template<typename FilePath>
+		Shader(const FilePath& vertexShaderPath, const FilePath& geometryShaderPath, const FilePath& fragmentShaderPath);
+
 		Shader(const Shader&) = delete;
 		Shader(Shader&& shader) noexcept;
 		Shader& operator=(const Shader&) = delete;
@@ -73,8 +79,12 @@ namespace MxEngine
 		void Unbind() const;
 		void InvalidateUniformCache();
 		BindableId GetNativeHandle() const;
-		void Load(const MxString& vertex, const MxString& fragment);
-		void Load(const MxString& vertex, const MxString& geometry, const MxString& fragment);
+
+		template<typename FilePath>
+		void Load(const FilePath& vertex, const FilePath& fragment);
+		template<typename FilePath>
+		void Load(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment);
+
 		void IgnoreNonExistingUniform(const MxString& name) const;
 		void IgnoreNonExistingUniform(const char* name) const;
 		void LoadFromString(const MxString& vertex, const MxString& fragment);

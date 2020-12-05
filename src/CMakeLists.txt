@@ -113,12 +113,18 @@ set(MXENGINE_SOURCES
 "Core/Components/Scripting/Script.cpp" 
 "Core/Runtime/RuntimeCompiler.cpp"
 "Utilities/ImGui/Editors/ComponentEditors/ScriptingEditors.cpp"
- "Core/Serialization/SceneSerializer.cpp" 
- "Core/Serialization/MxObjectSerializer.cpp"
- "Core/Serialization/ComponentSerializer.cpp" 
- "Core/Serialization/LightingSerializer.cpp" 
- "Core/Serialization/InstancingSerializer.cpp" 
- "Core/Serialization/CameraSerializer.cpp")
+"Core/Serialization/SceneSerializer.cpp" 
+"Core/Serialization/MxObjectSerializer.cpp"
+"Core/Serialization/ComponentSerializer.cpp" 
+"Core/Serialization/LightingSerializer.cpp" 
+"Core/Serialization/InstancingSerializer.cpp" 
+"Core/Serialization/CameraSerializer.cpp" 
+"Core/Serialization/RenderingSerializer.cpp" 
+"Core/Serialization/AudioSerializer.cpp" 
+"Core/Serialization/PhysicsSerializer.cpp"
+"Core/Serialization/ScriptSerializer.cpp"
+ "Core/Serialization/ResourceSerializer.cpp"
+ )
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)
@@ -268,6 +274,11 @@ include_directories(${MXENGINE_INCLUDE_DIRS})
 set(LIBRARY_NAME MxEngine)
 add_library(${LIBRARY_NAME} STATIC ${MXENGINE_SOURCES})
 
+set_target_properties(${LIBRARY_NAME} PROPERTIES
+    COMPILE_PDB_NAME ${LIBRARY_NAME}
+    COMPILE_PDB_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+)
+
 link_directories(${THIRD_PARTY_BINARY_DIRS})
 target_link_libraries(${LIBRARY_NAME} ${THIRD_PARTY_LIBRARIES})
 
@@ -303,6 +314,11 @@ if(WIN32)
         ${openal_binary_dir}/OpenAL32.dll
         ${glfw_binary_dir}/src/glfw3.dll
     )
+elseif(APPLE)
+    set(SHARED_LIBRARIES_PATHS
+        ${openal_binary_dir}/libopenal.1.dylib
+        ${glfw_binary_dir}/src/libglfw.3.dylib
+    )	
 else()
     set(SHARED_LIBRARIES_PATHS
         ${openal_binary_dir}/libopenal.so.1

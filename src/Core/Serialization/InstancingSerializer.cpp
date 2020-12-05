@@ -31,18 +31,21 @@
 
 namespace MxEngine
 {
-    void Serialize(JsonFile& json, InstanceFactory& factory)
+    void Serialize(JsonFile& json, const InstanceFactory& factory)
     {
         json["is-static"] = factory.IsStatic;
         auto instances = factory.GetInstances();
         auto& jInstances = json["instances"];
         for (auto& instance : instances)
         {
-            Serialize(jInstances.emplace_back(), *instance);
+            if (instance->IsSerialized)
+            {
+                Serialize(jInstances.emplace_back(), *instance);
+            }
         }
     }
 
-    void Serialize(JsonFile& json, Instance& instance)
+    void Serialize(JsonFile& json, const Instance& instance)
     {
         json["color"] = instance.GetColor();
     }

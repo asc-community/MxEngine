@@ -51,6 +51,16 @@ namespace MxEngine
         return this->maxDistance;
     }
 
+    float CameraSSR::GetStartDistance() const
+    {
+        return this->startDistance;
+    }
+
+    float CameraSSR::GetFading() const
+    {
+        return this->fading;
+    }
+
     void CameraSSR::SetThickness(float thickness)
     {
         this->thickness = Max(thickness, 0.0f);
@@ -69,5 +79,15 @@ namespace MxEngine
     void CameraSSR::SetMaxDistance(float distance)
     {
         this->maxDistance = Max(distance, 0.0f);
+    }
+
+    void CameraSSR::SetStartDistance(float distance)
+    {
+        this->startDistance = Max(distance, 0.0f);
+    }
+
+    void CameraSSR::SetFading(float fading)
+    {
+        this->fading = Max(fading, 0.0f);
     }
 }

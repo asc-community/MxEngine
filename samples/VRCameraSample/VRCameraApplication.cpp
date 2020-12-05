@@ -59,6 +59,7 @@ namespace VRCameraSample
             cubeObject->AddComponent<MeshSource>(Primitives::CreateCube());
             auto sphereMaterials = cubeObject->AddComponent<MeshRenderer>();
             auto instanceFactory = cubeObject->AddComponent<InstanceFactory>();
+            sphereMaterials->GetMaterial()->RoughnessFactor = 0.4f;
 
             for (size_t i = 0; i < 500; i++)
             {
@@ -77,6 +78,7 @@ namespace VRCameraSample
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Direction = MakeVector3(0.5f, 1.0f, 1.0f);
+            dirLight->SetIntensity(0.5f);
             dirLight->FollowViewport();
         }
 
@@ -101,6 +103,7 @@ namespace VRCameraSample
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     VRCameraSample::VRCameraApplication app;
     app.Run();
     return 0;

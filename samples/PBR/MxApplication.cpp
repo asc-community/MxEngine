@@ -45,29 +45,23 @@ namespace PBR
             input->BindRotation();
 
             auto skybox = cameraObject->AddComponent<Skybox>();
-            skybox->CubeMap = AssetManager::LoadCubeMap("skybox.png"_id);
-            skybox->Irradiance = AssetManager::LoadCubeMap("skybox_irradiance.png"_id);
-
-            auto lightObject = MxObject::Create();
-            lightObject->Name = "Global Light";
-            auto dirLight = lightObject->AddComponent<DirectionalLight>();
-            dirLight->Direction = MakeVector3(0.5f, 1.0f, -0.5f);
-            dirLight->SetAmbientIntensity(0.3f);
-            dirLight->SetIntensity(1.5f);
-            dirLight->FollowViewport();
+            skybox->CubeMap = AssetManager::LoadCubeMap("Resources/skybox.jpg"_id);
+            skybox->Irradiance = AssetManager::LoadCubeMap("Resources/skybox_irradiance.jpg"_id);
+            skybox->SetIntensity(1.0f);
 
             sphereMesh = Primitives::CreateSphere();
             
-            this->GenerateSpheres(MakeVector3(0.0f,  0.0f, 0.0f ), 5, MakeVector3(1.0f,  0.25f, 0.25f));
-            this->GenerateSpheres(MakeVector3(15.0f, 0.0f, 0.0f ), 5, MakeVector3(0.25,  0.25f, 1.0f ));
-            this->GenerateSpheres(MakeVector3(0.0f,  0.0f, 15.0f), 5, MakeVector3(0.25,  1.0f,  0.25f));
-            this->GenerateSpheres(MakeVector3(15.0f, 0.0f, 15.0f), 5, MakeVector3(0.25f, 0.25f, 0.25f));
+            this->GenerateSpheres(MakeVector3(0.0f,  0.0f, 0.0f ), 5, MakeVector3(1.0f,  0.3f, 0.3f));
+            this->GenerateSpheres(MakeVector3(15.0f, 0.0f, 0.0f ), 5, MakeVector3(0.9f,  0.7f, 0.0f));
+            this->GenerateSpheres(MakeVector3(0.0f,  0.0f, 15.0f), 5, MakeVector3(1.0f,  1.0f, 1.0f));
+            this->GenerateSpheres(MakeVector3(15.0f, 0.0f, 15.0f), 5, MakeVector3(0.4f,  0.4f, 0.4f));
         }
     };
 }
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     PBR::PBRApplication app;
     app.Run();
     return 0;

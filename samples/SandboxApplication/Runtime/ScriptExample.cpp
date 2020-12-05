@@ -17,7 +17,7 @@ public:
     
     virtual void OnUpdate(MxObject& self) override
     {
-        static float maxScale = 5.0f;
+        static float maxScale = 3.0f;
         static float scaleSpeed = 1.5f;
         static float rotationSpeed = 15.0f;
         
@@ -39,7 +39,7 @@ public:
         }
         else
         {
-            scale = scale - scaleSpeed * Time::Delta();
+            scale = 1.0;
         }
         self.Transform.SetScale(scale);
     }

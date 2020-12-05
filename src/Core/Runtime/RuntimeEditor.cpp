@@ -49,17 +49,17 @@ namespace MxEngine
 		Free(this->logger);
 	}
 
-	void RuntimeEditor::Log(const MxString& message)
+	void RuntimeEditor::LogToConsole(const MxString& message)
 	{
 		this->console->PrintLog(message.c_str()); //-V111
 	}
 
-	void RuntimeEditor::ClearLog()
+	void RuntimeEditor::ClearConsoleLog()
 	{
 		this->console->ClearLog();
 	}
 
-	void RuntimeEditor::PrintHistory()
+	void RuntimeEditor::PrintCommandHistory()
 	{
 		this->console->PrintHistory();
 	}
@@ -75,27 +75,32 @@ namespace MxEngine
 		inited = true;
 		const float viewportRatio = 0.7f;
 		const float editorRatio = 0.15f;
+		const float objectListRatio = 0.5f;
 
-		ImGuiID leftDockspace = 0; 
-		ImGuiID rightDockspace = 0;
-		ImGui::DockBuilderSplitNode(dockspaceId, ImGuiDir_Left, viewportRatio, &leftDockspace, &rightDockspace);
+		ImGuiID viewportDockspace = 0; 
+		ImGuiID editorDockspace = 0;
+		ImGui::DockBuilderSplitNode(dockspaceId, ImGuiDir_Left, viewportRatio, &viewportDockspace, &editorDockspace);
 
 		ImGuiID viewportId = 0;
 		ImGuiID profilerId = 0;
-		ImGui::DockBuilderSplitNode(leftDockspace, ImGuiDir_Up, viewportRatio, &viewportId, &profilerId);
+		ImGui::DockBuilderSplitNode(viewportDockspace, ImGuiDir_Up, viewportRatio, &viewportId, &profilerId);
 
-		ImGuiID rightUpDockspace = 0;
-		ImGuiID rightDownDockspace = 0;
-		ImGui::DockBuilderSplitNode(rightDockspace, ImGuiDir_Up, editorRatio, &rightUpDockspace, &rightDownDockspace);
+		ImGuiID applicationId = 0;
+		ImGuiID objectEditorDockspace = 0;
+		ImGui::DockBuilderSplitNode(editorDockspace, ImGuiDir_Up, editorRatio, &applicationId, &objectEditorDockspace);
+
+		ImGuiID objectListId = 0;
+		ImGuiID objectEditorId = 0;
+		ImGui::DockBuilderSplitNode(objectEditorDockspace, ImGuiDir_Up, objectListRatio, &objectListId, &objectEditorId);
 
 		ImGui::DockBuilderDockWindow("Viewport", viewportId);
 		ImGui::DockBuilderDockWindow("Profiling Tools", profilerId);
-		ImGui::DockBuilderDockWindow("Application Editor", rightUpDockspace);
-		ImGui::DockBuilderDockWindow("Object Editor", rightDownDockspace);
-		ImGui::DockBuilderDockWindow("Developer Console", rightDownDockspace);
-		ImGui::DockBuilderDockWindow("Object Editor", rightDownDockspace);
-		ImGui::DockBuilderDockWindow("Render Editor", rightDownDockspace);
-		ImGui::DockBuilderDockWindow("Texture Viewer", rightDownDockspace);
+		ImGui::DockBuilderDockWindow("Application Editor", applicationId);
+		ImGui::DockBuilderDockWindow("Object Editor", objectEditorId);
+		ImGui::DockBuilderDockWindow("Object List", objectListId);
+		ImGui::DockBuilderDockWindow("Developer Console", objectListId);
+		ImGui::DockBuilderDockWindow("Render Editor", objectListId);
+		ImGui::DockBuilderDockWindow("Texture Viewer", objectListId);
 
 		ImGui::DockBuilderFinish(dockspaceId);
 	}
@@ -104,10 +109,12 @@ namespace MxEngine
 	{
 		if (this->shouldRender)
 		{
+			MAKE_SCOPE_PROFILER("RuntimeEditor::OnUpdate()");
 			auto dockspaceID = ImGui::DockSpaceOverViewport();
 			InitDockspace(dockspaceID);
 
 			static bool isRenderEditorOpened = false;
+			static bool isObjectListOpened = false;
 			static bool isObjectEditorOpened = false;
 			static bool isApplicationEditorOpened = true;
 			static bool isTextureListOpened = true;
@@ -121,9 +128,10 @@ namespace MxEngine
 			GUI::DrawApplicationEditor("Application Editor", &isApplicationEditorOpened);
 			GUI::DrawTextureList("Texture Viewer", &isTextureListOpened);
 
-			this->DrawMxObjectList(&isObjectEditorOpened);
+			this->DrawMxObjectList(&isObjectListOpened);
+			this->DrawMxObjectEditorWindow(&isObjectEditorOpened);
 
-			GUI::DrawViewportWindow("Viewport", this->cachedWindowSize, &isViewportOpened);
+			GUI::DrawViewportWindow("Viewport", this->cachedViewportSize, this->cachedViewportPosition, &isViewportOpened);
 
 			{
 				ImGui::Begin("Profiling Tools", &isProfilerOpened);
@@ -143,25 +151,20 @@ namespace MxEngine
 		this->logger->AddEventEntry(entry);
 	}
 
-	void RuntimeEditor::SetSize(const Vector2& size)
-	{
-		this->console->SetSize({ size.x, size.y });
-	}
-
 	void RuntimeEditor::Toggle(bool isVisible)
 	{
 		this->shouldRender = isVisible;
 
 		if (!this->shouldRender) // if developer environment was turned off, we should notify application that viewport returned to normal
 		{
-			Rendering::SetRenderToDefaultFrameBuffer(this->useDefaultFrameBufferCached);
+			Rendering::SetRenderToDefaultFrameBuffer(this->cachedUseDefaultFrameBufferVariable);
 			auto windowSize = WindowManager::GetSize();
-			Event::AddEvent(MakeUnique<WindowResizeEvent>(this->cachedWindowSize, windowSize));
-			this->cachedWindowSize = windowSize;
+			Event::AddEvent(MakeUnique<WindowResizeEvent>(this->cachedViewportSize, windowSize));
+			this->cachedViewportSize = windowSize;
 		}
 		else
 		{
-			this->useDefaultFrameBufferCached = Rendering::IsRenderedToDefaultFrameBuffer();
+			this->cachedUseDefaultFrameBufferVariable = Rendering::IsRenderedToDefaultFrameBuffer();
 			Rendering::SetRenderToDefaultFrameBuffer(false);
 		}
 	}
@@ -263,12 +266,12 @@ namespace MxEngine
 						{
 						case VF:
 							shader->Load(
-								ToMxString(dependencies[0].first), ToMxString(dependencies[1].first)
+								dependencies[0].first, dependencies[1].first
 							);
 							break;
 						case VGF:
 							shader->Load(
-								ToMxString(dependencies[0].first), ToMxString(dependencies[1].first), ToMxString(dependencies[2].first)
+								dependencies[0].first, dependencies[1].first, dependencies[2].first
 							);
 							break;
 						}
@@ -285,19 +288,24 @@ namespace MxEngine
 		#if !defined(MXENGINE_DEBUG)
 		MXLOG_WARNING("RuntimeEditor::AddShaderUpdateListener", "cannot add listener in non-debug mode");
 		#else
-		auto lookupDirectory = ToFilePath(shader->GetVertexShaderDebugFilePath()).parent_path();
+		auto lookupDirectory = ToFilePath(shader->GetFragmentShaderDebugFilePath()).parent_path();
 		RuntimeEditor::AddShaderUpdateListener<ShaderHandle, FilePath>(std::move(shader), lookupDirectory);
 		#endif
 	}
 
     void RuntimeEditor::DrawMxObject(const MxString& treeName, MxObject& object)
     {
-		GUI::DrawMxObjectEditor(treeName.c_str(), object, this->componentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
+		GUI::DrawMxObjectEditor(treeName.c_str(), object, true, this->componentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
     }
 
-	Vector2 RuntimeEditor::GetSize() const
+	Vector2 RuntimeEditor::GetViewportSize() const
 	{
-		return Vector2(this->console->GetSize().x, this->console->GetSize().y);
+		return this->IsActive() ? this->cachedViewportSize : (Vector2)Rendering::GetViewportSize();
+	}
+
+	Vector2 RuntimeEditor::GetViewportPosition() const
+	{
+		return this->IsActive() ? this->cachedViewportPosition : MakeVector2(0.0f);
 	}
 
 	bool RuntimeEditor::IsActive() const
@@ -307,26 +315,44 @@ namespace MxEngine
 
 	void RuntimeEditor::DrawMxObjectList(bool* isOpen)
 	{
-		ImGui::Begin("Object Editor", isOpen);
+		ImGui::Begin("Object List", isOpen);
 
 		static char filter[128] = { '\0' };
 		ImGui::InputText("search filter", filter, std::size(filter));
 
 		if (ImGui::Button("create new MxObject"))
 			MxObject::Create();
+		ImGui::SameLine();
+		if (ImGui::Button("delete currently selected"))
+			MxObject::Destroy(this->currentlySelectedObject);
 
 		auto objects = MxObject::GetObjects();
 		int id = 0;
 		for (auto& object : objects)
 		{
 			bool shouldDisplay = object.IsDisplayedInRuntimeEditor() && object.Name.find(filter) != object.Name.npos;
-			if (shouldDisplay)
+			if (shouldDisplay && id < 10000) // do not display too much objects
 			{
 				ImGui::PushID(id++);
-				this->DrawMxObject(object.Name, object);
+				bool isSelected = this->currentlySelectedObject == MxObject::GetHandle(object);
+				if (ImGui::Selectable(object.Name.c_str(), &isSelected))
+				{
+					if (isSelected) this->currentlySelectedObject = MxObject::GetHandle(object);
+					else this->currentlySelectedObject = { };
+				}
 				ImGui::PopID();
 			}
 		}
+	}
+
+	void RuntimeEditor::DrawMxObjectEditorWindow(bool* isOpen)
+	{
+		ImGui::Begin("Object Editor", isOpen);
+		if (!this->currentlySelectedObject.IsValid())
+			ImGui::Text("no object selected");
+		else
+			this->DrawMxObject(this->currentlySelectedObject->Name, *this->currentlySelectedObject);
+		ImGui::End();
 	}
 
 	RuntimeEditor::RuntimeEditor()

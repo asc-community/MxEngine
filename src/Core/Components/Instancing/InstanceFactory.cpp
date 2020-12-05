@@ -72,8 +72,6 @@ namespace MxEngine
         auto object = MxObject::GetHandleByComponent(*this);
 
         this->pool.Allocate(instance);
-        instance->SetDisplayInRuntimeEditor(false);
-        instance->IsSerialized = false; // serialization handled in InstanceFactory component
         instance->Transform = object->Transform;
         auto component = instance->AddComponent<Instance>(object);
         return instance;

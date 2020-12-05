@@ -51,7 +51,7 @@ namespace MxEngine
             auto depthTextureSize = (int)GlobalConfig::GetDirectionalLightTextureSize();
             auto texture = GraphicFactory::Create<Texture>();
             texture->LoadDepth(depthTextureSize, depthTextureSize);
-            texture->SetPath("[[directional light]]");
+            texture->SetInternalEngineTag("[[directional light]]");
             this->SetDepthTexture(texture, i);
         }
         // create empty reference to timer
@@ -80,13 +80,34 @@ namespace MxEngine
 
     Matrix4x4 DirectionalLight::GetMatrix(const Vector3& center, size_t index) const
     {
-        Vector3 Low  = MakeVector3(-this->Projections[index]);
-        Vector3 High = MakeVector3( this->Projections[index]);
+        MX_ASSERT(index < this->textures.size());
+
+        auto Low  = MakeVector3(-this->Projections[index]);
+        auto High = MakeVector3( this->Projections[index]);
+        auto Center = center;
+
+        float distance = 0.0f;
+        for (size_t i = 0; i < index; i++)
+        {
+            distance += this->Projections[i + 1] - this->Projections[i];
+        }
+        Center += distance * this->CascadeDirection;
+
+        constexpr auto floor = [](const Vector3 & v) -> Vector3
+        {
+            return { std::floor(v.x), std::floor(v.y), std::floor(v.z) };
+        };
+
+        auto shadowMapSize = float(this->textures[index]->GetWidth() + 1);
+        auto worldUnitsPerText = (High - Low) / shadowMapSize;
+        Low = floor(Low / worldUnitsPerText) * worldUnitsPerText;
+        High = floor(High / worldUnitsPerText) * worldUnitsPerText;
+        Center = floor(Center / worldUnitsPerText) * worldUnitsPerText;
 
         Matrix4x4 OrthoProjection = MakeOrthographicMatrix(Low.x, High.x, Low.y, High.y, Low.z, High.z);
         Matrix4x4 LightView = MakeViewMatrix(
-            center + this->Direction,
-            center + MakeVector3(0.0f, 0.0f, 0.00001f),
+            Center + this->Direction,
+            Center + MakeVector3(0.0f, 0.0f, 0.00001f),
             MakeVector3(0.0f, 1.0f, 0.00001f)
         );
         return OrthoProjection * LightView;
@@ -98,11 +119,16 @@ namespace MxEngine
         auto& timer = *std::launder(reinterpret_cast<MxObject::Handle*>(&this->timerHandle));
         MxObject::Destroy(timer);
 
-        timer = Timer::CallEachDelta([object = MxObject::GetHandleByComponent(*this)]() mutable
+        timer = Timer::CallEachDelta([self = MxObject::GetComponentHandle(*this)]() mutable
         {
             auto viewport = Rendering::GetViewport();
-            if (viewport.IsValid()) 
-                object->Transform.SetPosition(MxObject::GetByComponent(*viewport).Transform.GetPosition());
+            if (viewport.IsValid())
+            {
+                auto& object = MxObject::GetByComponent(*self);
+                object.Transform.SetPosition(MxObject::GetByComponent(*viewport).Transform.GetPosition());
+                auto direction = viewport->GetDirection();
+                self->CascadeDirection = Normalize(Vector3(direction.x, 0.0f, direction.z));
+            }
         }, updateInterval);
     }
 }

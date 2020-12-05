@@ -37,12 +37,9 @@ uniform bool castsShadows;
 uniform sampler2D lightDepthMap;
 uniform Camera camera;
 uniform int pcfDistance;
-uniform int lightSamples;
 uniform vec2 viewportSize;
 
-uniform EnvironmentInfo environment;
-
-vec3 calcColorUnderSpotLight(FragmentInfo fragment, SpotLight light, vec3 viewDir, vec4 fragLightSpace, sampler2D map_shadow, bool computeShadow)
+vec3 calcColorUnderSpotLight(FragmentInfo fragment, SpotLight light, vec3 viewDirection, vec4 fragLightSpace, sampler2D map_shadow, bool computeShadow)
 {
 	vec3 lightPath = light.position - fragment.position;
 
@@ -53,7 +50,7 @@ vec3 calcColorUnderSpotLight(FragmentInfo fragment, SpotLight light, vec3 viewDi
 	float epsilon = light.innerAngle - light.outerAngle;
 	float intensity = pow(clamp((fragAngle - light.outerAngle) / epsilon, 0.0f, 1.0f), 2.0f);
 
-	return calculateLighting(fragment, viewDir, lightPath, environment, lightSamples, intensity * light.color.rgb, light.color.a, shadowFactor);
+	return calculateLighting(fragment, viewDirection, lightPath, intensity * light.color.rgb, light.color.a, shadowFactor);
 }
 
 void main()
@@ -71,9 +68,8 @@ void main()
 	light.outerAngle = spotLight.outerAngle;
 	light.color = spotLight.color;
 
-	vec3 totalColor = vec3(0.0f);
 	vec4 fragLightSpace = worldToLightTransform * vec4(fragment.position, 1.0f);
-	totalColor += calcColorUnderSpotLight(fragment, light, viewDirection, fragLightSpace, lightDepthMap, castsShadows);
+	vec3 totalColor = calcColorUnderSpotLight(fragment, light, viewDirection, fragLightSpace, lightDepthMap, castsShadows);
 
 	OutColor = vec4(totalColor, 1.0f);
 }

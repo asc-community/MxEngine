@@ -43,35 +43,39 @@ namespace MxEngine
 	{
 		GraphicConsole* console = nullptr;
 		EventLogger* logger = nullptr;
-		Vector2 cachedWindowSize{ 0.0f };
+		Vector2 cachedViewportSize{ 0.0f };
+		Vector2 cachedViewportPosition{ 0.0f };
 		bool shouldRender = false;
-		bool useDefaultFrameBufferCached = false;
+		bool cachedUseDefaultFrameBufferVariable = false;
 
 		MxVector<std::function<void(MxObject&)>> componentEditorCallbacks;
 		MxVector<std::function<void(MxObject&)>> componentAdderCallbacks;
 		MxVector<const char*> componentNames;
+		MxObject::Handle currentlySelectedObject{ };
 
 		void DrawMxObjectList(bool* isOpen = nullptr);
+		void DrawMxObjectEditorWindow(bool* isOpen = nullptr);
   	public:
 		RuntimeEditor();
 		RuntimeEditor(const RuntimeEditor&) = delete;
+		RuntimeEditor& operator=(const RuntimeEditor&) = delete;
 		RuntimeEditor(RuntimeEditor&&) = default;
+		RuntimeEditor& operator=(RuntimeEditor&&) = default;
 		~RuntimeEditor();
 
-		void Log(const MxString& message);
-		void ClearLog();
-		void PrintHistory();
+		void LogToConsole(const MxString& message);
+		void ClearConsoleLog();
+		void PrintCommandHistory();
 		void OnUpdate();
 		void AddEventEntry(const MxString& entry);
-		void SetSize(const Vector2& size);
 		void Toggle(bool isVisible = true);
 		void AddKeyBinding(KeyCode openKey);
 		template<typename ShaderHandle>
 		void AddShaderUpdateListener(ShaderHandle shader);
 		template<typename ShaderHandle, typename FilePath>
 		void AddShaderUpdateListener(ShaderHandle shader, const FilePath& lookupDirectory);
-
-		Vector2 GetSize() const;
+		Vector2 GetViewportSize() const;
+		Vector2 GetViewportPosition() const;
 		bool IsActive() const;
 
 		void DrawMxObject(const MxString& name, MxObject& object);
@@ -100,7 +104,7 @@ namespace MxEngine
 		template<typename T, typename Func>
 		void RegisterComponentEditor(const char* name, Func&& callback)
 		{
-			this->RegisterComponentEditor(name, std::function<void(T&)>(std::forward<Func>(callback)));
+			this->RegisterComponentEditor<T>(name, std::function<void(T&)>(std::forward<Func>(callback)));
 		}
 	};
 }

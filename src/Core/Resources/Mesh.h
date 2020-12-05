@@ -30,7 +30,6 @@
 
 #include "Core/Components/Transform.h"
 #include "Utilities/String/String.h"
-#include "Utilities/FileSystem/File.h"
 #include "Utilities/Memory/Memory.h"
 #include "Platform/GraphicAPI.h"
 #include "Core/Resources/SubMesh.h"
@@ -45,26 +44,35 @@ namespace MxEngine
 		
 		MxVector<VertexBufferHandle> VBOs;
 		MxVector<VertexBufferLayoutHandle> VBLs;
+		MxString filePath;
 
-		void LoadFromFile(const MxString& filepath);
+		template<typename FilePath>
+		void LoadFromFile(const FilePath& filepath);
+
 	public:
 		AABB BoxBounding;
 		BoundingSphere SphereBounding;
 		SubmeshList Submeshes;
 
 		explicit Mesh() = default;
-		Mesh(const MxString& path);
 		Mesh(Mesh&) = delete;
 		Mesh(Mesh&&) = default;
 		Mesh& operator=(const Mesh&) = delete;
 		Mesh& operator=(Mesh&&) = default;
+
+		template<typename FilePath>
+		Mesh(const FilePath& path);
 		
-		void Load(const MxString& filepath);
+		template<typename FilePath>
+		void Load(const FilePath& filepath);
+
 		void UpdateBoundingGeometry();
 		size_t AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl);
 		VertexBufferHandle GetBufferByIndex(size_t index) const; 
 		VertexBufferLayoutHandle GetBufferLayoutByIndex(size_t index) const;
 		size_t GetBufferCount() const;
 		void PopInstancedBuffer();
+		const MxString& GetFilePath() const;
+		void SetInternalEngineTag(const MxString& tag);
 	};
 }

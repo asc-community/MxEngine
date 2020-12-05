@@ -39,8 +39,11 @@
 
 namespace MxEngine
 {
-	void Mesh::LoadFromFile(const MxString& filepath)
+	template<>
+	void Mesh::LoadFromFile(const std::filesystem::path& filepath)
 	{
+		this->filePath = ToMxString(filepath);
+
 		ObjectInfo objectInfo = ObjectLoader::Load(filepath);
 		MxVector<TransformComponent::Handle> submeshTransforms;
 
@@ -68,7 +71,7 @@ namespace MxEngine
 		if (!objectInfo.materials.empty())
 		{
 			// dump all material to let user retrieve them for MeshRenderer component
-			auto materialLibPath = filepath + MeshRenderer::GetMaterialFileSuffix();
+			FilePath materialLibPath = filepath.native() + MeshRenderer::GetMaterialFileExtenstion().native();
 			ObjectLoader::DumpMaterials(objectInfo.materials, materialLibPath);
 		}
 		
@@ -91,14 +94,16 @@ namespace MxEngine
 		this->UpdateBoundingGeometry(); // use submeshes boundings to update mesh boundings
 	}
 
-    Mesh::Mesh(const MxString& path)
+	template<>
+    Mesh::Mesh(const std::filesystem::path& path)
     {
-		this->LoadFromFile(path);
+		this->LoadFromFile(std::filesystem::proximate(path));
     }
 
-	void Mesh::Load(const MxString& filepath)
+	template<>
+	void Mesh::Load(const std::filesystem::path& filepath)
 	{
-		this->LoadFromFile(filepath);
+		this->LoadFromFile(std::filesystem::proximate(filepath));
 	}
 
 	void Mesh::UpdateBoundingGeometry()
@@ -164,4 +169,14 @@ namespace MxEngine
 		this->VBOs.pop_back();
 		this->VBLs.pop_back();
     }
+
+	const MxString& Mesh::GetFilePath() const
+	{
+		return this->filePath;
+	}
+
+	void Mesh::SetInternalEngineTag(const MxString& tag)
+	{
+		this->filePath = tag;
+	}
 }

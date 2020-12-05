@@ -43,13 +43,13 @@
 
 namespace MxEngine
 {
-    AudioData AudioLoader::Load(const MxString& path)
+    AudioData AudioLoader::Load(const std::filesystem::path& path)
     {
         MAKE_SCOPE_PROFILER("AudioLoader::Load");
         MAKE_SCOPE_TIMER("MxEngine::AudioLoader", "AudioLoader::Load");
-        MXLOG_INFO("MxEngine::AudioLoader", "loading audio from file: " + path);
+        MXLOG_INFO("MxEngine::AudioLoader", "loading audio from file: " + ToMxString(path));
 
-        auto ext = FilePath(path.c_str()).extension();
+        auto ext = path.extension();
         AudioData result;
 
         if (ext == ".wav")
@@ -57,7 +57,7 @@ namespace MxEngine
             unsigned int channels;
             unsigned int sampleRate;
             drwav_uint64 totalPCMFrameCount;
-            drwav_int16* pSampleData = drwav_open_file_and_read_pcm_frames_s16(path.c_str(), &channels, &sampleRate, &totalPCMFrameCount, nullptr);
+            drwav_int16* pSampleData = drwav_open_file_and_read_pcm_frames_s16(path.string().c_str(), &channels, &sampleRate, &totalPCMFrameCount, nullptr);
             if (pSampleData == nullptr)
                 return result;
 
@@ -71,7 +71,7 @@ namespace MxEngine
         {
             drmp3_config config;
             drmp3_uint64 totalPCMFrameCount;
-            drmp3_int16* pSampleData = drmp3_open_file_and_read_pcm_frames_s16(path.c_str(), &config, &totalPCMFrameCount, nullptr);
+            drmp3_int16* pSampleData = drmp3_open_file_and_read_pcm_frames_s16(path.string().c_str(), &config, &totalPCMFrameCount, nullptr);
             if (pSampleData == nullptr)
                 return result;
 
@@ -86,7 +86,7 @@ namespace MxEngine
             unsigned int channels;
             unsigned int sampleRate;
             drflac_uint64 totalPCMFrameCount;
-            drflac_int16* pSampleData = drflac_open_file_and_read_pcm_frames_s16(path.c_str(), &channels, &sampleRate, &totalPCMFrameCount, nullptr);
+            drflac_int16* pSampleData = drflac_open_file_and_read_pcm_frames_s16(path.string().c_str(), &channels, &sampleRate, &totalPCMFrameCount, nullptr);
             if (pSampleData == nullptr)
                 return result;
 
@@ -101,7 +101,7 @@ namespace MxEngine
             int channels;
             int rate;
             short* pSampleData;
-            int size = stb_vorbis_decode_filename(path.c_str(), &channels, &rate, &pSampleData);
+            int size = stb_vorbis_decode_filename(path.string().c_str(), &channels, &rate, &pSampleData);
             result.sampleCount = size / sizeof(int16_t);
             result.data = pSampleData;
             result.channels = channels;

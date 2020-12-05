@@ -32,5 +32,5 @@
 
 namespace MxEngine::GUI
 {
-	void DrawViewportWindow(const char* name, Vector2& viewportSize, bool* isOpen = nullptr);
+	void DrawViewportWindow(const char* name, Vector2& viewportSize, Vector2& viewportPosition, bool* isOpen = nullptr);
 }

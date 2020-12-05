@@ -31,18 +31,20 @@
 // only for time
 #include <chrono>
 #include "Core/Macro/Macro.h"
-#if defined(MXENGINE_USE_OPENGL)
-#include "Platform/OpenGL/GLUtilities.h"
 #include "Core/Application/Application.h"
-
-MxEngine::TimeStep MxEngine::Time::Current()
-{
-	return (MxEngine::TimeStep)glfwGetTime();
-}
-#endif
 
 namespace MxEngine
 {
+	TimeStep Time::Current()
+	{
+		return Application::GetImpl()->GetTotalElapsedTime();
+	}
+
+	void Time::SetCurrent(TimeStep time)
+	{
+		Application::GetImpl()->SetTotalElapsedTime(time);
+	}
+
 	SystemTime Time::System()
 	{
 		using namespace std::chrono;

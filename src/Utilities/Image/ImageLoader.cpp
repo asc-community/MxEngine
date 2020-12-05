@@ -36,15 +36,15 @@
 
 namespace MxEngine
 {
-	Image ImageLoader::LoadImage(const MxString& filepath, bool flipImage)
+	Image ImageLoader::LoadImage(const std::filesystem::path& filepath, bool flipImage)
 	{
 		MAKE_SCOPE_PROFILER("ImageLoader::LoadImage");
 		MAKE_SCOPE_TIMER("MxEngine::ImageLoader", "ImageLoader::LoadImage()");
-		MXLOG_INFO("MxEngine::ImageLoader", "loading image from file: " + filepath);
+		MXLOG_INFO("MxEngine::ImageLoader", "loading image from file: " + ToMxString(filepath));
 
 		stbi_set_flip_vertically_on_load(flipImage);
 		int width, height, channels;
-		uint8_t* data = stbi_load(filepath.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+		uint8_t* data = stbi_load(filepath.string().c_str(), &width, &height, &channels, STBI_rgb_alpha);
 		channels = 4;
 		return Image(data, (size_t)width, (size_t)height, (size_t)channels, false);
 	}

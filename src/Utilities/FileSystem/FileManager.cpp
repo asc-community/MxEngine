@@ -32,13 +32,13 @@
 #include "Utilities/Format/Format.h"
 #include <portable-file-dialogs.h>
 #undef CreateDirectory
-
+#undef ERROR
 
 namespace MxEngine
 {
     MxString FileManager::OpenFileDialog(const MxString& types, const MxString& description)
     {
-        auto selection = pfd::open_file("Select file", FileManager::GetRoot().string(),
+        auto selection = pfd::open_file("Select file", FileManager::GetWorkingDirectory().string(),
             { description.c_str(), types.c_str(), "All Files", "*" }, pfd::opt::multiselect).result();
         return selection.empty() ? "" : ToMxString(selection.front());
 
@@ -46,7 +46,7 @@ namespace MxEngine
 
     MxString FileManager::SaveFileDialog(const MxString& types, const MxString& description)
     {
-        auto selection = pfd::save_file("Save file", FileManager::GetRoot().string(),
+        auto selection = pfd::save_file("Save file", FileManager::GetWorkingDirectory().string(),
             { description.c_str(), types.c_str(), "All Files", "*" }).result();
         return ToMxString(selection);
     }
@@ -59,13 +59,13 @@ namespace MxEngine
             MXLOG_DEBUG("MxEngine::FileManager", "creating directory: " + ToMxString(directory));
         }
 
-        namespace fs = std::filesystem;
-        auto it = fs::recursive_directory_iterator(directory, fs::directory_options::skip_permission_denied);
+        auto it = std::filesystem::recursive_directory_iterator(directory, std::filesystem::directory_options::skip_permission_denied);
         for (const auto& entry : it)
         {
             if (entry.is_regular_file())
             {
-                FileManager::AddFile(entry.path());
+                auto proximate = FileManager::GetProximatePath(entry, directory);
+                FileManager::AddFile(proximate);
             }
         }
     }
@@ -80,12 +80,12 @@ namespace MxEngine
         return manager->filetable[filename];
     }
 
-    FilePath FileManager::GetEngineShaderFolder()
+    FilePath FileManager::GetEngineShaderDirectory()
     {
         return FileManager::GetWorkingDirectory() / "Engine" / "Shaders";
     }
 
-    FilePath FileManager::GetEngineRuntimeFolder()
+    FilePath FileManager::GetEngineRuntimeDirectory()
     {
         return FileManager::GetWorkingDirectory() / "Engine" / "Runtime";
     }
@@ -123,7 +123,7 @@ namespace MxEngine
         auto it = fs::recursive_directory_iterator(directory);
         for (const auto& entry : it)
         {
-            if (entry.path().filename() == filename)
+            if (entry.is_regular_file() && entry.path().filename() == filename)
             {
                 return entry.path();
             }
@@ -136,27 +136,104 @@ namespace MxEngine
         return std::filesystem::relative(path, directory);
     }
 
-    void FileManager::AddFile(const FilePath& file)
+    FilePath FileManager::GetProximatePath(const FilePath& path, const FilePath& directory)
     {
-        auto filename = file.string(); // we need to transform Resources\path\to.something -> path/to.something
-        std::replace_if(filename.begin(), filename.end(), [](char c) { return c == FilePath::preferred_separator; }, '/');
-        filename.erase(filename.begin(), filename.begin() + manager->rootPathSize + 1);
+        return std::filesystem::proximate(path, directory);
+    }
 
-        auto filehash = MakeStringId(filename);
-        if (manager->filetable.find(filehash) != manager->filetable.end())
+    StringId FileManager::RegisterExternalResource(const FilePath& path)
+    {
+        auto workingDirectory = FileManager::GetWorkingDirectory();
+        auto absolutePath = std::filesystem::absolute(path);
+        FilePath localPath;
+
+        if (!FileManager::IsInDirectory(absolutePath, workingDirectory))
         {
-            MXLOG_WARNING("MxEngine::FileManager", MxFormat("hash of file \"{0}\" conflicts with other one in the project: {1}", filename, manager->filetable[filehash].string()));
+            auto parent = absolutePath.parent_path();
+            auto destination = FileManager::GetProximatePath(absolutePath, parent);
+            localPath = workingDirectory / destination;
+
+            MXLOG_INFO("MxEngine::FileManager", "path " + ToMxString(absolutePath) + " is not in project directory, copying to working directory");
+
+            if(File::IsDirectory(localPath))
+                File::CreateDirectory(localPath);
+
+            FileManager::Copy(absolutePath, localPath);
+            localPath = FileManager::GetProximatePath(localPath, workingDirectory);
         }
         else
         {
-            MXLOG_DEBUG("MxEngine::FileManager", MxFormat("file added to the project: {0}", filename));
+            localPath = FileManager::GetProximatePath(absolutePath, workingDirectory);
         }
-        manager->filetable.emplace(filehash, file);
+
+        if (File::IsFile(localPath))
+        {
+            return FileManager::AddFile(localPath);
+        }
+        else
+        {
+            auto it = std::filesystem::recursive_directory_iterator(localPath);
+            for (const auto& entry : it)
+            {
+                if (entry.is_regular_file())
+                {
+                    FileManager::AddFile(entry.path());
+                }
+            }
+            return 0;
+        }
+    }
+
+    bool FileManager::IsInDirectory(const FilePath& path, const FilePath& directory)
+    {
+        auto current = path;
+        auto root = current.root_path();
+        while (!current.empty() && current != root)
+        {
+            if (current == directory) return true;
+            current = current.parent_path();
+        }
+        return false;
+    }
+
+    void FileManager::Copy(const FilePath& from, const FilePath& to)
+    {
+        std::error_code ec;
+        std::filesystem::copy(from, to, std::filesystem::copy_options::update_existing | std::filesystem::copy_options::recursive, ec);
+        if (ec)
+        {
+            MXLOG_ERROR("MxEngine::FileManager", MxFormat("cannot copy {0} to {1}", ToMxString(from), ToMxString(to)));
+        }
+    }
+
+    StringId FileManager::AddFile(const FilePath& file)
+    {
+        auto filenameString = file.lexically_normal().string();
+        std::replace(filenameString.begin(), filenameString.end(), '\\', '/');
+        FilePath filename = filenameString;
+
+        auto filehash = MakeStringId(filenameString);
+        auto collision = manager->filetable.find(filehash);
+        if (collision != manager->filetable.end() && collision->second != filename)
+        {
+            MXLOG_WARNING("MxEngine::FileManager", MxFormat("hash of file \"{0}\" conflicts with other one in the project: {1}", filenameString, manager->filetable[filehash].string()));
+        }
+        else if (collision == manager->filetable.end())
+        {
+            MXLOG_DEBUG("MxEngine::FileManager", MxFormat("file added to the project: {0}", filenameString));
+            manager->filetable.emplace(filehash, filename);
+        }
+        return filehash;
     }
 
     void FileManager::Init()
     {
         manager = Alloc<FileManagerImpl>();
+
+        auto workingDirectory = FileManager::GetWorkingDirectory();
+
+        MXLOG_INFO("MxEngine::FileManager", "project working directory is set to: " + ToMxString(workingDirectory));
+        FileManager::InitializeRootDirectory(workingDirectory);
     }
 
     void FileManager::Clone(FileManagerImpl* other)
@@ -169,32 +246,8 @@ namespace MxEngine
         return manager;
     }
 
-    FilePath& FileManager::GetRoot()
-    {
-        return manager->root;
-    }
-
     FilePath FileManager::GetWorkingDirectory()
     {
         return std::filesystem::current_path();
-    }
-
-    void FileManager::SetRoot(const FilePath& rootPath)
-    {
-        MAKE_SCOPE_TIMER("MxEngine::FileManager", "FileManager::Init()");
-        MAKE_SCOPE_PROFILER("FileManager::Init()");
-
-        if (rootPath.is_relative())
-        {
-            manager->root = std::filesystem::current_path() / rootPath;
-        }
-        else
-        {
-            manager->root = rootPath;
-        }
-        MXLOG_DEBUG("MxEngine::FileManager", "setting root directory to: " + ToMxString(manager->root));
-
-        manager->rootPathSize = rootPath.string().size();
-        FileManager::InitializeRootDirectory(rootPath);
     }
 }

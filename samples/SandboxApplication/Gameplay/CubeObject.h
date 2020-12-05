@@ -15,6 +15,9 @@ struct CubeBehaviour
 		auto pool = instances->GetInstances();
 		for (auto& instance : pool)
 		{
+			// do not spam cube instances in runtime editor
+			instance->SetDisplayInRuntimeEditor(false);
+
 			int id = int(idx - offset);
 			idx++;
 			counter += 0.0005f * dt;
@@ -46,6 +49,7 @@ void InitCube(MxObject& cube)
 		instances->MakeInstance();
 	}
 
-	auto cubeTexture = AssetManager::LoadTexture("objects/crate/crate.jpg"_id);
+	auto cubeTexture = AssetManager::LoadTexture("Resources/objects/crate/crate.jpg"_id);
 	meshRenderer->GetMaterial()->AlbedoMap = cubeTexture;
+	meshRenderer->GetMaterial()->RoughnessFactor = 0.7f;
 }

@@ -136,7 +136,7 @@ namespace MxEngine
 
     void ImageManager::SaveTexture(const char* filePath, const TextureHandle& texture)
     {
-        ImageManager::SaveTexture(MxString(filePath), texture);
+        ImageManager::SaveTexture(FilePath(filePath), texture);
     }
 
     void ImageManager::TakeScreenShot(StringId fileHash, ImageType type)
@@ -229,7 +229,7 @@ namespace MxEngine
             // Putting content of the swap (previously current row) to the symmetric row
             std::memcpy(symmetricRow, swapRow, rowByteSize);
         }
-        std::free((void*)rowByteSize);
+        std::free((void*)swapRow);
     }
 
     Image ImageManager::CombineImages(ArrayView<Image> images, size_t imagesPerRaw)

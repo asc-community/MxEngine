@@ -115,8 +115,7 @@ namespace MxEngine
         FromJson(config.PointLightTextureSize,  json["renderer"],    "point-light-texture-size");
         FromJson(config.SpotLightTextureSize,   json["renderer"],    "spot-light-texture-size" );
         FromJson(config.EngineTextureSize,      json["renderer"],    "engine-texture-size"     );
-        FromJson(config.ProjectRootDirectory,   json["filesystem"],  "root"                    );
-        FromJson(config.ShaderSourceDirectory,  json["filesystem"],  "shader-source-directory" );
+        FromJson(config.ShaderSourceDirectory,  json["debug-build"], "shader-source-directory" );
         FromJson(config.ApplicationCloseKey,    json["debug-build"], "app-close-key"           );
         FromJson(config.Style,                  json["debug-build"], "editor-style"            );
         FromJson(config.EditorOpenKey,          json["debug-build"], "editor-key"              );
@@ -140,8 +139,7 @@ namespace MxEngine
         json["renderer"   ]["point-light-texture-size"] = config.PointLightTextureSize;
         json["renderer"   ]["spot-light-texture-size" ] = config.SpotLightTextureSize;
         json["renderer"   ]["engine-texture-size"     ] = config.EngineTextureSize;
-        json["filesystem" ]["root"                    ] = config.ProjectRootDirectory;
-        json["filesystem" ]["shader-source-directory" ] = config.ShaderSourceDirectory;
+        json["debug-build"]["shader-source-directory" ] = config.ShaderSourceDirectory;
         json["debug-build"]["app-close-key"           ] = config.ApplicationCloseKey;
         json["debug-build"]["editor-style"            ] = config.Style;
         json["debug-build"]["editor-key"              ] = config.EditorOpenKey;

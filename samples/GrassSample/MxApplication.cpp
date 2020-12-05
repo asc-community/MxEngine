@@ -16,21 +16,21 @@ namespace GrassSample
             field->Name = "Grass Field";
             field->AddComponent<MeshSource>(Primitives::CreatePlane(20));
             auto fieldMaterial = field->AddComponent<MeshRenderer>()->GetMaterial();
-            fieldMaterial->AlbedoMap = AssetManager::LoadTexture("field.png"_id);
+            fieldMaterial->AlbedoMap = AssetManager::LoadTexture("Resources/field.png"_id);
 
             this->grass = MxObject::Create();
             grass->Name = "Grass Instances";
             grass->Transform.TranslateY(0.3f);
             grass->Transform.ScaleZ(0.75f);
 
-            grass->AddComponent<MeshSource>(Primitives::CreatePlane());
+            auto source = grass->AddComponent<MeshSource>(Primitives::CreatePlane());
+            source->CastsShadow = false;
 
             auto material = grass->AddComponent<MeshRenderer>()->GetMaterial();
-            material->AlbedoMap = AssetManager::LoadTexture("grass_al.png"_id, TextureFormat::RGBA);
-            material->CastsShadow = false;
+            material->AlbedoMap = AssetManager::LoadTexture("Resources/grass_al.png"_id, TextureFormat::RGBA);
 
             auto grassInstances = grass->AddComponent<InstanceFactory>();
-            for (size_t i = 0; i < 2500; i++)
+            for (size_t i = 0; i < 10000; i++)
             {
                 auto g1 = grassInstances->MakeInstance();
                 auto g2 = grassInstances->MakeInstance();
@@ -50,10 +50,10 @@ namespace GrassSample
         {
             this->lights = MxObject::Create();
             this->lights->Name = "Light Instances";
-            this->lights->AddComponent<MeshSource>(Primitives::CreateCube());
+            auto source = this->lights->AddComponent<MeshSource>(Primitives::CreateCube());
+            source->CastsShadow = false;
             auto material = this->lights->AddComponent<MeshRenderer>()->GetMaterial();
-            material->CastsShadow = false;
-            material->Emmision = 10.0f;
+            material->Emmision = 100.0f;
             auto lightFactory = this->lights->AddComponent<InstanceFactory>();
 
             constexpr size_t lightRowSize = 100;
@@ -67,13 +67,13 @@ namespace GrassSample
                     object->Transform.Scale(0.1f);
 
                     auto pointLight = object->AddComponent<PointLight>();
-                    pointLight->UseRadius(0.4f);
+                    pointLight->UseRadius(0.2f);
 
                     float r = Random::GetFloat();
                     float g = Random::GetFloat();
                     float b = Random::GetFloat();
                     pointLight->SetColor({ r, g, b });
-                    pointLight->SetIntensity(10.0f);
+                    pointLight->SetIntensity(100.0f);
 
                     object->GetComponent<Instance>()->SetColor({ r, g, b });
                 }
@@ -96,8 +96,8 @@ namespace GrassSample
             cameraObject->Transform.TranslateY(2.0f);
             
             auto skybox = cameraObject->AddComponent<Skybox>();
-            skybox->CubeMap = AssetManager::LoadCubeMap("dawn.jpg"_id);
-            skybox->Irradiance = AssetManager::LoadCubeMap("dawn_irradiance.jpg"_id);
+            skybox->CubeMap = AssetManager::LoadCubeMap("Resources/dawn.jpg"_id);
+            skybox->Irradiance = AssetManager::LoadCubeMap("Resources/dawn_irradiance.jpg"_id);
             
             auto effects = cameraObject->AddComponent<CameraEffects>();
             effects->SetBloomIterations(3);
@@ -118,6 +118,7 @@ namespace GrassSample
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Direction = MakeVector3(0.1f, 1.0f, 0.0f);
+            dirLight->SetIntensity(35.0f);
             dirLight->FollowViewport();
 
             this->InstanciateGrass();
@@ -133,6 +134,7 @@ namespace GrassSample
 
 int main()
 {
+    MxEngine::LaunchFromSourceDirectory();
     GrassSample::GrassRenderApplication app;
     app.Run();
     return 0;

@@ -17,7 +17,7 @@ float calcShadowFactor2D(vec4 fragPosLight, sampler2D depthMap, float bias, int 
 	{
 		for (int y = -blurIterations; y <= blurIterations; y++)
 		{
-			float pcfDepth = textureLod(depthMap, projCoords.xy + vec2(x, y) * 1.5f * texelSize, 0).r;
+			float pcfDepth = textureLod(depthMap, projCoords.xy + vec2(x, y) * texelSize, 0).r;
 			shadowFactor += (currentDepth > pcfDepth) ? 0.0f : 1.0f;
 		}
 	}
