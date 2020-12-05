@@ -1,0 +1,35 @@
+image: Visual Studio 2019
+
+init:
+    - git config --global core.autocrlf input
+
+clone_folder: C:\repos
+shallow_clone: true
+
+matrix:
+    fast_finish: false
+
+platform:
+    - x64
+
+configuration:
+    - Debug
+    - Release
+
+environment:
+    matrix:
+        - TOOLCHAIN: msvc14
+        - TOOLCHAIN: msvc15
+        - TOOLCHAIN: msvc16
+
+install:
+    - call ci\appveyor\set-env.bat %TOOLCHAIN% %PLATFORM%
+    - cd MxEngine
+    - git submodules update --init
+
+build_script:
+    - mkdir build
+    - cd build
+    - cmake .. %CMAKE_CONFIGURE_FLAGS%
+    - cmake --build . %CMAKE_BUILD_FLAGS%
+    
