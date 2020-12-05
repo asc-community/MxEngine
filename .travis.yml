@@ -18,10 +18,6 @@ matrix:
         - lldb-10
         - lld-10
         - libstdc++-10-dev
-        - xorg-dev
-        - libgl1-mesa-dev
-        - libxrandr-dev
-        - libxinerama-dev
     env:
     - MATRIX_EVAL="CC=clang-10 && CXX=clang++-10"
     - LINKER_FLAGS="-std=c++17 -lstdc++fs -stdlib=libstdc++"
@@ -33,25 +29,15 @@ matrix:
         packages:
         - software-properties-common
         - g++-10
-        - xorg-dev
-        - libgl1-mesa-dev
-        - libxrandr-dev
-        - libxinerama-dev
     env:
     - MATRIX_EVAL="CC=gcc-10 && CXX=g++-10"
     - LINKER_FLAGS="-std=c++17 -lstdc++fs -stdlib=libstdc++" 
-  - os: windows
-    env:
-    - MSBUILD_PATH="C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin"
-    install:
-    - choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
-    - choco install dotnetcore-sdk
-   
+    
 before_install:
     - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
     - git submodule update --init
     - eval "${MATRIX_EVAL}"
-    
+    - sudo apt-get install -y xorg-dev && sudo apt-get install -y libgl1-mesa-dev && sudo apt-get install -y libxrandr-dev && sudo apt-get install -y libxinerama-dev
 script:
 - cmake .
 - cmake --build . -j 4
@@ -59,4 +45,3 @@ compiler:
 - g++
 os:
 - linux
-- windows
