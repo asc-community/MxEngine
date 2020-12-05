@@ -3,7 +3,6 @@ image: Visual Studio 2019
 init:
     - git config --global core.autocrlf input
 
-clone_folder: C:\repos
 shallow_clone: false
 
 matrix:
@@ -23,8 +22,7 @@ environment:
         - TOOLCHAIN: msvc16
        
 install:
-    cd C:\\repos\\MxEngine
-    git submodule update --init
+    - git submodule update --init
 
 build_script:
     - mkdir build
