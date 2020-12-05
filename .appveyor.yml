@@ -4,7 +4,7 @@ init:
     - git config --global core.autocrlf input
 
 clone_folder: C:\repos
-shallow_clone: true
+shallow_clone: false
 
 matrix:
     fast_finish: false
@@ -21,10 +21,6 @@ environment:
         - TOOLCHAIN: msvc14
         - TOOLCHAIN: msvc15
         - TOOLCHAIN: msvc16
-
-before_build:
-    - cd C:\repos\MxEngine
-    - git submodule update --init
 
 build_script:
     - mkdir build
