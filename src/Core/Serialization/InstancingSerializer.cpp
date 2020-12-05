@@ -38,7 +38,10 @@ namespace MxEngine
         auto& jInstances = json["instances"];
         for (auto& instance : instances)
         {
-            Serialize(jInstances.emplace_back(), *instance);
+            if (instance->IsSerialized)
+            {
+                Serialize(jInstances.emplace_back(), *instance);
+            }
         }
     }
 

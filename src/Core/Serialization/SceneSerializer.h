@@ -29,9 +29,33 @@
 #pragma once
 
 #include "Utilities/Json/Json.h"
+#include "Utilities/STL/MxHashMap.h"
 
 namespace MxEngine
 {
+    class SceneSerializer
+    {
+        static void SerializeGlobals(JsonFile& json);
+        static void SerializeObjects(JsonFile& json);
+        static void SerializeResources(JsonFile& json);
+    public:
+
+        struct DeserializerMappings
+        {
+            MxHashMap<size_t, size_t> cameraControllers;
+        };
+        
+    private:
+
+        static void DeserializeGlobals(const JsonFile& json, DeserializerMappings& mappings);
+        static void DeserializeObjects(const JsonFile& json, DeserializerMappings& mappings);
+        static void DeserializeResources(const JsonFile& json, DeserializerMappings& mappings);
+    public:
+
+        static JsonFile Serialize();
+        static void Deserialize(const JsonFile& scene);
+    };
+
     class MxObject;
     class TransformComponent;
     class Behaviour;
@@ -99,12 +123,12 @@ namespace MxEngine
     void SerializeCubeMaps(JsonFile& json);
     void SerializeTextures(JsonFile& json);
 
-    class SceneSerializer
-    {
-        static void SerializeGlobals(JsonFile& json);
-        static void SerializeObjects(JsonFile& json);
-        static void SerializeResources(JsonFile& json);
-    public:
-        static JsonFile Serialize();
-    };
+    void ClearExistingResources();
+
+    void DeserializeScripts(const JsonFile& json, SceneSerializer::DeserializerMappings& mappings);
+    void DeserializeMaterials(const JsonFile& json, SceneSerializer::DeserializerMappings& mappings);
+    void DeserializeMeshes(const JsonFile& json, SceneSerializer::DeserializerMappings& mappings);
+    void DeserializeAudios(const JsonFile& json, SceneSerializer::DeserializerMappings& mappings);
+    void DeserializeCubeMaps(const JsonFile& json, SceneSerializer::DeserializerMappings& mappings);
+    void DeserializeTextures(const JsonFile& json, SceneSerializer::DeserializerMappings& mappings);
 }

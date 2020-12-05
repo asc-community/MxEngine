@@ -355,6 +355,8 @@ namespace MxEngine
 
     void RuntimeCompiler::RegisterExistingScripts()
     {
+        MAKE_SCOPE_PROFILER("RuntimeCompiler::RegisterExistingScripts()");
+        MAKE_SCOPE_TIMER("MxEngine::RuntimeCompiler", "RuntimeCompiler::RegisterExistingScripts()");
         AUDynArray<IObjectConstructor*> constructors;
 
         impl->runtimeObjectSystem->GetObjectFactorySystem()->GetAll(constructors);
@@ -453,6 +455,14 @@ namespace MxEngine
         impl->runtimeObjectSystem->SetAdditionalLinkOptions(linkOptions.c_str());
 
         RuntimeCompiler::RegisterExistingScripts();
+    }
+
+    void RuntimeCompiler::Destroy()
+    {
+        delete impl->runtimeObjectSystem;
+        delete impl->compilerLogger;
+        delete impl->updateListener;
+        delete impl;
     }
 
     void RuntimeCompiler::Clone(RuntimeCompilerImpl* other)

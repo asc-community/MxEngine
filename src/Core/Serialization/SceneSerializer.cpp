@@ -31,6 +31,7 @@
 #include "Core/Application/Runtime.h"
 #include "Core/Application/Physics.h"
 #include "Core/MxObject/MxObject.h"
+#include "Core/Components/Instancing/Instance.h"
 
 namespace MxEngine
 {
@@ -55,11 +56,27 @@ namespace MxEngine
         auto view = MxObject::GetObjects();
         for (auto& object : view)
         {
-            if (object.IsSerialized)
+            if (object.IsSerialized && !object.HasComponent<Instance>())
             {
                 auto& j = objects.emplace_back();
                 MxEngine::Serialize(j, object);
             }
+        }
+    }
+
+    template<typename T>
+    auto GetComponentByHandle(size_t handle)
+    {
+        auto& factory = ComponentFactory::GetFactory<T>();
+        auto& pool = factory.template GetPool<T>();
+
+        if (pool.IsAllocated(handle))
+        {
+            return Resource<T, ComponentFactory>{ pool[handle].uuid, handle};
+        }
+        else
+        {
+            return Resource<T, ComponentFactory>{ };
         }
     }
 
@@ -73,6 +90,38 @@ namespace MxEngine
         SerializeScripts  (json["scripts"  ]);
     }
 
+    void SceneSerializer::DeserializeGlobals(const JsonFile& json, DeserializerMappings& mappings)
+    {
+        size_t viewportId =  json["globals"]["viewport-id"];
+        auto viewport = GetComponentByHandle<CameraController>(viewportId);
+        Rendering::SetViewport(viewport);
+
+        Rendering::SetLightSamples(        json["globals"]["light-samples"  ]);
+        Rendering::SetShadowBlurIterations(json["globals"]["blur-iterations"]);
+        Rendering::SetDebugOverlay(        json["globals"]["overlay-debug"  ]);
+        Runtime::SetApplicationPaused(     json["globals"]["paused"         ]);
+        Runtime::SetApplicationTimeScale(  json["globals"]["time-scale"     ]);
+        Physics::SetGravity(               json["globals"]["gravity"        ]);
+        Physics::SetSimulationStep(        json["globals"]["physics-step"   ]);
+        Runtime::SetApplicationTotalTime(  json["globals"]["total-time"     ]);
+    }
+
+    void SceneSerializer::DeserializeObjects(const JsonFile& json, DeserializerMappings& mappings)
+    {
+        auto objects = MxObject::GetObjects();
+        for (auto& object : objects)
+            MxObject::Destroy(object);
+
+        // TODO: create new MxObjects
+    }
+
+    void SceneSerializer::DeserializeResources(const JsonFile& json, DeserializerMappings& mappings)
+    {
+        ClearExistingResources();
+
+        //DeserializeTextures(json["textures"], mappings);
+    }
+
     JsonFile SceneSerializer::Serialize()
     {
         JsonFile json;
@@ -82,5 +131,14 @@ namespace MxEngine
         SceneSerializer::SerializeResources(json);
 
         return json;
+    }
+
+    void SceneSerializer::Deserialize(const JsonFile& json)
+    {
+        DeserializerMappings mappings;
+
+        SceneSerializer::DeserializeResources(json, mappings);
+        SceneSerializer::DeserializeObjects(json, mappings);
+        SceneSerializer::DeserializeGlobals(json, mappings);
     }
 }

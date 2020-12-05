@@ -106,7 +106,7 @@ namespace MxEngine
 		/*!
 		roughness factor value
 		*/
-		float RoughnessFactor = 0.5f;
+		float RoughnessFactor = 0.0f;
 	};
 
 	/*!

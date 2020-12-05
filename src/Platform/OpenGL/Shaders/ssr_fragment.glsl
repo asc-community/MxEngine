@@ -25,6 +25,8 @@ uniform int   steps;
 uniform float thickness;
 uniform float maxDistance;
 uniform float maxCosAngle;
+uniform float startDistance;
+uniform float fading;
 
 void main()
 {
@@ -42,8 +44,8 @@ void main()
     vec3 pivot = normalize(reflect(-viewDirection, fragment.normal));
     vec3 startPos = fragment.position + (pivot * 0.0001f);
 
-    float currentLength = 0.3f;
-    float bestDepth = 10000.0f;
+    float currentLength = startDistance;
+    float bestDepth = 10000.0;
     vec2 bestUV = vec2(0.0f);
     float rayCosAngle = dot(viewDirection, pivot);
 
@@ -88,7 +90,7 @@ void main()
     maxFactor = max(maxFactor, fromRequiredThickness);
     maxFactor = max(maxFactor, fromCameraAngle);
     maxFactor = max(maxFactor, fromValidLength);
-   
+
     float fadingFactor = 1.0f - clamp(maxFactor, 0.0f, 1.0f);
     fadingFactor *= fragment.metallicFactor;
     ssrReflection *= fadingFactor;
@@ -101,7 +103,7 @@ void main()
 
     vec3 lum = vec3(0.2126, 0.7152, 0.0722);
     vec3 albedo = mix(fragment.albedo, vec3(1.0), fragment.metallicFactor);
-    ssrReflection = mix(ssrReflection, dot(lum, ssrReflection) * fragment.albedo, fragment.metallicFactor );
+    ssrReflection = mix(ssrReflection, dot(lum, ssrReflection) * fragment.albedo, 0.5 * fragment.metallicFactor );
     
-    OutColor = vec4(mix(objectColor, albedo * ssrReflection, fadingFactor), 1.0f);
+    OutColor = vec4(mix(objectColor, albedo * ssrReflection, fadingFactor * fading), 1.0f);
 }

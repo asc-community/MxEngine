@@ -48,7 +48,7 @@ namespace MxEngine
 		float Transparency = 1.0f;
 		float Emmision = 0.0f;
 		float Displacement = 0.025f;
-		float RoughnessFactor = 0.5f;
+		float RoughnessFactor = 0.0f;
 		float MetallicFactor = 0.0f;
 
 		Vector3 BaseColor{ 1.0f };

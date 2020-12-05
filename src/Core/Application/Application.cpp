@@ -100,6 +100,16 @@ namespace MxEngine
 		return this->timeDelta / this->TimeScale;
 	}
 
+	TimeStep Application::GetTotalElapsedTime() const
+	{
+		return this->totalElapsedTime;
+	}
+
+	void Application::SetTotalElapsedTime(TimeStep time)
+	{
+		this->totalElapsedTime = Max(time, 0.0f);
+	}
+
 	size_t Application::GetCurrentFPS() const
 	{
 		return this->counterFPS;
@@ -464,7 +474,8 @@ namespace MxEngine
 			return;
 		}
 
-		float currentTime = Time::Current();
+		// query platform time
+		float currentTime = this->GetWindow().GetTime();
 		framesPerSecond++;
 		// check if 1 second passed. If so, update current FPS counter and add event
 		if (lastFrameEnd - lastSecondEnd >= 1.0f)
@@ -476,6 +487,7 @@ namespace MxEngine
 		}
 		// limit dt to be not less than 30fps
 		this->timeDelta = this->TimeScale * Min(currentTime - lastFrameEnd, 1.0f / 30.0f);
+		this->totalElapsedTime += this->timeDelta;
 		lastFrameEnd = currentTime;
 	}
 

@@ -51,4 +51,5 @@ void InitCube(MxObject& cube)
 
 	auto cubeTexture = AssetManager::LoadTexture("Resources/objects/crate/crate.jpg"_id);
 	meshRenderer->GetMaterial()->AlbedoMap = cubeTexture;
+	meshRenderer->GetMaterial()->RoughnessFactor = 0.7f;
 }

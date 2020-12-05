@@ -43,9 +43,14 @@ namespace MxEngine
 	{
 		/*!
 		gets current time since engine start
-		\returns timestep measured in 1/100 of millisecond (depends on GLFW implementation)
+		\returns timestep measured in milliseconds
 		*/
 		static TimeStep Current();
+		/*!
+		sets current time since engine start
+		\param time new current time
+		*/
+		static void SetCurrent(TimeStep time);
 		/*!
 		gets current system time (may not be fast, try avoiding calling it each frame)
 		/returns system time (uses chrono std library)

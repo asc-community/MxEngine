@@ -134,4 +134,67 @@ namespace MxEngine
             j["format"] = texture.value.GetFormat();
         }
     }
+
+    void DeserializeTextures(const JsonFile& json)
+    {
+        for (const auto& j : json)
+        {
+
+        }
+    }
+
+    bool IsInternalEngineResource(const MxString& filepath)
+    {
+        return filepath.size() >= 2 && (filepath[0] == '[' && filepath[1] == '[');
+    }
+
+    void ClearExistingResources()
+    {
+        // just recreate compiler
+        RuntimeCompiler::Destroy();
+        RuntimeCompiler::Init();
+
+        // all materials can be safely destroyed
+        auto& materials = ResourceFactory::Get<Material>();
+        for (auto& material : materials)
+        {
+            materials.Deallocate(materials.IndexOf(material));
+        }
+
+        auto& audios = AudioFactory::Get<AudioBuffer>();
+        for (auto& audio : audios)
+        {
+            if (!IsInternalEngineResource(audio.value.GetFilePath()))
+            {
+                audios.Deallocate(audios.IndexOf(audio));
+            }
+        }
+
+        auto& meshes = ResourceFactory::Get<Mesh>();
+        for (auto& mesh : meshes)
+        {
+            if (!IsInternalEngineResource(mesh.value.GetFilePath()))
+            {
+                audios.Deallocate(meshes.IndexOf(mesh));
+            }
+        }
+
+        auto& textures = GraphicFactory::Get<Texture>();
+        for (auto& texture : textures)
+        {
+            if (!IsInternalEngineResource(texture.value.GetFilePath()))
+            {
+                textures.Deallocate(textures.IndexOf(texture));
+            }
+        }
+
+        auto& cubemaps = GraphicFactory::Get<CubeMap>();
+        for (auto& cubemap : cubemaps)
+        {
+            if (!IsInternalEngineResource(cubemap.value.GetFilePath()))
+            {
+                cubemaps.Deallocate(cubemaps.IndexOf(cubemap));
+            }
+        }
+    }
 }

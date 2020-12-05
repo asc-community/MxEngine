@@ -48,7 +48,7 @@ namespace MxEngine::GUI
         ImGui::Text("current FPS: %d | total elapsed time: %f seconds", (int)Time::FPS(), Time::Current());
         ImGui::Text("time delta: %fms | frame interval: %fms", Time::Delta() * 1000.0f, Time::UnscaledDelta() * 1000.0f);
 
-        if (ImGui::Button("serialize scene"))
+        if (ImGui::Button("save scene"))
         {
             MxString path = FileManager::SaveFileDialog("*.json", "MxEngine scene files");
             if (!path.empty())
@@ -56,6 +56,17 @@ namespace MxEngine::GUI
                 auto serializedScene = SceneSerializer::Serialize();
                 File scene(path, File::WRITE);
                 SaveJson(scene, serializedScene);
+            }
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("load scene"))
+        {
+            MxString path = FileManager::OpenFileDialog("*.json", "MxEngine scene files");
+            if (!path.empty())
+            {
+                File sceneFile(path, File::READ);
+                auto sceneJson = LoadJson(sceneFile);
+                SceneSerializer::Deserialize(sceneJson);
             }
         }
 

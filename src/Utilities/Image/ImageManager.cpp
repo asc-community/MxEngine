@@ -229,7 +229,7 @@ namespace MxEngine
             // Putting content of the swap (previously current row) to the symmetric row
             std::memcpy(symmetricRow, swapRow, rowByteSize);
         }
-        std::free((void*)rowByteSize);
+        std::free((void*)swapRow);
     }
 
     Image ImageManager::CombineImages(ArrayView<Image> images, size_t imagesPerRaw)

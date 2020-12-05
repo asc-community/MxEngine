@@ -8,16 +8,19 @@ uniform sampler2D aoTex;
 
 float applyBlurFilter(sampler2D tex, vec2 coords)
 {
-    vec2 invSize = vec2(1.0f) / textureSize(tex, 0);
+    vec2 invSize = vec2(1.0) / textureSize(tex, 0);
     
-    float r1 = texture(tex, coords + vec2(0.0f, 0.0f) * invSize).r;
-    float r2 = texture(tex, coords + vec2(1.5f, 0.0f) * invSize).r;
-    float r3 = texture(tex, coords + vec2(0.0f, 1.5f) * invSize).r;
-    float r4 = texture(tex, coords - vec2(0.0f, 1.5f) * invSize).r;
-    float r5 = texture(tex, coords - vec2(1.5f, 0.0f) * invSize).r;
-    float result = (r1 + r2 + r3 + r4 + r5) * 0.2f;
+    float result = 0.0;
 
-    return result;
+    for (int x = -2; x < 2; x++)
+    {
+        for (int y = -2; y < 2; y++)
+        {
+            result += texture(tex, coords + vec2(x, y) * invSize).r;
+        }
+    }
+
+    return result / 16.0;
 }
 
 void main()
@@ -26,5 +29,5 @@ void main()
 
     float ao = applyBlurFilter(aoTex, TexCoord);
 
-    OutColor = vec4(ao * inputColor, 1.0f);
+    OutColor = vec4(ao * inputColor, 1.0);
 }

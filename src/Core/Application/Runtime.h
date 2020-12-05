@@ -131,5 +131,10 @@ namespace MxEngine
         {
             Application::GetImpl()->TimeScale = scale;
         }
+
+        static void SetApplicationTotalTime(float time)
+        {
+            Time::SetCurrent(time);
+        }
     };
 }

@@ -65,6 +65,7 @@ namespace MxEngine
 		Config config;
 		TimeStep timeDelta = 0.0f;
 		size_t counterFPS = 0;
+		TimeStep totalElapsedTime = 0.0f;
 		bool shouldClose = false;
 		bool isRunning = false;
 
@@ -103,8 +104,10 @@ namespace MxEngine
 		RuntimeEditor& GetRuntimeEditor();
 		Config& GetConfig();
 		Window& GetWindow();
-		float GetTimeDelta() const;
-		float GetUnscaledTimeDelta() const;
+		TimeStep GetTimeDelta() const;
+		TimeStep GetUnscaledTimeDelta() const;
+		TimeStep GetTotalElapsedTime() const;
+		void SetTotalElapsedTime(TimeStep time);
 		size_t GetCurrentFPS() const;
 		void Run();
 		bool IsRunning() const;

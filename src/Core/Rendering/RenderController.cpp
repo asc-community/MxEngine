@@ -455,7 +455,9 @@ namespace MxEngine
 
 		SSRShader->SetUniformFloat("thickness", camera.SSR->GetThickness());
 		SSRShader->SetUniformFloat("maxCosAngle", camera.SSR->GetMaxCosAngle());
+		SSRShader->SetUniformFloat("startDistance", camera.SSR->GetStartDistance());
 		SSRShader->SetUniformInt("steps", (int)camera.SSR->GetSteps());
+		SSRShader->SetUniformFloat("fading", camera.SSR->GetFading());
 		SSRShader->SetUniformFloat("maxDistance", camera.SSR->GetMaxDistance());
 
 		this->RenderToTexture(output, SSRShader);

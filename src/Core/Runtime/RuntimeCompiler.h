@@ -82,6 +82,7 @@ namespace MxEngine
         static void RegisterNewScript(IObjectConstructor* constructor);
     public:
         static void Init();
+        static void Destroy();
         static void Clone(RuntimeCompilerImpl* other);
         static RuntimeCompilerImpl* GetImpl();
 

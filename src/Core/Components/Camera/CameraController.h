@@ -68,7 +68,7 @@ namespace MxEngine
 		Vector3 direction = { 0.0f, 0.0f, 1.0f };
 		Vector3 up = { 0.0f, 1.0f, 0.0f };
 		Vector3 forward ={ 0.0f, 0.0f, 1.0f };
-		Vector3 right = { 1.0f, 0.0f, 0.0f };
+		Vector3 right = { -1.0f, 0.0f, 0.0f };
 		float verticalAngle = 0.0f;
 		float horizontalAngle = 0.0f;
 		float moveSpeed = 1.0f;
