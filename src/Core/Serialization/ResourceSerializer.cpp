@@ -27,11 +27,16 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Core/Serialization/SceneSerializer.h"
+#include "Core/Serialization/DeserializerMappings.h"
 #include "Core/Application/Runtime.h"
-#include "Core/Resources/AssetManager.h"
 
 namespace MxEngine
 {
+    bool IsInternalEngineResource(const MxString& filepath)
+    {
+        return filepath.size() < 2 || (filepath[0] == '[' && filepath[1] == '[');
+    }
+
     void SerializeScripts(JsonFile& json)
     {
         auto& scripts = Runtime::GetRegisteredScripts();
@@ -44,6 +49,18 @@ namespace MxEngine
         }
     }
 
+    void DeserializeScripts(const JsonFile& json, DeserializerMappings& mappings)
+    {
+        for (const auto& j : json)
+        {
+            FilePath path = j["filepath"];
+            if (!path.empty())
+            {
+                RuntimeCompiler::AddScriptFile(j["name"], path);
+            }
+        }
+    }
+
     void SerializeMaterials(JsonFile& json)
     {
         auto& materials = ResourceFactory::Get<Material>();
@@ -52,12 +69,12 @@ namespace MxEngine
             auto& j = json.emplace_back();
             j["id"] = materials.IndexOf(material);
 
-            j["albedo-map-id"]    = material.value.AlbedoMap.IsValid()           ? material.value.AlbedoMap.GetHandle()           : size_t(-1);
-            j["emmisive-map-id"]  = material.value.EmmisiveMap.IsValid()         ? material.value.EmmisiveMap.GetHandle()         : size_t(-1);
-            j["height-map-id"]    = material.value.HeightMap.IsValid()           ? material.value.HeightMap.GetHandle()           : size_t(-1);
-            j["normal-map-id"]    = material.value.NormalMap.IsValid()           ? material.value.NormalMap.GetHandle()           : size_t(-1);
-            j["ao-map-id"]        = material.value.AmbientOcclusionMap.IsValid() ? material.value.AmbientOcclusionMap.GetHandle() : size_t(-1);
-            j["metallic-map-id"]  = material.value.MetallicMap.IsValid()         ? material.value.MetallicMap.GetHandle()         : size_t(-1);
+            j["albedo-map-id"   ] = material.value.AlbedoMap.IsValid()           ? material.value.AlbedoMap.GetHandle()           : size_t(-1);
+            j["emmisive-map-id" ] = material.value.EmmisiveMap.IsValid()         ? material.value.EmmisiveMap.GetHandle()         : size_t(-1);
+            j["height-map-id"   ] = material.value.HeightMap.IsValid()           ? material.value.HeightMap.GetHandle()           : size_t(-1);
+            j["normal-map-id"   ] = material.value.NormalMap.IsValid()           ? material.value.NormalMap.GetHandle()           : size_t(-1);
+            j["ao-map-id"       ] = material.value.AmbientOcclusionMap.IsValid() ? material.value.AmbientOcclusionMap.GetHandle() : size_t(-1);
+            j["metallic-map-id" ] = material.value.MetallicMap.IsValid()         ? material.value.MetallicMap.GetHandle()         : size_t(-1);
             j["roughness-map-id"] = material.value.RoughnessMap.IsValid()        ? material.value.RoughnessMap.GetHandle()        : size_t(-1);
 
             j["transparency"]  = material.value.Transparency;
@@ -72,17 +89,32 @@ namespace MxEngine
         }
     }
 
-    template<typename T>
-    bool ShouldBeSerialized(const T& resource)
+    void DeserializeMaterials(const JsonFile& json, DeserializerMappings& mappings)
     {
-        const MxString& filepath = resource.GetFilePath();
-        if (filepath.empty()) return false;
+        for (const auto& j : json)
+        {
+            auto material = ResourceFactory::Create<Material>();
 
-        // internal engine resource
-        if (filepath.find("[[") != filepath.npos && filepath.find("]]") != filepath.npos)
-            return false;
+            material->AlbedoMap           = mappings.Textures[j["albedo-map-id"   ]];  
+            material->EmmisiveMap         = mappings.Textures[j["emmisive-map-id" ]];
+            material->HeightMap           = mappings.Textures[j["height-map-id"   ]];  
+            material->NormalMap           = mappings.Textures[j["normal-map-id"   ]];  
+            material->AmbientOcclusionMap = mappings.Textures[j["ao-map-id"       ]];      
+            material->MetallicMap         = mappings.Textures[j["metallic-map-id" ]];
+            material->RoughnessMap        = mappings.Textures[j["roughness-map-id"]];
 
-        return true;
+            material->Transparency        = j["transparency"];
+            material->Emmision            = j["emmision"];
+            material->Displacement        = j["displacement"];
+            material->RoughnessFactor     = j["roughness"];
+            material->MetallicFactor      = j["metallic"];
+                                          
+            material->BaseColor           = j["base-color"];
+            material->UVMultipliers       = j["uv-mult"];
+            material->Name                = (MxString)j["name"];
+
+            mappings.Materials[j["id"]] = material;
+        }
     }
 
     void SerializeMeshes(JsonFile& json)
@@ -93,7 +125,22 @@ namespace MxEngine
             auto& j = json.emplace_back();
             j["id"] = meshes.IndexOf(mesh);
 
-            j["filepath"] = ShouldBeSerialized(mesh.value) ? mesh.value.GetFilePath() : "";
+            auto& path = mesh.value.GetFilePath();
+            j["filepath"] = IsInternalEngineResource(path) ? "" : path;
+        }
+    }
+
+    void DeserializeMeshes(const JsonFile& json, DeserializerMappings& mappings)
+    {
+        for (const auto& j : json)
+        {
+            FilePath path = j["filepath"];
+            if (!path.empty())
+            {
+                auto mesh = ResourceFactory::Create<Mesh>();
+                mesh->Load(path);
+                mappings.Meshes[j["id"]] = mesh;
+            }
         }
     }
 
@@ -105,7 +152,22 @@ namespace MxEngine
             auto& j = json.emplace_back();
             j["id"] = audios.IndexOf(audio);
 
-            j["filepath"] = ShouldBeSerialized(audio.value) ? audio.value.GetFilePath() : "";
+            auto& path = audio.value.GetFilePath();
+            j["filepath"] = IsInternalEngineResource(path) ? "" : path;
+        }
+    }
+
+    void DeserializeAudios(const JsonFile& json, DeserializerMappings& mappings)
+    {
+        for (const auto& j : json)
+        {
+            FilePath path = j["filepath"];
+            if (!path.empty())
+            {
+                auto audio = AudioFactory::Create<AudioBuffer>();
+                audio->Load(path);
+                mappings.AudioBuffers[j["id"]] = audio;
+            }
         }
     }
 
@@ -117,7 +179,22 @@ namespace MxEngine
             auto& j = json.emplace_back();
             j["id"] = cubemaps.IndexOf(cubemap);
 
-            j["filepath"] = ShouldBeSerialized(cubemap.value) ? cubemap.value.GetFilePath() : "";
+            auto& path = cubemap.value.GetFilePath();
+            j["filepath"] = IsInternalEngineResource(path) ? "" : path;
+        }
+    }
+
+    void DeserializeCubeMaps(const JsonFile& json, DeserializerMappings& mappings)
+    {
+        for (const auto& j : json)
+        {
+            FilePath path = j["filepath"];
+            if (!path.empty())
+            {
+                auto cubemap = GraphicFactory::Create<CubeMap>();
+                cubemap->Load(path);
+                mappings.CubeMaps[j["id"]] = cubemap;
+            }
         }
     }
 
@@ -129,23 +206,26 @@ namespace MxEngine
             auto& j = json.emplace_back();
             j["id"] = textures.IndexOf(texture);
 
-            j["filepath"] = ShouldBeSerialized(texture.value) ? texture.value.GetFilePath() : "";
-            j["wrap"] = texture.value.GetWrapType();
             j["format"] = texture.value.GetFormat();
+            j["wrap"] = texture.value.GetWrapType();
+            
+            auto& path = texture.value.GetFilePath();
+            j["filepath"] = IsInternalEngineResource(path) ? "" : path;
         }
     }
 
-    void DeserializeTextures(const JsonFile& json)
+    void DeserializeTextures(const JsonFile& json, DeserializerMappings& mappings)
     {
         for (const auto& j : json)
         {
-
+            FilePath path = j["filepath"];
+            if (!path.empty())
+            {
+                auto texture = GraphicFactory::Create<Texture>();
+                texture->Load(path, j["format"], j["wrap"]);
+                mappings.Textures[j["id"]] = texture;
+            }
         }
-    }
-
-    bool IsInternalEngineResource(const MxString& filepath)
-    {
-        return filepath.size() >= 2 && (filepath[0] == '[' && filepath[1] == '[');
     }
 
     void ClearExistingResources()

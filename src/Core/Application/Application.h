@@ -66,6 +66,7 @@ namespace MxEngine
 		TimeStep timeDelta = 0.0f;
 		size_t counterFPS = 0;
 		TimeStep totalElapsedTime = 0.0f;
+		TimeStep timeSinceLastUpdate = 0.0f;
 		bool shouldClose = false;
 		bool isRunning = false;
 

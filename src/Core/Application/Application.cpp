@@ -102,7 +102,9 @@ namespace MxEngine
 
 	TimeStep Application::GetTotalElapsedTime() const
 	{
-		return this->totalElapsedTime;
+		auto appCurrent = this->window->GetTime();
+		auto diff = appCurrent - this->timeSinceLastUpdate;
+		return this->totalElapsedTime + diff;
 	}
 
 	void Application::SetTotalElapsedTime(TimeStep time)
@@ -489,6 +491,7 @@ namespace MxEngine
 		this->timeDelta = this->TimeScale * Min(currentTime - lastFrameEnd, 1.0f / 30.0f);
 		this->totalElapsedTime += this->timeDelta;
 		lastFrameEnd = currentTime;
+		this->timeSinceLastUpdate = currentTime;
 	}
 
 	void Application::InitializeConfig(Config& config)

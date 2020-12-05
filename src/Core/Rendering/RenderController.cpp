@@ -168,6 +168,7 @@ namespace MxEngine
 		auto& computeShader = this->Pipeline.Environment.Shaders["AmbientOcclusion"_id];
 		computeShader->IgnoreNonExistingUniform("materialTex");
 		computeShader->IgnoreNonExistingUniform("albedoTex");
+		computeShader->IgnoreNonExistingUniform("camera.position");
 
 		Texture::TextureBindId textureId = 0;
 		this->BindGBuffer(camera, *computeShader, textureId);

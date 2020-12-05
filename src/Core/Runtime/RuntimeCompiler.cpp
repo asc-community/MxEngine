@@ -349,8 +349,9 @@ namespace MxEngine
     void RuntimeCompiler::AddScriptFile(const MxString& scriptName, const std::filesystem::path& scriptFilePath)
     {
         auto hash = FileManager::RegisterExternalResource(scriptFilePath);
-        auto filepath = (FileManager::GetWorkingDirectory() / FileManager::GetFilePath(hash)).lexically_normal();
-        impl->runtimeObjectSystem->AddToRuntimeFileList(filepath.string().c_str());
+        auto filepath = ToMxString(FileManager::GetWorkingDirectory() / FileManager::GetFilePath(hash).lexically_normal());
+        MXLOG_INFO("RuntimeCompiler::AddScripFile", MxFormat("added script {0} with path: {1}", scriptName, filepath));
+        impl->runtimeObjectSystem->AddToRuntimeFileList(filepath.c_str());
     }
 
     void RuntimeCompiler::RegisterExistingScripts()
