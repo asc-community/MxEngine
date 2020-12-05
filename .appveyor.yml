@@ -23,7 +23,7 @@ environment:
         - TOOLCHAIN: msvc16
 
 install:
-    - git submodules update --init
+    - git submodule update --init
 
 build_script:
     - mkdir build
