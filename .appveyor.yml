@@ -22,7 +22,7 @@ environment:
         - TOOLCHAIN: msvc15
         - TOOLCHAIN: msvc16
 
-install:
+before_build:
     - cd C:\repos\MxEngine
     - git submodule update --init
 
