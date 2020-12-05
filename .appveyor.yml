@@ -23,7 +23,6 @@ environment:
         - TOOLCHAIN: msvc16
 
 install:
-    - cd MxEngine
     - git submodules update --init
 
 build_script:
