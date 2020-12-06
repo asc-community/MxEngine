@@ -27,6 +27,6 @@ install:
 build_script:
     - mkdir build
     - cd build
-    - cmake .. %CMAKE_CONFIGURE_FLAGS%
-    - cmake --build . -j 4 -DCMAKE_BUILD_TYPE="%configuration%" %CMAKE_BUILD_FLAGS%
+    - cmake .. -DCMAKE_BUILD_TYPE="%configuration%" %CMAKE_CONFIGURE_FLAGS%
+    - cmake --build . -j 4 %CMAKE_BUILD_FLAGS%
     
