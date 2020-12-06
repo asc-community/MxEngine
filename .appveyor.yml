@@ -3,7 +3,8 @@ image: Visual Studio 2019
 init:
     - git config --global core.autocrlf input
 
-shallow_clone: false
+#shallow_clone: false
+shallow_clone: true
 
 matrix:
     fast_finish: false
@@ -20,11 +21,12 @@ environment:
         - TOOLCHAIN: msvc16
        
 install:
-    - git submodule update --init
+    #- git submodule update --init
+    - "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
 
 build_script:
     - mkdir build
     - cd build
-    - cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE:STRING="%configuration%" -DCMAKE_C_COMPILER:FILEPATH="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.28.29333/bin/Hostx64/x64/cl.exe" -DCMAKE_CXX_COMPILER:FILEPATH="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.28.29333/bin/Hostx64/x64/cl.exe"
+    - cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE:STRING="%configuration%" -DCMAKE_C_COMPILER:FILEPATH="cl.exe" -DCMAKE_CXX_COMPILER:FILEPATH="cl.exe"
     - cmake --build . -j 4
     
