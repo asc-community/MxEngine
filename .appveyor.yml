@@ -17,8 +17,6 @@ configuration:
 
 environment:
     matrix:
-        - TOOLCHAIN: msvc14
-        - TOOLCHAIN: msvc15
         - TOOLCHAIN: msvc16
        
 install:
@@ -27,6 +25,6 @@ install:
 build_script:
     - mkdir build
     - cd build
-    - cmake .. -DCMAKE_BUILD_TYPE="%configuration%" %CMAKE_CONFIGURE_FLAGS%
+    - cmake .. -DCMAKE_BUILD_TYPE:STRING="%configuration%" %CMAKE_CONFIGURE_FLAGS%
     - cmake --build . -j 4 %CMAKE_BUILD_FLAGS%
     
