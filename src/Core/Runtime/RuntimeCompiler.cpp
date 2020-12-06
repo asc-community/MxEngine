@@ -188,14 +188,21 @@ namespace MxEngine
     auto SplitString(const MxString& str, char sep)
     {
         MxVector<MxString> result;
-        std::pair<size_t, size_t> indecies(0, 0);
-        while ((indecies.second = str.find(sep, indecies.first)) != str.npos)
+        
+        // MSVC crush workaround
+        std::pair<const char*, const char*> indecies =
+            { str.begin(), str.begin() };
+        
+        indecies.second = std::find(indecies.first, str.end(), sep);
+
+        while (indecies.second != str.end())
         {
-            result.push_back(str.substr(indecies.first, indecies.second - indecies.first));
+            result.push_back(MxString(indecies.first, indecies.second - indecies.first));
             indecies.first = indecies.second + 1;
+            indecies.second = std::find(indecies.first, str.end(), sep);
         }
-        if (indecies.first < str.size()) 
-            result.push_back(str.substr(indecies.first, str.size() - indecies.first));
+        if (indecies.first != str.end()) 
+            result.push_back(MxString(indecies.first, str.end() - indecies.first));
         return result;
     }
 
@@ -427,19 +434,19 @@ namespace MxEngine
         impl->runtimeObjectSystem->GetObjectFactorySystem()->AddListener(impl->updateListener);
         impl->runtimeObjectSystem->SetAdditionalCompileOptions(GetStandardCompilerOption().c_str());
         impl->runtimeObjectSystem->AddIncludeDir(GetWorkingDirectory().c_str());
-
+        
         auto includeDirectories = GetIncludeDirectories();
         for (const auto& includeDirectory : includeDirectories)
         {
             impl->runtimeObjectSystem->AddIncludeDir(includeDirectory.c_str());
         }
-
+        
         auto libraryDirectories = GetLibraryDirectories();
         for (const auto& libraryDirectory : libraryDirectories)
         {
             impl->runtimeObjectSystem->AddLibraryDir(libraryDirectory.c_str());
         }
-
+        
         auto libraryNames = GetLibraryNames();
         MxString linkOptions;
         for (const auto& libraryName : libraryNames)
