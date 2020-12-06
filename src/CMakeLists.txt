@@ -332,5 +332,6 @@ if(MSVC)
     add_custom_command(TARGET ${LIBRARY_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E
         copy ${SHARED_LIBRARIES_PATHS} "${CMAKE_CURRENT_BINARY_DIR}"
+        || (exit 0)
     )
 endif()
