@@ -1,6 +1,6 @@
 [
   {
-    "AlbedoMap": "D:\\repos\\MxEngine\\samples\\SandboxApplication\\Resources\\objects\\helmet\\glTF-Embedded\\albedo.png",
+    "AlbedoMap": "Resources\\objects\\helmet\\glTF-Embedded\\albedo.png",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -9,14 +9,14 @@
     ],
     "Displacement": 0.0,
     "Emmision": 100.0,
-    "EmmisiveMap": "D:\\repos\\MxEngine\\samples\\SandboxApplication\\Resources\\objects\\helmet\\glTF-Embedded\\emmisive.png",
+    "EmmisiveMap": "Resources\\objects\\helmet\\glTF-Embedded\\emmisive.png",
     "HeightMap": "",
     "MetallicFactor": 1.0,
-    "MetallicMap": "D:\\repos\\MxEngine\\samples\\SandboxApplication\\Resources\\objects\\helmet\\glTF-Embedded\\metallic.png",
+    "MetallicMap": "Resources\\objects\\helmet\\glTF-Embedded\\metallic.png",
     "Name": "Material_MR",
-    "NormalMap": "D:\\repos\\MxEngine\\samples\\SandboxApplication\\Resources\\objects\\helmet\\glTF-Embedded\\normal.png",
+    "NormalMap": "Resources\\objects\\helmet\\glTF-Embedded\\normal.png",
     "RoughnessFactor": 1.0,
-    "RoughnessMap": "D:\\repos\\MxEngine\\samples\\SandboxApplication\\Resources\\objects\\helmet\\glTF-Embedded\\roughness.png",
+    "RoughnessMap": "Resources\\objects\\helmet\\glTF-Embedded\\roughness.png",
     "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
@@ -24,7 +24,7 @@
     ]
   },
   {
-    "AlbedoMap": "D:\\repos\\MxEngine\\samples\\SandboxApplication\\Resources\\objects\\helmet\\glTF-Embedded\\albedo.png",
+    "AlbedoMap": "Resources\\objects\\helmet\\glTF-Embedded\\albedo.png",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -33,14 +33,14 @@
     ],
     "Displacement": 0.0,
     "Emmision": 100.0,
-    "EmmisiveMap": "D:\\repos\\MxEngine\\samples\\SandboxApplication\\Resources\\objects\\helmet\\glTF-Embedded\\emmisive.png",
+    "EmmisiveMap": "Resources\\objects\\helmet\\glTF-Embedded\\emmisive.png",
     "HeightMap": "",
     "MetallicFactor": 1.0,
-    "MetallicMap": "D:\\repos\\MxEngine\\samples\\SandboxApplication\\Resources\\objects\\helmet\\glTF-Embedded\\metallic.png",
+    "MetallicMap": "Resources\\objects\\helmet\\glTF-Embedded\\metallic.png",
     "Name": "material #1",
-    "NormalMap": "D:\\repos\\MxEngine\\samples\\SandboxApplication\\Resources\\objects\\helmet\\glTF-Embedded\\normal.png",
+    "NormalMap": "Resources\\objects\\helmet\\glTF-Embedded\\normal.png",
     "RoughnessFactor": 1.0,
-    "RoughnessMap": "D:\\repos\\MxEngine\\samples\\SandboxApplication\\Resources\\objects\\helmet\\glTF-Embedded\\roughness.png",
+    "RoughnessMap": "Resources\\objects\\helmet\\glTF-Embedded\\roughness.png",
     "Transparency": 1.0,
     "UVMultipliers": [
       1.0,

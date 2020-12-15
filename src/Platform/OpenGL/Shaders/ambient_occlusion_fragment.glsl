@@ -77,8 +77,6 @@ void main()
 {
     FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
     mat3 TBN = computeTBN(fragment.normal);
-
-    vec3 viewDirection = normalize(camera.position - fragment.position);
     
     const float sampleDepth = 1.0 / fragment.depth;
     int samples = min(sampleCount, MAX_SAMPLES);
@@ -93,7 +91,6 @@ void main()
 
         vec3 currentNormal = normalize(2.0f * texture(normalTex, frag.xy).rgb - 1.0f);
         float Nn = dot(fragment.normal, currentNormal);
-        float Nd = dot(fragment.normal, viewDirection);
 
         float depthDiff = abs(sampleDepth - currentDepth);
         float bias = pow(Nn, 300.0);

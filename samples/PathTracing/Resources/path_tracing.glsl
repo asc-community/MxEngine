@@ -58,7 +58,7 @@ void InitializeScene()
     spheres[1].material.refraction = 0.0;
     spheres[2].material.refraction = 0.8;
     spheres[0].material.reflectance = vec3(1.0, 0.0, 0.0);
-    spheres[1].material.reflectance = vec3(0.9, 0.7, 0.0);
+    spheres[1].material.reflectance = vec3(1.0, 0.4, 0.0);
     spheres[2].material.reflectance = vec3(1.0, 1.0, 1.0);
     spheres[0].material.emmitance = vec3(0.0);
     spheres[1].material.emmitance = vec3(0.0);
@@ -191,18 +191,22 @@ vec3 RandomHemispherePoint(vec2 rand, vec3 n)
     return dot(v, n) < 0.0 ? -v : v;
 }
 
+float FresnelSchlick(float nIn, float nOut, vec3 direction, vec3 normal)
+{
+    float R0 = ((nOut - nIn) * (nOut - nIn)) / ((nOut + nIn) * (nOut + nIn));
+    float fresnel = R0 + (1.0 - R0) * pow((1.0 - abs(dot(direction, normal))), 5.0);
+    return fresnel;
+}
+
 vec3 IdealRefract(vec3 direction, vec3 normal, float nIn, float nOut)
 {
     bool fromOutside = dot(normal, direction) < 0.0;
     float ratio = fromOutside ? nOut / nIn : nIn / nOut;
-    float R0 = ((nOut - nIn) * (nOut - nIn)) / ((nOut + nIn) * (nOut + nIn));
-    float fresnel = R0 + (1.0 - R0) * pow((1.0 - dot(direction, normal)), 5.0);
 
     vec3 refraction, reflection;
 
     refraction = fromOutside ? refract(direction, normal, ratio) : -refract(-direction, normal, ratio);
-    reflection = fromOutside ? reflect(direction, normal) : reflect(direction, normal);
-   
+    reflection = reflect(direction, normal);
 
     return refraction == vec3(0.0) ? reflection : refraction;
 }
@@ -343,12 +347,18 @@ vec3 TracePath(vec3 rayOrigin, vec3 rayDirection, float seed)
 
             newRayDirection = tr * newRayDirection;
 
+            const float nIn = 0.99;
+            const float nOut = 1.0;
+
+            float fresnel = FresnelSchlick(nIn, nOut, rayDirection, normal);
+
             float refractionProbability = RandomNoise(cos(seed * TexCoord.yx));
-            bool refracted = material.refraction > refractionProbability;
+            bool refracted = material.refraction > refractionProbability &&
+                             fresnel < refractionProbability;
 
             if (refracted)
             {
-                vec3 idealRefraction = IdealRefract(rayDirection, normal, 0.99, 1.0);
+                vec3 idealRefraction = IdealRefract(rayDirection, normal, nIn, nOut);
                 newRayDirection = normalize(mix(-newRayDirection, idealRefraction, material.roughness));
                 newRayOrigin += normal * (dot(newRayDirection, normal) < 0.0 ? -0.8 : 0.8);
             }

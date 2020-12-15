@@ -4,7 +4,7 @@
 
 float GGXPartialGeometry(float NV, float roughness2)
 {
-    return NV / (NV * (1.0f - roughness2) + roughness2);
+    return NV / mix(NV, 1.0, roughness2);
 }
 
 float GGXDistribution(float NH, float roughness)
@@ -26,7 +26,8 @@ float GGXSmith(float NV, float NL, float roughness)
 
 vec3 fresnelSchlick(vec3 F0, float HV)
 {
-    return (1.0f - F0) * pow(1.0f - HV, 5.0f) + F0;
+    vec3 fresnel = F0 + (1.0 - F0) * pow(2.0, (-5.55473 * HV - 6.98316) * HV);
+    return fresnel;
 }
 
 mat3 computeSampleTransform(vec3 normal)
@@ -43,8 +44,8 @@ mat3 computeSampleTransform(vec3 normal)
 vec3 GGXImportanceSample(vec2 Xi, float roughness, vec3 normal, mat3 transform)
 {
     float alpha = roughness * roughness;
-    float phi = 2.0f * PI * Xi.x;
-    float cosTheta = sqrt((1.0f - Xi.y) / (1.0 + (alpha * alpha - 1.0f) * Xi.y));
+    float phi = 2.0 * PI * Xi.x;
+    float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (alpha * alpha - 1.0f) * Xi.y));
     float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
     vec3 H = vec3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
     return transform * H;

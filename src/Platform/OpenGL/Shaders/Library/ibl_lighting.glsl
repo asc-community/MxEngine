@@ -16,7 +16,6 @@ vec3 calculateIBL(FragmentInfo fragment, vec3 viewDirection, EnvironmentInfo env
         vec2 Xi = sampleHammersley(i, invEnvironmentSampleCount);
         vec3 H = GGXImportanceSample(Xi, roughness, fragment.normal, sampleTransform);
         vec3 direction = 2.0f * dot(viewDirection, H) * H - viewDirection;
-        vec3 sampleDirection = environment.skyboxRotation * direction;
         
         vec3 FK;
         float pdf;
@@ -25,16 +24,17 @@ vec3 calculateIBL(FragmentInfo fragment, vec3 viewDirection, EnvironmentInfo env
         FKtotal += FK;
         float lod = computeLOD(A, pdf, direction);
 
-        vec3 sampledColor = textureLod(environment.skybox, sampleDirection, lod).rgb;
+        vec3 sampledColor = textureLod(environment.skybox, environment.skyboxRotation * direction, lod).rgb;
         specularColor += specularK * pow(sampledColor, vec3(gamma));
     }
     specularColor *= invEnvironmentSampleCount;
     FKtotal *= invEnvironmentSampleCount;
     vec3 irradianceColor = calcReflectionColor(environment.irradiance, environment.skyboxRotation, viewDirection, fragment.normal);
     irradianceColor = pow(irradianceColor, vec3(gamma));
-
+    
     float diffuseCoef = 1.0f - metallic;
     vec3 diffuseColor = fragment.albedo * (irradianceColor - irradianceColor * FKtotal) * diffuseCoef;
+    vec3 iblColor = (diffuseColor + specularColor) * environment.intensity;
 
-    return (diffuseColor + specularColor) * (environment.intensity * fragment.ambientOcclusion);
+    return fragment.emmisionFactor * fragment.albedo + iblColor * fragment.ambientOcclusion;
 }

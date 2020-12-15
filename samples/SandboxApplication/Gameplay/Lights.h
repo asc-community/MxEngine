@@ -34,14 +34,14 @@ void InitSpotLight(MxObject& object)
 
     auto light = object.AddComponent<SpotLight>();
     light->Direction     = { 1.0f, -1.3f, 1.0f };
-    light->SetIntensity(12.0f);
+    light->SetIntensity(500.0f);
     light->UseOuterAngle(70.0f);
     light->UseInnerAngle(30.0f);
     light->ToggleShadowCast(true);
 
     auto material = object.GetOrAddComponent<MeshRenderer>()->GetMaterial();
     material->BaseColor = light->GetColor();
-    material->Emmision = 10.0f;
+    material->Emmision = 50.0f;
     
     object.AddComponent<MeshSource>(Primitives::CreateCube());
     object.Transform

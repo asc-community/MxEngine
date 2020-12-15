@@ -17,7 +17,8 @@ public:
 
     virtual void OnUpdate(MxEngine::MxObject& self) override
     {
-        self.Transform.TranslateX(5.0f * Time::Delta());
+        //self.Transform.TranslateX(5.0f * Time::Delta());
+        self.Transform.RotateY(5.0f * Time::Delta());
     }
 };
 

@@ -102,6 +102,18 @@ namespace eastl
     {
         s = j.get<std::string>().c_str();
     }
+
+    void to_json(MxEngine::JsonFile& j, const MxEngine::MxVector<MxString>& v)
+    {
+        for (const auto& e : v)
+            j.push_back(e);
+    }
+
+    void from_json(const MxEngine::JsonFile& j, MxEngine::MxVector<MxString>& v)
+    {
+        for (const auto& e : j)
+            v.push_back(e);
+    }
 }
 
 namespace std::filesystem

@@ -90,10 +90,11 @@ namespace MxEngine
         size_t EngineTextureSize = 512;
 
         // Filesystem settings
-        MxString ShaderSourceDirectory = "../../src/Platform/OpenGL/Shaders";
+        MxVector<MxString> IgnoredFolders = { "MxEngine", "out", "build" };
 
         // Debug settings
         bool GraphicAPIDebug = true;
+        MxString ShaderSourceDirectory = "../../src/Platform/OpenGL/Shaders";
         bool AutoRecompileFiles = false;
         EditorStyle Style = EditorStyle::MXENGINE;
         KeyCode ApplicationCloseKey = KeyCode::ESCAPE;

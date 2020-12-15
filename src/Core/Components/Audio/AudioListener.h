@@ -52,6 +52,7 @@ namespace MxEngine
         Vector3 velocity{ 0.0f, 0.0f, 0.0f };
         float soundSpeed = 343.3f;
         float dopplerFactor = 1.0f;
+        SoundModel model = SoundModel::INVERSE_DISTANCE_CLAMPED;
     public:
         void OnUpdate(float timeDelta);
 
@@ -68,5 +69,6 @@ namespace MxEngine
         const Vector3& GetVelocity() const;
         float GetSoundSpeed() const;
         float GetDopplerFactor() const;
+        SoundModel GetSoundModel() const;
     };
 }

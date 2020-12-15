@@ -30,6 +30,7 @@
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/Memory/Memory.h"
 #include "Utilities/Format/Format.h"
+#include "Core/Config/GlobalConfig.h"
 #include <portable-file-dialogs.h>
 #undef CreateDirectory
 #undef ERROR
@@ -59,13 +60,30 @@ namespace MxEngine
             MXLOG_DEBUG("MxEngine::FileManager", "creating directory: " + ToMxString(directory));
         }
 
+        MxVector<FilePath> ignoredEntries;
+        auto& ignoredFolders = GlobalConfig::GetIgnoredFolders();
+        for(const auto& folder : ignoredFolders)
+        {
+            ignoredEntries.push_back(FileManager::SearchSubDirectoryInDirectory(directory, folder));
+        }
+
+        auto InIgnoredDirectories = [&ignoredEntries](const FilePath& path)
+        {
+            for (const auto& directory : ignoredEntries)
+                if (FileManager::IsInDirectory(path, directory))
+                    return true;
+            return false;
+        };
+
         auto it = std::filesystem::recursive_directory_iterator(directory, std::filesystem::directory_options::skip_permission_denied);
         for (const auto& entry : it)
         {
             if (entry.is_regular_file())
             {
                 auto proximate = FileManager::GetProximatePath(entry, directory);
-                FileManager::AddFile(proximate);
+                
+                if(!InIgnoredDirectories(entry.path()))
+                    FileManager::AddFile(proximate);
             }
         }
     }
@@ -110,12 +128,12 @@ namespace MxEngine
         return FilePath();
     }
 
-    FilePath FileManager::SearchInDirectory(const FilePath& directory, const MxString& filename)
+    FilePath FileManager::SearchFileInDirectory(const FilePath& directory, const MxString& filename)
     {
-        return SearchInDirectory(directory, ToFilePath(filename));
+        return SearchFileInDirectory(directory, ToFilePath(filename));
     }
 
-    FilePath FileManager::SearchInDirectory(const FilePath& directory, const FilePath& filename)
+    FilePath FileManager::SearchFileInDirectory(const FilePath& directory, const FilePath& filename)
     {
         if (!File::Exists(directory)) return FilePath();
 
@@ -129,6 +147,27 @@ namespace MxEngine
             }
         }
         return FilePath();
+    }
+
+    FilePath FileManager::SearchSubDirectoryInDirectory(const FilePath& directory, const FilePath& filename)
+    {
+        if (!File::Exists(directory)) return FilePath();
+
+        namespace fs = std::filesystem;
+        auto it = fs::recursive_directory_iterator(directory);
+        for (const auto& entry : it)
+        {
+            if (entry.is_directory() && entry.path().filename() == filename)
+            {
+                return entry.path();
+            }
+        }
+        return FilePath();
+    }
+
+    FilePath FileManager::SearchSubDirectoryInDirectory(const FilePath& directory, const MxString& filename)
+    {
+        return FileManager::SearchSubDirectoryInDirectory(directory, ToFilePath(filename));
     }
 
     FilePath FileManager::GetRelativePath(const FilePath& path, const FilePath& directory)
@@ -229,11 +268,8 @@ namespace MxEngine
     void FileManager::Init()
     {
         manager = Alloc<FileManagerImpl>();
-
         auto workingDirectory = FileManager::GetWorkingDirectory();
-
         MXLOG_INFO("MxEngine::FileManager", "project working directory is set to: " + ToMxString(workingDirectory));
-        FileManager::InitializeRootDirectory(workingDirectory);
     }
 
     void FileManager::Clone(FileManagerImpl* other)

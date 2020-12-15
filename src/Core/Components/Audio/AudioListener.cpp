@@ -76,7 +76,8 @@ namespace MxEngine
 
     void AudioListener::SetSoundModel(SoundModel model)
     {
-        ALCALL(alDistanceModel(soundModelTable[(size_t)model]));
+        this->model = model;
+        ALCALL(alDistanceModel(soundModelTable[(size_t)this->model]));
     }
 
     const Vector3& AudioListener::GetVelocity() const
@@ -92,5 +93,10 @@ namespace MxEngine
     float AudioListener::GetDopplerFactor() const
     {
         return this->dopplerFactor;
+    }
+
+    SoundModel AudioListener::GetSoundModel() const
+    {
+        return this->model;
     }
 }

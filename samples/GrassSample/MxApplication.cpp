@@ -53,7 +53,7 @@ namespace GrassSample
             auto source = this->lights->AddComponent<MeshSource>(Primitives::CreateCube());
             source->CastsShadow = false;
             auto material = this->lights->AddComponent<MeshRenderer>()->GetMaterial();
-            material->Emmision = 100.0f;
+            material->Emmision = 200.0f;
             auto lightFactory = this->lights->AddComponent<InstanceFactory>();
 
             constexpr size_t lightRowSize = 100;
@@ -67,7 +67,7 @@ namespace GrassSample
                     object->Transform.Scale(0.1f);
 
                     auto pointLight = object->AddComponent<PointLight>();
-                    pointLight->UseRadius(0.2f);
+                    pointLight->UseRadius(0.25f);
 
                     float r = Random::GetFloat();
                     float g = Random::GetFloat();

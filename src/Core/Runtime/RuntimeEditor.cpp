@@ -231,7 +231,7 @@ namespace MxEngine
 		// resolve file paths, if file was not found - skip whole shader to avoid crashing in listener
 		for (auto& [filepath, modifiedTime] : dependencies)
 		{
-			auto resolvedFilePath = FileManager::SearchInDirectory(lookupDirectory, filepath);
+			auto resolvedFilePath = FileManager::SearchFileInDirectory(lookupDirectory, filepath);
 			if (resolvedFilePath.empty())
 			{
 				MXLOG_WARNING("MxEngine::Runtime", "cannot find shader file for debug: " + ToMxString(filepath));

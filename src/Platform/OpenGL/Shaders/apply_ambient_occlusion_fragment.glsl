@@ -8,7 +8,7 @@ uniform sampler2D aoTex;
 
 float applyBlurFilter(sampler2D tex, vec2 coords)
 {
-    vec2 invSize = vec2(1.0) / textureSize(tex, 0);
+    vec2 invSize = vec2(1.5) / textureSize(tex, 0);
     
     float result = 0.0;
 

@@ -525,6 +525,8 @@ namespace MxEngine
 			MXLOG_ERROR("MxEngine::Application", "config was not loaded properly: " + ToMxString(configPath));
 		}
 
+		FileManager::InitializeRootDirectory(FileManager::GetWorkingDirectory());
+
 		#if defined(MXENGINE_SHIPPING)
 		config.GraphicAPIDebug = false;
 		config.EditorOpenKey = KeyCode::UNKNOWN;

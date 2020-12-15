@@ -28,15 +28,75 @@
 
 #include "Core/MxObject/MxObject.h"
 #include "Core/Serialization/SceneSerializer.h"
+#include "Core/Serialization/DeserializerMappings.h"
 #include "Core/Components/Components.h"
 
 namespace MxEngine
 {
     template<typename T>
-    void SerializeComponentBase(JsonFile& json, const T& component)
+    void SerializeComponent(JsonFile& json, const MxObject& object)
     {
-        json["id"] = MxObject::GetComponentHandle(component).GetHandle();
+        CResource<T> c = object.GetComponent<T>();
+        if (c.IsValid()) 
+        {
+            json["id"] = c.GetHandle();
+            Serialize(json, *c);
+        }
     }
+
+    template<typename T>
+    void DeserializeComponent(const JsonFile& json, DeserializerMappings& mappings, MxObject& object)
+    {
+        if (json.empty()) return;
+        CResource<T> c = object.AddComponent<T>();
+        Deserialize(json, mappings, *c);
+    }
+
+    //template<>
+    //void DeserializeComponent<Instance>(const JsonFile& json, DeserializerMappings& mappings, MxObject& object)
+    //{
+    //    if (json.empty()) return;
+    //    CResource<Instance> c = object.GetComponent<Instance>();
+    //    Deserialize(json, mappings, *c);
+    //}
+
+    using SerializeCallback = void(*)(JsonFile&, const MxObject&);
+    using DeserializeCallback = void(*)(const JsonFile&, DeserializerMappings&, MxObject&);
+    using SerializerPair = std::pair<SerializeCallback, DeserializeCallback>;
+
+    #define REGISTER(component) std::make_pair<SerializeCallback, DeserializeCallback>(\
+         [](JsonFile& json, const MxObject& object) { SerializeComponent<component>(json[#component], object); },\
+         [](const JsonFile& json, DeserializerMappings& mappings, MxObject& object) { DeserializeComponent<component>(json[#component], mappings, object); })
+
+    std::array callbacks =
+    {
+        //REGISTER(Behaviour),
+        //REGISTER(DirectionalLight),
+        //REGISTER(SpotLight),
+        //REGISTER(PointLight),
+        //REGISTER(Instance),
+        //REGISTER(InstanceFactory),
+        //REGISTER(CameraController),
+        //REGISTER(CameraEffects),
+        //REGISTER(CameraToneMapping),
+        //REGISTER(VRCameraController),
+        //REGISTER(InputController),
+        //REGISTER(CameraSSR),
+        //REGISTER(MeshRenderer),
+        //REGISTER(MeshSource),
+        //REGISTER(DebugDraw),
+        //REGISTER(Skybox),
+        //REGISTER(MeshLOD),
+        REGISTER(AudioListener),
+        //REGISTER(AudioSource),
+        //REGISTER(RigidBody),
+        //REGISTER(CharacterController),
+        //REGISTER(BoxCollider),
+        //REGISTER(SphereCollider),
+        //REGISTER(CapsuleCollider),
+        //REGISTER(CylinderCollider),
+        //REGISTER(CompoundCollider),
+    };
 
     void Serialize(JsonFile& json, const MxObject& object)
     {
@@ -44,50 +104,24 @@ namespace MxEngine
         json["displayed"] = object.IsDisplayedInRuntimeEditor();
         json["name"] = object.Name;
         Serialize(json["transform"], object.Transform);
-
-        using CallbackType = void(*)(JsonFile&, const MxObject&);
-        #define REGISTER(name) (CallbackType)[](JsonFile& json, const MxObject& object) {\
-            auto c = object.GetComponent<name>();\
-            if(c.IsValid()) {\
-                SerializeComponentBase(json[#name], *c);\
-                MxEngine::Serialize(json[#name], *c);\
-            }\
-        }
-
-        std::array callbacks =
-        {
-            REGISTER(Behaviour),
-            REGISTER(DirectionalLight),
-            REGISTER(SpotLight),
-            REGISTER(PointLight),
-            REGISTER(Instance),
-            REGISTER(InstanceFactory),
-            REGISTER(CameraController),
-            REGISTER(CameraEffects),
-            REGISTER(CameraToneMapping),
-            REGISTER(VRCameraController),
-            REGISTER(InputController),
-            REGISTER(CameraSSR),
-            REGISTER(MeshRenderer),
-            REGISTER(MeshSource),
-            REGISTER(DebugDraw),
-            REGISTER(Skybox),
-            REGISTER(MeshLOD),
-            REGISTER(AudioListener),
-            REGISTER(AudioSource),
-            REGISTER(RigidBody),
-            REGISTER(CharacterController),
-            REGISTER(BoxCollider),
-            REGISTER(SphereCollider),
-            REGISTER(CapsuleCollider),
-            REGISTER(CylinderCollider),
-            REGISTER(CompoundCollider),
-        };
        
         auto& components = json["components"];
-        for (const auto& callback : callbacks)
+        for (const auto& [serialize, deserialize] : callbacks)
         {
-            callback(components, object);
+            serialize(components, object);
+        }
+    }
+
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, MxObject& object)
+    {
+        object.SetDisplayInRuntimeEditor(json["displayed"]);
+        object.Name = json["name"].get<MxString>();
+        //Deserialize(json["transform"], mappings, object.Transform);
+
+        auto& components = json["components"];
+        for (const auto& [serialize, deserialize] : callbacks)
+        {
+            deserialize(components, mappings, object);
         }
     }
 }

@@ -29,12 +29,14 @@
 #include "Core/Serialization/SceneSerializer.h"
 #include "Core/Components/Audio/AudioListener.h"
 #include "Core/Components/Audio/AudioSource.h"
+#include "Core/Serialization/DeserializerMappings.h"
 
 namespace MxEngine
 {
     void Serialize(JsonFile& json, const AudioListener& listener)
     {
         json["doppler"] = listener.GetDopplerFactor();
+        json["sound-model"] = listener.GetSoundModel();
         json["sound-speed"] = listener.GetSoundSpeed();
         json["velocity"] = listener.GetVelocity();
         json["volume"] = listener.GetVolume();
@@ -44,6 +46,9 @@ namespace MxEngine
     {
         auto buffer = source.GetLoadedSource();
         json["source-id"] = buffer.IsValid() ? buffer.GetHandle() : size_t(-1);
+        json["is-relative"] = source.IsRelative();
+        json["is-looping"] = source.IsLooping();
+        json["is-playing"] = source.IsPlaying();
         json["direction"] = source.GetDirection();
         json["inner-angle"] = source.GetInnerAngle();
         json["outer-angle"] = source.GetOuterAngle();
@@ -53,5 +58,34 @@ namespace MxEngine
         json["speed"] = source.GetSpeed();
         json["velocity"] = source.GetVelocity();
         json["volume"] = source.GetVolume();
+    }
+
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, AudioListener& listener)
+    {
+        listener.SetDopplerFactor(json["doppler"]);
+        listener.SetSoundModel(json["sound-model"]);
+        listener.SetSoundSpeed(json["sound-speed"]);
+        listener.SetVelocity(json["velocity"]);
+        listener.SetVolume(json["volume"]);
+    }
+
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, AudioSource& source)
+    {
+        auto buffer = mappings.AudioBuffers[json["source-id"]];
+        source.Load(buffer);
+
+        bool(json["is-playing"]) ? source.Play() : source.Pause();
+
+        source.SetRelative(json["is-relative"]);
+        source.SetLooping(json["is-looping"]);
+        source.SetDirection(json["direction"]);
+        source.SetInnerAngle(json["inner-angle"]);
+        source.SetOuterAngle(json["outer-angle"]);
+        source.SetOuterAngleVolume(json["outer-angle-volume"]);
+        source.SetReferenceDistance(json["reference-distance"]);
+        source.SetRollofFactor(json["rollof-factor"]);
+        source.SetPlaybackSpeed(json["speed"]);
+        source.SetVelocity(json["velocity"]);
+        source.SetVolume(json["volume"]);
     }
 }

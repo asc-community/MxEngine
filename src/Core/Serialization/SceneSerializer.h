@@ -109,19 +109,49 @@ namespace MxEngine
     void Serialize(JsonFile& json, const CompoundCollider&);
     void Serialize(JsonFile& json, const Script&);
 
-    void SerializeScripts(JsonFile& json);
+    void SerializeScripts(  JsonFile& json);
     void SerializeMaterials(JsonFile& json);
-    void SerializeMeshes(JsonFile& json);
-    void SerializeAudios(JsonFile& json);
-    void SerializeCubeMaps(JsonFile& json);
-    void SerializeTextures(JsonFile& json);
+    void SerializeMeshes(   JsonFile& json);
+    void SerializeAudios(   JsonFile& json);
+    void SerializeCubeMaps( JsonFile& json);
+    void SerializeTextures( JsonFile& json);
 
     void ClearExistingResources();
 
-    void DeserializeScripts(const JsonFile& json, DeserializerMappings& mappings);
+    void DeserializeScripts(  const JsonFile& json, DeserializerMappings& mappings);
     void DeserializeMaterials(const JsonFile& json, DeserializerMappings& mappings);
-    void DeserializeMeshes(const JsonFile& json, DeserializerMappings& mappings);
-    void DeserializeAudios(const JsonFile& json, DeserializerMappings& mappings);
-    void DeserializeCubeMaps(const JsonFile& json, DeserializerMappings& mappings);
-    void DeserializeTextures(const JsonFile& json, DeserializerMappings& mappings);
+    void DeserializeMeshes(   const JsonFile& json, DeserializerMappings& mappings);
+    void DeserializeAudios(   const JsonFile& json, DeserializerMappings& mappings);
+    void DeserializeCubeMaps( const JsonFile& json, DeserializerMappings& mappings);
+    void DeserializeTextures( const JsonFile& json, DeserializerMappings& mappings);
+
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, MxObject&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, TransformComponent&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, Behaviour&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, DirectionalLight&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, PointLight&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, SpotLight&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, InstanceFactory&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, Instance&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, CameraController&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, CameraSSR&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, CameraToneMapping&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, CameraEffects&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, VRCameraController&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, InputController&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, MeshRenderer&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, MeshSource&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, Skybox&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, MeshLOD&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, DebugDraw&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, AudioListener&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, AudioSource&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, RigidBody&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, CharacterController&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, BoxCollider&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, SphereCollider&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, CapsuleCollider&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, CylinderCollider&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, CompoundCollider&);
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, Script&);
 }

@@ -35,4 +35,9 @@ namespace MxEngine
     {
         json["name"] = script.GetScriptName();
     }
+
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, Script& script)
+    {
+        script.SetScriptableObject(json["name"].get<MxString>());
+    }
 }

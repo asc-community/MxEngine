@@ -111,6 +111,11 @@ namespace MxEngine
         return CFG(EngineTextureSize);
     }
 
+    const MxVector<MxString>& GlobalConfig::GetIgnoredFolders()
+    {
+        return CFG(IgnoredFolders);
+    }
+
     const MxString& GlobalConfig::GetShaderSourceDirectory()
     {
         return CFG(ShaderSourceDirectory);

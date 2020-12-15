@@ -388,7 +388,7 @@ namespace MxEngine
         StringId scriptNameHash = MakeStringId(scriptName);
         
         auto workingDirectory = FileManager::GetWorkingDirectory();
-        FilePath filepath = FileManager::SearchInDirectory(workingDirectory, ToFilePath(scriptName + ".cpp"));
+        FilePath filepath = FileManager::SearchFileInDirectory(workingDirectory, ToFilePath(scriptName + ".cpp"));
         if (filepath.empty())
         {
             MXLOG_ERROR("MxEngine::RuntimeCompiler", MxFormat("cannot find {0}.cpp file in project working directory", scriptName));
