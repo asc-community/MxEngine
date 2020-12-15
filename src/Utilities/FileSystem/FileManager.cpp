@@ -64,7 +64,7 @@ namespace MxEngine
         auto& ignoredFolders = GlobalConfig::GetIgnoredFolders();
         for(const auto& folder : ignoredFolders)
         {
-            ignoredEntries.push_back(FileManager::SearchSubDirectoryInDirectory(directory, folder));
+             ignoredEntries.push_back(directory / ToFilePath(folder));
         }
 
         auto InIgnoredDirectories = [&ignoredEntries](const FilePath& path)

@@ -90,7 +90,7 @@ namespace MxEngine
         size_t EngineTextureSize = 512;
 
         // Filesystem settings
-        MxVector<MxString> IgnoredFolders = { "MxEngine", "out", "build" };
+        MxVector<MxString> IgnoredFolders = { "MxEngine", "out", "build", ".git", ".vs" };
 
         // Debug settings
         bool GraphicAPIDebug = true;
