@@ -59,8 +59,12 @@ namespace MxEngine::GUI
 		if (ImGui::DragFloat("intensity", &intensity, 0.01f))
 			skybox.SetIntensity(intensity);
 
+		ImGui::PushID(1);
 		DrawCubeMapEditor("cubemap", skybox.CubeMap);
+		ImGui::PopID(); 
+		ImGui::PushID(2);
 		DrawCubeMapEditor("irradiance", skybox.Irradiance);
+		ImGui::PopID();
 	}
 
 	void DebugDrawEditor(DebugDraw& debugDraw)

@@ -55,6 +55,7 @@ namespace MxEngine
 
 		void DrawMxObjectList(bool* isOpen = nullptr);
 		void DrawMxObjectEditorWindow(bool* isOpen = nullptr);
+		void DrawTransformManipulator(TransformComponent& transform);
   	public:
 		RuntimeEditor();
 		RuntimeEditor(const RuntimeEditor&) = delete;
@@ -77,6 +78,7 @@ namespace MxEngine
 		Vector2 GetViewportSize() const;
 		Vector2 GetViewportPosition() const;
 		bool IsActive() const;
+		bool IsKeyHeld(KeyCode key);
 
 		void DrawMxObject(const MxString& name, MxObject& object);
 

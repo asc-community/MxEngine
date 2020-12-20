@@ -142,6 +142,7 @@ set(eastl ${SUBMODULES_PATH}/EASTL)
 set(eabase ${SUBMODULES_PATH}/EABase)
 set(assimp ${SUBMODULES_PATH}/assimp)
 set(bullet3 ${SUBMODULES_PATH}/bullet3)
+set(imguizmo ${SUBMODULES_PATH}/ImGuizmo)
 set(portable_file_dialogs ${SUBMODULES_PATH}/portable-file-dialogs)
 set(stduuid ${SUBMODULES_PATH}/stduuid)
 set(runtime_compiled_cpp ${SUBMODULES_PATH}/RuntimeCompiledCPlusPlus/Aurora)
@@ -202,6 +203,7 @@ set(THIRD_PARTY_INCLUDE_DIRS
     ${miniaudio}/extras
     ${portable_file_dialogs}
     ${runtime_compiled_cpp}
+    ${imguizmo}
     ${imgui}
     ${glm}
     ${stb}
@@ -216,6 +218,7 @@ set(imgui_binary_dir ${THIRD_PARTY_BUILD_DIR}/imgui)
 set(eastl_binary_dir ${THIRD_PARTY_BUILD_DIR}/eastl)
 set(eabase_binary_dir ${THIRD_PARTY_BUILD_DIR}/eabase)
 set(openal_binary_dir ${THIRD_PARTY_BUILD_DIR}/openal)
+set(imguizmo_binary_dir ${THIRD_PARTY_BUILD_DIR}/imguizmo)
 set(runtime_compiled_cpp_binary_dir ${THIRD_PARTY_BUILD_DIR}/runtime_compiled_cpp)
 
 add_subdirectory(${fmt} ${fmt_binary_dir})
@@ -226,6 +229,7 @@ add_subdirectory(${imgui} ${imgui_binary_dir})
 add_subdirectory(${eastl} ${eastl_binary_dir})
 add_subdirectory(${eabase} ${eabase_binary_dir})
 add_subdirectory(${openal} ${openal_binary_dir})
+add_subdirectory(${imguizmo} ${imguizmo_binary_dir})
 add_subdirectory(${runtime_compiled_cpp} ${runtime_compiled_cpp_binary_dir})
 
 set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
@@ -233,6 +237,7 @@ add_subdirectory(${glfw} ${glfw_binary_dir})
 if(WIN32)
     set_target_properties(glfw PROPERTIES IMPORT_SUFFIX ".lib")
 endif()
+target_include_directories(ImGuizmo PUBLIC ${imgui})
 
 set(THIRD_PARTY_BINARY_DIRS
     ${fmt_binary_dir}
@@ -244,6 +249,7 @@ set(THIRD_PARTY_BINARY_DIRS
     ${eastl_binary_dir}
     ${eabase_binary_dir} 
     ${openal_binary_dir}
+    ${imguizmo_binary_dir}
     ${runtime_compiled_cpp_binary_dir}
 )
 
@@ -256,6 +262,7 @@ set(THIRD_PARTY_LIBRARIES
     imgui
     EASTL
     OpenAL
+    ImGuizmo
     BulletDynamics BulletCollision LinearMath
     RuntimeObjectSystem RuntimeCompiler
 )

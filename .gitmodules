@@ -47,3 +47,6 @@
 [submodule "submodules/stduuid"]
 	path = submodules/stduuid
 	url = https://github.com/mariusbancila/stduuid
+[submodule "submodules/ImGuizmo"]
+	path = submodules/ImGuizmo
+	url = https://github.com/MomoDeve/ImGuizmo

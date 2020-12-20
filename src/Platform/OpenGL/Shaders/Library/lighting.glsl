@@ -6,7 +6,7 @@ vec3 calculateLighting(FragmentInfo fragment, vec3 viewDirection, vec3 lightDire
     float roughness = clamp(fragment.roughnessFactor, 0.01f, 0.99f);
     float metallic = clamp(fragment.metallicFactor, 0.01f, 0.99f);
 
-    vec3 H = normalize(lightDirection + viewDirection);
+    vec3 H = normalize(normalize(lightDirection) + viewDirection);
     vec3 direction = 2.0f * dot(viewDirection, H) * H - viewDirection;
 
     vec3 FK;

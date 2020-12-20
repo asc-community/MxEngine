@@ -41,6 +41,7 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <ImGuizmo.h>
 
 #if defined(MXENGINE_USE_OPENGL)
     #define IMGUI_IMPL_OPENGL_LOADER_GLEW

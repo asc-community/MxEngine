@@ -136,5 +136,10 @@ namespace MxEngine
         {
             Time::SetCurrent(time);
         }
+
+        static bool IsKeyHeldInEditor(KeyCode key)
+        {
+            return Application::GetImpl()->GetRuntimeEditor().IsKeyHeld(key);
+        }
     };
 }

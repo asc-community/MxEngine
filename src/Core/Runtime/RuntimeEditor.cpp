@@ -41,6 +41,8 @@
 #include "Platform/Window/Input.h"
 #include "Core/Events/FpsUpdateEvent.h"
 
+#include "ImGuizmo.h"
+
 namespace MxEngine
 {
 	RuntimeEditor::~RuntimeEditor()
@@ -128,10 +130,10 @@ namespace MxEngine
 			GUI::DrawApplicationEditor("Application Editor", &isApplicationEditorOpened);
 			GUI::DrawTextureList("Texture Viewer", &isTextureListOpened);
 
+			GUI::DrawViewportWindow("Viewport", this->cachedViewportSize, this->cachedViewportPosition, &isViewportOpened);
+
 			this->DrawMxObjectList(&isObjectListOpened);
 			this->DrawMxObjectEditorWindow(&isObjectEditorOpened);
-
-			GUI::DrawViewportWindow("Viewport", this->cachedViewportSize, this->cachedViewportPosition, &isViewportOpened);
 
 			{
 				ImGui::Begin("Profiling Tools", &isProfilerOpened);
@@ -293,8 +295,76 @@ namespace MxEngine
 		#endif
 	}
 
+	void RuntimeEditor::DrawTransformManipulator(TransformComponent& transform)
+	{
+		static ImGuizmo::OPERATION currentOperation = ImGuizmo::TRANSLATE;
+
+		auto viewport = Rendering::GetViewport();
+		if (!viewport.IsValid()) return;
+		auto viewportPosition = MxObject::GetByComponent(*viewport).Transform.GetPosition();
+
+		auto view = viewport->GetViewMatrix(viewportPosition);
+		auto projection = viewport->GetProjectionMatrix();
+		auto matrix = transform.GetMatrix();
+		
+		// ImGuizmo does not work well with reversed perspective projection
+		if (viewport->GetCameraType() == CameraType::PERSPECTIVE)
+			projection = MakePerspectiveMatrix(
+				viewport->Camera.GetZoom(),
+				viewport->Camera.GetAspectRatio(),
+				viewport->Camera.GetZNear(),
+				viewport->Camera.GetZFar()
+			);
+
+		// TODO: add docs
+		if (this->IsKeyHeld(KeyCode::T)) currentOperation = ImGuizmo::TRANSLATE;
+		if (this->IsKeyHeld(KeyCode::R)) currentOperation = ImGuizmo::ROTATE;
+		if (this->IsKeyHeld(KeyCode::S)) currentOperation = ImGuizmo::SCALE;
+
+		bool isSnapped = this->IsKeyHeld(KeyCode::LEFT_CONTROL);
+		auto snapInterval = Vector3(currentOperation == ImGuizmo::ROTATE ? 45.0f : 0.5f);
+
+		auto viewportWindow = ImGui::FindWindowByName("Viewport");
+		MX_ASSERT(viewportWindow != nullptr);
+
+		ImGuizmo::SetOrthographic(viewport->GetCameraType() == CameraType::ORTHOGRAPHIC);
+		ImGuizmo::SetDrawlist(viewportWindow->DrawList);
+		ImGuizmo::SetRect(viewportWindow->Pos.x, viewportWindow->Pos.y, viewportWindow->Size.x, viewportWindow->Size.y);
+		ImGuizmo::Manipulate(&view[0][0], &projection[0][0], currentOperation, 
+			ImGuizmo::MODE::LOCAL, &matrix[0][0], nullptr, isSnapped ? &snapInterval[0] : nullptr);
+
+		auto oldRotation = DegreesVec(transform.GetEulerRotation());
+
+		Vector3 position{ 0.0f };
+		Vector3 rotation{ 0.0f };
+		Vector3 scale{ 0.0f };
+		ImGuizmo::DecomposeMatrixToComponents(&matrix[0][0], &position[0], &rotation[0], &scale[0]);
+
+		auto rotationDelta = rotation - oldRotation;
+		scale = VectorMax(scale, MakeVector3(0.001f));
+
+		float maxRotationDelta = Max(std::abs(rotationDelta.x), std::abs(rotationDelta.y), std::abs(rotationDelta.z));
+		maxRotationDelta = maxRotationDelta < 0.1f ? 0.0f : maxRotationDelta; // do not account small rotations
+
+		if (currentOperation == ImGuizmo::TRANSLATE)
+		{
+			transform.SetPosition(position);
+		}
+		if (currentOperation == ImGuizmo::SCALE)
+		{
+			transform.SetScale(scale);
+		}
+		if (currentOperation == ImGuizmo::ROTATE)
+		{
+			     if (std::abs(rotationDelta.x) == maxRotationDelta) transform.RotateX(rotationDelta.x);
+			else if (std::abs(rotationDelta.y) == maxRotationDelta) transform.RotateY(rotationDelta.y);
+			else if (std::abs(rotationDelta.z) == maxRotationDelta) transform.RotateZ(rotationDelta.z);
+		}
+	}
+
     void RuntimeEditor::DrawMxObject(const MxString& treeName, MxObject& object)
     {
+		this->DrawTransformManipulator(object.Transform);
 		GUI::DrawMxObjectEditor(treeName.c_str(), object, true, this->componentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
     }
 
@@ -311,6 +381,11 @@ namespace MxEngine
 	bool RuntimeEditor::IsActive() const
 	{
 		return this->shouldRender;
+	}
+
+	bool RuntimeEditor::IsKeyHeld(KeyCode key)
+	{
+		return Application::GetImpl()->GetWindow().IsKeyHeldUnchecked(key);
 	}
 
 	void RuntimeEditor::DrawMxObjectList(bool* isOpen)

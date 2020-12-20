@@ -39,6 +39,8 @@ uniform int uSamples;
 #define MAX_DEPTH 8
 #define SPHERE_COUNT 3
 #define BOX_COUNT 8
+#define N_IN 0.99
+#define N_OUT 1.0
 
 Sphere spheres[SPHERE_COUNT];
 Box boxes[BOX_COUNT];
@@ -131,7 +133,7 @@ void InitializeScene()
     // light source
     boxes[5].material.roughness = 0.0;
     boxes[5].material.opacity = 0.0;
-    boxes[5].material.emmitance = vec3(12.0);
+    boxes[5].material.emmitance = vec3(6.0);
     boxes[5].material.reflectance = vec3(1.0);
     boxes[5].halfSize = vec3(2.5, 0.2, 2.5);
     boxes[5].position = vec3(0.0, 4.8, 0.0);
@@ -173,7 +175,7 @@ float RandomNoise(vec2 co)
     return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-vec3 RandomSpherePoint(vec2 rand)
+vec3 RandomHemispherePoint(vec2 rand)
 {
     float cosTheta = sqrt(1.0 - rand.x);
     float sinTheta = sqrt(rand.x);
@@ -185,9 +187,9 @@ vec3 RandomSpherePoint(vec2 rand)
     );
 }
 
-vec3 RandomHemispherePoint(vec2 rand, vec3 n)
+vec3 NormalOrientedHemispherePoint(vec2 rand, vec3 n)
 {
-    vec3 v = RandomSpherePoint(rand);
+    vec3 v = RandomHemispherePoint(rand);
     return dot(v, n) < 0.0 ? -v : v;
 }
 
@@ -203,12 +205,12 @@ vec3 IdealRefract(vec3 direction, vec3 normal, float nIn, float nOut)
     bool fromOutside = dot(normal, direction) < 0.0;
     float ratio = fromOutside ? nOut / nIn : nIn / nOut;
 
-    vec3 opacity, reflection;
+    vec3 refraction, reflection;
 
-    opacity = fromOutside ? refract(direction, normal, ratio) : -refract(-direction, normal, ratio);
+    refraction = fromOutside ? refract(direction, normal, ratio) : -refract(-direction, normal, ratio);
     reflection = reflect(direction, normal);
 
-    return opacity == vec3(0.0) ? reflection : opacity;
+    return refraction == vec3(0.0) ? reflection : refraction;
 }
 
 vec3 GetRayDirection(vec2 texcoord, vec2 viewportSize, float fov, vec3 direction, vec3 up)
@@ -317,6 +319,12 @@ bool CastRay(vec3 rayOrigin, vec3 rayDirection, out float fraction, out vec3 nor
     return minDistance != FAR_DISTANCE;
 }
 
+bool IsRefracted(float rand, vec3 direction, vec3 normal, float opacity, float nIn, float nOut)
+{
+    float fresnel = FresnelSchlick(nIn, nOut, direction, normal);
+    return opacity > rand && fresnel < rand;
+}
+
 vec3 TracePath(vec3 rayOrigin, vec3 rayDirection, float seed)
 {
     vec3 L = vec3(0.0);
@@ -332,33 +340,26 @@ vec3 TracePath(vec3 rayOrigin, vec3 rayDirection, float seed)
             vec3 newRayOrigin = rayOrigin + fraction * rayDirection;
 
             vec2 rand = vec2(RandomNoise(seed * TexCoord.xy), seed * RandomNoise(TexCoord.yx));
-            vec3 newRayDirection = RandomHemispherePoint(rand.xy, normal);
+            vec3 hemisphereDistributedDirection = NormalOrientedHemispherePoint(rand, normal);
 
             vec3 randomVec = vec3(
                 RandomNoise(sin(seed * TexCoord.xy)),
                 RandomNoise(cos(seed * TexCoord.xy)),
                 RandomNoise(sin(seed * TexCoord.yx))
             );
-            randomVec = 2.0 * randomVec - 1.0;
+            randomVec = normalize(2.0 * randomVec - 1.0);
 
             vec3 tangent = cross(randomVec, normal);
             vec3 bitangent = cross(normal, tangent);
-            mat3 tr = mat3(tangent, bitangent, normal);
+            mat3 transform = mat3(tangent, bitangent, normal);
 
-            newRayDirection = tr * newRayDirection;
-
-            const float nIn = 0.99;
-            const float nOut = 1.0;
-
-            float fresnel = FresnelSchlick(nIn, nOut, rayDirection, normal);
-
-            float opacityProbability = RandomNoise(cos(seed * TexCoord.yx));
-            bool refracted = material.opacity > opacityProbability &&
-                             fresnel < opacityProbability;
-
+            vec3 newRayDirection = transform * hemisphereDistributedDirection;
+            
+            float refractRand = RandomNoise(cos(seed * TexCoord.yx));
+            bool refracted = IsRefracted(refractRand, rayDirection, normal, material.opacity, N_IN, N_OUT);
             if (refracted)
             {
-                vec3 idealRefraction = IdealRefract(rayDirection, normal, nIn, nOut);
+                vec3 idealRefraction = IdealRefract(rayDirection, normal, N_IN, N_OUT);
                 newRayDirection = normalize(mix(-newRayDirection, idealRefraction, material.roughness));
                 newRayOrigin += normal * (dot(newRayDirection, normal) < 0.0 ? -0.8 : 0.8);
             }
