@@ -5,14 +5,15 @@ MxEngine is not a huge framework so multiple third-party libraries are used. Her
 - [GLFW](https://www.glfw.org/) - multi-platform library for OpenGL providing API for creating windows, receiving input and events
 - [GLM](https://glm.g-truc.net/0.9.9/index.html) - header only C++ mathematics library for graphics software
 - [ImGui](https://github.com/ocornut/imgui) - Bloat-free Immediate Mode Graphical User interface for C++
-- [Boost](https://www.boost.org) - large C++ library that you should already know about
-- [Assimp](http://www.assimp.org/) - portable Open Source library to import various well-known 3D model formats
+- [boost](https://www.boost.org) - large C++ library that you should already know about
+- [assimp](http://www.assimp.org/) - portable Open Source library to import various well-known 3D model formats
 - [fmt](https://github.com/fmtlib/fmt) - formatting library for modern C++
 - [json](https://github.com/nlohmann/json) - nlohmann's json library for modern C++
 - [miniaudio](https://github.com/dr-soft/miniaudio) - header-only audio file loader collection
-- [OpenAL](https://github.com/kcat/openal-soft) - cross-platform, software implementation of the OpenAL 3D audio API
+- [OpenAL Soft](https://github.com/kcat/openal-soft) - cross-platform, software implementation of the OpenAL 3D audio API
 - [Bullet3](https://github.com/bulletphysics/bullet3) - real-time collision detection and multi-physics simulation library
-- [PFD](https://github.com/samhocevar/portable-file-dialogs) - cross-platform file dialog library
+- [portable file dialogs](https://github.com/samhocevar/portable-file-dialogs) - cross-platform file dialog library
+- [ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo) - object transform manipulator based on ImGui
 - [stduuid](https://github.com/mariusbancila/stduuid) - A C++17 cross-platform single-header library implementation for universally unique identifiers
 - [RCC++](https://github.com/RuntimeCompiledCPlusPlus/RuntimeCompiledCPlusPlus) - cross-platform library for C++ runtime code compilation
 

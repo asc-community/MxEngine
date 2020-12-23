@@ -27,6 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Core/Serialization/SceneSerializer.h"
+#include "Core/Serialization/DeserializerMappings.h"
 #include "Core/Components/Camera/CameraController.h"
 #include "Core/Components/Camera/FrustrumCamera.h"
 #include "Core/Components/Camera/PerspectiveCamera.h"
@@ -48,6 +49,15 @@ namespace MxEngine
         json["zoom"] = base.GetZoom();
     }
 
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, CameraBase& base)
+    {
+        base.SetAspectRatio(json["aspect-ratio"]);
+        base.SetProjectionCenter(json["center"]);
+        base.SetZNear(json["z-near"]);
+        base.SetZFar(json["z-far"]);
+        base.SetZoom(json["zoom"]);
+    }
+
     void Serialize(JsonFile& json, const CameraController& controller)
     {
         json["move-speed"] = controller.GetMoveSpeed();
@@ -62,12 +72,38 @@ namespace MxEngine
         Serialize(json["base"], controller.Camera);
     }
 
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, CameraController& controller)
+    {
+        controller.SetMoveSpeed(json["move-speed"]);
+        controller.SetRotateSpeed(json["rotate-speed"]);
+        controller.SetDirection(json["direction"]);
+        controller.SetUpVector(json["up-vector"]);
+        controller.SetForwardVector(json["forward-vector"]);
+        controller.SetRightVector(json["right-vector"]);
+        controller.ToggleRendering(json["is-rendered"]);
+        controller.SetCameraType(json["base-type"]);
+        if((bool)json["listens-resize"]) controller.ListensWindowResizeEvent();
+        Deserialize(json["base"], mappings, controller.Camera);
+    }
+
     void Serialize(JsonFile& json, const CameraSSR& ssr)
     {
         json["steps"] = ssr.GetSteps();
         json["max-angle"] = ssr.GetMaxCosAngle();
         json["distance"] = ssr.GetMaxDistance();
         json["thickness"] = ssr.GetThickness();
+        json["fading"] = ssr.GetFading();
+        json["thickness"] = ssr.GetThickness();
+    }
+
+    void Deserialize(const JsonFile& json, DeserializerMappings& mappings, CameraSSR& ssr)
+    {
+        ssr.SetSteps(json["steps"]);
+        ssr.SetMaxCosAngle(json["max-angle"]);
+        ssr.SetMaxDistance(json["distance"]);
+        ssr.SetThickness(json["thickness"]);
+        ssr.SetFading(json["fading"]);
+        ssr.SetThickness(json["thickness"]);
     }
 
     void Serialize(JsonFile& json, const CameraToneMapping& mapping)

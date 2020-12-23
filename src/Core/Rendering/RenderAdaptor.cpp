@@ -197,6 +197,7 @@ namespace MxEngine
 
         environment.Shaders["DebugDraw"_id] = AssetManager::LoadShader(
             shaderFolder / "debug_vertex.glsl",
+            shaderFolder / "debug_geometry.glsl",
             shaderFolder / "debug_fragment.glsl"
         );
 
