@@ -27,12 +27,6 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "MxObject.h"
-#include "Utilities/ObjectLoader/ObjectLoader.h"
-#include "Platform/GraphicAPI.h"
-#include "Utilities/Profiler/Profiler.h"
-#include "Utilities/Format/Format.h"
-#include "Core/Components/Rendering/MeshSource.h"
-#include "Core/Components/Rendering/MeshRenderer.h"
 
 namespace MxEngine
 {

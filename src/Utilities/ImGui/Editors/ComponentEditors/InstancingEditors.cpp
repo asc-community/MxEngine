@@ -64,13 +64,14 @@ namespace MxEngine::GUI
 			if (ImGui::CollapsingHeader(nodeName.c_str()))
 			{
 				GUI::Indent _(5.0f);
+				auto instance = self->GetInstancePool()[i];
 				if (ImGui::Button("destroy instance"))
 				{
-					MxObject::Destroy(self->GetInstancePool()[i]);
+					MxObject::Destroy(instance);
 				}
 				else
 				{
-					Application::GetImpl()->GetRuntimeEditor().DrawMxObject(nodeName, *self->GetInstancePool()[i]);
+					Application::GetImpl()->GetRuntimeEditor().DrawMxObject(nodeName, *instance);
 				}
 			}
 			ImGui::PopID();

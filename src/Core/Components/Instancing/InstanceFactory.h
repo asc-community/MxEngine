@@ -193,4 +193,8 @@ namespace MxEngine
 		InstanceFactory& operator=(InstanceFactory&&) noexcept = delete;
 		~InstanceFactory();
 	};
+    
+    bool IsInstanced(MxObject& object);
+    bool IsInstance(MxObject& object);
+    MxObject::Handle GetInstanceParent(MxObject& object);
 }

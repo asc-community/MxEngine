@@ -160,4 +160,20 @@ namespace MxEngine
             }
         }
     }
+
+    bool IsInstanced(MxObject& object)
+    {
+        return object.HasComponent<InstanceFactory>();
+    }
+
+    bool IsInstance(MxObject& object)
+    {
+        return object.HasComponent<Instance>();
+    }
+
+    MxObject::Handle GetInstanceParent(MxObject& object)
+    {
+        auto instance = object.GetComponent<Instance>();
+        return instance.IsValid() ? instance->GetParent() : MxObject::Handle{ };
+    }
 }
