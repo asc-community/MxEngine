@@ -53,13 +53,19 @@ float CalcShadowFactor3D(vec3 fragToLightRay, vec3 viewDist, float zfar, float b
 	return shadowFactor;
 }
 
-vec3 calcReflectionColor(samplerCube reflectionMap, mat3 reflectionMapTransform, vec3 viewDir, vec3 normal)
+vec3 calcReflectionColor(samplerCube reflectionMap, mat3 reflectionMapTransform, vec3 viewDir, vec3 normal, float lod)
 {
 	vec3 I = -viewDir;
 	vec3 reflectionRay = reflect(I, normal);
+	reflectionRay = dot(viewDir, normal) < 0.0 ? -reflectionRay : reflectionRay;
 	reflectionRay = reflectionMapTransform * reflectionRay;
-	vec3 color = texture(reflectionMap, reflectionRay).rgb;
+	vec3 color = textureLod(reflectionMap, reflectionRay, lod).rgb;
 	return color;
+}
+
+vec3 calcReflectionColor(samplerCube reflectionMap, mat3 reflectionMapTransform, vec3 viewDir, vec3 normal)
+{
+	return calcReflectionColor(reflectionMap, reflectionMapTransform, viewDir, normal, 0.0);
 }
 
 vec4 worldToFragSpace(vec3 v, mat4 viewProj)

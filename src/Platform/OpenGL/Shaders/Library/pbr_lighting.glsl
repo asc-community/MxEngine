@@ -30,6 +30,12 @@ vec3 fresnelSchlick(vec3 F0, float HV)
     return fresnel;
 }
 
+vec3 fresnelSchlickRoughness(vec3 F0, float HV, float roughness)
+{
+    vec3 fresnel = F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(2.0, (-5.55473 * HV - 6.98316) * HV);
+    return fresnel;
+}
+
 mat3 computeSampleTransform(vec3 normal)
 {
     vec3 up = abs(normal.z) < 0.999f ? vec3(0.0f, 0.0f, 1.0f) : vec3(1.0f, 0.0f, 0.0f);

@@ -85,6 +85,7 @@ namespace MxEngine
         this->Renderer.GetLightInformation().PointLigthsInstanced =
             PointLightInstancedObject(sphereInstancedMesh.Data.GetVBO(), sphereInstancedMesh.Data.GetVAO(), sphereInstancedMesh.Data.GetIBO());
 
+        auto textureFolder = FileManager::GetEngineTextureDirectory();
         int internalTextureSize = (int)GlobalConfig::GetEngineTextureSize();
         // default textures
         environment.DefaultShadowMap = Colors::MakeTexture(Colors::BLACK);
@@ -111,6 +112,9 @@ namespace MxEngine
         environment.AmbientOcclusionTexture = GraphicFactory::Create<Texture>();
         environment.AmbientOcclusionTexture->Load(nullptr, internalTextureSize, internalTextureSize, 1, false, TextureFormat::R);
         environment.AmbientOcclusionTexture->SetInternalEngineTag("[[ambient occlusion]]");
+
+        // TODO: use RG16
+        environment.EnvironmentBRDFLUT = AssetManager::LoadTexture(textureFolder / "env_brdf_lut.png", TextureFormat::RG);
         
         // shaders
         auto shaderFolder = FileManager::GetEngineShaderDirectory();

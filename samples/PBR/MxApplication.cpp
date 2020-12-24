@@ -49,6 +49,8 @@ namespace PBR
             skybox->Irradiance = AssetManager::LoadCubeMap("Resources/skybox_irradiance.jpg"_id);
             skybox->SetIntensity(1.0f);
 
+            //auto toneMap = cameraObject->AddComponent<CameraToneMapping>();
+
             sphereMesh = Primitives::CreateSphere();
             
             this->GenerateSpheres(MakeVector3(0.0f,  0.0f, 0.0f ), 5, MakeVector3(1.0f,  0.3f, 0.3f));

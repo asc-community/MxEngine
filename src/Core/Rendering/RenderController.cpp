@@ -389,7 +389,8 @@ namespace MxEngine
 		this->BindCameraInformation(camera, *shader);
 		this->BindSkyboxInformation(camera, *shader, textureId);
 		
-		shader->SetUniformInt("lightSamples", (int)this->Pipeline.Environment.LightSamples);
+		this->Pipeline.Environment.EnvironmentBRDFLUT->Bind(textureId++);
+		shader->SetUniformInt("envBRDFLUT", this->Pipeline.Environment.EnvironmentBRDFLUT->GetBoundId());
 		shader->SetUniformFloat("gamma", camera.Gamma);
 
 		this->RenderToTexture(output, shader);

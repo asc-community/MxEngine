@@ -201,7 +201,7 @@ namespace MxEngine
 
 			// if no pbr textures provided, set all pbr parameters to default value
 			if (materialInfo.MetallicMap.empty()) materialInfo.MetallicFactor = 0.0f;
-			if (materialInfo.RoughnessMap.empty()) materialInfo.RoughnessFactor = 0.5f;
+			if (materialInfo.RoughnessMap.empty()) materialInfo.RoughnessFactor = 0.75f;
 			// if emmision texture provided, set emmision to some non-zero value
 			if (!materialInfo.EmmisiveMap.empty()) materialInfo.Emmision = 100.0f;
 		}

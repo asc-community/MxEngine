@@ -98,6 +98,7 @@ namespace MxEngine
         TextureHandle DefaultShadowMap;
         TextureHandle AverageWhiteTexture;
         TextureHandle AmbientOcclusionTexture;
+        TextureHandle EnvironmentBRDFLUT;
         CubeMapHandle DefaultShadowCubeMap;
         CubeMapHandle DefaultSkybox;
 

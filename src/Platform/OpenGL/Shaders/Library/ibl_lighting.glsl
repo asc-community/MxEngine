@@ -38,3 +38,30 @@ vec3 calculateIBL(FragmentInfo fragment, vec3 viewDirection, EnvironmentInfo env
 
     return fragment.emmisionFactor * fragment.albedo + iblColor * fragment.ambientOcclusion;
 }
+
+vec3 calculateIBL(FragmentInfo fragment, vec3 viewDirection, sampler2D envBRDFLUT, EnvironmentInfo environment, float gamma)
+{
+    float roughness = clamp(fragment.roughnessFactor, 0.01, 0.99);
+    float metallic = clamp(fragment.metallicFactor, 0.01, 0.99);
+
+    vec3 reflection = 2.0 * dot(viewDirection, fragment.normal) * fragment.normal - viewDirection;
+    float NV = clamp(dot(fragment.normal, viewDirection), 0.0, 0.999);
+
+    float lod = log2(textureSize(environment.skybox, 0).x * roughness * roughness);
+    vec3 F0 = mix(vec3(0.04f), fragment.albedo, metallic);
+    vec3 F = fresnelSchlickRoughness(F0, NV, roughness);
+
+    vec3 prefilteredColor = calcReflectionColor(environment.skybox, environment.skyboxRotation, viewDirection, fragment.normal, lod);
+    prefilteredColor = pow(prefilteredColor, vec3(gamma));
+    vec2 envBRDF = texture2D(envBRDFLUT, vec2(NV, roughness)).rg;
+    vec3 specularColor = prefilteredColor * (F * envBRDF.x + envBRDF.y);
+
+    vec3 irradianceColor = calcReflectionColor(environment.irradiance, environment.skyboxRotation, viewDirection, fragment.normal);
+    irradianceColor = pow(irradianceColor, vec3(gamma));
+    
+    float diffuseCoef = 1.0f - metallic;
+    vec3 diffuseColor = fragment.albedo * (irradianceColor - irradianceColor * envBRDF.y) * diffuseCoef;
+    vec3 iblColor = (diffuseColor + specularColor) * environment.intensity;
+
+    return fragment.emmisionFactor * fragment.albedo + iblColor * fragment.ambientOcclusion;
+}

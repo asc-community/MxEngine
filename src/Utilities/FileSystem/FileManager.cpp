@@ -103,9 +103,9 @@ namespace MxEngine
         return FileManager::GetWorkingDirectory() / "Engine" / "Shaders";
     }
 
-    FilePath FileManager::GetEngineRuntimeDirectory()
+    FilePath FileManager::GetEngineTextureDirectory()
     {
-        return FileManager::GetWorkingDirectory() / "Engine" / "Runtime";
+        return FileManager::GetWorkingDirectory() / "Engine" / "Textures";
     }
 
     bool FileManager::FileExists(StringId filename)

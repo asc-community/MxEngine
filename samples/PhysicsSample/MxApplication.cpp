@@ -174,7 +174,9 @@ namespace PhysicsSample
             auto instances = MxObject::Create();
             instances->Name = "Cube Instances";
             instances->AddComponent<MeshSource>(Primitives::CreateCube());
-            instances->AddComponent<MeshRenderer>();
+            auto cubesMaterial = instances->AddComponent<MeshRenderer>()->GetMaterial();
+            cubesMaterial->RoughnessFactor = 0.15f;
+            cubesMaterial->MetallicFactor = 1.0f;
             physicalObjectFactory = instances->AddComponent<InstanceFactory>();
 
             auto shots = MxObject::Create();

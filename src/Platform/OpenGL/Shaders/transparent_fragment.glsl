@@ -39,9 +39,9 @@ struct Camera
 };
 
 uniform int lightCount;
-uniform int lightSamples;
 uniform int pcfDistance;
 uniform vec3 viewportPosition;
+uniform sampler2D envBRDFLUT;
 
 uniform EnvironmentInfo environment;
 
@@ -70,12 +70,12 @@ void main()
 	fragment.depth = gl_FragCoord.z;
 	fragment.normal = calcNormal(TexCoord, fsin.TBN, map_normal);
 	fragment.position = fsin.Position;
-
+	
 	float transparency = material.transparency * albedoAlphaTex.a;
 	float fragDistance = length(viewportPosition - fragment.position);
 	vec3 viewDirection = normalize(viewportPosition - fragment.position);
 	
-	vec3 IBLColor = calculateIBL(fragment, viewDirection, environment, lightSamples, gamma);
+	vec3 IBLColor = calculateIBL(fragment, viewDirection, envBRDFLUT, environment, gamma);
 
 	vec3 totalColor = IBLColor;
 	totalColor += fragment.albedo * fragment.emmisionFactor;

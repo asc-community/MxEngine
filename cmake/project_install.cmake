@@ -32,6 +32,19 @@ function(install_mxengine_project EXECUTABLE_NAME)
         || (exit 0)
     )
 
+    message(STATUS "copying textures into '${EXECUTABLE_NAME}' project directory")
+    # copy shader files to the executable folder
+    add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E
+        copy_directory "${MxEngine_ROOT_DIR}/src/Platform/OpenGL/Textures" "${CMAKE_CURRENT_SOURCE_DIR}/Engine/Textures"
+        || (exit 0)
+    )
+    add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E
+        copy_directory "${MxEngine_ROOT_DIR}/src/Platform/OpenGL/Textures" "${CMAKE_CURRENT_BINARY_DIR}/Engine/Textures"
+        || (exit 0)
+    )
+
     target_compile_definitions(${EXECUTABLE_NAME} PUBLIC MXENGINE_CMAKE_BUILD)
     target_compile_definitions(${EXECUTABLE_NAME} PUBLIC MXENGINE_PROJECT_SOURCE_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}")
     target_compile_definitions(${EXECUTABLE_NAME} PUBLIC MXENGINE_PROJECT_BINARY_DIRECTORY="${CMAKE_CURRENT_BINARY_DIR}")
