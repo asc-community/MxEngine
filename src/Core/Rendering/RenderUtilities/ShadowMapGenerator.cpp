@@ -54,7 +54,8 @@ namespace MxEngine
 
         Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
         Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
-        Rendering::GetController().GetRenderEngine().DrawTrianglesInstanced(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
+        Rendering::GetController().DrawTriangles(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
+        Rendering::GetController().GetRenderStatistics().AddEntry("shadow casts", 1);
     }
 
     bool InOrthoFrustrum(const Matrix4x4& projection, const Vector3& minAABB, const Vector3& maxAABB)
@@ -108,8 +109,15 @@ namespace MxEngine
         for (const auto& unit : shadowCasters)
         {
             // do not cull instanced objects, as their position may differ
-            if (unit.InstanceCount != 0 || InOrthoFrustrum(orthoProjection, unit.MinAABB, unit.MaxAABB))
+            bool culled = unit.InstanceCount == 0 && !InOrthoFrustrum(orthoProjection, unit.MinAABB, unit.MaxAABB);
+            if (!culled)
+            {
                 CastShadowsUnit(shader, unit, materials);
+            }
+            else
+            {
+                Rendering::GetController().GetRenderStatistics().AddEntry("culled from shadow cast", 1);
+            }
         }
     }
 
@@ -118,8 +126,15 @@ namespace MxEngine
         for (const auto& unit : shadowCasters)
         {
             // do not cull instanced objects, as their position may differ
-            if (unit.InstanceCount != 0 || InSphereBounds(pointLight, unit.MinAABB, unit.MaxAABB))
+            bool culled = unit.InstanceCount == 0 && !InSphereBounds(pointLight, unit.MinAABB, unit.MaxAABB);
+            if (!culled)
+            {
                 CastShadowsUnit(shader, unit, materials);
+            }
+            else
+            {
+                Rendering::GetController().GetRenderStatistics().AddEntry("culled from shadow cast", 1);
+            }
         }
     }
 
@@ -128,8 +143,15 @@ namespace MxEngine
         for (const auto& unit : shadowCasters)
         {
             // do not cull instanced objects, as their position may differ
-            if (unit.InstanceCount != 0 || InConeBounds(spotLight, unit.MinAABB, unit.MaxAABB))
+            bool culled = unit.InstanceCount == 0 && !InConeBounds(spotLight, unit.MinAABB, unit.MaxAABB);
+            if (!culled)
+            {
                 CastShadowsUnit(shader, unit, materials);
+            }
+            else
+            {
+                Rendering::GetController().GetRenderStatistics().AddEntry("culled from shadow cast", 1);
+            }
         }
     }
 

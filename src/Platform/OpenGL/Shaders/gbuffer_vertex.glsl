@@ -9,7 +9,14 @@ layout(location = 5)  in mat4 model;
 layout(location = 9)  in mat3 normalMatrix;
 layout(location = 12) in vec3 renderColor;
 
-uniform mat4 ViewProjMatrix;
+struct Camera
+{
+	vec3 position;
+	mat4 viewProjMatrix;
+	mat4 invViewProjMatrix;
+};
+
+uniform Camera camera;
 uniform float displacement;
 uniform vec2 uvMultipliers;
 uniform sampler2D map_height;
@@ -31,12 +38,16 @@ void main()
 	vec3 N = normalize(vec3(normalMatrix * normal));
 
 	vsout.TBN = mat3(T, B, N);
-	vsout.TexCoord = texCoord;
 	vsout.Normal = N;
 	vsout.RenderColor = renderColor;
 
-	modelPos.xyz += vsout.Normal * getDisplacement(uvMultipliers * texCoord, uvMultipliers, map_height, displacement);
+	float displacementFactor = getDisplacement(uvMultipliers * texCoord, uvMultipliers, map_height, displacement);
+
+	modelPos.xyz += vsout.Normal * displacementFactor;
 	vsout.Position = modelPos.xyz;
 
-	gl_Position = ViewProjMatrix * modelPos;
+	vec3 viewDirection = camera.position - vsout.Position;
+	vsout.TexCoord = texCoord;
+
+	gl_Position = camera.viewProjMatrix * modelPos;
 }

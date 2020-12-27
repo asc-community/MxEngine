@@ -49,14 +49,18 @@ namespace MxEngine::GUI
 		if (ImGui::Button("follow viewport"))
 			dirLight.FollowViewport();
 
+		static std::array<int, DirectionalLight::TextureCount> depthMapSizes;
+		INVOKE_ONCE(
+			for (size_t i = 0; i < DirectionalLight::TextureCount; i++)
+				depthMapSizes[i] = dirLight.GetDepthTexture(i)->GetWidth();
+		);
 		for (size_t i = 0; i < DirectionalLight::TextureCount; i++)
 		{
 			ImGui::Text("cascade shadow map #%d", (int)i);
 			ImGui::PushID((int)i);
 			auto texture = dirLight.GetDepthTexture(i);
-			static int depthMapSize = (int)texture->GetWidth();
-			if (GUI::InputIntOnClick("depth map size", &depthMapSize))
-				texture->LoadDepth(depthMapSize, depthMapSize);
+			if (GUI::InputIntOnClick("depth map size", &depthMapSizes[i]))
+				texture->LoadDepth(depthMapSizes[i], depthMapSizes[i]);
 
 			DrawTextureEditor("depth map", texture, false);
 			ImGui::PopID();

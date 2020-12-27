@@ -32,7 +32,7 @@ vec3 fresnelSchlick(vec3 F0, float HV)
 
 vec3 fresnelSchlickRoughness(vec3 F0, float HV, float roughness)
 {
-    vec3 fresnel = F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(2.0, (-5.55473 * HV - 6.98316) * HV);
+    vec3 fresnel = F0 + (clamp(vec3(1.0 - roughness), F0, vec3(1.0)) - F0) * pow(2.0, (-5.55473 * HV - 6.98316) * HV);
     return fresnel;
 }
 

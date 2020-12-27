@@ -26,17 +26,31 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Platform/GraphicAPI.h"
+#include "Utilities/STL/MxHashMap.h"
+#include <string>
 
 namespace MxEngine
 {
-    class BoxBlur
+    #if !defined(MXENGINE_SHIPPING)
+    class RenderStatistics
     {
-        FrameBufferHandle framebuffer;
-        ShaderHandle shader;
-    public:
-        BoxBlur(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
+        MxHashMap<const char*, size_t> statistics;
 
-        void Apply(const TextureHandle& input, const TextureHandle& output);
+    public:
+        void AddEntry(const char* entryName, size_t incrementValue) { this->statistics[entryName] += incrementValue; }
+        void ResetAll() { for (auto it = statistics.begin(); it != statistics.end(); it++) { it->second = 0; } }
+        const auto& GetEntries() const { return this->statistics; }
     };
+    #else
+    class RenderStatistics
+    {
+        MxHashMap<std::string_view, size_t> statistics;
+
+    public:
+        void AddEntry(const char* entryName, size_t incrementValue) { }
+        void ResetAll() { }
+        const auto& GetStatistics() const { return this->statistics; }
+    };
+};
+    #endif
 }

@@ -41,8 +41,6 @@
 #include "Platform/Window/Input.h"
 #include "Core/Events/FpsUpdateEvent.h"
 
-#include "ImGuizmo.h"
-
 namespace MxEngine
 {
 	RuntimeEditor::~RuntimeEditor()
@@ -139,6 +137,7 @@ namespace MxEngine
 				ImGui::Begin("Profiling Tools", &isProfilerOpened);
 				
 				GUI_TREE_NODE("Profiler", GUI::DrawProfiler("fps profiler"));
+				GUI_TREE_NODE("Render Statistics", GUI::DrawRenderStatistics("render statistics"));
 				this->logger->Draw("Event Logger", 20);
 
 				ImGui::End();

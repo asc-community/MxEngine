@@ -34,10 +34,9 @@
 #include "RenderObjects/RenderHelperObject.h"
 #include "RenderObjects/PointLightInstancedObject.h"
 #include "RenderObjects/SpotLightInstancedObject.h"
+#include "RenderUtilities/RenderStatistics.h"
 #include "Core/Resources/ACESCurve.h"
 #include "Core/Resources/Material.h"
-
-#include "Utilities/STL/MxHashMap.h"
 #include "Utilities/String/String.h"
 
 namespace MxEngine
@@ -181,5 +180,6 @@ namespace MxEngine
         MxVector<RenderUnit> TransparentRenderUnits;
         MxVector<Material> MaterialUnits;
         MxVector<CameraUnit> Cameras;
+        RenderStatistics Statistics;
     };
 }

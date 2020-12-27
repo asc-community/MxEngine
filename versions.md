@@ -231,3 +231,11 @@
 # 7.7.0
 - engine switched to physically based rendering
 - fixes in object loading, SSAO & SSR shaders, texture loading
+# 7.8.0
+- better shader recompilation (included files are also tracked)
+- boost library is now optional (only for stacktrace in error messages)
+- support for embedded textures into model binary format
+- new file tracking mechanism (now all resources are automatically moved to project directory)
+- imguizmo added (translate, rotate and scale objects via mouse)
+- color grading effect
+- improved performance by object culling, precomputing IBL computations

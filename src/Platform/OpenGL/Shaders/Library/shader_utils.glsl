@@ -53,13 +53,23 @@ float CalcShadowFactor3D(vec3 fragToLightRay, vec3 viewDist, float zfar, float b
 	return shadowFactor;
 }
 
+float getTextureLodLevel(vec2 uv)
+{
+	vec2 dx_vtc = dFdx(uv);
+	vec2 dy_vtc = dFdy(uv);
+	float delta_max_sqr = max(dot(dx_vtc, dx_vtc), dot(dy_vtc, dy_vtc));
+	return 0.5 * log2(delta_max_sqr);
+}
+
 vec3 calcReflectionColor(samplerCube reflectionMap, mat3 reflectionMapTransform, vec3 viewDir, vec3 normal, float lod)
 {
 	vec3 I = -viewDir;
 	vec3 reflectionRay = reflect(I, normal);
 	reflectionRay = dot(viewDir, normal) < 0.0 ? -reflectionRay : reflectionRay;
 	reflectionRay = reflectionMapTransform * reflectionRay;
-	vec3 color = textureLod(reflectionMap, reflectionRay, lod).rgb;
+
+	float defaultLod = getTextureLodLevel(reflectionRay.xy);
+	vec3 color = textureLod(reflectionMap, reflectionRay, max(lod, defaultLod)).rgb;
 	return color;
 }
 

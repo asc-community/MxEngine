@@ -102,7 +102,6 @@ set(MXENGINE_SOURCES
 "Library/Primitives/Primitives.cpp" 
 "Core/Components/Camera/CameraSSR.cpp" 
 "Core/Components/Camera/CameraToneMapping.cpp" 
-"Core/Rendering/RenderUtilities/TextureBlur.cpp"  
 "Core/Rendering/RenderUtilities/ShadowMapGenerator.cpp" 
 "Utilities/Parsing/ShaderPreprocessor.cpp"
 "Library/Noise/NoiseGenerator.cpp"
@@ -123,8 +122,8 @@ set(MXENGINE_SOURCES
 "Core/Serialization/AudioSerializer.cpp" 
 "Core/Serialization/PhysicsSerializer.cpp"
 "Core/Serialization/ScriptSerializer.cpp"
- "Core/Serialization/ResourceSerializer.cpp"
- )
+"Core/Serialization/ResourceSerializer.cpp"
+"Utilities/ImGui/RenderStatistics.cpp")
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)

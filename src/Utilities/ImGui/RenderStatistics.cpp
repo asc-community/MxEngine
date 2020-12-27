@@ -26,21 +26,19 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "ProfilerGraph.h"
+#include "ImGuiBase.h"
 #include "RenderStatistics.h"
-#include "Layout.h"
-#include "Viewport.h"
-#include "Editors/ResourceEditor.h"
-#include "Editors/RenderEditor.h"
-#include "Editors/MxObjectEditor.h"
-#include "Editors/ApplicationEditor.h"
+#include "Core/Application/Rendering.h"
 
-namespace MxEngine
+namespace MxEngine::GUI
 {
-    /*!
-    MxEngine GUI namespace. Used for declaration of Immediate GUI functions
-    */
-    namespace GUI {}
+    void DrawRenderStatistics(const char* name)
+    {
+		auto& statistics = Rendering::GetController().GetRenderStatistics().GetEntries();
+
+        for (auto entry = statistics.begin(); entry != statistics.end(); entry++)
+        {
+            ImGui::Text("%s: %d", entry->first, int(entry->second));
+        }
+    }
 }

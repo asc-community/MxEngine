@@ -88,6 +88,6 @@ namespace MxEngine
 
     void CameraSSR::SetFading(float fading)
     {
-        this->fading = Max(fading, 0.0f);
+        this->fading = Clamp(fading, 0.0f, 1.0f);
     }
 }

@@ -71,7 +71,7 @@ namespace MxEngine
             if (!File::Exists(filepath))
             {
                 MXLOG_ERROR("ShaderPreprocessor::LoadIncludes", "included file was not found: " + path);
-                continue;
+                return *this;
             }
             #if defined(MXENGINE_DEBUG)
             this->includeFilePaths.push_back(path);

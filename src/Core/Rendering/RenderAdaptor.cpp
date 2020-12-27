@@ -115,6 +115,7 @@ namespace MxEngine
 
         // TODO: use RG16
         environment.EnvironmentBRDFLUT = AssetManager::LoadTexture(textureFolder / "env_brdf_lut.png", TextureFormat::RG);
+        environment.EnvironmentBRDFLUT->SetInternalEngineTag("[[BRDF LUT]]");
         
         // shaders
         auto shaderFolder = FileManager::GetEngineShaderDirectory();

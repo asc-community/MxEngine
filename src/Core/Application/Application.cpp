@@ -358,6 +358,7 @@ namespace MxEngine
 		this->isRunning = true;
 		this->InvokeCreate();
 
+		this->timeSinceLastUpdate = Time::Current();
 		float secondEnd = Time::Current();
 		float frameEnd  = Time::Current();
 		size_t frameCount = 0;
@@ -488,7 +489,7 @@ namespace MxEngine
 			Event::AddEvent(MakeUnique<FpsUpdateEvent>(this->counterFPS));
 		}
 		// limit dt to be not less than 30fps
-		this->timeDelta = this->TimeScale * Min(currentTime - lastFrameEnd, 1.0f / 30.0f);
+		this->timeDelta = this->TimeScale * (currentTime - lastFrameEnd);
 		this->totalElapsedTime += this->timeDelta;
 		lastFrameEnd = currentTime;
 		this->timeSinceLastUpdate = currentTime;

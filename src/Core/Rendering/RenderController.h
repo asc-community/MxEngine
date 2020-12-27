@@ -80,6 +80,7 @@ namespace MxEngine
 		void BindCameraInformation(const CameraUnit& camera, const Shader& shader);
 		void BindFogInformation(const CameraUnit& camera, const Shader& shader);
 	public:
+
 		const Renderer& GetRenderEngine() const;
 		Renderer& GetRenderEngine();
 		void Render() const;
@@ -99,11 +100,17 @@ namespace MxEngine
 		void RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
 		void RenderToTextureNoClear(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
 		void CopyTexture(const TextureHandle& input, const TextureHandle& output);
+		void DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t instanceCount);
+		void DrawLines(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t instanceCount);
+		void DrawTriangles(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t instanceCount);
+		void DrawLines(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t instanceCount);
 
 		EnvironmentUnit& GetEnvironment();
 		const EnvironmentUnit& GetEnvironment() const;
 		LightingSystem& GetLightInformation();
 		const LightingSystem& GetLightInformation() const;
+		const RenderStatistics& GetRenderStatistics() const;
+		RenderStatistics& GetRenderStatistics();
 		void ResetPipeline();
 		void SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform);
 		void SubmitLightSource(const PointLight& light, const TransformComponent& parentTransform);

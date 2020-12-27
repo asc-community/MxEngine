@@ -28,19 +28,10 @@
 
 #pragma once
 
-#include "ProfilerGraph.h"
-#include "RenderStatistics.h"
-#include "Layout.h"
-#include "Viewport.h"
-#include "Editors/ResourceEditor.h"
-#include "Editors/RenderEditor.h"
-#include "Editors/MxObjectEditor.h"
-#include "Editors/ApplicationEditor.h"
-
 namespace MxEngine
 {
-    /*!
-    MxEngine GUI namespace. Used for declaration of Immediate GUI functions
-    */
-    namespace GUI {}
+    namespace GUI
+    {
+        void DrawRenderStatistics(const char* name);
+    }
 }
