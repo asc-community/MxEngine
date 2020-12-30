@@ -103,26 +103,6 @@ namespace MxEngine
         return FWD(IsRenderedToDefaultFrameBuffer);
     }
 
-    void Rendering::SetShadowBlurIterations(size_t iterations)
-    {
-        FWD(SetShadowBlurIterations, iterations);
-    }
-
-    size_t Rendering::GetShadowBlurIterations()
-    {
-        return FWD(GetShadowBlurIterations);
-    }
-
-    void Rendering::SetLightSamples(size_t samples)
-    {
-        FWD(SetLightSamples, samples);
-    }
-
-    size_t Rendering::GetLightSamples()
-    {
-        return FWD(GetLightSamples);
-    }
-
     #define DRW Application::GetImpl()->GetRenderAdaptor().DebugDrawer
 
     void Rendering::Draw(const Line& line, const Vector4& color)

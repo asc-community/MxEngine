@@ -53,10 +53,6 @@ namespace MxEngine
         static void SetDebugOverlay(bool value = true);
         static void SetRenderToDefaultFrameBuffer(bool value = true);
         static bool IsRenderedToDefaultFrameBuffer();
-        static void SetShadowBlurIterations(size_t iterations);
-        static size_t GetShadowBlurIterations();
-        static void SetLightSamples(size_t samples);
-        static size_t GetLightSamples();
         static void Draw(const Line& line, const Vector4& color);
         static void Draw(const AABB& box, const Vector4& color);
         static void Draw(const BoundingBox& box, const Vector4& color);

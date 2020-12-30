@@ -55,8 +55,6 @@ namespace MxEngine
         auto& environment = this->Renderer.GetEnvironment();
 
         this->SetRenderToDefaultFrameBuffer();
-        this->SetShadowBlurIterations(1);
-        this->SetLightSamples(4);
 
         // helper objects
         environment.RectangularObject.Init(1.0f);
@@ -417,31 +415,5 @@ namespace MxEngine
     bool RenderAdaptor::IsRenderedToDefaultFrameBuffer() const
     {
         return this->Renderer.GetEnvironment().RenderToDefaultFrameBuffer;
-    }
-
-    void RenderAdaptor::SetShadowBlurIterations(size_t iterations)
-    {
-        auto& environment = this->Renderer.GetEnvironment();
-        using BlutIterType = decltype(environment.ShadowBlurIterations);
-        constexpr size_t maxIterations = 5;
-        environment.ShadowBlurIterations = (BlutIterType)Min(iterations, maxIterations);
-    }
-
-    size_t RenderAdaptor::GetShadowBlurIterations() const
-    {
-        return (size_t)this->Renderer.GetEnvironment().ShadowBlurIterations;
-    }
-
-    void RenderAdaptor::SetLightSamples(size_t samples)
-    {
-        auto& environment = this->Renderer.GetEnvironment();
-        using SampleCountType = decltype(environment.LightSamples);
-        constexpr size_t maxSamples = 1024;
-        environment.LightSamples = (SampleCountType)Clamp(samples, (size_t)1, maxSamples);
-    }
-
-    size_t RenderAdaptor::GetLightSamples() const
-    {
-        return (size_t)this->Renderer.GetEnvironment().LightSamples;
     }
 }

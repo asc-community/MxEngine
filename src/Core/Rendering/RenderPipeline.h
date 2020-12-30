@@ -112,8 +112,6 @@ namespace MxEngine
         VectorInt2 Viewport;
         float TimeDelta;
 
-        size_t LightSamples;
-        uint8_t ShadowBlurIterations;
         uint8_t MainCameraIndex;
         bool OverlayDebugDraws;
         bool RenderToDefaultFrameBuffer;

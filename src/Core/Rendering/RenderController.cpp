@@ -272,7 +272,6 @@ namespace MxEngine
 		size_t lightCount = Min(MaxDirLightCount, dirLights.size());
 
 		shader->SetUniformInt("lightCount", (int)lightCount);
-		shader->SetUniformInt("pcfDistance", this->Pipeline.Environment.ShadowBlurIterations);
 
 		for (size_t i = 0; i < lightCount; i++)
 		{
@@ -345,7 +344,6 @@ namespace MxEngine
 		size_t lightCount = Min(MaxDirLightCount, dirLights.size());
 
 		shader->SetUniformInt("lightCount", (int)lightCount);
-		shader->SetUniformInt("pcfDistance", this->Pipeline.Environment.ShadowBlurIterations);
 
 		for (size_t i = 0; i < lightCount; i++)
 		{
@@ -559,7 +557,6 @@ namespace MxEngine
 		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
 
 		shader->SetUniformVec2("viewportSize", viewportSize);
-		shader->SetUniformInt("pcfDistance", this->Pipeline.Environment.ShadowBlurIterations);
 		shader->SetUniformInt("castsShadows", true);
 
 		Texture::TextureBindId textureId = 0;

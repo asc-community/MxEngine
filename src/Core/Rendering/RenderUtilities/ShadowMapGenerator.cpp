@@ -48,9 +48,11 @@ namespace MxEngine
     {
         const auto& material = materials[unit.materialIndex];
         material.HeightMap->Bind(0);
+        material.AlbedoMap->Bind(1);
         shader.SetUniformFloat("displacement", material.Displacement);
         shader.SetUniformVec2("uvMultipliers", material.UVMultipliers);
         shader.SetUniformInt("map_height", material.HeightMap->GetBoundId());
+        shader.SetUniformInt("map_albedo", material.AlbedoMap->GetBoundId());
 
         Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
         Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);

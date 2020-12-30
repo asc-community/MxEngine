@@ -38,7 +38,6 @@ namespace PBR
             controller->ListenWindowResizeEvent();
             controller->SetMoveSpeed(10.0f);
             Rendering::SetViewport(controller);
-            Rendering::SetLightSamples(16);
 
             auto input = cameraObject->AddComponent<InputController>();
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);

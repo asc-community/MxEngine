@@ -37,20 +37,7 @@ namespace MxEngine
     void GUI::DrawRenderEditor(const char* name, bool* isOpen)
     {
         ImGui::Begin(name, isOpen);
-
-        if (ImGui::TreeNode("lighting settings"))
-        {
-            int blurIterations = (int)Rendering::GetShadowBlurIterations();
-            if(ImGui::DragInt("shadow blur iterations", &blurIterations, 0.1f))
-                Rendering::SetShadowBlurIterations(Max(0, blurIterations));
-
-            int lightSamples = (int)Rendering::GetLightSamples();
-            if (ImGui::DragInt("PBR light samples", &lightSamples, 0.1f))
-                Rendering::SetLightSamples(Max(0, lightSamples));
-
-            ImGui::TreePop();
-        }
-
+        
         if (ImGui::TreeNode("window settings"))
         {
             static MxString title = WindowManager::GetTitle();;

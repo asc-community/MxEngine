@@ -9,20 +9,23 @@ vec3 reconstructWorldPosition(float depth, vec2 texcoord, mat4 invViewProjMatrix
 float calcShadowFactor2D(vec4 fragPosLight, sampler2D depthMap, float bias, int blurIterations)
 {
 	vec3 projCoords = fragPosLight.xyz / fragPosLight.w;
-	if (projCoords.z > 0.99f) return 1.0f; // do not handle corner cases, assume now shadows
+	if (projCoords.z > 0.99) return 1.0; // do not handle corner cases, assume now shadows
 	float currentDepth = projCoords.z - bias;
-	float shadowFactor = 0.0f;
-	vec2 texelSize = 1.0f / textureSize(depthMap, 0);
-	for (int x = -blurIterations; x <= blurIterations; x++)
-	{
-		for (int y = -blurIterations; y <= blurIterations; y++)
-		{
-			float pcfDepth = textureLod(depthMap, projCoords.xy + vec2(x, y) * texelSize, 0).r;
-			shadowFactor += (currentDepth > pcfDepth) ? 0.0f : 1.0f;
-		}
-	}
-	int iterations = 2 * blurIterations + 1;
-	shadowFactor /= float(iterations * iterations);
+	float shadowFactor = 0.0;
+
+	vec2 texelSize = textureSize(depthMap, 0);
+	
+	vec4 samples1 = textureGather(depthMap, projCoords.xy + 0.5 / texelSize);
+	vec4 samples2 = textureGather(depthMap, projCoords.xy - 0.5 / texelSize);
+	
+	shadowFactor += 0.125 * float(currentDepth < samples1[0]);
+	shadowFactor += 0.125 * float(currentDepth < samples1[1]);
+	shadowFactor += 0.125 * float(currentDepth < samples1[2]);
+	shadowFactor += 0.125 * float(currentDepth < samples1[3]);
+	shadowFactor += 0.125 * float(currentDepth < samples2[0]);
+	shadowFactor += 0.125 * float(currentDepth < samples2[1]);
+	shadowFactor += 0.125 * float(currentDepth < samples2[2]);
+	shadowFactor += 0.125 * float(currentDepth < samples2[3]);
 	return shadowFactor;
 }
 

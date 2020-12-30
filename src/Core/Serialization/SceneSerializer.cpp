@@ -44,8 +44,6 @@ namespace MxEngine
         auto viewport = Rendering::GetViewport();
 
         json["globals"]["viewport-id"    ] = viewport.IsValid() ? viewport.GetHandle() : size_t(-1);
-        json["globals"]["light-samples"  ] = Rendering::GetLightSamples();
-        json["globals"]["blur-iterations"] = Rendering::GetShadowBlurIterations();
         json["globals"]["overlay-debug"  ] = Rendering::IsDebugOverlayed();
         json["globals"]["paused"         ] = Runtime::IsApplicationPaused();
         json["globals"]["time-scale"     ] = Runtime::GetApplicationTimeScale();
@@ -90,8 +88,6 @@ namespace MxEngine
         MAKE_SCOPE_TIMER("MxEngine::SceneSerializer", "SceneSerializer::DeserializeGlobals()");
 
         Rendering::SetViewport(mappings.CameraControllers[json["globals"]["viewport-id"]]);
-        Rendering::SetLightSamples(        json["globals"]["light-samples"  ]);
-        Rendering::SetShadowBlurIterations(json["globals"]["blur-iterations"]);
         Rendering::SetDebugOverlay(        json["globals"]["overlay-debug"  ]);
         Runtime::SetApplicationPaused(     json["globals"]["paused"         ]);
         Runtime::SetApplicationTimeScale(  json["globals"]["time-scale"     ]);

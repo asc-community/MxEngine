@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Utilities/STL/MxHashMap.h"
-#include <string>
+#include <cstddef>
 
 namespace MxEngine
 {
@@ -44,13 +44,12 @@ namespace MxEngine
     #else
     class RenderStatistics
     {
-        MxHashMap<std::string_view, size_t> statistics;
+        MxHashMap<const char*, size_t> statistics;
 
     public:
         void AddEntry(const char* entryName, size_t incrementValue) { }
         void ResetAll() { }
         const auto& GetStatistics() const { return this->statistics; }
     };
-};
     #endif
 }

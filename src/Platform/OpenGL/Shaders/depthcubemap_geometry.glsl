@@ -1,7 +1,10 @@
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 18) out;
 
+in vec2 TexCoord[];
+
 out vec4 FragPos;
+out vec2 FragmentTexCoord;
 
 uniform mat4 LightProjMatrix[6];
 
@@ -18,6 +21,7 @@ void emitFace(mat4 lightMatrix)
 
 void main()
 {
+    FragmentTexCoord = TexCoord[0];
     // gl_Layer must be assigned to a constant to work on most devices
     gl_Layer = 0;
     emitFace(LightProjMatrix[0]);

@@ -46,10 +46,5 @@ namespace MxEngine
         void SetWindowSize(const VectorInt2& size);
         void SetRenderToDefaultFrameBuffer(bool value = true);
         bool IsRenderedToDefaultFrameBuffer() const;
-
-        void SetShadowBlurIterations(size_t iterations);
-        size_t GetShadowBlurIterations() const;
-        void SetLightSamples(size_t samples);
-        size_t GetLightSamples() const;
     };
 }
