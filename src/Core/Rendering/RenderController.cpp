@@ -71,6 +71,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::DrawObjects()");
 
 		if (objects.empty()) return;
+		shader.Bind();
 		shader.IgnoreNonExistingUniform("camera.position");
 		shader.IgnoreNonExistingUniform("camera.invViewProjMatrix");
 		this->BindCameraInformation(camera, shader);
@@ -119,7 +120,7 @@ namespace MxEngine
 		this->GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
 		this->GetRenderEngine().SetDefaultVertexAttribute(12, material.BaseColor);
 		
-		this->DrawTriangles(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
+		this->DrawTriangles(*unit.VAO, *unit.IBO, unit.InstanceCount);
 	}
 
 	void RenderController::ComputeBloomEffect(CameraUnit& camera)
@@ -138,12 +139,14 @@ namespace MxEngine
 
 		camera.AlbedoTexture->Bind(0);
 		camera.MaterialTexture->Bind(1);
+		splitShader->Bind();
 		splitShader->SetUniformInt("albedoTex", camera.AlbedoTexture->GetBoundId());
 		splitShader->SetUniformInt("materialTex", camera.MaterialTexture->GetBoundId());
 		splitShader->SetUniformFloat("weight", bloomWeight);
 		this->RenderToFrameBuffer(bloomBuffers.back(), splitShader);
 
 		// perform bloom iterations
+		iterShader->Bind();
 		iterShader->SetUniformInt("BloomTexture", 0);
 		for (uint8_t i = 0; i < iterations; i++)
 		{
@@ -169,6 +172,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::ComputeAmbientOcclusion()");
 
 		auto& computeShader = this->Pipeline.Environment.Shaders["AmbientOcclusion"_id];
+		computeShader->Bind();
 		computeShader->IgnoreNonExistingUniform("materialTex");
 		computeShader->IgnoreNonExistingUniform("albedoTex");
 		computeShader->IgnoreNonExistingUniform("camera.position");
@@ -185,6 +189,7 @@ namespace MxEngine
 		this->Pipeline.Environment.AmbientOcclusionTexture->GenerateMipmaps();
 
 		auto& applyShader = this->Pipeline.Environment.Shaders["ApplyAmbientOcclusion"_id];
+		applyShader->Bind();
 		input->Bind(0);
 		this->Pipeline.Environment.AmbientOcclusionTexture->Bind(1);
 		applyShader->SetUniformInt("inputTex", input->GetBoundId());
@@ -206,6 +211,7 @@ namespace MxEngine
 
 		auto& shader = this->Pipeline.Environment.Shaders["AverageWhite"_id];
 		auto& output = this->Pipeline.Environment.AverageWhiteTexture;
+		shader->Bind();
 		camera.HDRTexture->Bind(0);
 		camera.AverageWhiteTexture->Bind(1);
 		shader->SetUniformInt("curFrameHDR", 0);
@@ -256,6 +262,7 @@ namespace MxEngine
 	{
 		MAKE_SCOPE_PROFILER("RenderController::DrawDirectionalLights()");
 		auto& shader = this->Pipeline.Environment.Shaders["DirLight"_id];
+		shader->Bind();
 
 		shader->IgnoreNonExistingUniform("camera.viewProjMatrix");
 		shader->IgnoreNonExistingUniform("camera.position");
@@ -332,6 +339,7 @@ namespace MxEngine
 		this->ToggleFaceCulling(false);
 
 		auto& shader = this->Pipeline.Environment.Shaders["Transparent"_id];
+		shader->Bind();
 
 		shader->SetUniformVec3("viewportPosition", camera.ViewportPosition);
 		shader->SetUniformFloat("gamma", camera.Gamma);
@@ -382,6 +390,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::ApplyIBL()");
 
 		auto shader = this->Pipeline.Environment.Shaders["IBL"_id];
+		shader->Bind();
 		shader->IgnoreNonExistingUniform("camera.viewProjMatrix");
 		Texture::TextureBindId textureId = 0;
 
@@ -404,6 +413,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::ApplyFogEffect()");
 
 		auto fogShader = this->Pipeline.Environment.Shaders["Fog"_id];
+		fogShader->Bind();
 		fogShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
 		fogShader->IgnoreNonExistingUniform("normalTex");
 		fogShader->IgnoreNonExistingUniform("albedoTex");
@@ -427,7 +437,9 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::ApplyChromaticAbberation()");
 
 		auto& shader = this->Pipeline.Environment.Shaders["ChromaticAbberation"_id];
+		shader->Bind();
 		input->Bind(0);
+
 		shader->SetUniformInt("tex", input->GetBoundId());
 		shader->SetUniformVec3("chromaticAbberationParams", {
 			camera.Effects->GetChromaticAberrationMinDistance(),
@@ -446,6 +458,7 @@ namespace MxEngine
 		input->GenerateMipmaps();
 
 		auto& SSRShader = this->Pipeline.Environment.Shaders["SSR"_id];
+		SSRShader->Bind();
 		SSRShader->IgnoreNonExistingUniform("albedoTex");
 		
 		Texture::TextureBindId textureId = 0;
@@ -475,6 +488,7 @@ namespace MxEngine
 		auto averageWhite = this->ComputeAverageWhite(camera);
 		auto aces = camera.ToneMapping->GetACESCoefficients();
 
+		HDRToLDRShader->Bind();
 		input->Bind(0);
 		averageWhite->Bind(1);
 		HDRToLDRShader->SetUniformInt("HDRTex", input->GetBoundId());
@@ -499,8 +513,10 @@ namespace MxEngine
 		if (camera.Effects == nullptr || !camera.Effects->IsFXAAEnabled()) return;
 		MAKE_SCOPE_PROFILER("RenderController::ApplyFXAA");
 
-		auto& fxaaShader = this->Pipeline.Environment.Shaders["FXAA"_id];
 		input->GenerateMipmaps();
+
+		auto& fxaaShader = this->Pipeline.Environment.Shaders["FXAA"_id];
+		fxaaShader->Bind();
 		input->Bind(0);
 		fxaaShader->SetUniformInt("tex", input->GetBoundId());
 		
@@ -514,6 +530,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::ApplyVignette");
 
 		auto& vignetteShader = this->Pipeline.Environment.Shaders["Vignette"_id];
+		vignetteShader->Bind();
 		input->Bind(0);
 		vignetteShader->SetUniformInt("tex", input->GetBoundId());
 
@@ -530,6 +547,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::ApplyColorGrading");
 
 		auto& colorGradingShader = this->Pipeline.Environment.Shaders["ColorGrading"_id];
+		colorGradingShader->Bind();
 		input->Bind(0);
 		colorGradingShader->SetUniformInt("tex", input->GetBoundId());
 
@@ -549,6 +567,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::DrawShadowedSpotLights()");
 
 		auto shader = this->Pipeline.Environment.Shaders["SpotLight"_id];
+		shader->Bind();
 		shader->IgnoreNonExistingUniform("camera.position");
 		shader->IgnoreNonExistingUniform("albedoTex");
 		shader->IgnoreNonExistingUniform("materialTex");
@@ -578,7 +597,7 @@ namespace MxEngine
 			this->GetRenderEngine().SetDefaultVertexAttribute(10, Vector4(spotLight.Direction, spotLight.OuterAngle));
 			this->GetRenderEngine().SetDefaultVertexAttribute(11, Vector4(spotLight.Color, spotLight.AmbientIntensity));
 
-			this->DrawTriangles(pyramid.GetVAO(), pyramid.GetIBO(), *shader, 0);
+			this->DrawTriangles(pyramid.GetVAO(), pyramid.GetIBO(), 0);
 		}
 	}
 
@@ -589,6 +608,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::DrawShadowedPointLights()");
 
 		auto shader = this->Pipeline.Environment.Shaders["PointLight"_id];
+		shader->Bind();
 		shader->IgnoreNonExistingUniform("camera.position");
 		shader->IgnoreNonExistingUniform("albedoTex");
 		shader->IgnoreNonExistingUniform("materialTex");
@@ -615,7 +635,7 @@ namespace MxEngine
 			this->GetRenderEngine().SetDefaultVertexAttribute(9,  Vector4(pointLight.Position, pointLight.Radius));
 			this->GetRenderEngine().SetDefaultVertexAttribute(10, Vector4(pointLight.Color, pointLight.AmbientIntensity));
 
-			this->DrawTriangles(sphere.GetVAO(), sphere.GetIBO(), *shader, 0);
+			this->DrawTriangles(sphere.GetVAO(), sphere.GetIBO(), 0);
 		}
 	}
 
@@ -626,6 +646,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::DrawNonShadowedPointLights()");
 
 		auto shader = this->Pipeline.Environment.Shaders["PointLight"_id];
+		shader->Bind();
 		shader->IgnoreNonExistingUniform("camera.position");
 		shader->IgnoreNonExistingUniform("albedoTex");
 		shader->IgnoreNonExistingUniform("materialTex");
@@ -642,7 +663,7 @@ namespace MxEngine
 		shader->SetUniformInt("castsShadows", false);
 
 		instancedPointLights.SubmitToVBO();
-		this->DrawTriangles(instancedPointLights.GetVAO(), instancedPointLights.GetIBO(), *shader, instancedPointLights.Instances.size());
+		this->DrawTriangles(instancedPointLights.GetVAO(), instancedPointLights.GetIBO(), instancedPointLights.Instances.size());
 	}
 
 	void RenderController::DrawNonShadowedSpotLights(CameraUnit& camera, TextureHandle& output)
@@ -652,6 +673,7 @@ namespace MxEngine
 		MAKE_SCOPE_PROFILER("RenderController::DrawNonShadowedSpotLights()");
 
 		auto shader = this->Pipeline.Environment.Shaders["SpotLight"_id];
+		shader->Bind();
 		shader->IgnoreNonExistingUniform("camera.position");
 		shader->IgnoreNonExistingUniform("albedoTex");
 		shader->IgnoreNonExistingUniform("materialTex");
@@ -668,7 +690,7 @@ namespace MxEngine
 		shader->SetUniformInt("castsShadows", false);
 
 		instancedSpotLights.SubmitToVBO();
-		this->DrawTriangles(instancedSpotLights.GetVAO(), instancedSpotLights.GetIBO(), *shader, instancedSpotLights.Instances.size());
+		this->DrawTriangles(instancedSpotLights.GetVAO(), instancedSpotLights.GetIBO(), instancedSpotLights.Instances.size());
 	}
 
 	void RenderController::BindFogInformation(const CameraUnit& camera, const Shader& shader)
@@ -679,59 +701,59 @@ namespace MxEngine
 		shader.SetUniformVec3("fog.color", camera.Effects->GetFogColor());
 	}
 
-	void RenderController::DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t instanceCount)
+	void RenderController::DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, size_t instanceCount)
 	{
 		this->Pipeline.Statistics.AddEntry("draw calls", 1);
 		this->Pipeline.Statistics.AddEntry("drawn vertecies", ibo.GetCount() * Max(instanceCount, 1));
 		if (instanceCount == 0)
 		{
-			this->GetRenderEngine().DrawTriangles(vao, ibo, shader);
+			this->GetRenderEngine().DrawTriangles(vao, ibo);
 		}
 		else
 		{
-			this->GetRenderEngine().DrawTrianglesInstanced(vao, ibo, shader, instanceCount);
+			this->GetRenderEngine().DrawTrianglesInstanced(vao, ibo, instanceCount);
 		}
 	}
 
-	void RenderController::DrawLines(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t instanceCount)
+	void RenderController::DrawLines(const VertexArray& vao, const IndexBuffer& ibo, size_t instanceCount)
 	{
 		this->Pipeline.Statistics.AddEntry("draw calls", 1);
 		this->Pipeline.Statistics.AddEntry("drawn vertecies", ibo.GetCount() * Max(instanceCount, 1));
 		if (instanceCount == 0)
 		{
-			this->GetRenderEngine().DrawLines(vao, ibo, shader);
+			this->GetRenderEngine().DrawLines(vao, ibo);
 		}
 		else
 		{
-			this->GetRenderEngine().DrawLinesInstanced(vao, ibo, shader, instanceCount);
+			this->GetRenderEngine().DrawLinesInstanced(vao, ibo, instanceCount);
 		}
 	}
 
-	void RenderController::DrawTriangles(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t instanceCount)
+	void RenderController::DrawTriangles(const VertexArray& vao, size_t vertexCount, size_t instanceCount)
 	{
 		this->Pipeline.Statistics.AddEntry("draw calls", 1);
 		this->Pipeline.Statistics.AddEntry("drawn vertecies", vertexCount * Max(instanceCount, 1));
 		if (instanceCount == 0)
 		{
-			this->GetRenderEngine().DrawTriangles(vao, vertexCount, shader);
+			this->GetRenderEngine().DrawTriangles(vao, vertexCount);
 		}
 		else
 		{
-			this->GetRenderEngine().DrawTrianglesInstanced(vao, vertexCount, shader, instanceCount);
+			this->GetRenderEngine().DrawTrianglesInstanced(vao, vertexCount, instanceCount);
 		}
 	}
 
-	void RenderController::DrawLines(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t instanceCount)
+	void RenderController::DrawLines(const VertexArray& vao, size_t vertexCount, size_t instanceCount)
 	{
 		this->Pipeline.Statistics.AddEntry("draw calls", 1);
 		this->Pipeline.Statistics.AddEntry("drawn vertecies", vertexCount * Max(instanceCount, 1));
 		if (instanceCount == 0)
 		{
-			this->GetRenderEngine().DrawLines(vao, vertexCount, shader);
+			this->GetRenderEngine().DrawLines(vao, vertexCount);
 		}
 		else
 		{
-			this->GetRenderEngine().DrawLinesInstanced(vao, vertexCount, shader, instanceCount);
+			this->GetRenderEngine().DrawLinesInstanced(vao, vertexCount, instanceCount);
 		}
 	}
 
@@ -825,7 +847,8 @@ namespace MxEngine
 		this->Pipeline.Statistics.AddEntry("renders to framebuffer", 1);
 		this->AttachFrameBuffer(framebuffer);
 		auto& rectangle = this->Pipeline.Environment.RectangularObject;
-		this->DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, *shader, 0);
+		shader->Bind();
+		this->DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, 0);
 	}
 
 	void RenderController::RenderToFrameBufferNoClear(const FrameBufferHandle& framebuffer, const ShaderHandle& shader)
@@ -833,7 +856,8 @@ namespace MxEngine
 		this->Pipeline.Statistics.AddEntry("renders to framebuffer", 1);
 		this->AttachFrameBufferNoClear(framebuffer);
 		auto& rectangle = this->Pipeline.Environment.RectangularObject;
-		this->DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, *shader, 0);
+		shader->Bind();
+		this->DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, 0);
 	}
 
 	void RenderController::RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment)
@@ -896,15 +920,15 @@ namespace MxEngine
 			skyLuminance += dirLight.Intensity;
 		}
 
+		shader.Bind();
 		shader.SetUniformMat4("StaticViewProjection", camera.StaticViewProjectionMatrix);
 		shader.SetUniformMat3("Rotation", Transpose(camera.InversedSkyboxRotation));
 		shader.SetUniformFloat("gamma", camera.Gamma);
 		shader.SetUniformFloat("luminance", skyLuminance);
-
 		camera.SkyboxTexture->Bind(0);
 		shader.SetUniformInt("skybox", camera.SkyboxTexture->GetBoundId());
 
-		this->DrawTriangles(skybox.GetVAO(), skybox.VertexCount, shader, 0);
+		this->DrawTriangles(skybox.GetVAO(), skybox.VertexCount, 0);
 	}
 
 	void RenderController::DrawDebugBuffer(const CameraUnit& camera)
@@ -915,9 +939,10 @@ namespace MxEngine
 		this->GetRenderEngine().UseDepthBuffer(!this->Pipeline.Environment.OverlayDebugDraws); //-V807
 
 		auto& shader = *this->Pipeline.Environment.Shaders["DebugDraw"_id];
+		shader.Bind();
 		shader.SetUniformMat4("ViewProjMatrix", camera.ViewProjectionMatrix);
 
-		this->DrawLines(*this->Pipeline.Environment.DebugBufferObject.VAO, this->Pipeline.Environment.DebugBufferObject.VertexCount, shader, 0);
+		this->DrawLines(*this->Pipeline.Environment.DebugBufferObject.VAO, this->Pipeline.Environment.DebugBufferObject.VertexCount, 0);
 
 		this->GetRenderEngine().UseDepthBuffer(true);
 	}
@@ -1120,10 +1145,11 @@ namespace MxEngine
 		auto& finalShader = *this->Pipeline.Environment.Shaders["ImageForward"_id];
 		auto& rectangle = this->Pipeline.Environment.RectangularObject;
 
+		finalShader.Bind();
 		finalShader.SetUniformInt("tex", 0);
 		texture->Bind(0);
 
-		this->DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, finalShader, 0);
+		this->DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, 0);
 	}
 
 	void RenderController::StartPipeline()

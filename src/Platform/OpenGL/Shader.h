@@ -49,6 +49,8 @@ namespace MxEngine
 		using ShaderId = unsigned int;
 		using BindableId = unsigned int;
 
+		inline static BindableId CurrentlyAttachedShader = 0;
+
 		BindableId id = 0;
 		mutable UniformCache uniformCache;
 

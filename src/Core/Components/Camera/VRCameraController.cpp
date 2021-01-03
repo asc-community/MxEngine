@@ -85,6 +85,7 @@ namespace MxEngine
     {
         leftEye->Bind(0);
         rightEye->Bind(1);
+        this->shaderVR->Bind();
         this->shaderVR->SetUniformInt("leftEyeTex", 0);
         this->shaderVR->SetUniformInt("rightEyeTex", 1);
         Rendering::GetController().RenderToTexture(target, this->shaderVR);

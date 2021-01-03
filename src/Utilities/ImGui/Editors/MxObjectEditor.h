@@ -33,6 +33,8 @@
 
 namespace MxEngine::GUI
 {
+	void CreateMxObjectFromModelFile();
+
 	void DrawMxObjectEditor(
 		const char* name,
 		MxObject& object, 

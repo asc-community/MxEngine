@@ -56,7 +56,7 @@ namespace MxEngine
 
         Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
         Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
-        Rendering::GetController().DrawTriangles(*unit.VAO, *unit.IBO, shader, unit.InstanceCount);
+        Rendering::GetController().DrawTriangles(*unit.VAO, *unit.IBO, unit.InstanceCount);
         Rendering::GetController().GetRenderStatistics().AddEntry("shadow casts", 1);
     }
 
@@ -161,6 +161,7 @@ namespace MxEngine
     {
         auto& controller = Rendering::GetController();
 
+        shader.Bind();
         for (auto& directionalLight : directionalLights)
         {
             for (size_t i = 0; i < directionalLight.ShadowMaps.size(); i++)
@@ -187,6 +188,7 @@ namespace MxEngine
     {
         auto& controller = Rendering::GetController();
 
+        shader.Bind();
         for (auto& spotLight : spotLights)
         {
             controller.AttachDepthMap(spotLight.ShadowMap);
@@ -201,6 +203,7 @@ namespace MxEngine
     {
         auto& controller = Rendering::GetController();
 
+        shader.Bind();
         for (auto& pointLight : pointLights)
         {
             controller.AttachDepthMap(pointLight.ShadowMap);

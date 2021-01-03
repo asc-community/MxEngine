@@ -69,6 +69,7 @@ namespace PathTracing
 
             int raySamples = accumulateImage ? 16 : 4;
 
+            this->rayTracingShader->Bind();
             this->rayTracingShader->SetUniformInt("uSamples", raySamples);
             this->rayTracingShader->SetUniformFloat("uTime", Time::Current());
             this->rayTracingShader->SetUniformVec2("uViewportSize", viewportSize);
@@ -92,6 +93,7 @@ namespace PathTracing
             output->GenerateMipmaps();
 
             this->accumulationTexture->Bind(0);
+            this->postProcessShader->Bind();
             this->postProcessShader->SetUniformInt("uImage", this->accumulationTexture->GetBoundId());
             this->postProcessShader->SetUniformInt("uImageSamples", this->accumulationFrames);
             Rendering::GetController().RenderToTexture(output, this->postProcessShader);

@@ -54,12 +54,14 @@ namespace MxEngine
 
 	void Shader::Bind() const
 	{
-		GLCALL(glUseProgram(id));
+		GLCALL(glUseProgram(this->id));
+		Shader::CurrentlyAttachedShader = this->id;
 	}
 
 	void Shader::Unbind() const
 	{
 		GLCALL(glUseProgram(0));
+		Shader::CurrentlyAttachedShader = 0;
 	}
 
     void Shader::InvalidateUniformCache()
@@ -69,7 +71,7 @@ namespace MxEngine
 
 	Shader::BindableId Shader::GetNativeHandle() const
     {
-		return id;
+		return this->id;
     }
 
 	Shader::Shader(Shader&& shader) noexcept
@@ -258,33 +260,41 @@ namespace MxEngine
 
 	void Shader::SetUniformFloat(const MxString& name, float f) const
 	{
+		// shader was not bound before setting uniforms
+		MX_ASSERT(Shader::CurrentlyAttachedShader == this->id);
+
 		int location = GetUniformLocation(name);
 		if (location == -1) return;
-		Bind();
 		GLCALL(glUniform1f(location, f));
 	}
 
     void Shader::SetUniformVec2(const MxString& name, const Vector2& vec) const
     {
+		// shader was not bound before setting uniforms
+		MX_ASSERT(Shader::CurrentlyAttachedShader == this->id);
+
 		int location = GetUniformLocation(name);
 		if (location == -1) return;
-		Bind();
 		GLCALL(glUniform2f(location, vec.x, vec.y));
     }
 
 	void Shader::SetUniformVec3(const MxString& name, const Vector3& vec) const
 	{
+		// shader was not bound before setting uniforms
+		MX_ASSERT(Shader::CurrentlyAttachedShader == this->id);
+
 		int location = GetUniformLocation(name);
 		if (location == -1) return;
-		Bind();
 		GLCALL(glUniform3f(location, vec.x, vec.y, vec.z));
 	}
 
 	void Shader::SetUniformVec4(const MxString& name, const Vector4& vec) const
 	{
+		// shader was not bound before setting uniforms
+		MX_ASSERT(Shader::CurrentlyAttachedShader == this->id);
+
 		int location = GetUniformLocation(name);
 		if (location == -1) return;
-		Bind();
 		GLCALL(glUniform4f(location, vec.x, vec.y, vec.z, vec.w));
 	}
 
@@ -298,17 +308,19 @@ namespace MxEngine
 
 	void Shader::SetUniformMat3(const MxString& name, const Matrix3x3& matrix) const
 	{
+		// shader was not bound before setting uniforms
+		MX_ASSERT(Shader::CurrentlyAttachedShader == this->id);
 		int location = GetUniformLocation(name);
 		if (location == -1) return;
-		Bind();
 		GLCALL(glUniformMatrix3fv(location, 1, false, &matrix[0][0]));
 	}
 
 	void Shader::SetUniformInt(const MxString& name, int i) const
 	{
+		// shader was not bound before setting uniforms
+		MX_ASSERT(Shader::CurrentlyAttachedShader == this->id);
 		int location = GetUniformLocation(name);
 		if (location == -1) return;
-		Bind();
 		GLCALL(glUniform1i(location, i));
 	}
 
@@ -390,7 +402,7 @@ namespace MxEngine
 		if (uniformCache.find(uniformName) != uniformCache.end())
 			return uniformCache[uniformName];
 
-		GLCALL(int location = glGetUniformLocation(id, uniformName.c_str()));
+		GLCALL(int location = glGetUniformLocation(this->id, uniformName.c_str()));
 		if (location == -1)
 		{
 			#if defined(MXENGINE_DEBUG)

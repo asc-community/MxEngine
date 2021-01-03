@@ -58,71 +58,55 @@ namespace MxEngine
 		this->clearMask |= GL_COLOR_BUFFER_BIT;
 	}
 
-	void Renderer::DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const
+	void Renderer::DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo) const
 	{
 		vao.Bind();
 		ibo.Bind();
-		shader.Bind();
 		GLCALL(glDrawElements(GL_TRIANGLES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexTypeId(), nullptr));
 	}
 
-	void Renderer::DrawTriangles(const VertexArray& vao, size_t vertexCount, const Shader& shader) const
+	void Renderer::DrawTriangles(const VertexArray& vao, size_t vertexCount) const
 	{
 		vao.Bind();
-		shader.Bind();
 		GLCALL(glDrawArrays(GL_TRIANGLES, 0, (GLsizei)vertexCount));
 	}
 
-	void Renderer::DrawLines(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const
+	void Renderer::DrawLines(const VertexArray& vao, const IndexBuffer& ibo) const
 	{
 		vao.Bind();
 		ibo.Bind();
-		shader.Bind();
 		GLCALL(glDrawElements(GL_LINES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexTypeId(), nullptr));
 	}
 
-	void Renderer::DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const
+	void Renderer::DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, size_t count) const
 	{
-		if (count == 0) { this->DrawLines(vao, ibo, shader); return; }
-
 		vao.Bind();
 		ibo.Bind();
-		shader.Bind();
 		GLCALL(glDrawElementsInstanced(GL_LINES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexTypeId(), nullptr, (GLsizei)count));
 	}
 
-	void Renderer::DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const
+	void Renderer::DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, size_t count) const
 	{
-		if (count == 0) { this->DrawLines(vao, vertexCount, shader); return; }
-
 		vao.Bind();
-		shader.Bind();
 		GLCALL(glDrawArraysInstanced(GL_LINES, 0, (GLsizei)vertexCount, (GLsizei)count));
 	}
 
-	void Renderer::DrawTrianglesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const
+	void Renderer::DrawTrianglesInstanced(const VertexArray& vao, const IndexBuffer& ibo, size_t count) const
 	{
-		if (count == 0) { this->DrawTriangles(vao, ibo, shader); return; }
-
 		vao.Bind();
 		ibo.Bind();
-		shader.Bind();
 		GLCALL(glDrawElementsInstanced(GL_TRIANGLES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexTypeId(), nullptr, (GLsizei)count));
 	}
 
-	void Renderer::DrawTrianglesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const
+	void Renderer::DrawTrianglesInstanced(const VertexArray& vao, size_t vertexCount, size_t count) const
 	{
-		if (count == 0) { this->DrawTriangles(vao, vertexCount, shader); return; }
-
 		vao.Bind();
-		shader.Bind();
 		GLCALL(glDrawArraysInstanced(GL_TRIANGLES, 0, (GLsizei)vertexCount, (GLsizei)count));
 	}
 
-	void Renderer::DrawLines(const VertexArray& vao, size_t vertexCount, const Shader& shader) const
+	void Renderer::DrawLines(const VertexArray& vao, size_t vertexCount) const
 	{
 		vao.Bind();
-		shader.Bind();
 		GLCALL(glDrawArrays(GL_LINES, 0, (GLsizei)vertexCount));
 	}
 

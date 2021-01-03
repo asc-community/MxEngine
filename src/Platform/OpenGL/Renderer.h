@@ -67,14 +67,14 @@ namespace MxEngine
 	public:
 		Renderer();
 
-		void DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const;
-		void DrawTriangles(const VertexArray& vao, size_t vertexCount, const Shader& shader) const;
-		void DrawTrianglesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const;
-		void DrawTrianglesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const;
-		void DrawLines(const VertexArray& vao, size_t vertexCount, const Shader& shader) const;
-		void DrawLines(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const;
-		void DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader, size_t count) const;
-		void DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, const Shader& shader, size_t count) const;
+		void DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo) const;
+		void DrawTriangles(const VertexArray& vao, size_t vertexCountr) const;
+		void DrawTrianglesInstanced(const VertexArray& vao, const IndexBuffer& ibo, size_t count) const;
+		void DrawTrianglesInstanced(const VertexArray& vao, size_t vertexCount, size_t count) const;
+		void DrawLines(const VertexArray& vao, size_t vertexCount) const;
+		void DrawLines(const VertexArray& vao, const IndexBuffer& ibo) const;
+		void DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, size_t count) const;
+		void DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, size_t count) const;
 		void SetDefaultVertexAttribute(size_t index, float v) const;
 		void SetDefaultVertexAttribute(size_t index, const Vector2& vec) const;
 		void SetDefaultVertexAttribute(size_t index, const Vector3& vec) const;

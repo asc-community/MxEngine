@@ -40,8 +40,10 @@ namespace MxEngine
         MeshHandle Mesh;
         bool IsDrawn = true;
         bool CastsShadow = true;
+        bool IsStatic = false;
 
         MeshSource() : Mesh(ResourceFactory::Create<MxEngine::Mesh>()) { }
-        MeshSource(MeshHandle mesh) : Mesh(mesh) { }
+        MeshSource(const MeshHandle& mesh) : Mesh(mesh) { }
+        MeshSource& operator=(const MeshHandle& mesh) { this->Mesh = mesh; return *this; }
     };
 }

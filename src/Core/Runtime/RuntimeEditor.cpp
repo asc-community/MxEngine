@@ -404,7 +404,10 @@ namespace MxEngine
 		if (ImGui::Button("create new MxObject"))
 			MxObject::Create();
 		ImGui::SameLine();
-		if (ImGui::Button("delete currently selected"))
+		if (ImGui::Button("load model as MxObject"))
+			GUI::CreateMxObjectFromModelFile();
+		ImGui::SameLine();
+		if (ImGui::Button("delete selected MxObject"))
 			MxObject::Destroy(this->currentlySelectedObject);
 
 		auto objects = MxObject::GetObjects();

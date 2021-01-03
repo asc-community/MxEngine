@@ -31,10 +31,24 @@
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Core/BoundingObjects/BoundingBox.h"
 #include "Core/Components/Rendering/MeshSource.h"
+#include "Core/Components/Rendering/MeshRenderer.h"
 #include "Core/Application/Rendering.h"
+#include "Utilities/FileSystem/FileManager.h"
 
 namespace MxEngine::GUI
 {
+	void CreateMxObjectFromModelFile()
+	{
+		MxString filepath = FileManager::OpenFileDialog();
+		if (!filepath.empty() && File::Exists(filepath))
+		{
+			auto object = MxObject::Create();
+			object->Name = ToMxString(ToFilePath(filepath).stem());
+			object->AddComponent<MeshSource>(AssetManager::LoadMesh(filepath));
+			object->AddComponent<MeshRenderer>(AssetManager::LoadMaterials(filepath));
+		}
+	}
+
 	void DrawMxObjectEditor(
 		const char* name,
 		MxObject& object,
