@@ -52,8 +52,8 @@ namespace MxEngine
 
 		MakeTexture(material.AlbedoMap, textures, mat.AlbedoMap, TextureFormat::RGBA);
 		MakeTexture(material.EmissiveMap, textures, mat.EmissiveMap, TextureFormat::R);
-		MakeTexture(material.HeightMap, textures, mat.HeightMap, TextureFormat::RGB);
-		MakeTexture(material.NormalMap, textures, mat.NormalMap, TextureFormat::RGB);
+		MakeTexture(material.HeightMap, textures, mat.HeightMap, TextureFormat::R);
+		MakeTexture(material.NormalMap, textures, mat.NormalMap, TextureFormat::RG);
 		MakeTexture(material.MetallicMap, textures, mat.MetallicMap, TextureFormat::R);
 		MakeTexture(material.RoughnessMap, textures, mat.RoughnessMap, TextureFormat::R);
 		MakeTexture(material.AmbientOcclusionMap, textures, mat.AmbientOcclusionMap, TextureFormat::R);

@@ -214,8 +214,11 @@ namespace MxEngine
 			materialInfo.RoughnessMap        = GetActualTexturePath(directory, MxFormat("{}_{}", RoughnessTexName, i), scene, material, aiTextureType_DIFFUSE_ROUGHNESS);
 			materialInfo.MetallicMap         = GetActualTexturePath(directory, MxFormat("{}_{}", MetallicTexName,  i), scene, material, aiTextureType_METALNESS);
 
+			// if aiTextureType_AMBIENT_OCCLUSION failed to load, try aiTextureType_LIGHTMAP as alternative, as it also can store ambient occlusion
+			if(materialInfo.AmbientOcclusionMap.empty()) materialInfo.AmbientOcclusionMap = GetActualTexturePath(directory, MxFormat("{}_{}", AOTexName, i), scene, material, aiTextureType_LIGHTMAP);
+
 			// if emmision texture provided, set emmision to some non-zero value
-			if (!materialInfo.EmissiveMap.empty() && materialInfo.Emission == 0.0f) materialInfo.Emission = 100.0f;
+			if (!materialInfo.EmissiveMap.empty() && materialInfo.Emission == 0.0f) materialInfo.Emission = 1.0f;
 		}
 
 		Vector3 minCoords = MakeVector3(std::numeric_limits<float>::max());

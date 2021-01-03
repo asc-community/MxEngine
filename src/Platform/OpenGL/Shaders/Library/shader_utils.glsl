@@ -6,27 +6,38 @@ vec3 reconstructWorldPosition(float depth, vec2 texcoord, mat4 invViewProjMatrix
 	return worldPosition.xyz;
 }
 
+float sampleShadowMap(sampler2D depthMap, vec2 coords, float compare)
+{
+	return step(compare, texture2D(depthMap, coords).r);
+}
+
+float sampleShadowMapLinear(sampler2D depthMap, vec2 coords, float compare, vec2 texelSize)
+{
+	vec2 pixelPos = coords / texelSize + vec2(0.5);
+	vec2 fracPart = fract(pixelPos);
+	vec2 startTexel = (pixelPos - fracPart) * texelSize;
+
+	vec4 samples;
+	samples[0] = sampleShadowMap(depthMap, startTexel + vec2(0.0, 0.0) * texelSize, compare);
+	samples[1] = sampleShadowMap(depthMap, startTexel + vec2(1.0, 0.0) * texelSize, compare);
+	samples[2] = sampleShadowMap(depthMap, startTexel + vec2(0.0, 1.0) * texelSize, compare);
+	samples[3] = sampleShadowMap(depthMap, startTexel + vec2(1.0, 1.0) * texelSize, compare);
+
+	float sampleA = mix(samples[0], samples[2], fracPart.y);
+	float sampleB = mix(samples[1], samples[3], fracPart.y);
+	return mix(sampleA, sampleB, fracPart.x);
+}
+
 float calcShadowFactor2D(vec4 fragPosLight, sampler2D depthMap, float bias, int blurIterations)
 {
 	vec3 projCoords = fragPosLight.xyz / fragPosLight.w;
 	if (projCoords.z > 0.99) return 1.0; // do not handle corner cases, assume now shadows
 	float currentDepth = projCoords.z - bias;
-	float shadowFactor = 0.0;
-
-	vec2 texelSize = textureSize(depthMap, 0);
+	vec2 texelSize = 1.0 / textureSize(depthMap, 0);
 	
-	vec4 samples1 = textureGather(depthMap, projCoords.xy + 0.5 / texelSize);
-	vec4 samples2 = textureGather(depthMap, projCoords.xy - 0.5 / texelSize);
-	
-	shadowFactor += 0.125 * float(currentDepth < samples1[0]);
-	shadowFactor += 0.125 * float(currentDepth < samples1[1]);
-	shadowFactor += 0.125 * float(currentDepth < samples1[2]);
-	shadowFactor += 0.125 * float(currentDepth < samples1[3]);
-	shadowFactor += 0.125 * float(currentDepth < samples2[0]);
-	shadowFactor += 0.125 * float(currentDepth < samples2[1]);
-	shadowFactor += 0.125 * float(currentDepth < samples2[2]);
-	shadowFactor += 0.125 * float(currentDepth < samples2[3]);
-	return shadowFactor;
+	float sample1 = sampleShadowMapLinear(depthMap, projCoords.xy - texelSize, currentDepth, texelSize);
+	float sample2 = sampleShadowMapLinear(depthMap, projCoords.xy + texelSize, currentDepth, texelSize);
+	return mix(sample1, sample2, 0.5);
 }
 
 const int POINT_LIGHT_SAMPLES = 20;

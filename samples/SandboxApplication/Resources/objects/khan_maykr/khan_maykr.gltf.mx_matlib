@@ -1,0 +1,626 @@
+[
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_backpack.png",
+    "AmbientOcclusionMap": "Resources\\objects\\khan_maykr\\khan_maykr_backpack_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_backpack",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_backpack_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_eyes_organic.png",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 1.0,
+    "EmissiveMap": "Resources\\objects\\khan_maykr\\khan_maykr_eyes_organic_e.png",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_eyes_organic",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_eyes_organic_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_face.png",
+    "AmbientOcclusionMap": "Resources\\objects\\khan_maykr\\khan_maykr_face_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 1.0,
+    "EmissiveMap": "Resources\\objects\\khan_maykr\\khan_maykr_face_e.png",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_face",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_face_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_eyes.png",
+    "AmbientOcclusionMap": "Resources\\objects\\khan_maykr\\khan_maykr_eyes_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 1.0,
+    "EmissiveMap": "Resources\\objects\\khan_maykr\\khan_maykr_eyes_e.png",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_eyes",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_eyes_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      0.800000011920929,
+      0.800000011920929,
+      0.800000011920929
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_glass",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_glass_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 0.20000000298023224,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_teeth.png",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_teeth",
+    "NormalMap": "",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_torso.png",
+    "AmbientOcclusionMap": "Resources\\objects\\khan_maykr\\khan_maykr_torso_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_torso",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_torso_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_arms.png",
+    "AmbientOcclusionMap": "Resources\\objects\\khan_maykr\\khan_maykr_arms_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_arms",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_arms_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_shoulders.png",
+    "AmbientOcclusionMap": "Resources\\objects\\khan_maykr\\khan_maykr_shoulders_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_shoulders",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_shoulders_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_orb.png",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 1.0,
+    "EmissiveMap": "Resources\\objects\\khan_maykr\\khan_maykr_orb_e.png",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_orb",
+    "NormalMap": "",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_skirt.png",
+    "AmbientOcclusionMap": "Resources\\objects\\khan_maykr\\khan_maykr_skirt_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_skirt",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_skirt_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_under.png",
+    "AmbientOcclusionMap": "Resources\\objects\\khan_maykr\\khan_maykr_under_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_under",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_under_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_wing_frame.png",
+    "AmbientOcclusionMap": "Resources\\objects\\khan_maykr\\khan_maykr_wing_frame_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_wing_frame",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_wing_frame_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_torso.png",
+    "AmbientOcclusionMap": "Resources\\objects\\khan_maykr\\khan_maykr_torso_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_torso_gored",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_torso_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_arms.png",
+    "AmbientOcclusionMap": "Resources\\objects\\khan_maykr\\khan_maykr_arms_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_arms_gored",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_arms_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_naked_body_upper.png",
+    "AmbientOcclusionMap": "Resources\\objects\\khan_maykr\\khan_maykr_naked_body_upper_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_naked_body_upper",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_naked_body_upper_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_shoulders.png",
+    "AmbientOcclusionMap": "Resources\\objects\\khan_maykr\\khan_maykr_shoulders_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_shoulders_gored",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_shoulders_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      0.800000011920929,
+      0.800000011920929,
+      0.800000011920929
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.20000000298023224,
+    "MetallicMap": "",
+    "Name": "khan_maykr_wing_damage_left",
+    "NormalMap": "",
+    "RoughnessFactor": 0.800000011920929,
+    "RoughnessMap": "",
+    "Transparency": 0.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      0.800000011920929,
+      0.800000011920929,
+      0.800000011920929
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.20000000298023224,
+    "MetallicMap": "",
+    "Name": "khan_maykr_wing_damage_right",
+    "NormalMap": "",
+    "RoughnessFactor": 0.800000011920929,
+    "RoughnessMap": "",
+    "Transparency": 0.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      0.800000011920929,
+      0.800000011920929,
+      0.800000011920929
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.20000000298023224,
+    "MetallicMap": "",
+    "Name": "khan_maykr_wing_damage_left_stage_02",
+    "NormalMap": "",
+    "RoughnessFactor": 0.800000011920929,
+    "RoughnessMap": "",
+    "Transparency": 0.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      0.800000011920929,
+      0.800000011920929,
+      0.800000011920929
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_wing_damage_right_stage_02",
+    "NormalMap": "",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 0.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_wing_frame.png",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_wing_frame_gored",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_head_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_head.png",
+    "AmbientOcclusionMap": "Resources\\objects\\khan_maykr\\khan_maykr_head_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 1.0,
+    "EmissiveMap": "Resources\\objects\\khan_maykr\\khan_maykr_head_e.png",
+    "HeightMap": "",
+    "MetallicFactor": 0.4000000059604645,
+    "MetallicMap": "",
+    "Name": "khan_maykr_head",
+    "NormalMap": "Resources\\objects\\khan_maykr\\khan_maykr_head_n.png",
+    "RoughnessFactor": 0.27216553688049316,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_wing.png",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      0.800000011920929,
+      0.800000011920929,
+      0.800000011920929
+    ],
+    "Displacement": 0.0,
+    "Emission": 1.0,
+    "EmissiveMap": "Resources\\objects\\khan_maykr\\khan_maykr_wing.png",
+    "HeightMap": "",
+    "MetallicFactor": 0.20000000298023224,
+    "MetallicMap": "",
+    "Name": "khan_maykr_wings_left",
+    "NormalMap": "",
+    "RoughnessFactor": 0.800000011920929,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "Resources\\objects\\khan_maykr\\khan_maykr_wing.png",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      0.800000011920929,
+      0.800000011920929,
+      0.800000011920929
+    ],
+    "Displacement": 0.0,
+    "Emission": 1.0,
+    "EmissiveMap": "Resources\\objects\\khan_maykr\\khan_maykr_wing.png",
+    "HeightMap": "",
+    "MetallicFactor": 0.20000000298023224,
+    "MetallicMap": "",
+    "Name": "khan_maykr_wings_right",
+    "NormalMap": "",
+    "RoughnessFactor": 0.800000011920929,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 1.0,
+    "MetallicMap": "",
+    "Name": "material #25",
+    "NormalMap": "",
+    "RoughnessFactor": 1.0,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  }
+]
