@@ -54,7 +54,6 @@ namespace MxEngine
 	const char* const AOTexName = "ao";
 	const char* const RoughnessTexName = "roughness";
 	const char* const MetallicTexName = "metallic";
-	const char* const RoughnessMetallicTexName = "roughness-metallic";
 	constexpr ImageType PreferredFormat = ImageType::PNG;
 	const char* const PreferredExtension = ".png";
 
@@ -120,20 +119,45 @@ namespace MxEngine
 				else
 					image = ImageLoader::LoadImageFromMemory((const uint8_t*)data->pcData, data->mWidth * data->mHeight * sizeof(aiTexel));
 
-				// PBR roughness & metallic texture encoded in G & B channels
-				if (type == aiTextureType_UNKNOWN)
-				{
-					SaveRoughnessMetallicTexture(image, RoughnessTexName, MetallicTexName, lookupDirectory);
-				}
-				else
-				{				
-					// create image on disk to later load it
-					ImageManager::SaveImage(path, image, PreferredFormat);
-				}
+				ImageManager::SaveImage(path, image, PreferredFormat);
 				return path;
 			}
 		}
 		return FilePath();
+	}
+
+	void SplitRoughnessMetallicTexture(const FilePath& lookupDirectory, const MxString& roughness, const MxString& metallic, const aiScene* scene, const aiMaterial* material, aiTextureType metallicRoughnessType)
+	{
+		if (File::Exists(metallic) && File::Exists(roughness)) return;
+
+		if (material->GetTextureCount(metallicRoughnessType) > 0)
+		{
+			aiString assimpPath;
+			if (material->GetTexture(metallicRoughnessType, 0, &assimpPath) == aiReturn_SUCCESS)
+			{
+				const char* filepath = assimpPath.C_Str();
+
+				// check if texture is embedded into object file
+				const aiTexture* data = scene->GetEmbeddedTexture(filepath);
+
+				if (data != nullptr)
+				{
+					// if texture data is embedded, we need to create a file from it
+					Image image;
+					if (data->mHeight == 0.0f) // compressed data (jpg)
+						image = ImageLoader::LoadImageFromMemory((const uint8_t*)data->pcData, data->mWidth);
+					else
+						image = ImageLoader::LoadImageFromMemory((const uint8_t*)data->pcData, data->mWidth * data->mHeight * sizeof(aiTexel));
+
+					SaveRoughnessMetallicTexture(image, roughness, metallic, lookupDirectory);
+				}
+				else
+				{
+					Image image = ImageLoader::LoadImage(lookupDirectory / filepath);
+					SaveRoughnessMetallicTexture(image, roughness, metallic, lookupDirectory);
+				}
+			}
+		}
 	}
 
 	ObjectInfo ObjectLoader::Load(const FilePath& filepath)
@@ -204,7 +228,7 @@ namespace MxEngine
 			}
 
 			// process first to make sure metallic / roughness will present when checking for existing textures in GetActualTexturePath
-			auto _ = GetActualTexturePath(directory, MxFormat(RoughnessMetallicTexName, "{}_{}", i), scene, material, aiTextureType_UNKNOWN);
+			SplitRoughnessMetallicTexture(directory, MxFormat("{}_{}", RoughnessTexName, i), MxFormat("{}_{}", MetallicTexName, i), scene, material, aiTextureType_UNKNOWN);
 
 			materialInfo.AlbedoMap           = GetActualTexturePath(directory, MxFormat("{}_{}", AlbedoTexName,    i), scene, material, aiTextureType_DIFFUSE);
 			materialInfo.EmissiveMap         = GetActualTexturePath(directory, MxFormat("{}_{}", EmissiveTexName,  i), scene, material, aiTextureType_EMISSIVE);

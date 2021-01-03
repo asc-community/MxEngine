@@ -69,7 +69,8 @@ namespace Sponza
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Projections[1] = 100.0f;
-            dirLight->SetAmbientIntensity(0.2f);
+            dirLight->SetIntensity(5.0f);
+            dirLight->SetAmbientIntensity(0.25f);
             dirLight->FollowViewport();
 
             this->sphereFactory = MxObject::Create();
