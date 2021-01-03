@@ -70,7 +70,7 @@ namespace MxEngine
             j["id"] = materials.IndexOf(material);
 
             j["albedo-map-id"   ] = material.value.AlbedoMap.IsValid()           ? material.value.AlbedoMap.GetHandle()           : size_t(-1);
-            j["emmisive-map-id" ] = material.value.EmmisiveMap.IsValid()         ? material.value.EmmisiveMap.GetHandle()         : size_t(-1);
+            j["emissive-map-id" ] = material.value.EmissiveMap.IsValid()         ? material.value.EmissiveMap.GetHandle()         : size_t(-1);
             j["height-map-id"   ] = material.value.HeightMap.IsValid()           ? material.value.HeightMap.GetHandle()           : size_t(-1);
             j["normal-map-id"   ] = material.value.NormalMap.IsValid()           ? material.value.NormalMap.GetHandle()           : size_t(-1);
             j["ao-map-id"       ] = material.value.AmbientOcclusionMap.IsValid() ? material.value.AmbientOcclusionMap.GetHandle() : size_t(-1);
@@ -78,7 +78,7 @@ namespace MxEngine
             j["roughness-map-id"] = material.value.RoughnessMap.IsValid()        ? material.value.RoughnessMap.GetHandle()        : size_t(-1);
 
             j["transparency"]  = material.value.Transparency;
-            j["emmision"]      = material.value.Emmision;
+            j["emission"]      = material.value.Emission;
             j["displacement"]  = material.value.Displacement;
             j["roughness"]     = material.value.RoughnessFactor;
             j["metallic"]      = material.value.MetallicFactor;
@@ -96,7 +96,7 @@ namespace MxEngine
             auto material = ResourceFactory::Create<Material>();
 
             material->AlbedoMap           = mappings.Textures[j["albedo-map-id"   ]];  
-            material->EmmisiveMap         = mappings.Textures[j["emmisive-map-id" ]];
+            material->EmissiveMap         = mappings.Textures[j["emissive-map-id" ]];
             material->HeightMap           = mappings.Textures[j["height-map-id"   ]];  
             material->NormalMap           = mappings.Textures[j["normal-map-id"   ]];  
             material->AmbientOcclusionMap = mappings.Textures[j["ao-map-id"       ]];      
@@ -104,7 +104,7 @@ namespace MxEngine
             material->RoughnessMap        = mappings.Textures[j["roughness-map-id"]];
 
             material->Transparency        = j["transparency"];
-            material->Emmision            = j["emmision"];
+            material->Emission            = j["emission"];
             material->Displacement        = j["displacement"];
             material->RoughnessFactor     = j["roughness"];
             material->MetallicFactor      = j["metallic"];

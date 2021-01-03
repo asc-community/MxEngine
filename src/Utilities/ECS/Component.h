@@ -136,6 +136,10 @@ namespace MxEngine
         #define MAKE_COMPONENT(class_name)\
         public:\
                 using Handle = CResource<class_name>;\
+                class_name(const class_name&) = delete;\
+                class_name(class_name&&) = delete;\
+                class_name& operator=(const class_name&) = delete;\
+                class_name& operator=(class_name&&) = delete;\
         private: static constexpr MxEngine::StringId ComponentId = STRING_ID(#class_name);\
                 void* UserData = (void*)std::numeric_limits<uintptr_t>::max();\
                 friend class MxObject;\

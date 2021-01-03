@@ -50,15 +50,15 @@ namespace MxEngine
 
         for (auto factor : config.Factors)
         {
-            auto meshLODhandle = this->LODs.emplace_back(ResourceFactory::Create<Mesh>());
-            auto& meshLODsubmeshes = meshLODhandle->Submeshes;
-            meshLODsubmeshes.reserve(mesh->Submeshes.size());
+            auto meshLOD = this->LODs.emplace_back(ResourceFactory::Create<Mesh>());
 
             size_t totalIndicies = 0;
-            for (const auto& submesh : mesh->Submeshes)
+            for (size_t i = 0, submeshCount = mesh->GetSubMeshes().size(); i < submeshCount; i++)
             {
+                auto& submesh = mesh->GetSubMeshByIndex(i);
                 LODGenerator lod(submesh.Data);
-                auto& submeshLOD = meshLODsubmeshes.emplace_back(submesh.GetMaterialId(), submesh.GetTransform());
+
+                auto& submeshLOD = meshLOD->LinkSubMesh(submesh);
                 submeshLOD.Name = submesh.Name;
                 submeshLOD.Data = lod.CreateObject(factor);
                 totalIndicies += submeshLOD.Data.GetIndicies().size();

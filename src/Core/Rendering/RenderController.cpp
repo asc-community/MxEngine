@@ -94,7 +94,7 @@ namespace MxEngine
 		material.AlbedoMap->Bind(textureBindIndex++);
 		material.MetallicMap->Bind(textureBindIndex++);
 		material.RoughnessMap->Bind(textureBindIndex++);
-		material.EmmisiveMap->Bind(textureBindIndex++);
+		material.EmissiveMap->Bind(textureBindIndex++);
 		material.NormalMap->Bind(textureBindIndex++);
 		material.HeightMap->Bind(textureBindIndex++);
 		material.AmbientOcclusionMap->Bind(textureBindIndex++);
@@ -102,14 +102,14 @@ namespace MxEngine
 		shader.SetUniformInt("map_albedo", material.AlbedoMap->GetBoundId());
 		shader.SetUniformInt("map_metallic", material.MetallicMap->GetBoundId());
 		shader.SetUniformInt("map_roughness", material.RoughnessMap->GetBoundId());
-		shader.SetUniformInt("map_emmisive", material.EmmisiveMap->GetBoundId());
+		shader.SetUniformInt("map_emmisive", material.EmissiveMap->GetBoundId());
 		shader.SetUniformInt("map_normal", material.NormalMap->GetBoundId());
 		shader.SetUniformInt("map_height", material.HeightMap->GetBoundId());
 		shader.SetUniformInt("map_occlusion", material.AmbientOcclusionMap->GetBoundId());
 
 		shader.SetUniformFloat("material.roughness", material.RoughnessFactor);
 		shader.SetUniformFloat("material.metallic", material.MetallicFactor);
-		shader.SetUniformFloat("material.emmisive", material.Emmision);
+		shader.SetUniformFloat("material.emmisive", material.Emission);
 		shader.SetUniformFloat("material.transparency", material.Transparency);
 
 		shader.SetUniformFloat("displacement", material.Displacement);
@@ -741,7 +741,7 @@ namespace MxEngine
 		camera.IrradianceTexture->Bind(startId++);
 		shader.SetUniformInt("environment.skybox", camera.SkyboxTexture->GetBoundId());
 		shader.SetUniformInt("environment.irradiance", camera.IrradianceTexture->GetBoundId());
-		shader.SetUniformMat3("environment.skyboxRotation", camera.InverseSkyboxRotation);
+		shader.SetUniformMat3("environment.skyboxRotation", camera.InversedSkyboxRotation);
 		shader.SetUniformFloat("environment.intensity", camera.SkyboxIntensity);
 	}
 
@@ -897,7 +897,7 @@ namespace MxEngine
 		}
 
 		shader.SetUniformMat4("StaticViewProjection", camera.StaticViewProjectionMatrix);
-		shader.SetUniformMat3("Rotation", Transpose(camera.InverseSkyboxRotation));
+		shader.SetUniformMat3("Rotation", Transpose(camera.InversedSkyboxRotation));
 		shader.SetUniformFloat("gamma", camera.Gamma);
 		shader.SetUniformFloat("luminance", skyLuminance);
 
@@ -1039,7 +1039,7 @@ namespace MxEngine
 	}
 
 	void RenderController::SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
-		const Skybox& skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping, const CameraSSR* ssr)
+		const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping, const CameraSSR* ssr)
 	{
 		auto& camera = this->Pipeline.Cameras.emplace_back();
 
@@ -1059,17 +1059,17 @@ namespace MxEngine
 		camera.SwapTexture                = controller.GetSwapHDRTexture();
 		camera.OutputTexture              = controller.GetRenderTexture();
 		camera.RenderToTexture            = controller.IsRendered();
-		camera.InverseSkyboxRotation      = Transpose(ToMatrix(skybox.GetRotation()));
-		camera.SkyboxTexture              = skybox.CubeMap.IsValid() ? skybox.CubeMap : this->Pipeline.Environment.DefaultSkybox;
-		camera.IrradianceTexture          = skybox.Irradiance.IsValid() ? skybox.Irradiance : camera.SkyboxTexture;
-		camera.SkyboxIntensity            = skybox.GetIntensity();
-		camera.Gamma                      = toneMapping == nullptr ? 1.0f : toneMapping->GetGamma();
+		camera.SkyboxTexture              = (skybox != nullptr && skybox->CubeMap.IsValid()) ? skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;
+		camera.IrradianceTexture          = (skybox != nullptr && skybox->Irradiance.IsValid()) ? skybox->Irradiance : camera.SkyboxTexture;
+		camera.SkyboxIntensity            = (skybox != nullptr) ? skybox->GetIntensity() : Skybox::DefaultIntensity;
+		camera.InversedSkyboxRotation     = (skybox != nullptr) ? Transpose(ToMatrix(skybox->GetRotation())) : Matrix4x4(1.0f);
+		camera.Gamma                      = (toneMapping != nullptr) ? toneMapping->GetGamma() : CameraToneMapping::DefaultGamma;
 		camera.Effects                    = effects;
 		camera.ToneMapping                = toneMapping;
 		camera.SSR                        = ssr;
 	}
 
-	void RenderController::SubmitPrimitive(const SubMesh& object, const Material& material, bool castsShadows, const TransformComponent& parentTransform, size_t instanceCount, const char* debugName)
+	void RenderController::SubmitPrimitive(const SubMesh& submesh, const Material& material, bool castsShadows, const TransformComponent& parentTransform, size_t instanceCount, const char* debugName)
 	{
 		RenderUnit* primitivePtr = nullptr;
 		// filter transparent object to render in separate order
@@ -1079,11 +1079,11 @@ namespace MxEngine
 			primitivePtr = &this->Pipeline.OpaqueRenderUnits.emplace_back();
 		auto& primitive = *primitivePtr;
 
-		primitive.VAO = object.Data.GetVAO();
-		primitive.IBO = object.Data.GetIBO();
+		primitive.VAO = submesh.Data.GetVAO();
+		primitive.IBO = submesh.Data.GetIBO();
 		primitive.materialIndex = this->Pipeline.MaterialUnits.size();
-		primitive.ModelMatrix = parentTransform.GetMatrix() * object.GetTransform()->GetMatrix(); //-V807
-		primitive.NormalMatrix = parentTransform.GetNormalMatrix() * object.GetTransform()->GetNormalMatrix();
+		primitive.ModelMatrix = parentTransform.GetMatrix() * submesh.GetTransform().GetMatrix(); //-V807
+		primitive.NormalMatrix = parentTransform.GetNormalMatrix() * submesh.GetTransform().GetNormalMatrix();
 		primitive.InstanceCount = instanceCount;
 
 		#if defined(MXENGINE_DEBUG)
@@ -1091,14 +1091,14 @@ namespace MxEngine
 		#endif
 
 		// compute aabb of primitive object for later frustrum culling
-		auto aabb = object.Data.GetBoundingBox() * primitive.ModelMatrix;
+		auto aabb = submesh.Data.GetBoundingBox() * primitive.ModelMatrix;
 		primitive.MinAABB = aabb.Min;
 		primitive.MaxAABB = aabb.Max;
 
 		auto& renderMaterial = this->Pipeline.MaterialUnits.emplace_back(material); // create a copy of material for future work
 
 		// we need to change displacement to account object scale, so we take average of object scale components as multiplier
-		renderMaterial.Displacement *= Dot(parentTransform.GetScale() * object.GetTransform()->GetScale(), MakeVector3(1.0f / 3.0f));
+		renderMaterial.Displacement *= Dot(parentTransform.GetScale() * submesh.GetTransform().GetScale(), MakeVector3(1.0f / 3.0f));
 
 		if (renderMaterial.RoughnessMap.IsValid())         renderMaterial.RoughnessFactor = 1.0f;
 		if (renderMaterial.MetallicMap.IsValid())          renderMaterial.MetallicFactor = 1.0f;
@@ -1107,7 +1107,7 @@ namespace MxEngine
 		if (!renderMaterial.AlbedoMap.IsValid())           renderMaterial.AlbedoMap = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!renderMaterial.RoughnessMap.IsValid())        renderMaterial.RoughnessMap = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!renderMaterial.MetallicMap.IsValid())         renderMaterial.MetallicMap = this->Pipeline.Environment.DefaultMaterialMap;
-		if (!renderMaterial.EmmisiveMap.IsValid())         renderMaterial.EmmisiveMap = this->Pipeline.Environment.DefaultMaterialMap;
+		if (!renderMaterial.EmissiveMap.IsValid())         renderMaterial.EmissiveMap = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!renderMaterial.AmbientOcclusionMap.IsValid()) renderMaterial.AmbientOcclusionMap = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!renderMaterial.NormalMap.IsValid())           renderMaterial.NormalMap = this->Pipeline.Environment.DefaultNormalMap;
 		if (!renderMaterial.HeightMap.IsValid())           renderMaterial.HeightMap = this->Pipeline.Environment.DefaultBlackMap;

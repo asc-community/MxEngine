@@ -13,9 +13,9 @@ namespace OfflineRendererSample
     class OfflineRendererApplication : public Application
     {
         // Configure this parameters as you wish //
-        VectorInt2 viewportSize{ 7680, 4320 };
+        VectorInt2 viewportSize{ 1920, 1080 };//7680, 4320 };
         size_t texturesPerRow = 4;
-        float imageSize = 0.2f;
+        float imageSize = 1.0f / (float)texturesPerRow;
         ///////////////////////////////////////////
 
         using TextureArray = MxVector<Image>;
@@ -29,11 +29,10 @@ namespace OfflineRendererSample
             auto controller = cameraObject->AddComponent<CameraController>();
             controller->SetDirection(Vector3(0.0f, -0.333f, 1.0f));
             controller->SetCameraType(CameraType::FRUSTRUM);
-            auto effects = cameraObject->AddComponent<CameraEffects>();
-            effects->SetVignetteRadius(0.0f);
             auto skybox = cameraObject->AddComponent<Skybox>();
             skybox->CubeMap = AssetManager::LoadCubeMap("Resources/dawn.jpg"_id);
             skybox->Irradiance = AssetManager::LoadCubeMap("Resources/dawn_irradiance.jpg"_id);
+            skybox->SetIntensity(0.1f);
 
             Rendering::SetViewport(controller);
             Rendering::ResizeViewport(viewportSize.x, viewportSize.y);
@@ -52,6 +51,7 @@ namespace OfflineRendererSample
             auto lightObject = MxObject::Create();
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Direction = MakeVector3(0.5f, 1.0f, -0.1f);
+            dirLight->SetIntensity(1.0f);
             dirLight->FollowViewport();
         }
 

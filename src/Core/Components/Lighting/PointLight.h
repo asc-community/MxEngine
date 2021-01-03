@@ -43,6 +43,8 @@ namespace MxEngine
 
         void LoadDepthCubeMap();
     public:
+        PointLight() = default;
+
         bool IsCastingShadows() const;
         void ToggleShadowCast(bool value);
 

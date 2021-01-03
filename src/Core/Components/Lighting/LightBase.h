@@ -35,7 +35,7 @@ namespace MxEngine
     class LightBase
     {
         float ambientIntensity = 0.1f;
-        float intensity = 1.0f;
+        float intensity = 0.5f;
         Vector3 color{ 1.0f };
     public:        
         void SetColor(Vector3 color) { this->color = VectorMax(VectorMin(color, MakeVector3(1.0f)), MakeVector3(0.0f)); }

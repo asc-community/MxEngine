@@ -43,15 +43,7 @@ namespace MxEngine
 	void Mesh::LoadFromFile(const std::filesystem::path& filepath)
 	{
 		this->filePath = ToMxString(filepath);
-
 		ObjectInfo objectInfo = ObjectLoader::Load(filepath);
-		MxVector<TransformComponent::Handle> submeshTransforms;
-
-		submeshTransforms.reserve(objectInfo.meshes.size());
-		for (size_t i = 0; i < objectInfo.meshes.size(); i++)
-		{
-			submeshTransforms.push_back(ComponentFactory::CreateComponent<TransformComponent>());
-		}
 
 		MxVector<SubMesh::MaterialId> materialIds;
 		materialIds.reserve(objectInfo.meshes.size());
@@ -75,21 +67,21 @@ namespace MxEngine
 			ObjectLoader::DumpMaterials(objectInfo.materials, materialLibPath);
 		}
 		
+		// optimize transform additions
+		this->subMeshTransforms.reserve(objectInfo.meshes.size());
+
 		for (size_t i = 0; i < objectInfo.meshes.size(); i++)
 		{
 			auto& meshData = objectInfo.meshes[i];
 			auto& materialId = materialIds[i];
-			auto& transform = submeshTransforms[i];
 
-			SubMesh submesh(materialId, transform);
+			auto& submesh = this->AddSubMesh(materialId);
 			submesh.Data.GetVertecies() = std::move(meshData.vertecies);
 			submesh.Data.GetIndicies() = std::move(meshData.indicies);
 			submesh.Data.BufferVertecies();
 			submesh.Data.BufferIndicies();
 			submesh.Data.UpdateBoundingGeometry();
 			submesh.Name = std::move(meshData.name);
-
-			this->Submeshes.push_back(std::move(submesh));
 		}
 		this->UpdateBoundingGeometry(); // use submeshes boundings to update mesh boundings
 	}
@@ -110,10 +102,10 @@ namespace MxEngine
 	{
 		// compute bounding box, taking min and max points from each sub-box
 		this->BoxBounding = { MakeVector3(0.0f), MakeVector3(0.0f) };
-		if (!this->Submeshes.empty()) 
-			this->BoxBounding = this->Submeshes.front().Data.GetBoundingBox();
+		if (!this->GetSubMeshes().empty()) 
+			this->BoxBounding = this->GetSubMeshByIndex(0).Data.GetBoundingBox();
 
-		for (const auto& submesh : this->Submeshes)
+		for (const auto& submesh : this->GetSubMeshes())
 		{
 			this->BoxBounding.Min = VectorMin(this->BoxBounding.Min, submesh.Data.GetBoundingBox().Min);
 			this->BoxBounding.Max = VectorMax(this->BoxBounding.Max, submesh.Data.GetBoundingBox().Max);
@@ -122,7 +114,7 @@ namespace MxEngine
 		// compute bounding sphere, taking sum of max sub-sphere radius and distance to it
 		auto center = MakeVector3(0.0f);
 		auto maxRadius = 0.0f;
-		for (const auto& submesh : this->Submeshes)
+		for (const auto& submesh : this->GetSubMeshes())
 		{
 			auto sphere = submesh.Data.GetBoundingSphere();
 			auto distanceToCenter = Length(sphere.Center);
@@ -135,7 +127,7 @@ namespace MxEngine
 	{
 		this->VBOs.push_back(std::move(vbo));
 		this->VBLs.push_back(std::move(vbl));
-		for (auto& mesh : this->Submeshes)
+		for (auto& mesh : this->GetSubMeshes())
 		{
 			mesh.Data.GetVAO()->AddInstancedBuffer(*this->VBOs.back(), *this->VBLs.back());
 		}
@@ -162,7 +154,7 @@ namespace MxEngine
     void Mesh::PopInstancedBuffer()
     {
 		MX_ASSERT(!this->VBOs.empty());
-		for (auto& mesh : this->Submeshes)
+		for (auto& mesh : this->GetSubMeshes())
 		{
 			mesh.Data.GetVAO()->PopBuffer(*this->VBLs.back());
 		}
@@ -178,5 +170,44 @@ namespace MxEngine
 	void Mesh::SetInternalEngineTag(const MxString& tag)
 	{
 		this->filePath = tag;
+	}
+
+	const Mesh::SubMeshList& Mesh::GetSubMeshes() const
+	{
+		return this->submeshes;
+	}
+
+	const SubMesh& Mesh::GetSubMeshByIndex(size_t index) const
+	{
+		MX_ASSERT(index < this->submeshes.size());
+		return this->submeshes[index];
+	}
+
+	SubMesh& Mesh::GetSubMeshByIndex(size_t index)
+	{
+		MX_ASSERT(index < this->submeshes.size());
+		return this->submeshes[index];
+	}
+
+	SubMesh& Mesh::AddSubMesh(SubMesh::MaterialId materialId)
+	{
+		auto& transform = *this->subMeshTransforms.emplace_back(MakeUnique<TransformComponent>());
+		return this->submeshes.emplace_back(materialId, transform);
+	}
+
+	SubMesh& Mesh::LinkSubMesh(SubMesh& submesh)
+	{
+		// ALL submeshes in mesh should be linked, in any is linked
+		MX_ASSERT(this->subMeshTransforms.empty());
+		return this->submeshes.emplace_back(submesh.GetMaterialId(), submesh.GetTransform());
+	}
+
+	void Mesh::DeleteSubMeshByIndex(size_t index)
+	{
+		// you cannot delete linkes meshes
+		MX_ASSERT(!this->subMeshTransforms.empty());
+
+		this->submeshes.erase(this->submeshes.begin() + index);
+		this->subMeshTransforms.erase(this->subMeshTransforms.begin() + index);
 	}
 }

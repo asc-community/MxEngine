@@ -40,7 +40,7 @@ namespace MxEngine
         return this->Data.GetBoundingSphere();
     }
 
-    SubMesh::SubMesh(size_t materiaId, const TransformComponent::Handle& transform)
+    SubMesh::SubMesh(size_t materiaId, std::reference_wrapper<TransformComponent> transform)
         :  materialId(materiaId), transform(transform) { }
 
     size_t SubMesh::GetMaterialId() const
@@ -48,7 +48,12 @@ namespace MxEngine
         return this->materialId;
     }
 
-    TransformComponent::Handle SubMesh::GetTransform() const
+    const TransformComponent& SubMesh::GetTransform() const
+    {
+        return this->transform;
+    }
+
+    TransformComponent& SubMesh::GetTransform()
     {
         return this->transform;
     }

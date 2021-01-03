@@ -6,11 +6,7 @@ namespace MxEngine
     {
         auto mesh = ResourceFactory::Create<Mesh>();
 
-        SubMesh::MaterialId materialId = 0;
-        auto transform = ComponentFactory::CreateComponent<TransformComponent>();
-
-        auto& submeshes = mesh->Submeshes;
-        auto& submesh = submeshes.emplace_back(materialId, transform);
+        auto& submesh = mesh->AddSubMesh((SubMesh::MaterialId)0);
         submesh.Data = std::move(meshData);
         submesh.Data.BufferVertecies();
         submesh.Data.BufferIndicies();

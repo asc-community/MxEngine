@@ -51,14 +51,14 @@ namespace MxEngine
 		auto& material = *materialResource;
 
 		MakeTexture(material.AlbedoMap, textures, mat.AlbedoMap, TextureFormat::RGBA);
-		MakeTexture(material.EmmisiveMap, textures, mat.EmmisiveMap, TextureFormat::R);
+		MakeTexture(material.EmissiveMap, textures, mat.EmissiveMap, TextureFormat::R);
 		MakeTexture(material.HeightMap, textures, mat.HeightMap, TextureFormat::RGB);
 		MakeTexture(material.NormalMap, textures, mat.NormalMap, TextureFormat::RGB);
 		MakeTexture(material.MetallicMap, textures, mat.MetallicMap, TextureFormat::R);
 		MakeTexture(material.RoughnessMap, textures, mat.RoughnessMap, TextureFormat::R);
 		MakeTexture(material.AmbientOcclusionMap, textures, mat.AmbientOcclusionMap, TextureFormat::R);
 
-		material.Emmision = mat.Emmision;
+		material.Emission = mat.Emission;
 		material.Transparency = mat.Transparency;
 		material.BaseColor = mat.BaseColor;
 		material.MetallicFactor = mat.MetallicFactor;
@@ -67,6 +67,33 @@ namespace MxEngine
 		material.Name = mat.Name;
 
 		return materialResource;
+	}
+
+	MeshRenderer::MeshRenderer()
+		: Materials(1, ResourceFactory::Create<Material>()) { }
+
+	MeshRenderer::MeshRenderer(MaterialRef material)
+		: Materials(1, std::move(material)) { }
+
+	MeshRenderer::MeshRenderer(MaterialArray materials)
+		: Materials(std::move(materials)) { }
+
+	MeshRenderer& MeshRenderer::operator=(MaterialRef material)
+	{
+		this->Materials = MaterialArray{ 1, material };
+		return *this;
+	}
+
+	MeshRenderer& MeshRenderer::operator=(MaterialArray materials)
+	{
+		this->Materials = std::move(materials);
+		return *this;
+	}
+
+	MeshRenderer::MaterialRef MeshRenderer::GetMaterial() const
+	{
+		MX_ASSERT(!Materials.empty()); 
+		return this->Materials[0];
 	}
 
 	MeshRenderer::MaterialArray MeshRenderer::LoadMaterials(const FilePath& path)

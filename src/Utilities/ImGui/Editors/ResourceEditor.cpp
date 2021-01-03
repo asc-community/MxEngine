@@ -86,7 +86,7 @@ namespace MxEngine::GUI
                 ImGui::AlignTextToFramePadding();
                 ImGui::Text("id: %-3d", id);
                 ImGui::SameLine();
-                DrawTextureEditor(texturePath.c_str(), texture, false);
+                DrawTextureEditor(texturePath.c_str(), texture, { });
             }
 
             ImGui::PopID();
@@ -111,7 +111,7 @@ namespace MxEngine::GUI
         return path.find("[[") != path.npos && path.find("]]") != path.npos;
     }
 
-    void DrawTextureEditor(const char* name, TextureHandle& texture, bool withTextureLoader)
+    void DrawTextureEditor(const char* name, TextureHandle& texture, std::optional<TextureFormat> loadingFormat)
     {
         SCOPE_TREE_NODE(name);
         ImGui::PushID((int)texture.GetHandle());
@@ -142,14 +142,14 @@ namespace MxEngine::GUI
             ImGui::Text("empty resource");
         }
 
-        if (withTextureLoader)
+        if (loadingFormat.has_value())
         {
             if (ImGui::Button("load from file"))
             {
                 MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
                 if (!path.empty() && File::Exists(path))
                 {
-                    texture = AssetManager::LoadTexture(path, TextureFormat::RGBA);
+                    texture = AssetManager::LoadTexture(path, loadingFormat.value());
                 }
             }
             
@@ -237,17 +237,17 @@ namespace MxEngine::GUI
         }
         SCOPE_TREE_NODE(material->Name.c_str());
 
-        DrawTextureEditor("albedo map", material->AlbedoMap, true);
-        DrawTextureEditor("roughness map", material->RoughnessMap, true);
-        DrawTextureEditor("metallic map", material->MetallicMap, true);
-        DrawTextureEditor("emmisive map", material->EmmisiveMap, true);
-        DrawTextureEditor("normal map", material->NormalMap, true);
-        DrawTextureEditor("height map", material->HeightMap, true);
-        DrawTextureEditor("ambient occlusion map", material->AmbientOcclusionMap, true);
+        DrawTextureEditor("albedo map", material->AlbedoMap, TextureFormat::RGBA);
+        DrawTextureEditor("roughness map", material->RoughnessMap, TextureFormat::R);
+        DrawTextureEditor("metallic map", material->MetallicMap, TextureFormat::R);
+        DrawTextureEditor("emissive map", material->EmissiveMap, TextureFormat::R);
+        DrawTextureEditor("normal map", material->NormalMap, TextureFormat::RG);
+        DrawTextureEditor("height map", material->HeightMap, TextureFormat::R);
+        DrawTextureEditor("ambient occlusion map", material->AmbientOcclusionMap, TextureFormat::R);
 
         ImGui::DragFloat("roughness factor", &material->RoughnessFactor, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat("metallic factor", &material->MetallicFactor, 0.01f, 0.0f, 1.0f);
-        ImGui::DragFloat("emmision", &material->Emmision, 0.01f, 0.0f, FLT_MAX);
+        ImGui::DragFloat("emmision", &material->Emission, 0.01f, 0.0f, FLT_MAX);
         ImGui::DragFloat("displacement", &material->Displacement, 0.01f);
         ImGui::DragFloat("transparency", &material->Transparency, 0.01f, 0.0f, 1.0f);
         ImGui::DragFloat2("UV multipliers", &material->UVMultipliers[0], 0.01f);
@@ -461,16 +461,16 @@ namespace MxEngine::GUI
         static MxString submeshName;
         
         size_t vertexCount = 0, indexCount = 0;
-        for (auto& submesh : mesh->Submeshes)
+        for (auto& submesh : mesh->GetSubMeshes())
         {
             vertexCount += submesh.Data.GetVertecies().size();
             indexCount += submesh.Data.GetIndicies().size();
         }
         ImGui::Text("total vertex count: %d, total index count: %d", (int)vertexCount, (int)indexCount);
 
-        for (int id = 0; id < (int)mesh->Submeshes.size(); id++)
+        for (int id = 0; id < (int)mesh->GetSubMeshes().size(); id++)
         {
-            auto& submesh = mesh->Submeshes[id];
+            auto& submesh = mesh->GetSubMeshByIndex(id);
             if (!ImGui::CollapsingHeader(submesh.Name.c_str())) continue;
             GUI::Indent _(5.0f);
             ImGui::PushID(id);
@@ -479,7 +479,7 @@ namespace MxEngine::GUI
             ImGui::Text("index count: %d", (int)submesh.Data.GetIndicies().size());
             ImGui::Text("material id: %d", (int)submesh.GetMaterialId());
 
-            TransformEditor(*submesh.GetTransform());
+            TransformEditor(submesh.GetTransform());
 
             if (ImGui::Button("update submesh boundings"))
                 submesh.Data.UpdateBoundingGeometry();
@@ -489,7 +489,7 @@ namespace MxEngine::GUI
             ImGui::SameLine();
             if (ImGui::Button("delete submesh"))
             {
-                mesh->Submeshes.erase(mesh->Submeshes.begin() + id);
+                mesh->DeleteSubMeshByIndex(id);
                 id--; // compensate erased mesh
                 ImGui::PopID();
                 continue; // skip other ui as current mesh is deleted

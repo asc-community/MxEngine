@@ -57,7 +57,7 @@ namespace MxEngine
 		/*!
 		emmisive texture path
 		*/
-		FilePath EmmisiveMap;
+		FilePath EmissiveMap;
 		/*!
 		height texture path
 		*/
@@ -90,7 +90,7 @@ namespace MxEngine
 		/*!
 		light emmision value
 		*/
-		float Emmision = 0.0f;
+		float Emission = 0.0f;
 		/*!
 		object base color
 		*/
@@ -106,7 +106,7 @@ namespace MxEngine
 		/*!
 		roughness factor value
 		*/
-		float RoughnessFactor = 0.0f;
+		float RoughnessFactor = 0.75f;
 	};
 
 	/*!

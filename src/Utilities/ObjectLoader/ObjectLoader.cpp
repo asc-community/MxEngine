@@ -48,7 +48,7 @@
 namespace MxEngine
 {
 	const char* const AlbedoTexName = "albedo";
-	const char* const EmmisiveTexName = "emmisive";
+	const char* const EmissiveTexName = "emmisive";
 	const char* const HeightTexName = "height";
 	const char* const NormalTexName = "normal";
 	const char* const AOTexName = "ao";
@@ -188,22 +188,34 @@ namespace MxEngine
 			// TODO: this is workaround, because some object formats export alpha channel as 0, but its actually means 1
 			if (materialInfo.Transparency == 0.0f) materialInfo.Transparency = 1.0f;
 
+			aiColor4D baseColorPBR;
+			if (material->Get(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_BASE_COLOR_FACTOR, baseColorPBR) == aiReturn_SUCCESS)
+			{
+				materialInfo.BaseColor[0]  = baseColorPBR[0];
+				materialInfo.BaseColor[1]  = baseColorPBR[1];
+				materialInfo.BaseColor[2]  = baseColorPBR[2];
+				materialInfo.Transparency *= baseColorPBR[3];
+			}
+
+			aiColor3D emissiveColor;
+			if (material->Get(AI_MATKEY_COLOR_EMISSIVE, emissiveColor) == aiReturn_SUCCESS)
+			{
+				materialInfo.Emission = Max(emissiveColor.r, emissiveColor.g, emissiveColor.b);
+			}
+
 			// process first to make sure metallic / roughness will present when checking for existing textures in GetActualTexturePath
-			auto _ = GetActualTexturePath(directory, RoughnessMetallicTexName, scene, material, aiTextureType_UNKNOWN);
+			auto _ = GetActualTexturePath(directory, MxFormat(RoughnessMetallicTexName, "{}_{}", i), scene, material, aiTextureType_UNKNOWN);
 
-			materialInfo.AlbedoMap           = GetActualTexturePath(directory, AlbedoTexName,    scene, material, aiTextureType_DIFFUSE);
-			materialInfo.EmmisiveMap         = GetActualTexturePath(directory, EmmisiveTexName,  scene, material, aiTextureType_EMISSIVE);
-			materialInfo.HeightMap           = GetActualTexturePath(directory, HeightTexName,    scene, material, aiTextureType_HEIGHT);
-			materialInfo.NormalMap           = GetActualTexturePath(directory, NormalTexName,    scene, material, aiTextureType_NORMALS);
-			materialInfo.AmbientOcclusionMap = GetActualTexturePath(directory, AOTexName,        scene, material, aiTextureType_AMBIENT_OCCLUSION);
-			materialInfo.RoughnessMap        = GetActualTexturePath(directory, RoughnessTexName, scene, material, aiTextureType_DIFFUSE_ROUGHNESS);
-			materialInfo.MetallicMap         = GetActualTexturePath(directory, MetallicTexName,  scene, material, aiTextureType_METALNESS);
+			materialInfo.AlbedoMap           = GetActualTexturePath(directory, MxFormat("{}_{}", AlbedoTexName,    i), scene, material, aiTextureType_DIFFUSE);
+			materialInfo.EmissiveMap         = GetActualTexturePath(directory, MxFormat("{}_{}", EmissiveTexName,  i), scene, material, aiTextureType_EMISSIVE);
+			materialInfo.HeightMap           = GetActualTexturePath(directory, MxFormat("{}_{}", HeightTexName,    i), scene, material, aiTextureType_HEIGHT);
+			materialInfo.NormalMap           = GetActualTexturePath(directory, MxFormat("{}_{}", NormalTexName,    i), scene, material, aiTextureType_NORMALS);
+			materialInfo.AmbientOcclusionMap = GetActualTexturePath(directory, MxFormat("{}_{}", AOTexName,        i), scene, material, aiTextureType_AMBIENT_OCCLUSION);
+			materialInfo.RoughnessMap        = GetActualTexturePath(directory, MxFormat("{}_{}", RoughnessTexName, i), scene, material, aiTextureType_DIFFUSE_ROUGHNESS);
+			materialInfo.MetallicMap         = GetActualTexturePath(directory, MxFormat("{}_{}", MetallicTexName,  i), scene, material, aiTextureType_METALNESS);
 
-			// if no pbr textures provided, set all pbr parameters to default value
-			if (materialInfo.MetallicMap.empty()) materialInfo.MetallicFactor = 0.0f;
-			if (materialInfo.RoughnessMap.empty()) materialInfo.RoughnessFactor = 0.75f;
 			// if emmision texture provided, set emmision to some non-zero value
-			if (!materialInfo.EmmisiveMap.empty()) materialInfo.Emmision = 100.0f;
+			if (!materialInfo.EmissiveMap.empty() && materialInfo.Emission == 0.0f) materialInfo.Emission = 100.0f;
 		}
 
 		Vector3 minCoords = MakeVector3(std::numeric_limits<float>::max());
@@ -299,7 +311,7 @@ namespace MxEngine
 
 			material.Transparency        = json["Transparency"       ].get<float>();
 			material.Displacement        = json["Displacement"       ].get<float>();
-			material.Emmision            = json["Emmision"           ].get<float>();
+			material.Emission            = json["Emission"           ].get<float>();
 			material.MetallicFactor      = json["MetallicFactor"     ].get<float>();
 			material.RoughnessFactor     = json["RoughnessFactor"    ].get<float>();
 									    
@@ -307,7 +319,7 @@ namespace MxEngine
 			material.UVMultipliers       = json["UVMultipliers"      ].get<Vector2>();
 									    
 			material.AlbedoMap           = json["AlbedoMap"          ].get<FilePath>();
-			material.EmmisiveMap         = json["EmmisiveMap"        ].get<FilePath>();
+			material.EmissiveMap         = json["EmissiveMap"        ].get<FilePath>();
 			material.HeightMap           = json["HeightMap"          ].get<FilePath>();
 			material.NormalMap           = json["NormalMap"          ].get<FilePath>();
 			material.AmbientOcclusionMap = json["AmbientOcclusionMap"].get<FilePath>();
@@ -333,13 +345,13 @@ namespace MxEngine
 			DUMP(i, Displacement);
 			DUMP(i, MetallicFactor);
 			DUMP(i, RoughnessFactor);
-			DUMP(i, Emmision);
+			DUMP(i, Emission);
 
 			DUMP(i, BaseColor);
 			DUMP(i, UVMultipliers);
 
 			DUMP(i, AlbedoMap);
-			DUMP(i, EmmisiveMap);
+			DUMP(i, EmissiveMap);
 			DUMP(i, HeightMap);
 			DUMP(i, NormalMap);
 			DUMP(i, MetallicMap);

@@ -43,8 +43,10 @@ uniform Camera camera;
 
 vec3 calcNormal(vec2 texcoord, mat3 TBN, sampler2D normalMap)
 {
-	vec3 normal = texture(normalMap, texcoord).rgb;
-	normal = normalize(normal * 2.0f - 1.0f);
+	vec3 normal;
+	normal.xy = texture(normalMap, texcoord).rg;
+	normal.xy = 2.0 * normal.xy - 1.0;
+	normal.z = sqrt(1.0 - dot(normal.xy, normal.xy));
 	return TBN * normal;
 }
 

@@ -45,6 +45,7 @@ namespace MxEngine
 
         void CreateNewShape();
     public:
+        CompoundCollider() = default;
         void Init();
         void UpdateCollider();
         ~CompoundCollider();

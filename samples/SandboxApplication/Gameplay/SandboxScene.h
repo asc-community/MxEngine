@@ -1,7 +1,17 @@
 #pragma once
 
 #include <MxEngine.h>
-#include "UserObjects.h"
+
+void InitCamera(MxObject&);
+void InitCube(MxObject&);
+void InitSphere(MxObject&);
+void InitGrid(MxObject&);
+void InitSurface(MxObject&);
+void InitDirLight(MxObject&);
+void InitPointLight(MxObject&);
+void InitSpotLight(MxObject&);
+void InitPBRObject(MxObject&);
+void InitPBRSound(MxObject&);
 
 using namespace MxEngine;
 
@@ -28,12 +38,6 @@ public:
 
         // auto arc = MxObject::Create();
 		// InitArc(*arc);
-
-		// auto& deathStar = this->AddObject("DeathStar", MakeUnique<MxObject>());
-		// InitDeathStar(deathStar);
-
-		// auto& destroyer = this->AddObject("Destroyer", MakeUnique<MxObject>());
-		// InitDestroyer(destroyer);
 		
 		auto dirLight = MxObject::Create();
 		InitDirLight(*dirLight);

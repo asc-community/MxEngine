@@ -44,6 +44,7 @@ namespace MxEngine
 		};
 		bool bindHorizontalRotation = false, bindVerticalRotation = false;
 	public:
+		InputController() = default;
 		~InputController();
 
 		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right);

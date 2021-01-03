@@ -43,6 +43,8 @@ namespace MxEngine
 		float startDistance = 2.0f;
 		float fading = 1.0f;
 	public:
+		CameraSSR() = default;
+
 		float GetThickness() const;
 		float GetMaxCosAngle() const;
 		size_t GetSteps() const;

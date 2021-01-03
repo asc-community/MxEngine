@@ -58,6 +58,8 @@ namespace MxEngine
 		bool enableFXAA = false;
 		uint8_t bloomIterations = 3;
 	public:
+		CameraEffects() = default;
+
 		const Vector3& GetFogColor() const;
 		float GetFogDistance() const;
 		float GetFogDensity() const;

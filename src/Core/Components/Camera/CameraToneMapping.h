@@ -42,9 +42,11 @@ namespace MxEngine
 		{
 			Vector3 R{}, G{}, B{};
 		};
+
+		constexpr static float DefaultGamma = 2.2f;
 	
 	private:
-		float gamma = 2.2f;
+		float gamma = DefaultGamma;
 		float exposure = 1.0f;
 		float whitePoint = 1.0f;
 		float colorMultiplier = 1.0f;
@@ -60,6 +62,8 @@ namespace MxEngine
 		};
 
 	public:
+		CameraToneMapping() = default;
+
 		float GetGamma() const;
 		const ColorChannels& GetColorGrading() const;
 		float GetExposure() const;

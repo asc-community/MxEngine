@@ -1,4 +1,5 @@
-#pragma once
+#include <MxEngine.h>
+using namespace MxEngine;
 
 struct CubeBehaviour
 {

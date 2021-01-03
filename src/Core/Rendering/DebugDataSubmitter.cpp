@@ -40,19 +40,19 @@ namespace MxEngine
         {
             if (debugDraw.RenderBoundingBox)
             {
-                for (const auto& submesh : meshSource->Mesh->Submeshes)
+                for (const auto& submesh : meshSource->Mesh->GetSubMeshes())
                 {
-                    auto box = submesh.GetBoundingBox() * (object.Transform.GetMatrix() * submesh.GetTransform()->GetMatrix());
+                    auto box = submesh.GetBoundingBox() * (object.Transform.GetMatrix() * submesh.GetTransform().GetMatrix());
                     buffer.Submit(box, debugDraw.BoundingBoxColor);
                 }
             }
             if (debugDraw.RenderBoundingSphere)
             {
-                for (const auto& submesh : meshSource->Mesh->Submeshes)
+                for (const auto& submesh : meshSource->Mesh->GetSubMeshes())
                 {
                     auto sphere = submesh.GetBoundingSphere();
-                    sphere.Center += object.Transform.GetPosition() + submesh.GetTransform()->GetPosition();
-                    sphere.Radius *= ComponentMax(object.Transform.GetScale() * submesh.GetTransform()->GetScale());
+                    sphere.Center += object.Transform.GetPosition() + submesh.GetTransform().GetPosition();
+                    sphere.Radius *= ComponentMax(object.Transform.GetScale() * submesh.GetTransform().GetScale());
                     buffer.Submit(sphere, debugDraw.BoundingSphereColor);
                 }
             }

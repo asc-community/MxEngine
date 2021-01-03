@@ -30,6 +30,7 @@
 
 #include "Core/Resources/AssetManager.h"
 #include "Core/Components/Lighting/LightBase.h"
+#include <optional>
 
 namespace MxEngine
 {
@@ -40,7 +41,7 @@ namespace MxEngine
 
 namespace MxEngine::GUI
 {
-	void DrawTextureEditor(const char* name, TextureHandle& texture, bool withTextureLoader);
+	void DrawTextureEditor(const char* name, TextureHandle& texture, std::optional<TextureFormat> loadingFormat);
 	void DrawCubeMapEditor(const char* name, CubeMapHandle& cubemap);
 	void DrawMeshEditor(const char* name, MeshHandle& mesh);
 	void DrawAABBEditor(const char* name, AABB& aabb);

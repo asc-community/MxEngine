@@ -53,7 +53,7 @@ namespace GrassSample
             auto source = this->lights->AddComponent<MeshSource>(Primitives::CreateCube());
             source->CastsShadow = false;
             auto material = this->lights->AddComponent<MeshRenderer>()->GetMaterial();
-            material->Emmision = 200.0f;
+            material->Emission = 200.0f;
             auto lightFactory = this->lights->AddComponent<InstanceFactory>();
 
             constexpr size_t lightRowSize = 100;

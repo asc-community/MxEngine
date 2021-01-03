@@ -172,6 +172,8 @@ namespace MxEngine
         NormalData& GetNormalData();
         ColorData& GetColorData();
 	public:
+        InstanceFactory() = default;
+
 		bool IsStatic = false;
 
 		const InstancePool& GetInstancePool() const { return this->pool; }
@@ -186,11 +188,6 @@ namespace MxEngine
         void SubmitInstances();
 		void DestroyInstances();
 
-		InstanceFactory() = default;
-		InstanceFactory(const InstanceFactory&) = delete;
-		InstanceFactory(InstanceFactory&&) noexcept = delete;
-		InstanceFactory& operator=(const InstanceFactory&) = delete;
-		InstanceFactory& operator=(InstanceFactory&&) noexcept = delete;
 		~InstanceFactory();
 	};
     

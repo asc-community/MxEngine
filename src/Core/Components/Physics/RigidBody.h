@@ -56,13 +56,12 @@ namespace MxEngine
 
         void UpdateTransform();
     public:
-        MXENGINE_MAKE_MOVEONLY(RigidBody);
-
-        NativeRigidBodyHandle GetNativeHandle() const;
-
+        RigidBody() = default;
         void Init();
         void OnUpdate(float dt);
         void UpdateCollider();
+
+        NativeRigidBodyHandle GetNativeHandle() const;
         void InvokeOnCollisionCallback(MxObject& self, MxObject& object);
         void InvokeOnCollisionEnterCallback(MxObject& self, MxObject& object);
         void InvokeOnCollisionExitCallback(MxObject& self, MxObject& object);

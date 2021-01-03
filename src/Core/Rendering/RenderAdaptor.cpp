@@ -64,22 +64,22 @@ namespace MxEngine
 
         // light bounding objects
         auto pyramid = Primitives::CreatePyramid();
-        auto& pyramidMesh = pyramid->Submeshes.front();
+        auto& pyramidMesh = pyramid->GetSubMeshByIndex(0);
         this->Renderer.GetLightInformation().PyramidLight =
             RenderHelperObject(pyramidMesh.Data.GetVBO(), pyramidMesh.Data.GetVAO(), pyramidMesh.Data.GetIBO());
 
         auto sphere = Primitives::CreateSphere(8);
-        auto& sphereMesh = sphere->Submeshes.front();
+        auto& sphereMesh = sphere->GetSubMeshByIndex(0);
         this->Renderer.GetLightInformation().SphereLight =
             RenderHelperObject(sphereMesh.Data.GetVBO(), sphereMesh.Data.GetVAO(), sphereMesh.Data.GetIBO());
 
         auto pyramidInstanced = Primitives::CreatePyramid();
-        auto& pyramidInstancedMesh = pyramidInstanced->Submeshes.front();
+        auto& pyramidInstancedMesh = pyramidInstanced->GetSubMeshByIndex(0);
         this->Renderer.GetLightInformation().SpotLightsInstanced = 
             SpotLightInstancedObject(pyramidInstancedMesh.Data.GetVBO(), pyramidInstancedMesh.Data.GetVAO(), pyramidInstancedMesh.Data.GetIBO());
 
         auto sphereInstanced = Primitives::CreateSphere(8);
-        auto& sphereInstancedMesh = sphereInstanced->Submeshes.front();
+        auto& sphereInstancedMesh = sphereInstanced->GetSubMeshByIndex(0);
         this->Renderer.GetLightInformation().PointLigthsInstanced =
             PointLightInstancedObject(sphereInstancedMesh.Data.GetVBO(), sphereInstancedMesh.Data.GetVAO(), sphereInstancedMesh.Data.GetIBO());
 
@@ -301,7 +301,7 @@ namespace MxEngine
                 auto effectsComponent = object.GetComponent<CameraEffects>();
                 auto toneMappingComponent = object.GetComponent<CameraToneMapping>();
                 auto ssrComponent = object.GetComponent<CameraSSR>();
-                Skybox skybox                  = skyboxComponent.IsValid()      ? *skyboxComponent.GetUnchecked()     : Skybox();
+                Skybox* skybox                  = skyboxComponent.IsValid()     ? skyboxComponent.GetUnchecked()      : nullptr;
                 CameraEffects* effects         = effectsComponent.IsValid()     ? effectsComponent.GetUnchecked()     : nullptr;
                 CameraToneMapping* toneMapping = toneMappingComponent.IsValid() ? toneMappingComponent.GetUnchecked() : nullptr;
                 CameraSSR* ssr                 = ssrComponent.IsValid()         ? ssrComponent.GetUnchecked()         : nullptr;
@@ -337,8 +337,7 @@ namespace MxEngine
                     mesh = meshLOD->GetMeshLOD();
                 }
 
-                auto& submeshes = mesh->Submeshes;
-                for (const auto& submesh : submeshes)
+                for (const auto& submesh : mesh->GetSubMeshes())
                 {
                     auto materialId = submesh.GetMaterialId();
                     if (materialId >= meshRenderer->Materials.size()) continue;

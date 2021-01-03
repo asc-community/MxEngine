@@ -40,10 +40,12 @@ namespace MxEngine
 	
 	class Mesh
 	{
-		using SubmeshList = MxVector<SubMesh>;
+		using SubMeshList = MxVector<SubMesh>;
 		
+		SubMeshList submeshes;
 		MxVector<VertexBufferHandle> VBOs;
 		MxVector<VertexBufferLayoutHandle> VBLs;
+		MxVector<UniqueRef<TransformComponent>> subMeshTransforms;
 		MxString filePath;
 
 		template<typename FilePath>
@@ -52,7 +54,6 @@ namespace MxEngine
 	public:
 		AABB BoxBounding;
 		BoundingSphere SphereBounding;
-		SubmeshList Submeshes;
 
 		explicit Mesh() = default;
 		Mesh(Mesh&) = delete;
@@ -74,5 +75,11 @@ namespace MxEngine
 		void PopInstancedBuffer();
 		const MxString& GetFilePath() const;
 		void SetInternalEngineTag(const MxString& tag);
+		const SubMeshList& GetSubMeshes() const;
+		const SubMesh& GetSubMeshByIndex(size_t index) const;
+		SubMesh& GetSubMeshByIndex(size_t index);
+		SubMesh& AddSubMesh(SubMesh::MaterialId materialId);
+		SubMesh& LinkSubMesh(SubMesh& submesh);
+		void DeleteSubMeshByIndex(size_t index);
 	};
 }

@@ -35,11 +35,16 @@ namespace MxEngine
 {
     class Skybox
     {
+    public:
+        constexpr static float DefaultIntensity = 0.5f;
+    private:
         MAKE_COMPONENT(Skybox);
 
         Quaternion rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
-        float intensity = 0.5f;
+        float intensity = Skybox::DefaultIntensity;
     public:
+        Skybox() = default;
+
         CubeMapHandle CubeMap;
         CubeMapHandle Irradiance;
 

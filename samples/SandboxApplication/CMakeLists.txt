@@ -1,20 +1,18 @@
 set(PROJECT_HEADER_FILES
-    "Gameplay/Arc170Object.h"
-    "Gameplay/CameraObject.h"
-    "Gameplay/CubeObject.h"
-    "Gameplay/DeathStarObject.h"
-    "Gameplay/DestroyerObject.h"
-    "Gameplay/GridObject.h"
-    "Gameplay/Lights.h"
     "Gameplay/SandboxScene.h"
-    "Gameplay/SoundObject.h"
-    "Gameplay/SphereObject.h"
-    "Gameplay/SurfaceObject.h"
-    "Gameplay/UserObjects.h"
     "Sandbox.h"
 )
 
 set(PROJECT_SOURCE_FILES
+    "Gameplay/Arc170Object.cpp"
+    "Gameplay/CameraObject.cpp"
+    "Gameplay/CubeObject.cpp"
+    "Gameplay/GridObject.cpp"
+    "Gameplay/Lights.cpp"
+    "Gameplay/SoundObject.cpp"
+    "Gameplay/SphereObject.cpp"
+    "Gameplay/SurfaceObject.cpp"
+    "Gameplay/PBRObject.cpp"
     "Sandbox.cpp"
     "Runtime/ScriptExample.cpp"
 )

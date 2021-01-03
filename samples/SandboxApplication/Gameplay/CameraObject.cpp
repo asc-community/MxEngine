@@ -1,4 +1,5 @@
-#pragma once
+#include <MxEngine.h>
+using namespace MxEngine;
 
 void InitCamera(MxObject& object)
 {	
@@ -11,6 +12,8 @@ void InitCamera(MxObject& object)
 	auto effects = object.AddComponent<CameraEffects>();
 	auto toneMapping = object.AddComponent<CameraToneMapping>();
 	auto ssr = object.AddComponent<CameraSSR>();
+
+	effects->SetBloomWeight(5.0f);
 
 	toneMapping->SetWhitePoint(0.75f);
 	toneMapping->SetMinLuminance(0.3f);

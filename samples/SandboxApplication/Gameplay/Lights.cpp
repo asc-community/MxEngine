@@ -1,4 +1,5 @@
-#pragma once
+#include <MxEngine.h>
+using namespace MxEngine;
 
 void InitDirLight(MxObject& object)
 {
@@ -20,7 +21,7 @@ void InitPointLight(MxObject& object)
 
     auto material = object.GetOrAddComponent<MeshRenderer>()->GetMaterial();
     material->BaseColor = Vector3(1.0f, 0.7f, 0.0f);
-    material->Emmision = 50.0f;
+    material->Emission = 10.0f;
 
     object.AddComponent<MeshSource>(Primitives::CreateCube());
     object.Transform
@@ -41,7 +42,7 @@ void InitSpotLight(MxObject& object)
 
     auto material = object.GetOrAddComponent<MeshRenderer>()->GetMaterial();
     material->BaseColor = light->GetColor();
-    material->Emmision = 50.0f;
+    material->Emission = 10.0f;
     
     object.AddComponent<MeshSource>(Primitives::CreateCube());
     object.Transform

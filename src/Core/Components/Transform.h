@@ -35,8 +35,6 @@ namespace MxEngine
 {
 	class TransformComponent
 	{
-		MAKE_COMPONENT(TransformComponent);
-
 		Vector3 translation = MakeVector3(0.0f);
 		Vector3 scale = MakeVector3(1.0f);
 		Quaternion rotation{ 1.0f, 0.0f, 0.0f, 0.0f };

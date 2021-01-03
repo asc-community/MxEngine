@@ -54,6 +54,7 @@ namespace MxEngine
         float dopplerFactor = 1.0f;
         SoundModel model = SoundModel::INVERSE_DISTANCE_CLAMPED;
     public:
+        AudioListener() = default;
         void OnUpdate(float timeDelta);
 
         void SetPosition(const Vector3& position);

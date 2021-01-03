@@ -37,6 +37,8 @@ namespace MxEngine
     {
         MAKE_COMPONENT(DebugDraw);
     public:
+        DebugDraw() = default;
+
         Vector4 BoundingBoxColor    = MakeVector4(1.0f, 0.0f, 0.0f, 1.0f);
         Vector4 BoundingSphereColor = MakeVector4(0.0f, 0.3f, 1.0f, 1.0f);
         Vector4 LightSourceColor    = MakeVector4(1.0f, 1.0f, 0.0f, 1.0f);

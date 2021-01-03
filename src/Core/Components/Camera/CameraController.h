@@ -85,8 +85,6 @@ namespace MxEngine
 
 		CameraController();
 		~CameraController();
-		CameraController(CameraController&&) noexcept = default;
-		CameraController& operator=(CameraController&&) noexcept = default;
 
 		template<typename T>
 		T& GetCamera();

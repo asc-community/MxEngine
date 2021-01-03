@@ -38,7 +38,7 @@ namespace MxEngine
 	struct Material
 	{
 		TextureHandle AlbedoMap;
-		TextureHandle EmmisiveMap;
+		TextureHandle EmissiveMap;
 		TextureHandle NormalMap;
 		TextureHandle HeightMap;
 		TextureHandle AmbientOcclusionMap;
@@ -46,7 +46,7 @@ namespace MxEngine
 		TextureHandle RoughnessMap;
 
 		float Transparency = 1.0f;
-		float Emmision = 0.0f;
+		float Emission = 0.0f;
 		float Displacement = 0.025f;
 		float RoughnessFactor = 0.75f;
 		float MetallicFactor = 0.0f;

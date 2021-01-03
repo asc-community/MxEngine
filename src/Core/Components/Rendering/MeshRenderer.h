@@ -42,11 +42,13 @@ namespace MxEngine
 
         MaterialArray Materials;
 
-        MeshRenderer() : MeshRenderer(ResourceFactory::Create<Material>()) { }
-        MeshRenderer(MaterialRef material) : Materials(1, std::move(material)) { }
-        MeshRenderer(MaterialArray materials) : Materials(std::move(materials)) { }
+        MeshRenderer();
+        MeshRenderer(MaterialRef material);
+        MeshRenderer(MaterialArray materials);
+        MeshRenderer& operator=(MaterialRef material);
+        MeshRenderer& operator=(MaterialArray materials);
 
-        MaterialRef GetMaterial() const { MX_ASSERT(!Materials.empty()); return this->Materials[0]; }
+        MaterialRef GetMaterial() const;
 
         static MaterialArray LoadMaterials(const FilePath& objectFilepath);
         static const FilePath& GetMaterialFileExtenstion();

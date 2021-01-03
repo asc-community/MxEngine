@@ -316,9 +316,12 @@ namespace MxEngine
 			);
 
 		// TODO: add docs
-		if (this->IsKeyHeld(KeyCode::T)) currentOperation = ImGuizmo::TRANSLATE;
-		if (this->IsKeyHeld(KeyCode::R)) currentOperation = ImGuizmo::ROTATE;
-		if (this->IsKeyHeld(KeyCode::S)) currentOperation = ImGuizmo::SCALE;
+		if (!ImGuizmo::IsUsing())
+		{
+			if (this->IsKeyHeld(KeyCode::T)) currentOperation = ImGuizmo::TRANSLATE;
+			if (this->IsKeyHeld(KeyCode::R)) currentOperation = ImGuizmo::ROTATE;
+			if (this->IsKeyHeld(KeyCode::S)) currentOperation = ImGuizmo::SCALE;
+		}
 
 		bool isSnapped = this->IsKeyHeld(KeyCode::LEFT_CONTROL);
 		auto snapInterval = Vector3(currentOperation == ImGuizmo::ROTATE ? 45.0f : 0.5f);

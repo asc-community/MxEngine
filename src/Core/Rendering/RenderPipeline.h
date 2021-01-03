@@ -72,7 +72,7 @@ namespace MxEngine
         Vector3 ViewportPosition;
 
         float SkyboxIntensity;
-        Matrix3x3 InverseSkyboxRotation;
+        Matrix3x3 InversedSkyboxRotation;
         CubeMapHandle SkyboxTexture;
         CubeMapHandle IrradianceTexture;
 

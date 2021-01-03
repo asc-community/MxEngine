@@ -47,6 +47,8 @@ namespace MxEngine
 
         void LoadDepthTexture();
     public:
+        SpotLight() = default;
+
         bool IsCastingShadows() const;
         void ToggleShadowCast(bool value);
 

@@ -41,6 +41,8 @@ namespace MxEngine
 		void UpdateEyes(CameraController::Handle& leftCamera, CameraController::Handle& rightCamera);
 		void Render(TextureHandle& target, const TextureHandle& leftEye, const TextureHandle& rightEye);
 	public:
+		VRCameraController() = default;
+
 		void OnUpdate(float timeDelta);
 
 		CameraController::Handle LeftEye;

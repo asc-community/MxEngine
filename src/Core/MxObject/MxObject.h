@@ -125,7 +125,6 @@ namespace MxEngine
 		template<typename T>
 		void RemoveComponent()
 		{
-			static_assert(!std::is_same_v<T, MxEngine::TransformComponent>, "Transform component cannot be deleted");
 			this->components.RemoveComponent<T>();
 		}
 

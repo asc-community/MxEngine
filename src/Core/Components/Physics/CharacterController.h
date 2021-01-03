@@ -45,6 +45,8 @@ namespace MxEngine
         bool isGrounded = false;
 
     public:
+        CharacterController() = default;
+
         void OnUpdate(float dt);
 
         bool IsGrounded() const;

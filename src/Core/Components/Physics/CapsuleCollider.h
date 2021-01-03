@@ -42,6 +42,7 @@ namespace MxEngine
 
         void CreateNewShape(const Capsule& capsule);
     public:
+        CapsuleCollider() = default;
         void Init();
         void UpdateCollider();
 

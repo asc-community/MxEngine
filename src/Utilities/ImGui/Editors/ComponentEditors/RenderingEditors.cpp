@@ -94,8 +94,6 @@ namespace MxEngine::GUI
 			MxString path = FileManager::OpenFileDialog();
 			if (!path.empty() && File::Exists(path))
 				meshRenderer = AssetManager::LoadMaterials(path);
-
-
 		}
 
 		int id = 0;
@@ -115,6 +113,13 @@ namespace MxEngine::GUI
 		ImGui::Checkbox("is drawn", &meshSource.IsDrawn);
 		ImGui::SameLine();
 		ImGui::Checkbox("casts shadow", &meshSource.CastsShadow);
+		ImGui::SameLine();
+		if (ImGui::Button("load from file"))
+		{
+			MxString path = FileManager::OpenFileDialog();
+			if (!path.empty() && File::Exists(path))
+				meshSource.Mesh = AssetManager::LoadMesh(path);
+		}
 		DrawMeshEditor("mesh", meshSource.Mesh);
 	}
 

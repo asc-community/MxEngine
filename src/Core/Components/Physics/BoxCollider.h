@@ -41,6 +41,7 @@ namespace MxEngine
         BoxShapeHandle boxShape;
         void CreateNewShape(const BoundingBox& box);
     public:
+        BoxCollider() = default;
         void Init();
         void UpdateCollider();
 

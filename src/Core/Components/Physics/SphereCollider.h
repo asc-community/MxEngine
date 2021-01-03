@@ -42,6 +42,7 @@ namespace MxEngine
         SphereShapeHandle sphereShape;
         void CreateNewShape(const BoundingSphere& sphere);
     public:
+        SphereCollider() = default;
         void Init();
         void UpdateCollider();
 

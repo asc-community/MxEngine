@@ -62,7 +62,7 @@ namespace MxEngine::GUI
 			if (GUI::InputIntOnClick("depth map size", &depthMapSizes[i]))
 				texture->LoadDepth(depthMapSizes[i], depthMapSizes[i]);
 
-			DrawTextureEditor("depth map", texture, false);
+			DrawTextureEditor("depth map", texture, { });
 			ImGui::PopID();
 		}
 	}
@@ -124,7 +124,7 @@ namespace MxEngine::GUI
 			if (GUI::InputIntOnClick("depth map size", &depthMapSize))
 				texture->LoadDepth(depthMapSize, depthMapSize);
 
-			DrawTextureEditor("depth map", texture, false);
+			DrawTextureEditor("depth map", texture, { });
 		}
 	}
 }

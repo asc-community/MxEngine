@@ -43,6 +43,8 @@ namespace MxEngine
     {
         MAKE_COMPONENT(MeshLOD);
     public:
+        MeshLOD() = default;
+
         using LODInstance = MeshHandle;
         using LODIndex = uint8_t;
 
