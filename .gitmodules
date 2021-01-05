@@ -50,3 +50,6 @@
 [submodule "submodules/ImGuizmo"]
 	path = submodules/ImGuizmo
 	url = https://github.com/MomoDeve/ImGuizmo
+[submodule "submodules/rttr"]
+	path = submodules/rttr
+	url = https://github.com/MomoDeve/rttr

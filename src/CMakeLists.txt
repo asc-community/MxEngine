@@ -145,6 +145,7 @@ set(imguizmo ${SUBMODULES_PATH}/ImGuizmo)
 set(portable_file_dialogs ${SUBMODULES_PATH}/portable-file-dialogs)
 set(stduuid ${SUBMODULES_PATH}/stduuid)
 set(runtime_compiled_cpp ${SUBMODULES_PATH}/RuntimeCompiledCPlusPlus/Aurora)
+set(rttr ${SUBMODULES_PATH}/rttr)
 
 set(THIRD_PARTY_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH "")
@@ -158,7 +159,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         set(CMAKE_STATIC_LINKER_FLAGS "/Zi /VERBOSE")
     endif()
 endif()
-
 # bullet3
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(BUILD_CPU_DEMOS OFF CACHE BOOL "" FORCE)
@@ -187,6 +187,17 @@ set(glew-cmake_BUILD_STATIC ON CACHE BOOL "" FORCE)
 # rcc++
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
+# rttr
+set(BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
+set(BUILD_BENCHMARKS OFF CACHE BOOL "" FORCE)
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(BUILD_DOCUMENTATION OFF CACHE BOOL "" FORCE)
+set(BUILD_INSTALLER OFF CACHE BOOL "" FORCE)
+set(BUILD_PACKAGE OFF CACHE BOOL "" FORCE)
+set(USE_PCH OFF CACHE BOOL "" FORCE)
+set(BUILD_WEBSITE_DOCU OFF CACHE BOOL "" FORCE)
+set(MAX_CXX_STANDARD ${CMAKE_CXX_STANDARD})
+
 set(THIRD_PARTY_INCLUDE_DIRS
     ${nlohmann_json}/single_include
     ${eabase}/include/Common  
@@ -206,6 +217,7 @@ set(THIRD_PARTY_INCLUDE_DIRS
     ${imgui}
     ${glm}
     ${stb}
+    ${rttr}
 )
 
 set(fmt_binary_dir ${THIRD_PARTY_BUILD_DIR}/fmt)
@@ -219,6 +231,7 @@ set(eabase_binary_dir ${THIRD_PARTY_BUILD_DIR}/eabase)
 set(openal_binary_dir ${THIRD_PARTY_BUILD_DIR}/openal)
 set(imguizmo_binary_dir ${THIRD_PARTY_BUILD_DIR}/imguizmo)
 set(runtime_compiled_cpp_binary_dir ${THIRD_PARTY_BUILD_DIR}/runtime_compiled_cpp)
+set(rttr_binary_dir ${THIRD_PARTY_BUILD_DIR}/rttr)
 
 add_subdirectory(${fmt} ${fmt_binary_dir})
 add_subdirectory(${bullet3} ${bullet3_binary_dir})
@@ -230,6 +243,7 @@ add_subdirectory(${eabase} ${eabase_binary_dir})
 add_subdirectory(${openal} ${openal_binary_dir})
 add_subdirectory(${imguizmo} ${imguizmo_binary_dir})
 add_subdirectory(${runtime_compiled_cpp} ${runtime_compiled_cpp_binary_dir})
+add_subdirectory(${rttr} ${rttr_binary_dir})
 
 set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
 add_subdirectory(${glfw} ${glfw_binary_dir})
@@ -250,6 +264,7 @@ set(THIRD_PARTY_BINARY_DIRS
     ${openal_binary_dir}
     ${imguizmo_binary_dir}
     ${runtime_compiled_cpp_binary_dir}
+    ${rttr_binary_dir}
 )
 
 set(THIRD_PARTY_LIBRARIES
@@ -264,6 +279,7 @@ set(THIRD_PARTY_LIBRARIES
     ImGuizmo
     BulletDynamics BulletCollision LinearMath
     RuntimeObjectSystem RuntimeCompiler
+    rttr_core
 )
 
 if(TARGET zlibstatic)
@@ -318,16 +334,19 @@ if(WIN32)
     set(SHARED_LIBRARIES_PATHS
         ${openal_binary_dir}/OpenAL32.dll
         ${glfw_binary_dir}/src/glfw3.dll
+        ${rttr_binary_dir}/bin/rttr_core.dll
     )
 elseif(APPLE)
     set(SHARED_LIBRARIES_PATHS
         ${openal_binary_dir}/libopenal.1.dylib
         ${glfw_binary_dir}/src/libglfw.3.dylib
+        ${rttr_binary_dir}/bin/rttr_core.dylib
     )	
 else()
     set(SHARED_LIBRARIES_PATHS
         ${openal_binary_dir}/libopenal.so.1
         ${glfw_binary_dir}/src/libglfw.so.3
+        ${rttr_binary_dir}/bin/rttr_core.so
     )
 endif()
 
