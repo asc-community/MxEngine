@@ -181,8 +181,8 @@ set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
 
 # glew
-set(glew-cmake_BUILD_SHARED OFF CACHE BOOL "" FORCE)
-set(glew-cmake_BUILD_STATIC ON CACHE BOOL "" FORCE)
+set(glew-cmake_BUILD_SHARED ON CACHE BOOL "" FORCE)
+set(glew-cmake_BUILD_STATIC OFF CACHE BOOL "" FORCE)
 
 # rcc++
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -211,13 +211,13 @@ set(THIRD_PARTY_INCLUDE_DIRS
     ${bullet3}/src
     ${assimp}/include
     ${miniaudio}/extras
+    ${rttr}/src
     ${portable_file_dialogs}
     ${runtime_compiled_cpp}
     ${imguizmo}
     ${imgui}
     ${glm}
     ${stb}
-    ${rttr}
 )
 
 set(fmt_binary_dir ${THIRD_PARTY_BUILD_DIR}/fmt)
@@ -269,7 +269,7 @@ set(THIRD_PARTY_BINARY_DIRS
 
 set(THIRD_PARTY_LIBRARIES
     fmt
-    libglew_static
+    libglew_shared
     assimp
     IrrXML
     glfw
@@ -333,18 +333,21 @@ target_compile_definitions(${LIBRARY_NAME} PUBLIC MXENGINE_RCCPP_LIBRARY_COUNT=$
 if(WIN32)
     set(SHARED_LIBRARIES_PATHS
         ${openal_binary_dir}/OpenAL32.dll
+        ${glew_binary_dir}/libglew_shared.dll
         ${glfw_binary_dir}/src/glfw3.dll
         ${rttr_binary_dir}/bin/rttr_core.dll
     )
 elseif(APPLE)
     set(SHARED_LIBRARIES_PATHS
         ${openal_binary_dir}/libopenal.1.dylib
+        ${glew_binary_dir}/libglew_shared.dylib
         ${glfw_binary_dir}/src/libglfw.3.dylib
         ${rttr_binary_dir}/bin/rttr_core.dylib
     )	
 else()
     set(SHARED_LIBRARIES_PATHS
         ${openal_binary_dir}/libopenal.so.1
+        ${glew_binary_dir}/libglew_shared.so
         ${glfw_binary_dir}/src/libglfw.so.3
         ${rttr_binary_dir}/bin/rttr_core.so
     )

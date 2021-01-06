@@ -136,7 +136,7 @@ namespace MxEngine
 
 	void GraphicModule::Clone(void* context)
 	{
-		glewInit();
+		//glewInit();
 		ImGui::SetCurrentContext((ImGuiContext*)context);
 	}
 
