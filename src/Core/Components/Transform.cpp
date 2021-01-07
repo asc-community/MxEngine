@@ -177,6 +177,15 @@ namespace MxEngine
         return *this;
     }
 
+    TransformComponent& TransformComponent::SetEulerRotation(const Vector3& angles)
+    {
+        this->SetRotation(Quaternion{ 0.0f, 0.0f, 0.0f, 1.0f });
+        this->RotateX(angles.x);
+        this->RotateY(angles.y);
+        this->RotateZ(angles.z);
+        return *this;
+    }
+
     TransformComponent& TransformComponent::SetScale(const Vector3& scale)
     {
         this->scale = scale;
@@ -318,5 +327,51 @@ namespace MxEngine
         auto q = LookAtRotation(Normalize(MakeVector3(0.0f, v.y, v.z)), MakeVector3(1.0f, 0.0f, 0.00001f));
         this->SetRotation(q);
         return *this;
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        using Scale3 = TransformComponent& (TransformComponent::*)(const Vector3&);
+        using RotateQuat = TransformComponent& (TransformComponent::*)(const Quaternion&);
+
+        rttr::registration::class_<TransformComponent>("Transform")
+            .constructor<>()
+            .property("position", &TransformComponent::GetPosition, &TransformComponent::SetPosition)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
+            )
+            .property("rotation", &TransformComponent::GetRotation, (RotateQuat)&TransformComponent::SetRotation)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
+            )
+            .property("scale", &TransformComponent::GetScale, (Scale3)&TransformComponent::SetScale)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.01f, 100.0f })
+            )
+            .method("look at", &TransformComponent::LookAt)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::SUBTREE_NAME, "look at")
+            )
+            .method("look at XY", &TransformComponent::LookAtXY)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::SUBTREE_NAME, "look at")
+            )
+            .method("look at YZ", &TransformComponent::LookAtYZ)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::SUBTREE_NAME, "look at")
+            )
+            .method("look at XZ", &TransformComponent::LookAtXZ)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::SUBTREE_NAME, "look at")
+            )
+            ;
     }
 }

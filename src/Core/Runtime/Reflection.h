@@ -32,5 +32,36 @@
 
 namespace MxEngine
 {
-    
+    #define MXENGINE_REFLECT_TYPE RTTR_REGISTRATION
+
+    struct MetaInfo
+    {
+        constexpr static const char* FLAGS = "flags";
+
+        enum Flags : uint32_t
+        {
+            SERIALIZABLE = 1 << 0,
+            EDITABLE = 1 << 1,
+        };
+    };
+
+    struct EditorInfo
+    {
+        constexpr static const char* EDIT_PRECISION = "edit precision";
+        constexpr static const char* SUBTREE_NAME = "subtree name";
+        constexpr static const char* EDIT_RANGE = "edit name";
+        constexpr static const char* INTERPRET_AS = "edit as";
+    };
+
+    enum class InterpretAsInfo 
+    {
+        DEFAULT,
+        COLOR,
+    };
+
+    struct Range
+    {
+        float Min = 0.0f;
+        float Max = 0.0f;
+    };
 }
