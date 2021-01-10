@@ -136,8 +136,7 @@ namespace MxEngine
 
 		if (image.GetRawData() == nullptr)
 		{
-			MXLOG_ERROR("Texture", "file with name '" + ToMxString(filepath) + "' was not found");
-			return;
+			MXLOG_ERROR("Texture", "file with name '" + ToMxString(filepath) + "' was not found or cannot be loaded");
 		}
 
 		this->filepath = ToMxString(std::filesystem::proximate(filepath));

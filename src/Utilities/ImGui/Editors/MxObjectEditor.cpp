@@ -44,8 +44,8 @@ namespace MxEngine::GUI
 		{
 			auto object = MxObject::Create();
 			object->Name = ToMxString(ToFilePath(filepath).stem());
-			object->AddComponent<MeshSource>(AssetManager::LoadMesh(filepath));
-			object->AddComponent<MeshRenderer>(AssetManager::LoadMaterials(filepath));
+			auto meshSource = object->AddComponent<MeshSource>(AssetManager::LoadMesh(filepath));
+			auto meshRenderer = object->AddComponent<MeshRenderer>(AssetManager::LoadMaterials(meshSource->Mesh->GetFilePath()));
 		}
 	}
 

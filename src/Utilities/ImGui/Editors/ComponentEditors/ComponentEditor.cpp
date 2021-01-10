@@ -28,17 +28,13 @@
 
 #include "Core/Components/Behaviour.h"
 #include "Core/Components/Transform.h"
-#include "Core/Runtime/Reflection.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Utilities/Format/Format.h"
 #include "Utilities/STL/MxMap.h"
+#include "GenericComponentEditor.h"
 
 namespace MxEngine::GUI
 {
-	#define REMOVE_COMPONENT_BUTTON(comp) \
-	if(ImGui::Button("remove component")) {\
-		MxObject::template GetByComponent(comp).template RemoveComponent<std::remove_reference_t<decltype(comp)>>(); return; }
-
 	template<typename... Args>
 	void DisplayImpl(const rttr::property& property, const char* format, Args&&... args)
 	{
@@ -87,28 +83,6 @@ namespace MxEngine::GUI
 	{
 		auto val = property.get_value(parent).get_value<Vector2>();
 		DisplayImpl(property, "%s: (%f, %f, %f, %f)", val[0], val[1], val[2], val[3]);
-	}
-
-	void Display(rttr::instance parent, const rttr::property& property)
-	{
-		using DisplayCallback = void(*)(rttr::instance parent, const rttr::property&);
-		static MxMap<rttr::type, DisplayCallback> visitor = {
-			{ rttr::type::get<bool>(),       DisplayBool       },
-			{ rttr::type::get<MxString>(),   DisplayString     },
-			{ rttr::type::get<float>(),      DisplayFloat      },
-			{ rttr::type::get<Quaternion>(), DisplayQuaternion },
-			{ rttr::type::get<Vector2>(),    DisplayVector2    },
-			{ rttr::type::get<Vector3>(),    DisplayVector3    },
-			{ rttr::type::get<Vector4>(),    DisplayVector4    },
-		};
-		if (visitor.find(property.get_type()) != visitor.end())
-		{
-			visitor[property.get_type()](std::move(parent), property);
-		}
-		else
-		{
-			MXLOG_WARNING("MxEngine::RuntimeEditor", "no visitor defined to display type: " + MxString(parent.get_type().get_name().cbegin()));
-		}
 	}
 
 	void EditBool(rttr::instance parent, const rttr::property& property)
@@ -265,6 +239,28 @@ namespace MxEngine::GUI
 		}
 	}
 
+	void Display(rttr::instance parent, const rttr::property& property)
+	{
+		using DisplayCallback = void(*)(rttr::instance parent, const rttr::property&);
+		static MxMap<rttr::type, DisplayCallback> visitor = {
+			{ rttr::type::get<bool>(),       DisplayBool       },
+			{ rttr::type::get<MxString>(),   DisplayString     },
+			{ rttr::type::get<float>(),      DisplayFloat      },
+			{ rttr::type::get<Quaternion>(), DisplayQuaternion },
+			{ rttr::type::get<Vector2>(),    DisplayVector2    },
+			{ rttr::type::get<Vector3>(),    DisplayVector3    },
+			{ rttr::type::get<Vector4>(),    DisplayVector4    },
+		};
+		if (visitor.find(property.get_type()) != visitor.end())
+		{
+			visitor[property.get_type()](std::move(parent), property);
+		}
+		else
+		{
+			MXLOG_WARNING("MxEngine::RuntimeEditor", "no visitor defined to display type: " + MxString(parent.get_type().get_name().cbegin()));
+		}
+	}
+
 	void Edit(rttr::instance parent, const rttr::property& property)
 	{
 		using EditCallback = void(*)(rttr::instance parent, const rttr::property&);
@@ -311,10 +307,9 @@ namespace MxEngine::GUI
 		}
 	};
 
-	template<typename T>
-	void ReflectObject(T& object)
+	void ReflectObject(rttr::instance object)
 	{
-		rttr::type t = rttr::type::get<T>();
+		rttr::type t = object.get_type();
 
 		TreeNodeManager treeNodeManager;
 		for (const auto& property : t.get_properties())
@@ -363,26 +358,13 @@ namespace MxEngine::GUI
 		treeNodeManager.EndNodes();
 	}
 
-	template<typename T>
-	void ComponentEditor(T& component)
+	void ComponentEditorImpl(rttr::instance component)
 	{
-		rttr::type type = rttr::type::get<T>();
-		const char* name = type.get_name().cbegin();
-
-		TREE_NODE_PUSH(name);
-		REMOVE_COMPONENT_BUTTON(component);
-
 		ReflectObject(component);
 	}
 
-	template<typename T>
-	void ResourceEditor(T& resource)
+	void ResourceEditorImpl(rttr::instance resource)
 	{
-		rttr::type type = rttr::type::get<T>();
-		const char* name = type.get_name().cbegin();
-
-		TREE_NODE_PUSH(name);
-
 		ReflectObject(resource);
 	}
 

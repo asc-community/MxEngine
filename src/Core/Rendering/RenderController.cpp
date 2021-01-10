@@ -1057,10 +1057,11 @@ namespace MxEngine
 		baseLightData->AmbientIntensity = light.GetAmbientIntensity();
 		baseLightData->Color = light.GetIntensity() * light.GetColor();
 		baseLightData->Position = parentTransform.GetPosition();
-		baseLightData->Direction = Normalize(light.Direction);
 		baseLightData->Transform = light.GetPyramidTransform(parentTransform.GetPosition());
 		baseLightData->InnerAngle = light.GetInnerCos();
 		baseLightData->OuterAngle = light.GetOuterCos();
+		// pack max distance to normalized direction vector (see spotlight vertex shader)
+		baseLightData->Direction = light.GetMaxDistance() * Normalize(light.Direction);
 	}
 
 	void RenderController::SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
@@ -1098,7 +1099,9 @@ namespace MxEngine
 	{
 		RenderUnit* primitivePtr = nullptr;
 		// filter transparent object to render in separate order
-		if (material.Transparency < 1.0f)
+		if (material.Transparency == 0.0f)
+			return;
+		else if (material.Transparency < 1.0f)
 			primitivePtr = &this->Pipeline.TransparentRenderUnits.emplace_back();
 		else
 			primitivePtr = &this->Pipeline.OpaqueRenderUnits.emplace_back();

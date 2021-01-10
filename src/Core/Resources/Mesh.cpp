@@ -60,13 +60,10 @@ namespace MxEngine
 			}
 		}
 
-		if (!objectInfo.materials.empty())
-		{
-			// dump all material to let user retrieve them for MeshRenderer component
-			FilePath materialLibPath = filepath.native() + MeshRenderer::GetMaterialFileExtenstion().native();
-			ObjectLoader::DumpMaterials(objectInfo.materials, materialLibPath);
-		}
-		
+		// dump all material to let user retrieve them for MeshRenderer component
+		FilePath materialLibPath = filepath.native() + MeshRenderer::GetMaterialFileExtenstion().native();
+		ObjectLoader::DumpMaterials(objectInfo.materials, materialLibPath);
+
 		// optimize transform additions
 		this->subMeshTransforms.reserve(objectInfo.meshes.size());
 

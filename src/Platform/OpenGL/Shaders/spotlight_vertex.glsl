@@ -11,6 +11,7 @@ out SpotLightInfo
 	vec3 direction;
 	float outerAngle;
 	vec4 color;
+	float maxDistance;
 } spotLight;
 
 struct Camera
@@ -21,6 +22,7 @@ struct Camera
 };
 
 uniform Camera camera;
+uniform mat4 worldToLightTransform;
 
 void main()
 {
@@ -29,7 +31,8 @@ void main()
 
 	spotLight.position = lightPosition.xyz;
 	spotLight.innerAngle = lightPosition.w;
-	spotLight.direction = lightDirection.xyz;
+	spotLight.maxDistance = length(lightDirection.xyz);
+	spotLight.direction = lightDirection.xyz / spotLight.maxDistance;
 	spotLight.outerAngle = lightDirection.w;
 	spotLight.color = colorParameters;
 }
