@@ -115,13 +115,9 @@ namespace MxEngine::GUI
 		const char* name = property.get_name().cbegin();
 		auto val = property.get_value(parent).get_value<float>();
 
-		auto precisionMeta = property.get_metadata(EditorInfo::EDIT_PRECISION);
-		auto rangeMeta = property.get_metadata(EditorInfo::EDIT_RANGE);
+		ReflectionMeta meta(property);
 
-		auto precision = precisionMeta.is_valid() ? precisionMeta.get_value<float>() : 1.0f;
-		auto range = rangeMeta.is_valid() ? rangeMeta.get_value<Range>() : Range{ 0.0f, 0.0f };
-
-		bool edited = ImGui::DragFloat(name, &val, precision, range.Min, range.Max);
+		bool edited = ImGui::DragFloat(name, &val, meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
 		if (edited)
 		{
 			property.set_value(parent, val);
@@ -132,18 +128,14 @@ namespace MxEngine::GUI
 	{
 		auto val = property.get_value(parent).get_value<Quaternion>();
 
-		auto precisionMeta = property.get_metadata(EditorInfo::EDIT_PRECISION);
-		auto rangeMeta = property.get_metadata(EditorInfo::EDIT_RANGE);
-
-		auto precision = precisionMeta.is_valid() ? precisionMeta.get_value<float>() : 1.0f;
-		auto range = rangeMeta.is_valid() ? rangeMeta.get_value<Range>() : Range{ 0.0f, 0.0f };
+		ReflectionMeta meta(property);
 
 		auto angles = DegreesVec(MakeEulerAngles(val));
 		auto oldAngles = angles;
 
-		bool editedX = ImGui::DragFloat("rotate x", &angles.x, precision, range.Min, range.Max);
-		bool editedY = ImGui::DragFloat("rotate y", &angles.y, precision, range.Min, range.Max);
-		bool editedZ = ImGui::DragFloat("rotate z", &angles.z, precision, range.Min, range.Max);
+		bool editedX = ImGui::DragFloat("rotate x", &angles.x, meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
+		bool editedY = ImGui::DragFloat("rotate y", &angles.y, meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
+		bool editedZ = ImGui::DragFloat("rotate z", &angles.z, meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
 
 		if (editedX) val *= MakeQuaternion(Radians(angles.x - oldAngles.x), MakeVector3(1.0f, 0.0f, 0.0f));
 		if (editedY) val *= MakeQuaternion(Radians(angles.y - oldAngles.y), MakeVector3(0.0f, 1.0f, 0.0f));
@@ -160,13 +152,9 @@ namespace MxEngine::GUI
 		const char* name = property.get_name().cbegin();
 		auto val = property.get_value(parent).get_value<Vector2>();
 
-		auto precisionMeta = property.get_metadata(EditorInfo::EDIT_PRECISION);
-		auto rangeMeta = property.get_metadata(EditorInfo::EDIT_RANGE);
+		ReflectionMeta meta(property);
 
-		auto precision = precisionMeta.is_valid() ? precisionMeta.get_value<float>() : 1.0f;
-		auto range = rangeMeta.is_valid() ? rangeMeta.get_value<Range>() : Range{ 0.0f, 0.0f };
-
-		bool edited = ImGui::DragFloat2(name, &val[0], precision, range.Min, range.Max);
+		bool edited = ImGui::DragFloat2(name, &val[0], meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
 		if (edited)
 		{
 			property.set_value(parent, val);
@@ -178,16 +166,10 @@ namespace MxEngine::GUI
 		const char* name = property.get_name().cbegin();
 		auto val = property.get_value(parent).get_value<Vector3>();
 
-		auto precisionMeta = property.get_metadata(EditorInfo::EDIT_PRECISION);
-		auto rangeMeta = property.get_metadata(EditorInfo::EDIT_RANGE);
-		auto interpretAsMeta = property.get_metadata(EditorInfo::INTERPRET_AS);
-
-		auto precision = precisionMeta.is_valid() ? precisionMeta.get_value<float>() : 1.0f;
-		auto range = rangeMeta.is_valid() ? rangeMeta.get_value<Range>() : Range{ 0.0f, 0.0f };
-		auto interpretAs = interpretAsMeta.is_valid() ? interpretAsMeta.get_value<InterpretAsInfo>() : InterpretAsInfo::DEFAULT;
+		ReflectionMeta meta(property);
 
 		bool edited = false;
-		switch (interpretAs)
+		switch (meta.Editor.InterpretAs)
 		{
 		case InterpretAsInfo::COLOR:
 			edited = ImGui::ColorEdit3(name, &val[0]);
@@ -196,7 +178,7 @@ namespace MxEngine::GUI
 			MXLOG_WARNING("MxEngine::RuntimeEditor", "cannot correctly interpret " + MxString(name));
 			// fallthrough
 		case InterpretAsInfo::DEFAULT:
-			edited = ImGui::DragFloat3(name, &val[0], precision, range.Min, range.Max);
+			edited = ImGui::DragFloat3(name, &val[0], meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
 			break;
 		}
 
@@ -211,16 +193,10 @@ namespace MxEngine::GUI
 		const char* name = property.get_name().cbegin();
 		auto val = property.get_value(parent).get_value<Vector3>();
 
-		auto precisionMeta = property.get_metadata(EditorInfo::EDIT_PRECISION);
-		auto rangeMeta = property.get_metadata(EditorInfo::EDIT_RANGE);
-		auto interpretAsMeta = property.get_metadata(EditorInfo::INTERPRET_AS);
-
-		auto precision = precisionMeta.is_valid() ? precisionMeta.get_value<float>() : 1.0f;
-		auto range = rangeMeta.is_valid() ? rangeMeta.get_value<Range>() : Range{ 0.0f, 0.0f };
-		auto interpretAs = interpretAsMeta.is_valid() ? interpretAsMeta.get_value<InterpretAsInfo>() : InterpretAsInfo::DEFAULT;
+		ReflectionMeta meta(property);
 
 		bool edited = false;
-		switch (interpretAs)
+		switch (meta.Editor.InterpretAs)
 		{
 		case InterpretAsInfo::COLOR:
 			edited = ImGui::ColorEdit4(name, &val[0]);
@@ -229,7 +205,7 @@ namespace MxEngine::GUI
 			MXLOG_WARNING("MxEngine::RuntimeEditor", "cannot correctly interpret " + MxString(name));
 			// fallthrough
 		case InterpretAsInfo::DEFAULT:
-			edited = ImGui::DragFloat4(name, &val[0], precision, range.Min, range.Max);
+			edited = ImGui::DragFloat4(name, &val[0], meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
 			break;
 		}
 
@@ -314,45 +290,61 @@ namespace MxEngine::GUI
 		TreeNodeManager treeNodeManager;
 		for (const auto& property : t.get_properties())
 		{
-			auto flags = property.get_metadata(MetaInfo::FLAGS).to_uint32();
-			if ((flags & MetaInfo::EDITABLE) == 0) continue;
+			ReflectionMeta meta(property);
 
-			auto subtree = property.get_metadata(EditorInfo::SUBTREE_NAME);
-			treeNodeManager.NewNode(subtree.is_valid() ? subtree.get_value<std::string>() : "");
+			if ((meta.Flags & MetaInfo::EDITABLE) == 0) continue;
+			if (meta.Editor.ViewCondition != nullptr && !meta.Editor.ViewCondition(object)) continue;
 
-			if (property.is_readonly())
+			treeNodeManager.NewNode(meta.Editor.SubtreeName);
+
+			if (meta.Editor.ExtraView != nullptr)
 			{
-				Display(rttr::instance{ object }, property);
+				meta.Editor.ExtraView(object);
 			}
 			else
 			{
-				Edit(rttr::instance{ object }, property);
+				if (property.is_readonly())
+				{
+					Display(rttr::instance{ object }, property);
+				}
+				else
+				{
+					Edit(rttr::instance{ object }, property);
+				}
 			}
 		}
 		treeNodeManager.EndNodes();
 
 		for (const auto& method : t.get_methods())
 		{
-			auto flags = method.get_metadata(MetaInfo::FLAGS).to_uint32();
-			if ((flags & MetaInfo::EDITABLE) == 0) continue;
+			ReflectionMeta meta(method);
 
-			auto subtree = method.get_metadata(EditorInfo::SUBTREE_NAME);
-			treeNodeManager.NewNode(subtree.is_valid() ? subtree.get_value<std::string>() : "");
+			if ((meta.Flags & MetaInfo::EDITABLE) == 0) continue;
+			if (meta.Editor.ViewCondition != nullptr && !meta.Editor.ViewCondition(object)) continue;
+
+			treeNodeManager.NewNode(meta.Editor.SubtreeName);
 
 			auto params = method.get_parameter_infos();
 
-			if (params.empty())
+			if (meta.Editor.ExtraView != nullptr)
 			{
-				if (ImGui::Button(method.get_name().cbegin()))
-					method.invoke(object);
+				meta.Editor.ExtraView(object);
 			}
 			else
 			{
-				for (const auto& param : params)
+				if (params.empty())
 				{
-					// TODO
+					if (ImGui::Button(method.get_name().cbegin()))
+						method.invoke(object);
 				}
-				ImGui::Text("TODO: cannot add parameters for method call");
+				else
+				{
+					for (const auto& param : params)
+					{
+						// TODO
+					}
+					ImGui::Text("TODO: cannot add parameters for method call");
+				}
 			}
 		}
 		treeNodeManager.EndNodes();

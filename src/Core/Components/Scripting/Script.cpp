@@ -29,6 +29,7 @@
 #include "Script.h"
 #include <RuntimeObjectSystem/IObject.h>
 #include "Core/Runtime/RuntimeCompiler.h"
+#include "Core/Runtime/Reflection.h"
 #include "Core/Components/Scripting/Scriptable.h"
 
 namespace MxEngine
@@ -111,5 +112,31 @@ namespace MxEngine
     const Scriptable* Script::GetScriptableObject() const
     {
         return this->scriptImpl;
+    }
+
+    namespace GUI
+    {
+        void ScriptEditorExtra(rttr::instance& parent);
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<Script>("Script")
+            .constructor<>()
+            .property_readonly("attached script name", &Script::GetScriptName)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::VIEW_CONDITION, +([](const rttr::instance& p) { return p.try_convert<Script>()->HasScriptableObject(); }))
+            )
+            .property_readonly("attached script filepath", &Script::GetScriptFileName)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::VIEW_CONDITION, +([](const rttr::instance& p) { return p.try_convert<Script>()->HasScriptableObject(); }))
+            )
+            .method("script actions", &Script::GetHashedScriptName)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EXTERNAL_VIEW, GUI::ScriptEditorExtra)
+            );
     }
 }

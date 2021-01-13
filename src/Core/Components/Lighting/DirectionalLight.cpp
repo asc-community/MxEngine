@@ -31,6 +31,7 @@
 #include "Core/Config/GlobalConfig.h"
 #include "Core/Application/Timer.h"
 #include "Core/Components/Camera/CameraController.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -130,5 +131,29 @@ namespace MxEngine
                 self->CascadeDirection = Normalize(Vector3(direction.x, 0.0f, direction.z));
             }
         }, updateInterval);
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<DirectionalLight>("DirectionalLight")
+            .constructor<>()
+            .property("color", &DirectionalLight::GetColor, &DirectionalLight::SetColor)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::INTERPRET_AS, InterpretAsInfo::COLOR)
+            )
+            .property("intensity", &DirectionalLight::GetIntensity, &DirectionalLight::SetIntensity)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f })
+            )
+            .property("ambient intensity", &DirectionalLight::GetAmbientIntensity, &DirectionalLight::SetAmbientIntensity)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1.0f })
+            )
+            ;
     }
 }

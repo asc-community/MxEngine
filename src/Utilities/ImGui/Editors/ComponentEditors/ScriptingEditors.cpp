@@ -27,6 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Utilities/ImGui/Editors/ComponentEditor.h"
+#include "Utilities/ImGui/Editors/ComponentEditors/GenericComponentEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Utilities/FileSystem/FileManager.h"
 
@@ -66,8 +67,12 @@ namespace MxEngine::GUI
 
     void ScriptEditor(Script& script)
     {
-        TREE_NODE_PUSH("Script");
-        REMOVE_COMPONENT_BUTTON(script);
+        ComponentEditor(script);
+    }
+
+    void ScriptEditorExtra(rttr::instance& val)
+    {
+        auto& script = *val.try_convert<Script>();
 
         if (RuntimeCompiler::HasCompilationTaskInProcess())
         {
@@ -120,16 +125,6 @@ namespace MxEngine::GUI
                     MXLOG_ERROR("MxEngine::FileManager", "cannot create script file with empty name");
                 }
             }
-        }
-
-        if (!script.HasScriptableObject())
-        {
-            ImGui::Text("no script attached");
-        }
-        else
-        {
-            ImGui::Text("current script: %s", script.GetScriptName().c_str());
-            ImGui::Text("script filename: %s", script.GetScriptFileName().c_str());
         }
     }
 }

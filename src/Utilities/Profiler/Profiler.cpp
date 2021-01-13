@@ -91,7 +91,7 @@ namespace MxEngine
 
 	ScopeTimer::~ScopeTimer()
 	{
-		TimeStep end = Time::Current();
+		TimeStep end = Time::EngineCurrent();
 		MxString delta = BeautifyTime(end - start);
 		MXLOG_INFO(this->invoker.data(), this->function + " finished in " + delta);
 	}

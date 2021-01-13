@@ -102,9 +102,7 @@ namespace MxEngine
 
 	TimeStep Application::GetTotalElapsedTime() const
 	{
-		auto appCurrent = this->window->GetTime();
-		auto diff = appCurrent - this->timeSinceLastUpdate;
-		return this->totalElapsedTime + diff;
+		return this->totalElapsedTime;
 	}
 
 	void Application::SetTotalElapsedTime(TimeStep time)
@@ -358,9 +356,8 @@ namespace MxEngine
 		this->isRunning = true;
 		this->InvokeCreate();
 
-		this->timeSinceLastUpdate = Time::Current();
-		float secondEnd = Time::Current();
-		float frameEnd  = Time::Current();
+		float secondEnd = Time::EngineCurrent();
+		float frameEnd  = Time::EngineCurrent();
 		size_t frameCount = 0;
 		{
 			MAKE_SCOPE_PROFILER("Application::Run()");
@@ -467,6 +464,9 @@ namespace MxEngine
 
 	void Application::UpdateTimeDelta(TimeStep& lastFrameEnd, TimeStep& lastSecondEnd, size_t& framesPerSecond)
 	{
+		// query platform time
+		float currentTime = Time::EngineCurrent();
+
 		if (this->IsPaused)
 		{
 			lastFrameEnd = 0.0f;
@@ -474,25 +474,23 @@ namespace MxEngine
 			framesPerSecond = 0;
 			this->counterFPS = 0;
 			this->timeDelta = 0.0f;
-			return;
 		}
-
-		// query platform time
-		float currentTime = this->GetWindow().GetTime();
-		framesPerSecond++;
-		// check if 1 second passed. If so, update current FPS counter and add event
-		if (lastFrameEnd - lastSecondEnd >= 1.0f)
+		else
 		{
-			this->counterFPS = framesPerSecond;
-			lastSecondEnd = currentTime;
-			framesPerSecond = 0;
-			Event::AddEvent(MakeUnique<FpsUpdateEvent>(this->counterFPS));
+			framesPerSecond++;
+			// check if 1 second passed. If so, update current FPS counter and add event
+			if (lastFrameEnd - lastSecondEnd >= 1.0f)
+			{
+				this->counterFPS = framesPerSecond;
+				lastSecondEnd = currentTime;
+				framesPerSecond = 0;
+				Event::AddEvent(MakeUnique<FpsUpdateEvent>(this->counterFPS));
+			}
+
+			this->timeDelta = this->TimeScale * (currentTime - lastFrameEnd);
+			this->totalElapsedTime += this->timeDelta;
 		}
-		// limit dt to be not less than 30fps
-		this->timeDelta = this->TimeScale * (currentTime - lastFrameEnd);
-		this->totalElapsedTime += this->timeDelta;
 		lastFrameEnd = currentTime;
-		this->timeSinceLastUpdate = currentTime;
 	}
 
 	void Application::InitializeConfig(Config& config)

@@ -52,7 +52,7 @@ namespace MxEngine
         bool IsCastingShadows() const;
         void ToggleShadowCast(bool value);
 
-        Vector3 Direction = MakeVector3(0.0f, 1.0f, 0.0f);
+        Vector3 Direction = MakeVector3(0.0f, -1.0f, 0.0f);
 
         [[nodiscard]] float GetInnerAngle() const;
         [[nodiscard]] float GetOuterAngle() const;

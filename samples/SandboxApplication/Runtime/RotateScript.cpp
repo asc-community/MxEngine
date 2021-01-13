@@ -22,4 +22,4 @@ public:
     }
 };
 
-MXENGINE_RUNTIME_EDITOR(PointLightScript);
+MXENGINE_RUNTIME_EDITOR(RotateScript);
