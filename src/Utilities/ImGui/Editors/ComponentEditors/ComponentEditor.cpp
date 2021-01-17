@@ -287,6 +287,7 @@ namespace MxEngine::GUI
 		else
 		{
 			MXLOG_WARNING("MxEngine::RuntimeEditor", MxFormat("no visitor defined to dereference handle {}", t.get_name().cbegin()));
+			return rttr::instance{ };
 		}
 	}
 
