@@ -60,3 +60,5 @@ namespace MxEngine
         void RotateZ(float angle) { this->Rotate(angle, MakeVector3(0.0f, 0.0f, 1.0f)); }
     };
 }
+
+MXENGINE_FORCE_REFLECTION(Skybox);

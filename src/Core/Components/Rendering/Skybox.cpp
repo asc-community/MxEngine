@@ -26,42 +26,34 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
+#include "Skybox.h"
 #include "Core/Runtime/Reflection.h"
-#include "Core/MxObject/MxObject.h"
-#include "Utilities/ImGui/ImGuiBase.h"
 
-namespace MxEngine::GUI
+MXENGINE_FORCE_REFLECTION_IMPLEMENTATION(Skybox)
+
+namespace MxEngine
 {
-	void ComponentEditorImpl(rttr::instance obj);
-	void ResourceEditorImpl(rttr::instance obj);
-
-	template<typename T>
-	void ComponentEditor(T& object)
-	{
-		const char* name = rttr::type::get<T>().get_name().cbegin();
-
-		if (ImGui::TreeNode(name))
-		{
-			if(ImGui::Button("remove component"))
-			{
-				MxObject::template GetByComponent(object).template RemoveComponent<T>(); 
-				ImGui::TreePop();
-				return; 
-			}
-			ComponentEditorImpl(rttr::instance{ object });
-			ImGui::TreePop();
-		}
-	}
-
-	template<typename T>
-	void ResourceEditor(const char* name, T& object)
-	{
-		if (ImGui::TreeNode(name))
-		{
-			ResourceEditorImpl(rttr::instance{ object });
-			ImGui::TreePop();
-		}
-	}
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<Skybox>("Skybox")
+            .property("intensity", &Skybox::GetIntensity, &Skybox::SetIntensity)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 100000.0f })
+            )
+            .property("rotation", &Skybox::GetRotation, &Skybox::SetRotation)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
+            )
+            .property("cubemap", &Skybox::CubeMap)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("irradiance", &Skybox::Irradiance)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            );
+    }
 }

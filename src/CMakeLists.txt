@@ -123,7 +123,10 @@ set(MXENGINE_SOURCES
 "Core/Serialization/PhysicsSerializer.cpp"
 "Core/Serialization/ScriptSerializer.cpp"
 "Core/Serialization/ResourceSerializer.cpp"
-"Utilities/ImGui/RenderStatistics.cpp")
+"Utilities/ImGui/RenderStatistics.cpp" 
+"Core/Components/Rendering/DebugDraw.cpp"
+"Core/Components/Rendering/Skybox.cpp"
+ "Core/Resources/Material.cpp")
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)

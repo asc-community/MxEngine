@@ -19,6 +19,14 @@
     #define MXENGINE_DEBUG
 #endif
 
+#if defined(MXENGINE_WINDOWS)
+    #define MXENGINE_DLL_IMPORT __declspec(dllimport)
+    #define MXENGINE_DLL_EXPORT __declspec(dllexport)
+#else
+    #define MXENGINE_DLL_IMPORT __attribute__ ((visibility ("default")))
+    #define MXENGINE_DLL_EXPORT __attribute__ ((visibility ("default")))
+#endif
+
 #if INTPTR_MAX != INT64_MAX
 #error MxEngine supports only x64 builds
 #endif
@@ -73,6 +81,25 @@
     template<typename U> constexpr static auto check(int) -> decltype(std::declval<U>().__VA_ARGS__, bool()) { return true; }\
     template<typename> constexpr static bool check(...) { return false; } public:\
     static constexpr bool value = check<T>(0); }; }
+
+#define MXENGINE_FORCE_REFLECTION(TYPE) namespace MxEngine { \
+    namespace detail {                                       \
+        void MXENGINE_DLL_EXPORT DynamicInitDummy##TYPE();   \
+    }                                                        \
+}                                                            \
+namespace {                                                  \
+    struct DynamicInit##TYPE {                               \
+        DynamicInit##TYPE() {                                \
+            ::MxEngine::detail::DynamicInitDummy##TYPE();    \
+        }                                                    \
+    } dynamicInitInstance##TYPE;                             \
+}
+
+#define MXENGINE_FORCE_REFLECTION_IMPLEMENTATION(TYPE) namespace MxEngine { \
+    namespace detail {                                                      \
+        void MXENGINE_DLL_EXPORT DynamicInitDummy##TYPE() { }               \
+    }                                                                       \
+}
 
 namespace MxEngine
 {

@@ -29,6 +29,7 @@
 #include "MeshRenderer.h"
 #include "Utilities/ObjectLoader/ObjectLoader.h"
 #include "Core/Resources/AssetManager.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -120,5 +121,25 @@ namespace MxEngine
 	const FilePath& MeshRenderer::GetMaterialFileExtenstion()
 	{
 		return materialFileExtenstion;
+	}
+
+	namespace GUI
+	{
+		void LoadMaterialsFileDialog(const rttr::instance& parent);
+	}
+
+	MXENGINE_REFLECT_TYPE
+	{
+		rttr::registration::class_<MeshRenderer>("MeshRenderer")
+			.constructor<>()
+			.method("load materials", &MeshRenderer::GetMaterial)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EXTERNAL_VIEW, GUI::LoadMaterialsFileDialog)
+			)
+			.property_readonly("materials", &MeshRenderer::Materials)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+			);
 	}
 }

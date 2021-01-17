@@ -32,7 +32,7 @@
 #include "Core/Components/Rendering/MeshSource.h"
 #include "Core/Components/Rendering/Skybox.h"
 #include "Utilities/FileSystem/FileManager.h"
-
+#include "Utilities/ImGui/Editors/ComponentEditors/GenericComponentEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 
 namespace MxEngine::GUI
@@ -43,66 +43,28 @@ namespace MxEngine::GUI
 
 	void SkyboxEditor(Skybox& skybox)
 	{
-		TREE_NODE_PUSH("Skybox");
-		REMOVE_COMPONENT_BUTTON(skybox);
-
-		auto rotation = DegreesVec(skybox.GetEulerRotation());
-		auto newRotation = rotation;
-		if (ImGui::DragFloat("rotate x", &newRotation.x))
-			skybox.RotateX(newRotation.x - rotation.x);
-		if (ImGui::DragFloat("rotate y", &newRotation.y))
-			skybox.RotateY(newRotation.y - rotation.y);
-		if (ImGui::DragFloat("rotate z", &newRotation.z))
-			skybox.RotateZ(newRotation.z - rotation.z);
-
-		auto intensity = skybox.GetIntensity();
-		if (ImGui::DragFloat("intensity", &intensity, 0.01f))
-			skybox.SetIntensity(intensity);
-
-		ImGui::PushID(1);
-		DrawCubeMapEditor("cubemap", skybox.CubeMap);
-		ImGui::PopID(); 
-		ImGui::PushID(2);
-		DrawCubeMapEditor("irradiance", skybox.Irradiance);
-		ImGui::PopID();
+		ComponentEditor(skybox);
 	}
 
 	void DebugDrawEditor(DebugDraw& debugDraw)
 	{
-		TREE_NODE_PUSH("DebugDraw");
-		REMOVE_COMPONENT_BUTTON(debugDraw);
-		ImGui::Checkbox("draw physics collider", &debugDraw.RenderPhysicsCollider);
-		ImGui::Checkbox("draw bounding box (AABB)", &debugDraw.RenderBoundingBox);
-		ImGui::Checkbox("draw bounding sphere", &debugDraw.RenderBoundingSphere);
-		ImGui::Checkbox("draw light bounds", &debugDraw.RenderLightingBounds);
-		ImGui::Checkbox("draw sound bounds", &debugDraw.RenderSoundBounds);
-		ImGui::Checkbox("draw frustrum bounds", &debugDraw.RenderFrustrumBounds);
-		ImGui::ColorEdit4("bounding box color", &debugDraw.BoundingBoxColor[0], ImGuiColorEditFlags_AlphaBar);
-		ImGui::ColorEdit4("bounding sphere color", &debugDraw.BoundingSphereColor[0], ImGuiColorEditFlags_AlphaBar);
-		ImGui::ColorEdit4("light source color", &debugDraw.LightSourceColor[0], ImGuiColorEditFlags_AlphaBar);
-		ImGui::ColorEdit4("sound source color", &debugDraw.SoundSourceColor[0], ImGuiColorEditFlags_AlphaBar);
-		ImGui::ColorEdit4("frustrum color", &debugDraw.FrustrumColor[0], ImGuiColorEditFlags_AlphaBar);
+		ComponentEditor(debugDraw);
 	}
 
-	void MeshRendererEditor(MeshRenderer& meshRenderer)
+	void LoadMaterialsFileDialog(const rttr::instance& parent)
 	{
-		TREE_NODE_PUSH("MeshRenderer");
-		REMOVE_COMPONENT_BUTTON(meshRenderer);
-
 		if (ImGui::Button("load from file"))
 		{
+			auto& meshRenderer = *parent.try_convert<MeshRenderer>();
 			MxString path = FileManager::OpenFileDialog();
 			if (!path.empty() && File::Exists(path))
 				meshRenderer = AssetManager::LoadMaterials(path);
 		}
+	}
 
-		int id = 0;
-		for (auto& material : meshRenderer.Materials)
-		{
-			ImGui::PushID(id++);
-			DrawMaterialEditor(material);
-			ImGui::PopID();
-		}
+	void MeshRendererEditor(MeshRenderer& meshRenderer)
+	{
+		ComponentEditor(meshRenderer);
 	}
 
 	void MeshSourceEditor(MeshSource& meshSource)

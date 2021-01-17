@@ -371,7 +371,6 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::SUBTREE_NAME, "look at")
-            )
-            ;
+            );
     }
 }

@@ -936,6 +936,7 @@ namespace MxEngine
 		if (this->Pipeline.Environment.DebugBufferObject.VertexCount == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawDebugBuffer()");
 
+		this->GetRenderEngine().UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA);
 		this->GetRenderEngine().UseDepthBuffer(!this->Pipeline.Environment.OverlayDebugDraws); //-V807
 
 		auto& shader = *this->Pipeline.Environment.Shaders["DebugDraw"_id];
@@ -945,6 +946,7 @@ namespace MxEngine
 		this->DrawLines(*this->Pipeline.Environment.DebugBufferObject.VAO, this->Pipeline.Environment.DebugBufferObject.VertexCount, 0);
 
 		this->GetRenderEngine().UseDepthBuffer(true);
+		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
 	EnvironmentUnit& RenderController::GetEnvironment()

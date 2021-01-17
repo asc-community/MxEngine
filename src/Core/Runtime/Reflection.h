@@ -29,6 +29,7 @@
 #pragma once
 
 #include <rttr/registration.h>
+#include "Utilities/STL/MxVector.h"
 
 namespace MxEngine
 {
@@ -42,6 +43,7 @@ namespace MxEngine
         {
             SERIALIZABLE = 1 << 0,
             EDITABLE = 1 << 1,
+            HANDLE = 1 << 2,
         };
     };
 
@@ -110,4 +112,16 @@ namespace MxEngine
             InterpretAsInfo InterpretAs;
         } Editor;
     };
+
+    inline bool IsHandle(rttr::type t)
+    {
+        auto m = t.get_metadata(MetaInfo::FLAGS);
+        return m.is_valid() && (m.to_uint32() & MetaInfo::HANDLE);
+    }
 }
+
+template<typename T, typename Allocator>
+struct rttr::sequential_container_mapper<MxEngine::MxVector<T, Allocator>>
+    : public rttr::detail::sequential_container_base_dynamic_direct_access<MxEngine::MxVector<T, Allocator>>
+{
+};

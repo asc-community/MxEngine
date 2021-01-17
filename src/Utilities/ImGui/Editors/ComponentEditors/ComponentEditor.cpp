@@ -35,139 +35,112 @@
 
 namespace MxEngine::GUI
 {
-	template<typename... Args>
-	void DisplayImpl(const rttr::property& property, const char* format, Args&&... args)
+	void Display(const char* name, bool b, const ReflectionMeta& meta)
 	{
-		const char* name = property.get_name().cbegin();
-		ImGui::Text(format, name, std::forward<Args>(args)...);
+		ImGui::Text("%s: %s", name, BOOL_STRING(b));
 	}
 
-	void DisplayBool(rttr::instance parent, const rttr::property& property)
+	void Display(const char* name, const MxString& str, const ReflectionMeta& meta)
 	{
-		auto val = property.get_value(parent).get_value<bool>();
-		DisplayImpl(property, "%s: %s", BOOL_STRING(val));
+		ImGui::Text("%s: %s", name, str.c_str());
 	}
 
-	void DisplayString(rttr::instance parent, const rttr::property& property)
+	void Display(const char* name, float f, const ReflectionMeta& meta)
 	{
-		auto val = property.get_value(parent).get_value<MxString>();
-		DisplayImpl(property, "%s: %s", val.c_str());
+		ImGui::Text("%s: %f", name, f);
 	}
 
-	void DisplayFloat(rttr::instance parent, const rttr::property& property)
+	void Display(const char* name, const Quaternion& q, const ReflectionMeta& meta)
 	{
-		auto val = property.get_value(parent).get_value<float>();
-		DisplayImpl(property, "%s: %f", val);
+		auto angles = DegreesVec(MakeEulerAngles(q));
+		ImGui::Text("%s: (%f, %f, %f)", name, angles[0], angles[1], angles[2]);
 	}
 
-	void DisplayQuaternion(rttr::instance parent, const rttr::property& property)
+	void Display(const char* name, const Vector2& v, const ReflectionMeta& meta)
 	{
-		auto val = property.get_value(parent).get_value<Quaternion>();
-		auto angles = DegreesVec(MakeEulerAngles(val));
-		DisplayImpl(property, "%s: (%f, %f, %f)", angles[0], angles[1], angles[2]);
+		ImGui::Text("%s: (%f, %f)", name, v[0], v[1]);
 	}
 
-	void DisplayVector2(rttr::instance parent, const rttr::property& property)
+	void Display(const char* name, const Vector3& v, const ReflectionMeta& meta)
 	{
-		auto val = property.get_value(parent).get_value<Vector2>();
-		DisplayImpl(property, "%s: (%f, %f)", val[0], val[1]);
+		ImGui::Text("%s: (%f, %f, %f)", name, v[0], v[1], v[2]);
 	}
 
-	void DisplayVector3(rttr::instance parent, const rttr::property& property)
+	void Display(const char* name, const Vector4& v, const ReflectionMeta& meta)
 	{
-		auto val = property.get_value(parent).get_value<Vector3>();
-		DisplayImpl(property, "%s: (%f, %f, %f)", val[0], val[1], val[2]);
+		ImGui::Text("%s: (%f, %f, %f, %f)", name, v[0], v[1], v[2], v[3]);
 	}
 
-	void DisplayVector4(rttr::instance parent, const rttr::property& property)
+	void DisplaySequantialContainer(const char* name, const rttr::variant& val, const ReflectionMeta& meta)
 	{
-		auto val = property.get_value(parent).get_value<Vector2>();
-		DisplayImpl(property, "%s: (%f, %f, %f, %f)", val[0], val[1], val[2], val[3]);
-	}
+		auto view = val.create_sequential_view();
 
-	void EditBool(rttr::instance parent, const rttr::property& property)
-	{
-		const char* name = property.get_name().cbegin();
-		auto val = property.get_value(parent).get_value<bool>();
-
-		bool edited = ImGui::Checkbox(name, &val);
-		if (edited)
+		ImGui::Text("%s", name);
+		ImGui::Indent(5.0f);
+		int id = 0;
+		for (const auto& element : view)
 		{
-			property.set_value(parent, val);
+			ImGui::PushID(id++);
+			ResourceEditorImpl(element.extract_wrapped_value());
+			ImGui::PopID();
 		}
+		ImGui::Unindent(5.0f);
 	}
 
-	void EditString(rttr::instance parent, const rttr::property& property)
+	template<typename T>
+	void DisplayGeneric(const char* name, const rttr::variant& v, const ReflectionMeta& meta)
 	{
-		const char* name = property.get_name().cbegin();
-		auto val = property.get_value(parent).get_value<MxString>();
+		Display(name, v.template get_value<T>(), meta);
+	}
 
+	rttr::variant Edit(const char* name, bool val, const ReflectionMeta& meta)
+	{
+		bool edited = ImGui::Checkbox(name, &val);
+		return edited ? rttr::variant{ val } : rttr::variant{ };
+	}
+
+	rttr::variant Edit(const char* name, MxString val, const ReflectionMeta& meta)
+	{
 		static MxString text;
 		bool edited = GUI::InputTextOnClick(MxFormat("{}: {}", name, val).c_str(), text, 128);
-		if (edited)
-		{
-			property.set_value(parent, text);
-		}
+		return edited ? rttr::variant{ val } : rttr::variant{ };
 	}
 
-	void EditFloat(rttr::instance parent, const rttr::property& property)
+	rttr::variant Edit(const char* name, float val, const ReflectionMeta& meta)
 	{
-		const char* name = property.get_name().cbegin();
-		auto val = property.get_value(parent).get_value<float>();
-
-		ReflectionMeta meta(property);
-
 		bool edited = ImGui::DragFloat(name, &val, meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
-		if (edited)
-		{
-			property.set_value(parent, val);
-		}
+		return edited ? rttr::variant{ val } : rttr::variant{ };
 	}
 
-	void EditQuaternion(rttr::instance parent, const rttr::property& property)
+	rttr::variant Edit(const char* name, Quaternion val, const ReflectionMeta& meta)
 	{
-		auto val = property.get_value(parent).get_value<Quaternion>();
-
-		ReflectionMeta meta(property);
-
 		auto angles = DegreesVec(MakeEulerAngles(val));
 		auto oldAngles = angles;
+
+		ImGui::Text("%s", name);
+		ImGui::Indent(5.0f);
 
 		bool editedX = ImGui::DragFloat("rotate x", &angles.x, meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
 		bool editedY = ImGui::DragFloat("rotate y", &angles.y, meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
 		bool editedZ = ImGui::DragFloat("rotate z", &angles.z, meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
 
+		ImGui::Unindent(5.0f);
+
 		if (editedX) val *= MakeQuaternion(Radians(angles.x - oldAngles.x), MakeVector3(1.0f, 0.0f, 0.0f));
 		if (editedY) val *= MakeQuaternion(Radians(angles.y - oldAngles.y), MakeVector3(0.0f, 1.0f, 0.0f));
 		if (editedZ) val *= MakeQuaternion(Radians(angles.z - oldAngles.z), MakeVector3(0.0f, 0.0f, 1.0f));
 
-		if (editedX || editedY || editedZ)
-		{
-			property.set_value(parent, val);
-		}
+		return (editedX || editedY || editedZ) ? rttr::variant{ val } : rttr::variant{ };
 	}
 
-	void EditVector2(rttr::instance parent, const rttr::property& property)
+	rttr::variant Edit(const char* name, Vector2 val, const ReflectionMeta& meta)
 	{
-		const char* name = property.get_name().cbegin();
-		auto val = property.get_value(parent).get_value<Vector2>();
-
-		ReflectionMeta meta(property);
-
 		bool edited = ImGui::DragFloat2(name, &val[0], meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
-		if (edited)
-		{
-			property.set_value(parent, val);
-		}
+		return edited ? rttr::variant{ val } : rttr::variant{ };
 	}
 
-	void EditVector3(rttr::instance parent, const rttr::property& property)
+	rttr::variant Edit(const char* name, Vector3 val, const ReflectionMeta& meta)
 	{
-		const char* name = property.get_name().cbegin();
-		auto val = property.get_value(parent).get_value<Vector3>();
-
-		ReflectionMeta meta(property);
-
 		bool edited = false;
 		switch (meta.Editor.InterpretAs)
 		{
@@ -181,25 +154,16 @@ namespace MxEngine::GUI
 			edited = ImGui::DragFloat3(name, &val[0], meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
 			break;
 		}
-
-		if (edited)
-		{
-			property.set_value(parent, val);
-		}
+		return edited ? rttr::variant{ val } : rttr::variant{ };
 	}
 
-	void EditVector4(rttr::instance parent, const rttr::property& property)
+	rttr::variant Edit(const char* name, Vector4 val, const ReflectionMeta& meta)
 	{
-		const char* name = property.get_name().cbegin();
-		auto val = property.get_value(parent).get_value<Vector3>();
-
-		ReflectionMeta meta(property);
-
 		bool edited = false;
 		switch (meta.Editor.InterpretAs)
 		{
 		case InterpretAsInfo::COLOR:
-			edited = ImGui::ColorEdit4(name, &val[0]);
+			edited = ImGui::ColorEdit4(name, &val[0], ImGuiColorEditFlags_AlphaBar);
 			break;
 		default:
 			MXLOG_WARNING("MxEngine::RuntimeEditor", "cannot correctly interpret " + MxString(name));
@@ -208,54 +172,72 @@ namespace MxEngine::GUI
 			edited = ImGui::DragFloat4(name, &val[0], meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
 			break;
 		}
-
-		if (edited)
-		{
-			property.set_value(parent, val);
-		}
+		return edited ? rttr::variant{ val } : rttr::variant{ };
 	}
 
-	void Display(rttr::instance parent, const rttr::property& property)
+	rttr::variant EditSequantialContainer(const char* name, const rttr::variant& v, const ReflectionMeta& meta)
 	{
-		using DisplayCallback = void(*)(rttr::instance parent, const rttr::property&);
+		DisplaySequantialContainer(name, v, meta);
+		return rttr::variant{ };
+	}
+
+	void VisitDisplay(const char* name, const rttr::variant& v, const ReflectionMeta& meta)
+	{
+		using DisplayCallback = void(*)(const char*, const rttr::variant&, const ReflectionMeta&);
 		static MxMap<rttr::type, DisplayCallback> visitor = {
-			{ rttr::type::get<bool>(),       DisplayBool       },
-			{ rttr::type::get<MxString>(),   DisplayString     },
-			{ rttr::type::get<float>(),      DisplayFloat      },
-			{ rttr::type::get<Quaternion>(), DisplayQuaternion },
-			{ rttr::type::get<Vector2>(),    DisplayVector2    },
-			{ rttr::type::get<Vector3>(),    DisplayVector3    },
-			{ rttr::type::get<Vector4>(),    DisplayVector4    },
+			{ rttr::type::get<bool>(),           DisplayGeneric<bool>           },
+			{ rttr::type::get<MxString>(),       DisplayGeneric<MxString>       },
+			{ rttr::type::get<float>(),          DisplayGeneric<float>          },
+			{ rttr::type::get<Quaternion>(),     DisplayGeneric<Quaternion>     },
+			{ rttr::type::get<Vector2>(),        DisplayGeneric<Vector2>        },
+			{ rttr::type::get<Vector3>(),        DisplayGeneric<Vector3>        },
+			{ rttr::type::get<Vector4>(),        DisplayGeneric<Vector4>        },
 		};
-		if (visitor.find(property.get_type()) != visitor.end())
+		if (visitor.find(v.get_type()) != visitor.end())
 		{
-			visitor[property.get_type()](std::move(parent), property);
+			visitor[v.get_type()](name, v, meta);
+		}
+		else if (v.is_sequential_container())
+		{
+			DisplaySequantialContainer(name, v, meta);
 		}
 		else
 		{
-			MXLOG_WARNING("MxEngine::RuntimeEditor", "no visitor defined to display type: " + MxString(parent.get_type().get_name().cbegin()));
+			MXLOG_WARNING("MxEngine::RuntimeEditor", MxFormat("no visitor defined to display {}", name));
 		}
 	}
 
-	void Edit(rttr::instance parent, const rttr::property& property)
+	template<typename T>
+	rttr::variant EditGeneric(const char* name, const rttr::variant& v, const ReflectionMeta& meta)
 	{
-		using EditCallback = void(*)(rttr::instance parent, const rttr::property&);
+		return Edit(name, v.template get_value<T>(), meta);
+	}
+
+	rttr::variant VisitEdit(const char* name, const rttr::variant& v, const ReflectionMeta& meta)
+	{
+		using EditCallback = rttr::variant(*)(const char*, const rttr::variant&, const ReflectionMeta&);
 		static MxMap<rttr::type, EditCallback> visitor = {
-			{ rttr::type::get<bool>(),       EditBool       },
-			{ rttr::type::get<MxString>(),   EditString     },
-			{ rttr::type::get<float>(),      EditFloat      },
-			{ rttr::type::get<Quaternion>(), EditQuaternion },
-			{ rttr::type::get<Vector2>(),    EditVector2    },
-			{ rttr::type::get<Vector3>(),    EditVector3    },
-			{ rttr::type::get<Vector4>(),    EditVector4    },
+			{ rttr::type::get<bool>(),       EditGeneric<bool>       },
+			{ rttr::type::get<MxString>(),   EditGeneric<MxString>   },
+			{ rttr::type::get<float>(),      EditGeneric<float>      },
+			{ rttr::type::get<Quaternion>(), EditGeneric<Quaternion> },
+			{ rttr::type::get<Vector2>(),    EditGeneric<Vector2>    },
+			{ rttr::type::get<Vector3>(),    EditGeneric<Vector3>    },
+			{ rttr::type::get<Vector4>(),    EditGeneric<Vector4>    },
 		};
-		if (visitor.find(property.get_type()) != visitor.end())
+
+		if (visitor.find(v.get_type()) != visitor.end())
 		{
-			visitor[property.get_type()](std::move(parent), property);
+			return visitor[v.get_type()](name, v, meta);
+		}
+		else if(v.is_sequential_container())
+		{
+			return EditSequantialContainer(name, v, meta);
 		}
 		else
 		{
-			MXLOG_WARNING("MxEngine::RuntimeEditor", "no visitor defined to display type: " + MxString(parent.get_type().get_name().cbegin()));
+			MXLOG_WARNING("MxEngine::RuntimeEditor", MxFormat("no visitor defined to display {}", name));
+			return rttr::variant{ };
 		}
 	}
 
@@ -283,9 +265,39 @@ namespace MxEngine::GUI
 		}
 	};
 
+	template<typename THandle>
+	rttr::instance DereferenceGeneric(rttr::instance object)
+	{
+		THandle& handle = *object.try_convert<THandle>();
+		return rttr::instance{ *handle };
+	}
+
+	rttr::instance DereferenceHandle(rttr::instance object)
+	{
+		using DereferenceCallback = rttr::instance(*)(rttr::instance);
+		MxMap<rttr::type, DereferenceCallback> visitor = {
+			{ rttr::type::get<MaterialHandle>(), DereferenceGeneric<MaterialHandle> },
+		};
+		
+		auto t = object.get_type();
+		if (visitor.find(t) != visitor.end())
+		{
+			return visitor[t](object);
+		}
+		else
+		{
+			MXLOG_WARNING("MxEngine::RuntimeEditor", MxFormat("no visitor defined to dereference handle {}", t.get_name().cbegin()));
+		}
+	}
+
 	void ReflectObject(rttr::instance object)
 	{
 		rttr::type t = object.get_type();
+		if (IsHandle(t))
+		{
+			ReflectObject(DereferenceHandle(object));
+			return;
+		}
 
 		TreeNodeManager treeNodeManager;
 		for (const auto& property : t.get_properties())
@@ -303,13 +315,19 @@ namespace MxEngine::GUI
 			}
 			else
 			{
+				auto propertyValue = property.get_value(object);
+				const char* name = property.get_name().cbegin();
 				if (property.is_readonly())
 				{
-					Display(rttr::instance{ object }, property);
+					VisitDisplay(name, propertyValue, meta);
 				}
 				else
 				{
-					Edit(rttr::instance{ object }, property);
+					auto editedValue = VisitEdit(name, propertyValue, meta);
+					if (editedValue.is_valid())
+					{
+						property.set_value(object, editedValue);
+					}
 				}
 			}
 		}
@@ -362,7 +380,7 @@ namespace MxEngine::GUI
 
     void TransformEditor(TransformComponent& transform)
     {
-		ResourceEditor(transform);
+		ResourceEditor("Transform", transform);
     }
 
 	void BehaviourEditor(Behaviour& behaviour)
