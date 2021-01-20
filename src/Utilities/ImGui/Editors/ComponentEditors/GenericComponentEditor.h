@@ -34,8 +34,8 @@
 
 namespace MxEngine::GUI
 {
-	void ComponentEditorImpl(rttr::instance obj);
-	void ResourceEditorImpl(rttr::instance obj);
+	void ComponentEditorImpl(rttr::instance object);
+	void ResourceEditor(const char* name, rttr::instance object);
 
 	template<typename T>
 	void ComponentEditor(T& object)
@@ -55,13 +55,4 @@ namespace MxEngine::GUI
 		}
 	}
 
-	template<typename T>
-	void ResourceEditor(const char* name, T& object)
-	{
-		if (ImGui::TreeNode(name))
-		{
-			ResourceEditorImpl(rttr::instance{ object });
-			ImGui::TreePop();
-		}
-	}
 }

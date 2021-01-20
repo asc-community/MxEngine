@@ -112,12 +112,6 @@ namespace MxEngine
             InterpretAsInfo InterpretAs;
         } Editor;
     };
-
-    inline bool IsHandle(rttr::type t)
-    {
-        auto m = t.get_metadata(MetaInfo::FLAGS);
-        return m.is_valid() && (m.to_uint32() & MetaInfo::HANDLE);
-    }
 }
 
 template<typename T, typename Allocator>

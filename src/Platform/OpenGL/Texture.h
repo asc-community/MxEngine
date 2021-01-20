@@ -117,7 +117,7 @@ namespace MxEngine
 		bool IsMultisampled() const;
 		bool IsFloatingPoint() const;
 		bool IsDepthOnly() const;
-		int GetSampleCount() const;
+		size_t GetSampleCount() const;
 		size_t GetPixelSize() const;
 		TextureFormat GetFormat() const;
 		TextureWrap GetWrapType() const;

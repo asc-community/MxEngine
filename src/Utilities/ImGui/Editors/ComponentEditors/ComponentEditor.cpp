@@ -50,6 +50,21 @@ namespace MxEngine::GUI
 		ImGui::Text("%s: %f", name, f);
 	}
 
+	void Display(const char* name, int i, const ReflectionMeta& meta)
+	{
+		ImGui::Text("%s: %d", name, i);
+	}
+
+	void Display(const char* name, size_t i, const ReflectionMeta& meta)
+	{
+		Display(name, (int)i, meta);
+	}
+
+	void Display(const char* name, unsigned int i, const ReflectionMeta& meta)
+	{
+		Display(name, (int)i, meta);
+	}
+
 	void Display(const char* name, const Quaternion& q, const ReflectionMeta& meta)
 	{
 		auto angles = DegreesVec(MakeEulerAngles(q));
@@ -81,10 +96,17 @@ namespace MxEngine::GUI
 		for (const auto& element : view)
 		{
 			ImGui::PushID(id++);
-			ResourceEditorImpl(element.extract_wrapped_value());
+			ResourceEditor("", element.extract_wrapped_value());
 			ImGui::PopID();
 		}
 		ImGui::Unindent(5.0f);
+	}
+
+	void DisplayEnumeration(const char* name, const rttr::variant& val, const ReflectionMeta& meta)
+	{
+		auto t = val.get_type().get_enumeration();
+		const char* text = t.value_to_name(val).cbegin();
+		ImGui::Text("%s: %s", name, text);
 	}
 
 	template<typename T>
@@ -110,6 +132,26 @@ namespace MxEngine::GUI
 	{
 		bool edited = ImGui::DragFloat(name, &val, meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
 		return edited ? rttr::variant{ val } : rttr::variant{ };
+	}
+
+	rttr::variant Edit(const char* name, int val, const ReflectionMeta& meta)
+	{
+		bool edited = ImGui::DragInt(name, &val, meta.Editor.EditPrecision, int(meta.Editor.EditRange.Min), int(meta.Editor.EditRange.Max));
+		return edited ? rttr::variant{ val } : rttr::variant{ };
+	}
+
+	rttr::variant Edit(const char* name, size_t val, const ReflectionMeta& meta)
+	{
+		auto editVal = (int)val;
+		bool edited = ImGui::DragInt(name, &editVal, meta.Editor.EditPrecision, int(meta.Editor.EditRange.Min), int(meta.Editor.EditRange.Max));
+		return edited ? rttr::variant{ (size_t)editVal } : rttr::variant{ };
+	}
+
+	rttr::variant Edit(const char* name, unsigned int val, const ReflectionMeta& meta)
+	{
+		auto editVal = (int)val;
+		bool edited = ImGui::DragInt(name, &editVal, meta.Editor.EditPrecision, int(meta.Editor.EditRange.Min), int(meta.Editor.EditRange.Max));
+		return edited ? rttr::variant{ (unsigned int)editVal } : rttr::variant{ };
 	}
 
 	rttr::variant Edit(const char* name, Quaternion val, const ReflectionMeta& meta)
@@ -181,29 +223,59 @@ namespace MxEngine::GUI
 		return rttr::variant{ };
 	}
 
+	rttr::variant EditEnumeration(const char* name, const rttr::variant& v, const ReflectionMeta& meta)
+	{
+		auto t = v.get_type().get_enumeration();
+		const char* currentEnumName = t.value_to_name(v).cbegin();
+
+		if (ImGui::BeginCombo(name, currentEnumName))
+		{
+			for (const auto& enumName : t.get_names())
+			{
+				if (ImGui::Selectable(enumName.cbegin()))
+				{
+					return t.name_to_value(enumName);
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
+		}
+		return rttr::variant{ };
+	}
+
 	void VisitDisplay(const char* name, const rttr::variant& v, const ReflectionMeta& meta)
 	{
+		#define VISITOR_DISPLAY_ENTRY(TYPE) { rttr::type::get<TYPE>(), DisplayGeneric<TYPE> }
 		using DisplayCallback = void(*)(const char*, const rttr::variant&, const ReflectionMeta&);
 		static MxMap<rttr::type, DisplayCallback> visitor = {
-			{ rttr::type::get<bool>(),           DisplayGeneric<bool>           },
-			{ rttr::type::get<MxString>(),       DisplayGeneric<MxString>       },
-			{ rttr::type::get<float>(),          DisplayGeneric<float>          },
-			{ rttr::type::get<Quaternion>(),     DisplayGeneric<Quaternion>     },
-			{ rttr::type::get<Vector2>(),        DisplayGeneric<Vector2>        },
-			{ rttr::type::get<Vector3>(),        DisplayGeneric<Vector3>        },
-			{ rttr::type::get<Vector4>(),        DisplayGeneric<Vector4>        },
+			VISITOR_DISPLAY_ENTRY(bool),
+			VISITOR_DISPLAY_ENTRY(MxString),
+			VISITOR_DISPLAY_ENTRY(float),
+			VISITOR_DISPLAY_ENTRY(int),
+			VISITOR_DISPLAY_ENTRY(unsigned int),
+			VISITOR_DISPLAY_ENTRY(size_t),
+			VISITOR_DISPLAY_ENTRY(Quaternion),
+			VISITOR_DISPLAY_ENTRY(Vector2),
+			VISITOR_DISPLAY_ENTRY(Vector3),
+			VISITOR_DISPLAY_ENTRY(Vector4),
 		};
-		if (visitor.find(v.get_type()) != visitor.end())
+
+		auto t = v.get_type();
+		if (visitor.find(t) != visitor.end())
 		{
-			visitor[v.get_type()](name, v, meta);
+			visitor[t](name, v, meta);
 		}
 		else if (v.is_sequential_container())
 		{
 			DisplaySequantialContainer(name, v, meta);
 		}
+		else if (t.is_enumeration())
+		{
+			DisplayEnumeration(name, v, meta);
+		}
 		else
 		{
-			MXLOG_WARNING("MxEngine::RuntimeEditor", MxFormat("no visitor defined to display {}", name));
+			ResourceEditor(name, v);
 		}
 	}
 
@@ -215,28 +287,37 @@ namespace MxEngine::GUI
 
 	rttr::variant VisitEdit(const char* name, const rttr::variant& v, const ReflectionMeta& meta)
 	{
+		#define VISITOR_EDIT_ENTRY(TYPE) { rttr::type::get<TYPE>(), EditGeneric<TYPE> }
 		using EditCallback = rttr::variant(*)(const char*, const rttr::variant&, const ReflectionMeta&);
 		static MxMap<rttr::type, EditCallback> visitor = {
-			{ rttr::type::get<bool>(),       EditGeneric<bool>       },
-			{ rttr::type::get<MxString>(),   EditGeneric<MxString>   },
-			{ rttr::type::get<float>(),      EditGeneric<float>      },
-			{ rttr::type::get<Quaternion>(), EditGeneric<Quaternion> },
-			{ rttr::type::get<Vector2>(),    EditGeneric<Vector2>    },
-			{ rttr::type::get<Vector3>(),    EditGeneric<Vector3>    },
-			{ rttr::type::get<Vector4>(),    EditGeneric<Vector4>    },
+			VISITOR_EDIT_ENTRY(bool),
+			VISITOR_EDIT_ENTRY(MxString),
+			VISITOR_EDIT_ENTRY(float),
+			VISITOR_EDIT_ENTRY(int),
+			VISITOR_EDIT_ENTRY(unsigned int),
+			VISITOR_EDIT_ENTRY(size_t),
+			VISITOR_EDIT_ENTRY(Quaternion),
+			VISITOR_EDIT_ENTRY(Vector2),
+			VISITOR_EDIT_ENTRY(Vector3),
+			VISITOR_EDIT_ENTRY(Vector4),
 		};
 
-		if (visitor.find(v.get_type()) != visitor.end())
+		auto t = v.get_type();
+		if (visitor.find(t) != visitor.end())
 		{
-			return visitor[v.get_type()](name, v, meta);
+			return visitor[t](name, v, meta);
 		}
 		else if(v.is_sequential_container())
 		{
 			return EditSequantialContainer(name, v, meta);
 		}
+		else if (t.is_enumeration())
+		{
+			DisplayEnumeration(name, v, meta);
+		}
 		else
 		{
-			MXLOG_WARNING("MxEngine::RuntimeEditor", MxFormat("no visitor defined to display {}", name));
+			ResourceEditor(name, v);
 			return rttr::variant{ };
 		}
 	}
@@ -269,14 +350,25 @@ namespace MxEngine::GUI
 	rttr::instance DereferenceGeneric(rttr::instance object)
 	{
 		THandle& handle = *object.try_convert<THandle>();
-		return rttr::instance{ *handle };
+		return handle.IsValid() ? rttr::instance{ *handle } : rttr::instance{ };
 	}
 
 	rttr::instance DereferenceHandle(rttr::instance object)
 	{
+		#define VISITOR_DEREFERENCE_ENTRY(TYPE) { rttr::type::get<TYPE>(), DereferenceGeneric<TYPE> }
 		using DereferenceCallback = rttr::instance(*)(rttr::instance);
 		MxMap<rttr::type, DereferenceCallback> visitor = {
-			{ rttr::type::get<MaterialHandle>(), DereferenceGeneric<MaterialHandle> },
+			VISITOR_DEREFERENCE_ENTRY(MaterialHandle),
+			VISITOR_DEREFERENCE_ENTRY(MeshHandle),
+			VISITOR_DEREFERENCE_ENTRY(TextureHandle),
+			VISITOR_DEREFERENCE_ENTRY(ShaderHandle),
+			VISITOR_DEREFERENCE_ENTRY(FrameBufferHandle),
+			VISITOR_DEREFERENCE_ENTRY(CubeMapHandle),
+			VISITOR_DEREFERENCE_ENTRY(IndexBufferHandle),
+			VISITOR_DEREFERENCE_ENTRY(RenderBufferHandle),
+			VISITOR_DEREFERENCE_ENTRY(VertexArrayHandle),
+			VISITOR_DEREFERENCE_ENTRY(VertexBufferHandle),
+			VISITOR_DEREFERENCE_ENTRY(VertexBufferLayoutHandle),
 		};
 		
 		auto t = object.get_type();
@@ -286,19 +378,19 @@ namespace MxEngine::GUI
 		}
 		else
 		{
-			MXLOG_WARNING("MxEngine::RuntimeEditor", MxFormat("no visitor defined to dereference handle {}", t.get_name().cbegin()));
-			return rttr::instance{ };
+			return object;
 		}
 	}
 
-	void ReflectObject(rttr::instance object)
+	void ReflectObject(rttr::instance tmpObject)
 	{
-		rttr::type t = object.get_type();
-		if (IsHandle(t))
+		rttr::instance object = DereferenceHandle(tmpObject);
+		if (!object.is_valid())
 		{
-			ReflectObject(DereferenceHandle(object));
+			ImGui::Text("empty");
 			return;
 		}
+		rttr::type t = object.get_type();
 
 		TreeNodeManager treeNodeManager;
 		for (const auto& property : t.get_properties())
@@ -374,9 +466,20 @@ namespace MxEngine::GUI
 		ReflectObject(component);
 	}
 
-	void ResourceEditorImpl(rttr::instance resource)
+	void ResourceEditor(const char* name, rttr::instance object)
 	{
-		ReflectObject(resource);
+		if (strcmp(name, "") != 0)
+		{
+			if (ImGui::TreeNode(name))
+			{
+				ReflectObject(object);
+				ImGui::TreePop();
+			}
+		}
+		else
+		{
+			ReflectObject(object);
+		}
 	}
 
     void TransformEditor(TransformComponent& transform)

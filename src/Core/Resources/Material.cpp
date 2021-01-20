@@ -37,11 +37,6 @@ namespace MxEngine
 {
     MXENGINE_REFLECT_TYPE
     { 
-        rttr::registration::class_<MaterialHandle>("MaterialHandle")
-        (
-            rttr::metadata(MetaInfo::FLAGS, MetaInfo::HANDLE)
-        );
-
         rttr::registration::class_<Material>("Material")
             .constructor<>()
             .property_readonly("name", &Material::Name)

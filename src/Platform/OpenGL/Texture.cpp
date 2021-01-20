@@ -32,6 +32,7 @@
 #include "Utilities/Time/Time.h"
 #include "Utilities/Image/ImageLoader.h"
 #include "Utilities/FileSystem/File.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -367,9 +368,9 @@ namespace MxEngine
 		return format == TextureFormat::DEPTH || this->format == TextureFormat::DEPTH32F;
 	}
 
-    int Texture::GetSampleCount() const
+    size_t Texture::GetSampleCount() const
     {
-		return (int)this->samples;
+		return (size_t)this->samples;
     }
 
 	size_t Texture::GetPixelSize() const
@@ -527,42 +528,93 @@ namespace MxEngine
 
     const char* EnumToString(TextureFormat format)
     {
-		#define TEX_FMT_STR(val) case TextureFormat::val: return #val
-		switch (format)
-		{
-			TEX_FMT_STR(R);
-			TEX_FMT_STR(R16);
-			TEX_FMT_STR(RG);
-			TEX_FMT_STR(RG16);
-			TEX_FMT_STR(R16F);
-			TEX_FMT_STR(R32F);
-			TEX_FMT_STR(RG16F);
-			TEX_FMT_STR(RG32F);
-			TEX_FMT_STR(RGB);
-			TEX_FMT_STR(RGBA);
-			TEX_FMT_STR(RGB16);
-			TEX_FMT_STR(RGB16F);
-			TEX_FMT_STR(RGBA16);
-			TEX_FMT_STR(RGBA16F);
-			TEX_FMT_STR(RGB32F);
-			TEX_FMT_STR(RGBA32F);
-			TEX_FMT_STR(DEPTH);
-			TEX_FMT_STR(DEPTH32F);
-			default: return "INVALID_FORMAT";
-		}
+		auto type = rttr::type::get<TextureFormat>().get_enumeration();
+		return type.value_to_name(format).cbegin();
     }
 
     const char* EnumToString(TextureWrap wrap)
     {
-		#define TEX_WRAP_STR(val) case TextureWrap::val: return #val
-		switch (wrap)
-		{
-			TEX_WRAP_STR(CLAMP_TO_EDGE);
-			TEX_WRAP_STR(CLAMP_TO_BORDER);
-			TEX_WRAP_STR(MIRRORED_REPEAT);
-			TEX_WRAP_STR(REPEAT);
-		default:
-			return "INVALID_WRAPTYPE";
-		}
+		auto type = rttr::type::get<TextureWrap>().get_enumeration();
+		return type.value_to_name(wrap).cbegin();
     }
+
+	MXENGINE_REFLECT_TYPE
+	{
+		rttr::registration::enumeration<TextureFormat>("TextureFormat")
+		(
+			rttr::value("R"       , TextureFormat::R       ),
+			rttr::value("R16"     , TextureFormat::R16     ),
+			rttr::value("RG"      , TextureFormat::RG      ),
+			rttr::value("RG16"    , TextureFormat::RG16    ),
+			rttr::value("R16F"    , TextureFormat::R16F    ),
+			rttr::value("R32F"    , TextureFormat::R32F    ),
+			rttr::value("RG16F"   , TextureFormat::RG16F   ),
+			rttr::value("RG32F"   , TextureFormat::RG32F   ),
+			rttr::value("RGB"     , TextureFormat::RGB     ),
+			rttr::value("RGBA"    , TextureFormat::RGBA    ),
+			rttr::value("RGB16"   , TextureFormat::RGB16   ),
+			rttr::value("RGB16F"  , TextureFormat::RGB16F  ),
+			rttr::value("RGBA16"  , TextureFormat::RGBA16  ),
+			rttr::value("RGBA16F" , TextureFormat::RGBA16F ),
+			rttr::value("RGB32F"  , TextureFormat::RGB32F  ),
+			rttr::value("RGBA32F" , TextureFormat::RGBA32F ),
+			rttr::value("DEPTH"   , TextureFormat::DEPTH   ),
+			rttr::value("DEPTH32F", TextureFormat::DEPTH32F)
+		);
+
+		rttr::registration::enumeration<TextureWrap>("TextureWrap")
+		(
+			rttr::value("REPEAT"         , TextureWrap::REPEAT         ),
+			rttr::value("MIRRORED_REPEAT", TextureWrap::MIRRORED_REPEAT),
+			rttr::value("CLAMP_TO_EDGE"  , TextureWrap::CLAMP_TO_EDGE  ),
+			rttr::value("CLAMP_TO_BORDER", TextureWrap::CLAMP_TO_BORDER)
+		);
+
+		rttr::registration::class_<Texture>("Texture")
+			.constructor<>()
+			.property_readonly("filepath", &Texture::GetFilePath)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+			)
+			.property_readonly("width", &Texture::GetWidth)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("height", &Texture::GetHeight)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("channel count", &Texture::GetChannelCount)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("sample count", &Texture::GetSampleCount)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("format", &Texture::GetFormat)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("wrap type", &Texture::GetWrapType)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("texture type", &Texture::GetTextureType)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("native handle", &Texture::GetNativeHandle)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("is depth only", &Texture::IsDepthOnly)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("is multisampled", &Texture::IsMultisampled)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			);
+	}
 }

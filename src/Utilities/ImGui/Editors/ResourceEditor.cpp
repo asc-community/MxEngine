@@ -227,33 +227,6 @@ namespace MxEngine::GUI
         ImGui::PopID();
     }
 
-    void DrawMaterialEditor(MaterialHandle& material)
-    {
-        if (!material.IsValid())
-        {
-            GUI::Indent _(5.0f);
-            ImGui::Text("empty material");
-            return;
-        }
-        SCOPE_TREE_NODE(material->Name.c_str());
-
-        DrawTextureEditor("albedo map", material->AlbedoMap, TextureFormat::RGBA);
-        DrawTextureEditor("roughness map", material->RoughnessMap, TextureFormat::R);
-        DrawTextureEditor("metallic map", material->MetallicMap, TextureFormat::R);
-        DrawTextureEditor("emissive map", material->EmissiveMap, TextureFormat::R);
-        DrawTextureEditor("normal map", material->NormalMap, TextureFormat::RG);
-        DrawTextureEditor("height map", material->HeightMap, TextureFormat::R);
-        DrawTextureEditor("ambient occlusion map", material->AmbientOcclusionMap, TextureFormat::R);
-
-        ImGui::DragFloat("roughness factor", &material->RoughnessFactor, 0.01f, 0.0f, 1.0f);
-        ImGui::DragFloat("metallic factor", &material->MetallicFactor, 0.01f, 0.0f, 1.0f);
-        ImGui::DragFloat("emmision", &material->Emission, 0.01f, 0.0f, FLT_MAX);
-        ImGui::DragFloat("displacement", &material->Displacement, 0.01f);
-        ImGui::DragFloat("transparency", &material->Transparency, 0.01f, 0.0f, 1.0f);
-        ImGui::DragFloat2("UV multipliers", &material->UVMultipliers[0], 0.01f);
-        ImGui::ColorEdit3("base color", &material->BaseColor[0], ImGuiColorEditFlags_HDR);
-    }
-
     void DrawAABBEditor(const char* name, AABB& aabb)
     {
         SCOPE_TREE_NODE(name);
