@@ -36,6 +36,8 @@
 #include "Library/Primitives/Colors.h"
 #include "Library/Primitives/Primitives.h"
 #include "Utilities/FileSystem/FileManager.h"
+#include "Core/Runtime/Reflection.h"
+#include "Utilities/ImGui/Editors/ComponentEditors/GenericComponentEditor.h"
 
 namespace MxEngine::GUI
 {
@@ -86,7 +88,7 @@ namespace MxEngine::GUI
                 ImGui::AlignTextToFramePadding();
                 ImGui::Text("id: %-3d", id);
                 ImGui::SameLine();
-                DrawTextureEditor(texturePath.c_str(), texture, { });
+                GUI::ResourceEditor(texture->GetFilePath().c_str(), texture);
             }
 
             ImGui::PopID();
@@ -95,99 +97,93 @@ namespace MxEngine::GUI
         ImGui::End();
     }
 
-    void LoadFromInputId(TextureHandle& texture, int id)
+    TextureHandle GetTextureById(int id)
     {
         auto handle = (size_t)Max(id, 0);
         auto& storage = GraphicFactory::Get<Texture>();
         if (storage.IsAllocated(handle))
         {
-            texture = GraphicFactory::GetHandle(storage[handle]);
-        }
-    }
-
-    bool IsInternalEngineTexture(const TextureHandle& tex)
-    {
-        auto& path = tex->GetFilePath();
-        return path.find("[[") != path.npos && path.find("]]") != path.npos;
-    }
-
-    void DrawTextureEditor(const char* name, TextureHandle& texture, std::optional<TextureFormat> loadingFormat)
-    {
-        SCOPE_TREE_NODE(name);
-        ImGui::PushID((int)texture.GetHandle());
-
-        if (texture.IsValid())
-        {
-            if (!IsInternalEngineTexture(texture) && ImGui::Button("delete"))
-            {
-                ImGui::PopID();
-                GraphicFactory::Destroy(texture);
-                return;
-            }
-
-            ImGui::Text("path: %s", texture->GetFilePath().c_str());
-            ImGui::Text("width: %d", (int)texture->GetWidth());
-            ImGui::Text("height: %d", (int)texture->GetHeight());
-            ImGui::Text("channels: %d", (int)texture->GetChannelCount());
-            ImGui::Text("samples: %d", (int)texture->GetSampleCount());
-            ImGui::Text("format: %s", EnumToString(texture->GetFormat())); //-V111
-            ImGui::Text("wrap type: %s", EnumToString(texture->GetWrapType())); //-V111
-            ImGui::Text("native render type: %d", (int)texture->GetTextureType());
-            ImGui::Text("native handle: %d", (int)texture->GetNativeHandle());
-            ImGui::Text("is depth-only: %s", BOOL_STRING(texture->IsDepthOnly()));
-            ImGui::Text("is multisampled: %s", BOOL_STRING(texture->IsMultisampled()));
+            return GraphicFactory::GetHandle(storage[handle]);
         }
         else
         {
-            ImGui::Text("empty resource");
+            return TextureHandle{ };
+        }
+    }
+
+    void DrawTextureEditor(const char*, TextureHandle&, std::optional<TextureFormat>) { }
+
+    bool IsInternalEngineTexture(const Texture& texture)
+    {
+        auto& path = texture.GetFilePath();
+        return path.find("[[") != path.npos && path.find("]]") != path.npos;
+    }
+
+    void DrawTexturePreview(const Texture& texture, float scale)
+    {
+        auto nativeHeight = texture.GetHeight();
+        auto nativeWidth = texture.GetWidth();
+        auto width = ImGui::GetWindowSize().x * 0.9f * scale;
+        auto height = width * nativeHeight / nativeWidth;
+        if (!texture.IsMultisampled()) // TODO: support multisampled textures
+        {
+            texture.GenerateMipmaps(); // without mipmaps texture can be not visible in editor if its size is too small
+            ImGui::Image((void*)(uintptr_t)texture.GetNativeHandle(), ImVec2(width, height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+        }
+    }
+
+    void TextureEditorExtra(rttr::instance& object)
+    {
+        Texture& texture = *object.try_convert<Texture>();
+        DrawImageSaver(GraphicFactory::GetHandle(texture));
+
+        ImGui::SameLine();
+        if (ImGui::Button("flip image"))
+        {
+            auto image = texture.GetRawTextureData();
+            ImageManager::FlipImage(image);
+            texture.Load(image, texture.GetFormat(), texture.GetWrapType());
         }
 
-        if (loadingFormat.has_value())
+        static float scale = 1.0f;
+        ImGui::DragFloat("texture preview scale", &scale, 0.01f, 0.0f, 1.0f);
+        DrawTexturePreview(texture, scale);
+    }
+
+    rttr::variant TextureHandleEditorExtra(rttr::instance& handle)
+    {
+        rttr::variant result{ };
+        auto& texture = *handle.try_convert<TextureHandle>();
+        TextureFormat loadingFormat = texture.IsValid() ? texture->GetFormat() : TextureFormat::RGBA;
+
+        if (texture.IsValid())
         {
-            if (ImGui::Button("load from file"))
+            if (ImGui::Button("delete"))
             {
-                MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
-                if (!path.empty() && File::Exists(path))
-                {
-                    texture = AssetManager::LoadTexture(path, loadingFormat.value());
-                }
+                result = rttr::variant{ TextureHandle{ } };
             }
-            
-            static int id = 0;
             ImGui::SameLine();
-            if(GUI::InputIntOnClick("", &id, "load from id"))
-                LoadFromInputId(texture, id);
         }
         
-        if (texture.IsValid())
-        {   
-            DrawImageSaver(texture);
-
-            ImGui::SameLine();
-            if (ImGui::Button("flip image")) {
-                auto image = texture->GetRawTextureData();
-                ImageManager::FlipImage(image);
-                texture->Load(image, texture->GetFormat(), texture->GetWrapType());
-            }
-
-            auto nativeHeight = texture->GetHeight();
-            auto nativeWidth = texture->GetWidth();
-
-            static Vector3 color{ 1.0f };
-            if (ImGui::ColorEdit3("border color", &color[0]))
-                texture->SetBorderColor(color);
-
-            static float scale = 1.0f;
-            ImGui::DragFloat("texture preview scale", &scale, 0.01f, 0.0f, 1.0f);
-            auto width = ImGui::GetWindowSize().x * 0.9f * scale;
-            auto height = width * nativeHeight / nativeWidth;
-            if (!texture->IsMultisampled()) // TODO: support multisampled textures
+        if (ImGui::Button("load from file"))
+        {
+            MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
+            if (!path.empty() && File::Exists(path))
             {
-                texture->GenerateMipmaps(); // without mipmaps texture can be not visible in editor if its size is too small
-                ImGui::Image((void*)(uintptr_t)texture->GetNativeHandle(), ImVec2(width, height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+                auto newTexture = AssetManager::LoadTexture(path, loadingFormat);
+                result = rttr::variant{ newTexture };
             }
         }
-        ImGui::PopID();
+        
+        static int id = 0;
+        ImGui::SameLine();
+        if (GUI::InputIntOnClick(&id, "load from id"))
+        {
+            auto newTexture = GetTextureById(id);
+            result = rttr::variant{ newTexture };
+        }
+
+        return result;
     }
 
     void DrawCubeMapEditor(const char* name, CubeMapHandle& cubemap)

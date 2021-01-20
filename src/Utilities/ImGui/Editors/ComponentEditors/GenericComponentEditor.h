@@ -35,7 +35,6 @@
 namespace MxEngine::GUI
 {
 	void ComponentEditorImpl(rttr::instance object);
-	void ResourceEditor(const char* name, rttr::instance object);
 
 	template<typename T>
 	void ComponentEditor(T& object)
@@ -55,4 +54,5 @@ namespace MxEngine::GUI
 		}
 	}
 
+	rttr::variant ResourceEditor(const char* name, rttr::instance object);
 }

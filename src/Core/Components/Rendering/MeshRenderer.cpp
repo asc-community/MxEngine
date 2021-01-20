@@ -135,7 +135,7 @@ namespace MxEngine
 			.method("load materials", &MeshRenderer::GetMaterial)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-				rttr::metadata(EditorInfo::EXTERNAL_VIEW, GUI::LoadMaterialsFileDialog)
+				rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::LoadMaterialsFileDialog)
 			)
 			.property_readonly("materials", &MeshRenderer::Materials)
 			(

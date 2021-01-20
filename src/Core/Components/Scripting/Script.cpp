@@ -136,7 +136,7 @@ namespace MxEngine
             .method("script actions", &Script::GetHashedScriptName)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EXTERNAL_VIEW, GUI::ScriptEditorExtra)
+                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::ScriptEditorExtra)
             );
     }
 }

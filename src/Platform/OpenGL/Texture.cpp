@@ -58,7 +58,7 @@ namespace MxEngine
 		GL_DEPTH_COMPONENT32F
 	};
 
-	GLenum wrapTable[] =
+	GLint wrapTable[] =
 	{
 		GL_CLAMP_TO_EDGE,
 		GL_CLAMP_TO_BORDER,
@@ -88,7 +88,6 @@ namespace MxEngine
 		this->height = texture.height;
 		this->textureType = texture.textureType;
 		this->filepath = std::move(texture.filepath);
-		this->wrapType = texture.wrapType;
 		this->samples = texture.samples;
 		this->format = texture.format;
 		this->id = texture.id;
@@ -109,7 +108,6 @@ namespace MxEngine
 		this->height = texture.height;
 		this->textureType = texture.textureType;
 		this->filepath = std::move(texture.filepath);
-		this->wrapType = texture.wrapType;
 		this->samples = texture.samples;
 		this->format = texture.format;
 		this->id = texture.id;
@@ -141,7 +139,6 @@ namespace MxEngine
 		}
 
 		this->filepath = ToMxString(std::filesystem::proximate(filepath));
-		this->wrapType = wrap;
 		this->format = format;
 		this->width = image.GetWidth();
 		this->height = image.GetHeight();
@@ -172,9 +169,7 @@ namespace MxEngine
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
 		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, pixelFormat, pixelType, image.GetRawData()));
 
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
-		
+		this->SetWrapType(wrap);
 		if (genMipmaps) this->GenerateMipmaps();
 	}
 
@@ -192,7 +187,6 @@ namespace MxEngine
 		this->height = height;
 		this->textureType = GL_TEXTURE_2D;
 		this->format = format;
-		this->wrapType = wrap;
 
 		GLenum type = isFloating ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
@@ -218,10 +212,8 @@ namespace MxEngine
 
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
 		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, dataChannels, type, data));
-
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
-
+		
+		this->SetWrapType(wrap);
 		if (genMipmaps) this->GenerateMipmaps();
 	}
 
@@ -237,22 +229,20 @@ namespace MxEngine
 		this->height = height;
 		this->textureType = GL_TEXTURE_2D;
 		this->format = format;
-		this->wrapType = wrap;
 
 		this->Bind();
 
 		GLenum type = this->IsFloatingPoint() ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
 		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], width, height, 0, GL_DEPTH_COMPONENT, type, nullptr));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
 
+		this->SetWrapType(wrap);
 		this->SetBorderColor(MakeVector4(1.0f));
 	}
 
 	void Texture::SetSamplingFromLOD(size_t lod)
 	{
-		this->Bind();
+		this->Bind(0);
 		GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, (float)lod));
 		GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, (float)lod));
 	}
@@ -298,7 +288,7 @@ namespace MxEngine
 		return Image(result, this->width, this->height, this->GetChannelCount(), this->IsFloatingPoint());
     }
 
-	void Texture::GenerateMipmaps()
+	void Texture::GenerateMipmaps() const
 	{
 		this->Bind(0);
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
@@ -306,12 +296,20 @@ namespace MxEngine
 		GLCALL(glGenerateMipmap(GL_TEXTURE_2D));
 	}
 
-    void Texture::SetBorderColor(const Vector3& color)
+    void Texture::SetBorderColor(Vector4 color)
     {
 		this->Bind(0);
-		auto normalized = Clamp(color, MakeVector3(0.0f), MakeVector3(1.0f));
+		auto normalized = Clamp(color, MakeVector4(0.0f), MakeVector4(1.0f));
 		GLCALL(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &normalized[0]));
     }
+
+	Vector4 Texture::GetBorderColor() const
+	{
+		Vector4 result = MakeVector4(0.0f);
+		this->Bind(0);
+		GLCALL(glGetTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &result[0]));
+		return result;
+	}
 	
     bool Texture::IsMultisampled() const
     {
@@ -425,7 +423,22 @@ namespace MxEngine
 
 	TextureWrap Texture::GetWrapType() const
 	{
-		return this->wrapType;
+		GLint result = 0;
+		this->Bind(0);
+		GLCALL(glGetTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &result));
+		for (size_t i = 0; i < std::size(wrapTable); i++)
+		{
+			if (wrapTable[i] == result)
+				return TextureWrap(i);
+		}
+		return TextureWrap::CLAMP_TO_EDGE;
+	}
+
+	void Texture::SetWrapType(TextureWrap wrapType)
+	{
+		this->Bind(0);
+		GLCALL(glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &wrapTable[(int)wrapType]));
+		GLCALL(glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, &wrapTable[(int)wrapType]));
 	}
 
 	void Texture::Bind() const
@@ -538,6 +551,12 @@ namespace MxEngine
 		return type.value_to_name(wrap).cbegin();
     }
 
+	namespace GUI
+	{
+		void TextureEditorExtra(rttr::instance&);
+		rttr::variant TextureHandleEditorExtra(rttr::instance&);
+	}
+
 	MXENGINE_REFLECT_TYPE
 	{
 		rttr::registration::enumeration<TextureFormat>("TextureFormat")
@@ -571,6 +590,9 @@ namespace MxEngine
 		);
 
 		rttr::registration::class_<Texture>("Texture")
+			(
+				rttr::metadata(EditorInfo::HANDLE_EDITOR, GUI::TextureHandleEditorExtra)
+			)
 			.constructor<>()
 			.property_readonly("filepath", &Texture::GetFilePath)
 			(
@@ -596,9 +618,14 @@ namespace MxEngine
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
 			)
-			.property_readonly("wrap type", &Texture::GetWrapType)
+			.property("wrap type", &Texture::GetWrapType, &Texture::SetWrapType)
 			(
-				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+			)
+			.property("border color", &Texture::GetBorderColor, &Texture::SetBorderColor)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::INTERPRET_AS, InterpretAsInfo::COLOR)
 			)
 			.property_readonly("texture type", &Texture::GetTextureType)
 			(
@@ -615,6 +642,11 @@ namespace MxEngine
 			.property_readonly("is multisampled", &Texture::IsMultisampled)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("editor-preview", &Texture::GetBoundId)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::TextureEditorExtra)
 			);
 	}
 }

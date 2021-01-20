@@ -92,8 +92,9 @@ namespace Sponza
             {
                 // floor material
                 materials[8]->Name = "Floor";
-                materials[8]->MetallicFactor = 0.5f;
-                materials[8]->RoughnessFactor = 0.75f;
+                materials[8]->MetallicFactor = 0.25f;
+                materials[8]->RoughnessFactor = 0.25f;
+                materials[8]->MetallicMap = { };
 
                 // lion materials
                 materials[3]->Name = "Lion";

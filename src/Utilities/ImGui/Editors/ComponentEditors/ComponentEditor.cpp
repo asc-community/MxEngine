@@ -232,10 +232,12 @@ namespace MxEngine::GUI
 		{
 			for (const auto& enumName : t.get_names())
 			{
-				if (ImGui::Selectable(enumName.cbegin()))
+				auto enumValue = t.name_to_value(enumName);
+				if (ImGui::Selectable(enumName.cbegin(), enumValue == v))
 				{
-					return t.name_to_value(enumName);
 					ImGui::SetItemDefaultFocus();
+					ImGui::EndCombo();
+					return enumValue;
 				}
 			}
 			ImGui::EndCombo();
@@ -313,12 +315,11 @@ namespace MxEngine::GUI
 		}
 		else if (t.is_enumeration())
 		{
-			DisplayEnumeration(name, v, meta);
+			return EditEnumeration(name, v, meta);
 		}
 		else
 		{
-			ResourceEditor(name, v);
-			return rttr::variant{ };
+			return ResourceEditor(name, v);
 		}
 	}
 
@@ -347,16 +348,17 @@ namespace MxEngine::GUI
 	};
 
 	template<typename THandle>
-	rttr::instance DereferenceGeneric(rttr::instance object)
+	std::pair<rttr::instance, rttr::type> DereferenceGeneric(rttr::instance object)
 	{
+		using T = typename std::decay<decltype(*std::declval<THandle>())>::type;
 		THandle& handle = *object.try_convert<THandle>();
-		return handle.IsValid() ? rttr::instance{ *handle } : rttr::instance{ };
+		return std::pair{ handle.IsValid() ? rttr::instance{ *handle } : rttr::instance{ }, rttr::type::get<T>() };
 	}
 
-	rttr::instance DereferenceHandle(rttr::instance object)
+	std::pair<rttr::instance, rttr::type> DereferenceHandle(rttr::instance object)
 	{
 		#define VISITOR_DEREFERENCE_ENTRY(TYPE) { rttr::type::get<TYPE>(), DereferenceGeneric<TYPE> }
-		using DereferenceCallback = rttr::instance(*)(rttr::instance);
+		using DereferenceCallback = std::pair<rttr::instance, rttr::type>(*)(rttr::instance);
 		MxMap<rttr::type, DereferenceCallback> visitor = {
 			VISITOR_DEREFERENCE_ENTRY(MaterialHandle),
 			VISITOR_DEREFERENCE_ENTRY(MeshHandle),
@@ -378,55 +380,29 @@ namespace MxEngine::GUI
 		}
 		else
 		{
-			return object;
+			return std::pair{ object, object.get_type() };
 		}
 	}
 
-	void ReflectObject(rttr::instance tmpObject)
+	rttr::variant ReflectObject(rttr::instance maybeHandle)
 	{
-		rttr::instance object = DereferenceHandle(tmpObject);
+		rttr::variant result{ };
+		auto[object, type] = DereferenceHandle(maybeHandle);
+
+		ReflectionMeta typeMeta(type);
+		if (typeMeta.Editor.HandleEditor != nullptr)
+		{
+			result = typeMeta.Editor.HandleEditor(maybeHandle);
+		}
+
 		if (!object.is_valid())
 		{
 			ImGui::Text("empty");
-			return;
+			return result;
 		}
-		rttr::type t = object.get_type();
 
 		TreeNodeManager treeNodeManager;
-		for (const auto& property : t.get_properties())
-		{
-			ReflectionMeta meta(property);
-
-			if ((meta.Flags & MetaInfo::EDITABLE) == 0) continue;
-			if (meta.Editor.ViewCondition != nullptr && !meta.Editor.ViewCondition(object)) continue;
-
-			treeNodeManager.NewNode(meta.Editor.SubtreeName);
-
-			if (meta.Editor.ExtraView != nullptr)
-			{
-				meta.Editor.ExtraView(object);
-			}
-			else
-			{
-				auto propertyValue = property.get_value(object);
-				const char* name = property.get_name().cbegin();
-				if (property.is_readonly())
-				{
-					VisitDisplay(name, propertyValue, meta);
-				}
-				else
-				{
-					auto editedValue = VisitEdit(name, propertyValue, meta);
-					if (editedValue.is_valid())
-					{
-						property.set_value(object, editedValue);
-					}
-				}
-			}
-		}
-		treeNodeManager.EndNodes();
-
-		for (const auto& method : t.get_methods())
+		for (const auto& method : type.get_methods())
 		{
 			ReflectionMeta meta(method);
 
@@ -437,9 +413,9 @@ namespace MxEngine::GUI
 
 			auto params = method.get_parameter_infos();
 
-			if (meta.Editor.ExtraView != nullptr)
+			if (meta.Editor.CustomView != nullptr)
 			{
-				meta.Editor.ExtraView(object);
+				meta.Editor.CustomView(object);
 			}
 			else
 			{
@@ -450,41 +426,72 @@ namespace MxEngine::GUI
 				}
 				else
 				{
-					for (const auto& param : params)
-					{
-						// TODO
-					}
 					ImGui::Text("TODO: cannot add parameters for method call");
 				}
 			}
 		}
 		treeNodeManager.EndNodes();
+
+		for (const auto& property : type.get_properties())
+		{
+			ReflectionMeta meta(property);
+
+			if ((meta.Flags & MetaInfo::EDITABLE) == 0) continue;
+			if (meta.Editor.ViewCondition != nullptr && !meta.Editor.ViewCondition(object)) continue;
+
+			treeNodeManager.NewNode(meta.Editor.SubtreeName);
+
+			if (meta.Editor.CustomView != nullptr)
+			{
+				meta.Editor.CustomView(object);
+			}
+			else
+			{
+				const char* name = property.get_name().cbegin();
+				if (property.is_readonly())
+				{
+					VisitDisplay(name, property.get_value(object), meta);
+				}
+				else
+				{
+					auto editedValue = VisitEdit(name, property.get_value(object), meta);
+					if (editedValue.is_valid())
+					{
+						property.set_value(object, editedValue);
+					}
+				}
+			}
+		}
+		treeNodeManager.EndNodes();
+		return result;
 	}
 
 	void ComponentEditorImpl(rttr::instance component)
 	{
-		ReflectObject(component);
+		(void)ReflectObject(component);
 	}
 
-	void ResourceEditor(const char* name, rttr::instance object)
+	rttr::variant ResourceEditor(const char* name, rttr::instance object)
 	{
+		rttr::variant result{ };
 		if (strcmp(name, "") != 0)
 		{
 			if (ImGui::TreeNode(name))
 			{
-				ReflectObject(object);
+				result = ReflectObject(object);
 				ImGui::TreePop();
 			}
 		}
 		else
 		{
-			ReflectObject(object);
+			result = ReflectObject(object);
 		}
+		return result;
 	}
 
     void TransformEditor(TransformComponent& transform)
     {
-		ResourceEditor("Transform", transform);
+		(void)ResourceEditor("Transform", transform);
     }
 
 	void BehaviourEditor(Behaviour& behaviour)

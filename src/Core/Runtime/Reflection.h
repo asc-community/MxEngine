@@ -53,16 +53,19 @@ namespace MxEngine
         constexpr static const char* SUBTREE_NAME = "subtree name";
         constexpr static const char* EDIT_RANGE = "edit name";
         constexpr static const char* INTERPRET_AS = "interpret as";
-        constexpr static const char* EXTERNAL_VIEW = "extra view";
+        constexpr static const char* CUSTOM_VIEW = "custom view";
+        constexpr static const char* HANDLE_EDITOR = "handle editor";
         constexpr static const char* VIEW_CONDITION = "view condition";
     };
 
     using ViewConditionFunction = bool(*)(const rttr::instance&);
-    using ExtraViewFunction = void(*)(rttr::instance&);
+    using CustomViewFunction = void(*)(rttr::instance&);
+    using HandleEditorFunction = rttr::variant(*)(rttr::instance&);
 
     enum class InterpretAsInfo 
     {
         DEFAULT,
+        HANDLE,
         COLOR,
     };
 
@@ -93,23 +96,27 @@ namespace MxEngine
             rttr::variant interpretAs = obj.get_metadata(EditorInfo::INTERPRET_AS);
             this->Editor.InterpretAs = interpretAs.is_valid() ? interpretAs.get_value<InterpretAsInfo>() : InterpretAsInfo::DEFAULT;
 
-            rttr::variant externalView = obj.get_metadata(EditorInfo::EXTERNAL_VIEW);
-            this->Editor.ExtraView = externalView.is_valid() ? externalView.get_value<ExtraViewFunction>() : nullptr;
+            rttr::variant customView = obj.get_metadata(EditorInfo::CUSTOM_VIEW);
+            this->Editor.CustomView = customView.is_valid() ? customView.get_value<CustomViewFunction>() : nullptr;
 
             rttr::variant viewCondition = obj.get_metadata(EditorInfo::VIEW_CONDITION);
             this->Editor.ViewCondition = viewCondition.is_valid() ? viewCondition.get_value<ViewConditionFunction>() : nullptr;
+
+            rttr::variant handleEditor = obj.get_metadata(EditorInfo::HANDLE_EDITOR);
+            this->Editor.HandleEditor = handleEditor.is_valid() ? handleEditor.get_value<HandleEditorFunction>() : nullptr;
         }
         
-        uint32_t Flags;
+        uint32_t Flags = 0;
 
         struct
         {
             std::string SubtreeName;
-            ExtraViewFunction ExtraView;
-            ViewConditionFunction ViewCondition;
-            Range EditRange;
-            float EditPrecision;
-            InterpretAsInfo InterpretAs;
+            CustomViewFunction CustomView = nullptr;
+            ViewConditionFunction ViewCondition = nullptr;
+            HandleEditorFunction HandleEditor = nullptr;
+            Range EditRange{ 0.0f, 0.0f };
+            float EditPrecision = 1.0f;
+            InterpretAsInfo InterpretAs = InterpretAsInfo::DEFAULT;
         } Editor;
     };
 }

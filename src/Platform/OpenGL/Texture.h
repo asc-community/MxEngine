@@ -78,7 +78,6 @@ namespace MxEngine
 		mutable BindableId activeId = 0;
 		unsigned int textureType = 0;
 		TextureFormat format = TextureFormat::RGB;
-		TextureWrap wrapType = TextureWrap::REPEAT;
 		uint8_t samples = 0;
 
 		void FreeTexture();
@@ -112,15 +111,17 @@ namespace MxEngine
 		void SetSamplingFromLOD(size_t lod);
 		size_t GetMaxTextureLOD() const;
 		Image GetRawTextureData() const;
-		void GenerateMipmaps();
-		void SetBorderColor(const Vector3& color);
+		void GenerateMipmaps() const;
+		void SetBorderColor(Vector4 color);
 		bool IsMultisampled() const;
 		bool IsFloatingPoint() const;
 		bool IsDepthOnly() const;
+		Vector4 GetBorderColor() const;
 		size_t GetSampleCount() const;
 		size_t GetPixelSize() const;
 		TextureFormat GetFormat() const;
 		TextureWrap GetWrapType() const;
+		void SetWrapType(TextureWrap wrap);
 		const MxString& GetFilePath() const;
 		void SetInternalEngineTag(const MxString& tag);
 		unsigned int GetTextureType() const;

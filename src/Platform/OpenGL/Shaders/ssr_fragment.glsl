@@ -44,7 +44,7 @@ void main()
     vec3 pivot = normalize(reflect(-viewDirection, fragment.normal));
     vec3 startPos = fragment.position + (pivot * 0.0001f);
 
-    float currentLength = startDistance;
+    float currentLength = min(length(viewDistance) / steps, startDistance);
     float bestDepth = 10000.0;
     vec2 bestUV = vec2(0.0f);
     float rayCosAngle = dot(viewDirection, pivot);

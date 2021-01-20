@@ -362,6 +362,14 @@ namespace MxEngine
         }
 
         template<typename T>
+        static Resource<T, ThisType> GetHandle(const T& object)
+        {
+            auto ptr = (const uint8_t*)std::addressof(object);
+            auto resourcePtr = (const ManagedResource<T>*)(ptr - offsetof(ManagedResource<T>, value));
+            return GetHandle(*resourcePtr);
+        }
+
+        template<typename T>
         static void Destroy(Resource<T, ThisType>& resource)
         {
             factory->template GetPool<T>().Deallocate(resource.GetHandle());
