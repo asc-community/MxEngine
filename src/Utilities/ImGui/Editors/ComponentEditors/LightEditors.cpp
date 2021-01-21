@@ -29,7 +29,7 @@
 #include "Core/Components/Lighting/DirectionalLight.h"
 #include "Core/Components/Lighting/PointLight.h"
 #include "Core/Components/Lighting/SpotLight.h"
-
+#include "Utilities/ImGui/Editors/ComponentEditors/GenericComponentEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 
 namespace MxEngine::GUI
@@ -40,31 +40,7 @@ namespace MxEngine::GUI
 
 	void DirectionalLightEditor(DirectionalLight& dirLight)
 	{
-		TREE_NODE_PUSH("DirectionalLight");
-		REMOVE_COMPONENT_BUTTON(dirLight);
-
-		DrawLightBaseEditor(dirLight);
-		ImGui::DragFloat3("projection sizes", dirLight.Projections.data(), 1.0f, 0.0f, 10000.0f);
-		ImGui::DragFloat3("direction", &dirLight.Direction[0], 0.01f);
-		if (ImGui::Button("follow viewport"))
-			dirLight.FollowViewport();
-
-		static std::array<int, DirectionalLight::TextureCount> depthMapSizes;
-		INVOKE_ONCE(
-			for (size_t i = 0; i < DirectionalLight::TextureCount; i++)
-				depthMapSizes[i] = dirLight.GetDepthTexture(i)->GetWidth();
-		);
-		for (size_t i = 0; i < DirectionalLight::TextureCount; i++)
-		{
-			ImGui::Text("cascade shadow map #%d", (int)i);
-			ImGui::PushID((int)i);
-			auto texture = dirLight.GetDepthTexture(i);
-			if (GUI::InputIntOnClick("depth map size", &depthMapSizes[i]))
-				texture->LoadDepth(depthMapSizes[i], depthMapSizes[i]);
-
-			DrawTextureEditor("depth map", texture, { });
-			ImGui::PopID();
-		}
+		ComponentEditor(dirLight);
 	}
 
 	void PointLightEditor(PointLight& pointLight)
@@ -89,7 +65,7 @@ namespace MxEngine::GUI
 			if (GUI::InputIntOnClick("depth map size", &depthMapSize))
 				cubemap->LoadDepth(depthMapSize, depthMapSize);
 
-			DrawCubeMapEditor("depth map", cubemap);
+			//DrawCubeMapEditor("depth map", cubemap);
 		}
 	}
 
@@ -124,7 +100,7 @@ namespace MxEngine::GUI
 			if (GUI::InputIntOnClick("depth map size", &depthMapSize))
 				texture->LoadDepth(depthMapSize, depthMapSize);
 
-			DrawTextureEditor("depth map", texture, { });
+			//DrawTextureEditor("depth map", texture, { });
 		}
 	}
 }

@@ -126,7 +126,7 @@ set(MXENGINE_SOURCES
 "Utilities/ImGui/RenderStatistics.cpp" 
 "Core/Components/Rendering/DebugDraw.cpp"
 "Core/Components/Rendering/Skybox.cpp"
- "Core/Resources/Material.cpp")
+ "Core/Resources/Material.cpp" "Core/Components/Rendering/MeshSource.cpp")
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)

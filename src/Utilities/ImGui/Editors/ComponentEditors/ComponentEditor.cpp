@@ -86,6 +86,9 @@ namespace MxEngine::GUI
 		ImGui::Text("%s: (%f, %f, %f, %f)", name, v[0], v[1], v[2], v[3]);
 	}
 
+	void VisitDisplay(const char* name, const rttr::variant& v, const ReflectionMeta& meta);
+	rttr::variant VisitEdit(const char* name, const rttr::variant& v, const ReflectionMeta& meta);
+
 	void DisplaySequantialContainer(const char* name, const rttr::variant& val, const ReflectionMeta& meta)
 	{
 		auto view = val.create_sequential_view();
@@ -96,7 +99,9 @@ namespace MxEngine::GUI
 		for (const auto& element : view)
 		{
 			ImGui::PushID(id++);
-			ResourceEditor("", element.extract_wrapped_value());
+			auto elementValue = element.extract_wrapped_value();
+			auto elementType = elementValue.get_type();
+			VisitDisplay("", elementValue, ReflectionMeta{ elementType });
 			ImGui::PopID();
 		}
 		ImGui::Unindent(5.0f);
@@ -140,18 +145,18 @@ namespace MxEngine::GUI
 		return edited ? rttr::variant{ val } : rttr::variant{ };
 	}
 
-	rttr::variant Edit(const char* name, size_t val, const ReflectionMeta& meta)
+	rttr::variant Edit(const char* name, uint64_t val, const ReflectionMeta& meta)
 	{
 		auto editVal = (int)val;
 		bool edited = ImGui::DragInt(name, &editVal, meta.Editor.EditPrecision, int(meta.Editor.EditRange.Min), int(meta.Editor.EditRange.Max));
-		return edited ? rttr::variant{ (size_t)editVal } : rttr::variant{ };
+		return edited ? rttr::variant{ (uint64_t)Max(editVal, 0) } : rttr::variant{ };
 	}
 
-	rttr::variant Edit(const char* name, unsigned int val, const ReflectionMeta& meta)
+	rttr::variant Edit(const char* name, uint32_t val, const ReflectionMeta& meta)
 	{
 		auto editVal = (int)val;
 		bool edited = ImGui::DragInt(name, &editVal, meta.Editor.EditPrecision, int(meta.Editor.EditRange.Min), int(meta.Editor.EditRange.Max));
-		return edited ? rttr::variant{ (unsigned int)editVal } : rttr::variant{ };
+		return edited ? rttr::variant{ (uint32_t)Max(editVal, 0) } : rttr::variant{ };
 	}
 
 	rttr::variant Edit(const char* name, Quaternion val, const ReflectionMeta& meta)
@@ -217,10 +222,30 @@ namespace MxEngine::GUI
 		return edited ? rttr::variant{ val } : rttr::variant{ };
 	}
 
-	rttr::variant EditSequantialContainer(const char* name, const rttr::variant& v, const ReflectionMeta& meta)
+	rttr::variant EditSequantialContainer(const char* name, const rttr::variant& val, const ReflectionMeta& meta)
 	{
-		DisplaySequantialContainer(name, v, meta);
-		return rttr::variant{ };
+		rttr::variant arrayResult{ };
+		auto view = val.create_sequential_view();
+
+		ImGui::Text("%s", name);
+		ImGui::Indent(5.0f);
+		int id = 0;
+		for (size_t i = 0, size = view.get_size(); i < size; i++)
+		{
+			ImGui::PushID(id++);
+			auto elementValue = view.get_value(i).extract_wrapped_value();
+			auto elementType = elementValue.get_type();
+			auto result = VisitEdit("", elementValue, ReflectionMeta{ elementType });
+			if (result.is_valid())
+			{
+				view.set_value(i, result);
+				arrayResult = val;
+			}
+			ImGui::PopID();
+		}
+		ImGui::Unindent(5.0f);
+
+		return arrayResult;
 	}
 
 	rttr::variant EditEnumeration(const char* name, const rttr::variant& v, const ReflectionMeta& meta)
@@ -247,7 +272,7 @@ namespace MxEngine::GUI
 
 	void VisitDisplay(const char* name, const rttr::variant& v, const ReflectionMeta& meta)
 	{
-		#define VISITOR_DISPLAY_ENTRY(TYPE) { rttr::type::get<TYPE>(), DisplayGeneric<TYPE> }
+#define VISITOR_DISPLAY_ENTRY(TYPE) { rttr::type::get<TYPE>(), DisplayGeneric<TYPE> }
 		using DisplayCallback = void(*)(const char*, const rttr::variant&, const ReflectionMeta&);
 		static MxMap<rttr::type, DisplayCallback> visitor = {
 			VISITOR_DISPLAY_ENTRY(bool),

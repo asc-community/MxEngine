@@ -312,7 +312,7 @@ namespace MxEngine::GUI
 		}
 
 		auto texture = cameraController.GetRenderTexture();
-		DrawTextureEditor("output texture", texture, { });
+		//DrawTextureEditor("output texture", texture, { });
 
 		{
 			SCOPE_TREE_NODE("attached camera");

@@ -42,18 +42,22 @@ namespace MxEngine
     class MeshLOD
     {
         MAKE_COMPONENT(MeshLOD);
+
+        uint8_t currentLOD = 0;
     public:
         MeshLOD() = default;
 
         using LODInstance = MeshHandle;
-        using LODIndex = uint8_t;
 
         bool AutoLODSelection = true;
-        LODIndex CurrentLOD = 0;
 
         MxVector<LODInstance> LODs;
-        void Generate(const LODConfig& config = LODConfig{ });
+        void Generate(const LODConfig& config);
+        void Generate() { this->Generate(LODConfig{ }); }
         void FixBestLOD(const Vector3& viewportPosition, float viewportZoom = 1.0f);
+        void SetCurrentLOD(size_t lod);
+        size_t GetCurrentLOD() const;
+
         LODInstance GetMeshLOD() const;
     };
 }

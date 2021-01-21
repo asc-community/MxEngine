@@ -69,51 +69,11 @@ namespace MxEngine::GUI
 
 	void MeshSourceEditor(MeshSource& meshSource)
 	{
-		TREE_NODE_PUSH("MeshSource");
-		REMOVE_COMPONENT_BUTTON(meshSource);
-
-		ImGui::Checkbox("is drawn", &meshSource.IsDrawn);
-		ImGui::SameLine();
-		ImGui::Checkbox("casts shadow", &meshSource.CastsShadow);
-		ImGui::SameLine();
-		if (ImGui::Button("load from file"))
-		{
-			MxString path = FileManager::OpenFileDialog();
-			if (!path.empty() && File::Exists(path))
-				meshSource.Mesh = AssetManager::LoadMesh(path);
-		}
-		DrawMeshEditor("mesh", meshSource.Mesh);
+		ComponentEditor(meshSource);
 	}
 
 	void MeshLODEditor(MeshLOD& meshLOD)
 	{
-		TREE_NODE_PUSH("MeshLOD");
-		REMOVE_COMPONENT_BUTTON(meshLOD);
-		int id = 0;
-		static LODConfig config;
-
-		for (size_t i = 0; i < config.Factors.size(); i++)
-		{
-			auto name = "LOD level #" + ToMxString(i + 1);
-			ImGui::DragFloat(name.c_str(), &config.Factors[i], 0.01f, 0.0f, 1.0f);
-		}
-
-		if (ImGui::Button("generate LODs"))
-			meshLOD.Generate(config);
-
-		ImGui::SameLine();
-		ImGui::Checkbox("auto LOD selection", &meshLOD.AutoLODSelection);
-
-		int currentLOD = (int)meshLOD.CurrentLOD;
-		if (ImGui::DragInt("current LOD", &currentLOD, 0.1f, 0, (int)meshLOD.LODs.size()))
-			meshLOD.CurrentLOD = (MeshLOD::LODIndex)Min(currentLOD, meshLOD.LODs.size());
-
-		for (auto& lod : meshLOD.LODs)
-		{
-			ImGui::PushID(id++);
-			auto name = "lod #" + ToMxString(id);
-			DrawMeshEditor(name.c_str(), lod);
-			ImGui::PopID();
-		}
+		ComponentEditor(meshLOD);
 	}
 }

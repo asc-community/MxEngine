@@ -97,21 +97,20 @@ namespace MxEngine::GUI
         ImGui::End();
     }
 
-    TextureHandle GetTextureById(int id)
+    template<typename T>
+    auto GetById(int id)
     {
         auto handle = (size_t)Max(id, 0);
-        auto& storage = GraphicFactory::Get<Texture>();
+        auto& storage = GraphicFactory::Get<T>();
         if (storage.IsAllocated(handle))
         {
             return GraphicFactory::GetHandle(storage[handle]);
         }
         else
         {
-            return TextureHandle{ };
+            return GResource<T>{ };
         }
     }
-
-    void DrawTextureEditor(const char*, TextureHandle&, std::optional<TextureFormat>) { }
 
     bool IsInternalEngineTexture(const Texture& texture)
     {
@@ -179,48 +178,48 @@ namespace MxEngine::GUI
         ImGui::SameLine();
         if (GUI::InputIntOnClick(&id, "load from id"))
         {
-            auto newTexture = GetTextureById(id);
+            auto newTexture = GetById<Texture>(id);
             result = rttr::variant{ newTexture };
         }
 
         return result;
     }
 
-    void DrawCubeMapEditor(const char* name, CubeMapHandle& cubemap)
-    {
-        SCOPE_TREE_NODE(name);
-        ImGui::PushID((int)cubemap.GetHandle());
+    void CubeMapEditorExtra(rttr::instance& object) { /* nothing to do */ }
 
-        if (cubemap.IsValid())
+    rttr::variant CubeMapHandleEditorExtra(rttr::instance& handle)
+    {
+        rttr::variant result{ };
+        auto& texture = *handle.try_convert<CubeMapHandle>();
+
+        if (texture.IsValid())
         {
             if (ImGui::Button("delete"))
             {
-                ImGui::PopID();
-                GraphicFactory::Destroy(cubemap);
-                return;
+                result = rttr::variant{ CubeMapHandle{ } };
             }
+            ImGui::SameLine();
+        }
 
-            ImGui::Text("path: %s", cubemap->GetFilePath().c_str());
-            ImGui::Text("width: %d", (int)cubemap->GetWidth());
-            ImGui::Text("height: %d", (int)cubemap->GetHeight());
-            ImGui::Text("channels: %d", (int)cubemap->GetChannelCount());
-            ImGui::Text("native handle: %d", (int)cubemap->GetNativeHandle());
-        }
-        else
-        {
-            ImGui::Text("empty resource");
-        }
-        
         if (ImGui::Button("load from file"))
         {
             MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
             if (!path.empty() && File::Exists(path))
             {
-                cubemap = AssetManager::LoadCubeMap(path);
+                auto newCubeMap = AssetManager::LoadCubeMap(path);
+                result = rttr::variant{ newCubeMap };
             }
         }
-        // TODO: support cubemap preview
-        ImGui::PopID();
+
+        static int id = 0;
+        ImGui::SameLine();
+        if (GUI::InputIntOnClick(&id, "load from id"))
+        {
+            auto newCubeMap = GetById<CubeMap>(id);
+            result = rttr::variant{ newCubeMap };
+        }
+
+        return result;
     }
 
     void DrawAABBEditor(const char* name, AABB& aabb)

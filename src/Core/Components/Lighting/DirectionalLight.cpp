@@ -114,13 +114,13 @@ namespace MxEngine
         return OrthoProjection * LightView;
     }
 
-    void DirectionalLight::FollowViewport(float updateInterval)
+    void DirectionalLight::FollowViewport()
     {
         // get reference to timer and replace it with new one
         auto& timer = *std::launder(reinterpret_cast<MxObject::Handle*>(&this->timerHandle));
         MxObject::Destroy(timer);
 
-        timer = Timer::CallEachDelta([self = MxObject::GetComponentHandle(*this)]() mutable
+        timer = Timer::CallEachFrame([self = MxObject::GetComponentHandle(*this)]() mutable
         {
             auto viewport = Rendering::GetViewport();
             if (viewport.IsValid())
@@ -130,7 +130,7 @@ namespace MxEngine
                 auto direction = viewport->GetDirection();
                 self->CascadeDirection = Normalize(Vector3(direction.x, 0.0f, direction.z));
             }
-        }, updateInterval);
+        });
     }
 
     MXENGINE_REFLECT_TYPE
@@ -154,6 +154,31 @@ namespace MxEngine
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1.0f })
             )
-            ;
+            .property_readonly("is following viewport", &DirectionalLight::IsFollowingViewport)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("direction", &DirectionalLight::Direction)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("projections", &DirectionalLight::Projections)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property_readonly("depth textures", &DirectionalLight::GetDepthTextures)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("cascade direction", &DirectionalLight::CascadeDirection)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::VIEW_CONDITION, +([](rttr::instance& obj) { return !obj.try_convert<DirectionalLight>()->IsFollowingViewport(); }))
+            )
+            .method("follow viewport", &DirectionalLight::FollowViewport)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            );
     }
 }

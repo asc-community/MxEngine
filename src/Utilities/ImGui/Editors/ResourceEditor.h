@@ -41,8 +41,6 @@ namespace MxEngine
 
 namespace MxEngine::GUI
 {
-	void DrawTextureEditor(const char* name, TextureHandle& texture, std::optional<TextureFormat> loadingFormat);
-	void DrawCubeMapEditor(const char* name, CubeMapHandle& cubemap);
 	void DrawMeshEditor(const char* name, MeshHandle& mesh);
 	void DrawAABBEditor(const char* name, AABB& aabb);
 	void DrawBoxEditor(const char* name, BoundingBox& box);
@@ -50,7 +48,6 @@ namespace MxEngine::GUI
 	void DrawCylinderEditor(const char* name, Cylinder& cylinder);
 	void DrawCapsuleEditor(const char* name, Capsule& capsule);
 	void DrawLightBaseEditor(LightBase& base);
-	void DrawMaterialEditor(MaterialHandle& material);
 	void DrawVertexEditor(Vertex& vertex);
 	void DrawImageSaver(const TextureHandle& texture, const char* name = "save texture to disk");
 	void DrawTextureList(const char* name, bool* isOpen = nullptr);
