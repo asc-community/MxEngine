@@ -34,10 +34,6 @@
 
 namespace MxEngine::GUI
 {
-	#define REMOVE_COMPONENT_BUTTON(comp) \
-	if(ImGui::Button("remove component")) {\
-		MxObject::GetByComponent(comp).RemoveComponent<std::remove_reference_t<decltype(comp)>>(); return; }
-
 	void DirectionalLightEditor(DirectionalLight& dirLight)
 	{
 		ComponentEditor(dirLight);
@@ -45,62 +41,11 @@ namespace MxEngine::GUI
 
 	void PointLightEditor(PointLight& pointLight)
 	{
-		TREE_NODE_PUSH("PointLight");
-		REMOVE_COMPONENT_BUTTON(pointLight);
-
-		DrawLightBaseEditor(pointLight);
-
-		auto radius = pointLight.GetRadius();
-		if (ImGui::DragFloat("radius", &radius))
-			pointLight.UseRadius(radius);
-
-		auto castsShadows = pointLight.IsCastingShadows();
-		if (ImGui::Checkbox("casts shadows", &castsShadows))
-			pointLight.ToggleShadowCast(castsShadows);
-
-		if (castsShadows)
-		{
-			auto cubemap = pointLight.GetDepthCubeMap();
-			static int depthMapSize = (int)cubemap->GetWidth();
-			if (GUI::InputIntOnClick("depth map size", &depthMapSize))
-				cubemap->LoadDepth(depthMapSize, depthMapSize);
-
-			//DrawCubeMapEditor("depth map", cubemap);
-		}
+		ComponentEditor(pointLight);
 	}
 
 	void SpotLightEditor(SpotLight& spotLight)
 	{
-		TREE_NODE_PUSH("SpotLight");
-		REMOVE_COMPONENT_BUTTON(spotLight);
-
-		DrawLightBaseEditor(spotLight);
-
-		auto innerAngle = spotLight.GetInnerAngle();
-		auto outerAngle = spotLight.GetOuterAngle();
-		auto maxDistance = spotLight.GetMaxDistance();
-		auto castsShadows = spotLight.IsCastingShadows();
-
-		ImGui::DragFloat3("direction", &spotLight.Direction[0], 0.01f);
-
-		if (ImGui::Checkbox("casts shadows", &castsShadows))
-			spotLight.ToggleShadowCast(castsShadows);
-
-		if (ImGui::DragFloat("outer angle", &outerAngle))
-			spotLight.UseOuterAngle(outerAngle);
-		if (ImGui::DragFloat("inner angle", &innerAngle))
-			spotLight.UseInnerAngle(innerAngle);
-		if (ImGui::DragFloat("max distance", &maxDistance))
-			spotLight.UseMaxDistance(maxDistance);
-
-		if (castsShadows)
-		{
-			auto texture = spotLight.GetDepthTexture();
-			static int depthMapSize = (int)texture->GetWidth();
-			if (GUI::InputIntOnClick("depth map size", &depthMapSize))
-				texture->LoadDepth(depthMapSize, depthMapSize);
-
-			//DrawTextureEditor("depth map", texture, { });
-		}
+		ComponentEditor(spotLight);
 	}
 }

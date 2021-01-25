@@ -67,7 +67,7 @@ namespace GrassSample
                     object->Transform.Scale(0.1f);
 
                     auto pointLight = object->AddComponent<PointLight>();
-                    pointLight->UseRadius(0.25f);
+                    pointLight->SetRadius(0.25f);
 
                     float r = Random::GetFloat();
                     float g = Random::GetFloat();

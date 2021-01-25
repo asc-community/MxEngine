@@ -61,6 +61,6 @@ namespace MxEngine
         void SetDepthTexture(const TextureHandle& texture, size_t index);
         [[nodiscard]] Matrix4x4 GetMatrix(const Vector3& center, size_t index) const;
         void FollowViewport();
-        const auto& GetDepthTextures() const { return this->textures; }
+        [[nodiscard]] const auto& GetDepthTextures() const { return this->textures; }
     };
 }

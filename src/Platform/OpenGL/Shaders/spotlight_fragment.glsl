@@ -41,7 +41,7 @@ uniform Camera camera;
 uniform int pcfDistance;
 uniform vec2 viewportSize;
 
-vec3 calcColorUnderSpotLight(FragmentInfo fragment, SpotLight light, vec3 viewDirection, vec4 fragLightSpace, sampler2D map_shadow, bool computeShadow)
+vec3 calcColorUnderSpotLight(FragmentInfo fragment, SpotLight light, vec3 viewDirection, vec3 fragLightSpace, sampler2D map_shadow, bool computeShadow)
 {
 	vec3 lightPath = light.position - fragment.position;
 	float lightDistance = length(lightPath);
@@ -75,7 +75,8 @@ void main()
 	light.maxDistance = spotLight.maxDistance;
 
 	vec4 fragLightSpace = worldToLightTransform * vec4(fragment.position, 1.0f);
-	vec3 totalColor = calcColorUnderSpotLight(fragment, light, viewDirection, fragLightSpace, lightDepthMap, castsShadows);
+	fragLightSpace.xyz /= fragLightSpace.w;
+	vec3 totalColor = calcColorUnderSpotLight(fragment, light, viewDirection, fragLightSpace.xyz, lightDepthMap, castsShadows);
 
 	OutColor = vec4(totalColor, 1.0f);
 }
