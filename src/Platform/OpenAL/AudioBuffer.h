@@ -55,9 +55,6 @@ namespace MxEngine
         AudioBuffer& operator=(AudioBuffer&&) noexcept;
 
         template<typename FilePath>
-        AudioBuffer(const FilePath& path);
-
-        template<typename FilePath>
         void Load(const FilePath& path);
 
         BindableId GetNativeHandle() const;
@@ -65,6 +62,8 @@ namespace MxEngine
         size_t GetFrequency() const;
         size_t GetNativeFormat() const;
         size_t GetSampleCount() const;
+        float GetLength() const;
+        size_t GetLengthInSeconds() const;
         AudioType GetAudioType() const;
         const MxString& GetFilePath() const;
         void SetInternalEngineTag(const MxString& tag);

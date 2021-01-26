@@ -34,10 +34,6 @@
 #include "Core/Components/Scripting/Script.h"
 #include "Core/Application/Runtime.h"
 
-#define REMOVE_COMPONENT_BUTTON(comp) \
-	if(ImGui::Button("remove component")) {\
-		MxObject::GetByComponent(comp).RemoveComponent<std::remove_reference_t<decltype(comp)>>(); return; }
-
 namespace MxEngine::GUI
 {
     void CreateNewScript(const MxString& scriptName, const MxString& filepath)

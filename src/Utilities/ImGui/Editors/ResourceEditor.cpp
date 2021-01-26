@@ -228,13 +228,39 @@ namespace MxEngine::GUI
         return result;
     }
 
-    void DrawAABBEditor(const char* name, AABB& aabb)
+    rttr::variant AudioBufferHandleEditorExtra(rttr::instance& handle)
     {
-        SCOPE_TREE_NODE(name);
-        ImGui::DragFloat3("min", &aabb.Min[0], 0.01f);
-        ImGui::DragFloat3("max", &aabb.Max[0], 0.01f);
-        aabb.Min = VectorMin(aabb.Min, aabb.Max);
-        aabb.Max = VectorMax(aabb.Min, aabb.Max);
+        rttr::variant result{ };
+        auto& texture = *handle.try_convert<AudioBufferHandle>();
+
+        if (texture.IsValid())
+        {
+            if (ImGui::Button("delete"))
+            {
+                result = rttr::variant{ AudioBufferHandle{ } };
+            }
+            ImGui::SameLine();
+        }
+
+        if (ImGui::Button("load from file"))
+        {
+            MxString path = FileManager::OpenFileDialog("*.ogg *.flac *.mp3 *.wav", "Image Files");
+            if (!path.empty() && File::Exists(path))
+            {
+                auto newAudio = AssetManager::LoadAudio(path);
+                result = rttr::variant{ newAudio };
+            }
+        }
+
+        static int id = 0;
+        ImGui::SameLine();
+        if (GUI::InputIntOnClick(&id, "load from id"))
+        {
+            auto newAudio = GetById<AudioBufferHandle>(id);
+            result = rttr::variant{ newAudio };
+        }
+
+        return result;
     }
 
     void DrawBoxEditor(const char* name, BoundingBox& box)
@@ -256,14 +282,6 @@ namespace MxEngine::GUI
 
         box.Min = VectorMin(box.Min, box.Max);
         box.Max = VectorMax(box.Min, box.Max);
-    }
-
-    void DrawSphereEditor(const char* name, BoundingSphere& sphere)
-    {
-        SCOPE_TREE_NODE(name);
-        ImGui::DragFloat3("center", &sphere.Center[0], 0.01f);
-        ImGui::DragFloat("radius", &sphere.Radius, 0.01f);
-        sphere.Radius = Max(sphere.Radius, 0.0f);
     }
 
     void DrawCylinderEditor(const char* name, Cylinder& cylinder)
@@ -332,15 +350,6 @@ namespace MxEngine::GUI
             }
             ImGui::EndCombo();
         }
-    }
-
-    void DrawVertexEditor(Vertex& vertex)
-    {
-        ImGui::InputFloat3("position", &vertex.Position[0]);
-        ImGui::InputFloat2("texture", &vertex.TexCoord[0]);
-        ImGui::InputFloat3("normal", &vertex.Normal[0]);
-        ImGui::InputFloat3("tangent", &vertex.Tangent[0]);
-        ImGui::InputFloat3("bitangent", &vertex.Bitangent[0]);
     }
 
     void DrawImageSaver(const TextureHandle& texture, const char* name)

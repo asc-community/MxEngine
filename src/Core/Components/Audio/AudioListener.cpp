@@ -2,6 +2,7 @@
 #include "Platform/OpenAL/ALUtilities.h"
 #include "Core/Components/Camera/CameraController.h"
 #include "Core/MxObject/MxObject.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -98,5 +99,49 @@ namespace MxEngine
     SoundModel AudioListener::GetSoundModel() const
     {
         return this->model;
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::enumeration<SoundModel>("SoundModel")
+        (
+            rttr::value("NONE"                     , SoundModel::NONE                     ),
+            rttr::value("INVERSE_DISTANCE"         , SoundModel::INVERSE_DISTANCE         ),
+            rttr::value("INVERSE_DISTANCE_CLAMPED" , SoundModel::INVERSE_DISTANCE_CLAMPED ),
+            rttr::value("LINEAR_DISTANCE"          , SoundModel::LINEAR_DISTANCE          ),
+            rttr::value("LINEAR_DISTANCE_CLAMPED"  , SoundModel::LINEAR_DISTANCE_CLAMPED  ),
+            rttr::value("EXPONENT_DISTANCE"        , SoundModel::EXPONENT_DISTANCE        ),
+            rttr::value("EXPONENT_DISTANCE_CLAMPED", SoundModel::EXPONENT_DISTANCE_CLAMPED)
+        );
+
+        rttr::registration::class_<AudioListener>("AudioListener")
+            .constructor<>()
+            .property("volume", &AudioListener::GetVolume, &AudioListener::SetVolume)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("velocity", &AudioListener::GetVelocity, &AudioListener::SetVelocity)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("speed of sound", &AudioListener::GetSoundSpeed, &AudioListener::SetSoundSpeed)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("sound model", &AudioListener::GetSoundModel, &AudioListener::SetSoundModel)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("doppler factor", &AudioListener::GetDopplerFactor, &AudioListener::SetDopplerFactor)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            );
     }
 }

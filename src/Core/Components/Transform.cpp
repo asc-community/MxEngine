@@ -354,26 +354,6 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.01f, 100.0f })
-            )
-            .method("look at", &TransformComponent::LookAt)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::SUBTREE_NAME, "look at")
-            )
-            .method("look at XY", &TransformComponent::LookAtXY)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::SUBTREE_NAME, "look at")
-            )
-            .method("look at YZ", &TransformComponent::LookAtYZ)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::SUBTREE_NAME, "look at")
-            )
-            .method("look at XZ", &TransformComponent::LookAtXZ)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::SUBTREE_NAME, "look at")
             );
     }
 }

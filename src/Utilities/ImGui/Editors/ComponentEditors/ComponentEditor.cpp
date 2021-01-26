@@ -31,6 +31,7 @@
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Utilities/Format/Format.h"
 #include "Utilities/STL/MxMap.h"
+#include "Core/Resources/AssetManager.h"
 #include "GenericComponentEditor.h"
 
 namespace MxEngine::GUI
@@ -356,30 +357,6 @@ namespace MxEngine::GUI
 		}
 	}
 
-	class TreeNodeManager
-	{
-		std::string lastTreeNode;
-	public:
-		void NewNode(std::string name)
-		{
-			if (lastTreeNode == name)
-			{
-				if (!lastTreeNode.empty()) 
-					ImGui::TreePop();
-				lastTreeNode = name;
-				if (!lastTreeNode.empty()) 
-					ImGui::TreePush(name.c_str());
-			}
-		}
-
-		void EndNodes()
-		{
-			if (!lastTreeNode.empty())
-				ImGui::TreePop();
-			lastTreeNode.clear();
-		}
-	};
-
 	template<typename THandle>
 	std::pair<rttr::instance, rttr::type> DereferenceGeneric(rttr::instance object)
 	{
@@ -395,6 +372,8 @@ namespace MxEngine::GUI
 		MxMap<rttr::type, DereferenceCallback> visitor = {
 			VISITOR_DEREFERENCE_ENTRY(MaterialHandle),
 			VISITOR_DEREFERENCE_ENTRY(MeshHandle),
+			VISITOR_DEREFERENCE_ENTRY(AudioBufferHandle),
+			VISITOR_DEREFERENCE_ENTRY(AudioPlayerHandle),
 			VISITOR_DEREFERENCE_ENTRY(TextureHandle),
 			VISITOR_DEREFERENCE_ENTRY(ShaderHandle),
 			VISITOR_DEREFERENCE_ENTRY(FrameBufferHandle),
@@ -434,15 +413,12 @@ namespace MxEngine::GUI
 			return result;
 		}
 
-		TreeNodeManager treeNodeManager;
 		for (const auto& method : type.get_methods())
 		{
 			ReflectionMeta meta(method);
 
 			if ((meta.Flags & MetaInfo::EDITABLE) == 0) continue;
 			if (meta.Editor.ViewCondition != nullptr && !meta.Editor.ViewCondition(object)) continue;
-
-			treeNodeManager.NewNode(meta.Editor.SubtreeName);
 
 			auto params = method.get_parameter_infos();
 
@@ -455,15 +431,18 @@ namespace MxEngine::GUI
 				if (params.empty())
 				{
 					if (ImGui::Button(method.get_name().cbegin()))
+					{
 						method.invoke(object);
+						if (typeMeta.CopyFunction != nullptr)
+							result = typeMeta.CopyFunction(object);
+					}
 				}
 				else
 				{
-					ImGui::Text("TODO: cannot add parameters for method call");
+					ImGui::Text("cannot add method call as it requires additional arguments");
 				}
 			}
 		}
-		treeNodeManager.EndNodes();
 
 		for (const auto& property : type.get_properties())
 		{
@@ -471,8 +450,6 @@ namespace MxEngine::GUI
 
 			if ((meta.Flags & MetaInfo::EDITABLE) == 0) continue;
 			if (meta.Editor.ViewCondition != nullptr && !meta.Editor.ViewCondition(object)) continue;
-
-			treeNodeManager.NewNode(meta.Editor.SubtreeName);
 
 			if (meta.Editor.CustomView != nullptr)
 			{
@@ -497,7 +474,6 @@ namespace MxEngine::GUI
 				}
 			}
 		}
-		treeNodeManager.EndNodes();
 		return result;
 	}
 

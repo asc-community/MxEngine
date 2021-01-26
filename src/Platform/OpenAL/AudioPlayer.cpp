@@ -81,6 +81,12 @@ namespace MxEngine
         ALCALL(alSourcei(id, AL_BUFFER, buffer.GetNativeHandle()));
     }
 
+    void AudioPlayer::DetachBuffer()
+    {
+        this->Stop();
+        ALCALL(alSourcei(id, AL_BUFFER, NULL));
+    }
+
     void AudioPlayer::Play() const
     {
         ALCALL(alSourcePlay(id));

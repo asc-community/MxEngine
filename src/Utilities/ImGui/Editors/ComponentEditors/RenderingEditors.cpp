@@ -37,10 +37,6 @@
 
 namespace MxEngine::GUI
 {
-	#define REMOVE_COMPONENT_BUTTON(comp) \
-	if(ImGui::Button("remove component")) {\
-		MxObject::GetByComponent(comp).RemoveComponent<std::remove_reference_t<decltype(comp)>>(); return; }
-
 	void SkyboxEditor(Skybox& skybox)
 	{
 		ComponentEditor(skybox);

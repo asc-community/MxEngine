@@ -244,8 +244,6 @@ namespace MxEngine
 
 	MXENGINE_REFLECT_TYPE
 	{
-		using SubmeshConstFunc = const MxVector<SubMesh>& (Mesh::*)() const;
-
 		rttr::registration::class_<AABB>("AABB")
 			(
 				rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<AABB>)
@@ -310,7 +308,7 @@ namespace MxEngine
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
 				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
 			)
-			.property("submeshes", (SubmeshConstFunc)&Mesh::GetSubMeshes, &Mesh::SetSubMeshesInternal)
+			.property("submeshes", &Mesh::GetSubMeshes, &Mesh::SetSubMeshesInternal)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
 			);

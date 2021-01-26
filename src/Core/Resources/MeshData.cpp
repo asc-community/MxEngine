@@ -267,11 +267,11 @@ namespace MxEngine
     MXENGINE_REFLECT_TYPE
     {
         using BufferVerteciesFunc = void(MeshData::*)();
-        using BufferIndiciesFunc = void(MeshData::*)();
         using GetVerteciesFunc = const MxVector<Vertex>& (MeshData::*)();
-        using GetIndiciesFunc = const MxVector<uint32_t>& (MeshData::*)();        
         using SetVerteciesFunc = void (MeshData::*)(const MxVector<Vertex>&);
-        using SetIndiciesFunc = void (MeshData::*)(const MxVector<uint32_t>&);
+        // using BufferIndiciesFunc = void(MeshData::*)();
+        // using GetIndiciesFunc = const MxVector<uint32_t>& (MeshData::*)();        
+        // using SetIndiciesFunc = void (MeshData::*)(const MxVector<uint32_t>&);
 
         rttr::registration::class_<Vertex>("Vertex")
             (

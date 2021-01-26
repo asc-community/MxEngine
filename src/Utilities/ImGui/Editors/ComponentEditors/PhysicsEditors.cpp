@@ -233,7 +233,7 @@ namespace MxEngine::GUI
 		REMOVE_COMPONENT_BUTTON(sphereCollider);
 
 		auto boundingSphere = sphereCollider.GetNativeHandle()->GetBoundingSphereUnchanged();
-		DrawSphereEditor("bounding sphere", boundingSphere);
+		// DrawSphereEditor("bounding sphere", boundingSphere);
 		sphereCollider.SetBoundingSphere(boundingSphere);
 	}
 
@@ -331,7 +331,7 @@ namespace MxEngine::GUI
 				else if (sphere.IsValid())
 				{
 					auto bounding = sphere->GetBoundingSphereUnchanged();
-					DrawSphereEditor("sphere shape", bounding);
+					// DrawSphereEditor("sphere shape", bounding);
 					if (bounding != sphere->GetBoundingSphereUnchanged())
 					{
 						compoundCollider.RemoveShapeByIndex(i);

@@ -28,9 +28,7 @@
 
 #pragma once
 
-#include "Core/Resources/AssetManager.h"
-#include "Core/Components/Lighting/LightBase.h"
-#include <optional>
+#include "Platform/GraphicAPI.h"
 
 namespace MxEngine
 {
@@ -41,14 +39,9 @@ namespace MxEngine
 
 namespace MxEngine::GUI
 {
-	void DrawMeshEditor(const char* name, MeshHandle& mesh);
-	void DrawAABBEditor(const char* name, AABB& aabb);
 	void DrawBoxEditor(const char* name, BoundingBox& box);
-	void DrawSphereEditor(const char* name, BoundingSphere& sphere);
 	void DrawCylinderEditor(const char* name, Cylinder& cylinder);
 	void DrawCapsuleEditor(const char* name, Capsule& capsule);
-	void DrawLightBaseEditor(LightBase& base);
-	void DrawVertexEditor(Vertex& vertex);
 	void DrawImageSaver(const TextureHandle& texture, const char* name = "save texture to disk");
 	void DrawTextureList(const char* name, bool* isOpen = nullptr);
 }

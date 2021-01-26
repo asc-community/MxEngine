@@ -51,7 +51,6 @@ namespace MxEngine
     struct EditorInfo
     {
         constexpr static const char* EDIT_PRECISION = "edit precision";
-        constexpr static const char* SUBTREE_NAME = "subtree name";
         constexpr static const char* EDIT_RANGE = "edit name";
         constexpr static const char* INTERPRET_AS = "interpret as";
         constexpr static const char* CUSTOM_VIEW = "custom view";
@@ -92,9 +91,6 @@ namespace MxEngine
             rttr::variant precision = obj.get_metadata(EditorInfo::EDIT_PRECISION);
             this->Editor.EditPrecision = precision.is_valid() ? precision.get_value<float>() : 1.0f;
 
-            rttr::variant subtreeName = obj.get_metadata(EditorInfo::SUBTREE_NAME);
-            this->Editor.SubtreeName = subtreeName.is_valid() ? subtreeName.get_value<std::string>() : std::string{ };
-
             rttr::variant editRange = obj.get_metadata(EditorInfo::EDIT_RANGE);
             this->Editor.EditRange = editRange.is_valid() ? editRange.get_value<Range>() : Range{ 0.0f, 0.0f };
 
@@ -116,7 +112,6 @@ namespace MxEngine
 
         struct
         {
-            std::string SubtreeName;
             CustomViewFunction CustomView = nullptr;
             ViewConditionFunction ViewCondition = nullptr;
             HandleEditorFunction HandleEditor = nullptr;
