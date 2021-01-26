@@ -38,6 +38,7 @@ namespace MxEngine
     struct MetaInfo
     {
         constexpr static const char* FLAGS = "flags";
+        constexpr static const char* COPY_FUNCTION = "copy";
 
         enum Flags : uint32_t
         {
@@ -61,6 +62,7 @@ namespace MxEngine
     using ViewConditionFunction = bool(*)(const rttr::instance&);
     using CustomViewFunction = void(*)(rttr::instance&);
     using HandleEditorFunction = rttr::variant(*)(rttr::instance&);
+    using InstanceToVariantFunction = rttr::variant(*)(rttr::instance&);
 
     enum class InterpretAsInfo 
     {
@@ -83,6 +85,9 @@ namespace MxEngine
         {
             rttr::variant flags = obj.get_metadata(MetaInfo::FLAGS);
             this->Flags = flags.is_valid() ? flags.to_uint32() : uint32_t{ 0 };
+
+            rttr::variant copyFunction = obj.get_metadata(MetaInfo::COPY_FUNCTION);
+            this->CopyFunction = copyFunction.is_valid() ? copyFunction.get_value<InstanceToVariantFunction>() : nullptr;
 
             rttr::variant precision = obj.get_metadata(EditorInfo::EDIT_PRECISION);
             this->Editor.EditPrecision = precision.is_valid() ? precision.get_value<float>() : 1.0f;
@@ -107,6 +112,7 @@ namespace MxEngine
         }
         
         uint32_t Flags = 0;
+        InstanceToVariantFunction CopyFunction = nullptr;
 
         struct
         {
@@ -119,10 +125,19 @@ namespace MxEngine
             InterpretAsInfo InterpretAs = InterpretAsInfo::DEFAULT;
         } Editor;
     };
+
+    template<typename T>
+    rttr::variant Copy(rttr::instance& i)
+    {
+        return rttr::variant{ *i.try_convert<T>() };
+    }
 }
 
 template<typename T, typename Allocator>
 struct rttr::sequential_container_mapper<MxEngine::MxVector<T, Allocator>>
-    : public rttr::detail::sequential_container_base_dynamic_direct_access<MxEngine::MxVector<T, Allocator>>
+    : public std::conditional_t<std::is_default_constructible_v<T>,
+        rttr::detail::sequential_container_base_dynamic_direct_access<MxEngine::MxVector<T, Allocator>>,
+        rttr::detail::sequential_container_base_static<MxEngine::MxVector<T, Allocator>>
+    >
 {
 };

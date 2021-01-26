@@ -26,31 +26,26 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+#include "UsageType.h"
+#include "GLUtilities.h"
 
-#include "MeshData.h"
+GLenum DataType[] =
+{
+	GL_STREAM_DRAW,
+	GL_STREAM_READ,
+	GL_STREAM_COPY,
+	GL_STATIC_DRAW,
+	GL_STATIC_READ,
+	GL_STATIC_COPY,
+	GL_DYNAMIC_DRAW,
+	GL_DYNAMIC_READ,
+	GL_DYNAMIC_COPY,
+};
 
 namespace MxEngine
 {
-	class SubMesh
+	uint64_t UsageTypeToNative(UsageType usageType)
 	{
-	public:
-		using MaterialId = size_t;
-	private:
-		MaterialId materialId;
-		std::reference_wrapper<TransformComponent> transform;
-	public:
-		MeshData Data;
-		MxString Name = "Main";
-
-		const AABB& GetAABB() const;
-		const BoundingSphere& GetBoundingSphere() const;
-
-		SubMesh(size_t materiaId, std::reference_wrapper<TransformComponent> transform);
-
-		const TransformComponent& GetTransform() const;
-		TransformComponent& GetTransformReference();
-		void SetTransform(const TransformComponent& transform);
-		MaterialId GetMaterialId() const;
-	};
+		return (uint64_t)DataType[(size_t)usageType];
+	}
 }

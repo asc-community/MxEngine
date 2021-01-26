@@ -27,30 +27,22 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-
-#include "MeshData.h"
+#include <cstdint>
 
 namespace MxEngine
 {
-	class SubMesh
+	enum class UsageType
 	{
-	public:
-		using MaterialId = size_t;
-	private:
-		MaterialId materialId;
-		std::reference_wrapper<TransformComponent> transform;
-	public:
-		MeshData Data;
-		MxString Name = "Main";
-
-		const AABB& GetAABB() const;
-		const BoundingSphere& GetBoundingSphere() const;
-
-		SubMesh(size_t materiaId, std::reference_wrapper<TransformComponent> transform);
-
-		const TransformComponent& GetTransform() const;
-		TransformComponent& GetTransformReference();
-		void SetTransform(const TransformComponent& transform);
-		MaterialId GetMaterialId() const;
+		STREAM_DRAW,
+		STREAM_READ,
+		STREAM_COPY,
+		STATIC_DRAW,
+		STATIC_READ,
+		STATIC_COPY,
+		DYNAMIC_DRAW,
+		DYNAMIC_READ,
+		DYNAMIC_COPY,
 	};
+
+	uint64_t UsageTypeToNative(UsageType usageType);
 }

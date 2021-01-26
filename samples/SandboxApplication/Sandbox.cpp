@@ -24,7 +24,7 @@ void SandboxApp::OnRender()
 
 void SandboxApp::OnDestroy()
 {
-
+	
 }
 
 SandboxApp::SandboxApp()

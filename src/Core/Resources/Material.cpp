@@ -31,7 +31,6 @@
 #include "AssetManager.h"
 
 MXENGINE_FORCE_REFLECTION_IMPLEMENTATION(Material);
-MXENGINE_FORCE_REFLECTION_IMPLEMENTATION(MaterialHandle);
 
 namespace MxEngine
 {

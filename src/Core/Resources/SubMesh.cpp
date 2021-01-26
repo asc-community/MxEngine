@@ -27,12 +27,13 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SubMesh.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
-    const AABB& SubMesh::GetBoundingBox() const
+    const AABB& SubMesh::GetAABB() const
     {
-        return this->Data.GetBoundingBox();
+        return this->Data.GetAABB();
     }
 
     const BoundingSphere& SubMesh::GetBoundingSphere() const
@@ -42,6 +43,11 @@ namespace MxEngine
 
     SubMesh::SubMesh(size_t materiaId, std::reference_wrapper<TransformComponent> transform)
         :  materialId(materiaId), transform(transform) { }
+
+    void SubMesh::SetTransform(const TransformComponent& transform)
+    {
+        this->transform.get() = transform;
+    }
 
     size_t SubMesh::GetMaterialId() const
     {
@@ -53,9 +59,44 @@ namespace MxEngine
         return this->transform;
     }
 
-    TransformComponent& SubMesh::GetTransform()
+    TransformComponent& SubMesh::GetTransformReference()
     {
         return this->transform;
     }
 
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<SubMesh>("SubMesh")
+            (
+                rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<SubMesh>)
+            )
+            .property_readonly("name", &SubMesh::Name)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property_readonly("material id", &SubMesh::GetMaterialId)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("transform", &SubMesh::GetTransform, &SubMesh::SetTransform)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("name", &SubMesh::Name)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("data", &SubMesh::Data)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property_readonly("aabb", &SubMesh::GetAABB)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property_readonly("bounding box", &SubMesh::GetAABB)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            );
+    }
 }

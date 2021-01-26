@@ -61,4 +61,3 @@ namespace MxEngine
 }
 
 MXENGINE_FORCE_REFLECTION(Material);
-MXENGINE_FORCE_REFLECTION(MaterialHandle);

@@ -335,6 +335,9 @@ namespace MxEngine
         using RotateQuat = TransformComponent& (TransformComponent::*)(const Quaternion&);
 
         rttr::registration::class_<TransformComponent>("Transform")
+            (
+                rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<TransformComponent>)
+            )
             .constructor<>()
             .property("position", &TransformComponent::GetPosition, &TransformComponent::SetPosition)
             (

@@ -77,11 +77,11 @@ namespace MxEngine
 		this->FreeIndexBuffer();
 	}
 
-	void IndexBuffer::Load(const IndexType* data, size_t count)
+	void IndexBuffer::Load(const IndexType* data, size_t count, UsageType usageType)
 	{
 		this->count = count;
 		this->Bind();
-		GLCALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(IndexType), data, GL_STATIC_DRAW));
+		GLCALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(IndexType), data, (GLenum)UsageTypeToNative(usageType)));
 	}
 
 	void IndexBuffer::Unbind() const

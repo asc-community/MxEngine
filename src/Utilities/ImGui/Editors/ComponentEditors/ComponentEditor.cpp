@@ -98,11 +98,15 @@ namespace MxEngine::GUI
 		int id = 0;
 		for (const auto& element : view)
 		{
+			if (meta.Editor.EditRange.Min != 0.0f && (int)meta.Editor.EditRange.Min > id) continue;
+			if (meta.Editor.EditRange.Max != 0.0f && (int)meta.Editor.EditRange.Max < id) continue;
+
 			ImGui::PushID(id++);
 			auto elementValue = element.extract_wrapped_value();
 			auto elementType = elementValue.get_type();
 			VisitDisplay("", elementValue, ReflectionMeta{ elementType });
 			ImGui::PopID();
+			ImGui::Separator();
 		}
 		ImGui::Unindent(5.0f);
 	}
@@ -232,6 +236,9 @@ namespace MxEngine::GUI
 		int id = 0;
 		for (size_t i = 0, size = view.get_size(); i < size; i++)
 		{
+			if (meta.Editor.EditRange.Min != 0.0f && (int)meta.Editor.EditRange.Min > id) continue;
+			if (meta.Editor.EditRange.Max != 0.0f && (int)meta.Editor.EditRange.Max < id) continue;
+
 			ImGui::PushID(id++);
 			auto elementValue = view.get_value(i).extract_wrapped_value();
 			auto elementType = elementValue.get_type();
@@ -242,6 +249,7 @@ namespace MxEngine::GUI
 				arrayResult = val;
 			}
 			ImGui::PopID();
+			ImGui::Separator();
 		}
 		ImGui::Unindent(5.0f);
 
@@ -272,7 +280,7 @@ namespace MxEngine::GUI
 
 	void VisitDisplay(const char* name, const rttr::variant& v, const ReflectionMeta& meta)
 	{
-#define VISITOR_DISPLAY_ENTRY(TYPE) { rttr::type::get<TYPE>(), DisplayGeneric<TYPE> }
+		#define VISITOR_DISPLAY_ENTRY(TYPE) { rttr::type::get<TYPE>(), DisplayGeneric<TYPE> }
 		using DisplayCallback = void(*)(const char*, const rttr::variant&, const ReflectionMeta&);
 		static MxMap<rttr::type, DisplayCallback> visitor = {
 			VISITOR_DISPLAY_ENTRY(bool),
@@ -420,7 +428,7 @@ namespace MxEngine::GUI
 			result = typeMeta.Editor.HandleEditor(maybeHandle);
 		}
 
-		if (!object.is_valid())
+		if (!object.is_valid() || result.is_valid())
 		{
 			ImGui::Text("empty");
 			return result;
@@ -483,6 +491,8 @@ namespace MxEngine::GUI
 					if (editedValue.is_valid())
 					{
 						property.set_value(object, editedValue);
+						if (typeMeta.CopyFunction != nullptr)
+							result = typeMeta.CopyFunction(object);
 					}
 				}
 			}

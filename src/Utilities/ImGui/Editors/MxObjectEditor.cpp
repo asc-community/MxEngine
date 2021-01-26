@@ -87,7 +87,7 @@ namespace MxEngine::GUI
 			AABB aabb;
 			auto meshSource = object.GetComponent<MeshSource>();
 			if (meshSource.IsValid() && meshSource->Mesh.IsValid())
-				aabb = meshSource->Mesh->BoxBounding;
+				aabb = meshSource->Mesh->MeshAABB;
 			else
 				aabb = { MakeVector3(-0.5f), MakeVector3(0.5f) };
 

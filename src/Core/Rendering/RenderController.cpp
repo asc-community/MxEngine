@@ -1121,7 +1121,7 @@ namespace MxEngine
 		#endif
 
 		// compute aabb of primitive object for later frustrum culling
-		auto aabb = submesh.Data.GetBoundingBox() * primitive.ModelMatrix;
+		auto aabb = submesh.Data.GetAABB() * primitive.ModelMatrix;
 		primitive.MinAABB = aabb.Min;
 		primitive.MaxAABB = aabb.Max;
 

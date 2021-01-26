@@ -52,8 +52,8 @@ namespace MxEngine
 		void LoadFromFile(const FilePath& filepath);
 
 	public:
-		AABB BoxBounding;
-		BoundingSphere SphereBounding;
+		AABB MeshAABB;
+		BoundingSphere MeshBoundingSphere;
 
 		explicit Mesh() = default;
 		Mesh(Mesh&) = delete;
@@ -71,10 +71,13 @@ namespace MxEngine
 		size_t AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl);
 		VertexBufferHandle GetBufferByIndex(size_t index) const; 
 		VertexBufferLayoutHandle GetBufferLayoutByIndex(size_t index) const;
+		size_t GetTotalVerteciesCount() const;
+		size_t GetTotalIndiciesCount() const;
 		size_t GetBufferCount() const;
 		void PopInstancedBuffer();
 		const MxString& GetFilePath() const;
 		void SetInternalEngineTag(const MxString& tag);
+		void SetSubMeshesInternal(const SubMeshList& submeshes);
 		const SubMeshList& GetSubMeshes() const;
 		const SubMesh& GetSubMeshByIndex(size_t index) const;
 		SubMesh& GetSubMeshByIndex(size_t index);

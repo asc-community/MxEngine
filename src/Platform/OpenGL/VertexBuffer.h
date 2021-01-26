@@ -29,21 +29,10 @@
 #pragma once
 #include <cstddef>
 
+#include "UsageType.h"
+
 namespace MxEngine
 {
-	enum class UsageType
-	{
-		STREAM_DRAW,
-		STREAM_READ,
-		STREAM_COPY,
-		STATIC_DRAW,
-		STATIC_READ,
-		STATIC_COPY,
-		DYNAMIC_DRAW,
-		DYNAMIC_READ,
-		DYNAMIC_COPY,
-	};
-
 	class VertexBuffer
 	{
 		using BindableId = unsigned int;

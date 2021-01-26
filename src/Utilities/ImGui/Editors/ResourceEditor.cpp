@@ -97,19 +97,25 @@ namespace MxEngine::GUI
         ImGui::End();
     }
 
-    template<typename T>
-    auto GetById(int id)
+    template<typename T, typename Factory>
+    Resource<T, Factory> GetById(int id, Resource<T, Factory>* = nullptr)
     {
         auto handle = (size_t)Max(id, 0);
-        auto& storage = GraphicFactory::Get<T>();
+        auto& storage = Factory::template Get<T>();
         if (storage.IsAllocated(handle))
         {
-            return GraphicFactory::GetHandle(storage[handle]);
+            return Factory::GetHandle(storage[handle]);
         }
         else
         {
-            return GResource<T>{ };
+            return Resource<T, Factory>{ };
         }
+    }
+
+    template<typename T>
+    auto GetById(int id)
+    {
+        return GetById(id, (T*)nullptr);
     }
 
     bool IsInternalEngineTexture(const Texture& texture)
@@ -178,7 +184,7 @@ namespace MxEngine::GUI
         ImGui::SameLine();
         if (GUI::InputIntOnClick(&id, "load from id"))
         {
-            auto newTexture = GetById<Texture>(id);
+            auto newTexture = GetById<TextureHandle>(id);
             result = rttr::variant{ newTexture };
         }
 
@@ -215,7 +221,7 @@ namespace MxEngine::GUI
         ImGui::SameLine();
         if (GUI::InputIntOnClick(&id, "load from id"))
         {
-            auto newCubeMap = GetById<CubeMap>(id);
+            auto newCubeMap = GetById<CubeMapHandle>(id);
             result = rttr::variant{ newCubeMap };
         }
 
@@ -328,21 +334,6 @@ namespace MxEngine::GUI
         }
     }
 
-    void DrawLightBaseEditor(LightBase& base)
-    {
-        float ambientIntensity = base.GetAmbientIntensity();
-        float intensity = base.GetIntensity();
-        Vector3 color = base.GetColor();
-
-        ImGui::ColorEdit3("color", &color[0]);
-        ImGui::DragFloat("intensity", &intensity, 0.1f);
-        ImGui::DragFloat("ambient intensity", &ambientIntensity, 0.01f);
-
-        base.SetAmbientIntensity(ambientIntensity);
-        base.SetColor(color);
-        base.SetIntensity(intensity);
-    }
-
     void DrawVertexEditor(Vertex& vertex)
     {
         ImGui::InputFloat3("position", &vertex.Position[0]);
@@ -364,129 +355,87 @@ namespace MxEngine::GUI
         }
     }
 
-    void LoadFromPrimitive(MeshHandle& mesh)
+    MeshHandle LoadFromPrimitive(int* subdivisions)
     {
+        MeshHandle result{ };
         bool optionPeeked = false;
-        static int subdivisions = 1;
-        ImGui::InputInt("subdivisions", &subdivisions);
-        subdivisions = Max(subdivisions, 1);
+        ImGui::InputInt("subdivisions", subdivisions);
+        *subdivisions = Max(*subdivisions, 1);
 
         if (ImGui::BeginCombo("load primitive", "click to select"))
         {
             if (ImGui::Selectable("cube", &optionPeeked))
             {
-                mesh = Primitives::CreateCube(subdivisions);
                 ImGui::SetItemDefaultFocus();
+                result = Primitives::CreateCube((size_t)*subdivisions);
             }
             if (ImGui::Selectable("sphere", &optionPeeked))
             {
-                mesh = Primitives::CreateSphere(subdivisions);
                 ImGui::SetItemDefaultFocus();
+                result = Primitives::CreateSphere((size_t)*subdivisions);
             }
             if (ImGui::Selectable("plane", &optionPeeked))
             {
-                mesh = Primitives::CreatePlane(subdivisions);
                 ImGui::SetItemDefaultFocus();
+                result = Primitives::CreatePlane((size_t)*subdivisions);
             }
             if (ImGui::Selectable("cylinder", &optionPeeked))
             {
-                mesh = Primitives::CreateCylinder(subdivisions);
                 ImGui::SetItemDefaultFocus();
+                result = Primitives::CreateCylinder((size_t)*subdivisions);
             }
             if (ImGui::Selectable("pyramid", &optionPeeked))
             {
-                mesh = Primitives::CreatePyramid();
                 ImGui::SetItemDefaultFocus();
+                result = Primitives::CreatePyramid();
             }
             ImGui::EndCombo();
         }
-        if (optionPeeked) subdivisions = 1; // reset parameter
+        return result;
     }
 
-    void DrawMeshEditor(const char* name, MeshHandle& mesh)
+    rttr::variant MeshHandleEditorExtra(rttr::instance& handle)
     {
-        SCOPE_TREE_NODE(name);
-        ImGui::PushID((int)mesh.GetHandle());
+        rttr::variant result{ };
+        auto& mesh = *handle.try_convert<MeshHandle>();
 
-        DrawAABBEditor("bounding box", mesh->BoxBounding);
-        DrawSphereEditor("bounding sphere", mesh->SphereBounding);
+        if (mesh.IsValid())
+        {
+            if (ImGui::Button("delete"))
+            {
+                result = rttr::variant{ MeshHandle{ } };
+            }
+            ImGui::SameLine();
+        }
 
         if (ImGui::Button("load from file"))
         {
-            MxString path = FileManager::OpenFileDialog();
+            MxString path = FileManager::OpenFileDialog("", "Object Files");
             if (!path.empty() && File::Exists(path))
-                mesh = AssetManager::LoadMesh(path);
+            {
+                auto newMesh = AssetManager::LoadMesh(path);
+                result = rttr::variant{ newMesh };
+            }
         }
 
+        static int id = 0;
         ImGui::SameLine();
-        if (ImGui::Button("update mesh boundings"))
-            mesh->UpdateBoundingGeometry();
-        
+        if (GUI::InputIntOnClick(&id, "load from id"))
+        {
+            auto newMesh = GetById<MeshHandle>(id);
+            result = rttr::variant{ newMesh };
+        }
+
         ImGui::Indent(9.0f);
-        LoadFromPrimitive(mesh);
+        static int subdivisions = 1;
+        auto primitive = LoadFromPrimitive(&subdivisions);
+        if (primitive.IsValid())
+        {
+            result = rttr::variant{ primitive };
+            subdivisions = 1;
+        }
         ImGui::Unindent(9.0f);
 
-        static MxString submeshName;
-        
-        size_t vertexCount = 0, indexCount = 0;
-        for (auto& submesh : mesh->GetSubMeshes())
-        {
-            vertexCount += submesh.Data.GetVertecies().size();
-            indexCount += submesh.Data.GetIndicies().size();
-        }
-        ImGui::Text("total vertex count: %d, total index count: %d", (int)vertexCount, (int)indexCount);
-
-        for (int id = 0; id < (int)mesh->GetSubMeshes().size(); id++)
-        {
-            auto& submesh = mesh->GetSubMeshByIndex(id);
-            if (!ImGui::CollapsingHeader(submesh.Name.c_str())) continue;
-            GUI::Indent _(5.0f);
-            ImGui::PushID(id);
-
-            ImGui::Text("vertex count: %d", (int)submesh.Data.GetVertecies().size());
-            ImGui::Text("index count: %d", (int)submesh.Data.GetIndicies().size());
-            ImGui::Text("material id: %d", (int)submesh.GetMaterialId());
-
-            TransformEditor(submesh.GetTransform());
-
-            if (ImGui::Button("update submesh boundings"))
-                submesh.Data.UpdateBoundingGeometry();
-            ImGui::SameLine();
-            if (ImGui::Button("buffer vertecies"))
-                submesh.Data.BufferVertecies();
-            ImGui::SameLine();
-            if (ImGui::Button("delete submesh"))
-            {
-                mesh->DeleteSubMeshByIndex(id);
-                id--; // compensate erased mesh
-                ImGui::PopID();
-                continue; // skip other ui as current mesh is deleted
-            }
-
-            if (ImGui::Button("regenerate normals"))
-                submesh.Data.RegenerateNormals();
-            ImGui::SameLine();
-            if (ImGui::Button("regenerate tangents"))
-                submesh.Data.RegenerateTangentSpace();
-
-            // TODO: maybe add indicies editor?
-            {
-                if (ImGui::CollapsingHeader("vertecies"))
-                {
-                    GUI::Indent _(5.0f);
-                    auto& vertecies = submesh.Data.GetVertecies();
-                    size_t maxVertecies = Min(1000, vertecies.size());
-                    for (size_t i = 0; i < maxVertecies; i++)
-                    {
-                        ImGui::PushID((int)i);
-                        DrawVertexEditor(vertecies[i]);
-                        ImGui::Separator();
-                        ImGui::PopID();
-                    }
-                }
-            }
-            ImGui::PopID();
-        }
-        ImGui::PopID();
+        return result;
     }
 }
