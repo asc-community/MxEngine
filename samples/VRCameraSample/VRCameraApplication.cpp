@@ -63,7 +63,7 @@ namespace VRCameraSample
 
             for (size_t i = 0; i < 500; i++)
             {
-                auto instance = instanceFactory->MakeInstance();
+                auto instance = instanceFactory->Instanciate();
 
                 float rx = Random::GetFloat();
                 float ry = Random::GetFloat();

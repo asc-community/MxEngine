@@ -30,6 +30,7 @@
 
 #include <rttr/registration.h>
 #include "Utilities/STL/MxVector.h"
+#include "Utilities/VectorPool/VectorPool.h"
 
 namespace MxEngine
 {
@@ -135,4 +136,5 @@ struct rttr::sequential_container_mapper<MxEngine::MxVector<T, Allocator>>
         rttr::detail::sequential_container_base_static<MxEngine::MxVector<T, Allocator>>
     >
 {
+
 };

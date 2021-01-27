@@ -29,60 +29,40 @@
 #include "Core/Components/Instancing/InstanceFactory.h"
 #include "Core/Runtime/RuntimeEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
+#include "Core/Runtime/Reflection.h"
+#include "Utilities/Format/Format.h"
+#include "Utilities/ImGui/Editors/ComponentEditors/GenericComponentEditor.h"
 
 namespace MxEngine::GUI
 {
-	#define REMOVE_COMPONENT_BUTTON(comp) \
-	if(ImGui::Button("remove component")) {\
-		MxObject::GetByComponent(comp).RemoveComponent<std::remove_reference_t<decltype(comp)>>(); return; }
+	void DisplayPoolExtra(rttr::instance& val)
+	{
+		auto& instanceFactory = *val.try_convert<InstanceFactory>();
+		auto view = instanceFactory.GetInstances();
+		auto& runtimeEditor = Application::GetImpl()->GetRuntimeEditor();
+
+		int id = 0;
+		for (const auto& object : view)
+		{
+			auto name = MxFormat("instance #{}", id++);
+			if (ImGui::TreeNode(name.c_str()))
+			{
+				if (ImGui::Button("destroy instance"))
+					MxObject::Destroy(object);
+				else
+					runtimeEditor.DrawMxObject(name, object);
+				ImGui::TreePop();
+			}
+		}
+	}
 
 	void InstanceFactoryEditor(InstanceFactory& instanceFactory)
 	{
-		TREE_NODE_PUSH("InstanceFactory");
-		REMOVE_COMPONENT_BUTTON(instanceFactory);
-
-		ImGui::Text("instance count: %d", (int)instanceFactory.GetCount());
-
-		ImGui::SameLine();
-		if (ImGui::Button("instanciate"))
-			instanceFactory.MakeInstance();
-		ImGui::SameLine();
-		if (ImGui::Button("destroy all"))
-			instanceFactory.DestroyInstances();
-		ImGui::SameLine();
-		ImGui::Checkbox("is static", &instanceFactory.IsStatic);
-
-		int id = 0;
-		auto self = MxObject::GetComponentHandle(instanceFactory);
-		for (size_t i = 0; i < self->GetInstancePool().Capacity(); i++)
-		{
-			if (!self->GetInstancePool().IsAllocated(i)) continue;
-
-			GUI::Indent _(5.0f);
-			ImGui::PushID(id);
-			MxString nodeName = "instance #" + ToMxString(id++); //-V127
-			if (ImGui::CollapsingHeader(nodeName.c_str()))
-			{
-				GUI::Indent _(5.0f);
-				auto instance = self->GetInstancePool()[i];
-				if (ImGui::Button("destroy instance"))
-				{
-					MxObject::Destroy(instance);
-				}
-				else
-				{
-					Application::GetImpl()->GetRuntimeEditor().DrawMxObject(nodeName, *instance);
-				}
-			}
-			ImGui::PopID();
-		}
+		ComponentEditor(instanceFactory);
 	}
 
 	void InstanceEditor(Instance& instance)
 	{
-		TREE_NODE_PUSH("Instance");
-		auto color = instance.GetColor();
-		if (ImGui::ColorEdit3("base color", &color[0], ImGuiColorEditFlags_HDR))
-			instance.SetColor(color);
+		ComponentEditor(instance);
 	}
 }

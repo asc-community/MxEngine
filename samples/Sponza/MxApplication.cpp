@@ -15,7 +15,7 @@ namespace Sponza
             
             auto shootPosition = player.Transform.GetPosition() + controller->GetDirection() * 3.0f;
 
-            auto sphere = this->sphereFactory->GetComponent<InstanceFactory>()->MakeInstance();
+            auto sphere = this->sphereFactory->GetComponent<InstanceFactory>()->Instanciate();
             sphere->Name = "Sphere Instance";
             sphere->IsSerialized = false;
             sphere->Transform.SetPosition(shootPosition);

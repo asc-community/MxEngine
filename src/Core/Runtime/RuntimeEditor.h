@@ -80,7 +80,7 @@ namespace MxEngine
 		bool IsActive() const;
 		bool IsKeyHeld(KeyCode key);
 
-		void DrawMxObject(const MxString& name, MxObject& object);
+		void DrawMxObject(const MxString& name, MxObject::Handle object);
 
 		template<typename T>
 		void RegisterComponentEditor(const char* name, std::function<void(T&)> callback)

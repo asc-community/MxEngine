@@ -55,14 +55,14 @@ namespace MxEngine
             /*!
             reference to vector Pool. This means that vector Pool must not be moved/deleted until iterator exists
             */
-            VectorPool<T, Container>& poolRef;
+            mutable VectorPool<T, Container>* poolRef;
         public:
             size_t GetBase() const
             {
                 return index;
             }
 
-            VectorPool<T, Container>& GetPoolRef()
+            VectorPool<T, Container>& GetPoolRef() const
             {
                 return poolRef;
             }
@@ -73,9 +73,9 @@ namespace MxEngine
             \param poolRef reference to vector Pool
             */
             PoolIterator(size_t index, VectorPool<T, Container>& ref)
-                : index(index), poolRef(ref)
+                : index(index), poolRef(&ref)
             {
-                while (this->index < this->poolRef.Capacity() && !poolRef.IsAllocated(this->index))
+                while (this->index < this->poolRef->Capacity() && !poolRef->IsAllocated(this->index))
                 {
                     this->index++; // 0 element may not exists, so we should skip it until find any allocated
                 }
@@ -98,7 +98,7 @@ namespace MxEngine
             */
             PoolIterator operator++()
             {
-                do { index++; } while (index < poolRef.Capacity() && !poolRef.IsAllocated(index));
+                do { index++; } while (index < poolRef->Capacity() && !poolRef->IsAllocated(index));
                 return *this;
             }
 
@@ -119,44 +119,26 @@ namespace MxEngine
             */
             PoolIterator operator--()
             {
-                do { index--; } while (index < poolRef.Capacity() && !poolRef.IsAllocated(index));
+                do { index--; } while (index < poolRef->Capacity() && !poolRef->IsAllocated(index));
                 return *this;
-            }
-
-            /*!
-            dereferences iterator, accessing vector Pool
-            \returns pointer to vector Pool element
-            */
-            T* operator->()
-            {
-                return &poolRef[index];
             }
 
             /*!
             dereferences iterator, accessing vector Pool
             \returns const pointer to vector Pool element
             */
-            const T* operator->() const
+            T* operator->() const
             {
-                return &poolRef[index];
-            }
-
-            /*!
-            dereferences iterator, accessing vector Pool
-            \returns reference to vector Pool element
-            */
-            T& operator*()
-            {
-                return poolRef[index];
+                return std::addressof((*poolRef)[index]);
             }
 
             /*!
             dereferences iterator, accessing vector Pool
             \returns const reference to vector Pool element
             */
-            const T& operator*() const
+            T& operator*() const
             {
-                return poolRef[index];
+                return (*poolRef)[index];
             }
 
             /*!
@@ -165,7 +147,7 @@ namespace MxEngine
             */
             bool operator==(const PoolIterator& it) const
             {
-                return (index == it.index) && (&poolRef == &it.poolRef);
+                return (index == it.index) && (poolRef == it.poolRef);
             }
 
             /*!
@@ -180,6 +162,9 @@ namespace MxEngine
 
         using Allocator = PoolAllocator<T>;
         using Block = typename Allocator::Block;
+
+        using value_type = T;
+        using iterator = PoolIterator;
     private:
         /*!
         storage for allocator memory. Unluckly, not debuggable
@@ -369,6 +354,16 @@ namespace MxEngine
         auto end()
         {
             return PoolIterator{ this->Capacity(), *this };
+        }
+
+        bool empty() const
+        {
+            return this->Allocated() == 0;
+        }
+
+        size_t size() const
+        {
+            return this->Allocated();
         }
     };
 }

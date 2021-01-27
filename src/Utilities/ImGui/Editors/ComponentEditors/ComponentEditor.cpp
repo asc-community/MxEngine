@@ -372,6 +372,7 @@ namespace MxEngine::GUI
 		MxMap<rttr::type, DereferenceCallback> visitor = {
 			VISITOR_DEREFERENCE_ENTRY(MaterialHandle),
 			VISITOR_DEREFERENCE_ENTRY(MeshHandle),
+			VISITOR_DEREFERENCE_ENTRY(MxObject::Handle),
 			VISITOR_DEREFERENCE_ENTRY(AudioBufferHandle),
 			VISITOR_DEREFERENCE_ENTRY(AudioPlayerHandle),
 			VISITOR_DEREFERENCE_ENTRY(TextureHandle),
