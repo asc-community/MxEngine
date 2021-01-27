@@ -35,7 +35,7 @@
 #include "Core/Components/Camera/FrustrumCamera.h"
 #include "Core/Components/Camera/OrthographicCamera.h"
 #include "Core/Components/Camera/PerspectiveCamera.h"
-
+#include "Utilities/ImGui/Editors/ComponentEditors/GenericComponentEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Core/Application/Rendering.h"
 
@@ -235,118 +235,7 @@ namespace MxEngine::GUI
 
 	void CameraControllerEditor(CameraController& cameraController)
 	{
-		TREE_NODE_PUSH("CameraController");
-		REMOVE_COMPONENT_BUTTON(cameraController);
-
-		bool perspective = cameraController.GetCameraType() == CameraType::PERSPECTIVE;
-		bool orthographic = cameraController.GetCameraType() == CameraType::ORTHOGRAPHIC;
-		bool frustrum = cameraController.GetCameraType() == CameraType::FRUSTRUM;
-
-		if (ImGui::BeginCombo("camera type", perspective ? "perspective" : (orthographic ? "orthographic" : "frustrum")))
-		{
-			if (ImGui::Selectable("perspective", &perspective))
-			{
-				cameraController.SetCameraType(CameraType::PERSPECTIVE);
-				ImGui::SetItemDefaultFocus();
-			}
-			if (ImGui::Selectable("orthographic", &orthographic))
-			{
-				cameraController.SetCameraType(CameraType::ORTHOGRAPHIC);
-				ImGui::SetItemDefaultFocus();
-			}
-			if (ImGui::Selectable("frustrum", &frustrum))
-			{
-				cameraController.SetCameraType(CameraType::FRUSTRUM);
-				ImGui::SetItemDefaultFocus();
-			}
-			ImGui::EndCombo();
-		}
-
-		if (cameraController.GetCameraType() == CameraType::PERSPECTIVE)
-		{
-			float fov = cameraController.GetCamera<PerspectiveCamera>().GetFOV();
-			if (ImGui::DragFloat("fov", &fov, 0.3f, 1.0f, 179.0f))
-				cameraController.GetCamera<PerspectiveCamera>().SetFOV(fov);
-		}
-		else if (cameraController.GetCameraType() == CameraType::ORTHOGRAPHIC)
-		{
-			auto size = cameraController.GetCamera<OrthographicCamera>().GetSize();
-			if (ImGui::DragFloat("size", &size, 0.3f, 0.01f, 10000.0f))
-				cameraController.GetCamera<OrthographicCamera>().SetSize(size);
-		}
-		else if (cameraController.GetCameraType() == CameraType::FRUSTRUM)
-		{
-			auto bounds = cameraController.GetCamera<FrustrumCamera>().GetBounds();
-			if (ImGui::DragFloat2("center", &bounds[0], 0.01f))
-				cameraController.GetCamera<FrustrumCamera>().SetBounds(bounds.x, bounds.y, bounds.z);
-			if (ImGui::DragFloat("size", &bounds.z, 0.01f, 0.0f, 10000.0f))
-				cameraController.GetCamera<FrustrumCamera>().SetBounds(bounds.x, bounds.y, bounds.z);
-		}
-
-		auto direction = cameraController.GetDirectionDenormalized();
-		float moveSpeed = cameraController.GetMoveSpeed();
-		float rotateSpeed = cameraController.GetRotateSpeed();
-
-		if (ImGui::DragFloat("move speed", &moveSpeed))
-			cameraController.SetMoveSpeed(moveSpeed);
-		if (ImGui::DragFloat("rotate speed", &rotateSpeed, 0.01f))
-			cameraController.SetRotateSpeed(rotateSpeed);
-
-		if (ImGui::DragFloat3("direction", &direction[0], 0.01f))
-			cameraController.SetDirection(direction);
-
-		bool isRendered = cameraController.IsRendered();
-		if (ImGui::Checkbox("is rendering", &isRendered))
-			cameraController.ToggleRendering(isRendered);
-		ImGui::SameLine();
-
-		if (ImGui::Button("listen window resize"))
-		{
-			cameraController.ListenWindowResizeEvent();
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("set as main viewport"))
-		{
-			auto cameraComponent = MxObject::GetComponentHandle(cameraController);
-			Rendering::SetViewport(cameraComponent);
-		}
-
-		auto texture = cameraController.GetRenderTexture();
-		//DrawTextureEditor("output texture", texture, { });
-
-		{
-			SCOPE_TREE_NODE("attached camera");
-			ImGui::PushID(0xFFFF);
-
-			auto forward = cameraController.GetForwardVector();
-			auto right = cameraController.GetRightVector();
-			auto up = cameraController.GetUpVector();
-
-			if (ImGui::DragFloat3("forward vec", &forward[0], 0.01f))
-				cameraController.SetForwardVector(forward);
-			if (ImGui::DragFloat3("right vec", &right[0], 0.01f))
-				cameraController.SetRightVector(right);
-			if (ImGui::DragFloat3("up vec", &up[0], 0.01f))
-				cameraController.SetUpVector(up);
-
-			float aspect = cameraController.Camera.GetAspectRatio();
-			float zfar = cameraController.Camera.GetZFar();
-			float znear = cameraController.Camera.GetZNear();
-			float zoom = cameraController.Camera.GetZoom();
-
-			ImGui::Separator();
-			if (ImGui::DragFloat("aspect ratio", &aspect, 0.01f, 0.01f, 10.0f))
-				cameraController.Camera.SetAspectRatio(aspect);
-			if (ImGui::DragFloat("Z far", &zfar, 1.0f, 0.01f, std::numeric_limits<float>::max()))
-				cameraController.Camera.SetZFar(zfar);
-			if (ImGui::DragFloat("Z near", &znear, 0.001f, 0.001f, 10000.0f))
-				cameraController.Camera.SetZNear(znear);
-			if (ImGui::DragFloat("zoom", &zoom, 0.01f, 0.01f, 10000.0f))
-				cameraController.Camera.SetZoom(zoom);
-
-
-			ImGui::PopID();
-		}
+		ComponentEditor(cameraController);
 	}
 
 	void VRCameraControllerEditor(VRCameraController& vrCameraController)
