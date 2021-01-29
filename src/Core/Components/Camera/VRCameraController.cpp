@@ -30,6 +30,7 @@
 #include "Core/MxObject/MxObject.h"
 #include "Core/Application/Rendering.h"
 #include "Core/Application/Event.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -95,5 +96,29 @@ namespace MxEngine
     void VRCameraController::Init()
     {
         this->shaderVR = Rendering::GetController().GetEnvironment().Shaders["VRCamera"_id];
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<VRCameraController>("VRCameraController")
+            .constructor<>()
+            .property("eye distance", &VRCameraController::EyeDistance)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("focus distance", &VRCameraController::FocusDistance)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("left eye", &VRCameraController::LeftEye)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("right eye", &VRCameraController::RightEye)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            );
     }
 }

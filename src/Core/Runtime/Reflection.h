@@ -67,7 +67,6 @@ namespace MxEngine
     enum class InterpretAsInfo 
     {
         DEFAULT,
-        HANDLE,
         COLOR,
     };
 

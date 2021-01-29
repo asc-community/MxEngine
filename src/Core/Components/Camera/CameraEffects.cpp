@@ -28,6 +28,7 @@
 
 #include "CameraEffects.h"
 #include "Utilities/Math/Math.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -169,5 +170,86 @@ namespace MxEngine
     void CameraEffects::SetAmbientOcclusionSamples(size_t samples)
     {
         this->ambientOcclusionSamples = (uint8_t)Min(samples, 32);
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<CameraEffects>("CameraEffects")
+            .constructor<>()
+            .property("fxaa", &CameraEffects::IsFXAAEnabled, &CameraEffects::ToggleFXAA)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("fog color", &CameraEffects::GetFogColor, &CameraEffects::SetFogColor)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::INTERPRET_AS, InterpretAsInfo::COLOR)
+            )
+            .property("fog density", &CameraEffects::GetFogDensity, &CameraEffects::SetFogDensity)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("fog distance", &CameraEffects::GetFogDistance, &CameraEffects::SetFogDistance)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 1.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("ambient occlusion radius", &CameraEffects::GetAmbientOcclusionRadius, &CameraEffects::SetAmbientOcclusionRadius)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("ambient occlusion intensity", &CameraEffects::GetAmbientOcclusionIntensity, &CameraEffects::SetAmbientOcclusionIntensity)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("ambient occlusion samples", &CameraEffects::GetAmbientOcclusionSamples, &CameraEffects::SetAmbientOcclusionSamples)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 128.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+            )
+            .property("bloom weight", &CameraEffects::GetBloomWeight, &CameraEffects::SetBloomWeight)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("bloom iterations", &CameraEffects::GetBloomIterations, &CameraEffects::SetBloomIterations)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 128.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+            )
+            .property("vignette radius", &CameraEffects::GetVignetteRadius, &CameraEffects::SetVignetteRadius)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("chromatic aberration distortion", &CameraEffects::GetChromaticAberrationDistortion, &CameraEffects::SetChromaticAberrationDistortion)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("chromatic aberration intensity", &CameraEffects::GetChromaticAberrationIntensity, &CameraEffects::SetChromaticAberrationIntensity)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("chromatic aberration min distance", &CameraEffects::GetChromaticAberrationMinDistance, &CameraEffects::SetChromaticAberrationMinDistance)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 128.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+            );
     }
 }

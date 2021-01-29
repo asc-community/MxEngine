@@ -105,7 +105,7 @@ namespace MxEngine
 		bool IsListeningWindowResizeEvent() const;
 		void ResizeRenderTexture(size_t width, size_t height);
 		void SetRenderTexture(const TextureHandle& texture);
-		bool IsRendered() const;
+		bool IsRendering() const;
 		void ToggleRendering(bool value);
 		const FrustrumCuller& GetFrustrumCuller() const;
 

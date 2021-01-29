@@ -201,7 +201,7 @@ namespace MxEngine
 	{
 		this->renderTexture->Load(nullptr, (int)w, (int)h, 3, false, this->renderTexture->GetFormat(), this->renderTexture->GetWrapType());
 		this->renderTexture->SetInternalEngineTag("[[camera output]]");
-		if(this->IsRendered())
+		if(this->IsRendering())
 			this->renderBuffers->Resize((int)w, (int)h);
 	}
 
@@ -209,13 +209,13 @@ namespace MxEngine
 	{
 		MX_ASSERT(texture.IsValid());
 		this->renderTexture = texture;
-		if (this->IsRendered())
+		if (this->IsRendering())
 		{
 			this->renderBuffers->Resize((int)texture->GetWidth(), (int)texture->GetHeight());
 		}
 	}
 
-    bool CameraController::IsRendered() const
+    bool CameraController::IsRendering() const
     {
 		return this->renderingEnabled;
     }
@@ -608,6 +608,10 @@ namespace MxEngine
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
 			)
 			.property_readonly("is listening window resize event", &CameraController::IsListeningWindowResizeEvent)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+			)
+			.property("is rendering", &CameraController::IsRendering, &CameraController::ToggleRendering)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
 			)

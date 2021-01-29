@@ -67,7 +67,7 @@ namespace MxEngine
         json["forward-vector"] = controller.GetForwardVector();
         json["right-vector"] = controller.GetRightVector();
         json["listens-resize"] = controller.IsListeningWindowResizeEvent();
-        json["is-rendered"] = controller.IsRendered();
+        json["is-rendered"] = controller.IsRendering();
         json["base-type"] = controller.GetCameraType();
         Serialize(json["base"], controller.Camera);
     }

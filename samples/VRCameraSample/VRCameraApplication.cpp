@@ -82,20 +82,7 @@ namespace VRCameraSample
             dirLight->FollowViewport();
         }
 
-        virtual void OnUpdate() override
-        {
-            // draw debug information to check vr camera parameters without opening runtime editor
-            if (this->VRCamera.IsValid() && this->VRCamera->HasComponent<VRCameraController>())
-            {
-                auto& vr = *VRCamera->GetComponent<VRCameraController>();
-                ImGui::Begin("VR info");
-                ImGui::Text("eye focus distance: %f", vr.FocusDistance);
-                ImGui::Text("eye distance: %f", vr.EyeDistance);
-                ImGui::Text(" left eye fov: %f", vr.LeftEye->GetCamera<PerspectiveCamera>().GetFOV());
-                ImGui::Text("right eye fov: %f", vr.RightEye->GetCamera<PerspectiveCamera>().GetFOV());
-                ImGui::End();
-            }
-        }
+        virtual void OnUpdate() override { }
 
         virtual void OnDestroy() override { }
     };
