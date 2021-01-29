@@ -30,18 +30,8 @@
 
 #include "Platform/GraphicAPI.h"
 
-namespace MxEngine
-{
-	class Capsule;
-	class Cylinder;
-	class BoundingBox;
-}
-
 namespace MxEngine::GUI
 {
-	void DrawBoxEditor(const char* name, BoundingBox& box);
-	void DrawCylinderEditor(const char* name, Cylinder& cylinder);
-	void DrawCapsuleEditor(const char* name, Capsule& capsule);
 	void DrawImageSaver(const TextureHandle& texture, const char* name = "save texture to disk");
 	void DrawTextureList(const char* name, bool* isOpen = nullptr);
 }

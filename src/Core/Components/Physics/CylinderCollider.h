@@ -42,6 +42,7 @@ namespace MxEngine
 
         void CreateNewShape(const Cylinder& cylinder);
     public:
+        CylinderCollider() = default;
         void Init();
         void UpdateCollider();
 
@@ -53,6 +54,7 @@ namespace MxEngine
         AABB GetAABB() const;
         BoundingSphere GetBoundingSphere() const;
         Cylinder GetBoundingCylinder() const;
-        void SetBoundingCylinder(const Cylinder& cylinder);
+        Cylinder GetBoundingCylinderInternal() const;
+        void SetBoundingCylinder(Cylinder cylinder);
     };
 }

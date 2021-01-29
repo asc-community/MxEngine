@@ -260,23 +260,6 @@ namespace MxEngine
 				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
 			);
 
-		rttr::registration::class_<BoundingSphere>("BoundingSphere")
-			(
-				rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<BoundingSphere>)
-			)
-			.constructor<>()
-			.property("center", &BoundingSphere::Center)
-			(
-				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
-			)
-			.property("radius", &BoundingSphere::Radius)
-			(
-				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-				rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 10000000.0f }),
-				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
-			);
-
 		rttr::registration::class_<Mesh>("Mesh")
 			(
 				rttr::metadata(EditorInfo::HANDLE_EDITOR, GUI::MeshHandleEditorExtra)

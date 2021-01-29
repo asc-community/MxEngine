@@ -28,8 +28,7 @@
 
 #include "BoxCollider.h"
 #include "Core/MxObject/MxObject.h"
-#include "Core/Components/Rendering/MeshSource.h"
-#include "Core/Components/Instancing/Instance.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -78,8 +77,49 @@ namespace MxEngine
         return this->boxShape->GetBoundingSphere(transform);
     }
 
-    void BoxCollider::SetBoundingBox(const BoundingBox& box)
+    BoundingBox BoxCollider::GetBoundingBoxInternal() const
+    {
+        return this->GetNativeHandle()->GetBoundingBoxUnchanged();
+    }
+
+    void BoxCollider::SetBoundingBox(BoundingBox box)
     {
         this->CreateNewShape(box);
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<BoundingBox>("BoundingBox")
+            (
+                rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<BoundingBox>)
+            )
+            .constructor<>()
+            .property("center", &BoundingBox::Center)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("min", &BoundingBox::Min)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("max", &BoundingBox::Max)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("rotation", &BoundingBox::Rotation)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
+            );
+
+        rttr::registration::class_<BoxCollider>("BoxCollider")
+            .constructor<>()
+            .property("bounding box", &BoxCollider::GetBoundingBoxInternal, &BoxCollider::SetBoundingBox)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            );
     }
 }

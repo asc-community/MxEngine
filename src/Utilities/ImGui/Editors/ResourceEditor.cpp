@@ -29,14 +29,10 @@
 #include "ResourceEditor.h"
 #include "ComponentEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
-#include "Core/BoundingObjects/Cylinder.h"
-#include "Core/BoundingObjects/Capsule.h"
-#include "Core/BoundingObjects/BoundingBox.h"
 #include "Utilities/Image/ImageManager.h"
 #include "Library/Primitives/Colors.h"
 #include "Library/Primitives/Primitives.h"
 #include "Utilities/FileSystem/FileManager.h"
-#include "Core/Runtime/Reflection.h"
 #include "Utilities/ImGui/Editors/ComponentEditors/GenericComponentEditor.h"
 
 namespace MxEngine::GUI
@@ -261,95 +257,6 @@ namespace MxEngine::GUI
         }
 
         return result;
-    }
-
-    void DrawBoxEditor(const char* name, BoundingBox& box)
-    {
-        SCOPE_TREE_NODE(name);
-
-        ImGui::DragFloat3("center", &box.Center[0]);
-        ImGui::DragFloat3("min", &box.Min[0], 0.01f);
-        ImGui::DragFloat3("max", &box.Max[0], 0.01f);
-        
-        auto rotation = DegreesVec(MakeEulerAngles(box.Rotation));
-        auto newRotation = rotation;
-        if (ImGui::DragFloat("rotate x", &newRotation.x))
-            box.Rotation *= MakeQuaternion(Radians(newRotation.x - rotation.x), MakeVector3(1.0f, 0.0f, 0.0f));
-        if (ImGui::DragFloat("rotate y", &newRotation.y))
-            box.Rotation *= MakeQuaternion(Radians(newRotation.y - rotation.y), MakeVector3(0.0f, 1.0f, 0.0f));
-        if (ImGui::DragFloat("rotate z", &newRotation.z))
-            box.Rotation *= MakeQuaternion(Radians(newRotation.z - rotation.z), MakeVector3(0.0f, 0.0f, 1.0f));
-
-        box.Min = VectorMin(box.Min, box.Max);
-        box.Max = VectorMax(box.Min, box.Max);
-    }
-
-    void DrawCylinderEditor(const char* name, Cylinder& cylinder)
-    {
-        SCOPE_TREE_NODE(name);
-        ImGui::DragFloat("height",   &cylinder.Height, 0.01f);
-        ImGui::DragFloat("x radius", &cylinder.RadiusX, 0.01f);
-        ImGui::DragFloat("z radius", &cylinder.RadiusZ, 0.01f);
-        cylinder.Height  = Max(cylinder.Height, 0.0f);
-        cylinder.RadiusX = Max(cylinder.RadiusX, 0.0f);
-        cylinder.RadiusZ = Max(cylinder.RadiusZ, 0.0f);
-
-        bool axisX = cylinder.Orientation == Cylinder::Axis::X;
-        bool axisY = cylinder.Orientation == Cylinder::Axis::Y;
-        bool axisZ = cylinder.Orientation == Cylinder::Axis::Z;
-
-        if (ImGui::BeginCombo("orientation", axisX ? "x axis" : (axisY ? "y axis" : "z axis")))
-        {
-            if (ImGui::Selectable("x axis", &axisX))
-            {
-                cylinder.Orientation = Cylinder::Axis::X;
-                ImGui::SetItemDefaultFocus();
-            }
-            if (ImGui::Selectable("y axis", &axisY))
-            {
-                cylinder.Orientation = Cylinder::Axis::Y;
-                ImGui::SetItemDefaultFocus();
-            }
-            if (ImGui::Selectable("z axis", &axisZ))
-            {
-                cylinder.Orientation = Cylinder::Axis::Z;
-                ImGui::SetItemDefaultFocus();
-            }
-            ImGui::EndCombo();
-        }
-    }
-
-    void DrawCapsuleEditor(const char* name, Capsule& capsule)
-    {
-        SCOPE_TREE_NODE(name);
-        ImGui::DragFloat("height", &capsule.Height, 0.01f);
-        ImGui::DragFloat("radius", &capsule.Radius, 0.01f);
-        capsule.Height = Max(capsule.Height, 0.0f);
-        capsule.Radius = Max(capsule.Radius, 0.0f);
-
-        bool axisX = capsule.Orientation == Capsule::Axis::X;
-        bool axisY = capsule.Orientation == Capsule::Axis::Y;
-        bool axisZ = capsule.Orientation == Capsule::Axis::Z;
-
-        if (ImGui::BeginCombo("orientation", axisX ? "x axis" : (axisY ? "y axis" : "z axis")))
-        {
-            if (ImGui::Selectable("x axis", &axisX))
-            {
-                capsule.Orientation = Capsule::Axis::X;
-                ImGui::SetItemDefaultFocus();
-            }
-            if (ImGui::Selectable("y axis", &axisY))
-            {
-                capsule.Orientation = Capsule::Axis::Y;
-                ImGui::SetItemDefaultFocus();
-            }
-            if (ImGui::Selectable("z axis", &axisZ))
-            {
-                capsule.Orientation = Capsule::Axis::Z;
-                ImGui::SetItemDefaultFocus();
-            }
-            ImGui::EndCombo();
-        }
     }
 
     void DrawImageSaver(const TextureHandle& texture, const char* name)

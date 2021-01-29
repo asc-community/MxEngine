@@ -33,7 +33,7 @@
 #include "Core/Components/Physics/CapsuleCollider.h"
 #include "Core/Components/Physics/CylinderCollider.h"
 #include "Core/Components/Physics/CompoundCollider.h"
-
+#include "Utilities/ImGui/Editors/ComponentEditors/GenericComponentEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Utilities/ImGui/Editors/ComponentEditor.h"
 #include "Utilities/Format/Format.h"
@@ -219,42 +219,22 @@ namespace MxEngine::GUI
 
 	void BoxColliderEditor(BoxCollider& boxCollider)
 	{
-		TREE_NODE_PUSH("BoxCollider");
-		REMOVE_COMPONENT_BUTTON(boxCollider);
-
-		auto boundingBox = boxCollider.GetNativeHandle()->GetBoundingBoxUnchanged();
-		DrawBoxEditor("bounding box", boundingBox);
-		boxCollider.SetBoundingBox(boundingBox);
+		ComponentEditor(boxCollider);
 	}
 
-	void SphereColliderEditor(SphereCollider& sphereCollider) //-V111
+	void SphereColliderEditor(SphereCollider& sphereCollider)
 	{
-		TREE_NODE_PUSH("SphereCollider");
-		REMOVE_COMPONENT_BUTTON(sphereCollider);
-
-		auto boundingSphere = sphereCollider.GetNativeHandle()->GetBoundingSphereUnchanged();
-		// DrawSphereEditor("bounding sphere", boundingSphere);
-		sphereCollider.SetBoundingSphere(boundingSphere);
+		ComponentEditor(sphereCollider);
 	}
 
-	void CylinderColliderEditor(CylinderCollider& cylinderCollider) //-V111
+	void CylinderColliderEditor(CylinderCollider& cylinderCollider)
 	{
-		TREE_NODE_PUSH("CylinderCollider");
-		REMOVE_COMPONENT_BUTTON(cylinderCollider);
-
-		auto boundingCylinder = cylinderCollider.GetNativeHandle()->GetBoundingCylinderUnchanged();
-		DrawCylinderEditor("bounding cylinder", boundingCylinder);
-		cylinderCollider.SetBoundingCylinder(boundingCylinder);
+		ComponentEditor(cylinderCollider);
 	}
 
-	void CapsuleColliderEditor(CapsuleCollider& capsuleCollider) //-V111
+	void CapsuleColliderEditor(CapsuleCollider& capsuleCollider)
 	{
-		TREE_NODE_PUSH("CapsuleCollider");
-		REMOVE_COMPONENT_BUTTON(capsuleCollider);
-
-		auto boundingCapsule = capsuleCollider.GetNativeHandle()->GetBoundingCapsuleUnchanged();
-		DrawCapsuleEditor("bounding capsule", boundingCapsule);
-		capsuleCollider.SetBoundingCapsule(boundingCapsule);
+		ComponentEditor(capsuleCollider);
 	}
 
 	void CompoundColliderEditor(CompoundCollider& compoundCollider)
@@ -321,7 +301,7 @@ namespace MxEngine::GUI
 				if (box.IsValid())
 				{
 					auto bounding = box->GetBoundingBoxUnchanged();
-					DrawBoxEditor("box shape", bounding);
+					// DrawBoxEditor("box shape", bounding);
 					if (bounding != box->GetBoundingBoxUnchanged())
 					{
 						compoundCollider.RemoveShapeByIndex(i);
@@ -341,7 +321,7 @@ namespace MxEngine::GUI
 				else if (cylinder.IsValid())
 				{
 					auto bounding = cylinder->GetBoundingCylinderUnchanged();
-					DrawCylinderEditor("cylinder shape", bounding);
+					// DrawCylinderEditor("cylinder shape", bounding);
 					if (bounding != cylinder->GetBoundingCylinderUnchanged())
 					{
 						compoundCollider.RemoveShapeByIndex(i);
@@ -351,7 +331,7 @@ namespace MxEngine::GUI
 				else if (capsule.IsValid())
 				{
 					auto bounding = capsule->GetBoundingCapsuleUnchanged();
-					DrawCapsuleEditor("capsule shape", bounding);
+					// DrawCapsuleEditor("capsule shape", bounding);
 					if (bounding != capsule->GetBoundingCapsuleUnchanged())
 					{
 						compoundCollider.RemoveShapeByIndex(i);

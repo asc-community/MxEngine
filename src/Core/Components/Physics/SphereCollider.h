@@ -50,6 +50,7 @@ namespace MxEngine
 
         AABB GetAABB() const;
         BoundingSphere GetBoundingSphere() const;
-        void SetBoundingSphere(const BoundingSphere& sphere);
+        BoundingSphere GetBoundingSphereInternal() const;
+        void SetBoundingSphere(BoundingSphere sphere);
     };
 }

@@ -28,8 +28,7 @@
 
 #include "CapsuleCollider.h"
 #include "Core/MxObject/MxObject.h"
-#include "Core/Components/Rendering/MeshSource.h"
-#include "Core/Components/Instancing/Instance.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -90,8 +89,62 @@ namespace MxEngine
         return this->capsuleShape->GetBoundingCapsule(transform);
     }
 
-    void CapsuleCollider::SetBoundingCapsule(const Capsule& cylinder)
+    Capsule CapsuleCollider::GetBoundingCapsuleInternal() const
+    {
+        return this->GetNativeHandle()->GetBoundingCapsuleUnchanged();
+    }
+
+    void CapsuleCollider::SetBoundingCapsule(Capsule cylinder)
     {
         this->CreateNewShape(cylinder);
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::enumeration<Capsule::Axis>("CapsuleAxis")
+        (
+            rttr::value("X", Capsule::Axis::X),
+            rttr::value("Y", Capsule::Axis::Y),
+            rttr::value("Z", Capsule::Axis::Z)
+        );
+
+        rttr::registration::class_<Capsule>("Capsule")
+            (
+                rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<Capsule>)
+            )
+            .constructor<>()
+            .property("orientation", &Capsule::Orientation)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("center", &Capsule::Center)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("height", &Capsule::Height)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("radius", &Capsule::Radius)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("rotation", &Capsule::Rotation)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
+            );
+
+        rttr::registration::class_<CapsuleCollider>("CapsuleCollider")
+            .constructor<>()
+            .property("bounding capsule", &CapsuleCollider::GetBoundingCapsuleInternal, &CapsuleCollider::SetBoundingCapsule)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            );
     }
 }
