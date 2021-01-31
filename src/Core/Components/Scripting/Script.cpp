@@ -116,7 +116,7 @@ namespace MxEngine
 
     namespace GUI
     {
-        void ScriptEditorExtra(rttr::instance& parent);
+        rttr::variant ScriptEditorExtra(rttr::instance& parent);
     }
 
     MXENGINE_REFLECT_TYPE

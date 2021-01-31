@@ -180,7 +180,7 @@ namespace MxEngine
 
     namespace GUI
     {
-        void DisplayPoolExtra(rttr::instance&);
+        rttr::variant DisplayPoolExtra(rttr::instance&);
     }
 
     MXENGINE_REFLECT_TYPE

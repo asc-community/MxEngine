@@ -35,7 +35,7 @@
 
 namespace MxEngine::GUI
 {
-	void DisplayPoolExtra(rttr::instance& val)
+	rttr::variant DisplayPoolExtra(rttr::instance& val)
 	{
 		auto& instanceFactory = *val.try_convert<InstanceFactory>();
 		auto view = instanceFactory.GetInstances();
@@ -54,6 +54,7 @@ namespace MxEngine::GUI
 				ImGui::TreePop();
 			}
 		}
+		return { };
 	}
 
 	void InstanceFactoryEditor(InstanceFactory& instanceFactory)

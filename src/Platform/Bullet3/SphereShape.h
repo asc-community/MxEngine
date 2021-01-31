@@ -46,5 +46,10 @@ namespace MxEngine
         SphereShape& operator=(const SphereShape&) = delete;
         SphereShape& operator=(SphereShape&&) noexcept;
         ~SphereShape();
+
+        // both functions defined in ShapeBase
+        // BoundingSphere GetBoundingSphere(const TransformComponent& transform) const;
+        // BoundingSphere GetBoundingSphereUnchanged() const;
+        BoundingSphere GetNativeBounding() const;
     };
 }

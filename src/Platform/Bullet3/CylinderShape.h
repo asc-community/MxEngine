@@ -50,6 +50,7 @@ namespace MxEngine
 
         Cylinder GetBoundingCylinder(const TransformComponent& transform) const;
         Cylinder GetBoundingCylinderUnchanged() const;
+        Cylinder GetNativeBounding() const;
         Cylinder::Axis GetOrientation() const;
     };
 }

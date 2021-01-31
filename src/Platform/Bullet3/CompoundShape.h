@@ -74,6 +74,7 @@ namespace MxEngine
         void RemoveShapeByIndex(size_t index);
         TransformComponent GetShapeTransformByIndex(size_t index) const;
         void SetShapeTransformByIndex(size_t index, const TransformComponent& relativeTransform);
+        void ClearShapes();
 
         template<typename T>
         decltype(auto) GetShapeByIndex(size_t index) const

@@ -239,6 +239,8 @@ namespace MxEngine::GUI
 
 	void CompoundColliderEditor(CompoundCollider& compoundCollider)
 	{
+		ComponentEditor(compoundCollider);
+		return;
 		TREE_NODE_PUSH("CompoundCollider");
 		REMOVE_COMPONENT_BUTTON(compoundCollider);
 

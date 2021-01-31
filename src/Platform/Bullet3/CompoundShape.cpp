@@ -100,4 +100,13 @@ namespace MxEngine
         ToBulletTransform(tr, relativeTransform);
         ((btCompoundShape*)this->collider)->updateChildTransform((int)index, tr);
     }
+
+    void CompoundShape::ClearShapes()
+    {
+        if (this->GetShapeCount() == 0) return;
+        for (int index = (int)this->GetShapeCount() - 1; index >= 0; index--)
+        {
+            this->RemoveShapeByIndex(index);
+        }
+    }
 }

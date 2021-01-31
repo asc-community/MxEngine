@@ -60,7 +60,7 @@ namespace MxEngine
     };
 
     using ViewConditionFunction = bool(*)(const rttr::instance&);
-    using CustomViewFunction = void(*)(rttr::instance&);
+    using CustomViewFunction = rttr::variant(*)(rttr::instance&);
     using HandleEditorFunction = rttr::variant(*)(rttr::instance&);
     using InstanceToVariantFunction = rttr::variant(*)(rttr::instance&);
 

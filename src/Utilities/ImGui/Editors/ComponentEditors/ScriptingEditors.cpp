@@ -66,7 +66,7 @@ namespace MxEngine::GUI
         ComponentEditor(script);
     }
 
-    void ScriptEditorExtra(rttr::instance& val)
+    rttr::variant ScriptEditorExtra(rttr::instance& val)
     {
         auto& script = *val.try_convert<Script>();
 
@@ -122,5 +122,7 @@ namespace MxEngine::GUI
                 }
             }
         }
+
+        return { };
     }
 }

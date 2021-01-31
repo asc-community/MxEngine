@@ -301,7 +301,7 @@ namespace MxEngine
 	namespace GUI
 	{
 		rttr::variant CubeMapHandleEditorExtra(rttr::instance& handle);
-		void CubeMapEditorExtra(rttr::instance& object);
+		rttr::variant CubeMapEditorExtra(rttr::instance& object);
 	}
 
 	MXENGINE_REFLECT_TYPE

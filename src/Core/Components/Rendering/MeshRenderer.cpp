@@ -125,7 +125,7 @@ namespace MxEngine
 
 	namespace GUI
 	{
-		void LoadMaterialsFileDialog(const rttr::instance& parent);
+		rttr::variant LoadMaterialsFileDialog(const rttr::instance& parent);
 	}
 
 	MXENGINE_REFLECT_TYPE

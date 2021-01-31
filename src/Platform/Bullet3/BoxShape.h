@@ -49,5 +49,6 @@ namespace MxEngine
 
         BoundingBox GetBoundingBox(const TransformComponent& transform) const;
         BoundingBox GetBoundingBoxUnchanged() const;
+        BoundingBox GetNativeBounding() const;
     };
 }

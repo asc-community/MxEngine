@@ -32,23 +32,34 @@
 #include "Platform/PhysicsAPI.h"
 #include "ColliderBase.h"
 
+#include <variant>
+
 namespace MxEngine
 {
     class CompoundCollider : public ColliderBase
     {
         MAKE_COMPONENT(CompoundCollider);
 
-        using TypeErasedStorage = MxVector<std::pair<std::aligned_storage_t<sizeof(CompoundShapeHandle)>, void(*)(void*)>>;
+    public:
+        using VariantType = std::variant<BoxShapeHandle, SphereShapeHandle, CylinderShapeHandle, CapsuleShapeHandle>;
+        using VariantArray = MxVector<VariantType>;
 
+        struct CompoundColliderChild
+        {
+            TransformComponent Transform;
+            VariantType Shape;
+        };
+
+    private:
         CompoundShapeHandle compoundShape;
-        TypeErasedStorage children;
+        VariantArray children;
 
         void CreateNewShape();
+
     public:
         CompoundCollider() = default;
         void Init();
         void UpdateCollider();
-        ~CompoundCollider();
 
         CompoundShapeHandle GetNativeHandle() const;
 
@@ -56,28 +67,36 @@ namespace MxEngine
         void RemoveShapeByIndex(size_t index);
         TransformComponent GetShapeTransformByIndex(size_t index) const;
         void SetShapeTransformByIndex(size_t index, const TransformComponent& relativeTransform);
+        void ClearShapes();
 
         template<typename T>
-        decltype(auto) GetShapeByIndex(size_t index) const
+        auto GetShapeByIndex(size_t index) const
         {
-            return this->compoundShape->GetShapeByIndex<Resource<T, PhysicsFactory>>(index);
+            using THandle = Resource<T, PhysicsFactory>;
+            if (std::holds_alternative<THandle>(this->children[index]))
+                return std::get<THandle>(this->children[index]);
+            else
+                return THandle{ };
         }
 
         template<typename T, typename... Args>
         void AddShape(const TransformComponent& relativeTransform, Args&&... args)
         {
-            auto& [storage, deleter] = this->children.emplace_back();
             auto shape = PhysicsFactory::Create<T>(std::forward<Args>(args)...);
-            using ShapeHandleType = decltype(shape);
-            
-            static_assert(AssertEquality<sizeof(storage), sizeof(shape)>::value, "storage must fit shape size");
-            new(&storage) ShapeHandleType(shape);
-            deleter = [](void* ptr) { std::launder(reinterpret_cast<ShapeHandleType*>(ptr))->~ShapeHandleType(); };
+            this->AddShape(relativeTransform, shape);
+        }
 
+        template<typename T>
+        void AddShape(const TransformComponent& relativeTransform, const Resource<T, PhysicsFactory>& shape)
+        {
+            this->children.push_back(shape); // save handle in variant array
             this->compoundShape->AddShape(std::move(shape), relativeTransform);
         }
 
         AABB GetAABB() const;
         BoundingSphere GetBoundingSphere() const;
+
+        MxVector<CompoundColliderChild> GetChildren() const;
+        void SetChildren(MxVector<CompoundColliderChild> v);
     };
 }

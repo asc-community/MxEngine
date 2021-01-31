@@ -47,7 +47,7 @@ namespace MxEngine::GUI
 		ComponentEditor(debugDraw);
 	}
 
-	void LoadMaterialsFileDialog(const rttr::instance& parent)
+	rttr::variant LoadMaterialsFileDialog(const rttr::instance& parent)
 	{
 		if (ImGui::Button("load from file"))
 		{
@@ -56,6 +56,7 @@ namespace MxEngine::GUI
 			if (!path.empty() && File::Exists(path))
 				meshRenderer = AssetManager::LoadMaterials(path);
 		}
+		return { };
 	}
 
 	void MeshRendererEditor(MeshRenderer& meshRenderer)

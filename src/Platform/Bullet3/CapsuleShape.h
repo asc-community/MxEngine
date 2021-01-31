@@ -50,6 +50,7 @@ namespace MxEngine
 
         Capsule GetBoundingCapsule(const TransformComponent& transform) const;
         Capsule GetBoundingCapsuleUnchanged() const;
+        Capsule GetNativeBounding() const;
         Capsule::Axis GetOrientation() const;
     };
 }

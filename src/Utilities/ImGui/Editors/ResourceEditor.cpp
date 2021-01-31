@@ -33,6 +33,7 @@
 #include "Library/Primitives/Colors.h"
 #include "Library/Primitives/Primitives.h"
 #include "Utilities/FileSystem/FileManager.h"
+#include "Core/Components/Physics/CompoundCollider.h"
 #include "Utilities/ImGui/Editors/ComponentEditors/GenericComponentEditor.h"
 
 namespace MxEngine::GUI
@@ -133,7 +134,7 @@ namespace MxEngine::GUI
         }
     }
 
-    void TextureEditorExtra(rttr::instance& object)
+    rttr::variant TextureEditorExtra(rttr::instance& object)
     {
         Texture& texture = *object.try_convert<Texture>();
         DrawImageSaver(GraphicFactory::GetHandle(texture));
@@ -149,6 +150,7 @@ namespace MxEngine::GUI
         static float scale = 1.0f;
         ImGui::DragFloat("texture preview scale", &scale, 0.01f, 0.0f, 1.0f);
         DrawTexturePreview(texture, scale);
+        return { };
     }
 
     rttr::variant TextureHandleEditorExtra(rttr::instance& handle)
@@ -187,7 +189,7 @@ namespace MxEngine::GUI
         return result;
     }
 
-    void CubeMapEditorExtra(rttr::instance& object) { /* nothing to do */ }
+    rttr::variant CubeMapEditorExtra(rttr::instance& object) { /* nothing to do */ return { }; }
 
     rttr::variant CubeMapHandleEditorExtra(rttr::instance& handle)
     {
@@ -352,6 +354,26 @@ namespace MxEngine::GUI
         }
         ImGui::Unindent(9.0f);
 
+        return result;
+    }
+
+    rttr::variant VariantShapeEditorExtra(rttr::instance& v)
+    {
+        rttr::variant result{ };
+        auto child = v.try_convert<CompoundCollider::CompoundColliderChild>();
+        std::visit([&result, &child](auto&& shape)
+            {
+                auto bounding = shape->GetNativeBounding();
+                using BoundingType = decltype(bounding);
+                using ShapeType = std::decay_t<decltype(*shape)>;
+                const char* name = rttr::type::get<BoundingType>().get_name().cbegin();
+                auto editedValue = ResourceEditor(name, bounding);
+                if (editedValue.is_valid())
+                {
+                    auto newShape = PhysicsFactory::Create<ShapeType>(editedValue.template convert<BoundingType>());
+                    result = rttr::variant{ CompoundCollider::CompoundColliderChild{ child->Transform, newShape } };
+                }
+            }, child->Shape);
         return result;
     }
 }

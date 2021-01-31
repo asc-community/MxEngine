@@ -454,7 +454,9 @@ namespace MxEngine::GUI
 
 			if (meta.Editor.CustomView != nullptr)
 			{
-				meta.Editor.CustomView(object);
+				auto editedValue = meta.Editor.CustomView(object);
+				if (!property.is_readonly() && editedValue.is_valid())
+					result = std::move(editedValue);
 			}
 			else
 			{

@@ -118,6 +118,11 @@ namespace MxEngine
         return capsule;
     }
 
+    Capsule CapsuleShape::GetNativeBounding() const
+    {
+        return this->GetBoundingCapsuleUnchanged();
+    }
+
     Capsule::Axis CapsuleShape::GetOrientation() const
     {
         return this->orientation;

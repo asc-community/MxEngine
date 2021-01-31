@@ -553,7 +553,7 @@ namespace MxEngine
 
 	namespace GUI
 	{
-		void TextureEditorExtra(rttr::instance&);
+		rttr::variant TextureEditorExtra(rttr::instance&);
 		rttr::variant TextureHandleEditorExtra(rttr::instance&);
 	}
 
