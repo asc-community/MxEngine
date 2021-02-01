@@ -376,4 +376,41 @@ namespace MxEngine::GUI
             }, child->Shape);
         return result;
     }
+
+    template<size_t Index = 0, typename... Args>
+    void AddShapeSelectableForEachImpl(CompoundCollider& collider, const std::variant<Args...>& types)
+    {
+        if constexpr (Index < std::variant_size_v<std::variant<Args...>>)
+        {
+            using ShapeType = std::decay_t<decltype(*std::get<Index>(types))>;
+            using BoundingType = decltype(std::declval<ShapeType>().GetNativeBounding());
+            const char* name = rttr::type::get<BoundingType>().get_name().cbegin();
+
+            if (ImGui::Selectable(name))
+            {
+                auto shape = PhysicsFactory::Create<ShapeType>(BoundingType{ });
+                collider.AddShape({}, shape);
+                ImGui::SetItemDefaultFocus();
+            }
+
+            AddShapeSelectableForEachImpl<Index + 1>(collider, types);
+        }
+    }
+
+    void AddShapeSelectableForEach(CompoundCollider& collider)
+    {
+        AddShapeSelectableForEachImpl(collider, CompoundCollider::VariantType{ });
+    }
+
+    rttr::variant CompoundColliderAddShapeEditorExtra(rttr::instance& v)
+    {
+        auto& compoundCollider = *v.try_convert<CompoundCollider>();
+
+        if (ImGui::BeginCombo("add child shape", "click to select"))
+        {
+            AddShapeSelectableForEach(compoundCollider);
+            ImGui::EndCombo();
+        }
+        return { };
+    }
 }

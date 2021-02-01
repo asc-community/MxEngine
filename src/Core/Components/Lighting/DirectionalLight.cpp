@@ -84,37 +84,35 @@ namespace MxEngine
         MX_ASSERT(index < this->textures.size());
 
         Vector3 Center = center;
-        Vector3 NormalizedDirection = Normalize(MakeVector3(
-            this->Direction.x + 0.0001f,
-            this->Direction.y,
-            this->Direction.z + 0.0001f
-        ));
         float distance = 0.0f;
         for (size_t i = 0; i < index; i++)
         {
             distance += this->Projections[i + 1] - this->Projections[i];
         }
-        //Center -= distance * this->CascadeDirection;
+        // Center -= distance * this->CascadeDirection;
 
         constexpr auto floor = [](const Vector3 & v) -> Vector3
         {
             return { std::floor(v.x), std::floor(v.y), std::floor(v.z) };
         };
 
-        auto Low  = Center + MakeVector3(-this->Projections[index]);
-        auto High = Center + MakeVector3( this->Projections[index]);
+        Matrix4x4 LightView = MakeViewMatrix(
+            Normalize(this->Direction),
+            MakeVector3(0.0f, 0.0f, 0.0f),
+            MakeVector3(0.001f, 1.0f, 0.001f)
+        );
+        Center = (Matrix3x3)LightView * Center;
+
+        auto Low  = MakeVector3(-this->Projections[index]) + Center;
+        auto High = MakeVector3( this->Projections[index]) + Center;
 
         auto shadowMapSize = float(this->textures[index]->GetWidth() + 1);
         auto worldUnitsPerText = (High - Low) / shadowMapSize;
         Low = floor(Low / worldUnitsPerText) * worldUnitsPerText;
         High = floor(High / worldUnitsPerText) * worldUnitsPerText;
+        Center = (High + Low) * -0.5f;
 
         Matrix4x4 OrthoProjection = MakeOrthographicMatrix(Low.x, High.x, Low.y, High.y, Low.z, High.z);
-        Matrix4x4 LightView = MakeViewMatrix(
-            NormalizedDirection,
-            MakeVector3(0.0f, 0.0f, 0.0f),
-            MakeVector3(0.0f, 1.0f, 0.0f)
-        );
         return OrthoProjection * LightView;
     }
 

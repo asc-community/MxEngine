@@ -156,6 +156,7 @@ namespace MxEngine
     namespace GUI
     {
         rttr::variant VariantShapeEditorExtra(rttr::instance&);
+        rttr::variant CompoundColliderAddShapeEditorExtra(rttr::instance&);
     }
 
     MXENGINE_REFLECT_TYPE
@@ -178,6 +179,15 @@ namespace MxEngine
 
         rttr::registration::class_<CompoundCollider>("CompoundCollider")
             .constructor<>()
+            .method("clear shapes", &CompoundCollider::ClearShapes)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .method("add shape", &CompoundCollider::GetNativeHandle)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::CompoundColliderAddShapeEditorExtra)
+            )
             .property("children", &CompoundCollider::GetChildren, &CompoundCollider::SetChildren)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)

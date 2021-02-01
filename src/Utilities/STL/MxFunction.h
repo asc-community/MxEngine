@@ -32,12 +32,6 @@
 
 namespace MxEngine
 {
-    template<typename>
-    struct MxFunction;
-
-    template<typename R, typename... Args>
-    struct MxFunction<R(Args...)>
-    {
-        using type = eastl::function<R(Args...)>;
-    };
+    template<typename T>
+    using MxFunction = eastl::function<T>;
 }

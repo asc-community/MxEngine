@@ -33,6 +33,7 @@
 #include "Core/MxObject/MxObject.h"
 #include "Core/Application/Event.h"
 #include "Core/Application/Physics.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -160,5 +161,43 @@ namespace MxEngine
     {
         auto rigidBody = MxObject::GetByComponent(*this).GetComponent<RigidBody>();
         if (rigidBody.IsValid()) rigidBody->SetMass(Max(mass, 0.001f));
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<CharacterController>("CharacterController")
+            .constructor<>()
+            .property_readonly("is grounded", &CharacterController::IsGrounded)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("jump power", &CharacterController::GetJumpPower, &CharacterController::SetJumpPower)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("jump speed", &CharacterController::GetJumpSpeed, &CharacterController::SetJumpSpeed)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("mass", &CharacterController::GetMass, &CharacterController::SetMass)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.001f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("move speed", &CharacterController::GetMoveSpeed, &CharacterController::SetMoveSpeed)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("rotate speed", &CharacterController::GetRotateSpeed, &CharacterController::SetRotateSpeed)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            );
     }
 }

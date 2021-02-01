@@ -257,44 +257,4 @@ namespace MxEngine
     {
         return this->GetNativeHandle()->isActive();
     }
-
-    const char* EnumToString(CollisionMask::Mask mask)
-    {
-        switch (mask)
-        {
-        case CollisionMask::GHOST:
-            return "GHOST";
-        case CollisionMask::RAYCAST_ONLY:
-            return "RAYCAST_ONLY";
-        case CollisionMask::DYNAMIC:
-            return "DYNAMIC";
-        case CollisionMask::STATIC:
-            return "STATIC";
-        case CollisionMask::KINEMATIC:
-            return "KINEMATIC";
-        default:
-            return "CUSTOM";
-        }
-    }
-
-    const char* EnumToString(CollisionGroup::Group group)
-    {
-        switch (group)
-        {
-        case CollisionGroup::NONE:
-            return "NONE";
-        case CollisionGroup::RAYCAST_ONLY:
-            return "RAYCAST_ONLY";
-        case CollisionGroup::ALL_NO_RAYCAST:
-            return "ALL_NO_RAYCAST";
-        case CollisionGroup::ALL:
-            return "ALL";
-        case CollisionGroup::NO_STATIC_COLLISIONS_NO_RAYCAST:
-            return "NO_STATIC_COLLISIONS_NO_RAYCAST";
-        case CollisionGroup::NO_STATIC_COLLISIONS:
-            return "NO_STATIC_COLLISIONS";
-        default:
-            return "CUSTOM";
-        }
-    }
 }
