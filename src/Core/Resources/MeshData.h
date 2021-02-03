@@ -53,17 +53,25 @@ namespace MxEngine
         VertexArrayHandle GetVAO() const;
         VertexBufferHandle GetVBO() const;
         IndexBufferHandle GetIBO() const;
-        const AABB& GetBoundingBox() const;
+        const AABB& GetAABB() const;
         const BoundingSphere& GetBoundingSphere() const;
 
-        VertexData& GetVertecies();
+        VertexData& GetVerteciesReference();
         const VertexData& GetVertecies() const;
-        IndexData& GetIndicies();
+        IndexData& GetIndiciesReference();
         const IndexData& GetIndicies() const;
+        void SetVertecies(VertexData&& vertecies);
+        void SetIndicies(IndexData&& indicies);
+        void SetVertecies(const VertexData& vertecies);
+        void SetIndicies(const IndexData& indicies);
+        size_t GetVerteciesCount() const;
+        size_t GetIndiciesCount() const;
         
-        void BufferVertecies(UsageType usageType = UsageType::STATIC_DRAW);
-        void FreeMeshDataCopy();
+        void BufferVertecies();
+        void BufferVertecies(UsageType usageType);
         void BufferIndicies();
+        void BufferIndicies(UsageType usageType);
+        void FreeMeshDataCopy();
         void UpdateBoundingGeometry();
         void RegenerateNormals();
         void RegenerateTangentSpace();

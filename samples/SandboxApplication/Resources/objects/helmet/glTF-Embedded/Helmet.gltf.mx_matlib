@@ -1,22 +1,22 @@
 [
   {
-    "AlbedoMap": "Resources\\objects\\helmet\\glTF-Embedded\\albedo.png",
-    "AmbientOcclusionMap": "",
+    "AlbedoMap": "Resources\\objects\\helmet\\glTF-Embedded\\albedo_0.png",
+    "AmbientOcclusionMap": "Resources\\objects\\helmet\\glTF-Embedded\\ao_0.png",
     "BaseColor": [
       1.0,
       1.0,
       1.0
     ],
     "Displacement": 0.0,
-    "Emmision": 100.0,
-    "EmmisiveMap": "Resources\\objects\\helmet\\glTF-Embedded\\emmisive.png",
+    "Emission": 1.0,
+    "EmissiveMap": "Resources\\objects\\helmet\\glTF-Embedded\\emmisive_0.png",
     "HeightMap": "",
     "MetallicFactor": 1.0,
-    "MetallicMap": "Resources\\objects\\helmet\\glTF-Embedded\\metallic.png",
+    "MetallicMap": "Resources\\objects\\helmet\\glTF-Embedded\\metallic_0.png",
     "Name": "Material_MR",
-    "NormalMap": "Resources\\objects\\helmet\\glTF-Embedded\\normal.png",
+    "NormalMap": "Resources\\objects\\helmet\\glTF-Embedded\\normal_0.png",
     "RoughnessFactor": 1.0,
-    "RoughnessMap": "Resources\\objects\\helmet\\glTF-Embedded\\roughness.png",
+    "RoughnessMap": "Resources\\objects\\helmet\\glTF-Embedded\\roughness_0.png",
     "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
@@ -24,7 +24,7 @@
     ]
   },
   {
-    "AlbedoMap": "Resources\\objects\\helmet\\glTF-Embedded\\albedo.png",
+    "AlbedoMap": "",
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -32,15 +32,15 @@
       1.0
     ],
     "Displacement": 0.0,
-    "Emmision": 100.0,
-    "EmmisiveMap": "Resources\\objects\\helmet\\glTF-Embedded\\emmisive.png",
+    "Emission": 0.0,
+    "EmissiveMap": "",
     "HeightMap": "",
     "MetallicFactor": 1.0,
-    "MetallicMap": "Resources\\objects\\helmet\\glTF-Embedded\\metallic.png",
+    "MetallicMap": "",
     "Name": "material #1",
-    "NormalMap": "Resources\\objects\\helmet\\glTF-Embedded\\normal.png",
+    "NormalMap": "",
     "RoughnessFactor": 1.0,
-    "RoughnessMap": "Resources\\objects\\helmet\\glTF-Embedded\\roughness.png",
+    "RoughnessMap": "",
     "Transparency": 1.0,
     "UVMultipliers": [
       1.0,

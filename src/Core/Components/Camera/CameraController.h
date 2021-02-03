@@ -92,6 +92,8 @@ namespace MxEngine
 		const T& GetCamera() const;
 		void SetCameraType(CameraType type);
 		CameraType GetCameraType() const;
+		template<typename T>
+		void SetCamera(const T& camera);
 
 		const Matrix4x4& GetMatrix(const Vector3& position) const;
 		const Matrix4x4& GetViewMatrix(const Vector3& position) const;
@@ -100,10 +102,10 @@ namespace MxEngine
 		Matrix4x4 GetStaticViewMatrix() const;
 		TextureHandle GetRenderTexture() const;
 		void ListenWindowResizeEvent();
-		bool ListensWindowResizeEvent() const;
+		bool IsListeningWindowResizeEvent() const;
 		void ResizeRenderTexture(size_t width, size_t height);
 		void SetRenderTexture(const TextureHandle& texture);
-		bool IsRendered() const;
+		bool IsRendering() const;
 		void ToggleRendering(bool value);
 		const FrustrumCuller& GetFrustrumCuller() const;
 

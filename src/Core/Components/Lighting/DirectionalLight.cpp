@@ -31,6 +31,7 @@
 #include "Core/Config/GlobalConfig.h"
 #include "Core/Application/Timer.h"
 #include "Core/Components/Camera/CameraController.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -82,44 +83,46 @@ namespace MxEngine
     {
         MX_ASSERT(index < this->textures.size());
 
-        auto Low  = MakeVector3(-this->Projections[index]);
-        auto High = MakeVector3( this->Projections[index]);
-        auto Center = center;
-
+        Vector3 Center = center;
         float distance = 0.0f;
         for (size_t i = 0; i < index; i++)
         {
             distance += this->Projections[i + 1] - this->Projections[i];
         }
-        Center += distance * this->CascadeDirection;
+        // Center -= distance * this->CascadeDirection;
 
         constexpr auto floor = [](const Vector3 & v) -> Vector3
         {
             return { std::floor(v.x), std::floor(v.y), std::floor(v.z) };
         };
 
+        Matrix4x4 LightView = MakeViewMatrix(
+            Normalize(this->Direction),
+            MakeVector3(0.0f, 0.0f, 0.0f),
+            MakeVector3(0.001f, 1.0f, 0.001f)
+        );
+        Center = (Matrix3x3)LightView * Center;
+
+        auto Low  = MakeVector3(-this->Projections[index]) + Center;
+        auto High = MakeVector3( this->Projections[index]) + Center;
+
         auto shadowMapSize = float(this->textures[index]->GetWidth() + 1);
         auto worldUnitsPerText = (High - Low) / shadowMapSize;
         Low = floor(Low / worldUnitsPerText) * worldUnitsPerText;
         High = floor(High / worldUnitsPerText) * worldUnitsPerText;
-        Center = floor(Center / worldUnitsPerText) * worldUnitsPerText;
+        Center = (High + Low) * -0.5f;
 
         Matrix4x4 OrthoProjection = MakeOrthographicMatrix(Low.x, High.x, Low.y, High.y, Low.z, High.z);
-        Matrix4x4 LightView = MakeViewMatrix(
-            Center + this->Direction,
-            Center + MakeVector3(0.0f, 0.0f, 0.00001f),
-            MakeVector3(0.0f, 1.0f, 0.00001f)
-        );
         return OrthoProjection * LightView;
     }
 
-    void DirectionalLight::FollowViewport(float updateInterval)
+    void DirectionalLight::FollowViewport()
     {
         // get reference to timer and replace it with new one
         auto& timer = *std::launder(reinterpret_cast<MxObject::Handle*>(&this->timerHandle));
         MxObject::Destroy(timer);
 
-        timer = Timer::CallEachDelta([self = MxObject::GetComponentHandle(*this)]() mutable
+        timer = Timer::CallEachFrame([self = MxObject::GetComponentHandle(*this)]() mutable
         {
             auto viewport = Rendering::GetViewport();
             if (viewport.IsValid())
@@ -129,6 +132,55 @@ namespace MxEngine
                 auto direction = viewport->GetDirection();
                 self->CascadeDirection = Normalize(Vector3(direction.x, 0.0f, direction.z));
             }
-        }, updateInterval);
+        });
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<DirectionalLight>("DirectionalLight")
+            .constructor<>()
+            .property("color", &DirectionalLight::GetColor, &DirectionalLight::SetColor)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::INTERPRET_AS, InterpretAsInfo::COLOR)
+            )
+            .property("intensity", &DirectionalLight::GetIntensity, &DirectionalLight::SetIntensity)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f })
+            )
+            .property("ambient intensity", &DirectionalLight::GetAmbientIntensity, &DirectionalLight::SetAmbientIntensity)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1.0f })
+            )
+            .property_readonly("is following viewport", &DirectionalLight::IsFollowingViewport)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("direction", &DirectionalLight::Direction)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("projections", &DirectionalLight::Projections)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property_readonly("depth textures", &DirectionalLight::GetDepthTextures)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("cascade direction", &DirectionalLight::CascadeDirection)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::VIEW_CONDITION, +([](rttr::instance& obj) { return !obj.try_convert<DirectionalLight>()->IsFollowingViewport(); }))
+            )
+            .method("follow viewport", &DirectionalLight::FollowViewport)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            );
     }
 }

@@ -38,7 +38,7 @@ namespace MxEngine
 		return object;
     }
 
-	void MxObject::Destroy(MxObject::Handle& object)
+	void MxObject::Destroy(MxObject::Handle object)
 	{
 		if(object.IsValid()) Factory::Destroy(object);
 	}

@@ -117,14 +117,14 @@ namespace MxEngine
 		\param function function name which is measured
 		*/
 		ScopeProfiler(const char* function)
-			: start(Time::Current()), function(function) { }
+			: start(Time::EngineCurrent()), function(function) { }
 
 		/*!
 		destroyed scope profiler, forcing it to write json entry to profiler
 		*/
 		~ScopeProfiler()
 		{
-			TimeStep end = Time::Current();
+			TimeStep end = Time::EngineCurrent();
 			Profiler::WriteEntry(this->function, this->start, end - start);
 		}
 	};
@@ -154,7 +154,7 @@ namespace MxEngine
 		\param function function name which is executed
 		*/
 		ScopeTimer(std::string_view invoker, std::string_view function)
-			: start(Time::Current()), function(function.data()), invoker(invoker)
+			: start(Time::EngineCurrent()), function(function.data()), invoker(invoker)
 		{
 			MXLOG_INFO(this->invoker.data(), "calling " + this->function);
 		}

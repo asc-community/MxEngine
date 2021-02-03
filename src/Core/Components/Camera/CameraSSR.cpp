@@ -28,6 +28,7 @@
 
 #include "CameraSSR.h"
 #include "Utilities/Math/Math.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -89,5 +90,47 @@ namespace MxEngine
     void CameraSSR::SetFading(float fading)
     {
         this->fading = Clamp(fading, 0.0f, 1.0f);
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<CameraSSR>("CameraSSR")
+            .constructor<>()
+            .property("thickness", &CameraSSR::GetThickness, &CameraSSR::SetThickness)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("max cos angle", &CameraSSR::GetMaxCosAngle, &CameraSSR::SetMaxCosAngle)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { -1.0f, 1.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("steps", &CameraSSR::GetSteps, &CameraSSR::SetSteps)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 128.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+            )
+            .property("max distance", &CameraSSR::GetMaxDistance, &CameraSSR::SetMaxDistance)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("start distance", &CameraSSR::GetStartDistance, &CameraSSR::SetStartDistance)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("fading", &CameraSSR::GetFading, &CameraSSR::SetFading)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            );
     }
 }

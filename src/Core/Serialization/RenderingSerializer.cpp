@@ -53,7 +53,7 @@ namespace MxEngine
     void Serialize(JsonFile& json, const MeshLOD& lod)
     {
         json["auto-select"] = lod.AutoLODSelection;
-        json["current-lod"] = lod.CurrentLOD;
+        json["current-lod"] = lod.GetCurrentLOD();
         // TODO: should LODs meshes be also serialized?
     }
 

@@ -4,6 +4,7 @@ using namespace MxEngine;
 
 class ScriptExample : public Scriptable
 {
+    float totalTime = 0.0f;
 public:
     virtual void OnCreate(MxObject& self) override
     {
@@ -12,36 +13,21 @@ public:
 
     virtual void OnReload(MxObject& self) override
     {
-        
+        totalTime = 0.0f;
+        auto position = self.Transform.GetPosition();
+        self.Transform.SetPosition({ position.x, 0.5f, position.z });
     }
-    
+
     virtual void OnUpdate(MxObject& self) override
     {
-        static float maxScale = 3.0f;
-        static float scaleSpeed = 1.5f;
-        static float rotationSpeed = 15.0f;
-        
-        if (Runtime::IsEditorActive())
-        {
-            ImGui::Begin("cube settings");
-            ImGui::DragFloat("max scale", &maxScale);
-            ImGui::DragFloat("scale speed", &scaleSpeed);
-            ImGui::DragFloat("rotation speed", &rotationSpeed);
-            ImGui::End();
-        }
-        
-        self.Transform.RotateY(rotationSpeed * Time::Delta());
-        auto scale = self.Transform.GetScale().x;
-        
-        if (scale < maxScale)
-        {
-            scale = scale + scaleSpeed * Time::Delta();
-        }
-        else
-        {
-            scale = 1.0;
-        }
-        self.Transform.SetScale(scale);
+        Vector3 pos = self.Transform.GetPosition();
+        Vector3 scale = self.Transform.GetScale();
+        float dt = Time::Delta();
+        this->totalTime += dt;
+        float offset = 0.003f * std::sin(this->totalTime);
+
+        self.Transform.SetPosition({ pos.x + 3.0f * dt, pos.y + 3.0f * offset, pos.z });
+        self.Transform.SetScale({ scale.x, scale.y, scale.z });
     }
 };
 

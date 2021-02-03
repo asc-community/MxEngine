@@ -367,11 +367,11 @@ namespace MxEngine
 	// declared in InstanceFactory.h
 	bool IsInstanced(MxObject& object);
 
-    void RuntimeEditor::DrawMxObject(const MxString& treeName, MxObject& object)
+    void RuntimeEditor::DrawMxObject(const MxString& treeName, MxObject::Handle object)
     {
-		bool isInstanced = IsInstanced(object);
-		if(!isInstanced) this->DrawTransformManipulator(object.Transform);
-		GUI::DrawMxObjectEditor(treeName.c_str(), object, isInstanced, this->componentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
+		bool isInstanced = IsInstanced(*object);
+		if(!isInstanced) this->DrawTransformManipulator(object->Transform);
+		GUI::DrawMxObjectEditor(treeName.c_str(), *object, !isInstanced, this->componentAdderComponentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
     }
 
 	Vector2 RuntimeEditor::GetViewportSize() const
@@ -436,7 +436,7 @@ namespace MxEngine
 		if (!this->currentlySelectedObject.IsValid())
 			ImGui::Text("no object selected");
 		else
-			this->DrawMxObject(this->currentlySelectedObject->Name, *this->currentlySelectedObject);
+			this->DrawMxObject(this->currentlySelectedObject->Name, this->currentlySelectedObject);
 		ImGui::End();
 	}
 

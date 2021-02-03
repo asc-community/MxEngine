@@ -28,6 +28,7 @@
 
 #include "CompoundCollider.h"
 #include "Core/MxObject/MxObject.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -52,14 +53,6 @@ namespace MxEngine
         }
     }
 
-    CompoundCollider::~CompoundCollider()
-    {
-        for (auto& [storage, deleter] : this->children)
-        {
-            deleter(&storage);
-        }
-    }
-
     CompoundShapeHandle CompoundCollider::GetNativeHandle() const
     {
         return this->compoundShape;
@@ -73,8 +66,6 @@ namespace MxEngine
     void CompoundCollider::RemoveShapeByIndex(size_t index)
     {
         this->compoundShape->RemoveShapeByIndex(index);
-        auto& [storage, deleter] = this->children[index];
-        deleter(&storage);
         this->children.erase(this->children.begin() + index);
     }
 
@@ -88,6 +79,12 @@ namespace MxEngine
         this->compoundShape->SetShapeTransformByIndex(index, relativeTransform);
     }
 
+    void CompoundCollider::ClearShapes()
+    {
+        this->compoundShape->ClearShapes();
+        this->children.clear();
+    }
+
     AABB CompoundCollider::GetAABB() const
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
@@ -98,5 +95,96 @@ namespace MxEngine
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
         return this->compoundShape->GetBoundingSphere(transform);
+    }
+
+    // const CompoundCollider::VariantArray& CompoundCollider::GetChildrenVariant() const
+    // {
+    //     return this->children;
+    // }
+    // 
+    // void CompoundCollider::SetChildrenVariant(const VariantArray& v)
+    // {
+    //     // copy child shape transforms before deleting children
+    //     MxVector<TransformComponent> oldTransforms;
+    //     oldTransforms.resize(this->GetShapeCount());
+    //     for (size_t i = 0; i < oldTransforms.size(); i++)
+    //     {
+    //         oldTransforms[i] = this->GetShapeTransformByIndex(i);
+    //     }
+    //     // delete old children
+    //     this->compoundShape->ClearShapes();
+    // 
+    //     // fill new children (need to restore transform later)
+    //     for (const auto& shapeVariant : v)
+    //     {
+    //         std::visit([this](auto&& shape) { this->AddShape({ }, shape); }, shapeVariant);
+    //     }
+    // 
+    //     // O(n^2) but who cares
+    //     for (size_t oldIndex = 0; oldIndex < this->children.size(); oldIndex++)
+    //     {
+    //         for (size_t newIndex = 0; newIndex < v.size(); newIndex++)
+    //         {
+    //             if (this->children[oldIndex] == v[newIndex])
+    //                 this->SetShapeTransformByIndex(newIndex, oldTransforms[oldIndex]);
+    //         }
+    //     }
+    // 
+    //     this->children = v;
+    // }
+
+    MxVector<CompoundCollider::CompoundColliderChild> CompoundCollider::GetChildren() const
+    {
+        MxVector<CompoundColliderChild> result;
+        result.resize(this->GetShapeCount());
+        for (size_t i = 0; i < result.size(); i++)
+        {
+            result[i] = { this->GetShapeTransformByIndex(i), this->children[i] };
+        }
+        return result;
+    }
+
+    void CompoundCollider::SetChildren(MxVector<CompoundColliderChild> v)
+    {
+        this->ClearShapes();
+        for (auto& child : v)
+        {
+            std::visit([this, &child](auto&& shape) { this->AddShape(child.Transform, shape); }, child.Shape);
+        }
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        using CompoundColliderChild = CompoundCollider::CompoundColliderChild;
+        rttr::registration::class_<CompoundColliderChild>("CompoundColliderChild")
+            (
+                rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<CompoundColliderChild>)
+            )
+            .constructor<>()
+            .property("transform", &CompoundColliderChild::Transform)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("shape", &CompoundColliderChild::Shape)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<CompoundColliderChild>)
+            );
+
+        rttr::registration::class_<CompoundCollider>("CompoundCollider")
+            .constructor<>()
+            .method("clear shapes", &CompoundCollider::ClearShapes)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .method("add shape", &CompoundCollider::GetNativeHandle)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<CompoundCollider>)
+            )
+            .property("children", &CompoundCollider::GetChildren, &CompoundCollider::SetChildren)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            );
     }
 }

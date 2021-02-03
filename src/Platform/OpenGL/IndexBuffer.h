@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Core/Macro/Macro.h"
+#include "UsageType.h"
 #include <cstddef>
 
 namespace MxEngine
@@ -54,7 +55,7 @@ namespace MxEngine
 		BindableId GetNativeHandle() const;
 		void Bind() const;
 		void Unbind() const;
-		void Load(const IndexType* data, size_t sizeInInts);
+		void Load(const IndexType* data, size_t sizeInInts, UsageType usageType = UsageType::STATIC_DRAW);
 		size_t GetCount() const;
 		size_t GetIndexTypeId() const;
 	};

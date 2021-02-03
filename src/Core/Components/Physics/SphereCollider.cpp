@@ -28,8 +28,7 @@
 
 #include "SphereCollider.h"
 #include "Core/MxObject/MxObject.h"
-#include "Core/Components/Instancing/Instance.h"
-#include "Core/Components/Rendering/MeshSource.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -72,8 +71,40 @@ namespace MxEngine
         return this->sphereShape->GetBoundingSphere(transform);
     }
 
-    void SphereCollider::SetBoundingSphere(const BoundingSphere& sphere)
+    BoundingSphere SphereCollider::GetBoundingSphereInternal() const
+    {
+        return this->GetNativeHandle()->GetBoundingSphereUnchanged();
+    }
+
+    void SphereCollider::SetBoundingSphere(BoundingSphere sphere)
     {
         this->CreateNewShape(sphere);
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<BoundingSphere>("BoundingSphere")
+            (
+                rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<BoundingSphere>)
+            )
+            .constructor<>()
+            .property("center", &BoundingSphere::Center)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("radius", &BoundingSphere::Radius)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            );
+
+        rttr::registration::class_<SphereCollider>("SphereCollider")
+            .constructor<>()
+            .property("bounding sphere", &SphereCollider::GetBoundingSphereInternal, &SphereCollider::SetBoundingSphere)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            );
     }
 }

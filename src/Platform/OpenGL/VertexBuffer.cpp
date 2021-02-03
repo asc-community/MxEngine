@@ -32,19 +32,6 @@
 
 namespace MxEngine
 {		
-	GLenum DataType[] =
-	{
-		GL_STREAM_DRAW,
-		GL_STREAM_READ,
-		GL_STREAM_COPY,
-		GL_STATIC_DRAW,
-		GL_STATIC_READ,
-		GL_STATIC_COPY,
-		GL_DYNAMIC_DRAW,
-		GL_DYNAMIC_READ,
-		GL_DYNAMIC_COPY,
-	};
-
     void VertexBuffer::FreeVertexBuffer()
     {
 		if (this->id != 0)
@@ -90,11 +77,11 @@ namespace MxEngine
 		return *this;
 	}
 
-	void VertexBuffer::Load(BufferData data, size_t count, UsageType type)
+	void VertexBuffer::Load(BufferData data, size_t count, UsageType usageType)
 	{
 		this->size = count;
 		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, id));
-		GLCALL(glBufferData(GL_ARRAY_BUFFER, count * sizeof(float), data, DataType[(int)type]));
+		GLCALL(glBufferData(GL_ARRAY_BUFFER, count * sizeof(float), data, (GLenum)UsageTypeToNative(usageType)));
 	}
 
     void VertexBuffer::BufferSubData(BufferData data, size_t count, size_t offset)

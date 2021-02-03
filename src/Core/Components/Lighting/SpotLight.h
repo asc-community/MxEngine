@@ -49,7 +49,7 @@ namespace MxEngine
     public:
         SpotLight() = default;
 
-        bool IsCastingShadows() const;
+        [[nodiscard]] bool IsCastingShadows() const;
         void ToggleShadowCast(bool value);
 
         Vector3 Direction = MakeVector3(0.0f, -1.0f, 0.0f);
@@ -59,9 +59,9 @@ namespace MxEngine
         [[nodiscard]] float GetInnerCos() const;
         [[nodiscard]] float GetOuterCos() const;
         [[nodiscard]] float GetMaxDistance() const;
-        SpotLight& UseInnerAngle(float angle);
-        SpotLight& UseOuterAngle(float angle);
-        SpotLight& UseMaxDistance(float zvalue);
+        void SetInnerAngle(float angle);
+        void SetOuterAngle(float angle);
+        void SetMaxDistance(float zvalue);
 
         [[nodiscard]] TextureHandle GetDepthTexture() const;
         void AttachDepthTexture(const TextureHandle& texture);

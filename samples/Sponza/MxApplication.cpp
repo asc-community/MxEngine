@@ -15,7 +15,7 @@ namespace Sponza
             
             auto shootPosition = player.Transform.GetPosition() + controller->GetDirection() * 3.0f;
 
-            auto sphere = this->sphereFactory->GetComponent<InstanceFactory>()->MakeInstance();
+            auto sphere = this->sphereFactory->GetComponent<InstanceFactory>()->Instanciate();
             sphere->Name = "Sphere Instance";
             sphere->IsSerialized = false;
             sphere->Transform.SetPosition(shootPosition);
@@ -92,8 +92,9 @@ namespace Sponza
             {
                 // floor material
                 materials[8]->Name = "Floor";
-                materials[8]->MetallicFactor = 0.5f;
-                materials[8]->RoughnessFactor = 0.75f;
+                materials[8]->MetallicFactor = 0.25f;
+                materials[8]->RoughnessFactor = 0.25f;
+                materials[8]->MetallicMap = { };
 
                 // lion materials
                 materials[3]->Name = "Lion";

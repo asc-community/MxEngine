@@ -1,6 +1,7 @@
 #include "InstanceFactory.h"
 #include "Core/Components/Rendering/MeshSource.h"
 #include "Utilities/Profiler/Profiler.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -66,7 +67,7 @@ namespace MxEngine
         this->SendInstancesToGPU();
     }
 
-    MxObject::Handle InstanceFactory::MakeInstance()
+    MxObject::Handle InstanceFactory::Instanciate()
     {
         auto instance = MxObject::Create();
         auto object = MxObject::GetHandleByComponent(*this);
@@ -175,5 +176,45 @@ namespace MxEngine
     {
         auto instance = object.GetComponent<Instance>();
         return instance.IsValid() ? instance->GetParent() : MxObject::Handle{ };
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        using GetPoolFunc = VectorPool<MxObject::Handle>& (InstanceFactory::*)();
+
+        rttr::registration::class_<Instance>("Instance")
+            .property("color", &Instance::GetColor, &Instance::SetColor)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::INTERPRET_AS, InterpretAsInfo::COLOR)
+            )
+            .property_readonly("parent", &Instance::GetParent)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE)
+            );
+
+        rttr::registration::class_<InstanceFactory>("InstanceFactory")
+            .constructor<>()
+            .method("instanciate", &InstanceFactory::Instanciate)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .method("destroy insances", &InstanceFactory::DestroyInstances)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("is static", &InstanceFactory::IsStatic)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property_readonly("instance count", &InstanceFactory::GetCount)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property_readonly("instances", (GetPoolFunc)&InstanceFactory::GetInstancePool)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<InstanceFactory>)
+            );
     }
 }

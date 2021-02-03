@@ -66,8 +66,8 @@ namespace MxEngine
         json["up-vector"] = controller.GetUpVector();
         json["forward-vector"] = controller.GetForwardVector();
         json["right-vector"] = controller.GetRightVector();
-        json["listens-resize"] = controller.ListensWindowResizeEvent();
-        json["is-rendered"] = controller.IsRendered();
+        json["listens-resize"] = controller.IsListeningWindowResizeEvent();
+        json["is-rendered"] = controller.IsRendering();
         json["base-type"] = controller.GetCameraType();
         Serialize(json["base"], controller.Camera);
     }
@@ -82,7 +82,7 @@ namespace MxEngine
         controller.SetRightVector(json["right-vector"]);
         controller.ToggleRendering(json["is-rendered"]);
         controller.SetCameraType(json["base-type"]);
-        if((bool)json["listens-resize"]) controller.ListensWindowResizeEvent();
+        if((bool)json["listens-resize"]) controller.IsListeningWindowResizeEvent();
         Deserialize(json["base"], mappings, controller.Camera);
     }
 

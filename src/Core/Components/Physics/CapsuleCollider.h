@@ -54,6 +54,7 @@ namespace MxEngine
         AABB GetAABB() const;
         BoundingSphere GetBoundingSphere() const;
         Capsule GetBoundingCapsule() const;
-        void SetBoundingCapsule(const Capsule& capsule);
+        Capsule GetBoundingCapsuleInternal() const;
+        void SetBoundingCapsule(Capsule capsule);
     };
 }

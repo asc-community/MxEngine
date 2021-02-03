@@ -40,6 +40,11 @@ namespace MxEngine
 		return Application::GetImpl()->GetTotalElapsedTime();
 	}
 
+	TimeStep Time::EngineCurrent()
+	{
+		return Application::GetImpl()->GetWindow().GetTime();
+	}
+
 	void Time::SetCurrent(TimeStep time)
 	{
 		Application::GetImpl()->SetTotalElapsedTime(time);

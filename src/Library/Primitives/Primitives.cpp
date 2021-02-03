@@ -21,10 +21,10 @@ namespace MxEngine
     MeshHandle Primitives::CreateCube(size_t polygons)
     {
         MeshData meshData;
-        polygons = polygons + 1; // polygons in [1; inf), but we need at least two points per edge
+        auto& vertecies = meshData.GetVerteciesReference();
+        auto& indicies = meshData.GetIndiciesReference();
 
-        auto& vertecies = meshData.GetVertecies();
-        auto& indicies = meshData.GetIndicies();
+        polygons = polygons + 1; // polygons in [1; inf), but we need at least two points per edge
 
         for (size_t i = 0; i < polygons; i++)
         {
@@ -164,9 +164,8 @@ namespace MxEngine
     MeshHandle Primitives::CreatePlane(size_t size)
     {
         MeshData meshData;
-
-        auto& indicies = meshData.GetIndicies();
-        auto& vertecies = meshData.GetVertecies();
+        auto& vertecies = meshData.GetVerteciesReference();
+        auto& indicies = meshData.GetIndiciesReference();
 
         float gridSize = float(size) / 2.0f;
         std::array vertex =
@@ -200,18 +199,18 @@ namespace MxEngine
     MeshHandle Primitives::CreateSphere(size_t polygons)
     {
         MeshData meshData;
-        polygons -= polygons % 4;
+        auto& vertecies = meshData.GetVerteciesReference();
+        auto& indicies = meshData.GetIndiciesReference();
 
-        auto& verteces = meshData.GetVertecies();
-        auto& indicies = meshData.GetIndicies();
-        verteces.reserve((polygons + 1) * (polygons + 1));
+        polygons -= polygons % 4;
+        vertecies.reserve((polygons + 1) * (polygons + 1));
 
         // generate raw data for verteces (must be rearranged after)
         for (size_t m = 0; m <= polygons; m++)
         {
             for (size_t n = 0; n <= polygons; n++)
             {
-                auto& vertex = verteces.emplace_back();
+                auto& vertex = vertecies.emplace_back();
 
                 float x = std::sin(Pi<float>() * m / polygons) * std::cos(2 * Pi<float>() * n / polygons);
                 float z = std::sin(Pi<float>() * m / polygons) * std::sin(2 * Pi<float>() * n / polygons);
@@ -260,6 +259,8 @@ namespace MxEngine
     MeshHandle Primitives::CreateCylinder(size_t polygons)
     {
         MeshData meshData;
+        auto& vertecies = meshData.GetVerteciesReference();
+        auto& indicies = meshData.GetIndiciesReference();
 
         polygons = Max(polygons - polygons % 4, 4);
         MxVector<Vector2> circle(polygons);
@@ -269,8 +270,6 @@ namespace MxEngine
             circle[i].x = 0.5f * std::sin(angle);
             circle[i].y = 0.5f * std::cos(angle);
         }
-        auto& vertecies = meshData.GetVertecies();
-        auto& indicies = meshData.GetIndicies();
 
         // format: 
         // [center upper circle vertex]
@@ -373,8 +372,8 @@ namespace MxEngine
     MeshHandle Primitives::CreatePyramid()
     {
         MeshData meshData;
-        auto& vertecies = meshData.GetVertecies();
-        auto& indicies = meshData.GetIndicies();
+        auto& vertecies = meshData.GetVerteciesReference();
+        auto& indicies = meshData.GetIndiciesReference();
 
         vertecies.resize(5);
         vertecies[0].Position = Vector3( 0.0f,  0.0f, 0.0f);
@@ -404,13 +403,12 @@ namespace MxEngine
     MeshHandle Primitives::CreateSurface(const Array2D<float>& heights)
     {
         MeshData meshData;
+        auto& vertecies = meshData.GetVerteciesReference();
+        auto& indicies = meshData.GetIndiciesReference();
 
         MX_ASSERT(heights.size() > 0);
         size_t xsize = heights.width();
         size_t ysize = heights.height();
-
-        auto& vertecies = meshData.GetVertecies();
-        auto& indicies = meshData.GetIndicies();
 
         float minY = 0.0f;
         float maxY = 0.0f;

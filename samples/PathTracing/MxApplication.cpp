@@ -24,7 +24,7 @@ namespace PathTracing
 
             Rendering::SetViewport(controller);
             controller->ToggleRendering(false);
-            controller->ListensWindowResizeEvent();
+            controller->ListenWindowResizeEvent();
             controller->SetMoveSpeed(5.0f);
             controller->SetRotateSpeed(5.0f);
             controller->SetDirection(Vector3(0.0f, 0.0f, -1.0f));

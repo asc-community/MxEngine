@@ -47,7 +47,7 @@ namespace MxEngine
     {
         MAKE_COMPONENT(RigidBody);
 
-        using CollisionCallback = MxFunction<void(MxObject&, MxObject&)>::type;
+        using CollisionCallback = MxFunction<void(MxObject&, MxObject&)>;
 
         NativeRigidBodyHandle rigidBody;
         CollisionCallback onCollision;
@@ -77,6 +77,11 @@ namespace MxEngine
         bool IsRayCastable() const;
         void ToggleRayCasting(bool value);
         bool IsMoving() const;
+
+        void SetStateDynamic(bool value);
+        void SetStateStatic(bool value);
+        void SetStateKinematic(bool value);
+        void SetStateTrigger(bool value);
 
         template<typename F>
         void SetOnCollisionCallback(F&& func)
@@ -122,28 +127,28 @@ namespace MxEngine
         void SetRollingFriction(float value);
         float GetBounceFactor() const;
         void SetBounceFactor(float value);
-        void SetGravity(const Vector3& gravity);
+        void SetGravity(Vector3 gravity);
         Vector3 GetGravity() const;
-        void SetLinearVelocity(const Vector3& velocity);
+        void SetLinearVelocity(Vector3 velocity);
         Vector3 GetLinearVelocity() const;
-        void SetAngularVelocity(const Vector3& velocity);
+        void SetAngularVelocity(Vector3 velocity);
         Vector3 GetAngularVelocity() const;
         float GetInverseMass() const;
         Vector3 GetAngularForceFactor() const;
-        void SetAngularForceFactor(const Vector3& factor);
+        void SetAngularForceFactor(Vector3 factor);
         Vector3 GetLinearForceFactor() const;
-        void SetLinearForceFactor(const Vector3& factor);
+        void SetLinearForceFactor(Vector3 factor);
         void SetAngularAirResistance(float value);
         float GetAngularAirResistance() const;
         void SetLinearAirResistance(float value);
         float GetLinearAirResistance() const;
-        Vector3 GetTotalForce() const;
-        Vector3 GetTotalTorque() const;
+        Vector3 GetTotalForceApplied() const;
+        Vector3 GetTotalTorqueApplied() const;
         Vector3 GetInertia() const;
-        Vector3 GetVelocityInPoint(const Vector3& relativePosition);
-        Vector3 GetPushVelocityInPoint(const Vector3& relativePosition);
-        void ApplyCentralImpulse(const Vector3& impulse);
-        void ApplyCentralPushImpulse(const Vector3& impulse);
+        Vector3 GetVelocityInPoint(Vector3 relativePosition);
+        Vector3 GetPushVelocityInPoint(Vector3 relativePosition);
+        void ApplyCentralImpulse(Vector3 impulse);
+        void ApplyCentralPushImpulse(Vector3 impulse);
         void ApplyForce(const Vector3& force, const Vector3& relativePosition);
         void ApplyImpulse(const Vector3& impulse, const Vector3& relativePosition);
         void ApplyPushImpulse(const Vector3& impulse, const Vector3& relativePosition);
@@ -151,12 +156,14 @@ namespace MxEngine
         void ApplyTorqueImpulse(const Vector3& impulse);
         void ApplyTorqueTurnImpulse(const Vector3& impulse);
         void ApplyCentralForce(const Vector3& force);
-        void SetPushVelocity(const Vector3& velocity);
+        void SetPushVelocity(Vector3 velocity);
         Vector3 GetPushVelocity() const;
-        void SetTurnVelocity(const Vector3& velocity);
+        void SetTurnVelocity(Vector3 velocity);
         Vector3 GetTurnVelocity() const;
-        void SetAnisotropicFriction(const Vector3& friction, AnisotropicFriction mode = AnisotropicFriction::ENABLED);
+        void SetAnisotropicFriction(Vector3 friction, AnisotropicFriction mode);
+        void SetAnisotropicFriction(Vector3 friction);
         bool HasAnisotropicFriction() const;
+        void ToggleAnisotropicFriction(bool value);
         Vector3 GetAnisotropicFriction() const;
     };
 }

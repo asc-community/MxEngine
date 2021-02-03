@@ -1,0 +1,218 @@
+[
+  {
+    "AlbedoMap": "baron\\baron_gore.png",
+    "AmbientOcclusionMap": "baron\\baron_face_wound_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 1.0,
+    "EmissiveMap": "baron\\baron_gore_e.png",
+    "HeightMap": "",
+    "MetallicFactor": 0.20000000298023224,
+    "MetallicMap": "",
+    "Name": "baron_gore",
+    "NormalMap": "baron\\baron_gore_n.png",
+    "RoughnessFactor": 0.800000011920929,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "baron\\baron_face_wound.png",
+    "AmbientOcclusionMap": "baron\\baron_face_wound_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 1.0,
+    "EmissiveMap": "baron\\baron_face_wound_e.png",
+    "HeightMap": "",
+    "MetallicFactor": 0.20000000298023224,
+    "MetallicMap": "",
+    "Name": "baron_face_wound",
+    "NormalMap": "baron\\baron_face_wound_n.png",
+    "RoughnessFactor": 0.800000011920929,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      0.800000011920929,
+      0.800000011920929,
+      0.800000011920929
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.20000000298023224,
+    "MetallicMap": "",
+    "Name": "baron_blades",
+    "NormalMap": "",
+    "RoughnessFactor": 0.800000011920929,
+    "RoughnessMap": "",
+    "Transparency": 0.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "baron\\baron_eyes.png",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 1.0,
+    "EmissiveMap": "baron\\baron_eyes_e.png",
+    "HeightMap": "",
+    "MetallicFactor": 0.20000000298023224,
+    "MetallicMap": "",
+    "Name": "baron_eyes",
+    "NormalMap": "baron\\baron_eyes_n.png",
+    "RoughnessFactor": 0.800000011920929,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "baron\\baron_head.png",
+    "AmbientOcclusionMap": "baron\\baron_head_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 1.0,
+    "EmissiveMap": "baron\\baron_head_e.png",
+    "HeightMap": "",
+    "MetallicFactor": 0.20000000298023224,
+    "MetallicMap": "",
+    "Name": "baron_head",
+    "NormalMap": "baron\\baron_head_n.png",
+    "RoughnessFactor": 0.800000011920929,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "baron\\baron_torso.png",
+    "AmbientOcclusionMap": "baron\\baron_torso_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 1.0,
+    "EmissiveMap": "baron\\baron_torso_e.png",
+    "HeightMap": "",
+    "MetallicFactor": 0.20000000298023224,
+    "MetallicMap": "",
+    "Name": "baron_torso",
+    "NormalMap": "baron\\baron_torso_n.png",
+    "RoughnessFactor": 0.800000011920929,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "baron\\baron_arms.png",
+    "AmbientOcclusionMap": "baron\\baron_arms_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 1.0,
+    "EmissiveMap": "baron\\baron_arms_e.png",
+    "HeightMap": "",
+    "MetallicFactor": 0.20000000298023224,
+    "MetallicMap": "",
+    "Name": "baron_arms",
+    "NormalMap": "baron\\baron_legs_g.png",
+    "RoughnessFactor": 0.800000011920929,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "baron\\baron_legs.png",
+    "AmbientOcclusionMap": "baron\\baron_legs_g.png",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 1.0,
+    "EmissiveMap": "baron\\baron_legs_e.png",
+    "HeightMap": "",
+    "MetallicFactor": 0.20000000298023224,
+    "MetallicMap": "",
+    "Name": "baron_legs",
+    "NormalMap": "baron\\baron_legs_n.png",
+    "RoughnessFactor": 0.800000011920929,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 1.0,
+    "MetallicMap": "",
+    "Name": "material #8",
+    "NormalMap": "",
+    "RoughnessFactor": 1.0,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  }
+]

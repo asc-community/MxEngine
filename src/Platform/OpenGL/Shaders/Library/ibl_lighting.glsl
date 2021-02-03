@@ -44,9 +44,8 @@ vec3 calculateIBL(FragmentInfo fragment, vec3 viewDirection, sampler2D envBRDFLU
     float roughness = clamp(fragment.roughnessFactor, 0.01, 0.99);
     float metallic = clamp(fragment.metallicFactor, 0.01, 0.99);
 
-    vec3 reflection = 2.0 * dot(viewDirection, fragment.normal) * fragment.normal - viewDirection;
     float NV = clamp(dot(fragment.normal, viewDirection), 0.0, 0.999);
-
+    
     float lod = log2(textureSize(environment.skybox, 0).x * roughness * roughness);
     vec3 F0 = mix(vec3(0.04f), fragment.albedo, metallic);
     vec3 F = fresnelSchlickRoughness(F0, NV, roughness);

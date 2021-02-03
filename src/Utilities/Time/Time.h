@@ -42,10 +42,15 @@ namespace MxEngine
 	struct Time
 	{
 		/*!
-		gets current time since engine start
+		gets current time of running game
 		\returns timestep measured in milliseconds
 		*/
 		static TimeStep Current();
+		/*!
+		gets current time since engine start
+		\returns timestep measured in milliseconds
+		*/
+		static TimeStep EngineCurrent();
 		/*!
 		sets current time since engine start
 		\param time new current time

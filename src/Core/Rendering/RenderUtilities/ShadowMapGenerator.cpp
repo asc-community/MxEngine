@@ -29,6 +29,7 @@
 #include "ShadowMapGenerator.h"
 #include "Core/Application/Rendering.h"
 #include "Core/Rendering/RenderPipeline.h"
+#include "Core/BoundingObjects/FrustrumCuller.h"
 
 namespace MxEngine
 {
@@ -60,25 +61,9 @@ namespace MxEngine
         Rendering::GetController().GetRenderStatistics().AddEntry("shadow casts", 1);
     }
 
-    bool InOrthoFrustrum(const Matrix4x4& projection, const Vector3& minAABB, const Vector3& maxAABB)
+    bool InOrthoFrustrum(const FrustrumCuller& culler, const Vector3& minAABB, const Vector3& maxAABB)
     {
-        auto pmin = projection * Vector4(minAABB, 1.0f);
-        auto pmax = projection * Vector4(maxAABB, 1.0f);
-
-        std::array conditions = {
-            pmin.x < -1.0f && pmax.x < -1.0f,
-            pmin.x >  1.0f && pmax.x >  1.0f,
-            pmin.y < -1.0f && pmax.y < -1.0f,
-            pmin.y >  1.0f && pmax.y >  1.0f,
-            pmin.z < -1.0f && pmax.z < -1.0f,
-            pmin.z >  1.0f && pmax.z >  1.0f,
-        };
-
-        bool outOfBounds = false;
-        for (bool& c : conditions)
-            outOfBounds = outOfBounds || c;
-
-        return !outOfBounds;
+        return culler.IsAABBVisible(minAABB, maxAABB);
     };
 
     bool InSphereBounds(const PointLightUnit& pointLight, const Vector3& minAABB, const Vector3& maxAABB)
@@ -108,10 +93,11 @@ namespace MxEngine
 
     void CastShadowsWithCulling(const Matrix4x4& orthoProjection, const Shader& shader, ArrayView<RenderUnit> shadowCasters, ArrayView<Material> materials)
     {
+        FrustrumCuller culler(orthoProjection);
         for (const auto& unit : shadowCasters)
         {
             // do not cull instanced objects, as their position may differ
-            bool culled = unit.InstanceCount == 0 && !InOrthoFrustrum(orthoProjection, unit.MinAABB, unit.MaxAABB);
+            bool culled = unit.InstanceCount == 0 && !InOrthoFrustrum(culler, unit.MinAABB, unit.MaxAABB);
             if (!culled)
             {
                 CastShadowsUnit(shader, unit, materials);

@@ -55,7 +55,7 @@ namespace MxEngine
         json["outer-angle-volume"] = source.GetOuterAngleVolume();
         json["reference-distance"] = source.GetReferenceDistance();
         json["rollof-factor"] = source.GetRollofFactor();
-        json["speed"] = source.GetSpeed();
+        json["speed"] = source.GetPlaybackSpeed();
         json["velocity"] = source.GetVelocity();
         json["volume"] = source.GetVolume();
     }

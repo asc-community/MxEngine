@@ -31,6 +31,7 @@
 #include "Core/MxObject/MxObject.h"
 #include "Utilities/Logging/Logger.h"
 #include "Utilities/Format/Format.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -44,7 +45,7 @@ namespace MxEngine
             return;
         }
 
-        auto mesh = meshSource.GetUnchecked()->Mesh;
+        auto mesh = meshSource->Mesh;
         this->LODs.clear();
         this->LODs.reserve(config.Factors.size());
 
@@ -74,11 +75,11 @@ namespace MxEngine
         auto meshSource = object.GetComponent<MeshSource>();
         if (!meshSource.IsValid()) 
         {
-            this->CurrentLOD = 0; 
+            this->SetCurrentLOD(0); 
             return;
         }
 
-        auto box = meshSource->Mesh->BoxBounding * object.Transform.GetMatrix();
+        auto box = meshSource->Mesh->MeshAABB * object.Transform.GetMatrix();
 
         float distance = Length(box.GetCenter() - viewportPosition);
         Vector3 length = box.Length();
@@ -89,18 +90,52 @@ namespace MxEngine
         constexpr static std::array lodDistance = {
             0.21f, 0.15f, 0.10f, 0.06f, 0.03f, 0.01f
         };
-        this->CurrentLOD = 0;
-        while (this->CurrentLOD < lodDistance.size() && scaledDistance < lodDistance[this->CurrentLOD])
-            this->CurrentLOD++;
+        this->SetCurrentLOD(0);
+        while (this->currentLOD < lodDistance.size() && scaledDistance < lodDistance[this->currentLOD])
+            this->currentLOD++;
 
-        this->CurrentLOD = (LODIndex)Min(this->CurrentLOD, this->LODs.size());
+        this->SetCurrentLOD(Min(this->currentLOD, this->LODs.size()));
+    }
+
+    void MeshLOD::SetCurrentLOD(size_t lod)
+    {
+        this->currentLOD = (uint8_t)Min(lod, (size_t)std::numeric_limits<uint8_t>::max());
+    }
+
+    size_t MeshLOD::GetCurrentLOD() const
+    {
+        return (size_t)this->currentLOD;
     }
 
     MeshLOD::LODInstance MeshLOD::GetMeshLOD() const
     {
-        if (this->CurrentLOD == 0 || this->CurrentLOD >= this->LODs.size())
+        if (this->currentLOD == 0 || this->currentLOD >= this->LODs.size())
             return MxObject::GetByComponent(*this).GetComponent<MeshSource>()->Mesh;
         else
-            return this->LODs[this->CurrentLOD - 1];
+            return this->LODs[this->currentLOD - 1];
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        using AutoLodGenFunc = void(MeshLOD::*)();
+
+        rttr::registration::class_<MeshLOD>("MeshLOD")
+            .constructor<>()
+            .property("auto lod selection", &MeshLOD::AutoLODSelection)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("current lod", &MeshLOD::GetCurrentLOD, &MeshLOD::SetCurrentLOD)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .method("generate lods", (AutoLodGenFunc)&MeshLOD::Generate)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("lods", &MeshLOD::LODs)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            );
     }
 }

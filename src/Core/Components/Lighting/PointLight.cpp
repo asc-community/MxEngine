@@ -28,6 +28,7 @@
 
 #include "PointLight.h"
 #include "Core/Config/GlobalConfig.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -61,10 +62,9 @@ namespace MxEngine
         return this->radius;
     }
 
-    PointLight& PointLight::UseRadius(float radius)
+    void PointLight::SetRadius(float radius)
     {
         this->radius = Max(0.0f, radius);
-        return *this;
     }
 
     CubeMapHandle PointLight::GetDepthCubeMap() const
@@ -116,5 +116,43 @@ namespace MxEngine
         m[0][0] = m[1][1] = m[2][2] = scale;
         m[3] = Vector4(position, 1.0f);
         return m;
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<PointLight>("PointLight")
+            .constructor<>()
+            .property("color", &PointLight::GetColor, &PointLight::SetColor)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::INTERPRET_AS, InterpretAsInfo::COLOR)
+            )
+            .property("intensity", &PointLight::GetIntensity, &PointLight::SetIntensity)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f })
+            )
+            .property("ambient intensity", &PointLight::GetAmbientIntensity, &PointLight::SetAmbientIntensity)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1.0f })
+            )
+            .property("radius", &PointLight::GetRadius, &PointLight::SetRadius)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+            )
+            .property("casts shadows", &PointLight::IsCastingShadows, &PointLight::ToggleShadowCast)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property_readonly("depth cubemap", &PointLight::GetDepthCubeMap)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::VIEW_CONDITION, +([](rttr::instance& obj) { return obj.try_convert<PointLight>()->IsCastingShadows(); }))
+            );
     }
 }

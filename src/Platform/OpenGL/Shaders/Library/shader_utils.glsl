@@ -28,10 +28,9 @@ float sampleShadowMapLinear(sampler2D depthMap, vec2 coords, float compare, vec2
 	return mix(sampleA, sampleB, fracPart.x);
 }
 
-float calcShadowFactor2D(vec4 fragPosLight, sampler2D depthMap, float bias, int blurIterations)
+float calcShadowFactor2D(vec3 projCoords, sampler2D depthMap, float bias, int blurIterations)
 {
-	vec3 projCoords = fragPosLight.xyz / fragPosLight.w;
-	if (projCoords.z > 0.99) return 1.0; // do not handle corner cases, assume now shadows
+	if (projCoords.z > 0.999 || projCoords.z < 0.001) return 1.0; // do not handle corner cases, assume now shadows
 	float currentDepth = projCoords.z - bias;
 	vec2 texelSize = 1.0 / textureSize(depthMap, 0);
 	

@@ -49,7 +49,7 @@ namespace MxEngine
 		float gamma = DefaultGamma;
 		float exposure = 1.0f;
 		float whitePoint = 1.0f;
-		float colorMultiplier = 1.0f;
+		float colorScale = 1.0f;
 		ACES coefficients;
 		float eyeAdaptationSpeed = 0.1f;
 		float eyeAdaptationThreshold = 0.1f;

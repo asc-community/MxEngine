@@ -34,6 +34,7 @@
 #include "OrthographicCamera.h"
 #include "PerspectiveCamera.h"
 #include "FrustrumCamera.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -75,6 +76,27 @@ namespace MxEngine
 		MX_ASSERT(this->GetCameraType() == CameraType::ORTHOGRAPHIC);
 		static_assert(AssertEquality<sizeof(OrthographicCamera), sizeof(this->Camera)>::value, "camera byte storage size mismatch");
 		return *reinterpret_cast<OrthographicCamera*>(&this->Camera); //-V717
+	}
+
+	template<>
+	void CameraController::SetCamera<PerspectiveCamera>(const PerspectiveCamera& camera)
+	{
+		this->SetCameraType(CameraType::PERSPECTIVE);
+		this->GetCamera<PerspectiveCamera>() = camera;
+	}
+
+	template<>
+	void CameraController::SetCamera<OrthographicCamera>(const OrthographicCamera& camera)
+	{
+		this->SetCameraType(CameraType::ORTHOGRAPHIC);
+		this->GetCamera<OrthographicCamera>() = camera;
+	}
+
+	template<>
+	void CameraController::SetCamera<FrustrumCamera>(const FrustrumCamera& camera)
+	{
+		this->SetCameraType(CameraType::FRUSTRUM);
+		this->GetCamera<FrustrumCamera>() = camera;
 	}
 
 	template<>
@@ -170,7 +192,7 @@ namespace MxEngine
 		});
 	}
 
-	bool CameraController::ListensWindowResizeEvent() const
+	bool CameraController::IsListeningWindowResizeEvent() const
 	{
 		return Event::HasEventListenerWithName(this->GetEventUUID());
 	}
@@ -179,7 +201,7 @@ namespace MxEngine
 	{
 		this->renderTexture->Load(nullptr, (int)w, (int)h, 3, false, this->renderTexture->GetFormat(), this->renderTexture->GetWrapType());
 		this->renderTexture->SetInternalEngineTag("[[camera output]]");
-		if(this->IsRendered())
+		if(this->IsRendering())
 			this->renderBuffers->Resize((int)w, (int)h);
 	}
 
@@ -187,13 +209,13 @@ namespace MxEngine
 	{
 		MX_ASSERT(texture.IsValid());
 		this->renderTexture = texture;
-		if (this->IsRendered())
+		if (this->IsRendering())
 		{
 			this->renderBuffers->Resize((int)texture->GetWidth(), (int)texture->GetHeight());
 		}
 	}
 
-    bool CameraController::IsRendered() const
+    bool CameraController::IsRendering() const
     {
 		return this->renderingEnabled;
     }
@@ -298,7 +320,7 @@ namespace MxEngine
 
 	void CameraController::SetMoveSpeed(float speed)
 	{
-		this->moveSpeed = Max(speed, 0.0f);
+		this->moveSpeed = speed;
 	}
 
 	float CameraController::GetRotateSpeed() const
@@ -308,7 +330,7 @@ namespace MxEngine
 
 	void CameraController::SetRotateSpeed(float speed)
 	{
-		this->rotateSpeed = Max(speed, 0.0f);
+		this->rotateSpeed = speed;
 	}
 
 	CameraController& CameraController::Rotate(float horizontal, float vertical)
@@ -469,5 +491,182 @@ namespace MxEngine
 		GraphicFactory::Destroy(this->Depth);
 		GraphicFactory::Destroy(this->HDR);
 		GraphicFactory::Destroy(this->SwapHDR);
+	}
+
+	MXENGINE_REFLECT_TYPE
+	{
+		using GetPerspectiveCameraFunc = const PerspectiveCamera& (CameraController::*)() const;
+		using GetOrthographicCameraFunc = const OrthographicCamera& (CameraController::*)() const;
+		using GetFrustrumCameraFunc = const FrustrumCamera& (CameraController::*)() const;
+		using GetAspectRatioPerspective = float (PerspectiveCamera::*)() const;
+		using GetAspectRatioOrthographic = float (OrthographicCamera::*)() const;
+		using GetAspectRatioFrustrum = float (FrustrumCamera::*)() const;
+		using SetAspectRatioPerspective = void (PerspectiveCamera::*)(float);
+		using SetAspectRatioOrthographic = void (OrthographicCamera::*)(float);
+		using SetAspectRatioFrustrum = void (FrustrumCamera::*)(float);
+
+		rttr::registration::enumeration<CameraType>("CameraType")
+		(
+			rttr::value("PERSPECTIVE" , CameraType::PERSPECTIVE ),
+			rttr::value("ORTHOGRAPHIC", CameraType::ORTHOGRAPHIC),
+			rttr::value("FRUSTRUM"    , CameraType::FRUSTRUM    )
+		);
+
+		rttr::registration::class_<PerspectiveCamera>("PerspectiveCamera")
+			(
+				rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<PerspectiveCamera>)
+			)
+			.constructor<>()
+			.property("fov", &PerspectiveCamera::GetFOV, &PerspectiveCamera::SetFOV)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 180.0f }),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+			)
+			.property("aspect ratio", (GetAspectRatioPerspective)&PerspectiveCamera::GetAspectRatio, (SetAspectRatioPerspective)&PerspectiveCamera::SetAspectRatio)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+			)
+			.property("znear", &PerspectiveCamera::GetZNear, &PerspectiveCamera::SetZNear)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+			);
+
+		rttr::registration::class_<OrthographicCamera>("OrthographicCamera")
+			(
+				rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<OrthographicCamera>)
+			)
+			.constructor<>()
+			.property("size", &OrthographicCamera::GetSize, &OrthographicCamera::SetSize)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 10000000.0f }),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+			)
+			.property("aspect ratio", (GetAspectRatioOrthographic)&OrthographicCamera::GetAspectRatio, (SetAspectRatioOrthographic)&OrthographicCamera::SetAspectRatio)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+			)
+			.property("znear", &OrthographicCamera::GetZNear, &OrthographicCamera::SetZNear)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+			)
+			.property("zfar", &OrthographicCamera::GetZFar, &OrthographicCamera::SetZFar)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+			);
+
+		rttr::registration::class_<FrustrumCamera>("FrustrumCamera")
+			(
+				rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<FrustrumCamera>)
+			)
+			.constructor<>()
+			.property("zoom", &FrustrumCamera::GetZoom, &FrustrumCamera::SetZoom)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+			)
+			.property("projection center", &FrustrumCamera::GetProjectionCenter, &FrustrumCamera::SetProjectionCenter)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+			)
+			.property("aspect ratio", (GetAspectRatioFrustrum)&FrustrumCamera::GetAspectRatio, (SetAspectRatioFrustrum)&FrustrumCamera::SetAspectRatio)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+			)
+			.property("znear", &FrustrumCamera::GetZNear, &FrustrumCamera::SetZNear)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+			)
+			.property("zfar", &FrustrumCamera::GetZFar, &FrustrumCamera::SetZFar)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+			);
+
+		rttr::registration::class_<CameraController>("CameraController")
+			.constructor<>()
+			.method("listen window resize event", &CameraController::ListenWindowResizeEvent)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("is listening window resize event", &CameraController::IsListeningWindowResizeEvent)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+			)
+			.property("is rendering", &CameraController::IsRendering, &CameraController::ToggleRendering)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+			)
+			.property("camera type", &CameraController::GetCameraType, &CameraController::SetCameraType)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+			)
+			.property("perspective camera", (GetPerspectiveCameraFunc)&CameraController::GetCamera<PerspectiveCamera>, &CameraController::SetCamera<PerspectiveCamera>)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::VIEW_CONDITION, +([](rttr::instance& v) { return v.try_convert<CameraController>()->GetCameraType() == CameraType::PERSPECTIVE; }))
+			)
+			.property("orthographic camera", (GetOrthographicCameraFunc)&CameraController::GetCamera<OrthographicCamera>, &CameraController::SetCamera<OrthographicCamera>)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::VIEW_CONDITION, +([](rttr::instance& v) { return v.try_convert<CameraController>()->GetCameraType() == CameraType::ORTHOGRAPHIC; }))
+			)
+			.property("frustrum camera", (GetFrustrumCameraFunc)&CameraController::GetCamera<FrustrumCamera>, &CameraController::SetCamera<FrustrumCamera>)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::VIEW_CONDITION, +([](rttr::instance& v) { return v.try_convert<CameraController>()->GetCameraType() == CameraType::FRUSTRUM; }))
+			)
+			.property("direction", &CameraController::GetDirectionDenormalized, &CameraController::SetDirection)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+			)
+			.property("move speed", &CameraController::GetMoveSpeed, &CameraController::SetMoveSpeed)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+			)
+			.property("rotate speed", &CameraController::GetRotateSpeed, &CameraController::SetRotateSpeed)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+			)
+			.property_readonly("render texture", &CameraController::GetRenderTexture)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property("forward vector", &CameraController::GetForwardVector, &CameraController::SetForwardVector)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+			)
+			.property("up vector", &CameraController::GetUpVector, &CameraController::SetUpVector)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+			)
+			.property("right vector", &CameraController::GetRightVector, &CameraController::SetRightVector)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+			);
 	}
 }

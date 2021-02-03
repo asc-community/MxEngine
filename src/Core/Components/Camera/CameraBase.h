@@ -48,8 +48,6 @@ namespace MxEngine
         mutable Matrix4x4 matrix{ 1.0f };
         mutable bool updateMatrix = true;
     public:
-        MXENGINE_MAKE_MOVEONLY(CameraBase);
-
         mutable bool UpdateProjection = true;
 
         const Matrix4x4& GetMatrix() const;
@@ -61,7 +59,8 @@ namespace MxEngine
         void SetViewMatrix(const Matrix4x4& view);
         float GetZoom() const;
         void SetZoom(float zoom);
-        void SetAspectRatio(float w, float h = 1.0f);
+        void SetAspectRatio(float w, float h);
+        void SetAspectRatio(float ratio);
         float GetAspectRatio() const;
         float GetZFar() const;
         void SetZFar(float zFar);

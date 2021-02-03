@@ -32,6 +32,7 @@
 #include "Utilities/Time/Time.h"
 #include "Utilities/Image/ImageLoader.h"
 #include "Utilities/FileSystem/File.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -57,7 +58,7 @@ namespace MxEngine
 		GL_DEPTH_COMPONENT32F
 	};
 
-	GLenum wrapTable[] =
+	GLint wrapTable[] =
 	{
 		GL_CLAMP_TO_EDGE,
 		GL_CLAMP_TO_BORDER,
@@ -87,7 +88,6 @@ namespace MxEngine
 		this->height = texture.height;
 		this->textureType = texture.textureType;
 		this->filepath = std::move(texture.filepath);
-		this->wrapType = texture.wrapType;
 		this->samples = texture.samples;
 		this->format = texture.format;
 		this->id = texture.id;
@@ -108,7 +108,6 @@ namespace MxEngine
 		this->height = texture.height;
 		this->textureType = texture.textureType;
 		this->filepath = std::move(texture.filepath);
-		this->wrapType = texture.wrapType;
 		this->samples = texture.samples;
 		this->format = texture.format;
 		this->id = texture.id;
@@ -136,12 +135,10 @@ namespace MxEngine
 
 		if (image.GetRawData() == nullptr)
 		{
-			MXLOG_ERROR("Texture", "file with name '" + ToMxString(filepath) + "' was not found");
-			return;
+			MXLOG_ERROR("Texture", "file with name '" + ToMxString(filepath) + "' was not found or cannot be loaded");
 		}
 
 		this->filepath = ToMxString(std::filesystem::proximate(filepath));
-		this->wrapType = wrap;
 		this->format = format;
 		this->width = image.GetWidth();
 		this->height = image.GetHeight();
@@ -172,9 +169,7 @@ namespace MxEngine
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
 		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, pixelFormat, pixelType, image.GetRawData()));
 
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
-		
+		this->SetWrapType(wrap);
 		if (genMipmaps) this->GenerateMipmaps();
 	}
 
@@ -192,7 +187,6 @@ namespace MxEngine
 		this->height = height;
 		this->textureType = GL_TEXTURE_2D;
 		this->format = format;
-		this->wrapType = wrap;
 
 		GLenum type = isFloating ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
@@ -218,10 +212,8 @@ namespace MxEngine
 
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
 		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, dataChannels, type, data));
-
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
-
+		
+		this->SetWrapType(wrap);
 		if (genMipmaps) this->GenerateMipmaps();
 	}
 
@@ -237,22 +229,20 @@ namespace MxEngine
 		this->height = height;
 		this->textureType = GL_TEXTURE_2D;
 		this->format = format;
-		this->wrapType = wrap;
 
 		this->Bind();
 
 		GLenum type = this->IsFloatingPoint() ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
 		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], width, height, 0, GL_DEPTH_COMPONENT, type, nullptr));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapTable[(int)this->wrapType]));
-		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapTable[(int)this->wrapType]));
 
+		this->SetWrapType(wrap);
 		this->SetBorderColor(MakeVector4(1.0f));
 	}
 
 	void Texture::SetSamplingFromLOD(size_t lod)
 	{
-		this->Bind();
+		this->Bind(0);
 		GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, (float)lod));
 		GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, (float)lod));
 	}
@@ -298,7 +288,7 @@ namespace MxEngine
 		return Image(result, this->width, this->height, this->GetChannelCount(), this->IsFloatingPoint());
     }
 
-	void Texture::GenerateMipmaps()
+	void Texture::GenerateMipmaps() const
 	{
 		this->Bind(0);
 		GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
@@ -306,12 +296,20 @@ namespace MxEngine
 		GLCALL(glGenerateMipmap(GL_TEXTURE_2D));
 	}
 
-    void Texture::SetBorderColor(const Vector3& color)
+    void Texture::SetBorderColor(Vector4 color)
     {
 		this->Bind(0);
-		auto normalized = Clamp(color, MakeVector3(0.0f), MakeVector3(1.0f));
+		auto normalized = Clamp(color, MakeVector4(0.0f), MakeVector4(1.0f));
 		GLCALL(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &normalized[0]));
     }
+
+	Vector4 Texture::GetBorderColor() const
+	{
+		Vector4 result = MakeVector4(0.0f);
+		this->Bind(0);
+		GLCALL(glGetTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &result[0]));
+		return result;
+	}
 	
     bool Texture::IsMultisampled() const
     {
@@ -368,9 +366,9 @@ namespace MxEngine
 		return format == TextureFormat::DEPTH || this->format == TextureFormat::DEPTH32F;
 	}
 
-    int Texture::GetSampleCount() const
+    size_t Texture::GetSampleCount() const
     {
-		return (int)this->samples;
+		return (size_t)this->samples;
     }
 
 	size_t Texture::GetPixelSize() const
@@ -425,7 +423,22 @@ namespace MxEngine
 
 	TextureWrap Texture::GetWrapType() const
 	{
-		return this->wrapType;
+		GLint result = 0;
+		this->Bind(0);
+		GLCALL(glGetTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &result));
+		for (size_t i = 0; i < std::size(wrapTable); i++)
+		{
+			if (wrapTable[i] == result)
+				return TextureWrap(i);
+		}
+		return TextureWrap::CLAMP_TO_EDGE;
+	}
+
+	void Texture::SetWrapType(TextureWrap wrapType)
+	{
+		this->Bind(0);
+		GLCALL(glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &wrapTable[(int)wrapType]));
+		GLCALL(glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, &wrapTable[(int)wrapType]));
 	}
 
 	void Texture::Bind() const
@@ -528,42 +541,112 @@ namespace MxEngine
 
     const char* EnumToString(TextureFormat format)
     {
-		#define TEX_FMT_STR(val) case TextureFormat::val: return #val
-		switch (format)
-		{
-			TEX_FMT_STR(R);
-			TEX_FMT_STR(R16);
-			TEX_FMT_STR(RG);
-			TEX_FMT_STR(RG16);
-			TEX_FMT_STR(R16F);
-			TEX_FMT_STR(R32F);
-			TEX_FMT_STR(RG16F);
-			TEX_FMT_STR(RG32F);
-			TEX_FMT_STR(RGB);
-			TEX_FMT_STR(RGBA);
-			TEX_FMT_STR(RGB16);
-			TEX_FMT_STR(RGB16F);
-			TEX_FMT_STR(RGBA16);
-			TEX_FMT_STR(RGBA16F);
-			TEX_FMT_STR(RGB32F);
-			TEX_FMT_STR(RGBA32F);
-			TEX_FMT_STR(DEPTH);
-			TEX_FMT_STR(DEPTH32F);
-			default: return "INVALID_FORMAT";
-		}
+		auto type = rttr::type::get<TextureFormat>().get_enumeration();
+		return type.value_to_name(format).cbegin();
     }
 
     const char* EnumToString(TextureWrap wrap)
     {
-		#define TEX_WRAP_STR(val) case TextureWrap::val: return #val
-		switch (wrap)
-		{
-			TEX_WRAP_STR(CLAMP_TO_EDGE);
-			TEX_WRAP_STR(CLAMP_TO_BORDER);
-			TEX_WRAP_STR(MIRRORED_REPEAT);
-			TEX_WRAP_STR(REPEAT);
-		default:
-			return "INVALID_WRAPTYPE";
-		}
+		auto type = rttr::type::get<TextureWrap>().get_enumeration();
+		return type.value_to_name(wrap).cbegin();
     }
+
+	namespace GUI
+	{
+		rttr::variant TextureEditorExtra(rttr::instance&);
+		rttr::variant TextureHandleEditorExtra(rttr::instance&);
+	}
+
+	MXENGINE_REFLECT_TYPE
+	{
+		rttr::registration::enumeration<TextureFormat>("TextureFormat")
+		(
+			rttr::value("R"       , TextureFormat::R       ),
+			rttr::value("R16"     , TextureFormat::R16     ),
+			rttr::value("RG"      , TextureFormat::RG      ),
+			rttr::value("RG16"    , TextureFormat::RG16    ),
+			rttr::value("R16F"    , TextureFormat::R16F    ),
+			rttr::value("R32F"    , TextureFormat::R32F    ),
+			rttr::value("RG16F"   , TextureFormat::RG16F   ),
+			rttr::value("RG32F"   , TextureFormat::RG32F   ),
+			rttr::value("RGB"     , TextureFormat::RGB     ),
+			rttr::value("RGBA"    , TextureFormat::RGBA    ),
+			rttr::value("RGB16"   , TextureFormat::RGB16   ),
+			rttr::value("RGB16F"  , TextureFormat::RGB16F  ),
+			rttr::value("RGBA16"  , TextureFormat::RGBA16  ),
+			rttr::value("RGBA16F" , TextureFormat::RGBA16F ),
+			rttr::value("RGB32F"  , TextureFormat::RGB32F  ),
+			rttr::value("RGBA32F" , TextureFormat::RGBA32F ),
+			rttr::value("DEPTH"   , TextureFormat::DEPTH   ),
+			rttr::value("DEPTH32F", TextureFormat::DEPTH32F)
+		);
+
+		rttr::registration::enumeration<TextureWrap>("TextureWrap")
+		(
+			rttr::value("REPEAT"         , TextureWrap::REPEAT         ),
+			rttr::value("MIRRORED_REPEAT", TextureWrap::MIRRORED_REPEAT),
+			rttr::value("CLAMP_TO_EDGE"  , TextureWrap::CLAMP_TO_EDGE  ),
+			rttr::value("CLAMP_TO_BORDER", TextureWrap::CLAMP_TO_BORDER)
+		);
+
+		rttr::registration::class_<Texture>("Texture")
+			(
+				rttr::metadata(EditorInfo::HANDLE_EDITOR, GUI::HandleEditorExtra<Texture>)
+			)
+			.constructor<>()
+			.property_readonly("filepath", &Texture::GetFilePath)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+			)
+			.property_readonly("width", &Texture::GetWidth)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("height", &Texture::GetHeight)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("channel count", &Texture::GetChannelCount)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("sample count", &Texture::GetSampleCount)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("format", &Texture::GetFormat)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property("wrap type", &Texture::GetWrapType, &Texture::SetWrapType)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+			)
+			.property("border color", &Texture::GetBorderColor, &Texture::SetBorderColor)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::INTERPRET_AS, InterpretAsInfo::COLOR)
+			)
+			.property_readonly("texture type", &Texture::GetTextureType)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("native handle", &Texture::GetNativeHandle)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("is depth only", &Texture::IsDepthOnly)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("is multisampled", &Texture::IsMultisampled)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("editor-preview", &Texture::GetBoundId)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<Texture>)
+			);
+	}
 }

@@ -66,7 +66,6 @@ set(MXENGINE_SOURCES
 "Platform/Window/Window.cpp" 
 "Platform/Window/WindowManager.cpp" 
 "Utilities/ImGui/Editors/ApplicationEditor.cpp" 
-"Utilities/ImGui/Editors/ComponentEditors/RenderingEditors.cpp" 
 "Utilities/Audio/AudioLoader.cpp" 
 "Utilities/FileSystem/File.cpp" 
 "Utilities/FileSystem/FileManager.cpp" 
@@ -74,15 +73,11 @@ set(MXENGINE_SOURCES
 "Utilities/Image/ImageLoader.cpp" 
 "Utilities/Image/ImageConverter.cpp" 
 "Utilities/Image/ImageManager.cpp" 
-"Utilities/ImGui/Editors/ComponentEditors/AudioEditors.cpp" 
-"Utilities/ImGui/Editors/ComponentEditors/CameraEditors.cpp" 
-"Utilities/ImGui/Editors/ComponentEditors/ComponentEditor.cpp" 
+"Utilities/ImGui/Editors/Components/ComponentEditor.cpp" 
+"Utilities/ImGui/Editors/Components/EditorExtra.cpp" 
 "Utilities/ImGui/EventLogger.cpp" 
 "Utilities/ImGui/GraphicConsole.cpp" 
-"Utilities/ImGui/Editors/ComponentEditors/InstancingEditors.cpp" 
-"Utilities/ImGui/Editors/ComponentEditors/LightEditors.cpp" 
 "Utilities/ImGui/Editors/MxObjectEditor.cpp" 
-"Utilities/ImGui/Editors/ComponentEditors/PhysicsEditors.cpp" 
 "Utilities/ImGui/ProfilerGraph.cpp" 
 "Utilities/ImGui/Editors/RenderEditor.cpp" 
 "Utilities/ImGui/Editors/ResourceEditor.cpp" 
@@ -111,7 +106,6 @@ set(MXENGINE_SOURCES
 "Core/Rendering/DebugDataSubmitter.cpp"
 "Core/Components/Scripting/Script.cpp" 
 "Core/Runtime/RuntimeCompiler.cpp"
-"Utilities/ImGui/Editors/ComponentEditors/ScriptingEditors.cpp"
 "Core/Serialization/SceneSerializer.cpp" 
 "Core/Serialization/MxObjectSerializer.cpp"
 "Core/Serialization/ComponentSerializer.cpp" 
@@ -123,7 +117,12 @@ set(MXENGINE_SOURCES
 "Core/Serialization/PhysicsSerializer.cpp"
 "Core/Serialization/ScriptSerializer.cpp"
 "Core/Serialization/ResourceSerializer.cpp"
-"Utilities/ImGui/RenderStatistics.cpp")
+"Utilities/ImGui/RenderStatistics.cpp" 
+"Core/Components/Rendering/DebugDraw.cpp"
+"Core/Components/Rendering/Skybox.cpp"
+"Core/Resources/Material.cpp" 
+"Core/Components/Rendering/MeshSource.cpp" 
+"Platform/OpenGL/UsageType.cpp")
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)
@@ -145,6 +144,7 @@ set(imguizmo ${SUBMODULES_PATH}/ImGuizmo)
 set(portable_file_dialogs ${SUBMODULES_PATH}/portable-file-dialogs)
 set(stduuid ${SUBMODULES_PATH}/stduuid)
 set(runtime_compiled_cpp ${SUBMODULES_PATH}/RuntimeCompiledCPlusPlus/Aurora)
+set(rttr ${SUBMODULES_PATH}/rttr)
 
 set(THIRD_PARTY_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH "")
@@ -158,7 +158,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         set(CMAKE_STATIC_LINKER_FLAGS "/Zi /VERBOSE")
     endif()
 endif()
-
 # bullet3
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(BUILD_CPU_DEMOS OFF CACHE BOOL "" FORCE)
@@ -181,11 +180,22 @@ set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
 
 # glew
-set(glew-cmake_BUILD_SHARED OFF CACHE BOOL "" FORCE)
-set(glew-cmake_BUILD_STATIC ON CACHE BOOL "" FORCE)
+set(glew-cmake_BUILD_SHARED ON CACHE BOOL "" FORCE)
+set(glew-cmake_BUILD_STATIC OFF CACHE BOOL "" FORCE)
 
 # rcc++
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+# rttr
+set(BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
+set(BUILD_BENCHMARKS OFF CACHE BOOL "" FORCE)
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(BUILD_DOCUMENTATION OFF CACHE BOOL "" FORCE)
+set(BUILD_INSTALLER OFF CACHE BOOL "" FORCE)
+set(BUILD_PACKAGE OFF CACHE BOOL "" FORCE)
+set(USE_PCH OFF CACHE BOOL "" FORCE)
+set(BUILD_WEBSITE_DOCU OFF CACHE BOOL "" FORCE)
+set(MAX_CXX_STANDARD ${CMAKE_CXX_STANDARD})
 
 set(THIRD_PARTY_INCLUDE_DIRS
     ${nlohmann_json}/single_include
@@ -200,6 +210,7 @@ set(THIRD_PARTY_INCLUDE_DIRS
     ${bullet3}/src
     ${assimp}/include
     ${miniaudio}/extras
+    ${rttr}/src
     ${portable_file_dialogs}
     ${runtime_compiled_cpp}
     ${imguizmo}
@@ -219,6 +230,7 @@ set(eabase_binary_dir ${THIRD_PARTY_BUILD_DIR}/eabase)
 set(openal_binary_dir ${THIRD_PARTY_BUILD_DIR}/openal)
 set(imguizmo_binary_dir ${THIRD_PARTY_BUILD_DIR}/imguizmo)
 set(runtime_compiled_cpp_binary_dir ${THIRD_PARTY_BUILD_DIR}/runtime_compiled_cpp)
+set(rttr_binary_dir ${THIRD_PARTY_BUILD_DIR}/rttr)
 
 add_subdirectory(${fmt} ${fmt_binary_dir})
 add_subdirectory(${bullet3} ${bullet3_binary_dir})
@@ -230,6 +242,7 @@ add_subdirectory(${eabase} ${eabase_binary_dir})
 add_subdirectory(${openal} ${openal_binary_dir})
 add_subdirectory(${imguizmo} ${imguizmo_binary_dir})
 add_subdirectory(${runtime_compiled_cpp} ${runtime_compiled_cpp_binary_dir})
+add_subdirectory(${rttr} ${rttr_binary_dir})
 
 set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
 add_subdirectory(${glfw} ${glfw_binary_dir})
@@ -250,11 +263,12 @@ set(THIRD_PARTY_BINARY_DIRS
     ${openal_binary_dir}
     ${imguizmo_binary_dir}
     ${runtime_compiled_cpp_binary_dir}
+    ${rttr_binary_dir}
 )
 
 set(THIRD_PARTY_LIBRARIES
     fmt
-    libglew_static
+    libglew_shared
     assimp
     IrrXML
     glfw
@@ -264,6 +278,7 @@ set(THIRD_PARTY_LIBRARIES
     ImGuizmo
     BulletDynamics BulletCollision LinearMath
     RuntimeObjectSystem RuntimeCompiler
+    rttr_core
 )
 
 if(TARGET zlibstatic)
@@ -317,17 +332,23 @@ target_compile_definitions(${LIBRARY_NAME} PUBLIC MXENGINE_RCCPP_LIBRARY_COUNT=$
 if(WIN32)
     set(SHARED_LIBRARIES_PATHS
         ${openal_binary_dir}/OpenAL32.dll
+        ${glew_binary_dir}/libglew_shared.dll
         ${glfw_binary_dir}/src/glfw3.dll
+        ${rttr_binary_dir}/bin/rttr_core.dll
     )
 elseif(APPLE)
     set(SHARED_LIBRARIES_PATHS
         ${openal_binary_dir}/libopenal.1.dylib
+        ${glew_binary_dir}/libglew_shared.dylib
         ${glfw_binary_dir}/src/libglfw.3.dylib
+        ${rttr_binary_dir}/bin/rttr_core.dylib
     )	
 else()
     set(SHARED_LIBRARIES_PATHS
         ${openal_binary_dir}/libopenal.so.1
+        ${glew_binary_dir}/libglew_shared.so
         ${glfw_binary_dir}/src/libglfw.so.3
+        ${rttr_binary_dir}/bin/rttr_core.so
     )
 endif()
 

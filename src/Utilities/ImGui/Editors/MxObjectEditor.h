@@ -40,7 +40,7 @@ namespace MxEngine::GUI
 		MxObject& object, 
 		bool withBoundingBox,
 		const MxVector<const char*>& componentNames,
-		MxVector<std::function<void(MxObject&)>>& componentAdderCallbacks,
-		MxVector<std::function<void(MxObject&)>>& componentEditorCallbacks
+		const MxVector<void(*)(MxObject&)>& componentAdderCallbacks,
+		const MxVector<void(*)(MxObject&)>& componentEditorCallbacks
 	);
 }

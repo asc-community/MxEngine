@@ -28,30 +28,10 @@
 
 #pragma once
 
-#include "Core/Resources/AssetManager.h"
-#include "Core/Components/Lighting/LightBase.h"
-#include <optional>
-
-namespace MxEngine
-{
-	class Capsule;
-	class Cylinder;
-	class BoundingBox;
-}
+#include "Platform/GraphicAPI.h"
 
 namespace MxEngine::GUI
 {
-	void DrawTextureEditor(const char* name, TextureHandle& texture, std::optional<TextureFormat> loadingFormat);
-	void DrawCubeMapEditor(const char* name, CubeMapHandle& cubemap);
-	void DrawMeshEditor(const char* name, MeshHandle& mesh);
-	void DrawAABBEditor(const char* name, AABB& aabb);
-	void DrawBoxEditor(const char* name, BoundingBox& box);
-	void DrawSphereEditor(const char* name, BoundingSphere& sphere);
-	void DrawCylinderEditor(const char* name, Cylinder& cylinder);
-	void DrawCapsuleEditor(const char* name, Capsule& capsule);
-	void DrawLightBaseEditor(LightBase& base);
-	void DrawMaterialEditor(MaterialHandle& material);
-	void DrawVertexEditor(Vertex& vertex);
 	void DrawImageSaver(const TextureHandle& texture, const char* name = "save texture to disk");
 	void DrawTextureList(const char* name, bool* isOpen = nullptr);
 }

@@ -42,7 +42,7 @@ namespace MxEngine
             {
                 for (const auto& submesh : meshSource->Mesh->GetSubMeshes())
                 {
-                    auto box = submesh.GetBoundingBox() * (object.Transform.GetMatrix() * submesh.GetTransform().GetMatrix());
+                    auto box = submesh.GetAABB() * (object.Transform.GetMatrix() * submesh.GetTransform().GetMatrix());
                     buffer.Submit(box, debugDraw.BoundingBoxColor);
                 }
             }

@@ -47,6 +47,7 @@ namespace MxEngine
         ~AudioPlayer();
 
         void AttachBuffer(const AudioBuffer& buffer);
+        void DetachBuffer();
         void Play() const;
         void Stop() const;
         void Pause() const;

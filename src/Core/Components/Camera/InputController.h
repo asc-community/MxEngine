@@ -42,16 +42,22 @@ namespace MxEngine
 		std::array<KeyCode, 6> keybindings = {
 			KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN,
 		};
-		bool bindHorizontalRotation = false, bindVerticalRotation = false;
+		bool bindHorizontalRotation = false, bindVerticalRotation = false, bindMovement = false;
+		
+		void BindMovementCallback();
+		void BindRotationCallback();
 	public:
 		InputController() = default;
 		~InputController();
 
 		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right);
 		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down);
+		void BindMovementWASD();
+		void BindMovementWASDSpaceShift();
 		void BindRotation();
 		void BindHorizontalRotation();
 		void BindVerticalRotation();
+		void UnbindAll();
 
 		const Vector3& GetMotionVector() const;
 		KeyCode GetForwardKeyBinding() const;
@@ -62,5 +68,14 @@ namespace MxEngine
 		KeyCode GetDownKeyBinding() const;
 		bool IsVerticalRotationBound() const;
 		bool IsHorizontalRotationBound() const;
+
+		void SetForwardKeyBinding(KeyCode key);
+		void SetBackKeyBinding(KeyCode key);
+		void SetLeftKeyBinding(KeyCode key);
+		void SetRightKeyBinding(KeyCode key);
+		void SetUpKeyBinding(KeyCode key);
+		void SetDownKeyBinding(KeyCode key);
+		void ToggleVerticalRotationBound(bool value);
+		void ToggleHorizontalRotationBound(bool value);
 	};
 }

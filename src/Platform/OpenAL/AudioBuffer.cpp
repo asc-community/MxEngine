@@ -31,6 +31,7 @@
 #include "Utilities/Logging/Logger.h"
 #include "Utilities/Audio/AudioLoader.h"
 #include "Utilities/FileSystem/File.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -115,13 +116,6 @@ namespace MxEngine
         }
     }
 
-    template<>
-    AudioBuffer::AudioBuffer(const std::filesystem::path& path)
-        : AudioBuffer()
-    {
-        this->Load(path);
-    }
-
     AudioBuffer::BindableId AudioBuffer::GetNativeHandle() const
     {
         return id;
@@ -147,6 +141,21 @@ namespace MxEngine
         return this->sampleCount;
     }
 
+    static size_t Max(size_t v1, size_t v2)
+    {
+        return v1 > v2 ? v1 : v2;
+    }
+
+    float AudioBuffer::GetLength() const
+    {
+        return float(this->GetSampleCount()) / float(Max(this->GetFrequency(), 1));
+    }
+
+    size_t AudioBuffer::GetLengthInSeconds() const
+    {
+        return this->GetSampleCount() / Max(this->GetFrequency(), 1);
+    }
+
     AudioType AudioBuffer::GetAudioType() const
     {
         return this->type;
@@ -160,5 +169,65 @@ namespace MxEngine
     void AudioBuffer::SetInternalEngineTag(const MxString& tag)
     {
         this->filepath = tag;
+    }
+
+    namespace GUI
+    {
+        rttr::variant AudioBufferHandleEditorExtra(rttr::instance&);
+    }
+
+    const char* EnumToString(AudioType type)
+    {
+        auto t = rttr::type::get(type).get_enumeration();
+        return t.value_to_name(type).cbegin();
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::enumeration<AudioType>("AudioType")
+        (
+            rttr::value("WAV" , AudioType::WAV ),
+            rttr::value("MP3" , AudioType::MP3 ),
+            rttr::value("OGG" , AudioType::OGG ),
+            rttr::value("FLAC", AudioType::FLAC)
+        );
+
+        rttr::registration::class_<AudioBuffer>("AudioBuffer")
+            (
+                rttr::metadata(EditorInfo::HANDLE_EDITOR, GUI::HandleEditorExtra<AudioBuffer>)
+            )
+            .constructor<>()
+            .property_readonly("filepath", &AudioBuffer::GetFilePath)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property_readonly("length in seconds", &AudioBuffer::GetLengthInSeconds)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property_readonly("audio type", &AudioBuffer::GetAudioType)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property_readonly("frequency", &AudioBuffer::GetFrequency)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property_readonly("channel count", &AudioBuffer::GetChannelCount)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property_readonly("sample count", &AudioBuffer::GetSampleCount)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property_readonly("native handle", &AudioBuffer::GetNativeHandle)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property_readonly("native format", &AudioBuffer::GetNativeFormat)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            );
     }
 }

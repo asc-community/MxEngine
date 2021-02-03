@@ -62,9 +62,6 @@ namespace MxEngine
         };
     }
 
-    const char* EnumToString(CollisionGroup::Group mask);
-    const char* EnumToString(CollisionMask::Mask group);
-
     enum class ActivationState
     {
         ACTIVE_TAG = 1,

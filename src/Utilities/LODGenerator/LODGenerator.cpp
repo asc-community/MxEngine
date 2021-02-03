@@ -95,7 +95,7 @@ namespace MxEngine
             return result;
         }
 
-        Vector3 distance = mesh.GetBoundingBox().Length();
+        Vector3 distance = mesh.GetAABB().Length();
         float averageDistance = Dot(distance, MakeVector3(1.0f / 3.0f));
         if (averageDistance == 0.0f) averageDistance = 1.0f; //-V550
         this->PrepareIndexData(threshold * averageDistance);
@@ -104,8 +104,8 @@ namespace MxEngine
 
         auto& oldVertecies = mesh.GetVertecies();
         auto& oldIndicies  = mesh.GetIndicies();
-        auto& vertecies    = result.GetVertecies();
-        auto& indicies     = result.GetIndicies();
+        auto& vertecies    = result.GetVerteciesReference();
+        auto& indicies     = result.GetIndiciesReference();
 
         // collapse vertecies. If triangle has pair of equal verticies - ignore it
         indicies.reserve(oldIndicies.size());

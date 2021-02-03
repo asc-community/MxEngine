@@ -28,8 +28,7 @@
 
 #include "CylinderCollider.h"
 #include "Core/MxObject/MxObject.h"
-#include "Core/Components/Rendering/MeshSource.h"
-#include "Core/Components/Instancing/Instance.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -90,8 +89,68 @@ namespace MxEngine
         return this->cylinderShape->GetBoundingCylinder(transform);
     }
 
-    void CylinderCollider::SetBoundingCylinder(const Cylinder& cylinder)
+    Cylinder CylinderCollider::GetBoundingCylinderInternal() const
+    {
+        return this->GetNativeHandle()->GetBoundingCylinderUnchanged();
+    }
+
+    void CylinderCollider::SetBoundingCylinder(Cylinder cylinder)
     {
         this->CreateNewShape(cylinder);
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::enumeration<Cylinder::Axis>("CylinderAxis")
+        (
+            rttr::value("X", Cylinder::Axis::X),
+            rttr::value("Y", Cylinder::Axis::Y),
+            rttr::value("Z", Cylinder::Axis::Z)
+        );
+
+        rttr::registration::class_<Cylinder>("Cylinder")
+            (
+                rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<Cylinder>)
+            )
+            .constructor<>()
+            .property("orientation", &Cylinder::Orientation)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("center", &Cylinder::Center)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("height", &Cylinder::Height)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("radius x", &Cylinder::RadiusX)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("radius z", &Cylinder::RadiusZ)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("rotation", &Cylinder::Rotation)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
+            );
+
+        rttr::registration::class_<CylinderCollider>("CylinderCollider")
+            .constructor<>()
+            .property("bounding cylinder", &CylinderCollider::GetBoundingCylinderInternal, &CylinderCollider::SetBoundingCylinder)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            );
     }
 }

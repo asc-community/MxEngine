@@ -71,6 +71,7 @@ namespace MxEngine
 		TransformComponent& SetTranslation(const Vector3& dist);
 		TransformComponent& SetRotation(float angle, const Vector3& axis);
 		TransformComponent& SetRotation(const Quaternion& q);
+		TransformComponent& SetEulerRotation(const Vector3& angles);
 		TransformComponent& SetScale(const Vector3& scale);
 		TransformComponent& SetScale(float scale);
 		TransformComponent& SetPosition(const Vector3& position);

@@ -27,6 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Transform.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -176,6 +177,15 @@ namespace MxEngine
         return *this;
     }
 
+    TransformComponent& TransformComponent::SetEulerRotation(const Vector3& angles)
+    {
+        this->SetRotation(Quaternion{ 0.0f, 0.0f, 0.0f, 1.0f });
+        this->RotateX(angles.x);
+        this->RotateY(angles.y);
+        this->RotateZ(angles.z);
+        return *this;
+    }
+
     TransformComponent& TransformComponent::SetScale(const Vector3& scale)
     {
         this->scale = scale;
@@ -317,5 +327,33 @@ namespace MxEngine
         auto q = LookAtRotation(Normalize(MakeVector3(0.0f, v.y, v.z)), MakeVector3(1.0f, 0.0f, 0.00001f));
         this->SetRotation(q);
         return *this;
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        using Scale3 = TransformComponent& (TransformComponent::*)(const Vector3&);
+        using RotateQuat = TransformComponent& (TransformComponent::*)(const Quaternion&);
+
+        rttr::registration::class_<TransformComponent>("Transform")
+            (
+                rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<TransformComponent>)
+            )
+            .constructor<>()
+            .property("position", &TransformComponent::GetPosition, &TransformComponent::SetPosition)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
+            )
+            .property("rotation", &TransformComponent::GetRotation, (RotateQuat)&TransformComponent::SetRotation)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
+            )
+            .property("scale", &TransformComponent::GetScale, (Scale3)&TransformComponent::SetScale)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.01f, 100.0f })
+            );
     }
 }

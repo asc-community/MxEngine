@@ -32,8 +32,8 @@ namespace GrassSample
             auto grassInstances = grass->AddComponent<InstanceFactory>();
             for (size_t i = 0; i < 10000; i++)
             {
-                auto g1 = grassInstances->MakeInstance();
-                auto g2 = grassInstances->MakeInstance();
+                auto g1 = grassInstances->Instanciate();
+                auto g2 = grassInstances->Instanciate();
                 float x = Random::GetFloat() * 20.0f - 10.0f;
                 float z = Random::GetFloat() * 20.0f - 10.0f;
                 float r = Random::GetFloat() * 180.0f - 90.0f;
@@ -62,12 +62,12 @@ namespace GrassSample
             {
                 for (size_t j = 0; j < lightRowSize; j++)
                 {
-                    auto object = lightFactory->MakeInstance();
+                    auto object = lightFactory->Instanciate();
                     object->Transform.SetPosition(Vector3((float)i - lightRowSize / 2, 0.5f, (float)j - lightRowSize / 2) * 0.2f);
                     object->Transform.Scale(0.1f);
 
                     auto pointLight = object->AddComponent<PointLight>();
-                    pointLight->UseRadius(0.25f);
+                    pointLight->SetRadius(0.25f);
 
                     float r = Random::GetFloat();
                     float g = Random::GetFloat();

@@ -30,6 +30,10 @@
 
 #include "Core/Macro/Macro.h"
 
+#if defined(GLEW_BUILD)
+#undef GLEW_BUILD
+#endif
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 

@@ -107,6 +107,11 @@ namespace MxEngine
         return cylinder;
     }
 
+    Cylinder CylinderShape::GetNativeBounding() const
+    {
+        return this->GetBoundingCylinderUnchanged();
+    }
+
     Cylinder::Axis CylinderShape::GetOrientation() const
     {
         return this->orientation;

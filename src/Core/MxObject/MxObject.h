@@ -59,7 +59,7 @@ namespace MxEngine
 		ComponentManager components;
 	public:
 		static Handle Create();
-		static void Destroy(Handle& object);
+		static void Destroy(Handle object);
 		static void Destroy(MxObject& object);
 
 		static ComponentView<MxObject> GetObjects();

@@ -16,5 +16,6 @@ MxEngine is not a huge framework so multiple third-party libraries are used. Her
 - [ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo) - object transform manipulator based on ImGui
 - [stduuid](https://github.com/mariusbancila/stduuid) - A C++17 cross-platform single-header library implementation for universally unique identifiers
 - [RCC++](https://github.com/RuntimeCompiledCPlusPlus/RuntimeCompiledCPlusPlus) - cross-platform library for C++ runtime code compilation
+- [RTTR](https://github.com/rttrorg/rttr) - runtime type reflection library for C++ 
 
 Note that MxEngine may include more additional libraries in further releases. It also uses [Boost library](https://www.boost.org) in its core, but does not expose it to user-code. Engine requires at least C++17-compatable compiler as it depends on some new STL features. All source files were successfully compiled and tested using MSVC through CMake on Windows and Linux

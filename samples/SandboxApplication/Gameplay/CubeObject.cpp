@@ -47,7 +47,7 @@ void InitCube(MxObject& cube)
 
 	for (size_t i = 0; i < 100; i++)
 	{
-		instances->MakeInstance();
+		instances->Instanciate();
 	}
 
 	auto cubeTexture = AssetManager::LoadTexture("Resources/objects/crate/crate.jpg"_id);

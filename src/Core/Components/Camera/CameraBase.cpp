@@ -88,7 +88,12 @@ namespace MxEngine
 
     void CameraBase::SetAspectRatio(float w, float h)
     {
-        this->aspectRatio = w / h;
+        this->SetAspectRatio(w / h);
+    }
+
+    void CameraBase::SetAspectRatio(float ratio)
+    {
+        this->aspectRatio = ratio;
         this->UpdateProjection = true;
     }
 

@@ -51,7 +51,7 @@ namespace MxEngine
 
         using TimeDelta = float;
 
-        using BehaviourImpl = MxFunction<void(MxObject&, TimeDelta)>::type;
+        using BehaviourImpl = MxFunction<void(MxObject&, TimeDelta)>;
 
         BehaviourImpl userBehaviour;
         TimeDelta timeLeft = 0.0f;

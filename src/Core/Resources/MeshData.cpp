@@ -27,6 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "MeshData.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -61,7 +62,7 @@ namespace MxEngine
         return this->IBO;
     }
 
-    const AABB& MeshData::GetBoundingBox() const
+    const AABB& MeshData::GetAABB() const
     {
         return this->boundingBox;
     }
@@ -71,16 +72,17 @@ namespace MxEngine
         return this->boundingSphere;
     }
 
-    MeshData::VertexData& MeshData::GetVertecies()
+    MeshData::VertexData& MeshData::GetVerteciesReference()
     {
         return this->vertecies;
     }
+
     const MeshData::VertexData& MeshData::GetVertecies() const
     {
         return this->vertecies;
     }
 
-    MeshData::IndexData& MeshData::GetIndicies()
+    MeshData::IndexData& MeshData::GetIndiciesReference()
     {
         return this->indicies;
     }
@@ -88,6 +90,41 @@ namespace MxEngine
     const MeshData::IndexData& MeshData::GetIndicies() const
     {
         return this->indicies;
+    }
+
+    void MeshData::SetVertecies(const VertexData& vertecies)
+    {
+        this->vertecies = vertecies;
+    }
+
+    void MeshData::SetIndicies(const IndexData& indicies)
+    {
+        this->indicies = indicies;
+    }
+
+    size_t MeshData::GetVerteciesCount() const
+    {
+        return this->GetVBO()->GetSize() / Vertex::Size;
+    }
+
+    size_t MeshData::GetIndiciesCount() const
+    {
+        return this->GetIBO()->GetCount();
+    }
+
+    void MeshData::SetVertecies(VertexData&& vertecies)
+    {
+        this->vertecies = std::move(vertecies);
+    }
+
+    void MeshData::SetIndicies(IndexData&& indicies)
+    {
+        this->indicies = std::move(indicies);
+    }
+
+    void MeshData::BufferVertecies()
+    {
+        this->BufferVertecies(UsageType::STATIC_DRAW);
     }
 
     void MeshData::BufferVertecies(UsageType usageType)
@@ -104,8 +141,13 @@ namespace MxEngine
 
     void MeshData::BufferIndicies()
     {
+        this->BufferIndicies(UsageType::STATIC_DRAW);
+    }
+
+    void MeshData::BufferIndicies(UsageType usageType)
+    {
         auto data = reinterpret_cast<uint32_t*>(this->indicies.data());
-        this->IBO->Load(data, this->indicies.size());
+        this->IBO->Load(data, this->indicies.size(), usageType);
     }
 
     void MeshData::UpdateBoundingGeometry()
@@ -220,5 +262,93 @@ namespace MxEngine
             vertecies[i].Tangent = Normalize(vertecies[i].Tangent);
             vertecies[i].Bitangent = Normalize(vertecies[i].Bitangent);
         }
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        using BufferVerteciesFunc = void(MeshData::*)();
+        using GetVerteciesFunc = const MxVector<Vertex>& (MeshData::*)();
+        using SetVerteciesFunc = void (MeshData::*)(const MxVector<Vertex>&);
+        // using BufferIndiciesFunc = void(MeshData::*)();
+        // using GetIndiciesFunc = const MxVector<uint32_t>& (MeshData::*)();        
+        // using SetIndiciesFunc = void (MeshData::*)(const MxVector<uint32_t>&);
+
+        rttr::registration::class_<Vertex>("Vertex")
+            (
+                rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<Vertex>)
+            )
+            .constructor<>()
+            .property("position", &Vertex::Position)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("tex coord", &Vertex::TexCoord)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("normal", &Vertex::Normal)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("tangent", &Vertex::Tangent)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("bitangent", &Vertex::Bitangent)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            );
+
+        rttr::registration::class_<MeshData>("MeshData")
+            (
+                rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<MeshData>)
+            )
+            .constructor<>()
+            .property_readonly("vertecies count", &MeshData::GetVerteciesCount)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property_readonly("indicies count", &MeshData::GetIndiciesCount)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("vertecies", (GetVerteciesFunc)&MeshData::GetVertecies, (SetVerteciesFunc)&MeshData::SetVertecies)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 100.0f })
+            )
+            .property_readonly("aabb", &MeshData::GetAABB)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property_readonly("bounding sphere", &MeshData::GetBoundingSphere)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .method("free mesh data copy", &MeshData::FreeMeshDataCopy)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .method("update bounding geometry", &MeshData::UpdateBoundingGeometry)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .method("regenerate normals", &MeshData::RegenerateNormals)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .method("regenerate tangent space", &MeshData::RegenerateTangentSpace)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .method("buffer vertecies", (BufferVerteciesFunc)&MeshData::BufferVertecies)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            );
     }
 }

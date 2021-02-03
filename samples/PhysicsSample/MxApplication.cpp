@@ -40,7 +40,7 @@ namespace PhysicsSample
                 float y = i / cubeConstraintsC % cubeConstraintsB * size;                      //-V104 //-V636
                 float z = i % cubeConstraintsC * size;                                         //-V104 //-V636
 
-                auto object = physicalObjectFactory->MakeInstance();
+                auto object = physicalObjectFactory->Instanciate();
                 object->Name = "Cube Instance";
 
                 object->Transform.SetPosition(Vector3(x, y + offset, z));
@@ -77,7 +77,7 @@ namespace PhysicsSample
 
         void CreateShot()
         {
-            auto object = shotFactory->MakeInstance();
+            auto object = shotFactory->Instanciate();
             object->Name = "Bullet Instance";
 
             if (debugPhysics)
@@ -168,6 +168,7 @@ namespace PhysicsSample
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Direction = MakeVector3(0.1f, 1.0f, 0.0f);
             dirLight->FollowViewport();
+            dirLight->Projections[0] = 50.0f;
             dirLight->Projections[1] = 200.0f;
 
             // create factories for physical objects and player shots

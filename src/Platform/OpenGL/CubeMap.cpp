@@ -31,6 +31,7 @@
 #include "Utilities/Image/ImageLoader.h"
 #include "Utilities/Logging/Logger.h"
 #include "Utilities/FileSystem/File.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -295,5 +296,39 @@ namespace MxEngine
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 		GLCALL(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
+	}
+
+	MXENGINE_REFLECT_TYPE
+	{
+		rttr::registration::class_<CubeMap>("CubeMap")
+			(
+				rttr::metadata(EditorInfo::HANDLE_EDITOR, GUI::HandleEditorExtra<CubeMap>)
+			)
+			.constructor<>()
+			.property_readonly("filepath", &CubeMap::GetFilePath)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+			)
+			.property_readonly("width", &CubeMap::GetWidth)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("height", &CubeMap::GetHeight)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("channel count", &CubeMap::GetChannelCount)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("native handle", &CubeMap::GetNativeHandle)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property_readonly("editor-preview", &CubeMap::GetBoundId)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<CubeMap>)
+			);
 	}
 }

@@ -71,4 +71,9 @@ namespace MxEngine
         auto box = ToBoundingBox(aabb);
         return box;
     }
+
+    BoundingBox BoxShape::GetNativeBounding() const
+    {
+        return this->GetBoundingBoxUnchanged();
+    }
 }

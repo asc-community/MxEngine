@@ -57,4 +57,7 @@ namespace MxEngine
 
 		constexpr static size_t TextureCount = 7;
 	};
+
 }
+
+MXENGINE_FORCE_REFLECTION(Material);

@@ -58,7 +58,7 @@ namespace MxEngine
 		AudioSource() = default;
 		AudioSource(const AudioBufferHandle& buffer);
 
-		void Load(const AudioBufferHandle& buffer);
+		void Load(AudioBufferHandle buffer);
 		AudioBufferHandle GetLoadedSource() const;
 
 		void Play();
@@ -66,6 +66,7 @@ namespace MxEngine
 		void Pause();
 		void Reset();
 		void Replay();
+		void SetPlaying(bool isPlaying);
 		void SetVolume(float volume);
 		void SetLooping(bool value);
 		void SetRelative(bool value);
@@ -83,7 +84,7 @@ namespace MxEngine
 		bool IsPlaying() const;
 		bool IsRelative() const;
 		float GetVolume() const;
-		float GetSpeed() const;
+		float GetPlaybackSpeed() const;
 		float GetOuterAngleVolume() const;
 		float GetOuterAngle() const;
 		float GetInnerAngle() const;

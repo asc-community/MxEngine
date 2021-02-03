@@ -45,11 +45,11 @@ namespace MxEngine
     public:
         PointLight() = default;
 
-        bool IsCastingShadows() const;
+        [[nodiscard]] bool IsCastingShadows() const;
         void ToggleShadowCast(bool value);
 
         [[nodiscard]] float GetRadius() const;
-        PointLight& UseRadius(float radius);
+        void SetRadius(float radius);
 
         [[nodiscard]] CubeMapHandle GetDepthCubeMap() const;
         void AttachDepthCubeMap(const CubeMapHandle& cubemap);

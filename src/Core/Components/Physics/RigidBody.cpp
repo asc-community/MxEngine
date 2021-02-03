@@ -36,6 +36,7 @@
 #include "Utilities/Logging/Logger.h"
 #include "Platform/Bullet3/Bullet3Utils.h"
 #include "Core/Application/Physics.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -214,6 +215,26 @@ namespace MxEngine
         return this->rigidBody->IsMoving();
     }
 
+    void RigidBody::SetStateDynamic(bool value)
+    {
+        if (value) this->MakeDynamic();
+    }
+
+    void RigidBody::SetStateStatic(bool value)
+    {
+        if (value) this->MakeStatic();
+    }
+
+    void RigidBody::SetStateKinematic(bool value)
+    {
+        if (value) this->MakeKinematic();
+    }
+
+    void RigidBody::SetStateTrigger(bool value)
+    {
+        if (value) this->MakeTrigger();
+    }
+
     void RigidBody::SetCollisionFilter(uint32_t mask, uint32_t group)
     {
         this->rigidBody->SetCollisionFilter(group, mask);
@@ -314,7 +335,7 @@ namespace MxEngine
         return this->rigidBody->GetNativeHandle()->setRollingFriction(value);
     }
 
-    void RigidBody::SetLinearVelocity(const Vector3& velocity)
+    void RigidBody::SetLinearVelocity(Vector3 velocity)
     {
         this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->setLinearVelocity(ToBulletVector3(velocity));
@@ -335,7 +356,7 @@ namespace MxEngine
         return FromBulletVector3(this->rigidBody->GetNativeHandle()->getGravity());
     }
 
-    void RigidBody::SetGravity(const Vector3& gravity)
+    void RigidBody::SetGravity(Vector3 gravity)
     {
         this->rigidBody->GetNativeHandle()->setGravity(ToBulletVector3(gravity));
     }
@@ -345,7 +366,7 @@ namespace MxEngine
         return FromBulletVector3(this->rigidBody->GetNativeHandle()->getLinearVelocity());
     }
 
-    void RigidBody::SetAngularVelocity(const Vector3& velocity)
+    void RigidBody::SetAngularVelocity(Vector3 velocity)
     {
         this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->setAngularVelocity(ToBulletVector3(velocity));
@@ -366,7 +387,7 @@ namespace MxEngine
         return FromBulletVector3(this->rigidBody->GetNativeHandle()->getAngularFactor());
     }
 
-    void RigidBody::SetAngularForceFactor(const Vector3& factor)
+    void RigidBody::SetAngularForceFactor(Vector3 factor)
     {
         this->rigidBody->GetNativeHandle()->setAngularFactor(ToBulletVector3(factor));
     }
@@ -376,7 +397,7 @@ namespace MxEngine
         return FromBulletVector3(this->rigidBody->GetNativeHandle()->getLinearFactor());
     }
 
-    void RigidBody::SetLinearForceFactor(const Vector3& factor)
+    void RigidBody::SetLinearForceFactor(Vector3 factor)
     {
         this->rigidBody->GetNativeHandle()->setLinearFactor(ToBulletVector3(factor));
     }
@@ -401,12 +422,12 @@ namespace MxEngine
         return this->rigidBody->GetNativeHandle()->getLinearDamping();
     }
 
-    Vector3 RigidBody::GetTotalForce() const
+    Vector3 RigidBody::GetTotalForceApplied() const
     {
         return FromBulletVector3(this->rigidBody->GetNativeHandle()->getTotalForce());
     }
 
-    Vector3 RigidBody::GetTotalTorque() const
+    Vector3 RigidBody::GetTotalTorqueApplied() const
     {
         return FromBulletVector3(this->rigidBody->GetNativeHandle()->getTotalTorque());
     }
@@ -416,23 +437,23 @@ namespace MxEngine
         return FromBulletVector3(this->rigidBody->GetNativeHandle()->getLocalInertia());
     }
 
-    Vector3 RigidBody::GetVelocityInPoint(const Vector3& relativePosition)
+    Vector3 RigidBody::GetVelocityInPoint(Vector3 relativePosition)
     {
         return FromBulletVector3(this->rigidBody->GetNativeHandle()->getVelocityInLocalPoint(ToBulletVector3(relativePosition)));
     }
 
-    Vector3 RigidBody::GetPushVelocityInPoint(const Vector3& relativePosition)
+    Vector3 RigidBody::GetPushVelocityInPoint(Vector3 relativePosition)
     {
         return FromBulletVector3(this->rigidBody->GetNativeHandle()->getPushVelocityInLocalPoint(ToBulletVector3(relativePosition)));
     }
 
-    void RigidBody::ApplyCentralImpulse(const Vector3& impulse)
+    void RigidBody::ApplyCentralImpulse(Vector3 impulse)
     {
         this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->applyCentralImpulse(ToBulletVector3(impulse));
     }
 
-    void RigidBody::ApplyCentralPushImpulse(const Vector3& impulse)
+    void RigidBody::ApplyCentralPushImpulse(Vector3 impulse)
     {
         this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->applyCentralPushImpulse(ToBulletVector3(impulse));
@@ -480,7 +501,7 @@ namespace MxEngine
         this->rigidBody->GetNativeHandle()->applyCentralForce(ToBulletVector3(force));
     }
 
-    void RigidBody::SetPushVelocity(const Vector3& velocity)
+    void RigidBody::SetPushVelocity(Vector3 velocity)
     {
         this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->setPushVelocity(ToBulletVector3(velocity));
@@ -491,7 +512,7 @@ namespace MxEngine
         return FromBulletVector3(this->rigidBody->GetNativeHandle()->getPushVelocity());
     }
 
-    void RigidBody::SetTurnVelocity(const Vector3& velocity)
+    void RigidBody::SetTurnVelocity(Vector3 velocity)
     {
         this->rigidBody->Activate();
         this->rigidBody->GetNativeHandle()->setTurnVelocity(ToBulletVector3(velocity));
@@ -502,9 +523,14 @@ namespace MxEngine
         return FromBulletVector3(this->rigidBody->GetNativeHandle()->getTurnVelocity());
     }
 
-    void RigidBody::SetAnisotropicFriction(const Vector3& friction, AnisotropicFriction mode)
+    void RigidBody::SetAnisotropicFriction(Vector3 friction, AnisotropicFriction mode)
     {
         this->rigidBody->GetNativeHandle()->setAnisotropicFriction(ToBulletVector3(friction), (int)mode);
+    }
+
+    void RigidBody::SetAnisotropicFriction(Vector3 friction)
+    {
+        this->SetAnisotropicFriction(friction, this->HasAnisotropicFriction() ? AnisotropicFriction::ENABLED : AnisotropicFriction::DISABLED);
     }
 
     bool RigidBody::HasAnisotropicFriction() const
@@ -512,8 +538,150 @@ namespace MxEngine
         return this->rigidBody->GetNativeHandle()->hasAnisotropicFriction();
     }
 
+    void RigidBody::ToggleAnisotropicFriction(bool value)
+    {
+        this->SetAnisotropicFriction(this->GetAnisotropicFriction(), value ? AnisotropicFriction::ENABLED : AnisotropicFriction::DISABLED);
+    }
+
     Vector3 RigidBody::GetAnisotropicFriction() const
     {
         return FromBulletVector3(this->rigidBody->GetNativeHandle()->getAnisotropicFriction());
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        using SetAnisotropicFrictionFunc = void(RigidBody::*)(Vector3);
+
+        rttr::registration::class_<RigidBody>("RigidBody")
+            .constructor<>()
+            .method("clear forces", &RigidBody::ClearForces)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .method("activate", &RigidBody::Activate)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("is static", &RigidBody::IsStatic, &RigidBody::SetStateStatic)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("is dynamic", &RigidBody::IsDynamic, &RigidBody::SetStateDynamic)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("is kinematic", &RigidBody::IsKinematic, &RigidBody::SetStateKinematic)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("is trigger", &RigidBody::IsTrigger, &RigidBody::SetStateTrigger)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("is ray castable", &RigidBody::IsRayCastable, &RigidBody::ToggleRayCasting)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property_readonly("is moving", &RigidBody::IsMoving)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property_readonly("total force", &RigidBody::GetTotalForceApplied)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property_readonly("total torque", &RigidBody::GetTotalTorqueApplied)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property_readonly("intertia", &RigidBody::GetInertia)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("mass", &RigidBody::GetMass, &RigidBody::SetMass)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.001f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("friction", &RigidBody::GetFriction, &RigidBody::SetFriction)
+            (
+                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                 rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 1.0f }),
+                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("bounce factor", &RigidBody::GetBounceFactor, &RigidBody::SetBounceFactor)
+            (
+                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                 rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 1.0f }),
+                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("linear velocity", &RigidBody::GetLinearVelocity, &RigidBody::SetLinearVelocity)
+            (
+                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("angular velocity", &RigidBody::GetAngularVelocity, &RigidBody::SetAngularVelocity)
+            (
+                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("push velocity", &RigidBody::GetPushVelocity, &RigidBody::SetPushVelocity)
+            (
+                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("turn velocity", &RigidBody::GetTurnVelocity, &RigidBody::SetTurnVelocity)
+            (
+                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("linear force factor", &RigidBody::GetLinearForceFactor, &RigidBody::SetLinearForceFactor)
+            (
+                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("angular force factor", &RigidBody::GetAngularForceFactor, &RigidBody::SetAngularForceFactor)
+            (
+                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("linear air resistance", &RigidBody::GetLinearAirResistance, &RigidBody::SetLinearAirResistance)
+            (
+                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("angular air resistance", &RigidBody::GetAngularAirResistance, &RigidBody::SetAngularAirResistance)
+            (
+                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("has anisotropic friction", &RigidBody::HasAnisotropicFriction, &RigidBody::ToggleAnisotropicFriction)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("anisotropic friction", &RigidBody::GetAnisotropicFriction, (SetAnisotropicFrictionFunc)&RigidBody::SetAnisotropicFriction)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 1.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("gravity", &RigidBody::GetGravity, &RigidBody::SetGravity)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("rolling friction", &RigidBody::GetRollingFriction, &RigidBody::SetRollingFriction)
+            (
+                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                 rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 1.0f }),
+                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("spinning friction", &RigidBody::GetSpinningFriction, &RigidBody::SetSpinningFriction)
+            (
+                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                 rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 1.0f }),
+                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            );
     }
 }

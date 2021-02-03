@@ -61,4 +61,9 @@ namespace MxEngine
     {
         this->DestroyShape();
     }
+
+    BoundingSphere SphereShape::GetNativeBounding() const
+    {
+        return this->GetBoundingSphereUnchanged();
+    }
 }

@@ -179,12 +179,11 @@ namespace MxEngine
 		const InstancePool& GetInstancePool() const { return this->pool; }
 		InstancePool& GetInstancePool() { return this->pool; };
 		size_t GetCount() const { return this->GetInstancePool().Allocated(); }
-        auto GetInstances() { return InstanceView{ this->pool }; }
         auto GetInstances() const { return InstanceView{ this->pool }; }
 
 		void Init();
 		void OnUpdate(float timeDelta);
-		MxObject::Handle MakeInstance();
+		MxObject::Handle Instanciate();
         void SubmitInstances();
 		void DestroyInstances();
 

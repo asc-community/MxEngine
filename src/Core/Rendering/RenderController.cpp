@@ -936,6 +936,7 @@ namespace MxEngine
 		if (this->Pipeline.Environment.DebugBufferObject.VertexCount == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawDebugBuffer()");
 
+		this->GetRenderEngine().UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA);
 		this->GetRenderEngine().UseDepthBuffer(!this->Pipeline.Environment.OverlayDebugDraws); //-V807
 
 		auto& shader = *this->Pipeline.Environment.Shaders["DebugDraw"_id];
@@ -945,6 +946,7 @@ namespace MxEngine
 		this->DrawLines(*this->Pipeline.Environment.DebugBufferObject.VAO, this->Pipeline.Environment.DebugBufferObject.VertexCount, 0);
 
 		this->GetRenderEngine().UseDepthBuffer(true);
+		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
 	EnvironmentUnit& RenderController::GetEnvironment()
@@ -1057,10 +1059,11 @@ namespace MxEngine
 		baseLightData->AmbientIntensity = light.GetAmbientIntensity();
 		baseLightData->Color = light.GetIntensity() * light.GetColor();
 		baseLightData->Position = parentTransform.GetPosition();
-		baseLightData->Direction = Normalize(light.Direction);
 		baseLightData->Transform = light.GetPyramidTransform(parentTransform.GetPosition());
 		baseLightData->InnerAngle = light.GetInnerCos();
 		baseLightData->OuterAngle = light.GetOuterCos();
+		// pack max distance to normalized direction vector (see spotlight vertex shader)
+		baseLightData->Direction = light.GetMaxDistance() * Normalize(light.Direction);
 	}
 
 	void RenderController::SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
@@ -1083,7 +1086,7 @@ namespace MxEngine
 		camera.HDRTexture                 = controller.GetHDRTexture();
 		camera.SwapTexture                = controller.GetSwapHDRTexture();
 		camera.OutputTexture              = controller.GetRenderTexture();
-		camera.RenderToTexture            = controller.IsRendered();
+		camera.RenderToTexture            = controller.IsRendering();
 		camera.SkyboxTexture              = (skybox != nullptr && skybox->CubeMap.IsValid()) ? skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;
 		camera.IrradianceTexture          = (skybox != nullptr && skybox->Irradiance.IsValid()) ? skybox->Irradiance : camera.SkyboxTexture;
 		camera.SkyboxIntensity            = (skybox != nullptr) ? skybox->GetIntensity() : Skybox::DefaultIntensity;
@@ -1098,7 +1101,9 @@ namespace MxEngine
 	{
 		RenderUnit* primitivePtr = nullptr;
 		// filter transparent object to render in separate order
-		if (material.Transparency < 1.0f)
+		if (material.Transparency == 0.0f)
+			return;
+		else if (material.Transparency < 1.0f)
 			primitivePtr = &this->Pipeline.TransparentRenderUnits.emplace_back();
 		else
 			primitivePtr = &this->Pipeline.OpaqueRenderUnits.emplace_back();
@@ -1116,7 +1121,7 @@ namespace MxEngine
 		#endif
 
 		// compute aabb of primitive object for later frustrum culling
-		auto aabb = submesh.Data.GetBoundingBox() * primitive.ModelMatrix;
+		auto aabb = submesh.Data.GetAABB() * primitive.ModelMatrix;
 		primitive.MinAABB = aabb.Min;
 		primitive.MaxAABB = aabb.Max;
 

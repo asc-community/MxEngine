@@ -46,6 +46,7 @@ namespace MxEngine
 		stbi_set_flip_vertically_on_load(flipImage);
 		int width, height, channels;
 		uint8_t* data = stbi_load(filepath.string().c_str(), &width, &height, &channels, STBI_rgb_alpha);
+		if (data == nullptr) { width = height = 0; }
 		channels = 4;
 		return Image(data, (size_t)width, (size_t)height, (size_t)channels, false);
 	}
@@ -59,6 +60,7 @@ namespace MxEngine
 		stbi_set_flip_vertically_on_load(flipImage);
 		int width, height, channels;
 		uint8_t* data = stbi_load_from_memory(memory, (int)byteSize, &width, &height, &channels, STBI_rgb_alpha);
+		if (data == nullptr) { width = height = 0; }
 		channels = 4;
 		return Image(data, (size_t)width, (size_t)height, (size_t)channels, false);
 	}

@@ -57,10 +57,8 @@ namespace MxEngine
 	constexpr ImageType PreferredFormat = ImageType::PNG;
 	const char* const PreferredExtension = ".png";
 
-	void SaveRoughnessMetallicTexture(const Image& image, const MxString& roughnessName, const MxString& metallicName, const FilePath& saveDirectory)
+	void SaveRoughnessMetallicTexture(const Image& image, const FilePath& roughnessPath, const FilePath& metallicPath)
 	{
-		auto roughnessPath = saveDirectory /  ToFilePath(roughnessName + PreferredExtension);
-		auto metallicPath  = saveDirectory /  ToFilePath(metallicName + PreferredExtension);
 		if (File::Exists(roughnessPath) || File::Exists(metallicPath))
 			return; // avoid rewriting existing textures
 
@@ -128,7 +126,9 @@ namespace MxEngine
 
 	void SplitRoughnessMetallicTexture(const FilePath& lookupDirectory, const MxString& roughness, const MxString& metallic, const aiScene* scene, const aiMaterial* material, aiTextureType metallicRoughnessType)
 	{
-		if (File::Exists(metallic) && File::Exists(roughness)) return;
+		auto roughnessPath = lookupDirectory / ToFilePath(roughness + PreferredExtension);
+		auto metallicPath = lookupDirectory / ToFilePath(metallic + PreferredExtension);
+		if (File::Exists(metallicPath) && File::Exists(roughnessPath)) return;
 
 		if (material->GetTextureCount(metallicRoughnessType) > 0)
 		{
@@ -149,12 +149,12 @@ namespace MxEngine
 					else
 						image = ImageLoader::LoadImageFromMemory((const uint8_t*)data->pcData, data->mWidth * data->mHeight * sizeof(aiTexel));
 
-					SaveRoughnessMetallicTexture(image, roughness, metallic, lookupDirectory);
+					SaveRoughnessMetallicTexture(image, roughnessPath, metallicPath);
 				}
 				else
 				{
 					Image image = ImageLoader::LoadImage(lookupDirectory / filepath);
-					SaveRoughnessMetallicTexture(image, roughness, metallic, lookupDirectory);
+					SaveRoughnessMetallicTexture(image, roughnessPath, metallicPath);
 				}
 			}
 		}

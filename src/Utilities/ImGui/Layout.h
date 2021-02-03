@@ -93,6 +93,26 @@ namespace MxEngine::GUI
     }
 
     /*!
+    creates input field for an int and apply-button next to it
+    \param title input field title
+    \param v value in which input will be stored
+    \param buttonText text of apply-button
+    \returns true if button was pressed, false either
+    */
+    inline bool InputIntOnClick(int* v, const char* buttonText = "apply")
+    {
+        ImGui::PushID(0xCC);
+        ImGui::AlignTextToFramePadding();
+        ImGui::PushItemWidth(100.0f);
+        ImGui::InputInt("", v); 
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
+        bool result = ImGui::Button(buttonText);
+        ImGui::PopID();
+        return result;
+    }
+
+    /*!
     creates input field for a float and apply-button next to it
     \param title input field title
     \param v value in which input will be stored

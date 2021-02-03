@@ -47,3 +47,5 @@ namespace MxEngine
         MeshSource& operator=(const MeshHandle& mesh) { this->Mesh = mesh; return *this; }
     };
 }
+
+MXENGINE_FORCE_REFLECTION(MeshSource);

@@ -28,6 +28,7 @@
 
 #include "SpotLight.h"
 #include "Core/Config/GlobalConfig.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -82,26 +83,23 @@ namespace MxEngine
         return this->maxDistance;
     }
 
-    SpotLight& SpotLight::UseInnerAngle(float angle)
+    void SpotLight::SetInnerAngle(float angle)
     {
         this->innerAngle = Clamp(angle * 0.5f, 0.0f, this->outerAngle - 0.01f);
         this->innerCos = std::cos(Radians(this->innerAngle));
-        return *this;
     }
 
-    SpotLight& SpotLight::UseOuterAngle(float angle)
+    void SpotLight::SetOuterAngle(float angle)
     {
         this->outerAngle = Clamp(angle * 0.5f, 0.0f, 90.0f);
         this->outerCos = std::cos(Radians(this->outerAngle));
         // update inner as it can be larger than outer
-        this->UseInnerAngle(this->GetInnerAngle()); 
-        return *this;
+        this->SetInnerAngle(this->GetInnerAngle()); 
     }
 
-    SpotLight& SpotLight::UseMaxDistance(float zvalue)
+    void SpotLight::SetMaxDistance(float zvalue)
     {
         this->maxDistance = Max(1.2f, zvalue);
-        return *this;
     }
 
     TextureHandle SpotLight::GetDepthTexture() const
@@ -117,14 +115,14 @@ namespace MxEngine
     Matrix4x4 SpotLight::GetMatrix(const Vector3& position) const
     {
         auto Projection = MakePerspectiveMatrix(Radians(2.0f * this->outerAngle), 1.0f, 1.1f, this->maxDistance);
-        auto directionNorm = Normalize(MakeVector3(
+        auto normalizedDirection = Normalize(MakeVector3(
             this->Direction.x + 0.0001f,
             this->Direction.y,
             this->Direction.z + 0.0001f
         ));
         auto View = MakeViewMatrix(
             position,
-            position + directionNorm,
+            position + normalizedDirection,
             MakeVector3(0.0f, 1.0f, 0.0f)
         );
         return Projection * View;
@@ -138,5 +136,58 @@ namespace MxEngine
         auto R = ToMatrix(LookAtRotation(-Normalize(this->Direction), MakeVector3(0.1f, 1.0f, 0.1f)));
         auto S = Scale(I, MakeVector3(fov * this->maxDistance, fov * this->maxDistance, this->maxDistance));
         return T * R * S;
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<SpotLight>("SpotLight")
+            .constructor<>()
+            .property("color", &SpotLight::GetColor, &SpotLight::SetColor)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::INTERPRET_AS, InterpretAsInfo::COLOR)
+            )
+            .property("intensity", &SpotLight::GetIntensity, &SpotLight::SetIntensity)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f })
+            )
+            .property("ambient intensity", &SpotLight::GetAmbientIntensity, &SpotLight::SetAmbientIntensity)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1.0f })
+            )
+            .property("direction", &SpotLight::Direction)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+            )
+            .property("outer angle", &SpotLight::GetOuterAngle, &SpotLight::SetOuterAngle)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
+            )
+            .property("inner angle", &SpotLight::GetInnerAngle, &SpotLight::SetInnerAngle)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
+            )
+            .property("max distance", &SpotLight::GetMaxDistance, &SpotLight::SetMaxDistance)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
+            )
+            .property("casts shadows", &SpotLight::IsCastingShadows, &SpotLight::ToggleShadowCast)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property_readonly("depth texture", &SpotLight::GetDepthTexture)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::VIEW_CONDITION, +([](rttr::instance& obj) { return obj.try_convert<SpotLight>()->IsCastingShadows(); }))
+            );
     }
 }

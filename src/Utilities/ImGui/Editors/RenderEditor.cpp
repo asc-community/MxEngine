@@ -27,8 +27,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "RenderEditor.h"
-#include "ComponentEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
+#include "Utilities/ImGui/Editors/Components/ComponentEditor.h"
 #include "Core/Application/Rendering.h"
 #include "Platform/Window/WindowManager.h"
 
@@ -73,11 +73,33 @@ namespace MxEngine
 
         if (ImGui::TreeNode("renderer viewport"))
         {
+            auto view = ComponentFactory::GetView<CameraController>();
             auto viewport = Rendering::GetViewport();
+
+            int id = 0;
+            ImGui::Text("objects with CameraController attached:");
+            ImGui::Indent(10.0f);
+            for (auto& component : view)
+            {
+                auto& object = MxObject::GetByComponent(component);
+                auto componentHandle = MxObject::GetComponentHandle(component);
+                ImGui::PushID(id++);
+                bool isSelected = viewport == componentHandle;
+                if (ImGui::Selectable(object.Name.c_str(), &isSelected))
+                {
+                    if (isSelected) Rendering::SetViewport(componentHandle);
+                    else Rendering::SetViewport({ });
+                }
+                ImGui::PopID();
+            }
+            ImGui::Unindent(10.0f);
+
+            viewport = Rendering::GetViewport();
             if (viewport.IsValid())
             {
                 GUI::DrawImageSaver(viewport->GetRenderTexture(), "take screenshot");
-                GUI::CameraControllerEditor(*viewport);
+                ImGui::Text("attached viewport:");
+                ComponentEditor(*viewport);
             }
             else
             {

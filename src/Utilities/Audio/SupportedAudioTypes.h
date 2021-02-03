@@ -41,20 +41,5 @@ namespace MxEngine
         FLAC,
     };
 
-    inline const char* EnumToString(AudioType type)
-    {
-        switch (type)
-        {
-        case AudioType::WAV:
-            return "WAV";
-        case AudioType::MP3:
-            return "MP3";
-        case AudioType::OGG:
-            return "OGG";
-        case AudioType::FLAC:
-            return "FLAC";
-        default:
-            return "INVALID_TYPE";
-        }
-    }
+    const char* EnumToString(AudioType type);
 }

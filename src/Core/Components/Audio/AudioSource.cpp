@@ -28,6 +28,7 @@
 
 #include "AudioSource.h"
 #include "Core/MxObject/MxObject.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -48,11 +49,13 @@ namespace MxEngine
     AudioSource::AudioSource(const AudioBufferHandle& buffer)
         : buffer(buffer) { }
 
-    void AudioSource::Load(const AudioBufferHandle& buffer)
+    void AudioSource::Load(AudioBufferHandle buffer)
     {
-        this->buffer = buffer;
-        if(this->buffer.IsValid())
+        if (buffer.IsValid())
             player->AttachBuffer(*buffer);
+        else
+            player->DetachBuffer();
+        this->buffer = std::move(buffer);
     }
 
     AudioBufferHandle AudioSource::GetLoadedSource() const
@@ -80,6 +83,7 @@ namespace MxEngine
 
     void AudioSource::Reset()
     {
+        this->isPlaying = false;
         this->player->Reset();
     }
 
@@ -87,6 +91,11 @@ namespace MxEngine
     {
         this->Reset();
         this->Play();
+    }
+
+    void AudioSource::SetPlaying(bool isPlaying)
+    {
+        isPlaying ? this->Play() : this->Pause();
     }
     
     void AudioSource::SetVolume(float volume)
@@ -109,7 +118,7 @@ namespace MxEngine
 
     void AudioSource::SetPlaybackSpeed(float speed)
     {
-        this->currentSpeed = Max(speed, 0.001f);
+        this->currentSpeed = speed;
         this->player->SetSpeed(this->currentSpeed);
     }
 
@@ -181,7 +190,7 @@ namespace MxEngine
         return this->currentVolume;
     }
 
-    float AudioSource::GetSpeed() const
+    float AudioSource::GetPlaybackSpeed() const
     {
         return this->currentSpeed;
     }
@@ -230,5 +239,94 @@ namespace MxEngine
     float AudioSource::GetReferenceDistance() const
     {
         return this->referenceDistance;
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<AudioSource>("AudioSource")
+            .constructor<>()
+            .method("replay", &AudioSource::Replay)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .method("stop", &AudioSource::Stop)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .method("make omnidirectional", &AudioSource::MakeOmnidirectional)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("is playing", &AudioSource::IsPlaying, &AudioSource::SetPlaying)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("is looping", &AudioSource::IsLooping, &AudioSource::SetLooping)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("is relative", &AudioSource::IsRelative, &AudioSource::SetRelative)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property_readonly("is omnidirectional", &AudioSource::IsOmnidirectional)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("volume", &AudioSource::GetVolume, &AudioSource::SetVolume)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("outer angle", &AudioSource::GetOuterAngle, &AudioSource::SetOuterAngle)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 360.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+            )
+            .property("inner angle", &AudioSource::GetInnerAngle, &AudioSource::SetInnerAngle)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 360.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+            )
+            .property("playback speed", &AudioSource::GetPlaybackSpeed, &AudioSource::SetPlaybackSpeed)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("velocity", &AudioSource::GetVelocity, &AudioSource::SetVelocity)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("direction", &AudioSource::GetDirection, &AudioSource::SetDirection)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("source", &AudioSource::GetLoadedSource, &AudioSource::Load)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("outer angle volume", &AudioSource::GetOuterAngleVolume, &AudioSource::SetOuterAngleVolume)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("reference distance", &AudioSource::GetReferenceDistance, &AudioSource::SetReferenceDistance)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("rollof factor", &AudioSource::GetRollofFactor, &AudioSource::SetRollofFactor)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            );
     }
 }

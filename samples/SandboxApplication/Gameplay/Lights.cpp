@@ -7,7 +7,7 @@ void InitDirLight(MxObject& object)
 
     auto light = object.AddComponent<DirectionalLight>();
     light->SetIntensity(5.0f);
-    light->FollowViewport(0.0f);
+    light->FollowViewport();
 }
 
 void InitPointLight(MxObject& object)
@@ -36,8 +36,8 @@ void InitSpotLight(MxObject& object)
     auto light = object.AddComponent<SpotLight>();
     light->Direction     = { 1.0f, -1.3f, 1.0f };
     light->SetIntensity(500.0f);
-    light->UseOuterAngle(70.0f);
-    light->UseInnerAngle(30.0f);
+    light->SetOuterAngle(70.0f);
+    light->SetInnerAngle(30.0f);
     light->ToggleShadowCast(true);
 
     auto material = object.GetOrAddComponent<MeshRenderer>()->GetMaterial();

@@ -28,6 +28,7 @@
 
 #include "Behaviour.h"
 #include "Core/MxObject/MxObject.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -93,7 +94,7 @@ namespace MxEngine
 
     Behaviour::TimeDelta Behaviour::GetTimeLeft() const
     {
-        return this->timeLeft;
+        return Max(this->timeLeft, 0.0f);
     }
 
     Behaviour::TimeDelta Behaviour::GetTimeRequest() const
@@ -104,5 +105,44 @@ namespace MxEngine
     TimerMode Behaviour::GetTimerMode() const
     {
         return this->timerMode;
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::enumeration<TimerMode>("TimerMode")
+            (
+                rttr::value("update after delta",   TimerMode::UPDATE_AFTER_DELTA),
+                rttr::value("update each delta",    TimerMode::UPDATE_EACH_DELTA),
+                rttr::value("update each frame",    TimerMode::UPDATE_EACH_FRAME),
+                rttr::value("update for n seconds", TimerMode::UPDATE_FOR_N_SECONDS)
+            );
+
+        rttr::registration::class_<Behaviour>("Behaviour")
+            .constructor<>()
+            .property("tag", &Behaviour::Tag)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property_readonly("has update callback", &Behaviour::HasBehaviour)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property_readonly("time left", &Behaviour::GetTimeLeft)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property_readonly("time request", &Behaviour::GetTimeRequest)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .method("remove callback", &Behaviour::RemoveBehaviour)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .method("set update logic", &Behaviour::Schedule)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            ;
     }
 }

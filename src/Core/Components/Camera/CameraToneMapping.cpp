@@ -28,6 +28,7 @@
 
 #include "CameraToneMapping.h"
 #include "Utilities/Math/Math.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -48,7 +49,7 @@ namespace MxEngine
 
     float CameraToneMapping::GetColorScale() const
     {
-        return this->colorMultiplier;
+        return this->colorScale;
     }
 
     float CameraToneMapping::GetWhitePoint() const
@@ -115,7 +116,7 @@ namespace MxEngine
 
     void CameraToneMapping::SetColorScale(float mult)
     {
-        this->colorMultiplier = Max(0.0f, mult);
+        this->colorScale = Max(0.0f, mult);
     }
 
     void CameraToneMapping::SetWhitePoint(float point)
@@ -140,5 +141,136 @@ namespace MxEngine
             Max(0.0f, aces.C), Max(0.0f, aces.D),
             Max(0.0f, aces.E), Max(0.0f, aces.F),
         };
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<ACES>("ACES")
+            (
+                rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<ACES>)
+            )
+            .constructor<>()
+            .property("a", &ACES::A)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("b", &ACES::B)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("c", &ACES::C)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("d", &ACES::D)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("e", &ACES::E)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("f", &ACES::F)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            );
+
+        rttr::registration::class_<CameraToneMapping::ColorChannels>("ColorChannels")
+            (
+                rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<ACES>)
+            )
+            .constructor<>()
+            .property("R", &CameraToneMapping::ColorChannels::R)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::INTERPRET_AS, InterpretAsInfo::COLOR)
+            )
+            .property("G", &CameraToneMapping::ColorChannels::G)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::INTERPRET_AS, InterpretAsInfo::COLOR)
+            )
+            .property("B", &CameraToneMapping::ColorChannels::B)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::INTERPRET_AS, InterpretAsInfo::COLOR)
+            );
+
+        rttr::registration::class_<CameraToneMapping>("CameraToneMapping")
+            .constructor<>()
+            .property("gamma", &CameraToneMapping::GetGamma, &CameraToneMapping::SetGamma)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("exposure", &CameraToneMapping::GetExposure, &CameraToneMapping::SetExposure)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("white point", &CameraToneMapping::GetWhitePoint, &CameraToneMapping::SetWhitePoint)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { -10000000.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("color scale", &CameraToneMapping::GetColorScale, &CameraToneMapping::SetColorScale)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("color scale", &CameraToneMapping::GetColorScale, &CameraToneMapping::SetColorScale)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("aces coefficients", &CameraToneMapping::GetACESCoefficients, &CameraToneMapping::SetACESCoefficients)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("eye adaptation speed", &CameraToneMapping::GetEyeAdaptationSpeed, &CameraToneMapping::SetEyeAdaptationSpeed)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("eye adaptation threshold", &CameraToneMapping::GetEyeAdaptationThreshold, &CameraToneMapping::SetEyeAdaptationThreshold)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("min luminance", &CameraToneMapping::GetMinLuminance, &CameraToneMapping::SetMinLuminance)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("max luminance", &CameraToneMapping::GetMaxLuminance, &CameraToneMapping::SetMaxLuminance)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("color grading", &CameraToneMapping::GetColorGrading, &CameraToneMapping::SetColorGrading)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            );
     }
 }

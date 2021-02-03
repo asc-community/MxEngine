@@ -65,13 +65,13 @@ namespace MxEngine
     const AABB& ColliderBase::GetAABB(MxObject& self)
     {
         auto meshSource = GetCurrentlyUsedMesh(self); 
-        return meshSource->Mesh->BoxBounding;
+        return meshSource->Mesh->MeshAABB;
     }
 
     const BoundingSphere& ColliderBase::GetBoundingSphere(MxObject& self)
     {
         auto meshSource = GetCurrentlyUsedMesh(self);
-        return meshSource->Mesh->SphereBounding;
+        return meshSource->Mesh->MeshBoundingSphere;
     }
 
     void ColliderBase::SetColliderChangedFlag(bool value)

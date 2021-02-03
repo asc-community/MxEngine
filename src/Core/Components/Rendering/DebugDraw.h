@@ -52,3 +52,5 @@ namespace MxEngine
         bool RenderFrustrumBounds = false;
     };
 }
+
+MXENGINE_FORCE_REFLECTION(DebugDraw);

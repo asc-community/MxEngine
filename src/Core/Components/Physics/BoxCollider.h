@@ -50,6 +50,7 @@ namespace MxEngine
         AABB GetAABB() const;
         BoundingBox GetBoundingBox() const;
         BoundingSphere GetBoundingSphere() const;
-        void SetBoundingBox(const BoundingBox& box);
+        BoundingBox GetBoundingBoxInternal() const;
+        void SetBoundingBox(BoundingBox box);
     };
 }
