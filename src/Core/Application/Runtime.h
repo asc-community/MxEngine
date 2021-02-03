@@ -38,10 +38,10 @@ namespace MxEngine
     class Runtime
     {
     public:
-        template<typename Func>
-        static void RegisterComponentEditor(const char* name, Func&& callback)
+        template<typename T>
+        static void RegisterComponentEditor()
         {
-            Application::GetImpl()->GetRuntimeEditor().RegisterComponentEditor(name, std::forward<Func>(callback));
+            Application::GetImpl()->GetRuntimeEditor().RegisterComponentEditor<T>();
         }
 
         template<typename T>
@@ -56,9 +56,9 @@ namespace MxEngine
             Application::GetImpl()->GetEventDispatcher().AddEventListener<EventType>(
                 "EventLogger",
                 [f = std::forward<Func>(callback)](EventType& e)
-            {
-                Runtime::AddEventLogEntry(f(e));
-            }
+                {
+                    Runtime::AddEventLogEntry(f(e));
+                }
             );
         }
 
