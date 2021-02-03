@@ -66,7 +66,6 @@ set(MXENGINE_SOURCES
 "Platform/Window/Window.cpp" 
 "Platform/Window/WindowManager.cpp" 
 "Utilities/ImGui/Editors/ApplicationEditor.cpp" 
-"Utilities/ImGui/Editors/ComponentEditors/RenderingEditors.cpp" 
 "Utilities/Audio/AudioLoader.cpp" 
 "Utilities/FileSystem/File.cpp" 
 "Utilities/FileSystem/FileManager.cpp" 
@@ -74,15 +73,11 @@ set(MXENGINE_SOURCES
 "Utilities/Image/ImageLoader.cpp" 
 "Utilities/Image/ImageConverter.cpp" 
 "Utilities/Image/ImageManager.cpp" 
-"Utilities/ImGui/Editors/ComponentEditors/AudioEditors.cpp" 
-"Utilities/ImGui/Editors/ComponentEditors/CameraEditors.cpp" 
-"Utilities/ImGui/Editors/ComponentEditors/ComponentEditor.cpp" 
+"Utilities/ImGui/Editors/Components/ComponentEditor.cpp" 
+"Utilities/ImGui/Editors/Components/EditorExtra.cpp" 
 "Utilities/ImGui/EventLogger.cpp" 
 "Utilities/ImGui/GraphicConsole.cpp" 
-"Utilities/ImGui/Editors/ComponentEditors/InstancingEditors.cpp" 
-"Utilities/ImGui/Editors/ComponentEditors/LightEditors.cpp" 
 "Utilities/ImGui/Editors/MxObjectEditor.cpp" 
-"Utilities/ImGui/Editors/ComponentEditors/PhysicsEditors.cpp" 
 "Utilities/ImGui/ProfilerGraph.cpp" 
 "Utilities/ImGui/Editors/RenderEditor.cpp" 
 "Utilities/ImGui/Editors/ResourceEditor.cpp" 
@@ -111,7 +106,6 @@ set(MXENGINE_SOURCES
 "Core/Rendering/DebugDataSubmitter.cpp"
 "Core/Components/Scripting/Script.cpp" 
 "Core/Runtime/RuntimeCompiler.cpp"
-"Utilities/ImGui/Editors/ComponentEditors/ScriptingEditors.cpp"
 "Core/Serialization/SceneSerializer.cpp" 
 "Core/Serialization/MxObjectSerializer.cpp"
 "Core/Serialization/ComponentSerializer.cpp" 
@@ -126,7 +120,9 @@ set(MXENGINE_SOURCES
 "Utilities/ImGui/RenderStatistics.cpp" 
 "Core/Components/Rendering/DebugDraw.cpp"
 "Core/Components/Rendering/Skybox.cpp"
- "Core/Resources/Material.cpp" "Core/Components/Rendering/MeshSource.cpp" "Platform/OpenGL/UsageType.cpp")
+"Core/Resources/Material.cpp" 
+"Core/Components/Rendering/MeshSource.cpp" 
+"Platform/OpenGL/UsageType.cpp")
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)

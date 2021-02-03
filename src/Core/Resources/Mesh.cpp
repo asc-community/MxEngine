@@ -262,7 +262,7 @@ namespace MxEngine
 
 		rttr::registration::class_<Mesh>("Mesh")
 			(
-				rttr::metadata(EditorInfo::HANDLE_EDITOR, GUI::MeshHandleEditorExtra)
+				rttr::metadata(EditorInfo::HANDLE_EDITOR, GUI::HandleEditorExtra<Mesh>)
 			)
 			.constructor<>()
 			.property_readonly("filepath", &Mesh::GetFilePath)

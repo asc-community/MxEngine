@@ -178,11 +178,6 @@ namespace MxEngine
         return instance.IsValid() ? instance->GetParent() : MxObject::Handle{ };
     }
 
-    namespace GUI
-    {
-        rttr::variant DisplayPoolExtra(rttr::instance&);
-    }
-
     MXENGINE_REFLECT_TYPE
     {
         using GetPoolFunc = VectorPool<MxObject::Handle>& (InstanceFactory::*)();
@@ -219,7 +214,7 @@ namespace MxEngine
             .property_readonly("instances", (GetPoolFunc)&InstanceFactory::GetInstancePool)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::DisplayPoolExtra)
+                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<InstanceFactory>)
             );
     }
 }

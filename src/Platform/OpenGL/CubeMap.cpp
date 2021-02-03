@@ -298,17 +298,11 @@ namespace MxEngine
 		GLCALL(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
 	}
 
-	namespace GUI
-	{
-		rttr::variant CubeMapHandleEditorExtra(rttr::instance& handle);
-		rttr::variant CubeMapEditorExtra(rttr::instance& object);
-	}
-
 	MXENGINE_REFLECT_TYPE
 	{
 		rttr::registration::class_<CubeMap>("CubeMap")
 			(
-				rttr::metadata(EditorInfo::HANDLE_EDITOR, GUI::CubeMapHandleEditorExtra)
+				rttr::metadata(EditorInfo::HANDLE_EDITOR, GUI::HandleEditorExtra<CubeMap>)
 			)
 			.constructor<>()
 			.property_readonly("filepath", &CubeMap::GetFilePath)
@@ -334,7 +328,7 @@ namespace MxEngine
 			.property_readonly("editor-preview", &CubeMap::GetBoundId)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-				rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::CubeMapEditorExtra)
+				rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<CubeMap>)
 			);
 	}
 }

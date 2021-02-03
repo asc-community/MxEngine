@@ -126,6 +126,15 @@ namespace MxEngine
     {
         return rttr::variant{ *i.try_convert<T>() };
     }
+
+    namespace GUI
+    {
+        template<typename>
+        rttr::variant EditorExtra(rttr::instance&);
+
+        template<typename>
+        rttr::variant HandleEditorExtra(rttr::instance&);
+    }
 }
 
 template<typename T, typename Allocator>

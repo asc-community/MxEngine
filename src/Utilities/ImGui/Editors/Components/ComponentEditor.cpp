@@ -26,13 +26,10 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Core/Components/Behaviour.h"
-#include "Core/Components/Transform.h"
-#include "Utilities/ImGui/ImGuiUtils.h"
+#include "ComponentEditor.h"
 #include "Utilities/Format/Format.h"
+#include "Utilities/ImGui/ImGuiUtils.h"
 #include "Utilities/STL/MxMap.h"
-#include "Core/Resources/AssetManager.h"
-#include "GenericComponentEditor.h"
 
 namespace MxEngine::GUI
 {
@@ -357,46 +354,6 @@ namespace MxEngine::GUI
 		}
 	}
 
-	template<typename THandle>
-	std::pair<rttr::instance, rttr::type> DereferenceGeneric(rttr::instance object)
-	{
-		using T = typename std::decay<decltype(*std::declval<THandle>())>::type;
-		THandle& handle = *object.try_convert<THandle>();
-		return std::pair{ handle.IsValid() ? rttr::instance{ *handle } : rttr::instance{ }, rttr::type::get<T>() };
-	}
-
-	std::pair<rttr::instance, rttr::type> DereferenceHandle(rttr::instance object)
-	{
-		#define VISITOR_DEREFERENCE_ENTRY(TYPE) { rttr::type::get<TYPE>(), DereferenceGeneric<TYPE> }
-		using DereferenceCallback = std::pair<rttr::instance, rttr::type>(*)(rttr::instance);
-		MxMap<rttr::type, DereferenceCallback> visitor = {
-			VISITOR_DEREFERENCE_ENTRY(MaterialHandle),
-			VISITOR_DEREFERENCE_ENTRY(MeshHandle),
-			VISITOR_DEREFERENCE_ENTRY(MxObject::Handle),
-			VISITOR_DEREFERENCE_ENTRY(AudioBufferHandle),
-			VISITOR_DEREFERENCE_ENTRY(AudioPlayerHandle),
-			VISITOR_DEREFERENCE_ENTRY(TextureHandle),
-			VISITOR_DEREFERENCE_ENTRY(ShaderHandle),
-			VISITOR_DEREFERENCE_ENTRY(FrameBufferHandle),
-			VISITOR_DEREFERENCE_ENTRY(CubeMapHandle),
-			VISITOR_DEREFERENCE_ENTRY(IndexBufferHandle),
-			VISITOR_DEREFERENCE_ENTRY(RenderBufferHandle),
-			VISITOR_DEREFERENCE_ENTRY(VertexArrayHandle),
-			VISITOR_DEREFERENCE_ENTRY(VertexBufferHandle),
-			VISITOR_DEREFERENCE_ENTRY(VertexBufferLayoutHandle),
-		};
-		
-		auto t = object.get_type();
-		if (visitor.find(t) != visitor.end())
-		{
-			return visitor[t](object);
-		}
-		else
-		{
-			return std::pair{ object, object.get_type() };
-		}
-	}
-
 	rttr::variant ReflectObject(rttr::instance maybeHandle)
 	{
 		rttr::variant result{ };
@@ -480,9 +437,19 @@ namespace MxEngine::GUI
 		return result;
 	}
 
-	void ComponentEditorImpl(rttr::instance component)
+	void ComponentEditorImpl(const char* name, rttr::instance component, void(*removeCallback)(rttr::instance))
 	{
-		(void)ReflectObject(component);
+		if (ImGui::TreeNode(name))
+		{
+			if (ImGui::Button("remove component"))
+			{
+				removeCallback(component);
+				ImGui::TreePop();
+				return;
+			}
+			(void)ReflectObject(component);
+			ImGui::TreePop();
+		}
 	}
 
 	rttr::variant ResourceEditor(const char* name, rttr::instance object)
@@ -501,15 +468,5 @@ namespace MxEngine::GUI
 			result = ReflectObject(object);
 		}
 		return result;
-	}
-
-    void TransformEditor(TransformComponent& transform)
-    {
-		(void)ResourceEditor("Transform", transform);
-    }
-
-	void BehaviourEditor(Behaviour& behaviour)
-	{
-		ComponentEditor(behaviour);
 	}
 }

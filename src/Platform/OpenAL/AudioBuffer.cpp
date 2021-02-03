@@ -194,7 +194,7 @@ namespace MxEngine
 
         rttr::registration::class_<AudioBuffer>("AudioBuffer")
             (
-                rttr::metadata(EditorInfo::HANDLE_EDITOR, GUI::AudioBufferHandleEditorExtra)
+                rttr::metadata(EditorInfo::HANDLE_EDITOR, GUI::HandleEditorExtra<AudioBuffer>)
             )
             .constructor<>()
             .property_readonly("filepath", &AudioBuffer::GetFilePath)

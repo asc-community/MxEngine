@@ -114,11 +114,6 @@ namespace MxEngine
         return this->scriptImpl;
     }
 
-    namespace GUI
-    {
-        rttr::variant ScriptEditorExtra(rttr::instance& parent);
-    }
-
     MXENGINE_REFLECT_TYPE
     {
         rttr::registration::class_<Script>("Script")
@@ -136,7 +131,7 @@ namespace MxEngine
             .method("script actions", &Script::GetHashedScriptName)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::ScriptEditorExtra)
+                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<Script>)
             );
     }
 }

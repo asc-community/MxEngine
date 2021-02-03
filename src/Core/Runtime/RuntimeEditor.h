@@ -32,7 +32,7 @@
 #include "Utilities/Memory/Memory.h"
 #include "Core/MxObject/MxObject.h"
 #include "Core/Events/KeyEvent.h"
-#include <functional>
+#include "Utilities/ImGui/Editors/Components/ComponentEditor.h"
 
 namespace MxEngine
 {
@@ -48,9 +48,9 @@ namespace MxEngine
 		bool shouldRender = false;
 		bool cachedUseDefaultFrameBufferVariable = false;
 
-		MxVector<std::function<void(MxObject&)>> componentEditorCallbacks;
-		MxVector<std::function<void(MxObject&)>> componentAdderCallbacks;
-		MxVector<const char*> componentNames;
+		MxVector<const char*> componentAdderComponentNames;
+		MxVector<void(*)(MxObject&)> componentEditorCallbacks;
+		MxVector<void(*)(MxObject&)> componentAdderCallbacks;
 		MxObject::Handle currentlySelectedObject{ };
 
 		void DrawMxObjectList(bool* isOpen = nullptr);
@@ -83,30 +83,24 @@ namespace MxEngine
 		void DrawMxObject(const MxString& name, MxObject::Handle object);
 
 		template<typename T>
-		void RegisterComponentEditor(const char* name, std::function<void(T&)> callback)
+		void RegisterComponentEditor()
 		{
-			this->componentEditorCallbacks.push_back([func = std::move(callback)](MxObject& object)
+			this->componentEditorCallbacks.push_back([](MxObject& object)
 			{
 				auto component = object.GetComponent<T>();
 				if (component.IsValid())
-					func(*component);
+					GUI::ComponentEditor(*component);
 			});
 			// Note: if component has no default constructor, it cannot be added to component list in runtime editor
 			if constexpr (std::is_default_constructible_v<T>)
 			{
-				this->componentNames.push_back(name);
+				this->componentAdderComponentNames.push_back(rttr::type::get<T>().get_name().cbegin());
 				this->componentAdderCallbacks.push_back([](MxObject& object)
 				{
 					if(!object.HasComponent<T>())
 						object.AddComponent<T>();
 				});
 			}
-		}
-
-		template<typename T, typename Func>
-		void RegisterComponentEditor(const char* name, Func&& callback)
-		{
-			this->RegisterComponentEditor<T>(name, std::function<void(T&)>(std::forward<Func>(callback)));
 		}
 	};
 }

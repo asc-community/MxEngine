@@ -123,11 +123,6 @@ namespace MxEngine
 		return materialFileExtenstion;
 	}
 
-	namespace GUI
-	{
-		rttr::variant LoadMaterialsFileDialog(const rttr::instance& parent);
-	}
-
 	MXENGINE_REFLECT_TYPE
 	{
 		rttr::registration::class_<MeshRenderer>("MeshRenderer")
@@ -135,7 +130,7 @@ namespace MxEngine
 			.method("load materials", &MeshRenderer::GetMaterial)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-				rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::LoadMaterialsFileDialog)
+				rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<MeshRenderer>)
 			)
 			.property_readonly("materials", &MeshRenderer::Materials)
 			(

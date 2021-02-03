@@ -26,52 +26,28 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Core/Components/Physics/RigidBody.h"
-#include "Core/Components/Physics/CharacterController.h"
-#include "Core/Components/Physics/BoxCollider.h"
-#include "Core/Components/Physics/SphereCollider.h"
-#include "Core/Components/Physics/CapsuleCollider.h"
-#include "Core/Components/Physics/CylinderCollider.h"
-#include "Core/Components/Physics/CompoundCollider.h"
-#include "Utilities/ImGui/Editors/ComponentEditors/GenericComponentEditor.h"
-#include "Utilities/ImGui/ImGuiUtils.h"
-#include "Utilities/ImGui/Editors/ComponentEditor.h"
-#include "Utilities/Format/Format.h"
+#pragma once
+
+#include "Core/Runtime/Reflection.h"
+#include "Core/MxObject/MxObject.h"
 
 namespace MxEngine::GUI
 {
-	void CharacterControllerEditor(CharacterController& characterController)
+	void ComponentEditorImpl(const char* name, rttr::instance object, void(*removeCallback)(rttr::instance));
+	std::pair<rttr::instance, rttr::type> DereferenceHandle(rttr::instance handle);
+
+	template<typename T>
+	void ComponentEditor(T& object)
 	{
-		ComponentEditor(characterController);
+		auto name = rttr::type::get<T>().get_name().cbegin();
+		constexpr auto removeCallback = [](rttr::instance v)
+		{
+			auto& component = *v.try_convert<T>();
+			auto& object = MxObject::GetByComponent(component);
+			object.template RemoveComponent<T>();
+		};
+		ComponentEditorImpl(name, rttr::instance{ object }, removeCallback);
 	}
 
-	void RigidBodyEditor(RigidBody& rigidBody)
-	{
-		ComponentEditor(rigidBody);
-	}
-
-	void BoxColliderEditor(BoxCollider& boxCollider)
-	{
-		ComponentEditor(boxCollider);
-	}
-
-	void SphereColliderEditor(SphereCollider& sphereCollider)
-	{
-		ComponentEditor(sphereCollider);
-	}
-
-	void CylinderColliderEditor(CylinderCollider& cylinderCollider)
-	{
-		ComponentEditor(cylinderCollider);
-	}
-
-	void CapsuleColliderEditor(CapsuleCollider& capsuleCollider)
-	{
-		ComponentEditor(capsuleCollider);
-	}
-
-	void CompoundColliderEditor(CompoundCollider& compoundCollider)
-	{
-		ComponentEditor(compoundCollider);
-	}
+	rttr::variant ResourceEditor(const char* name, rttr::instance object);
 }

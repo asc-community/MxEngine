@@ -27,8 +27,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "RenderEditor.h"
-#include "ComponentEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
+#include "Utilities/ImGui/Editors/Components/ComponentEditor.h"
 #include "Core/Application/Rendering.h"
 #include "Platform/Window/WindowManager.h"
 
@@ -99,7 +99,7 @@ namespace MxEngine
             {
                 GUI::DrawImageSaver(viewport->GetRenderTexture(), "take screenshot");
                 ImGui::Text("attached viewport:");
-                GUI::CameraControllerEditor(*viewport);
+                ComponentEditor(*viewport);
             }
             else
             {

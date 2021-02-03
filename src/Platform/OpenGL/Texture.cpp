@@ -591,7 +591,7 @@ namespace MxEngine
 
 		rttr::registration::class_<Texture>("Texture")
 			(
-				rttr::metadata(EditorInfo::HANDLE_EDITOR, GUI::TextureHandleEditorExtra)
+				rttr::metadata(EditorInfo::HANDLE_EDITOR, GUI::HandleEditorExtra<Texture>)
 			)
 			.constructor<>()
 			.property_readonly("filepath", &Texture::GetFilePath)
@@ -646,7 +646,7 @@ namespace MxEngine
 			.property_readonly("editor-preview", &Texture::GetBoundId)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-				rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::TextureEditorExtra)
+				rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<Texture>)
 			);
 	}
 }

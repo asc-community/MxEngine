@@ -27,13 +27,13 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "MxObjectEditor.h"
-#include "ComponentEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Core/BoundingObjects/BoundingBox.h"
 #include "Core/Components/Rendering/MeshSource.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
 #include "Core/Application/Rendering.h"
 #include "Utilities/FileSystem/FileManager.h"
+#include "Utilities/ImGui/Editors/Components/ComponentEditor.h"
 
 namespace MxEngine::GUI
 {
@@ -54,8 +54,8 @@ namespace MxEngine::GUI
 		MxObject& object,
 		bool withBoundingBox,
 		const MxVector<const char*>& componentNames,
-		MxVector<std::function<void(MxObject&)>>& componentAdderCallbacks,
-		MxVector<std::function<void(MxObject&)>>& componentEditorCallbacks
+		const MxVector<void(*)(MxObject&)>& componentAdderCallbacks,
+		const MxVector<void(*)(MxObject&)>& componentEditorCallbacks
 	)
 	{
 		static MxString objectName;
@@ -75,7 +75,7 @@ namespace MxEngine::GUI
 			componentAdderCallbacks[(size_t)currentItem](object);
 		}
 
-		GUI::TransformEditor(object.Transform);
+		ResourceEditor("Transform", object.Transform);
 
 		for (size_t i = 0; i < componentEditorCallbacks.size(); i++)
 		{

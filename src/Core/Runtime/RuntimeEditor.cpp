@@ -371,7 +371,7 @@ namespace MxEngine
     {
 		bool isInstanced = IsInstanced(*object);
 		if(!isInstanced) this->DrawTransformManipulator(object->Transform);
-		GUI::DrawMxObjectEditor(treeName.c_str(), *object, !isInstanced, this->componentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
+		GUI::DrawMxObjectEditor(treeName.c_str(), *object, !isInstanced, this->componentAdderComponentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
     }
 
 	Vector2 RuntimeEditor::GetViewportSize() const
