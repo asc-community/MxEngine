@@ -32,6 +32,7 @@
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Utilities/Format/Format.h"
+#include "Utilities/Logging/Logger.h"
 #include "Utilities/FileSystem/FileManager.h"
 #include "Core/Events/WindowResizeEvent.h"
 #include "Core/Events/UpdateEvent.h"
