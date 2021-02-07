@@ -29,11 +29,11 @@
 #pragma once
 
 #include "Serializer.h"
+#include "Utilities/Logging/Logger.h"
+#include "Core/MxObject/MxObject.h"
 
 namespace MxEngine
 {
-    class MxObject;
-
     struct SceneSerializerImpl
     {
         MxVector<void(*)(JsonFile&, MxObject&)> serializeCallbacks;
