@@ -93,17 +93,17 @@ namespace Sponza
                 // floor material
                 materials[8]->Name = "Floor";
                 materials[8]->MetallicFactor = 0.25f;
-                materials[8]->RoughnessFactor = 0.25f;
                 materials[8]->MetallicMap = { };
 
                 // lion materials
                 materials[3]->Name = "Lion";
                 materials[3]->MetallicFactor = 1.0f;
                 materials[3]->RoughnessFactor = 0.0f;
+                materials[3]->MetallicMap = { };
 
                 materials[23]->Name = "Lion Head";
                 materials[23]->MetallicFactor = 1.0f;
-                materials[23]->RoughnessFactor = 0.0f;
+                materials[23]->MetallicMap = { };
             }
 
             sponza->AddComponent<RigidBody>();

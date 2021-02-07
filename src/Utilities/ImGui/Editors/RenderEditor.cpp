@@ -107,7 +107,6 @@ namespace MxEngine
             }
             ImGui::TreePop();
         }
-        // TODO: let user change viewport to other camera controller
 
         if (ImGui::TreeNode("debug settings"))
         {

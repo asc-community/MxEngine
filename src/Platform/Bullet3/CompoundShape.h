@@ -38,28 +38,7 @@ namespace MxEngine
 
     class CompoundShape : public ShapeBase
     {
-        btCollisionShape* GetShapeImpl(size_t index) const;
-        void AddShapeImpl(btCollisionShape* ptr, size_t userIndex, const TransformComponent& relativeTransform);
-        static size_t GetShapeUserHandle(btCollisionShape* ptr);
-
-        template<typename Shape, typename Factory>
-        Resource<Shape, Factory> GetShapeByIndexDeduced(size_t index, Resource<Shape, Factory>*) const
-        {
-            auto shape = this->GetShapeImpl(index);
-            auto handle = CompoundShape::GetShapeUserHandle(shape);
-            auto& pool = Factory::template Get<Shape>();
-
-            if (pool.Capacity() <= handle) return { };
-            auto& managedObject = pool[handle];
-            if(managedObject.refCount == 0 || managedObject.uuid == UUIDGenerator::GetNull())
-                return { };
-
-            if (managedObject.value.GetNativeHandle() != shape)
-                return { };
-
-            return Factory::GetHandle(managedObject);
-        }
-     
+        void AddShapeImpl(btCollisionShape* ptr, size_t userIndex, const TransformComponent& relativeTransform);     
     public:
         using NativeHandle = btCompoundShape*;
 
@@ -75,12 +54,6 @@ namespace MxEngine
         TransformComponent GetShapeTransformByIndex(size_t index) const;
         void SetShapeTransformByIndex(size_t index, const TransformComponent& relativeTransform);
         void ClearShapes();
-
-        template<typename T>
-        decltype(auto) GetShapeByIndex(size_t index) const
-        {
-            return this->GetShapeByIndexDeduced(index, (T*)nullptr);
-        }
 
         template<typename Shape, typename Factory>
         void AddShape(Resource<Shape, Factory> shape, const TransformComponent& relativeTransform)

@@ -31,23 +31,11 @@
 
 namespace MxEngine
 {
-    btCollisionShape* CompoundShape::GetShapeImpl(size_t index) const
-    {
-        MX_ASSERT(index < this->GetShapeCount());
-        return ((btCompoundShape*)this->collider)->getChildShape((int)index);
-    }
-
     void CompoundShape::AddShapeImpl(btCollisionShape* ptr, size_t userIndex, const TransformComponent& relativeTransform)
     {
         btTransform tr;
         ToBulletTransform(tr, relativeTransform);
-        ptr->setUserPointer(reinterpret_cast<void*>(userIndex));
         ((btCompoundShape*)this->collider)->addChildShape(tr, ptr);
-    }
-
-    size_t CompoundShape::GetShapeUserHandle(btCollisionShape* ptr)
-    {
-        return (size_t)ptr->getUserPointer();
     }
 
     CompoundShape::CompoundShape()
