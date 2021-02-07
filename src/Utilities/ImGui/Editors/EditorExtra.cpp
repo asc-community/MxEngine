@@ -32,7 +32,7 @@
 #include "Core/Components/Physics/CompoundCollider.h"
 #include "Core/Application/Runtime.h"
 #include "Platform/GraphicAPI.h"
-#include "Utilities/ImGui/Editors/Components/ComponentEditor.h"
+#include "Utilities/ImGui/Editors/ComponentEditor.h"
 #include "Utilities/Format/Format.h"
 #include "Utilities/FileSystem/FileManager.h"
 #include "Utilities/Image/ImageManager.h"

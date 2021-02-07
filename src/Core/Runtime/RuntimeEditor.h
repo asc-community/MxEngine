@@ -32,7 +32,8 @@
 #include "Utilities/Memory/Memory.h"
 #include "Core/MxObject/MxObject.h"
 #include "Core/Events/KeyEvent.h"
-#include "Utilities/ImGui/Editors/Components/ComponentEditor.h"
+#include "Utilities/ImGui/Editors/ComponentEditor.h"
+#include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
 {

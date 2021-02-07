@@ -28,7 +28,7 @@
 
 #include "RenderEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
-#include "Utilities/ImGui/Editors/Components/ComponentEditor.h"
+#include "Utilities/ImGui/Editors/ComponentEditor.h"
 #include "Core/Application/Rendering.h"
 #include "Platform/Window/WindowManager.h"
 

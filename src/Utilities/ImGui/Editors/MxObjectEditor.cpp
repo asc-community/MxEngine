@@ -33,7 +33,7 @@
 #include "Core/Components/Rendering/MeshRenderer.h"
 #include "Core/Application/Rendering.h"
 #include "Utilities/FileSystem/FileManager.h"
-#include "Utilities/ImGui/Editors/Components/ComponentEditor.h"
+#include "Utilities/ImGui/Editors/ComponentEditor.h"
 
 namespace MxEngine::GUI
 {
