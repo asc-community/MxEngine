@@ -190,6 +190,11 @@ namespace MxEngine
 		this->filePath = tag;
 	}
 
+	bool Mesh::IsInternalEngineResource() const
+	{
+		return this->filePath.find(MXENGINE_INTERNAL_TAG_SYMBOL) == 0;
+	}
+
 	void Mesh::SetSubMeshesInternal(const SubMeshList& submeshes)
 	{
 		this->submeshes = submeshes;

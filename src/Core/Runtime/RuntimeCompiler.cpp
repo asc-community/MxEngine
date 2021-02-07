@@ -471,6 +471,7 @@ namespace MxEngine
         delete impl->compilerLogger;
         delete impl->updateListener;
         delete impl;
+        impl = nullptr;
     }
 
     void RuntimeCompiler::Clone(RuntimeCompilerImpl* other)

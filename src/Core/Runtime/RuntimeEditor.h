@@ -85,6 +85,8 @@ namespace MxEngine
 		template<typename T>
 		void RegisterComponentEditor()
 		{
+			MXLOG_DEBUG("MxEngine::RuntimeEditor", "registered component " + MxString(rttr::type::get<T>().get_name().cbegin()));
+
 			this->componentEditorCallbacks.push_back([](MxObject& object)
 			{
 				auto component = object.GetComponent<T>();

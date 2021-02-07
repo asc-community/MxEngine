@@ -52,7 +52,7 @@ namespace MxEngine
             auto depthTextureSize = (int)GlobalConfig::GetDirectionalLightTextureSize();
             auto texture = GraphicFactory::Create<Texture>();
             texture->LoadDepth(depthTextureSize, depthTextureSize);
-            texture->SetInternalEngineTag("[[directional light]]");
+            texture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("directional light"));
             this->SetDepthTexture(texture, i);
         }
         // create empty reference to timer
@@ -176,7 +176,7 @@ namespace MxEngine
             .property("cascade direction", &DirectionalLight::CascadeDirection)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::VIEW_CONDITION, +([](rttr::instance& obj) { return !obj.try_convert<DirectionalLight>()->IsFollowingViewport(); }))
+                rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& obj) { return !obj.try_convert<DirectionalLight>()->IsFollowingViewport(); }))
             )
             .method("follow viewport", &DirectionalLight::FollowViewport)
             (

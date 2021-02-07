@@ -31,30 +31,7 @@ namespace MxEngine
 		MIDDLE = 2,
 	};
 
-	inline const char* EnumToString(MouseButton button)
-	{
-		switch (button)
-		{
-		case MxEngine::MouseButton::_4:
-			return "4";
-		case MxEngine::MouseButton::_5:
-			return "5";
-		case MxEngine::MouseButton::_6:
-			return "6";
-		case MxEngine::MouseButton::_7:
-			return "7";
-		case MxEngine::MouseButton::_8:
-			return "8";
-		case MxEngine::MouseButton::LEFT:
-			return "LEFT";
-		case MxEngine::MouseButton::RIGHT:
-			return "RIGHT";
-		case MxEngine::MouseButton::MIDDLE:
-			return "MIDDLE";
-		default:
-			return "UNKNOWN";
-		}
-	}
+	const char* EnumToString(MouseButton button);
 
 	class MouseButtonEvent : public EventBase
 	{

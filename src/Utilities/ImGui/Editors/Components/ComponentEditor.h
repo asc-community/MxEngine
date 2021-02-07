@@ -34,7 +34,6 @@
 namespace MxEngine::GUI
 {
 	void ComponentEditorImpl(const char* name, rttr::instance object, void(*removeCallback)(rttr::instance));
-	std::pair<rttr::instance, rttr::type> DereferenceHandle(rttr::instance handle);
 
 	template<typename T>
 	void ComponentEditor(T& object)

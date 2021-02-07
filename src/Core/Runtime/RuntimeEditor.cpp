@@ -415,7 +415,7 @@ namespace MxEngine
 		for (auto& object : objects)
 		{
 			bool filteredByName = object.Name.find(filter) != object.Name.npos;
-			bool shouldDisplay = object.IsDisplayedInRuntimeEditor() && filteredByName && id < 10000;
+			bool shouldDisplay = object.IsDisplayedInEditor && filteredByName && id < 10000;
 			if (shouldDisplay) // do not display too much objects
 			{
 				ImGui::PushID(id++);

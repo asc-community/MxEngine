@@ -275,6 +275,11 @@ namespace MxEngine
 		this->filepath = tag;
 	}
 
+	bool CubeMap::IsInternalEngineResource() const
+	{
+		return this->filepath.find(MXENGINE_INTERNAL_TAG_SYMBOL) == 0;
+	}
+
 	size_t CubeMap::GetWidth() const
 	{
 		return this->width;

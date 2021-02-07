@@ -116,7 +116,7 @@ namespace MxEngine
 
 		this->renderTexture = GraphicFactory::Create<Texture>();
 		this->renderTexture->Load(nullptr, viewport.x, viewport.y, 3, false, TextureFormat::RGB, TextureWrap::CLAMP_TO_EDGE);
-		this->renderTexture->SetInternalEngineTag("[[camera output]]");
+		this->renderTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera output"));
 	}
 
 	CameraController::~CameraController()
@@ -473,13 +473,13 @@ namespace MxEngine
 		this->HDR->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
 		this->SwapHDR->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
 
-		this->Albedo->SetInternalEngineTag("[[cam albedo]]");
-		this->Normal->SetInternalEngineTag("[[cam normal]]");
-		this->Material->SetInternalEngineTag("[[cam material]]");
-		this->Depth->SetInternalEngineTag("[[cam depth]]");
-		this->AverageWhite->SetInternalEngineTag("[[cam avg white]]");
-		this->HDR->SetInternalEngineTag("[[cam hdr]]");
-		this->SwapHDR->SetInternalEngineTag("[[cam swap hdr]]");
+		this->Albedo->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera albedo"));
+		this->Normal->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera normal"));
+		this->Material->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera material"));
+		this->Depth->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera depth"));
+		this->AverageWhite->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera white"));
+		this->HDR->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera hdr"));
+		this->SwapHDR->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap hdr"));
 	}
 
 	void CameraRender::DeInit()
@@ -622,17 +622,17 @@ namespace MxEngine
 			.property("perspective camera", (GetPerspectiveCameraFunc)&CameraController::GetCamera<PerspectiveCamera>, &CameraController::SetCamera<PerspectiveCamera>)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-				rttr::metadata(EditorInfo::VIEW_CONDITION, +([](rttr::instance& v) { return v.try_convert<CameraController>()->GetCameraType() == CameraType::PERSPECTIVE; }))
+				rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& v) { return v.try_convert<CameraController>()->GetCameraType() == CameraType::PERSPECTIVE; }))
 			)
 			.property("orthographic camera", (GetOrthographicCameraFunc)&CameraController::GetCamera<OrthographicCamera>, &CameraController::SetCamera<OrthographicCamera>)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-				rttr::metadata(EditorInfo::VIEW_CONDITION, +([](rttr::instance& v) { return v.try_convert<CameraController>()->GetCameraType() == CameraType::ORTHOGRAPHIC; }))
+				rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& v) { return v.try_convert<CameraController>()->GetCameraType() == CameraType::ORTHOGRAPHIC; }))
 			)
 			.property("frustrum camera", (GetFrustrumCameraFunc)&CameraController::GetCamera<FrustrumCamera>, &CameraController::SetCamera<FrustrumCamera>)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-				rttr::metadata(EditorInfo::VIEW_CONDITION, +([](rttr::instance& v) { return v.try_convert<CameraController>()->GetCameraType() == CameraType::FRUSTRUM; }))
+				rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& v) { return v.try_convert<CameraController>()->GetCameraType() == CameraType::FRUSTRUM; }))
 			)
 			.property("direction", &CameraController::GetDirectionDenormalized, &CameraController::SetDirection)
 			(

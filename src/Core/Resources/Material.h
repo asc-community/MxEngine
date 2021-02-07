@@ -35,8 +35,9 @@
 
 namespace MxEngine
 {
-	struct Material
+	class Material
 	{
+	public:
 		TextureHandle AlbedoMap;
 		TextureHandle EmissiveMap;
 		TextureHandle NormalMap;
@@ -56,6 +57,7 @@ namespace MxEngine
 		MxString Name = "DefaultMaterial";
 
 		constexpr static size_t TextureCount = 7;
+		bool IsInternalEngineResource() const { return false; }
 	};
 
 }

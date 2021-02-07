@@ -34,6 +34,7 @@ set(MXENGINE_SOURCES
 "Core/Rendering/RenderController.cpp" 
 "Core/Rendering/RenderObjects/SkyboxObject.cpp"
 "Core/Runtime/RuntimeEditor.cpp"  
+"Core/Runtime/DereferenceHandle.cpp"
 "Core/MxObject/MxObject.cpp" 
 "Core/Resources/Mesh.cpp" 
 "Core/Resources/MeshData.cpp" 
@@ -107,22 +108,15 @@ set(MXENGINE_SOURCES
 "Core/Components/Scripting/Script.cpp" 
 "Core/Runtime/RuntimeCompiler.cpp"
 "Core/Serialization/SceneSerializer.cpp" 
-"Core/Serialization/MxObjectSerializer.cpp"
-"Core/Serialization/ComponentSerializer.cpp" 
-"Core/Serialization/LightingSerializer.cpp" 
-"Core/Serialization/InstancingSerializer.cpp" 
-"Core/Serialization/CameraSerializer.cpp" 
-"Core/Serialization/RenderingSerializer.cpp" 
-"Core/Serialization/AudioSerializer.cpp" 
-"Core/Serialization/PhysicsSerializer.cpp"
-"Core/Serialization/ScriptSerializer.cpp"
-"Core/Serialization/ResourceSerializer.cpp"
 "Utilities/ImGui/RenderStatistics.cpp" 
 "Core/Components/Rendering/DebugDraw.cpp"
 "Core/Components/Rendering/Skybox.cpp"
 "Core/Resources/Material.cpp" 
 "Core/Components/Rendering/MeshSource.cpp" 
-"Platform/OpenGL/UsageType.cpp")
+"Platform/OpenGL/UsageType.cpp" 
+"Core/Serialization/Serializer.cpp" 
+"Core/Components/Components.cpp" 
+ "Core/Serialization/ResourceSerializer.cpp")
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)

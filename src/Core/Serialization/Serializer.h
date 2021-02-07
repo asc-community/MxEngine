@@ -26,27 +26,13 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Core/Serialization/SceneSerializer.h"
-#include "Core/Components/Instancing/InstanceFactory.h"
+#include "Utilities/Json/Json.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
-    void Serialize(JsonFile& json, const InstanceFactory& factory)
-    {
-        json["is-static"] = factory.IsStatic;
-        auto instances = factory.GetInstances();
-        auto& jInstances = json["instances"];
-        for (auto& instance : instances)
-        {
-            if (instance->IsSerialized)
-            {
-                Serialize(jInstances.emplace_back(), *instance);
-            }
-        }
-    }
+    void Serialize(JsonFile& json, rttr::instance object);
 
-    void Serialize(JsonFile& json, const Instance& instance)
-    {
-        json["color"] = instance.GetColor();
-    }
+    template<typename T>
+    void SerializeResource(JsonFile& json);
 }

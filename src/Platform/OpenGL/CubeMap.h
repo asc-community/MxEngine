@@ -70,11 +70,13 @@ namespace MxEngine
         void Load(const std::array<Image, 6>& images, bool genMipmaps = true);
         void Load(const std::array<uint8_t*, 6>& RawDataRGB, size_t width, size_t height, bool genMipmaps = true);
         void LoadDepth(int width, int height);
-        const MxString& GetFilePath() const;
-        void SetInternalEngineTag(const MxString& tag);
         size_t GetWidth() const;
         size_t GetHeight() const;
         size_t GetChannelCount() const;
         void GenerateMipmaps();
+
+        const MxString& GetFilePath() const;
+        void SetInternalEngineTag(const MxString& tag);
+        bool IsInternalEngineResource() const;
     };
 }

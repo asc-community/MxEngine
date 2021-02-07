@@ -78,22 +78,6 @@ namespace MxEngine
 		return MxObject::Handle(managedObject.uuid, handle);
 	}
 
-	void MxObject::SetDisplayInRuntimeEditor(bool value)
-    {
-		#if defined(MXENGINE_MXOBJECT_EDITOR)
-		this->displayedInEditorList = value;
-		#endif
-    }
-
-	bool MxObject::IsDisplayedInRuntimeEditor() const
-	{
-		#if defined(MXENGINE_MXOBJECT_EDITOR)
-		return this->displayedInEditorList;
-		#else
-		return false;
-		#endif
-	}
-
     MxObject::EngineHandle MxObject::GetNativeHandle() const
     {
 		return this->handle;

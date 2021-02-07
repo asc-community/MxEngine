@@ -33,6 +33,7 @@
 #include "Core/MxObject/MxObject.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/Runtime/RuntimeCompiler.h"
+#include "Core/Serialization/SceneSerializer.h"
 #include "Utilities/FileSystem/FileManager.h"
 #include "Platform/Modules/PhysicsModule.h"
 #include "Platform/Modules/GraphicModule.h"
@@ -55,6 +56,7 @@ namespace MxEngine
 		AudioFactory,
 		PhysicsFactory,
 		MxObject::Factory,
-		RuntimeCompiler
+		RuntimeCompiler,
+		SceneSerializer
 	>;
 }

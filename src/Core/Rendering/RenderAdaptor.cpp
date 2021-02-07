@@ -94,26 +94,26 @@ namespace MxEngine
         environment.DefaultShadowCubeMap = Colors::MakeCubeMap(Colors::BLACK);
         environment.DefaultSkybox = Colors::MakeCubeMap(0.8f, 0.9f, 1.0f);
 
-        environment.DefaultBlackMap->SetInternalEngineTag("[[black color]]");
-        environment.DefaultNormalMap->SetInternalEngineTag("[[default normal]]");
-        environment.DefaultMaterialMap->SetInternalEngineTag("[[white color]]");
-        environment.DefaultGreyMap->SetInternalEngineTag("[[grey color]]");
-        environment.DefaultShadowMap->SetInternalEngineTag("[[default shadow map]]");
-        environment.DefaultShadowCubeMap->SetInternalEngineTag("[[default shadow cubemap]]");
-        environment.DefaultSkybox->SetInternalEngineTag("[[default skybox cubemap]]");
+        environment.DefaultBlackMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("black color"));
+        environment.DefaultNormalMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default normal"));
+        environment.DefaultMaterialMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("white color"));
+        environment.DefaultGreyMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("grey color"));
+        environment.DefaultShadowMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default shadow map"));
+        environment.DefaultShadowCubeMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default shadow cubemap"));
+        environment.DefaultSkybox->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default skybox cubemap"));
 
         environment.AverageWhiteTexture = GraphicFactory::Create<Texture>();
         environment.AverageWhiteTexture->Load(nullptr, internalTextureSize, internalTextureSize, 1, false, TextureFormat::R16F);
         environment.AverageWhiteTexture->SetSamplingFromLOD(environment.AverageWhiteTexture->GetMaxTextureLOD());
-        environment.AverageWhiteTexture->SetInternalEngineTag("[[average white]]");
+        environment.AverageWhiteTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("average white"));
 
         environment.AmbientOcclusionTexture = GraphicFactory::Create<Texture>();
         environment.AmbientOcclusionTexture->Load(nullptr, internalTextureSize, internalTextureSize, 1, false, TextureFormat::R);
-        environment.AmbientOcclusionTexture->SetInternalEngineTag("[[ambient occlusion]]");
+        environment.AmbientOcclusionTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("ambient occlusion"));
 
         // TODO: use RG16
         environment.EnvironmentBRDFLUT = AssetManager::LoadTexture(textureFolder / "env_brdf_lut.png", TextureFormat::RG);
-        environment.EnvironmentBRDFLUT->SetInternalEngineTag("[[BRDF LUT]]");
+        environment.EnvironmentBRDFLUT->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("BRDF LUT"));
         
         // shaders
         auto shaderFolder = FileManager::GetEngineShaderDirectory();
@@ -254,7 +254,7 @@ namespace MxEngine
         {
             auto bloomTexture = GraphicFactory::Create<Texture>();
             bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, 3, false, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
-            bloomTexture->SetInternalEngineTag("[[bloom]]");
+            bloomTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("bloom"));
 
             bloomBuffer = GraphicFactory::Create<FrameBuffer>();
             bloomBuffer->AttachTexture(bloomTexture, Attachment::COLOR_ATTACHMENT0);

@@ -54,7 +54,7 @@ namespace MxEngine
         auto depthTextureSize = (int)GlobalConfig::GetSpotLightTextureSize();
         auto texture = GraphicFactory::Create<Texture>();
         texture->LoadDepth(depthTextureSize, depthTextureSize);
-        texture->SetInternalEngineTag("[[spot light]]");
+        texture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("spot light"));
         this->AttachDepthTexture(texture);
     }
 
@@ -187,7 +187,7 @@ namespace MxEngine
             .property_readonly("depth texture", &SpotLight::GetDepthTexture)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::VIEW_CONDITION, +([](rttr::instance& obj) { return obj.try_convert<SpotLight>()->IsCastingShadows(); }))
+                rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& obj) { return obj.try_convert<SpotLight>()->IsCastingShadows(); }))
             );
     }
 }

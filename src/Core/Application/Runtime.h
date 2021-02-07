@@ -32,6 +32,7 @@
 #include "Core/Runtime/RuntimeEditor.h"
 #include "Core/Runtime/RuntimeCompiler.h"
 #include "Utilities/EventDispatcher/EventDispatcher.h"
+#include "Core/Serialization/SceneSerializer.h"
 
 namespace MxEngine 
 {
@@ -39,14 +40,10 @@ namespace MxEngine
     {
     public:
         template<typename T>
-        static void RegisterComponentEditor()
+        static void RegisterComponent()
         {
+            SceneSerializer::RegisterComponent<T>();
             Application::GetImpl()->GetRuntimeEditor().RegisterComponentEditor<T>();
-        }
-
-        template<typename T>
-        static void RegisterComponentUpdate()
-        {
             Application::GetImpl()->RegisterComponentUpdate<T>();
         }
 

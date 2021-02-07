@@ -121,12 +121,12 @@ namespace MxEngine
             .property_readonly("attached script name", &Script::GetScriptName)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::VIEW_CONDITION, +([](const rttr::instance& p) { return p.try_convert<Script>()->HasScriptableObject(); }))
+                rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance& p) { return p.try_convert<Script>()->HasScriptableObject(); }))
             )
             .property_readonly("attached script filepath", &Script::GetScriptFileName)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::VIEW_CONDITION, +([](const rttr::instance& p) { return p.try_convert<Script>()->HasScriptableObject(); }))
+                rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance& p) { return p.try_convert<Script>()->HasScriptableObject(); }))
             )
             .method("script actions", &Script::GetHashedScriptName)
             (

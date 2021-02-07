@@ -26,25 +26,39 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Core/Components/Transform.h"
-#include "Core/Components/Behaviour.h"
-#include "Core/Serialization/SceneSerializer.h"
+#include "Core/Application/Runtime.h"
+#include "Components.h"
 
 namespace MxEngine
 {
-    void Serialize(JsonFile& json, const TransformComponent& transform)
+    void RegisterComponents()
     {
-        json["position"] = transform.GetPosition();
-        json["rotation"] = transform.GetRotation();
-        json["scale"] = transform.GetScale();
-    }
-
-    void Serialize(JsonFile& json, const Behaviour& behaviour)
-    {
-        json["tag"] = behaviour.Tag;
-        json["has-behaviour"] = behaviour.HasBehaviour();
-        json["timer-mode"] = behaviour.GetTimerMode();
-        json["time-left"] = behaviour.GetTimeLeft();
-        json["time-request"] = behaviour.GetTimeRequest();
+		Runtime::RegisterComponent<Behaviour          >();
+		Runtime::RegisterComponent<InstanceFactory    >();
+		Runtime::RegisterComponent<Instance           >();
+		Runtime::RegisterComponent<Skybox             >();
+		Runtime::RegisterComponent<DebugDraw          >();
+		Runtime::RegisterComponent<MeshRenderer       >();
+		Runtime::RegisterComponent<MeshSource         >();
+		Runtime::RegisterComponent<MeshLOD            >();
+		Runtime::RegisterComponent<DirectionalLight   >();
+		Runtime::RegisterComponent<PointLight         >();
+		Runtime::RegisterComponent<SpotLight          >();
+		Runtime::RegisterComponent<CameraController   >();
+		Runtime::RegisterComponent<CameraEffects      >();
+		Runtime::RegisterComponent<CameraSSR          >();
+		Runtime::RegisterComponent<CameraToneMapping  >();
+		Runtime::RegisterComponent<VRCameraController >();
+		Runtime::RegisterComponent<InputController    >();
+		Runtime::RegisterComponent<AudioSource        >();
+		Runtime::RegisterComponent<AudioListener      >();
+		Runtime::RegisterComponent<RigidBody          >();
+		Runtime::RegisterComponent<CharacterController>();
+		Runtime::RegisterComponent<BoxCollider        >();
+		Runtime::RegisterComponent<SphereCollider     >();
+		Runtime::RegisterComponent<CylinderCollider   >();
+		Runtime::RegisterComponent<CapsuleCollider    >();
+		Runtime::RegisterComponent<CompoundCollider   >();
+		Runtime::RegisterComponent<Script             >();
     }
 }

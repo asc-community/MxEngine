@@ -37,9 +37,6 @@
 #include "Utilities/Image/ImageLoader.h"
 #include "Utilities/Image/ImageManager.h"
 
-#include <algorithm>
-
-#if defined(MXENGINE_USE_ASSIMP)
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -390,16 +387,3 @@ namespace MxEngine
 		SaveJson(file, json);
 	}
 }
-#else
-
-namespace MxEngine
-{
-	ObjectInfo ObjectLoader::Load(const FilePath& path)
-	{
-		MXLOG_ERROR("MxEngine::ObjectLoader", "object cannot be loaded as Assimp library was turned off in engine settings");
-		ObjectInfo object;
-		object.isSuccess = false;
-		return object;
-	}
-}
-#endif

@@ -26,24 +26,16 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Utilities/STL/MxHashMap.h"
-#include "Core/Components/Camera/CameraController.h"
-#include "Core/Resources/AssetManager.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
-    struct DeserializerMappings
+    struct DereferenceHandleInfo
     {
-        template<typename Handle>
-        using Mapping = MxHashMap<size_t, Handle>;
-
-        Mapping<CameraController::Handle> CameraControllers;
-        Mapping<TextureHandle> Textures;
-        Mapping<CubeMapHandle> CubeMaps;
-        Mapping<MeshHandle> Meshes;
-        Mapping<AudioBufferHandle> AudioBuffers;
-        Mapping<MaterialHandle> Materials;
+        rttr::instance Object;
+        rttr::type Type;
+        size_t HandleId;
     };
+
+    DereferenceHandleInfo DereferenceHandle(rttr::instance object);
 }

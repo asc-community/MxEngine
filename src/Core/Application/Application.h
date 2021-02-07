@@ -51,7 +51,7 @@ namespace MxEngine
 			~ModuleManager();
 		} manager;
 
-		using CallbackList = MxVector<std::function<void(TimeStep)>>;
+		using UpdateCallbackList = MxVector<void(*)(TimeStep)>;
 		using CollisionList = MxVector<std::pair<MxObject::Handle, MxObject::Handle>>;
 		using CollisionSwapPair = std::pair<CollisionList, CollisionList>;
 	private:
@@ -60,7 +60,7 @@ namespace MxEngine
 		RenderAdaptor renderAdaptor;
 		EventDispatcherImpl<EventBase>* dispatcher;
 		RuntimeEditor* editor;
-		CallbackList updateCallbacks;
+		UpdateCallbackList updateCallbacks;
 		CollisionSwapPair collisions;
 		Config config;
 		TimeStep timeDelta = 0.0f;
@@ -94,6 +94,7 @@ namespace MxEngine
 
 		template<typename T>
 		void RegisterComponentUpdate();
+
 		void ToggleRuntimeEditor(bool isVisible);
 		void ToggleWindowUpdates(bool isPolled);
 		void CloseOnKeyPress(KeyCode key);
@@ -122,16 +123,18 @@ namespace MxEngine
 	template<typename T>
 	inline void Application::RegisterComponentUpdate()
 	{
-		static_assert(has_method_OnUpdate<T>::value, "object must contain OnUpdate(TimeDelta) method");
-		this->updateCallbacks.push_back([](TimeStep dt)
+		if constexpr (has_method_OnUpdate<T>::value)
 		{
-			MAKE_SCOPE_PROFILER(typeid(T).name());
-			auto view = ComponentFactory::GetView<T>();
-			for (auto& component : view)
+			this->updateCallbacks.push_back([](TimeStep dt)
 			{
-				component.OnUpdate(dt);
-			}
-		});
+				MAKE_SCOPE_PROFILER(typeid(T).name());
+				auto view = ComponentFactory::GetView<T>();
+				for (auto& component : view)
+				{
+					component.OnUpdate(dt);
+				}
+			});
+		}
 	}
 
 	#if defined(MXENGINE_PROJECT_SOURCE_DIRECTORY) && defined(MXENGINE_PROJECT_BINARY_DIRECTORY)

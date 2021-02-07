@@ -37,6 +37,7 @@ namespace MxEngine
         auto depthTextureSize = (int)GlobalConfig::GetPointLightTextureSize();
         auto cubemap = GraphicFactory::Create<CubeMap>();
         cubemap->LoadDepth(depthTextureSize, depthTextureSize);
+        cubemap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("point light"));
         this->AttachDepthCubeMap(cubemap);
     }
 
@@ -152,7 +153,7 @@ namespace MxEngine
             .property_readonly("depth cubemap", &PointLight::GetDepthCubeMap)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::VIEW_CONDITION, +([](rttr::instance& obj) { return obj.try_convert<PointLight>()->IsCastingShadows(); }))
+                rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& obj) { return obj.try_convert<PointLight>()->IsCastingShadows(); }))
             );
     }
 }

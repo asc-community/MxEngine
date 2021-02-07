@@ -75,8 +75,6 @@ namespace MxEngine
 		size_t GetTotalIndiciesCount() const;
 		size_t GetBufferCount() const;
 		void PopInstancedBuffer();
-		const MxString& GetFilePath() const;
-		void SetInternalEngineTag(const MxString& tag);
 		void SetSubMeshesInternal(const SubMeshList& submeshes);
 		const SubMeshList& GetSubMeshes() const;
 		const SubMesh& GetSubMeshByIndex(size_t index) const;
@@ -84,5 +82,9 @@ namespace MxEngine
 		SubMesh& AddSubMesh(SubMesh::MaterialId materialId);
 		SubMesh& LinkSubMesh(SubMesh& submesh);
 		void DeleteSubMeshByIndex(size_t index);
+
+		const MxString& GetFilePath() const;
+		void SetInternalEngineTag(const MxString& tag);
+		bool IsInternalEngineResource() const;
 	};
 }

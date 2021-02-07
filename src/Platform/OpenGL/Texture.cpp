@@ -479,6 +479,11 @@ namespace MxEngine
 		this->filepath = tag;
 	}
 
+	bool Texture::IsInternalEngineResource() const
+	{
+		return this->filepath.find(MXENGINE_INTERNAL_TAG_SYMBOL) == 0;
+	}
+
     unsigned int Texture::GetTextureType() const
     {
 		return this->textureType;

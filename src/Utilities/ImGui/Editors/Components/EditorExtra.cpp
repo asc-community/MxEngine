@@ -42,80 +42,40 @@
 
 namespace MxEngine::GUI
 {
-    template<typename THandle>
-    std::pair<rttr::instance, rttr::type> DereferenceGeneric(rttr::instance object)
+    template<>
+    rttr::variant EditorExtra<InstanceFactory>(rttr::instance& val)
     {
-        using T = typename std::decay<decltype(*std::declval<THandle>())>::type;
-        THandle& handle = *object.try_convert<THandle>();
-        return std::pair{ handle.IsValid() ? rttr::instance{ *handle } : rttr::instance{ }, rttr::type::get<T>() };
-    }
+        auto& instanceFactory = *val.try_convert<InstanceFactory>();
+        auto view = instanceFactory.GetInstances();
 
-    std::pair<rttr::instance, rttr::type> DereferenceHandle(rttr::instance object)
-    {
-        #define VISITOR_DEREFERENCE_ENTRY(TYPE) { rttr::type::get<TYPE>(), DereferenceGeneric<TYPE> }
-        using DereferenceCallback = std::pair<rttr::instance, rttr::type>(*)(rttr::instance);
-        MxMap<rttr::type, DereferenceCallback> visitor = {
-            VISITOR_DEREFERENCE_ENTRY(MaterialHandle),
-            VISITOR_DEREFERENCE_ENTRY(MeshHandle),
-            VISITOR_DEREFERENCE_ENTRY(MxObject::Handle),
-            VISITOR_DEREFERENCE_ENTRY(AudioBufferHandle),
-            VISITOR_DEREFERENCE_ENTRY(AudioPlayerHandle),
-            VISITOR_DEREFERENCE_ENTRY(TextureHandle),
-            VISITOR_DEREFERENCE_ENTRY(ShaderHandle),
-            VISITOR_DEREFERENCE_ENTRY(FrameBufferHandle),
-            VISITOR_DEREFERENCE_ENTRY(CubeMapHandle),
-            VISITOR_DEREFERENCE_ENTRY(IndexBufferHandle),
-            VISITOR_DEREFERENCE_ENTRY(RenderBufferHandle),
-            VISITOR_DEREFERENCE_ENTRY(VertexArrayHandle),
-            VISITOR_DEREFERENCE_ENTRY(VertexBufferHandle),
-            VISITOR_DEREFERENCE_ENTRY(VertexBufferLayoutHandle),
-        };
-
-        auto t = object.get_type();
-        if (visitor.find(t) != visitor.end())
+        int id = 0;
+        for (const auto& object : view)
         {
-            return visitor[t](object);
+            auto name = MxFormat("instance #{}", id++);
+            if (ImGui::TreeNode(name.c_str()))
+            {
+                if (ImGui::Button("destroy instance"))
+                    MxObject::Destroy(object);
+                else
+                    Application::GetImpl()->GetRuntimeEditor().DrawMxObject(name, object);
+                ImGui::TreePop();
+            }
         }
-        else
-        {
-            return std::pair{ object, object.get_type() };
-        }
+        return { };
     }
 
     template<>
-	rttr::variant EditorExtra<InstanceFactory>(rttr::instance& val)
-	{
-		auto& instanceFactory = *val.try_convert<InstanceFactory>();
-		auto view = instanceFactory.GetInstances();
-
-		int id = 0;
-		for (const auto& object : view)
-		{
-			auto name = MxFormat("instance #{}", id++);
-			if (ImGui::TreeNode(name.c_str()))
-			{
-				if (ImGui::Button("destroy instance"))
-					MxObject::Destroy(object);
-				else
-					Application::GetImpl()->GetRuntimeEditor().DrawMxObject(name, object);
-				ImGui::TreePop();
-			}
-		}
-		return { };
-	}
-
-    template<>
-	rttr::variant EditorExtra<MeshRenderer>(rttr::instance& parent)
-	{
-		if (ImGui::Button("load from file"))
-		{
-			auto& meshRenderer = *parent.try_convert<MeshRenderer>();
-			MxString path = FileManager::OpenFileDialog();
-			if (!path.empty() && File::Exists(path))
-				meshRenderer = AssetManager::LoadMaterials(path);
-		}
-		return { };
-	}
+    rttr::variant EditorExtra<MeshRenderer>(rttr::instance& parent)
+    {
+        if (ImGui::Button("load from file"))
+        {
+            auto& meshRenderer = *parent.try_convert<MeshRenderer>();
+            MxString path = FileManager::OpenFileDialog();
+            if (!path.empty() && File::Exists(path))
+                meshRenderer = AssetManager::LoadMaterials(path);
+        }
+        return { };
+    }
 
     void CreateNewScript(const MxString& scriptName, const MxString& filepath)
     {
@@ -141,7 +101,7 @@ namespace MxEngine::GUI
         script << "};\n\n";
         script << "MXENGINE_RUNTIME_EDITOR(" << scriptName << ");\n";
     }
-    
+
     template<>
     rttr::variant EditorExtra<Script>(rttr::instance& val)
     {

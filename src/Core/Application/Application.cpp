@@ -569,41 +569,7 @@ namespace MxEngine
 		auto& editor = this->GetRuntimeEditor();
 		editor.LogToConsole("Welcome to MxEngine developer console!");
 
-		editor.RegisterComponentEditor<Behaviour          >();
-		editor.RegisterComponentEditor<InstanceFactory    >();
-		editor.RegisterComponentEditor<Instance           >();
-		editor.RegisterComponentEditor<Skybox             >();
-		editor.RegisterComponentEditor<DebugDraw          >();
-		editor.RegisterComponentEditor<MeshRenderer       >();
-		editor.RegisterComponentEditor<MeshSource         >();
-		editor.RegisterComponentEditor<MeshLOD            >();
-		editor.RegisterComponentEditor<DirectionalLight   >();
-		editor.RegisterComponentEditor<PointLight         >();
-		editor.RegisterComponentEditor<SpotLight          >();
-		editor.RegisterComponentEditor<CameraController   >();
-		editor.RegisterComponentEditor<CameraEffects      >();
-		editor.RegisterComponentEditor<CameraSSR          >();
-		editor.RegisterComponentEditor<CameraToneMapping  >();
-		editor.RegisterComponentEditor<VRCameraController >();
-		editor.RegisterComponentEditor<InputController    >();
-		editor.RegisterComponentEditor<AudioSource        >();
-		editor.RegisterComponentEditor<AudioListener      >();
-		editor.RegisterComponentEditor<RigidBody          >();
-		editor.RegisterComponentEditor<CharacterController>();
-		editor.RegisterComponentEditor<BoxCollider        >();
-		editor.RegisterComponentEditor<SphereCollider     >();
-		editor.RegisterComponentEditor<CylinderCollider   >();
-		editor.RegisterComponentEditor<CapsuleCollider    >();
-		editor.RegisterComponentEditor<CompoundCollider   >();
-		editor.RegisterComponentEditor<Script             >();
-
-		this->RegisterComponentUpdate<Behaviour>();
-		this->RegisterComponentUpdate<Script>();
-		this->RegisterComponentUpdate<InstanceFactory>();
-		this->RegisterComponentUpdate<VRCameraController>();
-		this->RegisterComponentUpdate<AudioListener>();
-		this->RegisterComponentUpdate<AudioSource>();
-		this->RegisterComponentUpdate<RigidBody>();
-		this->RegisterComponentUpdate<CharacterController>();
+		// register all predefined components and their update methods
+		MxEngine::RegisterComponents();
 	}
 }

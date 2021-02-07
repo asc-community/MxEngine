@@ -31,23 +31,8 @@
 #error MxEngine supports only x64 builds
 #endif
 
-// graphic api
-#define MXENGINE_USE_OPENGL
-
-// audio api
-#define MXENGINE_USE_OPENAL
-
-// physics
-#define MXENGINE_USE_BULLET3
-
 // assert handling 
 #define MX_ASSERT_EXCEPTION
-
-// boost library is optional for stacktrace
-// #define MXENGINE_USE_BOOST
-
-// model loader
-#define MXENGINE_USE_ASSIMP
 
 #define MXENGINE_CONCAT_IMPL(x, y) x##y
 #define MXENGINE_CONCAT(x, y) MXENGINE_CONCAT_IMPL(x, y)
@@ -58,7 +43,9 @@
 
 #define MXENGINE_STRING_IMPL(x) #x
 #define MXENGINE_STRING(x) MXENGINE_STRING_IMPL(x)
-#define EMBEDDED_SHADER(x) MXENGINE_STRING_IMPL(x)
+
+#define MXENGINE_MAKE_INTERNAL_TAG(tag) ("!" tag)
+#define MXENGINE_INTERNAL_TAG_SYMBOL '!'
 
 #define MXENGINE_MAKE_MOVEONLY(class_name) class_name() = default; class_name(const class_name&) = delete; class_name& operator=(const class_name&) = delete;\
         class_name(class_name&&) noexcept = default; class_name& operator=(class_name&&) noexcept = default

@@ -30,10 +30,8 @@
 
 #include "Core/Macro/Macro.h"
 
-#if defined(MXENGINE_USE_OPENAL)
 #include "Platform/OpenAL/AudioBuffer.h"
 #include "Platform/OpenAL/AudioPlayer.h"
-#endif
 
 #include "Utilities/AbstractFactory/AbstractFactory.h"
 

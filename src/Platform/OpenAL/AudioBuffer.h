@@ -65,7 +65,9 @@ namespace MxEngine
         float GetLength() const;
         size_t GetLengthInSeconds() const;
         AudioType GetAudioType() const;
+
         const MxString& GetFilePath() const;
-        void SetInternalEngineTag(const MxString& tag);
+        void SetInternalEngineTag(const MxString& tag); 
+        bool IsInternalEngineResource() const;
     };
 }

@@ -171,6 +171,11 @@ namespace MxEngine
         this->filepath = tag;
     }
 
+    bool AudioBuffer::IsInternalEngineResource() const
+    {
+        return this->filepath.find(MXENGINE_INTERNAL_TAG_SYMBOL) == 0;
+    }
+
     namespace GUI
     {
         rttr::variant AudioBufferHandleEditorExtra(rttr::instance&);

@@ -30,9 +30,11 @@
 #include "Utilities/Format/Format.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Utilities/STL/MxMap.h"
+#include "Core/Runtime/DereferenceHandle.h"
 
 namespace MxEngine::GUI
 {
+
 	void Display(const char* name, bool b, const ReflectionMeta& meta)
 	{
 		ImGui::Text("%s: %s", name, BOOL_STRING(b));
@@ -87,7 +89,7 @@ namespace MxEngine::GUI
 	void VisitDisplay(const char* name, const rttr::variant& v, const ReflectionMeta& meta);
 	rttr::variant VisitEdit(const char* name, const rttr::variant& v, const ReflectionMeta& meta);
 
-	void DisplaySequantialContainer(const char* name, const rttr::variant& val, const ReflectionMeta& meta)
+	void DisplaySequentialContainer(const char* name, const rttr::variant& val, const ReflectionMeta& meta)
 	{
 		auto view = val.create_sequential_view();
 
@@ -224,7 +226,7 @@ namespace MxEngine::GUI
 		return edited ? rttr::variant{ val } : rttr::variant{ };
 	}
 
-	rttr::variant EditSequantialContainer(const char* name, const rttr::variant& val, const ReflectionMeta& meta)
+	rttr::variant EditSequentialContainer(const char* name, const rttr::variant& val, const ReflectionMeta& meta)
 	{
 		rttr::variant arrayResult{ };
 		auto view = val.create_sequential_view();
@@ -300,7 +302,7 @@ namespace MxEngine::GUI
 		}
 		else if (v.is_sequential_container())
 		{
-			DisplaySequantialContainer(name, v, meta);
+			DisplaySequentialContainer(name, v, meta);
 		}
 		else if (t.is_enumeration())
 		{
@@ -342,7 +344,7 @@ namespace MxEngine::GUI
 		}
 		else if(v.is_sequential_container())
 		{
-			return EditSequantialContainer(name, v, meta);
+			return EditSequentialContainer(name, v, meta);
 		}
 		else if (t.is_enumeration())
 		{
@@ -357,7 +359,7 @@ namespace MxEngine::GUI
 	rttr::variant ReflectObject(rttr::instance maybeHandle)
 	{
 		rttr::variant result{ };
-		auto[object, type] = DereferenceHandle(maybeHandle);
+		auto [object, type, handleId] = DereferenceHandle(maybeHandle);
 
 		ReflectionMeta typeMeta(type);
 		if (typeMeta.Editor.HandleEditor != nullptr)
@@ -376,7 +378,7 @@ namespace MxEngine::GUI
 			ReflectionMeta meta(method);
 
 			if ((meta.Flags & MetaInfo::EDITABLE) == 0) continue;
-			if (meta.Editor.ViewCondition != nullptr && !meta.Editor.ViewCondition(object)) continue;
+			if (meta.Condition != nullptr && !meta.Condition(object)) continue;
 
 			auto params = method.get_parameter_infos();
 
@@ -407,7 +409,7 @@ namespace MxEngine::GUI
 			ReflectionMeta meta(property);
 
 			if ((meta.Flags & MetaInfo::EDITABLE) == 0) continue;
-			if (meta.Editor.ViewCondition != nullptr && !meta.Editor.ViewCondition(object)) continue;
+			if (meta.Condition != nullptr && !meta.Condition(object)) continue;
 
 			if (meta.Editor.CustomView != nullptr)
 			{
