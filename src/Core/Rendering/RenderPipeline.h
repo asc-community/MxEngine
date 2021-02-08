@@ -61,7 +61,8 @@ namespace MxEngine
         TextureHandle DepthTexture;
         TextureHandle AverageWhiteTexture;
         TextureHandle HDRTexture;
-        TextureHandle SwapTexture;
+        TextureHandle SwapTexture1;
+        TextureHandle SwapTexture2;
 
         FrustrumCuller Culler;
         Matrix4x4 InverseViewProjMatrix;
@@ -96,7 +97,6 @@ namespace MxEngine
         TextureHandle DefaultGreyMap;
         TextureHandle DefaultShadowMap;
         TextureHandle AverageWhiteTexture;
-        TextureHandle AmbientOcclusionTexture;
         TextureHandle EnvironmentBRDFLUT;
         CubeMapHandle DefaultShadowCubeMap;
         CubeMapHandle DefaultSkybox;

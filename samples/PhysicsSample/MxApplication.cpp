@@ -141,8 +141,11 @@ namespace PhysicsSample
             auto rb = object->AddComponent<RigidBody>();
             auto cl = object->AddComponent<SphereCollider>();
 
-            mr->GetMaterial()->BaseColor = Colors::Create(Colors::GREEN);
-            mr->GetMaterial()->Transparency = 0.3f;
+            auto material = mr->GetMaterial();
+            material->BaseColor = Colors::Create(Colors::GREEN);
+            material->Transparency = 0.3f;
+            material->MetallicFactor = 1.0f;
+            material->RoughnessFactor = 0.4f;
             ms->Mesh = Primitives::CreateSphere();
             rb->MakeTrigger();
             rb->SetOnCollisionEnterCallback([](MxObject& self, MxObject& other)

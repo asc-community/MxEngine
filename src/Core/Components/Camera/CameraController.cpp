@@ -431,9 +431,14 @@ namespace MxEngine
 		return this->renderBuffers->HDR;
 	}
 
-    TextureHandle CameraController::GetSwapHDRTexture() const
+	TextureHandle CameraController::GetSwapHDRTexture2() const
+	{
+		return this->renderBuffers->SwapHDR2;
+	}
+
+    TextureHandle CameraController::GetSwapHDRTexture1() const
     {
-		return this->renderBuffers->SwapHDR;
+		return this->renderBuffers->SwapHDR1;
     }
 
 	void CameraRender::Init(int width, int height)
@@ -445,7 +450,8 @@ namespace MxEngine
 		this->Depth = GraphicFactory::Create<Texture>();
 		this->AverageWhite = GraphicFactory::Create<Texture>();
 		this->HDR = GraphicFactory::Create<Texture>();
-		this->SwapHDR = GraphicFactory::Create<Texture>();
+		this->SwapHDR1 = GraphicFactory::Create<Texture>();
+		this->SwapHDR2 = GraphicFactory::Create<Texture>();
 
 		this->Resize(width, height);
 		
@@ -471,7 +477,8 @@ namespace MxEngine
 		this->Depth->LoadDepth(width, height, TextureFormat::DEPTH32F, TextureWrap::CLAMP_TO_EDGE);
 		this->AverageWhite->Load(nullptr, 1, 1, 3, false, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
 		this->HDR->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
-		this->SwapHDR->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
+		this->SwapHDR1->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
+		this->SwapHDR2->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
 
 		this->Albedo->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera albedo"));
 		this->Normal->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera normal"));
@@ -479,7 +486,8 @@ namespace MxEngine
 		this->Depth->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera depth"));
 		this->AverageWhite->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera white"));
 		this->HDR->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera hdr"));
-		this->SwapHDR->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap hdr"));
+		this->SwapHDR1->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap hdr 1"));
+		this->SwapHDR2->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap hdr 2"));
 	}
 
 	void CameraRender::DeInit()
@@ -490,7 +498,8 @@ namespace MxEngine
 		GraphicFactory::Destroy(this->Material);
 		GraphicFactory::Destroy(this->Depth);
 		GraphicFactory::Destroy(this->HDR);
-		GraphicFactory::Destroy(this->SwapHDR);
+		GraphicFactory::Destroy(this->SwapHDR1);
+		GraphicFactory::Destroy(this->SwapHDR2);
 	}
 
 	MXENGINE_REFLECT_TYPE

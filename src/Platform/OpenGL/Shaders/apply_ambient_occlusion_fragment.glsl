@@ -8,19 +8,16 @@ uniform sampler2D aoTex;
 
 float applyBlurFilter(sampler2D tex, vec2 coords)
 {
-    vec2 invSize = vec2(1.5) / textureSize(tex, 0);
+    const int LOD = 2;
+    vec2 invSize = 1.0 / textureSize(tex, LOD);
     
     float result = 0.0;
+    result += textureLod(tex, coords + vec2(0.0, 1.0) * invSize, LOD).r;
+    result += textureLod(tex, coords + vec2(1.0, 0.0) * invSize, LOD).r;
+    result += textureLod(tex, coords - vec2(0.0, 1.0) * invSize, LOD).r;
+    result += textureLod(tex, coords - vec2(1.0, 0.0) * invSize, LOD).r;
 
-    for (int x = -2; x < 2; x++)
-    {
-        for (int y = -2; y < 2; y++)
-        {
-            result += texture(tex, coords + vec2(x, y) * invSize).r;
-        }
-    }
-
-    return result / 16.0;
+    return result * 0.25;
 }
 
 void main()

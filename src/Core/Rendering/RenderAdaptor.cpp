@@ -107,10 +107,6 @@ namespace MxEngine
         environment.AverageWhiteTexture->SetSamplingFromLOD(environment.AverageWhiteTexture->GetMaxTextureLOD());
         environment.AverageWhiteTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("average white"));
 
-        environment.AmbientOcclusionTexture = GraphicFactory::Create<Texture>();
-        environment.AmbientOcclusionTexture->Load(nullptr, internalTextureSize, internalTextureSize, 1, false, TextureFormat::R);
-        environment.AmbientOcclusionTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("ambient occlusion"));
-
         // TODO: use RG16
         environment.EnvironmentBRDFLUT = AssetManager::LoadTexture(textureFolder / "env_brdf_lut.png", TextureFormat::RG);
         environment.EnvironmentBRDFLUT->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("BRDF LUT"));
@@ -217,6 +213,16 @@ namespace MxEngine
         environment.Shaders["SSR"_id] = AssetManager::LoadShader(
             shaderFolder / "rect_vertex.glsl",
             shaderFolder / "ssr_fragment.glsl"
+        );
+
+        environment.Shaders["SSGI"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "ssgi_fragment.glsl"
+        );
+
+        environment.Shaders["ApplySSGI"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "apply_ssgi_fragment.glsl"
         );
         
         environment.Shaders["ChromaticAbberation"_id] = AssetManager::LoadShader(

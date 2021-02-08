@@ -51,7 +51,8 @@ namespace MxEngine
 		TextureHandle Depth;
 		TextureHandle AverageWhite;
 		TextureHandle HDR;
-		TextureHandle SwapHDR;
+		TextureHandle SwapHDR1;
+		TextureHandle SwapHDR2;
 
 		void Init(int width, int height);
 		void Resize(int width, int height);
@@ -135,6 +136,7 @@ namespace MxEngine
 		TextureHandle GetDepthTexture() const;
 		TextureHandle GetAverageWhiteTexture() const;
 		TextureHandle GetHDRTexture() const;
-		TextureHandle GetSwapHDRTexture() const;
+		TextureHandle GetSwapHDRTexture1() const;
+		TextureHandle GetSwapHDRTexture2() const;
 	};
 }

@@ -63,8 +63,9 @@ namespace MxEngine
 		void DrawTransparentObjects(CameraUnit& camera);
 		void ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyChromaticAbberation(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
-		void ApplyAmbientOcclusion(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
-		void ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+		void ApplySSAO(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
+		void ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
+		void ApplySSGI(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
 		void ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
 		void ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
