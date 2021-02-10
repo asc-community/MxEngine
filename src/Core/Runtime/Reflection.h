@@ -59,10 +59,16 @@ namespace MxEngine
         constexpr static const char* HANDLE_EDITOR = "handle editor";
     };
 
+    struct SerializeInfo
+    {
+        constexpr static const char* CUSTOM_SERIALIZE = "custom serialize";
+    };
+
     using ConditionFunction = bool(*)(const rttr::instance&);
     using CustomViewFunction = rttr::variant(*)(rttr::instance&);
     using HandleEditorFunction = rttr::variant(*)(rttr::instance&);
     using InstanceToVariantFunction = rttr::variant(*)(rttr::instance&);
+    using CustomSerializeFunction = void(*)(rttr::instance, rttr::instance&);
 
     enum class InterpretAsInfo 
     {
@@ -105,8 +111,11 @@ namespace MxEngine
 
             rttr::variant handleEditor = obj.get_metadata(EditorInfo::HANDLE_EDITOR);
             this->Editor.HandleEditor = handleEditor.is_valid() ? handleEditor.get_value<HandleEditorFunction>() : nullptr;
+
+            rttr::variant customSerialize = obj.get_metadata(SerializeInfo::CUSTOM_SERIALIZE);
+            this->Serialization.CustomSerialize = customSerialize.is_valid() ? customSerialize.get_value<CustomSerializeFunction>() : nullptr;
         }
-        
+
         uint32_t Flags = 0;
         InstanceToVariantFunction CopyFunction = nullptr;
         ConditionFunction Condition = nullptr;
@@ -119,6 +128,11 @@ namespace MxEngine
             float EditPrecision = 1.0f;
             InterpretAsInfo InterpretAs = InterpretAsInfo::DEFAULT;
         } Editor;
+
+        struct 
+        {
+            CustomSerializeFunction CustomSerialize = nullptr;
+        } Serialization;
     };
 
     template<typename T>
@@ -126,6 +140,9 @@ namespace MxEngine
     {
         return rttr::variant{ *i.try_convert<T>() };
     }
+
+    template<typename>
+    void SerializeExtra(rttr::instance, rttr::instance&);
 
     namespace GUI
     {

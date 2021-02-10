@@ -42,8 +42,8 @@ vec3 calcColorUnderPointLight(FragmentInfo fragment, PointLight light, vec3 view
 	float shadowFactor = 1.0f;
 	if (computeShadow) { shadowFactor = CalcShadowFactor3D(lightPath, viewDirection, light.radius, 0.15f, map_shadow); }
 	
-	float attenuation = 1.0f - pow(lightDistance / light.radius, 4.0f);
-	float intensity = clamp(attenuation * attenuation / (lightDistance * lightDistance + 1.0f), 0.0f, 1.0f);
+	float attenuation = clamp(1.0f - pow(lightDistance / light.radius, 4.0f), 0.0, 1.0);
+	float intensity = attenuation * attenuation / (lightDistance * lightDistance + 1.0f);
 	intensity = isnan(lightDistance) || light.radius < lightDistance ? 0.0f : intensity;
 
 	return calculateLighting(fragment, viewDirection, lightPath, intensity * light.color.rgb, light.color.a, shadowFactor);

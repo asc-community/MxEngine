@@ -192,6 +192,11 @@ namespace MxEngine
 		});
 	}
 
+	void CameraController::SetListenWindowResizeEventInternal(bool value)
+	{
+		if (value) this->ListenWindowResizeEvent();
+	}
+
 	bool CameraController::IsListeningWindowResizeEvent() const
 	{
 		return Event::HasEventListenerWithName(this->GetEventUUID());
@@ -612,11 +617,7 @@ namespace MxEngine
 
 		rttr::registration::class_<CameraController>("CameraController")
 			.constructor<>()
-			.method("listen window resize event", &CameraController::ListenWindowResizeEvent)
-			(
-				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
-			)
-			.property_readonly("is listening window resize event", &CameraController::IsListeningWindowResizeEvent)
+			.property("is listening window resize event", &CameraController::IsListeningWindowResizeEvent, &CameraController::SetListenWindowResizeEventInternal)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
 			)

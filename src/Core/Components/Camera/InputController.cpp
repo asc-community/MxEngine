@@ -330,15 +330,15 @@ namespace MxEngine
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
 			)
+			.property("left key binding", &InputController::GetLeftKeyBinding, &InputController::SetLeftKeyBinding)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+			)
 			.property("back key binding", &InputController::GetBackKeyBinding, &InputController::SetBackKeyBinding)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
 			)
 			.property("right key binding", &InputController::GetRightKeyBinding, &InputController::SetRightKeyBinding)
-			(
-				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-			)
-			.property("left key binding", &InputController::GetLeftKeyBinding, &InputController::SetLeftKeyBinding)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
 			)

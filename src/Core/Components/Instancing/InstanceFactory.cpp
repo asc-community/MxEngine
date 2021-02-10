@@ -187,10 +187,6 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::INTERPRET_AS, InterpretAsInfo::COLOR)
-            )
-            .property_readonly("parent", &Instance::GetParent)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE)
             );
 
         rttr::registration::class_<InstanceFactory>("InstanceFactory")
@@ -213,8 +209,9 @@ namespace MxEngine
             )
             .property_readonly("instances", (GetPoolFunc)&InstanceFactory::GetInstancePool)
             (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<InstanceFactory>)
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<InstanceFactory>),
+                rttr::metadata(SerializeInfo::CUSTOM_SERIALIZE, SerializeExtra<InstanceFactory>)
             );
     }
 }

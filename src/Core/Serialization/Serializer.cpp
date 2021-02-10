@@ -116,7 +116,14 @@ namespace MxEngine
 
             const char* propertyName = property.get_name().cbegin();
 
-            VisitSerialize(json[propertyName], property.get_value(object), propertyMeta);
+			if (propertyMeta.Serialization.CustomSerialize != nullptr)
+			{
+				propertyMeta.Serialization.CustomSerialize(json[propertyName], object);
+			}
+			else
+			{
+				VisitSerialize(json[propertyName], property.get_value(object), propertyMeta);
+			}
         }
 		if (type.get_properties().empty())
 		{

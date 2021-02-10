@@ -116,7 +116,7 @@ set(MXENGINE_SOURCES
 "Platform/OpenGL/UsageType.cpp" 
 "Core/Serialization/Serializer.cpp" 
 "Core/Components/Components.cpp" 
- "Core/Serialization/ResourceSerializer.cpp")
+ "Core/Serialization/ResourceSerializer.cpp" "Core/Serialization/SerializeExtra.cpp")
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)

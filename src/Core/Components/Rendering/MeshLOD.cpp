@@ -107,7 +107,7 @@ namespace MxEngine
         return (size_t)this->currentLOD;
     }
 
-    MeshLOD::LODInstance MeshLOD::GetMeshLOD() const
+    MeshHandle MeshLOD::GetMeshLOD() const
     {
         if (this->currentLOD == 0 || this->currentLOD >= this->LODs.size())
             return MxObject::GetByComponent(*this).GetComponent<MeshSource>()->Mesh;

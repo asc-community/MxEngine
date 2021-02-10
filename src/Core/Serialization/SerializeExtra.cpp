@@ -26,36 +26,36 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Utilities/ECS/Component.h"
-#include "Core/Resources/AssetManager.h"
-#include "MeshSource.h"
+#include "Core/Serialization/Serializer.h"
+#include "Core/Components/Physics/CompoundCollider.h"
+#include "Core/Components/Instancing/InstanceFactory.h"
+#include "Core/Serialization/SceneSerializer.h"
 
 namespace MxEngine
 {
-    struct LODConfig
+    template<>
+    void SerializeExtra<CompoundCollider::CompoundColliderChild>(rttr::instance jsonWrapped, rttr::instance& object)
     {
-        std::array<float, 5> Factors{ 0.001f, 0.01f, 0.05f, 0.15f, 0.3f };
-    };
+        auto& json = *jsonWrapped.try_convert<JsonFile>();
+        auto& child = *object.try_convert<CompoundCollider::CompoundColliderChild>();
 
-    class MeshLOD
+        std::visit([&json](auto&& shape) mutable
+        {
+            auto bounding = shape->GetNativeBounding();
+            const char* name = rttr::type::get(bounding).get_name().cbegin();
+            Serialize(json[name], bounding);
+        }, child.Shape);
+    }
+
+    template<>
+    void SerializeExtra<InstanceFactory>(rttr::instance jsonWrapped, rttr::instance& object)
     {
-        MAKE_COMPONENT(MeshLOD);
+        auto& json = *jsonWrapped.try_convert<JsonFile>();
+        auto& instanceFactory = *object.try_convert<InstanceFactory>();
 
-        uint8_t currentLOD = 0;
-    public:
-        MeshLOD() = default;
-
-        bool AutoLODSelection = true;
-
-        MxVector<MeshHandle> LODs;
-        void Generate(const LODConfig& config);
-        void Generate() { this->Generate(LODConfig{ }); }
-        void FixBestLOD(const Vector3& viewportPosition, float viewportZoom = 1.0f);
-        void SetCurrentLOD(size_t lod);
-        size_t GetCurrentLOD() const;
-
-        MeshHandle GetMeshLOD() const;
-    };
+        for (auto& instance : instanceFactory.GetInstances())
+        {
+            json.push_back(SceneSerializer::SerializeMxObject(*instance));
+        }
+    }
 }

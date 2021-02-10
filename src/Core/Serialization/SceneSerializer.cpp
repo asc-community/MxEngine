@@ -31,7 +31,6 @@
 #include "Core/Application/Runtime.h"
 #include "Core/Application/Physics.h"
 #include "Core/MxObject/MxObject.h"
-#include "Core/Components/Instancing/Instance.h"
 
 namespace MxEngine
 {
@@ -42,14 +41,16 @@ namespace MxEngine
     class CubeMap;
     class AudioBuffer;
 
+    bool IsInstance(MxObject&);
+
     void SceneSerializer::SerializeGlobals(JsonFile& json)
     {
         MAKE_SCOPE_PROFILER("SceneSerializer::SerializeGlobals()");
         MAKE_SCOPE_TIMER("MxEngine::SceneSerializer", "SceneSerializer::SerializeGlobals()");
 
         auto viewport = Rendering::GetViewport();
+        if (viewport.IsValid()) json["globals"]["viewport"] = viewport.GetHandle();
 
-        json["globals"]["viewport"     ] = viewport.IsValid() ? viewport.GetHandle() : size_t(-1);
         json["globals"]["overlay-debug"] = Rendering::IsDebugOverlayed();
         json["globals"]["paused"       ] = Runtime::IsApplicationPaused();
         json["globals"]["time-scale"   ] = Runtime::GetApplicationTimeScale();
@@ -67,7 +68,7 @@ namespace MxEngine
         auto view = MxObject::GetObjects();
         for (auto& object : view)
         {
-            if (object.IsSerialized && !object.HasComponent<Instance>())
+            if (object.IsSerialized && !IsInstance(object))
             {
                 objects.push_back(SceneSerializer::SerializeMxObject(object));
             }
@@ -94,6 +95,7 @@ namespace MxEngine
 
         // TODO: determine viewport
         //Rendering::SetViewport(mappings.CameraControllers[json["globals"]["viewport-id"]]);
+
         Rendering::SetDebugOverlay(        json["globals"]["overlay-debug"  ]);
         Runtime::SetApplicationPaused(     json["globals"]["paused"         ]);
         Runtime::SetApplicationTimeScale(  json["globals"]["time-scale"     ]);

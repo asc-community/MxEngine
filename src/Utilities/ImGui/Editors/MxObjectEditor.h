@@ -38,9 +38,10 @@ namespace MxEngine::GUI
 	void DrawMxObjectEditor(
 		const char* name,
 		MxObject& object, 
-		bool withBoundingBox,
 		const MxVector<const char*>& componentNames,
 		const MxVector<void(*)(MxObject&)>& componentAdderCallbacks,
 		const MxVector<void(*)(MxObject&)>& componentEditorCallbacks
 	);
+
+	void DrawMxObjectBoundingBoxEditor(MxObject& object);
 }

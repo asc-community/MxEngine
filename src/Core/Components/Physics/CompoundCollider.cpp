@@ -97,42 +97,6 @@ namespace MxEngine
         return this->compoundShape->GetBoundingSphere(transform);
     }
 
-    // const CompoundCollider::VariantArray& CompoundCollider::GetChildrenVariant() const
-    // {
-    //     return this->children;
-    // }
-    // 
-    // void CompoundCollider::SetChildrenVariant(const VariantArray& v)
-    // {
-    //     // copy child shape transforms before deleting children
-    //     MxVector<TransformComponent> oldTransforms;
-    //     oldTransforms.resize(this->GetShapeCount());
-    //     for (size_t i = 0; i < oldTransforms.size(); i++)
-    //     {
-    //         oldTransforms[i] = this->GetShapeTransformByIndex(i);
-    //     }
-    //     // delete old children
-    //     this->compoundShape->ClearShapes();
-    // 
-    //     // fill new children (need to restore transform later)
-    //     for (const auto& shapeVariant : v)
-    //     {
-    //         std::visit([this](auto&& shape) { this->AddShape({ }, shape); }, shapeVariant);
-    //     }
-    // 
-    //     // O(n^2) but who cares
-    //     for (size_t oldIndex = 0; oldIndex < this->children.size(); oldIndex++)
-    //     {
-    //         for (size_t newIndex = 0; newIndex < v.size(); newIndex++)
-    //         {
-    //             if (this->children[oldIndex] == v[newIndex])
-    //                 this->SetShapeTransformByIndex(newIndex, oldTransforms[oldIndex]);
-    //         }
-    //     }
-    // 
-    //     this->children = v;
-    // }
-
     MxVector<CompoundCollider::CompoundColliderChild> CompoundCollider::GetChildren() const
     {
         MxVector<CompoundColliderChild> result;
@@ -168,7 +132,8 @@ namespace MxEngine
             .property("shape", &CompoundColliderChild::Shape)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<CompoundColliderChild>)
+                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<CompoundColliderChild>),
+                rttr::metadata(SerializeInfo::CUSTOM_SERIALIZE, SerializeExtra<CompoundColliderChild>)
             );
 
         rttr::registration::class_<CompoundCollider>("CompoundCollider")
