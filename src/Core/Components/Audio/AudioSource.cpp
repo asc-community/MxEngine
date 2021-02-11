@@ -118,7 +118,7 @@ namespace MxEngine
 
     void AudioSource::SetPlaybackSpeed(float speed)
     {
-        this->currentSpeed = speed;
+        this->currentSpeed = Max(speed, 0.0f);
         this->player->SetSpeed(this->currentSpeed);
     }
 

@@ -84,7 +84,7 @@ namespace MxEngine
     void AudioPlayer::DetachBuffer()
     {
         this->Stop();
-        ALCALL(alSourcei(id, AL_BUFFER, NULL));
+        ALCALL(alSourcei(id, AL_BUFFER, (ALint)NULL));
     }
 
     void AudioPlayer::Play() const
