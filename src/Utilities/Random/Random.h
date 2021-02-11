@@ -54,7 +54,7 @@ namespace MxEngine
         /*!
         generator instance. One per each thread. Use seed to initialize it to some value (maybe use thread id for that)
         */
-        static thread_local inline Generator mersenne64;
+        thread_local static Generator mersenne64;
     public:
         /*!
         max value which random generator can produce

@@ -31,6 +31,8 @@
 
 namespace MxEngine
 {
+    thread_local Random::Generator mersenne64;
+
     template<typename T>
     T GetRandomImpl(Random::Generator& gen, T lower, T upper)
     {
