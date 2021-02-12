@@ -114,11 +114,16 @@ namespace MxEngine
             )
             .property("left eye", &VRCameraController::LeftEye)
             (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
             )
             .property("right eye", &VRCameraController::RightEye)
             (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("eyes", &VRCameraController::LeftEye)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE),
+                rttr::metadata(SerializeInfo::CUSTOM_SERIALIZE, SerializeExtra<VRCameraController>)
             );
     }
 }

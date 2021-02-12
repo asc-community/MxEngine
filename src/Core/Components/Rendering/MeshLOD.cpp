@@ -99,7 +99,7 @@ namespace MxEngine
 
     void MeshLOD::SetCurrentLOD(size_t lod)
     {
-        this->currentLOD = (uint8_t)Min(lod, (size_t)std::numeric_limits<uint8_t>::max());
+        this->currentLOD = (uint8_t)Min(lod, (size_t)Max((int)this->LODs.size() - 1, 0));
     }
 
     size_t MeshLOD::GetCurrentLOD() const
@@ -127,7 +127,8 @@ namespace MxEngine
             )
             .property("current lod", &MeshLOD::GetCurrentLOD, &MeshLOD::SetCurrentLOD)
             (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance& v) { return !v.try_convert<MeshLOD>()->AutoLODSelection; }))
             )
             .method("generate lods", (AutoLodGenFunc)&MeshLOD::Generate)
             (

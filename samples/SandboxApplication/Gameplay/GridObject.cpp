@@ -14,5 +14,6 @@ void InitGrid(MxObject& object)
 	material->NormalMap = AssetManager::LoadTexture("Resources/textures/brick_normal.jpg"_id);
 	material->AmbientOcclusionMap = AssetManager::LoadTexture("Resources/textures/brick_ao.jpg"_id);
 	material->RoughnessMap = AssetManager::LoadTexture("Resources/textures/brick_roughness.jpg"_id);
+	//material->AlbedoMap = Primitives::CreateGridTexture();
 	material->UVMultipliers = { 0.5f * scale, 0.5f * scale };
 }

@@ -156,6 +156,7 @@ namespace MxEngine
         vertecies.shrink_to_fit();
         result.BufferIndicies(indicies);
         result.BufferVertecies(vertecies);
+        result.UpdateBoundingGeometry(vertecies);
         return result;
     }
 }

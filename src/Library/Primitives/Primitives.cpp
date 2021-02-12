@@ -431,13 +431,15 @@ namespace MxEngine
     {
         TextureHandle gridTexture = GraphicFactory::Create<Texture>();
 
+        constexpr size_t channels = 3;
+
         Array2D<uint8_t> textureData;
-        textureData.resize(textureSize, textureSize * 3);
+        textureData.resize(textureSize, textureSize * channels, 255);
 
         constexpr auto draw_border = [](Array2D<uint8_t>& texture, size_t borderSize)
         {
             size_t width = texture.width();
-            size_t height = texture.height() / 3;
+            size_t height = texture.height() / channels;
             for (size_t i = 0; i < width; i++)
             {
                 for (size_t j = 0; j < height; j++)
@@ -445,16 +447,16 @@ namespace MxEngine
                     if (i < borderSize || i + borderSize >= width ||
                         j < borderSize || j + borderSize >= height)
                     {
-                        texture[i][j * 3 + 0] = 0;
-                        texture[i][j * 3 + 1] = 0;
-                        texture[i][j * 3 + 2] = 0;
+                        texture[i][j * channels + 0] = 0;
+                        texture[i][j * channels + 1] = 0;
+                        texture[i][j * channels + 2] = 0;
                     }
                 }
             }
         };
 
         draw_border(textureData, static_cast<size_t>(textureSize * borderScale));
-        gridTexture->Load(textureData.data(), (int)textureSize, (int)textureSize, 3, false, TextureFormat::RGB);
+        gridTexture->Load(textureData.data(), (int)textureSize, (int)textureSize, channels, false, TextureFormat::RGB);
         return gridTexture;
     }
 }

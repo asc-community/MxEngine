@@ -29,6 +29,7 @@
 #include "Core/Serialization/Serializer.h"
 #include "Core/Components/Physics/CompoundCollider.h"
 #include "Core/Components/Instancing/InstanceFactory.h"
+#include "Core/Components/Camera/VRCameraController.h"
 #include "Core/Serialization/SceneSerializer.h"
 
 namespace MxEngine
@@ -57,5 +58,15 @@ namespace MxEngine
         {
             json.push_back(SceneSerializer::SerializeMxObject(*instance));
         }
+    }
+
+    template<>
+    void SerializeExtra<VRCameraController>(rttr::instance jsonWrapped, rttr::instance& object)
+    {
+        auto& json = *jsonWrapped.try_convert<JsonFile>();
+        auto& vr = *object.try_convert<VRCameraController>();
+
+        if (vr.LeftEye.IsValid()) json["left"] = vr.LeftEye.GetHandle();
+        if (vr.RightEye.IsValid()) json["right"] = vr.RightEye.GetHandle();
     }
 }

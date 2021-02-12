@@ -176,11 +176,12 @@ namespace MxEngine
             .property("cascade direction", &DirectionalLight::CascadeDirection)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& obj) { return !obj.try_convert<DirectionalLight>()->IsFollowingViewport(); }))
+                rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance& v) { return !v.try_convert<DirectionalLight>()->IsFollowingViewport(); }))
             )
             .method("follow viewport", &DirectionalLight::FollowViewport)
             (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance & v) { return !v.try_convert<DirectionalLight>()->IsFollowingViewport(); }))
             );
     }
 }

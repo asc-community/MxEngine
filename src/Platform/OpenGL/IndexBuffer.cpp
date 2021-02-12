@@ -86,6 +86,7 @@ namespace MxEngine
 
 	void IndexBuffer::GetBufferedIndicies(IndexType* data, size_t sizeInInts) const
 	{
+		this->Bind();
 		constexpr size_t offset = 0;
 		GLCALL(glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, sizeInInts * sizeof(IndexType), data));
 	}
