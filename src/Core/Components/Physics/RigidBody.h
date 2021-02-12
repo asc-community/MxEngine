@@ -43,6 +43,13 @@ namespace MxEngine
         ROLLING_FRICTION = 2
     };
 
+    enum class RigidBodyType
+    {
+        STATIC,
+        DYNAMIC,
+        KINEMATIC,
+    };
+
     class RigidBody
     {
         MAKE_COMPONENT(RigidBody);
@@ -77,11 +84,9 @@ namespace MxEngine
         bool IsRayCastable() const;
         void ToggleRayCasting(bool value);
         bool IsMoving() const;
-
-        void SetStateDynamic(bool value);
-        void SetStateStatic(bool value);
-        void SetStateKinematic(bool value);
-        void SetStateTrigger(bool value);
+        void ToggleTrigger(bool value);
+        RigidBodyType GetTypeInternal() const;
+        void SetTypeInternal(RigidBodyType type);
 
         template<typename F>
         void SetOnCollisionCallback(F&& func)

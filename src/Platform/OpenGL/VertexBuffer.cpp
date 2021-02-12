@@ -98,6 +98,12 @@ namespace MxEngine
 			this->BufferSubData(data, sizeInFloats);
     }
 
+	void VertexBuffer::GetBufferedData(BufferData data, size_t sizeInFloats, size_t offsetInFloats) const
+	{
+		this->Bind();
+		GLCALL(glGetBufferSubData(GL_ARRAY_BUFFER, offsetInFloats * sizeof(float), sizeInFloats * sizeof(float), (void*)data));
+	}
+
     size_t VertexBuffer::GetSize() const
     {
 		return this->size;

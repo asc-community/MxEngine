@@ -84,6 +84,12 @@ namespace MxEngine
 		GLCALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(IndexType), data, (GLenum)UsageTypeToNative(usageType)));
 	}
 
+	void IndexBuffer::GetBufferedIndicies(IndexType* data, size_t sizeInInts) const
+	{
+		constexpr size_t offset = 0;
+		GLCALL(glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, sizeInInts * sizeof(IndexType), data));
+	}
+
 	void IndexBuffer::Unbind() const
 	{
 		GLCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));

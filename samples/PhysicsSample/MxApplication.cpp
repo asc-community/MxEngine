@@ -115,7 +115,7 @@ namespace PhysicsSample
             Rendering::SetViewport(controller);
 
             auto input = player->AddComponent<InputController>();
-            input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::UNKNOWN);
+            input->BindMovementWASDSpaceShift();
             input->BindRotation();
 
             auto collider = player->AddComponent<CapsuleCollider>();
@@ -253,7 +253,7 @@ namespace PhysicsSample
                 ImGui::InputInt("Y", &y);
                 ImGui::InputInt("Z", &z);
 
-                if (ImGui::DragFloat3("gravity", &gravity[0], 0.01f, 0.0f, 10000.0f))
+                if (ImGui::DragFloat3("gravity", &gravity[0], 0.01f, -10000.0f, 10000.0f))
                     Physics::SetGravity(gravity);
 
                 cubeConstraintsA = Max(0, x), cubeConstraintsB = Max(0, y), cubeConstraintsC = Max(0, z);

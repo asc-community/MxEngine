@@ -62,7 +62,7 @@ namespace MxEngine
                 auto& submeshLOD = meshLOD->LinkSubMesh(submesh);
                 submeshLOD.Name = submesh.Name;
                 submeshLOD.Data = lod.CreateObject(factor);
-                totalIndicies += submeshLOD.Data.GetIndicies().size();
+                totalIndicies += submeshLOD.Data.GetIndiciesCount();
             }
             MXLOG_DEBUG("MxEngine::MeshLOD", MxFormat("generated LOD with {0} indicies for object: {1}", totalIndicies, object.Name.c_str()));
         }

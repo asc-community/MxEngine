@@ -2,15 +2,15 @@
 
 namespace MxEngine
 {
-    MeshHandle Primitives::CreateMesh(MeshData meshData)
+    MeshHandle Primitives::CreateMesh(MeshData meshData, const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies)
     {
         auto mesh = ResourceFactory::Create<Mesh>();
 
         auto& submesh = mesh->AddSubMesh((SubMesh::MaterialId)0);
         submesh.Data = std::move(meshData);
-        submesh.Data.BufferVertecies();
-        submesh.Data.BufferIndicies();
-        submesh.Data.UpdateBoundingGeometry();
+        submesh.Data.BufferVertecies(vertecies);
+        submesh.Data.BufferIndicies(indicies);
+        submesh.Data.UpdateBoundingGeometry(vertecies);
 
         mesh->UpdateBoundingGeometry();
         mesh->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("primitive"));
@@ -21,8 +21,8 @@ namespace MxEngine
     MeshHandle Primitives::CreateCube(size_t polygons)
     {
         MeshData meshData;
-        auto& vertecies = meshData.GetVerteciesReference();
-        auto& indicies = meshData.GetIndiciesReference();
+        MeshData::VertexData vertecies;
+        MeshData::IndexData indicies;
 
         polygons = polygons + 1; // polygons in [1; inf), but we need at least two points per edge
 
@@ -156,51 +156,21 @@ namespace MxEngine
                 }
             }
         }
-        meshData.RegenerateTangentSpace();
 
-        return Primitives::CreateMesh(std::move(meshData));
+        MeshData::RegenerateTangentSpace(vertecies, indicies);
+        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies);
     }
 
-    MeshHandle Primitives::CreatePlane(size_t size)
+    MeshHandle Primitives::CreatePlane(size_t polygons)
     {
-        MeshData meshData;
-        auto& vertecies = meshData.GetVerteciesReference();
-        auto& indicies = meshData.GetIndiciesReference();
-
-        float gridSize = float(size) / 2.0f;
-        std::array vertex =
-        {
-            Vector3(-gridSize, 0.0f, -gridSize),
-            Vector3(-gridSize, 0.0f,  gridSize),
-            Vector3( gridSize, 0.0f, -gridSize),
-            Vector3( gridSize, 0.0f,  gridSize),
-        };
-        std::array texture =
-        {
-            Vector2(0.0f,               0.0f),
-            Vector2(0.0f,        size * 1.0f),
-            Vector2(size * 1.0f,        0.0f),
-            Vector2(size * 1.0f, size * 1.0f),
-        };
-
-        vertecies.resize(vertex.size());
-        for (size_t i = 0; i < vertecies.size(); i++)
-        {
-            vertecies[i].Position = vertex[i];
-            vertecies[i].TexCoord = texture[i];
-            vertecies[i].Normal = MakeVector3(0.0f, 1.0f, 0.0f);
-            vertecies[i].Tangent = MakeVector3(1.0f, 0.0f, 0.0f);
-            vertecies[i].Bitangent  = MakeVector3(0.0f, 0.0f, 1.0f);
-        }
-        indicies = { 0, 1, 2, 2, 1, 3, 0, 2, 1, 1, 2, 3 };
-        return Primitives::CreateMesh(std::move(meshData));
+        return Primitives::CreateSurface([](float, float) { return 0.0f; }, 1.0f, 1.0f, 1.0f / float(polygons));
     }
 
     MeshHandle Primitives::CreateSphere(size_t polygons)
     {
         MeshData meshData;
-        auto& vertecies = meshData.GetVerteciesReference();
-        auto& indicies = meshData.GetIndiciesReference();
+        MeshData::VertexData vertecies;
+        MeshData::IndexData indicies;
 
         polygons -= polygons % 4;
         vertecies.reserve((polygons + 1) * (polygons + 1));
@@ -253,14 +223,14 @@ namespace MxEngine
                 }
             }
         }
-        return Primitives::CreateMesh(std::move(meshData));
+        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies);
     }
 
     MeshHandle Primitives::CreateCylinder(size_t polygons)
     {
         MeshData meshData;
-        auto& vertecies = meshData.GetVerteciesReference();
-        auto& indicies = meshData.GetIndiciesReference();
+        MeshData::VertexData vertecies;
+        MeshData::IndexData indicies;
 
         polygons = Max(polygons - polygons % 4, 4);
         MxVector<Vector2> circle(polygons);
@@ -365,15 +335,15 @@ namespace MxEngine
         indicies.push_back(uint32_t(lowerL));
         indicies.push_back(uint32_t(lowerR));
 
-        meshData.RegenerateNormals();
-        return Primitives::CreateMesh(std::move(meshData));
+        MeshData::RegenerateNormals(vertecies, indicies);
+        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies);
     }
 
     MeshHandle Primitives::CreatePyramid()
     {
         MeshData meshData;
-        auto& vertecies = meshData.GetVerteciesReference();
-        auto& indicies = meshData.GetIndiciesReference();
+        MeshData::VertexData vertecies;
+        MeshData::IndexData indicies;
 
         vertecies.resize(5);
         vertecies[0].Position = Vector3( 0.0f,  0.0f, 0.0f);
@@ -396,17 +366,18 @@ namespace MxEngine
             1, 4, 3,
         };
 
-        meshData.RegenerateNormals();
-        return Primitives::CreateMesh(std::move(meshData));
+        MeshData::RegenerateNormals(vertecies, indicies);
+        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies);
     }
 
     MeshHandle Primitives::CreateSurface(const Array2D<float>& heights)
     {
         MeshData meshData;
-        auto& vertecies = meshData.GetVerteciesReference();
-        auto& indicies = meshData.GetIndiciesReference();
+        MeshData::VertexData vertecies;
+        MeshData::IndexData indicies;
 
-        MX_ASSERT(heights.size() > 0);
+        MX_ASSERT(heights.width() > 0);
+        MX_ASSERT(heights.height() > 0);
         size_t xsize = heights.width();
         size_t ysize = heights.height();
 
@@ -419,8 +390,8 @@ namespace MxEngine
             for (size_t y = 0; y < ysize; y++)
             {
                 auto& vertex = vertecies.emplace_back();
-                float fx = float(x) / (float)xsize;
-                float fy = float(y) / (float)ysize;
+                float fx = float(x) / float(xsize - 1);
+                float fy = float(y) / float(ysize - 1);
                 float fz = heights[x][y];
 
                 vertex.TexCoord = MakeVector2(fx, fy);
@@ -451,8 +422,9 @@ namespace MxEngine
                 indicies.push_back(uint32_t(y + x * ysize + ysize));
             }
         }
-        meshData.RegenerateNormals();
-        return Primitives::CreateMesh(std::move(meshData));
+        
+        MeshData::RegenerateNormals(vertecies, indicies);
+        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies);
     }
 
     TextureHandle Primitives::CreateGridTexture(size_t textureSize, float borderScale)

@@ -74,11 +74,9 @@ namespace MxEngine
 			auto& materialId = materialIds[i];
 
 			auto& submesh = this->AddSubMesh(materialId);
-			submesh.Data.SetVertecies(std::move(meshData.vertecies));
-			submesh.Data.SetIndicies(std::move(meshData.indicies));
-			submesh.Data.BufferVertecies();
-			submesh.Data.BufferIndicies();
-			submesh.Data.UpdateBoundingGeometry();
+			submesh.Data.BufferVertecies(meshData.vertecies);
+			submesh.Data.BufferIndicies(meshData.indicies);
+			submesh.Data.UpdateBoundingGeometry(meshData.vertecies);
 			submesh.Name = std::move(meshData.name);
 		}
 		this->UpdateBoundingGeometry(); // use submeshes boundings to update mesh boundings
