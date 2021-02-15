@@ -61,7 +61,8 @@ namespace MxEngine
 
     struct SerializeInfo
     {
-        constexpr static const char* CUSTOM_SERIALIZE = "custom serialize";
+        constexpr static const char* CUSTOM_SERIALIZE = "serialize";
+        constexpr static const char* CUSTOM_DESERIALIZE = "deserialize";
     };
 
     using ConditionFunction = bool(*)(const rttr::instance&);
@@ -69,6 +70,7 @@ namespace MxEngine
     using HandleEditorFunction = rttr::variant(*)(rttr::instance&);
     using InstanceToVariantFunction = rttr::variant(*)(rttr::instance&);
     using CustomSerializeFunction = void(*)(rttr::instance, rttr::instance&);
+    using CustomDeserializeFunction = void(*)(rttr::instance, rttr::instance&);
 
     enum class InterpretAsInfo 
     {
@@ -114,6 +116,9 @@ namespace MxEngine
 
             rttr::variant customSerialize = obj.get_metadata(SerializeInfo::CUSTOM_SERIALIZE);
             this->Serialization.CustomSerialize = customSerialize.is_valid() ? customSerialize.get_value<CustomSerializeFunction>() : nullptr;
+
+            rttr::variant customDeserialize = obj.get_metadata(SerializeInfo::CUSTOM_DESERIALIZE);
+            this->Serialization.CustomDeserialize = customDeserialize.is_valid() ? customDeserialize.get_value<CustomDeserializeFunction>() : nullptr;
         }
 
         uint32_t Flags = 0;
@@ -132,6 +137,7 @@ namespace MxEngine
         struct 
         {
             CustomSerializeFunction CustomSerialize = nullptr;
+            CustomSerializeFunction CustomDeserialize = nullptr;
         } Serialization;
     };
 
@@ -143,6 +149,9 @@ namespace MxEngine
 
     template<typename>
     void SerializeExtra(rttr::instance, rttr::instance&);
+
+    template<typename>
+    void DeserializeExtra(rttr::instance, rttr::instance&);
 
     namespace GUI
     {

@@ -2,18 +2,16 @@
   "AudioBuffer": null,
   "CubeMap": [
     {
-      "filepath": "Resources\\textures\\dawn.jpg",
       "id": 2
     },
     {
-      "filepath": "Resources\\textures\\dawn_irradiance.jpg",
       "id": 3
     }
   ],
   "Material": [
     {
       "albedo map": 18,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
         1.0,
@@ -21,15 +19,15 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 0,
       "metallic factor": 0.0,
-      "metallic map": null,
+      "metallic map": 18446744073709551615,
       "name": "DefaultMaterial",
-      "normal map": null,
+      "normal map": 18446744073709551615,
       "roughness factor": 0.699999988079071,
-      "roughness map": null,
+      "roughness map": 18446744073709551615,
       "transparency": 1.0,
       "uv multipliers": [
         1.0,
@@ -38,7 +36,7 @@
     },
     {
       "albedo map": 19,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
         1.0,
@@ -46,15 +44,15 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
+      "emissive map": 18446744073709551615,
       "height map": 20,
       "id": 1,
       "metallic factor": 0.0,
-      "metallic map": null,
+      "metallic map": 18446744073709551615,
       "name": "DefaultMaterial",
       "normal map": 21,
       "roughness factor": 0.75,
-      "roughness map": null,
+      "roughness map": 18446744073709551615,
       "transparency": 1.0,
       "uv multipliers": [
         1.0,
@@ -71,24 +69,24 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 2,
       "metallic factor": 0.0,
-      "metallic map": null,
+      "metallic map": 18446744073709551615,
       "name": "DefaultMaterial",
       "normal map": 23,
       "roughness factor": 0.75,
       "roughness map": 25,
       "transparency": 1.0,
       "uv multipliers": [
-        1.0,
-        1.0
+        250.0,
+        250.0
       ]
     },
     {
-      "albedo map": null,
-      "ambient occlusion map": null,
+      "albedo map": 18446744073709551615,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
         1.0,
@@ -96,15 +94,15 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 3,
       "metallic factor": 0.0,
-      "metallic map": null,
+      "metallic map": 18446744073709551615,
       "name": "DefaultMaterial",
-      "normal map": null,
+      "normal map": 18446744073709551615,
       "roughness factor": 0.75,
-      "roughness map": null,
+      "roughness map": 18446744073709551615,
       "transparency": 1.0,
       "uv multipliers": [
         1.0,
@@ -112,8 +110,8 @@
       ]
     },
     {
-      "albedo map": null,
-      "ambient occlusion map": null,
+      "albedo map": 18446744073709551615,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
         0.699999988079071,
@@ -121,15 +119,15 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 10.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 4,
       "metallic factor": 0.0,
-      "metallic map": null,
+      "metallic map": 18446744073709551615,
       "name": "DefaultMaterial",
-      "normal map": null,
+      "normal map": 18446744073709551615,
       "roughness factor": 0.75,
-      "roughness map": null,
+      "roughness map": 18446744073709551615,
       "transparency": 1.0,
       "uv multipliers": [
         1.0,
@@ -137,8 +135,8 @@
       ]
     },
     {
-      "albedo map": null,
-      "ambient occlusion map": null,
+      "albedo map": 18446744073709551615,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
         1.0,
@@ -146,15 +144,15 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 10.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 5,
       "metallic factor": 0.0,
-      "metallic map": null,
+      "metallic map": 18446744073709551615,
       "name": "DefaultMaterial",
-      "normal map": null,
+      "normal map": 18446744073709551615,
       "roughness factor": 0.75,
-      "roughness map": null,
+      "roughness map": 18446744073709551615,
       "transparency": 1.0,
       "uv multipliers": [
         1.0,
@@ -171,7 +169,7 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
+      "emissive map": 18446744073709551615,
       "height map": 32,
       "id": 6,
       "metallic factor": 0.0,
@@ -202,18 +200,10 @@
         0.0,
         0.0
       ],
-      "filepath": "[[camera output]]",
-      "id": 17,
-      "wrap type": "CLAMP_TO_EDGE"
-    },
-    {
-      "border color": [
-        0.0,
-        0.0,
-        0.0,
-        0.0
-      ],
-      "filepath": "Resources\\objects\\crate\\crate.jpg",
+      "filepath": {
+        "filepath": "Resources\\objects\\crate\\crate.jpg",
+        "format": "RGB"
+      },
       "id": 18,
       "wrap type": "REPEAT"
     },
@@ -224,7 +214,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\textures\\planet_texture.png",
+      "filepath": {
+        "filepath": "Resources\\textures\\planet_texture.png",
+        "format": "RGB"
+      },
       "id": 19,
       "wrap type": "REPEAT"
     },
@@ -235,7 +228,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\textures\\planet_height.png",
+      "filepath": {
+        "filepath": "Resources\\textures\\planet_height.png",
+        "format": "RGB"
+      },
       "id": 20,
       "wrap type": "REPEAT"
     },
@@ -246,7 +242,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\textures\\planet_normal.png",
+      "filepath": {
+        "filepath": "Resources\\textures\\planet_normal.png",
+        "format": "RGB"
+      },
       "id": 21,
       "wrap type": "REPEAT"
     },
@@ -257,7 +256,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\textures\\brick_albedo.jpg",
+      "filepath": {
+        "filepath": "Resources\\textures\\brick_albedo.jpg",
+        "format": "RGB"
+      },
       "id": 22,
       "wrap type": "REPEAT"
     },
@@ -268,7 +270,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\textures\\brick_normal.jpg",
+      "filepath": {
+        "filepath": "Resources\\textures\\brick_normal.jpg",
+        "format": "RGB"
+      },
       "id": 23,
       "wrap type": "REPEAT"
     },
@@ -279,7 +284,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\textures\\brick_ao.jpg",
+      "filepath": {
+        "filepath": "Resources\\textures\\brick_ao.jpg",
+        "format": "RGB"
+      },
       "id": 24,
       "wrap type": "REPEAT"
     },
@@ -290,7 +298,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\textures\\brick_roughness.jpg",
+      "filepath": {
+        "filepath": "Resources\\textures\\brick_roughness.jpg",
+        "format": "RGB"
+      },
       "id": 25,
       "wrap type": "REPEAT"
     },
@@ -301,7 +312,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\textures\\PBR\\pirate-gold_albedo.png",
+      "filepath": {
+        "filepath": "Resources\\textures\\PBR\\pirate-gold_albedo.png",
+        "format": "RGB"
+      },
       "id": 30,
       "wrap type": "REPEAT"
     },
@@ -312,7 +326,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\textures\\PBR\\pirate-gold_ao.png",
+      "filepath": {
+        "filepath": "Resources\\textures\\PBR\\pirate-gold_ao.png",
+        "format": "RGB"
+      },
       "id": 31,
       "wrap type": "REPEAT"
     },
@@ -323,7 +340,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\textures\\PBR\\pirate-gold_height.png",
+      "filepath": {
+        "filepath": "Resources\\textures\\PBR\\pirate-gold_height.png",
+        "format": "RGB"
+      },
       "id": 32,
       "wrap type": "REPEAT"
     },
@@ -334,7 +354,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\textures\\PBR\\pirate-gold_metallic.png",
+      "filepath": {
+        "filepath": "Resources\\textures\\PBR\\pirate-gold_metallic.png",
+        "format": "RGB"
+      },
       "id": 33,
       "wrap type": "REPEAT"
     },
@@ -345,7 +368,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\textures\\PBR\\pirate-gold_roughness.png",
+      "filepath": {
+        "filepath": "Resources\\textures\\PBR\\pirate-gold_roughness.png",
+        "format": "RGB"
+      },
       "id": 34,
       "wrap type": "REPEAT"
     },
@@ -356,7 +382,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\textures\\PBR\\pirate-gold_normal-dx.png",
+      "filepath": {
+        "filepath": "Resources\\textures\\PBR\\pirate-gold_normal-dx.png",
+        "format": "RGB"
+      },
       "id": 35,
       "wrap type": "REPEAT"
     }
@@ -371,13 +400,14 @@
     "paused": false,
     "physics-step": 1.0,
     "time-scale": 1.0,
-    "total-time": 10.757177352905273,
+    "total-time": 3.5430593490600586,
     "viewport": 0
   },
   "mxobjects": [
     {
       "AudioListener": {
         "doppler factor": 1.0,
+        "id": 0,
         "sound model": "INVERSE_DISTANCE_CLAMPED",
         "speed of sound": 343.29998779296875,
         "velocity": [
@@ -390,15 +420,16 @@
       "CameraController": {
         "camera type": "PERSPECTIVE",
         "direction": [
-          -0.5263108015060425,
-          -0.590813934803009,
-          0.6115029454231262
+          0.6444836258888245,
+          0.0462341271340847,
+          0.7632189989089966
         ],
         "forward vector": [
-          -0.6523372530937195,
+          0.6451735496520996,
           0.0,
-          0.7579288482666016
+          0.7640360593795776
         ],
+        "id": 0,
         "is listening window resize event": true,
         "is rendering": true,
         "move speed": 5.0,
@@ -408,9 +439,9 @@
           "znear": 0.10000000149011612
         },
         "right vector": [
-          -0.757928729057312,
+          -0.7640361189842224,
           0.0,
-          -0.652337372303009
+          0.6451734900474548
         ],
         "rotate speed": 10.0,
         "up vector": [
@@ -436,10 +467,12 @@
         "fog density": 0.0010000000474974513,
         "fog distance": 1.0,
         "fxaa": false,
+        "id": 0,
         "vignette radius": 0.10000000149011612
       },
       "CameraSSR": {
         "fading": 1.0,
+        "id": 0,
         "max cos angle": 0.5,
         "max distance": 3.0,
         "start distance": 2.0,
@@ -477,6 +510,7 @@
         "eye adaptation speed": 0.10000000149011612,
         "eye adaptation threshold": 0.10000000149011612,
         "gamma": 2.200000047683716,
+        "id": 0,
         "max luminance": 100000.0,
         "min luminance": 0.30000001192092896,
         "white point": 0.75
@@ -485,6 +519,7 @@
         "back key binding": "S",
         "down key binding": "LEFT_SHIFT",
         "forward key binding": "W",
+        "id": 0,
         "is horizontal rotation bound": true,
         "is vertical rotation bound": true,
         "left key binding": "A",
@@ -493,6 +528,7 @@
       },
       "Skybox": {
         "cubemap": 2,
+        "id": 0,
         "intensity": 5.0,
         "irradiance": 3,
         "rotation": [
@@ -526,11 +562,13 @@
     {
       "Behaviour": {
         "has update callback": true,
+        "id": 0,
         "tag": "Behaviour",
         "time left": 0.0,
         "time request": 0.0
       },
       "InstanceFactory": {
+        "id": 0,
         "instances": [
           {
             "Instance": {
@@ -539,15 +577,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 0
             },
             "displayed": false,
             "name": "3f26c691-5086-41be-9c03-4b65a639308d",
             "transform": {
               "position": [
-                4.536547660827637,
-                -0.23157984018325806,
-                2.1023168563842773
+                3.5017905235290527,
+                -0.4120504856109619,
+                3.568958282470703
               ],
               "rotation": [
                 0.0,
@@ -569,15 +607,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 1
             },
             "displayed": false,
             "name": "2a6b241a-13a2-4f10-af16-a59b211bceed",
             "transform": {
               "position": [
-                4.863790512084961,
-                0.2684227228164673,
-                1.1591131687164307
+                4.141046524047852,
+                0.0879523754119873,
+                2.8020949363708496
               ],
               "rotation": [
                 0.0,
@@ -599,15 +637,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 2
             },
             "displayed": false,
             "name": "33c9e1c2-2466-43f9-882a-35adef64f06d",
             "transform": {
               "position": [
-                4.997119426727295,
-                0.7684252858161926,
-                0.16969618201255798
+                4.6152024269104,
+                0.5879552364349365,
+                1.9235141277313232
               ],
               "rotation": [
                 0.0,
@@ -629,15 +667,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 3
             },
             "displayed": false,
             "name": "1cc3f534-e676-4698-903b-b2c1cd3fd6e3",
             "transform": {
               "position": [
-                4.931219100952148,
-                1.268427848815918,
-                -0.826486349105835
+                4.9053544998168945,
+                1.0879580974578857,
+                0.9682444334030151
               ],
               "rotation": [
                 0.0,
@@ -659,15 +697,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 4
             },
             "displayed": false,
             "name": "b4f7e00b-2e65-44d5-9c02-de50f72266ce",
             "transform": {
               "position": [
-                4.6687164306640625,
-                1.768430471420288,
-                -1.789717197418213
+                4.999934196472168,
+                1.587960958480835,
+                -0.02562772110104561
               ],
               "rotation": [
                 0.0,
@@ -689,15 +727,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 5
             },
             "displayed": false,
             "name": "7f38f147-0d30-4eff-bad2-dfd6d4be3cd7",
             "transform": {
               "position": [
-                4.220076560974121,
-                2.268433094024658,
-                -2.6815950870513916
+                4.895171165466309,
+                2.087963819503784,
+                -1.0184787511825562
               ],
               "rotation": [
                 0.0,
@@ -719,15 +757,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 6
             },
             "displayed": false,
             "name": "9e33e5be-5e3f-4d1c-8d9b-e9884691b17a",
             "transform": {
               "position": [
-                3.6031877994537354,
-                2.768435478210449,
-                -3.466559648513794
+                4.595242023468018,
+                2.5879666805267334,
+                -1.970723271369934
               ],
               "rotation": [
                 0.0,
@@ -749,15 +787,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 7
             },
             "displayed": false,
             "name": "08469da7-bfb1-4149-967b-d4cd171c2ac5",
             "transform": {
               "position": [
-                2.842644214630127,
-                3.2684381008148193,
-                -4.113316535949707
+                4.112104415893555,
+                3.0879695415496826,
+                -2.84439754486084
               ],
               "rotation": [
                 0.0,
@@ -779,15 +817,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 8
             },
             "displayed": false,
             "name": "5ac0ffc9-8c8b-4cb7-868c-df3d131daeb1",
             "transform": {
               "position": [
-                1.968767523765564,
-                3.7684407234191895,
-                -4.596080303192139
+                3.4650208950042725,
+                3.587972402572632,
+                -3.6046676635742188
               ],
               "rotation": [
                 0.0,
@@ -809,15 +847,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 9
             },
             "displayed": false,
             "name": "5f2bf71f-89d9-4c51-a9b6-bce0a4cf64a2",
             "transform": {
               "position": [
-                1.0163981914520264,
-                4.2684431076049805,
-                -4.895603656768799
+                2.6797895431518555,
+                4.08797550201416,
+                -4.2212233543396
               ],
               "rotation": [
                 0.0,
@@ -839,15 +877,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 10
             },
             "displayed": false,
             "name": "d1e32158-8dbd-4fe4-8aca-7ad56c1bc420",
             "transform": {
               "position": [
-                0.023505164310336113,
-                4.76844596862793,
-                -4.999944686889648
+                1.7877190113067627,
+                4.587978363037109,
+                -4.6694817543029785
               ],
               "rotation": [
                 0.0,
@@ -869,15 +907,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 11
             },
             "displayed": false,
             "name": "fa2b3b94-d251-4411-ab2b-5e6270868317",
             "transform": {
               "position": [
-                -0.9703249931335449,
-                5.268448352813721,
-                -4.904943466186523
+                0.8243710994720459,
+                5.087981224060059,
+                -4.931572914123535
               ],
               "rotation": [
                 0.0,
@@ -899,15 +937,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 12
             },
             "displayed": false,
             "name": "9cc09e10-212c-4532-9ed6-da388396e5c5",
             "transform": {
               "position": [
-                -1.9254683256149292,
-                5.768450736999512,
-                -4.614387512207031
+                -0.1718413531780243,
+                5.587984085083008,
+                -4.99704647064209
               ],
               "rotation": [
                 0.0,
@@ -929,15 +967,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 13
             },
             "displayed": false,
             "name": "bbbfe1a3-5f32-496b-a7b1-5bf27f1caf0a",
             "transform": {
               "position": [
-                -2.8038454055786133,
-                6.268453598022461,
-                -4.139861106872559
+                -1.1612038612365723,
+                6.087986946105957,
+                -4.8632917404174805
               ],
               "rotation": [
                 0.0,
@@ -959,15 +997,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 14
             },
             "displayed": false,
             "name": "5fc07411-cf9c-4146-85f8-433de2f18a2f",
             "transform": {
               "position": [
-                -3.5704362392425537,
-                6.768455982208252,
-                -3.500283718109131
+                -2.1042702198028564,
+                6.587989807128906,
+                -4.535642147064209
               ],
               "rotation": [
                 0.0,
@@ -989,15 +1027,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 15
             },
             "displayed": false,
             "name": "35c585a1-198c-4a2c-9270-21ec0022b61f",
             "transform": {
               "position": [
-                -4.19467830657959,
-                7.268458366394043,
-                -2.721153497695923
+                -2.9634408950805664,
+                7.0879926681518555,
+                -4.027160167694092
               ],
               "rotation": [
                 0.0,
@@ -1019,15 +1057,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 16
             },
             "displayed": false,
             "name": "72e35b68-2e81-42c3-bb60-6cd45d0af7ef",
             "transform": {
               "position": [
-                -4.6516828536987305,
-                7.768461227416992,
-                -1.8335342407226563
+                -3.704461097717285,
+                7.587995529174805,
+                -3.358119487762451
               ],
               "rotation": [
                 0.0,
@@ -1049,15 +1087,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 17
             },
             "displayed": false,
             "name": "2f2d823a-de9d-40af-aab4-d79219d0a2c8",
             "transform": {
               "position": [
-                -4.923230171203613,
-                8.268464088439941,
-                -0.8728141188621521
+                -4.297788619995117,
+                8.087998390197754,
+                -2.5551929473876953
               ],
               "rotation": [
                 0.0,
@@ -1079,15 +1117,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 18
             },
             "displayed": false,
             "name": "4b9a8152-79be-41c7-ba58-c9a73ee832b5",
             "transform": {
               "position": [
-                -4.9984941482543945,
-                8.768465995788574,
-                0.12270654737949371
+                -4.7197675704956055,
+                8.588001251220703,
+                -1.6503920555114746
               ],
               "rotation": [
                 0.0,
@@ -1109,15 +1147,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 19
             },
             "displayed": false,
             "name": "6117d3bf-b1bd-4597-ad55-8ecc949c729f",
             "transform": {
               "position": [
-                -4.8744730949401855,
-                9.268468856811523,
-                1.113332748413086
+                -4.9535722732543945,
+                9.088004112243652,
+                -0.6797937154769897
               ],
               "rotation": [
                 0.0,
@@ -1139,15 +1177,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 20
             },
             "displayed": false,
             "name": "0ebdc8a3-8753-452f-b768-6a03287a689d",
             "transform": {
               "position": [
-                -4.556112766265869,
-                9.768471717834473,
-                2.0595715045928955
+                -4.9898834228515625,
+                9.588006973266602,
+                0.3179073631763458
               ],
               "rotation": [
                 0.0,
@@ -1169,15 +1207,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 21
             },
             "displayed": false,
             "name": "afb14c9d-f8e1-4a87-b93d-f4789c47926c",
             "transform": {
               "position": [
-                -4.056105613708496,
-                10.268473625183105,
-                2.9236974716186523
+                -4.82725191116333,
+                10.08800983428955,
+                1.3029338121414185
               ],
               "rotation": [
                 0.0,
@@ -1199,15 +1237,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 22
             },
             "displayed": false,
             "name": "29a01b7d-d670-4244-b051-c3d45d484fc8",
             "transform": {
               "position": [
-                -3.394385814666748,
-                10.768476486206055,
-                3.6712594032287598
+                -4.472162246704102,
+                10.5880126953125,
+                2.236015796661377
               ],
               "rotation": [
                 0.0,
@@ -1229,15 +1267,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 23
             },
             "displayed": false,
             "name": "938eadee-a96a-4a5e-b173-2132f4d5b768",
             "transform": {
               "position": [
-                -2.5973339080810547,
-                11.268479347229004,
-                4.272453308105469
+                -3.938770294189453,
+                11.08801555633545,
+                3.079949378967285
               ],
               "rotation": [
                 0.0,
@@ -1259,15 +1297,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 24
             },
             "displayed": false,
             "name": "bb1fecb9-f0c5-4926-9418-033143409343",
             "transform": {
               "position": [
-                -1.6967308521270752,
-                11.768481254577637,
-                4.703307628631592
+                -3.248344659805298,
+                11.588018417358398,
+                3.801086187362671
               ],
               "rotation": [
                 0.0,
@@ -1289,15 +1327,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 25
             },
             "displayed": false,
             "name": "079d502d-132a-4102-987b-0b7e736ef8ec",
             "transform": {
               "position": [
-                -0.7284812927246094,
-                12.268484115600586,
-                4.9466471672058105
+                -2.428410530090332,
+                12.088021278381348,
+                4.370677471160889
               ],
               "rotation": [
                 0.0,
@@ -1319,15 +1357,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 26
             },
             "displayed": false,
             "name": "edc893c6-0c55-4f71-bfba-5fb586d16a90",
             "transform": {
               "position": [
-                0.2688121497631073,
-                12.768486976623535,
-                4.99276876449585
+                -1.5116558074951172,
+                12.588024139404297,
+                4.76601505279541
               ],
               "rotation": [
                 0.0,
@@ -1349,15 +1387,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 27
             },
             "displayed": false,
             "name": "f04c900e-7662-47d0-b6bf-adf08d649818",
             "transform": {
               "position": [
-                1.2553882598876953,
-                13.268489837646484,
-                4.839834690093994
+                -0.5346348285675049,
+                13.088027000427246,
+                4.971334457397461
               ],
               "rotation": [
                 0.0,
@@ -1379,15 +1417,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 28
             },
             "displayed": false,
             "name": "48e49851-8bcf-4665-ac68-2dde4b692f39",
             "transform": {
               "position": [
-                2.19191575050354,
-                13.768491744995117,
-                4.493941307067871
+                0.46370384097099304,
+                13.588029861450195,
+                4.978451251983643
               ],
               "rotation": [
                 0.0,
@@ -1409,15 +1447,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 29
             },
             "displayed": false,
             "name": "a926109f-b96c-430e-b927-3aff50eaa413",
             "transform": {
               "position": [
-                3.0410499572753906,
-                14.268494606018066,
-                3.968881130218506
+                1.4435527324676514,
+                14.088032722473145,
+                4.787082195281982
               ],
               "rotation": [
                 0.0,
@@ -1439,15 +1477,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 30
             },
             "displayed": false,
             "name": "5e7125e5-8481-471e-a4cc-24da8bca5f74",
             "transform": {
               "position": [
-                3.7689425945281982,
-                14.768497467041016,
-                3.285585403442383
+                2.3658485412597656,
+                14.588035583496094,
+                4.4048566818237305
               ],
               "rotation": [
                 0.0,
@@ -1469,15 +1507,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 31
             },
             "displayed": false,
             "name": "ae0cb140-8a7d-406d-b760-40ec21d9760a",
             "transform": {
               "position": [
-                4.346573829650879,
-                15.268499374389648,
-                2.47129487991333
+                3.193822145462036,
+                15.088038444519043,
+                3.8470120429992676
               ],
               "rotation": [
                 0.0,
@@ -1499,15 +1537,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 32
             },
             "displayed": false,
             "name": "234c351e-6951-42a3-bd24-e1e1b3f462bf",
             "transform": {
               "position": [
-                4.750909805297852,
-                15.768502235412598,
-                1.558478832244873
+                3.8944590091705322,
+                15.588041305541992,
+                3.135791778564453
               ],
               "rotation": [
                 0.0,
@@ -1529,15 +1567,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 33
             },
             "displayed": false,
             "name": "5dfd06b6-a9d6-49ce-a069-a900183de90b",
             "transform": {
               "position": [
-                4.9658331871032715,
-                16.268505096435547,
-                0.5835253596305847
+                4.439828395843506,
+                16.088043212890625,
+                2.299548387527466
               ],
               "rotation": [
                 0.0,
@@ -1559,15 +1597,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 34
             },
             "displayed": false,
             "name": "0281eda2-9bc3-4115-bc4a-1f2ef58770fa",
             "transform": {
               "position": [
-                4.982773780822754,
-                16.76850700378418,
-                -0.414687842130661
+                4.808184623718262,
+                16.58804702758789,
+                1.3716262578964233
               ],
               "rotation": [
                 0.0,
@@ -1589,15 +1627,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 35
             },
             "displayed": false,
             "name": "2050080b-a7f4-475c-93dc-9f1c868fef06",
             "transform": {
               "position": [
-                4.801056385040283,
-                17.268508911132813,
-                -1.3963725566864014
+                4.9848432540893555,
+                17.088048934936523,
+                0.38901859521865845
               ],
               "rotation": [
                 0.0,
@@ -1619,15 +1657,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 36
             },
             "displayed": false,
             "name": "43528615-f738-4022-a59c-3f0ed774d611",
             "transform": {
               "position": [
-                4.4279279708862305,
-                17.768512725830078,
-                -2.322381019592285
+                4.962760925292969,
+                17.58805274963379,
+                -0.6091011762619019
               ],
               "rotation": [
                 0.0,
@@ -1649,15 +1687,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 37
             },
             "displayed": false,
             "name": "33fd565e-ea12-4a31-8100-29b27505519e",
             "transform": {
               "position": [
-                3.878260850906372,
-                18.26851463317871,
-                -3.1558032035827637
+                4.742816925048828,
+                18.088054656982422,
+                -1.5829366445541382
               ],
               "rotation": [
                 0.0,
@@ -1679,15 +1717,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 38
             },
             "displayed": false,
             "name": "ebf6cf30-5b9c-4376-9324-2a862ee390e2",
             "transform": {
               "position": [
-                3.173971176147461,
-                18.768518447875977,
-                -3.863406181335449
+                4.333781719207764,
+                18.588058471679688,
+                -2.493659496307373
               ],
               "rotation": [
                 0.0,
@@ -1709,15 +1747,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 39
             },
             "displayed": false,
             "name": "69d76a70-4732-4ad3-b35b-a21974a87548",
             "transform": {
               "position": [
-                2.343142509460449,
-                19.26852035522461,
-                -4.416976451873779
+                3.751962423324585,
+                19.08806037902832,
+                -3.304962635040283
               ],
               "rotation": [
                 0.0,
@@ -1739,15 +1777,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 40
             },
             "displayed": false,
             "name": "9192ab7c-fd20-4fc0-891d-6b4a14b8496f",
             "transform": {
               "position": [
-                1.418895959854126,
-                19.768522262573242,
-                -4.794448375701904
+                3.0205562114715576,
+                19.588064193725586,
+                -3.984499931335449
               ],
               "rotation": [
                 0.0,
@@ -1769,15 +1807,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 41
             },
             "displayed": false,
             "name": "be18f86d-489d-4dfe-8881-75a0a848011b",
             "transform": {
               "position": [
-                0.4380752146244049,
-                20.268526077270508,
-                -4.980772018432617
+                2.1687233448028564,
+                20.08806610107422,
+                -4.505179405212402
               ],
               "rotation": [
                 0.0,
@@ -1799,15 +1837,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 42
             },
             "displayed": false,
             "name": "97dbb1d1-00e7-4a18-b85c-d2b3d1fdb785",
             "transform": {
               "position": [
-                -0.5602113008499146,
-                20.76852798461914,
-                -4.968517303466797
+                1.2304209470748901,
+                20.588069915771484,
+                -4.846242427825928
               ],
               "rotation": [
                 0.0,
@@ -1829,15 +1867,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 43
             },
             "displayed": false,
             "name": "28330158-cf5c-4a03-997c-e72e6296fbb3",
             "transform": {
               "position": [
-                -1.5361582040786743,
-                21.268529891967773,
-                -4.758173942565918
+                0.24307191371917725,
+                21.088071823120117,
+                -4.994088172912598
               ],
               "rotation": [
                 0.0,
@@ -1859,15 +1897,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 44
             },
             "displayed": false,
             "name": "fa8ea120-61b3-4434-8d35-b15bbe8743f7",
             "transform": {
               "position": [
-                -2.450864553451538,
-                21.76853370666504,
-                -4.358126163482666
+                -0.7539775371551514,
+                21.588075637817383,
+                -4.942824840545654
               ],
               "rotation": [
                 0.0,
@@ -1889,15 +1927,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 45
             },
             "displayed": false,
             "name": "e3e650c3-8d69-45ca-93fa-0407132571f2",
             "transform": {
               "position": [
-                -3.267857551574707,
-                22.268535614013672,
-                -3.7843239307403564
+                -1.7209663391113281,
+                22.088077545166016,
+                -4.694494247436523
               ],
               "rotation": [
                 0.0,
@@ -1919,15 +1957,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 46
             },
             "displayed": false,
             "name": "8c4b88e5-05aa-4796-8582-2f14448e37e4",
             "transform": {
               "position": [
-                -3.9545607566833496,
-                22.768537521362305,
-                -3.059648275375366
+                -2.619333028793335,
+                22.58808135986328,
+                -4.259001731872559
               ],
               "rotation": [
                 0.0,
@@ -1949,15 +1987,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 47
             },
             "displayed": false,
             "name": "2ac13ba7-7f63-4126-94f8-a99afbb8b00c",
             "transform": {
               "position": [
-                -4.4836015701293945,
-                23.26854133605957,
-                -2.2129886150360107
+                -3.4132776260375977,
+                23.088083267211914,
+                -3.6537017822265625
               ],
               "rotation": [
                 0.0,
@@ -1979,15 +2017,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 48
             },
             "displayed": false,
             "name": "59991aa3-c130-45e1-b2f0-36917ac29b1c",
             "transform": {
               "position": [
-                -4.833888053894043,
-                23.768543243408203,
-                -1.2780953645706177
+                -4.071131229400635,
+                23.58808708190918,
+                -2.9027388095855713
               ],
               "rotation": [
                 0.0,
@@ -2009,15 +2047,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 49
             },
             "displayed": false,
             "name": "7854de11-7aaa-4e99-abfe-3582a364c02f",
             "transform": {
               "position": [
-                -4.991451740264893,
-                24.268545150756836,
-                -0.29224565625190735
+                -4.566678047180176,
+                24.088088989257813,
+                -2.036038875579834
               ],
               "rotation": [
                 0.0,
@@ -2039,15 +2077,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 50
             },
             "displayed": false,
             "name": "374b4e3a-8459-4fb2-abb8-f3679fb3994c",
             "transform": {
               "position": [
-                -4.950011730194092,
-                24.7685489654541,
-                0.7052556276321411
+                -4.880153656005859,
+                24.588092803955078,
+                -1.088163137435913
               ],
               "rotation": [
                 0.0,
@@ -2069,15 +2107,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 51
             },
             "displayed": false,
             "name": "b68ae626-a186-4477-9dd7-fb16ad5dc2de",
             "transform": {
               "position": [
-                -4.711220741271973,
-                25.268550872802734,
-                1.6746344566345215
+                -4.99906063079834,
+                25.08809471130371,
+                -0.09691253304481506
               ],
               "rotation": [
                 0.0,
@@ -2099,15 +2137,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 52
             },
             "displayed": false,
             "name": "661f934f-121a-4d97-87da-000c908063eb",
             "transform": {
               "position": [
-                -4.284599304199219,
-                25.768552780151367,
-                2.5772478580474854
+                -4.9186601638793945,
+                25.588098526000977,
+                0.8982112407684326
               ],
               "rotation": [
                 0.0,
@@ -2129,15 +2167,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 53
             },
             "displayed": false,
             "name": "46b15b65-f80d-4893-bb9a-5facb8cce0cd",
             "transform": {
               "position": [
-                -3.6871540546417236,
-                26.268556594848633,
-                3.3771135807037354
+                -4.642158508300781,
+                26.08810043334961,
+                1.8575149774551392
               ],
               "rotation": [
                 0.0,
@@ -2159,15 +2197,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 54
             },
             "displayed": false,
             "name": "129380d9-2fad-4054-b3fa-7974b1d86053",
             "transform": {
               "position": [
-                -2.9427051544189453,
-                26.768558502197266,
-                4.042336463928223
+                -4.180575370788574,
+                26.588104248046875,
+                2.742769956588745
               ],
               "rotation": [
                 0.0,
@@ -2189,15 +2227,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 55
             },
             "displayed": false,
             "name": "6c46d6f3-9864-438d-9d12-4b91420c7aec",
             "transform": {
               "position": [
-                -2.0809335708618164,
-                27.2685604095459,
-                4.546395778656006
+                -3.5523152351379395,
+                27.088106155395508,
+                3.518672227859497
               ],
               "rotation": [
                 0.0,
@@ -2219,15 +2257,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 56
             },
             "displayed": false,
             "name": "51410ed9-0aa9-433d-a15b-08ff05a61ab4",
             "transform": {
               "position": [
-                -1.1362016201019287,
-                27.768564224243164,
-                4.8691935539245605
+                -2.7824342250823975,
+                27.588109970092773,
+                4.154282093048096
               ],
               "rotation": [
                 0.0,
@@ -2249,15 +2287,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 57
             },
             "displayed": false,
             "name": "f794d741-f740-4ae9-8aa4-58b265c3cf4d",
             "transform": {
               "position": [
-                -0.14617092907428741,
-                28.268566131591797,
-                4.997862815856934
+                -1.901612401008606,
+                28.088111877441406,
+                4.624269485473633
               ],
               "rotation": [
                 0.0,
@@ -2279,15 +2317,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 58
             },
             "displayed": false,
             "name": "c0c0e84c-3088-4aab-bb50-8bd108f52596",
             "transform": {
               "position": [
-                0.8496921062469482,
-                28.76856803894043,
-                4.927273273468018
+                -0.944983720779419,
+                28.588115692138672,
+                4.90988826751709
               ],
               "rotation": [
                 0.0,
@@ -2309,15 +2347,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 59
             },
             "displayed": false,
             "name": "d5a7fe78-70cb-4565-95f8-752bad166315",
             "transform": {
               "position": [
-                1.8116786479949951,
-                29.268571853637695,
-                4.660238265991211
+                0.04932975396513939,
+                29.088117599487305,
+                4.999756336212158
               ],
               "rotation": [
                 0.0,
@@ -2339,15 +2377,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 60
             },
             "displayed": false,
             "name": "c56544fc-a7c3-43eb-8c91-e201240a1446",
             "transform": {
               "position": [
-                2.7014315128326416,
-                29.768573760986328,
-                4.207406520843506
+                1.0416765213012695,
+                29.58812141418457,
+                4.890287399291992
               ],
               "rotation": [
                 0.0,
@@ -2369,15 +2407,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 61
             },
             "displayed": false,
             "name": "0cc5d6a6-55cd-4160-9c16-2d13fef207fd",
             "transform": {
               "position": [
-                3.483484983444214,
-                30.26857566833496,
-                3.586827516555786
+                1.992483377456665,
+                30.088123321533203,
+                4.585848808288574
               ],
               "rotation": [
                 0.0,
@@ -2399,15 +2437,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 62
             },
             "displayed": false,
             "name": "43f57032-98b5-4797-9344-847eab67bc80",
             "transform": {
               "position": [
-                4.126652717590332,
-                30.768579483032227,
-                2.823249101638794
+                2.8638603687286377,
+                30.58812713623047,
+                4.098573207855225
               ],
               "rotation": [
                 0.0,
@@ -2429,15 +2467,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 63
             },
             "displayed": false,
             "name": "e6096586-6ec8-4416-8355-1189ef12ae1b",
             "transform": {
               "position": [
-                4.6052985191345215,
-                31.26858139038086,
-                1.9471073150634766
+                3.6210503578186035,
+                31.0881290435791,
+                3.447896957397461
               ],
               "rotation": [
                 0.0,
@@ -2459,15 +2497,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 64
             },
             "displayed": false,
             "name": "3fc4502f-0258-411f-8a70-cdc8339c6ad2",
             "transform": {
               "position": [
-                4.900335311889648,
-                31.768583297729492,
-                0.9933362007141113
+                4.233879089355469,
+                31.588132858276367,
+                2.6597495079040527
               ],
               "rotation": [
                 0.0,
@@ -2489,15 +2527,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 65
             },
             "displayed": false,
             "name": "82c221ca-0dbe-40f7-91f8-e2c49448ef82",
             "transform": {
               "position": [
-                5.0,
-                32.268585205078125,
-                -3.3557473216205835e-05
+                4.677905559539795,
+                32.088134765625,
+                1.765559196472168
               ],
               "rotation": [
                 0.0,
@@ -2519,15 +2557,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 66
             },
             "displayed": false,
             "name": "c780afef-cd42-4c45-9d06-64d364427346",
             "transform": {
               "position": [
-                4.900321006774902,
-                32.76858901977539,
-                -0.9934066534042358
+                4.9354248046875,
+                32.588138580322266,
+                0.8009865880012512
               ],
               "rotation": [
                 0.0,
@@ -2549,15 +2587,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 67
             },
             "displayed": false,
             "name": "84c78e9f-8643-4a6a-bc79-2c1b873b3c32",
             "transform": {
               "position": [
-                4.60527229309082,
-                33.268592834472656,
-                -1.9471691846847534
+                4.996175289154053,
+                33.08814239501953,
+                -0.19552983343601227
               ],
               "rotation": [
                 0.0,
@@ -2579,15 +2617,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 68
             },
             "displayed": false,
             "name": "1b97703e-8e69-4e5b-896d-cc94a75ef6f3",
             "transform": {
               "position": [
-                4.126617431640625,
-                33.768592834472656,
-                -2.82330060005188
+                4.857733249664307,
+                33.58814239501953,
+                -1.1842412948608398
               ],
               "rotation": [
                 0.0,
@@ -2609,15 +2647,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 69
             },
             "displayed": false,
             "name": "403988a0-9afe-4a83-ab29-fc7fe2fe4e7d",
             "transform": {
               "position": [
-                3.483433485031128,
-                34.26859664916992,
-                -3.5868775844573975
+                4.525615692138672,
+                34.0881462097168,
+                -2.1257474422454834
               ],
               "rotation": [
                 0.0,
@@ -2639,15 +2677,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 70
             },
             "displayed": false,
             "name": "85ed810c-b9d2-41e1-a557-5a19a109304f",
             "transform": {
               "position": [
-                2.7013750076293945,
-                34.76860046386719,
-                -4.207442760467529
+                4.013064861297607,
+                34.58815002441406,
+                -2.9825010299682617
               ],
               "rotation": [
                 0.0,
@@ -2669,15 +2707,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 71
             },
             "displayed": false,
             "name": "2fb596a8-a82f-42a2-85d9-037b3efef12d",
             "transform": {
               "position": [
-                1.8116161823272705,
-                35.26860046386719,
-                -4.660262584686279
+                3.340522050857544,
+                35.08815383911133,
+                -3.7203378677368164
               ],
               "rotation": [
                 0.0,
@@ -2699,15 +2737,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 72
             },
             "displayed": false,
             "name": "428a8c4b-03b4-4c97-b44f-ad83010c88b4",
             "transform": {
               "position": [
-                0.8496260046958923,
-                35.76860427856445,
-                -4.9272847175598145
+                2.5347890853881836,
+                35.58815383911133,
+                -4.309854030609131
               ],
               "rotation": [
                 0.0,
@@ -2729,15 +2767,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 73
             },
             "displayed": false,
             "name": "ea56570c-90a3-4ad4-bad6-46fa5dd8ac87",
             "transform": {
               "position": [
-                -0.14623324573040009,
-                36.26860809326172,
-                -4.997860908508301
+                1.6280044317245483,
+                36.088157653808594,
+                -4.727536201477051
               ],
               "rotation": [
                 0.0,
@@ -2759,15 +2797,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 74
             },
             "displayed": false,
             "name": "b77b5761-4868-4d1c-95e3-316ddcf43fc3",
             "transform": {
               "position": [
-                -1.1362717151641846,
-                36.76860809326172,
-                -4.869177341461182
+                0.6563042402267456,
+                36.58816146850586,
+                -4.95673942565918
               ],
               "rotation": [
                 0.0,
@@ -2789,15 +2827,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 75
             },
             "displayed": false,
             "name": "2532f548-b5f7-40b2-9473-947a0de80a0c",
             "transform": {
               "position": [
-                -2.081003189086914,
-                37.268611907958984,
-                -4.546363830566406
+                -0.3415626287460327,
+                37.088165283203125,
+                -4.9883198738098145
               ],
               "rotation": [
                 0.0,
@@ -2819,15 +2857,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 76
             },
             "displayed": false,
             "name": "825d9092-862b-4e81-82d4-b80916786347",
             "transform": {
               "position": [
-                -2.942763328552246,
-                37.76861572265625,
-                -4.042294502258301
+                -1.3258023262023926,
+                37.588165283203125,
+                -4.821021556854248
               ],
               "rotation": [
                 0.0,
@@ -2849,15 +2887,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 77
             },
             "displayed": false,
             "name": "9362e67f-2677-4041-82eb-90937432eb92",
             "transform": {
               "position": [
-                -3.687199354171753,
-                38.26861572265625,
-                -3.377063751220703
+                -2.257192611694336,
+                38.08816909790039,
+                -4.461511135101318
               ],
               "rotation": [
                 0.0,
@@ -2879,15 +2917,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 78
             },
             "displayed": false,
             "name": "4045c22f-0333-4e97-b118-8277cf7c354e",
             "transform": {
               "position": [
-                -4.284631729125977,
-                38.768619537353516,
-                -2.5771946907043457
+                -3.0985822677612305,
+                38.588172912597656,
+                -3.924128770828247
               ],
               "rotation": [
                 0.0,
@@ -2909,15 +2947,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 79
             },
             "displayed": false,
             "name": "5664d292-0e95-49e0-9a70-5069fecf47c3",
             "transform": {
               "position": [
-                -4.711244583129883,
-                39.26862335205078,
-                -1.6745667457580566
+                -3.8164422512054443,
+                39.08817672729492,
+                -3.2302894592285156
               ],
               "rotation": [
                 0.0,
@@ -2939,15 +2977,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 80
             },
             "displayed": false,
             "name": "c75545c0-0fcb-40be-805b-93a178431c9f",
             "transform": {
               "position": [
-                -4.950021743774414,
-                39.76862335205078,
-                -0.7051844000816345
+                -4.382142543792725,
+                39.58817672729492,
+                -2.4076602458953857
               ],
               "rotation": [
                 0.0,
@@ -2969,15 +3007,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 81
             },
             "displayed": false,
             "name": "87bf49a8-1d86-4679-b004-923d9314fa09",
             "transform": {
               "position": [
-                -4.991447925567627,
-                40.26862716674805,
-                0.2923126518726349
+                -4.773126125335693,
+                40.08818054199219,
+                -1.4890482425689697
               ],
               "rotation": [
                 0.0,
@@ -2999,15 +3037,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 82
             },
             "displayed": false,
             "name": "8817b753-5167-4d14-a163-e711db2f83b6",
             "transform": {
               "position": [
-                -4.833871841430664,
-                40.76863098144531,
-                1.2781555652618408
+                -4.973813056945801,
+                40.58818435668945,
+                -0.5110602974891663
               ],
               "rotation": [
                 0.0,
@@ -3029,15 +3067,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 83
             },
             "displayed": false,
             "name": "0ae2d464-8d3a-4295-b0f3-48e1e130bbb9",
             "transform": {
               "position": [
-                -4.483571529388428,
-                41.26863098144531,
-                2.2130486965179443
+                -4.976196765899658,
+                41.08818817138672,
+                0.4873032569885254
               ],
               "rotation": [
                 0.0,
@@ -3059,15 +3097,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 84
             },
             "displayed": false,
             "name": "d39b24db-9d1d-419b-b3b2-fed0199baf66",
             "transform": {
               "position": [
-                -3.9545199871063232,
-                41.76863479614258,
-                3.059701442718506
+                -4.780185222625732,
+                41.58818817138672,
+                1.4662292003631592
               ],
               "rotation": [
                 0.0,
@@ -3089,15 +3127,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 85
             },
             "displayed": false,
             "name": "8e93c7b8-89da-4dc6-bb5f-1544c19412b1",
             "transform": {
               "position": [
-                -3.2678065299987793,
-                42.268638610839844,
-                3.784367799758911
+                -4.393589496612549,
+                42.088191986083984,
+                2.386706829071045
               ],
               "rotation": [
                 0.0,
@@ -3119,15 +3157,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 86
             },
             "displayed": false,
             "name": "ef2bf126-0725-45df-b051-41cd95cf03b6",
             "transform": {
               "position": [
-                -2.4508018493652344,
-                42.76864242553711,
-                4.358161449432373
+                -3.8318240642547607,
+                42.58819580078125,
+                3.2120280265808105
               ],
               "rotation": [
                 0.0,
@@ -3149,15 +3187,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 87
             },
             "displayed": false,
             "name": "90bef1f0-1108-4efb-8b58-24b4d55198cf",
             "transform": {
               "position": [
-                -1.5360941886901855,
-                43.26864242553711,
-                4.758194446563721
+                -3.117293357849121,
+                43.088199615478516,
+                3.9092814922332764
               ],
               "rotation": [
                 0.0,
@@ -3179,15 +3217,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 88
             },
             "displayed": false,
             "name": "79d3f280-45bb-4429-830f-4e599691a9ee",
             "transform": {
               "position": [
-                -0.5601446032524109,
-                43.768646240234375,
-                4.968524932861328
+                -2.2784717082977295,
+                43.588199615478516,
+                4.450681686401367
               ],
               "rotation": [
                 0.0,
@@ -3209,15 +3247,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 89
             },
             "displayed": false,
             "name": "3b9decbb-f585-4236-add7-25481ff2123a",
             "transform": {
               "position": [
-                0.43813732266426086,
-                44.26865005493164,
-                4.980766296386719
+                -1.348818063735962,
+                44.08820343017578,
+                4.814632892608643
               ],
               "rotation": [
                 0.0,
@@ -3239,15 +3277,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 90
             },
             "displayed": false,
             "name": "ca615b3d-7614-43c6-ba3d-4d051bfbc326",
             "transform": {
               "position": [
-                1.4189603328704834,
-                44.76865005493164,
-                4.794429302215576
+                -0.365379273891449,
+                44.58820724487305,
+                4.986631870269775
               ],
               "rotation": [
                 0.0,
@@ -3269,15 +3307,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 91
             },
             "displayed": false,
             "name": "0ad4a0bc-f9f8-4368-beac-d6a1e6548496",
             "transform": {
               "position": [
-                2.3432018756866455,
-                45.268653869628906,
-                4.416945457458496
+                0.632627010345459,
+                45.08821105957031,
+                4.959816932678223
               ],
               "rotation": [
                 0.0,
@@ -3299,15 +3337,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 92
             },
             "displayed": false,
             "name": "3da89d2d-b610-4b37-8b99-5ece8d3f8714",
             "transform": {
               "position": [
-                3.174023151397705,
-                45.76865768432617,
-                3.86336350440979
+                1.6054017543792725,
+                45.58821105957031,
+                4.735259532928467
               ],
               "rotation": [
                 0.0,
@@ -3329,15 +3367,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 93
             },
             "displayed": false,
             "name": "5c511c60-7110-4511-af2d-541988dfa0f6",
             "transform": {
               "position": [
-                3.8783061504364014,
-                46.26865768432617,
-                3.155747413635254
+                2.514179229736328,
+                46.08821487426758,
+                4.321909427642822
               ],
               "rotation": [
                 0.0,
@@ -3359,15 +3397,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 94
             },
             "displayed": false,
             "name": "d91b3e3c-e8ef-494a-b73a-33a9c1acb37a",
             "transform": {
               "position": [
-                4.427958965301514,
-                46.76866149902344,
-                2.3223214149475098
+                3.322711229324341,
+                46.588218688964844,
+                3.736253261566162
               ],
               "rotation": [
                 0.0,
@@ -3389,15 +3427,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 95
             },
             "displayed": false,
             "name": "079c469d-8a19-4950-a49e-0df5c6002a9f",
             "transform": {
               "position": [
-                4.801074981689453,
-                47.2686653137207,
-                1.3963080644607544
+                3.99877667427063,
+                47.08822250366211,
+                3.0016303062438965
               ],
               "rotation": [
                 0.0,
@@ -3419,15 +3457,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 96
             },
             "displayed": false,
             "name": "af5aee2f-73e1-483d-9e77-aa04a9b93a9b",
             "transform": {
               "position": [
-                4.982779502868652,
-                47.7686653137207,
-                0.414616197347641
+                4.515413284301758,
+                47.58822250366211,
+                2.147334098815918
               ],
               "rotation": [
                 0.0,
@@ -3449,15 +3487,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 97
             },
             "displayed": false,
             "name": "c87c33dd-2587-4055-8ea6-875a3ad3630e",
             "transform": {
               "position": [
-                4.965824604034424,
-                48.26866912841797,
-                -0.5835967659950256
+                4.852020263671875,
+                48.088226318359375,
+                1.207434058189392
               ],
               "rotation": [
                 0.0,
@@ -3479,15 +3517,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 98
             },
             "displayed": false,
             "name": "f048968d-1d9a-4d6e-8f25-cd2554ba4baf",
             "transform": {
               "position": [
-                4.750888824462891,
-                48.768672943115234,
-                -1.5585424900054932
+                4.995184421539307,
+                48.58823013305664,
+                0.21938563883304596
               ],
               "rotation": [
                 0.0,
@@ -3509,15 +3547,15 @@
                 1.0,
                 1.0
               ],
-              "parent": 1
+              "id": 99
             },
             "displayed": false,
             "name": "27fe5d89-6c9c-45bc-8646-8d0b847d4368",
             "transform": {
               "position": [
-                4.346541404724121,
-                49.268672943115234,
-                -2.471351146697998
+                4.939195156097412,
+                49.088233947753906,
+                -0.7774000763893127
               ],
               "rotation": [
                 0.0,
@@ -3536,12 +3574,14 @@
         "is static": false
       },
       "MeshRenderer": {
+        "id": 0,
         "materials": [
           0
         ]
       },
       "MeshSource": {
         "casts shadow": true,
+        "id": 0,
         "is drawn": true,
         "is static": false,
         "mesh": 0
@@ -3569,12 +3609,14 @@
     },
     {
       "MeshRenderer": {
+        "id": 1,
         "materials": [
           1
         ]
       },
       "MeshSource": {
         "casts shadow": true,
+        "id": 1,
         "is drawn": true,
         "is static": false,
         "mesh": 1
@@ -3602,12 +3644,14 @@
     },
     {
       "MeshRenderer": {
+        "id": 2,
         "materials": [
           2
         ]
       },
       "MeshSource": {
         "casts shadow": true,
+        "id": 2,
         "is drawn": true,
         "is static": false,
         "mesh": 2
@@ -3627,20 +3671,22 @@
           1.0
         ],
         "scale": [
-          3.0,
-          3.0,
-          3.0
+          500.0,
+          500.0,
+          500.0
         ]
       }
     },
     {
       "MeshRenderer": {
+        "id": 3,
         "materials": [
           3
         ]
       },
       "MeshSource": {
         "casts shadow": true,
+        "id": 3,
         "is drawn": true,
         "is static": false,
         "mesh": 3
@@ -3679,6 +3725,7 @@
           1.0,
           0.0
         ],
+        "id": 0,
         "intensity": 5.0,
         "is following viewport": true,
         "projections": [
@@ -3710,12 +3757,14 @@
     },
     {
       "MeshRenderer": {
+        "id": 4,
         "materials": [
           4
         ]
       },
       "MeshSource": {
         "casts shadow": true,
+        "id": 4,
         "is drawn": true,
         "is static": false,
         "mesh": 4
@@ -3728,6 +3777,7 @@
           0.30000001192092896,
           0.0
         ],
+        "id": 0,
         "intensity": 800.0,
         "radius": 8.0
       },
@@ -3754,12 +3804,14 @@
     },
     {
       "MeshRenderer": {
+        "id": 5,
         "materials": [
           5
         ]
       },
       "MeshSource": {
         "casts shadow": true,
+        "id": 5,
         "is drawn": true,
         "is static": false,
         "mesh": 5
@@ -3777,6 +3829,7 @@
           -1.2999999523162842,
           1.0
         ],
+        "id": 0,
         "inner angle": 30.0,
         "intensity": 500.0,
         "max distance": 1000.0,
@@ -3805,12 +3858,14 @@
     },
     {
       "MeshRenderer": {
+        "id": 6,
         "materials": [
           6
         ]
       },
       "MeshSource": {
         "casts shadow": true,
+        "id": 6,
         "is drawn": true,
         "is static": false,
         "mesh": 6

@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Serializer.h"
+#include "Serialization.h"
 #include "Utilities/Logging/Logger.h"
 #include "Core/MxObject/MxObject.h"
 
@@ -37,6 +37,7 @@ namespace MxEngine
     struct SceneSerializerImpl
     {
         MxVector<void(*)(JsonFile&, MxObject&)> serializeCallbacks;
+        MxVector<void(*)(const JsonFile&, MxObject&, HandleMappings&)> deserializeCallbacks;
     };
 
     class SceneSerializer
@@ -47,9 +48,10 @@ namespace MxEngine
         static void SerializeObjects(JsonFile& json);
         static void SerializeResources(JsonFile& json);
 
-        static void DeserializeGlobals(const JsonFile& json);
-        static void DeserializeObjects(const JsonFile& json);
-        static void DeserializeResources(const JsonFile& json);
+        static HandleMappings DeserializeResources(const JsonFile& json);
+        static void DeserializeGlobals(const JsonFile& json, const HandleMappings& mappings);
+        static void DeserializeObjects(const JsonFile& json, HandleMappings& mappings);
+        static MxObject& DeserializeMxObject(const JsonFile& json, HandleMappings& mappings);
     public:
         static void Init();
         static void Destroy();
@@ -60,23 +62,40 @@ namespace MxEngine
         static void Deserialize(const JsonFile& scene);
 
         static JsonFile SerializeMxObject(MxObject& object);
-        static MxObject& DeserializeMxObject(const JsonFile& json);
 
         template<typename T>
         static void RegisterComponent()
         {
             MXLOG_DEBUG("MxEngine::SceneSerializer", "registered component " + MxString(rttr::type::get<T>().get_name().cbegin()));
 
-            impl->serializeCallbacks.push_back([](JsonFile& json, MxObject& object)
-            {
-                auto component = object.template GetComponent<T>();
-                if (component.IsValid())
+            impl->serializeCallbacks.push_back(
+                [](JsonFile& json, MxObject& object)
                 {
-                    rttr::type t = rttr::type::get<T>();
-                    const char* name = t.get_name().cbegin();
-                    MxEngine::Serialize(json[name], *component);
+                    auto component = object.template GetComponent<T>();
+                    if (component.IsValid())
+                    {
+                        rttr::type t = rttr::type::get<T>();
+                        const char* name = t.get_name().cbegin();
+                        SerializeComponent(json[name], component);
+                    }
                 }
-            });
+            );
+
+            if constexpr (std::is_default_constructible_v<T>)
+            {
+                impl->deserializeCallbacks.push_back(
+                    [](const JsonFile& json, MxObject& object, HandleMappings& mappings)
+                    {
+                        rttr::type t = rttr::type::get<T>();
+                        const char* name = t.get_name().cbegin();
+                        if (json.contains(name))
+                        {
+                            auto component = object.template AddComponent<T>();
+                            DeserializeComponent(json[name], component, mappings);
+                        }
+                    }
+                );
+            }
         }
     };
 }

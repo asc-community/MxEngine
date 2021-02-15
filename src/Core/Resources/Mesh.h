@@ -64,8 +64,8 @@ namespace MxEngine
 		template<typename FilePath>
 		Mesh(const FilePath& path);
 		
-		template<typename FilePath>
-		void Load(const FilePath& filepath);
+		void Load(const MxString& filepath);
+		template<typename FilePath> void Load(const FilePath& filepath);
 
 		void UpdateBoundingGeometry();
 		size_t AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl);

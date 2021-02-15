@@ -40,6 +40,7 @@ namespace MxEngine
 		if (id != 0)
 		{
 			GLCALL(glDeleteTextures(1, &id));
+			MXLOG_DEBUG("OpenGL::CubeMap", "deleted cubemap with id = " + ToMxString(id));
 		}
 		id = 0;
 		activeId = 0;
@@ -52,9 +53,10 @@ namespace MxEngine
 	}
 
 	template<>
-	void CubeMap::Load(const std::filesystem::path& filepath, bool genMipmaps, bool flipImage)
+	void CubeMap::Load(const std::filesystem::path& filepath)
 	{
 		// TODO: support floating point textures
+		bool flipImage = true;
 		Image img = ImageLoader::LoadImage(filepath, flipImage);
 		if (img.GetRawData() == nullptr)
 		{
@@ -78,17 +80,19 @@ namespace MxEngine
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
 
-		if (genMipmaps)
-		{
-			this->GenerateMipmaps();
-		}
+		this->GenerateMipmaps();
+	}
+
+	void CubeMap::Load(const MxString& filepath)
+	{
+		this->Load(ToFilePath(filepath));
 	}
 
 	template<>
-    CubeMap::CubeMap(const std::filesystem::path& filepath, bool genMipmaps, bool flipImage)
+    CubeMap::CubeMap(const std::filesystem::path& filepath)
 		: CubeMap()
     {
-		this->Load(filepath, genMipmaps, flipImage);
+		this->Load(filepath);
     }
 
 	CubeMap::CubeMap(CubeMap&& other) noexcept
@@ -159,9 +163,9 @@ namespace MxEngine
 
 	template<>
     void CubeMap::Load(const std::filesystem::path& right, const std::filesystem::path& left, const std::filesystem::path& top,
-		               const std::filesystem::path& bottom, const std::filesystem::path& front, const std::filesystem::path& back, 
-					   bool genMipmaps, bool flipImage)
+		               const std::filesystem::path& bottom, const std::filesystem::path& front, const std::filesystem::path& back)
     {
+		bool flipImage = true;
 		std::array<Image, 6> images =
 		{
 			ImageLoader::LoadImage(right, flipImage),
@@ -171,7 +175,7 @@ namespace MxEngine
 			ImageLoader::LoadImage(front, flipImage),
 			ImageLoader::LoadImage(back, flipImage),
 		};
-		this->Load(images, genMipmaps);
+		this->Load(images);
     }
 
 	void CubeMap::Load(const std::array<Image, 6>& images, bool genMipmaps)
@@ -219,7 +223,7 @@ namespace MxEngine
 		}
 	}
 
-    void CubeMap::Load(const std::array<uint8_t*, 6>& data, size_t width, size_t height, bool genMipmaps)
+    void CubeMap::Load(const std::array<uint8_t*, 6>& data, size_t width, size_t height)
     {
 		this->width = width;
 		this->height = height;
@@ -237,10 +241,7 @@ namespace MxEngine
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 		GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
 
-		if (genMipmaps)
-		{
-			this->GenerateMipmaps();
-		}
+		this->GenerateMipmaps();
     }
 
 	void CubeMap::LoadDepth(int width, int height)
@@ -305,6 +306,8 @@ namespace MxEngine
 
 	MXENGINE_REFLECT_TYPE
 	{
+		using SetFilePath = void(CubeMap::*)(const MxString&);
+
 		rttr::registration::class_<CubeMap>("CubeMap")
 			(
 				rttr::metadata(EditorInfo::HANDLE_EDITOR, GUI::HandleEditorExtra<CubeMap>)
@@ -312,7 +315,11 @@ namespace MxEngine
 			.constructor<>()
 			.property_readonly("filepath", &CubeMap::GetFilePath)
 			(
-				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property("filepath", &CubeMap::GetFilePath, (SetFilePath)&CubeMap::Load)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE)
 			)
 			.property_readonly("width", &CubeMap::GetWidth)
 			(

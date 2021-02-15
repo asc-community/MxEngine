@@ -26,10 +26,11 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Core/Serialization/Serializer.h"
+#include "Core/Serialization/Serialization.h"
 #include "Core/Components/Physics/CompoundCollider.h"
 #include "Core/Components/Instancing/InstanceFactory.h"
 #include "Core/Components/Camera/VRCameraController.h"
+#include "Platform/OpenGL/Texture.h"
 #include "Core/Serialization/SceneSerializer.h"
 
 namespace MxEngine
@@ -68,5 +69,31 @@ namespace MxEngine
 
         if (vr.LeftEye.IsValid()) json["left"] = vr.LeftEye.GetHandle();
         if (vr.RightEye.IsValid()) json["right"] = vr.RightEye.GetHandle();
+    }
+
+    template<>
+    void SerializeExtra<Texture>(rttr::instance jsonWrapped, rttr::instance& object)
+    {
+        auto& json = *jsonWrapped.try_convert<JsonFile>();
+        auto& texture = *object.try_convert<Texture>();
+
+        auto formatEnumType = rttr::type::get<TextureFormat>().get_enumeration();
+
+        json["filepath"] = texture.GetFilePath();
+        json["format"] = formatEnumType.value_to_name(texture.GetFormat()).cbegin();
+    }
+
+    template<>
+    void DeserializeExtra<Texture>(rttr::instance jsonWrapped, rttr::instance& object)
+    {
+        const auto& json = *jsonWrapped.try_convert<JsonFile>();
+        auto& texture = *object.try_convert<Texture>();
+
+        auto formatEnumType = rttr::type::get<TextureFormat>().get_enumeration();
+
+        auto filepath = ToFilePath(json["filepath"].get<MxString>());
+        auto format = formatEnumType.name_to_value(json["format"].get<MxString>().c_str()).convert<TextureFormat>();
+
+        texture.Load(filepath, format);
     }
 }

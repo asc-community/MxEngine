@@ -26,13 +26,26 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Utilities/Json/Json.h"
+#pragma once
+
 #include "Core/Runtime/Reflection.h"
+#include "Utilities/STL/MxHashMap.h"
+#include "Utilities/STL/MxMap.h"
 
 namespace MxEngine
 {
-    void Serialize(JsonFile& json, rttr::instance object);
+    struct HandleMappings
+    {
+        using HandleProjection = MxHashMap<size_t, rttr::variant>;
+        MxMap<rttr::type, HandleProjection> TypeToProjection;
+    };
 
-    template<typename T>
-    void SerializeResource(JsonFile& json);
+    // see ResourceReflection.h
+    rttr::variant GetHandleById(const rttr::type& type, size_t handleId, const HandleMappings& mappings);
+
+    template<typename Handle>
+    Handle GetHandleById(size_t handleId, const HandleMappings& mappings)
+    {
+        return GetHandleById(rttr::type::get<Handle>(), handleId, mappings).template convert<Handle>();
+    }
 }

@@ -28,46 +28,33 @@
 
 #pragma once
 
-#include "Utilities/Audio/SupportedAudioTypes.h"
-#include "Utilities/STL/MxString.h"
+#include "Utilities/Json/Json.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
-    class AudioBuffer
+    struct HandleMappings;
+
+    void Serialize(JsonFile& json, rttr::instance object);
+    void Deserialize(const JsonFile& json, rttr::instance object, const HandleMappings& mappings);
+    void DeserializeComponentImpl(const JsonFile& json, rttr::instance object, rttr::variant handle, HandleMappings& mappings);
+
+    template<typename Handle>
+    void SerializeComponent(JsonFile& json, Handle component)
     {
-        using BindableId = unsigned int;
+        json["id"] = component.GetHandle();
+        Serialize(json, rttr::instance{ *component });
+    }
 
-        MxString filepath;
-        BindableId id = 0;
-        uint8_t channels = 0;
-        AudioType type = AudioType::WAV;
-        size_t frequency = 0;
-        size_t sampleCount = 0;
-        size_t nativeFormat = 0;
+    template<typename Handle>
+    void DeserializeComponent(const JsonFile& json, Handle component, HandleMappings& mappings)
+    {
+        DeserializeComponentImpl(json, rttr::instance{ *component }, rttr::variant{ component }, mappings);
+    }
 
-        void FreeAudioBuffer();
-    public:
-        AudioBuffer();
-        ~AudioBuffer();
-        AudioBuffer(const AudioBuffer&) = delete;
-        AudioBuffer(AudioBuffer&&) noexcept;
-        AudioBuffer& operator=(const AudioBuffer&) = delete;
-        AudioBuffer& operator=(AudioBuffer&&) noexcept;
+    template<typename T>
+    void SerializeResource(JsonFile& json);
 
-        void Load(const MxString& path);
-        template<typename FilePath> void Load(const FilePath& path);
-
-        BindableId GetNativeHandle() const;
-        size_t GetChannelCount() const;
-        size_t GetFrequency() const;
-        size_t GetNativeFormat() const;
-        size_t GetSampleCount() const;
-        float GetLength() const;
-        size_t GetLengthInSeconds() const;
-        AudioType GetAudioType() const;
-
-        const MxString& GetFilePath() const;
-        void SetInternalEngineTag(const MxString& tag); 
-        bool IsInternalEngineResource() const;
-    };
+    template<typename T>
+    void DeserializeResource(const JsonFile& json, HandleMappings& mappings);
 }

@@ -103,7 +103,7 @@ void main()
 
     vec3 lum = vec3(0.2126, 0.7152, 0.0722);
     vec3 albedo = mix(fragment.albedo, vec3(1.0), fragment.metallicFactor);
-    ssrReflection = mix(ssrReflection, dot(lum, ssrReflection) * fragment.albedo, 0.5 * fragment.metallicFactor );
+    ssrReflection = mix(ssrReflection, dot(lum, ssrReflection) * fragment.albedo, 0.5 * fragment.metallicFactor);
     
     OutColor = vec4(mix(objectColor, albedo * ssrReflection, fadingFactor * fading), 1.0f);
 }

@@ -54,8 +54,8 @@ namespace MxEngine
 
         if (resultTexture->GetWidth() != widthTotal || resultTexture->GetHeight() != heightTotal)
         {
-            resultTexture->Load(nullptr, (int)widthTotal, (int)heightTotal, 3, false, resultTexture->GetFormat(), resultTexture->GetWrapType());
-            resultTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("vr camera output"));
+            resultTexture->Load(nullptr, (int)widthTotal, (int)heightTotal, 3, false, resultTexture->GetFormat());
+            resultTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("vr camera out"));
         }
 
         this->Render(resultTexture, leftTexture, rightTexture);

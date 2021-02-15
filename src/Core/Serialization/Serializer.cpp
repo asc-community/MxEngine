@@ -26,10 +26,10 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Serializer.h"
+#include "Serialization.h"
 #include "Utilities/STL/MxMap.h"
 #include "Utilities/Logging/Logger.h"
-#include "Core/Runtime/DereferenceHandle.h"
+#include "Core/Runtime/ResourceReflection.h"
 
 namespace MxEngine
 {
@@ -95,18 +95,15 @@ namespace MxEngine
 		}
     }
 
-    void Serialize(JsonFile& json, rttr::instance maybeHandle)
+    void Serialize(JsonFile& json, rttr::instance object)
     {
-		auto handleType = maybeHandle.get_type();
-		auto [object, type, handleId] = DereferenceHandle(maybeHandle);
-		if (!object.is_valid()) return;
-
-		bool isHandle = (type != handleType);
-		if (isHandle)
+		if (IsHandle(object))
 		{
-			json = handleId;
+			json = GetHandleId(object);
 			return;
 		}
+
+		auto type = object.get_type();
 
         for (auto property : type.get_properties())
         {

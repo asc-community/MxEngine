@@ -33,6 +33,8 @@ namespace MxEngine
 {
     void RegisterComponents()
     {
+		Runtime::RegisterComponent<CameraController   >();
+		Runtime::RegisterComponent<Script             >();
 		Runtime::RegisterComponent<Behaviour          >();
 		Runtime::RegisterComponent<InstanceFactory    >();
 		Runtime::RegisterComponent<Instance           >();
@@ -44,7 +46,6 @@ namespace MxEngine
 		Runtime::RegisterComponent<DirectionalLight   >();
 		Runtime::RegisterComponent<PointLight         >();
 		Runtime::RegisterComponent<SpotLight          >();
-		Runtime::RegisterComponent<CameraController   >();
 		Runtime::RegisterComponent<CameraEffects      >();
 		Runtime::RegisterComponent<CameraSSR          >();
 		Runtime::RegisterComponent<CameraToneMapping  >();
@@ -59,6 +60,5 @@ namespace MxEngine
 		Runtime::RegisterComponent<CylinderCollider   >();
 		Runtime::RegisterComponent<CapsuleCollider    >();
 		Runtime::RegisterComponent<CompoundCollider   >();
-		Runtime::RegisterComponent<Script             >();
     }
 }

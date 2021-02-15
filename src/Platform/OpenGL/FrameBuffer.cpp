@@ -87,7 +87,9 @@ namespace MxEngine
         if (this->id != 0)
         {
             GLCALL(glDeleteFramebuffers(1, &id));
+            MXLOG_DEBUG("OpenGL::FrameBuffer", "deleted framebuffer with id = " + ToMxString(id));
         }
+        this->id = 0;
     }
 
     void FrameBuffer::CopyFrameBufferContents(int screenWidth, int screenHeight) const

@@ -57,7 +57,7 @@ namespace MxEngine
         }
     };
 
-    template<typename T, typename Factory>
+    template<typename T, typename F>
     class Resource
     {
         UUID uuid;
@@ -96,16 +96,19 @@ namespace MxEngine
             return resource;
         }
 
-        void DestroyThis(Resource<T, Factory>& resource)
+        void DestroyThis(Resource<T, F>& resource)
         {
             Factory::Destroy(resource);
         }
 
         ManagedResource<T>& AccessThis(size_t handle) const
         {
-            return Factory::template Get<T>()[handle];
+            return F::template Get<T>()[handle];
         }
     public:
+        using Type = T;
+        using Factory = F;
+
         Resource()
             : uuid(UUIDGenerator::GetNull()), handle(InvalidHandle)
         {

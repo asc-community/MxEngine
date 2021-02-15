@@ -115,7 +115,8 @@ namespace MxEngine
 		this->renderBuffers->Init(viewport.x, viewport.y);
 
 		this->renderTexture = GraphicFactory::Create<Texture>();
-		this->renderTexture->Load(nullptr, viewport.x, viewport.y, 3, false, TextureFormat::RGB, TextureWrap::CLAMP_TO_EDGE);
+		this->renderTexture->Load(nullptr, viewport.x, viewport.y, 3, false, TextureFormat::RGB);
+		this->renderTexture->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
 		this->renderTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera output"));
 	}
 
@@ -204,8 +205,8 @@ namespace MxEngine
 
 	void CameraController::ResizeRenderTexture(size_t w, size_t h)
 	{
-		this->renderTexture->Load(nullptr, (int)w, (int)h, 3, false, this->renderTexture->GetFormat(), this->renderTexture->GetWrapType());
-		this->renderTexture->SetInternalEngineTag("[[camera output]]");
+		this->renderTexture->Load(nullptr, (int)w, (int)h, 3, false, this->renderTexture->GetFormat());
+		this->renderTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera output"));
 		if(this->IsRendering())
 			this->renderBuffers->Resize((int)w, (int)h);
 	}
@@ -476,23 +477,38 @@ namespace MxEngine
 
 	void CameraRender::Resize(int width, int height)
 	{
-		this->Albedo->Load(nullptr, width, height, 3, false, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
-		this->Normal->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16, TextureWrap::CLAMP_TO_EDGE);
-		this->Material->Load(nullptr, width, height, 3, false, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
-		this->Depth->LoadDepth(width, height, TextureFormat::DEPTH32F, TextureWrap::CLAMP_TO_EDGE);
-		this->AverageWhite->Load(nullptr, 1, 1, 3, false, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
-		this->HDR->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
-		this->SwapHDR1->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
-		this->SwapHDR2->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
 
+		this->Albedo->Load(nullptr, width, height, 3, false, TextureFormat::RGBA);
 		this->Albedo->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera albedo"));
+		this->Albedo->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
+		this->Normal->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16);
 		this->Normal->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera normal"));
+		this->Normal->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
+		this->Material->Load(nullptr, width, height, 3, false, TextureFormat::RGBA);
 		this->Material->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera material"));
+		this->Material->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
+		this->Depth->LoadDepth(width, height, TextureFormat::DEPTH32F);
 		this->Depth->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera depth"));
+		this->Depth->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
+		this->AverageWhite->Load(nullptr, 1, 1, 3, false, TextureFormat::RGBA16F);
 		this->AverageWhite->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera white"));
+		this->AverageWhite->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+		
+		this->HDR->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F);
 		this->HDR->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera hdr"));
+		this->HDR->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+		
+		this->SwapHDR1->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F);
 		this->SwapHDR1->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap hdr 1"));
+		this->SwapHDR1->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+		
+		this->SwapHDR2->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F);
 		this->SwapHDR2->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap hdr 2"));
+		this->SwapHDR2->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
 	}
 
 	void CameraRender::DeInit()

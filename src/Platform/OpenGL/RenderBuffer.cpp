@@ -38,7 +38,9 @@ namespace MxEngine
         if (this->id != 0)
         {
             GLCALL(glDeleteRenderbuffers(1, &this->id));
+            MXLOG_DEBUG("OpenGL::RenderBuffer", "deleted renderbuffer with id = " + ToMxString(this->id));
         }
+        this->id = 0;
     }
 
     RenderBuffer::RenderBuffer()

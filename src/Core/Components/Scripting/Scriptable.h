@@ -67,7 +67,7 @@ namespace MxEngine
 
 		virtual void InitializeModuleContext(void* context) { GlobalContextSerializer::Deserialize(context); }
 
-		virtual void ProtectedFunc()
+		virtual void ProtectedFunc() final
 		{
 			switch (this->CurrentState.Method)
 			{

@@ -429,10 +429,11 @@ namespace MxEngine
 
 	void Shader::FreeShader()
 	{
-		if (id != 0)
+		if (this->id != 0)
 		{
-			GLCALL(glDeleteProgram(id));
+			GLCALL(glDeleteProgram(this->id));
 		}
+		this->id = 0;
 	}
 
     MxString Shader::GetShaderVersionString()

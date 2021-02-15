@@ -26,16 +26,18 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#pragma once
+
 #include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
-    struct DereferenceHandleInfo
-    {
-        rttr::instance Object;
-        rttr::type Type;
-        size_t HandleId;
-    };
+    struct HandleMappings;
 
-    DereferenceHandleInfo DereferenceHandle(rttr::instance object);
+    bool IsHandle(rttr::instance object);
+    size_t GetHandleId(rttr::instance handle);
+    rttr::instance DereferenceHandle(rttr::instance object);
+    rttr::type GetTypeByHandle(rttr::instance object);
+    rttr::variant GetHandleById(const rttr::type& type, size_t handleId);
+    rttr::variant GetHandleById(const rttr::type& type, size_t handleId, const HandleMappings& mappings);
 }

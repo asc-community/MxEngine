@@ -259,8 +259,9 @@ namespace MxEngine
         for (auto& bloomBuffer : environment.BloomBuffers)
         {
             auto bloomTexture = GraphicFactory::Create<Texture>();
-            bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, 3, false, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
+            bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, 3, false, HDRTextureFormat);
             bloomTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("bloom"));
+            bloomTexture->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
 
             bloomBuffer = GraphicFactory::Create<FrameBuffer>();
             bloomBuffer->AttachTexture(bloomTexture, Attachment::COLOR_ATTACHMENT0);

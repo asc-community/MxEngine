@@ -30,7 +30,7 @@
 #include "Utilities/Format/Format.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Utilities/STL/MxMap.h"
-#include "Core/Runtime/DereferenceHandle.h"
+#include "Core/Runtime/ResourceReflection.h"
 
 namespace MxEngine::GUI
 {
@@ -356,22 +356,37 @@ namespace MxEngine::GUI
 		}
 	}
 
-	rttr::variant ReflectObject(rttr::instance maybeHandle)
+	rttr::variant ReflectObject(rttr::instance object)
 	{
-		rttr::variant result{ };
-		auto [object, type, handleId] = DereferenceHandle(maybeHandle);
+		rttr::variant result;
 
+		if (IsHandle(object))
+		{
+			auto type = GetTypeByHandle(object);
+			auto dereferenced = DereferenceHandle(object);
+			ReflectionMeta typeMeta(type);
+			// first we check if handle has special editor
+			// if it changed value, just return new one
+			if (typeMeta.Editor.HandleEditor != nullptr)
+			{
+				result = typeMeta.Editor.HandleEditor(object);
+				if (result.is_valid()) return result;
+			}
+
+			// if handle is valid, invoke editor for its value
+			if (dereferenced.is_valid())
+			{
+				return ReflectObject(dereferenced);
+			}
+			else
+			{
+				ImGui::Text("empty");
+				return result;
+			}
+		}
+
+		auto type = object.get_type();
 		ReflectionMeta typeMeta(type);
-		if (typeMeta.Editor.HandleEditor != nullptr)
-		{
-			result = typeMeta.Editor.HandleEditor(maybeHandle);
-		}
-
-		if (!object.is_valid() || result.is_valid())
-		{
-			ImGui::Text("empty");
-			return result;
-		}
 
 		for (const auto& method : type.get_methods())
 		{

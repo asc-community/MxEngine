@@ -214,7 +214,7 @@ namespace MxEngine::GUI
         {
             auto image = texture.GetRawTextureData();
             ImageManager::FlipImage(image);
-            texture.Load(image, texture.GetFormat(), texture.GetWrapType());
+            texture.Load(image, texture.GetFormat());
         }
 
         static float scale = 1.0f;

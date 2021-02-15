@@ -436,7 +436,7 @@ namespace MxEngine
         Array2D<uint8_t> textureData;
         textureData.resize(textureSize, textureSize * channels, 255);
 
-        constexpr auto draw_border = [](Array2D<uint8_t>& texture, size_t borderSize)
+        constexpr auto draw_border = [channels](Array2D<uint8_t>& texture, size_t borderSize)
         {
             size_t width = texture.width();
             size_t height = texture.height() / channels;

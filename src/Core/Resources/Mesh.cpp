@@ -94,6 +94,11 @@ namespace MxEngine
 		this->LoadFromFile(std::filesystem::proximate(filepath));
 	}
 
+	void Mesh::Load(const MxString& filepath)
+	{
+		this->Load(ToFilePath(filepath));
+	}
+
 	void Mesh::UpdateBoundingGeometry()
 	{
 		// compute bounding box, taking min and max points from each sub-box
@@ -263,6 +268,8 @@ namespace MxEngine
 				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
 			);
 
+		using SetFilePath = void(Mesh::*)(const MxString&);
+
 		rttr::registration::class_<Mesh>("Mesh")
 			(
 				rttr::metadata(EditorInfo::HANDLE_EDITOR, GUI::HandleEditorExtra<Mesh>)
@@ -270,7 +277,11 @@ namespace MxEngine
 			.constructor<>()
 			.property_readonly("filepath", &Mesh::GetFilePath)
 			(
-				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property("filepath", &Mesh::GetFilePath, (SetFilePath)&Mesh::Load)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE)
 			)
 			.method("update bounding geometry", &Mesh::UpdateBoundingGeometry)
 			(

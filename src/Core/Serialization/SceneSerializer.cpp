@@ -31,6 +31,7 @@
 #include "Core/Application/Runtime.h"
 #include "Core/Application/Physics.h"
 #include "Core/MxObject/MxObject.h"
+#include "Core/Runtime/HandleMappings.h"
 
 namespace MxEngine
 {
@@ -88,23 +89,26 @@ namespace MxEngine
         SerializeResource<AudioBuffer>(json);
     }
 
-    void SceneSerializer::DeserializeGlobals(const JsonFile& json)
+    void SceneSerializer::DeserializeGlobals(const JsonFile& json, const HandleMappings& mappings)
     {
         MAKE_SCOPE_PROFILER("SceneSerializer::DeserializeGlobals()");
         MAKE_SCOPE_TIMER("MxEngine::SceneSerializer", "SceneSerializer::DeserializeGlobals()");
 
-        // TODO: determine viewport
-        //Rendering::SetViewport(mappings.CameraControllers[json["globals"]["viewport-id"]]);
+        if (json["globals"].contains("viewport-id"))
+        {
+            auto viewport = GetHandleById<CameraControllerHandle>(json["globals"]["viewport-id"], mappings);
+            Rendering::SetViewport(viewport);
+        }
 
-        Rendering::SetDebugOverlay(        json["globals"]["overlay-debug"  ]);
-        Runtime::SetApplicationPaused(     json["globals"]["paused"         ]);
-        Runtime::SetApplicationTimeScale(  json["globals"]["time-scale"     ]);
-        Physics::SetGravity(               json["globals"]["gravity"        ]);
-        Physics::SetSimulationStep(        json["globals"]["physics-step"   ]);
-        Runtime::SetApplicationTotalTime(  json["globals"]["total-time"     ]);
+        Rendering::SetDebugOverlay(      json["globals"]["overlay-debug"  ]);
+        Runtime::SetApplicationPaused(   json["globals"]["paused"         ]);
+        Runtime::SetApplicationTimeScale(json["globals"]["time-scale"     ]);
+        Physics::SetGravity(             json["globals"]["gravity"        ]);
+        Physics::SetSimulationStep(      json["globals"]["physics-step"   ]);
+        Runtime::SetApplicationTotalTime(json["globals"]["total-time"     ]);
     }
 
-    void SceneSerializer::DeserializeObjects(const JsonFile& json)
+    void SceneSerializer::DeserializeObjects(const JsonFile& json, HandleMappings& mappings)
     {
         MAKE_SCOPE_PROFILER("SceneSerializer::DeserializeObjects()");
         MAKE_SCOPE_TIMER("MxEngine::SceneSerializer", "SceneSerializer::DeserializeObjects()");
@@ -113,13 +117,28 @@ namespace MxEngine
         for (auto& object : objects)
             MxObject::Destroy(object);
 
-        // TODO: create new MxObjects
+        const auto& jsonObjects = json["mxobjects"];
+        for (const auto& entry : jsonObjects)
+        {
+            (void)SceneSerializer::DeserializeMxObject(entry, mappings);
+        }
     }
 
-    void SceneSerializer::DeserializeResources(const JsonFile& json)
+    HandleMappings SceneSerializer::DeserializeResources(const JsonFile& json)
     {
+        HandleMappings mappings;
+
         MAKE_SCOPE_PROFILER("SceneSerializer::DeserializeResources()");
         MAKE_SCOPE_TIMER("MxEngine::SceneSerializer", "SceneSerializer::DeserializeResources()");
+
+        DeserializeResource<Mesh       >(json, mappings);
+        DeserializeResource<Script     >(json, mappings);
+        DeserializeResource<Material   >(json, mappings);
+        DeserializeResource<Texture    >(json, mappings);
+        DeserializeResource<CubeMap    >(json, mappings);
+        DeserializeResource<AudioBuffer>(json, mappings);
+
+        return mappings;
     }
 
     JsonFile SceneSerializer::Serialize()
@@ -141,9 +160,9 @@ namespace MxEngine
         MAKE_SCOPE_PROFILER("SceneSerializer::Deserialize()");
         MAKE_SCOPE_TIMER("MxEngine::SceneSerializer", "SceneSerializer::Deserialize()");
 
-        SceneSerializer::DeserializeResources(json);
-        SceneSerializer::DeserializeObjects(json);
-        SceneSerializer::DeserializeGlobals(json);
+        auto mappings = SceneSerializer::DeserializeResources(json);
+        SceneSerializer::DeserializeObjects(json, mappings);
+        SceneSerializer::DeserializeGlobals(json, mappings);
     }
 
     JsonFile SceneSerializer::SerializeMxObject(MxObject& object)
@@ -162,15 +181,19 @@ namespace MxEngine
         return json;
     }
 
-    MxObject& SceneSerializer::DeserializeMxObject(const JsonFile& json)
+    MxObject& SceneSerializer::DeserializeMxObject(const JsonFile& json, HandleMappings& mappings)
     {
         auto object = MxObject::Create();
 
         object->Name = json["name"].get<MxString>();
         object->IsDisplayedInEditor = json["displayed"];
-        
-        // TODO: transform
-        // TODO: components
+
+        MxEngine::Deserialize(json["transform"], object->Transform, mappings);
+
+        for (const auto& callback : impl->deserializeCallbacks)
+        {
+            callback(json, *object, mappings);
+        }
 
         return *object;
     }

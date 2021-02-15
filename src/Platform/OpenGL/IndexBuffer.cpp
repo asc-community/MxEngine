@@ -38,7 +38,9 @@ namespace MxEngine
 		if (this->id != 0)
 		{
 			GLCALL(glDeleteBuffers(1, &id));
+			MXLOG_DEBUG("OpenGL::IndexBuffer", "deleted index buffer with id = " + ToMxString(id));
 		}
+		this->id = 0;
 	}
 
 	IndexBuffer::IndexBuffer()
