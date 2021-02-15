@@ -133,10 +133,10 @@ namespace MxEngine
 
         DeserializeResource<Mesh       >(json, mappings);
         DeserializeResource<Script     >(json, mappings);
-        DeserializeResource<Material   >(json, mappings);
         DeserializeResource<Texture    >(json, mappings);
         DeserializeResource<CubeMap    >(json, mappings);
         DeserializeResource<AudioBuffer>(json, mappings);
+        DeserializeResource<Material   >(json, mappings);
 
         return mappings;
     }

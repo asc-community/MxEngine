@@ -43,7 +43,8 @@ namespace MxEngine
         using Type = typename T::Type;
         using Factory = typename T::Factory;
         auto& pool = Factory::template Get<Type>();
-        return pool.IsAllocated(handleId) ? rttr::variant{ Factory::GetHandle(pool[handleId]) } : rttr::variant{ };
+        auto handle = pool.IsAllocated(handleId) ? Factory::GetHandle(pool[handleId]) : T{ };
+        return rttr::variant{ handle };
     }
     
     template<typename... Args>
@@ -133,19 +134,24 @@ namespace MxEngine
         return ReflectHandleImpl<HANDLE_TYPELIST>(handle).DereferencedType != handle.get_type();
     }
 
+    rttr::variant CreateEmptyHandle(const rttr::type& type)
+    {
+        return GetHandleById(type, size_t(-1));
+    }
+
     rttr::variant GetHandleById(const rttr::type& type, size_t handleId, const HandleMappings& mappings)
     {
         auto projections = mappings.TypeToProjection.find(type);
         if (projections == mappings.TypeToProjection.end())
         {
-            MXLOG_WARNING("MxEngine::Reflection", "cannot find handle mapping for type: " + MxString(type.get_name().cbegin()));
+            MXLOG_ERROR("MxEngine::Reflection", "cannot find handle mapping for type: " + MxString(type.get_name().cbegin()));
             return rttr::variant{ };
         }
 
         auto projection = projections->second.find(handleId);
         if (projection == projections->second.end())
         {
-            return rttr::variant{ };
+            return CreateEmptyHandle(type);
         }
 
         return projection->second;

@@ -69,13 +69,15 @@ namespace MxEngine
         const char* name = objectType.get_name().cbegin();
         auto& jlist = json[name];
 
+        mappings.TypeToProjection.insert(handleType);
+
         for (const auto& jresource : jlist)
         {
             auto resource = Factory::template Create<Type>();
             Deserialize(jresource, *resource, mappings);
 
             size_t jsonHandleId = jresource["id"];
-            mappings.TypeToProjection[handleType][jsonHandleId] = rttr::variant{ resource };
+            mappings.TypeToProjection.at(handleType)[jsonHandleId] = rttr::variant{ resource };
         }
     }
 
@@ -106,15 +108,15 @@ namespace MxEngine
 
     template<> void SerializeResource<Script>     (JsonFile& json) { SerializeResourceImpl<Script::Handle>   (json); }
     template<> void SerializeResource<Mesh>       (JsonFile& json) { SerializeResourceImpl<MeshHandle>       (json); }
-    template<> void SerializeResource<Material>   (JsonFile& json) { SerializeResourceImpl<MaterialHandle>   (json); }
     template<> void SerializeResource<Texture>    (JsonFile& json) { SerializeResourceImpl<TextureHandle>    (json); }
     template<> void SerializeResource<CubeMap>    (JsonFile& json) { SerializeResourceImpl<CubeMapHandle>    (json); }
     template<> void SerializeResource<AudioBuffer>(JsonFile& json) { SerializeResourceImpl<AudioBufferHandle>(json); }
+    template<> void SerializeResource<Material>   (JsonFile& json) { SerializeResourceImpl<MaterialHandle>   (json); }
 
     template<> void DeserializeResource<Script>     (const JsonFile& json, HandleMappings& mappings) { DeserializeResourceImpl<Script::Handle>   (json, mappings); }
     template<> void DeserializeResource<Mesh>       (const JsonFile& json, HandleMappings& mappings) { DeserializeResourceImpl<MeshHandle>       (json, mappings); }
-    template<> void DeserializeResource<Material>   (const JsonFile& json, HandleMappings& mappings) { DeserializeResourceImpl<MaterialHandle>   (json, mappings); }
     template<> void DeserializeResource<Texture>    (const JsonFile& json, HandleMappings& mappings) { DeserializeResourceImpl<TextureHandle>    (json, mappings); }
     template<> void DeserializeResource<CubeMap>    (const JsonFile& json, HandleMappings& mappings) { DeserializeResourceImpl<CubeMapHandle>    (json, mappings); }
     template<> void DeserializeResource<AudioBuffer>(const JsonFile& json, HandleMappings& mappings) { DeserializeResourceImpl<AudioBufferHandle>(json, mappings); }
+    template<> void DeserializeResource<Material>   (const JsonFile& json, HandleMappings& mappings) { DeserializeResourceImpl<MaterialHandle>   (json, mappings); }
 }

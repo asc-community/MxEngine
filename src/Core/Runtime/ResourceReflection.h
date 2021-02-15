@@ -40,4 +40,5 @@ namespace MxEngine
     rttr::type GetTypeByHandle(rttr::instance object);
     rttr::variant GetHandleById(const rttr::type& type, size_t handleId);
     rttr::variant GetHandleById(const rttr::type& type, size_t handleId, const HandleMappings& mappings);
+    rttr::variant CreateEmptyHandle(const rttr::type& type);
 }

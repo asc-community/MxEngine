@@ -104,7 +104,7 @@ namespace MxEngine
 		}
 		else
 		{
-			return Deserialize(json, type.create(), mappings);
+			return Deserialize(json, CreateEmptyHandle(type), mappings);
 		}
 	}
 

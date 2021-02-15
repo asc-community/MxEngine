@@ -335,7 +335,7 @@ namespace MxEngine
                 auto mesh = meshSource.Mesh;
                 bool castsShadow = meshSource.CastsShadow;
 
-                if (!meshSource.IsDrawn || !meshRenderer.IsValid()) continue;
+                if (!meshSource.IsDrawn || !meshRenderer.IsValid() || !mesh.IsValid()) continue;
 
                 // we do not try to use LODs for instanced objects, as its quite hard and time consuming. TODO: fix this
                 if (meshLOD.IsValid() && instanceCount == 0)

@@ -145,7 +145,7 @@ namespace MxEngine
     {
         auto& object = MxObject::GetByComponent(*this);
         auto meshSource = object.GetComponent<MeshSource>();
-        if (meshSource.IsValid())
+        if (meshSource.IsValid() && meshSource->Mesh.IsValid())
         {
             auto& mesh = *meshSource->Mesh;
 
