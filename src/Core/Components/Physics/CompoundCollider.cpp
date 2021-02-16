@@ -136,7 +136,8 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<CompoundColliderChild>),
-                rttr::metadata(SerializeInfo::CUSTOM_SERIALIZE, SerializeExtra<CompoundColliderChild>)
+                rttr::metadata(SerializeInfo::CUSTOM_SERIALIZE, SerializeExtra<CompoundColliderChild>),
+                rttr::metadata(SerializeInfo::CUSTOM_DESERIALIZE, DeserializeExtra<CompoundColliderChild>)
             );
 
         rttr::registration::class_<CompoundCollider>("CompoundCollider")

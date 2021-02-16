@@ -113,15 +113,26 @@ namespace MxEngine
         MAKE_SCOPE_PROFILER("SceneSerializer::DeserializeObjects()");
         MAKE_SCOPE_TIMER("MxEngine::SceneSerializer", "SceneSerializer::DeserializeObjects()");
 
-        auto objects = MxObject::GetObjects();
-        for (auto& object : objects)
-            MxObject::Destroy(object);
-
         const auto& jsonObjects = json["mxobjects"];
         for (const auto& entry : jsonObjects)
         {
             (void)SceneSerializer::DeserializeMxObject(entry, mappings);
         }
+    }
+
+    void SceneSerializer::ClearResources()
+    {
+        // re-init runtime compiler to clear all existing scripts
+        RuntimeCompiler::Destroy();
+        RuntimeCompiler::Init();
+
+        // destroy all existing MxObjects
+        auto objects = MxObject::GetObjects();
+        for (auto& object : objects)
+            MxObject::Destroy(object);
+
+        // remove attached viewport
+        Rendering::SetViewport(CameraControllerHandle{ });
     }
 
     HandleMappings SceneSerializer::DeserializeResources(const JsonFile& json)
@@ -160,6 +171,7 @@ namespace MxEngine
         MAKE_SCOPE_PROFILER("SceneSerializer::Deserialize()");
         MAKE_SCOPE_TIMER("MxEngine::SceneSerializer", "SceneSerializer::Deserialize()");
 
+        SceneSerializer::ClearResources();
         auto mappings = SceneSerializer::DeserializeResources(json);
         SceneSerializer::DeserializeObjects(json, mappings);
         SceneSerializer::DeserializeGlobals(json, mappings);

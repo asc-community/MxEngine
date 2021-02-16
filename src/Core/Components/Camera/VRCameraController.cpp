@@ -120,10 +120,11 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
             )
-            .property("eyes", &VRCameraController::LeftEye)
+            .property("eyes", &VRCameraController::LeftEye) // serialization of both eyes
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE),
-                rttr::metadata(SerializeInfo::CUSTOM_SERIALIZE, SerializeExtra<VRCameraController>)
+                rttr::metadata(SerializeInfo::CUSTOM_SERIALIZE, SerializeExtra<VRCameraController>),
+                rttr::metadata(SerializeInfo::CUSTOM_DESERIALIZE, DeserializeExtra<VRCameraController>)
             );
     }
 }

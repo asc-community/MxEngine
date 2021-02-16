@@ -122,6 +122,8 @@ namespace MxEngine
 		float GetRotateSpeed() const;
 		void SetRotateSpeed(float speed);
 		CameraController& Rotate(float horz, float vert);
+		Vector2 GetRotation() const;
+		void SetRotation(Vector2 newRotation);
 
 		void SetForwardVector(const Vector3& forward);
 		void SetUpVector(const Vector3& up);

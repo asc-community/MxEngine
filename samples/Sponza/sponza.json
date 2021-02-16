@@ -2,18 +2,18 @@
   "AudioBuffer": null,
   "CubeMap": [
     {
-      "filepath": "Resources\\skybox.png",
+      "_filepath": "Resources\\skybox.png",
       "id": 2
     },
     {
-      "filepath": "Resources\\skybox_irradiance.png",
+      "_filepath": "Resources\\skybox_irradiance.png",
       "id": 3
     }
   ],
   "Material": [
     {
       "albedo map": 21,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
         1.0,
@@ -21,15 +21,15 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 0,
       "metallic factor": 0.0,
-      "metallic map": null,
+      "metallic map": 18446744073709551615,
       "name": "DefaultMaterial",
-      "normal map": null,
+      "normal map": 18446744073709551615,
       "roughness factor": 0.75,
-      "roughness map": null,
+      "roughness map": 18446744073709551615,
       "transparency": 1.0,
       "uv multipliers": [
         1.0,
@@ -38,7 +38,7 @@
     },
     {
       "albedo map": 22,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -46,8 +46,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 1,
       "metallic factor": 1.0,
       "metallic map": 24,
@@ -63,7 +63,7 @@
     },
     {
       "albedo map": 26,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -71,8 +71,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 2,
       "metallic factor": 1.0,
       "metallic map": 28,
@@ -88,7 +88,7 @@
     },
     {
       "albedo map": 30,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -96,8 +96,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 3,
       "metallic factor": 1.0,
       "metallic map": 32,
@@ -113,7 +113,7 @@
     },
     {
       "albedo map": 34,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -121,11 +121,11 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 4,
       "metallic factor": 1.0,
-      "metallic map": null,
+      "metallic map": 18446744073709551615,
       "name": "Lion",
       "normal map": 35,
       "roughness factor": 0.0,
@@ -138,7 +138,7 @@
     },
     {
       "albedo map": 38,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -146,8 +146,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 5,
       "metallic factor": 1.0,
       "metallic map": 40,
@@ -163,7 +163,7 @@
     },
     {
       "albedo map": 42,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -171,8 +171,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 6,
       "metallic factor": 1.0,
       "metallic map": 44,
@@ -188,7 +188,7 @@
     },
     {
       "albedo map": 46,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -196,8 +196,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 7,
       "metallic factor": 1.0,
       "metallic map": 48,
@@ -213,7 +213,7 @@
     },
     {
       "albedo map": 50,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -221,8 +221,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 8,
       "metallic factor": 1.0,
       "metallic map": 52,
@@ -238,7 +238,7 @@
     },
     {
       "albedo map": 54,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -246,11 +246,11 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 9,
       "metallic factor": 0.25,
-      "metallic map": null,
+      "metallic map": 18446744073709551615,
       "name": "Floor",
       "normal map": 55,
       "roughness factor": 1.0,
@@ -263,7 +263,7 @@
     },
     {
       "albedo map": 58,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -271,8 +271,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 10,
       "metallic factor": 1.0,
       "metallic map": 60,
@@ -288,7 +288,7 @@
     },
     {
       "albedo map": 62,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -296,8 +296,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 11,
       "metallic factor": 1.0,
       "metallic map": 64,
@@ -313,7 +313,7 @@
     },
     {
       "albedo map": 66,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -321,8 +321,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 12,
       "metallic factor": 1.0,
       "metallic map": 68,
@@ -338,7 +338,7 @@
     },
     {
       "albedo map": 70,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -346,15 +346,15 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 13,
       "metallic factor": 0.0,
-      "metallic map": null,
+      "metallic map": 18446744073709551615,
       "name": "material #12",
-      "normal map": null,
+      "normal map": 18446744073709551615,
       "roughness factor": 1.0,
-      "roughness map": null,
+      "roughness map": 18446744073709551615,
       "transparency": 1.0,
       "uv multipliers": [
         1.0,
@@ -363,7 +363,7 @@
     },
     {
       "albedo map": 71,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -371,8 +371,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 14,
       "metallic factor": 1.0,
       "metallic map": 73,
@@ -388,7 +388,7 @@
     },
     {
       "albedo map": 75,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -396,8 +396,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 15,
       "metallic factor": 1.0,
       "metallic map": 77,
@@ -413,7 +413,7 @@
     },
     {
       "albedo map": 79,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -421,8 +421,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 16,
       "metallic factor": 1.0,
       "metallic map": 81,
@@ -438,7 +438,7 @@
     },
     {
       "albedo map": 83,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -446,8 +446,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 17,
       "metallic factor": 1.0,
       "metallic map": 85,
@@ -463,7 +463,7 @@
     },
     {
       "albedo map": 87,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -471,8 +471,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 18,
       "metallic factor": 1.0,
       "metallic map": 89,
@@ -488,7 +488,7 @@
     },
     {
       "albedo map": 91,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -496,8 +496,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 19,
       "metallic factor": 1.0,
       "metallic map": 93,
@@ -513,7 +513,7 @@
     },
     {
       "albedo map": 95,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -521,8 +521,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 20,
       "metallic factor": 1.0,
       "metallic map": 97,
@@ -538,7 +538,7 @@
     },
     {
       "albedo map": 99,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -546,8 +546,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 21,
       "metallic factor": 1.0,
       "metallic map": 101,
@@ -563,7 +563,7 @@
     },
     {
       "albedo map": 103,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -571,8 +571,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 22,
       "metallic factor": 1.0,
       "metallic map": 105,
@@ -588,7 +588,7 @@
     },
     {
       "albedo map": 107,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -596,8 +596,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 23,
       "metallic factor": 1.0,
       "metallic map": 109,
@@ -613,7 +613,7 @@
     },
     {
       "albedo map": 111,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -621,11 +621,11 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 24,
       "metallic factor": 1.0,
-      "metallic map": null,
+      "metallic map": 18446744073709551615,
       "name": "Lion Head",
       "normal map": 112,
       "roughness factor": 1.0,
@@ -638,7 +638,7 @@
     },
     {
       "albedo map": 115,
-      "ambient occlusion map": null,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
         0.5879999995231628,
@@ -646,8 +646,8 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 25,
       "metallic factor": 1.0,
       "metallic map": 117,
@@ -662,8 +662,8 @@
       ]
     },
     {
-      "albedo map": null,
-      "ambient occlusion map": null,
+      "albedo map": 18446744073709551615,
+      "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
         1.0,
@@ -671,15 +671,15 @@
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
-      "emissive map": null,
-      "height map": null,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
       "id": 26,
       "metallic factor": 1.0,
-      "metallic map": null,
+      "metallic map": 18446744073709551615,
       "name": "material #25",
-      "normal map": null,
+      "normal map": 18446744073709551615,
       "roughness factor": 1.0,
-      "roughness map": null,
+      "roughness map": 18446744073709551615,
       "transparency": 1.0,
       "uv multipliers": [
         1.0,
@@ -689,6 +689,31 @@
   ],
   "Mesh": [
     {
+      "_filepath": "Engine/Models/sphere_20.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.5000000596046448
+      },
+      "id": 0
+    },
+    {
+      "_filepath": "Resources\\Sponza\\glTF\\Sponza.gltf",
       "aabb": {
         "max": [
           1860.427001953125,
@@ -709,7 +734,6 @@
         ],
         "radius": 2887.561767578125
       },
-      "filepath": "Resources\\Sponza\\glTF\\Sponza.gltf",
       "id": 1
     }
   ],
@@ -722,7 +746,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\moon.jpg",
+      "filepath": {
+        "format": "RGB",
+        "path": "Resources\\moon.jpg"
+      },
       "id": 21,
       "wrap type": "REPEAT"
     },
@@ -733,7 +760,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\5061699253647017043.png",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\5061699253647017043.png"
+      },
       "id": 22,
       "wrap type": "REPEAT"
     },
@@ -744,7 +774,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\8773302468495022225.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\8773302468495022225.jpg"
+      },
       "id": 23,
       "wrap type": "REPEAT"
     },
@@ -755,7 +788,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_0.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_0.png"
+      },
       "id": 24,
       "wrap type": "REPEAT"
     },
@@ -766,7 +802,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_0.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_0.png"
+      },
       "id": 25,
       "wrap type": "REPEAT"
     },
@@ -777,7 +816,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\8006627369776289000.png",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\8006627369776289000.png"
+      },
       "id": 26,
       "wrap type": "REPEAT"
     },
@@ -788,7 +830,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\12501374198249454378.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\12501374198249454378.jpg"
+      },
       "id": 27,
       "wrap type": "REPEAT"
     },
@@ -799,7 +844,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_1.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_1.png"
+      },
       "id": 28,
       "wrap type": "REPEAT"
     },
@@ -810,7 +858,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_1.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_1.png"
+      },
       "id": 29,
       "wrap type": "REPEAT"
     },
@@ -821,7 +872,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\7268504077753552595.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\7268504077753552595.jpg"
+      },
       "id": 30,
       "wrap type": "REPEAT"
     },
@@ -832,7 +886,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\4477655471536070370.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\4477655471536070370.jpg"
+      },
       "id": 31,
       "wrap type": "REPEAT"
     },
@@ -843,7 +900,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_2.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_2.png"
+      },
       "id": 32,
       "wrap type": "REPEAT"
     },
@@ -854,7 +914,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_2.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_2.png"
+      },
       "id": 33,
       "wrap type": "REPEAT"
     },
@@ -865,7 +928,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\8750083169368950601.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\8750083169368950601.jpg"
+      },
       "id": 34,
       "wrap type": "REPEAT"
     },
@@ -876,7 +942,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\13982482287905699490.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\13982482287905699490.jpg"
+      },
       "id": 35,
       "wrap type": "REPEAT"
     },
@@ -887,7 +956,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_3.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_3.png"
+      },
       "id": 37,
       "wrap type": "REPEAT"
     },
@@ -898,7 +970,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\5792855332885324923.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\5792855332885324923.jpg"
+      },
       "id": 38,
       "wrap type": "REPEAT"
     },
@@ -909,7 +984,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\16299174074766089871.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\16299174074766089871.jpg"
+      },
       "id": 39,
       "wrap type": "REPEAT"
     },
@@ -920,7 +998,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_4.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_4.png"
+      },
       "id": 40,
       "wrap type": "REPEAT"
     },
@@ -931,7 +1012,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_4.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_4.png"
+      },
       "id": 41,
       "wrap type": "REPEAT"
     },
@@ -942,7 +1026,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\14650633544276105767.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\14650633544276105767.jpg"
+      },
       "id": 42,
       "wrap type": "REPEAT"
     },
@@ -953,7 +1040,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\2051777328469649772.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\2051777328469649772.jpg"
+      },
       "id": 43,
       "wrap type": "REPEAT"
     },
@@ -964,7 +1054,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_5.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_5.png"
+      },
       "id": 44,
       "wrap type": "REPEAT"
     },
@@ -975,7 +1068,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_5.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_5.png"
+      },
       "id": 45,
       "wrap type": "REPEAT"
     },
@@ -986,7 +1082,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\15295713303328085182.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\15295713303328085182.jpg"
+      },
       "id": 46,
       "wrap type": "REPEAT"
     },
@@ -997,7 +1096,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\10388182081421875623.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\10388182081421875623.jpg"
+      },
       "id": 47,
       "wrap type": "REPEAT"
     },
@@ -1008,7 +1110,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_6.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_6.png"
+      },
       "id": 48,
       "wrap type": "REPEAT"
     },
@@ -1019,7 +1124,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_6.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_6.png"
+      },
       "id": 49,
       "wrap type": "REPEAT"
     },
@@ -1030,7 +1138,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\6047387724914829168.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\6047387724914829168.jpg"
+      },
       "id": 50,
       "wrap type": "REPEAT"
     },
@@ -1041,7 +1152,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\15722799267630235092.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\15722799267630235092.jpg"
+      },
       "id": 51,
       "wrap type": "REPEAT"
     },
@@ -1052,7 +1166,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_7.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_7.png"
+      },
       "id": 52,
       "wrap type": "REPEAT"
     },
@@ -1063,7 +1180,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_7.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_7.png"
+      },
       "id": 53,
       "wrap type": "REPEAT"
     },
@@ -1074,7 +1194,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\5823059166183034438.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\5823059166183034438.jpg"
+      },
       "id": 54,
       "wrap type": "REPEAT"
     },
@@ -1085,7 +1208,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\14267839433702832875.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\14267839433702832875.jpg"
+      },
       "id": 55,
       "wrap type": "REPEAT"
     },
@@ -1096,7 +1222,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_8.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_8.png"
+      },
       "id": 57,
       "wrap type": "REPEAT"
     },
@@ -1107,7 +1236,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\7441062115984513793.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\7441062115984513793.jpg"
+      },
       "id": 58,
       "wrap type": "REPEAT"
     },
@@ -1118,7 +1250,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\6667038893015345571.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\6667038893015345571.jpg"
+      },
       "id": 59,
       "wrap type": "REPEAT"
     },
@@ -1129,7 +1264,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_9.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_9.png"
+      },
       "id": 60,
       "wrap type": "REPEAT"
     },
@@ -1140,7 +1278,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_9.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_9.png"
+      },
       "id": 61,
       "wrap type": "REPEAT"
     },
@@ -1151,7 +1292,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\11490520546946913238.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\11490520546946913238.jpg"
+      },
       "id": 62,
       "wrap type": "REPEAT"
     },
@@ -1162,7 +1306,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\3628158980083700836.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\3628158980083700836.jpg"
+      },
       "id": 63,
       "wrap type": "REPEAT"
     },
@@ -1173,7 +1320,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_10.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_10.png"
+      },
       "id": 64,
       "wrap type": "REPEAT"
     },
@@ -1184,7 +1334,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_10.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_10.png"
+      },
       "id": 65,
       "wrap type": "REPEAT"
     },
@@ -1195,7 +1348,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\6151467286084645207.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\6151467286084645207.jpg"
+      },
       "id": 66,
       "wrap type": "REPEAT"
     },
@@ -1206,7 +1362,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\7645212358685992005.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\7645212358685992005.jpg"
+      },
       "id": 67,
       "wrap type": "REPEAT"
     },
@@ -1217,7 +1376,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_11.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_11.png"
+      },
       "id": 68,
       "wrap type": "REPEAT"
     },
@@ -1228,7 +1390,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_11.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_11.png"
+      },
       "id": 69,
       "wrap type": "REPEAT"
     },
@@ -1239,7 +1404,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\white.png",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\white.png"
+      },
       "id": 70,
       "wrap type": "REPEAT"
     },
@@ -1250,7 +1418,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\4975155472559461469.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\4975155472559461469.jpg"
+      },
       "id": 71,
       "wrap type": "REPEAT"
     },
@@ -1261,7 +1432,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\2299742237651021498.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\2299742237651021498.jpg"
+      },
       "id": 72,
       "wrap type": "REPEAT"
     },
@@ -1272,7 +1446,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_13.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_13.png"
+      },
       "id": 73,
       "wrap type": "REPEAT"
     },
@@ -1283,7 +1460,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_13.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_13.png"
+      },
       "id": 74,
       "wrap type": "REPEAT"
     },
@@ -1294,7 +1474,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\4675343432951571524.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\4675343432951571524.jpg"
+      },
       "id": 75,
       "wrap type": "REPEAT"
     },
@@ -1305,7 +1488,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\7056944414013900257.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\7056944414013900257.jpg"
+      },
       "id": 76,
       "wrap type": "REPEAT"
     },
@@ -1316,7 +1502,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_14.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_14.png"
+      },
       "id": 77,
       "wrap type": "REPEAT"
     },
@@ -1327,7 +1516,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_14.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_14.png"
+      },
       "id": 78,
       "wrap type": "REPEAT"
     },
@@ -1338,7 +1530,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\2775690330959970771.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\2775690330959970771.jpg"
+      },
       "id": 79,
       "wrap type": "REPEAT"
     },
@@ -1349,7 +1544,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\2374361008830720677.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\2374361008830720677.jpg"
+      },
       "id": 80,
       "wrap type": "REPEAT"
     },
@@ -1360,7 +1558,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_15.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_15.png"
+      },
       "id": 81,
       "wrap type": "REPEAT"
     },
@@ -1371,7 +1572,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_15.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_15.png"
+      },
       "id": 82,
       "wrap type": "REPEAT"
     },
@@ -1382,7 +1586,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\2185409758123873465.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\2185409758123873465.jpg"
+      },
       "id": 83,
       "wrap type": "REPEAT"
     },
@@ -1393,7 +1600,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\332936164838540657.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\332936164838540657.jpg"
+      },
       "id": 84,
       "wrap type": "REPEAT"
     },
@@ -1404,7 +1614,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_16.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_16.png"
+      },
       "id": 85,
       "wrap type": "REPEAT"
     },
@@ -1415,7 +1628,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_16.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_16.png"
+      },
       "id": 86,
       "wrap type": "REPEAT"
     },
@@ -1426,7 +1642,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\17876391417123941155.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\17876391417123941155.jpg"
+      },
       "id": 87,
       "wrap type": "REPEAT"
     },
@@ -1437,7 +1656,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\6593109234861095314.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\6593109234861095314.jpg"
+      },
       "id": 88,
       "wrap type": "REPEAT"
     },
@@ -1448,7 +1670,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_17.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_17.png"
+      },
       "id": 89,
       "wrap type": "REPEAT"
     },
@@ -1459,7 +1684,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_17.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_17.png"
+      },
       "id": 90,
       "wrap type": "REPEAT"
     },
@@ -1470,7 +1698,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\11474523244911310074.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\11474523244911310074.jpg"
+      },
       "id": 91,
       "wrap type": "REPEAT"
     },
@@ -1481,7 +1712,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\4601176305987539675.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\4601176305987539675.jpg"
+      },
       "id": 92,
       "wrap type": "REPEAT"
     },
@@ -1492,7 +1726,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_18.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_18.png"
+      },
       "id": 93,
       "wrap type": "REPEAT"
     },
@@ -1503,7 +1740,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_18.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_18.png"
+      },
       "id": 94,
       "wrap type": "REPEAT"
     },
@@ -1514,7 +1754,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\9288698199695299068.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\9288698199695299068.jpg"
+      },
       "id": 95,
       "wrap type": "REPEAT"
     },
@@ -1525,7 +1768,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\4910669866631290573.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\4910669866631290573.jpg"
+      },
       "id": 96,
       "wrap type": "REPEAT"
     },
@@ -1536,7 +1782,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_19.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_19.png"
+      },
       "id": 97,
       "wrap type": "REPEAT"
     },
@@ -1547,7 +1796,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_19.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_19.png"
+      },
       "id": 98,
       "wrap type": "REPEAT"
     },
@@ -1558,7 +1810,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\16275776544635328252.png",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\16275776544635328252.png"
+      },
       "id": 99,
       "wrap type": "REPEAT"
     },
@@ -1569,7 +1824,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\14170708867020035030.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\14170708867020035030.jpg"
+      },
       "id": 100,
       "wrap type": "REPEAT"
     },
@@ -1580,7 +1838,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_20.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_20.png"
+      },
       "id": 101,
       "wrap type": "REPEAT"
     },
@@ -1591,7 +1852,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_20.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_20.png"
+      },
       "id": 102,
       "wrap type": "REPEAT"
     },
@@ -1602,7 +1866,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\755318871556304029.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\755318871556304029.jpg"
+      },
       "id": 103,
       "wrap type": "REPEAT"
     },
@@ -1613,7 +1880,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\3827035219084910048.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\3827035219084910048.jpg"
+      },
       "id": 104,
       "wrap type": "REPEAT"
     },
@@ -1624,7 +1894,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_21.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_21.png"
+      },
       "id": 105,
       "wrap type": "REPEAT"
     },
@@ -1635,7 +1908,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_21.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_21.png"
+      },
       "id": 106,
       "wrap type": "REPEAT"
     },
@@ -1646,7 +1922,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\8481240838833932244.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\8481240838833932244.jpg"
+      },
       "id": 107,
       "wrap type": "REPEAT"
     },
@@ -1657,7 +1936,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\10381718147657362067.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\10381718147657362067.jpg"
+      },
       "id": 108,
       "wrap type": "REPEAT"
     },
@@ -1668,7 +1950,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_22.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_22.png"
+      },
       "id": 109,
       "wrap type": "REPEAT"
     },
@@ -1679,7 +1964,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_22.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_22.png"
+      },
       "id": 110,
       "wrap type": "REPEAT"
     },
@@ -1690,7 +1978,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\6772804448157695701.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\6772804448157695701.jpg"
+      },
       "id": 111,
       "wrap type": "REPEAT"
     },
@@ -1701,7 +1992,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\759203620573749278.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\759203620573749278.jpg"
+      },
       "id": 112,
       "wrap type": "REPEAT"
     },
@@ -1712,7 +2006,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_23.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_23.png"
+      },
       "id": 114,
       "wrap type": "REPEAT"
     },
@@ -1723,7 +2020,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\2969916736137545357.jpg",
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\Sponza\\glTF\\2969916736137545357.jpg"
+      },
       "id": 115,
       "wrap type": "REPEAT"
     },
@@ -1734,7 +2034,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\14118779221266351425.jpg",
+      "filepath": {
+        "format": "RG",
+        "path": "Resources\\Sponza\\glTF\\14118779221266351425.jpg"
+      },
       "id": 116,
       "wrap type": "REPEAT"
     },
@@ -1745,7 +2048,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\metallic_24.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\metallic_24.png"
+      },
       "id": 117,
       "wrap type": "REPEAT"
     },
@@ -1756,7 +2062,10 @@
         0.0,
         0.0
       ],
-      "filepath": "Resources\\Sponza\\glTF\\roughness_24.png",
+      "filepath": {
+        "format": "R",
+        "path": "Resources\\Sponza\\glTF\\roughness_24.png"
+      },
       "id": 118,
       "wrap type": "REPEAT"
     }
@@ -1771,7 +2080,7 @@
     "paused": false,
     "physics-step": 1.0,
     "time-scale": 1.0,
-    "total-time": 5.160423278808594,
+    "total-time": 11.829085350036621,
     "viewport": 0
   },
   "mxobjects": [
@@ -1779,15 +2088,16 @@
       "CameraController": {
         "camera type": "PERSPECTIVE",
         "direction": [
-          -0.7904324531555176,
-          -0.12982246279716492,
-          -0.5986340641975403
+          0.8708856105804443,
+          -0.02459980919957161,
+          0.4908697009086609
         ],
         "forward vector": [
-          -0.7971787452697754,
+          0.8711492419242859,
           0.0,
-          -0.6037433743476868
+          0.49101829528808594
         ],
+        "id": 0,
         "is listening window resize event": false,
         "is rendering": true,
         "move speed": 10.0,
@@ -1797,9 +2107,9 @@
           "znear": 0.10000000149011612
         },
         "right vector": [
-          0.6037434935569763,
+          -0.4910183548927307,
           0.0,
-          -0.7971786260604858
+          0.8711492419242859
         ],
         "rotate speed": 10.0,
         "up vector": [
@@ -1825,10 +2135,12 @@
         "fog density": 0.0,
         "fog distance": 1.0,
         "fxaa": false,
+        "id": 0,
         "vignette radius": 0.10000000149011612
       },
       "CameraSSR": {
         "fading": 1.0,
+        "id": 0,
         "max cos angle": 0.5,
         "max distance": 3.0,
         "start distance": 2.0,
@@ -1866,6 +2178,7 @@
         "eye adaptation speed": 0.10000000149011612,
         "eye adaptation threshold": 0.10000000149011612,
         "gamma": 2.200000047683716,
+        "id": 0,
         "max luminance": 100000.0,
         "min luminance": 0.30000001192092896,
         "white point": 0.5
@@ -1886,9 +2199,11 @@
             0.0,
             1.0
           ]
-        }
+        },
+        "id": 0
       },
       "CharacterController": {
+        "id": 0,
         "jump power": 12.0,
         "jump speed": 10.0
       },
@@ -1896,6 +2211,7 @@
         "back key binding": "S",
         "down key binding": "LEFT_SHIFT",
         "forward key binding": "W",
+        "id": 0,
         "is horizontal rotation bound": true,
         "is vertical rotation bound": true,
         "left key binding": "A",
@@ -1927,10 +2243,8 @@
           0.0
         ],
         "has anisotropic friction": false,
-        "is dynamic": true,
-        "is kinematic": false,
+        "id": 0,
         "is ray castable": true,
-        "is static": false,
         "is trigger": false,
         "linear air resistance": 0.0,
         "linear force factor": [
@@ -1939,9 +2253,9 @@
           1.0
         ],
         "linear velocity": [
-          2.1264183658331604e-07,
+          -7.964633255141962e-07,
           5.736947059631348e-06,
-          -2.8610238587134518e-06
+          -5.226790449341934e-07
         ],
         "mass": 1.0,
         "push velocity": [
@@ -1955,10 +2269,12 @@
           0.0,
           0.0,
           0.0
-        ]
+        ],
+        "type": "DYNAMIC"
       },
       "Skybox": {
         "cubemap": 2,
+        "id": 0,
         "intensity": 1.0,
         "irradiance": 3,
         "rotation": [
@@ -1972,9 +2288,9 @@
       "name": "Camera",
       "transform": {
         "position": [
-          13.197003364562988,
+          23.666135787963867,
           2.999999523162842,
-          2.950000286102295
+          -1.8685251474380493
         ],
         "rotation": [
           0.0,
@@ -2002,6 +2318,7 @@
           1.0,
           0.0
         ],
+        "id": 0,
         "intensity": 5.0,
         "is following viewport": true,
         "projections": [
@@ -2014,9 +2331,49 @@
       "name": "Global Light",
       "transform": {
         "position": [
-          13.197003364562988,
+          23.666135787963867,
           2.999999523162842,
-          2.950000286102295
+          -1.8685251474380493
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "InstanceFactory": {
+        "id": 0,
+        "instances": null,
+        "is static": false
+      },
+      "MeshRenderer": {
+        "id": 0,
+        "materials": [
+          0
+        ]
+      },
+      "MeshSource": {
+        "casts shadow": true,
+        "id": 0,
+        "is drawn": true,
+        "is static": false,
+        "mesh": 0
+      },
+      "displayed": true,
+      "name": "Sphere Factory",
+      "transform": {
+        "position": [
+          0.0,
+          0.0,
+          0.0
         ],
         "rotation": [
           0.0,
@@ -2036,7 +2393,7 @@
         "children": [
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2058,12 +2415,13 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
                 0.0,
-                -14.5,
+                -725.0,
                 0.0
               ],
               "rotation": [
@@ -2081,7 +2439,7 @@
           },
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2103,13 +2461,14 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
                 0.0,
                 0.0,
-                17.0
+                850.0
               ],
               "rotation": [
                 0.0,
@@ -2126,7 +2485,7 @@
           },
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2148,13 +2507,14 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
                 0.0,
                 0.0,
-                -17.0
+                -850.0
               ],
               "rotation": [
                 0.0,
@@ -2171,7 +2531,7 @@
           },
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2193,11 +2553,12 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
-                32.0,
+                1600.0,
                 0.0,
                 0.0
               ],
@@ -2216,7 +2577,7 @@
           },
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2238,11 +2599,12 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
-                -32.0,
+                -1600.0,
                 0.0,
                 0.0
               ],
@@ -2261,7 +2623,7 @@
           },
           {
             "shape": {
-              "Cylinder": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2277,13 +2639,14 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "Cylinder"
             },
             "transform": {
               "position": [
-                23.600000381469727,
-                -12.0,
-                8.800000190734863
+                1180.0,
+                -600.0,
+                440.0000305175781
               ],
               "rotation": [
                 0.0,
@@ -2300,7 +2663,7 @@
           },
           {
             "shape": {
-              "Cylinder": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2316,13 +2679,14 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "Cylinder"
             },
             "transform": {
               "position": [
-                23.600000381469727,
-                -12.0,
-                -8.199999809265137
+                1180.0,
+                -600.0,
+                -410.0
               ],
               "rotation": [
                 0.0,
@@ -2339,7 +2703,7 @@
           },
           {
             "shape": {
-              "Cylinder": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2355,13 +2719,14 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "Cylinder"
             },
             "transform": {
               "position": [
-                -22.799999237060547,
-                -12.0,
-                8.800000190734863
+                -1140.0,
+                -600.0,
+                440.0000305175781
               ],
               "rotation": [
                 0.0,
@@ -2378,7 +2743,7 @@
           },
           {
             "shape": {
-              "Cylinder": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2394,13 +2759,14 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "Cylinder"
             },
             "transform": {
               "position": [
-                -22.799999237060547,
-                -12.0,
-                -8.199999809265137
+                -1140.0,
+                -600.0,
+                -410.0
               ],
               "rotation": [
                 0.0,
@@ -2417,7 +2783,7 @@
           },
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2439,13 +2805,14 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
                 0.0,
-                -8.5,
-                -4.5
+                -425.0,
+                -225.0
               ],
               "rotation": [
                 0.0,
@@ -2462,7 +2829,7 @@
           },
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2484,13 +2851,14 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
                 0.0,
-                -8.5,
-                4.5
+                -425.0,
+                225.0
               ],
               "rotation": [
                 0.0,
@@ -2507,7 +2875,7 @@
           },
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2529,12 +2897,13 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
-                19.0,
-                -3.5,
+                950.0,
+                -175.0,
                 0.0
               ],
               "rotation": [
@@ -2552,7 +2921,7 @@
           },
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2574,12 +2943,13 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
-                -19.0,
-                -3.5,
+                -950.0,
+                -175.0,
                 0.0
               ],
               "rotation": [
@@ -2597,7 +2967,7 @@
           },
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2619,13 +2989,14 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
                 0.0,
-                -4.699999809265137,
-                9.0
+                -235.0,
+                450.0
               ],
               "rotation": [
                 0.0,
@@ -2642,7 +3013,7 @@
           },
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2664,13 +3035,14 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
                 0.0,
-                -4.699999809265137,
-                -9.0
+                -235.0,
+                -450.0
               ],
               "rotation": [
                 0.0,
@@ -2687,7 +3059,7 @@
           },
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2709,12 +3081,13 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
-                23.5,
-                -4.699999809265137,
+                1175.0,
+                -235.0,
                 0.0
               ],
               "rotation": [
@@ -2732,7 +3105,7 @@
           },
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2754,12 +3127,13 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
-                -23.5,
-                -4.699999809265137,
+                -1175.0,
+                -235.0,
                 0.0
               ],
               "rotation": [
@@ -2777,7 +3151,7 @@
           },
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2799,13 +3173,14 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
                 0.0,
-                10.0,
-                9.0
+                500.0,
+                450.0
               ],
               "rotation": [
                 0.0,
@@ -2822,7 +3197,7 @@
           },
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2844,13 +3219,14 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
                 0.0,
-                10.0,
-                -9.0
+                500.0,
+                -450.0
               ],
               "rotation": [
                 0.0,
@@ -2867,7 +3243,7 @@
           },
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2889,12 +3265,13 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
-                23.5,
-                10.0,
+                1175.0,
+                500.0,
                 0.0
               ],
               "rotation": [
@@ -2912,7 +3289,7 @@
           },
           {
             "shape": {
-              "BoundingBox": {
+              "bounding": {
                 "center": [
                   0.0,
                   0.0,
@@ -2934,12 +3311,13 @@
                   0.0,
                   1.0
                 ]
-              }
+              },
+              "type": "BoundingBox"
             },
             "transform": {
               "position": [
-                -23.5,
-                10.0,
+                -1175.0,
+                500.0,
                 0.0
               ],
               "rotation": [
@@ -2955,9 +3333,11 @@
               ]
             }
           }
-        ]
+        ],
+        "id": 0
       },
       "MeshRenderer": {
+        "id": 1,
         "materials": [
           1,
           2,
@@ -2989,6 +3369,7 @@
       },
       "MeshSource": {
         "casts shadow": true,
+        "id": 1,
         "is drawn": true,
         "is static": false,
         "mesh": 1
@@ -3018,10 +3399,8 @@
           0.0
         ],
         "has anisotropic friction": false,
-        "is dynamic": false,
-        "is kinematic": false,
+        "id": 1,
         "is ray castable": true,
-        "is static": true,
         "is trigger": false,
         "linear air resistance": 0.0,
         "linear force factor": [
@@ -3046,7 +3425,8 @@
           0.0,
           0.0,
           0.0
-        ]
+        ],
+        "type": "STATIC"
       },
       "displayed": true,
       "name": "Sponza",

@@ -31,6 +31,7 @@
 #include "Core/Components/Instancing/InstanceFactory.h"
 #include "Core/Components/Camera/VRCameraController.h"
 #include "Platform/OpenGL/Texture.h"
+#include "Core/Runtime/HandleMappings.h"
 #include "Core/Serialization/SceneSerializer.h"
 
 namespace MxEngine
@@ -45,8 +46,49 @@ namespace MxEngine
         {
             auto bounding = shape->GetNativeBounding();
             const char* name = rttr::type::get(bounding).get_name().cbegin();
-            Serialize(json[name], bounding);
+            json["type"] = name;
+            Serialize(json["bounding"], bounding);
         }, child.Shape);
+    }
+
+    template<size_t Index = 0, typename... Args>
+    void FindDeserializerForChildShapeImpl(const JsonFile& json, std::variant<Args...>& shape, const HandleMappings& mappings)
+    {
+        if constexpr (Index < std::variant_size_v<std::variant<Args...>>)
+        {
+            using ShapeType = std::decay_t<decltype(*std::get<Index>(shape))>;
+            using BoundingType = decltype(std::declval<ShapeType>().GetNativeBounding());
+            const char* name = rttr::type::get<BoundingType>().get_name().cbegin();
+
+            if (json["type"].get<MxString>() == name)
+            {
+                BoundingType bounding;
+                Deserialize(json["bounding"], rttr::instance{ bounding }, mappings);
+                shape = PhysicsFactory::Create<ShapeType>(bounding);
+            }
+            else
+            {
+                FindDeserializerForChildShapeImpl<Index + 1>(json, shape, mappings);
+            }
+        }
+        else
+        {
+            MXLOG_WARNING("MxEngine::Serializer", "cannot find deserializer for type: " + json["type"].get<MxString>());
+        }
+    }
+
+    void FindDeserializerForChildShape(const JsonFile& json, CompoundCollider::VariantType& shape, const HandleMappings& mappings)
+    {
+        FindDeserializerForChildShapeImpl(json, shape, mappings);
+    }
+
+    template<>
+    void DeserializeExtra<CompoundCollider::CompoundColliderChild>(rttr::instance jsonWrapped, rttr::instance& object, const HandleMappings& mappings)
+    {
+        const auto& json = *jsonWrapped.try_convert<JsonFile>();
+        auto& child = *object.try_convert<CompoundCollider::CompoundColliderChild>();
+
+        FindDeserializerForChildShape(json, child.Shape, mappings);
     }
 
     template<>
@@ -72,6 +114,16 @@ namespace MxEngine
     }
 
     template<>
+    void DeserializeExtra<VRCameraController>(rttr::instance jsonWrapped, rttr::instance& object, const HandleMappings& mappings)
+    {
+        const auto& json = *jsonWrapped.try_convert<JsonFile>();
+        auto& vr = *object.try_convert<VRCameraController>();
+
+        if (json.contains("left")) vr.LeftEye = GetHandleById<CameraController::Handle>(json["left"], mappings);
+        if (json.contains("right")) vr.RightEye = GetHandleById<CameraController::Handle>(json["right"], mappings);
+    }
+
+    template<>
     void SerializeExtra<Texture>(rttr::instance jsonWrapped, rttr::instance& object)
     {
         auto& json = *jsonWrapped.try_convert<JsonFile>();
@@ -84,7 +136,7 @@ namespace MxEngine
     }
 
     template<>
-    void DeserializeExtra<Texture>(rttr::instance jsonWrapped, rttr::instance& object)
+    void DeserializeExtra<Texture>(rttr::instance jsonWrapped, rttr::instance& object, const HandleMappings& mappings)
     {
         const auto& json = *jsonWrapped.try_convert<JsonFile>();
         auto& texture = *object.try_convert<Texture>();

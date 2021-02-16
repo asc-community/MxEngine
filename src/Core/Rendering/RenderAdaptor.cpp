@@ -271,8 +271,6 @@ namespace MxEngine
 
     void RenderAdaptor::RenderFrame()
     {
-        this->Renderer.ResetPipeline();
-
         auto& environment = this->Renderer.GetEnvironment();
         environment.MainCameraIndex = std::numeric_limits<decltype(environment.MainCameraIndex)>::max();
         auto viewportPosition = MakeVector3(0.0f);
@@ -406,6 +404,7 @@ namespace MxEngine
     {
         this->Renderer.EndPipeline();
         this->Renderer.Render();
+        this->Renderer.ResetPipeline();
     }
 
     void RenderAdaptor::SetWindowSize(const VectorInt2& size)

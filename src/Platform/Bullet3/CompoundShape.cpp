@@ -76,7 +76,9 @@ namespace MxEngine
     {
         MX_ASSERT(index < this->GetShapeCount());
         TransformComponent result;
+        auto parentScale = this->collider->getLocalScaling();
         auto& tr = ((btCompoundShape*)this->collider)->getChildTransform((int)index);
+        tr.setOrigin(tr.getOrigin() / parentScale);
         FromBulletTransform(result, tr);
         return result;
     }

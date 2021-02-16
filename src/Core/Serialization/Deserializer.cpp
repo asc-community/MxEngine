@@ -130,7 +130,7 @@ namespace MxEngine
 
 			if (propertyMeta.Serialization.CustomDeserialize != nullptr)
 			{
-				propertyMeta.Serialization.CustomDeserialize(json[propertyName], object);
+				propertyMeta.Serialization.CustomDeserialize(json[propertyName], object, mappings);
 			}
 			else
 			{

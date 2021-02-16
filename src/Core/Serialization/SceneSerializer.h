@@ -48,6 +48,7 @@ namespace MxEngine
         static void SerializeObjects(JsonFile& json);
         static void SerializeResources(JsonFile& json);
 
+        static void ClearResources();
         static HandleMappings DeserializeResources(const JsonFile& json);
         static void DeserializeGlobals(const JsonFile& json, const HandleMappings& mappings);
         static void DeserializeObjects(const JsonFile& json, HandleMappings& mappings);

@@ -372,6 +372,19 @@ namespace MxEngine
 		return *this;
 	}
 
+	Vector2 CameraController::GetRotation() const
+	{
+		return { Degrees(this->horizontalAngle), Degrees(this->verticalAngle) };
+	}
+
+	void CameraController::SetRotation(Vector2 newRotation)
+	{
+		auto oldRotation = this->GetRotation();
+		newRotation.x = std::fmod(newRotation.x - oldRotation.x, 360.0f);
+		newRotation.y = std::fmod(newRotation.y - oldRotation.y, 360.0f);
+		this->Rotate(newRotation.x, newRotation.y);
+	}
+
 	void CameraController::SetForwardVector(const Vector3& forward)
 	{
 		this->forward = forward;
@@ -668,6 +681,11 @@ namespace MxEngine
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
 				rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& v) { return v.try_convert<CameraController>()->GetCameraType() == CameraType::FRUSTRUM; }))
+			)
+			.property("rotation", &CameraController::GetRotation, &CameraController::SetRotation)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
 			)
 			.property("direction", &CameraController::GetDirectionDenormalized, &CameraController::SetDirection)
 			(

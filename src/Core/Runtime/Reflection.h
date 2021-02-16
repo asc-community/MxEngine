@@ -36,6 +36,8 @@ namespace MxEngine
 {
     #define MXENGINE_REFLECT_TYPE RTTR_REGISTRATION
 
+    struct HandleMappings;
+
     struct MetaInfo
     {
         constexpr static const char* FLAGS = "flags";
@@ -70,7 +72,7 @@ namespace MxEngine
     using HandleEditorFunction = rttr::variant(*)(rttr::instance&);
     using InstanceToVariantFunction = rttr::variant(*)(rttr::instance&);
     using CustomSerializeFunction = void(*)(rttr::instance, rttr::instance&);
-    using CustomDeserializeFunction = void(*)(rttr::instance, rttr::instance&);
+    using CustomDeserializeFunction = void(*)(rttr::instance, rttr::instance&, const HandleMappings&);
 
     enum class InterpretAsInfo 
     {
@@ -137,7 +139,7 @@ namespace MxEngine
         struct 
         {
             CustomSerializeFunction CustomSerialize = nullptr;
-            CustomSerializeFunction CustomDeserialize = nullptr;
+            CustomDeserializeFunction CustomDeserialize = nullptr;
         } Serialization;
     };
 
@@ -151,7 +153,7 @@ namespace MxEngine
     void SerializeExtra(rttr::instance, rttr::instance&);
 
     template<typename>
-    void DeserializeExtra(rttr::instance, rttr::instance&);
+    void DeserializeExtra(rttr::instance, rttr::instance&, const HandleMappings&);
 
     namespace GUI
     {

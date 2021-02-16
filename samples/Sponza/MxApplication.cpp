@@ -6,16 +6,17 @@ namespace Sponza
 
     class SponzaApplication : public Application
     {
-        MxObject::Handle sphereFactory;
-
         void ShootSphere()
         {
+            auto sphereFactory = MxObject::GetByName("Sphere Factory");
+            if (!sphereFactory.IsValid()) return; // sphere factory was deleted
+
             auto controller = Rendering::GetViewport();
             auto& player = MxObject::GetByComponent(*Rendering::GetViewport());
             
             auto shootPosition = player.Transform.GetPosition() + controller->GetDirection() * 3.0f;
 
-            auto sphere = this->sphereFactory->GetComponent<InstanceFactory>()->Instanciate();
+            auto sphere = sphereFactory->GetComponent<InstanceFactory>()->Instanciate();
             sphere->Name = "Sphere Instance";
             sphere->IsSerialized = false;
             sphere->Transform.SetPosition(shootPosition);
@@ -73,11 +74,11 @@ namespace Sponza
             dirLight->SetAmbientIntensity(0.25f);
             dirLight->FollowViewport();
 
-            this->sphereFactory = MxObject::Create();
-            this->sphereFactory->Name = "Sphere Factory";
-            this->sphereFactory->AddComponent<InstanceFactory>();
-            this->sphereFactory->AddComponent<MeshSource>(Primitives::CreateSphere(20));
-            auto renderer = this->sphereFactory->AddComponent<MeshRenderer>();
+            auto sphereFactory = MxObject::Create();
+            sphereFactory->Name = "Sphere Factory";
+            sphereFactory->AddComponent<InstanceFactory>();
+            sphereFactory->AddComponent<MeshSource>(Primitives::CreateSphere(20));
+            auto renderer = sphereFactory->AddComponent<MeshRenderer>();
             renderer->GetMaterial()->AlbedoMap = AssetManager::LoadTexture("Resources/moon.jpg"_id);
 
             auto sponza = MxObject::Create();

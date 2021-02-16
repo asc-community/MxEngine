@@ -163,25 +163,22 @@ namespace MxEngine::GUI
         return { };
     }
 
-    template<typename T, typename Factory>
-    Resource<T, Factory> GetById(int id, Resource<T, Factory>* = nullptr)
+    template<typename Handle>
+    Handle GetById(int id)
     {
+        using Type = typename Handle::Type;
+        using Factory = typename Handle::Factory;
+
         auto handle = (size_t)Max(id, 0);
-        auto& storage = Factory::template Get<T>();
+        auto& storage = Factory::template Get<Type>();
         if (storage.IsAllocated(handle))
         {
             return Factory::GetHandle(storage[handle]);
         }
         else
         {
-            return Resource<T, Factory>{ };
+            return Handle{ };
         }
-    }
-
-    template<typename T>
-    auto GetById(int id)
-    {
-        return GetById(id, (T*)nullptr);
     }
 
     bool IsInternalEngineTexture(const Texture& texture)
@@ -426,18 +423,18 @@ namespace MxEngine::GUI
         rttr::variant result{ };
         auto child = v.try_convert<CompoundCollider::CompoundColliderChild>();
         std::visit([&result, &child](auto&& shape)
+        {
+            auto bounding = shape->GetNativeBounding();
+            using BoundingType = decltype(bounding);
+            using ShapeType = std::decay_t<decltype(*shape)>;
+            const char* name = rttr::type::get<BoundingType>().get_name().cbegin();
+            auto editedValue = ResourceEditor(name, bounding);
+            if (editedValue.is_valid())
             {
-                auto bounding = shape->GetNativeBounding();
-                using BoundingType = decltype(bounding);
-                using ShapeType = std::decay_t<decltype(*shape)>;
-                const char* name = rttr::type::get<BoundingType>().get_name().cbegin();
-                auto editedValue = ResourceEditor(name, bounding);
-                if (editedValue.is_valid())
-                {
-                    auto newShape = PhysicsFactory::Create<ShapeType>(editedValue.template convert<BoundingType>());
-                    result = rttr::variant{ CompoundCollider::CompoundColliderChild{ child->Transform, newShape } };
-                }
-            }, child->Shape);
+                auto newShape = PhysicsFactory::Create<ShapeType>(editedValue.template convert<BoundingType>());
+                result = rttr::variant{ CompoundCollider::CompoundColliderChild{ child->Transform, newShape } };
+            }
+        }, child->Shape);
         return result;
     }
 
