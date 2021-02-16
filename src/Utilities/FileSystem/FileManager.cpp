@@ -108,6 +108,11 @@ namespace MxEngine
         return FileManager::GetWorkingDirectory() / "Engine" / "Textures";
     }
 
+    FilePath FileManager::GetEngineModelDirectory()
+    {
+        return FileManager::GetWorkingDirectory() / "Engine" / "Models";
+    }
+
     bool FileManager::FileExists(StringId filename)
     {
         return manager->filetable.find(filename) != manager->filetable.end();
@@ -270,6 +275,15 @@ namespace MxEngine
         manager = Alloc<FileManagerImpl>();
         auto workingDirectory = FileManager::GetWorkingDirectory();
         MXLOG_INFO("MxEngine::FileManager", "project working directory is set to: " + ToMxString(workingDirectory));
+
+        if (!File::Exists(FileManager::GetEngineTextureDirectory()))
+            File::CreateDirectory(FileManager::GetEngineTextureDirectory());
+
+        if (!File::Exists(FileManager::GetEngineShaderDirectory()))
+            File::CreateDirectory(FileManager::GetEngineShaderDirectory());
+
+        if (!File::Exists(FileManager::GetEngineModelDirectory()))
+            File::CreateDirectory(FileManager::GetEngineModelDirectory());
     }
 
     void FileManager::Clone(FileManagerImpl* other)

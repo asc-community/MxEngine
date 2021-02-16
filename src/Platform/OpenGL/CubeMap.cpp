@@ -56,7 +56,7 @@ namespace MxEngine
 	void CubeMap::Load(const std::filesystem::path& filepath)
 	{
 		// TODO: support floating point textures
-		bool flipImage = true;
+		bool flipImage = false;
 		Image img = ImageLoader::LoadImage(filepath, flipImage);
 		if (img.GetRawData() == nullptr)
 		{
@@ -317,7 +317,7 @@ namespace MxEngine
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
 			)
-			.property("filepath", &CubeMap::GetFilePath, (SetFilePath)&CubeMap::Load)
+			.property("_filepath", &CubeMap::GetFilePath, (SetFilePath)&CubeMap::Load)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE)
 			)

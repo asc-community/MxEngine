@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Mesh.h"
-#include "Utilities/ObjectLoader/ObjectLoader.h"
+#include "Utilities/ObjectLoading/ObjectLoader.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Platform/GraphicAPI.h"
 #include "Utilities/LODGenerator/LODGenerator.h"
@@ -222,8 +222,13 @@ namespace MxEngine
 
 	SubMesh& Mesh::AddSubMesh(SubMesh::MaterialId materialId)
 	{
+		return this->AddSubMesh(materialId, MeshData{ });
+	}
+
+	SubMesh& Mesh::AddSubMesh(SubMesh::MaterialId materialId, MeshData data)
+	{
 		auto& transform = *this->subMeshTransforms.emplace_back(MakeUnique<TransformComponent>());
-		return this->submeshes.emplace_back(materialId, transform);
+		return this->submeshes.emplace_back(materialId, transform, std::move(data));
 	}
 
 	SubMesh& Mesh::LinkSubMesh(SubMesh& submesh)
@@ -270,7 +275,7 @@ namespace MxEngine
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
 				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
 			);
-
+		
 		using SetFilePath = void(Mesh::*)(const MxString&);
 
 		rttr::registration::class_<Mesh>("Mesh")
@@ -282,7 +287,7 @@ namespace MxEngine
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
 			)
-			.property("filepath", &Mesh::GetFilePath, (SetFilePath)&Mesh::Load)
+			.property("_filepath", &Mesh::GetFilePath, (SetFilePath)&Mesh::Load)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE)
 			)

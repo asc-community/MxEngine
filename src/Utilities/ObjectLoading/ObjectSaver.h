@@ -28,30 +28,20 @@
 
 #pragma once
 
-#include "MeshData.h"
+#include "Core/Resources/Mesh.h"
+#include "Utilities/FileSystem/File.h"
 
 namespace MxEngine
 {
-	class SubMesh
-	{
-	public:
-		using MaterialId = size_t;
-	private:
-		MaterialId materialId;
-		std::reference_wrapper<TransformComponent> transform;
-	public:
-		MeshData Data;
-		MxString Name = "Main";
+    enum class SupportedSaveFormats
+    {
+        OBJ
+    };
 
-		const AABB& GetAABB() const;
-		const BoundingSphere& GetBoundingSphere() const;
-
-		SubMesh(size_t materialId, std::reference_wrapper<TransformComponent> transform);
-		SubMesh(size_t materialId, std::reference_wrapper<TransformComponent> transform, MeshData data);
-
-		const TransformComponent& GetTransform() const;
-		TransformComponent& GetTransformReference();
-		void SetTransform(const TransformComponent& transform);
-		MaterialId GetMaterialId() const;
-	};
+    class ObjectSaver
+    {
+    public:
+        static void SaveVerteciesIndicies(const FilePath& filepath, SupportedSaveFormats format, const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies);
+        static void SaveMeshData(const FilePath& filepath, SupportedSaveFormats format, const MeshData& meshData);
+    };
 }

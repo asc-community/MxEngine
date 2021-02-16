@@ -296,10 +296,13 @@ namespace MxEngine
 			meshInfo.indicies.resize((size_t)mesh->mNumFaces * 3);
 			for (size_t i = 0; i < (size_t)mesh->mNumFaces; i++)
 			{
-				MX_ASSERT(mesh->mFaces[i].mNumIndices == 3);
-				meshInfo.indicies[3 * i + 0] = mesh->mFaces[i].mIndices[0];
-				meshInfo.indicies[3 * i + 1] = mesh->mFaces[i].mIndices[1];
-				meshInfo.indicies[3 * i + 2] = mesh->mFaces[i].mIndices[2];
+				if (mesh->mFaces[i].mNumIndices == 3)
+				{
+					meshInfo.indicies[3 * i + 0] = mesh->mFaces[i].mIndices[0];
+					meshInfo.indicies[3 * i + 1] = mesh->mFaces[i].mIndices[1];
+					meshInfo.indicies[3 * i + 2] = mesh->mFaces[i].mIndices[2];
+				}
+				else continue;
 			}
 			if (meshInfo.name.empty())
 				meshInfo.name = UUIDGenerator::Get();

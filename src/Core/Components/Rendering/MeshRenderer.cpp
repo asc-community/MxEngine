@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "MeshRenderer.h"
-#include "Utilities/ObjectLoader/ObjectLoader.h"
+#include "Utilities/ObjectLoading/ObjectLoader.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/Runtime/Reflection.h"
 

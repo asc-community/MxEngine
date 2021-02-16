@@ -43,10 +43,10 @@ namespace MxEngine
 		using SubMeshList = MxVector<SubMesh>;
 		
 		SubMeshList submeshes;
+		MxString filePath;
 		MxVector<VertexBufferHandle> VBOs;
 		MxVector<VertexBufferLayoutHandle> VBLs;
 		MxVector<UniqueRef<TransformComponent>> subMeshTransforms;
-		MxString filePath;
 
 		template<typename FilePath>
 		void LoadFromFile(const FilePath& filepath);
@@ -80,6 +80,7 @@ namespace MxEngine
 		const SubMesh& GetSubMeshByIndex(size_t index) const;
 		SubMesh& GetSubMeshByIndex(size_t index);
 		SubMesh& AddSubMesh(SubMesh::MaterialId materialId);
+		SubMesh& AddSubMesh(SubMesh::MaterialId materialId, MeshData data);
 		SubMesh& LinkSubMesh(SubMesh& submesh);
 		void DeleteSubMeshByIndex(size_t index);
 

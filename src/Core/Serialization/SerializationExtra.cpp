@@ -79,7 +79,7 @@ namespace MxEngine
 
         auto formatEnumType = rttr::type::get<TextureFormat>().get_enumeration();
 
-        json["filepath"] = texture.GetFilePath();
+        json["path"] = texture.GetFilePath();
         json["format"] = formatEnumType.value_to_name(texture.GetFormat()).cbegin();
     }
 
@@ -91,7 +91,7 @@ namespace MxEngine
 
         auto formatEnumType = rttr::type::get<TextureFormat>().get_enumeration();
 
-        auto filepath = ToFilePath(json["filepath"].get<MxString>());
+        auto filepath = ToFilePath(json["path"].get<MxString>());
         auto format = formatEnumType.name_to_value(json["format"].get<MxString>().c_str()).convert<TextureFormat>();
 
         texture.Load(filepath, format);

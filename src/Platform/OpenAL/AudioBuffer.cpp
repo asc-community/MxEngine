@@ -213,7 +213,7 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
             )
-            .property("filepath", &AudioBuffer::GetFilePath, (SetFilePath)&AudioBuffer::Load)
+            .property("_filepath", &AudioBuffer::GetFilePath, (SetFilePath)&AudioBuffer::Load)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE)
             )

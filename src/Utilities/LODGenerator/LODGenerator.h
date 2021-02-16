@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Utilities/ObjectLoader/ObjectLoader.h"
+#include "Utilities/ObjectLoading/ObjectLoader.h"
 #include "Utilities/STL/MxMap.h"
 #include "Utilities/STL/MxHashMap.h"
 

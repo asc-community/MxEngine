@@ -1,21 +1,126 @@
+// Copyright(c) 2019 - 2020, #Momo
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met :
+// 
+// 1. Redistributions of source code must retain the above copyright notice, this
+// list of conditions and the following disclaimer.
+// 
+// 2. Redistributions in binary form must reproduce the above copyright notice,
+// this list of conditions and the following disclaimer in the documentation
+// and /or other materials provided with the distribution.
+// 
+// 3. Neither the name of the copyright holder nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED.IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #include "Primitives.h"
+#include "Utilities/Format/Format.h"
+#include "Utilities/FileSystem/FileManager.h"
+#include "Utilities/ObjectLoading/ObjectSaver.h"
 
 namespace MxEngine
 {
-    MeshHandle Primitives::CreateMesh(MeshData meshData, const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies)
+    MeshHandle Primitives::CreateMesh(MeshData meshData, const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies, const MxString& filename)
     {
         auto mesh = ResourceFactory::Create<Mesh>();
 
-        auto& submesh = mesh->AddSubMesh((SubMesh::MaterialId)0);
-        submesh.Data = std::move(meshData);
+        auto& submesh = mesh->AddSubMesh((SubMesh::MaterialId)0, std::move(meshData));
         submesh.Data.BufferVertecies(vertecies);
         submesh.Data.BufferIndicies(indicies);
         submesh.Data.UpdateBoundingGeometry(vertecies);
 
         mesh->UpdateBoundingGeometry();
-        mesh->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("primitive"));
+
+        FilePath saveFilePath = FileManager::GetEngineModelDirectory() / ToFilePath(filename + ".obj");
+        if (!File::Exists(saveFilePath))
+        {
+            ObjectSaver::SaveVerteciesIndicies(saveFilePath, SupportedSaveFormats::OBJ, vertecies, indicies);
+        }
+
+        auto proximatePath = FileManager::GetFilePath(FileManager::RegisterExternalResource(saveFilePath));
+        mesh->SetInternalEngineTag(ToMxString(proximatePath));
 
         return mesh;
+    }
+
+    MeshHandle Primitives::CreateMesh(MeshData meshData, const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies)
+    {
+        return Primitives::CreateMesh(meshData, vertecies, indicies, UUIDGenerator::Get());
+    }
+
+    MeshHandle Primitives::CreateSurface(const Array2D<float>& heights)
+    {
+        return Primitives::CreateSurface(heights, UUIDGenerator::Get());
+    }
+
+    MeshHandle Primitives::CreateSurface(const Array2D<float>& heights, const MxString& filename)
+    {
+        MeshData meshData;
+        MeshData::VertexData vertecies;
+        MeshData::IndexData indicies;
+
+        MX_ASSERT(heights.width() > 0);
+        MX_ASSERT(heights.height() > 0);
+        size_t xsize = heights.width();
+        size_t ysize = heights.height();
+
+        float minY = 0.0f;
+        float maxY = 0.0f;
+
+        vertecies.reserve(xsize * ysize);
+        for (size_t x = 0; x < xsize; x++)
+        {
+            for (size_t y = 0; y < ysize; y++)
+            {
+                auto& vertex = vertecies.emplace_back();
+                float fx = float(x) / float(xsize - 1);
+                float fy = float(y) / float(ysize - 1);
+                float fz = heights[x][y];
+
+                vertex.TexCoord = MakeVector2(fx, fy);
+
+                // yes, z component is actually y component, because in such case its easier to think 
+                // of plane as OXY, with heights pointing towards z axis
+                vertex.Position = MakeVector3(fx, fz, fy);
+                minY = Min(minY, fz);
+                maxY = Max(maxY, fz);
+            }
+        }
+
+        for (auto& vertex : vertecies)
+        {
+            vertex.Position -= MakeVector3(0.5f, (maxY + minY) * 0.5f, 0.5f);
+        }
+
+        indicies.reserve((xsize - 1) * (ysize - 1) * 6);
+        for (size_t x = 0; x < xsize - 1; x++)
+        {
+            for (size_t y = 0; y < ysize - 1; y++)
+            {
+                indicies.push_back(uint32_t(y + x * ysize));
+                indicies.push_back(uint32_t(y + x * ysize + 1));
+                indicies.push_back(uint32_t(y + x * ysize + ysize));
+                indicies.push_back(uint32_t(y + x * ysize + 1));
+                indicies.push_back(uint32_t(y + x * ysize + 1 + ysize));
+                indicies.push_back(uint32_t(y + x * ysize + ysize));
+            }
+        }
+
+        MeshData::RegenerateNormals(vertecies, indicies);
+        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies, filename);
     }
 
     MeshHandle Primitives::CreateCube(size_t polygons)
@@ -24,7 +129,7 @@ namespace MxEngine
         MeshData::VertexData vertecies;
         MeshData::IndexData indicies;
 
-        polygons = polygons + 1; // polygons in [1; inf), but we need at least two points per edge
+        polygons = Max(polygons, 2); // polygons in [1; inf), but we need at least two points per edge
 
         for (size_t i = 0; i < polygons; i++)
         {
@@ -158,12 +263,15 @@ namespace MxEngine
         }
 
         MeshData::RegenerateTangentSpace(vertecies, indicies);
-        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies);
+        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies, MxFormat("cube_{}", polygons));
     }
 
     MeshHandle Primitives::CreatePlane(size_t polygons)
     {
-        return Primitives::CreateSurface([](float, float) { return 0.0f; }, 1.0f, 1.0f, 1.0f / float(polygons));
+        polygons = Max(polygons, 2);
+        Array2D<float> heights;
+        heights.resize(polygons, polygons, 0.0f);
+        return Primitives::CreateSurface(heights, MxFormat("plane_{}", polygons));
     }
 
     MeshHandle Primitives::CreateSphere(size_t polygons)
@@ -172,7 +280,7 @@ namespace MxEngine
         MeshData::VertexData vertecies;
         MeshData::IndexData indicies;
 
-        polygons -= polygons % 4;
+        polygons = Max(polygons - polygons % 4, 4);
         vertecies.reserve((polygons + 1) * (polygons + 1));
 
         // generate raw data for verteces (must be rearranged after)
@@ -223,7 +331,7 @@ namespace MxEngine
                 }
             }
         }
-        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies);
+        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies, MxFormat("sphere_{}", polygons));
     }
 
     MeshHandle Primitives::CreateCylinder(size_t polygons)
@@ -336,10 +444,10 @@ namespace MxEngine
         indicies.push_back(uint32_t(lowerR));
 
         MeshData::RegenerateNormals(vertecies, indicies);
-        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies);
+        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies, MxFormat("cylinder_{}", polygons));
     }
 
-    MeshHandle Primitives::CreatePyramid()
+    MeshHandle Primitives::CreatePyramid(size_t)
     {
         MeshData meshData;
         MeshData::VertexData vertecies;
@@ -367,64 +475,7 @@ namespace MxEngine
         };
 
         MeshData::RegenerateNormals(vertecies, indicies);
-        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies);
-    }
-
-    MeshHandle Primitives::CreateSurface(const Array2D<float>& heights)
-    {
-        MeshData meshData;
-        MeshData::VertexData vertecies;
-        MeshData::IndexData indicies;
-
-        MX_ASSERT(heights.width() > 0);
-        MX_ASSERT(heights.height() > 0);
-        size_t xsize = heights.width();
-        size_t ysize = heights.height();
-
-        float minY = 0.0f;
-        float maxY = 0.0f;
-
-        vertecies.reserve(xsize * ysize);
-        for (size_t x = 0; x < xsize; x++)
-        {
-            for (size_t y = 0; y < ysize; y++)
-            {
-                auto& vertex = vertecies.emplace_back();
-                float fx = float(x) / float(xsize - 1);
-                float fy = float(y) / float(ysize - 1);
-                float fz = heights[x][y];
-
-                vertex.TexCoord = MakeVector2(fx, fy);
-
-                // yes, z component is actually y component, because in such case its easier to think 
-                // of plane as OXY, with heights pointing towards z axis
-                vertex.Position = MakeVector3(fx, fz, fy);
-                minY = Min(minY, fz);
-                maxY = Max(maxY, fz);
-            }
-        }
-
-        for (auto& vertex : vertecies)
-        {
-            vertex.Position -= MakeVector3(0.5f, (maxY + minY) * 0.5f, 0.5f);
-        }
-
-        indicies.reserve((xsize - 1) * (ysize - 1) * 6);
-        for (size_t x = 0; x < xsize - 1; x++)
-        {
-            for (size_t y = 0; y < ysize - 1; y++)
-            {
-                indicies.push_back(uint32_t(y + x * ysize));
-                indicies.push_back(uint32_t(y + x * ysize + 1));
-                indicies.push_back(uint32_t(y + x * ysize + ysize));
-                indicies.push_back(uint32_t(y + x * ysize + 1));
-                indicies.push_back(uint32_t(y + x * ysize + 1 + ysize));
-                indicies.push_back(uint32_t(y + x * ysize + ysize));
-            }
-        }
-        
-        MeshData::RegenerateNormals(vertecies, indicies);
-        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies);
+        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies, MxFormat("pyramid_1"));
     }
 
     TextureHandle Primitives::CreateGridTexture(size_t textureSize, float borderScale)
