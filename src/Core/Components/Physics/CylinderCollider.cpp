@@ -113,6 +113,9 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<Cylinder>)
             )
             .constructor<>()
+            (
+                rttr::policy::ctor::as_object
+            )
             .property("orientation", &Cylinder::Orientation)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)

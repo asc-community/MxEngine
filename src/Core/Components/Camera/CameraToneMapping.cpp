@@ -150,6 +150,9 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<ACES>)
             )
             .constructor<>()
+            (
+                rttr::policy::ctor::as_object
+            )
             .property("a", &ACES::A)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
@@ -192,6 +195,9 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<ACES>)
             )
             .constructor<>()
+            (
+                rttr::policy::ctor::as_object
+            )
             .property("R", &CameraToneMapping::ColorChannels::R)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),

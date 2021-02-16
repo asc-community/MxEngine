@@ -239,6 +239,9 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<Vertex>)
             )
             .constructor<>()
+            (
+                rttr::policy::ctor::as_object
+            )
             .property("position", &Vertex::Position)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
@@ -270,6 +273,9 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<MeshData>)
             )
             .constructor<>()
+            (
+                rttr::policy::ctor::as_object
+            )
             .property_readonly("vertecies count", &MeshData::GetVerteciesCount)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)

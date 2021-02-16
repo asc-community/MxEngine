@@ -257,6 +257,9 @@ namespace MxEngine
 				rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<AABB>)
 			)
 			.constructor<>()
+			(
+				rttr::policy::ctor::as_object
+			)
 			.property("min", &AABB::Min)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),

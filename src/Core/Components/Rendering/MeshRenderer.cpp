@@ -132,7 +132,7 @@ namespace MxEngine
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
 				rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<MeshRenderer>)
 			)
-			.property_readonly("materials", &MeshRenderer::Materials)
+			.property("materials", &MeshRenderer::Materials)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
 			);

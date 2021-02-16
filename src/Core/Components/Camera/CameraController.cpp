@@ -547,6 +547,9 @@ namespace MxEngine
 				rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<PerspectiveCamera>)
 			)
 			.constructor<>()
+			(
+				rttr::policy::ctor::as_object
+			)
 			.property("fov", &PerspectiveCamera::GetFOV, &PerspectiveCamera::SetFOV)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
@@ -571,6 +574,9 @@ namespace MxEngine
 				rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<OrthographicCamera>)
 			)
 			.constructor<>()
+			(
+				rttr::policy::ctor::as_object
+			)
 			.property("size", &OrthographicCamera::GetSize, &OrthographicCamera::SetSize)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
@@ -601,6 +607,9 @@ namespace MxEngine
 				rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<FrustrumCamera>)
 			)
 			.constructor<>()
+			(
+				rttr::policy::ctor::as_object
+			)
 			.property("zoom", &FrustrumCamera::GetZoom, &FrustrumCamera::SetZoom)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),

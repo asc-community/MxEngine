@@ -125,6 +125,9 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<CompoundColliderChild>)
             )
             .constructor<>()
+            (
+                rttr::policy::ctor::as_object
+            )
             .property("transform", &CompoundColliderChild::Transform)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)

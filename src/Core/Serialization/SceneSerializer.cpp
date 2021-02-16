@@ -94,9 +94,9 @@ namespace MxEngine
         MAKE_SCOPE_PROFILER("SceneSerializer::DeserializeGlobals()");
         MAKE_SCOPE_TIMER("MxEngine::SceneSerializer", "SceneSerializer::DeserializeGlobals()");
 
-        if (json["globals"].contains("viewport-id"))
+        if (json["globals"].contains("viewport"))
         {
-            auto viewport = GetHandleById<CameraControllerHandle>(json["globals"]["viewport-id"], mappings);
+            auto viewport = GetHandleById<CameraControllerHandle>(json["globals"]["viewport"], mappings);
             Rendering::SetViewport(viewport);
         }
 

@@ -339,6 +339,9 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<TransformComponent>)
             )
             .constructor<>()
+            (
+                rttr::policy::ctor::as_object
+            )
             .property("position", &TransformComponent::GetPosition, &TransformComponent::SetPosition)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),

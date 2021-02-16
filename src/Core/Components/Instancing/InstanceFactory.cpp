@@ -41,7 +41,7 @@ namespace MxEngine
 
         this->DestroyInstances();
 
-        if (meshSource.IsValid())
+        if (meshSource.IsValid() && meshSource->Mesh.IsValid())
         {
             auto& mesh = *meshSource->Mesh;
             this->RemoveInstancedBuffer(mesh, (size_t)this->bufferIndex + 2);

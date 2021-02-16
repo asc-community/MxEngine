@@ -34,7 +34,7 @@
 
 namespace MxEngine
 {
-	rttr::variant VisitDeserialize(const JsonFile& json, const rttr::type& type);
+	rttr::variant VisitDeserialize(const JsonFile& json, const rttr::variant& property, const HandleMappings& mappings);
 
 	template<typename T>
 	rttr::variant DeserializeGeneric(const JsonFile& json,  const rttr::type& type)
@@ -42,36 +42,46 @@ namespace MxEngine
 		return json.empty() ? rttr::variant{ } : rttr::variant{ json.get<T>() };
 	}
 
-	//  void SerializeSequentialContainer(JsonFile& json, const ReflectionMeta& meta)
-	//  {
-	//  	auto view = v.create_sequential_view();
-	//  
-	//  	for (const auto& object : view)
-	//  	{
-	//  		auto elementValue = object.extract_wrapped_value();
-	//  		VisitSerialize(json.emplace_back(), elementValue, ReflectionMeta(elementValue.get_type()));
-	//  	}
-	//  }
-
-	rttr::variant DeserializeEnumeration(const JsonFile& json, const rttr::type& type, const HandleMappings& mappings)
+	rttr::variant DeserializeSequentialContainer(const JsonFile& json, const rttr::variant& property, const HandleMappings& mappings)
 	{
-		return json.empty() ? rttr::variant{ } : type.get_enumeration().name_to_value(json.get<MxString>().c_str());
+		auto view = property.create_sequential_view();
+		if (view.is_dynamic())
+		{
+			view.clear();
+			view.set_size(json.size());
+		}
+		size_t size = Min(view.get_size(), json.size());
+
+		for (size_t index = 0; index < size; index++)
+		{
+			auto element = view.get_value(index);
+			auto result = VisitDeserialize(json[index], element.extract_wrapped_value(), mappings);
+			view.set_value(index, result);
+		}
+
+		return property;
 	}
 
-	rttr::variant Deserialize(const JsonFile& json, const rttr::variant& v, const HandleMappings& mappings)
+	rttr::variant DeserializeEnumeration(const JsonFile& json, const rttr::variant& property, const HandleMappings& mappings)
 	{
-		if (IsHandle(v))
+		return json.empty() ? rttr::variant{ } : property.get_type().get_enumeration().name_to_value(json.get<MxString>().c_str());
+	}
+
+	rttr::variant Deserialize(const JsonFile& json, const rttr::variant& property, const HandleMappings& mappings)
+	{
+		if (IsHandle(property))
 		{
 			size_t handleId = json;
-			return GetHandleById(v.get_type(), handleId, mappings);
+			return GetHandleById(property.get_type(), handleId, mappings);
 		}
 		else
 		{
-			return rttr::variant{ };
+			Deserialize(json, rttr::instance{ property }, mappings);
+			return property;
 		}
 	}
 
-	rttr::variant VisitDeserialize(const JsonFile& json, const rttr::type& type, const HandleMappings& mappings)
+	rttr::variant VisitDeserialize(const JsonFile& json, const rttr::variant& property, const HandleMappings& mappings)
 	{
 		#define VISITOR_DESERIALIZE_ENTRY(TYPE) { rttr::type::get<TYPE>(), DeserializeGeneric<TYPE> }
 		using DeserializeCallback = rttr::variant(*)(const JsonFile&, const rttr::type&);
@@ -88,23 +98,22 @@ namespace MxEngine
 			VISITOR_DESERIALIZE_ENTRY(Vector4),
 		};
 
+		auto type = property.get_type();
 		if (visitor.find(type) != visitor.end())
 		{
 			return visitor[type](json, type);
 		}
 		else if (type.is_sequential_container())
 		{
-			// TODO
-			// return DeserializeSequentialContainer(json, v, meta);
-			return rttr::variant{ };
+			return DeserializeSequentialContainer(json, property, mappings);
 		}
 		else if (type.is_enumeration())
 		{
-			return DeserializeEnumeration(json, type, mappings);
+			return DeserializeEnumeration(json, property, mappings);
 		}
 		else
 		{
-			return Deserialize(json, CreateEmptyHandle(type), mappings);
+			return Deserialize(json, property, mappings);
 		}
 	}
 
@@ -127,7 +136,7 @@ namespace MxEngine
 			{
 				if (json.contains(propertyName))
 				{
-					auto result = VisitDeserialize(json[propertyName], property.get_type(), mappings);
+					auto result = VisitDeserialize(json[propertyName], property.get_value(object), mappings);
 					if (result.is_valid())
 					{
 						property.set_value(object, result);

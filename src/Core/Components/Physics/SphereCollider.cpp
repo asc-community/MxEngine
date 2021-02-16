@@ -88,6 +88,9 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<BoundingSphere>)
             )
             .constructor<>()
+            (
+                rttr::policy::ctor::as_object
+            )
             .property("center", &BoundingSphere::Center)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
