@@ -98,12 +98,20 @@ namespace MxEngine
     void DeserializeResourceImpl<Script::Handle>(const JsonFile& json, HandleMappings& mappings)
     {
         auto& jlist = json["Script"];
+
+        bool needRecompile = false;
         for (const auto& jscript : jlist)
         {
             auto name = jscript["name"].get<MxString>();
             auto filepath = jscript["filepath"].get<MxString>();
-            RuntimeCompiler::AddScriptFile(name, ToFilePath(filepath));
+
+            if (!RuntimeCompiler::HasScript(name) || RuntimeCompiler::GetScriptInfo(name).FilePath != filepath)
+            {
+                RuntimeCompiler::AddScriptFile(name, ToFilePath(filepath));
+                needRecompile = true;
+            }
         }
+        if(needRecompile) RuntimeCompiler::StartCompilationTask();
     }
 
     template<> void SerializeResource<Script>     (JsonFile& json) { SerializeResourceImpl<Script::Handle>   (json); }

@@ -96,7 +96,8 @@ namespace MxEngine
 
         template<typename FilePath>
         static void AddScriptFile(const MxString& scriptName, const FilePath& scriptPath);
-
+        
+        static bool HasScript(const MxString& scriptName);
         static const ScriptInfo& GetScriptInfo(const MxString& scriptName);
         static const ScriptInfo& GetScriptInfo(StringId scriptName);
         static void InvokeScriptableObject(Scriptable* script, ScriptableMethod method, MxObject& scriptParent);

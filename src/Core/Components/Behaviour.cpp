@@ -71,6 +71,7 @@ namespace MxEngine
                 this->InvokeUserBehaviour(dt);
             break;
         default:
+            // do nothing
             break;
         }
     }
@@ -92,6 +93,11 @@ namespace MxEngine
         this->timeLeft = this->timeRequested;
     }
 
+    void Behaviour::Pause()
+    {
+        this->Schedule(TimerMode::UPDATE_AFTER_DELTA, std::numeric_limits<TimeDelta>::infinity());
+    }
+
     Behaviour::TimeDelta Behaviour::GetTimeLeft() const
     {
         return Max(this->timeLeft, 0.0f);
@@ -105,6 +111,21 @@ namespace MxEngine
     TimerMode Behaviour::GetTimerMode() const
     {
         return this->timerMode;
+    }
+
+    void Behaviour::SetTimerModeInternal(TimerMode mode)
+    {
+        this->timerMode = mode;
+    }
+
+    void Behaviour::SetTimeLeftInternal(TimeDelta time)
+    {
+        this->timeLeft = Max(time, 0.0f);
+    }
+
+    void Behaviour::SetTimeRequestInternal(TimeDelta time)
+    {
+        this->timeRequested = Max(time, 0.0f);
     }
 
     MXENGINE_REFLECT_TYPE
@@ -127,22 +148,25 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )
-            .property_readonly("time left", &Behaviour::GetTimeLeft)
+            .property("time left", &Behaviour::GetTimeLeft, &Behaviour::SetTimeLeftInternal)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )
-            .property_readonly("time request", &Behaviour::GetTimeRequest)
+            .property("time request", &Behaviour::GetTimeRequest, &Behaviour::SetTimeRequestInternal)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("timer mode", &Behaviour::GetTimerMode, &Behaviour::SetTimerModeInternal)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .method("pause", &Behaviour::Pause)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
             )
             .method("remove callback", &Behaviour::RemoveBehaviour)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
-            )
-            .method("set update logic", &Behaviour::Schedule)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
-            )
-            ;
+            );
     }
 }

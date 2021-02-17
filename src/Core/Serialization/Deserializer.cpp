@@ -34,7 +34,7 @@
 
 namespace MxEngine
 {
-	rttr::variant VisitDeserialize(const JsonFile& json, const rttr::variant& property, const HandleMappings& mappings);
+	rttr::variant VisitDeserialize(const JsonFile& json, const rttr::variant& property, HandleMappings& mappings);
 
 	template<typename T>
 	rttr::variant DeserializeGeneric(const JsonFile& json,  const rttr::type& type)
@@ -42,7 +42,7 @@ namespace MxEngine
 		return json.empty() ? rttr::variant{ } : rttr::variant{ json.get<T>() };
 	}
 
-	rttr::variant DeserializeSequentialContainer(const JsonFile& json, const rttr::variant& property, const HandleMappings& mappings)
+	rttr::variant DeserializeSequentialContainer(const JsonFile& json, const rttr::variant& property, HandleMappings& mappings)
 	{
 		auto view = property.create_sequential_view();
 		if (view.is_dynamic())
@@ -62,12 +62,12 @@ namespace MxEngine
 		return property;
 	}
 
-	rttr::variant DeserializeEnumeration(const JsonFile& json, const rttr::variant& property, const HandleMappings& mappings)
+	rttr::variant DeserializeEnumeration(const JsonFile& json, const rttr::variant& property, HandleMappings& mappings)
 	{
 		return json.empty() ? rttr::variant{ } : property.get_type().get_enumeration().name_to_value(json.get<MxString>().c_str());
 	}
 
-	rttr::variant Deserialize(const JsonFile& json, const rttr::variant& property, const HandleMappings& mappings)
+	rttr::variant Deserialize(const JsonFile& json, const rttr::variant& property, HandleMappings& mappings)
 	{
 		if (IsHandle(property))
 		{
@@ -81,7 +81,7 @@ namespace MxEngine
 		}
 	}
 
-	rttr::variant VisitDeserialize(const JsonFile& json, const rttr::variant& property, const HandleMappings& mappings)
+	rttr::variant VisitDeserialize(const JsonFile& json, const rttr::variant& property, HandleMappings& mappings)
 	{
 		#define VISITOR_DESERIALIZE_ENTRY(TYPE) { rttr::type::get<TYPE>(), DeserializeGeneric<TYPE> }
 		using DeserializeCallback = rttr::variant(*)(const JsonFile&, const rttr::type&);
@@ -117,7 +117,7 @@ namespace MxEngine
 		}
 	}
 
-	void Deserialize(const JsonFile& json, rttr::instance object, const HandleMappings& mappings)
+	void Deserialize(const JsonFile& json, rttr::instance object, HandleMappings& mappings)
 	{
 		auto type = object.get_type();
 

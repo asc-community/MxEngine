@@ -52,7 +52,6 @@ namespace MxEngine
         static HandleMappings DeserializeResources(const JsonFile& json);
         static void DeserializeGlobals(const JsonFile& json, const HandleMappings& mappings);
         static void DeserializeObjects(const JsonFile& json, HandleMappings& mappings);
-        static MxObject& DeserializeMxObject(const JsonFile& json, HandleMappings& mappings);
     public:
         static void Init();
         static void Destroy();
@@ -63,6 +62,7 @@ namespace MxEngine
         static void Deserialize(const JsonFile& scene);
 
         static JsonFile SerializeMxObject(MxObject& object);
+        static void DeserializeMxObject(const JsonFile& json, MxObject::Handle object, HandleMappings& mappings);
 
         template<typename T>
         static void RegisterComponent()

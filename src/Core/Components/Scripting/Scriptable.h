@@ -65,7 +65,13 @@ namespace MxEngine
 			MxObject* Self = nullptr;
 		} CurrentState;
 
-		virtual void InitializeModuleContext(void* context) { GlobalContextSerializer::Deserialize(context); }
+		virtual void InitializeModuleContext(void* context) 
+		{
+			GlobalContextSerializer::Deserialize(context); 
+			// script dll is not properly unloaded, unregistering reflection info results in crush
+			// to prevent it we need to disable unregister mechanism in dll module
+			rttr::detail::get_registration_manager().set_disable_unregister();
+		}
 
 		virtual void ProtectedFunc() final
 		{

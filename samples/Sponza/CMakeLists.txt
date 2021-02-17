@@ -3,6 +3,7 @@ set(PROJECT_HEADER_FILES
 
 set(PROJECT_SOURCE_FILES
     "MxApplication.cpp"
+    "Resources/ShootSpheres.cpp"
 )
 
 set(EXECUTABLE_NAME "Sponza")

@@ -36,7 +36,7 @@ namespace MxEngine
     struct HandleMappings;
 
     void Serialize(JsonFile& json, rttr::instance object);
-    void Deserialize(const JsonFile& json, rttr::instance object, const HandleMappings& mappings);
+    void Deserialize(const JsonFile& json, rttr::instance object, HandleMappings& mappings);
     void DeserializeComponentImpl(const JsonFile& json, rttr::instance object, rttr::variant handle, HandleMappings& mappings);
 
     template<typename Handle>

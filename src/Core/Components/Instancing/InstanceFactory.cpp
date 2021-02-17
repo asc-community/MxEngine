@@ -211,7 +211,8 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<InstanceFactory>),
-                rttr::metadata(SerializeInfo::CUSTOM_SERIALIZE, SerializeExtra<InstanceFactory>)
+                rttr::metadata(SerializeInfo::CUSTOM_SERIALIZE, SerializeExtra<InstanceFactory>),
+                rttr::metadata(SerializeInfo::CUSTOM_DESERIALIZE, DeserializeExtra<InstanceFactory>)
             );
     }
 }

@@ -72,7 +72,7 @@ namespace MxEngine
     using HandleEditorFunction = rttr::variant(*)(rttr::instance&);
     using InstanceToVariantFunction = rttr::variant(*)(rttr::instance&);
     using CustomSerializeFunction = void(*)(rttr::instance, rttr::instance&);
-    using CustomDeserializeFunction = void(*)(rttr::instance, rttr::instance&, const HandleMappings&);
+    using CustomDeserializeFunction = void(*)(rttr::instance, rttr::instance&, HandleMappings&);
 
     enum class InterpretAsInfo 
     {
@@ -153,7 +153,7 @@ namespace MxEngine
     void SerializeExtra(rttr::instance, rttr::instance&);
 
     template<typename>
-    void DeserializeExtra(rttr::instance, rttr::instance&, const HandleMappings&);
+    void DeserializeExtra(rttr::instance, rttr::instance&, HandleMappings&);
 
     namespace GUI
     {

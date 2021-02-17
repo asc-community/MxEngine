@@ -52,7 +52,7 @@ namespace MxEngine
     }
 
     template<size_t Index = 0, typename... Args>
-    void FindDeserializerForChildShapeImpl(const JsonFile& json, std::variant<Args...>& shape, const HandleMappings& mappings)
+    void FindDeserializerForChildShapeImpl(const JsonFile& json, std::variant<Args...>& shape, HandleMappings& mappings)
     {
         if constexpr (Index < std::variant_size_v<std::variant<Args...>>)
         {
@@ -77,13 +77,13 @@ namespace MxEngine
         }
     }
 
-    void FindDeserializerForChildShape(const JsonFile& json, CompoundCollider::VariantType& shape, const HandleMappings& mappings)
+    void FindDeserializerForChildShape(const JsonFile& json, CompoundCollider::VariantType& shape, HandleMappings& mappings)
     {
         FindDeserializerForChildShapeImpl(json, shape, mappings);
     }
 
     template<>
-    void DeserializeExtra<CompoundCollider::CompoundColliderChild>(rttr::instance jsonWrapped, rttr::instance& object, const HandleMappings& mappings)
+    void DeserializeExtra<CompoundCollider::CompoundColliderChild>(rttr::instance jsonWrapped, rttr::instance& object, HandleMappings& mappings)
     {
         const auto& json = *jsonWrapped.try_convert<JsonFile>();
         auto& child = *object.try_convert<CompoundCollider::CompoundColliderChild>();
@@ -99,7 +99,24 @@ namespace MxEngine
 
         for (auto& instance : instanceFactory.GetInstances())
         {
-            json.push_back(SceneSerializer::SerializeMxObject(*instance));
+            if (instance->IsSerialized)
+            {
+                json.push_back(SceneSerializer::SerializeMxObject(*instance));
+            }
+        }
+    }
+
+    template<>
+    void DeserializeExtra<InstanceFactory>(rttr::instance jsonWrapped, rttr::instance& object, HandleMappings& mappings)
+    {
+        const auto& json = *jsonWrapped.try_convert<JsonFile>();
+        auto& instanceFactory = *object.try_convert<InstanceFactory>();
+
+        for (const auto& entry : json)
+        {
+            auto instance = instanceFactory.Instanciate();
+            SceneSerializer::DeserializeMxObject(entry, instance, mappings);
+            DeserializeComponent(entry["Instance"], instance->GetComponent<Instance>(), mappings);
         }
     }
 
@@ -114,7 +131,7 @@ namespace MxEngine
     }
 
     template<>
-    void DeserializeExtra<VRCameraController>(rttr::instance jsonWrapped, rttr::instance& object, const HandleMappings& mappings)
+    void DeserializeExtra<VRCameraController>(rttr::instance jsonWrapped, rttr::instance& object, HandleMappings& mappings)
     {
         const auto& json = *jsonWrapped.try_convert<JsonFile>();
         auto& vr = *object.try_convert<VRCameraController>();
@@ -136,7 +153,7 @@ namespace MxEngine
     }
 
     template<>
-    void DeserializeExtra<Texture>(rttr::instance jsonWrapped, rttr::instance& object, const HandleMappings& mappings)
+    void DeserializeExtra<Texture>(rttr::instance jsonWrapped, rttr::instance& object, HandleMappings& mappings)
     {
         const auto& json = *jsonWrapped.try_convert<JsonFile>();
         auto& texture = *object.try_convert<Texture>();
