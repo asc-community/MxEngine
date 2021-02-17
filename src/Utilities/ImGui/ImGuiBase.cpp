@@ -29,7 +29,5 @@
 #include "ImGuiBase.h"
 
 // including imgui implementation
-#if defined(MXENGINE_USE_OPENGL)
-    #include <examples/imgui_impl_opengl3.cpp>
-    #include <examples/imgui_impl_glfw.cpp>
-#endif
+#include <examples/imgui_impl_opengl3.cpp>
+#include <examples/imgui_impl_glfw.cpp>

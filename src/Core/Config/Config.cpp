@@ -36,21 +36,6 @@ namespace MxEngine
         dist = json.value(name, dist);
     }
 
-    const char* EnumToString(CursorMode mode)
-    {
-        switch (mode)
-        {
-        case CursorMode::NORMAL:
-            return "NORMAL";
-        case CursorMode::HIDDEN:
-            return "HIDDEN";
-        case CursorMode::DISABLED:
-            return "DISABLED";
-        default:
-            return "HIDDEN";
-        }
-    }
-
     const char* EnumToString(RenderProfile profile)
     {
         switch (profile)

@@ -30,6 +30,7 @@
 
 // only for time
 #include <chrono>
+#include <thread>
 #include "Core/Macro/Macro.h"
 #include "Core/Application/Application.h"
 
@@ -69,5 +70,10 @@ namespace MxEngine
 	size_t Time::FPS()
 	{
 		return Application::GetImpl()->GetCurrentFPS();
+	}
+
+	void Time::Sleep(float seconds)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(uint64_t(seconds * 1000.0f)));
 	}
 }

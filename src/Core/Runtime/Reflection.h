@@ -36,10 +36,13 @@ namespace MxEngine
 {
     #define MXENGINE_REFLECT_TYPE RTTR_REGISTRATION
 
+    struct HandleMappings;
+
     struct MetaInfo
     {
         constexpr static const char* FLAGS = "flags";
         constexpr static const char* COPY_FUNCTION = "copy";
+        constexpr static const char* CONDITION = "condition";
 
         enum Flags : uint32_t
         {
@@ -56,13 +59,20 @@ namespace MxEngine
         constexpr static const char* INTERPRET_AS = "interpret as";
         constexpr static const char* CUSTOM_VIEW = "custom view";
         constexpr static const char* HANDLE_EDITOR = "handle editor";
-        constexpr static const char* VIEW_CONDITION = "view condition";
     };
 
-    using ViewConditionFunction = bool(*)(const rttr::instance&);
+    struct SerializeInfo
+    {
+        constexpr static const char* CUSTOM_SERIALIZE = "serialize";
+        constexpr static const char* CUSTOM_DESERIALIZE = "deserialize";
+    };
+
+    using ConditionFunction = bool(*)(const rttr::instance&);
     using CustomViewFunction = rttr::variant(*)(rttr::instance&);
     using HandleEditorFunction = rttr::variant(*)(rttr::instance&);
     using InstanceToVariantFunction = rttr::variant(*)(rttr::instance&);
+    using CustomSerializeFunction = void(*)(rttr::instance, rttr::instance&);
+    using CustomDeserializeFunction = void(*)(rttr::instance, rttr::instance&, HandleMappings&);
 
     enum class InterpretAsInfo 
     {
@@ -88,6 +98,9 @@ namespace MxEngine
             rttr::variant copyFunction = obj.get_metadata(MetaInfo::COPY_FUNCTION);
             this->CopyFunction = copyFunction.is_valid() ? copyFunction.get_value<InstanceToVariantFunction>() : nullptr;
 
+            rttr::variant condition = obj.get_metadata(MetaInfo::CONDITION);
+            this->Condition = condition.is_valid() ? condition.get_value<ConditionFunction>() : nullptr;
+
             rttr::variant precision = obj.get_metadata(EditorInfo::EDIT_PRECISION);
             this->Editor.EditPrecision = precision.is_valid() ? precision.get_value<float>() : 1.0f;
 
@@ -100,25 +113,34 @@ namespace MxEngine
             rttr::variant customView = obj.get_metadata(EditorInfo::CUSTOM_VIEW);
             this->Editor.CustomView = customView.is_valid() ? customView.get_value<CustomViewFunction>() : nullptr;
 
-            rttr::variant viewCondition = obj.get_metadata(EditorInfo::VIEW_CONDITION);
-            this->Editor.ViewCondition = viewCondition.is_valid() ? viewCondition.get_value<ViewConditionFunction>() : nullptr;
-
             rttr::variant handleEditor = obj.get_metadata(EditorInfo::HANDLE_EDITOR);
             this->Editor.HandleEditor = handleEditor.is_valid() ? handleEditor.get_value<HandleEditorFunction>() : nullptr;
+
+            rttr::variant customSerialize = obj.get_metadata(SerializeInfo::CUSTOM_SERIALIZE);
+            this->Serialization.CustomSerialize = customSerialize.is_valid() ? customSerialize.get_value<CustomSerializeFunction>() : nullptr;
+
+            rttr::variant customDeserialize = obj.get_metadata(SerializeInfo::CUSTOM_DESERIALIZE);
+            this->Serialization.CustomDeserialize = customDeserialize.is_valid() ? customDeserialize.get_value<CustomDeserializeFunction>() : nullptr;
         }
-        
+
         uint32_t Flags = 0;
         InstanceToVariantFunction CopyFunction = nullptr;
+        ConditionFunction Condition = nullptr;
 
         struct
         {
             CustomViewFunction CustomView = nullptr;
-            ViewConditionFunction ViewCondition = nullptr;
             HandleEditorFunction HandleEditor = nullptr;
             Range EditRange{ 0.0f, 0.0f };
             float EditPrecision = 1.0f;
             InterpretAsInfo InterpretAs = InterpretAsInfo::DEFAULT;
         } Editor;
+
+        struct 
+        {
+            CustomSerializeFunction CustomSerialize = nullptr;
+            CustomDeserializeFunction CustomDeserialize = nullptr;
+        } Serialization;
     };
 
     template<typename T>
@@ -126,6 +148,12 @@ namespace MxEngine
     {
         return rttr::variant{ *i.try_convert<T>() };
     }
+
+    template<typename>
+    void SerializeExtra(rttr::instance, rttr::instance&);
+
+    template<typename>
+    void DeserializeExtra(rttr::instance, rttr::instance&, HandleMappings&);
 
     namespace GUI
     {

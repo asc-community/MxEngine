@@ -41,7 +41,7 @@ namespace MxEngine
         {
             auto object = MxObject::Create();
             object->IsSerialized = false;
-            object->SetDisplayInRuntimeEditor(false);
+            object->IsDisplayedInEditor = false;
             object->Name = "__Timer";
             auto behaviour = object->AddComponent<Behaviour>(
             [callback = std::forward<F>(func)](MxObject& self, float dt) mutable

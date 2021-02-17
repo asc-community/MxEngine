@@ -17,7 +17,7 @@ struct CubeBehaviour
 		for (auto& instance : pool)
 		{
 			// do not spam cube instances in runtime editor
-			instance->SetDisplayInRuntimeEditor(false);
+			instance->IsDisplayedInEditor = false;
 
 			int id = int(idx - offset);
 			idx++;

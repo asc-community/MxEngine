@@ -116,6 +116,11 @@ namespace MxEngine
         }
     }
 
+    void AudioBuffer::Load(const MxString& path)
+    {
+        this->Load(ToFilePath(path));
+    }
+
     AudioBuffer::BindableId AudioBuffer::GetNativeHandle() const
     {
         return id;
@@ -171,6 +176,11 @@ namespace MxEngine
         this->filepath = tag;
     }
 
+    bool AudioBuffer::IsInternalEngineResource() const
+    {
+        return this->filepath.find(MXENGINE_INTERNAL_TAG_SYMBOL) == 0;
+    }
+
     namespace GUI
     {
         rttr::variant AudioBufferHandleEditorExtra(rttr::instance&);
@@ -192,6 +202,8 @@ namespace MxEngine
             rttr::value("FLAC", AudioType::FLAC)
         );
 
+        using SetFilePath = void(AudioBuffer::*)(const MxString&);
+
         rttr::registration::class_<AudioBuffer>("AudioBuffer")
             (
                 rttr::metadata(EditorInfo::HANDLE_EDITOR, GUI::HandleEditorExtra<AudioBuffer>)
@@ -199,7 +211,11 @@ namespace MxEngine
             .constructor<>()
             .property_readonly("filepath", &AudioBuffer::GetFilePath)
             (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("_filepath", &AudioBuffer::GetFilePath, (SetFilePath)&AudioBuffer::Load)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE)
             )
             .property_readonly("length in seconds", &AudioBuffer::GetLengthInSeconds)
             (

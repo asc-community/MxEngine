@@ -49,7 +49,7 @@ namespace MxEngine
     public:
         void AddEntry(const char* entryName, size_t incrementValue) { }
         void ResetAll() { }
-        const auto& GetStatistics() const { return this->statistics; }
+        const auto& GetEntries() const { return this->statistics; }
     };
     #endif
 }

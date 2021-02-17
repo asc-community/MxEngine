@@ -28,7 +28,7 @@
 
 #include "RenderEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
-#include "Utilities/ImGui/Editors/Components/ComponentEditor.h"
+#include "Utilities/ImGui/Editors/ComponentEditor.h"
 #include "Core/Application/Rendering.h"
 #include "Platform/Window/WindowManager.h"
 
@@ -107,7 +107,6 @@ namespace MxEngine
             }
             ImGui::TreePop();
         }
-        // TODO: let user change viewport to other camera controller
 
         if (ImGui::TreeNode("debug settings"))
         {

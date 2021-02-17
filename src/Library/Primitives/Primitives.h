@@ -37,13 +37,15 @@ namespace MxEngine
     class Primitives
     {
     public:
-        static MeshHandle CreateMesh(MeshData meshData);
-        static MeshHandle CreateCube(size_t polygons = 1);
-        static MeshHandle CreatePlane(size_t UVrepeats = 1);
+        static MeshHandle CreateMesh(MeshData meshData, const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies, const MxString& filename);
+        static MeshHandle CreateMesh(MeshData meshData, const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies);
+        static MeshHandle CreateCube(size_t polygons = 2);
+        static MeshHandle CreatePlane(size_t polygons = 2);
         static MeshHandle CreateSphere(size_t polygons = 32);
         static MeshHandle CreateCylinder(size_t polygons = 32);
-        static MeshHandle CreatePyramid();
+        static MeshHandle CreatePyramid(size_t polygons = 1);
         static MeshHandle CreateSurface(const Array2D<float>& heights);
+        static MeshHandle CreateSurface(const Array2D<float>& heights, const MxString& filename);
         static TextureHandle CreateGridTexture(size_t textureSize = 512, float borderScale = 0.01f);
 
         template<typename Func>
@@ -54,8 +56,8 @@ namespace MxEngine
             MX_ASSERT(xsize > 0.0f);
             MX_ASSERT(ysize > 0.0f);
 
-            size_t intxsize = static_cast<size_t>(xsize / step);
-            size_t intysize = static_cast<size_t>(ysize / step);
+            size_t intxsize = static_cast<size_t>(xsize / step) + 1;
+            size_t intysize = static_cast<size_t>(ysize / step) + 1;
             Array2D<float> heights;
             heights.resize(intxsize, intysize);
 

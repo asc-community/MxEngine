@@ -166,7 +166,7 @@ namespace MxEngine
 		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
-	void RenderController::ApplyAmbientOcclusion(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
+	void RenderController::ApplySSAO(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
 	{
 		if (camera.Effects == nullptr || camera.Effects->GetAmbientOcclusionSamples() == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::ComputeAmbientOcclusion()");
@@ -185,15 +185,15 @@ namespace MxEngine
 		computeShader->SetUniformFloat("radius", camera.Effects->GetAmbientOcclusionRadius());
 		computeShader->SetUniformFloat("intensity", camera.Effects->GetAmbientOcclusionIntensity());
 
-		this->RenderToTexture(this->Pipeline.Environment.AmbientOcclusionTexture, computeShader);
-		this->Pipeline.Environment.AmbientOcclusionTexture->GenerateMipmaps();
+		this->RenderToTexture(temporary, computeShader);
+		temporary->GenerateMipmaps();
 
 		auto& applyShader = this->Pipeline.Environment.Shaders["ApplyAmbientOcclusion"_id];
 		applyShader->Bind();
 		input->Bind(0);
-		this->Pipeline.Environment.AmbientOcclusionTexture->Bind(1);
+		temporary->Bind(1);
 		applyShader->SetUniformInt("inputTex", input->GetBoundId());
-		applyShader->SetUniformInt("aoTex", this->Pipeline.Environment.AmbientOcclusionTexture->GetBoundId());
+		applyShader->SetUniformInt("aoTex", temporary->GetBoundId());
 
 		this->RenderToTexture(output, applyShader);
 		std::swap(input, output);
@@ -233,8 +233,9 @@ namespace MxEngine
 		camera.NormalTexture->GenerateMipmaps();
 		camera.DepthTexture->GenerateMipmaps();
 
-		this->ApplyAmbientOcclusion(camera, camera.HDRTexture, camera.SwapTexture);
-		this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture);
+		this->ApplySSAO(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
+		this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
+		// this->ApplySSGI(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
 
 		// render skybox & debug buffer (HDR texture is already attached)
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.HDRTexture, Attachment::COLOR_ATTACHMENT0);
@@ -248,14 +249,14 @@ namespace MxEngine
 		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
 
 		this->ComputeBloomEffect(camera);
-		this->ApplyChromaticAbberation(camera, camera.HDRTexture, camera.SwapTexture);
-		this->ApplyFogEffect(camera, camera.HDRTexture, camera.SwapTexture);
+		this->ApplyChromaticAbberation(camera, camera.HDRTexture, camera.SwapTexture1);
+		this->ApplyFogEffect(camera, camera.HDRTexture, camera.SwapTexture1);
 
-		this->ApplyHDRToLDRConversion(camera, camera.HDRTexture, camera.SwapTexture);
+		this->ApplyHDRToLDRConversion(camera, camera.HDRTexture, camera.SwapTexture1);
 
-		this->ApplyFXAA(camera, camera.HDRTexture, camera.SwapTexture);
-		this->ApplyColorGrading(camera, camera.HDRTexture, camera.SwapTexture);
-		this->ApplyVignette(camera, camera.HDRTexture, camera.SwapTexture);
+		this->ApplyFXAA(camera, camera.HDRTexture, camera.SwapTexture1);
+		this->ApplyColorGrading(camera, camera.HDRTexture, camera.SwapTexture1);
+		this->ApplyVignette(camera, camera.HDRTexture, camera.SwapTexture1);
 	}
 
 	void RenderController::DrawDirectionalLights(CameraUnit& camera, TextureHandle& output)
@@ -451,7 +452,7 @@ namespace MxEngine
 		std::swap(input, output);
 	}
 
-	void RenderController::ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
+	void RenderController::ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
 	{
 		if (camera.SSR == nullptr || camera.SSR->GetSteps() == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::ApplySSR()");
@@ -476,6 +477,35 @@ namespace MxEngine
 		SSRShader->SetUniformFloat("maxDistance", camera.SSR->GetMaxDistance());
 
 		this->RenderToTexture(output, SSRShader);
+		std::swap(input, output);
+	}
+
+	void RenderController::ApplySSGI(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
+	{
+		MAKE_SCOPE_PROFILER("RenderController::ApplySSR()");
+		input->GenerateMipmaps();
+
+		auto& SSGIShader = this->Pipeline.Environment.Shaders["SSGI"_id];
+		SSGIShader->Bind();
+
+		Texture::TextureBindId textureId = 0;
+		this->BindGBuffer(camera, *SSGIShader, textureId);
+		this->BindCameraInformation(camera, *SSGIShader);
+
+		input->Bind(textureId++);
+		SSGIShader->SetUniformInt("inputTex", input->GetBoundId());
+
+		this->RenderToTexture(temporary, SSGIShader);
+		temporary->GenerateMipmaps();
+
+		auto& applyShader = this->Pipeline.Environment.Shaders["ApplySSGI"_id];
+		applyShader->Bind();
+		input->Bind(0);
+		temporary->Bind(1);
+		applyShader->SetUniformInt("inputTex", input->GetBoundId());
+		applyShader->SetUniformInt("SSGITex", temporary->GetBoundId());
+
+		this->RenderToTexture(output, applyShader);
 		std::swap(input, output);
 	}
 
@@ -1084,7 +1114,8 @@ namespace MxEngine
 		camera.DepthTexture               = controller.GetDepthTexture();
 		camera.AverageWhiteTexture        = controller.GetAverageWhiteTexture();
 		camera.HDRTexture                 = controller.GetHDRTexture();
-		camera.SwapTexture                = controller.GetSwapHDRTexture();
+		camera.SwapTexture1                = controller.GetSwapHDRTexture1();
+		camera.SwapTexture2                = controller.GetSwapHDRTexture2();
 		camera.OutputTexture              = controller.GetRenderTexture();
 		camera.RenderToTexture            = controller.IsRendering();
 		camera.SkyboxTexture              = (skybox != nullptr && skybox->CubeMap.IsValid()) ? skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;

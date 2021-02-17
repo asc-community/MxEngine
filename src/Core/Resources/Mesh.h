@@ -43,10 +43,10 @@ namespace MxEngine
 		using SubMeshList = MxVector<SubMesh>;
 		
 		SubMeshList submeshes;
+		MxString filePath;
 		MxVector<VertexBufferHandle> VBOs;
 		MxVector<VertexBufferLayoutHandle> VBLs;
 		MxVector<UniqueRef<TransformComponent>> subMeshTransforms;
-		MxString filePath;
 
 		template<typename FilePath>
 		void LoadFromFile(const FilePath& filepath);
@@ -64,8 +64,8 @@ namespace MxEngine
 		template<typename FilePath>
 		Mesh(const FilePath& path);
 		
-		template<typename FilePath>
-		void Load(const FilePath& filepath);
+		void Load(const MxString& filepath);
+		template<typename FilePath> void Load(const FilePath& filepath);
 
 		void UpdateBoundingGeometry();
 		size_t AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl);
@@ -75,14 +75,17 @@ namespace MxEngine
 		size_t GetTotalIndiciesCount() const;
 		size_t GetBufferCount() const;
 		void PopInstancedBuffer();
-		const MxString& GetFilePath() const;
-		void SetInternalEngineTag(const MxString& tag);
 		void SetSubMeshesInternal(const SubMeshList& submeshes);
 		const SubMeshList& GetSubMeshes() const;
 		const SubMesh& GetSubMeshByIndex(size_t index) const;
 		SubMesh& GetSubMeshByIndex(size_t index);
 		SubMesh& AddSubMesh(SubMesh::MaterialId materialId);
+		SubMesh& AddSubMesh(SubMesh::MaterialId materialId, MeshData data);
 		SubMesh& LinkSubMesh(SubMesh& submesh);
 		void DeleteSubMeshByIndex(size_t index);
+
+		const MxString& GetFilePath() const;
+		void SetInternalEngineTag(const MxString& tag);
+		bool IsInternalEngineResource() const;
 	};
 }

@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ResourceEditor.h"
-#include "Utilities/ImGui/Editors/Components/ComponentEditor.h"
+#include "Utilities/ImGui/Editors/ComponentEditor.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Utilities/FileSystem/FileManager.h"
 #include "Utilities/Image/ImageManager.h"

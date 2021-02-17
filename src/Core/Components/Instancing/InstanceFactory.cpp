@@ -41,7 +41,7 @@ namespace MxEngine
 
         this->DestroyInstances();
 
-        if (meshSource.IsValid())
+        if (meshSource.IsValid() && meshSource->Mesh.IsValid())
         {
             auto& mesh = *meshSource->Mesh;
             this->RemoveInstancedBuffer(mesh, (size_t)this->bufferIndex + 2);
@@ -74,6 +74,7 @@ namespace MxEngine
 
         this->pool.Allocate(instance);
         instance->Transform = object->Transform;
+        instance->Name = object->Name + "_instance";
         auto component = instance->AddComponent<Instance>(object);
         return instance;
     }
@@ -145,7 +146,7 @@ namespace MxEngine
     {
         auto& object = MxObject::GetByComponent(*this);
         auto meshSource = object.GetComponent<MeshSource>();
-        if (meshSource.IsValid())
+        if (meshSource.IsValid() && meshSource->Mesh.IsValid())
         {
             auto& mesh = *meshSource->Mesh;
 
@@ -172,6 +173,12 @@ namespace MxEngine
         return object.HasComponent<Instance>();
     }
 
+    MxObject::Handle Instanciate(MxObject& object)
+    {
+        auto instanceFactory = object.GetOrAddComponent<InstanceFactory>();
+        return instanceFactory->Instanciate();
+    }
+
     MxObject::Handle GetInstanceParent(MxObject& object)
     {
         auto instance = object.GetComponent<Instance>();
@@ -187,10 +194,6 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::INTERPRET_AS, InterpretAsInfo::COLOR)
-            )
-            .property_readonly("parent", &Instance::GetParent)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE)
             );
 
         rttr::registration::class_<InstanceFactory>("InstanceFactory")
@@ -213,8 +216,10 @@ namespace MxEngine
             )
             .property_readonly("instances", (GetPoolFunc)&InstanceFactory::GetInstancePool)
             (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<InstanceFactory>)
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<InstanceFactory>),
+                rttr::metadata(SerializeInfo::CUSTOM_SERIALIZE, SerializeExtra<InstanceFactory>),
+                rttr::metadata(SerializeInfo::CUSTOM_DESERIALIZE, DeserializeExtra<InstanceFactory>)
             );
     }
 }

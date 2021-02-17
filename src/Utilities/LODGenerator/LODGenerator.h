@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Utilities/ObjectLoader/ObjectLoader.h"
+#include "Utilities/ObjectLoading/ObjectLoader.h"
 #include "Utilities/STL/MxMap.h"
 #include "Utilities/STL/MxHashMap.h"
 
@@ -77,7 +77,9 @@ namespace MxEngine
         /*!
         initial object reference. Used to generate LODs and does not changed by LODGenerator
         */
-        const MeshData& mesh;
+        const MeshData& originMesh;
+        MeshData::VertexData originVertecies;
+        MeshData::IndexData originIndicies;
 
         using ProjectionTable = MxVector<uint32_t>;
         using WeightList = MxHashMap<size_t, size_t>;

@@ -62,18 +62,18 @@ namespace MxEngine
     AABB SphereCollider::GetAABB() const
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->sphereShape->GetAABB(transform);
+        return this->sphereShape->GetAABBTransformed(transform);
     }
 
     BoundingSphere SphereCollider::GetBoundingSphere() const
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->sphereShape->GetBoundingSphere(transform);
+        return this->sphereShape->GetBoundingSphereTransformed(transform);
     }
 
     BoundingSphere SphereCollider::GetBoundingSphereInternal() const
     {
-        return this->GetNativeHandle()->GetBoundingSphereUnchanged();
+        return this->GetNativeHandle()->GetBoundingSphere();
     }
 
     void SphereCollider::SetBoundingSphere(BoundingSphere sphere)
@@ -88,6 +88,9 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<BoundingSphere>)
             )
             .constructor<>()
+            (
+                rttr::policy::ctor::as_object
+            )
             .property("center", &BoundingSphere::Center)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),

@@ -87,7 +87,10 @@ namespace glm
     void from_json(const MxEngine::JsonFile& j, MxEngine::Quaternion& q)
     {
         auto a = j.get<std::array<float, 4>>();
-        q = Quaternion{ a[0], a[1], a[2], a[3] };
+        q.x = a[0];
+        q.y = a[1];
+        q.z = a[2];
+        q.w = a[3];
     }
 }
 

@@ -69,9 +69,9 @@ namespace MxEngine
         this->DestroyShape();
     }
 
-    Capsule CapsuleShape::GetBoundingCapsule(const TransformComponent& transform) const
+    Capsule CapsuleShape::GetBoundingCapsuleTransformed(const TransformComponent& transform) const
     {
-        auto capsule = this->GetBoundingCapsuleUnchanged();
+        auto capsule = this->GetBoundingCapsule();
         auto& scale = transform.GetScale();
         capsule.Center += transform.GetPosition();
         capsule.Rotation = transform.GetRotation();
@@ -93,9 +93,9 @@ namespace MxEngine
         return capsule;
     }
 
-    Capsule CapsuleShape::GetBoundingCapsuleUnchanged() const
+    Capsule CapsuleShape::GetBoundingCapsule() const
     {
-        auto box = this->GetAABBUnchanged();
+        auto box = this->GetAABB();
         auto scale = this->GetScale();
         box.Min *= scale;
         box.Max *= scale;
@@ -120,7 +120,12 @@ namespace MxEngine
 
     Capsule CapsuleShape::GetNativeBounding() const
     {
-        return this->GetBoundingCapsuleUnchanged();
+        return this->GetBoundingCapsule();
+    }
+
+    Capsule CapsuleShape::GetNativeBoundingTransformed(const TransformComponent& transform) const
+    {
+        return this->GetBoundingCapsuleTransformed(transform);
     }
 
     Capsule::Axis CapsuleShape::GetOrientation() const

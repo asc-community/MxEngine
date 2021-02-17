@@ -239,3 +239,8 @@
 - imguizmo added (translate, rotate and scale objects via mouse)
 - color grading effect
 - improved performance by object culling, precomputing IBL computations
+# 8.0.0
+- improved shadows (alpha masks, blured cascade shadow maps) 
+- runtime reflection, scene saving and loading
+- optimized mesh and texture storage (normals as R8G8, o vertex data on CPU side)
+- more editor features (instancing by hotkey, viewport selection, loading model files as MxObjects)

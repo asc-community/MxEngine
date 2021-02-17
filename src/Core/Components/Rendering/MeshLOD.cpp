@@ -62,7 +62,7 @@ namespace MxEngine
                 auto& submeshLOD = meshLOD->LinkSubMesh(submesh);
                 submeshLOD.Name = submesh.Name;
                 submeshLOD.Data = lod.CreateObject(factor);
-                totalIndicies += submeshLOD.Data.GetIndicies().size();
+                totalIndicies += submeshLOD.Data.GetIndiciesCount();
             }
             MXLOG_DEBUG("MxEngine::MeshLOD", MxFormat("generated LOD with {0} indicies for object: {1}", totalIndicies, object.Name.c_str()));
         }
@@ -99,7 +99,7 @@ namespace MxEngine
 
     void MeshLOD::SetCurrentLOD(size_t lod)
     {
-        this->currentLOD = (uint8_t)Min(lod, (size_t)std::numeric_limits<uint8_t>::max());
+        this->currentLOD = (uint8_t)Min(lod, (size_t)Max((int)this->LODs.size() - 1, 0));
     }
 
     size_t MeshLOD::GetCurrentLOD() const
@@ -107,7 +107,7 @@ namespace MxEngine
         return (size_t)this->currentLOD;
     }
 
-    MeshLOD::LODInstance MeshLOD::GetMeshLOD() const
+    MeshHandle MeshLOD::GetMeshLOD() const
     {
         if (this->currentLOD == 0 || this->currentLOD >= this->LODs.size())
             return MxObject::GetByComponent(*this).GetComponent<MeshSource>()->Mesh;
@@ -127,7 +127,8 @@ namespace MxEngine
             )
             .property("current lod", &MeshLOD::GetCurrentLOD, &MeshLOD::SetCurrentLOD)
             (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance& v) { return !v.try_convert<MeshLOD>()->AutoLODSelection; }))
             )
             .method("generate lods", (AutoLodGenFunc)&MeshLOD::Generate)
             (

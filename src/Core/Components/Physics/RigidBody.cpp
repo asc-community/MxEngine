@@ -215,24 +215,36 @@ namespace MxEngine
         return this->rigidBody->IsMoving();
     }
 
-    void RigidBody::SetStateDynamic(bool value)
-    {
-        if (value) this->MakeDynamic();
-    }
-
-    void RigidBody::SetStateStatic(bool value)
-    {
-        if (value) this->MakeStatic();
-    }
-
-    void RigidBody::SetStateKinematic(bool value)
-    {
-        if (value) this->MakeKinematic();
-    }
-
-    void RigidBody::SetStateTrigger(bool value)
+    void RigidBody::ToggleTrigger(bool value)
     {
         if (value) this->MakeTrigger();
+    }
+
+    RigidBodyType RigidBody::GetTypeInternal() const
+    {
+        return
+            this->IsStatic()    ? RigidBodyType::STATIC    :
+            this->IsDynamic()   ? RigidBodyType::DYNAMIC   :
+            this->IsKinematic() ? RigidBodyType::KINEMATIC :
+            RigidBodyType::STATIC;
+    }
+
+    void RigidBody::SetTypeInternal(RigidBodyType type)
+    {
+        switch (type)
+        {
+        case MxEngine::RigidBodyType::STATIC:
+            this->MakeStatic();
+            break;
+        case MxEngine::RigidBodyType::DYNAMIC:
+            this->MakeDynamic();
+            break;
+        case MxEngine::RigidBodyType::KINEMATIC:
+            this->MakeKinematic();
+            break;
+        default: // do not do anything
+            break;
+        }
     }
 
     void RigidBody::SetCollisionFilter(uint32_t mask, uint32_t group)
@@ -552,6 +564,13 @@ namespace MxEngine
     {
         using SetAnisotropicFrictionFunc = void(RigidBody::*)(Vector3);
 
+        rttr::registration::enumeration<RigidBodyType>("RigidBodyType")
+        (
+            rttr::value("STATIC", RigidBodyType::STATIC),
+            rttr::value("DYNAMIC", RigidBodyType::DYNAMIC),
+            rttr::value("KINEMATIC", RigidBodyType::KINEMATIC)
+        );
+
         rttr::registration::class_<RigidBody>("RigidBody")
             .constructor<>()
             .method("clear forces", &RigidBody::ClearForces)
@@ -562,19 +581,11 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
             )
-            .property("is static", &RigidBody::IsStatic, &RigidBody::SetStateStatic)
+            .property("type", &RigidBody::GetTypeInternal, &RigidBody::SetTypeInternal)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )
-            .property("is dynamic", &RigidBody::IsDynamic, &RigidBody::SetStateDynamic)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
-            .property("is kinematic", &RigidBody::IsKinematic, &RigidBody::SetStateKinematic)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
-            .property("is trigger", &RigidBody::IsTrigger, &RigidBody::SetStateTrigger)
+            .property("is trigger", &RigidBody::IsTrigger, &RigidBody::ToggleTrigger)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )

@@ -31,11 +31,11 @@
 namespace MxEngine
 {
     class Shader;
+    class Material;
     struct DirectionalLightUnit;
     struct PointLightUnit;
     struct SpotLightUnit;
     struct RenderUnit;
-    struct Material;
 
     class ShadowMapGenerator
     {

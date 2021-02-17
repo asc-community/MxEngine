@@ -32,6 +32,7 @@
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Utilities/Format/Format.h"
+#include "Utilities/Logging/Logger.h"
 #include "Utilities/FileSystem/FileManager.h"
 #include "Core/Events/WindowResizeEvent.h"
 #include "Core/Events/UpdateEvent.h"
@@ -40,6 +41,7 @@
 #include "Platform/Window/WindowManager.h"
 #include "Platform/Window/Input.h"
 #include "Core/Events/FpsUpdateEvent.h"
+#include "Core/Components/Instancing/Instance.h"
 
 namespace MxEngine
 {
@@ -364,15 +366,27 @@ namespace MxEngine
 		}
 	}
 
-	// declared in InstanceFactory.h
-	bool IsInstanced(MxObject& object);
-
     void RuntimeEditor::DrawMxObject(const MxString& treeName, MxObject::Handle object)
     {
-		bool isInstanced = IsInstanced(*object);
-		if(!isInstanced) this->DrawTransformManipulator(object->Transform);
-		GUI::DrawMxObjectEditor(treeName.c_str(), *object, !isInstanced, this->componentAdderComponentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
-    }
+		GUI::DrawMxObjectEditor(treeName.c_str(), *object, this->componentAdderComponentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
+		if (!IsInstanced(*object))
+		{
+			this->DrawTransformManipulator(object->Transform);
+			GUI::DrawMxObjectBoundingBoxEditor(*object);
+		}
+		// instanciate by middle button click TODO: add docs
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Middle))
+		{
+			if (IsInstance(*object))
+			{
+				this->currentlySelectedObject = Instanciate(*GetInstanceParent(*object));
+			}
+			else
+			{
+				this->currentlySelectedObject = Instanciate(*object);
+			}
+		}
+	}
 
 	Vector2 RuntimeEditor::GetViewportSize() const
 	{
@@ -415,7 +429,7 @@ namespace MxEngine
 		for (auto& object : objects)
 		{
 			bool filteredByName = object.Name.find(filter) != object.Name.npos;
-			bool shouldDisplay = object.IsDisplayedInRuntimeEditor() && filteredByName && id < 10000;
+			bool shouldDisplay = object.IsDisplayedInEditor && filteredByName && id < 10000;
 			if (shouldDisplay) // do not display too much objects
 			{
 				ImGui::PushID(id++);

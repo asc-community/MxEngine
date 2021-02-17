@@ -51,7 +51,8 @@ namespace MxEngine
 		TextureHandle Depth;
 		TextureHandle AverageWhite;
 		TextureHandle HDR;
-		TextureHandle SwapHDR;
+		TextureHandle SwapHDR1;
+		TextureHandle SwapHDR2;
 
 		void Init(int width, int height);
 		void Resize(int width, int height);
@@ -102,6 +103,7 @@ namespace MxEngine
 		Matrix4x4 GetStaticViewMatrix() const;
 		TextureHandle GetRenderTexture() const;
 		void ListenWindowResizeEvent();
+		void SetListenWindowResizeEventInternal(bool value);
 		bool IsListeningWindowResizeEvent() const;
 		void ResizeRenderTexture(size_t width, size_t height);
 		void SetRenderTexture(const TextureHandle& texture);
@@ -120,6 +122,8 @@ namespace MxEngine
 		float GetRotateSpeed() const;
 		void SetRotateSpeed(float speed);
 		CameraController& Rotate(float horz, float vert);
+		Vector2 GetRotation() const;
+		void SetRotation(Vector2 newRotation);
 
 		void SetForwardVector(const Vector3& forward);
 		void SetUpVector(const Vector3& up);
@@ -135,6 +139,7 @@ namespace MxEngine
 		TextureHandle GetDepthTexture() const;
 		TextureHandle GetAverageWhiteTexture() const;
 		TextureHandle GetHDRTexture() const;
-		TextureHandle GetSwapHDRTexture() const;
+		TextureHandle GetSwapHDRTexture1() const;
+		TextureHandle GetSwapHDRTexture2() const;
 	};
 }

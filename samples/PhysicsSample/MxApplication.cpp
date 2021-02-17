@@ -115,7 +115,7 @@ namespace PhysicsSample
             Rendering::SetViewport(controller);
 
             auto input = player->AddComponent<InputController>();
-            input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::UNKNOWN);
+            input->BindMovementWASDSpaceShift();
             input->BindRotation();
 
             auto collider = player->AddComponent<CapsuleCollider>();
@@ -141,8 +141,11 @@ namespace PhysicsSample
             auto rb = object->AddComponent<RigidBody>();
             auto cl = object->AddComponent<SphereCollider>();
 
-            mr->GetMaterial()->BaseColor = Colors::Create(Colors::GREEN);
-            mr->GetMaterial()->Transparency = 0.3f;
+            auto material = mr->GetMaterial();
+            material->BaseColor = Colors::Create(Colors::GREEN);
+            material->Transparency = 0.3f;
+            material->MetallicFactor = 1.0f;
+            material->RoughnessFactor = 0.4f;
             ms->Mesh = Primitives::CreateSphere();
             rb->MakeTrigger();
             rb->SetOnCollisionEnterCallback([](MxObject& self, MxObject& other)
@@ -250,7 +253,7 @@ namespace PhysicsSample
                 ImGui::InputInt("Y", &y);
                 ImGui::InputInt("Z", &z);
 
-                if (ImGui::DragFloat3("gravity", &gravity[0], 0.01f, 0.0f, 10000.0f))
+                if (ImGui::DragFloat3("gravity", &gravity[0], 0.01f, -10000.0f, 10000.0f))
                     Physics::SetGravity(gravity);
 
                 cubeConstraintsA = Max(0, x), cubeConstraintsB = Max(0, y), cubeConstraintsC = Max(0, z);

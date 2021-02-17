@@ -27,7 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Mesh.h"
-#include "Utilities/ObjectLoader/ObjectLoader.h"
+#include "Utilities/ObjectLoading/ObjectLoader.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Platform/GraphicAPI.h"
 #include "Utilities/LODGenerator/LODGenerator.h"
@@ -74,11 +74,9 @@ namespace MxEngine
 			auto& materialId = materialIds[i];
 
 			auto& submesh = this->AddSubMesh(materialId);
-			submesh.Data.SetVertecies(std::move(meshData.vertecies));
-			submesh.Data.SetIndicies(std::move(meshData.indicies));
-			submesh.Data.BufferVertecies();
-			submesh.Data.BufferIndicies();
-			submesh.Data.UpdateBoundingGeometry();
+			submesh.Data.BufferVertecies(meshData.vertecies);
+			submesh.Data.BufferIndicies(meshData.indicies);
+			submesh.Data.UpdateBoundingGeometry(meshData.vertecies);
 			submesh.Name = std::move(meshData.name);
 		}
 		this->UpdateBoundingGeometry(); // use submeshes boundings to update mesh boundings
@@ -94,6 +92,11 @@ namespace MxEngine
 	void Mesh::Load(const std::filesystem::path& filepath)
 	{
 		this->LoadFromFile(std::filesystem::proximate(filepath));
+	}
+
+	void Mesh::Load(const MxString& filepath)
+	{
+		this->Load(ToFilePath(filepath));
 	}
 
 	void Mesh::UpdateBoundingGeometry()
@@ -190,6 +193,11 @@ namespace MxEngine
 		this->filePath = tag;
 	}
 
+	bool Mesh::IsInternalEngineResource() const
+	{
+		return this->filePath.find(MXENGINE_INTERNAL_TAG_SYMBOL) == 0;
+	}
+
 	void Mesh::SetSubMeshesInternal(const SubMeshList& submeshes)
 	{
 		this->submeshes = submeshes;
@@ -214,8 +222,13 @@ namespace MxEngine
 
 	SubMesh& Mesh::AddSubMesh(SubMesh::MaterialId materialId)
 	{
+		return this->AddSubMesh(materialId, MeshData{ });
+	}
+
+	SubMesh& Mesh::AddSubMesh(SubMesh::MaterialId materialId, MeshData data)
+	{
 		auto& transform = *this->subMeshTransforms.emplace_back(MakeUnique<TransformComponent>());
-		return this->submeshes.emplace_back(materialId, transform);
+		return this->submeshes.emplace_back(materialId, transform, std::move(data));
 	}
 
 	SubMesh& Mesh::LinkSubMesh(SubMesh& submesh)
@@ -249,6 +262,9 @@ namespace MxEngine
 				rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<AABB>)
 			)
 			.constructor<>()
+			(
+				rttr::policy::ctor::as_object
+			)
 			.property("min", &AABB::Min)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
@@ -259,6 +275,8 @@ namespace MxEngine
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
 				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
 			);
+		
+		using SetFilePath = void(Mesh::*)(const MxString&);
 
 		rttr::registration::class_<Mesh>("Mesh")
 			(
@@ -267,7 +285,11 @@ namespace MxEngine
 			.constructor<>()
 			.property_readonly("filepath", &Mesh::GetFilePath)
 			(
-				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+			)
+			.property("_filepath", &Mesh::GetFilePath, (SetFilePath)&Mesh::Load)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE)
 			)
 			.method("update bounding geometry", &Mesh::UpdateBoundingGeometry)
 			(

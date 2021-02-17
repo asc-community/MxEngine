@@ -58,11 +58,11 @@ namespace MxEngine
             unsigned int channels;
             unsigned int sampleRate;
             drwav_uint64 totalPCMFrameCount;
-            drwav_int16* pSampleData = drwav_open_file_and_read_pcm_frames_s16(path.string().c_str(), &channels, &sampleRate, &totalPCMFrameCount, nullptr);
-            if (pSampleData == nullptr)
+            drwav_int16* sampleData = drwav_open_file_and_read_pcm_frames_s16(path.string().c_str(), &channels, &sampleRate, &totalPCMFrameCount, nullptr);
+            if (sampleData == nullptr)
                 return result;
 
-            result.data = pSampleData;
+            result.data = sampleData;
             result.sampleCount = size_t(totalPCMFrameCount * channels);
             result.channels = channels;
             result.frequency = sampleRate;
@@ -72,11 +72,11 @@ namespace MxEngine
         {
             drmp3_config config;
             drmp3_uint64 totalPCMFrameCount;
-            drmp3_int16* pSampleData = drmp3_open_file_and_read_pcm_frames_s16(path.string().c_str(), &config, &totalPCMFrameCount, nullptr);
-            if (pSampleData == nullptr)
+            drmp3_int16* sampleData = drmp3_open_file_and_read_pcm_frames_s16(path.string().c_str(), &config, &totalPCMFrameCount, nullptr);
+            if (sampleData == nullptr)
                 return result;
 
-            result.data = pSampleData;
+            result.data = sampleData;
             result.sampleCount = size_t(totalPCMFrameCount * config.channels);
             result.channels = config.channels;
             result.frequency = config.sampleRate;
@@ -87,11 +87,11 @@ namespace MxEngine
             unsigned int channels;
             unsigned int sampleRate;
             drflac_uint64 totalPCMFrameCount;
-            drflac_int16* pSampleData = drflac_open_file_and_read_pcm_frames_s16(path.string().c_str(), &channels, &sampleRate, &totalPCMFrameCount, nullptr);
-            if (pSampleData == nullptr)
+            drflac_int16* sampleData = drflac_open_file_and_read_pcm_frames_s16(path.string().c_str(), &channels, &sampleRate, &totalPCMFrameCount, nullptr);
+            if (sampleData == nullptr)
                 return result;
 
-            result.data = pSampleData;
+            result.data = sampleData;
             result.sampleCount = size_t(totalPCMFrameCount * channels);
             result.channels = channels;
             result.frequency = sampleRate;
@@ -100,13 +100,16 @@ namespace MxEngine
         else if (ext == ".ogg")
         {
             int channels;
-            int rate;
-            short* pSampleData;
-            int size = stb_vorbis_decode_filename(path.string().c_str(), &channels, &rate, &pSampleData);
-            result.sampleCount = size / sizeof(int16_t);
-            result.data = pSampleData;
+            int sampleRate;
+            short* sampleData;
+            int totalPCMFrameCount = stb_vorbis_decode_filename(path.string().c_str(), &channels, &sampleRate, &sampleData);
+            if (sampleData == nullptr)
+                return result;
+
+            result.data = sampleData;
+            result.sampleCount = size_t(totalPCMFrameCount * channels);
             result.channels = channels;
-            result.frequency = rate;
+            result.frequency = sampleRate;
             result.type = AudioType::OGG;
         }
         else

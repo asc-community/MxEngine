@@ -76,5 +76,10 @@ namespace MxEngine
 		\returns amount of frames per second
 		*/
 		static size_t FPS();
+		/*!
+		make current thread to go into sleep state
+		\param seconds time in seconds
+		*/
+		static void Sleep(float seconds);
 	};
 }

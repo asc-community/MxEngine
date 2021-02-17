@@ -1,0 +1,108 @@
+{
+  "accessors": [
+    {
+      "bufferView": 0,
+      "byteOffset": 0,
+      "componentType": 5125,
+      "count": 2613690,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 0,
+      "componentType": 5126,
+      "count": 444939,
+      "max": [
+        2.07395000000000000000e-01,
+        4.22022000000000010000e-01,
+        5.27753000000000030000e-01
+      ],
+      "min": [
+        -2.39779999999999990000e-01,
+        -2.82957999999999990000e-01,
+        -4.72246999999999970000e-01
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 12,
+      "componentType": 5126,
+      "count": 444939,
+      "type": "VEC3"
+    }
+  ],
+  "asset": {
+    "generator": "Wings 3D 2.2.6.1",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 10454760,
+      "byteOffset": 0
+    },
+    {
+      "buffer": 0,
+      "byteLength": 10678536,
+      "byteOffset": 10454760,
+      "byteStride": 24
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 21133296,
+      "uri": "dragon.bin"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "emissiveFactor": [
+        0.00000000000000000000e+00,
+        0.00000000000000000000e+00,
+        0.00000000000000000000e+00
+      ],
+      "name": "default",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          7.89853807692307730000e-01,
+          8.13333333333333350000e-01,
+          6.94044444444444460000e-01,
+          1.00000000000000000000e+00
+        ],
+        "metallicFactor": 1.00000000000000010000e-01,
+        "roughnessFactor": 8.00000000000000040000e-01
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "root",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 2,
+            "POSITION": 1
+          },
+          "indices": 0,
+          "material": 0
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "root"
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}

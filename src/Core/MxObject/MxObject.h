@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Core/Components/Transform.h"
+#include "Utilities/ECS/Component.h"
 
 GENERATE_METHOD_CHECK(Init, Init())
 
@@ -47,17 +48,22 @@ namespace MxEngine
 	private:
 		constexpr static EngineHandle InvalidHandle = std::numeric_limits<EngineHandle>::max();
 		EngineHandle handle = InvalidHandle;
-		#if defined(MXENGINE_MXOBJECT_EDITOR)
-		bool displayedInEditorList = true;
-		#endif
 	public:
 		bool IsSerialized = true;
+		bool IsDisplayedInEditor = true;
 		MxString Name = UUIDGenerator::Get();
 		TransformComponent Transform;
 	private:
 		// placed here to be destroyed before other members
 		ComponentManager components;
 	public:
+		MxObject() = default;
+		MxObject(const MxObject&) = delete;
+		MxObject& operator=(const MxObject&) = delete;
+		MxObject(MxObject&&) = default;
+		MxObject& operator=(MxObject&&) = default;
+		~MxObject();
+
 		static Handle Create();
 		static void Destroy(Handle object);
 		static void Destroy(MxObject& object);
@@ -65,6 +71,9 @@ namespace MxEngine
 		static ComponentView<MxObject> GetObjects();
 		static Handle GetByName(const MxString& name);
 		static Handle GetHandle(MxObject& object);
+		static Handle GetByHandle(EngineHandle handle);
+
+		EngineHandle GetNativeHandle() const;
 
 		template<typename T>
 		static MxObject& GetByComponent(T& component)
@@ -74,12 +83,6 @@ namespace MxEngine
 			auto& managedObject = Factory::Get<MxObject>()[handle];
 			return managedObject.value;
 		}
-	
-		static MxObject::Handle GetByHandle(EngineHandle handle);
-
-		void SetDisplayInRuntimeEditor(bool value);
-		bool IsDisplayedInRuntimeEditor() const;
-		EngineHandle GetNativeHandle() const;
 
 		template<typename T>
 		static Handle GetHandleByComponent(T& component)
@@ -88,18 +91,9 @@ namespace MxEngine
 			return MxObject::GetByHandle(handle);
 		}
 
-		MxObject() = default;
-		MxObject(const MxObject&) = delete;
-		MxObject& operator=(const MxObject&) = delete;
-		MxObject(MxObject&&) = default;
-		MxObject& operator=(MxObject&&) = default;
-		~MxObject();
-
 		template<typename T, typename... Args>
 		auto AddComponent(Args&&... args)
 		{
-			static_assert(!std::is_same_v<T, TransformComponent>, "Transform component is already present in MxObject");
-
 			auto component = this->components.AddComponent<T>(std::forward<Args>(args)...);
 			component->UserData = reinterpret_cast<void*>(this->handle);
 			if constexpr (has_method_Init<T>::value) 

@@ -46,7 +46,8 @@ namespace MxEngine
 		const AABB& GetAABB() const;
 		const BoundingSphere& GetBoundingSphere() const;
 
-		SubMesh(size_t materiaId, std::reference_wrapper<TransformComponent> transform);
+		SubMesh(size_t materialId, std::reference_wrapper<TransformComponent> transform);
+		SubMesh(size_t materialId, std::reference_wrapper<TransformComponent> transform, MeshData data);
 
 		const TransformComponent& GetTransform() const;
 		TransformComponent& GetTransformReference();

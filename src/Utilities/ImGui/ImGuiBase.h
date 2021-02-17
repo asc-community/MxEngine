@@ -43,8 +43,6 @@
 #include <imgui_internal.h>
 #include <ImGuizmo.h>
 
-#if defined(MXENGINE_USE_OPENGL)
-    #define IMGUI_IMPL_OPENGL_LOADER_GLEW
-    #include <examples/imgui_impl_glfw.h>
-    #include <examples/imgui_impl_opengl3.h>
-#endif
+#define IMGUI_IMPL_OPENGL_LOADER_GLEW
+#include <examples/imgui_impl_glfw.h>
+#include <examples/imgui_impl_opengl3.h>

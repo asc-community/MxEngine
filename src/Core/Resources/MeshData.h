@@ -37,10 +37,10 @@ namespace MxEngine
 {
     class MeshData
     {
+    public:
         using VertexData = MxVector<Vertex>;
         using IndexData = MxVector<uint32_t>;
-        VertexData vertecies;
-        IndexData indicies;
+    private:
         AABB boundingBox;
         BoundingSphere boundingSphere;
 
@@ -55,25 +55,19 @@ namespace MxEngine
         IndexBufferHandle GetIBO() const;
         const AABB& GetAABB() const;
         const BoundingSphere& GetBoundingSphere() const;
-
-        VertexData& GetVerteciesReference();
-        const VertexData& GetVertecies() const;
-        IndexData& GetIndiciesReference();
-        const IndexData& GetIndicies() const;
-        void SetVertecies(VertexData&& vertecies);
-        void SetIndicies(IndexData&& indicies);
-        void SetVertecies(const VertexData& vertecies);
-        void SetIndicies(const IndexData& indicies);
+        
         size_t GetVerteciesCount() const;
         size_t GetIndiciesCount() const;
-        
-        void BufferVertecies();
-        void BufferVertecies(UsageType usageType);
-        void BufferIndicies();
-        void BufferIndicies(UsageType usageType);
-        void FreeMeshDataCopy();
-        void UpdateBoundingGeometry();
-        void RegenerateNormals();
-        void RegenerateTangentSpace();
+        void BufferVertecies(const VertexData& vertecies);
+        void BufferVertecies(const VertexData& vertecies, UsageType usageType);
+        void BufferIndicies(const IndexData& indicies);
+        void BufferIndicies(const IndexData& indicies, UsageType usageType);
+        void UpdateBoundingGeometry(const VertexData& vertecies);
+
+        VertexData GetVerteciesFromGPU() const;
+        IndexData GetIndiciesFromGPU() const;
+
+        static void RegenerateNormals(VertexData& vertecies, const IndexData& indicies);
+        static void RegenerateTangentSpace(VertexData& vertecies, const IndexData& indicies);
     };
 }

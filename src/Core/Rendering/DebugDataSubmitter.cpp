@@ -133,18 +133,14 @@ namespace MxEngine
             {
                 for (size_t i = 0; i < compoundCollider->GetShapeCount(); i++)
                 {
-                    auto transform = compoundCollider->GetShapeTransformByIndex(i) * object.Transform;
-                    auto box = compoundCollider->GetShapeByIndex<BoxShape>(i);
-                    if (box.IsValid()) buffer.Submit(box->GetBoundingBox(transform), debugDraw.BoundingBoxColor);
+                    auto& child = compoundCollider->GetShapeByIndex(i);
+                    auto childTransform = compoundCollider->GetShapeTransformByIndex(i);
+                    childTransform.SetPosition(childTransform.GetPosition() * object.Transform.GetScale());
 
-                    auto sphere = compoundCollider->GetShapeByIndex<SphereShape>(i);
-                    if (sphere.IsValid()) buffer.Submit(sphere->GetBoundingSphere(transform), debugDraw.BoundingSphereColor);
-
-                    auto cylinder = compoundCollider->GetShapeByIndex<CylinderShape>(i);
-                    if (cylinder.IsValid()) buffer.Submit(cylinder->GetBoundingCylinder(transform), debugDraw.BoundingBoxColor);
-
-                    auto capsule = compoundCollider->GetShapeByIndex<CapsuleShape>(i);
-                    if (capsule.IsValid()) buffer.Submit(capsule->GetBoundingCapsule(transform), debugDraw.BoundingSphereColor);
+                    std::visit([&buffer, &debugDraw, transform = childTransform * object.Transform](auto&& shape) mutable
+                    {
+                        buffer.Submit(shape->GetNativeBoundingTransformed(transform), debugDraw.BoundingBoxColor);
+                    }, child);
                 }
             }
         }

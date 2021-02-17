@@ -52,7 +52,7 @@ namespace MxEngine
         ~CubeMap();
 
         template<typename FilePath>
-        CubeMap(const FilePath& filepath, bool genMipmaps = true, bool flipImage = false);
+        CubeMap(const FilePath& filepath);
 
         void Bind() const;
         void Unbind() const;
@@ -60,21 +60,23 @@ namespace MxEngine
         BindableId GetBoundId() const;
         BindableId GetNativeHandle() const;
 
-        template<typename FilePath>
-        void Load(const FilePath& filepath, bool genMipmaps = true, bool flipImage = false);
-        template<typename FilePath>
-        void Load(const FilePath& right,  const FilePath& left,  const FilePath& top,
-                  const FilePath& bottom, const FilePath& front, const FilePath& back, 
-                  bool genMipmaps = true, bool flipImage = false);
+        void Load(const MxString& filepath);
+        template<typename FilePath> void Load(const FilePath& filepath);
+        template<typename FilePath> void Load(
+            const FilePath& right,  const FilePath& left,  const FilePath& top,
+            const FilePath& bottom, const FilePath& front, const FilePath& back
+        );
 
         void Load(const std::array<Image, 6>& images, bool genMipmaps = true);
-        void Load(const std::array<uint8_t*, 6>& RawDataRGB, size_t width, size_t height, bool genMipmaps = true);
+        void Load(const std::array<uint8_t*, 6>& RawDataRGB, size_t width, size_t height);
         void LoadDepth(int width, int height);
-        const MxString& GetFilePath() const;
-        void SetInternalEngineTag(const MxString& tag);
         size_t GetWidth() const;
         size_t GetHeight() const;
         size_t GetChannelCount() const;
         void GenerateMipmaps();
+
+        const MxString& GetFilePath() const;
+        void SetInternalEngineTag(const MxString& tag);
+        bool IsInternalEngineResource() const;
     };
 }

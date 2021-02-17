@@ -69,9 +69,14 @@ namespace MxEngine
         void RemoveBehaviour();
         bool HasBehaviour() const;
         void Schedule(TimerMode timer, TimeDelta seconds = 0.0f);
+        void Pause();
         TimeDelta GetTimeLeft() const;
         TimeDelta GetTimeRequest() const;
         TimerMode GetTimerMode() const;
+
+        void SetTimerModeInternal(TimerMode mode);
+        void SetTimeLeftInternal(TimeDelta time);
+        void SetTimeRequestInternal(TimeDelta time);
 
         template<typename T>
         Behaviour(T&& customBehaviour)

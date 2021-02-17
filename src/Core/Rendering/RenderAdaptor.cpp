@@ -94,26 +94,22 @@ namespace MxEngine
         environment.DefaultShadowCubeMap = Colors::MakeCubeMap(Colors::BLACK);
         environment.DefaultSkybox = Colors::MakeCubeMap(0.8f, 0.9f, 1.0f);
 
-        environment.DefaultBlackMap->SetInternalEngineTag("[[black color]]");
-        environment.DefaultNormalMap->SetInternalEngineTag("[[default normal]]");
-        environment.DefaultMaterialMap->SetInternalEngineTag("[[white color]]");
-        environment.DefaultGreyMap->SetInternalEngineTag("[[grey color]]");
-        environment.DefaultShadowMap->SetInternalEngineTag("[[default shadow map]]");
-        environment.DefaultShadowCubeMap->SetInternalEngineTag("[[default shadow cubemap]]");
-        environment.DefaultSkybox->SetInternalEngineTag("[[default skybox cubemap]]");
+        environment.DefaultBlackMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("black color"));
+        environment.DefaultNormalMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default normal"));
+        environment.DefaultMaterialMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("white color"));
+        environment.DefaultGreyMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("grey color"));
+        environment.DefaultShadowMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default shadow map"));
+        environment.DefaultShadowCubeMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default shadow cubemap"));
+        environment.DefaultSkybox->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default skybox cubemap"));
 
         environment.AverageWhiteTexture = GraphicFactory::Create<Texture>();
         environment.AverageWhiteTexture->Load(nullptr, internalTextureSize, internalTextureSize, 1, false, TextureFormat::R16F);
         environment.AverageWhiteTexture->SetSamplingFromLOD(environment.AverageWhiteTexture->GetMaxTextureLOD());
-        environment.AverageWhiteTexture->SetInternalEngineTag("[[average white]]");
-
-        environment.AmbientOcclusionTexture = GraphicFactory::Create<Texture>();
-        environment.AmbientOcclusionTexture->Load(nullptr, internalTextureSize, internalTextureSize, 1, false, TextureFormat::R);
-        environment.AmbientOcclusionTexture->SetInternalEngineTag("[[ambient occlusion]]");
+        environment.AverageWhiteTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("average white"));
 
         // TODO: use RG16
         environment.EnvironmentBRDFLUT = AssetManager::LoadTexture(textureFolder / "env_brdf_lut.png", TextureFormat::RG);
-        environment.EnvironmentBRDFLUT->SetInternalEngineTag("[[BRDF LUT]]");
+        environment.EnvironmentBRDFLUT->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("BRDF LUT"));
         
         // shaders
         auto shaderFolder = FileManager::GetEngineShaderDirectory();
@@ -218,6 +214,16 @@ namespace MxEngine
             shaderFolder / "rect_vertex.glsl",
             shaderFolder / "ssr_fragment.glsl"
         );
+
+        environment.Shaders["SSGI"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "ssgi_fragment.glsl"
+        );
+
+        environment.Shaders["ApplySSGI"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "apply_ssgi_fragment.glsl"
+        );
         
         environment.Shaders["ChromaticAbberation"_id] = AssetManager::LoadShader(
             shaderFolder / "rect_vertex.glsl",
@@ -253,8 +259,9 @@ namespace MxEngine
         for (auto& bloomBuffer : environment.BloomBuffers)
         {
             auto bloomTexture = GraphicFactory::Create<Texture>();
-            bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, 3, false, HDRTextureFormat, TextureWrap::CLAMP_TO_EDGE);
-            bloomTexture->SetInternalEngineTag("[[bloom]]");
+            bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, 3, false, HDRTextureFormat);
+            bloomTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("bloom"));
+            bloomTexture->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
 
             bloomBuffer = GraphicFactory::Create<FrameBuffer>();
             bloomBuffer->AttachTexture(bloomTexture, Attachment::COLOR_ATTACHMENT0);
@@ -264,8 +271,6 @@ namespace MxEngine
 
     void RenderAdaptor::RenderFrame()
     {
-        this->Renderer.ResetPipeline();
-
         auto& environment = this->Renderer.GetEnvironment();
         environment.MainCameraIndex = std::numeric_limits<decltype(environment.MainCameraIndex)>::max();
         auto viewportPosition = MakeVector3(0.0f);
@@ -328,7 +333,7 @@ namespace MxEngine
                 auto mesh = meshSource.Mesh;
                 bool castsShadow = meshSource.CastsShadow;
 
-                if (!meshSource.IsDrawn || !meshRenderer.IsValid()) continue;
+                if (!meshSource.IsDrawn || !meshRenderer.IsValid() || !mesh.IsValid()) continue;
 
                 // we do not try to use LODs for instanced objects, as its quite hard and time consuming. TODO: fix this
                 if (meshLOD.IsValid() && instanceCount == 0)
@@ -399,6 +404,7 @@ namespace MxEngine
     {
         this->Renderer.EndPipeline();
         this->Renderer.Render();
+        this->Renderer.ResetPipeline();
     }
 
     void RenderAdaptor::SetWindowSize(const VectorInt2& size)

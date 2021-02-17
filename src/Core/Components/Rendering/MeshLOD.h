@@ -47,17 +47,15 @@ namespace MxEngine
     public:
         MeshLOD() = default;
 
-        using LODInstance = MeshHandle;
-
         bool AutoLODSelection = true;
 
-        MxVector<LODInstance> LODs;
+        MxVector<MeshHandle> LODs;
         void Generate(const LODConfig& config);
         void Generate() { this->Generate(LODConfig{ }); }
         void FixBestLOD(const Vector3& viewportPosition, float viewportZoom = 1.0f);
         void SetCurrentLOD(size_t lod);
         size_t GetCurrentLOD() const;
 
-        LODInstance GetMeshLOD() const;
+        MeshHandle GetMeshLOD() const;
     };
 }

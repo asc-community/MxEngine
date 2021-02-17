@@ -38,7 +38,9 @@ namespace MxEngine
 		if (this->id != 0)
 		{
 			GLCALL(glDeleteBuffers(1, &id));
+			MXLOG_DEBUG("OpenGL::IndexBuffer", "deleted index buffer with id = " + ToMxString(id));
 		}
+		this->id = 0;
 	}
 
 	IndexBuffer::IndexBuffer()
@@ -82,6 +84,13 @@ namespace MxEngine
 		this->count = count;
 		this->Bind();
 		GLCALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(IndexType), data, (GLenum)UsageTypeToNative(usageType)));
+	}
+
+	void IndexBuffer::GetBufferedIndicies(IndexType* data, size_t sizeInInts) const
+	{
+		this->Bind();
+		constexpr size_t offset = 0;
+		GLCALL(glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, sizeInInts * sizeof(IndexType), data));
 	}
 
 	void IndexBuffer::Unbind() const

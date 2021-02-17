@@ -261,42 +261,38 @@ namespace MxEngine
 
     class CompilerLogger : public ICompilerLogger
     {
+        constexpr static size_t BufferSize = 2048;
+        char buffer[BufferSize + 1] = { '\0' };
     public:
         virtual void LogError(const char* format, ...) override
         {
-            constexpr size_t bufferSize = 512;
-            char buffer[bufferSize + 1] = { '\0' };
             va_list argptr;
             va_start(argptr, format);
-            int symbols = vsnprintf(buffer, bufferSize, format, argptr);
+            int symbols = vsnprintf(buffer, BufferSize, format, argptr);
             va_end(argptr);
-            if (symbols > 0 && symbols <= bufferSize) buffer[symbols - 1] = '\0';
+            if (symbols > 0 && symbols <= BufferSize) buffer[symbols - 1] = '\0';
 
             MXLOG_ERROR("MxEngine::RuntimeCompiler", buffer);
         }
 
         virtual void LogWarning(const char* format, ...) override
         {
-            constexpr size_t bufferSize = 512;
-            char buffer[bufferSize + 1] = { '\0' };
             va_list argptr;
             va_start(argptr, format);
-            int symbols = vsnprintf(buffer, bufferSize, format, argptr);
+            int symbols = vsnprintf(buffer, BufferSize, format, argptr);
             va_end(argptr);
-            if (symbols > 0 && symbols <= bufferSize) buffer[symbols - 1] = '\0';
+            if (symbols > 0 && symbols <= BufferSize) buffer[symbols - 1] = '\0';
 
             MXLOG_WARNING("MxEngine::RuntimeCompiler", buffer);
         }
 
         virtual void LogInfo(const char* format, ...) override
         {
-            constexpr size_t bufferSize = 512;
-            char buffer[bufferSize + 1] = { '\0' };
             va_list argptr;
             va_start(argptr, format);
-            int symbols = vsnprintf(buffer, bufferSize, format, argptr);
+            int symbols = vsnprintf(buffer, BufferSize, format, argptr);
             va_end(argptr);
-            if (symbols > 0 && symbols <= bufferSize) buffer[symbols - 1] = '\0';
+            if (symbols > 0 && symbols <= BufferSize) buffer[symbols - 1] = '\0';
 
             MXLOG_DEBUG("MxEngine::RuntimeCompiler", buffer);
         }
@@ -471,6 +467,7 @@ namespace MxEngine
         delete impl->compilerLogger;
         delete impl->updateListener;
         delete impl;
+        impl = nullptr;
     }
 
     void RuntimeCompiler::Clone(RuntimeCompilerImpl* other)
@@ -535,6 +532,12 @@ namespace MxEngine
 
         MAKE_SCOPE_PROFILER("RuntimeCompiler::OnUpdate()");
         impl->runtimeObjectSystem->GetFileChangeNotifier()->Update(dt);
+    }
+
+    bool RuntimeCompiler::HasScript(const MxString& scriptName)
+    {
+        const ScriptInfo& info = RuntimeCompiler::GetScriptInfo(MakeStringId(scriptName));
+        return info.ScriptHandle != nullptr;
     }
 
     const ScriptInfo& RuntimeCompiler::GetScriptInfo(const MxString& scriptName)

@@ -115,8 +115,9 @@ namespace MxEngine
 		this->renderBuffers->Init(viewport.x, viewport.y);
 
 		this->renderTexture = GraphicFactory::Create<Texture>();
-		this->renderTexture->Load(nullptr, viewport.x, viewport.y, 3, false, TextureFormat::RGB, TextureWrap::CLAMP_TO_EDGE);
-		this->renderTexture->SetInternalEngineTag("[[camera output]]");
+		this->renderTexture->Load(nullptr, viewport.x, viewport.y, 3, false, TextureFormat::RGB);
+		this->renderTexture->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+		this->renderTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera output"));
 	}
 
 	CameraController::~CameraController()
@@ -192,6 +193,11 @@ namespace MxEngine
 		});
 	}
 
+	void CameraController::SetListenWindowResizeEventInternal(bool value)
+	{
+		if (value) this->ListenWindowResizeEvent();
+	}
+
 	bool CameraController::IsListeningWindowResizeEvent() const
 	{
 		return Event::HasEventListenerWithName(this->GetEventUUID());
@@ -199,8 +205,8 @@ namespace MxEngine
 
 	void CameraController::ResizeRenderTexture(size_t w, size_t h)
 	{
-		this->renderTexture->Load(nullptr, (int)w, (int)h, 3, false, this->renderTexture->GetFormat(), this->renderTexture->GetWrapType());
-		this->renderTexture->SetInternalEngineTag("[[camera output]]");
+		this->renderTexture->Load(nullptr, (int)w, (int)h, 3, false, this->renderTexture->GetFormat());
+		this->renderTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera output"));
 		if(this->IsRendering())
 			this->renderBuffers->Resize((int)w, (int)h);
 	}
@@ -366,6 +372,19 @@ namespace MxEngine
 		return *this;
 	}
 
+	Vector2 CameraController::GetRotation() const
+	{
+		return { Degrees(this->horizontalAngle), Degrees(this->verticalAngle) };
+	}
+
+	void CameraController::SetRotation(Vector2 newRotation)
+	{
+		auto oldRotation = this->GetRotation();
+		newRotation.x = std::fmod(newRotation.x - oldRotation.x, 360.0f);
+		newRotation.y = std::fmod(newRotation.y - oldRotation.y, 360.0f);
+		this->Rotate(newRotation.x, newRotation.y);
+	}
+
 	void CameraController::SetForwardVector(const Vector3& forward)
 	{
 		this->forward = forward;
@@ -431,9 +450,14 @@ namespace MxEngine
 		return this->renderBuffers->HDR;
 	}
 
-    TextureHandle CameraController::GetSwapHDRTexture() const
+	TextureHandle CameraController::GetSwapHDRTexture2() const
+	{
+		return this->renderBuffers->SwapHDR2;
+	}
+
+    TextureHandle CameraController::GetSwapHDRTexture1() const
     {
-		return this->renderBuffers->SwapHDR;
+		return this->renderBuffers->SwapHDR1;
     }
 
 	void CameraRender::Init(int width, int height)
@@ -445,7 +469,8 @@ namespace MxEngine
 		this->Depth = GraphicFactory::Create<Texture>();
 		this->AverageWhite = GraphicFactory::Create<Texture>();
 		this->HDR = GraphicFactory::Create<Texture>();
-		this->SwapHDR = GraphicFactory::Create<Texture>();
+		this->SwapHDR1 = GraphicFactory::Create<Texture>();
+		this->SwapHDR2 = GraphicFactory::Create<Texture>();
 
 		this->Resize(width, height);
 		
@@ -465,21 +490,38 @@ namespace MxEngine
 
 	void CameraRender::Resize(int width, int height)
 	{
-		this->Albedo->Load(nullptr, width, height, 3, false, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
-		this->Normal->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16, TextureWrap::CLAMP_TO_EDGE);
-		this->Material->Load(nullptr, width, height, 3, false, TextureFormat::RGBA, TextureWrap::CLAMP_TO_EDGE);
-		this->Depth->LoadDepth(width, height, TextureFormat::DEPTH32F, TextureWrap::CLAMP_TO_EDGE);
-		this->AverageWhite->Load(nullptr, 1, 1, 3, false, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
-		this->HDR->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
-		this->SwapHDR->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F, TextureWrap::CLAMP_TO_EDGE);
 
-		this->Albedo->SetInternalEngineTag("[[cam albedo]]");
-		this->Normal->SetInternalEngineTag("[[cam normal]]");
-		this->Material->SetInternalEngineTag("[[cam material]]");
-		this->Depth->SetInternalEngineTag("[[cam depth]]");
-		this->AverageWhite->SetInternalEngineTag("[[cam avg white]]");
-		this->HDR->SetInternalEngineTag("[[cam hdr]]");
-		this->SwapHDR->SetInternalEngineTag("[[cam swap hdr]]");
+		this->Albedo->Load(nullptr, width, height, 3, false, TextureFormat::RGBA);
+		this->Albedo->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera albedo"));
+		this->Albedo->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
+		this->Normal->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16);
+		this->Normal->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera normal"));
+		this->Normal->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
+		this->Material->Load(nullptr, width, height, 3, false, TextureFormat::RGBA);
+		this->Material->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera material"));
+		this->Material->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
+		this->Depth->LoadDepth(width, height, TextureFormat::DEPTH32F);
+		this->Depth->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera depth"));
+		this->Depth->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
+		this->AverageWhite->Load(nullptr, 1, 1, 3, false, TextureFormat::RGBA16F);
+		this->AverageWhite->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera white"));
+		this->AverageWhite->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+		
+		this->HDR->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F);
+		this->HDR->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera hdr"));
+		this->HDR->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+		
+		this->SwapHDR1->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F);
+		this->SwapHDR1->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap hdr 1"));
+		this->SwapHDR1->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+		
+		this->SwapHDR2->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F);
+		this->SwapHDR2->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap hdr 2"));
+		this->SwapHDR2->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
 	}
 
 	void CameraRender::DeInit()
@@ -490,7 +532,8 @@ namespace MxEngine
 		GraphicFactory::Destroy(this->Material);
 		GraphicFactory::Destroy(this->Depth);
 		GraphicFactory::Destroy(this->HDR);
-		GraphicFactory::Destroy(this->SwapHDR);
+		GraphicFactory::Destroy(this->SwapHDR1);
+		GraphicFactory::Destroy(this->SwapHDR2);
 	}
 
 	MXENGINE_REFLECT_TYPE
@@ -517,6 +560,9 @@ namespace MxEngine
 				rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<PerspectiveCamera>)
 			)
 			.constructor<>()
+			(
+				rttr::policy::ctor::as_object
+			)
 			.property("fov", &PerspectiveCamera::GetFOV, &PerspectiveCamera::SetFOV)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
@@ -541,6 +587,9 @@ namespace MxEngine
 				rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<OrthographicCamera>)
 			)
 			.constructor<>()
+			(
+				rttr::policy::ctor::as_object
+			)
 			.property("size", &OrthographicCamera::GetSize, &OrthographicCamera::SetSize)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
@@ -571,6 +620,9 @@ namespace MxEngine
 				rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<FrustrumCamera>)
 			)
 			.constructor<>()
+			(
+				rttr::policy::ctor::as_object
+			)
 			.property("zoom", &FrustrumCamera::GetZoom, &FrustrumCamera::SetZoom)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
@@ -603,11 +655,7 @@ namespace MxEngine
 
 		rttr::registration::class_<CameraController>("CameraController")
 			.constructor<>()
-			.method("listen window resize event", &CameraController::ListenWindowResizeEvent)
-			(
-				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
-			)
-			.property_readonly("is listening window resize event", &CameraController::IsListeningWindowResizeEvent)
+			.property("is listening window resize event", &CameraController::IsListeningWindowResizeEvent, &CameraController::SetListenWindowResizeEventInternal)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
 			)
@@ -622,17 +670,22 @@ namespace MxEngine
 			.property("perspective camera", (GetPerspectiveCameraFunc)&CameraController::GetCamera<PerspectiveCamera>, &CameraController::SetCamera<PerspectiveCamera>)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-				rttr::metadata(EditorInfo::VIEW_CONDITION, +([](rttr::instance& v) { return v.try_convert<CameraController>()->GetCameraType() == CameraType::PERSPECTIVE; }))
+				rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& v) { return v.try_convert<CameraController>()->GetCameraType() == CameraType::PERSPECTIVE; }))
 			)
 			.property("orthographic camera", (GetOrthographicCameraFunc)&CameraController::GetCamera<OrthographicCamera>, &CameraController::SetCamera<OrthographicCamera>)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-				rttr::metadata(EditorInfo::VIEW_CONDITION, +([](rttr::instance& v) { return v.try_convert<CameraController>()->GetCameraType() == CameraType::ORTHOGRAPHIC; }))
+				rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& v) { return v.try_convert<CameraController>()->GetCameraType() == CameraType::ORTHOGRAPHIC; }))
 			)
 			.property("frustrum camera", (GetFrustrumCameraFunc)&CameraController::GetCamera<FrustrumCamera>, &CameraController::SetCamera<FrustrumCamera>)
 			(
 				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-				rttr::metadata(EditorInfo::VIEW_CONDITION, +([](rttr::instance& v) { return v.try_convert<CameraController>()->GetCameraType() == CameraType::FRUSTRUM; }))
+				rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& v) { return v.try_convert<CameraController>()->GetCameraType() == CameraType::FRUSTRUM; }))
+			)
+			.property("rotation", &CameraController::GetRotation, &CameraController::SetRotation)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
 			)
 			.property("direction", &CameraController::GetDirectionDenormalized, &CameraController::SetDirection)
 			(

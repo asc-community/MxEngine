@@ -37,7 +37,9 @@ namespace MxEngine
 		if (this->id != 0)
 		{
 			GLCALL(glDeleteBuffers(1, &id));
+			MXLOG_DEBUG("OpenGL::VertexBuffer", "deleted vertex buffer with id = " + ToMxString(id));
 		}
+		this->id = 0;
     }
 
     VertexBuffer::VertexBuffer()
@@ -97,6 +99,12 @@ namespace MxEngine
 		else
 			this->BufferSubData(data, sizeInFloats);
     }
+
+	void VertexBuffer::GetBufferedData(BufferData data, size_t sizeInFloats, size_t offsetInFloats) const
+	{
+		this->Bind();
+		GLCALL(glGetBufferSubData(GL_ARRAY_BUFFER, offsetInFloats * sizeof(float), sizeInFloats * sizeof(float), (void*)data));
+	}
 
     size_t VertexBuffer::GetSize() const
     {

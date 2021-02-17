@@ -94,7 +94,7 @@ namespace MxEngine
 		~Texture();
 
 		template<typename FilePath>
-		Texture(const FilePath& filepath, TextureFormat format, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
+		Texture(const FilePath& filepath, TextureFormat format);
 
 		void Bind() const;
 		void Bind(TextureBindId id) const;
@@ -103,11 +103,11 @@ namespace MxEngine
 		BindableId GetNativeHandle() const;
 		
 		template<typename FilePath>
-		void Load(const FilePath& filepath, TextureFormat format, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true, bool flipImage = true);
-		
-		void Load(RawDataPointer data, int width, int height, int channels, bool isFloating, TextureFormat format = TextureFormat::RGB, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true);
-		void Load(const Image& image, TextureFormat format = TextureFormat::RGB, TextureWrap wrap = TextureWrap::REPEAT, bool genMipmaps = true);
-		void LoadDepth(int width, int height, TextureFormat format = TextureFormat::DEPTH, TextureWrap wrap = TextureWrap::CLAMP_TO_BORDER);
+		void Load(const FilePath& filepath, TextureFormat format);
+
+		void Load(RawDataPointer data, int width, int height, int channels, bool isFloating, TextureFormat format = TextureFormat::RGB);
+		void Load(const Image& image, TextureFormat format = TextureFormat::RGB);
+		void LoadDepth(int width, int height, TextureFormat format = TextureFormat::DEPTH);
 		void SetSamplingFromLOD(size_t lod);
 		size_t GetMaxTextureLOD() const;
 		Image GetRawTextureData() const;
@@ -122,11 +122,13 @@ namespace MxEngine
 		TextureFormat GetFormat() const;
 		TextureWrap GetWrapType() const;
 		void SetWrapType(TextureWrap wrap);
-		const MxString& GetFilePath() const;
-		void SetInternalEngineTag(const MxString& tag);
 		unsigned int GetTextureType() const;
 		size_t GetWidth() const;
 		size_t GetHeight() const;
 		size_t GetChannelCount() const;
+
+		const MxString& GetFilePath() const;
+		void SetInternalEngineTag(const MxString& tag);
+		bool IsInternalEngineResource() const;
 	};
 }

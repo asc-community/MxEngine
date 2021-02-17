@@ -33,7 +33,7 @@
 #include "Core/Components/Rendering/MeshRenderer.h"
 #include "Core/Application/Rendering.h"
 #include "Utilities/FileSystem/FileManager.h"
-#include "Utilities/ImGui/Editors/Components/ComponentEditor.h"
+#include "Utilities/ImGui/Editors/ComponentEditor.h"
 
 namespace MxEngine::GUI
 {
@@ -49,10 +49,28 @@ namespace MxEngine::GUI
 		}
 	}
 
+	void DrawMxObjectBoundingBoxEditor(MxObject& object)
+	{
+		AABB aabb;
+		auto meshSource = object.GetComponent<MeshSource>();
+		if (meshSource.IsValid() && meshSource->Mesh.IsValid())
+			aabb = meshSource->Mesh->MeshAABB;
+		else
+			aabb = { MakeVector3(-0.5f), MakeVector3(0.5f) };
+
+		// add a bit of offset to scale to make boundings visible for cubic objects
+		BoundingBox box = BoundingBox(aabb.GetCenter(), aabb.Length() * 0.6f);
+		box.Rotation = object.Transform.GetRotation();
+		box.Center = object.Transform.GetPosition();
+		box.Max *= object.Transform.GetScale();
+		box.Min *= object.Transform.GetScale();
+
+		Rendering::Draw(box, Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+	}
+
 	void DrawMxObjectEditor(
 		const char* name,
 		MxObject& object,
-		bool withBoundingBox,
 		const MxVector<const char*>& componentNames,
 		const MxVector<void(*)(MxObject&)>& componentAdderCallbacks,
 		const MxVector<void(*)(MxObject&)>& componentEditorCallbacks
@@ -65,6 +83,10 @@ namespace MxEngine::GUI
 			objectName.clear();
 		}
 
+		ImGui::Checkbox("is serialized", &object.IsSerialized);
+		ImGui::SameLine();
+		ImGui::Checkbox("is displayed in editor", &object.IsDisplayedInEditor);
+
 		static int currentItem = 0;
 		ImGui::PushID(0xFFAA);
 		ImGui::Combo("", &currentItem, componentNames.data(), (int)componentNames.size());
@@ -75,30 +97,12 @@ namespace MxEngine::GUI
 			componentAdderCallbacks[(size_t)currentItem](object);
 		}
 
+
 		ResourceEditor("Transform", object.Transform);
 
 		for (size_t i = 0; i < componentEditorCallbacks.size(); i++)
 		{
 			componentEditorCallbacks[i](object);
-		}
-
-		if (withBoundingBox)
-		{
-			AABB aabb;
-			auto meshSource = object.GetComponent<MeshSource>();
-			if (meshSource.IsValid() && meshSource->Mesh.IsValid())
-				aabb = meshSource->Mesh->MeshAABB;
-			else
-				aabb = { MakeVector3(-0.5f), MakeVector3(0.5f) };
-
-			// add a bit of offset to scale to make boundings visible for cubic objects
-			BoundingBox box = BoundingBox(aabb.GetCenter(), aabb.Length() * 0.6f);
-			box.Rotation = object.Transform.GetRotation();
-			box.Center = object.Transform.GetPosition();
-			box.Max *= object.Transform.GetScale();
-			box.Min *= object.Transform.GetScale();
-
-			Rendering::Draw(box, Vector4(0.0f, 1.0f, 0.0f, 1.0f));
 		}
 	}
 }

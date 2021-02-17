@@ -56,6 +56,7 @@ namespace MxEngine
 		void Bind() const;
 		void Unbind() const;
 		void Load(const IndexType* data, size_t sizeInInts, UsageType usageType = UsageType::STATIC_DRAW);
+		void GetBufferedIndicies(IndexType* data, size_t sizeInInts) const;
 		size_t GetCount() const;
 		size_t GetIndexTypeId() const;
 	};

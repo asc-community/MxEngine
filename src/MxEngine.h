@@ -34,6 +34,7 @@
 #include "Core/Application/Runtime.h"
 #include "Core/Application/Physics.h"
 #include "Core/Application/Timer.h"
+#include "Core/Application/Scene.h"
 #include "Core/MxObject/MxObject.h"
 #include "Core/Config/GlobalConfig.h"
 #include "Core/Components/Camera/PerspectiveCamera.h"

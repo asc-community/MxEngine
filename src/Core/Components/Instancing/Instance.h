@@ -53,4 +53,9 @@ namespace MxEngine
 			return this->color;
 		}
 	};
+
+	bool IsInstanced(MxObject& object);
+	bool IsInstance(MxObject& object);
+	MxObject::Handle Instanciate(MxObject& object);
+	MxObject::Handle GetInstanceParent(MxObject& object);
 }

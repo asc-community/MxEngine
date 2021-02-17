@@ -71,6 +71,7 @@ namespace MxEngine
 		if (id != 0)
 		{
 			GLCALL(glDeleteTextures(1, &id));
+			MXLOG_DEBUG("OpenGL::Texture", "deleted texture with id = " + ToMxString(id));
 		}
 		id = 0;
 		activeId = 0;
@@ -128,9 +129,10 @@ namespace MxEngine
 	}
 
 	template<>
-	void Texture::Load(const std::filesystem::path& filepath, TextureFormat format, TextureWrap wrap, bool genMipmaps, bool flipImage)
+	void Texture::Load(const std::filesystem::path& filepath, TextureFormat format)
 	{
 		// TODO: support floating point texture loading
+		bool flipImage = true;
 		Image image = ImageLoader::LoadImage(filepath, flipImage);
 
 		if (image.GetRawData() == nullptr)
@@ -169,18 +171,17 @@ namespace MxEngine
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
 		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, pixelFormat, pixelType, image.GetRawData()));
 
-		this->SetWrapType(wrap);
-		if (genMipmaps) this->GenerateMipmaps();
+		this->GenerateMipmaps();
 	}
 
 	template<>
-	Texture::Texture(const std::filesystem::path& filepath, TextureFormat format, TextureWrap wrap, bool genMipmaps, bool flipImage)
+	Texture::Texture(const std::filesystem::path& filepath, TextureFormat format)
 		: Texture()
 	{
-		this->Load(filepath, format, wrap, genMipmaps, flipImage);
+		this->Load(filepath, format);
 	}
 
-	void Texture::Load(RawDataPointer data, int width, int height, int channels, bool isFloating, TextureFormat format, TextureWrap wrap, bool genMipmaps)
+	void Texture::Load(RawDataPointer data, int width, int height, int channels, bool isFloating, TextureFormat format)
 	{
 		this->filepath = "[[raw data]]";
 		this->width = width;
@@ -212,17 +213,16 @@ namespace MxEngine
 
 		GLCALL(glBindTexture(GL_TEXTURE_2D, id));
 		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, dataChannels, type, data));
-		
-		this->SetWrapType(wrap);
-		if (genMipmaps) this->GenerateMipmaps();
+
+		this->GenerateMipmaps();
 	}
 
-    void Texture::Load(const Image& image, TextureFormat format, TextureWrap wrap, bool genMipmaps)
+    void Texture::Load(const Image& image, TextureFormat format)
     {
-		this->Load(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannelCount(), image.IsFloatingPoint(), format, wrap, genMipmaps);
+		this->Load(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannelCount(), image.IsFloatingPoint(), format);
     }
 
-	void Texture::LoadDepth(int width, int height, TextureFormat format, TextureWrap wrap)
+	void Texture::LoadDepth(int width, int height, TextureFormat format)
 	{
 		this->filepath = "[[depth]]";
 		this->width = width;
@@ -235,8 +235,6 @@ namespace MxEngine
 		GLenum type = this->IsFloatingPoint() ? GL_FLOAT : GL_UNSIGNED_BYTE;
 
 		GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], width, height, 0, GL_DEPTH_COMPONENT, type, nullptr));
-
-		this->SetWrapType(wrap);
 		this->SetBorderColor(MakeVector4(1.0f));
 	}
 
@@ -479,6 +477,11 @@ namespace MxEngine
 		this->filepath = tag;
 	}
 
+	bool Texture::IsInternalEngineResource() const
+	{
+		return this->filepath.find(MXENGINE_INTERNAL_TAG_SYMBOL) == 0;
+	}
+
     unsigned int Texture::GetTextureType() const
     {
 		return this->textureType;
@@ -596,7 +599,9 @@ namespace MxEngine
 			.constructor<>()
 			.property_readonly("filepath", &Texture::GetFilePath)
 			(
-				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(SerializeInfo::CUSTOM_SERIALIZE, SerializeExtra<Texture>),
+				rttr::metadata(SerializeInfo::CUSTOM_DESERIALIZE, DeserializeExtra<Texture>)
 			)
 			.property_readonly("width", &Texture::GetWidth)
 			(

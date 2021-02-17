@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-7.8.0-red)
+![](https://img.shields.io/badge/version-8.0.0-red)
 [![Travis Build Status](https://api.travis-ci.org/asc-community/MxEngine.png?branch=master)](https://travis-ci.org/asc-community/MxEngine)
 [![Appveyor Build status](https://ci.appveyor.com/api/projects/status/github/asc-community/MxEngine?branch=master&svg=true)](https://ci.appveyor.com/project/MomoDeve/mxengine/branch/master)
 ![GitHub](https://img.shields.io/github/license/asc-community/MxEngine?color=yellow)
@@ -47,9 +47,9 @@ To develop your own applications using MxEngine you can use template project wit
 
 	- Physically Based Rendering (Cook-Torrance GGX)
 	- Screen Space Reflection, Screen Space Ambient Occlusion
-	- Cascade shadow maps, omnidirectional shadow maps
+	- Cascade shadow maps, omnidirectional shadow maps, spot projection maps
 	- directional, point and spot dynamic lights
-	- Adaptive tone mapping, FXAA, fog, bloom effects
+	- Adaptive tone mapping, FXAA, fog, bloom effect
 	- 2D debug utilities: light, sound, object bounds, lines, rectangles and etc.
 
 </details>
@@ -65,7 +65,7 @@ To develop your own applications using MxEngine you can use template project wit
 	<summary><b>Audio features</b></summary>
 
 	- 3D sounds with distance attenuation
-	- Support of popular audio formats: .mp3, .ogg, .wav 
+	- Support of popular audio formats: .mp3, .ogg, .wav, .flac
 
 </details>
 <details>
@@ -111,7 +111,7 @@ auto light = object->AddComponent<SpotLight>();
 light->SetColor(Vector3(1.0f, 0.7f, 0.0f));
 light->SetIntensity(100.0f);
 light->SetAmbientIntensity(0.3f);
-light->UseOuterAngle(45.0f);
+light->SetOuterAngle(45.0f);
 ```
 ### Using scripts for runtime code compilation
 by creating a seperate file with special macro definition you are able to add scripts to objects and
@@ -139,13 +139,13 @@ you can create MxObjects which share same mesh and material. They all can have d
 ```cs
 auto factory = object->AddComponent<InstanceFactory>();
 
-auto instance1 = factory->MakeInstance();
+auto instance1 = factory->Instanciate();
 instance1->Transform.SetPosition({0.0f, 1.0f, 0.0f});
 
-auto instance2 = factory->MakeInstance();
+auto instance2 = factory->Instanciate();
 instance2->Transform.SetPosition({0.0f, 2.0f, 0.0f});
 
-auto instance3 = factory->MakeInstance();
+auto instance3 = factory->Instanciate();
 instance3->Transform.SetPosition({0.0f, 3.0f, 0.0f});
 ```
 ### Playing audio files

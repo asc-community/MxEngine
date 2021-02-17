@@ -31,23 +31,11 @@
 
 namespace MxEngine
 {
-    btCollisionShape* CompoundShape::GetShapeImpl(size_t index) const
-    {
-        MX_ASSERT(index < this->GetShapeCount());
-        return ((btCompoundShape*)this->collider)->getChildShape((int)index);
-    }
-
     void CompoundShape::AddShapeImpl(btCollisionShape* ptr, size_t userIndex, const TransformComponent& relativeTransform)
     {
         btTransform tr;
         ToBulletTransform(tr, relativeTransform);
-        ptr->setUserPointer(reinterpret_cast<void*>(userIndex));
         ((btCompoundShape*)this->collider)->addChildShape(tr, ptr);
-    }
-
-    size_t CompoundShape::GetShapeUserHandle(btCollisionShape* ptr)
-    {
-        return (size_t)ptr->getUserPointer();
     }
 
     CompoundShape::CompoundShape()
@@ -87,17 +75,27 @@ namespace MxEngine
     TransformComponent CompoundShape::GetShapeTransformByIndex(size_t index) const
     {
         MX_ASSERT(index < this->GetShapeCount());
+
         TransformComponent result;
         auto& tr = ((btCompoundShape*)this->collider)->getChildTransform((int)index);
+
+        auto parentScale = FromBulletVector3(this->collider->getLocalScaling());
+
         FromBulletTransform(result, tr);
+        result.SetPosition(result.GetPosition() / parentScale);
         return result;
     }
 
     void CompoundShape::SetShapeTransformByIndex(size_t index, const TransformComponent& relativeTransform)
     {
         MX_ASSERT(index < this->GetShapeCount());
+
         btTransform tr;
         ToBulletTransform(tr, relativeTransform);
+
+        auto parentScale = this->collider->getLocalScaling();
+        tr.setOrigin(tr.getOrigin() * parentScale);
+
         ((btCompoundShape*)this->collider)->updateChildTransform((int)index, tr);
     }
 

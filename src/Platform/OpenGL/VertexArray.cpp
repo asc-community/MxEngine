@@ -36,10 +36,12 @@ namespace MxEngine
 {
 	void VertexArray::FreeVertexArray()
 	{
-		if (id != 0)
+		if (this->id != 0)
 		{
-			GLCALL(glDeleteVertexArrays(1, &id));
+			GLCALL(glDeleteVertexArrays(1, &this->id));
+			MXLOG_DEBUG("OpenGL::VertexArray", "deleted vertex array with id = " + ToMxString(id));
 		}
+		this->id = 0;
 	}
 
 	VertexArray::VertexArray()

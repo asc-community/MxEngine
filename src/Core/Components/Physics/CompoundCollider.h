@@ -66,6 +66,7 @@ namespace MxEngine
         size_t GetShapeCount() const;
         void RemoveShapeByIndex(size_t index);
         TransformComponent GetShapeTransformByIndex(size_t index) const;
+        const VariantType& GetShapeByIndex(size_t index) const;
         void SetShapeTransformByIndex(size_t index, const TransformComponent& relativeTransform);
         void ClearShapes();
 
@@ -90,7 +91,8 @@ namespace MxEngine
         void AddShape(const TransformComponent& relativeTransform, const Resource<T, PhysicsFactory>& shape)
         {
             this->children.push_back(shape); // save handle in variant array
-            this->compoundShape->AddShape(std::move(shape), relativeTransform);
+            this->compoundShape->AddShape(std::move(shape), TransformComponent{ });
+            this->SetShapeTransformByIndex(this->GetShapeCount() - 1, relativeTransform);
         }
 
         AABB GetAABB() const;

@@ -31,10 +31,11 @@
 #include "Utilities/Logging/Logger.h"
 #include "Utilities/EventDispatcher/EventDispatcher.h"
 #include "Utilities/Memory/Memory.h"
-#include "Core/Events/WindowResizeEvent.h"
+#include "Utilities/Format/Format.h"
 #include "Platform/Modules/GraphicModule.h"
 #include "Platform/OpenGL/GLUtilities.h"
-#include "Utilities/Format/Format.h"
+#include "Core/Events/WindowResizeEvent.h"
+#include "Core/Runtime/Reflection.h"
 
 #include <array>
 
@@ -473,5 +474,174 @@ namespace MxEngine
 		int width, height;
 		glfwGetWindowSize(this->window, &width, &height);
 		return height;
+	}
+
+	const char* EnumToString(KeyCode value)
+	{
+		auto t = rttr::type::get(value).get_enumeration();
+		return t.value_to_name(value).cbegin();
+	}
+
+	const char* EnumToString(MouseButton value)
+	{
+		auto t = rttr::type::get(value).get_enumeration();
+		return t.value_to_name(value).cbegin();
+	}
+
+	const char* EnumToString(CursorMode value)
+	{
+		auto t = rttr::type::get(value).get_enumeration();
+		return t.value_to_name(value).cbegin();
+	}
+
+	MXENGINE_REFLECT_TYPE
+	{
+		rttr::registration::enumeration<KeyCode>("KeyCode")
+		(
+			rttr::value("UNKNOWN"      , KeyCode::UNKNOWN        ),
+			rttr::value("SPACE"		   , KeyCode::SPACE		     ),
+			rttr::value("APOSTROPHE"   , KeyCode::APOSTROPHE     ),
+			rttr::value("COMMA"		   , KeyCode::COMMA		     ),
+			rttr::value("MINUS"		   , KeyCode::MINUS		     ),
+			rttr::value("PERIOD"	   , KeyCode::PERIOD	     ),
+			rttr::value("SLASH"		   , KeyCode::SLASH		     ),
+			rttr::value("D0"		   , KeyCode::D0		     ),
+			rttr::value("D1"		   , KeyCode::D1		     ),
+			rttr::value("D2"		   , KeyCode::D2		     ),
+			rttr::value("D3"		   , KeyCode::D3		     ),
+			rttr::value("D4"		   , KeyCode::D4		     ),
+			rttr::value("D5"		   , KeyCode::D5		     ),
+			rttr::value("D6"		   , KeyCode::D6		     ),
+			rttr::value("D7"		   , KeyCode::D7		     ),
+			rttr::value("D8"		   , KeyCode::D8		     ),
+			rttr::value("D9"		   , KeyCode::D9		     ),
+			rttr::value("SEMICOLON"	   , KeyCode::SEMICOLON	     ),
+			rttr::value("EQUAL"		   , KeyCode::EQUAL		     ),
+			rttr::value("A"			   , KeyCode::A			     ),
+			rttr::value("B"			   , KeyCode::B			     ),
+			rttr::value("C"			   , KeyCode::C			     ),
+			rttr::value("D"			   , KeyCode::D			     ),
+			rttr::value("E"			   , KeyCode::E			     ),
+			rttr::value("F"			   , KeyCode::F			     ),
+			rttr::value("G"			   , KeyCode::G			     ),
+			rttr::value("H"			   , KeyCode::H			     ),
+			rttr::value("I"			   , KeyCode::I			     ),
+			rttr::value("J"			   , KeyCode::J			     ),
+			rttr::value("K"			   , KeyCode::K			     ),
+			rttr::value("L"			   , KeyCode::L			     ),
+			rttr::value("M"			   , KeyCode::M			     ),
+			rttr::value("N"			   , KeyCode::N			     ),
+			rttr::value("O"			   , KeyCode::O			     ),
+			rttr::value("P"			   , KeyCode::P			     ),
+			rttr::value("Q"			   , KeyCode::Q			     ),
+			rttr::value("R"			   , KeyCode::R			     ),
+			rttr::value("S"			   , KeyCode::S			     ),
+			rttr::value("T"			   , KeyCode::T			     ),
+			rttr::value("U"			   , KeyCode::U			     ),
+			rttr::value("V"			   , KeyCode::V			     ),
+			rttr::value("W"			   , KeyCode::W			     ),
+			rttr::value("X"			   , KeyCode::X			     ),
+			rttr::value("Y"			   , KeyCode::Y			     ),
+			rttr::value("Z"			   , KeyCode::Z			     ),
+			rttr::value("LEFT_BRACKET" , KeyCode::LEFT_BRACKET   ),
+			rttr::value("BACKSLASH"	   , KeyCode::BACKSLASH	     ),
+			rttr::value("RIGHT_BRACKET", KeyCode::RIGHT_BRACKET  ),
+			rttr::value("GRAVE_ACCENT" , KeyCode::GRAVE_ACCENT   ),
+			rttr::value("WORLD_1"	   , KeyCode::WORLD_1		 ),
+			rttr::value("WORLD_2"      , KeyCode::WORLD_2		 ),
+			rttr::value("ESCAPE"	   , KeyCode::ESCAPE		 ),
+			rttr::value("ENTER"		   , KeyCode::ENTER		     ),
+			rttr::value("TAB"		   , KeyCode::TAB			 ),
+			rttr::value("BACKSPACE"	   , KeyCode::BACKSPACE	     ),
+			rttr::value("INSERT"	   , KeyCode::INSERT		 ),
+			rttr::value("DELETE"	   , KeyCode::DELETE		 ),
+			rttr::value("RIGHT"		   , KeyCode::RIGHT		     ),
+			rttr::value("LEFT"		   , KeyCode::LEFT		     ),
+			rttr::value("DOWN"		   , KeyCode::DOWN		     ),
+			rttr::value("UP"		   , KeyCode::UP			 ),
+			rttr::value("PAGE_UP"	   , KeyCode::PAGE_UP		 ),
+			rttr::value("PAGE_DOWN"	   , KeyCode::PAGE_DOWN	     ),
+			rttr::value("HOME"		   , KeyCode::HOME		     ),
+			rttr::value("END"		   , KeyCode::END			 ),
+			rttr::value("CAPS_LOCK"	   , KeyCode::CAPS_LOCK	     ),
+			rttr::value("SCROLL_LOCK"  , KeyCode::SCROLL_LOCK	 ),
+			rttr::value("NUM_LOCK"	   , KeyCode::NUM_LOCK	     ),
+			rttr::value("PRINT_SCREEN" , KeyCode::PRINT_SCREEN   ),
+			rttr::value("PAUSE"		   , KeyCode::PAUSE		     ),
+			rttr::value("F1"		   , KeyCode::F1			 ),
+			rttr::value("F2"		   , KeyCode::F2			 ),
+			rttr::value("F3"		   , KeyCode::F3			 ),
+			rttr::value("F4"		   , KeyCode::F4			 ),
+			rttr::value("F5"		   , KeyCode::F5			 ),
+			rttr::value("F6"		   , KeyCode::F6			 ),
+			rttr::value("F7"		   , KeyCode::F7			 ),
+			rttr::value("F8"		   , KeyCode::F8			 ),
+			rttr::value("F9"		   , KeyCode::F9			 ),
+			rttr::value("F10"		   , KeyCode::F10			 ),
+			rttr::value("F11"		   , KeyCode::F11			 ),
+			rttr::value("F12"		   , KeyCode::F12			 ),
+			rttr::value("F13"		   , KeyCode::F13			 ),
+			rttr::value("F14"		   , KeyCode::F14			 ),
+			rttr::value("F15"		   , KeyCode::F15			 ),
+			rttr::value("F16"		   , KeyCode::F16			 ),
+			rttr::value("F17"		   , KeyCode::F17			 ),
+			rttr::value("F18"		   , KeyCode::F18			 ),
+			rttr::value("F19"		   , KeyCode::F19			 ),
+			rttr::value("F20"		   , KeyCode::F20			 ),
+			rttr::value("F21"		   , KeyCode::F21			 ),
+			rttr::value("F22"		   , KeyCode::F22			 ),
+			rttr::value("F23"		   , KeyCode::F23			 ),
+			rttr::value("F24"		   , KeyCode::F24			 ),
+			rttr::value("F25"		   , KeyCode::F25			 ),
+			rttr::value("KP_0"		   , KeyCode::KP_0		     ),
+			rttr::value("KP_1"		   , KeyCode::KP_1		     ),
+			rttr::value("KP_2"		   , KeyCode::KP_2		     ),
+			rttr::value("KP_3"		   , KeyCode::KP_3		     ),
+			rttr::value("KP_4"		   , KeyCode::KP_4		     ),
+			rttr::value("KP_5"		   , KeyCode::KP_5		     ),
+			rttr::value("KP_6"		   , KeyCode::KP_6		     ),
+			rttr::value("KP_7"		   , KeyCode::KP_7		     ),
+			rttr::value("KP_8"		   , KeyCode::KP_8		     ),
+			rttr::value("KP_9"		   , KeyCode::KP_9		     ),
+			rttr::value("KP_DECIMAL"   , KeyCode::KP_DECIMAL	 ),
+			rttr::value("KP_DIVIDE"	   , KeyCode::KP_DIVIDE	     ),
+			rttr::value("KP_MULTIPLY"  , KeyCode::KP_MULTIPLY	 ),
+			rttr::value("KP_SUBTRACT"  , KeyCode::KP_SUBTRACT	 ),
+			rttr::value("KP_ADD"	   , KeyCode::KP_ADD		 ),
+			rttr::value("KP_ENTER"	   , KeyCode::KP_ENTER	     ),
+			rttr::value("KP_EQUAL"	   , KeyCode::KP_EQUAL	     ),
+			rttr::value("LEFT_SHIFT"   , KeyCode::LEFT_SHIFT	 ),
+			rttr::value("LEFT_CONTROL" , KeyCode::LEFT_CONTROL   ),
+			rttr::value("LEFT_ALT"	   , KeyCode::LEFT_ALT	     ),
+			rttr::value("LEFT_SUPER"   , KeyCode::LEFT_SUPER	 ),
+			rttr::value("RIGHT_SHIFT"  , KeyCode::RIGHT_SHIFT	 ),
+			rttr::value("RIGHT_CONTROL", KeyCode::RIGHT_CONTROL  ),
+			rttr::value("RIGHT_ALT"	   , KeyCode::RIGHT_ALT	     ),
+			rttr::value("RIGHT_SUPER"  , KeyCode::RIGHT_SUPER	 ),
+			rttr::value("MENU"		   , KeyCode::MENU		     )
+		);
+
+		rttr::registration::enumeration<MouseButton>("MouseButton")
+		(
+			rttr::value("1"     , MouseButton::_1    ),
+			rttr::value("2"     , MouseButton::_2    ),
+			rttr::value("3"     , MouseButton::_3    ),
+			rttr::value("4"     , MouseButton::_4    ),
+			rttr::value("5"     , MouseButton::_5    ),
+			rttr::value("6"     , MouseButton::_6    ),
+			rttr::value("7"     , MouseButton::_7    ),
+			rttr::value("8"     , MouseButton::_8    ),
+			rttr::value("LAST"  , MouseButton::LAST  ),
+			rttr::value("LEFT"  , MouseButton::LEFT  ),
+			rttr::value("RIGHT" , MouseButton::RIGHT ),
+			rttr::value("MIDDLE", MouseButton::MIDDLE)
+		);
+
+		rttr::registration::enumeration<CursorMode>("CursorMode")
+		(
+			rttr::value("DISABLED", CursorMode::DISABLED),
+			rttr::value("HIDDEN"  , CursorMode::HIDDEN  ),
+			rttr::value("NORMAL"  , CursorMode::NORMAL  )
+		);
 	}
 }

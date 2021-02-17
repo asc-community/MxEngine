@@ -74,24 +74,24 @@ namespace MxEngine
     AABB CapsuleCollider::GetAABB() const
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->capsuleShape->GetAABB(transform);
+        return this->capsuleShape->GetAABBTransformed(transform);
     }
 
     BoundingSphere CapsuleCollider::GetBoundingSphere() const
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->capsuleShape->GetBoundingSphere(transform);
+        return this->capsuleShape->GetBoundingSphereTransformed(transform);
     }
 
     Capsule CapsuleCollider::GetBoundingCapsule() const
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->capsuleShape->GetBoundingCapsule(transform);
+        return this->capsuleShape->GetBoundingCapsuleTransformed(transform);
     }
 
     Capsule CapsuleCollider::GetBoundingCapsuleInternal() const
     {
-        return this->GetNativeHandle()->GetBoundingCapsuleUnchanged();
+        return this->GetNativeHandle()->GetBoundingCapsule();
     }
 
     void CapsuleCollider::SetBoundingCapsule(Capsule cylinder)
@@ -113,6 +113,9 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<Capsule>)
             )
             .constructor<>()
+            (
+                rttr::policy::ctor::as_object
+            )
             .property("orientation", &Capsule::Orientation)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)

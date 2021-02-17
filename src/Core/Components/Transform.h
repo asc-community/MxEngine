@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "Utilities/ECS/Component.h"
 #include "Utilities/Math/Math.h"
 
 namespace MxEngine

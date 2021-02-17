@@ -54,8 +54,8 @@ namespace MxEngine
 
         if (resultTexture->GetWidth() != widthTotal || resultTexture->GetHeight() != heightTotal)
         {
-            resultTexture->Load(nullptr, (int)widthTotal, (int)heightTotal, 3, false, resultTexture->GetFormat(), resultTexture->GetWrapType());
-            resultTexture->SetInternalEngineTag("[[vr cam output]]");
+            resultTexture->Load(nullptr, (int)widthTotal, (int)heightTotal, 3, false, resultTexture->GetFormat());
+            resultTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("vr camera out"));
         }
 
         this->Render(resultTexture, leftTexture, rightTexture);
@@ -114,11 +114,17 @@ namespace MxEngine
             )
             .property("left eye", &VRCameraController::LeftEye)
             (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
             )
             .property("right eye", &VRCameraController::RightEye)
             (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("eyes", &VRCameraController::LeftEye) // serialization of both eyes
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE),
+                rttr::metadata(SerializeInfo::CUSTOM_SERIALIZE, SerializeExtra<VRCameraController>),
+                rttr::metadata(SerializeInfo::CUSTOM_DESERIALIZE, DeserializeExtra<VRCameraController>)
             );
     }
 }

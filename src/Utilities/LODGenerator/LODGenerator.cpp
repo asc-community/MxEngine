@@ -37,32 +37,29 @@
 namespace MxEngine
 {
     LODGenerator::LODGenerator(const MeshData& mesh)
-        : mesh(mesh) { }
+        : originMesh(mesh), originVertecies(mesh.GetVerteciesFromGPU()), originIndicies(mesh.GetIndiciesFromGPU()) { }
 
     void LODGenerator::PrepareIndexData(float threshold)
     {
-        auto& vertecies = mesh.GetVertecies();
-        auto& indicies = mesh.GetIndicies();
-
-        projection.resize(vertecies.size(), std::numeric_limits<uint32_t>::max());
-        weights.resize(vertecies.size());
+        this->projection.resize(this->originVertecies.size(), std::numeric_limits<uint32_t>::max());
+        this->weights.resize(this->originVertecies.size());
 
         Vector3Cmp::Threshold = threshold;
         MxMap<Vector3, size_t, Vector3Cmp> vertexMapping;
         
-        for (size_t i = 0; i < indicies.size(); i += 3)
+        for (size_t i = 0; i < this->originIndicies.size(); i += 3)
         {
             std::array<size_t, 3> triangle = {
-                indicies[i + 0],
-                indicies[i + 1],
-                indicies[i + 2],
+                this->originIndicies[i + 0],
+                this->originIndicies[i + 1],
+                this->originIndicies[i + 2],
             };
 
             for (size_t I = 0; I < 3; I++)
             {
                 size_t newI = CollapseDublicate(vertexMapping, triangle[I]);
-                projection[triangle[I]] = (uint32_t)newI;
-                weights[newI][triangle[I]]++;
+                this->projection[triangle[I]] = (uint32_t)newI;
+                this->weights[newI][triangle[I]]++;
             }
         }
         
@@ -70,7 +67,7 @@ namespace MxEngine
 
     size_t LODGenerator::CollapseDublicate(MxMap<Vector3, size_t, Vector3Cmp>& vertexMapping, size_t f)
     {
-        const Vector3& Vf = mesh.GetVertecies()[f].Position;
+        const Vector3& Vf = this->originVertecies[f].Position;
 
         auto it = vertexMapping.find(Vf);
         if (it == vertexMapping.end())
@@ -91,31 +88,29 @@ namespace MxEngine
         threshold = Clamp(threshold, 0.0f, 1.0f);
         if (threshold == 0.0f) //-V550
         {
-            result = this->mesh;
+            result = this->originMesh;
             return result;
         }
 
-        Vector3 distance = mesh.GetAABB().Length();
+        Vector3 distance = this->originMesh.GetAABB().Length();
         float averageDistance = Dot(distance, MakeVector3(1.0f / 3.0f));
         if (averageDistance == 0.0f) averageDistance = 1.0f; //-V550
         this->PrepareIndexData(threshold * averageDistance);
 
         constexpr uint32_t Invalid = std::numeric_limits<uint32_t>::max();
 
-        auto& oldVertecies = mesh.GetVertecies();
-        auto& oldIndicies  = mesh.GetIndicies();
-        auto& vertecies    = result.GetVerteciesReference();
-        auto& indicies     = result.GetIndiciesReference();
+        MeshData::VertexData vertecies;
+        MeshData::IndexData indicies;
 
         // collapse vertecies. If triangle has pair of equal verticies - ignore it
-        indicies.reserve(oldIndicies.size());
-        for (size_t f = 0; f < oldIndicies.size(); f += 3)
+        indicies.reserve(this->originIndicies.size());
+        for (size_t f = 0; f < this->originIndicies.size(); f += 3)
         {
             uint32_t triangle[] =
             {
-                projection[oldIndicies[f + 0]],
-                projection[oldIndicies[f + 1]],
-                projection[oldIndicies[f + 2]],
+                projection[this->originIndicies[f + 0]],
+                projection[this->originIndicies[f + 1]],
+                projection[this->originIndicies[f + 2]],
             };
             // check if triangle is degenerate or is no longer exists
             if (((triangle[0] != triangle[1]) && (triangle[1] != triangle[2]) && (triangle[2] != triangle[0]))
@@ -131,7 +126,7 @@ namespace MxEngine
         std::vector<size_t> indexTable;
         indexTable.assign(projection.size(), NotExists);
         size_t lastId = 0;
-        vertecies.reserve(oldVertecies.size());
+        vertecies.reserve(this->originVertecies.size());
         for(auto& f : indicies)
         {
             if (indexTable[f] == NotExists)
@@ -139,13 +134,13 @@ namespace MxEngine
                 auto& newVertex = vertecies.emplace_back();
 
                 size_t total = 0;
-                for (const auto& [face, count] : weights[f])
+                for (const auto& [face, count] : this->weights[f])
                     total += count;
 
-                for (const auto& [face, count] : weights[f])
+                for (const auto& [face, count] : this->weights[f])
                 {
                     float weight = (float)count / (float)total;
-                    const auto& oldVertex = oldVertecies[face];
+                    const auto& oldVertex = this->originVertecies[face];
                     newVertex.Position   += weight * oldVertex.Position;
                     newVertex.TexCoord   += weight * oldVertex.TexCoord;
                     newVertex.Normal     += weight * oldVertex.Normal;
@@ -159,8 +154,9 @@ namespace MxEngine
 
         indicies.shrink_to_fit();
         vertecies.shrink_to_fit();
-        result.BufferIndicies();
-        result.BufferVertecies();
+        result.BufferIndicies(indicies);
+        result.BufferVertecies(vertecies);
+        result.UpdateBoundingGeometry(vertecies);
         return result;
     }
 }

@@ -30,7 +30,6 @@
 
 #include "Core/Macro/Macro.h"
 
-#if defined(MXENGINE_USE_OPENGL)
 #include "Platform/OpenGL/CubeMap.h"
 #include "Platform/OpenGL/FrameBuffer.h"
 #include "Platform/OpenGL/IndexBuffer.h"
@@ -40,7 +39,6 @@
 #include "Platform/OpenGL/VertexArray.h"
 #include "Platform/OpenGL/VertexBuffer.h"
 #include "Platform/OpenGL/VertexBufferLayout.h"
-#endif
 
 #include "Utilities/AbstractFactory/AbstractFactory.h"
 

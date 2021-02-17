@@ -56,6 +56,7 @@ namespace MxEngine
 		void Load(BufferData data, size_t sizeInFloats, UsageType type);
 		void BufferSubData(BufferData data, size_t sizeInFloats, size_t offsetInFloats = 0);
 		void BufferDataWithResize(BufferData data, size_t sizeInFloats);
+		void GetBufferedData(BufferData data, size_t sizeInFloats, size_t offsetInFloats = 0) const;
 		size_t GetSize() const;
 	};
 }

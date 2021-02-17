@@ -32,7 +32,8 @@
 #include "Utilities/Memory/Memory.h"
 #include "Core/MxObject/MxObject.h"
 #include "Core/Events/KeyEvent.h"
-#include "Utilities/ImGui/Editors/Components/ComponentEditor.h"
+#include "Utilities/ImGui/Editors/ComponentEditor.h"
+#include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
 {
@@ -85,6 +86,8 @@ namespace MxEngine
 		template<typename T>
 		void RegisterComponentEditor()
 		{
+			MXLOG_DEBUG("MxEngine::RuntimeEditor", "registered component " + MxString(rttr::type::get<T>().get_name().cbegin()));
+
 			this->componentEditorCallbacks.push_back([](MxObject& object)
 			{
 				auto component = object.GetComponent<T>();

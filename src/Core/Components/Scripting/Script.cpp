@@ -116,17 +116,24 @@ namespace MxEngine
 
     MXENGINE_REFLECT_TYPE
     {
+        using SetScriptName = void(Script::*)(const MxString&);
+
         rttr::registration::class_<Script>("Script")
             .constructor<>()
             .property_readonly("attached script name", &Script::GetScriptName)
             (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::VIEW_CONDITION, +([](const rttr::instance& p) { return p.try_convert<Script>()->HasScriptableObject(); }))
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance& p) { return p.try_convert<Script>()->HasScriptableObject(); }))
+            )
+            .property("_name", &Script::GetScriptName, (SetScriptName)&Script::SetScriptableObject)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE),
+                rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance& p) { return p.try_convert<Script>()->HasScriptableObject(); }))
             )
             .property_readonly("attached script filepath", &Script::GetScriptFileName)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::VIEW_CONDITION, +([](const rttr::instance& p) { return p.try_convert<Script>()->HasScriptableObject(); }))
+                rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance& p) { return p.try_convert<Script>()->HasScriptableObject(); }))
             )
             .method("script actions", &Script::GetHashedScriptName)
             (
