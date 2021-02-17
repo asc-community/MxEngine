@@ -74,24 +74,24 @@ namespace MxEngine
     AABB CylinderCollider::GetAABB() const
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->cylinderShape->GetAABB(transform);
+        return this->cylinderShape->GetAABBTransformed(transform);
     }
 
     BoundingSphere CylinderCollider::GetBoundingSphere() const
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->cylinderShape->GetBoundingSphere(transform);
+        return this->cylinderShape->GetBoundingSphereTransformed(transform);
     }
 
     Cylinder CylinderCollider::GetBoundingCylinder() const
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->cylinderShape->GetBoundingCylinder(transform);
+        return this->cylinderShape->GetBoundingCylinderTransformed(transform);
     }
 
     Cylinder CylinderCollider::GetBoundingCylinderInternal() const
     {
-        return this->GetNativeHandle()->GetBoundingCylinderUnchanged();
+        return this->GetNativeHandle()->GetBoundingCylinder();
     }
 
     void CylinderCollider::SetBoundingCylinder(Cylinder cylinder)

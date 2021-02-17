@@ -73,9 +73,9 @@ namespace MxEngine
         this->DestroyShape();
     }
 
-    Cylinder CylinderShape::GetBoundingCylinder(const TransformComponent& transform) const
+    Cylinder CylinderShape::GetBoundingCylinderTransformed(const TransformComponent& transform) const
     {
-        auto cylinder = this->GetBoundingCylinderUnchanged();
+        auto cylinder = this->GetBoundingCylinder();
         auto& scale = transform.GetScale();
         cylinder.Center += transform.GetPosition();
         cylinder.Rotation = transform.GetRotation();
@@ -100,16 +100,21 @@ namespace MxEngine
         return cylinder;
     }
 
-    Cylinder CylinderShape::GetBoundingCylinderUnchanged() const
+    Cylinder CylinderShape::GetBoundingCylinder() const
     {
-        auto box = this->GetAABBUnchanged();
+        auto box = this->GetAABB();
         auto cylinder = ToCylinder(box, this->orientation);
         return cylinder;
     }
 
+    Cylinder CylinderShape::GetNativeBoundingTransformed(const TransformComponent& transform) const
+    {
+        return this->GetBoundingCylinderTransformed(transform);
+    }
+
     Cylinder CylinderShape::GetNativeBounding() const
     {
-        return this->GetBoundingCylinderUnchanged();
+        return this->GetBoundingCylinder();
     }
 
     Cylinder::Axis CylinderShape::GetOrientation() const

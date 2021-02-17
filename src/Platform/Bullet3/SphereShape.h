@@ -47,9 +47,9 @@ namespace MxEngine
         SphereShape& operator=(SphereShape&&) noexcept;
         ~SphereShape();
 
-        // both functions defined in ShapeBase
-        // BoundingSphere GetBoundingSphere(const TransformComponent& transform) const;
-        // BoundingSphere GetBoundingSphereUnchanged() const;
+        // other functions defined in ShapeBase
+
         BoundingSphere GetNativeBounding() const;
+        BoundingSphere GetNativeBoundingTransformed(const TransformComponent& transform) const;
     };
 }

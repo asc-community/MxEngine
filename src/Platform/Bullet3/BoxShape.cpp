@@ -55,9 +55,9 @@ namespace MxEngine
         this->DestroyShape();
     }
 
-    BoundingBox BoxShape::GetBoundingBox(const TransformComponent& transform) const
+    BoundingBox BoxShape::GetBoundingBoxTransformed(const TransformComponent& transform) const
     {
-        auto box = this->GetBoundingBoxUnchanged();
+        auto box = this->GetBoundingBox();
         box.Min *= transform.GetScale();
         box.Max *= transform.GetScale();
         box.Center = transform.GetPosition();
@@ -65,15 +65,20 @@ namespace MxEngine
         return box;
     }
 
-    BoundingBox BoxShape::GetBoundingBoxUnchanged() const
+    BoundingBox BoxShape::GetBoundingBox() const
     {
-        auto aabb = this->GetAABBUnchanged();
+        auto aabb = this->GetAABB();
         auto box = ToBoundingBox(aabb);
         return box;
     }
 
     BoundingBox BoxShape::GetNativeBounding() const
     {
-        return this->GetBoundingBoxUnchanged();
+        return this->GetBoundingBox();
+    }
+
+    BoundingBox BoxShape::GetNativeBoundingTransformed(const TransformComponent& transform) const
+    {
+        return this->GetBoundingBoxTransformed(transform);
     }
 }

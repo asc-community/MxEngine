@@ -75,19 +75,27 @@ namespace MxEngine
     TransformComponent CompoundShape::GetShapeTransformByIndex(size_t index) const
     {
         MX_ASSERT(index < this->GetShapeCount());
+
         TransformComponent result;
-        auto parentScale = this->collider->getLocalScaling();
         auto& tr = ((btCompoundShape*)this->collider)->getChildTransform((int)index);
-        tr.setOrigin(tr.getOrigin() / parentScale);
+
+        auto parentScale = FromBulletVector3(this->collider->getLocalScaling());
+
         FromBulletTransform(result, tr);
+        result.SetPosition(result.GetPosition() / parentScale);
         return result;
     }
 
     void CompoundShape::SetShapeTransformByIndex(size_t index, const TransformComponent& relativeTransform)
     {
         MX_ASSERT(index < this->GetShapeCount());
+
         btTransform tr;
         ToBulletTransform(tr, relativeTransform);
+
+        auto parentScale = this->collider->getLocalScaling();
+        tr.setOrigin(tr.getOrigin() * parentScale);
+
         ((btCompoundShape*)this->collider)->updateChildTransform((int)index, tr);
     }
 

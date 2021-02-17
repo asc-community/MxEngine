@@ -88,13 +88,13 @@ namespace MxEngine
     AABB CompoundCollider::GetAABB() const
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->compoundShape->GetAABB(transform);
+        return this->compoundShape->GetAABBTransformed(transform);
     }
 
     BoundingSphere CompoundCollider::GetBoundingSphere() const
     {
         auto& transform = MxObject::GetByComponent(*this).Transform;
-        return this->compoundShape->GetBoundingSphere(transform);
+        return this->compoundShape->GetBoundingSphereTransformed(transform);
     }
 
     MxVector<CompoundCollider::CompoundColliderChild> CompoundCollider::GetChildren() const
@@ -108,12 +108,20 @@ namespace MxEngine
         return result;
     }
 
+    const CompoundCollider::VariantType& CompoundCollider::GetShapeByIndex(size_t index) const
+    {
+        return this->children[index];
+    }
+
     void CompoundCollider::SetChildren(MxVector<CompoundColliderChild> v)
     {
         this->ClearShapes();
         for (auto& child : v)
         {
-            std::visit([this, &child](auto&& shape) { this->AddShape(child.Transform, shape); }, child.Shape);
+            std::visit([this, &child](auto&& shape) 
+            { 
+                this->AddShape(child.Transform, shape); 
+            }, child.Shape);
         }
     }
 

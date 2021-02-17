@@ -48,9 +48,10 @@ namespace MxEngine
         CapsuleShape& operator=(CapsuleShape&&) noexcept;
         ~CapsuleShape();
 
-        Capsule GetBoundingCapsule(const TransformComponent& transform) const;
-        Capsule GetBoundingCapsuleUnchanged() const;
+        Capsule GetBoundingCapsuleTransformed(const TransformComponent& transform) const;
+        Capsule GetBoundingCapsule() const;
         Capsule GetNativeBounding() const;
+        Capsule GetNativeBoundingTransformed(const TransformComponent& transform) const;
         Capsule::Axis GetOrientation() const;
     };
 }
