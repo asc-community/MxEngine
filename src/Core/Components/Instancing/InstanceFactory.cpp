@@ -74,6 +74,7 @@ namespace MxEngine
 
         this->pool.Allocate(instance);
         instance->Transform = object->Transform;
+        instance->Name = object->Name + "_instance";
         auto component = instance->AddComponent<Instance>(object);
         return instance;
     }
@@ -170,6 +171,12 @@ namespace MxEngine
     bool IsInstance(MxObject& object)
     {
         return object.HasComponent<Instance>();
+    }
+
+    MxObject::Handle Instanciate(MxObject& object)
+    {
+        auto instanceFactory = object.GetOrAddComponent<InstanceFactory>();
+        return instanceFactory->Instanciate();
     }
 
     MxObject::Handle GetInstanceParent(MxObject& object)

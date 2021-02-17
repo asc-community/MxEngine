@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "Utilities/Image/ImageLoader.h"
+
 namespace ProjectTemplate
 {
     using namespace MxEngine;

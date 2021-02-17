@@ -41,6 +41,7 @@
 #include "Platform/Window/WindowManager.h"
 #include "Platform/Window/Input.h"
 #include "Core/Events/FpsUpdateEvent.h"
+#include "Core/Components/Instancing/Instance.h"
 
 namespace MxEngine
 {
@@ -365,17 +366,25 @@ namespace MxEngine
 		}
 	}
 
-	// declared in InstanceFactory.h
-	bool IsInstanced(MxObject& object);
-
     void RuntimeEditor::DrawMxObject(const MxString& treeName, MxObject::Handle object)
     {
-		bool isInstanced = IsInstanced(*object);
 		GUI::DrawMxObjectEditor(treeName.c_str(), *object, this->componentAdderComponentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
-		if (!isInstanced)
+		if (!IsInstanced(*object))
 		{
 			this->DrawTransformManipulator(object->Transform);
 			GUI::DrawMxObjectBoundingBoxEditor(*object);
+		}
+		// instanciate by middle button click TODO: add docs
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Middle))
+		{
+			if (IsInstance(*object))
+			{
+				this->currentlySelectedObject = Instanciate(*GetInstanceParent(*object));
+			}
+			else
+			{
+				this->currentlySelectedObject = Instanciate(*object);
+			}
 		}
 	}
 

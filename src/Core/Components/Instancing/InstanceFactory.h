@@ -189,8 +189,4 @@ namespace MxEngine
 
 		~InstanceFactory();
 	};
-    
-    bool IsInstanced(MxObject& object);
-    bool IsInstance(MxObject& object);
-    MxObject::Handle GetInstanceParent(MxObject& object);
 }
