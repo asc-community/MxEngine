@@ -36,7 +36,7 @@ namespace MxEngine
 	{
 		MAKE_COMPONENT(CameraSSGI);
 
-		size_t raySteps = 8;
+		size_t raySteps = 3;
 		float intensity = 2.5f;
 	public:
 		CameraSSGI() = default;

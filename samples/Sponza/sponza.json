@@ -2145,8 +2145,8 @@
       },
       "CameraSSGI": {
         "id": 0,
-        "intensity": 2.5,
-        "ray steps": 8
+        "intensity": 3.0,
+        "ray steps": 3
       },
       "CameraSSR": {
         "fading": 1.0,

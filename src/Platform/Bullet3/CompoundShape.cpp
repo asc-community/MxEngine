@@ -97,6 +97,7 @@ namespace MxEngine
         tr.setOrigin(tr.getOrigin() * parentScale);
 
         ((btCompoundShape*)this->collider)->updateChildTransform((int)index, tr);
+        ((btCompoundShape*)this->collider)->getChildShape((int)index)->setLocalScaling(parentScale);
     }
 
     void CompoundShape::ClearShapes()
