@@ -30,7 +30,7 @@
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Core/Config/GlobalConfig.h"
 #include "Utilities/FileSystem/FileManager.h"
-#include "Core/Serialization/SceneSerializer.h"
+#include "Core/Application/Scene.h"
 
 namespace MxEngine::GUI
 {
@@ -53,9 +53,7 @@ namespace MxEngine::GUI
             MxString path = FileManager::SaveFileDialog("*.json", "MxEngine scene files");
             if (!path.empty())
             {
-                auto serializedScene = SceneSerializer::Serialize();
-                File scene(path, File::WRITE);
-                SaveJson(scene, serializedScene);
+                Scene::Save(path);
             }
         }
         ImGui::SameLine();
@@ -64,9 +62,7 @@ namespace MxEngine::GUI
             MxString path = FileManager::OpenFileDialog("*.json", "MxEngine scene files");
             if (!path.empty())
             {
-                File sceneFile(path, File::READ);
-                auto sceneJson = LoadJson(sceneFile);
-                SceneSerializer::Deserialize(sceneJson);
+                Scene::Load(path);
             }
         }
 

@@ -93,9 +93,10 @@ namespace MxEngine
         MxVector<MxString> IgnoredFolders = { "MxEngine", "out", "build", ".git", ".vs" };
 
         // Debug settings
-        bool GraphicAPIDebug = true;
         MxString ShaderSourceDirectory = "../../src/Platform/OpenGL/Shaders";
+        bool GraphicAPIDebug = true;
         bool AutoRecompileFiles = false;
+        bool CachePrimitiveModels = true;
         EditorStyle Style = EditorStyle::MXENGINE;
         KeyCode ApplicationCloseKey = KeyCode::ESCAPE;
         KeyCode EditorOpenKey = KeyCode::GRAVE_ACCENT;

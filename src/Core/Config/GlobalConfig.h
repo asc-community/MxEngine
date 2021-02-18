@@ -54,6 +54,7 @@ namespace MxEngine
         static EditorStyle GetEditorStyle();
         static bool HasGraphicAPIDebug();
         static bool HasAutoRecompileFiles();
+        static bool HasCachePrimitiveModels();
         static KeyCode GetApplicationCloseKey();
         static KeyCode GetEditorOpenKey();
         static KeyCode GetRecompileFilesKey();

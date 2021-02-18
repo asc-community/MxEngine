@@ -60,4 +60,33 @@ namespace MxEngine
         JsonFile json = LoadJson(f);
         SceneSerializer::Deserialize(json);
     }
+
+    void Scene::Save(const FilePath& filepath)
+    {
+        auto hash = FileManager::RegisterExternalResource(filepath);
+        Scene::Save(hash);
+    }
+
+    void Scene::Save(const MxString& filepath)
+    {
+        Scene::Save(ToFilePath(filepath));
+    }
+
+    void Scene::Save(const char* filepath)
+    {
+        Scene::Save(FilePath(filepath));
+    }
+
+    void Scene::Save(StringId hash)
+    {
+        auto filepath = FileManager::GetFilePath(hash);
+        File f(filepath, File::WRITE);
+        if (!f.IsOpen())
+        {
+            MXLOG_ERROR("MxEngine::Scene", "cannot open scene file: " + ToMxString(filepath));
+            return;
+        }
+        auto json = SceneSerializer::Serialize();
+        SaveJson(f, json);
+    }
 }

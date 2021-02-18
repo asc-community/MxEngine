@@ -136,6 +136,11 @@ namespace MxEngine
         return CFG(AutoRecompileFiles);
     }
 
+    bool GlobalConfig::HasCachePrimitiveModels()
+    {
+        return CFG(CachePrimitiveModels);
+    }
+
     KeyCode GlobalConfig::GetApplicationCloseKey()
     {
         return CFG(ApplicationCloseKey);

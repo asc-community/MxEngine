@@ -30,9 +30,25 @@
 #include "Utilities/Format/Format.h"
 #include "Utilities/FileSystem/FileManager.h"
 #include "Utilities/ObjectLoading/ObjectSaver.h"
+#include "Core/Config/GlobalConfig.h"
 
 namespace MxEngine
 {
+    MxString CachePrimitiveMesh(const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies, const MxString& filename)
+    {
+        if (!GlobalConfig::HasCachePrimitiveModels())
+            return MXENGINE_MAKE_INTERNAL_TAG("primitive");
+
+        FilePath saveFilePath = FileManager::GetEngineModelDirectory() / ToFilePath(filename + ".obj");
+        if (!File::Exists(saveFilePath))
+        {
+            ObjectSaver::SaveVerteciesIndicies(saveFilePath, SupportedSaveFormats::OBJ, vertecies, indicies);
+        }
+
+        auto proximatePath = FileManager::GetFilePath(FileManager::RegisterExternalResource(saveFilePath));
+        return ToMxString(proximatePath);
+    }
+
     MeshHandle Primitives::CreateMesh(MeshData meshData, const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies, const MxString& filename)
     {
         auto mesh = ResourceFactory::Create<Mesh>();
@@ -44,14 +60,8 @@ namespace MxEngine
 
         mesh->UpdateBoundingGeometry();
 
-        FilePath saveFilePath = FileManager::GetEngineModelDirectory() / ToFilePath(filename + ".obj");
-        if (!File::Exists(saveFilePath))
-        {
-            ObjectSaver::SaveVerteciesIndicies(saveFilePath, SupportedSaveFormats::OBJ, vertecies, indicies);
-        }
-
-        auto proximatePath = FileManager::GetFilePath(FileManager::RegisterExternalResource(saveFilePath));
-        mesh->SetInternalEngineTag(ToMxString(proximatePath));
+        MxString tag = CachePrimitiveMesh(vertecies, indicies, filename);
+        mesh->SetInternalEngineTag(tag);
 
         return mesh;
     }

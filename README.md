@@ -85,6 +85,7 @@ To develop your own applications using MxEngine you can use template project wit
 	- Runtime GLSL shader editing (both engines and your own)
 	- ImGui editor with multiple draggable windows (docking)
 	- Load/save file dialog, texture viewer, mesh, material & component editors
+	- One-click scene loading/saving, generic serializer for all components and resources
 
 </details>
 
@@ -242,6 +243,14 @@ debug->BoundingBoxColor = Colors::Create(Colors::RED);
 
 Rendering::Draw(Line({0.0f, 0.0f, 0.0f}, {10.0f, 10.0f, 10.0f}), Colors::Create(Colors::GREEN, 1.0f));
 ```
+### Scene managing
+You can save your game objects, resources and scripts into a json script file. They can be loaded later with one function
+```cs
+// application state and all MxObjects and resources are saved and written to a json file
+Scene::Save("scene.json");
+// to completely replace current scene with another simply load a json file
+Scene::Load("another_scene.json");
+```
 
 ## Dependencies
 If you are interesed in libraries MxEngine depend on, consider reading [dependencies.md](dependencies.md) file. It contains third-party library list with links to each project's github repository and brief explanation of why each library is used in the engine. Note that some of the libraries are shipped in modified version, so do no try to edit engine CMake file if your are unsure if everything will still work correctly
@@ -261,11 +270,15 @@ If you are interesed in libraries MxEngine depend on, consider reading [dependen
 <img src="preview_images/readme_additional1.png">
 <i>physics simulation with colliders turned on</i>
 
-<img src="preview_images/readme_additional3.png">
+<img src="preview_images/readme_additional2.png">
 <i>Sponza scene with one point light</i>
 
-<img src="preview_images/readme_additional2.png">
+<img src="preview_images/readme_additional3.png">
 <i>light and sound bounds, other debug utilities</i>
+</p>
+
+<img src="preview_images/readme_additional4.png">
+<i>shadow casting from dynamic lights, screen-space reflections</i>
 </p>
 
 ## Projects based on MxEngine

@@ -38,5 +38,10 @@ namespace MxEngine
         static void Load(const MxString& filepath);
         static void Load(const char* filepath);
         static void Load(StringId filepath);
+
+        static void Save(const FilePath& filepath);
+        static void Save(const MxString& filepath);
+        static void Save(const char* filepath);
+        static void Save(StringId filepath);
     };
 }
