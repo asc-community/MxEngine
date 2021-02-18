@@ -45,6 +45,7 @@ namespace MxEngine
     class CameraEffects;
     class CameraToneMapping;
     class CameraSSR;
+    class CameraSSGI;
     
     struct DebugBufferUnit
     {
@@ -85,6 +86,7 @@ namespace MxEngine
         const CameraEffects* Effects;
         const CameraToneMapping* ToneMapping;
         const CameraSSR* SSR;
+        const CameraSSGI* SSGI;
     };
 
     struct EnvironmentUnit

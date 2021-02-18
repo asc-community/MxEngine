@@ -28,36 +28,47 @@
 
 #pragma once
 
-#include "Instancing/InstanceFactory.h"
-#include "Lighting/DirectionalLight.h"
-#include "Lighting/SpotLight.h"
-#include "Lighting/PointLight.h"
-#include "Rendering/MeshRenderer.h"
-#include "Rendering/MeshSource.h"
-#include "Rendering/MeshLOD.h"
-#include "Rendering/Skybox.h"
-#include "Rendering/DebugDraw.h"
-#include "Camera/CameraController.h"
-#include "Camera/CameraEffects.h"
-#include "Camera/CameraToneMapping.h"
-#include "Camera/CameraSSR.h"
-#include "Camera/CameraSSGI.h"
-#include "Camera/InputController.h"
-#include "Camera/VRCameraController.h"
-#include "Audio/AudioListener.h"
-#include "Audio/AudioSource.h"
-#include "Physics/BoxCollider.h"
-#include "Physics/SphereCollider.h"
-#include "Physics/CylinderCollider.h"
-#include "Physics/CapsuleCollider.h"
-#include "Physics/CompoundCollider.h"
-#include "Physics/CharacterController.h"
-#include "Physics/RigidBody.h"
-#include "Scripting/Script.h"
-#include "Transform.h"
-#include "Behaviour.h"
+#include "CameraSSGI.h"
+#include "Utilities/Math/Math.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
-    void RegisterComponents();
+    float CameraSSGI::GetIntensity() const
+    {
+        return this->intensity;
+    }
+
+    size_t CameraSSGI::GetRaySteps() const
+    {
+        return this->raySteps;
+    }
+
+    void CameraSSGI::SetIntensity(float intensity)
+    {
+        this->intensity = Max(intensity, 0.0f);
+    }
+
+    void CameraSSGI::SetRaySteps(size_t raySteps)
+    {
+        this->raySteps = Clamp<size_t>(raySteps, 0, 50);
+    }
+
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<CameraSSGI>("CameraSSGI")
+            .constructor<>()
+            .property("intensity", &CameraSSGI::GetIntensity, &CameraSSGI::SetIntensity)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("ray steps", &CameraSSGI::GetRaySteps, &CameraSSGI::SetRaySteps)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 50.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+            );
+    }
 }

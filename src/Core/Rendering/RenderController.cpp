@@ -16,7 +16,7 @@
 // this software without specific prior written permission.
 // 
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR ISpotMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 // IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 // DISCLAIMED.IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
 // FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
@@ -33,6 +33,7 @@
 #include "Core/Components/Camera/CameraEffects.h"
 #include "Core/Components/Camera/CameraToneMapping.h"
 #include "Core/Components/Camera/CameraSSR.h"
+#include "Core/Components/Camera/CameraSSGI.h"
 #include "Core/Components/Lighting/DirectionalLight.h"
 #include "Core/Components/Lighting/SpotLight.h"
 #include "Core/Components/Lighting/PointLight.h"
@@ -235,7 +236,6 @@ namespace MxEngine
 
 		this->ApplySSAO(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
 		this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
-		// this->ApplySSGI(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
 
 		// render skybox & debug buffer (HDR texture is already attached)
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.HDRTexture, Attachment::COLOR_ATTACHMENT0);
@@ -248,7 +248,11 @@ namespace MxEngine
 		this->GetRenderEngine().UseDepthBufferMask(true);
 		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
 
+
 		this->ComputeBloomEffect(camera);
+		this->ApplySSGI(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
+
+		
 		this->ApplyChromaticAbberation(camera, camera.HDRTexture, camera.SwapTexture1);
 		this->ApplyFogEffect(camera, camera.HDRTexture, camera.SwapTexture1);
 
@@ -482,11 +486,17 @@ namespace MxEngine
 
 	void RenderController::ApplySSGI(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
 	{
+		if (camera.SSGI == nullptr || camera.SSGI->GetIntensity() == 0.0f) return;
+
 		MAKE_SCOPE_PROFILER("RenderController::ApplySSR()");
 		input->GenerateMipmaps();
 
 		auto& SSGIShader = this->Pipeline.Environment.Shaders["SSGI"_id];
 		SSGIShader->Bind();
+		SSGIShader->IgnoreNonExistingUniform("albedoTex");
+		SSGIShader->IgnoreNonExistingUniform("normalTex");
+		SSGIShader->IgnoreNonExistingUniform("materialTex");
+		SSGIShader->IgnoreNonExistingUniform("camera.position");
 
 		Texture::TextureBindId textureId = 0;
 		this->BindGBuffer(camera, *SSGIShader, textureId);
@@ -494,14 +504,22 @@ namespace MxEngine
 
 		input->Bind(textureId++);
 		SSGIShader->SetUniformInt("inputTex", input->GetBoundId());
+		SSGIShader->SetUniformInt("raySteps", (int)camera.SSGI->GetRaySteps());
+		SSGIShader->SetUniformFloat("intensity", (int)camera.SSGI->GetIntensity());
 
 		this->RenderToTexture(temporary, SSGIShader);
 		temporary->GenerateMipmaps();
 
 		auto& applyShader = this->Pipeline.Environment.Shaders["ApplySSGI"_id];
 		applyShader->Bind();
-		input->Bind(0);
-		temporary->Bind(1);
+		applyShader->IgnoreNonExistingUniform("depthTex");
+		applyShader->IgnoreNonExistingUniform("normalTex");
+
+		textureId = 0;
+		this->BindGBuffer(camera, *applyShader, textureId);
+
+		input->Bind(textureId++);
+		temporary->Bind(textureId++);
 		applyShader->SetUniformInt("inputTex", input->GetBoundId());
 		applyShader->SetUniformInt("SSGITex", temporary->GetBoundId());
 
@@ -1097,7 +1115,7 @@ namespace MxEngine
 	}
 
 	void RenderController::SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
-		const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping, const CameraSSR* ssr)
+		const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping, const CameraSSR* ssr, const CameraSSGI* ssgi)
 	{
 		auto& camera = this->Pipeline.Cameras.emplace_back();
 
@@ -1126,6 +1144,7 @@ namespace MxEngine
 		camera.Effects                    = effects;
 		camera.ToneMapping                = toneMapping;
 		camera.SSR                        = ssr;
+		camera.SSGI                       = ssgi;
 	}
 
 	void RenderController::SubmitPrimitive(const SubMesh& submesh, const Material& material, bool castsShadows, const TransformComponent& parentTransform, size_t instanceCount, const char* debugName)

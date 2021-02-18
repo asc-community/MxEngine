@@ -8,7 +8,7 @@ vec3 reconstructWorldPosition(float depth, vec2 texcoord, mat4 invViewProjMatrix
 
 float sampleShadowMap(sampler2D depthMap, vec2 coords, float compare)
 {
-	return step(compare, texture2D(depthMap, coords).r);
+	return step(compare, textureLod(depthMap, coords, 0.0).r);
 }
 
 float sampleShadowMapLinear(sampler2D depthMap, vec2 coords, float compare, vec2 texelSize)

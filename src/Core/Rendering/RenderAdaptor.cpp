@@ -38,6 +38,7 @@
 #include "Core/Components/Rendering/DebugDraw.h"
 #include "Core/Components/Camera/CameraEffects.h"
 #include "Core/Components/Camera/CameraSSR.h"
+#include "Core/Components/Camera/CameraSSGI.h"
 #include "Core/Components/Camera/CameraToneMapping.h"
 #include "Core/Components/Lighting/DirectionalLight.h"
 #include "Core/Components/Lighting/PointLight.h"
@@ -306,12 +307,14 @@ namespace MxEngine
                 auto effectsComponent = object.GetComponent<CameraEffects>();
                 auto toneMappingComponent = object.GetComponent<CameraToneMapping>();
                 auto ssrComponent = object.GetComponent<CameraSSR>();
-                Skybox* skybox                  = skyboxComponent.IsValid()     ? skyboxComponent.GetUnchecked()      : nullptr;
+                auto ssgiComponent = object.GetComponent<CameraSSGI>();
+                Skybox* skybox                 = skyboxComponent.IsValid()      ? skyboxComponent.GetUnchecked()      : nullptr;
                 CameraEffects* effects         = effectsComponent.IsValid()     ? effectsComponent.GetUnchecked()     : nullptr;
                 CameraToneMapping* toneMapping = toneMappingComponent.IsValid() ? toneMappingComponent.GetUnchecked() : nullptr;
                 CameraSSR* ssr                 = ssrComponent.IsValid()         ? ssrComponent.GetUnchecked()         : nullptr;
+                CameraSSGI* ssgi               = ssgiComponent.IsValid()        ? ssgiComponent.GetUnchecked()        : nullptr;
 
-                this->Renderer.SubmitCamera(camera, transform, skybox, effects, toneMapping, ssr);
+                this->Renderer.SubmitCamera(camera, transform, skybox, effects, toneMapping, ssr, ssgi);
                 TrackMainCameraIndex(camera);
             }
         }

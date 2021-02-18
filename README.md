@@ -46,7 +46,7 @@ To develop your own applications using MxEngine you can use template project wit
 	<summary><b>Rendering features</b></summary>
 
 	- Physically Based Rendering (Cook-Torrance GGX)
-	- Screen Space Reflection, Screen Space Ambient Occlusion
+	- Screen Space Reflection, Screen Space Ambient Occlusion, Screen Space Global Illumination
 	- Cascade shadow maps, omnidirectional shadow maps, spot projection maps
 	- directional, point and spot dynamic lights
 	- Adaptive tone mapping, FXAA, fog, bloom effect

@@ -2085,7 +2085,7 @@
     "paused": false,
     "physics-step": 1.0,
     "time-scale": 1.0,
-    "total-time": 0.0,
+    "total-time": 144.26101684570313,
     "viewport": 0
   },
   "mxobjects": [
@@ -2093,14 +2093,14 @@
       "CameraController": {
         "camera type": "PERSPECTIVE",
         "direction": [
-          -0.9969802498817444,
-          0.07621360570192337,
-          -0.014893390238285065
+          0.9984824657440186,
+          0.047322534024715424,
+          0.02816525474190712
         ],
         "forward vector": [
-          -0.9998884201049805,
+          0.9996023774147034,
           0.0,
-          -0.014936833642423153
+          0.028196845203638077
         ],
         "id": 0,
         "is listening window resize event": false,
@@ -2112,9 +2112,9 @@
           "znear": 0.10000000149011612
         },
         "right vector": [
-          0.01493699662387371,
+          -0.02819688804447651,
           0.0,
-          -0.9998884201049805
+          0.9996023774147034
         ],
         "rotate speed": 10.0,
         "up vector": [
@@ -2142,6 +2142,11 @@
         "fxaa": false,
         "id": 0,
         "vignette radius": 0.10000000149011612
+      },
+      "CameraSSGI": {
+        "id": 0,
+        "intensity": 2.5,
+        "ray steps": 8
       },
       "CameraSSR": {
         "fading": 1.0,
@@ -2180,7 +2185,7 @@
         },
         "color scale": 1.0,
         "exposure": 1.0,
-        "eye adaptation speed": 0.10000000149011612,
+        "eye adaptation speed": 1.0,
         "eye adaptation threshold": 0.10000000149011612,
         "gamma": 2.200000047683716,
         "id": 0,
@@ -2260,7 +2265,7 @@
         "linear velocity": [
           0.0,
           5.7220458984375e-06,
-          -6.592978252228932e-07
+          -2.531879594869224e-08
         ],
         "mass": 1.0,
         "push velocity": [
@@ -2293,9 +2298,9 @@
       "name": "Camera",
       "transform": {
         "position": [
-          22.738914489746094,
+          -23.572839736938477,
           2.999999523162842,
-          -0.3487933874130249
+          0.0949043482542038
         ],
         "rotation": [
           0.0,
@@ -2312,7 +2317,7 @@
     },
     {
       "DirectionalLight": {
-        "ambient intensity": 0.25,
+        "ambient intensity": 0.0,
         "cascade direction": [
           0.0,
           0.0,
@@ -2320,8 +2325,8 @@
         ],
         "color": [
           1.0,
-          1.0,
-          1.0
+          0.8377978205680847,
+          0.75
         ],
         "direction": [
           0.0,
@@ -2329,12 +2334,12 @@
           0.0
         ],
         "id": 0,
-        "intensity": 5.0,
+        "intensity": 100.0,
         "is following viewport": false,
         "projections": [
-          15.0,
+          50.0,
           100.0,
-          1500.0
+          200.0
         ]
       },
       "displayed": true,

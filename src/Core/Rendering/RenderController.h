@@ -117,7 +117,8 @@ namespace MxEngine
 		void SubmitLightSource(const PointLight& light, const TransformComponent& parentTransform);
 		void SubmitLightSource(const SpotLight& light, const TransformComponent& parentTransform);
 		void SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
-			const Skybox* skybox, const CameraEffects* effects = nullptr, const CameraToneMapping* toneMapping = nullptr, const CameraSSR* ssr = nullptr);
+			const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping,
+			const CameraSSR* ssr, const CameraSSGI* ssgi);
 		void SubmitPrimitive(const SubMesh& object, const Material& material, bool castsShadows, const TransformComponent& parentTransform, size_t instanceCount, const char* debugName = nullptr);
 		void SubmitImage(const TextureHandle& texture);
 		void StartPipeline();

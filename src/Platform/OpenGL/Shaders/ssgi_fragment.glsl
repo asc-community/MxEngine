@@ -17,18 +17,46 @@ struct Camera
 uniform Camera camera;
 
 uniform sampler2D inputTex;
+uniform int raySteps;
+uniform float intensity;
 
 float rand(vec2 co)
 {
     return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-vec3 sampleTexture(sampler2D tex, vec2 uv, vec2 origin)
+float getLOD(vec2 offset)
 {
-    float v = clamp(pow(dot(uv, uv), 0.1), 0.0, 1.0);
+    float v = clamp(pow(dot(offset, offset), 0.1), 0.0, 1.0);
     float lod = 10.0 * v;
-    vec3 lightColor = textureLod(tex, origin + uv, lod).rgb;
-    return lightColor;
+    return lod;
+}
+
+float calculateShadowRayCast(vec3 startPosition, vec3 endPosition, vec2 startUV)
+{
+    float rayDistance = length(endPosition - startPosition);
+    vec3 rayDirection = normalize(endPosition - startPosition);
+
+    float distancePerStep = rayDistance / raySteps;
+    for (int i = 1; i < raySteps; i++)
+    {
+        float currentDistance = i * distancePerStep;
+        vec3 currentPosition = startPosition + rayDirection * currentDistance;
+
+        vec4 projectedPosition = worldToFragSpace(currentPosition, camera.viewProjMatrix);
+        vec2 currentUV = projectedPosition.xy;
+
+        float lod = getLOD(currentUV - startUV);
+        float projectedDepth = 1.0 / projectedPosition.z;
+
+        float currentDepth = 1.0 / textureLod(depthTex, currentUV, lod).r;
+        if (projectedDepth > currentDepth + 0.1)
+        {
+            return float(i - 1) / raySteps;
+        }
+    }
+
+    return 1.0;
 }
 
 void main()
@@ -39,29 +67,29 @@ void main()
 
     float r = rand(TexCoord);
     vec2 invSize = 1.0 / textureSize(inputTex, 0);
-    const int SAMPLES = 20;
+    const int SAMPLES = 4;
     vec3 accum = vec3(0.0);
     for (int i = 0; i < SAMPLES; i++)
     {
-        float mMod = (i % (SAMPLES / 4) + 1) * 1.2 + r;
-        float mExp = exp(mMod);
+        float sampleDistance = exp(i - SAMPLES);
         float phi = ((i + r * SAMPLES) * 2.0 * PI) / SAMPLES;
-        vec2 uv = mExp * vec2(cos(phi), sin(phi));
-        uv = uv * invSize;
+        vec2 uv = sampleDistance * vec2(cos(phi), sin(phi));
 
-        vec3 lightColor = sampleTexture(inputTex, uv, TexCoord);
-        float sampleDepth = texture(depthTex, TexCoord + uv).r;
+        float lod = getLOD(uv);
+        vec3 lightColor = textureLod(inputTex, TexCoord + uv, lod).rgb;
+        float sampleDepth = textureLod(depthTex, TexCoord + uv, lod).r;
         vec3 lightPosition = reconstructWorldPosition(sampleDepth, TexCoord + uv, camera.invViewProjMatrix);
         vec3 lightDirection = lightPosition - fragment.position;
 
-        const float lightIntensity = 1.0;
-        const float lightRadius = 100.0;
+        const float lightRadius = 50.0;
         float lightDistance = length(lightDirection);
-        float attenuation = clamp(1.0f - pow(lightDistance / lightRadius, 4.0f), 0.0, 1.0);
-        float intensity = attenuation * attenuation / (lightDistance * lightDistance + 1.0f);
-        
-        accum += calculateLighting(fragment, viewDirection, lightDirection, lightIntensity * intensity * lightColor, 0.1, 1.0);
+        float distanceAttenuation = clamp(1.0f - pow(lightDistance / lightRadius, 4.0f), 0.0, 1.0);
+        distanceAttenuation = isinf(lightDistance) ? 0.0 : distanceAttenuation;
+
+        float shadowFactor = calculateShadowRayCast(fragment.position, lightPosition, TexCoord);
+
+        accum += lightColor * shadowFactor * distanceAttenuation;
     }
 
-    OutColor = vec4(accum, 1.0);
+    OutColor = vec4(accum * intensity, 1.0);
 }

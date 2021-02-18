@@ -28,36 +28,23 @@
 
 #pragma once
 
-#include "Instancing/InstanceFactory.h"
-#include "Lighting/DirectionalLight.h"
-#include "Lighting/SpotLight.h"
-#include "Lighting/PointLight.h"
-#include "Rendering/MeshRenderer.h"
-#include "Rendering/MeshSource.h"
-#include "Rendering/MeshLOD.h"
-#include "Rendering/Skybox.h"
-#include "Rendering/DebugDraw.h"
-#include "Camera/CameraController.h"
-#include "Camera/CameraEffects.h"
-#include "Camera/CameraToneMapping.h"
-#include "Camera/CameraSSR.h"
-#include "Camera/CameraSSGI.h"
-#include "Camera/InputController.h"
-#include "Camera/VRCameraController.h"
-#include "Audio/AudioListener.h"
-#include "Audio/AudioSource.h"
-#include "Physics/BoxCollider.h"
-#include "Physics/SphereCollider.h"
-#include "Physics/CylinderCollider.h"
-#include "Physics/CapsuleCollider.h"
-#include "Physics/CompoundCollider.h"
-#include "Physics/CharacterController.h"
-#include "Physics/RigidBody.h"
-#include "Scripting/Script.h"
-#include "Transform.h"
-#include "Behaviour.h"
+#include "Utilities/ECS/Component.h"
 
 namespace MxEngine
 {
-    void RegisterComponents();
+	class CameraSSGI
+	{
+		MAKE_COMPONENT(CameraSSGI);
+
+		size_t raySteps = 8;
+		float intensity = 2.5f;
+	public:
+		CameraSSGI() = default;
+
+		float GetIntensity() const;
+		size_t GetRaySteps() const;
+		
+		void SetIntensity(float intensity);
+		void SetRaySteps(size_t raySteps);
+	};
 }
