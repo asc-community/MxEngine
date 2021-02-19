@@ -101,7 +101,7 @@
       "id": 3,
       "metallic factor": 1.0,
       "metallic map": 18446744073709551615,
-      "name": "DefaultMaterial",
+      "name": "Lion Head",
       "normal map": 27,
       "roughness factor": 1.0,
       "roughness map": 21,
@@ -476,7 +476,7 @@
       "id": 18,
       "metallic factor": 0.25,
       "metallic map": 18446744073709551615,
-      "name": "DefaultMaterial",
+      "name": "Floor",
       "normal map": 83,
       "roughness factor": 1.0,
       "roughness map": 66,
@@ -601,7 +601,7 @@
       "id": 23,
       "metallic factor": 1.0,
       "metallic map": 18446744073709551615,
-      "name": "DefaultMaterial",
+      "name": "Lion Head",
       "normal map": 9,
       "roughness factor": 0.0,
       "roughness map": 81,
@@ -2085,7 +2085,7 @@
     "paused": false,
     "physics-step": 1.0,
     "time-scale": 1.0,
-    "total-time": 144.26101684570313,
+    "total-time": 0.0,
     "viewport": 0
   },
   "mxobjects": [
@@ -2093,14 +2093,14 @@
       "CameraController": {
         "camera type": "PERSPECTIVE",
         "direction": [
-          0.9984824657440186,
-          0.047322534024715424,
-          0.02816525474190712
+          0.9935327768325806,
+          0.11325626075267792,
+          0.00809989683330059
         ],
         "forward vector": [
-          0.9996023774147034,
+          0.9999667406082153,
           0.0,
-          0.028196845203638077
+          0.008152350783348083
         ],
         "id": 0,
         "is listening window resize event": false,
@@ -2112,9 +2112,9 @@
           "znear": 0.10000000149011612
         },
         "right vector": [
-          -0.02819688804447651,
+          -0.00815239455550909,
           0.0,
-          0.9996023774147034
+          0.9999667406082153
         ],
         "rotate speed": 10.0,
         "up vector": [
@@ -2265,7 +2265,7 @@
         "linear velocity": [
           0.0,
           5.7220458984375e-06,
-          -2.531879594869224e-08
+          -6.278546038629429e-08
         ],
         "mass": 1.0,
         "push velocity": [
@@ -2298,9 +2298,9 @@
       "name": "Camera",
       "transform": {
         "position": [
-          -23.572839736938477,
+          -24.58367156982422,
           2.999999523162842,
-          0.0949043482542038
+          0.10230235755443573
         ],
         "rotation": [
           0.0,

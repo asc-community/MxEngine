@@ -400,6 +400,7 @@ namespace MxEngine
             environment.TimeDelta = Time::Delta();
         }
 
+        this->Renderer.GetRenderStatistics().ResetAll();
         this->Renderer.StartPipeline();
     }
 

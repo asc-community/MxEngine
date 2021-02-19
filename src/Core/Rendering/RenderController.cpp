@@ -1040,7 +1040,6 @@ namespace MxEngine
 		this->Pipeline.ShadowCasterUnits.clear();
 		this->Pipeline.MaterialUnits.clear();
 		this->Pipeline.Cameras.clear();
-		this->Pipeline.Statistics.ResetAll();
 	}
 
 	void RenderController::SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform)

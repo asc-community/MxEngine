@@ -134,7 +134,7 @@ namespace MxEngine::GUI
 	{
 		static MxString text;
 		bool edited = GUI::InputTextOnClick(MxFormat("{}: {}", name, val).c_str(), text, 128);
-		return edited ? rttr::variant{ val } : rttr::variant{ };
+		return edited ? rttr::variant{ text } : rttr::variant{ };
 	}
 
 	rttr::variant Edit(const char* name, float val, const ReflectionMeta& meta)

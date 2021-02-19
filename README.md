@@ -35,8 +35,6 @@ Right now MxEngine is distributed in source code with configurable CMake files. 
 4. select one of sample executables and run it to check if everything was built successfully
 5. to create your own project, consider taking ProjectTemplate sample as starting point, it has everything already configured for build
 
-*note: if you are using Visual Studio and want to debug applications, click on executable located in the project directory and select* ***set as startup item***, *then work with VS project as usual*
-
 #### As a user (if you want to develop your own application)
 To develop your own applications using MxEngine you can use template project with already setup dependencies:
 [MxEngineTemplate](https://github.com/MomoDeve/MxEngineTemplate) (make sure it contains up-to-date version of the engine)

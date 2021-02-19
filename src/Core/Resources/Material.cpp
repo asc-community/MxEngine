@@ -38,7 +38,7 @@ namespace MxEngine
     { 
         rttr::registration::class_<Material>("Material")
             .constructor<>()
-            .property_readonly("name", &Material::Name)
+            .property("name", &Material::Name)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )
