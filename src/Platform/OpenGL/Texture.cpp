@@ -451,7 +451,7 @@ namespace MxEngine
 		GLCALL(glBindTexture(this->textureType, 0));
 	}
 
-	Texture::BindableId Texture::GetBoundId() const
+	Texture::TextureBindId Texture::GetBoundId() const
 	{
 		return this->activeId;
 	}

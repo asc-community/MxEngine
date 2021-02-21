@@ -121,7 +121,8 @@ set(MXENGINE_SOURCES
 "Core/Serialization/Deserializer.cpp" 
 "Utilities/ObjectLoading/ObjectSaver.cpp"
 "Core/Application/Scene.cpp"
- "Core/Components/Camera/CameraSSGI.cpp")
+ "Core/Components/Camera/CameraSSGI.cpp" 
+ "Platform/OpenGL/ShaderStorageBuffer.cpp" "Platform/OpenGL/ShaderBase.cpp" "Platform/OpenGL/ComputeShader.cpp")
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)

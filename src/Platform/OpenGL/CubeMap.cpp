@@ -150,13 +150,13 @@ namespace MxEngine
 		return id;
     }
 
-	void CubeMap::Bind(CubeMapId id) const
+	void CubeMap::Bind(CubeMapBindId id) const
 	{
 		this->activeId = id;
 		this->Bind();
 	}
 
-	CubeMap::BindableId CubeMap::GetBoundId() const
+	CubeMap::CubeMapBindId CubeMap::GetBoundId() const
 	{
 		return this->activeId;
 	}

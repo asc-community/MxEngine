@@ -50,10 +50,10 @@ namespace MxEngine
         const auto& material = materials[unit.materialIndex];
         material.HeightMap->Bind(0);
         material.AlbedoMap->Bind(1);
-        shader.SetUniformFloat("displacement", material.Displacement);
-        shader.SetUniformVec2("uvMultipliers", material.UVMultipliers);
-        shader.SetUniformInt("map_height", material.HeightMap->GetBoundId());
-        shader.SetUniformInt("map_albedo", material.AlbedoMap->GetBoundId());
+        shader.SetUniform("displacement", material.Displacement);
+        shader.SetUniform("uvMultipliers", material.UVMultipliers);
+        shader.SetUniform("map_height", material.HeightMap->GetBoundId());
+        shader.SetUniform("map_albedo", material.AlbedoMap->GetBoundId());
 
         Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
         Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
@@ -155,7 +155,7 @@ namespace MxEngine
                 const auto& projection = directionalLight.ProjectionMatrices[i];
 
                 controller.AttachDepthMap(directionalLight.ShadowMaps[i]);
-                shader.SetUniformMat4("LightProjMatrix", projection);
+                shader.SetUniform("LightProjMatrix", projection);
 
                 CastShadowsWithCulling(projection, shader, this->shadowCasters, this->materials);
             }
@@ -178,7 +178,7 @@ namespace MxEngine
         for (auto& spotLight : spotLights)
         {
             controller.AttachDepthMap(spotLight.ShadowMap);
-            shader.SetUniformMat4("LightProjMatrix", spotLight.ProjectionMatrix);
+            shader.SetUniform("LightProjMatrix", spotLight.ProjectionMatrix);
 
             CastShadowsWithCulling(spotLight, shader, this->shadowCasters, this->materials);
             spotLight.ShadowMap->GenerateMipmaps();
@@ -193,14 +193,14 @@ namespace MxEngine
         for (auto& pointLight : pointLights)
         {
             controller.AttachDepthMap(pointLight.ShadowMap);
-            shader.SetUniformMat4("LightProjMatrix[0]", pointLight.ProjectionMatrices[0]);
-            shader.SetUniformMat4("LightProjMatrix[1]", pointLight.ProjectionMatrices[1]);
-            shader.SetUniformMat4("LightProjMatrix[2]", pointLight.ProjectionMatrices[2]);
-            shader.SetUniformMat4("LightProjMatrix[3]", pointLight.ProjectionMatrices[3]);
-            shader.SetUniformMat4("LightProjMatrix[4]", pointLight.ProjectionMatrices[4]);
-            shader.SetUniformMat4("LightProjMatrix[5]", pointLight.ProjectionMatrices[5]);
-            shader.SetUniformFloat("zFar", pointLight.Radius);
-            shader.SetUniformVec3("lightPos", pointLight.Position);
+            shader.SetUniform("LightProjMatrix[0]", pointLight.ProjectionMatrices[0]);
+            shader.SetUniform("LightProjMatrix[1]", pointLight.ProjectionMatrices[1]);
+            shader.SetUniform("LightProjMatrix[2]", pointLight.ProjectionMatrices[2]);
+            shader.SetUniform("LightProjMatrix[3]", pointLight.ProjectionMatrices[3]);
+            shader.SetUniform("LightProjMatrix[4]", pointLight.ProjectionMatrices[4]);
+            shader.SetUniform("LightProjMatrix[5]", pointLight.ProjectionMatrices[5]);
+            shader.SetUniform("zFar", pointLight.Radius);
+            shader.SetUniform("lightPos", pointLight.Position);
 
             CastShadowsWithCulling(pointLight, shader, this->shadowCasters, this->materials);
             pointLight.ShadowMap->GenerateMipmaps();

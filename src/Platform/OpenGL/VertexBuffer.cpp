@@ -36,8 +36,8 @@ namespace MxEngine
     {
 		if (this->id != 0)
 		{
-			GLCALL(glDeleteBuffers(1, &id));
-			MXLOG_DEBUG("OpenGL::VertexBuffer", "deleted vertex buffer with id = " + ToMxString(id));
+			GLCALL(glDeleteBuffers(1, &this->id));
+			MXLOG_DEBUG("OpenGL::VertexBuffer", "deleted vertex buffer with id = " + ToMxString(this->id));
 		}
 		this->id = 0;
     }
@@ -46,13 +46,13 @@ namespace MxEngine
 	{
 		this->size = 0;
 		GLCALL(glGenBuffers(1, &id));
-		MXLOG_DEBUG("OpenGL::VertexBuffer", "created vertex buffer with id = " + ToMxString(id));
+		MXLOG_DEBUG("OpenGL::VertexBuffer", "created vertex buffer with id = " + ToMxString(this->id));
 	}
 
-	VertexBuffer::VertexBuffer(BufferData data, size_t count, UsageType type) 
+	VertexBuffer::VertexBuffer(BufferDataRead data, size_t count, UsageType type)
 		: VertexBuffer()
 	{
-		Load(data, count, type);
+		this->Load(data, count, type);
 	}
 
 	VertexBuffer::~VertexBuffer()
@@ -79,20 +79,20 @@ namespace MxEngine
 		return *this;
 	}
 
-	void VertexBuffer::Load(BufferData data, size_t count, UsageType usageType)
+	void VertexBuffer::Load(BufferDataRead data, size_t count, UsageType usageType)
 	{
 		this->size = count;
-		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, id));
+		this->Bind();
 		GLCALL(glBufferData(GL_ARRAY_BUFFER, count * sizeof(float), data, (GLenum)UsageTypeToNative(usageType)));
 	}
 
-    void VertexBuffer::BufferSubData(BufferData data, size_t count, size_t offset)
+    void VertexBuffer::BufferSubData(BufferDataRead data, size_t count, size_t offset)
     {
 		this->Bind();
 		GLCALL(glBufferSubData(GL_ARRAY_BUFFER, sizeof(float) * offset, count * sizeof(float), data));
     }
 
-    void VertexBuffer::BufferDataWithResize(BufferData data, size_t sizeInFloats)
+    void VertexBuffer::BufferDataWithResize(BufferDataRead data, size_t sizeInFloats)
     {
 		if (this->GetSize() < sizeInFloats)
 			this->Load(data, sizeInFloats, UsageType::DYNAMIC_DRAW);
@@ -100,7 +100,7 @@ namespace MxEngine
 			this->BufferSubData(data, sizeInFloats);
     }
 
-	void VertexBuffer::GetBufferedData(BufferData data, size_t sizeInFloats, size_t offsetInFloats) const
+	void VertexBuffer::GetBufferedData(BufferDataWrite data, size_t sizeInFloats, size_t offsetInFloats) const
 	{
 		this->Bind();
 		GLCALL(glGetBufferSubData(GL_ARRAY_BUFFER, offsetInFloats * sizeof(float), sizeInFloats * sizeof(float), (void*)data));
@@ -118,7 +118,7 @@ namespace MxEngine
 
 	void VertexBuffer::Bind() const
 	{
-		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, id));
+		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, this->id));
 	}
 
 	void VertexBuffer::Unbind() const

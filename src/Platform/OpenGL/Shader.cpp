@@ -29,330 +29,187 @@
 
 #include "Shader.h"
 #include "Utilities/Logging/Logger.h"
-#include "Core/Macro/Macro.h"
 #include "Platform/OpenGL/GLUtilities.h"
-#include "Utilities/FileSystem/File.h"
-#include "Core/Config/GlobalConfig.h"
-#include "Utilities/Parsing/ShaderPreprocessor.h"
+#include "Utilities/FileSystem/FileManager.h"
 
 namespace MxEngine
 {
-	MxString EmptyPath;
-	MxVector<MxString> EmptyVector;
-
-	enum class ShaderType
-	{
-		VERTEX_SHADER   = GL_VERTEX_SHADER,
-		GEOMETRY_SHADER = GL_GEOMETRY_SHADER,
-		FRAGMENT_SHADER = GL_FRAGMENT_SHADER,
+	std::array PipelineStageToNative = {
+		GL_VERTEX_SHADER,
+		GL_GEOMETRY_SHADER,
+		GL_FRAGMENT_SHADER
 	};
 
-	Shader::Shader()
+	std::array PipelineStageToString = {
+		"vertex",
+		"geometry",
+		"fragment"
+	};
+
+	struct PipelineStageInfo
 	{
-		this->id = 0;
-	}
+		Shader::PipelineStage Stage;
+		MxString SourceCode;
+		FilePath Path;
+	};
 
-	void Shader::Bind() const
+	Shader::BindableId Shader::CreateShaderProgram(ShaderId* ids, const PipelineStageInfo* stageInfos, size_t count)
 	{
-		GLCALL(glUseProgram(this->id));
-		Shader::CurrentlyAttachedShader = this->id;
-	}
-
-	void Shader::Unbind() const
-	{
-		GLCALL(glUseProgram(0));
-		Shader::CurrentlyAttachedShader = 0;
-	}
-
-    void Shader::InvalidateUniformCache()
-    {
-		this->uniformCache.clear();
-    }
-
-	Shader::BindableId Shader::GetNativeHandle() const
-    {
-		return this->id;
-    }
-
-	Shader::Shader(Shader&& shader) noexcept
-	{
-		#if defined(MXENGINE_DEBUG)
-		this->vertexShaderPath = shader.vertexShaderPath;
-		this->geometryShaderPath = shader.geometryShaderPath;
-		this->fragmentShaderPath = shader.fragmentShaderPath;
-		#endif
-		this->id = shader.id;
-		this->uniformCache = std::move(shader.uniformCache);
-		shader.id = 0;
-	}
-
-	Shader& Shader::operator=(Shader&& shader) noexcept
-	{
-		this->FreeShader();
-
-		#if defined(MXENGINE_DEBUG)
-		this->vertexShaderPath = shader.vertexShaderPath;
-		this->geometryShaderPath = shader.geometryShaderPath;
-		this->fragmentShaderPath = shader.fragmentShaderPath;
-		#endif
-		this->id = shader.id;
-		this->uniformCache = std::move(shader.uniformCache);
-		shader.id = 0;
-		return *this;
-	}
-
-	Shader::~Shader()
-	{
-		this->FreeShader();
-	}
-
-	template<>
-	Shader::ShaderId Shader::CompileShader(unsigned int type, const MxString& source, const std::filesystem::path& path)
-	{
-		GLCALL(GLuint shaderId = glCreateShader((GLenum)type));
-
-		ShaderPreprocessor preprocessor(source);
-
-		auto sourceModified = preprocessor
-			.LoadIncludes(FilePath(path.c_str()).parent_path())
-			.EmitPrefixLine(Shader::GetShaderVersionString())
-			.GetResult()
-			;
-
-#if defined(MXENGINE_DEBUG)
-		auto& includes = preprocessor.GetIncludeFiles();
-		this->includedFilePaths.insert(this->includedFilePaths.end(), includes.begin(), includes.end());
-#endif
-
-		auto cStringSource = sourceModified.c_str();
-		GLCALL(glShaderSource(shaderId, 1, &cStringSource, nullptr));
-		GLCALL(glCompileShader(shaderId));
-
-		GLint result;
-		GLCALL(glGetShaderiv(shaderId, GL_COMPILE_STATUS, &result));
-		if (result == GL_FALSE)
+		// create each shader stage
+		for (size_t i = 0; i < count; i++)
 		{
-			GLint length;
-			GLCALL(glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &length));
-			MxString msg;
-			msg.resize(length);
-			GLCALL(glGetShaderInfoLog(shaderId, length, &length, &msg[0]));
-			msg.pop_back(); // extra \n character
-			MxString typeName;
-			switch ((ShaderType)type)
-			{
-			case ShaderType::VERTEX_SHADER:
-				typeName = "vertex";
-				break;
-			case ShaderType::GEOMETRY_SHADER:
-				typeName = "geometry";
-				break;
-			case ShaderType::FRAGMENT_SHADER:
-				typeName = "fragment";
-				break;
-			}
-			MXLOG_ERROR("OpenGL::Shader", "failed to compile " + typeName + " shader: " + ToMxString(path));
-			MXLOG_ERROR("OpenGL::ErrorHandler", msg);
+			auto& stageInfo = stageInfos[i];
+			MXLOG_DEBUG("OpenGL::Shader", "compiling " + MxString(PipelineStageToString[stageInfo.Stage]) + " shader");
+			ids[i] = ShaderBase::CreateShader(PipelineStageToNative[stageInfo.Stage], stageInfo.SourceCode, stageInfo.Path);
 		}
 
-		return shaderId;
-	}
+		// link stages into one shader program
+		BindableId program = ShaderBase::CreateProgram(ids, count);
+		MXLOG_DEBUG("OpenGL::Shader", "created shader program with id = " + ToMxString(program));
 
-	template<>
-	void Shader::Load(const std::filesystem::path& vertex, const std::filesystem::path& fragment)
-	{
-		this->InvalidateUniformCache();
-		this->FreeShader();
-		#if defined(MXENGINE_DEBUG)
-		this->vertexShaderPath = ToMxString(vertex);
-		this->fragmentShaderPath = ToMxString(fragment);
-		#endif
-		MxString vs = File::ReadAllText(vertex);
-		MxString fs = File::ReadAllText(fragment);
-
-		if (vs.empty())
-			MXLOG_WARNING("OpenGL::Shader", "vertex shader is empty: " + ToMxString(vertex));
-		if (fs.empty())
-			MXLOG_WARNING("OpenGL::Shader", "fragment shader is empty: " + ToMxString(fragment));
-
-		MXLOG_DEBUG("OpenGL::Shader", "compiling vertex shader: " + this->vertexShaderPath);
-		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vs, vertex);
-		MXLOG_DEBUG("OpenGL::Shader", "compiling fragment shader: " + this->fragmentShaderPath);
-		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fs, fragment);
-
-		id = CreateProgram(vertexShader, fragmentShader);
-		MXLOG_DEBUG("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
-	}
-
-	template<>
-	void Shader::Load(const std::filesystem::path& vertex, const std::filesystem::path& geometry, const std::filesystem::path& fragment)
-	{
-		this->InvalidateUniformCache();
-		this->FreeShader();
-		#if defined(MXENGINE_DEBUG)
-		this->vertexShaderPath   = ToMxString(std::filesystem::proximate(vertex));
-		this->geometryShaderPath = ToMxString(std::filesystem::proximate(geometry));
-		this->fragmentShaderPath = ToMxString(std::filesystem::proximate(fragment));
-		#endif
-		MxString vs = File::ReadAllText(vertex);
-		MxString gs = File::ReadAllText(geometry);
-		MxString fs = File::ReadAllText(fragment);
-
-		if (vs.empty())
-			MXLOG_WARNING("OpenGL::Shader", "vertex shader is empty: " + ToMxString(vertex));
-		if (gs.empty())
-			MXLOG_WARNING("OpenGL::Shader", "geometry shader is empty: " + ToMxString(geometry));
-		if (fs.empty())
-			MXLOG_WARNING("OpenGL::Shader", "fragment shader is empty: " + ToMxString(fragment));
-
-		MXLOG_DEBUG("OpenGL::Shader", "compiling vertex shader: " + this->vertexShaderPath);
-		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vs, vertex);
-		MXLOG_DEBUG("OpenGL::Shader", "compiling geometry shader: " + this->geometryShaderPath);
-		unsigned int geometryShader = CompileShader((GLenum)ShaderType::GEOMETRY_SHADER, gs, geometry);
-		MXLOG_DEBUG("OpenGL::Shader", "compiling fragment shader: " + this->fragmentShaderPath);
-		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fs, fragment);
-
-		id = CreateProgram(vertexShader, geometryShader, fragmentShader);
-		MXLOG_DEBUG("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
-	}
-
-	void Shader::IgnoreNonExistingUniform(const MxString& name) const
-	{
-		this->IgnoreNonExistingUniform(name.c_str());
-	}
-
-	void Shader::IgnoreNonExistingUniform(const char* name) const
-	{
-		if (uniformCache.find_as(name) == uniformCache.end())
+		// delete separate shader stages
+		for (size_t i = 0; i < count; i++)
 		{
-			GLCALL(int location = glGetUniformLocation(this->id, name));
-			uniformCache[name] = location;
+			ShaderBase::DeleteShader(ids[i]);
 		}
+
+		return program;
+	}
+
+	void Shader::LoadDebugVariables(const PipelineStageInfo* stageInfos, size_t count)
+	{
+		#if defined(MXENGINE_DEBUG)
+		for (size_t i = 0; i < count; i++)
+		{
+			auto& stageInfo = stageInfos[i];
+			this->debugFilePaths[(size_t)stageInfo.Stage] = ToMxString(FileManager::GetProximatePath(stageInfo.Path, FileManager::GetWorkingDirectory()));
+			auto filepaths = ShaderBase::GetShaderIncludeFiles(stageInfo.SourceCode, stageInfo.Path);
+			this->includedFilePaths.insert(this->includedFilePaths.end(), eastl::make_move_iterator(filepaths.begin()), eastl::make_move_iterator(filepaths.end()));
+		}
+		#endif
+	}
+
+	template<>
+	void Shader::Load(const FilePath& vertex, const FilePath& fragment)
+	{
+		std::array stageInfos = {
+			PipelineStageInfo {
+				PipelineStage::VERTEX,
+				File::ReadAllText(vertex),
+				vertex
+			},
+			PipelineStageInfo {
+				PipelineStage::FRAGMENT,
+				File::ReadAllText(fragment),
+				fragment
+			},
+		};
+
+		constexpr size_t StageCount = stageInfos.size();
+		std::array<ShaderId, StageCount> ids;
+
+		auto program = Shader::CreateShaderProgram(ids.data(), stageInfos.data(), StageCount);
+		this->LoadDebugVariables(stageInfos.data(), StageCount);
+		this->SetNewNativeHandle(program);
+	}
+
+	template<>
+	void Shader::Load(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment)
+	{
+		std::array stageInfos = {
+			PipelineStageInfo {
+				PipelineStage::VERTEX,
+				File::ReadAllText(vertex),
+				vertex
+			},
+			PipelineStageInfo {
+				PipelineStage::GEOMETRY,
+				File::ReadAllText(geometry),
+				geometry
+			},
+			PipelineStageInfo {
+				PipelineStage::FRAGMENT,
+				File::ReadAllText(fragment),
+				fragment
+			},
+		};
+
+		constexpr size_t StageCount = stageInfos.size();
+		std::array<ShaderId, StageCount> ids;
+
+		auto program = Shader::CreateShaderProgram(ids.data(), stageInfos.data(), StageCount);
+		this->LoadDebugVariables(stageInfos.data(), StageCount);
+		this->SetNewNativeHandle(program);
+	}
+
+	void Shader::Load(const MxString& vertexPath, const MxString& fragmentPath)
+	{
+		this->Load(ToFilePath(vertexPath), ToFilePath(fragmentPath));
+	}
+
+	void Shader::Load(const MxString& vertexPath, const MxString& geometryPath, const MxString& fragmentPath)
+	{
+		this->Load(ToFilePath(vertexPath), ToFilePath(geometryPath), ToFilePath(fragmentPath));
 	}
 
     void Shader::LoadFromString(const MxString& vertex, const MxString& fragment)
     {
-		this->InvalidateUniformCache();
+		std::array stageInfos = {
+			PipelineStageInfo {
+				PipelineStage::VERTEX,
+				vertex,
+				FilePath("_vertex.glsl")
+			},
+			PipelineStageInfo {
+				PipelineStage::FRAGMENT,
+				fragment,
+				FilePath("_fragment.glsl")
+			},
+		};
 
-		MXLOG_DEBUG("OpenGL::Shader", "compiling vertex shader: vertex.glsl");
-		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, FilePath("vertex.glsl"));
-		MXLOG_DEBUG("OpenGL::Shader", "compiling fragment shader: fragment.glsl");
-		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fragment, FilePath("fragment.glsl"));
+		constexpr size_t StageCount = stageInfos.size();
+		std::array<ShaderId, StageCount> ids;
 
-		id = CreateProgram(vertexShader, fragmentShader);
-		MXLOG_DEBUG("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
+		auto program = Shader::CreateShaderProgram(ids.data(), stageInfos.data(), StageCount);
+		this->LoadDebugVariables(stageInfos.data(), StageCount);
+		this->SetNewNativeHandle(program);
     }
 
 	void Shader::LoadFromString(const MxString& vertex, const MxString& geometry, const MxString& fragment)
 	{
-		this->InvalidateUniformCache();
+		std::array stageInfos = {
+			PipelineStageInfo {
+				PipelineStage::VERTEX,
+				vertex,
+				FilePath("_vertex.glsl")
+			},
+			PipelineStageInfo {
+				PipelineStage::GEOMETRY,
+				geometry,
+				FilePath("_geometry.glsl")
+			},
+			PipelineStageInfo {
+				PipelineStage::FRAGMENT,
+				fragment,
+				FilePath("_fragment.glsl")
+			},
+		};
 
-		MXLOG_DEBUG("OpenGL::Shader", "compiling vertex shader: vertex.glsl");
-		unsigned int vertexShader = CompileShader((GLenum)ShaderType::VERTEX_SHADER, vertex, FilePath("vertex.glsl"));
-		MXLOG_DEBUG("OpenGL::Shader", "compiling geometry shader: geometry.glsl");
-		unsigned int geometryShader = CompileShader((GLenum)ShaderType::GEOMETRY_SHADER, geometry, FilePath("geometry.glsl"));
-		MXLOG_DEBUG("OpenGL::Shader", "compiling fragment shader: fragment.glsl");
-		unsigned int fragmentShader = CompileShader((GLenum)ShaderType::FRAGMENT_SHADER, fragment, FilePath("fragment.glsl"));
+		constexpr size_t StageCount = stageInfos.size();
+		std::array<ShaderId, StageCount> ids;
 
-		id = CreateProgram(vertexShader, geometryShader, fragmentShader);
-		MXLOG_DEBUG("OpenGL::Shader", "shader program created with id = " + ToMxString(id));
+		auto program = Shader::CreateShaderProgram(ids.data(), stageInfos.data(), StageCount);
+		this->LoadDebugVariables(stageInfos.data(), StageCount);
+		this->SetNewNativeHandle(program);
 	}
 
-	void Shader::SetUniformFloat(const MxString& name, float f) const
-	{
-		// shader was not bound before setting uniforms
-		MX_ASSERT(Shader::CurrentlyAttachedShader == this->id);
-
-		int location = GetUniformLocation(name);
-		if (location == -1) return;
-		GLCALL(glUniform1f(location, f));
-	}
-
-    void Shader::SetUniformVec2(const MxString& name, const Vector2& vec) const
-    {
-		// shader was not bound before setting uniforms
-		MX_ASSERT(Shader::CurrentlyAttachedShader == this->id);
-
-		int location = GetUniformLocation(name);
-		if (location == -1) return;
-		GLCALL(glUniform2f(location, vec.x, vec.y));
-    }
-
-	void Shader::SetUniformVec3(const MxString& name, const Vector3& vec) const
-	{
-		// shader was not bound before setting uniforms
-		MX_ASSERT(Shader::CurrentlyAttachedShader == this->id);
-
-		int location = GetUniformLocation(name);
-		if (location == -1) return;
-		GLCALL(glUniform3f(location, vec.x, vec.y, vec.z));
-	}
-
-	void Shader::SetUniformVec4(const MxString& name, const Vector4& vec) const
-	{
-		// shader was not bound before setting uniforms
-		MX_ASSERT(Shader::CurrentlyAttachedShader == this->id);
-
-		int location = GetUniformLocation(name);
-		if (location == -1) return;
-		GLCALL(glUniform4f(location, vec.x, vec.y, vec.z, vec.w));
-	}
-
-	void Shader::SetUniformMat4(const MxString& name, const Matrix4x4& matrix) const
-	{
-		int location = GetUniformLocation(name);
-		if (location == -1) return;
-		Bind();
-		GLCALL(glUniformMatrix4fv(location, 1, false, &matrix[0][0]));
-	}
-
-	void Shader::SetUniformMat3(const MxString& name, const Matrix3x3& matrix) const
-	{
-		// shader was not bound before setting uniforms
-		MX_ASSERT(Shader::CurrentlyAttachedShader == this->id);
-		int location = GetUniformLocation(name);
-		if (location == -1) return;
-		GLCALL(glUniformMatrix3fv(location, 1, false, &matrix[0][0]));
-	}
-
-	void Shader::SetUniformInt(const MxString& name, int i) const
-	{
-		// shader was not bound before setting uniforms
-		MX_ASSERT(Shader::CurrentlyAttachedShader == this->id);
-		int location = GetUniformLocation(name);
-		if (location == -1) return;
-		GLCALL(glUniform1i(location, i));
-	}
-
-	void Shader::SetUniformBool(const MxString& name, bool b) const
-	{
-		this->SetUniformInt(name, (int)b);
-	}
-
-	const MxString& Shader::GetVertexShaderDebugFilePath() const
+	const MxString& Shader::GetDebugFilePath(Shader::PipelineStage stage)
 	{
 		#if defined(MXENGINE_DEBUG)
-		return this->vertexShaderPath;
+		return this->debugFilePaths[(size_t)stage];
 		#else
-		return EmptyPath;
-		#endif
-	}
-
-	const MxString& Shader::GetGeometryShaderDebugFilePath() const
-	{
-		#if defined(MXENGINE_DEBUG)
-		return this->geometryShaderPath;
-		#else
-		return EmptyPath;
-		#endif
-	}
-
-	const MxString& Shader::GetFragmentShaderDebugFilePath() const
-	{
-		#if defined(MXENGINE_DEBUG)
-		return this->fragmentShaderPath;
-		#else
-		return EmptyPath;
+		const static MxString EmptyFilePath;
+		return EmptyFilePath;
 		#endif
 	}
 
@@ -361,83 +218,8 @@ namespace MxEngine
 		#if defined(MXENGINE_DEBUG)
 		return this->includedFilePaths;
 		#else
+		const static MxVector<MxString> EmptyVector;
 		return EmptyVector;
 		#endif
 	}
-
-	Shader::BindableId Shader::CreateProgram(Shader::ShaderId vertexShader, Shader::ShaderId fragmentShader) const
-	{
-		GLCALL(unsigned int program = glCreateProgram());
-
-		GLCALL(glAttachShader(program, vertexShader));
-		GLCALL(glAttachShader(program, fragmentShader));
-		GLCALL(glLinkProgram(program));
-		GLCALL(glValidateProgram(program));
-
-		GLCALL(glDeleteShader(vertexShader));
-		GLCALL(glDeleteShader(fragmentShader));
-
-		return program;
-	}
-
-	Shader::BindableId Shader::CreateProgram(ShaderId vertexShader, ShaderId geometryShader, ShaderId fragmentShader) const
-	{
-		GLCALL(unsigned int program = glCreateProgram());
-
-		GLCALL(glAttachShader(program, vertexShader));
-		GLCALL(glAttachShader(program, geometryShader));
-		GLCALL(glAttachShader(program, fragmentShader));
-		GLCALL(glLinkProgram(program));
-		GLCALL(glValidateProgram(program));
-
-		GLCALL(glDeleteShader(vertexShader));
-		GLCALL(glDeleteShader(geometryShader));
-		GLCALL(glDeleteShader(fragmentShader));
-
-		return program;
-	}
-
-	int Shader::GetUniformLocation(const MxString& uniformName) const
-	{
-		if (uniformCache.find(uniformName) != uniformCache.end())
-			return uniformCache[uniformName];
-
-		GLCALL(int location = glGetUniformLocation(this->id, uniformName.c_str()));
-		if (location == -1)
-		{
-			#if defined(MXENGINE_DEBUG)
-			MXLOG_WARNING("OpenGL::Shader", '[' + this->fragmentShaderPath + "]: " + "uniform was not found: " + uniformName);
-			#else
-			MXLOG_WARNING("OpenGL::Shader", "uniform was not found: " + uniformName);
-			#endif
-		}
-		uniformCache[uniformName] = location;
-		return location;
-	}
-
-	template<>
-	Shader::Shader(const std::filesystem::path& vertexShaderPath, const std::filesystem::path& fragmentShaderPath)
-	{
-		this->Load(vertexShaderPath, fragmentShaderPath);
-	}
-
-	template<>
-	Shader::Shader(const std::filesystem::path& vertexShaderPath, const std::filesystem::path& geometryShaderPath, const std::filesystem::path& fragmentShaderPath)
-	{
-		this->Load(vertexShaderPath, geometryShaderPath, fragmentShaderPath);
-	}
-
-	void Shader::FreeShader()
-	{
-		if (this->id != 0)
-		{
-			GLCALL(glDeleteProgram(this->id));
-		}
-		this->id = 0;
-	}
-
-    MxString Shader::GetShaderVersionString()
-    {
-		return "#version " + ToMxString(GlobalConfig::GetGraphicAPIMajorVersion() * 100 + GlobalConfig::GetGraphicAPIMinorVersion() * 10);
-    }
 }

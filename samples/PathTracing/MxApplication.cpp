@@ -70,13 +70,13 @@ namespace PathTracing
             int raySamples = accumulateImage ? 16 : 4;
 
             this->rayTracingShader->Bind();
-            this->rayTracingShader->SetUniformInt("uSamples", raySamples);
-            this->rayTracingShader->SetUniformFloat("uTime", Time::Current());
-            this->rayTracingShader->SetUniformVec2("uViewportSize", viewportSize);
-            this->rayTracingShader->SetUniformVec3("uPosition", cameraPosition);
-            this->rayTracingShader->SetUniformVec3("uDirection", cameraDirection);
-            this->rayTracingShader->SetUniformVec3("uUp", cameraUpVector);
-            this->rayTracingShader->SetUniformFloat("uFOV", Radians(cameraFOV));
+            this->rayTracingShader->SetUniform("uSamples", raySamples);
+            this->rayTracingShader->SetUniform("uTime", Time::Current());
+            this->rayTracingShader->SetUniform("uViewportSize", viewportSize);
+            this->rayTracingShader->SetUniform("uPosition", cameraPosition);
+            this->rayTracingShader->SetUniform("uDirection", cameraDirection);
+            this->rayTracingShader->SetUniform("uUp", cameraUpVector);
+            this->rayTracingShader->SetUniform("uFOV", Radians(cameraFOV));
 
             if (accumulateImage)
             {
@@ -94,8 +94,8 @@ namespace PathTracing
 
             this->accumulationTexture->Bind(0);
             this->postProcessShader->Bind();
-            this->postProcessShader->SetUniformInt("uImage", this->accumulationTexture->GetBoundId());
-            this->postProcessShader->SetUniformInt("uImageSamples", this->accumulationFrames);
+            this->postProcessShader->SetUniform("uImage", this->accumulationTexture->GetBoundId());
+            this->postProcessShader->SetUniform("uImageSamples", (int)this->accumulationFrames);
             Rendering::GetController().RenderToTexture(output, this->postProcessShader);
             output->GenerateMipmaps();
 

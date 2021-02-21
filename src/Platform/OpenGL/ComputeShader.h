@@ -26,31 +26,25 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Utilities/ECS/Component.h"
+#include "ShaderBase.h"
 
 namespace MxEngine
 {
-	class CameraSSGI
-	{
-		MAKE_COMPONENT(CameraSSGI);
+    class ComputeShader : public ShaderBase
+    {
+        #if defined(MXENGINE_DEBUG)
+        MxString debugFilePath;
+        MxVector<MxString> includedFilePaths;
+        #endif
 
-		uint8_t raySteps = 3;
-		uint8_t blurIterations = 1;
-		uint8_t blurLOD = 4;
-		float intensity = 2.5f;
-	public:
-		CameraSSGI() = default;
+        template<typename FilePath> static BindableId CreateShaderProgram(const MxString& source, const FilePath& path);
+    public:
+        void Load(const MxString& path);
+        template<typename FilePath> void Load(const FilePath& path);
 
-		float GetIntensity() const;
-		size_t GetRaySteps() const;
-		size_t GetBlurIterations() const;
-		size_t GetBlurLOD() const;
-		
-		void SetIntensity(float intensity);
-		void SetRaySteps(size_t raySteps);
-		void SetBlurIterations(size_t iterations);
-		void SetBlurLOD(size_t lod);
-	};
+        void LoadFromString(const MxString& source);
+
+        const MxString& GetDebugFilePath();
+        const MxVector<MxString>& GetIncludedFilePaths() const;
+    };
 }

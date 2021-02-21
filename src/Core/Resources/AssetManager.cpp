@@ -141,9 +141,13 @@ namespace MxEngine
 
     ShaderHandle AssetManager::LoadShader(StringId vertex, StringId fragment)
     {
+        auto shader = GraphicFactory::Create<Shader>();
+
         auto vp = FileManager::GetFilePath(vertex);
         auto fp = FileManager::GetFilePath(fragment);
-        return GraphicFactory::Create<Shader>(vp, fp);
+
+        shader->Load(vp, fp);
+        return shader;
     }
 
     ShaderHandle AssetManager::LoadShader(const FilePath& vertex, const FilePath& fragment)
@@ -165,10 +169,14 @@ namespace MxEngine
 
     ShaderHandle AssetManager::LoadShader(StringId vertex, StringId geometry, StringId fragment)
     {
+        auto shader = GraphicFactory::Create<Shader>();
+
         auto vp = FileManager::GetFilePath(vertex);
         auto gp = FileManager::GetFilePath(geometry);
         auto fp = FileManager::GetFilePath(fragment);
-        return GraphicFactory::Create<Shader>(vp, gp, fp);
+
+        shader->Load(vp, gp, fp);
+        return shader;
     }
 
     ShaderHandle AssetManager::LoadShader(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment)
@@ -210,6 +218,30 @@ namespace MxEngine
     ShaderHandle AssetManager::LoadScreenSpaceShader(const char* fragment)
     {
         return AssetManager::LoadScreenSpaceShader(FilePath(fragment));
+    }
+
+    ComputeShaderHandle AssetManager::LoadComputeShader(StringId path)
+    {
+        auto shader = GraphicFactory::Create<ComputeShader>();
+        auto filepath = FileManager::GetFilePath(path);
+        shader->Load(filepath);
+        return shader;
+    }
+
+    ComputeShaderHandle AssetManager::LoadComputeShader(const FilePath& path)
+    {
+        auto hash = FileManager::RegisterExternalResource(path);
+        return AssetManager::LoadComputeShader(hash);
+    }
+
+    ComputeShaderHandle AssetManager::LoadComputeShader(const MxString& path)
+    {
+        return AssetManager::LoadComputeShader(ToFilePath(path));
+    }
+
+    ComputeShaderHandle AssetManager::LoadComputeShader(const char* path)
+    {
+        return AssetManager::LoadComputeShader(FilePath(path));
     }
 
     MeshHandle AssetManager::LoadMesh(StringId hash)

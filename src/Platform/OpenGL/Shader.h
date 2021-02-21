@@ -28,81 +28,39 @@
 
 #pragma once
 
-#include "Utilities/Math/Math.h"
-#include "Core/Macro/Macro.h"
-#include "Utilities/STL/MxString.h"
-#include "Utilities/STL/MxVector.h"
-#include "Utilities/STL/MxHashMap.h"
+#include "ShaderBase.h"
 
 namespace MxEngine
 {
-	class Shader
+	struct PipelineStageInfo;
+
+	class Shader : public ShaderBase
 	{
+	public:
+		enum PipelineStage
+		{
+			VERTEX = 0, // should be equal to 0, next to 1, etc.
+			GEOMETRY,
+			FRAGMENT,
+			STAGE_COUNT // should be last
+		};
 		#if defined(MXENGINE_DEBUG)
-		MxString vertexShaderPath;
-		MxString geometryShaderPath;
-		MxString fragmentShaderPath;
+		std::array<MxString, PipelineStage::STAGE_COUNT> debugFilePaths;
 		MxVector<MxString> includedFilePaths;
 		#endif
-		using UniformType = int;
-		using UniformCache = MxHashMap<MxString, UniformType>;
-		using ShaderId = unsigned int;
-		using BindableId = unsigned int;
 
-		inline static BindableId CurrentlyAttachedShader = 0;
-
-		BindableId id = 0;
-		mutable UniformCache uniformCache;
-
-		template<typename FilePath>
-		ShaderId CompileShader(unsigned int type, const MxString& source, const FilePath& name);
-
-		BindableId CreateProgram(ShaderId vertexShader, ShaderId fragmentShader) const;
-		BindableId CreateProgram(ShaderId vertexShader, ShaderId geometryShader, ShaderId fragmentShader) const;
-		UniformType GetUniformLocation(const MxString& uniformName) const;
-		void FreeShader();
+		static BindableId CreateShaderProgram(ShaderId* shaderIds, const PipelineStageInfo* stageInfos, size_t count);
+		void LoadDebugVariables(const PipelineStageInfo* stageInfos, size_t count);
 	public:
-		static MxString GetShaderVersionString();
+		void Load(const MxString& vertexPath, const MxString& fragmentPath);
+		void Load(const MxString& vertexPath, const MxString& geometryPath, const MxString& fragmentPath);
+		template<typename FilePath> void Load(const FilePath& vertexPath, const FilePath& fragmentPath);
+		template<typename FilePath> void Load(const FilePath& vertexPath, const FilePath& geometryPath, const FilePath& fragmentPath);
 
-		Shader();
+		void LoadFromString(const MxString& vertexSource, const MxString& fragmentSource);
+		void LoadFromString(const MxString& vertexSource, const MxString& geometrySource, const MxString& fragmentSource);
 
-		template<typename FilePath>
-		Shader(const FilePath& vertexShaderPath, const FilePath& fragmentShaderPath);
-		template<typename FilePath>
-		Shader(const FilePath& vertexShaderPath, const FilePath& geometryShaderPath, const FilePath& fragmentShaderPath);
-
-		Shader(const Shader&) = delete;
-		Shader(Shader&& shader) noexcept;
-		Shader& operator=(const Shader&) = delete;
-		Shader& operator=(Shader&& shader) noexcept;
-		~Shader();
-
-		void Bind() const;
-		void Unbind() const;
-		void InvalidateUniformCache();
-		BindableId GetNativeHandle() const;
-
-		template<typename FilePath>
-		void Load(const FilePath& vertex, const FilePath& fragment);
-		template<typename FilePath>
-		void Load(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment);
-
-		void IgnoreNonExistingUniform(const MxString& name) const;
-		void IgnoreNonExistingUniform(const char* name) const;
-		void LoadFromString(const MxString& vertex, const MxString& fragment);
-		void LoadFromString(const MxString& vertex, const MxString& geometry, const MxString& fragment);
-		void SetUniformFloat(const MxString& name, float f) const;
-		void SetUniformVec2(const MxString& name, const Vector2& vec) const;
-		void SetUniformVec3(const MxString& name, const Vector3& vec) const;
-		void SetUniformVec4(const MxString& name, const Vector4& vec) const;
-		void SetUniformMat4(const MxString& name, const Matrix4x4& matrix) const;
-		void SetUniformMat3(const MxString& name, const Matrix3x3& matrix) const;
-		void SetUniformInt(const MxString& name, int i) const;
-		void SetUniformBool(const MxString& name, bool b) const;
-
-		const MxString& GetVertexShaderDebugFilePath() const;
-		const MxString& GetGeometryShaderDebugFilePath() const;
-		const MxString& GetFragmentShaderDebugFilePath() const;
+		const MxString& GetDebugFilePath(Shader::PipelineStage stage);
 		const MxVector<MxString>& GetIncludedFilePaths() const;
 	};
 }

@@ -220,9 +220,9 @@ namespace MxEngine
 		// list of all files shader depend on
 		MxVector<std::pair<FilePath, FileSystemTime>> dependencies;
 
-		auto& vertex = shader->GetVertexShaderDebugFilePath();
-		auto& geometry = shader->GetGeometryShaderDebugFilePath();
-		auto& fragment = shader->GetFragmentShaderDebugFilePath();
+		auto& vertex = shader->GetDebugFilePath(Shader::PipelineStage::VERTEX);
+		auto& geometry = shader->GetDebugFilePath(Shader::PipelineStage::GEOMETRY);
+		auto& fragment = shader->GetDebugFilePath(Shader::PipelineStage::FRAGMENT);
 		auto& includes = shader->GetIncludedFilePaths();
 		
 		// add all filenames to list. File paths and modified time will be resolved later
@@ -291,7 +291,7 @@ namespace MxEngine
 		#if !defined(MXENGINE_DEBUG)
 		MXLOG_WARNING("RuntimeEditor::AddShaderUpdateListener", "cannot add listener in non-debug mode");
 		#else
-		auto lookupDirectory = ToFilePath(shader->GetFragmentShaderDebugFilePath()).parent_path();
+		auto lookupDirectory = ToFilePath(shader->GetDebugFilePath(Shader::PipelineStage::FRAGMENT)).parent_path();
 		RuntimeEditor::AddShaderUpdateListener<ShaderHandle, FilePath>(std::move(shader), lookupDirectory);
 		#endif
 	}

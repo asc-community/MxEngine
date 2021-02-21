@@ -105,7 +105,8 @@ namespace MxEngine
 
         FrameBufferHandle DepthFrameBuffer;
         FrameBufferHandle PostProcessFrameBuffer;
-        std::array<FrameBufferHandle, 2> BloomBuffers;
+        FrameBufferHandle BloomFrameBuffer;
+        std::array<TextureHandle, 2> BloomTextures;
 
         SkyboxObject SkyboxCubeObject;
         DebugBufferUnit DebugBufferObject;

@@ -26,8 +26,6 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
 #include "CameraSSGI.h"
 #include "Utilities/Math/Math.h"
 #include "Core/Runtime/Reflection.h"
@@ -44,6 +42,16 @@ namespace MxEngine
         return this->raySteps;
     }
 
+    size_t CameraSSGI::GetBlurIterations() const
+    {
+        return this->blurIterations;
+    }
+
+    size_t CameraSSGI::GetBlurLOD() const
+    {
+        return this->blurLOD;
+    }
+
     void CameraSSGI::SetIntensity(float intensity)
     {
         this->intensity = Max(intensity, 0.0f);
@@ -52,6 +60,16 @@ namespace MxEngine
     void CameraSSGI::SetRaySteps(size_t raySteps)
     {
         this->raySteps = Clamp<size_t>(raySteps, 0, 50);
+    }
+
+    void CameraSSGI::SetBlurIterations(size_t iterations)
+    {
+        this->blurIterations = (uint8_t)Min(iterations, (size_t)std::numeric_limits<uint8_t>::max());
+    }
+
+    void CameraSSGI::SetBlurLOD(size_t lod)
+    {
+        this->blurLOD = (uint8_t)Min(lod, (size_t)std::numeric_limits<uint8_t>::max());
     }
 
     MXENGINE_REFLECT_TYPE
@@ -68,6 +86,18 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 50.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+            )
+            .property("blur iterations", &CameraSSGI::GetBlurIterations, &CameraSSGI::SetBlurIterations)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 50.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+            )
+            .property("blur lod", &CameraSSGI::GetBlurLOD, &CameraSSGI::SetBlurLOD)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
             );
     }

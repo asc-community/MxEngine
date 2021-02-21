@@ -36,14 +36,15 @@ namespace MxEngine
 	class VertexBuffer
 	{
 		using BindableId = unsigned int;
-		using BufferData = const float*;
+		using BufferDataWrite = float*;
+		using BufferDataRead = const float*;
 
 		BindableId id = 0;
 		size_t size;
 		void FreeVertexBuffer();
 	public:
 		explicit VertexBuffer();
-		explicit VertexBuffer(BufferData data, size_t sizeInFloats, UsageType type);
+		explicit VertexBuffer(BufferDataRead data, size_t sizeInFloats, UsageType type);
 		~VertexBuffer();
 		VertexBuffer(const VertexBuffer&) = delete;
 		VertexBuffer(VertexBuffer&& vbo) noexcept;
@@ -53,10 +54,10 @@ namespace MxEngine
 		BindableId GetNativeHandle() const;
 		void Bind() const;
 		void Unbind() const;
-		void Load(BufferData data, size_t sizeInFloats, UsageType type);
-		void BufferSubData(BufferData data, size_t sizeInFloats, size_t offsetInFloats = 0);
-		void BufferDataWithResize(BufferData data, size_t sizeInFloats);
-		void GetBufferedData(BufferData data, size_t sizeInFloats, size_t offsetInFloats = 0) const;
+		void Load(BufferDataRead data, size_t sizeInFloats, UsageType type);
+		void BufferSubData(BufferDataRead data, size_t sizeInFloats, size_t offsetInFloats = 0);
+		void BufferDataWithResize(BufferDataRead data, size_t sizeInFloats);
+		void GetBufferedData(BufferDataWrite data, size_t sizeInFloats, size_t offsetInFloats = 0) const;
 		size_t GetSize() const;
 	};
 }

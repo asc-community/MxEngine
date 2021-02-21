@@ -180,9 +180,9 @@ namespace MxEngine
             shaderFolder / "depthcubemap_fragment.glsl"
         );
 
-        environment.Shaders["BloomIteration"_id] = AssetManager::LoadShader(
+        environment.Shaders["GaussianBlur"_id] = AssetManager::LoadShader(
             shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "bloom_iter_fragment.glsl"
+            shaderFolder / "gaussian_blur_fragment.glsl"
         );
 
         environment.Shaders["BloomSplit"_id] = AssetManager::LoadShader(
@@ -255,18 +255,15 @@ namespace MxEngine
         environment.DepthFrameBuffer = GraphicFactory::Create<FrameBuffer>();
         environment.DepthFrameBuffer->UseOnlyDepth();
         environment.PostProcessFrameBuffer = GraphicFactory::Create<FrameBuffer>();
+        environment.BloomFrameBuffer = GraphicFactory::Create<FrameBuffer>();
 
         auto bloomBufferSize = (int)GlobalConfig::GetEngineTextureSize();
-        for (auto& bloomBuffer : environment.BloomBuffers)
+        for (auto& bloomTexture : environment.BloomTextures)
         {
-            auto bloomTexture = GraphicFactory::Create<Texture>();
+            bloomTexture = GraphicFactory::Create<Texture>();
             bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, 3, false, HDRTextureFormat);
             bloomTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("bloom"));
             bloomTexture->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
-
-            bloomBuffer = GraphicFactory::Create<FrameBuffer>();
-            bloomBuffer->AttachTexture(bloomTexture, Attachment::COLOR_ATTACHMENT0);
-            bloomBuffer->Validate();
         }
     }
 

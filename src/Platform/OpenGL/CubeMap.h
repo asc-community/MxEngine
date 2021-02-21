@@ -35,12 +35,15 @@ namespace MxEngine
 {
     class CubeMap
     {
+    public:
+        using CubeMapBindId = int;
+
+    private:
         using BindableId = unsigned int;
-        using CubeMapId = BindableId;
         MxString filepath;
         size_t width = 0, height = 0, channels = 0;
         BindableId id = 0;
-        mutable CubeMapId activeId = 0;
+        mutable CubeMapBindId activeId = 0;
         void FreeCubeMap();
     public:
         CubeMap();
@@ -56,8 +59,8 @@ namespace MxEngine
 
         void Bind() const;
         void Unbind() const;
-        void Bind(CubeMapId id) const;
-        BindableId GetBoundId() const;
+        void Bind(CubeMapBindId id) const;
+        CubeMapBindId GetBoundId() const;
         BindableId GetNativeHandle() const;
 
         void Load(const MxString& filepath);

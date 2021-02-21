@@ -56,7 +56,7 @@ namespace MxEngine
 		void DrawObjects(const CameraUnit& camera, const Shader& shader, const MxVector<RenderUnit>& objects);
 		void DrawDebugBuffer(const CameraUnit& camera);
 		void DrawObject(const RenderUnit& unit, const Shader& shader);
-		void ComputeBloomEffect(CameraUnit& camera);
+		void ComputeBloomEffect(CameraUnit& camera, const TextureHandle& output);
 		TextureHandle ComputeAverageWhite(CameraUnit& camera);
 		void PerformPostProcessing(CameraUnit& camera);
 		void PerformLightPass(CameraUnit& camera);
@@ -101,6 +101,7 @@ namespace MxEngine
 		void RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
 		void RenderToTextureNoClear(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
 		void CopyTexture(const TextureHandle& input, const TextureHandle& output);
+		void ApplyGaussianBlur(const TextureHandle& inputOutput, const TextureHandle& temporary, size_t iterations, size_t lod = 0);
 		void DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, size_t instanceCount);
 		void DrawLines(const VertexArray& vao, const IndexBuffer& ibo, size_t instanceCount);
 		void DrawTriangles(const VertexArray& vao, size_t vertexCount, size_t instanceCount);

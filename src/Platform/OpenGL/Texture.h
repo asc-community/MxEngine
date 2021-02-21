@@ -70,12 +70,16 @@ namespace MxEngine
 
 	class Texture
 	{
+	public:
+		using TextureBindId = int;
+
+	private:
 		using BindableId = unsigned int;
 
 		MxString filepath;
 		size_t width = 0, height = 0;
 		BindableId id = 0;
-		mutable BindableId activeId = 0;
+		mutable TextureBindId activeId = 0;
 		unsigned int textureType = 0;
 		TextureFormat format = TextureFormat::RGB;
 		uint8_t samples = 0;
@@ -84,7 +88,6 @@ namespace MxEngine
 	public:
 		using RawData = uint8_t;
 		using RawDataPointer = RawData*;
-		using TextureBindId = BindableId;
 
 		Texture();
 		Texture(const Texture&) = delete;
@@ -99,7 +102,7 @@ namespace MxEngine
 		void Bind() const;
 		void Bind(TextureBindId id) const;
 		void Unbind() const;
-		BindableId GetBoundId() const;
+		TextureBindId GetBoundId() const;
 		BindableId GetNativeHandle() const;
 		
 		template<typename FilePath>
