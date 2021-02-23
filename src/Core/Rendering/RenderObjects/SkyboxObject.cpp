@@ -69,7 +69,12 @@ namespace MxEngine
             data[3 * i + 2] = v.z;
         }
 
-        this->VBO = GraphicFactory::Create<VertexBuffer>(data.data(), data.size(), UsageType::STATIC_DRAW);
+        this->VBO = GraphicFactory::Create<VertexBuffer>(
+            data.data(), 
+            data.size(), 
+            UsageType::STATIC_DRAW
+        );
+
         auto VBL = GraphicFactory::Create<VertexBufferLayout>();
         VBL->PushFloat(3);
         this->VAO = GraphicFactory::Create<VertexArray>();

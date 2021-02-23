@@ -33,9 +33,9 @@ namespace MxEngine
 {
     MeshData::MeshData()
     {
-        this->VBO = GraphicFactory::Create<VertexBuffer>();
+        this->VBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
+        this->IBO = GraphicFactory::Create<IndexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
         this->VAO = GraphicFactory::Create<VertexArray>();
-        this->IBO = GraphicFactory::Create<IndexBuffer>();
 
         auto VBL = GraphicFactory::Create<VertexBufferLayout>();
         VBL->PushFloat(3); // position //-V525
@@ -79,7 +79,7 @@ namespace MxEngine
 
     size_t MeshData::GetIndiciesCount() const
     {
-        return this->GetIBO()->GetCount();
+        return this->GetIBO()->GetSize();
     }
 
     void MeshData::BufferVertecies(const VertexData& vertecies)
@@ -89,8 +89,7 @@ namespace MxEngine
 
     void MeshData::BufferVertecies(const VertexData& vertecies, UsageType usageType)
     {
-        auto data = reinterpret_cast<const float*>(vertecies.data());
-        this->VBO->Load(data, vertecies.size() * Vertex::Size, usageType);
+        this->VBO->Load((const float*)vertecies.data(), vertecies.size() * Vertex::Size, usageType);
     }
 
     void MeshData::BufferIndicies(const IndexData& indicies)
@@ -100,8 +99,7 @@ namespace MxEngine
 
     void MeshData::BufferIndicies(const IndexData& indicies, UsageType usageType)
     {
-        auto data = reinterpret_cast<const uint32_t*>(indicies.data());
-        this->IBO->Load(data, indicies.size(), usageType);
+        this->IBO->Load(indicies.data(), indicies.size(), usageType);
     }
 
     void MeshData::UpdateBoundingGeometry(const VertexData& vertecies)
@@ -130,14 +128,14 @@ namespace MxEngine
     MeshData::VertexData MeshData::GetVerteciesFromGPU() const
     {
         VertexData vertecies(this->GetVerteciesCount());
-        this->VBO->GetBufferedData((float*)vertecies.data(), vertecies.size() * Vertex::Size);
+        this->VBO->GetBufferData((float*)vertecies.data(), vertecies.size() * Vertex::Size);
         return vertecies;
     }
 
     MeshData::IndexData MeshData::GetIndiciesFromGPU() const
     {
         IndexData indicies(this->GetIndiciesCount());
-        this->IBO->GetBufferedIndicies(indicies.data(), indicies.size());
+        this->IBO->GetBufferData(indicies.data(), indicies.size());
         return indicies;
     }
 

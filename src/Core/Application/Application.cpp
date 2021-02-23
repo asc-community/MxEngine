@@ -447,7 +447,7 @@ namespace MxEngine
 		{
 			MXLOG_WARNING("Application::InitializeShaderDebug", "method is called before InitializeRenderAdaptor()");
 		}
-		auto shaderDirectory = FileManager::GetWorkingDirectory() / ToFilePath(this->config.ShaderSourceDirectory);
+		auto shaderDirectory = (FileManager::GetWorkingDirectory() / ToFilePath(this->config.ShaderSourceDirectory)).lexically_normal();
 		if (!File::Exists(shaderDirectory))
 		{
 			MXLOG_WARNING("Application::InitializeShaderDebug", "shader debug directory does not exists: " + ToMxString(shaderDirectory));

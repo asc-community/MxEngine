@@ -56,7 +56,7 @@ namespace MxEngine
 		SpotLightInstancedObject(VertexBufferHandle vbo, VertexArrayHandle vao, IndexBufferHandle ibo)
 			: RenderHelperObject(std::move(vbo), std::move(vao), std::move(ibo))
 		{
-			this->instancedVBO = GraphicFactory::Create<VertexBuffer>();
+			this->instancedVBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
 
 			auto VBL = GraphicFactory::Create<VertexBufferLayout>();
 			VBL->Push<Matrix4x4>(); // transform

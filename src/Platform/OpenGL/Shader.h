@@ -60,7 +60,7 @@ namespace MxEngine
 		void LoadFromString(const MxString& vertexSource, const MxString& fragmentSource);
 		void LoadFromString(const MxString& vertexSource, const MxString& geometrySource, const MxString& fragmentSource);
 
-		const MxString& GetDebugFilePath(Shader::PipelineStage stage);
+		const MxString& GetDebugFilePath(Shader::PipelineStage stage) const;
 		const MxVector<MxString>& GetIncludedFilePaths() const;
 	};
 }

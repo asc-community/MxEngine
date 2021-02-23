@@ -27,94 +27,36 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "IndexBuffer.h"
-#include "Platform/OpenGL/GLUtilities.h"
-#include "Utilities/Logging/Logger.h"
-#include "Core/Macro/Macro.h"
 
 namespace MxEngine
 {
-	void IndexBuffer::FreeIndexBuffer()
+	IndexBuffer::IndexBuffer(const IndexType* data, size_t count, UsageType usage)
 	{
-		if (this->id != 0)
-		{
-			GLCALL(glDeleteBuffers(1, &id));
-			MXLOG_DEBUG("OpenGL::IndexBuffer", "deleted index buffer with id = " + ToMxString(id));
-		}
-		this->id = 0;
+		this->Load(data, count, usage);
 	}
 
-	IndexBuffer::IndexBuffer()
+	size_t IndexBuffer::GetSize() const
 	{
-		GLCALL(glGenBuffers(1, &id));
-		MXLOG_DEBUG("OpenGL::IndexBuffer", "created index buffer with id = " + ToMxString(id));
+		return this->GetByteSize() / sizeof(IndexType);
 	}
 
-	IndexBuffer::IndexBuffer(const IndexType* data, size_t count)
-		: IndexBuffer()
+	void IndexBuffer::Load(const IndexType* data, size_t count, UsageType usage)
 	{
-		Load(data, count);
+		BufferBase::Load(BufferType::ELEMENT_ARRAY, (const uint8_t*)data, count * sizeof(IndexType), usage);
 	}
 
-	IndexBuffer::IndexBuffer(IndexBuffer&& ibo) noexcept
-		: count(ibo.count)
+	void IndexBuffer::BufferSubData(const IndexType* data, size_t count, size_t offsetCount)
 	{
-		this->id = ibo.id;
-		ibo.id = 0;
-		ibo.count = 0;
+		BufferBase::BufferSubData((const uint8_t*)data, count * sizeof(IndexType), offsetCount * sizeof(IndexType));
 	}
 
-	IndexBuffer& IndexBuffer::operator=(IndexBuffer&& ibo) noexcept
+	void IndexBuffer::BufferDataWithResize(const IndexType* data, size_t count)
 	{
-		this->FreeIndexBuffer();
-
-		this->count = ibo.count;
-		this->id = ibo.id;
-		ibo.count = 0;
-		ibo.id = 0;
-		return *this;
+		BufferBase::BufferDataWithResize((const uint8_t*)data, count * sizeof(IndexType));
 	}
 
-	IndexBuffer::~IndexBuffer()
+	void IndexBuffer::GetBufferData(IndexType* data, size_t count, size_t offsetCount) const
 	{
-		this->FreeIndexBuffer();
-	}
-
-	void IndexBuffer::Load(const IndexType* data, size_t count, UsageType usageType)
-	{
-		this->count = count;
-		this->Bind();
-		GLCALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(IndexType), data, (GLenum)UsageTypeToNative(usageType)));
-	}
-
-	void IndexBuffer::GetBufferedIndicies(IndexType* data, size_t sizeInInts) const
-	{
-		this->Bind();
-		constexpr size_t offset = 0;
-		GLCALL(glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, sizeInInts * sizeof(IndexType), data));
-	}
-
-	void IndexBuffer::Unbind() const
-	{
-		GLCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
-	}
-
-	size_t IndexBuffer::GetCount() const
-	{
-		return count;
-	}
-
-	size_t IndexBuffer::GetIndexTypeId() const
-	{
-		return GL_UNSIGNED_INT;
-	}
-
-	IndexBuffer::BindableId IndexBuffer::GetNativeHandle() const
-	{
-		return id;
-	}
-
-	void IndexBuffer::Bind() const
-	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
+		BufferBase::GetBufferData((uint8_t*)data, count * sizeof(IndexType), offsetCount * sizeof(IndexType));
 	}
 }

@@ -496,10 +496,11 @@ namespace MxEngine
 		SSGIShader->SetUniform("raySteps", (int)camera.SSGI->GetRaySteps());
 		SSGIShader->SetUniform("intensity", camera.SSGI->GetIntensity());
 
-		this->RenderToTexture(temporary, SSGIShader);
+		auto& blurInputOutput = this->Pipeline.Environment.BloomTextures.front();
+		auto& blurTemporary = this->Pipeline.Environment.BloomTextures.back();
 
-		auto& blurInputOutput = temporary;
-		auto& blurTemporary = output;
+		this->RenderToTexture(blurInputOutput, SSGIShader);
+
 		this->ApplyGaussianBlur(blurInputOutput, blurTemporary, camera.SSGI->GetBlurIterations(), camera.SSGI->GetBlurLOD());
 
 		auto& applyShader = this->Pipeline.Environment.Shaders["ApplySSGI"_id];
@@ -745,7 +746,7 @@ namespace MxEngine
 	void RenderController::DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, size_t instanceCount)
 	{
 		this->Pipeline.Statistics.AddEntry("draw calls", 1);
-		this->Pipeline.Statistics.AddEntry("drawn vertecies", ibo.GetCount() * Max(instanceCount, 1));
+		this->Pipeline.Statistics.AddEntry("drawn vertecies", ibo.GetSize() * Max(instanceCount, 1));
 		if (instanceCount == 0)
 		{
 			this->GetRenderEngine().DrawTriangles(vao, ibo);
@@ -759,7 +760,7 @@ namespace MxEngine
 	void RenderController::DrawLines(const VertexArray& vao, const IndexBuffer& ibo, size_t instanceCount)
 	{
 		this->Pipeline.Statistics.AddEntry("draw calls", 1);
-		this->Pipeline.Statistics.AddEntry("drawn vertecies", ibo.GetCount() * Max(instanceCount, 1));
+		this->Pipeline.Statistics.AddEntry("drawn vertecies", ibo.GetSize() * Max(instanceCount, 1));
 		if (instanceCount == 0)
 		{
 			this->GetRenderEngine().DrawLines(vao, ibo);

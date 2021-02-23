@@ -27,102 +27,36 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "VertexBuffer.h"
-#include "Platform/OpenGL/GLUtilities.h"
-#include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
-{		
-    void VertexBuffer::FreeVertexBuffer()
+{
+	VertexBuffer::VertexBuffer(const VertexScalar* data, size_t sizeInScalars, UsageType usage)
+	{
+		this->Load(data, sizeInScalars, usage);
+	}
+
+	size_t VertexBuffer::GetSize() const
     {
-		if (this->id != 0)
-		{
-			GLCALL(glDeleteBuffers(1, &this->id));
-			MXLOG_DEBUG("OpenGL::VertexBuffer", "deleted vertex buffer with id = " + ToMxString(this->id));
-		}
-		this->id = 0;
+		return this->GetByteSize() / sizeof(VertexScalar);
     }
 
-    VertexBuffer::VertexBuffer()
+	void VertexBuffer::Load(const VertexScalar* data, size_t sizeInScalars, UsageType usage)
 	{
-		this->size = 0;
-		GLCALL(glGenBuffers(1, &id));
-		MXLOG_DEBUG("OpenGL::VertexBuffer", "created vertex buffer with id = " + ToMxString(this->id));
+		BufferBase::Load(BufferType::ARRAY, (const uint8_t*)data, sizeInScalars * sizeof(VertexScalar), usage);
 	}
 
-	VertexBuffer::VertexBuffer(BufferDataRead data, size_t count, UsageType type)
-		: VertexBuffer()
+	void VertexBuffer::BufferSubData(const VertexScalar* data, size_t sizeInScalars, size_t offsetInScalars)
 	{
-		this->Load(data, count, type);
+		BufferBase::BufferSubData((const uint8_t*)data, sizeInScalars * sizeof(VertexScalar), offsetInScalars * sizeof(VertexScalar));
 	}
 
-	VertexBuffer::~VertexBuffer()
+	void VertexBuffer::BufferDataWithResize(const VertexScalar* data, size_t sizeInScalars)
 	{
-		this->FreeVertexBuffer();
+		BufferBase::BufferDataWithResize((const uint8_t*)data, sizeInScalars * sizeof(VertexScalar));
 	}
 
-	VertexBuffer::VertexBuffer(VertexBuffer&& vbo) noexcept
+	void VertexBuffer::GetBufferData(VertexScalar* data, size_t sizeInScalars, size_t offsetInScalars) const
 	{
-		this->id = vbo.id;
-		this->size = vbo.size;
-		vbo.id = 0;
-		vbo.size = 0;
-	}
-
-	VertexBuffer& VertexBuffer::operator=(VertexBuffer&& vbo) noexcept
-	{
-		this->FreeVertexBuffer();
-
-		this->id = vbo.id;
-		this->size = vbo.size;
-		vbo.id = 0;
-		vbo.size = 0;
-		return *this;
-	}
-
-	void VertexBuffer::Load(BufferDataRead data, size_t count, UsageType usageType)
-	{
-		this->size = count;
-		this->Bind();
-		GLCALL(glBufferData(GL_ARRAY_BUFFER, count * sizeof(float), data, (GLenum)UsageTypeToNative(usageType)));
-	}
-
-    void VertexBuffer::BufferSubData(BufferDataRead data, size_t count, size_t offset)
-    {
-		this->Bind();
-		GLCALL(glBufferSubData(GL_ARRAY_BUFFER, sizeof(float) * offset, count * sizeof(float), data));
-    }
-
-    void VertexBuffer::BufferDataWithResize(BufferDataRead data, size_t sizeInFloats)
-    {
-		if (this->GetSize() < sizeInFloats)
-			this->Load(data, sizeInFloats, UsageType::DYNAMIC_DRAW);
-		else
-			this->BufferSubData(data, sizeInFloats);
-    }
-
-	void VertexBuffer::GetBufferedData(BufferDataWrite data, size_t sizeInFloats, size_t offsetInFloats) const
-	{
-		this->Bind();
-		GLCALL(glGetBufferSubData(GL_ARRAY_BUFFER, offsetInFloats * sizeof(float), sizeInFloats * sizeof(float), (void*)data));
-	}
-
-    size_t VertexBuffer::GetSize() const
-    {
-		return this->size;
-    }
-
-	VertexBuffer::BindableId VertexBuffer::GetNativeHandle() const
-	{
-		return id;
-	}
-
-	void VertexBuffer::Bind() const
-	{
-		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, this->id));
-	}
-
-	void VertexBuffer::Unbind() const
-	{
-		GLCALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+		BufferBase::GetBufferData((uint8_t*)data, sizeInScalars * sizeof(VertexScalar), offsetInScalars * sizeof(VertexScalar));
 	}
 }

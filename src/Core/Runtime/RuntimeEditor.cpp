@@ -202,98 +202,169 @@ namespace MxEngine
 		});
 	}
 
-	template<>
-	void RuntimeEditor::AddShaderUpdateListener(ShaderHandle shader, const FilePath& lookupDirectory)
+	bool IsFileUpdated(FileSystemTime oldTime, const FilePath& filepath)
 	{
-		// we need shader stages to reload shader correctly
-		enum ShaderStages : uint8_t
+		auto newTime = File::LastModifiedTime(filepath);
+		return oldTime < newTime;
+	}
+
+	bool IsAnyFileUpdated(MxVector<FilePath>& filepaths, MxVector<FileSystemTime> updateTimes)
+	{
+		for (size_t i = 0; i < filepaths.size(); i++)
 		{
-			NONE = 0,
-			HAS_VERTEX_STAGE = 1 << 0,
-			HAS_GEOMETRY_STAGE = 1 << 1,
-			HAS_FRAGMENT_STAGE = 1 << 2,
-		};
+			if (IsFileUpdated(updateTimes[i], filepaths[i]))
+				return true;
+		}
+		return false;
+	}
 
-		#if !defined(MXENGINE_DEBUG)
-		MXLOG_WARNING("RuntimeEditor::AddShaderUpdateListener", "cannot add listener in non-debug mode");
-		#else
-		// list of all files shader depend on
-		MxVector<std::pair<FilePath, FileSystemTime>> dependencies;
+	FilePath GetShaderLookupDirectory(const ShaderHandle& shader)
+	{
+		return ToFilePath(shader->GetDebugFilePath(Shader::PipelineStage::FRAGMENT)).parent_path();
+	}
 
-		auto& vertex = shader->GetDebugFilePath(Shader::PipelineStage::VERTEX);
-		auto& geometry = shader->GetDebugFilePath(Shader::PipelineStage::GEOMETRY);
-		auto& fragment = shader->GetDebugFilePath(Shader::PipelineStage::FRAGMENT);
+	FilePath GetShaderLookupDirectory(const ComputeShaderHandle& shader)
+	{
+		return ToFilePath(shader->GetDebugFilePath()).parent_path();
+	}
+
+	MxVector<MxString> GetTrackedFilePaths(const ShaderHandle& shader)
+	{
+		MxVector<MxString> paths;
+
+		auto& V = shader->GetDebugFilePath(Shader::PipelineStage::VERTEX);
+		auto& G = shader->GetDebugFilePath(Shader::PipelineStage::GEOMETRY);
+		auto& F = shader->GetDebugFilePath(Shader::PipelineStage::FRAGMENT);
 		auto& includes = shader->GetIncludedFilePaths();
-		
-		// add all filenames to list. File paths and modified time will be resolved later
-		if (!vertex.empty()) dependencies.emplace_back(ToFilePath(vertex).filename(), FileSystemTime());
-		if (!geometry.empty()) dependencies.emplace_back(ToFilePath(geometry).filename(), FileSystemTime());
-		if (!fragment.empty()) dependencies.emplace_back(ToFilePath(fragment).filename(), FileSystemTime());
-		for (const auto& include : includes) dependencies.emplace_back(ToFilePath(include).filename(), FileSystemTime());
 
-		// resolve file paths, if file was not found - skip whole shader to avoid crashing in listener
-		for (auto& [filepath, modifiedTime] : dependencies)
+		if (!V.empty()) paths.push_back(V);
+		if (!G.empty()) paths.push_back(G);
+		if (!F.empty()) paths.push_back(F);
+
+		paths.insert(paths.end(), includes.begin(), includes.end());
+
+		return paths;
+	}
+
+	MxVector<MxString> GetTrackedFilePaths(const ComputeShaderHandle& shader)
+	{
+		MxVector<MxString> paths;
+
+		auto& C = shader->GetDebugFilePath();
+		auto& includes = shader->GetIncludedFilePaths();
+
+		if (!C.empty()) paths.push_back(C);
+
+		paths.insert(paths.end(), includes.begin(), includes.end());
+
+		return paths;
+	}
+
+	/*
+	extracts filenames from filepaths list
+	*/
+	MxVector<FilePath> GetTrackedFileNames(const MxVector<MxString>& paths)
+	{
+		MxVector<FilePath> filenames;
+		filenames.reserve(paths.size());
+		for (const auto& path : paths)
+			filenames.push_back(ToFilePath(path).filename());
+		return filenames;
+	}
+
+	/*
+	replaces filename with filepath from lookup directory (i.e. file.txt + directory -> directory/smth/file.txt)
+	if functions fails, empty list is returned
+	*/
+	MxVector<FilePath> ResolveTrackedFileNames(MxVector<FilePath>& filenames, const FilePath& lookupDirectory)
+	{
+		MxVector<FilePath> resolved;
+		resolved.reserve(filenames.size());
+		for (const auto& filename : filenames)
 		{
-			auto resolvedFilePath = FileManager::SearchFileInDirectory(lookupDirectory, filepath);
+			auto resolvedFilePath = FileManager::SearchFileInDirectory(lookupDirectory, filename);
 			if (resolvedFilePath.empty())
 			{
-				MXLOG_WARNING("MxEngine::Runtime", "cannot find shader file for debug: " + ToMxString(filepath));
-				return;
+				MXLOG_WARNING("MxEngine::RuntimeEditor", MxFormat("cannot find shader {} in directory {}", ToMxString(filename), ToMxString(lookupDirectory)));
+				resolved.clear();
+				break;
 			}
-			filepath = resolvedFilePath.lexically_normal();
-			modifiedTime = File::LastModifiedTime(filepath);
+			resolved.push_back(resolvedFilePath.lexically_normal());
 		}
+		return resolved;
+	}
 
-		// check for all shader stages
-		uint8_t stages = ShaderStages::NONE;
-		if (!vertex.empty())   stages |= ShaderStages::HAS_VERTEX_STAGE;
-		if (!geometry.empty()) stages |= ShaderStages::HAS_GEOMETRY_STAGE;
-		if (!fragment.empty()) stages |= ShaderStages::HAS_FRAGMENT_STAGE;
-		
-		Event::AddEventListener<FpsUpdateEvent>("ShaderDebugEvent", 
-			[shader, dependencies = std::move(dependencies), stages](FpsUpdateEvent&) mutable
+	MxVector<FileSystemTime> GetTrackedFilesUpdateTime(const MxVector<FilePath>& filepaths)
+	{
+		MxVector<FileSystemTime> updateTimes;
+		updateTimes.reserve(filepaths.size());
+		for (const auto& filepath : filepaths)
+			updateTimes.push_back(File::LastModifiedTime(filepath));
+		return updateTimes;
+	}
+
+	void LoadShader(ShaderHandle shader, const MxVector<FilePath>& filepaths)
+	{
+		auto optionalGeometryStage = shader->GetDebugFilePath(Shader::PipelineStage::GEOMETRY);
+		if (optionalGeometryStage.empty()) // no geometry stage
+		{
+			shader->Load(filepaths[0], filepaths[1]);
+		}
+		else
+		{
+			shader->Load(filepaths[0], filepaths[1], filepaths[2]);
+		}
+	}
+
+	void LoadShader(ComputeShaderHandle shader, const MxVector<FilePath>& filepaths)
+	{
+		shader->Load(filepaths[0]);
+	}
+
+	template<typename ShaderHandleType>
+	void AddShaderUpdateListenerImpl(const ShaderHandleType& shader, const FilePath& lookupDirectory)
+	{
+		auto debugFilepaths = GetTrackedFilePaths(shader);
+		auto filenames = GetTrackedFileNames(debugFilepaths);
+
+		auto resolvedFilepaths = ResolveTrackedFileNames(filenames, lookupDirectory);
+		if (resolvedFilepaths.empty()) return;
+
+		auto updateTimes = GetTrackedFilesUpdateTime(resolvedFilepaths);
+
+		Event::AddEventListener<UpdateEvent>("RuntimeEditor", 
+			[shader, filepaths = std::move(resolvedFilepaths), updates = std::move(updateTimes)](auto&) mutable
 			{
-				bool alreadyModified = false;
-				for (auto& [filepath, modifiedTime] : dependencies)
+				if (IsAnyFileUpdated(filepaths, updates))
 				{
-					auto lastModified = File::LastModifiedTime(filepath);
-					if(!alreadyModified && modifiedTime < lastModified)
-					{
-						alreadyModified = true;
-						// check for shader stages combinations: vertex & fragment are required,
-						// other stages are optional
-						constexpr uint8_t VF = ShaderStages::HAS_VERTEX_STAGE | ShaderStages::HAS_FRAGMENT_STAGE;
-						constexpr uint8_t VGF = VF | ShaderStages::HAS_GEOMETRY_STAGE;
-
-						switch(stages)
-						{
-						case VF:
-							shader->Load(
-								dependencies[0].first, dependencies[1].first
-							);
-							break;
-						case VGF:
-							shader->Load(
-								dependencies[0].first, dependencies[1].first, dependencies[2].first
-							);
-							break;
-						}
-					}
-					modifiedTime = lastModified;
+					LoadShader(shader, filepaths);
+					updates = GetTrackedFilesUpdateTime(filepaths);
 				}
 			});
-		#endif
 	}
 
 	template<>
-	void RuntimeEditor::AddShaderUpdateListener(ShaderHandle shader)
+	void RuntimeEditor::AddShaderUpdateListener<ShaderHandle, FilePath>(ShaderHandle shader, const FilePath& lookupDirectory)
 	{
-		#if !defined(MXENGINE_DEBUG)
-		MXLOG_WARNING("RuntimeEditor::AddShaderUpdateListener", "cannot add listener in non-debug mode");
-		#else
-		auto lookupDirectory = ToFilePath(shader->GetDebugFilePath(Shader::PipelineStage::FRAGMENT)).parent_path();
-		RuntimeEditor::AddShaderUpdateListener<ShaderHandle, FilePath>(std::move(shader), lookupDirectory);
-		#endif
+		AddShaderUpdateListenerImpl(shader, lookupDirectory);
+	}
+
+	template<>
+	void RuntimeEditor::AddShaderUpdateListener<ComputeShaderHandle, FilePath>(ComputeShaderHandle shader, const FilePath& lookupDirectory)
+	{
+		AddShaderUpdateListenerImpl(shader, lookupDirectory);
+	}
+
+	template<>
+	void RuntimeEditor::AddShaderUpdateListener<ShaderHandle>(ShaderHandle shader)
+	{
+		AddShaderUpdateListener(shader, GetShaderLookupDirectory(shader));
+	}
+
+	template<>
+	void RuntimeEditor::AddShaderUpdateListener<ComputeShaderHandle>(ComputeShaderHandle shader)
+	{
+		AddShaderUpdateListener(shader, GetShaderLookupDirectory(shader));
 	}
 
 	void RuntimeEditor::DrawTransformManipulator(TransformComponent& transform)

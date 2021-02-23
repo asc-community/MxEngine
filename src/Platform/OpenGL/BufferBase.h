@@ -27,11 +27,13 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
+
 #include <cstdint>
+#include <cstddef>
 
 namespace MxEngine
 {
-	enum class UsageType
+	enum class UsageType : uint8_t
 	{
 		STREAM_DRAW,
 		STREAM_READ,
@@ -44,5 +46,44 @@ namespace MxEngine
 		DYNAMIC_COPY,
 	};
 
-	uint64_t UsageTypeToNative(UsageType usageType);
+	enum class BufferType : uint8_t
+	{
+		UNKNOWN = 0,
+		ARRAY,
+		ELEMENT_ARRAY,
+		SHADER_STORAGE,
+	};
+
+	class BufferBase
+	{
+		using BindableId = unsigned int;
+
+		BindableId id = 0;
+		BufferType type = BufferType::UNKNOWN;
+		UsageType usage = UsageType::STATIC_DRAW;
+		size_t byteSize = 0;
+
+		void FreeBuffer();
+	public:
+		BufferBase();
+		~BufferBase();
+		BufferBase(const BufferBase&) = delete;
+		BufferBase(BufferBase&&) noexcept;
+		BufferBase& operator=(const BufferBase&) = delete;
+		BufferBase& operator=(BufferBase&&) noexcept;
+
+		void Bind() const;
+		void Unbind() const;
+		BindableId GetNativeHandle() const;
+		BufferType GetBufferType() const;
+		UsageType GetUsageType() const;
+		size_t GetByteSize() const;
+		void SetUsageType(UsageType usage);
+
+	protected:
+		void Load(BufferType type, const uint8_t* byteData, size_t byteSize, UsageType usage);
+		void BufferSubData(const uint8_t* byteData, size_t byteSize, size_t offset = 0);
+		void BufferDataWithResize(const uint8_t* byteData, size_t byteSize);
+		void GetBufferData(uint8_t* byteData, size_t byteSize, size_t offset = 0) const;
+	};
 }

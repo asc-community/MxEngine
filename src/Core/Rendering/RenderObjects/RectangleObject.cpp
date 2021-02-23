@@ -42,7 +42,12 @@ namespace MxEngine
             Vector4( halfSize,  halfSize, 0.5f, 1.0f),
         };
 
-        this->VBO = GraphicFactory::Create<VertexBuffer>((float*)vertecies.data(), vertecies.size() * sizeof(float), UsageType::STATIC_DRAW);
+        this->VBO = GraphicFactory::Create<VertexBuffer>(
+            (float*)vertecies.data(), 
+            vertecies.size() * (sizeof(Vector4) / sizeof(float)), 
+            UsageType::STATIC_DRAW
+        );
+
         auto VBL = GraphicFactory::Create<VertexBufferLayout>();
         VBL->PushFloat(4); //-V112
         this->VAO = GraphicFactory::Create<VertexArray>();

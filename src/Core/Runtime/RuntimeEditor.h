@@ -72,10 +72,10 @@ namespace MxEngine
 		void AddEventEntry(const MxString& entry);
 		void Toggle(bool isVisible = true);
 		void AddKeyBinding(KeyCode openKey);
-		template<typename ShaderHandle>
-		void AddShaderUpdateListener(ShaderHandle shader);
-		template<typename ShaderHandle, typename FilePath>
-		void AddShaderUpdateListener(ShaderHandle shader, const FilePath& lookupDirectory);
+		template<typename ShaderHandleType>
+		void AddShaderUpdateListener(ShaderHandleType shader);
+		template<typename ShaderHandleType, typename FilePath>
+		void AddShaderUpdateListener(ShaderHandleType shader, const FilePath& lookupDirectory);
 		Vector2 GetViewportSize() const;
 		Vector2 GetViewportPosition() const;
 		bool IsActive() const;

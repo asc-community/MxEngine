@@ -44,7 +44,7 @@ namespace MxEngine
 
         void LoadFromString(const MxString& source);
 
-        const MxString& GetDebugFilePath();
+        const MxString& GetDebugFilePath() const;
         const MxVector<MxString>& GetIncludedFilePaths() const;
     };
 }

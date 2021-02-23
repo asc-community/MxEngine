@@ -179,6 +179,8 @@ namespace MxEngine
 
     ShaderBase& ShaderBase::operator=(ShaderBase&& other) noexcept
     {
+        this->FreeProgram();
+
         this->id = other.id;
         this->uniformCache = std::move(other.uniformCache);
 

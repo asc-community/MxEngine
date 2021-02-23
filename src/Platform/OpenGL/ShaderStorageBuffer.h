@@ -27,70 +27,48 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <cstddef>
-#include <cstdint>
 
-#include "UsageType.h"
+#include "BufferBase.h"
 
 namespace MxEngine
 {
-	class ShaderStorageBuffer
+	class ShaderStorageBuffer : public BufferBase
 	{
-		using BindableId = unsigned int;
-		using BufferDataRead = const uint8_t*;
-		using BufferDataWrite = uint8_t*;
-
-		BindableId id = 0;
-		size_t size;
-		void FreeShaderStorageBuffer();
 	public:
-		explicit ShaderStorageBuffer();
-		explicit ShaderStorageBuffer(BufferDataRead data, size_t byteSize, UsageType type);
-		~ShaderStorageBuffer();
-		ShaderStorageBuffer(const ShaderStorageBuffer&) = delete;
-		ShaderStorageBuffer(ShaderStorageBuffer&& ssbo) noexcept;
-		ShaderStorageBuffer& operator=(const ShaderStorageBuffer&) = delete;
-		ShaderStorageBuffer& operator=(ShaderStorageBuffer&& ssbo) noexcept;
-
-		BindableId GetNativeHandle() const;
-		void Bind() const;
-		void Unbind() const;
-		void BindTarget(size_t index) const;
-		void Load(BufferDataRead data, size_t byteSize, UsageType type);
-		void BufferSubData(BufferDataRead data, size_t byteSize, size_t byteOffset = 0);
-		void BufferDataWithResize(BufferDataRead data, size_t byteSize);
-		void GetBufferedData(BufferDataWrite data, size_t byteSize, size_t byteOffset = 0) const;
-		size_t GetByteSize() const;
-
 		template<typename T>
-		ShaderStorageBuffer(const T* data, size_t elementCount, size_t elementOffset = 0)
-			: ShaderStorageBuffer((BufferDataRead)data, elementCount * sizeof(T), elementOffset * sizeof(T))
+		ShaderStorageBuffer(const T* data, size_t count, UsageType usage)
 		{
-
+			this->Load<T>(data, count, usage);
 		}
 
 		template<typename T>
-		void BufferSubData(const T* data, size_t elementCount, size_t elementOffset = 0)
+		size_t GetSize() const
 		{
-			this->BufferSubData((BufferDataRead)data, elementCount * sizeof(T), elementOffset * sizeof(T));
+			return this->GetByteSize() / sizeof(T);
 		}
 
 		template<typename T>
-		void BufferDataWithResize(const T* data, size_t elementCount)
+		void Load(const T* data, size_t count, UsageType usage)
 		{
-			this->BufferDataWithResize((BufferDataRead)data, elementCount * sizeof(T));
+			BufferBase::Load(BufferType::SHADER_STORAGE, (const uint8_t*)data, count * sizeof(T), usage);
 		}
 
 		template<typename T>
-		size_t GetElementCount() const
+		void BufferSubData(const T* data, size_t count, size_t offsetCount = 0)
 		{
-			return this->GetByteSize() * sizeof(T);
+			BufferBase::BufferSubData((const uint8_t*)data, count * sizeof(T), offsetCount * sizeof(T));
 		}
 
 		template<typename T>
-		void GetBufferedData(T* data, size_t elementCount, size_t elementOffset)
+		void BufferSubDataWithResize(const T* data, size_t count)
 		{
-			return this->GetBufferedData((BufferDataWrite)data, elementCount * sizeof(T), elementOffset * sizeof(T));
+			BufferBase::BufferSubDataWithResize((const uint8_t*)data, count * sizeof(T));
+		}
+
+		template<typename T>
+		void GetBufferData(T* data, size_t count, size_t offsetCount = 0)
+		{
+			BufferBase::GetBufferData((uint8_t*)data, count * sizeof(T), offsetCount * sizeof(T));
 		}
 	};
 }

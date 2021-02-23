@@ -162,7 +162,7 @@ namespace MxEngine
 		size_t result = 0;
 		for (auto& mesh : this->GetSubMeshes())
 		{
-			result += mesh.Data.GetIBO()->GetCount();
+			result += mesh.Data.GetIBO()->GetSize();
 		}
 		return result;
 	}

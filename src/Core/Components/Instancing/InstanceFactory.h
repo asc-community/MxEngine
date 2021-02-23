@@ -148,10 +148,14 @@ namespace MxEngine
 		template<typename T>
 		BufferIndex AddInstancedBuffer(Mesh& mesh, const MxVector<T>& data)
 		{
-			auto VBO = GraphicFactory::Create<VertexBuffer>();
-			auto VBL = GraphicFactory::Create<VertexBufferLayout>();
+			auto VBO = GraphicFactory::Create<VertexBuffer>(
+                (float*)data.data(), 
+                data.size() * sizeof(T) / sizeof(float), 
+                UsageType::DYNAMIC_DRAW
+            );
+			
+            auto VBL = GraphicFactory::Create<VertexBufferLayout>();
 			VBL->Push<T>();
-			VBO->Load((float*)data.data(), data.size() * sizeof(T) / sizeof(float), UsageType::DYNAMIC_DRAW);
 			return (BufferIndex)mesh.AddInstancedBuffer(std::move(VBO), std::move(VBL));
 		}
 

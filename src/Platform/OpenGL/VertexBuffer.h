@@ -27,37 +27,23 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
-#include <cstddef>
 
-#include "UsageType.h"
+#include "BufferBase.h"
 
 namespace MxEngine
 {
-	class VertexBuffer
-	{
-		using BindableId = unsigned int;
-		using BufferDataWrite = float*;
-		using BufferDataRead = const float*;
+    class VertexBuffer : public BufferBase
+    {
+    public:
+        using VertexScalar = float;
 
-		BindableId id = 0;
-		size_t size;
-		void FreeVertexBuffer();
-	public:
-		explicit VertexBuffer();
-		explicit VertexBuffer(BufferDataRead data, size_t sizeInFloats, UsageType type);
-		~VertexBuffer();
-		VertexBuffer(const VertexBuffer&) = delete;
-		VertexBuffer(VertexBuffer&& vbo) noexcept;
-		VertexBuffer& operator=(const VertexBuffer&) = delete;
-		VertexBuffer& operator=(VertexBuffer&&) noexcept;
+        VertexBuffer(const VertexScalar* data, size_t sizeInScalars, UsageType usage);
 
-		BindableId GetNativeHandle() const;
-		void Bind() const;
-		void Unbind() const;
-		void Load(BufferDataRead data, size_t sizeInFloats, UsageType type);
-		void BufferSubData(BufferDataRead data, size_t sizeInFloats, size_t offsetInFloats = 0);
-		void BufferDataWithResize(BufferDataRead data, size_t sizeInFloats);
-		void GetBufferedData(BufferDataWrite data, size_t sizeInFloats, size_t offsetInFloats = 0) const;
-		size_t GetSize() const;
-	};
+        size_t GetSize() const;
+
+        void Load(const VertexScalar* data, size_t sizeInScalars, UsageType usage);
+        void BufferSubData(const VertexScalar* data, size_t sizeInScalars, size_t offsetInScalars = 0);
+        void BufferDataWithResize(const VertexScalar* data, size_t sizeInScalars);
+        void GetBufferData(VertexScalar* data, size_t sizeInScalars, size_t offsetInScalars = 0) const;
+    };
 }

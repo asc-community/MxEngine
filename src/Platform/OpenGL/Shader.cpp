@@ -203,7 +203,7 @@ namespace MxEngine
 		this->SetNewNativeHandle(program);
 	}
 
-	const MxString& Shader::GetDebugFilePath(Shader::PipelineStage stage)
+	const MxString& Shader::GetDebugFilePath(Shader::PipelineStage stage) const
 	{
 		#if defined(MXENGINE_DEBUG)
 		return this->debugFilePaths[(size_t)stage];

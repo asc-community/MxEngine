@@ -62,7 +62,7 @@ namespace MxEngine
 	{
 		vao.Bind();
 		ibo.Bind();
-		GLCALL(glDrawElements(GL_TRIANGLES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexTypeId(), nullptr));
+		GLCALL(glDrawElements(GL_TRIANGLES, (GLsizei)ibo.GetSize(), GetGLType<IndexBuffer::IndexType>(), nullptr));
 	}
 
 	void Renderer::DrawTriangles(const VertexArray& vao, size_t vertexCount) const
@@ -75,14 +75,14 @@ namespace MxEngine
 	{
 		vao.Bind();
 		ibo.Bind();
-		GLCALL(glDrawElements(GL_LINES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexTypeId(), nullptr));
+		GLCALL(glDrawElements(GL_LINES, (GLsizei)ibo.GetSize(), GetGLType<IndexBuffer::IndexType>(), nullptr));
 	}
 
 	void Renderer::DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, size_t count) const
 	{
 		vao.Bind();
 		ibo.Bind();
-		GLCALL(glDrawElementsInstanced(GL_LINES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexTypeId(), nullptr, (GLsizei)count));
+		GLCALL(glDrawElementsInstanced(GL_LINES, (GLsizei)ibo.GetSize(), GetGLType<IndexBuffer::IndexType>(), nullptr, (GLsizei)count));
 	}
 
 	void Renderer::DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, size_t count) const
@@ -95,7 +95,7 @@ namespace MxEngine
 	{
 		vao.Bind();
 		ibo.Bind();
-		GLCALL(glDrawElementsInstanced(GL_TRIANGLES, (GLsizei)ibo.GetCount(), (GLenum)ibo.GetIndexTypeId(), nullptr, (GLsizei)count));
+		GLCALL(glDrawElementsInstanced(GL_TRIANGLES, (GLsizei)ibo.GetSize(), GetGLType<IndexBuffer::IndexType>(), nullptr, (GLsizei)count));
 	}
 
 	void Renderer::DrawTrianglesInstanced(const VertexArray& vao, size_t vertexCount, size_t count) const

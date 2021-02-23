@@ -46,7 +46,7 @@ namespace MxEngine
         VBL->PushFloat(3); // position
         VBL->PushFloat(4); // color //-V112
 
-        this->VBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::DYNAMIC_DRAW);
+        this->VBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
         this->VAO = GraphicFactory::Create<VertexArray>();
         VAO->AddBuffer(*this->VBO, *VBL);
     }
@@ -492,10 +492,7 @@ namespace MxEngine
     void DebugBuffer::SubmitBuffer()
     {
         size_t size = this->GetSize() * sizeof(Point) / sizeof(float);
-        if (size <= this->VBO->GetSize())
-            this->VBO->BufferSubData((float*)this->storage.data(), size);
-        else
-            this->VBO->Load((float*)this->storage.data(), size, UsageType::DYNAMIC_DRAW);
+        this->VBO->BufferDataWithResize((float*)this->storage.data(), size);
     }
 
     size_t DebugBuffer::GetSize() const

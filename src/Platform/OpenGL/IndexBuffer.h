@@ -28,36 +28,22 @@
 
 #pragma once
 
-#include "Core/Macro/Macro.h"
-#include "UsageType.h"
-#include <cstddef>
+#include "BufferBase.h"
 
 namespace MxEngine
 {
-	class IndexBuffer
+	class IndexBuffer : public BufferBase
 	{
-		using BindableId = unsigned int;
-		BindableId id = 0;
-		size_t count = 0;
+    public:
+        using IndexType = uint32_t;
 
-		void FreeIndexBuffer();
-	public:
-		using IndexType = unsigned int;
+        IndexBuffer(const IndexType* data, size_t count, UsageType usage);
+        
+        size_t GetSize() const;
 
-		explicit IndexBuffer();
-		explicit IndexBuffer(const IndexType* data, size_t count);
-		IndexBuffer(const IndexBuffer&) = delete;
-		IndexBuffer(IndexBuffer&& ibo) noexcept;
-		IndexBuffer& operator=(const IndexBuffer&) = delete;
-		IndexBuffer& operator=(IndexBuffer&& ibo) noexcept;
-		~IndexBuffer();
-
-		BindableId GetNativeHandle() const;
-		void Bind() const;
-		void Unbind() const;
-		void Load(const IndexType* data, size_t sizeInInts, UsageType usageType = UsageType::STATIC_DRAW);
-		void GetBufferedIndicies(IndexType* data, size_t sizeInInts) const;
-		size_t GetCount() const;
-		size_t GetIndexTypeId() const;
+        void Load(const IndexType* data, size_t count, UsageType usage);
+        void BufferSubData(const IndexType* data, size_t count, size_t offsetCount = 0);
+        void BufferDataWithResize(const IndexType* data, size_t count);
+        void GetBufferData(IndexType* data, size_t count, size_t offsetCount = 0) const;
 	};
 }
