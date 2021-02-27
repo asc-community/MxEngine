@@ -212,7 +212,7 @@ namespace MxEngine
 	{
 		for (size_t i = 0; i < filepaths.size(); i++)
 		{
-			if (IsFileUpdated(updateTimes[i], filepaths[i]))
+			if (File::Exists(filepaths[i]) && IsFileUpdated(updateTimes[i], filepaths[i]))
 				return true;
 		}
 		return false;

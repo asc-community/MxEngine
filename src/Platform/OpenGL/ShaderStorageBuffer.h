@@ -62,7 +62,7 @@ namespace MxEngine
 		template<typename T>
 		void BufferSubDataWithResize(const T* data, size_t count)
 		{
-			BufferBase::BufferSubDataWithResize((const uint8_t*)data, count * sizeof(T));
+			BufferBase::BufferDataWithResize((const uint8_t*)data, count * sizeof(T));
 		}
 
 		template<typename T>
