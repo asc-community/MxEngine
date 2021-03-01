@@ -35,14 +35,14 @@ namespace MxEngine
     struct DirectionalLightUnit;
     struct PointLightUnit;
     struct SpotLightUnit;
-    struct RenderUnit;
+    struct RenderList;
 
     class ShadowMapGenerator
     {
-        ArrayView<RenderUnit> shadowCasters;
+        const RenderList& shadowCasters;
         ArrayView<Material> materials;
     public:
-        ShadowMapGenerator(ArrayView<RenderUnit> shadowCasters, ArrayView<Material> materials);
+        ShadowMapGenerator(const RenderList& shadowCasters, ArrayView<Material> materials);
         ~ShadowMapGenerator();
 
         void GenerateFor(const Shader& shader, ArrayView<DirectionalLightUnit> directionalLights);

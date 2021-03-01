@@ -155,30 +155,44 @@ namespace MxEngine
         RenderHelperObject PyramidLight;
     };
 
-    struct RenderUnit
+    struct RenderGroup
     {
         VertexArrayHandle VAO;
         IndexBufferHandle IBO;
+        size_t InstanceCount;
+        size_t unitCount;
+    };
 
+    struct RenderUnit
+    {
         size_t materialIndex;
+        size_t IndexOffset;
+        size_t IndexCount;
         
         Matrix4x4 ModelMatrix;
         Matrix3x3 NormalMatrix;
 
         Vector3 MinAABB, MaxAABB;
-        size_t InstanceCount;
         #if defined(MXENGINE_DEBUG)
         const char* DebugName;
         #endif
+    };
+
+    struct RenderList
+    {
+        MxVector<RenderGroup> Groups;
+        MxVector<RenderUnit> Units;
     };
 
     struct RenderPipeline
     {
         EnvironmentUnit Environment;
         LightingSystem Lighting;
-        MxVector<RenderUnit> ShadowCasterUnits;
-        MxVector<RenderUnit> OpaqueRenderUnits;
-        MxVector<RenderUnit> TransparentRenderUnits;
+
+        RenderList ShadowCasters;
+        RenderList TransparentObjects;
+        RenderList OpaqueObjects;
+
         MxVector<Material> MaterialUnits;
         MxVector<CameraUnit> Cameras;
         RenderStatistics Statistics;

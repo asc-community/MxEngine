@@ -6,7 +6,7 @@
     "editor-key": "GRAVE_ACCENT",
     "editor-style": "MXENGINE",
     "recompile-files-key": "F5",
-    "shader-source-directory": "../../src/Platform/OpenGL/Shaders"
+    "shader-source-directory": "."
   },
   "filesystem": {
     "ignored-folders": [

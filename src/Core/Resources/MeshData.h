@@ -45,23 +45,23 @@ namespace MxEngine
         BoundingSphere boundingSphere;
 
         VertexBufferHandle VBO;
-        VertexArrayHandle VAO;
+        size_t vertexCount, vertexOffset;
         IndexBufferHandle IBO;
+        size_t indexCount, indexOffset;
     public:
-        MeshData();
+        MeshData(const VertexBufferHandle& VBO, size_t vertexCount, size_t vertexOffset, const IndexBufferHandle& IBO, size_t indexCount, size_t indexOffset);
 
-        VertexArrayHandle GetVAO() const;
         VertexBufferHandle GetVBO() const;
         IndexBufferHandle GetIBO() const;
+        size_t GetVerteciesOffset() const;
+        size_t GetIndiciesOffset() const;
         const AABB& GetAABB() const;
         const BoundingSphere& GetBoundingSphere() const;
         
         size_t GetVerteciesCount() const;
         size_t GetIndiciesCount() const;
         void BufferVertecies(const VertexData& vertecies);
-        void BufferVertecies(const VertexData& vertecies, UsageType usageType);
         void BufferIndicies(const IndexData& indicies);
-        void BufferIndicies(const IndexData& indicies, UsageType usageType);
         void UpdateBoundingGeometry(const VertexData& vertecies);
 
         VertexData GetVerteciesFromGPU() const;

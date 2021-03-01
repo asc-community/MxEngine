@@ -85,7 +85,6 @@ set(MXENGINE_SOURCES
 "Utilities/ImGui/Viewport.cpp" 
 "Utilities/ImGui/ImGuiBase.cpp"
 "Utilities/Json/Json.cpp" 
-"Utilities/LODGenerator/LODGenerator.cpp" 
 "Utilities/Logging/Logger.cpp" 
 "Utilities/Logging/Platform.cpp" 
 "Utilities/Memory/Memory.cpp" 
@@ -113,7 +112,6 @@ set(MXENGINE_SOURCES
 "Core/Components/Rendering/Skybox.cpp"
 "Core/Resources/Material.cpp" 
 "Core/Components/Rendering/MeshSource.cpp" 
- 
 "Core/Serialization/Serializer.cpp" 
 "Core/Components/Components.cpp" 
 "Core/Serialization/ResourceSerialization.cpp" 
@@ -121,8 +119,11 @@ set(MXENGINE_SOURCES
 "Core/Serialization/Deserializer.cpp" 
 "Utilities/ObjectLoading/ObjectSaver.cpp"
 "Core/Application/Scene.cpp"
- "Core/Components/Camera/CameraSSGI.cpp" 
-  "Platform/OpenGL/ShaderBase.cpp" "Platform/OpenGL/ComputeShader.cpp" "Platform/OpenGL/BufferBase.cpp")
+"Core/Components/Camera/CameraSSGI.cpp" 
+"Platform/OpenGL/ShaderBase.cpp" 
+"Platform/OpenGL/ComputeShader.cpp" 
+"Platform/OpenGL/BufferBase.cpp"
+"Platform/Compute/Compute.cpp")
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)

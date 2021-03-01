@@ -30,7 +30,6 @@
 #include "Utilities/ObjectLoading/ObjectLoader.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Platform/GraphicAPI.h"
-#include "Utilities/LODGenerator/LODGenerator.h"
 #include "Utilities/Format/Format.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
@@ -68,22 +67,66 @@ namespace MxEngine
 		// optimize transform additions
 		this->subMeshTransforms.reserve(objectInfo.meshes.size());
 
+		// precompute and allocate size for per-mesh Vertex Buffer and Index Buffer
+		size_t totalVerticies = 0;
+		size_t totalIndicies = 0;
+		for (const auto& meshInfo : objectInfo.meshes)
+		{
+			totalVerticies += meshInfo.vertecies.size();
+			totalIndicies += meshInfo.indicies.size();
+		}
+		// create CPU-side array for verticies and indicies, and GPU-size VBO/IBO
+		MxVector<Vertex> verticies;
+		MxVector<IndexBuffer::IndexType> indicies;
+		verticies.reserve(totalVerticies);
+		indicies.reserve(totalIndicies);
+		this->ReserveData(totalVerticies, totalIndicies);
+
+		// insert all verticies and indicies into single VBO/IBO
 		for (size_t i = 0; i < objectInfo.meshes.size(); i++)
 		{
-			auto& meshData = objectInfo.meshes[i];
+			auto& meshInfo = objectInfo.meshes[i];
 			auto& materialId = materialIds[i];
+			
+			MeshData meshData{ 
+				this->VBO, meshInfo.vertecies.size(), verticies.size(),
+				this->IBO, meshInfo.indicies.size(), indicies.size()
+			};
+			meshData.UpdateBoundingGeometry(meshInfo.vertecies);
 
-			auto& submesh = this->AddSubMesh(materialId);
-			submesh.Data.BufferVertecies(meshData.vertecies);
-			submesh.Data.BufferIndicies(meshData.indicies);
-			submesh.Data.UpdateBoundingGeometry(meshData.vertecies);
-			submesh.Name = std::move(meshData.name);
+			// apply vertex offset to each index
+			for (const auto& index : meshInfo.indicies)
+				indicies.push_back(index + verticies.size());
+			// no additional operations for verticies
+			verticies.insert(verticies.end(), meshInfo.vertecies.begin(), meshInfo.vertecies.end());
+
+			this->AddSubMesh(materialId, std::move(meshData));
 		}
+		// load verticies and indicies to GPU
+		this->VBO->BufferSubData((float*)verticies.data(), verticies.size() * Vertex::Size);
+		this->IBO->BufferSubData(indicies.data(), indicies.size());
+
 		this->UpdateBoundingGeometry(); // use submeshes boundings to update mesh boundings
+	}
+
+	Mesh::Mesh()
+	{
+		this->filePath = MXENGINE_MAKE_INTERNAL_TAG("empty");
+		this->VBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
+		this->IBO = GraphicFactory::Create<IndexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
+		this->VAO = GraphicFactory::Create<VertexArray>();
+		auto VBL = GraphicFactory::Create<VertexBufferLayout>();
+		VBL->PushFloat(3); // position
+		VBL->PushFloat(2); // texture uv
+		VBL->PushFloat(3); // normal
+		VBL->PushFloat(3); // tangent
+		VBL->PushFloat(3); // bitangent
+		this->VAO->AddBuffer(*this->VBO, *VBL);
 	}
 
 	template<>
     Mesh::Mesh(const std::filesystem::path& path)
+		: Mesh()
     {
 		this->LoadFromFile(std::filesystem::proximate(path));
     }
@@ -97,6 +140,12 @@ namespace MxEngine
 	void Mesh::Load(const MxString& filepath)
 	{
 		this->Load(ToFilePath(filepath));
+	}
+
+	void Mesh::ReserveData(size_t vertexCount, size_t indexCount)
+	{
+		this->VBO->Load(nullptr, vertexCount * Vertex::Size, UsageType::STATIC_DRAW);
+		this->IBO->Load(nullptr, indexCount, UsageType::STATIC_DRAW);
 	}
 
 	void Mesh::UpdateBoundingGeometry()
@@ -126,61 +175,60 @@ namespace MxEngine
 
 	size_t Mesh::AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl)
 	{
-		this->VBOs.push_back(std::move(vbo));
-		this->VBLs.push_back(std::move(vbl));
-		for (auto& mesh : this->GetSubMeshes())
-		{
-			mesh.Data.GetVAO()->AddInstancedBuffer(*this->VBOs.back(), *this->VBLs.back());
-		}
-		return this->VBOs.size() - 1;
+		this->instancedVBOs.push_back(std::move(vbo));
+		this->instancedVBLs.push_back(std::move(vbl));
+		this->VAO->AddInstancedBuffer(*this->instancedVBOs.back(), *this->instancedVBLs.back());
+		return this->instancedVBOs.size() - 1;
 	}
 
 	VertexBufferHandle Mesh::GetBufferByIndex(size_t index) const
 	{
-		MX_ASSERT(index < this->VBOs.size());
-		return this->VBOs[index];
+		MX_ASSERT(index < this->instancedVBOs.size());
+		return this->instancedVBOs[index];
 	}
 
 	VertexBufferLayoutHandle Mesh::GetBufferLayoutByIndex(size_t index) const
 	{
-		MX_ASSERT(index < this->VBLs.size());
-		return this->VBLs[index];
+		MX_ASSERT(index < this->instancedVBLs.size());
+		return this->instancedVBLs[index];
+	}
+
+	VertexBufferHandle Mesh::GetVBO() const
+	{
+		return this->VBO;
+	}
+
+	IndexBufferHandle Mesh::GetIBO() const
+	{
+		return this->IBO;
+	}
+
+	VertexArrayHandle Mesh::GetVAO() const
+	{
+		return this->VAO;
 	}
 
 	size_t Mesh::GetTotalVerteciesCount() const
 	{
-		size_t result = 0;
-		for (auto& mesh : this->GetSubMeshes())
-		{
-			result += mesh.Data.GetVBO()->GetSize() / Vertex::Size;
-		}
-		return result;
+		return this->VBO->GetSize() / Vertex::Size;
 	}
 
 	size_t Mesh::GetTotalIndiciesCount() const
 	{
-		size_t result = 0;
-		for (auto& mesh : this->GetSubMeshes())
-		{
-			result += mesh.Data.GetIBO()->GetSize();
-		}
-		return result;
+		return this->IBO->GetSize();
 	}
 
-	size_t Mesh::GetBufferCount() const
+	size_t Mesh::GetInstancedBufferCount() const
     {
-		return this->VBOs.size();
+		return this->instancedVBOs.size();
     }
 
     void Mesh::PopInstancedBuffer()
     {
-		MX_ASSERT(!this->VBOs.empty());
-		for (auto& mesh : this->GetSubMeshes())
-		{
-			mesh.Data.GetVAO()->PopBuffer(*this->VBLs.back());
-		}
-		this->VBOs.pop_back();
-		this->VBLs.pop_back();
+		MX_ASSERT(!this->instancedVBOs.empty());
+		this->VAO->PopBuffer(*this->instancedVBLs.back());
+		this->instancedVBOs.pop_back();
+		this->instancedVBLs.pop_back();
     }
 
 	const MxString& Mesh::GetFilePath() const
@@ -220,22 +268,10 @@ namespace MxEngine
 		return this->submeshes[index];
 	}
 
-	SubMesh& Mesh::AddSubMesh(SubMesh::MaterialId materialId)
-	{
-		return this->AddSubMesh(materialId, MeshData{ });
-	}
-
 	SubMesh& Mesh::AddSubMesh(SubMesh::MaterialId materialId, MeshData data)
 	{
 		auto& transform = *this->subMeshTransforms.emplace_back(MakeUnique<TransformComponent>());
 		return this->submeshes.emplace_back(materialId, transform, std::move(data));
-	}
-
-	SubMesh& Mesh::LinkSubMesh(SubMesh& submesh)
-	{
-		// ALL submeshes in mesh should be linked, in any is linked
-		MX_ASSERT(this->subMeshTransforms.empty());
-		return this->submeshes.emplace_back(submesh.GetMaterialId(), submesh.GetTransformReference());
 	}
 
 	void Mesh::DeleteSubMeshByIndex(size_t index)

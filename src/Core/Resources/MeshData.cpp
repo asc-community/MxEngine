@@ -31,25 +31,12 @@
 
 namespace MxEngine
 {
-    MeshData::MeshData()
+
+    MeshData::MeshData(const VertexBufferHandle& VBO, size_t vertexCount, size_t vertexOffset, const IndexBufferHandle& IBO, size_t indexCount, size_t indexOffset)
+        : VBO(VBO), vertexCount(vertexCount), vertexOffset(vertexOffset), IBO(IBO), indexCount(indexCount), indexOffset(indexOffset)
     {
-        this->VBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
-        this->IBO = GraphicFactory::Create<IndexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
-        this->VAO = GraphicFactory::Create<VertexArray>();
-
-        auto VBL = GraphicFactory::Create<VertexBufferLayout>();
-        VBL->PushFloat(3); // position //-V525
-        VBL->PushFloat(2); // texture
-        VBL->PushFloat(3); // normal
-        VBL->PushFloat(3); // tangent
-        VBL->PushFloat(3); // bitangent
-
-        this->VAO->AddBuffer(*this->VBO, *VBL);
-    }
-
-    VertexArrayHandle MeshData::GetVAO() const
-    {
-        return this->VAO;
+        MX_ASSERT((this->vertexCount + this->vertexOffset) * Vertex::Size <= this->VBO->GetSize());
+        MX_ASSERT((this->indexCount + this->indexOffset) <= this->IBO->GetSize());
     }
 
     VertexBufferHandle MeshData::GetVBO() const
@@ -60,6 +47,16 @@ namespace MxEngine
     IndexBufferHandle MeshData::GetIBO() const
     {
         return this->IBO;
+    }
+
+    size_t MeshData::GetVerteciesOffset() const
+    {
+        return this->vertexOffset;
+    }
+
+    size_t MeshData::GetIndiciesOffset() const
+    {
+        return this->indexOffset;
     }
 
     const AABB& MeshData::GetAABB() const
@@ -74,32 +71,23 @@ namespace MxEngine
 
     size_t MeshData::GetVerteciesCount() const
     {
-        return this->GetVBO()->GetSize() / Vertex::Size;
+        return this->vertexCount;
     }
 
     size_t MeshData::GetIndiciesCount() const
     {
-        return this->GetIBO()->GetSize();
+        return this->indexCount;
     }
 
     void MeshData::BufferVertecies(const VertexData& vertecies)
     {
-        this->BufferVertecies(vertecies, UsageType::STATIC_DRAW);
-    }
-
-    void MeshData::BufferVertecies(const VertexData& vertecies, UsageType usageType)
-    {
-        this->VBO->Load((const float*)vertecies.data(), vertecies.size() * Vertex::Size, usageType);
+        MX_ASSERT(vertecies.size() == this->vertexCount);
+        this->VBO->BufferSubData((float*)vertecies.data(), this->vertexCount * Vertex::Size, this->vertexOffset * Vertex::Size);
     }
 
     void MeshData::BufferIndicies(const IndexData& indicies)
     {
-        this->BufferIndicies(indicies, UsageType::STATIC_DRAW);
-    }
-
-    void MeshData::BufferIndicies(const IndexData& indicies, UsageType usageType)
-    {
-        this->IBO->Load(indicies.data(), indicies.size(), usageType);
+        this->IBO->BufferSubData(indicies.data(), this->indexCount, this->indexOffset);
     }
 
     void MeshData::UpdateBoundingGeometry(const VertexData& vertecies)
@@ -269,10 +257,6 @@ namespace MxEngine
         rttr::registration::class_<MeshData>("MeshData")
             (
                 rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<MeshData>)
-            )
-            .constructor<>()
-            (
-                rttr::policy::ctor::as_object
             )
             .property_readonly("vertecies count", &MeshData::GetVerteciesCount)
             (

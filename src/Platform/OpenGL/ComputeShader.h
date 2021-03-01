@@ -38,6 +38,7 @@ namespace MxEngine
         #endif
 
         template<typename FilePath> static BindableId CreateShaderProgram(const MxString& source, const FilePath& path);
+        template<typename FilePath> void LoadDebugVariables(const MxString& source, const FilePath& path);
     public:
         void Load(const MxString& path);
         template<typename FilePath> void Load(const FilePath& path);

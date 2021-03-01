@@ -19,6 +19,7 @@ uniform Camera camera;
 uniform sampler2D inputTex;
 uniform int raySteps;
 uniform float intensity;
+uniform float distance;
 
 float rand(vec2 co)
 {
@@ -81,10 +82,9 @@ void main()
         vec3 lightPosition = reconstructWorldPosition(sampleDepth, TexCoord + uv, camera.invViewProjMatrix);
         vec3 lightDirection = lightPosition - fragment.position;
 
-        const float lightRadius = 50.0;
-        float lightDistance = length(lightDirection);
-        float distanceAttenuation = clamp(1.0f - pow(lightDistance / lightRadius, 4.0f), 0.0, 1.0);
-        distanceAttenuation = isinf(lightDistance) ? 0.0 : distanceAttenuation;
+        float currentDistance = length(lightDirection);
+        float distanceAttenuation = clamp(1.0f - pow(currentDistance / distance, 4.0f), 0.0, 1.0);
+        distanceAttenuation = isinf(currentDistance) ? 0.0 : distanceAttenuation;
 
         float shadowFactor = calculateShadowRayCast(fragment.position, lightPosition, TexCoord);
 

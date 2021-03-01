@@ -26,31 +26,44 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "MeshData.h"
+#include "Compute.h"
+#include "Platform/OpenGL/GLUtilities.h"
 
 namespace MxEngine
 {
-	class SubMesh
-	{
-	public:
-		using MaterialId = size_t;
-	private:
-		MaterialId materialId;
-		std::reference_wrapper<TransformComponent> transform;
-	public:
-		MeshData Data;
-		MxString Name = "Main";
+    constexpr std::array<uint64_t, 16> BarrierMappings = {
+        GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT,
+        GL_ELEMENT_ARRAY_BARRIER_BIT,
+        GL_UNIFORM_BARRIER_BIT,
+        GL_TEXTURE_FETCH_BARRIER_BIT,
+        GL_SHADER_IMAGE_ACCESS_BARRIER_BIT,
+        GL_COMMAND_BARRIER_BIT,
+        GL_PIXEL_BUFFER_BARRIER_BIT,
+        GL_TEXTURE_UPDATE_BARRIER_BIT,
+        GL_BUFFER_UPDATE_BARRIER_BIT,
+        GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT,
+        GL_FRAMEBUFFER_BARRIER_BIT,
+        GL_TRANSFORM_FEEDBACK_BARRIER_BIT,
+        GL_ATOMIC_COUNTER_BARRIER_BIT,
+        GL_SHADER_STORAGE_BARRIER_BIT,
+        GL_QUERY_BUFFER_BARRIER_BIT,
+        GL_ALL_BARRIER_BITS,
+    };
 
-		const AABB& GetAABB() const;
-		const BoundingSphere& GetBoundingSphere() const;
+    void Compute::Dispatch(const ComputeShaderHandle& computeShader, size_t x, size_t y, size_t z)
+    {
+        computeShader->Bind();
+        GLCALL(glDispatchCompute(x, y, z));
+    }
 
-		SubMesh(size_t materialId, std::reference_wrapper<TransformComponent> transform, MeshData data);
-
-		const TransformComponent& GetTransform() const;
-		TransformComponent& GetTransformReference();
-		void SetTransform(const TransformComponent& transform);
-		MaterialId GetMaterialId() const;
-	};
+    void Compute::SetMemoryBarrier(BarrierType::Bits barriers)
+    {
+        GLbitfield barrierBits = 0;
+        for (size_t i = 0; i < BarrierMappings.size(); i++)
+        {
+            bool bit = (uint64_t)barriers & (1ull << i);
+            barrierBits |= (bit ? BarrierMappings[i] : 0);
+        }
+        GLCALL(glMemoryBarrier(barrierBits));
+    }
 }

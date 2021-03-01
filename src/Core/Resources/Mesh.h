@@ -44,8 +44,11 @@ namespace MxEngine
 		
 		SubMeshList submeshes;
 		MxString filePath;
-		MxVector<VertexBufferHandle> VBOs;
-		MxVector<VertexBufferLayoutHandle> VBLs;
+		VertexBufferHandle VBO;
+		VertexArrayHandle VAO;
+		IndexBufferHandle IBO;
+		MxVector<VertexBufferHandle> instancedVBOs;
+		MxVector<VertexBufferLayoutHandle> instancedVBLs;
 		MxVector<UniqueRef<TransformComponent>> subMeshTransforms;
 
 		template<typename FilePath>
@@ -55,7 +58,7 @@ namespace MxEngine
 		AABB MeshAABB;
 		BoundingSphere MeshBoundingSphere;
 
-		explicit Mesh() = default;
+		explicit Mesh();
 		Mesh(Mesh&) = delete;
 		Mesh(Mesh&&) = default;
 		Mesh& operator=(const Mesh&) = delete;
@@ -67,21 +70,23 @@ namespace MxEngine
 		void Load(const MxString& filepath);
 		template<typename FilePath> void Load(const FilePath& filepath);
 
+		void ReserveData(size_t vertexCount, size_t indexCount);
 		void UpdateBoundingGeometry();
 		size_t AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl);
 		VertexBufferHandle GetBufferByIndex(size_t index) const; 
 		VertexBufferLayoutHandle GetBufferLayoutByIndex(size_t index) const;
+		VertexBufferHandle GetVBO() const;
+		IndexBufferHandle GetIBO() const;
+		VertexArrayHandle GetVAO() const;
 		size_t GetTotalVerteciesCount() const;
 		size_t GetTotalIndiciesCount() const;
-		size_t GetBufferCount() const;
+		size_t GetInstancedBufferCount() const;
 		void PopInstancedBuffer();
 		void SetSubMeshesInternal(const SubMeshList& submeshes);
 		const SubMeshList& GetSubMeshes() const;
 		const SubMesh& GetSubMeshByIndex(size_t index) const;
 		SubMesh& GetSubMeshByIndex(size_t index);
-		SubMesh& AddSubMesh(SubMesh::MaterialId materialId);
 		SubMesh& AddSubMesh(SubMesh::MaterialId materialId, MeshData data);
-		SubMesh& LinkSubMesh(SubMesh& submesh);
 		void DeleteSubMeshByIndex(size_t index);
 
 		const MxString& GetFilePath() const;

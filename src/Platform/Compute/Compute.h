@@ -26,47 +26,37 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Core/Macro/Macro.h"
-#include "Core/Application/Application.h"
-#include "Core/Application/Rendering.h"
-#include "Core/Application/Runtime.h"
-#include "Core/Application/Physics.h"
-#include "Core/Application/Timer.h"
-#include "Core/Application/Scene.h"
-#include "Core/MxObject/MxObject.h"
-#include "Core/Config/GlobalConfig.h"
-#include "Core/Components/Camera/PerspectiveCamera.h"
-#include "Core/Components/Camera/OrthographicCamera.h"
-#include "Core/Components/Camera/FrustrumCamera.h"
-#include "Core/Components/Components.h"
-#include "Core/Application/Event.h"
-#include "Core/Events/Events.h"
-#include "Core/BoundingObjects/Line.h"
-#include "Core/BoundingObjects/Frustrum.h"
-#include "Core/BoundingObjects/Cone.h"
-#include "Core/BoundingObjects/Rectangle.h"
-#include "Core/BoundingObjects/Circle.h"
 #include "Platform/GraphicAPI.h"
-#include "Platform/Compute/Compute.h"
-#include "Platform/Window/Input.h"
-#include "Platform/Window/WindowManager.h"
-#include "Utilities/Math/Math.h"
-#include "Utilities/ImGui/ImGuiUtils.h"
-#include "Utilities/Format/Format.h"
-#include "Utilities/Random/Random.h"
-#include "Utilities/Array/Array2D.h"
-#include "Utilities/Image/ImageConverter.h"
-#include "Utilities/Image/ImageManager.h"
-#include "Utilities/Memory/Memory.h"
-#include "Utilities/Logging/Logger.h"
-#include "Utilities/FileSystem/FileManager.h"
-#include "Library/Primitives/Primitives.h"
-#include "Library/Primitives/Colors.h"
-#include "Core/Components/Scripting/Scriptable.h"
 
-/*!
-Main namespace of MxEngine framework. All classes are located here or in nested namespaces
-*/
-namespace MxEngine { }
+namespace MxEngine
+{
+    struct BarrierType
+    {
+        enum Bits : uint64_t
+        {
+            VERTEX_ARRAY = 1 << 0,
+            INDEX_BUFFER = 1 << 1,
+            UNIFORM_BUFFER = 1 << 2,
+            TEXTURE_FETCH = 1 << 3,
+            IMAGE_ACCESS = 1 << 4,
+            COMMAND = 1 << 5,
+            PIXEL_BUFFER = 1 << 6,
+            TEXTURE_UPDATE = 1 << 7,
+            BUFFER_UPDATE = 1 << 8,
+            CLIENT_MAPPED_BUFFER = 1 << 9,
+            FRAMEBUFFER = 1 << 10,
+            TRANSFORM_FEEDBACK = 1 << 11,
+            ATOMIC_COUNTER = 1 << 12,
+            SHADER_STORAGE_BUFFER = 1 << 13,
+            QUERY_BUFFER = 1 << 14,
+            ALL = 1 << 15,
+        };
+    };
+
+    class Compute
+    {
+    public:
+        static void Dispatch(const ComputeShaderHandle& computeShader, size_t x, size_t y, size_t z);
+        static void SetMemoryBarrier(BarrierType::Bits barriers);
+    };
+}

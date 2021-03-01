@@ -37,6 +37,11 @@ namespace MxEngine
         return this->intensity;
     }
 
+    float CameraSSGI::GetDistance() const
+    {
+        return this->distance;
+    }
+
     size_t CameraSSGI::GetRaySteps() const
     {
         return this->raySteps;
@@ -55,6 +60,11 @@ namespace MxEngine
     void CameraSSGI::SetIntensity(float intensity)
     {
         this->intensity = Max(intensity, 0.0f);
+    }
+
+    void CameraSSGI::SetDistance(float distance)
+    {
+        this->distance = Max(distance, 0.0f);
     }
 
     void CameraSSGI::SetRaySteps(size_t raySteps)
@@ -81,6 +91,12 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("distance", &CameraSSGI::GetDistance, &CameraSSGI::SetDistance)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
             )
             .property("ray steps", &CameraSSGI::GetRaySteps, &CameraSSGI::SetRaySteps)
             (

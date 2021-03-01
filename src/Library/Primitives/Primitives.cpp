@@ -49,9 +49,14 @@ namespace MxEngine
         return ToMxString(proximatePath);
     }
 
-    MeshHandle Primitives::CreateMesh(MeshData meshData, const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies, const MxString& filename)
+    MeshHandle Primitives::CreateMesh(const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies, const MxString& filename)
     {
         auto mesh = ResourceFactory::Create<Mesh>();
+        mesh->ReserveData(vertecies.size(), indicies.size());
+        MeshData meshData{
+            mesh->GetVBO(), vertecies.size(), 0,
+            mesh->GetIBO(), indicies.size(), 0
+        };
 
         auto& submesh = mesh->AddSubMesh((SubMesh::MaterialId)0, std::move(meshData));
         submesh.Data.BufferVertecies(vertecies);
@@ -66,9 +71,9 @@ namespace MxEngine
         return mesh;
     }
 
-    MeshHandle Primitives::CreateMesh(MeshData meshData, const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies)
+    MeshHandle Primitives::CreateMesh(const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies)
     {
-        return Primitives::CreateMesh(meshData, vertecies, indicies, UUIDGenerator::Get());
+        return Primitives::CreateMesh(vertecies, indicies, UUIDGenerator::Get());
     }
 
     MeshHandle Primitives::CreateSurface(const Array2D<float>& heights)
@@ -78,7 +83,6 @@ namespace MxEngine
 
     MeshHandle Primitives::CreateSurface(const Array2D<float>& heights, const MxString& filename)
     {
-        MeshData meshData;
         MeshData::VertexData vertecies;
         MeshData::IndexData indicies;
 
@@ -130,12 +134,11 @@ namespace MxEngine
         }
 
         MeshData::RegenerateNormals(vertecies, indicies);
-        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies, filename);
+        return Primitives::CreateMesh(vertecies, indicies, filename);
     }
 
     MeshHandle Primitives::CreateCube(size_t polygons)
     {
-        MeshData meshData;
         MeshData::VertexData vertecies;
         MeshData::IndexData indicies;
 
@@ -273,7 +276,7 @@ namespace MxEngine
         }
 
         MeshData::RegenerateTangentSpace(vertecies, indicies);
-        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies, MxFormat("cube_{}", polygons));
+        return Primitives::CreateMesh(vertecies, indicies, MxFormat("cube_{}", polygons));
     }
 
     MeshHandle Primitives::CreatePlane(size_t polygons)
@@ -286,7 +289,6 @@ namespace MxEngine
 
     MeshHandle Primitives::CreateSphere(size_t polygons)
     {
-        MeshData meshData;
         MeshData::VertexData vertecies;
         MeshData::IndexData indicies;
 
@@ -341,12 +343,11 @@ namespace MxEngine
                 }
             }
         }
-        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies, MxFormat("sphere_{}", polygons));
+        return Primitives::CreateMesh(vertecies, indicies, MxFormat("sphere_{}", polygons));
     }
 
     MeshHandle Primitives::CreateCylinder(size_t polygons)
     {
-        MeshData meshData;
         MeshData::VertexData vertecies;
         MeshData::IndexData indicies;
 
@@ -454,12 +455,11 @@ namespace MxEngine
         indicies.push_back(uint32_t(lowerR));
 
         MeshData::RegenerateNormals(vertecies, indicies);
-        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies, MxFormat("cylinder_{}", polygons));
+        return Primitives::CreateMesh(vertecies, indicies, MxFormat("cylinder_{}", polygons));
     }
 
     MeshHandle Primitives::CreatePyramid(size_t)
     {
-        MeshData meshData;
         MeshData::VertexData vertecies;
         MeshData::IndexData indicies;
 
@@ -485,7 +485,7 @@ namespace MxEngine
         };
 
         MeshData::RegenerateNormals(vertecies, indicies);
-        return Primitives::CreateMesh(std::move(meshData), vertecies, indicies, MxFormat("pyramid_1"));
+        return Primitives::CreateMesh(vertecies, indicies, MxFormat("pyramid_1"));
     }
 
     TextureHandle Primitives::CreateGridTexture(size_t textureSize, float borderScale)

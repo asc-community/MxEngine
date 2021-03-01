@@ -33,7 +33,7 @@
 
 namespace MxEngine
 {
-    ShadowMapGenerator::ShadowMapGenerator(ArrayView<RenderUnit> shadowCasters, ArrayView<Material> materials)
+    ShadowMapGenerator::ShadowMapGenerator(const RenderList& shadowCasters, ArrayView<Material> materials)
         : shadowCasters(shadowCasters), materials(materials)
     {
         Rendering::GetController().ToggleReversedDepth(false);
@@ -45,7 +45,7 @@ namespace MxEngine
         Rendering::GetController().ToggleDepthOnlyMode(false);
     }
 
-    void CastShadowsUnit(const Shader& shader, const RenderUnit& unit, ArrayView<Material> materials)
+    void RenderUnitToDepthMap(const Shader& shader, size_t instanceCount, const RenderUnit& unit, ArrayView<Material> materials)
     {
         const auto& material = materials[unit.materialIndex];
         material.HeightMap->Bind(0);
@@ -57,7 +57,7 @@ namespace MxEngine
 
         Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
         Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
-        Rendering::GetController().DrawTriangles(*unit.VAO, *unit.IBO, unit.InstanceCount);
+        Rendering::GetController().DrawIndicies(RenderPrimitive::TRIANGLES, unit.IndexCount, unit.IndexOffset, instanceCount);
         Rendering::GetController().GetRenderStatistics().AddEntry("shadow casts", 1);
     }
 
@@ -91,54 +91,35 @@ namespace MxEngine
         return inside || (Dot(relative, relative) < dist * dist);
     }
 
-    void CastShadowsWithCulling(const Matrix4x4& orthoProjection, const Shader& shader, ArrayView<RenderUnit> shadowCasters, ArrayView<Material> materials)
+    template<typename CullFunc>
+    void CastShadowsPerUnit(const CullFunc& culler, const Shader& shader, const RenderUnit& unit, size_t instanceCount, ArrayView<Material> materials)
     {
-        FrustrumCuller culler(orthoProjection);
-        for (const auto& unit : shadowCasters)
+        // do not cull instanced objects, as their position may differ
+        bool culled = instanceCount == 0 && !culler(unit.MinAABB, unit.MaxAABB);
+        if (!culled)
         {
-            // do not cull instanced objects, as their position may differ
-            bool culled = unit.InstanceCount == 0 && !InOrthoFrustrum(culler, unit.MinAABB, unit.MaxAABB);
-            if (!culled)
-            {
-                CastShadowsUnit(shader, unit, materials);
-            }
-            else
-            {
-                Rendering::GetController().GetRenderStatistics().AddEntry("culled from shadow cast", 1);
-            }
+            RenderUnitToDepthMap(shader, instanceCount, unit, materials);
+        }
+        else
+        {
+            Rendering::GetController().GetRenderStatistics().AddEntry("culled from shadow cast", 1);
         }
     }
 
-    void CastShadowsWithCulling(const PointLightUnit& pointLight, const Shader& shader, ArrayView<RenderUnit> shadowCasters, ArrayView<Material> materials)
+    template<typename CullFunc>
+    void CastsShadowsPerGroup(const CullFunc& culler, const Shader& shader, const RenderList& shadowCasters, ArrayView<Material> materials)
     {
-        for (const auto& unit : shadowCasters)
+        size_t currentUnit = 0;
+        for (const auto& group : shadowCasters.Groups)
         {
-            // do not cull instanced objects, as their position may differ
-            bool culled = unit.InstanceCount == 0 && !InSphereBounds(pointLight, unit.MinAABB, unit.MaxAABB);
-            if (!culled)
-            {
-                CastShadowsUnit(shader, unit, materials);
-            }
-            else
-            {
-                Rendering::GetController().GetRenderStatistics().AddEntry("culled from shadow cast", 1);
-            }
-        }
-    }
+            if (group.unitCount == 0) continue;
 
-    void CastShadowsWithCulling(const SpotLightUnit& spotLight, const Shader& shader, ArrayView<RenderUnit> shadowCasters, ArrayView<Material> materials)
-    {
-        for (const auto& unit : shadowCasters)
-        {
-            // do not cull instanced objects, as their position may differ
-            bool culled = unit.InstanceCount == 0 && !InConeBounds(spotLight, unit.MinAABB, unit.MaxAABB);
-            if (!culled)
+            group.VAO->Bind();
+            group.IBO->Bind();
+            for (size_t i = 0; i < group.unitCount; i++, currentUnit++)
             {
-                CastShadowsUnit(shader, unit, materials);
-            }
-            else
-            {
-                Rendering::GetController().GetRenderStatistics().AddEntry("culled from shadow cast", 1);
+                const RenderUnit& unit = shadowCasters.Units[currentUnit];
+                CastShadowsPerUnit(culler, shader, unit, group.InstanceCount, materials);
             }
         }
     }
@@ -157,7 +138,12 @@ namespace MxEngine
                 controller.AttachDepthMap(directionalLight.ShadowMaps[i]);
                 shader.SetUniform("LightProjMatrix", projection);
 
-                CastShadowsWithCulling(projection, shader, this->shadowCasters, this->materials);
+                auto CullingFunction = [culler = FrustrumCuller(projection)](const Vector3& min, const Vector3& max)
+                {
+                    return InOrthoFrustrum(culler, min, max);
+                };
+
+                CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->materials);
             }
         }
 
@@ -180,7 +166,16 @@ namespace MxEngine
             controller.AttachDepthMap(spotLight.ShadowMap);
             shader.SetUniform("LightProjMatrix", spotLight.ProjectionMatrix);
 
-            CastShadowsWithCulling(spotLight, shader, this->shadowCasters, this->materials);
+            auto CullingFunction = [&spotLight](const Vector3& min, const Vector3& max)
+            {
+                return InConeBounds(spotLight, min, max);
+            };
+
+            CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->materials);
+        }
+
+        for (auto& spotLight : spotLights)
+        {
             spotLight.ShadowMap->GenerateMipmaps();
         }
     }
@@ -202,7 +197,16 @@ namespace MxEngine
             shader.SetUniform("zFar", pointLight.Radius);
             shader.SetUniform("lightPos", pointLight.Position);
 
-            CastShadowsWithCulling(pointLight, shader, this->shadowCasters, this->materials);
+            auto CullingFunction = [&pointLight](const Vector3& min, const Vector3& max)
+            {
+                return InSphereBounds(pointLight, min, max);
+            };
+
+            CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->materials);
+        }
+
+        for (auto& pointLight : pointLights)
+        {
             pointLight.ShadowMap->GenerateMipmaps();
         }
     }

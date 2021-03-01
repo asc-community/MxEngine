@@ -42,6 +42,7 @@
 #include "Platform/Window/Input.h"
 #include "Core/Events/FpsUpdateEvent.h"
 #include "Core/Components/Instancing/Instance.h"
+#include "Core/Config/GlobalConfig.h"
 
 namespace MxEngine
 {
@@ -218,15 +219,22 @@ namespace MxEngine
 		return false;
 	}
 
-	FilePath GetShaderLookupDirectory(const ShaderHandle& shader)
+	MxString GetShaderMainFile(const ShaderHandle& shader)
 	{
-		return ToFilePath(shader->GetDebugFilePath(Shader::PipelineStage::FRAGMENT)).parent_path();
+		return shader->GetDebugFilePath(Shader::PipelineStage::FRAGMENT);
 	}
 
-	FilePath GetShaderLookupDirectory(const ComputeShaderHandle& shader)
+	MxString GetShaderMainFile(const ComputeShaderHandle& shader)
 	{
-		return ToFilePath(shader->GetDebugFilePath()).parent_path();
+		return shader->GetDebugFilePath();
 	}
+
+	template<typename ShaderHandleType>
+	FilePath GetShaderLookupDirectory(const ShaderHandleType& shader)
+	{
+		return ToFilePath(GetShaderMainFile(shader)).parent_path();
+	}
+
 
 	MxVector<MxString> GetTrackedFilePaths(const ShaderHandle& shader)
 	{
@@ -272,6 +280,16 @@ namespace MxEngine
 		return filenames;
 	}
 
+	FilePath ResolveFileName(const FilePath& filename, const FilePath& lookupDirectory)
+	{
+		auto resolvedFilePath = FileManager::SearchFileInDirectory(lookupDirectory, filename);
+		if (!resolvedFilePath.empty()) return resolvedFilePath;
+
+		auto globalLookupDirectory = ToFilePath(GlobalConfig::GetShaderSourceDirectory());
+		resolvedFilePath = FileManager::SearchFileInDirectory(globalLookupDirectory, filename);
+		return resolvedFilePath; // found or empty path
+	}
+
 	/*
 	replaces filename with filepath from lookup directory (i.e. file.txt + directory -> directory/smth/file.txt)
 	if functions fails, empty list is returned
@@ -282,7 +300,7 @@ namespace MxEngine
 		resolved.reserve(filenames.size());
 		for (const auto& filename : filenames)
 		{
-			auto resolvedFilePath = FileManager::SearchFileInDirectory(lookupDirectory, filename);
+			auto resolvedFilePath = ResolveFileName(filename, lookupDirectory);
 			if (resolvedFilePath.empty())
 			{
 				MXLOG_WARNING("MxEngine::RuntimeEditor", MxFormat("cannot find shader {} in directory {}", ToMxString(filename), ToMxString(lookupDirectory)));
@@ -332,6 +350,7 @@ namespace MxEngine
 
 		auto updateTimes = GetTrackedFilesUpdateTime(resolvedFilepaths);
 
+		MXLOG_INFO("MxEngine::RuntimeEditor", "added shader update listener for shader: " + GetShaderMainFile(shader));
 		Event::AddEventListener<UpdateEvent>("RuntimeEditor", 
 			[shader, filepaths = std::move(resolvedFilepaths), updates = std::move(updateTimes)](auto&) mutable
 			{

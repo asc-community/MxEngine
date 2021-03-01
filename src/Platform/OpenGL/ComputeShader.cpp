@@ -34,6 +34,15 @@
 namespace MxEngine
 {
     template<>
+    void ComputeShader::LoadDebugVariables<FilePath>(const MxString& source, const FilePath& path)
+    {
+        #if defined(MXENGINE_DEBUG)
+        this->debugFilePath = ToMxString(FileManager::GetProximatePath(path, FileManager::GetWorkingDirectory()));
+        this->includedFilePaths = ShaderBase::GetShaderIncludeFiles(source, path);
+        #endif
+    }
+
+    template<>
     ComputeShader::BindableId ComputeShader::CreateShaderProgram<FilePath>(const MxString& source, const FilePath& path)
     {
         MXLOG_DEBUG("OpenGL::Shader", "compiling compute shader");
@@ -50,13 +59,16 @@ namespace MxEngine
     void ComputeShader::LoadFromString(const MxString& source)
     {
         BindableId program = ComputeShader::CreateShaderProgram(source, FilePath("_compute.glsl"));
+        this->LoadDebugVariables(source, FilePath("_compute.glsl"));
         this->SetNewNativeHandle(program);
     }
 
     template<>
     void ComputeShader::Load<FilePath>(const FilePath& path)
     {
-        BindableId program = ComputeShader::CreateShaderProgram(File::ReadAllText(path), path);
+        auto source = File::ReadAllText(path);
+        BindableId program = ComputeShader::CreateShaderProgram(source, path);
+        this->LoadDebugVariables(source, path);
         this->SetNewNativeHandle(program);
     }
 

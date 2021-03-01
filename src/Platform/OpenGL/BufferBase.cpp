@@ -112,6 +112,11 @@ namespace MxEngine
         GLCALL(glBindBuffer(BufferTypeToEnum[(size_t)this->type], 0));
     }
 
+    void BufferBase::BindBase(size_t index) const
+    {
+        GLCALL(glBindBufferBase(BufferTypeToEnum[(size_t)this->type], index, this->id));
+    }
+
     BufferBase::BindableId BufferBase::GetNativeHandle() const
     {
         return this->id;
@@ -148,6 +153,7 @@ namespace MxEngine
 
     void BufferBase::BufferSubData(const uint8_t* byteData, size_t byteSize, size_t offset)
     {
+        MX_ASSERT(byteSize + offset <= this->byteSize);
         this->Bind();
         GLCALL(glBufferSubData(BufferTypeToEnum[(size_t)this->type], offset, byteSize, byteData));
     }
@@ -162,6 +168,7 @@ namespace MxEngine
 
     void BufferBase::GetBufferData(uint8_t* byteData, size_t byteSize, size_t offset) const
     {
+        MX_ASSERT(byteSize + offset <= this->byteSize);
         this->Bind();
         GLCALL(glGetBufferSubData(BufferTypeToEnum[(size_t)this->type], offset, byteSize, byteData));
     }

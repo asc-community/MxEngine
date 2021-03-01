@@ -53,61 +53,24 @@ namespace MxEngine
 		GL_ONE_MINUS_CONSTANT_ALPHA,
 	};
 
+	GLenum PrimitiveTable[] = {
+		GL_POINTS,
+		GL_LINE_STRIP,
+		GL_LINE_LOOP,
+		GL_LINES,
+		GL_LINE_STRIP_ADJACENCY,
+		GL_LINES_ADJACENCY,
+		GL_TRIANGLE_STRIP,
+		GL_TRIANGLE_FAN,
+		GL_TRIANGLES,
+		GL_TRIANGLE_STRIP_ADJACENCY,
+		GL_TRIANGLES_ADJACENCY,
+		GL_PATCHES,
+	};
+
 	Renderer::Renderer()
 	{
 		this->clearMask |= GL_COLOR_BUFFER_BIT;
-	}
-
-	void Renderer::DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo) const
-	{
-		vao.Bind();
-		ibo.Bind();
-		GLCALL(glDrawElements(GL_TRIANGLES, (GLsizei)ibo.GetSize(), GetGLType<IndexBuffer::IndexType>(), nullptr));
-	}
-
-	void Renderer::DrawTriangles(const VertexArray& vao, size_t vertexCount) const
-	{
-		vao.Bind();
-		GLCALL(glDrawArrays(GL_TRIANGLES, 0, (GLsizei)vertexCount));
-	}
-
-	void Renderer::DrawLines(const VertexArray& vao, const IndexBuffer& ibo) const
-	{
-		vao.Bind();
-		ibo.Bind();
-		GLCALL(glDrawElements(GL_LINES, (GLsizei)ibo.GetSize(), GetGLType<IndexBuffer::IndexType>(), nullptr));
-	}
-
-	void Renderer::DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, size_t count) const
-	{
-		vao.Bind();
-		ibo.Bind();
-		GLCALL(glDrawElementsInstanced(GL_LINES, (GLsizei)ibo.GetSize(), GetGLType<IndexBuffer::IndexType>(), nullptr, (GLsizei)count));
-	}
-
-	void Renderer::DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, size_t count) const
-	{
-		vao.Bind();
-		GLCALL(glDrawArraysInstanced(GL_LINES, 0, (GLsizei)vertexCount, (GLsizei)count));
-	}
-
-	void Renderer::DrawTrianglesInstanced(const VertexArray& vao, const IndexBuffer& ibo, size_t count) const
-	{
-		vao.Bind();
-		ibo.Bind();
-		GLCALL(glDrawElementsInstanced(GL_TRIANGLES, (GLsizei)ibo.GetSize(), GetGLType<IndexBuffer::IndexType>(), nullptr, (GLsizei)count));
-	}
-
-	void Renderer::DrawTrianglesInstanced(const VertexArray& vao, size_t vertexCount, size_t count) const
-	{
-		vao.Bind();
-		GLCALL(glDrawArraysInstanced(GL_TRIANGLES, 0, (GLsizei)vertexCount, (GLsizei)count));
-	}
-
-	void Renderer::DrawLines(const VertexArray& vao, size_t vertexCount) const
-	{
-		vao.Bind();
-		GLCALL(glDrawArrays(GL_LINES, 0, (GLsizei)vertexCount));
 	}
 
 	void Renderer::Clear() const
@@ -143,6 +106,37 @@ namespace MxEngine
 		else
 			glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 		return *this;
+	}
+
+	void Renderer::DrawVertecies(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset)
+	{
+		GLCALL(glDrawArrays(PrimitiveTable[(size_t)primitive], (GLint)vertexOffset, (GLsizei)vertexCount));
+	}
+
+	void Renderer::DrawVerteciesInstanced(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount)
+	{
+		GLCALL(glDrawArraysInstanced(PrimitiveTable[(size_t)primitive], (GLint)vertexOffset, (GLsizei)vertexCount, instanceCount));
+	}
+
+	void Renderer::DrawIndicies(RenderPrimitive primitive, size_t indexCount, size_t indexOffset)
+	{
+		GLCALL(glDrawElements(
+			PrimitiveTable[(size_t)primitive],
+			indexCount,
+			GetGLType<IndexBuffer::IndexType>(),
+			(const void*)(indexOffset * sizeof(IndexBuffer::IndexType))
+		));
+	}
+
+	void Renderer::DrawIndiciesInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount)
+	{
+		GLCALL(glDrawElementsInstanced(
+			PrimitiveTable[(size_t)primitive], 
+			indexCount, 
+			GetGLType<IndexBuffer::IndexType>(), 
+			(const void*)(indexOffset * sizeof(IndexBuffer::IndexType)), 
+			instanceCount
+		));
 	}
 
 	Renderer& Renderer::UseColorMask(bool r, bool g, bool b, bool a)

@@ -37,8 +37,8 @@ namespace MxEngine
     class Primitives
     {
     public:
-        static MeshHandle CreateMesh(MeshData meshData, const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies, const MxString& filename);
-        static MeshHandle CreateMesh(MeshData meshData, const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies);
+        static MeshHandle CreateMesh(const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies, const MxString& filename);
+        static MeshHandle CreateMesh(const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies);
         static MeshHandle CreateCube(size_t polygons = 2);
         static MeshHandle CreatePlane(size_t polygons = 2);
         static MeshHandle CreateSphere(size_t polygons = 32);

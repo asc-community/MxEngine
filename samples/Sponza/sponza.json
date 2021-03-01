@@ -2146,7 +2146,10 @@
       "CameraSSGI": {
         "id": 0,
         "intensity": 3.0,
-        "ray steps": 3
+        "ray steps": 3,
+		"distance": 50.0,
+		"blur iterations": 1,
+		"blur lod": 4
       },
       "CameraSSR": {
         "fading": 1.0,
@@ -2317,7 +2320,7 @@
     },
     {
       "DirectionalLight": {
-        "ambient intensity": 0.0,
+        "ambient intensity": 0.01,
         "cascade direction": [
           0.0,
           0.0,

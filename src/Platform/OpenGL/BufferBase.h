@@ -74,6 +74,7 @@ namespace MxEngine
 
 		void Bind() const;
 		void Unbind() const;
+		void BindBase(size_t index) const;
 		BindableId GetNativeHandle() const;
 		BufferType GetBufferType() const;
 		UsageType GetUsageType() const;

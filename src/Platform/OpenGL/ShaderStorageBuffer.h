@@ -70,5 +70,10 @@ namespace MxEngine
 		{
 			BufferBase::GetBufferData((uint8_t*)data, count * sizeof(T), offsetCount * sizeof(T));
 		}
+
+		void BindBase(size_t index) const
+		{
+			BufferBase::BindBase(index);
+		}
 	};
 }

@@ -27,47 +27,11 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "MeshLOD.h"
-#include "Utilities/LODGenerator/LODGenerator.h"
 #include "Core/MxObject/MxObject.h"
-#include "Utilities/Logging/Logger.h"
-#include "Utilities/Format/Format.h"
 #include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
-    void MeshLOD::Generate(const LODConfig& config)
-    {
-        auto& object = MxObject::GetByComponent(*this);
-        auto meshSource = object.GetComponent<MeshSource>();
-        if (!meshSource.IsValid() || !meshSource->Mesh.IsValid())
-        {
-            MXLOG_WARNING("MxEngine::MeshLOD", "LODs are not generated as object has no mesh: " + object.Name);
-            return;
-        }
-
-        auto mesh = meshSource->Mesh;
-        this->LODs.clear();
-        this->LODs.reserve(config.Factors.size());
-
-        for (auto factor : config.Factors)
-        {
-            auto meshLOD = this->LODs.emplace_back(ResourceFactory::Create<Mesh>());
-
-            size_t totalIndicies = 0;
-            for (size_t i = 0, submeshCount = mesh->GetSubMeshes().size(); i < submeshCount; i++)
-            {
-                auto& submesh = mesh->GetSubMeshByIndex(i);
-                LODGenerator lod(submesh.Data);
-
-                auto& submeshLOD = meshLOD->LinkSubMesh(submesh);
-                submeshLOD.Name = submesh.Name;
-                submeshLOD.Data = lod.CreateObject(factor);
-                totalIndicies += submeshLOD.Data.GetIndiciesCount();
-            }
-            MXLOG_DEBUG("MxEngine::MeshLOD", MxFormat("generated LOD with {0} indicies for object: {1}", totalIndicies, object.Name.c_str()));
-        }
-    }
-
     void MeshLOD::FixBestLOD(const Vector3& viewportPosition, float viewportZoom)
     {
         if (!this->AutoLODSelection) return;
@@ -117,8 +81,6 @@ namespace MxEngine
 
     MXENGINE_REFLECT_TYPE
     {
-        using AutoLodGenFunc = void(MeshLOD::*)();
-
         rttr::registration::class_<MeshLOD>("MeshLOD")
             .constructor<>()
             .property("auto lod selection", &MeshLOD::AutoLODSelection)
@@ -129,10 +91,6 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance& v) { return !v.try_convert<MeshLOD>()->AutoLODSelection; }))
-            )
-            .method("generate lods", (AutoLodGenFunc)&MeshLOD::Generate)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
             )
             .property("lods", &MeshLOD::LODs)
             (

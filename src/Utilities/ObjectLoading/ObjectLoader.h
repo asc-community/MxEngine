@@ -138,11 +138,6 @@ namespace MxEngine
 		has the mesh normal data (and tangent space) or not
 		*/
 		bool useNormal = false;
-
-		/*!
-		returns count of verteces in buffer
-		*/
-		size_t GetVertexCount() const { return this->vertecies.size(); }
 	};
 
 	using MaterialLibrary = MxVector<MaterialInfo>;

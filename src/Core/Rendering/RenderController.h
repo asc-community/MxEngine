@@ -44,6 +44,7 @@ namespace MxEngine
 	class CameraSSR;
 	class Skybox;
 	class SubMesh;
+	class Mesh;
 	class TransformComponent;
 
 	class RenderController
@@ -53,9 +54,9 @@ namespace MxEngine
 
 		void PrepareShadowMaps();
 		void DrawSkybox(const CameraUnit& camera);
-		void DrawObjects(const CameraUnit& camera, const Shader& shader, const MxVector<RenderUnit>& objects);
+		void DrawObjects(const CameraUnit& camera, const Shader& shader, const RenderList& objects);
 		void DrawDebugBuffer(const CameraUnit& camera);
-		void DrawObject(const RenderUnit& unit, const Shader& shader);
+		void DrawObject(const RenderUnit& unit, size_t instanceCount, const Shader& shader);
 		void ComputeBloomEffect(CameraUnit& camera, const TextureHandle& output);
 		TextureHandle ComputeAverageWhite(CameraUnit& camera);
 		void PerformPostProcessing(CameraUnit& camera);
@@ -80,6 +81,8 @@ namespace MxEngine
 		void BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
 		void BindCameraInformation(const CameraUnit& camera, const Shader& shader);
 		void BindFogInformation(const CameraUnit& camera, const Shader& shader);
+
+		void RenderToAttachedFrameBuffer(const Shader& shader);
 	public:
 
 		const Renderer& GetRenderEngine() const;
@@ -102,10 +105,8 @@ namespace MxEngine
 		void RenderToTextureNoClear(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
 		void CopyTexture(const TextureHandle& input, const TextureHandle& output);
 		void ApplyGaussianBlur(const TextureHandle& inputOutput, const TextureHandle& temporary, size_t iterations, size_t lod = 0);
-		void DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, size_t instanceCount);
-		void DrawLines(const VertexArray& vao, const IndexBuffer& ibo, size_t instanceCount);
-		void DrawTriangles(const VertexArray& vao, size_t vertexCount, size_t instanceCount);
-		void DrawLines(const VertexArray& vao, size_t vertexCount, size_t instanceCount);
+		void DrawVertecies(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount);
+		void DrawIndicies(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount);
 
 		EnvironmentUnit& GetEnvironment();
 		const EnvironmentUnit& GetEnvironment() const;
@@ -120,7 +121,8 @@ namespace MxEngine
 		void SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
 			const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping,
 			const CameraSSR* ssr, const CameraSSGI* ssgi);
-		void SubmitPrimitive(const SubMesh& object, const Material& material, bool castsShadows, const TransformComponent& parentTransform, size_t instanceCount, const char* debugName = nullptr);
+		size_t SubmitRenderGroup(const Mesh& mesh, size_t instanceCount);
+		void SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& object, const Material& material, const TransformComponent& parentTransform, bool castsShadow, const char* debugName = nullptr);
 		void SubmitImage(const TextureHandle& texture);
 		void StartPipeline();
 		void EndPipeline();

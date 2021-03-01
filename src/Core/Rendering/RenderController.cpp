@@ -49,7 +49,7 @@ namespace MxEngine
 	{
 		MAKE_SCOPE_PROFILER("RenderController::PrepareShadowMaps()");
 
-		ShadowMapGenerator generator(this->Pipeline.ShadowCasterUnits, this->Pipeline.MaterialUnits);
+		ShadowMapGenerator generator(this->Pipeline.ShadowCasters, this->Pipeline.MaterialUnits);
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PrepareDirectionalLightMaps()");
@@ -67,27 +67,37 @@ namespace MxEngine
 		}
 	}
 
-	void RenderController::DrawObjects(const CameraUnit& camera, const Shader& shader, const MxVector<RenderUnit>& objects)
+	void RenderController::DrawObjects(const CameraUnit& camera, const Shader& shader, const RenderList& objects)
 	{
 		MAKE_SCOPE_PROFILER("RenderController::DrawObjects()");
 
-		if (objects.empty()) return;
+		if (objects.Units.empty()) return;
 		shader.Bind();
 		shader.IgnoreNonExistingUniform("camera.position");
 		shader.IgnoreNonExistingUniform("camera.invViewProjMatrix");
 		this->BindCameraInformation(camera, shader);
 		shader.SetUniform("gamma", camera.Gamma);
 
-		for (const auto& unit : objects)
+		size_t currentUnit = 0;
+		for (const auto& group : objects.Groups)
 		{
-			bool isUnitVisible = unit.InstanceCount > 0 || camera.Culler.IsAABBVisible(unit.MinAABB, unit.MaxAABB);
-			this->Pipeline.Statistics.AddEntry(isUnitVisible ? "drawn objects" : "culled objects", 1);
+			if (group.unitCount == 0) continue;
+			bool isInstanced = group.InstanceCount > 0;
 
-			if (isUnitVisible) this->DrawObject(unit, shader);
+			group.VAO->Bind();
+			group.IBO->Bind();
+			for (size_t i = 0; i < group.unitCount; i++, currentUnit++)
+			{
+				const auto& unit = objects.Units[currentUnit];
+				bool isUnitVisible = isInstanced || camera.Culler.IsAABBVisible(unit.MinAABB, unit.MaxAABB);
+				this->Pipeline.Statistics.AddEntry(isUnitVisible ? "drawn objects" : "culled objects", 1);
+
+				if (isUnitVisible) this->DrawObject(unit, group.InstanceCount, shader);
+			}
 		}
 	}
 
-	void RenderController::DrawObject(const RenderUnit& unit, const Shader& shader)
+	void RenderController::DrawObject(const RenderUnit& unit, size_t instanceCount, const Shader& shader)
 	{
 		Texture::TextureBindId textureBindIndex = 0;
 		const auto& material = this->Pipeline.MaterialUnits[unit.materialIndex];
@@ -121,7 +131,7 @@ namespace MxEngine
 		this->GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
 		this->GetRenderEngine().SetDefaultVertexAttribute(12, material.BaseColor);
 		
-		this->DrawTriangles(*unit.VAO, *unit.IBO, unit.InstanceCount);
+		this->DrawIndicies(RenderPrimitive::TRIANGLES, unit.IndexCount, unit.IndexOffset, instanceCount);
 	}
 
 	void RenderController::ComputeBloomEffect(CameraUnit& camera, const TextureHandle& output)
@@ -326,7 +336,7 @@ namespace MxEngine
 
 	void RenderController::DrawTransparentObjects(CameraUnit& camera)
 	{
-		if (this->Pipeline.TransparentRenderUnits.empty()) return;
+		if (this->Pipeline.TransparentObjects.Units.empty()) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawTransparentObjects()");
 
 		this->GetRenderEngine().UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA);
@@ -373,7 +383,7 @@ namespace MxEngine
 			}
 		}
 
-		this->DrawObjects(camera, *shader, this->Pipeline.TransparentRenderUnits);
+		this->DrawObjects(camera, *shader, this->Pipeline.TransparentObjects);
 
 		this->ToggleFaceCulling(true);
 		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
@@ -495,6 +505,7 @@ namespace MxEngine
 		SSGIShader->SetUniform("inputTex", input->GetBoundId());
 		SSGIShader->SetUniform("raySteps", (int)camera.SSGI->GetRaySteps());
 		SSGIShader->SetUniform("intensity", camera.SSGI->GetIntensity());
+		SSGIShader->SetUniform("distance", camera.SSGI->GetDistance());
 
 		auto& blurInputOutput = this->Pipeline.Environment.BloomTextures.front();
 		auto& blurTemporary = this->Pipeline.Environment.BloomTextures.back();
@@ -626,6 +637,12 @@ namespace MxEngine
 		
 		shader->SetUniform("lightDepthMap", textureId);
 
+		// TODO: refactor
+		auto& VAO = pyramid.GetVAO();
+		auto& IBO = pyramid.GetIBO();
+		VAO.Bind();
+		IBO.Bind();
+
 		for (size_t i = 0; i < spotLights.size(); i++)
 		{
 			const auto& spotLight = spotLights[i];
@@ -639,7 +656,7 @@ namespace MxEngine
 			this->GetRenderEngine().SetDefaultVertexAttribute(10, Vector4(spotLight.Direction, spotLight.OuterAngle));
 			this->GetRenderEngine().SetDefaultVertexAttribute(11, Vector4(spotLight.Color, spotLight.AmbientIntensity));
 
-			this->DrawTriangles(pyramid.GetVAO(), pyramid.GetIBO(), 0);
+			this->DrawIndicies(RenderPrimitive::TRIANGLES, IBO.GetSize(), 0, 0);
 		}
 	}
 
@@ -667,6 +684,12 @@ namespace MxEngine
 
 		shader->SetUniform("lightDepthMap", textureId);
 
+		// TODO: refactor
+		auto& VAO = sphere.GetVAO();
+		auto& IBO = sphere.GetIBO();
+		VAO.Bind();
+		IBO.Bind();
+
 		for (size_t i = 0; i < pointLights.size(); i++)
 		{
 			const auto& pointLight = pointLights[i];
@@ -677,7 +700,7 @@ namespace MxEngine
 			this->GetRenderEngine().SetDefaultVertexAttribute(9,  Vector4(pointLight.Position, pointLight.Radius));
 			this->GetRenderEngine().SetDefaultVertexAttribute(10, Vector4(pointLight.Color, pointLight.AmbientIntensity));
 
-			this->DrawTriangles(sphere.GetVAO(), sphere.GetIBO(), 0);
+			this->DrawIndicies(RenderPrimitive::TRIANGLES, IBO.GetSize(), 0, 0);
 		}
 	}
 
@@ -705,7 +728,13 @@ namespace MxEngine
 		shader->SetUniform("castsShadows", false);
 
 		instancedPointLights.SubmitToVBO();
-		this->DrawTriangles(instancedPointLights.GetVAO(), instancedPointLights.GetIBO(), instancedPointLights.Instances.size());
+		// TODO: refactor
+		auto& VAO = instancedPointLights.GetVAO();
+		auto& IBO = instancedPointLights.GetIBO();
+		VAO.Bind();
+		IBO.Bind();
+
+		this->DrawIndicies(RenderPrimitive::TRIANGLES, IBO.GetSize(), 0, instancedPointLights.Instances.size());
 	}
 
 	void RenderController::DrawNonShadowedSpotLights(CameraUnit& camera, TextureHandle& output)
@@ -732,7 +761,13 @@ namespace MxEngine
 		shader->SetUniform("castsShadows", false);
 
 		instancedSpotLights.SubmitToVBO();
-		this->DrawTriangles(instancedSpotLights.GetVAO(), instancedSpotLights.GetIBO(), instancedSpotLights.Instances.size());
+		// TODO: refactor
+		auto& VAO = instancedSpotLights.GetVAO();
+		auto& IBO = instancedSpotLights.GetIBO();
+		VAO.Bind();
+		IBO.Bind();
+
+		this->DrawIndicies(RenderPrimitive::TRIANGLES, IBO.GetSize(), 0, instancedSpotLights.Instances.size());
 	}
 
 	void RenderController::BindFogInformation(const CameraUnit& camera, const Shader& shader)
@@ -741,62 +776,6 @@ namespace MxEngine
 		shader.SetUniform("fog.distance", camera.Effects->GetFogDistance());
 		shader.SetUniform("fog.density", camera.Effects->GetFogDensity());
 		shader.SetUniform("fog.color", camera.Effects->GetFogColor());
-	}
-
-	void RenderController::DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo, size_t instanceCount)
-	{
-		this->Pipeline.Statistics.AddEntry("draw calls", 1);
-		this->Pipeline.Statistics.AddEntry("drawn vertecies", ibo.GetSize() * Max(instanceCount, 1));
-		if (instanceCount == 0)
-		{
-			this->GetRenderEngine().DrawTriangles(vao, ibo);
-		}
-		else
-		{
-			this->GetRenderEngine().DrawTrianglesInstanced(vao, ibo, instanceCount);
-		}
-	}
-
-	void RenderController::DrawLines(const VertexArray& vao, const IndexBuffer& ibo, size_t instanceCount)
-	{
-		this->Pipeline.Statistics.AddEntry("draw calls", 1);
-		this->Pipeline.Statistics.AddEntry("drawn vertecies", ibo.GetSize() * Max(instanceCount, 1));
-		if (instanceCount == 0)
-		{
-			this->GetRenderEngine().DrawLines(vao, ibo);
-		}
-		else
-		{
-			this->GetRenderEngine().DrawLinesInstanced(vao, ibo, instanceCount);
-		}
-	}
-
-	void RenderController::DrawTriangles(const VertexArray& vao, size_t vertexCount, size_t instanceCount)
-	{
-		this->Pipeline.Statistics.AddEntry("draw calls", 1);
-		this->Pipeline.Statistics.AddEntry("drawn vertecies", vertexCount * Max(instanceCount, 1));
-		if (instanceCount == 0)
-		{
-			this->GetRenderEngine().DrawTriangles(vao, vertexCount);
-		}
-		else
-		{
-			this->GetRenderEngine().DrawTrianglesInstanced(vao, vertexCount, instanceCount);
-		}
-	}
-
-	void RenderController::DrawLines(const VertexArray& vao, size_t vertexCount, size_t instanceCount)
-	{
-		this->Pipeline.Statistics.AddEntry("draw calls", 1);
-		this->Pipeline.Statistics.AddEntry("drawn vertecies", vertexCount * Max(instanceCount, 1));
-		if (instanceCount == 0)
-		{
-			this->GetRenderEngine().DrawLines(vao, vertexCount);
-		}
-		else
-		{
-			this->GetRenderEngine().DrawLinesInstanced(vao, vertexCount, instanceCount);
-		}
 	}
 
 	void RenderController::BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId)
@@ -884,22 +863,28 @@ namespace MxEngine
 		this->Clear();
 	}
 
-	void RenderController::RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader)
+	void RenderController::RenderToAttachedFrameBuffer(const Shader& shader)
 	{
 		this->Pipeline.Statistics.AddEntry("renders to framebuffer", 1);
-		this->AttachFrameBuffer(framebuffer);
 		auto& rectangle = this->Pipeline.Environment.RectangularObject;
-		shader->Bind();
-		this->DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, 0);
+		shader.Bind();
+
+		// TODO: refactor
+		auto& VAO = rectangle.GetVAO();
+		VAO.Bind();
+		this->DrawVertecies(RenderPrimitive::TRIANGLES, rectangle.VertexCount, 0, 0);
+	}
+
+	void RenderController::RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader)
+	{
+		this->AttachFrameBuffer(framebuffer);
+		this->RenderToAttachedFrameBuffer(*shader);
 	}
 
 	void RenderController::RenderToFrameBufferNoClear(const FrameBufferHandle& framebuffer, const ShaderHandle& shader)
 	{
-		this->Pipeline.Statistics.AddEntry("renders to framebuffer", 1);
 		this->AttachFrameBufferNoClear(framebuffer);
-		auto& rectangle = this->Pipeline.Environment.RectangularObject;
-		shader->Bind();
-		this->DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, 0);
+		this->RenderToAttachedFrameBuffer(*shader);
 	}
 
 	void RenderController::RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment)
@@ -944,6 +929,34 @@ namespace MxEngine
 
 			framebuffer->AttachTexture(target);
 			this->RenderToFrameBuffer(framebuffer, shader);
+		}
+	}
+
+	void RenderController::DrawVertecies(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount)
+	{
+		this->Pipeline.Statistics.AddEntry("draw calls", 1);
+		this->Pipeline.Statistics.AddEntry("drawn vertecies", vertexCount * Max(instanceCount, 1));
+		if (instanceCount == 0)
+		{
+			this->GetRenderEngine().DrawVertecies(primitive, vertexCount, vertexOffset);
+		}
+		else
+		{
+			this->GetRenderEngine().DrawVerteciesInstanced(primitive, vertexCount, instanceCount, instanceCount);
+		}
+	}
+
+	void RenderController::DrawIndicies(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount)
+	{
+		this->Pipeline.Statistics.AddEntry("draw calls", 1);
+		this->Pipeline.Statistics.AddEntry("drawn vertecies", indexCount * Max(instanceCount, 1));
+		if (instanceCount == 0)
+		{
+			this->GetRenderEngine().DrawIndicies(primitive, indexCount, indexOffset);
+		}
+		else
+		{
+			this->GetRenderEngine().DrawIndiciesInstanced(primitive, indexCount, indexOffset, instanceCount);
 		}
 	}
 
@@ -995,7 +1008,11 @@ namespace MxEngine
 		camera.SkyboxTexture->Bind(0);
 		shader.SetUniform("skybox", camera.SkyboxTexture->GetBoundId());
 
-		this->DrawTriangles(skybox.GetVAO(), skybox.VertexCount, 0);
+		// TODO: refactor
+		auto& VAO = skybox.GetVAO();
+		VAO.Bind();
+
+		this->DrawVertecies(RenderPrimitive::TRIANGLES, skybox.VertexCount, 0, 0);
 	}
 
 	void RenderController::DrawDebugBuffer(const CameraUnit& camera)
@@ -1010,7 +1027,11 @@ namespace MxEngine
 		shader.Bind();
 		shader.SetUniform("ViewProjMatrix", camera.ViewProjectionMatrix);
 
-		this->DrawLines(*this->Pipeline.Environment.DebugBufferObject.VAO, this->Pipeline.Environment.DebugBufferObject.VertexCount, 0);
+		// TODO: refactor
+		auto& VAO = *this->Pipeline.Environment.DebugBufferObject.VAO;
+		VAO.Bind();
+
+		this->DrawVertecies(RenderPrimitive::LINES, this->Pipeline.Environment.DebugBufferObject.VertexCount, 0, 0);
 
 		this->GetRenderEngine().UseDepthBuffer(true);
 		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
@@ -1054,9 +1075,12 @@ namespace MxEngine
 		this->Pipeline.Lighting.SpotLightsInstanced.Instances.clear();
 		this->Pipeline.Lighting.PointLights.clear();
 		this->Pipeline.Lighting.SpotLights.clear();
-		this->Pipeline.OpaqueRenderUnits.clear();
-		this->Pipeline.TransparentRenderUnits.clear();
-		this->Pipeline.ShadowCasterUnits.clear();
+		this->Pipeline.ShadowCasters.Groups.clear();
+		this->Pipeline.ShadowCasters.Units.clear();
+		this->Pipeline.TransparentObjects.Groups.clear();
+		this->Pipeline.TransparentObjects.Units.clear();
+		this->Pipeline.OpaqueObjects.Groups.clear();
+		this->Pipeline.OpaqueObjects.Units.clear();
 		this->Pipeline.MaterialUnits.clear();
 		this->Pipeline.Cameras.clear();
 	}
@@ -1165,34 +1189,71 @@ namespace MxEngine
 		camera.SSGI                       = ssgi;
 	}
 
-	void RenderController::SubmitPrimitive(const SubMesh& submesh, const Material& material, bool castsShadows, const TransformComponent& parentTransform, size_t instanceCount, const char* debugName)
+	size_t RenderController::SubmitRenderGroup(const Mesh& mesh, size_t instanceCount)
 	{
-		RenderUnit* primitivePtr = nullptr;
-		// filter transparent object to render in separate order
-		if (material.Transparency == 0.0f)
-			return;
-		else if (material.Transparency < 1.0f)
-			primitivePtr = &this->Pipeline.TransparentRenderUnits.emplace_back();
-		else
-			primitivePtr = &this->Pipeline.OpaqueRenderUnits.emplace_back();
-		auto& primitive = *primitivePtr;
+		size_t renderGroupIndex = this->Pipeline.OpaqueObjects.Groups.size();
 
-		primitive.VAO = submesh.Data.GetVAO();
-		primitive.IBO = submesh.Data.GetIBO();
-		primitive.materialIndex = this->Pipeline.MaterialUnits.size();
-		primitive.ModelMatrix = parentTransform.GetMatrix() * submesh.GetTransform().GetMatrix(); //-V807
-		primitive.NormalMatrix = parentTransform.GetNormalMatrix() * submesh.GetTransform().GetNormalMatrix();
-		primitive.InstanceCount = instanceCount;
+		std::array<std::reference_wrapper<RenderGroup>, 3> groupSubTypes = {
+			this->Pipeline.OpaqueObjects.Groups.emplace_back(),
+			this->Pipeline.TransparentObjects.Groups.emplace_back(),
+			this->Pipeline.ShadowCasters.Groups.emplace_back(),
+		};
+
+		for (auto subType : groupSubTypes)
+		{
+			subType.get().VAO = mesh.GetVAO();
+			subType.get().IBO = mesh.GetIBO();
+			subType.get().InstanceCount = instanceCount;
+			subType.get().unitCount = 0;
+		}
+
+		return renderGroupIndex;
+	}
+
+	void RenderController::SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& submesh, const Material& material, const TransformComponent& parentTransform, bool castsShadow, const char* debugName)
+	{
+		bool isInvisible = material.Transparency == 0.0f;
+		bool isTransparent = material.Transparency < 1.0f;
+		if (isInvisible) return;
+
+		RenderUnit renderUnit;
+
+		renderUnit.materialIndex = this->Pipeline.MaterialUnits.size();
+		renderUnit.IndexCount = submesh.Data.GetIndiciesCount();
+		renderUnit.IndexOffset = submesh.Data.GetIndiciesOffset();
+		renderUnit.ModelMatrix = parentTransform.GetMatrix() * submesh.GetTransform().GetMatrix(); //-V807
+		renderUnit.NormalMatrix = parentTransform.GetNormalMatrix() * submesh.GetTransform().GetNormalMatrix();
 
 		#if defined(MXENGINE_DEBUG)
-		primitive.DebugName = debugName;
+		renderUnit.DebugName = debugName;
 		#endif
 
 		// compute aabb of primitive object for later frustrum culling
-		auto aabb = submesh.Data.GetAABB() * primitive.ModelMatrix;
-		primitive.MinAABB = aabb.Min;
-		primitive.MaxAABB = aabb.Max;
+		auto aabb = submesh.Data.GetAABB() * renderUnit.ModelMatrix;
+		renderUnit.MinAABB = aabb.Min;
+		renderUnit.MaxAABB = aabb.Max;
 
+		if (castsShadow)
+		{
+			auto& shadowCasters = this->Pipeline.ShadowCasters;
+			shadowCasters.Groups[renderGroupIndex].unitCount++;
+			shadowCasters.Units.push_back(renderUnit);
+		}
+
+		if (isTransparent)
+		{
+			auto& transparentObjects = this->Pipeline.TransparentObjects;
+			transparentObjects.Groups[renderGroupIndex].unitCount++;
+			transparentObjects.Units.push_back(std::move(renderUnit));
+		}
+		else
+		{
+			auto& opaqueObjects = this->Pipeline.OpaqueObjects;
+			opaqueObjects.Groups[renderGroupIndex].unitCount++;
+			opaqueObjects.Units.push_back(std::move(renderUnit));
+		}
+
+		// submit render material
 		auto& renderMaterial = this->Pipeline.MaterialUnits.emplace_back(material); // create a copy of material for future work
 
 		// we need to change displacement to account object scale, so we take average of object scale components as multiplier
@@ -1209,8 +1270,6 @@ namespace MxEngine
 		if (!renderMaterial.AmbientOcclusionMap.IsValid()) renderMaterial.AmbientOcclusionMap = this->Pipeline.Environment.DefaultMaterialMap;
 		if (!renderMaterial.NormalMap.IsValid())           renderMaterial.NormalMap = this->Pipeline.Environment.DefaultNormalMap;
 		if (!renderMaterial.HeightMap.IsValid())           renderMaterial.HeightMap = this->Pipeline.Environment.DefaultBlackMap;
-
-		if(castsShadows) this->Pipeline.ShadowCasterUnits.push_back(primitive);
 	}
 
 	void RenderController::SubmitImage(const TextureHandle& texture)
@@ -1222,7 +1281,11 @@ namespace MxEngine
 		finalShader.SetUniform("tex", 0);
 		texture->Bind(0);
 
-		this->DrawTriangles(rectangle.GetVAO(), rectangle.VertexCount, 0);
+		// TODO: refactor
+		auto& VAO = rectangle.GetVAO();
+		VAO.Bind();
+
+		this->DrawVertecies(RenderPrimitive::TRIANGLES, rectangle.VertexCount, 0, 0);
 	}
 
 	void RenderController::StartPipeline()
@@ -1245,7 +1308,7 @@ namespace MxEngine
 			this->ToggleReversedDepth(camera.IsPerspective);
 			this->AttachFrameBuffer(camera.GBuffer);
 
-			this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBuffer"_id], this->Pipeline.OpaqueRenderUnits);
+			this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBuffer"_id], this->Pipeline.OpaqueObjects);
 			this->PerformLightPass(camera);
 			this->PerformPostProcessing(camera);
 

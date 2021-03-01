@@ -60,6 +60,22 @@ enum class DepthFunction
 
 namespace MxEngine
 {
+	enum class RenderPrimitive
+	{
+		POINTS = 0, 
+		LINE_STRIP, 
+		LINE_LOOP, 
+		LINES, 
+		LINE_STRIP_ADJACENCY, 
+		LINES_ADJACENCY, 
+		TRIANGLE_STRIP, 
+		TRIANGLE_FAN, 
+		TRIANGLES, 
+		TRIANGLE_STRIP_ADJACENCY, 
+		TRIANGLES_ADJACENCY,
+		PATCHES,
+	};
+
 	class Renderer
 	{
 		bool depthBufferEnabled = false;
@@ -67,14 +83,11 @@ namespace MxEngine
 	public:
 		Renderer();
 
-		void DrawTriangles(const VertexArray& vao, const IndexBuffer& ibo) const;
-		void DrawTriangles(const VertexArray& vao, size_t vertexCountr) const;
-		void DrawTrianglesInstanced(const VertexArray& vao, const IndexBuffer& ibo, size_t count) const;
-		void DrawTrianglesInstanced(const VertexArray& vao, size_t vertexCount, size_t count) const;
-		void DrawLines(const VertexArray& vao, size_t vertexCount) const;
-		void DrawLines(const VertexArray& vao, const IndexBuffer& ibo) const;
-		void DrawLinesInstanced(const VertexArray& vao, const IndexBuffer& ibo, size_t count) const;
-		void DrawLinesInstanced(const VertexArray& vao, size_t vertexCount, size_t count) const;
+		void DrawVertecies(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset);
+		void DrawIndicies(RenderPrimitive primitive, size_t indexCount, size_t indexOffset);
+		void DrawVerteciesInstanced(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount);
+		void DrawIndiciesInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount);
+
 		void SetDefaultVertexAttribute(size_t index, float v) const;
 		void SetDefaultVertexAttribute(size_t index, const Vector2& vec) const;
 		void SetDefaultVertexAttribute(size_t index, const Vector3& vec) const;

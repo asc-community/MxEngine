@@ -65,24 +65,20 @@ namespace MxEngine
 
         // light bounding objects
         auto pyramid = Primitives::CreatePyramid();
-        auto& pyramidMesh = pyramid->GetSubMeshByIndex(0);
         this->Renderer.GetLightInformation().PyramidLight =
-            RenderHelperObject(pyramidMesh.Data.GetVBO(), pyramidMesh.Data.GetVAO(), pyramidMesh.Data.GetIBO());
+            RenderHelperObject(pyramid->GetVBO(), pyramid->GetVAO(), pyramid->GetIBO());
 
         auto sphere = Primitives::CreateSphere(8);
-        auto& sphereMesh = sphere->GetSubMeshByIndex(0);
         this->Renderer.GetLightInformation().SphereLight =
-            RenderHelperObject(sphereMesh.Data.GetVBO(), sphereMesh.Data.GetVAO(), sphereMesh.Data.GetIBO());
+            RenderHelperObject(sphere->GetVBO(), sphere->GetVAO(), sphere->GetIBO());
 
         auto pyramidInstanced = Primitives::CreatePyramid();
-        auto& pyramidInstancedMesh = pyramidInstanced->GetSubMeshByIndex(0);
         this->Renderer.GetLightInformation().SpotLightsInstanced = 
-            SpotLightInstancedObject(pyramidInstancedMesh.Data.GetVBO(), pyramidInstancedMesh.Data.GetVAO(), pyramidInstancedMesh.Data.GetIBO());
+            SpotLightInstancedObject(pyramidInstanced->GetVBO(), pyramidInstanced->GetVAO(), pyramidInstanced->GetIBO());
 
         auto sphereInstanced = Primitives::CreateSphere(8);
-        auto& sphereInstancedMesh = sphereInstanced->GetSubMeshByIndex(0);
         this->Renderer.GetLightInformation().PointLigthsInstanced =
-            PointLightInstancedObject(sphereInstancedMesh.Data.GetVBO(), sphereInstancedMesh.Data.GetVAO(), sphereInstancedMesh.Data.GetIBO());
+            PointLightInstancedObject(sphereInstanced->GetVBO(), sphereInstanced->GetVAO(), sphereInstanced->GetIBO());
 
         auto textureFolder = FileManager::GetEngineTextureDirectory();
         int internalTextureSize = (int)GlobalConfig::GetEngineTextureSize();
@@ -342,13 +338,14 @@ namespace MxEngine
                     mesh = meshLOD->GetMeshLOD();
                 }
 
+                size_t renderGroupIndex = this->Renderer.SubmitRenderGroup(*mesh, instanceCount);
                 for (const auto& submesh : mesh->GetSubMeshes())
                 {
                     auto materialId = submesh.GetMaterialId();
                     if (materialId >= meshRenderer->Materials.size()) continue;
                     auto material = meshRenderer->Materials[materialId];
 
-                    this->Renderer.SubmitPrimitive(submesh, *material, castsShadow, transform, instanceCount, object.Name.c_str());
+                    this->Renderer.SubmitRenderUnit(renderGroupIndex, submesh, *material, transform, castsShadow, object.Name.c_str());
                 }
             }
         }

@@ -34,10 +34,6 @@
 
 namespace MxEngine
 {
-    struct LODConfig
-    {
-        std::array<float, 5> Factors{ 0.001f, 0.01f, 0.05f, 0.15f, 0.3f };
-    };
 
     class MeshLOD
     {
@@ -50,12 +46,9 @@ namespace MxEngine
         bool AutoLODSelection = true;
 
         MxVector<MeshHandle> LODs;
-        void Generate(const LODConfig& config);
-        void Generate() { this->Generate(LODConfig{ }); }
         void FixBestLOD(const Vector3& viewportPosition, float viewportZoom = 1.0f);
         void SetCurrentLOD(size_t lod);
         size_t GetCurrentLOD() const;
-
         MeshHandle GetMeshLOD() const;
     };
 }

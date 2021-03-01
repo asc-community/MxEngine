@@ -21,7 +21,7 @@ namespace MxEngine
 
     void InstanceFactory::RemoveInstancedBuffer(Mesh& mesh, size_t index)
     {
-        MX_ASSERT(mesh.GetBufferCount() == index + 1);
+        MX_ASSERT(mesh.GetInstancedBufferCount() == index + 1);
         mesh.PopInstancedBuffer();
     }
 
@@ -150,7 +150,7 @@ namespace MxEngine
         {
             auto& mesh = *meshSource->Mesh;
 
-            if ((uint16_t)mesh.GetBufferCount() < this->bufferIndex + 2)
+            if ((uint16_t)mesh.GetInstancedBufferCount() < this->bufferIndex + 2)
             {
                 this->InitMesh(); // MeshSource was updated, re-init mesh
             }
