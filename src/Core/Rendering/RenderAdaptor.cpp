@@ -36,6 +36,7 @@
 #include "Core/Components/Rendering/Skybox.h"
 #include "Core/Components/Rendering/MeshLOD.h"
 #include "Core/Components/Rendering/DebugDraw.h"
+#include "Core/Components/Rendering/ParticleSystem.h"
 #include "Core/Components/Camera/CameraEffects.h"
 #include "Core/Components/Camera/CameraSSR.h"
 #include "Core/Components/Camera/CameraSSGI.h"
@@ -247,6 +248,16 @@ namespace MxEngine
             shaderFolder / "ibl_fragment.glsl"
         );
 
+        environment.Shaders["Particle"_id] = AssetManager::LoadShader(
+            shaderFolder / "particle_vertex.glsl",
+            shaderFolder / "particle_fragment.glsl"
+        );
+
+        // compute shaders
+        environment.ComputeShaders["Particle"_id] = AssetManager::LoadComputeShader(
+            shaderFolder / "particle_compute.glsl"
+        );
+
         // framebuffers
         environment.DepthFrameBuffer = GraphicFactory::Create<FrameBuffer>();
         environment.DepthFrameBuffer->UseOnlyDepth();
@@ -347,6 +358,16 @@ namespace MxEngine
 
                     this->Renderer.SubmitRenderUnit(renderGroupIndex, submesh, *material, transform, castsShadow, object.Name.c_str());
                 }
+            }
+        }
+
+        {
+            MAKE_SCOPE_PROFILER("RenderAdaptor::SubmitParticleSystems()");
+            auto particleSystemView = ComponentFactory::GetView<ParticleSystem>();
+            for (const auto& particleSystem : particleSystemView)
+            {
+                auto& transform = MxObject::GetByComponent(particleSystem).Transform;
+                this->Renderer.SubmitParticleSystem(particleSystem, transform);
             }
         }
 

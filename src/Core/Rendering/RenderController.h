@@ -45,6 +45,7 @@ namespace MxEngine
 	class Skybox;
 	class SubMesh;
 	class Mesh;
+	class ParticleSystem;
 	class TransformComponent;
 
 	class RenderController
@@ -53,6 +54,8 @@ namespace MxEngine
 		RenderPipeline Pipeline;
 
 		void PrepareShadowMaps();
+		void ComputeParticles();
+		void DrawParticles(const CameraUnit& camera);
 		void DrawSkybox(const CameraUnit& camera);
 		void DrawObjects(const CameraUnit& camera, const Shader& shader, const RenderList& objects);
 		void DrawDebugBuffer(const CameraUnit& camera);
@@ -115,6 +118,7 @@ namespace MxEngine
 		const RenderStatistics& GetRenderStatistics() const;
 		RenderStatistics& GetRenderStatistics();
 		void ResetPipeline();
+		void SubmitParticleSystem(const ParticleSystem& system, const TransformComponent& parentTransform);
 		void SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform);
 		void SubmitLightSource(const PointLight& light, const TransformComponent& parentTransform);
 		void SubmitLightSource(const SpotLight& light, const TransformComponent& parentTransform);

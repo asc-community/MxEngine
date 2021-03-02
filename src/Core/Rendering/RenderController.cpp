@@ -29,6 +29,7 @@
 #include "RenderController.h"
 #include "Utilities/Format/Format.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
+#include "Core/Components/Rendering/ParticleSystem.h"
 #include "Core/Components/Camera/CameraController.h"
 #include "Core/Components/Camera/CameraEffects.h"
 #include "Core/Components/Camera/CameraToneMapping.h"
@@ -39,11 +40,13 @@
 #include "Core/Components/Lighting/PointLight.h"
 #include "Core/Components/Rendering/Skybox.h"
 #include "Utilities/Profiler/Profiler.h"
+#include "Platform/Compute/Compute.h"
 #include "RenderUtilities/ShadowMapGenerator.h"
 
 namespace MxEngine
 {
 	constexpr size_t MaxDirLightCount = 4;
+	constexpr size_t ParticleComputeGroupSize = 256;
 
 	void RenderController::PrepareShadowMaps()
 	{
@@ -64,6 +67,52 @@ namespace MxEngine
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PreparePointLightMaps()");
 			generator.GenerateFor(*this->Pipeline.Environment.Shaders["DepthCubeMap"_id], this->Pipeline.Lighting.PointLights);
+		}
+	}
+
+	void RenderController::ComputeParticles()
+	{
+		if (this->Pipeline.ParticleSystems.empty()) return;
+		MAKE_SCOPE_PROFILER("RenderController::ComputeParticles()");
+		
+		auto& computeShader = this->Pipeline.Environment.ComputeShaders["Particle"_id];
+		computeShader->Bind();
+		computeShader->SetUniform("dt", Min(Time::Delta(), 1.0f / 60.0f));
+
+		for (const auto& particleSytem : this->Pipeline.ParticleSystems)
+		{
+			particleSytem.ParticleData->BindBase(0);
+			computeShader->SetUniform("lifetime", particleSytem.ParticleLifetime);
+			computeShader->SetUniform("spawnpoint", particleSytem.IsRelative ? Vector3(0.0f) : particleSytem.SystemCenter);
+
+			Compute::Dispatch(computeShader, particleSytem.InvocationCount, 1, 1);
+		}
+	}
+
+	void RenderController::DrawParticles(const CameraUnit& camera)
+	{
+		if (this->Pipeline.ParticleSystems.empty()) return;
+		MAKE_SCOPE_PROFILER("RenderController::DrawParticles()");
+
+		auto& shader = this->Pipeline.Environment.Shaders["Particle"_id];
+		shader->Bind();
+
+		shader->SetUniform("projMatrix", camera.ViewProjectionMatrix);
+		shader->SetUniform("cameraPosition", camera.ViewportPosition);
+		shader->SetUniform("aspectRatio", camera.AspectRatio);
+
+		Compute::SetMemoryBarrier(BarrierType::SHADER_STORAGE_BUFFER);
+
+		auto& particleMesh = this->Pipeline.Environment.RectangularObject;
+		auto& VAO = particleMesh.GetVAO();
+		VAO.Bind();
+		
+		for (const auto& particleSystem : this->Pipeline.ParticleSystems)
+		{
+			particleSystem.ParticleData->BindBase(0);
+			shader->SetUniform("relativePosition", particleSystem.IsRelative ? particleSystem.SystemCenter : Vector3(0.0f));
+
+			this->DrawVertecies(RenderPrimitive::TRIANGLES, particleMesh.VertexCount, 0, particleSystem.InvocationCount * ParticleComputeGroupSize);
 		}
 	}
 
@@ -942,7 +991,7 @@ namespace MxEngine
 		}
 		else
 		{
-			this->GetRenderEngine().DrawVerteciesInstanced(primitive, vertexCount, instanceCount, instanceCount);
+			this->GetRenderEngine().DrawVerteciesInstanced(primitive, vertexCount, vertexOffset, instanceCount);
 		}
 	}
 
@@ -1081,8 +1130,19 @@ namespace MxEngine
 		this->Pipeline.TransparentObjects.Units.clear();
 		this->Pipeline.OpaqueObjects.Groups.clear();
 		this->Pipeline.OpaqueObjects.Units.clear();
+		this->Pipeline.ParticleSystems.clear();
 		this->Pipeline.MaterialUnits.clear();
 		this->Pipeline.Cameras.clear();
+	}
+
+	void RenderController::SubmitParticleSystem(const ParticleSystem& system, const TransformComponent& parentTransform)
+	{
+		auto& particleSystem = this->Pipeline.ParticleSystems.emplace_back();
+		particleSystem.ParticleData = system.GetParticleBuffer();
+		particleSystem.ParticleLifetime = system.GetParticleLifetime();
+		particleSystem.SystemCenter = parentTransform.GetPosition();
+		particleSystem.IsRelative = system.IsRelative();
+		particleSystem.InvocationCount = system.GetMaxParticleCount() / ParticleComputeGroupSize;
 	}
 
 	void RenderController::SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform)
@@ -1162,6 +1222,7 @@ namespace MxEngine
 		auto& camera = this->Pipeline.Cameras.emplace_back();
 
 		camera.ViewportPosition           = parentTransform.GetPosition();
+		camera.AspectRatio                = controller.Camera.GetAspectRatio();
 		camera.StaticViewProjectionMatrix = controller.GetMatrix(MakeVector3(0.0f));
 		camera.ViewProjectionMatrix       = controller.GetMatrix(parentTransform.GetPosition());
 		camera.InverseViewProjMatrix      = Inverse(camera.ViewProjectionMatrix);
@@ -1174,8 +1235,8 @@ namespace MxEngine
 		camera.DepthTexture               = controller.GetDepthTexture();
 		camera.AverageWhiteTexture        = controller.GetAverageWhiteTexture();
 		camera.HDRTexture                 = controller.GetHDRTexture();
-		camera.SwapTexture1                = controller.GetSwapHDRTexture1();
-		camera.SwapTexture2                = controller.GetSwapHDRTexture2();
+		camera.SwapTexture1               = controller.GetSwapHDRTexture1();
+		camera.SwapTexture2               = controller.GetSwapHDRTexture2();
 		camera.OutputTexture              = controller.GetRenderTexture();
 		camera.RenderToTexture            = controller.IsRendering();
 		camera.SkyboxTexture              = (skybox != nullptr && skybox->CubeMap.IsValid()) ? skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;
@@ -1298,6 +1359,7 @@ namespace MxEngine
 			return;
 		}
 
+		this->ComputeParticles();
 		this->PrepareShadowMaps();
 
 		for (auto& camera : this->Pipeline.Cameras)
@@ -1309,6 +1371,7 @@ namespace MxEngine
 			this->AttachFrameBuffer(camera.GBuffer);
 
 			this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBuffer"_id], this->Pipeline.OpaqueObjects);
+			this->DrawParticles(camera);
 			this->PerformLightPass(camera);
 			this->PerformPostProcessing(camera);
 

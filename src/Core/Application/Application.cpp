@@ -440,10 +440,15 @@ namespace MxEngine
 	void Application::InitializeShaderDebug()
 	{
 		#if defined(MXENGINE_DEBUG)
+
 		MAKE_SCOPE_PROFILER("Application::InitializeShaderDebug()");
 		MAKE_SCOPE_TIMER("MxEngine::Application", "InitializeShaderDebug()");
-		auto& shaders = this->GetRenderAdaptor().Renderer.GetEnvironment().Shaders;
-		if (shaders.empty())
+
+		auto& environment = this->GetRenderAdaptor().Renderer.GetEnvironment();
+		auto& shaders = environment.Shaders;
+		auto& computeShaders = environment.ComputeShaders;
+
+		if (shaders.empty() || computeShaders.empty())
 		{
 			MXLOG_WARNING("Application::InitializeShaderDebug", "method is called before InitializeRenderAdaptor()");
 		}
@@ -458,6 +463,11 @@ namespace MxEngine
 		{
 			this->GetRuntimeEditor().AddShaderUpdateListener(it->second, shaderDirectory);
 		}
+		for (auto it = computeShaders.begin(); it != computeShaders.end(); it++)
+		{
+			this->GetRuntimeEditor().AddShaderUpdateListener(it->second, shaderDirectory);
+		}
+
 		#endif
 	}
 

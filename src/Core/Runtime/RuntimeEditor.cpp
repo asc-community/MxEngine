@@ -209,7 +209,7 @@ namespace MxEngine
 		return oldTime < newTime;
 	}
 
-	bool IsAnyFileUpdated(MxVector<FilePath>& filepaths, MxVector<FileSystemTime> updateTimes)
+	bool IsAnyFileUpdated(MxVector<FilePath>& filepaths, const MxVector<FileSystemTime>& updateTimes)
 	{
 		for (size_t i = 0; i < filepaths.size(); i++)
 		{

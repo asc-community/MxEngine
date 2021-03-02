@@ -37,6 +37,7 @@
 #include "Rendering/MeshLOD.h"
 #include "Rendering/Skybox.h"
 #include "Rendering/DebugDraw.h"
+#include "Rendering/ParticleSystem.h"
 #include "Camera/CameraController.h"
 #include "Camera/CameraEffects.h"
 #include "Camera/CameraToneMapping.h"

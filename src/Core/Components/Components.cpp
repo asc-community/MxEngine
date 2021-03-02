@@ -43,6 +43,7 @@ namespace MxEngine
 		Runtime::RegisterComponent<MeshRenderer       >();
 		Runtime::RegisterComponent<MeshSource         >();
 		Runtime::RegisterComponent<MeshLOD            >();
+		Runtime::RegisterComponent<ParticleSystem     >();
 		Runtime::RegisterComponent<DirectionalLight   >();
 		Runtime::RegisterComponent<PointLight         >();
 		Runtime::RegisterComponent<SpotLight          >();

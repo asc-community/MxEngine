@@ -79,6 +79,7 @@ namespace MxEngine
         CubeMapHandle IrradianceTexture;
 
         float Gamma;
+        float AspectRatio;
 
         bool IsPerspective;
         bool RenderToTexture;
@@ -92,6 +93,7 @@ namespace MxEngine
     struct EnvironmentUnit
     {
         MxHashMap<StringId, ShaderHandle> Shaders;
+        MxHashMap<StringId, ComputeShaderHandle> ComputeShaders;
 
         TextureHandle DefaultMaterialMap;
         TextureHandle DefaultNormalMap;
@@ -184,6 +186,15 @@ namespace MxEngine
         MxVector<RenderUnit> Units;
     };
 
+    struct ParticleSystemUnit
+    {
+        ShaderStorageBufferHandle ParticleData;
+        Vector3 SystemCenter;
+        float ParticleLifetime;
+        size_t InvocationCount;
+        bool IsRelative;
+    };
+
     struct RenderPipeline
     {
         EnvironmentUnit Environment;
@@ -193,6 +204,7 @@ namespace MxEngine
         RenderList TransparentObjects;
         RenderList OpaqueObjects;
 
+        MxVector<ParticleSystemUnit> ParticleSystems;
         MxVector<Material> MaterialUnits;
         MxVector<CameraUnit> Cameras;
         RenderStatistics Statistics;

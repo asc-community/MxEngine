@@ -6,13 +6,16 @@
     "editor-key": "GRAVE_ACCENT",
     "editor-style": "MXENGINE",
     "recompile-files-key": "F5",
-    "shader-source-directory": "."
+    "shader-source-directory": "../../src/Platform/OpenGL/Shaders"
   },
   "filesystem": {
+    "cache-primitives": true,
     "ignored-folders": [
       "MxEngine",
       "out",
-      "build"
+      "build",
+      ".git",
+      ".vs"
     ]
   },
   "renderer": {
