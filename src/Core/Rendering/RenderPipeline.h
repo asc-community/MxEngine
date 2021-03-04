@@ -183,7 +183,7 @@ namespace MxEngine
     struct RenderList
     {
         MxVector<RenderGroup> Groups;
-        MxVector<RenderUnit> Units;
+        MxVector<size_t> UnitsIndex;
     };
 
     struct ParticleSystemUnit
@@ -203,6 +203,7 @@ namespace MxEngine
         RenderList ShadowCasters;
         RenderList TransparentObjects;
         RenderList OpaqueObjects;
+        MxVector<RenderUnit> RenderUnits;
 
         MxVector<ParticleSystemUnit> ParticleSystems;
         MxVector<Material> MaterialUnits;

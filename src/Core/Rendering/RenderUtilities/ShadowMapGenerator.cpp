@@ -33,8 +33,8 @@
 
 namespace MxEngine
 {
-    ShadowMapGenerator::ShadowMapGenerator(const RenderList& shadowCasters, ArrayView<Material> materials)
-        : shadowCasters(shadowCasters), materials(materials)
+    ShadowMapGenerator::ShadowMapGenerator(const RenderList& shadowCasters, ArrayView<RenderUnit> renderUnits, ArrayView<Material> materials)
+        : shadowCasters(shadowCasters), renderUnits(renderUnits), materials(materials)
     {
         Rendering::GetController().ToggleReversedDepth(false);
         Rendering::GetController().ToggleDepthOnlyMode(true);
@@ -107,7 +107,7 @@ namespace MxEngine
     }
 
     template<typename CullFunc>
-    void CastsShadowsPerGroup(const CullFunc& culler, const Shader& shader, const RenderList& shadowCasters, ArrayView<Material> materials)
+    void CastsShadowsPerGroup(const CullFunc& culler, const Shader& shader, const RenderList& shadowCasters, ArrayView<RenderUnit> units, ArrayView<Material> materials)
     {
         size_t currentUnit = 0;
         for (const auto& group : shadowCasters.Groups)
@@ -118,7 +118,7 @@ namespace MxEngine
             group.IBO->Bind();
             for (size_t i = 0; i < group.unitCount; i++, currentUnit++)
             {
-                const RenderUnit& unit = shadowCasters.Units[currentUnit];
+                const RenderUnit& unit = units[shadowCasters.UnitsIndex[currentUnit]];
                 CastShadowsPerUnit(culler, shader, unit, group.InstanceCount, materials);
             }
         }
@@ -143,7 +143,7 @@ namespace MxEngine
                     return InOrthoFrustrum(culler, min, max);
                 };
 
-                CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->materials);
+                CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->renderUnits, this->materials);
             }
         }
 
@@ -171,7 +171,7 @@ namespace MxEngine
                 return InConeBounds(spotLight, min, max);
             };
 
-            CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->materials);
+            CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->renderUnits, this->materials);
         }
 
         for (auto& spotLight : spotLights)
@@ -202,7 +202,7 @@ namespace MxEngine
                 return InSphereBounds(pointLight, min, max);
             };
 
-            CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->materials);
+            CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->renderUnits, this->materials);
         }
 
         for (auto& pointLight : pointLights)

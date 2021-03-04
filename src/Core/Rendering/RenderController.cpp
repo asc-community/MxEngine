@@ -52,7 +52,7 @@ namespace MxEngine
 	{
 		MAKE_SCOPE_PROFILER("RenderController::PrepareShadowMaps()");
 
-		ShadowMapGenerator generator(this->Pipeline.ShadowCasters, this->Pipeline.MaterialUnits);
+		ShadowMapGenerator generator(this->Pipeline.ShadowCasters, this->Pipeline.RenderUnits, this->Pipeline.MaterialUnits);
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PrepareDirectionalLightMaps()");
@@ -120,7 +120,7 @@ namespace MxEngine
 	{
 		MAKE_SCOPE_PROFILER("RenderController::DrawObjects()");
 
-		if (objects.Units.empty()) return;
+		if (objects.UnitsIndex.empty()) return;
 		shader.Bind();
 		shader.IgnoreNonExistingUniform("camera.position");
 		shader.IgnoreNonExistingUniform("camera.invViewProjMatrix");
@@ -137,7 +137,7 @@ namespace MxEngine
 			group.IBO->Bind();
 			for (size_t i = 0; i < group.unitCount; i++, currentUnit++)
 			{
-				const auto& unit = objects.Units[currentUnit];
+				const auto& unit = this->Pipeline.RenderUnits[objects.UnitsIndex[currentUnit]];
 				bool isUnitVisible = isInstanced || camera.Culler.IsAABBVisible(unit.MinAABB, unit.MaxAABB);
 				this->Pipeline.Statistics.AddEntry(isUnitVisible ? "drawn objects" : "culled objects", 1);
 
@@ -385,7 +385,7 @@ namespace MxEngine
 
 	void RenderController::DrawTransparentObjects(CameraUnit& camera)
 	{
-		if (this->Pipeline.TransparentObjects.Units.empty()) return;
+		if (this->Pipeline.TransparentObjects.UnitsIndex.empty()) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawTransparentObjects()");
 
 		this->GetRenderEngine().UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA);
@@ -1125,11 +1125,12 @@ namespace MxEngine
 		this->Pipeline.Lighting.PointLights.clear();
 		this->Pipeline.Lighting.SpotLights.clear();
 		this->Pipeline.ShadowCasters.Groups.clear();
-		this->Pipeline.ShadowCasters.Units.clear();
+		this->Pipeline.ShadowCasters.UnitsIndex.clear();
 		this->Pipeline.TransparentObjects.Groups.clear();
-		this->Pipeline.TransparentObjects.Units.clear();
+		this->Pipeline.TransparentObjects.UnitsIndex.clear();
 		this->Pipeline.OpaqueObjects.Groups.clear();
-		this->Pipeline.OpaqueObjects.Units.clear();
+		this->Pipeline.OpaqueObjects.UnitsIndex.clear();
+		this->Pipeline.RenderUnits.clear();
 		this->Pipeline.ParticleSystems.clear();
 		this->Pipeline.MaterialUnits.clear();
 		this->Pipeline.Cameras.clear();
@@ -1277,7 +1278,8 @@ namespace MxEngine
 		bool isTransparent = material.Transparency < 1.0f;
 		if (isInvisible) return;
 
-		RenderUnit renderUnit;
+		size_t unitIndex = this->Pipeline.RenderUnits.size();
+		auto& renderUnit = this->Pipeline.RenderUnits.emplace_back();
 
 		renderUnit.materialIndex = this->Pipeline.MaterialUnits.size();
 		renderUnit.IndexCount = submesh.Data.GetIndiciesCount();
@@ -1298,20 +1300,20 @@ namespace MxEngine
 		{
 			auto& shadowCasters = this->Pipeline.ShadowCasters;
 			shadowCasters.Groups[renderGroupIndex].unitCount++;
-			shadowCasters.Units.push_back(renderUnit);
+			shadowCasters.UnitsIndex.push_back(unitIndex);
 		}
 
 		if (isTransparent)
 		{
 			auto& transparentObjects = this->Pipeline.TransparentObjects;
 			transparentObjects.Groups[renderGroupIndex].unitCount++;
-			transparentObjects.Units.push_back(std::move(renderUnit));
+			transparentObjects.UnitsIndex.push_back(unitIndex);
 		}
 		else
 		{
 			auto& opaqueObjects = this->Pipeline.OpaqueObjects;
 			opaqueObjects.Groups[renderGroupIndex].unitCount++;
-			opaqueObjects.Units.push_back(std::move(renderUnit));
+			opaqueObjects.UnitsIndex.push_back(unitIndex);
 		}
 
 		// submit render material
