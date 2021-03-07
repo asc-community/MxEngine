@@ -28,6 +28,6 @@ void main()
     projectedPosition.xy += particleSize * vec2(position.x, aspectRatio * position.y);
 
     gl_Position = projectedPosition;
-    WorldPosition - particlePosition;
+    WorldPosition = particlePosition;
 	TexCoord = position.xy * 0.5 + vec2(0.5);
 }

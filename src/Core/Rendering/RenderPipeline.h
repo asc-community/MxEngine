@@ -192,6 +192,7 @@ namespace MxEngine
         Vector3 SystemCenter;
         float ParticleLifetime;
         size_t InvocationCount;
+        size_t MaterialIndex;
         bool IsRelative;
     };
 
@@ -205,7 +206,8 @@ namespace MxEngine
         RenderList OpaqueObjects;
         MxVector<RenderUnit> RenderUnits;
 
-        MxVector<ParticleSystemUnit> ParticleSystems;
+        MxVector<ParticleSystemUnit> OpaqueParticleSystems;
+        MxVector<ParticleSystemUnit> TransparentParticleSystems;
         MxVector<Material> MaterialUnits;
         MxVector<CameraUnit> Cameras;
         RenderStatistics Statistics;

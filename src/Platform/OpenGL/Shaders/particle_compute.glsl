@@ -1,4 +1,4 @@
-layout(local_size_x = 256) in;
+layout(local_size_x = 64) in;
 
 uniform float dt;
 uniform float lifetime;

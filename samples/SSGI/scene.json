@@ -1,0 +1,395 @@
+{
+  "AudioBuffer": null,
+  "CubeMap": [
+    {
+      "_filepath": "Resources\\skybox.png",
+      "id": 2
+    },
+    {
+      "_filepath": "Resources\\skybox_irradiance.png",
+      "id": 3
+    }
+  ],
+  "Material": [
+    {
+      "albedo map": 9,
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 0,
+      "metallic factor": 0.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 0.75,
+      "roughness map": 18446744073709551615,
+      "transparency": 0.5,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 18446744073709551615,
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 1,
+      "metallic factor": 0.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 0.75,
+      "roughness map": 18446744073709551615,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 18446744073709551615,
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 2,
+      "metallic factor": 0.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 0.75,
+      "roughness map": 18446744073709551615,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    }
+  ],
+  "Mesh": [
+    {
+      "_filepath": "Engine\\Models\\cube_2.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.8660253882408142
+      },
+      "id": 0
+    },
+    {
+      "_filepath": "Engine\\Models\\plane_2.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.0,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          0.0,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.7071067690849304
+      },
+      "id": 1
+    }
+  ],
+  "Script": null,
+  "Texture": [
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "smoke.png"
+      },
+      "id": 9,
+      "wrap type": "REPEAT"
+    }
+  ],
+  "globals": {
+    "gravity": [
+      0.0,
+      -9.800000190734863,
+      0.0
+    ],
+    "overlay-debug": false,
+    "paused": false,
+    "physics-step": 1.0,
+    "time-scale": 1.0,
+    "total-time": 16718.017578125,
+    "viewport": 0
+  },
+  "mxobjects": [
+    {
+      "CameraController": {
+        "camera type": "PERSPECTIVE",
+        "direction": [
+          0.5531775951385498,
+          -0.3292773365974426,
+          0.7652261257171631
+        ],
+        "forward vector": [
+          0.5858484506607056,
+          0.0,
+          0.8104206323623657
+        ],
+        "id": 0,
+        "is listening window resize event": false,
+        "is rendering": true,
+        "move speed": 10.0,
+        "perspective camera": {
+          "aspect ratio": 1.7777777910232544,
+          "fov": 65.0,
+          "znear": 0.10000000149011612
+        },
+        "right vector": [
+          -0.8104206919670105,
+          0.0,
+          0.5858483910560608
+        ],
+        "rotate speed": 10.0,
+        "up vector": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "CameraToneMapping": {
+        "aces coefficients": {
+          "a": 0.25,
+          "b": 0.3059999942779541,
+          "c": 0.0989999994635582,
+          "d": 0.3499999940395355,
+          "e": 0.02500000037252903,
+          "f": 0.4000000059604645
+        },
+        "color grading": {
+          "B": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "G": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "R": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        },
+        "color scale": 1.0,
+        "exposure": 1.0,
+        "eye adaptation speed": 0.10000000149011612,
+        "eye adaptation threshold": 0.10000000149011612,
+        "gamma": 2.200000047683716,
+        "id": 0,
+        "max luminance": 100000.0,
+        "min luminance": 0.30000001192092896,
+        "white point": 0.5
+      },
+      "InputController": {
+        "back key binding": "S",
+        "down key binding": "LEFT_SHIFT",
+        "forward key binding": "W",
+        "id": 0,
+        "is horizontal rotation bound": true,
+        "is vertical rotation bound": true,
+        "left key binding": "A",
+        "right key binding": "D",
+        "up key binding": "SPACE"
+      },
+      "Skybox": {
+        "cubemap": 2,
+        "id": 0,
+        "intensity": 1.0,
+        "irradiance": 3,
+        "rotation": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "displayed": true,
+      "name": "Camera",
+      "transform": {
+        "position": [
+          -0.9148690104484558,
+          11.397310256958008,
+          2.324671745300293
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 0,
+        "materials": [
+          0
+        ]
+      },
+      "ParticleSystem": {
+        "id": 0,
+        "is relative": true,
+        "max initial time alive": 1.0,
+        "max particle count": 256,
+        "max particle size": 1.5,
+        "min particle size": 1.0,
+        "particle lifetime": 1.0,
+        "particle speed": 0.5,
+        "shape": "SPHERE"
+      },
+      "displayed": true,
+      "name": "Particles",
+      "transform": {
+        "position": [
+          1.9620236158370972,
+          9.803359031677246,
+          6.2211174964904785
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 1,
+        "materials": [
+          2
+        ]
+      },
+      "MeshSource": {
+        "casts shadow": true,
+        "id": 0,
+        "is drawn": true,
+        "is static": false,
+        "mesh": 1
+      },
+      "displayed": true,
+      "name": "Plane",
+      "transform": {
+        "position": [
+          0.0,
+          7.5898284912109375,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "scale": [
+          145.55319213867188,
+          145.55319213867188,
+          145.55319213867188
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 2,
+        "materials": [
+          1
+        ]
+      },
+      "MeshSource": {
+        "casts shadow": true,
+        "id": 1,
+        "is drawn": true,
+        "is static": false,
+        "mesh": 0
+      },
+      "displayed": true,
+      "name": "Cube",
+      "transform": {
+        "position": [
+          2.5831499099731445,
+          8.624861717224121,
+          5.331309795379639
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "scale": [
+          2.069999933242798,
+          2.069999933242798,
+          2.069999933242798
+        ]
+      }
+    }
+  ]
+}

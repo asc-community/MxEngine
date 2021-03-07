@@ -248,9 +248,14 @@ namespace MxEngine
             shaderFolder / "ibl_fragment.glsl"
         );
 
-        environment.Shaders["Particle"_id] = AssetManager::LoadShader(
-            shaderFolder / "particle_vertex.glsl",
-            shaderFolder / "particle_fragment.glsl"
+        environment.Shaders["ParticleOpaque"_id] = AssetManager::LoadShader(
+            shaderFolder / "particle_opaque_vertex.glsl",
+            shaderFolder / "particle_opaque_fragment.glsl"
+        );
+
+        environment.Shaders["ParticleTransparent"_id] = AssetManager::LoadShader(
+            shaderFolder / "particle_transparent_vertex.glsl",
+            shaderFolder / "particle_transparent_fragment.glsl"
         );
 
         // compute shaders
@@ -366,8 +371,12 @@ namespace MxEngine
             auto particleSystemView = ComponentFactory::GetView<ParticleSystem>();
             for (const auto& particleSystem : particleSystemView)
             {
+                auto meshRenderer = MxObject::GetByComponent(particleSystem).GetComponent<MeshRenderer>();
+                if (!meshRenderer.IsValid() || meshRenderer->Materials.empty())
+                    continue;
+
                 auto& transform = MxObject::GetByComponent(particleSystem).Transform;
-                this->Renderer.SubmitParticleSystem(particleSystem, transform);
+                this->Renderer.SubmitParticleSystem(particleSystem, *meshRenderer->GetMaterial(), transform);
             }
         }
 

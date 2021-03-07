@@ -72,13 +72,11 @@ void main()
 	fragment.position = fsin.Position;
 	
 	float transparency = material.transparency * albedoAlphaTex.a;
-	float fragDistance = length(viewportPosition - fragment.position);
 	vec3 viewDirection = normalize(viewportPosition - fragment.position);
 	
-	vec3 IBLColor = calculateIBL(fragment, viewDirection, envBRDFLUT, environment, gamma);
+	vec3 IBLColor = calculateIBL(fragment, viewDirection, environment, gamma);
 
 	vec3 totalColor = IBLColor;
-	totalColor += fragment.albedo * fragment.emmisionFactor;
 	for (int i = 0; i < lightCount; i++)
 	{
 		vec4 pos = vec4(fragment.position, 1.0f);

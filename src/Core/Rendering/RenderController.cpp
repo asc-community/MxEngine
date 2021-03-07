@@ -46,7 +46,7 @@
 namespace MxEngine
 {
 	constexpr size_t MaxDirLightCount = 4;
-	constexpr size_t ParticleComputeGroupSize = 256;
+	constexpr size_t ParticleComputeGroupSize = 64;
 
 	void RenderController::PrepareShadowMaps()
 	{
@@ -70,16 +70,16 @@ namespace MxEngine
 		}
 	}
 
-	void RenderController::ComputeParticles()
+	void RenderController::ComputeParticles(const MxVector<ParticleSystemUnit>& particleSystems)
 	{
-		if (this->Pipeline.ParticleSystems.empty()) return;
+		if (particleSystems.empty()) return;
 		MAKE_SCOPE_PROFILER("RenderController::ComputeParticles()");
 		
 		auto& computeShader = this->Pipeline.Environment.ComputeShaders["Particle"_id];
 		computeShader->Bind();
 		computeShader->SetUniform("dt", Min(Time::Delta(), 1.0f / 60.0f));
 
-		for (const auto& particleSytem : this->Pipeline.ParticleSystems)
+		for (const auto& particleSytem : particleSystems)
 		{
 			particleSytem.ParticleData->BindBase(0);
 			computeShader->SetUniform("lifetime", particleSytem.ParticleLifetime);
@@ -89,28 +89,67 @@ namespace MxEngine
 		}
 	}
 
-	void RenderController::DrawParticles(const CameraUnit& camera)
+	void RenderController::SortParticles(const CameraUnit& camera, MxVector<ParticleSystemUnit>& particleSystems)
 	{
-		if (this->Pipeline.ParticleSystems.empty()) return;
+		std::sort(particleSystems.begin(), particleSystems.end(), 
+			[&camera](const ParticleSystemUnit& p1, const ParticleSystemUnit& p2)
+			{
+				auto dist1 = camera.ViewportPosition - p1.SystemCenter;
+				auto dist2 = camera.ViewportPosition - p2.SystemCenter;
+				return Dot(dist1, dist1) < Dot(dist2, dist2);
+			});
+	}
+
+	void RenderController::DrawParticles(const CameraUnit& camera, MxVector<ParticleSystemUnit>& particleSystems, const Shader& shader)
+	{
+		if (particleSystems.empty()) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawParticles()");
+		this->SortParticles(camera, particleSystems);
 
-		auto& shader = this->Pipeline.Environment.Shaders["Particle"_id];
-		shader->Bind();
+		shader.Bind();
+		shader.IgnoreNonExistingUniform("transparency");
+		shader.IgnoreNonExistingUniform("viewportSize");
+		shader.IgnoreNonExistingUniform("depthTex");
+		shader.IgnoreNonExistingUniform("environment.skybox");
+		shader.IgnoreNonExistingUniform("environment.irradiance");
+		shader.IgnoreNonExistingUniform("environment.skyboxRotation");
+		shader.IgnoreNonExistingUniform("environment.intensity");
+		shader.IgnoreNonExistingUniform("environment.envBRDFLUT");
 
-		shader->SetUniform("projMatrix", camera.ViewProjectionMatrix);
-		shader->SetUniform("cameraPosition", camera.ViewportPosition);
-		shader->SetUniform("aspectRatio", camera.AspectRatio);
+		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
 
-		Compute::SetMemoryBarrier(BarrierType::SHADER_STORAGE_BUFFER);
+		Texture::TextureBindId textureId = 0;
+		this->BindSkyboxInformation(camera, shader, textureId);
+		
+		shader.SetUniform("viewportSize", viewportSize);
+		shader.SetUniform("projMatrix", camera.ViewProjectionMatrix);
+		shader.SetUniform("aspectRatio", camera.AspectRatio);
+		shader.SetUniform("gamma", camera.Gamma);
 
 		auto& particleMesh = this->Pipeline.Environment.RectangularObject;
 		auto& VAO = particleMesh.GetVAO();
 		VAO.Bind();
-		
-		for (const auto& particleSystem : this->Pipeline.ParticleSystems)
+
+		camera.DepthTexture->Bind(textureId++);
+		shader.SetUniform("depthTex", camera.DepthTexture->GetBoundId());
+		shader.SetUniform("albedoTex", textureId);
+
+		Compute::SetMemoryBarrier(BarrierType::SHADER_STORAGE_BUFFER);
+
+		for (const auto& particleSystem : particleSystems)
 		{
+			auto& material = this->Pipeline.MaterialUnits[particleSystem.MaterialIndex];
+
+			material.AlbedoMap->Bind(textureId);
 			particleSystem.ParticleData->BindBase(0);
-			shader->SetUniform("relativePosition", particleSystem.IsRelative ? particleSystem.SystemCenter : Vector3(0.0f));
+
+			shader.SetUniform("normal", Normalize(camera.ViewportPosition - particleSystem.SystemCenter));
+			shader.SetUniform("relativePosition", particleSystem.IsRelative ? particleSystem.SystemCenter : Vector3(0.0f));
+			shader.SetUniform("metallness", material.MetallicFactor);
+			shader.SetUniform("roughness", material.RoughnessFactor);
+			shader.SetUniform("color", material.BaseColor);
+			shader.SetUniform("transparency", material.Transparency);
+			shader.SetUniform("emmision", material.Emission);
 
 			this->DrawVertecies(RenderPrimitive::TRIANGLES, particleMesh.VertexCount, 0, particleSystem.InvocationCount * ParticleComputeGroupSize);
 		}
@@ -293,8 +332,17 @@ namespace MxEngine
 		this->AttachFrameBufferNoClear(this->Pipeline.Environment.PostProcessFrameBuffer);
 		this->GetRenderEngine().UseDepthBufferMask(false);
 		this->DrawSkybox(camera);
+
+		this->GetRenderEngine().UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA);
+		this->ToggleFaceCulling(false);
+
 		this->DrawTransparentObjects(camera);
+		this->DrawParticles(camera, this->Pipeline.TransparentParticleSystems, *this->Pipeline.Environment.Shaders["ParticleTransparent"_id]);
 		this->DrawDebugBuffer(camera);
+
+		this->ToggleFaceCulling(true);
+		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
+
 		this->GetRenderEngine().UseDepthBufferMask(true);
 		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
 
@@ -388,9 +436,6 @@ namespace MxEngine
 		if (this->Pipeline.TransparentObjects.UnitsIndex.empty()) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawTransparentObjects()");
 
-		this->GetRenderEngine().UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA);
-		this->ToggleFaceCulling(false);
-
 		auto& shader = this->Pipeline.Environment.Shaders["Transparent"_id];
 		shader->Bind();
 
@@ -433,9 +478,6 @@ namespace MxEngine
 		}
 
 		this->DrawObjects(camera, *shader, this->Pipeline.TransparentObjects);
-
-		this->ToggleFaceCulling(true);
-		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
 	void RenderController::DrawIBL(CameraUnit& camera, TextureHandle& output)
@@ -451,8 +493,6 @@ namespace MxEngine
 		this->BindCameraInformation(camera, *shader);
 		this->BindSkyboxInformation(camera, *shader, textureId);
 		
-		this->Pipeline.Environment.EnvironmentBRDFLUT->Bind(textureId++);
-		shader->SetUniform("envBRDFLUT", this->Pipeline.Environment.EnvironmentBRDFLUT->GetBoundId());
 		shader->SetUniform("gamma", camera.Gamma);
 
 		this->RenderToTexture(output, shader);
@@ -831,8 +871,10 @@ namespace MxEngine
 	{
 		camera.SkyboxTexture->Bind(startId++);
 		camera.IrradianceTexture->Bind(startId++);
+		this->Pipeline.Environment.EnvironmentBRDFLUT->Bind(startId++);
 		shader.SetUniform("environment.skybox", camera.SkyboxTexture->GetBoundId());
 		shader.SetUniform("environment.irradiance", camera.IrradianceTexture->GetBoundId());
+		shader.SetUniform("environment.envBRDFLUT", this->Pipeline.Environment.EnvironmentBRDFLUT->GetBoundId());
 		shader.SetUniform("environment.skyboxRotation", camera.InversedSkyboxRotation);
 		shader.SetUniform("environment.intensity", camera.SkyboxIntensity);
 	}
@@ -1069,9 +1111,6 @@ namespace MxEngine
 		if (this->Pipeline.Environment.DebugBufferObject.VertexCount == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawDebugBuffer()");
 
-		this->GetRenderEngine().UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA);
-		this->GetRenderEngine().UseDepthBuffer(!this->Pipeline.Environment.OverlayDebugDraws); //-V807
-
 		auto& shader = *this->Pipeline.Environment.Shaders["DebugDraw"_id];
 		shader.Bind();
 		shader.SetUniform("ViewProjMatrix", camera.ViewProjectionMatrix);
@@ -1081,9 +1120,6 @@ namespace MxEngine
 		VAO.Bind();
 
 		this->DrawVertecies(RenderPrimitive::LINES, this->Pipeline.Environment.DebugBufferObject.VertexCount, 0, 0);
-
-		this->GetRenderEngine().UseDepthBuffer(true);
-		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
 	EnvironmentUnit& RenderController::GetEnvironment()
@@ -1131,19 +1167,27 @@ namespace MxEngine
 		this->Pipeline.OpaqueObjects.Groups.clear();
 		this->Pipeline.OpaqueObjects.UnitsIndex.clear();
 		this->Pipeline.RenderUnits.clear();
-		this->Pipeline.ParticleSystems.clear();
+		this->Pipeline.OpaqueParticleSystems.clear();
+		this->Pipeline.TransparentParticleSystems.clear();
 		this->Pipeline.MaterialUnits.clear();
 		this->Pipeline.Cameras.clear();
 	}
 
-	void RenderController::SubmitParticleSystem(const ParticleSystem& system, const TransformComponent& parentTransform)
+	void RenderController::SubmitParticleSystem(const ParticleSystem& system, const Material& material, const TransformComponent& parentTransform)
 	{
-		auto& particleSystem = this->Pipeline.ParticleSystems.emplace_back();
+		if (material.Transparency == 0.0f) return;
+		bool isTransparent = material.Transparency < 1.0f;
+
+		auto& particleSystem = (isTransparent ? this->Pipeline.TransparentParticleSystems : this->Pipeline.OpaqueParticleSystems).emplace_back();
 		particleSystem.ParticleData = system.GetParticleBuffer();
 		particleSystem.ParticleLifetime = system.GetParticleLifetime();
 		particleSystem.SystemCenter = parentTransform.GetPosition();
 		particleSystem.IsRelative = system.IsRelative();
 		particleSystem.InvocationCount = system.GetMaxParticleCount() / ParticleComputeGroupSize;
+		particleSystem.MaterialIndex = this->Pipeline.MaterialUnits.size();
+		
+		auto& materialCopy = this->Pipeline.MaterialUnits.emplace_back(material);
+		if (!materialCopy.AlbedoMap.IsValid()) materialCopy.AlbedoMap = this->Pipeline.Environment.DefaultMaterialMap;
 	}
 
 	void RenderController::SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform)
@@ -1361,7 +1405,9 @@ namespace MxEngine
 			return;
 		}
 
-		this->ComputeParticles();
+		this->ComputeParticles(this->Pipeline.OpaqueParticleSystems);
+		this->ComputeParticles(this->Pipeline.TransparentParticleSystems);
+
 		this->PrepareShadowMaps();
 
 		for (auto& camera : this->Pipeline.Cameras)
@@ -1373,7 +1419,7 @@ namespace MxEngine
 			this->AttachFrameBuffer(camera.GBuffer);
 
 			this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBuffer"_id], this->Pipeline.OpaqueObjects);
-			this->DrawParticles(camera);
+			this->DrawParticles(camera, this->Pipeline.OpaqueParticleSystems, *this->Pipeline.Environment.Shaders["ParticleOpaque"_id]);
 			this->PerformLightPass(camera);
 			this->PerformPostProcessing(camera);
 

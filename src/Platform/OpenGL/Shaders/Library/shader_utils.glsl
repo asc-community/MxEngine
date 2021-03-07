@@ -117,6 +117,7 @@ struct EnvironmentInfo
 	samplerCube irradiance;
 	mat3 skyboxRotation;
 	float intensity;
+	sampler2D envBRDFLUT;
 };
 
 FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D normalTexture, sampler2D materialTexture, sampler2D depthTexture, mat4 invViewProjMatrix)
