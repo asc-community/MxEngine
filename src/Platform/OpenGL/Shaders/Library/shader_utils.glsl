@@ -130,8 +130,8 @@ FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D n
 	fragment.depth = texture(depthTexture, texCoord).r;
 
 	fragment.albedo = albedo.rgb;
-	fragment.ambientOcclusion = albedo.a;
-	fragment.emmisionFactor = material.r / (1.0f - material.r);
+	fragment.emmisionFactor = albedo.a / (1.0f - albedo.a);
+	fragment.ambientOcclusion = material.r;
 	fragment.roughnessFactor = material.g;
 	fragment.metallicFactor = material.b;
 

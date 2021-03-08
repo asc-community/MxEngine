@@ -35,6 +35,7 @@
 #include "Core/Components/Camera/CameraToneMapping.h"
 #include "Core/Components/Camera/CameraSSR.h"
 #include "Core/Components/Camera/CameraSSGI.h"
+#include "Core/Components/Camera/CameraSSAO.h"
 #include "Core/Components/Lighting/DirectionalLight.h"
 #include "Core/Components/Lighting/SpotLight.h"
 #include "Core/Components/Lighting/PointLight.h"
@@ -110,6 +111,7 @@ namespace MxEngine
 		shader.IgnoreNonExistingUniform("transparency");
 		shader.IgnoreNonExistingUniform("viewportSize");
 		shader.IgnoreNonExistingUniform("depthTex");
+		shader.IgnoreNonExistingUniform("light");
 		shader.IgnoreNonExistingUniform("environment.skybox");
 		shader.IgnoreNonExistingUniform("environment.irradiance");
 		shader.IgnoreNonExistingUniform("environment.skyboxRotation");
@@ -143,13 +145,19 @@ namespace MxEngine
 			material.AlbedoMap->Bind(textureId);
 			particleSystem.ParticleData->BindBase(0);
 
-			shader.SetUniform("normal", Normalize(camera.ViewportPosition - particleSystem.SystemCenter));
+			Vector3 normal = Normalize(camera.ViewportPosition - particleSystem.SystemCenter);
+			Vector3 totalLight{ 0.0f };
+			for (const auto& dirLight : this->Pipeline.Lighting.DirectionalLights)
+				totalLight += (0.5f * Dot(normal, dirLight.Direction) + 0.5f) * dirLight.Color * dirLight.Intensity * (1.0f + dirLight.AmbientIntensity);
+
+			shader.SetUniform("normal", normal);
 			shader.SetUniform("relativePosition", particleSystem.IsRelative ? particleSystem.SystemCenter : Vector3(0.0f));
 			shader.SetUniform("metallness", material.MetallicFactor);
 			shader.SetUniform("roughness", material.RoughnessFactor);
 			shader.SetUniform("color", material.BaseColor);
 			shader.SetUniform("transparency", material.Transparency);
 			shader.SetUniform("emmision", material.Emission);
+			shader.SetUniform("light", totalLight);
 
 			this->DrawVertecies(RenderPrimitive::TRIANGLES, particleMesh.VertexCount, 0, particleSystem.InvocationCount * ParticleComputeGroupSize);
 		}
@@ -235,10 +243,8 @@ namespace MxEngine
 		float bloomWeight = camera.Effects->GetBloomWeight() * fogReduceFactor;
 
 		camera.AlbedoTexture->Bind(0);
-		camera.MaterialTexture->Bind(1);
 		splitShader->Bind();
 		splitShader->SetUniform("albedoTex", camera.AlbedoTexture->GetBoundId());
-		splitShader->SetUniform("materialTex", camera.MaterialTexture->GetBoundId());
 		splitShader->SetUniform("weight", bloomWeight);
 
 		auto& blurTarget = bloomTextures.front();
@@ -249,41 +255,45 @@ namespace MxEngine
 		blurTarget->GenerateMipmaps();
 		
 		// use additive blending to apply bloom to camera HDR image
-		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ONE);
+		this->GetRenderEngine().UseBlendFactors(BlendFactor::ONE, BlendFactor::ONE);
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(output);
 		this->AttachFrameBufferNoClear(this->Pipeline.Environment.PostProcessFrameBuffer);
 		this->SubmitImage(blurTarget);
-		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
+		this->GetRenderEngine().UseBlendFactors(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
 	void RenderController::ApplySSAO(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
 	{
-		if (camera.Effects == nullptr || camera.Effects->GetAmbientOcclusionSamples() == 0) return;
+		if (camera.SSAO == nullptr || camera.SSAO->GetSampleCount() == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::ComputeAmbientOcclusion()");
 
-		auto& computeShader = this->Pipeline.Environment.Shaders["AmbientOcclusion"_id];
-		computeShader->Bind();
-		computeShader->IgnoreNonExistingUniform("materialTex");
-		computeShader->IgnoreNonExistingUniform("albedoTex");
-		computeShader->IgnoreNonExistingUniform("camera.position");
+		auto& ssaoShader = this->Pipeline.Environment.Shaders["AmbientOcclusion"_id];
+		ssaoShader->Bind();
+		ssaoShader->IgnoreNonExistingUniform("materialTex");
+		ssaoShader->IgnoreNonExistingUniform("albedoTex");
+		ssaoShader->IgnoreNonExistingUniform("camera.position");
 
 		Texture::TextureBindId textureId = 0;
-		this->BindGBuffer(camera, *computeShader, textureId);
-		this->BindCameraInformation(camera, *computeShader);
+		this->BindGBuffer(camera, *ssaoShader, textureId);
+		this->BindCameraInformation(camera, *ssaoShader);
 
-		computeShader->SetUniform("sampleCount", (int)camera.Effects->GetAmbientOcclusionSamples());
-		computeShader->SetUniform("radius", camera.Effects->GetAmbientOcclusionRadius());
-		computeShader->SetUniform("intensity", camera.Effects->GetAmbientOcclusionIntensity());
+		ssaoShader->SetUniform("sampleCount", (int)camera.SSAO->GetSampleCount());
+		ssaoShader->SetUniform("radius", camera.SSAO->GetRadius());
 
-		this->RenderToTexture(temporary, computeShader);
-		temporary->GenerateMipmaps();
+		auto& blurInputOutput = temporary;
+		auto& blurTemporary = output;
+
+		this->RenderToTexture(temporary, ssaoShader);
+
+		this->ApplyGaussianBlur(blurInputOutput, blurTemporary, camera.SSAO->GetBlurIterations(), camera.SSAO->GetBlurLOD());
 
 		auto& applyShader = this->Pipeline.Environment.Shaders["ApplyAmbientOcclusion"_id];
 		applyShader->Bind();
 		input->Bind(0);
-		temporary->Bind(1);
+		blurInputOutput->Bind(1);
 		applyShader->SetUniform("inputTex", input->GetBoundId());
-		applyShader->SetUniform("aoTex", temporary->GetBoundId());
+		applyShader->SetUniform("aoTex", blurInputOutput->GetBoundId());
+		applyShader->SetUniform("intensity", camera.SSAO->GetIntensity());
 
 		this->RenderToTexture(output, applyShader);
 		std::swap(input, output);
@@ -333,7 +343,7 @@ namespace MxEngine
 		this->GetRenderEngine().UseDepthBufferMask(false);
 		this->DrawSkybox(camera);
 
-		this->GetRenderEngine().UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA);
+		this->GetRenderEngine().UseBlendFactors(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA);
 		this->ToggleFaceCulling(false);
 
 		this->DrawTransparentObjects(camera);
@@ -341,7 +351,7 @@ namespace MxEngine
 		this->DrawDebugBuffer(camera);
 
 		this->ToggleFaceCulling(true);
-		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
+		this->GetRenderEngine().UseBlendFactors(BlendFactor::ONE, BlendFactor::ZERO);
 
 		this->GetRenderEngine().UseDepthBufferMask(true);
 		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
@@ -414,7 +424,7 @@ namespace MxEngine
 	{
 		this->DrawIBL(camera, camera.HDRTexture);
 
-		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ONE);
+		this->GetRenderEngine().UseBlendFactors(BlendFactor::ONE, BlendFactor::ONE);
 
 		this->DrawDirectionalLights(camera, camera.HDRTexture);
 
@@ -428,7 +438,7 @@ namespace MxEngine
 		
 		this->ToggleFaceCulling(true, true, true);
 
-		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
+		this->GetRenderEngine().UseBlendFactors(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
 	void RenderController::DrawTransparentObjects(CameraUnit& camera)
@@ -1262,7 +1272,7 @@ namespace MxEngine
 	}
 
 	void RenderController::SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
-		const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping, const CameraSSR* ssr, const CameraSSGI* ssgi)
+		const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping, const CameraSSR* ssr, const CameraSSGI* ssgi, const CameraSSAO* ssao)
 	{
 		auto& camera = this->Pipeline.Cameras.emplace_back();
 
@@ -1293,6 +1303,7 @@ namespace MxEngine
 		camera.ToneMapping                = toneMapping;
 		camera.SSR                        = ssr;
 		camera.SSGI                       = ssgi;
+		camera.SSAO                       = ssao;
 	}
 
 	size_t RenderController::SubmitRenderGroup(const Mesh& mesh, size_t instanceCount)
@@ -1414,7 +1425,7 @@ namespace MxEngine
 		{
 			if (!camera.RenderToTexture) continue;
 
-			this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
+			this->GetRenderEngine().UseBlendFactors(BlendFactor::ONE, BlendFactor::ZERO);
 			this->ToggleReversedDepth(camera.IsPerspective);
 			this->AttachFrameBuffer(camera.GBuffer);
 

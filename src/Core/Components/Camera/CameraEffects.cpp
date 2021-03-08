@@ -87,21 +87,6 @@ namespace MxEngine
         return size_t(this->bloomIterations);
     }
 
-    float CameraEffects::GetAmbientOcclusionRadius() const
-    {
-        return this->ambientOcclusionRadius;
-    }
-
-    float CameraEffects::GetAmbientOcclusionIntensity() const
-    {
-        return this->ambientOcclusionIntensity;
-    }
-
-    size_t CameraEffects::GetAmbientOcclusionSamples() const
-    {
-        return (size_t)this->ambientOcclusionSamples;
-    }
-
     void CameraEffects::SetFogColor(const Vector3& color)
     {
         this->fogColor = VectorClamp(color, MakeVector3(0.0f), MakeVector3(1.0f));
@@ -157,21 +142,6 @@ namespace MxEngine
         this->bloomIterations = (uint8_t)Min(100, iterations);
     }
 
-    void CameraEffects::SetAmbientOcclusionRadius(float radius)
-    {
-        this->ambientOcclusionRadius = Max(radius, 0.0f);
-    }
-
-    void CameraEffects::SetAmbientOcclusionIntensity(float intensity)
-    {
-        this->ambientOcclusionIntensity = Max(intensity, 0.0f);
-    }
-
-    void CameraEffects::SetAmbientOcclusionSamples(size_t samples)
-    {
-        this->ambientOcclusionSamples = (uint8_t)Min(samples, 32);
-    }
-
     MXENGINE_REFLECT_TYPE
     {
         rttr::registration::class_<CameraEffects>("CameraEffects")
@@ -196,24 +166,6 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 1.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
-            )
-            .property("ambient occlusion radius", &CameraEffects::GetAmbientOcclusionRadius, &CameraEffects::SetAmbientOcclusionRadius)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 10000.0f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
-            )
-            .property("ambient occlusion intensity", &CameraEffects::GetAmbientOcclusionIntensity, &CameraEffects::SetAmbientOcclusionIntensity)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 10000.0f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
-            )
-            .property("ambient occlusion samples", &CameraEffects::GetAmbientOcclusionSamples, &CameraEffects::SetAmbientOcclusionSamples)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 128.0f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
             )
             .property("bloom weight", &CameraEffects::GetBloomWeight, &CameraEffects::SetBloomWeight)
             (

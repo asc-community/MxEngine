@@ -50,6 +50,7 @@ namespace MxEngine
 		Runtime::RegisterComponent<CameraEffects      >();
 		Runtime::RegisterComponent<CameraSSR          >();
 		Runtime::RegisterComponent<CameraSSGI         >();
+		Runtime::RegisterComponent<CameraSSAO         >();
 		Runtime::RegisterComponent<CameraToneMapping  >();
 		Runtime::RegisterComponent<VRCameraController >();
 		Runtime::RegisterComponent<InputController    >();

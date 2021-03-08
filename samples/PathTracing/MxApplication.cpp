@@ -80,13 +80,13 @@ namespace PathTracing
 
             if (accumulateImage)
             {
-                Rendering::GetController().GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ONE);
+                Rendering::GetController().GetRenderEngine().UseBlendFactors(BlendFactor::ONE, BlendFactor::ONE);
                 Rendering::GetController().RenderToTextureNoClear(this->accumulationTexture, this->rayTracingShader);
                 accumulationFrames++;
             }
             else
             {
-                Rendering::GetController().GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
+                Rendering::GetController().GetRenderEngine().UseBlendFactors(BlendFactor::ONE, BlendFactor::ZERO);
                 Rendering::GetController().RenderToTexture(this->accumulationTexture, this->rayTracingShader);
                 accumulationFrames = 1;
             }

@@ -17,6 +17,7 @@ uniform vec2 viewportSize;
 uniform sampler2D albedoTex;
 uniform sampler2D depthTex;
 uniform vec3 normal;
+uniform vec3 light;
 uniform EnvironmentInfo environment;
 
 void main()
@@ -38,7 +39,7 @@ void main()
 
     vec3 IBLColor = calculateIBL(fragment, normal, environment, gamma);
 
-    vec3 totalColor = IBLColor;
+    vec3 totalColor = IBLColor + light;
 
     OutColor = vec4(totalColor, albedoAlphaTex.a * transparency * depthFading);
 }

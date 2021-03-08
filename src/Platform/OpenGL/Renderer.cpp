@@ -255,7 +255,7 @@ namespace MxEngine
 		return *this;
 	}
 
-	Renderer& Renderer::UseBlending(BlendFactor src, BlendFactor dist)
+	Renderer& Renderer::UseBlendFactors(BlendFactor src, BlendFactor dist)
 	{
 		if (src == BlendFactor::NONE || dist == BlendFactor::NONE)
 		{

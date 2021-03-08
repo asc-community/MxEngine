@@ -30,36 +30,36 @@
 
 #include "Platform/GraphicAPI.h"
 
-enum class BlendFactor
-{
-	NONE,
-	ZERO,
-	ONE,
-	ONE_MINUS_SRC_COLOR,
-	SRC_ALPHA,
-	ONE_MINUS_SRC_ALPHA,
-	DST_ALPHA,
-	ONE_MINUS_DST_ALPHA,
-	DST_COLOR,
-	ONE_MINUS_DST_COLOR,
-	CONSTANT_COLOR,
-	ONE_MINUS_CONSTANT_COLOR,
-	CONSTANT_ALPHA,
-	ONE_MINUS_CONSTANT_ALPHA,
-};
-
-enum class DepthFunction
-{
-	EQUAL,
-	NOT_EQUAL,
-	LESS,
-	GREATER,
-	LESS_EQUAL,
-	GREATER_EQUAL,
-};
-
 namespace MxEngine
 {
+	enum class BlendFactor
+	{
+		NONE = 0,
+		ZERO,
+		ONE,
+		ONE_MINUS_SRC_COLOR,
+		SRC_ALPHA,
+		ONE_MINUS_SRC_ALPHA,
+		DST_ALPHA,
+		ONE_MINUS_DST_ALPHA,
+		DST_COLOR,
+		ONE_MINUS_DST_COLOR,
+		CONSTANT_COLOR,
+		ONE_MINUS_CONSTANT_COLOR,
+		CONSTANT_ALPHA,
+		ONE_MINUS_CONSTANT_ALPHA,
+	};
+
+	enum class DepthFunction
+	{
+		EQUAL = 0,
+		NOT_EQUAL,
+		LESS,
+		GREATER,
+		LESS_EQUAL,
+		GREATER_EQUAL,
+	};
+
 	enum class RenderPrimitive
 	{
 		POINTS = 0, 
@@ -107,7 +107,7 @@ namespace MxEngine
 		Renderer& UseDepthFunction(DepthFunction function);
 		Renderer& UseCulling(bool value = true, bool counterClockWise = true, bool cullBack = true);
 		Renderer& UseClearColor(float r, float g, float b, float a = 0.0f);
-		Renderer& UseBlending(BlendFactor src, BlendFactor dist);
+		Renderer& UseBlendFactors(BlendFactor src, BlendFactor dist);
 		Renderer& UseAnisotropicFiltering(float factor);
 		float GetLargestAnisotropicFactor() const;
 	};

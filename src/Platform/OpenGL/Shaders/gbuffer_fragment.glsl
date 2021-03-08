@@ -74,7 +74,7 @@ void main()
 
 	vec3 albedo = pow(fsin.RenderColor * albedoTex, vec3(gamma));
 
-	OutAlbedo = vec4(fsin.RenderColor * albedo, parallaxOcclusion * occlusion);
+	OutAlbedo = vec4(fsin.RenderColor * albedo, emmisive / (emmisive + 1.0f));
 	OutNormal = vec4(0.5f * normal + 0.5f, 1.0f);
-	OutMaterial = vec4(emmisive / (emmisive + 1.0f), roughness, metallic, 1.0f);
+	OutMaterial = vec4(parallaxOcclusion * occlusion, roughness, metallic, 1.0f);
 }

@@ -19,7 +19,6 @@ uniform Camera camera;
 uniform sampler2D noiseTex;
 uniform int sampleCount;
 uniform float radius;
-uniform float intensity;
 
 const int MAX_SAMPLES = 32;
 vec3 kernel[MAX_SAMPLES] = vec3[]
@@ -90,7 +89,7 @@ void main()
         float currentDepth = 1.0 / texture(depthTex, frag.xy).r;
 
         vec3 currentNormal = normalize(2.0f * texture(normalTex, frag.xy).rgb - 1.0f);
-        float Nn = dot(fragment.normal, currentNormal);
+        float Nn = 0.5 * dot(fragment.normal, currentNormal) + 0.5;
 
         float depthDiff = abs(sampleDepth - currentDepth);
         float bias = pow(Nn, 300.0);
@@ -100,7 +99,6 @@ void main()
         totalOcclusion += occlusion;
     }
     totalOcclusion = 1.0f - totalOcclusion / float(samples);
-    totalOcclusion = pow(totalOcclusion, intensity);
     
     OutColor = vec4(totalOcclusion, 0.0f, 0.0f, 1.0f);
 }

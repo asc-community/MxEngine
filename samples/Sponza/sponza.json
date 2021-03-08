@@ -2151,6 +2151,14 @@
 		"blur iterations": 1,
 		"blur lod": 4
       },
+	  "CameraSSAO": {
+        "id": 0,
+        "intensity": 1.5,
+        "sample count": 16,
+		"radius": 1.0,
+		"blur iterations": 1,
+		"blur lod": 4
+      },
       "CameraSSR": {
         "fading": 1.0,
         "id": 0,
