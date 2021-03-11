@@ -476,11 +476,7 @@ namespace MxEngine
 		this->Pipeline.Environment.DefaultShadowMap->Bind(textureId);
 		for (size_t i = lightCount; i < MaxDirLightCount; i++)
 		{
-			for (size_t j = 0; j < DirectionalLight::TextureCount; j++)
-			{
-				shader->SetUniform(MxFormat("lightDepthMaps[{}]", i * DirectionalLight::TextureCount + j),
-					this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
-			}
+			shader->SetUniform(MxFormat("lightDepthMaps[{}]", i), this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
 		}
 
 		this->DrawObjects(camera, *shader, this->Pipeline.TransparentObjects);
@@ -1221,9 +1217,9 @@ namespace MxEngine
 			return Result;
 		};
 
-		for (size_t i = 0; i < DirectionalLight::TextureCount; i++)
+		dirLight.ShadowMap = light.DepthMap;
+		for (size_t i = 0; i < dirLight.ProjectionMatrices.size(); i++)
 		{
-			dirLight.ShadowMap = light.DepthMap;
 			dirLight.ProjectionMatrices[i] = light.GetMatrix(parentTransform.GetPosition(), i);
 			dirLight.BiasedProjectionMatrices[i] = ProjectionBiasMatrix(i) * dirLight.ProjectionMatrices[i];
 		}
