@@ -20,7 +20,7 @@ uniform int pcfDistance;
 uniform Camera camera;
 
 uniform DirLight lights[MaxDirLightCount];
-uniform sampler2D lightDepthMaps[MaxDirLightCount * DirLightCascadeMapCount];
+uniform sampler2D lightDepthMaps[MaxDirLightCount];
 
 void main()
 {
@@ -31,7 +31,7 @@ void main()
 	for (int i = 0; i < lightCount; i++)
 	{
 		vec4 pos = vec4(fragment.position, 1.0);
-		float shadowFactor = calcShadowFactorCascade(pos, lights[i], lightDepthMaps, i, pcfDistance);
+		float shadowFactor = calcShadowFactorCascade(pos, lights[i], lightDepthMaps[i], pcfDistance);
 		totalColor += calculateLighting(fragment, viewDirection, lights[i].direction, lights[i].color.rgb, lights[i].color.a, shadowFactor);
 	}
 	

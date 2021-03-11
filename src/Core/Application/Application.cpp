@@ -328,6 +328,7 @@ namespace MxEngine
 			.UseCulling()
 			.UseDepthBuffer()
 			.UseSeamlessCubeMaps()
+			.UseClipDistance(2)
 			.UseClearColor(0.0f, 0.0f, 0.0f, 0.0f)
 			.UseBlendFactors(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA)
 			.UseAnisotropicFiltering((float)this->config.AnisothropicFiltering);

@@ -30,6 +30,7 @@
 #include "Core/Application/Rendering.h"
 #include "Core/Rendering/RenderPipeline.h"
 #include "Core/BoundingObjects/FrustrumCuller.h"
+#include "Utilities/Format/Format.h"
 
 namespace MxEngine
 {
@@ -131,28 +132,26 @@ namespace MxEngine
         shader.Bind();
         for (auto& directionalLight : directionalLights)
         {
-            for (size_t i = 0; i < directionalLight.ShadowMaps.size(); i++)
+            controller.AttachDepthMap(directionalLight.ShadowMap);
+
+            auto maxProjection = directionalLight.ProjectionMatrices.back();
+            auto CullingFunction = [culler = FrustrumCuller(maxProjection)](const Vector3& min, const Vector3& max)
+            {
+                return InOrthoFrustrum(culler, min, max);
+            };
+
+            for (size_t i = 0; i < directionalLight.ProjectionMatrices.size(); i++)
             {
                 const auto& projection = directionalLight.ProjectionMatrices[i];
-
-                controller.AttachDepthMap(directionalLight.ShadowMaps[i]);
-                shader.SetUniform("LightProjMatrix", projection);
-
-                auto CullingFunction = [culler = FrustrumCuller(projection)](const Vector3& min, const Vector3& max)
-                {
-                    return InOrthoFrustrum(culler, min, max);
-                };
-
-                CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->renderUnits, this->materials);
+                shader.SetUniform(MxFormat("LightProjMatrix[{}]", i), projection);
             }
+
+            CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->renderUnits, this->materials);
         }
 
         for (auto& directionalLight : directionalLights)
         {
-            for (size_t i = 0; i < directionalLight.ShadowMaps.size(); i++)
-            {
-                directionalLight.ShadowMaps[i]->GenerateMipmaps();
-            }
+            directionalLight.ShadowMap->GenerateMipmaps();
         }
     }
 

@@ -1,5 +1,5 @@
 in vec4 FragPos;
-in vec2 FragmentTexCoord;
+in vec2 TexCoord;
 
 uniform vec3 lightPos;
 uniform float zFar;
@@ -7,7 +7,7 @@ uniform sampler2D map_albedo;
 
 void main()
 {
-    float alpha = texture2D(map_albedo, FragmentTexCoord).a;
+    float alpha = texture2D(map_albedo, TexCoord).a;
     if (alpha < 0.5)
         discard;
 

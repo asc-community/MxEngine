@@ -18,6 +18,6 @@ void main()
 
     vec4 modelPos = model * position;
     vec3 normalObjectSpace = normalMatrix * normal;
-    modelPos.xyz += normalObjectSpace * getDisplacement(uvMultipliers * texCoord, uvMultipliers, map_height, displacement);
+    modelPos.xyz += normalObjectSpace * getDisplacement(VertexTexCoord, uvMultipliers, map_height, displacement);
     gl_Position = modelPos;
 }

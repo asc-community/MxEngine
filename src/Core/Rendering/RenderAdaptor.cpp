@@ -167,12 +167,18 @@ namespace MxEngine
             shaderFolder / "skybox_fragment.glsl"
         );
 
-        environment.Shaders["DepthTexture"_id] = AssetManager::LoadShader(
+        environment.Shaders["DirLightDepthMap"_id] = AssetManager::LoadShader(
+            shaderFolder / "depthtexture_multi_vertex.glsl",
+            shaderFolder / "depthtexture_multi_geometry.glsl",
+            shaderFolder / "depthtexture_fragment.glsl"
+        );
+
+        environment.Shaders["SpotLightDepthMap"_id] = AssetManager::LoadShader(
             shaderFolder / "depthtexture_vertex.glsl", 
             shaderFolder / "depthtexture_fragment.glsl"
         );
 
-        environment.Shaders["DepthCubeMap"_id] = AssetManager::LoadShader(
+        environment.Shaders["PointLightDepthMap"_id] = AssetManager::LoadShader(
             shaderFolder / "depthcubemap_vertex.glsl",
             shaderFolder / "depthcubemap_geometry.glsl",
             shaderFolder / "depthcubemap_fragment.glsl"

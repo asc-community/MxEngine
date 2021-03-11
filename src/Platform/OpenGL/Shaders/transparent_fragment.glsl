@@ -47,7 +47,7 @@ uniform EnvironmentInfo environment;
 
 const int MaxLightCount = 4;
 uniform DirLight lights[MaxLightCount];
-uniform sampler2D lightDepthMaps[MaxLightCount * DirLightCascadeMapCount];
+uniform sampler2D lightDepthMaps[MaxLightCount];
 
 vec3 calcNormal(vec2 texcoord, mat3 TBN, sampler2D normalMap)
 {
@@ -80,7 +80,7 @@ void main()
 	for (int i = 0; i < lightCount; i++)
 	{
 		vec4 pos = vec4(fragment.position, 1.0f);
-		float shadowFactor = calcShadowFactorCascade(pos, lights[i], lightDepthMaps, i, pcfDistance);
+		float shadowFactor = calcShadowFactorCascade(pos, lights[i], lightDepthMaps[i], pcfDistance);
 		totalColor += calculateLighting(fragment, viewDirection, lights[i].direction, lights[i].color.rgb, lights[i].color.a, shadowFactor);
 	}
 
