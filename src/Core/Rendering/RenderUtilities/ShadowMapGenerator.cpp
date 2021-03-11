@@ -131,11 +131,14 @@ namespace MxEngine
         shader.Bind();
         for (auto& directionalLight : directionalLights)
         {
-            for (size_t i = 0; i < directionalLight.ShadowMaps.size(); i++)
-            {
-                const auto& projection = directionalLight.ProjectionMatrices[i];
+            controller.AttachDepthMap(directionalLight.ShadowMap);
+            size_t splitSize = directionalLight.ShadowMap->GetWidth() / directionalLight.ProjectionMatrices.size();
 
-                controller.AttachDepthMap(directionalLight.ShadowMaps[i]);
+            for (size_t i = 0; i < directionalLight.ProjectionMatrices.size(); i++)
+            {
+                controller.SetViewport(int(i * splitSize), 0, splitSize, splitSize);
+
+                const auto& projection = directionalLight.ProjectionMatrices[i];
                 shader.SetUniform("LightProjMatrix", projection);
 
                 auto CullingFunction = [culler = FrustrumCuller(projection)](const Vector3& min, const Vector3& max)
@@ -145,14 +148,12 @@ namespace MxEngine
 
                 CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->renderUnits, this->materials);
             }
+
         }
 
         for (auto& directionalLight : directionalLights)
         {
-            for (size_t i = 0; i < directionalLight.ShadowMaps.size(); i++)
-            {
-                directionalLight.ShadowMaps[i]->GenerateMipmaps();
-            }
+            directionalLight.ShadowMap->GenerateMipmaps();
         }
     }
 

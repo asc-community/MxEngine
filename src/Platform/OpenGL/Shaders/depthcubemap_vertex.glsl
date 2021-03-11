@@ -10,11 +10,11 @@ uniform float displacement;
 uniform vec2 uvMultipliers;
 uniform sampler2D map_height;
 
-out vec2 TexCoord;
+out vec2 VertexTexCoord;
 
 void main()
 {
-    TexCoord = texCoord * uvMultipliers;
+    VertexTexCoord = texCoord * uvMultipliers;
 
     vec4 modelPos = model * position;
     vec3 normalObjectSpace = normalMatrix * normal;

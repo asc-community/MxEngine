@@ -35,15 +35,14 @@ namespace MxEngine
     void PointLight::LoadDepthCubeMap()
     {
         auto depthTextureSize = (int)GlobalConfig::GetPointLightTextureSize();
-        auto cubemap = GraphicFactory::Create<CubeMap>();
-        cubemap->LoadDepth(depthTextureSize, depthTextureSize);
-        cubemap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("point light"));
-        this->AttachDepthCubeMap(cubemap);
+        this->DepthMap = GraphicFactory::Create<CubeMap>();
+        this->DepthMap->LoadDepth(depthTextureSize, depthTextureSize);
+        this->DepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("point light"));
     }
 
     bool PointLight::IsCastingShadows() const
     {
-        return this->cubemap.IsValid();
+        return this->DepthMap.IsValid();
     }
 
     void PointLight::ToggleShadowCast(bool value)
@@ -54,7 +53,7 @@ namespace MxEngine
         }
         else if(!value && this->IsCastingShadows())
         {
-            this->cubemap = { };
+            this->DepthMap = { };
         }
     }
 
@@ -66,16 +65,6 @@ namespace MxEngine
     void PointLight::SetRadius(float radius)
     {
         this->radius = Max(0.0f, radius);
-    }
-
-    CubeMapHandle PointLight::GetDepthCubeMap() const
-    {
-        return this->cubemap;
-    }
-
-    void PointLight::AttachDepthCubeMap(const CubeMapHandle& cubemap)
-    {
-        this->cubemap = cubemap;
     }
 
     Vector3 DirectionTable[] =
@@ -150,7 +139,7 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )
-            .property_readonly("depth cubemap", &PointLight::GetDepthCubeMap)
+            .property_readonly("depth map", &PointLight::DepthMap)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
                 rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& obj) { return obj.try_convert<PointLight>()->IsCastingShadows(); }))

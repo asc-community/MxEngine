@@ -38,11 +38,12 @@ namespace MxEngine
     {
         MAKE_COMPONENT(PointLight);
 
-        CubeMapHandle cubemap;
         float radius = 8.0f;
 
         void LoadDepthCubeMap();
     public:
+        CubeMapHandle DepthMap;
+
         PointLight() = default;
 
         [[nodiscard]] bool IsCastingShadows() const;
@@ -51,8 +52,6 @@ namespace MxEngine
         [[nodiscard]] float GetRadius() const;
         void SetRadius(float radius);
 
-        [[nodiscard]] CubeMapHandle GetDepthCubeMap() const;
-        void AttachDepthCubeMap(const CubeMapHandle& cubemap);
         [[nodiscard]] Matrix4x4 GetMatrix(size_t index, const Vector3& position) const;
         [[nodiscard]] Matrix4x4 GetSphereTransform(const Vector3& position) const;
     };

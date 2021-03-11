@@ -164,7 +164,7 @@
     "paused": false,
     "physics-step": 1.0,
     "time-scale": 1.0,
-    "total-time": 16718.017578125,
+    "total-time": 16767.84765625,
     "viewport": 0
   },
   "mxobjects": [
@@ -172,14 +172,14 @@
       "CameraController": {
         "camera type": "PERSPECTIVE",
         "direction": [
-          0.5531775951385498,
-          -0.3292773365974426,
-          0.7652261257171631
+          0.6014114022254944,
+          -0.3808823227882385,
+          0.7023054957389832
         ],
         "forward vector": [
-          0.5858484506607056,
+          0.6504392027854919,
           0.0,
-          0.8104206323623657
+          0.7595583200454712
         ],
         "id": 0,
         "is listening window resize event": false,
@@ -191,9 +191,9 @@
           "znear": 0.10000000149011612
         },
         "right vector": [
-          -0.8104206919670105,
+          -0.7595583200454712,
           0.0,
-          0.5858483910560608
+          0.6504392027854919
         ],
         "rotate speed": 10.0,
         "up vector": [
@@ -201,6 +201,14 @@
           1.0,
           0.0
         ]
+      },
+      "CameraSSAO": {
+        "blur iterations": 1,
+        "blur lod": 2,
+        "id": 0,
+        "intensity": 1.0,
+        "radius": 1.0,
+        "sample count": 16
       },
       "CameraToneMapping": {
         "aces coefficients": {
@@ -265,9 +273,9 @@
       "name": "Camera",
       "transform": {
         "position": [
-          -0.9148690104484558,
-          11.397310256958008,
-          2.324671745300293
+          -1.3608282804489136,
+          11.62105941772461,
+          1.8213627338409424
         ],
         "rotation": [
           0.0,
@@ -295,7 +303,7 @@
         "max initial time alive": 1.0,
         "max particle count": 256,
         "max particle size": 1.5,
-        "min particle size": 1.0,
+        "min particle size": 0.05000000074505806,
         "particle lifetime": 1.0,
         "particle speed": 0.5,
         "shape": "SPHERE"

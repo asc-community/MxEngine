@@ -57,17 +57,17 @@ namespace MxEngine
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PrepareDirectionalLightMaps()");
-			generator.GenerateFor(*this->Pipeline.Environment.Shaders["DepthTexture"_id], this->Pipeline.Lighting.DirectionalLights);
+			generator.GenerateFor(*this->Pipeline.Environment.Shaders["DirLightDepthMap"_id], this->Pipeline.Lighting.DirectionalLights);
 		}
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PrepareSpotLightMaps()");
-			generator.GenerateFor(*this->Pipeline.Environment.Shaders["DepthTexture"_id], this->Pipeline.Lighting.SpotLights);
+			generator.GenerateFor(*this->Pipeline.Environment.Shaders["SpotLightDepthMap"_id], this->Pipeline.Lighting.SpotLights);
 		}
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PreparePointLightMaps()");
-			generator.GenerateFor(*this->Pipeline.Environment.Shaders["DepthCubeMap"_id], this->Pipeline.Lighting.PointLights);
+			generator.GenerateFor(*this->Pipeline.Environment.Shaders["PointLightDepthMap"_id], this->Pipeline.Lighting.PointLights);
 		}
 	}
 
@@ -396,13 +396,13 @@ namespace MxEngine
 			auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
 
 			Vector4 colorPacked = Vector4(dirLight.Color * dirLight.Intensity, dirLight.AmbientIntensity);
+			dirLight.ShadowMap->Bind(textureId++);
 			shader->SetUniform(MxFormat("lights[{}].color", i), colorPacked);
 			shader->SetUniform(MxFormat("lights[{}].direction", i), dirLight.Direction);
+			shader->SetUniform(MxFormat("lightDepthMaps[{}]", i), dirLight.ShadowMap->GetBoundId());
 
-			for (size_t j = 0; j < dirLight.ShadowMaps.size(); j++)
+			for (size_t j = 0; j < dirLight.BiasedProjectionMatrices.size(); j++)
 			{
-				dirLight.ShadowMaps[j]->Bind(textureId++);
-				shader->SetUniform(MxFormat("lightDepthMaps[{}]", i * DirectionalLight::TextureCount + j), dirLight.ShadowMaps[j]->GetBoundId());
 				shader->SetUniform(MxFormat("lights[{}].transform[{}]", i, j), dirLight.BiasedProjectionMatrices[j]);
 			}
 		}
@@ -410,11 +410,7 @@ namespace MxEngine
 		this->Pipeline.Environment.DefaultShadowMap->Bind(textureId);
 		for (size_t i = lightCount; i < MaxDirLightCount; i++)
 		{
-			for (size_t j = 0; j < DirectionalLight::TextureCount; j++)
-			{
-				shader->SetUniform(MxFormat("lightDepthMaps[{}]", i * DirectionalLight::TextureCount + j),
-					this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
-			}
+			shader->SetUniform(MxFormat("lightDepthMaps[{}]", i), this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
 		}
 
 		this->RenderToTextureNoClear(output, shader);
@@ -466,13 +462,13 @@ namespace MxEngine
 			auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
 
 			Vector4 colorPacked = Vector4(dirLight.Color * dirLight.Intensity, dirLight.AmbientIntensity);
+			dirLight.ShadowMap->Bind(textureId++);
 			shader->SetUniform(MxFormat("lights[{}].color", i), colorPacked);
 			shader->SetUniform(MxFormat("lights[{}].direction", i), dirLight.Direction);
+			shader->SetUniform(MxFormat("lightDepthMaps[{}]", i), dirLight.ShadowMap->GetBoundId());
 
-			for (size_t j = 0; j < dirLight.ShadowMaps.size(); j++)
+			for (size_t j = 0; j < dirLight.BiasedProjectionMatrices.size(); j++)
 			{
-				dirLight.ShadowMaps[j]->Bind(textureId++);
-				shader->SetUniform(MxFormat("lightDepthMaps[{}]", i * DirectionalLight::TextureCount + j), dirLight.ShadowMaps[j]->GetBoundId());
 				shader->SetUniform(MxFormat("lights[{}].transform[{}]", i, j), dirLight.BiasedProjectionMatrices[j]);
 			}
 		}
@@ -480,11 +476,7 @@ namespace MxEngine
 		this->Pipeline.Environment.DefaultShadowMap->Bind(textureId);
 		for (size_t i = lightCount; i < MaxDirLightCount; i++)
 		{
-			for (size_t j = 0; j < DirectionalLight::TextureCount; j++)
-			{
-				shader->SetUniform(MxFormat("lightDepthMaps[{}]", i * DirectionalLight::TextureCount + j),
-					this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
-			}
+			shader->SetUniform(MxFormat("lightDepthMaps[{}]", i), this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
 		}
 
 		this->DrawObjects(camera, *shader, this->Pipeline.TransparentObjects);
@@ -1203,18 +1195,33 @@ namespace MxEngine
 	void RenderController::SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform)
 	{
 		auto& dirLight = this->Pipeline.Lighting.DirectionalLights.emplace_back();
-		MX_ASSERT(dirLight.ShadowMaps.size() == DirectionalLight::TextureCount);
+		MX_ASSERT(dirLight.ProjectionMatrices.size() == DirectionalLight::TextureCount);
+		MX_ASSERT(dirLight.BiasedProjectionMatrices.size() == DirectionalLight::TextureCount);
 
 		dirLight.AmbientIntensity = light.GetAmbientIntensity();
 		dirLight.Intensity = light.GetIntensity();
 		dirLight.Color = light.GetColor();
 		dirLight.Direction = Normalize(light.Direction);
 
-		for (size_t i = 0; i < DirectionalLight::TextureCount; i++)
+		constexpr auto ProjectionBiasMatrix = [](size_t projectionIndex)
 		{
-			dirLight.ShadowMaps[i] = light.GetDepthTexture(i);
+			float scale = 1.0f / DirectionalLight::TextureCount;
+			float offset = projectionIndex * scale;
+
+			Matrix4x4 Result(
+				0.5f * scale,          0.0f, 0.0f, 0.0f,
+				0.0f,                  0.5f, 0.0f, 0.0f,
+				0.0f,                  0.0f, 0.5f, 0.0f,
+				0.5f * scale + offset, 0.5f, 0.5f, 1.0f
+			);
+			return Result;
+		};
+
+		dirLight.ShadowMap = light.DepthMap;
+		for (size_t i = 0; i < dirLight.ProjectionMatrices.size(); i++)
+		{
 			dirLight.ProjectionMatrices[i] = light.GetMatrix(parentTransform.GetPosition(), i);
-			dirLight.BiasedProjectionMatrices[i] = MakeBiasMatrix() * dirLight.ProjectionMatrices[i];
+			dirLight.BiasedProjectionMatrices[i] = ProjectionBiasMatrix(i) * dirLight.ProjectionMatrices[i];
 		}
 	}
 
@@ -1226,7 +1233,7 @@ namespace MxEngine
 			auto& pointLight = this->Pipeline.Lighting.PointLights.emplace_back();
 			baseLightData = &pointLight;
 
-			pointLight.ShadowMap = light.GetDepthCubeMap();
+			pointLight.ShadowMap = light.DepthMap;
 			for (size_t i = 0; i < std::size(pointLight.ProjectionMatrices); i++)
 				pointLight.ProjectionMatrices[i] = light.GetMatrix(i, parentTransform.GetPosition());
 		}
@@ -1253,7 +1260,7 @@ namespace MxEngine
 
 			spotLight.ProjectionMatrix = light.GetMatrix(parentTransform.GetPosition());
 			spotLight.BiasedProjectionMatrix = MakeBiasMatrix() * light.GetMatrix(parentTransform.GetPosition());
-			spotLight.ShadowMap = light.GetDepthTexture();
+			spotLight.ShadowMap = light.DepthMap;
 		}
 		else
 		{
