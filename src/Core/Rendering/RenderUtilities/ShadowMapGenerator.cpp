@@ -132,12 +132,14 @@ namespace MxEngine
         for (auto& directionalLight : directionalLights)
         {
             controller.AttachDepthMap(directionalLight.ShadowMap);
+            size_t splitSize = directionalLight.ShadowMap->GetWidth() / directionalLight.ProjectionMatrices.size();
 
             for (size_t i = 0; i < directionalLight.ProjectionMatrices.size(); i++)
             {
+                controller.SetViewport(int(i * splitSize), 0, splitSize, splitSize);
+
                 const auto& projection = directionalLight.ProjectionMatrices[i];
                 shader.SetUniform("LightProjMatrix", projection);
-                shader.SetUniform("index", (int)i);
 
                 auto CullingFunction = [culler = FrustrumCuller(projection)](const Vector3& min, const Vector3& max)
                 {
