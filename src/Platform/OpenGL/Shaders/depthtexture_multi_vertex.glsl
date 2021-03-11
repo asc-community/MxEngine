@@ -6,18 +6,28 @@ layout(location = 2)  in vec3 normal;
 layout(location = 5)  in mat4 model;
 layout(location = 9)  in mat3 normalMatrix;
 
+uniform mat4 LightProjMatrix;
 uniform float displacement;
 uniform vec2 uvMultipliers;
 uniform sampler2D map_height;
 
-out vec2 VertexTexCoord;
+uniform int index;
+const int SplitCount = 3;
+
+out vec2 TexCoord;
 
 void main()
 {
-    VertexTexCoord = texCoord * uvMultipliers;
+    TexCoord = texCoord * uvMultipliers;
 
     vec4 modelPos = model * position;
     vec3 normalObjectSpace = normalMatrix * normal;
-    modelPos.xyz += normalObjectSpace * getDisplacement(VertexTexCoord, uvMultipliers, map_height, displacement);
-    gl_Position = modelPos;
+    modelPos.xyz += normalObjectSpace * getDisplacement(TexCoord, uvMultipliers, map_height, displacement);
+    vec4 ProjPos = LightProjMatrix * modelPos;
+
+    gl_Position = ProjPos;
+    gl_Position.x = (gl_Position.x + (index - 1) * 2) / SplitCount;
+
+    gl_ClipDistance[0] = 0.5 *  ProjPos.x + 0.5;
+    gl_ClipDistance[1] = 0.5 * -ProjPos.x + 0.5;
 }

@@ -169,7 +169,6 @@ namespace MxEngine
 
         environment.Shaders["DirLightDepthMap"_id] = AssetManager::LoadShader(
             shaderFolder / "depthtexture_multi_vertex.glsl",
-            shaderFolder / "depthtexture_multi_geometry.glsl",
             shaderFolder / "depthtexture_fragment.glsl"
         );
 
