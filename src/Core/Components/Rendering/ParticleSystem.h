@@ -40,6 +40,8 @@ namespace MxEngine
             float TimeAlive;
             Vector3 Velocity;
             float Size;
+            Vector3 _Padding;
+            float SpawnDistance;
         };
 
         enum class Shape
@@ -55,6 +57,7 @@ namespace MxEngine
         float particleMaxSize = 0.05f;
         float particleSpeed = 1.0f;
         float maxInitialTimeAlive = 0.0f;
+        float particleSpawnDistance = 0.0f;
         Shape shape = Shape::SPHERE;
         size_t maxParticleCount = 1024;
         bool isDirty = true;
@@ -72,18 +75,28 @@ namespace MxEngine
 
         size_t GetMaxParticleCount() const;
         void SetMaxParticleCount(size_t count);
-        float GetParticleLifetime() const;
+
         void SetParticleLifetime(float lifetime);
+        float GetParticleLifetime() const;
+
         float GetMinParticleSize() const;
         void SetMinParticleSize(float size);
+
         float GetMaxParticleSize() const;
         void SetMaxParticleSize(float size);
+
         float GetParticleSpeed() const;
         void SetParticleSpeed(float speed);
+
+        float GetParticleSpawnDistance() const;
+        void SetParticleSpawnDistance(float distance);
+
         float GetMaxInitialTimeAlive() const;
         void SetMaxInitialTimeAlive(float timeAlive);
+
         bool IsRelative() const;
         void SetRelative(bool relative);
+
         Shape GetShape() const;
         void SetShape(Shape shape);
     };

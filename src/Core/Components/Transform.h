@@ -34,24 +34,13 @@ namespace MxEngine
 {
 	class TransformComponent
 	{
-		Vector3 translation = MakeVector3(0.0f);
+		Vector3 position = MakeVector3(0.0f);
+		Vector3 rotation = MakeVector3(0.0f);
 		Vector3 scale = MakeVector3(1.0f);
-		Quaternion rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
-		mutable Vector3 eulerRotation{ 0.0f };
 		mutable Matrix4x4 transform{ 0.0f };
-		mutable bool needTransformUpdate = true;
-		mutable bool needRotationUpdate = true;
 		mutable Matrix3x3 normalMatrix{ 0.0f };
-
-		void Copy(const TransformComponent& other) noexcept;
+		mutable bool needTransformUpdate = true;
 	public:
-		TransformComponent() = default;
-		~TransformComponent() = default;
-		TransformComponent(const TransformComponent&);
-		TransformComponent(TransformComponent&&) noexcept;
-		TransformComponent& operator=(const TransformComponent&);
-		TransformComponent& operator=(TransformComponent&&) noexcept;
-
 		bool operator==(const TransformComponent& other) const;
 		bool operator!=(const TransformComponent& other) const;
 		TransformComponent operator*(const TransformComponent& other) const;
@@ -61,16 +50,14 @@ namespace MxEngine
 		void GetMatrix(Matrix4x4& inPlaceMatrix) const;
 		void GetNormalMatrix(const Matrix4x4& model, Matrix3x3& inPlaceMatrix) const;
 
-		const Vector3& GetTranslation() const;
-		const Quaternion& GetRotation() const;
-		const Vector3& GetScale() const;
-		const Vector3& GetEulerRotation() const;
 		const Vector3& GetPosition() const;
+		const Vector3& GetRotation() const;
+		const Vector3& GetScale() const;
 
-		TransformComponent& SetTranslation(const Vector3& dist);
-		TransformComponent& SetRotation(float angle, const Vector3& axis);
+		Quaternion GetRotationQuaternion() const;
+
 		TransformComponent& SetRotation(const Quaternion& q);
-		TransformComponent& SetEulerRotation(const Vector3& angles);
+		TransformComponent& SetRotation(const Vector3& angles);
 		TransformComponent& SetScale(const Vector3& scale);
 		TransformComponent& SetScale(float scale);
 		TransformComponent& SetPosition(const Vector3& position);
@@ -81,8 +68,8 @@ namespace MxEngine
 		TransformComponent& ScaleY(float scale);
 		TransformComponent& ScaleZ(float scale);
 
-		TransformComponent& Rotate(float angle, const Vector3& axis);
 		TransformComponent& Rotate(const Quaternion& q);
+		TransformComponent& Rotate(const Vector3& angles);
 		TransformComponent& RotateX(float angle);
 		TransformComponent& RotateY(float angle);
 		TransformComponent& RotateZ(float angle);
@@ -91,10 +78,6 @@ namespace MxEngine
 		TransformComponent& TranslateX(float x);
 		TransformComponent& TranslateY(float y);
 		TransformComponent& TranslateZ(float z);
-
-		TransformComponent& TranslateForward(float dist);
-		TransformComponent& TranslateRight(float dist);
-		TransformComponent& TranslateUp(float dist);
 
 		TransformComponent& LookAt(const Vector3& point);
 		TransformComponent& LookAtXY(const Vector3& point);

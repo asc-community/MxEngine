@@ -60,7 +60,7 @@ namespace MxEngine::GUI
 
 		// add a bit of offset to scale to make boundings visible for cubic objects
 		BoundingBox box = BoundingBox(aabb.GetCenter(), aabb.Length() * 0.6f);
-		box.Rotation = object.Transform.GetRotation();
+		box.Rotation = object.Transform.GetRotationQuaternion();
 		box.Center = object.Transform.GetPosition();
 		box.Max *= object.Transform.GetScale();
 		box.Min *= object.Transform.GetScale();

@@ -20,7 +20,7 @@ void main()
     if (albedo.a < 0.5)
         discard; // alpha mask
 
-    OutAlbedo = vec4(color * pow(albedo.rgb, vec3(gamma)), 1.0);
+    OutAlbedo = vec4(color * pow(albedo.rgb, vec3(gamma)), emmision / (emmision + 1.0));
     OutNormal = vec4(0.5 * normal + 0.5, 1.0);
-    OutMaterial = vec4(emmision / (emmision + 1.0), roughness, metallness, 1.0);
+    OutMaterial = vec4(1.0, roughness, metallness, 1.0);
 }

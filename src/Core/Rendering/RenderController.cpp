@@ -1304,7 +1304,7 @@ namespace MxEngine
 		camera.SkyboxTexture              = (skybox != nullptr && skybox->CubeMap.IsValid()) ? skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;
 		camera.IrradianceTexture          = (skybox != nullptr && skybox->Irradiance.IsValid()) ? skybox->Irradiance : camera.SkyboxTexture;
 		camera.SkyboxIntensity            = (skybox != nullptr) ? skybox->GetIntensity() : Skybox::DefaultIntensity;
-		camera.InversedSkyboxRotation     = (skybox != nullptr) ? Transpose(ToMatrix(skybox->GetRotation())) : Matrix4x4(1.0f);
+		camera.InversedSkyboxRotation     = (skybox != nullptr) ? Transpose(MakeRotationMatrix(RadiansVec(skybox->GetRotation()))) : Matrix3x3(1.0f);
 		camera.Gamma                      = (toneMapping != nullptr) ? toneMapping->GetGamma() : CameraToneMapping::DefaultGamma;
 		camera.Effects                    = effects;
 		camera.ToneMapping                = toneMapping;

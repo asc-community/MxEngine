@@ -33,6 +33,11 @@ namespace MxEngine
 {   
     #define WND(func, ...) Application::GetImpl()->GetWindow().func(__VA_ARGS__)
 
+    Window& WindowManager::GetWindow()
+    {
+        return Application::GetImpl()->GetWindow();
+    }
+
     Vector2 WindowManager::GetSize()
     {
         auto width  = (float)WND(GetWidth);

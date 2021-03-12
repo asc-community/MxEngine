@@ -33,9 +33,12 @@
 
 namespace MxEngine
 {
+	class Window;
+
 	class WindowManager
 	{
 	public:
+		static Window& GetWindow();
 		static Vector2 GetSize();
 		static float GetWidth();
 		static void SetWidth(float width);

@@ -79,7 +79,7 @@ namespace MxEngine
 		Vector2 GetViewportSize() const;
 		Vector2 GetViewportPosition() const;
 		bool IsActive() const;
-		bool IsKeyHeld(KeyCode key);
+		bool IsKeyHeld(KeyCode key) const;
 
 		void DrawMxObject(const MxString& name, MxObject::Handle object);
 

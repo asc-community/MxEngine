@@ -70,13 +70,16 @@ namespace MxEngine
     void ParticleSystem::FillParticleData(MxVector<ParticleGPU>& particles) const
     {
         auto& systemTransform = MxObject::GetByComponent(*this).Transform;
-        Vector3 systemCenter = systemTransform.GetPosition();
+        Vector3 baseSpawnPoint = this->IsRelative() ? Vector3(0.0f) : systemTransform.GetPosition();
 
         for (auto& particle : particles)
         {
-            particle.Position = this->IsRelative() ? Vector3(0.0f) : systemCenter;
+            auto shapeBasedRandom = GetRandomVector3(this->GetShape());
+
+            particle.SpawnDistance = Random::GetFloat() * this->GetParticleSpawnDistance();
+            particle.Position = baseSpawnPoint + particle.SpawnDistance * shapeBasedRandom;
+            particle.Velocity = this->GetParticleSpeed() * shapeBasedRandom;
             particle.TimeAlive = Random::GetFloat() * this->GetMaxInitialTimeAlive();
-            particle.Velocity = this->GetParticleSpeed() * GetRandomVector3(this->GetShape());
             particle.Size = Random::Range(this->GetMinParticleSize(), this->GetMaxParticleSize());
         }
     }
@@ -127,7 +130,18 @@ namespace MxEngine
 
     void ParticleSystem::SetParticleSpeed(float speed)
     {
-        this->particleSpeed = Max(speed, 0.0f);
+        this->particleSpeed = Max(speed, 0.0001f);
+        this->isDirty = true;
+    }
+
+    float ParticleSystem::GetParticleSpawnDistance() const
+    {
+        return this->particleSpawnDistance;
+    }
+
+    void ParticleSystem::SetParticleSpawnDistance(float distance)
+    {
+        this->particleSpawnDistance = Max(distance, 0.0f);
         this->isDirty = true;
     }
 
@@ -211,6 +225,12 @@ namespace MxEngine
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
             .property("particle speed", &ParticleSystem::GetParticleSpeed, &ParticleSystem::SetParticleSpeed)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("particle spawn distance", &ParticleSystem::GetParticleSpawnDistance, &ParticleSystem::SetParticleSpawnDistance)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1000000.0f }),

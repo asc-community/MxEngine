@@ -31,6 +31,7 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/euler_angles.hpp>
 #include "Core/Macro/Macro.h"
 #include <cmath>
 #include <array>
@@ -153,6 +154,11 @@ namespace MxEngine
 		return Result;
 	}
 
+	inline Matrix3x3 MakeRotationMatrix(const Vector3& angles)
+	{
+		return glm::yawPitchRoll(angles.y, angles.x, angles.z);
+	}
+
 	template<typename T>
 	inline T Normalize(const T& value)
 	{
@@ -199,6 +205,11 @@ namespace MxEngine
 	inline Quaternion MakeQuaternion(float angle, const Vector3& axis)
 	{
 		return glm::angleAxis(angle, axis);
+	}
+
+	inline Quaternion MakeQuaternion(const Matrix3x3& rot)
+	{
+		return glm::toQuat(rot);
 	}
 
 	inline Vector3 MakeEulerAngles(const Quaternion& q)
