@@ -45,11 +45,12 @@ namespace MxEngine
         using TimerHandle = std::aligned_storage_t<sizeof(DirectionalLight::Handle)>;
 
         TimerHandle timerHandle;
+        [[nodiscard]] const MxObject& GetUpdateTimerHandle() const;
     public:
         TextureHandle DepthMap;
 
         [[nodiscard]] bool IsFollowingViewport() const;
-        [[nodiscard]] const MxObject& GetUpdateTimerHandle() const;
+        void SetIsFollowingViewport(bool value);
 
         DirectionalLight();
         ~DirectionalLight();

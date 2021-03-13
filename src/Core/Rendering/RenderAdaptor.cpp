@@ -219,6 +219,11 @@ namespace MxEngine
             shaderFolder / "ssr_fragment.glsl"
         );
 
+        environment.Shaders["ApplySSR"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "apply_ssr_fragment.glsl"
+        );
+
         environment.Shaders["SSGI"_id] = AssetManager::LoadShader(
             shaderFolder / "rect_vertex.glsl",
             shaderFolder / "ssgi_fragment.glsl"
@@ -236,12 +241,12 @@ namespace MxEngine
 
         environment.Shaders["AmbientOcclusion"_id] = AssetManager::LoadShader(
             shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "ambient_occlusion_fragment.glsl"
+            shaderFolder / "ssao_fragment.glsl"
         );
 
         environment.Shaders["ApplyAmbientOcclusion"_id] = AssetManager::LoadShader(
             shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "apply_ambient_occlusion_fragment.glsl"
+            shaderFolder / "apply_ssao_fragment.glsl"
         );
 
         environment.Shaders["ColorGrading"_id] = AssetManager::LoadShader(

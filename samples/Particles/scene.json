@@ -173,7 +173,7 @@
       ],
       "filepath": {
         "format": "RGBA",
-        "path": "smoke.png"
+        "path": "Resources\\smoke.png"
       },
       "id": 9,
       "wrap type": "REPEAT"

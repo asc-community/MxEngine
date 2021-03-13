@@ -40,6 +40,14 @@ namespace MxEngine
         return std::launder(reinterpret_cast<const MxObject::Handle*>(&this->timerHandle))->IsValid();
     }
 
+    void DirectionalLight::SetIsFollowingViewport(bool value)
+    {
+        if (value)
+            this->FollowViewport();
+        else
+            MxObject::Destroy(MxObject::GetHandle(this->GetUpdateTimerHandle()));
+    }
+
     const MxObject& DirectionalLight::GetUpdateTimerHandle() const
     {
         return **std::launder(reinterpret_cast<const MxObject::Handle*>(&this->timerHandle));
@@ -141,7 +149,7 @@ namespace MxEngine
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1.0f })
             )
-            .property_readonly("is following viewport", &DirectionalLight::IsFollowingViewport)
+            .property("is following viewport", &DirectionalLight::IsFollowingViewport, &DirectionalLight::SetIsFollowingViewport)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )
@@ -150,23 +158,18 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
-            .property("projections", &DirectionalLight::Projections)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
             .property_readonly("depth map", &DirectionalLight::DepthMap)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("projections", &DirectionalLight::Projections)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )
             .property("cascade direction", &DirectionalLight::CascadeDirection)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance& v) { return !v.try_convert<DirectionalLight>()->IsFollowingViewport(); }))
-            )
-            .method("follow viewport", &DirectionalLight::FollowViewport)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance & v) { return !v.try_convert<DirectionalLight>()->IsFollowingViewport(); }))
             );
     }
 }

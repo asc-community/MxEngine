@@ -555,22 +555,30 @@ namespace MxEngine
 		auto& SSRShader = this->Pipeline.Environment.Shaders["SSR"_id];
 		SSRShader->Bind();
 		SSRShader->IgnoreNonExistingUniform("albedoTex");
+		SSRShader->IgnoreNonExistingUniform("materialTex");
 		
 		Texture::TextureBindId textureId = 0;
 		this->BindGBuffer(camera, *SSRShader, textureId);
 		this->BindCameraInformation(camera, *SSRShader);
 
-		input->Bind(textureId++);
-		SSRShader->SetUniform("HDRTex", input->GetBoundId());
-
 		SSRShader->SetUniform("thickness", camera.SSR->GetThickness());
-		SSRShader->SetUniform("maxCosAngle", camera.SSR->GetMaxCosAngle());
 		SSRShader->SetUniform("startDistance", camera.SSR->GetStartDistance());
 		SSRShader->SetUniform("steps", (int)camera.SSR->GetSteps());
-		SSRShader->SetUniform("fading", camera.SSR->GetFading());
-		SSRShader->SetUniform("maxDistance", camera.SSR->GetMaxDistance());
 
-		this->RenderToTexture(output, SSRShader);
+		this->RenderToTexture(temporary, SSRShader);
+
+		auto& applySSRShader = this->Pipeline.Environment.Shaders["ApplySSR"_id];
+		applySSRShader->Bind();
+		
+		textureId = 0;
+		this->BindGBuffer(camera, *applySSRShader, textureId);
+
+		temporary->Bind(textureId++);
+		input->Bind(textureId++);
+		applySSRShader->SetUniform("SSRTex", temporary->GetBoundId());
+		applySSRShader->SetUniform("HDRTex", input->GetBoundId());
+
+		this->RenderToTexture(output, applySSRShader);
 		std::swap(input, output);
 	}
 

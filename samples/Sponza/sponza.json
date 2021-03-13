@@ -2346,7 +2346,7 @@
         ],
         "id": 0,
         "intensity": 100.0,
-        "is following viewport": false,
+        "is following viewport": true,
         "projections": [
           50.0,
           100.0,
