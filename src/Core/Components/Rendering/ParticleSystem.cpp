@@ -48,6 +48,11 @@ namespace MxEngine
         }
     }
 
+    void ParticleSystem::Invalidate()
+    {
+        this->isDirty = true;
+    }
+
     ShaderStorageBufferHandle ParticleSystem::GetParticleBuffer() const
     {
         return this->particleBuffer;
@@ -59,8 +64,16 @@ namespace MxEngine
         switch (shape)
         {
         case ParticleSystem::Shape::SPHERE:
+        {
             result = Random::GetUnitVector3();
             break;
+        }
+        case ParticleSystem::Shape::DISK:
+        {
+            Vector2 v = Random::GetUnitVector2();
+            result = MakeVector3(v.x, 0.0f, v.y);
+            break;
+        }
         default:
             result = Vector3(0.0f, 0.0f, 0.0f);
         }
@@ -70,14 +83,14 @@ namespace MxEngine
     void ParticleSystem::FillParticleData(MxVector<ParticleGPU>& particles) const
     {
         auto& systemTransform = MxObject::GetByComponent(*this).Transform;
-        Vector3 baseSpawnPoint = this->IsRelative() ? Vector3(0.0f) : systemTransform.GetPosition();
+        Matrix4x4 particleTransform = this->IsRelative() ? Matrix4x4(1.0f) : systemTransform.GetMatrix();
 
         for (auto& particle : particles)
         {
-            auto shapeBasedRandom = GetRandomVector3(this->GetShape());
+            auto shapeBasedRandom = Matrix3x3(particleTransform) * GetRandomVector3(this->GetShape());
 
-            particle.SpawnDistance = Random::GetFloat() * this->GetParticleSpawnDistance();
-            particle.Position = baseSpawnPoint + particle.SpawnDistance * shapeBasedRandom;
+            particle.SpawnDistance = Random::Range(this->GetMinSpawnDistance(), this->GetMaxSpawnDistance());
+            particle.Position = particle.SpawnDistance * shapeBasedRandom + Vector3(particleTransform[3]);
             particle.Velocity = this->GetParticleSpeed() * shapeBasedRandom;
             particle.TimeAlive = Random::GetFloat() * this->GetMaxInitialTimeAlive();
             particle.Size = Random::Range(this->GetMinParticleSize(), this->GetMaxParticleSize());
@@ -87,7 +100,7 @@ namespace MxEngine
     void ParticleSystem::SetMaxParticleCount(size_t count)
     {
         this->maxParticleCount = count;
-        this->isDirty = true;
+        this->Invalidate();
     }
 
     float ParticleSystem::GetParticleLifetime() const
@@ -108,7 +121,7 @@ namespace MxEngine
     void ParticleSystem::SetMinParticleSize(float size)
     {
         this->particleMinSize = Clamp(size, 0.0f, this->GetMaxParticleSize());
-        this->isDirty = true;
+        this->Invalidate();
     }
 
     float ParticleSystem::GetMaxParticleSize() const
@@ -119,8 +132,8 @@ namespace MxEngine
     void ParticleSystem::SetMaxParticleSize(float size)
     {
         this->particleMaxSize = Max(size, 0.0f);
-        this->isDirty = true;
         this->SetMinParticleSize(this->GetMinParticleSize());
+        this->Invalidate();
     }
 
     float ParticleSystem::GetParticleSpeed() const
@@ -131,18 +144,30 @@ namespace MxEngine
     void ParticleSystem::SetParticleSpeed(float speed)
     {
         this->particleSpeed = Max(speed, 0.0001f);
-        this->isDirty = true;
+        this->Invalidate();
     }
 
-    float ParticleSystem::GetParticleSpawnDistance() const
+    float ParticleSystem::GetMinSpawnDistance() const
     {
-        return this->particleSpawnDistance;
+        return this->minSpawnDistance;
     }
 
-    void ParticleSystem::SetParticleSpawnDistance(float distance)
+    void ParticleSystem::SetMinSpawnDistance(float distance)
     {
-        this->particleSpawnDistance = Max(distance, 0.0f);
-        this->isDirty = true;
+        this->minSpawnDistance = Clamp(distance, 0.0f, this->GetMaxSpawnDistance());
+        this->Invalidate();
+    }
+
+    float ParticleSystem::GetMaxSpawnDistance() const
+    {
+        return this->maxSpawnDistance;
+    }
+
+    void ParticleSystem::SetMaxSpawnDistance(float distance)
+    {
+        this->maxSpawnDistance = Max(distance, 0.0f);
+        this->SetMinSpawnDistance(this->GetMinSpawnDistance());
+        this->Invalidate();
     }
 
     float ParticleSystem::GetMaxInitialTimeAlive() const
@@ -153,7 +178,7 @@ namespace MxEngine
     void ParticleSystem::SetMaxInitialTimeAlive(float timeAlive)
     {
         this->maxInitialTimeAlive = Max(timeAlive, 0.0);
-        this->isDirty = true;
+        this->Invalidate();
     }
 
     bool ParticleSystem::IsRelative() const
@@ -164,7 +189,7 @@ namespace MxEngine
     void ParticleSystem::SetRelative(bool relative)
     {
         this->isRelative = relative;
-        this->isDirty = true;
+        this->Invalidate();
     }
 
     ParticleSystem::Shape ParticleSystem::GetShape() const
@@ -175,7 +200,7 @@ namespace MxEngine
     void ParticleSystem::SetShape(Shape shape)
     {
         this->shape = shape;
-        this->isDirty = true;
+        this->Invalidate();
     }
 
     size_t ParticleSystem::GetMaxParticleCount() const
@@ -187,11 +212,16 @@ namespace MxEngine
     {
         rttr::registration::enumeration<ParticleSystem::Shape>("ParticleSystemShape")
         (
-            rttr::value("SPHERE", ParticleSystem::Shape::SPHERE)
+            rttr::value("SPHERE", ParticleSystem::Shape::SPHERE),
+            rttr::value("DISK", ParticleSystem::Shape::DISK)
         );
 
         rttr::registration::class_<ParticleSystem>("ParticleSystem")
             .constructor<>()
+            .method("invalidate", &ParticleSystem::Invalidate)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
             .property("shape", &ParticleSystem::GetShape, &ParticleSystem::SetShape)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
@@ -230,7 +260,13 @@ namespace MxEngine
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1000000.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
-            .property("particle spawn distance", &ParticleSystem::GetParticleSpawnDistance, &ParticleSystem::SetParticleSpawnDistance)
+            .property("min spawn distance", &ParticleSystem::GetMinSpawnDistance, &ParticleSystem::SetMinSpawnDistance)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("max spawn distance", &ParticleSystem::GetMaxSpawnDistance, &ParticleSystem::SetMaxSpawnDistance)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1000000.0f }),

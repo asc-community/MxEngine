@@ -47,6 +47,7 @@ namespace MxEngine
         enum class Shape
         {
             SPHERE,
+            DISK,
         };
     private:
         MAKE_COMPONENT(ParticleSystem);
@@ -57,7 +58,8 @@ namespace MxEngine
         float particleMaxSize = 0.05f;
         float particleSpeed = 1.0f;
         float maxInitialTimeAlive = 0.0f;
-        float particleSpawnDistance = 0.0f;
+        float minSpawnDistance = 0.0f;
+        float maxSpawnDistance = 0.0f;
         Shape shape = Shape::SPHERE;
         size_t maxParticleCount = 1024;
         bool isDirty = true;
@@ -71,6 +73,7 @@ namespace MxEngine
         void Init();
 
         void OnUpdate(float dt);
+        void Invalidate();
         ShaderStorageBufferHandle GetParticleBuffer() const;
 
         size_t GetMaxParticleCount() const;
@@ -81,15 +84,16 @@ namespace MxEngine
 
         float GetMinParticleSize() const;
         void SetMinParticleSize(float size);
-
         float GetMaxParticleSize() const;
         void SetMaxParticleSize(float size);
 
         float GetParticleSpeed() const;
         void SetParticleSpeed(float speed);
 
-        float GetParticleSpawnDistance() const;
-        void SetParticleSpawnDistance(float distance);
+        float GetMinSpawnDistance() const;
+        void SetMinSpawnDistance(float distance);
+        float GetMaxSpawnDistance() const;
+        void SetMaxSpawnDistance(float distance);
 
         float GetMaxInitialTimeAlive() const;
         void SetMaxInitialTimeAlive(float timeAlive);

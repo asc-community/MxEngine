@@ -17,7 +17,7 @@ layout(std430, binding = 0) buffer ParticleData
 
 uniform mat4 projMatrix;
 uniform float aspectRatio;
-uniform vec3 relativePosition;
+uniform mat4 transform;
 
 void main()
 {
@@ -25,9 +25,9 @@ void main()
     vec3 particlePosition = particle.position_timeAlive.xyz;
     float particleSize = particle.velocity_size.w;
 
-    vec4 projectedPosition = projMatrix * vec4(particlePosition + relativePosition, 1.0);
+    vec4 projectedPosition = projMatrix * transform * vec4(particlePosition, 1.0);
     projectedPosition.xy += particleSize * vec2(position.x, aspectRatio * position.y);
-
+    
     gl_Position = projectedPosition;
     WorldPosition = particlePosition;
 	TexCoord = position.xy * 0.5 + vec2(0.5);

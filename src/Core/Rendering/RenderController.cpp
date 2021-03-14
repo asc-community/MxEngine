@@ -80,13 +80,13 @@ namespace MxEngine
 		computeShader->Bind();
 		computeShader->SetUniform("dt", Min(Time::Delta(), 1.0f / 60.0f));
 
-		for (const auto& particleSytem : particleSystems)
+		for (const auto& particleSystem : particleSystems)
 		{
-			particleSytem.ParticleData->BindBase(0);
-			computeShader->SetUniform("lifetime", particleSytem.ParticleLifetime);
-			computeShader->SetUniform("spawnpoint", particleSytem.IsRelative ? Vector3(0.0f) : particleSytem.SystemCenter);
+			particleSystem.ParticleData->BindBase(0);
+			computeShader->SetUniform("lifetime", particleSystem.ParticleLifetime);
+			computeShader->SetUniform("spawnpoint", particleSystem.IsRelative ? Vector3(0.0f) : Vector3(particleSystem.Transform[3]));
 
-			Compute::Dispatch(computeShader, particleSytem.InvocationCount, 1, 1);
+			Compute::Dispatch(computeShader, particleSystem.InvocationCount, 1, 1);
 		}
 	}
 
@@ -95,8 +95,8 @@ namespace MxEngine
 		std::sort(particleSystems.begin(), particleSystems.end(), 
 			[&camera](const ParticleSystemUnit& p1, const ParticleSystemUnit& p2)
 			{
-				auto dist1 = camera.ViewportPosition - p1.SystemCenter;
-				auto dist2 = camera.ViewportPosition - p2.SystemCenter;
+				auto dist1 = camera.ViewportPosition - Vector3(p1.Transform[3]);
+				auto dist2 = camera.ViewportPosition - Vector3(p2.Transform[3]);
 				return Dot(dist1, dist1) < Dot(dist2, dist2);
 			});
 	}
@@ -145,13 +145,14 @@ namespace MxEngine
 			material.AlbedoMap->Bind(textureId);
 			particleSystem.ParticleData->BindBase(0);
 
-			Vector3 normal = Normalize(camera.ViewportPosition - particleSystem.SystemCenter);
+			Vector3 systemCenter = particleSystem.Transform[3];
+			Vector3 normal = Normalize(camera.ViewportPosition - systemCenter);
 			Vector3 totalLight{ 0.0f };
 			for (const auto& dirLight : this->Pipeline.Lighting.DirectionalLights)
 				totalLight += (0.5f * Dot(normal, dirLight.Direction) + 0.5f) * dirLight.Color * dirLight.Intensity * (1.0f + dirLight.AmbientIntensity);
 
 			shader.SetUniform("normal", normal);
-			shader.SetUniform("relativePosition", particleSystem.IsRelative ? particleSystem.SystemCenter : Vector3(0.0f));
+			shader.SetUniform("transform", particleSystem.IsRelative ? particleSystem.Transform : Matrix4x4(1.0f));
 			shader.SetUniform("metallness", material.MetallicFactor);
 			shader.SetUniform("roughness", material.RoughnessFactor);
 			shader.SetUniform("color", material.BaseColor);
@@ -1191,10 +1192,11 @@ namespace MxEngine
 		auto& particleSystem = (isTransparent ? this->Pipeline.TransparentParticleSystems : this->Pipeline.OpaqueParticleSystems).emplace_back();
 		particleSystem.ParticleData = system.GetParticleBuffer();
 		particleSystem.ParticleLifetime = system.GetParticleLifetime();
-		particleSystem.SystemCenter = parentTransform.GetPosition();
 		particleSystem.IsRelative = system.IsRelative();
 		particleSystem.InvocationCount = system.GetMaxParticleCount() / ParticleComputeGroupSize;
 		particleSystem.MaterialIndex = this->Pipeline.MaterialUnits.size();
+
+		parentTransform.GetMatrix(particleSystem.Transform);
 		
 		auto& materialCopy = this->Pipeline.MaterialUnits.emplace_back(material);
 		if (!materialCopy.AlbedoMap.IsValid()) materialCopy.AlbedoMap = this->Pipeline.Environment.DefaultMaterialMap;

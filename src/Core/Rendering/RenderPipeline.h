@@ -191,7 +191,7 @@ namespace MxEngine
     struct ParticleSystemUnit
     {
         ShaderStorageBufferHandle ParticleData;
-        Vector3 SystemCenter;
+        Matrix4x4 Transform;
         float ParticleLifetime;
         size_t InvocationCount;
         size_t MaterialIndex;
