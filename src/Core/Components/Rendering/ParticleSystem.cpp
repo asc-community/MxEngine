@@ -74,6 +74,42 @@ namespace MxEngine
             result = MakeVector3(v.x, 0.0f, v.y);
             break;
         }
+        case ParticleSystem::Shape::RAY:
+        {
+            result = MakeVector3(0.0f, 1.0f, 0.0f);
+            break;
+        }
+        case ParticleSystem::Shape::LINE:
+        {
+            result = MakeVector3(0.0f, Random::GetBool() ? 1.0f : -1.0f, 0.0f);
+            break;
+        }
+        case ParticleSystem::Shape::CROSS:
+        {
+            int rng = Random::Range(0, 4);
+            switch (rng)
+            {
+            case 0: result = MakeVector3 (1.0f, 0.0f,  0.0f); break;
+            case 1: result = MakeVector3(-1.0f, 0.0f,  0.0f); break;
+            case 2: result = MakeVector3( 0.0f, 0.0f,  1.0f); break;
+            case 3: result = MakeVector3( 0.0f, 0.0f, -1.0f); break;
+            }
+            break;
+        }
+        case ParticleSystem::Shape::AXIS:
+        {
+            int rng = Random::Range(0, 6);
+            switch (rng)
+            {
+            case 0: result = MakeVector3( 1.0f,  0.0f,  0.0f); break;
+            case 1: result = MakeVector3(-1.0f,  0.0f,  0.0f); break;
+            case 2: result = MakeVector3( 0.0f,  1.0f,  0.0f); break;
+            case 3: result = MakeVector3( 0.0f, -1.0f,  0.0f); break;
+            case 4: result = MakeVector3( 0.0f,  0.0f,  1.0f); break;
+            case 5: result = MakeVector3( 0.0f,  0.0f, -1.0f); break;
+            }
+            break;
+        }
         default:
             result = Vector3(0.0f, 0.0f, 0.0f);
         }
@@ -213,7 +249,11 @@ namespace MxEngine
         rttr::registration::enumeration<ParticleSystem::Shape>("ParticleSystemShape")
         (
             rttr::value("SPHERE", ParticleSystem::Shape::SPHERE),
-            rttr::value("DISK", ParticleSystem::Shape::DISK)
+            rttr::value("DISK", ParticleSystem::Shape::DISK),
+            rttr::value("RAY", ParticleSystem::Shape::RAY),
+            rttr::value("LINE", ParticleSystem::Shape::LINE),
+            rttr::value("CROSS", ParticleSystem::Shape::CROSS),
+            rttr::value("AXIS", ParticleSystem::Shape::AXIS)
         );
 
         rttr::registration::class_<ParticleSystem>("ParticleSystem")

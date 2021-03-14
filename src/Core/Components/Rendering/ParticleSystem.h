@@ -48,6 +48,10 @@ namespace MxEngine
         {
             SPHERE,
             DISK,
+            RAY,
+            LINE,
+            CROSS,
+            AXIS,
         };
     private:
         MAKE_COMPONENT(ParticleSystem);

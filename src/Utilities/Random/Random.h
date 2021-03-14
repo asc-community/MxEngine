@@ -86,6 +86,10 @@ namespace MxEngine
         */
         static bool GetBool(float probability);
         /*!
+        generates random bool value
+        */
+        static bool GetBool();
+        /*!
         generates random rotation [-pi, pi]
         \returns angle in radians
         */
