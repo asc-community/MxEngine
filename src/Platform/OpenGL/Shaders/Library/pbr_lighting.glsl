@@ -93,18 +93,18 @@ vec3 GGXCookTorranceSampled(vec3 normal, vec3 lightDirection, vec3 viewDirection
     float NH = dot(normal, H);
     float HV = dot(H, viewDirection);
 
-    if (NV < 0.0f) return vec3(0.0f);
-    if (NL < 0.0f) return vec3(0.0f);
+    if (NV < 0.0) return vec3(0.0);
+    if (NL < 0.0) return vec3(0.0);
 
-    vec3 F0 = mix(vec3(0.04f), albedo, metallic);
+    vec3 F0 = mix(vec3(0.04), albedo, metallic);
 
     float G = GGXSmith(NV, NL, roughness);
     float D = GGXDistribution(NH, roughness);
     vec3 F = fresnelSchlick(F0, HV);
 
     FK = F;
-    pdf = D * NH / (4.0f * HV);
+    pdf = D * NH / (4.0 * HV);
 
-    vec3 specular = G * F * HV / (NV * NH);
+    vec3 specular = D * F * G / (4.0 * NL * NV);
     return clamp(specular, vec3(0.0), vec3(1.0));
 }

@@ -189,7 +189,8 @@ namespace MxEngine
             MXLOG_WARNING("MxEngine::File", "file was not found: " + ToMxString(path));
             return FileSystemTime();
         }
-        return std::filesystem::last_write_time(path);
+        std::error_code e;
+        return std::filesystem::last_write_time(path, e);
     }
 
     FileSystemTime File::LastModifiedTime(const MxString& path)

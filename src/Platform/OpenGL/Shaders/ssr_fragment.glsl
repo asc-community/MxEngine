@@ -10,12 +10,15 @@ struct Camera
     mat4 invViewProjMatrix;
 };
 
+
 uniform sampler2D albedoTex;
 uniform sampler2D normalTex;
 uniform sampler2D materialTex;
 uniform sampler2D depthTex;
+uniform sampler2D HDRTex;
 
 uniform Camera camera;
+uniform EnvironmentInfo environment;
 
 uniform int   steps;
 uniform float thickness;
@@ -61,5 +64,9 @@ void main()
         }
     }
 
-    OutColor = vec4(bestUV, 0.0, 1.0);
+    vec3 skyboxReflection = calcReflectionColor(environment.skybox, environment.skyboxRotation, viewDirection, fragment.normal);
+    
+    vec3 reflection = texture(HDRTex, bestUV).rgb;
+
+    OutColor = vec4(reflection, 1.0);
 }

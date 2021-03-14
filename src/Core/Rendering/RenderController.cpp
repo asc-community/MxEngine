@@ -332,7 +332,7 @@ namespace MxEngine
 		camera.MaterialTexture->GenerateMipmaps();
 		camera.NormalTexture->GenerateMipmaps();
 		camera.DepthTexture->GenerateMipmaps();
-
+		
 		this->ApplySSAO(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
 		this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
 
@@ -342,7 +342,7 @@ namespace MxEngine
 		this->AttachFrameBufferNoClear(this->Pipeline.Environment.PostProcessFrameBuffer);
 		this->GetRenderEngine().UseDepthBufferMask(false);
 		this->DrawSkybox(camera);
-
+		
 		this->GetRenderEngine().UseBlendFactors(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA);
 		this->ToggleFaceCulling(false);
 
@@ -550,7 +550,6 @@ namespace MxEngine
 	{
 		if (camera.SSR == nullptr || camera.SSR->GetSteps() == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::ApplySSR()");
-		input->GenerateMipmaps();
 
 		auto& SSRShader = this->Pipeline.Environment.Shaders["SSR"_id];
 		SSRShader->Bind();
@@ -566,6 +565,7 @@ namespace MxEngine
 		SSRShader->SetUniform("steps", (int)camera.SSR->GetSteps());
 
 		this->RenderToTexture(temporary, SSRShader);
+		temporary->GenerateMipmaps();
 
 		auto& applySSRShader = this->Pipeline.Environment.Shaders["ApplySSR"_id];
 		applySSRShader->Bind();

@@ -2,8 +2,8 @@
 
 vec3 calculateIBL(FragmentInfo fragment, vec3 viewDirection, EnvironmentInfo environment, float gamma)
 {
-    float roughness = clamp(fragment.roughnessFactor, 0.01, 0.99);
-    float metallic = clamp(fragment.metallicFactor, 0.01, 0.99);
+    float roughness = clamp(fragment.roughnessFactor, 0.05, 0.95);
+    float metallic = clamp(fragment.metallicFactor, 0.05, 0.95);
 
     float NV = clamp(dot(fragment.normal, viewDirection), 0.0, 0.999);
     
