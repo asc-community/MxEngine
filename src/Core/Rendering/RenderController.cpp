@@ -182,7 +182,6 @@ namespace MxEngine
 			bool isInstanced = group.InstanceCount > 0;
 
 			group.VAO->Bind();
-			group.IBO->Bind();
 			for (size_t i = 0; i < group.unitCount; i++, currentUnit++)
 			{
 				const auto& unit = this->Pipeline.RenderUnits[objects.UnitsIndex[currentUnit]];
@@ -739,9 +738,7 @@ namespace MxEngine
 
 		// TODO: refactor
 		auto& VAO = pyramid.GetVAO();
-		auto& IBO = pyramid.GetIBO();
 		VAO.Bind();
-		IBO.Bind();
 
 		for (size_t i = 0; i < spotLights.size(); i++)
 		{
@@ -756,7 +753,7 @@ namespace MxEngine
 			this->GetRenderEngine().SetDefaultVertexAttribute(10, Vector4(spotLight.Direction, spotLight.OuterAngle));
 			this->GetRenderEngine().SetDefaultVertexAttribute(11, Vector4(spotLight.Color, spotLight.AmbientIntensity));
 
-			this->DrawIndicies(RenderPrimitive::TRIANGLES, IBO.GetSize(), 0, 0);
+			this->DrawIndicies(RenderPrimitive::TRIANGLES, pyramid.GetIndexCount(), 0, 0);
 		}
 	}
 
@@ -786,9 +783,7 @@ namespace MxEngine
 
 		// TODO: refactor
 		auto& VAO = sphere.GetVAO();
-		auto& IBO = sphere.GetIBO();
 		VAO.Bind();
-		IBO.Bind();
 
 		for (size_t i = 0; i < pointLights.size(); i++)
 		{
@@ -800,7 +795,7 @@ namespace MxEngine
 			this->GetRenderEngine().SetDefaultVertexAttribute(9,  Vector4(pointLight.Position, pointLight.Radius));
 			this->GetRenderEngine().SetDefaultVertexAttribute(10, Vector4(pointLight.Color, pointLight.AmbientIntensity));
 
-			this->DrawIndicies(RenderPrimitive::TRIANGLES, IBO.GetSize(), 0, 0);
+			this->DrawIndicies(RenderPrimitive::TRIANGLES, sphere.GetIndexCount(), 0, 0);
 		}
 	}
 
@@ -830,11 +825,9 @@ namespace MxEngine
 		instancedPointLights.SubmitToVBO();
 		// TODO: refactor
 		auto& VAO = instancedPointLights.GetVAO();
-		auto& IBO = instancedPointLights.GetIBO();
 		VAO.Bind();
-		IBO.Bind();
 
-		this->DrawIndicies(RenderPrimitive::TRIANGLES, IBO.GetSize(), 0, instancedPointLights.Instances.size());
+		this->DrawIndicies(RenderPrimitive::TRIANGLES, instancedPointLights.GetIndexCount(), 0, instancedPointLights.Instances.size());
 	}
 
 	void RenderController::DrawNonShadowedSpotLights(CameraUnit& camera, TextureHandle& output)
@@ -863,11 +856,9 @@ namespace MxEngine
 		instancedSpotLights.SubmitToVBO();
 		// TODO: refactor
 		auto& VAO = instancedSpotLights.GetVAO();
-		auto& IBO = instancedSpotLights.GetIBO();
 		VAO.Bind();
-		IBO.Bind();
 
-		this->DrawIndicies(RenderPrimitive::TRIANGLES, IBO.GetSize(), 0, instancedSpotLights.Instances.size());
+		this->DrawIndicies(RenderPrimitive::TRIANGLES, instancedSpotLights.GetIndexCount(), 0, instancedSpotLights.Instances.size());
 	}
 
 	void RenderController::BindFogInformation(const CameraUnit& camera, const Shader& shader)
@@ -876,6 +867,13 @@ namespace MxEngine
 		shader.SetUniform("fog.distance", camera.Effects->GetFogDistance());
 		shader.SetUniform("fog.density", camera.Effects->GetFogDensity());
 		shader.SetUniform("fog.color", camera.Effects->GetFogColor());
+	}
+
+	void RenderController::AttachDefaultVAO()
+	{
+		// simular to default framebuffer, we simply unbind any VAO to set it
+		// to default (0) state
+		this->Pipeline.Environment.RectangularObject.GetVAO().Unbind();
 	}
 
 	void RenderController::BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId)
@@ -1336,7 +1334,6 @@ namespace MxEngine
 		for (auto subType : groupSubTypes)
 		{
 			subType.get().VAO = mesh.GetVAO();
-			subType.get().IBO = mesh.GetIBO();
 			subType.get().InstanceCount = instanceCount;
 			subType.get().unitCount = 0;
 		}
@@ -1467,5 +1464,6 @@ namespace MxEngine
 
 			this->SubmitImage(mainCamera.OutputTexture);
 		}
+		this->AttachDefaultVAO();
 	}
 }

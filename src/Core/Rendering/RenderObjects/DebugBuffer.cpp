@@ -48,7 +48,7 @@ namespace MxEngine
 
         this->VBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
         this->VAO = GraphicFactory::Create<VertexArray>();
-        VAO->AddBuffer(*this->VBO, *VBL);
+        VAO->AddVertexBuffer(*this->VBO, *VBL);
     }
 
     void DebugBuffer::Submit(const Line& line, const Vector4& color)

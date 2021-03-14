@@ -84,7 +84,7 @@ namespace MxEngine
 		void BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
 		void BindCameraInformation(const CameraUnit& camera, const Shader& shader);
 		void BindFogInformation(const CameraUnit& camera, const Shader& shader);
-
+		void AttachDefaultVAO();
 		void RenderToAttachedFrameBuffer(const Shader& shader);
 	public:
 

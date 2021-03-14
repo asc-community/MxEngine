@@ -115,7 +115,6 @@ namespace MxEngine
             if (group.unitCount == 0) continue;
 
             group.VAO->Bind();
-            group.IBO->Bind();
             for (size_t i = 0; i < group.unitCount; i++, currentUnit++)
             {
                 const RenderUnit& unit = units[shadowCasters.UnitsIndex[currentUnit]];

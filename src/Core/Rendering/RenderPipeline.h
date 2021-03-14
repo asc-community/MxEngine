@@ -162,7 +162,6 @@ namespace MxEngine
     struct RenderGroup
     {
         VertexArrayHandle VAO;
-        IndexBufferHandle IBO;
         size_t InstanceCount;
         size_t unitCount;
     };
