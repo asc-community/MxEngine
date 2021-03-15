@@ -37,19 +37,9 @@ namespace MxEngine
         return this->thickness;
     }
 
-    float CameraSSR::GetMaxCosAngle() const
-    {
-        return this->maxCosAngle;
-    }
-
     size_t CameraSSR::GetSteps() const
     {
         return this->steps;
-    }
-
-    float CameraSSR::GetMaxDistance() const
-    {
-        return this->maxDistance;
     }
 
     float CameraSSR::GetStartDistance() const
@@ -57,19 +47,9 @@ namespace MxEngine
         return this->startDistance;
     }
 
-    float CameraSSR::GetFading() const
-    {
-        return this->fading;
-    }
-
     void CameraSSR::SetThickness(float thickness)
     {
         this->thickness = Max(thickness, 0.0f);
-    }
-
-    void CameraSSR::SetMaxCosAngle(float angle)
-    {
-        this->maxCosAngle = Clamp(angle, -1.0f, 1.0f);
     }
 
     void CameraSSR::SetSteps(size_t steps)
@@ -77,19 +57,9 @@ namespace MxEngine
         this->steps = steps;
     }
 
-    void CameraSSR::SetMaxDistance(float distance)
-    {
-        this->maxDistance = Max(distance, 0.0f);
-    }
-
     void CameraSSR::SetStartDistance(float distance)
     {
         this->startDistance = Max(distance, 0.0f);
-    }
-
-    void CameraSSR::SetFading(float fading)
-    {
-        this->fading = Clamp(fading, 0.0f, 1.0f);
     }
 
     MXENGINE_REFLECT_TYPE
@@ -102,34 +72,16 @@ namespace MxEngine
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
-            .property("max cos angle", &CameraSSR::GetMaxCosAngle, &CameraSSR::SetMaxCosAngle)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { -1.0f, 1.0f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
-            )
             .property("steps", &CameraSSR::GetSteps, &CameraSSR::SetSteps)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 128.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
             )
-            .property("max distance", &CameraSSR::GetMaxDistance, &CameraSSR::SetMaxDistance)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
-            )
             .property("start distance", &CameraSSR::GetStartDistance, &CameraSSR::SetStartDistance)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
-            )
-            .property("fading", &CameraSSR::GetFading, &CameraSSR::SetFading)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             );
     }
