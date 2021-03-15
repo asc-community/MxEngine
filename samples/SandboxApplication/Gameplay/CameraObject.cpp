@@ -12,6 +12,7 @@ void InitCamera(MxObject& object)
 	auto effects = object.AddComponent<CameraEffects>();
 	auto toneMapping = object.AddComponent<CameraToneMapping>();
 	auto ssr = object.AddComponent<CameraSSR>();
+	auto ssao = object.AddComponent<CameraSSAO>();
 
 	effects->SetBloomWeight(5.0f);
 

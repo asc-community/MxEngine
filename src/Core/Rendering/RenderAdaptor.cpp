@@ -36,9 +36,11 @@
 #include "Core/Components/Rendering/Skybox.h"
 #include "Core/Components/Rendering/MeshLOD.h"
 #include "Core/Components/Rendering/DebugDraw.h"
+#include "Core/Components/Rendering/ParticleSystem.h"
 #include "Core/Components/Camera/CameraEffects.h"
 #include "Core/Components/Camera/CameraSSR.h"
 #include "Core/Components/Camera/CameraSSGI.h"
+#include "Core/Components/Camera/CameraSSAO.h"
 #include "Core/Components/Camera/CameraToneMapping.h"
 #include "Core/Components/Lighting/DirectionalLight.h"
 #include "Core/Components/Lighting/PointLight.h"
@@ -165,12 +167,17 @@ namespace MxEngine
             shaderFolder / "skybox_fragment.glsl"
         );
 
-        environment.Shaders["DepthTexture"_id] = AssetManager::LoadShader(
+        environment.Shaders["DirLightDepthMap"_id] = AssetManager::LoadShader(
+            shaderFolder / "depthtexture_vertex.glsl",
+            shaderFolder / "depthtexture_fragment.glsl"
+        );
+
+        environment.Shaders["SpotLightDepthMap"_id] = AssetManager::LoadShader(
             shaderFolder / "depthtexture_vertex.glsl", 
             shaderFolder / "depthtexture_fragment.glsl"
         );
 
-        environment.Shaders["DepthCubeMap"_id] = AssetManager::LoadShader(
+        environment.Shaders["PointLightDepthMap"_id] = AssetManager::LoadShader(
             shaderFolder / "depthcubemap_vertex.glsl",
             shaderFolder / "depthcubemap_geometry.glsl",
             shaderFolder / "depthcubemap_fragment.glsl"
@@ -212,6 +219,11 @@ namespace MxEngine
             shaderFolder / "ssr_fragment.glsl"
         );
 
+        environment.Shaders["ApplySSR"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "apply_ssr_fragment.glsl"
+        );
+
         environment.Shaders["SSGI"_id] = AssetManager::LoadShader(
             shaderFolder / "rect_vertex.glsl",
             shaderFolder / "ssgi_fragment.glsl"
@@ -229,12 +241,12 @@ namespace MxEngine
 
         environment.Shaders["AmbientOcclusion"_id] = AssetManager::LoadShader(
             shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "ambient_occlusion_fragment.glsl"
+            shaderFolder / "ssao_fragment.glsl"
         );
 
         environment.Shaders["ApplyAmbientOcclusion"_id] = AssetManager::LoadShader(
             shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "apply_ambient_occlusion_fragment.glsl"
+            shaderFolder / "apply_ssao_fragment.glsl"
         );
 
         environment.Shaders["ColorGrading"_id] = AssetManager::LoadShader(
@@ -245,6 +257,21 @@ namespace MxEngine
         environment.Shaders["IBL"_id] = AssetManager::LoadShader(
             shaderFolder / "rect_vertex.glsl",
             shaderFolder / "ibl_fragment.glsl"
+        );
+
+        environment.Shaders["ParticleOpaque"_id] = AssetManager::LoadShader(
+            shaderFolder / "particle_opaque_vertex.glsl",
+            shaderFolder / "particle_opaque_fragment.glsl"
+        );
+
+        environment.Shaders["ParticleTransparent"_id] = AssetManager::LoadShader(
+            shaderFolder / "particle_transparent_vertex.glsl",
+            shaderFolder / "particle_transparent_fragment.glsl"
+        );
+
+        // compute shaders
+        environment.ComputeShaders["Particle"_id] = AssetManager::LoadComputeShader(
+            shaderFolder / "particle_compute.glsl"
         );
 
         // framebuffers
@@ -301,13 +328,15 @@ namespace MxEngine
                 auto toneMappingComponent = object.GetComponent<CameraToneMapping>();
                 auto ssrComponent = object.GetComponent<CameraSSR>();
                 auto ssgiComponent = object.GetComponent<CameraSSGI>();
+                auto ssaoComponent = object.GetComponent<CameraSSAO>();
                 Skybox* skybox                 = skyboxComponent.IsValid()      ? skyboxComponent.GetUnchecked()      : nullptr;
                 CameraEffects* effects         = effectsComponent.IsValid()     ? effectsComponent.GetUnchecked()     : nullptr;
                 CameraToneMapping* toneMapping = toneMappingComponent.IsValid() ? toneMappingComponent.GetUnchecked() : nullptr;
                 CameraSSR* ssr                 = ssrComponent.IsValid()         ? ssrComponent.GetUnchecked()         : nullptr;
                 CameraSSGI* ssgi               = ssgiComponent.IsValid()        ? ssgiComponent.GetUnchecked()        : nullptr;
+                CameraSSAO* ssao               = ssaoComponent.IsValid()        ? ssaoComponent.GetUnchecked()        : nullptr;
 
-                this->Renderer.SubmitCamera(camera, transform, skybox, effects, toneMapping, ssr, ssgi);
+                this->Renderer.SubmitCamera(camera, transform, skybox, effects, toneMapping, ssr, ssgi, ssao);
                 TrackMainCameraIndex(camera);
             }
         }
@@ -347,6 +376,20 @@ namespace MxEngine
 
                     this->Renderer.SubmitRenderUnit(renderGroupIndex, submesh, *material, transform, castsShadow, object.Name.c_str());
                 }
+            }
+        }
+
+        {
+            MAKE_SCOPE_PROFILER("RenderAdaptor::SubmitParticleSystems()");
+            auto particleSystemView = ComponentFactory::GetView<ParticleSystem>();
+            for (const auto& particleSystem : particleSystemView)
+            {
+                auto meshRenderer = MxObject::GetByComponent(particleSystem).GetComponent<MeshRenderer>();
+                if (!meshRenderer.IsValid() || meshRenderer->Materials.empty())
+                    continue;
+
+                auto& transform = MxObject::GetByComponent(particleSystem).Transform;
+                this->Renderer.SubmitParticleSystem(particleSystem, *meshRenderer->GetMaterial(), transform);
             }
         }
 

@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include "Core/Resources/ACESCurve.h"
 #include "Utilities/ECS/Component.h"
 
 namespace MxEngine
@@ -51,10 +50,6 @@ namespace MxEngine
 		float chromaticAberrationMinDistance = 0.8f;
 		float chromaticAberrationDistortion = 0.8f;
 
-		float ambientOcclusionRadius = 0.5f;
-		float ambientOcclusionIntensity = 1.0f;
-		uint8_t ambientOcclusionSamples = 16;
-
 		bool enableFXAA = false;
 		uint8_t bloomIterations = 3;
 	public:
@@ -76,10 +71,6 @@ namespace MxEngine
 
 		bool IsFXAAEnabled() const;
 
-		float GetAmbientOcclusionRadius() const;
-		float GetAmbientOcclusionIntensity() const;
-		size_t GetAmbientOcclusionSamples() const;
-
 		void SetFogColor(const Vector3& color);
 		void SetFogDistance(float distance);
 		void SetFogDensity(float density);
@@ -95,9 +86,5 @@ namespace MxEngine
 		void SetChromaticAberrationDistortion(float distortion);
 
 		void ToggleFXAA(bool value);
-
-		void SetAmbientOcclusionRadius(float radius);
-		void SetAmbientOcclusionIntensity(float intensity);
-		void SetAmbientOcclusionSamples(size_t samples);
 	};
 }

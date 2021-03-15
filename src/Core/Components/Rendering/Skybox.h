@@ -40,7 +40,7 @@ namespace MxEngine
     private:
         MAKE_COMPONENT(Skybox);
 
-        Quaternion rotation{ 1.0f, 0.0f, 0.0f, 0.0f };
+        Vector3 rotation = MakeVector3(0.0f);
         float intensity = Skybox::DefaultIntensity;
     public:
         Skybox() = default;
@@ -50,14 +50,28 @@ namespace MxEngine
 
         void SetIntensity(float intensity) { this->intensity = Max(intensity, 0.0f); }
         float GetIntensity() const { return this->intensity; }
-        const Quaternion& GetRotation() const { return this->rotation; }
-        void SetRotation(const Quaternion& rotation) { this->rotation = rotation; }
-        Vector3 GetEulerRotation() const { return MakeEulerAngles(this->rotation); }
-        void Rotate(const Quaternion& q) { this->rotation *= q; }
-        void Rotate(float angle, const Vector3& axis) { this->Rotate(MakeQuaternion(Radians(angle), axis)); }
-        void RotateX(float angle) { this->Rotate(angle, MakeVector3(1.0f, 0.0f, 0.0f)); }
-        void RotateY(float angle) { this->Rotate(angle, MakeVector3(0.0f, 1.0f, 0.0f)); }
-        void RotateZ(float angle) { this->Rotate(angle, MakeVector3(0.0f, 0.0f, 1.0f)); }
+
+        Quaternion GetRotationQuaternion() const { return MakeQuaternion(MakeRotationMatrix(RadiansVec(this->rotation))); }
+        void SetRotation(const Quaternion& q) { this->SetRotation(DegreesVec(MakeEulerAngles(q))); }
+
+        void RotateX(float angle) { this->Rotate(Vector3(angle, 0.0f, 0.0f)); }
+        void RotateY(float angle) { this->Rotate(Vector3(0.0f, angle, 0.0f)); }
+        void RotateZ(float angle) { this->Rotate(Vector3(0.0f, 0.0f, angle)); }
+        const Vector3& GetRotation() const { return this->rotation; }
+
+        void SetRotation(const Vector3& angles)
+        {
+            this->rotation = MakeVector3(0.0f);
+            this->Rotate(angles);
+        }
+
+        void Rotate(const Vector3& angles)
+        {
+            this->rotation += angles;
+            this->rotation.x = std::fmod(this->rotation.x, 360.0f);
+            this->rotation.y = std::fmod(this->rotation.y, 360.0f);
+            this->rotation.z = std::fmod(this->rotation.z, 360.0f);
+        }
     };
 }
 

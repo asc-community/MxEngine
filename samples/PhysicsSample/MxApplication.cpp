@@ -137,7 +137,7 @@ namespace PhysicsSample
             object->Transform.SetScale(30.0f);
 
             auto mr = object->AddComponent<MeshRenderer>();
-            auto ms = object->AddComponent<MeshSource>();
+            auto ms = object->AddComponent<MeshSource>(Primitives::CreateSphere());
             auto rb = object->AddComponent<RigidBody>();
             auto cl = object->AddComponent<SphereCollider>();
 
@@ -146,7 +146,6 @@ namespace PhysicsSample
             material->Transparency = 0.3f;
             material->MetallicFactor = 1.0f;
             material->RoughnessFactor = 0.4f;
-            ms->Mesh = Primitives::CreateSphere();
             rb->MakeTrigger();
             rb->SetOnCollisionEnterCallback([](MxObject& self, MxObject& other)
             {

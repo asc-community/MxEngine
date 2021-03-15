@@ -1,0 +1,44 @@
+{
+  "debug-build": {
+    "app-close-key": "ESCAPE",
+    "auto-recompile-files": false,
+    "debug-graphics": true,
+    "editor-key": "GRAVE_ACCENT",
+    "editor-style": "MXENGINE",
+    "recompile-files-key": "F5",
+    "shader-source-directory": "../../src/Platform/OpenGL/Shaders"
+  },
+  "filesystem": {
+    "cache-primitives": true,
+    "ignored-folders": [
+      "MxEngine",
+      "out",
+      "build",
+      ".git",
+      ".vs"
+    ]
+  },
+  "renderer": {
+    "anisothropic-filtering": 16,
+    "dir-light-texture-size": 2048,
+    "engine-texture-size": 512,
+    "major-version": 4,
+    "minor-version": 5,
+    "point-light-texture-size": 512,
+    "profile": "CORE",
+    "spot-light-texture-size": 512
+  },
+  "window": {
+    "cursor-mode": "DISABLED",
+    "double-buffering": false,
+    "position": [
+      300.0,
+      150.0
+    ],
+    "size": [
+      1600.0,
+      900.0
+    ],
+    "title": "MxEngine Application"
+  }
+}

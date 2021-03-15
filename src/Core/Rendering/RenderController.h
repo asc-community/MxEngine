@@ -41,10 +41,10 @@ namespace MxEngine
 	class CameraController;
 	class CameraEffects;
 	class CameraToneMapping;
-	class CameraSSR;
 	class Skybox;
 	class SubMesh;
 	class Mesh;
+	class ParticleSystem;
 	class TransformComponent;
 
 	class RenderController
@@ -54,6 +54,9 @@ namespace MxEngine
 
 		void PrepareShadowMaps();
 		void DrawSkybox(const CameraUnit& camera);
+		void ComputeParticles(const MxVector<ParticleSystemUnit>& particleSystems);
+		void SortParticles(const CameraUnit& camera, MxVector<ParticleSystemUnit>& particleSystems);
+		void DrawParticles(const CameraUnit& camera, MxVector<ParticleSystemUnit>& particleSystems, const Shader& shader);
 		void DrawObjects(const CameraUnit& camera, const Shader& shader, const RenderList& objects);
 		void DrawDebugBuffer(const CameraUnit& camera);
 		void DrawObject(const RenderUnit& unit, size_t instanceCount, const Shader& shader);
@@ -81,7 +84,7 @@ namespace MxEngine
 		void BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
 		void BindCameraInformation(const CameraUnit& camera, const Shader& shader);
 		void BindFogInformation(const CameraUnit& camera, const Shader& shader);
-
+		void AttachDefaultVAO();
 		void RenderToAttachedFrameBuffer(const Shader& shader);
 	public:
 
@@ -115,12 +118,13 @@ namespace MxEngine
 		const RenderStatistics& GetRenderStatistics() const;
 		RenderStatistics& GetRenderStatistics();
 		void ResetPipeline();
+		void SubmitParticleSystem(const ParticleSystem& system, const Material& material, const TransformComponent& parentTransform);
 		void SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform);
 		void SubmitLightSource(const PointLight& light, const TransformComponent& parentTransform);
 		void SubmitLightSource(const SpotLight& light, const TransformComponent& parentTransform);
 		void SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
 			const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping,
-			const CameraSSR* ssr, const CameraSSGI* ssgi);
+			const CameraSSR* ssr, const CameraSSGI* ssgi, const CameraSSAO* ssao);
 		size_t SubmitRenderGroup(const Mesh& mesh, size_t instanceCount);
 		void SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& object, const Material& material, const TransformComponent& parentTransform, bool castsShadow, const char* debugName = nullptr);
 		void SubmitImage(const TextureHandle& texture);

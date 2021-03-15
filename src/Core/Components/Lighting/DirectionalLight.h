@@ -44,11 +44,13 @@ namespace MxEngine
     private:
         using TimerHandle = std::aligned_storage_t<sizeof(DirectionalLight::Handle)>;
 
-        std::array<TextureHandle, TextureCount> textures;
         TimerHandle timerHandle;
-    public:
-        [[nodiscard]] bool IsFollowingViewport() const;
         [[nodiscard]] const MxObject& GetUpdateTimerHandle() const;
+    public:
+        TextureHandle DepthMap;
+
+        [[nodiscard]] bool IsFollowingViewport() const;
+        void SetIsFollowingViewport(bool value);
 
         DirectionalLight();
         ~DirectionalLight();
@@ -57,10 +59,7 @@ namespace MxEngine
         Vector3 CascadeDirection{ 0.0f };
         std::array<float, TextureCount> Projections = { 15.0f, 150.0f, 1500.0f };
 
-        [[nodiscard]] TextureHandle GetDepthTexture(size_t index) const;
-        void SetDepthTexture(const TextureHandle& texture, size_t index);
         [[nodiscard]] Matrix4x4 GetMatrix(const Vector3& center, size_t index) const;
         void FollowViewport();
-        [[nodiscard]] const auto& GetDepthTextures() const { return this->textures; }
     };
 }

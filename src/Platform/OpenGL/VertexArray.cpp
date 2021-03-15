@@ -29,6 +29,7 @@
 #include "VertexArray.h"
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Platform/OpenGL/VertexBuffer.h"
+#include "Platform/OpenGL/IndexBuffer.h"
 #include "Platform/OpenGL/VertexBufferLayout.h"
 #include "Utilities/Logging/Logger.h"
 
@@ -46,7 +47,8 @@ namespace MxEngine
 
 	VertexArray::VertexArray()
 	{
-		this->id = 0;
+		GLCALL(glGenVertexArrays(1, &this->id));
+		MXLOG_DEBUG("OpenGL::VertexArray", "created vertex array with id = " + ToMxString(id));
 	}
 
 	VertexArray::~VertexArray()
@@ -55,8 +57,8 @@ namespace MxEngine
 	}
 
 	VertexArray::VertexArray(VertexArray&& array) noexcept
-		: attributeIndex(array.attributeIndex)
 	{
+		this->attributeIndex = array.attributeIndex;
 		this->id = array.id;
 		array.id = 0;
 		array.attributeIndex = 0;
@@ -68,6 +70,7 @@ namespace MxEngine
 		this->attributeIndex = array.attributeIndex;
 		this->id = array.id;
 		array.id = 0;
+		array.attributeIndex = 0;
 		return *this;
 	}
 
@@ -78,7 +81,7 @@ namespace MxEngine
 
     void VertexArray::Bind() const
 	{
-		glBindVertexArray(id);
+		glBindVertexArray(this->id);
 	}
 
 	void VertexArray::Unbind() const
@@ -86,13 +89,8 @@ namespace MxEngine
 		glBindVertexArray(0);
 	}
 
-	void VertexArray::AddBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout)
+	void VertexArray::AddVertexBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout)
 	{
-		if (id == 0)
-		{
-			GLCALL(glGenVertexArrays(1, &id));
-			MXLOG_DEBUG("OpenGL::VertexArray", "created vertex array with id = " + ToMxString(id));
-		}
 		this->Bind();
 		buffer.Bind();
 		const auto& elements = layout.GetElements();
@@ -104,14 +102,11 @@ namespace MxEngine
 			offset += element.count * GetGLTypeSize(element.type);
 			this->attributeIndex++;
 		}
+		this->Unbind();
 	}
 
-	void VertexArray::AddInstancedBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout)
+	void VertexArray::AddInstancedVertexBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout)
 	{
-		if (id == 0)
-		{
-			GLCALL(glGenVertexArrays(1, &id));
-		}
 		this->Bind();
 		buffer.Bind();
 		const auto& elements = layout.GetElements();
@@ -124,6 +119,7 @@ namespace MxEngine
 			offset += element.count * GetGLTypeSize(element.type);
 			this->attributeIndex++;
 		}
+		this->Unbind();
 	}
 
 	void VertexArray::PopBuffer(const VertexBufferLayout& vbl)
@@ -137,6 +133,14 @@ namespace MxEngine
 			GLCALL(glDisableVertexAttribArray(this->attributeIndex));
 			offset -= elements[i].count * GetGLTypeSize(elements[i].type);
 		}
+		this->Unbind();
+	}
+
+	void VertexArray::LinkIndexBuffer(const IndexBuffer& buffer)
+	{
+		this->Bind();
+		buffer.Bind();
+		this->Unbind();
 	}
 
     int VertexArray::GetAttributeCount() const

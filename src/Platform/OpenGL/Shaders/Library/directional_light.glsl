@@ -10,7 +10,7 @@ struct DirLight
 	vec3 direction;
 };
 
-float calcShadowFactorCascade(vec4 position, DirLight light, sampler2D shadowMaps[MaxDirLightCount * DirLightCascadeMapCount], int samplerIndex, int pcfDistance)
+float calcShadowFactorCascade(vec4 position, DirLight light, sampler2D shadowMap, int pcfDistance)
 {
 	vec3 projectedPositions[DirLightCascadeMapCount];
 	float shadowFactors[DirLightCascadeMapCount + 1];
@@ -20,7 +20,7 @@ float calcShadowFactorCascade(vec4 position, DirLight light, sampler2D shadowMap
 	{
 		vec4 fragLightSpace = light.transform[i] * position;
 		projectedPositions[i] = fragLightSpace.xyz / fragLightSpace.w;
-		shadowFactors[i] = calcShadowFactor2D(projectedPositions[i], shadowMaps[DirLightCascadeMapCount * samplerIndex + i], 0.01f, pcfDistance);
+		shadowFactors[i] = calcShadowFactor2D(projectedPositions[i], shadowMap, 0.01f, pcfDistance);
 	}
 
 	float totalFactor = 1.0f;

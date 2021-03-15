@@ -61,7 +61,7 @@ namespace MxEngine
         box.Min *= transform.GetScale();
         box.Max *= transform.GetScale();
         box.Center = transform.GetPosition();
-        box.Rotation = transform.GetRotation();
+        box.Rotation = transform.GetRotationQuaternion();
         return box;
     }
 

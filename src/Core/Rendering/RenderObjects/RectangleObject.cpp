@@ -51,7 +51,7 @@ namespace MxEngine
         auto VBL = GraphicFactory::Create<VertexBufferLayout>();
         VBL->PushFloat(4); //-V112
         this->VAO = GraphicFactory::Create<VertexArray>();
-        VAO->AddBuffer(*VBO, *VBL);
+        VAO->AddVertexBuffer(*VBO, *VBL);
     }
     
     const VertexArray& RectangleObject::GetVAO() const

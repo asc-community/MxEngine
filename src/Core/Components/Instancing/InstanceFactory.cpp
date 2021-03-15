@@ -168,9 +168,19 @@ namespace MxEngine
         return object.HasComponent<InstanceFactory>();
     }
 
+    bool IsInstanced(MxObject::Handle object)
+    {
+        return object.IsValid() && IsInstanced(*object);
+    }
+
     bool IsInstance(MxObject& object)
     {
         return object.HasComponent<Instance>();
+    }
+
+    bool IsInstance(MxObject::Handle object)
+    {
+        return object.IsValid() && IsInstance(object);
     }
 
     MxObject::Handle Instanciate(MxObject& object)
@@ -179,10 +189,20 @@ namespace MxEngine
         return instanceFactory->Instanciate();
     }
 
+    MxObject::Handle Instanciate(MxObject::Handle object)
+    {
+        return object.IsValid() ? Instanciate(*object) : MxObject::Handle{ };
+    }
+
     MxObject::Handle GetInstanceParent(MxObject& object)
     {
         auto instance = object.GetComponent<Instance>();
         return instance.IsValid() ? instance->GetParent() : MxObject::Handle{ };
+    }
+
+    MxObject::Handle GetInstanceParent(MxObject::Handle object)
+    {
+        return object.IsValid() ? GetInstanceParent(*object) : MxObject::Handle{ };
     }
 
     MXENGINE_REFLECT_TYPE

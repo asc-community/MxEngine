@@ -8,7 +8,7 @@ void InitArc(MxObject& object)
 		void OnUpdate(MxObject& object, float dt)
 		{			
 			object.Transform.RotateY(-10.0f * dt);
-			object.Transform.TranslateForward(2.0f * dt);
+			object.Transform.TranslateX(2.0f * dt);
 		}
 	};
 

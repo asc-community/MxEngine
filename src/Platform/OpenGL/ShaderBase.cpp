@@ -82,6 +82,50 @@ namespace MxEngine
         this->id = 0;
     }
 
+    // returns true if any errors occured
+    bool PrintErrorsToLogShader(ShaderBase::BindableId shaderId, GLenum stage)
+    {
+        GLint result;
+        GLCALL(glGetShaderiv(shaderId, stage, &result));
+        if (result == GL_FALSE)
+        {
+            GLint length;
+            GLCALL(glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &length));
+            MxString msg;
+            msg.resize(length);
+            GLCALL(glGetShaderInfoLog(shaderId, length, &length, &msg[0]));
+            if (!msg.empty())
+            {
+                msg.pop_back(); // extra \n character
+                MXLOG_ERROR("OpenGL::ErrorHandler", msg);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    // returns true if any errors occured
+    bool PrintErrorsToLogProgram(ShaderBase::BindableId programId, GLenum stage)
+    {
+        GLint result;
+        GLCALL(glGetProgramiv(programId, stage, &result));
+        if (result == GL_FALSE)
+        {
+            GLint length;
+            GLCALL(glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &length));
+            MxString msg;
+            msg.resize(length);
+            GLCALL(glGetProgramInfoLog(programId, length, &length, &msg[0]));
+            if (!msg.empty())
+            {
+                msg.pop_back(); // extra \n character
+                MXLOG_ERROR("OpenGL::ErrorHandler", msg);
+            }
+            return true;
+        }
+        return false;
+    }
+
     ShaderBase::BindableId ShaderBase::CreateProgram(const ShaderId* ids, size_t shaderCount)
     {
         GLCALL(BindableId program = glCreateProgram());
@@ -90,8 +134,18 @@ namespace MxEngine
         {
             GLCALL(glAttachShader(program, ids[i]));
         }
+
         GLCALL(glLinkProgram(program));
+        if(PrintErrorsToLogProgram(program, GL_LINK_STATUS))
+        {
+            MXLOG_WARNING("OpenGL::Shader", "failed to link shader program with id = " + ToMxString(program));
+        }
+
         GLCALL(glValidateProgram(program));
+        if (PrintErrorsToLogProgram(program, GL_VALIDATE_STATUS))
+        {
+            MXLOG_WARNING("OpenGL::Shader", "failed to validate shader program with id = " + ToMxString(program));
+        }
 
         return program;
     }
@@ -120,20 +174,9 @@ namespace MxEngine
         auto sourceptr = modifiedSourceCode.c_str();
         GLCALL(glShaderSource(shaderId, 1, &sourceptr, nullptr));
         GLCALL(glCompileShader(shaderId));
-
-        GLint result;
-        GLCALL(glGetShaderiv(shaderId, GL_COMPILE_STATUS, &result));
-        if (result == GL_FALSE)
+        if (PrintErrorsToLogShader(shaderId, GL_COMPILE_STATUS))
         {
-            GLint length;
-            GLCALL(glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &length));
-            MxString msg;
-            msg.resize(length);
-            GLCALL(glGetShaderInfoLog(shaderId, length, &length, &msg[0]));
-            msg.pop_back(); // extra \n character
-            MxString typeName;
-            MXLOG_ERROR("OpenGL::Shader", "failed to compile shader loaded from path: " + ToMxString(path));
-            MXLOG_ERROR("OpenGL::ErrorHandler", msg);
+            MXLOG_WARNING("OpenGL::Shader", "failed to compile shader stage: " + ToMxString(path));
         }
 
         return shaderId;

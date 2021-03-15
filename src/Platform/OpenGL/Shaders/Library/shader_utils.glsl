@@ -6,22 +6,24 @@ vec3 reconstructWorldPosition(float depth, vec2 texcoord, mat4 invViewProjMatrix
 	return worldPosition.xyz;
 }
 
-float sampleShadowMap(sampler2D depthMap, vec2 coords, float compare)
+float sampleShadowMap(sampler2D depthMap, vec2 coords, float lod, float compare)
 {
-	return step(compare, textureLod(depthMap, coords, 0.0).r);
+	return step(compare, texture(depthMap, coords, lod).r);
 }
 
-float sampleShadowMapLinear(sampler2D depthMap, vec2 coords, float compare, vec2 texelSize)
+float sampleShadowMapLinear(sampler2D depthMap, vec2 coords, float compare)
 {
+	const int lod = 0;
+	vec2 texelSize = 1.0 / textureSize(depthMap, lod);
 	vec2 pixelPos = coords / texelSize + vec2(0.5);
 	vec2 fracPart = fract(pixelPos);
 	vec2 startTexel = (pixelPos - fracPart) * texelSize;
-
+	
 	vec4 samples;
-	samples[0] = sampleShadowMap(depthMap, startTexel + vec2(0.0, 0.0) * texelSize, compare);
-	samples[1] = sampleShadowMap(depthMap, startTexel + vec2(1.0, 0.0) * texelSize, compare);
-	samples[2] = sampleShadowMap(depthMap, startTexel + vec2(0.0, 1.0) * texelSize, compare);
-	samples[3] = sampleShadowMap(depthMap, startTexel + vec2(1.0, 1.0) * texelSize, compare);
+	samples[0] = sampleShadowMap(depthMap, startTexel + vec2(0.0, 0.0) * texelSize, lod, compare);
+	samples[1] = sampleShadowMap(depthMap, startTexel + vec2(1.0, 0.0) * texelSize, lod, compare);
+	samples[2] = sampleShadowMap(depthMap, startTexel + vec2(0.0, 1.0) * texelSize, lod, compare);
+	samples[3] = sampleShadowMap(depthMap, startTexel + vec2(1.0, 1.0) * texelSize, lod, compare);
 
 	float sampleA = mix(samples[0], samples[2], fracPart.y);
 	float sampleB = mix(samples[1], samples[3], fracPart.y);
@@ -30,13 +32,13 @@ float sampleShadowMapLinear(sampler2D depthMap, vec2 coords, float compare, vec2
 
 float calcShadowFactor2D(vec3 projCoords, sampler2D depthMap, float bias, int blurIterations)
 {
-	if (projCoords.z > 0.999 || projCoords.z < 0.001) return 1.0; // do not handle corner cases, assume now shadows
+	if (projCoords.x > 0.999 || projCoords.x < 0.001) return 1.0;
+	if (projCoords.y > 0.999 || projCoords.y < 0.001) return 1.0;
+	if (projCoords.z > 0.999 || projCoords.z < 0.001) return 1.0; // do not handle corner cases, assume no shadows
 	float currentDepth = projCoords.z - bias;
-	vec2 texelSize = 1.0 / textureSize(depthMap, 0);
 	
-	float sample1 = sampleShadowMapLinear(depthMap, projCoords.xy - texelSize, currentDepth, texelSize);
-	float sample2 = sampleShadowMapLinear(depthMap, projCoords.xy + texelSize, currentDepth, texelSize);
-	return mix(sample1, sample2, 0.5);
+	float s = sampleShadowMapLinear(depthMap, projCoords.xy, currentDepth);
+	return s;
 }
 
 const int POINT_LIGHT_SAMPLES = 20;
@@ -117,6 +119,7 @@ struct EnvironmentInfo
 	samplerCube irradiance;
 	mat3 skyboxRotation;
 	float intensity;
+	sampler2D envBRDFLUT;
 };
 
 FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D normalTexture, sampler2D materialTexture, sampler2D depthTexture, mat4 invViewProjMatrix)
@@ -129,8 +132,8 @@ FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D n
 	fragment.depth = texture(depthTexture, texCoord).r;
 
 	fragment.albedo = albedo.rgb;
-	fragment.ambientOcclusion = albedo.a;
-	fragment.emmisionFactor = material.r / (1.0f - material.r);
+	fragment.emmisionFactor = albedo.a / (1.0f - albedo.a);
+	fragment.ambientOcclusion = material.r;
 	fragment.roughnessFactor = material.g;
 	fragment.metallicFactor = material.b;
 

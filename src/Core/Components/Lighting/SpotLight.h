@@ -38,7 +38,6 @@ namespace MxEngine
     {
         MAKE_COMPONENT(SpotLight);
 
-        TextureHandle texture;
         float innerAngle  = 35.0f;
         float innerCos    = std::cos(Radians(innerAngle));
         float outerAngle  = 45.0f;
@@ -47,6 +46,8 @@ namespace MxEngine
 
         void LoadDepthTexture();
     public:
+        TextureHandle DepthMap;
+
         SpotLight() = default;
 
         [[nodiscard]] bool IsCastingShadows() const;
@@ -63,8 +64,6 @@ namespace MxEngine
         void SetOuterAngle(float angle);
         void SetMaxDistance(float zvalue);
 
-        [[nodiscard]] TextureHandle GetDepthTexture() const;
-        void AttachDepthTexture(const TextureHandle& texture);
         [[nodiscard]] Matrix4x4 GetMatrix(const Vector3& position) const;
         [[nodiscard]] Matrix4x4 GetPyramidTransform(const Vector3& position) const;
     };

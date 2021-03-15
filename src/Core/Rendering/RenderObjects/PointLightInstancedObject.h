@@ -61,7 +61,7 @@ namespace MxEngine
 			VBL->Push<Vector4>(); // position + radius
 			VBL->Push<Vector4>(); // intensity * color + ambient intensity
 
-			this->VAO->AddInstancedBuffer(*this->instancedVBO, *VBL);
+			this->VAO->AddInstancedVertexBuffer(*this->instancedVBO, *VBL);
 		}
 
 		void SubmitToVBO() { instancedVBO->BufferDataWithResize((float*)this->Instances.data(), this->Instances.size() * PointLightBaseData::Size); }

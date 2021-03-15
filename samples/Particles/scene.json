@@ -1,0 +1,774 @@
+{
+  "AudioBuffer": null,
+  "CubeMap": [
+    {
+      "_filepath": "Resources\\skybox.png",
+      "id": 2
+    },
+    {
+      "_filepath": "Resources\\skybox_irradiance.png",
+      "id": 3
+    }
+  ],
+  "Material": [
+    {
+      "albedo map": 9,
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 0,
+      "metallic factor": 0.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 0.75,
+      "roughness map": 18446744073709551615,
+      "transparency": 0.5,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 18446744073709551615,
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        1.0,
+        0.9117647409439087,
+        0.0
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 1,
+      "metallic factor": 1.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 0.25,
+      "roughness map": 18446744073709551615,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 18446744073709551615,
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 2,
+      "metallic factor": 0.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 0.75,
+      "roughness map": 18446744073709551615,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 18446744073709551615,
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        1.0,
+        0.17647016048431396,
+        0.0
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 1.5,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 3,
+      "metallic factor": 0.5,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 0.5,
+      "roughness map": 18446744073709551615,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 10,
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 1.5,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 4,
+      "metallic factor": 0.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 1.0,
+      "roughness map": 18446744073709551615,
+      "transparency": 0.5,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 20,
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        1.0,
+        0.9999899864196777,
+        0.9999899864196777
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 3.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 5,
+      "metallic factor": 0.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 0.0,
+      "roughness map": 18446744073709551615,
+      "transparency": 0.800000011920929,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 18446744073709551615,
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.4215686321258545,
+        0.2872452735900879,
+        0.2872452735900879
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 6,
+      "metallic factor": 0.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 0.75,
+      "roughness map": 18446744073709551615,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    }
+  ],
+  "Mesh": [
+    {
+      "_filepath": "Engine\\Models\\cube_2.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.8660253882408142
+      },
+      "id": 0
+    },
+    {
+      "_filepath": "Engine\\Models\\plane_2.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.0,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          0.0,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.7071067690849304
+      },
+      "id": 1
+    },
+    {
+      "_filepath": "Engine/Models/cylinder_20.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.7071067690849304
+      },
+      "id": 3
+    }
+  ],
+  "Script": null,
+  "Texture": [
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\smoke.png"
+      },
+      "id": 9,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\star.png"
+      },
+      "id": 10,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\fire.png"
+      },
+      "id": 20,
+      "wrap type": "REPEAT"
+    }
+  ],
+  "globals": {
+    "gravity": [
+      0.0,
+      -9.800000190734863,
+      0.0
+    ],
+    "overlay-debug": false,
+    "paused": false,
+    "physics-step": 1.0,
+    "time-scale": 1.0,
+    "total-time": 0.0,
+    "viewport": 0
+  },
+  "mxobjects": [
+    {
+      "CameraController": {
+        "camera type": "PERSPECTIVE",
+        "direction": [
+          -0.6470794677734375,
+          -0.21585847437381744,
+          0.7312272191047668
+        ],
+        "forward vector": [
+          -0.6627029180526733,
+          0.0,
+          0.7488824129104614
+        ],
+        "id": 0,
+        "is listening window resize event": false,
+        "is rendering": true,
+        "move speed": 10.0,
+        "perspective camera": {
+          "aspect ratio": 1.7777777910232544,
+          "fov": 65.0,
+          "znear": 0.10000000149011612
+        },
+        "right vector": [
+          -0.7488822937011719,
+          0.0,
+          -0.6627030372619629
+        ],
+        "rotate speed": 10.0,
+        "up vector": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "CameraEffects": {
+        "bloom iterations": 3,
+        "bloom weight": 0.5,
+        "chromatic aberration distortion": 0.800000011920929,
+        "chromatic aberration intensity": 0.07999999821186066,
+        "chromatic aberration min distance": 0.800000011920929,
+        "fog color": [
+          0.5,
+          0.6000000238418579,
+          0.699999988079071
+        ],
+        "fog density": 0.0,
+        "fog distance": 1.0,
+        "fxaa": false,
+        "id": 0,
+        "vignette radius": 0.10000000149011612
+      },
+      "CameraSSAO": {
+        "blur iterations": 1,
+        "blur lod": 2,
+        "id": 0,
+        "intensity": 1.0,
+        "radius": 1.0,
+        "sample count": 16
+      },
+      "CameraToneMapping": {
+        "aces coefficients": {
+          "a": 0.25,
+          "b": 0.3059999942779541,
+          "c": 0.0989999994635582,
+          "d": 0.3499999940395355,
+          "e": 0.02500000037252903,
+          "f": 0.4000000059604645
+        },
+        "color grading": {
+          "B": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "G": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "R": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        },
+        "color scale": 1.0,
+        "exposure": 1.0,
+        "eye adaptation speed": 0.10000000149011612,
+        "eye adaptation threshold": 0.10000000149011612,
+        "gamma": 2.200000047683716,
+        "id": 0,
+        "max luminance": 100000.0,
+        "min luminance": 0.30000001192092896,
+        "white point": 0.5
+      },
+      "InputController": {
+        "back key binding": "S",
+        "down key binding": "LEFT_SHIFT",
+        "forward key binding": "W",
+        "id": 0,
+        "is horizontal rotation bound": true,
+        "is vertical rotation bound": true,
+        "left key binding": "A",
+        "right key binding": "D",
+        "up key binding": "SPACE"
+      },
+      "Skybox": {
+        "cubemap": 2,
+        "id": 0,
+        "intensity": 1.0,
+        "irradiance": 3,
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "displayed": true,
+      "name": "Camera",
+      "transform": {
+        "position": [
+          11.527750015258789,
+          12.649925231933594,
+          -7.6469268798828125
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 0,
+        "materials": [
+          0
+        ]
+      },
+      "ParticleSystem": {
+        "id": 0,
+        "is relative": true,
+        "max initial time alive": 4.0,
+        "max particle count": 256,
+        "max particle size": 1.5,
+        "max spawn distance": 0.0,
+        "min particle size": 0.05000000074505806,
+        "min spawn distance": 0.0,
+        "particle angular speed": 0.0,
+        "particle lifetime": 4.0,
+        "particle speed": 0.05000000074505806,
+        "shape": "SPHERE"
+      },
+      "displayed": true,
+      "name": "Smoke",
+      "transform": {
+        "position": [
+          1.7797425985336304,
+          9.803438186645508,
+          5.708061695098877
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          5.041599750518799,
+          5.041599750518799,
+          5.041599750518799
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 1,
+        "materials": [
+          2
+        ]
+      },
+      "MeshSource": {
+        "casts shadow": true,
+        "id": 0,
+        "is drawn": true,
+        "is static": false,
+        "mesh": 1
+      },
+      "displayed": true,
+      "name": "Plane",
+      "transform": {
+        "position": [
+          0.0,
+          7.5898284912109375,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          145.55319213867188,
+          145.55319213867188,
+          145.55319213867188
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 2,
+        "materials": [
+          1
+        ]
+      },
+      "MeshSource": {
+        "casts shadow": true,
+        "id": 1,
+        "is drawn": true,
+        "is static": false,
+        "mesh": 0
+      },
+      "displayed": true,
+      "name": "Cube",
+      "transform": {
+        "position": [
+          2.5831499099731445,
+          8.624861717224121,
+          5.331309795379639
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          2.069999933242798,
+          2.069999933242798,
+          2.069999933242798
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 3,
+        "materials": [
+          3
+        ]
+      },
+      "ParticleSystem": {
+        "id": 1,
+        "is relative": true,
+        "max initial time alive": 0.10000000149011612,
+        "max particle count": 512,
+        "max particle size": 0.029999999329447746,
+        "max spawn distance": 0.0,
+        "min particle size": 0.009999999776482582,
+        "min spawn distance": 0.0,
+        "particle angular speed": 0.0,
+        "particle lifetime": 1.0,
+        "particle speed": 2.0,
+        "shape": "SPHERE"
+      },
+      "displayed": true,
+      "name": "Fireworks",
+      "transform": {
+        "position": [
+          9.260950088500977,
+          10.458531379699707,
+          4.343201637268066
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 4,
+        "materials": [
+          4
+        ]
+      },
+      "ParticleSystem": {
+        "id": 2,
+        "is relative": true,
+        "max initial time alive": 0.0,
+        "max particle count": 256,
+        "max particle size": 0.3499999940395355,
+        "max spawn distance": 3.0,
+        "min particle size": 0.05000000074505806,
+        "min spawn distance": 0.0,
+        "particle angular speed": 5.0,
+        "particle lifetime": 10000.0,
+        "particle speed": -0.10000000149011612,
+        "shape": "DISK"
+      },
+      "displayed": true,
+      "name": "Stars",
+      "transform": {
+        "position": [
+          5.246739864349365,
+          8.937172889709473,
+          -4.333069801330566
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.40299999713897705,
+          0.40299999713897705,
+          0.40299999713897705
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 5,
+        "materials": [
+          5
+        ]
+      },
+      "ParticleSystem": {
+        "id": 3,
+        "is relative": false,
+        "max initial time alive": 2.0,
+        "max particle count": 64,
+        "max particle size": 0.5,
+        "max spawn distance": 0.0,
+        "min particle size": 0.25,
+        "min spawn distance": 0.0,
+        "particle angular speed": 0.0,
+        "particle lifetime": 2.0,
+        "particle speed": 0.20000000298023224,
+        "shape": "HEMISPHERE"
+      },
+      "displayed": true,
+      "name": "Fire",
+      "transform": {
+        "position": [
+          -2.0,
+          9.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.600600004196167,
+          14.212030410766602,
+          2.122525215148926
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 6,
+        "materials": [
+          6
+        ]
+      },
+      "MeshSource": {
+        "casts shadow": true,
+        "id": 2,
+        "is drawn": true,
+        "is static": false,
+        "mesh": 3
+      },
+      "displayed": true,
+      "name": "Cylinder",
+      "transform": {
+        "position": [
+          -2.0,
+          8.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.4800000190734863,
+          1.4800000190734863,
+          1.4800000190734863
+        ]
+      }
+    },
+    {
+      "DirectionalLight": {
+        "ambient intensity": 0.0,
+        "cascade direction": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "color": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "direction": [
+          1.0,
+          1.0,
+          -1.0
+        ],
+        "id": 0,
+        "intensity": 0.10000000149011612,
+        "is following viewport": false,
+        "projections": [
+          15.0,
+          150.0,
+          1500.0
+        ]
+      },
+      "displayed": true,
+      "name": "SunLight",
+      "transform": {
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    }
+  ]
+}

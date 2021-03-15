@@ -46,6 +46,7 @@ namespace MxEngine
 
 		const VertexArray& GetVAO() const { return *VAO; }
 		const IndexBuffer& GetIBO() const { return *IBO; }
-		const size_t GetVertexCount() const { return VBO->GetSize() / Vertex::Size; }
+		size_t GetIndexCount() const { return this->IBO->GetSize(); }
+		size_t GetVertexCount() const { return VBO->GetSize() / Vertex::Size; }
 	};
 }

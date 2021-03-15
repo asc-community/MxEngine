@@ -40,6 +40,14 @@ namespace MxEngine
         return std::launder(reinterpret_cast<const MxObject::Handle*>(&this->timerHandle))->IsValid();
     }
 
+    void DirectionalLight::SetIsFollowingViewport(bool value)
+    {
+        if (value == this->IsFollowingViewport()) return;
+
+        if (value) this->FollowViewport();
+        else MxObject::Destroy(MxObject::GetHandle(this->GetUpdateTimerHandle()));
+    }
+
     const MxObject& DirectionalLight::GetUpdateTimerHandle() const
     {
         return **std::launder(reinterpret_cast<const MxObject::Handle*>(&this->timerHandle));
@@ -47,14 +55,11 @@ namespace MxEngine
 
     DirectionalLight::DirectionalLight()
     { 
-        for (size_t i = 0; i < DirectionalLight::TextureCount; i++)
-        {
-            auto depthTextureSize = (int)GlobalConfig::GetDirectionalLightTextureSize();
-            auto texture = GraphicFactory::Create<Texture>();
-            texture->LoadDepth(depthTextureSize, depthTextureSize);
-            texture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("directional light"));
-            this->SetDepthTexture(texture, i);
-        }
+        auto depthTextureSize = (int)GlobalConfig::GetDirectionalLightTextureSize();
+        this->DepthMap = GraphicFactory::Create<Texture>();
+        this->DepthMap->LoadDepth(DirectionalLight::TextureCount * depthTextureSize, depthTextureSize);
+        this->DepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("directional light"));
+
         // create empty reference to timer
         (void)new(&this->timerHandle) MxObject::Handle();
     }
@@ -67,21 +72,9 @@ namespace MxEngine
         timer->~Resource();
     }
 
-    TextureHandle DirectionalLight::GetDepthTexture(size_t index) const
-    {
-        MX_ASSERT(index < this->textures.size());
-        return this->textures[index];
-    }
-
-    void DirectionalLight::SetDepthTexture(const TextureHandle& texture, size_t index)
-    {
-        MX_ASSERT(index < this->textures.size());
-        this->textures[index] = texture;
-    }
-
     Matrix4x4 DirectionalLight::GetMatrix(const Vector3& center, size_t index) const
     {
-        MX_ASSERT(index < this->textures.size());
+        MX_ASSERT(index < DirectionalLight::TextureCount);
 
         Vector3 Center = center;
         float distance = 0.0f;
@@ -106,7 +99,7 @@ namespace MxEngine
         auto Low  = MakeVector3(-this->Projections[index]) + Center;
         auto High = MakeVector3( this->Projections[index]) + Center;
 
-        auto shadowMapSize = float(this->textures[index]->GetWidth() + 1);
+        auto shadowMapSize = float(this->DepthMap->GetHeight() + 1);
         auto worldUnitsPerText = (High - Low) / shadowMapSize;
         Low = floor(Low / worldUnitsPerText) * worldUnitsPerText;
         High = floor(High / worldUnitsPerText) * worldUnitsPerText;
@@ -156,7 +149,7 @@ namespace MxEngine
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1.0f })
             )
-            .property_readonly("is following viewport", &DirectionalLight::IsFollowingViewport)
+            .property("is following viewport", &DirectionalLight::IsFollowingViewport, &DirectionalLight::SetIsFollowingViewport)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )
@@ -165,23 +158,18 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
+            .property_readonly("depth map", &DirectionalLight::DepthMap)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
             .property("projections", &DirectionalLight::Projections)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
-            .property_readonly("depth textures", &DirectionalLight::GetDepthTextures)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
             )
             .property("cascade direction", &DirectionalLight::CascadeDirection)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance& v) { return !v.try_convert<DirectionalLight>()->IsFollowingViewport(); }))
-            )
-            .method("follow viewport", &DirectionalLight::FollowViewport)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance & v) { return !v.try_convert<DirectionalLight>()->IsFollowingViewport(); }))
             );
     }
 }

@@ -65,7 +65,7 @@ namespace MxEngine
 		return MxObject::Handle{ };
 	}
 
-	MxObject::Handle MxObject::GetHandle(MxObject& object)
+	MxObject::Handle MxObject::GetHandle(const MxObject& object)
 	{
 		return MxObject::GetByHandle(object.GetNativeHandle());
 	}

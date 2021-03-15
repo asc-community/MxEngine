@@ -121,7 +121,8 @@ namespace MxEngine
 		VBL->PushFloat(3); // normal
 		VBL->PushFloat(3); // tangent
 		VBL->PushFloat(3); // bitangent
-		this->VAO->AddBuffer(*this->VBO, *VBL);
+		this->VAO->AddVertexBuffer(*this->VBO, *VBL);
+		this->VAO->LinkIndexBuffer(*this->IBO);
 	}
 
 	template<>
@@ -177,7 +178,7 @@ namespace MxEngine
 	{
 		this->instancedVBOs.push_back(std::move(vbo));
 		this->instancedVBLs.push_back(std::move(vbl));
-		this->VAO->AddInstancedBuffer(*this->instancedVBOs.back(), *this->instancedVBLs.back());
+		this->VAO->AddInstancedVertexBuffer(*this->instancedVBOs.back(), *this->instancedVBLs.back());
 		return this->instancedVBOs.size() - 1;
 	}
 

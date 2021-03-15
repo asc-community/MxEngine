@@ -78,7 +78,7 @@ namespace MxEngine
         auto VBL = GraphicFactory::Create<VertexBufferLayout>();
         VBL->PushFloat(3);
         this->VAO = GraphicFactory::Create<VertexArray>();
-        VAO->AddBuffer(*VBO, *VBL);
+        VAO->AddVertexBuffer(*VBO, *VBL);
     }
 
     const VertexArray& SkyboxObject::GetVAO() const

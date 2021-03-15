@@ -63,6 +63,11 @@ namespace MxEngine
         return v <= probability;
     }
 
+    bool Random::GetBool()
+    {
+        return (bool)GetRandomImpl(mersenne64, 0, 1);
+    }
+
     float Random::GetRotationRadians()
     {
         return Random::Range(-Pi<float>(), Pi<float>());

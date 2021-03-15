@@ -35,6 +35,8 @@ namespace MxEngine
 {
     MXENGINE_REFLECT_TYPE
     {
+        using RotationEuler = void(Skybox::*)(const Vector3&);
+
         rttr::registration::class_<Skybox>("Skybox")
             .property("intensity", &Skybox::GetIntensity, &Skybox::SetIntensity)
             (
@@ -42,7 +44,7 @@ namespace MxEngine
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 100000.0f })
             )
-            .property("rotation", &Skybox::GetRotation, &Skybox::SetRotation)
+            .property("rotation", &Skybox::GetRotation, (RotationEuler)&Skybox::SetRotation)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)

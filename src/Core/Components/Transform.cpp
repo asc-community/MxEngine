@@ -31,47 +31,9 @@
 
 namespace MxEngine
 {
-    static Vector3 ForwardVec = MakeVector3( 0.0f, 0.0f, 1.0f);
-    static Vector3 RightVec   = MakeVector3(-1.0f, 0.0f, 0.0f);
-    static Vector3 UpVec      = MakeVector3( 0.0f, 1.0f, 0.0f);
-
-    void TransformComponent::Copy(const TransformComponent& other) noexcept
-    {
-        this->translation = other.GetTranslation();
-        this->scale = other.GetScale();
-        this->rotation = other.GetRotation();
-        this->eulerRotation = other.GetEulerRotation();
-        other.GetMatrix(this->transform);
-        other.GetNormalMatrix(this->transform, this->normalMatrix);
-        this->needTransformUpdate = false;
-        this->needRotationUpdate = false;
-    }
-
-    TransformComponent::TransformComponent(const TransformComponent& other)
-    {
-        this->Copy(other);
-    }
-
-    TransformComponent::TransformComponent(TransformComponent&& other) noexcept
-    {
-        this->Copy(other);
-    }
-
-    TransformComponent& TransformComponent::operator=(const TransformComponent& other)
-    {
-        this->Copy(other);
-        return *this;
-    }
-
-    TransformComponent& TransformComponent::operator=(TransformComponent&& other) noexcept
-    {
-        this->Copy(other);
-        return *this;
-    }
-
     bool TransformComponent::operator==(const TransformComponent& other) const
     {
-        return this->translation == other.translation && this->rotation == other.rotation && this->scale == other.scale;
+        return this->position == other.position && this->rotation == other.rotation && this->scale == other.scale;
     }
 
     bool TransformComponent::operator!=(const TransformComponent& other) const
@@ -83,8 +45,8 @@ namespace MxEngine
     {
         TransformComponent result;
         result.scale = this->scale * other.scale;
-        result.translation = this->translation + other.translation;
-        result.rotation = this->rotation * other.rotation;
+        result.position = this->position + other.position;
+        result.rotation = this->rotation + other.rotation;
         return result;
     }
 
@@ -92,14 +54,8 @@ namespace MxEngine
     {
         if (this->needTransformUpdate)
         {
-            Matrix4x4 Translation = MxEngine::Translate(Matrix4x4(1.0f), this->translation);
-            Matrix4x4 Rotation = ToMatrix(this->rotation);
-            Matrix4x4 Scale = MxEngine::Scale(Matrix4x4(1.0f), this->scale);
-            this->transform = Translation * Rotation * Scale;
-            if (this->scale.x == this->scale.y && this->scale.y == this->scale.z)
-                this->normalMatrix = Rotation;
-            else
-                this->normalMatrix = Transpose(Inverse(this->transform));
+            this->GetMatrix(this->transform);
+            this->GetNormalMatrix(this->transform, this->normalMatrix);
             this->needTransformUpdate = false;
         }
         return this->transform;
@@ -113,8 +69,8 @@ namespace MxEngine
 
     void TransformComponent::GetMatrix(Matrix4x4& inPlaceMatrix) const
     {
-        Matrix4x4 Translation = MxEngine::Translate(Matrix4x4(1.0f), this->translation);
-        Matrix4x4 Rotation = ToMatrix(this->rotation);
+        Matrix4x4 Translation = MxEngine::Translate(Matrix4x4(1.0f), this->position);
+        Matrix4x4 Rotation = MakeRotationMatrix(RadiansVec(this->rotation));
         Matrix4x4 Scale = MxEngine::Scale(Matrix4x4(1.0f), this->scale);
         inPlaceMatrix = Translation * Rotation * Scale;
     }
@@ -127,12 +83,7 @@ namespace MxEngine
             inPlaceMatrix = Transpose(Inverse(model));
     }
 
-    const Vector3& TransformComponent::GetTranslation() const
-    {
-        return this->translation;
-    }
-
-    const Quaternion& TransformComponent::GetRotation() const
+    const Vector3& TransformComponent::GetRotation() const
     {
         return this->rotation;
     }
@@ -142,47 +93,25 @@ namespace MxEngine
         return this->scale;
     }
 
-    const Vector3& TransformComponent::GetEulerRotation() const
+    Quaternion TransformComponent::GetRotationQuaternion() const
     {
-        if (this->needRotationUpdate)
-        {
-            this->eulerRotation = MakeEulerAngles(this->rotation);
-            this->needRotationUpdate = false;
-        }
-        return this->eulerRotation;
+        return MakeQuaternion(MakeRotationMatrix(RadiansVec(this->rotation)));
     }
 
-    const Vector3& TransformComponent::GetPosition() const //-V524
+    const Vector3& TransformComponent::GetPosition() const
     {
-        return this->translation;
-    }
-
-    TransformComponent& TransformComponent::SetTranslation(const Vector3& dist)
-    {
-        this->translation = dist;
-        this->needTransformUpdate = true;
-        return *this;
-    }
-
-    TransformComponent& TransformComponent::SetRotation(float angle, const Vector3& axis)
-    {
-        return this->SetRotation(MakeQuaternion(angle, axis));
+        return this->position;
     }
 
     TransformComponent& TransformComponent::SetRotation(const Quaternion& q)
     {
-        this->rotation = q;
-        this->needRotationUpdate = true;
-        this->needTransformUpdate = true;
-        return *this;
+        return this->SetRotation(DegreesVec(MakeEulerAngles(q)));
     }
 
-    TransformComponent& TransformComponent::SetEulerRotation(const Vector3& angles)
+    TransformComponent& TransformComponent::SetRotation(const Vector3& angles)
     {
-        this->SetRotation(Quaternion{ 0.0f, 0.0f, 0.0f, 1.0f });
-        this->RotateX(angles.x);
-        this->RotateY(angles.y);
-        this->RotateZ(angles.z);
+        this->rotation = MakeVector3(0.0f);
+        this->Rotate(angles);
         return *this;
     }
 
@@ -200,7 +129,9 @@ namespace MxEngine
 
     TransformComponent& TransformComponent::SetPosition(const Vector3& position)
     {
-        return this->SetTranslation(position);
+        this->position = position;
+        this->needTransformUpdate = true;
+        return *this;
     }
 
     TransformComponent& TransformComponent::Scale(float scale) 
@@ -230,37 +161,39 @@ namespace MxEngine
         return this->Scale(MakeVector3(1.0f, 1.0f, scale));
     }
 
-    TransformComponent& TransformComponent::Rotate(float angle, const Vector3& axis)
-    {
-        return this->Rotate(MakeQuaternion(Radians(angle), axis));
-    }
-
     TransformComponent& TransformComponent::Rotate(const Quaternion& q)
     {
-        this->rotation *= q;
-        this->needRotationUpdate = true;
+        return this->Rotate(MakeEulerAngles(q));
+    }
+
+    TransformComponent& TransformComponent::Rotate(const Vector3& angles)
+    {
+        this->rotation += angles;
+        this->rotation.x = std::fmod(this->rotation.x, 360.0f);
+        this->rotation.y = std::fmod(this->rotation.y, 360.0f);
+        this->rotation.z = std::fmod(this->rotation.z, 360.0f);
         this->needTransformUpdate = true;
         return *this;
     }
 
     TransformComponent& TransformComponent::RotateX(float angle)
     {
-        return this->Rotate(angle, MakeVector3(1.0f, 0.0f, 0.0f));
+        return this->Rotate(Vector3(angle, 0.0f, 0.0f));
     }
 
     TransformComponent& TransformComponent::RotateY(float angle)
     {
-        return this->Rotate(angle, MakeVector3(0.0f, 1.0f, 0.0f));
+        return this->Rotate(Vector3(0.0f, angle, 0.0f));
     }
 
     TransformComponent& TransformComponent::RotateZ(float angle)
     {
-        return this->Rotate(angle, MakeVector3(0.0f, 0.0f, 1.0f));
+        return this->Rotate(Vector3(0.0f, 0.0f, angle));
     }
 
     TransformComponent& TransformComponent::Translate(const Vector3& dist)
     {
-        this->translation += dist;
+        this->position += dist;
         this->needTransformUpdate = true;
         return *this;
     }
@@ -280,34 +213,16 @@ namespace MxEngine
         return this->Translate(MakeVector3(0.0f, 0.0f, z));
     }
 
-    TransformComponent& TransformComponent::TranslateForward(float dist)
-    {
-        this->Translate(this->rotation * ForwardVec * dist);
-        return *this;
-    }
-
-    TransformComponent& TransformComponent::TranslateRight(float dist)
-    {
-        this->Translate(this->rotation * RightVec * dist);
-        return *this;
-    }
-
-    TransformComponent& TransformComponent::TranslateUp(float dist)
-    {
-        this->Translate(this->rotation * UpVec * dist);
-        return *this;
-    }
-
     TransformComponent& TransformComponent::LookAt(const Vector3& point)
     {
-        auto q = LookAtRotation(Normalize(this->translation - point), MakeVector3(0.00001f, 1.0f, 0.0f));
+        auto q = LookAtRotation(Normalize(this->position - point), MakeVector3(0.00001f, 1.0f, 0.0f));
         this->SetRotation(q);
         return *this;
     }
 
     TransformComponent& TransformComponent::LookAtXY(const Vector3& point)
     {
-        auto v = this->translation - point;
+        auto v = this->position - point;
         auto q = LookAtRotation(Normalize(MakeVector3(v.x, v.y, 0.0f)), MakeVector3(0.00001f, 0.0f, 1.0f));
         this->SetRotation(q);
         return *this;
@@ -315,7 +230,7 @@ namespace MxEngine
 
     TransformComponent& TransformComponent::LookAtXZ(const Vector3& point)
     {
-        auto v = this->translation - point;
+        auto v = this->position - point;
         auto q = LookAtRotation(Normalize(MakeVector3(v.x, 0.0f, v.z)), MakeVector3(0.00001f, 1.0f, 0.0f));
         this->SetRotation(q);
         return *this;
@@ -323,7 +238,7 @@ namespace MxEngine
 
     TransformComponent& TransformComponent::LookAtYZ(const Vector3& point)
     {
-        auto v = this->translation - point;
+        auto v = this->position - point;
         auto q = LookAtRotation(Normalize(MakeVector3(0.0f, v.y, v.z)), MakeVector3(1.0f, 0.0f, 0.00001f));
         this->SetRotation(q);
         return *this;
@@ -332,7 +247,7 @@ namespace MxEngine
     MXENGINE_REFLECT_TYPE
     {
         using Scale3 = TransformComponent& (TransformComponent::*)(const Vector3&);
-        using RotateQuat = TransformComponent& (TransformComponent::*)(const Quaternion&);
+        using RotateEuler = TransformComponent& (TransformComponent::*)(const Vector3&);
 
         rttr::registration::class_<TransformComponent>("Transform")
             (
@@ -347,7 +262,7 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
             )
-            .property("rotation", &TransformComponent::GetRotation, (RotateQuat)&TransformComponent::SetRotation)
+            .property("rotation", &TransformComponent::GetRotation, (RotateEuler)&TransformComponent::SetRotation)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)

@@ -43,12 +43,14 @@ namespace MxEngine
 		Runtime::RegisterComponent<MeshRenderer       >();
 		Runtime::RegisterComponent<MeshSource         >();
 		Runtime::RegisterComponent<MeshLOD            >();
+		Runtime::RegisterComponent<ParticleSystem     >();
 		Runtime::RegisterComponent<DirectionalLight   >();
 		Runtime::RegisterComponent<PointLight         >();
 		Runtime::RegisterComponent<SpotLight          >();
 		Runtime::RegisterComponent<CameraEffects      >();
 		Runtime::RegisterComponent<CameraSSR          >();
 		Runtime::RegisterComponent<CameraSSGI         >();
+		Runtime::RegisterComponent<CameraSSAO         >();
 		Runtime::RegisterComponent<CameraToneMapping  >();
 		Runtime::RegisterComponent<VRCameraController >();
 		Runtime::RegisterComponent<InputController    >();

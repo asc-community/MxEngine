@@ -74,7 +74,7 @@ namespace MxEngine
         auto capsule = this->GetBoundingCapsule();
         auto& scale = transform.GetScale();
         capsule.Center += transform.GetPosition();
-        capsule.Rotation = transform.GetRotation();
+        capsule.Rotation = transform.GetRotationQuaternion();
         switch (capsule.Orientation)
         {
         case Capsule::Axis::X:

@@ -70,7 +70,7 @@ namespace MxEngine
 
 		static ComponentView<MxObject> GetObjects();
 		static Handle GetByName(const MxString& name);
-		static Handle GetHandle(MxObject& object);
+		static Handle GetHandle(const MxObject& object);
 		static Handle GetByHandle(EngineHandle handle);
 
 		EngineHandle GetNativeHandle() const;

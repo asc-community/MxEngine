@@ -34,7 +34,7 @@ namespace MxEngine
 {
     bool SpotLight::IsCastingShadows() const
     {
-        return this->texture.IsValid();
+        return this->DepthMap.IsValid();
     }
 
     void SpotLight::ToggleShadowCast(bool value)
@@ -45,7 +45,7 @@ namespace MxEngine
         }
         else if (!value && this->IsCastingShadows())
         {
-            this->texture = { };
+            this->DepthMap = { };
         }
     }
 
@@ -55,7 +55,7 @@ namespace MxEngine
         auto texture = GraphicFactory::Create<Texture>();
         texture->LoadDepth(depthTextureSize, depthTextureSize);
         texture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("spot light"));
-        this->AttachDepthTexture(texture);
+        this->DepthMap = texture;
     }
 
     float SpotLight::GetInnerAngle() const
@@ -100,16 +100,6 @@ namespace MxEngine
     void SpotLight::SetMaxDistance(float zvalue)
     {
         this->maxDistance = Max(1.2f, zvalue);
-    }
-
-    TextureHandle SpotLight::GetDepthTexture() const
-    {
-        return this->texture;
-    }
-
-    void SpotLight::AttachDepthTexture(const TextureHandle& texture)
-    {
-        this->texture = texture;
     }
 
     Matrix4x4 SpotLight::GetMatrix(const Vector3& position) const
@@ -184,7 +174,7 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )
-            .property_readonly("depth texture", &SpotLight::GetDepthTexture)
+            .property_readonly("depth map", &SpotLight::DepthMap)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
                 rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& obj) { return obj.try_convert<SpotLight>()->IsCastingShadows(); }))

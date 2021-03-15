@@ -78,7 +78,7 @@ namespace MxEngine
         auto cylinder = this->GetBoundingCylinder();
         auto& scale = transform.GetScale();
         cylinder.Center += transform.GetPosition();
-        cylinder.Rotation = transform.GetRotation();
+        cylinder.Rotation = transform.GetRotationQuaternion();
         switch (cylinder.Orientation)
         {
         case Cylinder::Axis::X:

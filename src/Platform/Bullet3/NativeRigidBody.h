@@ -106,7 +106,9 @@ namespace MxEngine
         bool IsMoving() const;
         bool HasCollisionResponce() const;
         void SetKinematicFlag();
+        void UnsetKinematicFlag();
         void SetTriggerFlag();
+        void UnsetTriggerFlag();
         void UnsetAllFlags();
         void SetScale(const Vector3& scale);
         float GetMass() const;

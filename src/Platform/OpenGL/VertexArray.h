@@ -32,6 +32,7 @@ namespace MxEngine
 {
 	class VertexBuffer;
 	class VertexBufferLayout;
+	class IndexBuffer;
 
 	class VertexArray
 	{
@@ -51,9 +52,10 @@ namespace MxEngine
 		BindableId GetNativeHandle() const;
 		void Bind() const;
 		void Unbind() const;
-		void AddBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout);
-		void AddInstancedBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout);
+		void AddVertexBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout);
+		void AddInstancedVertexBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout);
 		void PopBuffer(const VertexBufferLayout& vbl);
+		void LinkIndexBuffer(const IndexBuffer& buffer);
 		int GetAttributeCount() const;
 	};
 }

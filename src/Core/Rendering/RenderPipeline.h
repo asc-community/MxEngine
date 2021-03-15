@@ -46,6 +46,7 @@ namespace MxEngine
     class CameraToneMapping;
     class CameraSSR;
     class CameraSSGI;
+    class CameraSSAO;
     
     struct DebugBufferUnit
     {
@@ -79,6 +80,7 @@ namespace MxEngine
         CubeMapHandle IrradianceTexture;
 
         float Gamma;
+        float AspectRatio;
 
         bool IsPerspective;
         bool RenderToTexture;
@@ -87,11 +89,13 @@ namespace MxEngine
         const CameraToneMapping* ToneMapping;
         const CameraSSR* SSR;
         const CameraSSGI* SSGI;
+        const CameraSSAO* SSAO;
     };
 
     struct EnvironmentUnit
     {
         MxHashMap<StringId, ShaderHandle> Shaders;
+        MxHashMap<StringId, ComputeShaderHandle> ComputeShaders;
 
         TextureHandle DefaultMaterialMap;
         TextureHandle DefaultNormalMap;
@@ -122,7 +126,7 @@ namespace MxEngine
 
     struct DirectionalLightUnit
     {
-        std::array<TextureHandle, 3> ShadowMaps;
+        TextureHandle ShadowMap;
         std::array<Matrix4x4, 3> ProjectionMatrices;
         std::array<Matrix4x4, 3> BiasedProjectionMatrices;
         Vector3 Direction;
@@ -158,7 +162,6 @@ namespace MxEngine
     struct RenderGroup
     {
         VertexArrayHandle VAO;
-        IndexBufferHandle IBO;
         size_t InstanceCount;
         size_t unitCount;
     };
@@ -181,7 +184,17 @@ namespace MxEngine
     struct RenderList
     {
         MxVector<RenderGroup> Groups;
-        MxVector<RenderUnit> Units;
+        MxVector<size_t> UnitsIndex;
+    };
+
+    struct ParticleSystemUnit
+    {
+        ShaderStorageBufferHandle ParticleData;
+        Matrix4x4 Transform;
+        float ParticleLifetime;
+        size_t InvocationCount;
+        size_t MaterialIndex;
+        bool IsRelative;
     };
 
     struct RenderPipeline
@@ -192,7 +205,10 @@ namespace MxEngine
         RenderList ShadowCasters;
         RenderList TransparentObjects;
         RenderList OpaqueObjects;
+        MxVector<RenderUnit> RenderUnits;
 
+        MxVector<ParticleSystemUnit> OpaqueParticleSystems;
+        MxVector<ParticleSystemUnit> TransparentParticleSystems;
         MxVector<Material> MaterialUnits;
         MxVector<CameraUnit> Cameras;
         RenderStatistics Statistics;

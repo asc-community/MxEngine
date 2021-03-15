@@ -33,8 +33,8 @@
 
 namespace MxEngine
 {
-    ShadowMapGenerator::ShadowMapGenerator(const RenderList& shadowCasters, ArrayView<Material> materials)
-        : shadowCasters(shadowCasters), materials(materials)
+    ShadowMapGenerator::ShadowMapGenerator(const RenderList& shadowCasters, ArrayView<RenderUnit> renderUnits, ArrayView<Material> materials)
+        : shadowCasters(shadowCasters), renderUnits(renderUnits), materials(materials)
     {
         Rendering::GetController().ToggleReversedDepth(false);
         Rendering::GetController().ToggleDepthOnlyMode(true);
@@ -107,7 +107,7 @@ namespace MxEngine
     }
 
     template<typename CullFunc>
-    void CastsShadowsPerGroup(const CullFunc& culler, const Shader& shader, const RenderList& shadowCasters, ArrayView<Material> materials)
+    void CastsShadowsPerGroup(const CullFunc& culler, const Shader& shader, const RenderList& shadowCasters, ArrayView<RenderUnit> units, ArrayView<Material> materials)
     {
         size_t currentUnit = 0;
         for (const auto& group : shadowCasters.Groups)
@@ -115,10 +115,9 @@ namespace MxEngine
             if (group.unitCount == 0) continue;
 
             group.VAO->Bind();
-            group.IBO->Bind();
             for (size_t i = 0; i < group.unitCount; i++, currentUnit++)
             {
-                const RenderUnit& unit = shadowCasters.Units[currentUnit];
+                const RenderUnit& unit = units[shadowCasters.UnitsIndex[currentUnit]];
                 CastShadowsPerUnit(culler, shader, unit, group.InstanceCount, materials);
             }
         }
@@ -131,11 +130,14 @@ namespace MxEngine
         shader.Bind();
         for (auto& directionalLight : directionalLights)
         {
-            for (size_t i = 0; i < directionalLight.ShadowMaps.size(); i++)
-            {
-                const auto& projection = directionalLight.ProjectionMatrices[i];
+            controller.AttachDepthMap(directionalLight.ShadowMap);
+            size_t splitSize = directionalLight.ShadowMap->GetWidth() / directionalLight.ProjectionMatrices.size();
 
-                controller.AttachDepthMap(directionalLight.ShadowMaps[i]);
+            for (size_t i = 0; i < directionalLight.ProjectionMatrices.size(); i++)
+            {
+                controller.SetViewport(int(i * splitSize), 0, splitSize, splitSize);
+
+                const auto& projection = directionalLight.ProjectionMatrices[i];
                 shader.SetUniform("LightProjMatrix", projection);
 
                 auto CullingFunction = [culler = FrustrumCuller(projection)](const Vector3& min, const Vector3& max)
@@ -143,16 +145,14 @@ namespace MxEngine
                     return InOrthoFrustrum(culler, min, max);
                 };
 
-                CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->materials);
+                CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->renderUnits, this->materials);
             }
+
         }
 
         for (auto& directionalLight : directionalLights)
         {
-            for (size_t i = 0; i < directionalLight.ShadowMaps.size(); i++)
-            {
-                directionalLight.ShadowMaps[i]->GenerateMipmaps();
-            }
+            directionalLight.ShadowMap->GenerateMipmaps();
         }
     }
 
@@ -171,7 +171,7 @@ namespace MxEngine
                 return InConeBounds(spotLight, min, max);
             };
 
-            CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->materials);
+            CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->renderUnits, this->materials);
         }
 
         for (auto& spotLight : spotLights)
@@ -202,7 +202,7 @@ namespace MxEngine
                 return InSphereBounds(pointLight, min, max);
             };
 
-            CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->materials);
+            CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->renderUnits, this->materials);
         }
 
         for (auto& pointLight : pointLights)

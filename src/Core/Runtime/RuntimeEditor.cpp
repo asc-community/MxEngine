@@ -42,6 +42,7 @@
 #include "Platform/Window/Input.h"
 #include "Core/Events/FpsUpdateEvent.h"
 #include "Core/Components/Instancing/Instance.h"
+#include "Core/Components/Physics/RigidBody.h"
 #include "Core/Config/GlobalConfig.h"
 
 namespace MxEngine
@@ -179,7 +180,7 @@ namespace MxEngine
 		Event::AddEventListener<UpdateEvent>("RuntimeEditor", 
 		[cursorPos = Vector2(), cursorModeCached = CursorMode::DISABLED, openKey, savedStateKeyHeld = false](auto& event) mutable
 		{
-			bool isHeld = Application::GetImpl()->GetWindow().IsKeyHeldUnchecked(openKey);
+			bool isHeld = WindowManager::GetWindow().IsKeyHeldUnchecked(openKey);
 			if (isHeld != savedStateKeyHeld) savedStateKeyHeld = false;
 
 			if (isHeld && !savedStateKeyHeld)
@@ -209,7 +210,7 @@ namespace MxEngine
 		return oldTime < newTime;
 	}
 
-	bool IsAnyFileUpdated(MxVector<FilePath>& filepaths, MxVector<FileSystemTime> updateTimes)
+	bool IsAnyFileUpdated(MxVector<FilePath>& filepaths, const MxVector<FileSystemTime>& updateTimes)
 	{
 		for (size_t i = 0; i < filepaths.size(); i++)
 		{
@@ -427,54 +428,83 @@ namespace MxEngine
 		ImGuizmo::Manipulate(&view[0][0], &projection[0][0], currentOperation, 
 			ImGuizmo::MODE::LOCAL, &matrix[0][0], nullptr, isSnapped ? &snapInterval[0] : nullptr);
 
-		auto oldRotation = DegreesVec(transform.GetEulerRotation());
-
-		Vector3 position{ 0.0f };
-		Vector3 rotation{ 0.0f };
-		Vector3 scale{ 0.0f };
-		ImGuizmo::DecomposeMatrixToComponents(&matrix[0][0], &position[0], &rotation[0], &scale[0]);
-
-		auto rotationDelta = rotation - oldRotation;
-		scale = VectorMax(scale, MakeVector3(0.001f));
-
-		float maxRotationDelta = Max(std::abs(rotationDelta.x), std::abs(rotationDelta.y), std::abs(rotationDelta.z));
-		maxRotationDelta = maxRotationDelta < 0.1f ? 0.0f : maxRotationDelta; // do not account small rotations
-
-		if (currentOperation == ImGuizmo::TRANSLATE)
+		if (ImGuizmo::IsUsing())
 		{
-			transform.SetPosition(position);
-		}
-		if (currentOperation == ImGuizmo::SCALE)
-		{
-			transform.SetScale(scale);
-		}
-		if (currentOperation == ImGuizmo::ROTATE)
-		{
-			     if (std::abs(rotationDelta.x) == maxRotationDelta) transform.RotateX(rotationDelta.x);
-			else if (std::abs(rotationDelta.y) == maxRotationDelta) transform.RotateY(rotationDelta.y);
-			else if (std::abs(rotationDelta.z) == maxRotationDelta) transform.RotateZ(rotationDelta.z);
+			Vector3 position{ 0.0f };
+			Vector3 rotation{ 0.0f };
+			Vector3 scale{ 0.0f };
+			ImGuizmo::DecomposeMatrixToComponents(&matrix[0][0], &position[0], &rotation[0], &scale[0]);
+
+			scale = VectorMax(scale, MakeVector3(0.001f));
+
+			if (currentOperation == ImGuizmo::TRANSLATE)
+			{
+				transform.SetPosition(position);
+			}
+			if (currentOperation == ImGuizmo::ROTATE)
+			{
+				transform.SetRotation(rotation);
+			}
+			if (currentOperation == ImGuizmo::SCALE)
+			{
+				transform.SetScale(scale);
+			}
 		}
 	}
 
     void RuntimeEditor::DrawMxObject(const MxString& treeName, MxObject::Handle object)
     {
+		auto oldTransform = object->Transform;
+
 		GUI::DrawMxObjectEditor(treeName.c_str(), *object, this->componentAdderComponentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
-		if (!IsInstanced(*object))
+
+		if (!IsInstanced(object))
 		{
 			this->DrawTransformManipulator(object->Transform);
-			GUI::DrawMxObjectBoundingBoxEditor(*object);
 		}
 		// instanciate by middle button click TODO: add docs
 		if (ImGui::IsMouseClicked(ImGuiMouseButton_Middle))
 		{
-			if (IsInstance(*object))
+			if (IsInstance(object))
 			{
-				this->currentlySelectedObject = Instanciate(*GetInstanceParent(*object));
+				this->currentlySelectedObject = Instanciate(GetInstanceParent(object));
+				this->currentlySelectedObject->Transform = object->Transform;
 			}
 			else
 			{
-				this->currentlySelectedObject = Instanciate(*object);
+				this->currentlySelectedObject = Instanciate(object);
 			}
+		}
+		// delete by lctrl + delete TODO: add docs
+		if (this->IsKeyHeld(KeyCode::DELETE) && this->IsKeyHeld(KeyCode::LEFT_CONTROL))
+		{
+			MxObject::Destroy(this->currentlySelectedObject);
+		}
+
+		if (this->currentlySelectedObject.IsValid() && this->currentlySelectedObject->HasComponent<RigidBody>())
+		{
+			auto rigidBody = this->currentlySelectedObject->GetComponent<RigidBody>();
+			auto newTransform = this->currentlySelectedObject->Transform;
+
+			auto positionDelta = newTransform.GetPosition() - oldTransform.GetPosition();
+			if (positionDelta != Vector3(0.0f))
+			{
+				if (rigidBody->IsStatic())
+				{
+					rigidBody->MakeKinematic();
+				}
+				if (rigidBody->IsDynamic())
+				{
+					rigidBody->SetLinearVelocity(positionDelta);
+					rigidBody->SetAngularVelocity(Vector3(0.0f));
+					rigidBody->UpdateTransform();
+				}
+			}
+		}
+
+		if (!IsInstanced(object))
+		{
+			GUI::DrawMxObjectBoundingBoxEditor(*object);
 		}
 	}
 
@@ -493,9 +523,9 @@ namespace MxEngine
 		return this->shouldRender;
 	}
 
-	bool RuntimeEditor::IsKeyHeld(KeyCode key)
+	bool RuntimeEditor::IsKeyHeld(KeyCode key) const
 	{
-		return Application::GetImpl()->GetWindow().IsKeyHeldUnchecked(key);
+		return WindowManager::GetWindow().IsKeyHeldUnchecked(key);
 	}
 
 	void RuntimeEditor::DrawMxObjectList(bool* isOpen)

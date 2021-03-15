@@ -29,41 +29,138 @@
 #include "RenderController.h"
 #include "Utilities/Format/Format.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
+#include "Core/Components/Rendering/ParticleSystem.h"
 #include "Core/Components/Camera/CameraController.h"
 #include "Core/Components/Camera/CameraEffects.h"
 #include "Core/Components/Camera/CameraToneMapping.h"
 #include "Core/Components/Camera/CameraSSR.h"
 #include "Core/Components/Camera/CameraSSGI.h"
+#include "Core/Components/Camera/CameraSSAO.h"
 #include "Core/Components/Lighting/DirectionalLight.h"
 #include "Core/Components/Lighting/SpotLight.h"
 #include "Core/Components/Lighting/PointLight.h"
 #include "Core/Components/Rendering/Skybox.h"
 #include "Utilities/Profiler/Profiler.h"
+#include "Platform/Compute/Compute.h"
 #include "RenderUtilities/ShadowMapGenerator.h"
 
 namespace MxEngine
 {
 	constexpr size_t MaxDirLightCount = 4;
+	constexpr size_t ParticleComputeGroupSize = 64;
 
 	void RenderController::PrepareShadowMaps()
 	{
 		MAKE_SCOPE_PROFILER("RenderController::PrepareShadowMaps()");
 
-		ShadowMapGenerator generator(this->Pipeline.ShadowCasters, this->Pipeline.MaterialUnits);
+		ShadowMapGenerator generator(this->Pipeline.ShadowCasters, this->Pipeline.RenderUnits, this->Pipeline.MaterialUnits);
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PrepareDirectionalLightMaps()");
-			generator.GenerateFor(*this->Pipeline.Environment.Shaders["DepthTexture"_id], this->Pipeline.Lighting.DirectionalLights);
+			generator.GenerateFor(*this->Pipeline.Environment.Shaders["DirLightDepthMap"_id], this->Pipeline.Lighting.DirectionalLights);
 		}
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PrepareSpotLightMaps()");
-			generator.GenerateFor(*this->Pipeline.Environment.Shaders["DepthTexture"_id], this->Pipeline.Lighting.SpotLights);
+			generator.GenerateFor(*this->Pipeline.Environment.Shaders["SpotLightDepthMap"_id], this->Pipeline.Lighting.SpotLights);
 		}
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PreparePointLightMaps()");
-			generator.GenerateFor(*this->Pipeline.Environment.Shaders["DepthCubeMap"_id], this->Pipeline.Lighting.PointLights);
+			generator.GenerateFor(*this->Pipeline.Environment.Shaders["PointLightDepthMap"_id], this->Pipeline.Lighting.PointLights);
+		}
+	}
+
+	void RenderController::ComputeParticles(const MxVector<ParticleSystemUnit>& particleSystems)
+	{
+		if (particleSystems.empty()) return;
+		MAKE_SCOPE_PROFILER("RenderController::ComputeParticles()");
+		
+		auto& computeShader = this->Pipeline.Environment.ComputeShaders["Particle"_id];
+		computeShader->Bind();
+		computeShader->SetUniform("dt", Min(Time::Delta(), 1.0f / 60.0f));
+
+		for (const auto& particleSystem : particleSystems)
+		{
+			particleSystem.ParticleData->BindBase(0);
+			computeShader->SetUniform("lifetime", particleSystem.ParticleLifetime);
+			computeShader->SetUniform("spawnpoint", particleSystem.IsRelative ? Vector3(0.0f) : Vector3(particleSystem.Transform[3]));
+
+			Compute::Dispatch(computeShader, particleSystem.InvocationCount, 1, 1);
+		}
+	}
+
+	void RenderController::SortParticles(const CameraUnit& camera, MxVector<ParticleSystemUnit>& particleSystems)
+	{
+		std::sort(particleSystems.begin(), particleSystems.end(), 
+			[&camera](const ParticleSystemUnit& p1, const ParticleSystemUnit& p2)
+			{
+				auto dist1 = camera.ViewportPosition - Vector3(p1.Transform[3]);
+				auto dist2 = camera.ViewportPosition - Vector3(p2.Transform[3]);
+				return Dot(dist1, dist1) > Dot(dist2, dist2);
+			});
+	}
+
+	void RenderController::DrawParticles(const CameraUnit& camera, MxVector<ParticleSystemUnit>& particleSystems, const Shader& shader)
+	{
+		if (particleSystems.empty()) return;
+		MAKE_SCOPE_PROFILER("RenderController::DrawParticles()");
+		this->SortParticles(camera, particleSystems);
+
+		shader.Bind();
+		shader.IgnoreNonExistingUniform("transparency");
+		shader.IgnoreNonExistingUniform("viewportSize");
+		shader.IgnoreNonExistingUniform("depthTex");
+		shader.IgnoreNonExistingUniform("light");
+		shader.IgnoreNonExistingUniform("environment.skybox");
+		shader.IgnoreNonExistingUniform("environment.irradiance");
+		shader.IgnoreNonExistingUniform("environment.skyboxRotation");
+		shader.IgnoreNonExistingUniform("environment.intensity");
+		shader.IgnoreNonExistingUniform("environment.envBRDFLUT");
+
+		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
+
+		Texture::TextureBindId textureId = 0;
+		this->BindSkyboxInformation(camera, shader, textureId);
+		
+		shader.SetUniform("viewportSize", viewportSize);
+		shader.SetUniform("projMatrix", camera.ViewProjectionMatrix);
+		shader.SetUniform("aspectRatio", camera.AspectRatio);
+		shader.SetUniform("gamma", camera.Gamma);
+
+		auto& particleMesh = this->Pipeline.Environment.RectangularObject;
+		auto& VAO = particleMesh.GetVAO();
+		VAO.Bind();
+
+		camera.DepthTexture->Bind(textureId++);
+		shader.SetUniform("depthTex", camera.DepthTexture->GetBoundId());
+		shader.SetUniform("albedoTex", textureId);
+
+		Compute::SetMemoryBarrier(BarrierType::SHADER_STORAGE_BUFFER);
+
+		for (const auto& particleSystem : particleSystems)
+		{
+			auto& material = this->Pipeline.MaterialUnits[particleSystem.MaterialIndex];
+
+			material.AlbedoMap->Bind(textureId);
+			particleSystem.ParticleData->BindBase(0);
+
+			Vector3 systemCenter = particleSystem.Transform[3];
+			Vector3 normal = Normalize(camera.ViewportPosition - systemCenter);
+			Vector3 totalLight{ 0.0f };
+			for (const auto& dirLight : this->Pipeline.Lighting.DirectionalLights)
+				totalLight += (0.5f * Dot(normal, dirLight.Direction) + 0.5f) * dirLight.Color * dirLight.Intensity * (1.0f + dirLight.AmbientIntensity);
+
+			shader.SetUniform("normal", normal);
+			shader.SetUniform("transform", particleSystem.IsRelative ? particleSystem.Transform : Matrix4x4(1.0f));
+			shader.SetUniform("metallness", material.MetallicFactor);
+			shader.SetUniform("roughness", material.RoughnessFactor);
+			shader.SetUniform("color", material.BaseColor);
+			shader.SetUniform("transparency", material.Transparency);
+			shader.SetUniform("emmision", material.Emission);
+			shader.SetUniform("light", totalLight);
+
+			this->DrawVertecies(RenderPrimitive::TRIANGLES, particleMesh.VertexCount, 0, particleSystem.InvocationCount * ParticleComputeGroupSize);
 		}
 	}
 
@@ -71,7 +168,7 @@ namespace MxEngine
 	{
 		MAKE_SCOPE_PROFILER("RenderController::DrawObjects()");
 
-		if (objects.Units.empty()) return;
+		if (objects.UnitsIndex.empty()) return;
 		shader.Bind();
 		shader.IgnoreNonExistingUniform("camera.position");
 		shader.IgnoreNonExistingUniform("camera.invViewProjMatrix");
@@ -85,10 +182,9 @@ namespace MxEngine
 			bool isInstanced = group.InstanceCount > 0;
 
 			group.VAO->Bind();
-			group.IBO->Bind();
 			for (size_t i = 0; i < group.unitCount; i++, currentUnit++)
 			{
-				const auto& unit = objects.Units[currentUnit];
+				const auto& unit = this->Pipeline.RenderUnits[objects.UnitsIndex[currentUnit]];
 				bool isUnitVisible = isInstanced || camera.Culler.IsAABBVisible(unit.MinAABB, unit.MaxAABB);
 				this->Pipeline.Statistics.AddEntry(isUnitVisible ? "drawn objects" : "culled objects", 1);
 
@@ -147,10 +243,8 @@ namespace MxEngine
 		float bloomWeight = camera.Effects->GetBloomWeight() * fogReduceFactor;
 
 		camera.AlbedoTexture->Bind(0);
-		camera.MaterialTexture->Bind(1);
 		splitShader->Bind();
 		splitShader->SetUniform("albedoTex", camera.AlbedoTexture->GetBoundId());
-		splitShader->SetUniform("materialTex", camera.MaterialTexture->GetBoundId());
 		splitShader->SetUniform("weight", bloomWeight);
 
 		auto& blurTarget = bloomTextures.front();
@@ -161,41 +255,45 @@ namespace MxEngine
 		blurTarget->GenerateMipmaps();
 		
 		// use additive blending to apply bloom to camera HDR image
-		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ONE);
+		this->GetRenderEngine().UseBlendFactors(BlendFactor::ONE, BlendFactor::ONE);
 		this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(output);
 		this->AttachFrameBufferNoClear(this->Pipeline.Environment.PostProcessFrameBuffer);
 		this->SubmitImage(blurTarget);
-		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
+		this->GetRenderEngine().UseBlendFactors(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
 	void RenderController::ApplySSAO(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
 	{
-		if (camera.Effects == nullptr || camera.Effects->GetAmbientOcclusionSamples() == 0) return;
+		if (camera.SSAO == nullptr || camera.SSAO->GetSampleCount() == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::ComputeAmbientOcclusion()");
 
-		auto& computeShader = this->Pipeline.Environment.Shaders["AmbientOcclusion"_id];
-		computeShader->Bind();
-		computeShader->IgnoreNonExistingUniform("materialTex");
-		computeShader->IgnoreNonExistingUniform("albedoTex");
-		computeShader->IgnoreNonExistingUniform("camera.position");
+		auto& ssaoShader = this->Pipeline.Environment.Shaders["AmbientOcclusion"_id];
+		ssaoShader->Bind();
+		ssaoShader->IgnoreNonExistingUniform("materialTex");
+		ssaoShader->IgnoreNonExistingUniform("albedoTex");
+		ssaoShader->IgnoreNonExistingUniform("camera.position");
 
 		Texture::TextureBindId textureId = 0;
-		this->BindGBuffer(camera, *computeShader, textureId);
-		this->BindCameraInformation(camera, *computeShader);
+		this->BindGBuffer(camera, *ssaoShader, textureId);
+		this->BindCameraInformation(camera, *ssaoShader);
 
-		computeShader->SetUniform("sampleCount", (int)camera.Effects->GetAmbientOcclusionSamples());
-		computeShader->SetUniform("radius", camera.Effects->GetAmbientOcclusionRadius());
-		computeShader->SetUniform("intensity", camera.Effects->GetAmbientOcclusionIntensity());
+		ssaoShader->SetUniform("sampleCount", (int)camera.SSAO->GetSampleCount());
+		ssaoShader->SetUniform("radius", camera.SSAO->GetRadius());
 
-		this->RenderToTexture(temporary, computeShader);
-		temporary->GenerateMipmaps();
+		auto& blurInputOutput = temporary;
+		auto& blurTemporary = output;
+
+		this->RenderToTexture(temporary, ssaoShader);
+
+		this->ApplyGaussianBlur(blurInputOutput, blurTemporary, camera.SSAO->GetBlurIterations(), camera.SSAO->GetBlurLOD());
 
 		auto& applyShader = this->Pipeline.Environment.Shaders["ApplyAmbientOcclusion"_id];
 		applyShader->Bind();
 		input->Bind(0);
-		temporary->Bind(1);
+		blurInputOutput->Bind(1);
 		applyShader->SetUniform("inputTex", input->GetBoundId());
-		applyShader->SetUniform("aoTex", temporary->GetBoundId());
+		applyShader->SetUniform("aoTex", blurInputOutput->GetBoundId());
+		applyShader->SetUniform("intensity", camera.SSAO->GetIntensity());
 
 		this->RenderToTexture(output, applyShader);
 		std::swap(input, output);
@@ -234,7 +332,7 @@ namespace MxEngine
 		camera.MaterialTexture->GenerateMipmaps();
 		camera.NormalTexture->GenerateMipmaps();
 		camera.DepthTexture->GenerateMipmaps();
-
+		
 		this->ApplySSAO(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
 		this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
 
@@ -244,8 +342,17 @@ namespace MxEngine
 		this->AttachFrameBufferNoClear(this->Pipeline.Environment.PostProcessFrameBuffer);
 		this->GetRenderEngine().UseDepthBufferMask(false);
 		this->DrawSkybox(camera);
+		
+		this->GetRenderEngine().UseBlendFactors(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA);
+		this->ToggleFaceCulling(false);
+
 		this->DrawTransparentObjects(camera);
+		this->DrawParticles(camera, this->Pipeline.TransparentParticleSystems, *this->Pipeline.Environment.Shaders["ParticleTransparent"_id]);
 		this->DrawDebugBuffer(camera);
+
+		this->ToggleFaceCulling(true);
+		this->GetRenderEngine().UseBlendFactors(BlendFactor::ONE, BlendFactor::ZERO);
+
 		this->GetRenderEngine().UseDepthBufferMask(true);
 		this->Pipeline.Environment.PostProcessFrameBuffer->DetachExtraTarget(Attachment::DEPTH_ATTACHMENT);
 
@@ -289,13 +396,13 @@ namespace MxEngine
 			auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
 
 			Vector4 colorPacked = Vector4(dirLight.Color * dirLight.Intensity, dirLight.AmbientIntensity);
+			dirLight.ShadowMap->Bind(textureId++);
 			shader->SetUniform(MxFormat("lights[{}].color", i), colorPacked);
 			shader->SetUniform(MxFormat("lights[{}].direction", i), dirLight.Direction);
+			shader->SetUniform(MxFormat("lightDepthMaps[{}]", i), dirLight.ShadowMap->GetBoundId());
 
-			for (size_t j = 0; j < dirLight.ShadowMaps.size(); j++)
+			for (size_t j = 0; j < dirLight.BiasedProjectionMatrices.size(); j++)
 			{
-				dirLight.ShadowMaps[j]->Bind(textureId++);
-				shader->SetUniform(MxFormat("lightDepthMaps[{}]", i * DirectionalLight::TextureCount + j), dirLight.ShadowMaps[j]->GetBoundId());
 				shader->SetUniform(MxFormat("lights[{}].transform[{}]", i, j), dirLight.BiasedProjectionMatrices[j]);
 			}
 		}
@@ -303,11 +410,7 @@ namespace MxEngine
 		this->Pipeline.Environment.DefaultShadowMap->Bind(textureId);
 		for (size_t i = lightCount; i < MaxDirLightCount; i++)
 		{
-			for (size_t j = 0; j < DirectionalLight::TextureCount; j++)
-			{
-				shader->SetUniform(MxFormat("lightDepthMaps[{}]", i * DirectionalLight::TextureCount + j),
-					this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
-			}
+			shader->SetUniform(MxFormat("lightDepthMaps[{}]", i), this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
 		}
 
 		this->RenderToTextureNoClear(output, shader);
@@ -317,7 +420,7 @@ namespace MxEngine
 	{
 		this->DrawIBL(camera, camera.HDRTexture);
 
-		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ONE);
+		this->GetRenderEngine().UseBlendFactors(BlendFactor::ONE, BlendFactor::ONE);
 
 		this->DrawDirectionalLights(camera, camera.HDRTexture);
 
@@ -331,16 +434,13 @@ namespace MxEngine
 		
 		this->ToggleFaceCulling(true, true, true);
 
-		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
+		this->GetRenderEngine().UseBlendFactors(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
 	void RenderController::DrawTransparentObjects(CameraUnit& camera)
 	{
-		if (this->Pipeline.TransparentObjects.Units.empty()) return;
+		if (this->Pipeline.TransparentObjects.UnitsIndex.empty()) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawTransparentObjects()");
-
-		this->GetRenderEngine().UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA);
-		this->ToggleFaceCulling(false);
 
 		auto& shader = this->Pipeline.Environment.Shaders["Transparent"_id];
 		shader->Bind();
@@ -362,13 +462,13 @@ namespace MxEngine
 			auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
 
 			Vector4 colorPacked = Vector4(dirLight.Color * dirLight.Intensity, dirLight.AmbientIntensity);
+			dirLight.ShadowMap->Bind(textureId++);
 			shader->SetUniform(MxFormat("lights[{}].color", i), colorPacked);
 			shader->SetUniform(MxFormat("lights[{}].direction", i), dirLight.Direction);
+			shader->SetUniform(MxFormat("lightDepthMaps[{}]", i), dirLight.ShadowMap->GetBoundId());
 
-			for (size_t j = 0; j < dirLight.ShadowMaps.size(); j++)
+			for (size_t j = 0; j < dirLight.BiasedProjectionMatrices.size(); j++)
 			{
-				dirLight.ShadowMaps[j]->Bind(textureId++);
-				shader->SetUniform(MxFormat("lightDepthMaps[{}]", i * DirectionalLight::TextureCount + j), dirLight.ShadowMaps[j]->GetBoundId());
 				shader->SetUniform(MxFormat("lights[{}].transform[{}]", i, j), dirLight.BiasedProjectionMatrices[j]);
 			}
 		}
@@ -376,17 +476,10 @@ namespace MxEngine
 		this->Pipeline.Environment.DefaultShadowMap->Bind(textureId);
 		for (size_t i = lightCount; i < MaxDirLightCount; i++)
 		{
-			for (size_t j = 0; j < DirectionalLight::TextureCount; j++)
-			{
-				shader->SetUniform(MxFormat("lightDepthMaps[{}]", i * DirectionalLight::TextureCount + j),
-					this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
-			}
+			shader->SetUniform(MxFormat("lightDepthMaps[{}]", i), this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
 		}
 
 		this->DrawObjects(camera, *shader, this->Pipeline.TransparentObjects);
-
-		this->ToggleFaceCulling(true);
-		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
 	void RenderController::DrawIBL(CameraUnit& camera, TextureHandle& output)
@@ -402,8 +495,6 @@ namespace MxEngine
 		this->BindCameraInformation(camera, *shader);
 		this->BindSkyboxInformation(camera, *shader, textureId);
 		
-		this->Pipeline.Environment.EnvironmentBRDFLUT->Bind(textureId++);
-		shader->SetUniform("envBRDFLUT", this->Pipeline.Environment.EnvironmentBRDFLUT->GetBoundId());
 		shader->SetUniform("gamma", camera.Gamma);
 
 		this->RenderToTexture(output, shader);
@@ -459,27 +550,35 @@ namespace MxEngine
 	{
 		if (camera.SSR == nullptr || camera.SSR->GetSteps() == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::ApplySSR()");
-		input->GenerateMipmaps();
 
 		auto& SSRShader = this->Pipeline.Environment.Shaders["SSR"_id];
 		SSRShader->Bind();
 		SSRShader->IgnoreNonExistingUniform("albedoTex");
+		SSRShader->IgnoreNonExistingUniform("materialTex");
 		
 		Texture::TextureBindId textureId = 0;
 		this->BindGBuffer(camera, *SSRShader, textureId);
 		this->BindCameraInformation(camera, *SSRShader);
 
-		input->Bind(textureId++);
-		SSRShader->SetUniform("HDRTex", input->GetBoundId());
-
 		SSRShader->SetUniform("thickness", camera.SSR->GetThickness());
-		SSRShader->SetUniform("maxCosAngle", camera.SSR->GetMaxCosAngle());
 		SSRShader->SetUniform("startDistance", camera.SSR->GetStartDistance());
 		SSRShader->SetUniform("steps", (int)camera.SSR->GetSteps());
-		SSRShader->SetUniform("fading", camera.SSR->GetFading());
-		SSRShader->SetUniform("maxDistance", camera.SSR->GetMaxDistance());
 
-		this->RenderToTexture(output, SSRShader);
+		this->RenderToTexture(temporary, SSRShader);
+		temporary->GenerateMipmaps();
+
+		auto& applySSRShader = this->Pipeline.Environment.Shaders["ApplySSR"_id];
+		applySSRShader->Bind();
+		
+		textureId = 0;
+		camera.MaterialTexture->Bind(textureId++);
+		temporary->Bind(textureId++);
+		input->Bind(textureId++);
+		applySSRShader->SetUniform("materialTex", camera.MaterialTexture->GetBoundId());
+		applySSRShader->SetUniform("SSRTex", temporary->GetBoundId());
+		applySSRShader->SetUniform("HDRTex", input->GetBoundId());
+
+		this->RenderToTexture(output, applySSRShader);
 		std::swap(input, output);
 	}
 
@@ -639,9 +738,7 @@ namespace MxEngine
 
 		// TODO: refactor
 		auto& VAO = pyramid.GetVAO();
-		auto& IBO = pyramid.GetIBO();
 		VAO.Bind();
-		IBO.Bind();
 
 		for (size_t i = 0; i < spotLights.size(); i++)
 		{
@@ -656,7 +753,7 @@ namespace MxEngine
 			this->GetRenderEngine().SetDefaultVertexAttribute(10, Vector4(spotLight.Direction, spotLight.OuterAngle));
 			this->GetRenderEngine().SetDefaultVertexAttribute(11, Vector4(spotLight.Color, spotLight.AmbientIntensity));
 
-			this->DrawIndicies(RenderPrimitive::TRIANGLES, IBO.GetSize(), 0, 0);
+			this->DrawIndicies(RenderPrimitive::TRIANGLES, pyramid.GetIndexCount(), 0, 0);
 		}
 	}
 
@@ -686,9 +783,7 @@ namespace MxEngine
 
 		// TODO: refactor
 		auto& VAO = sphere.GetVAO();
-		auto& IBO = sphere.GetIBO();
 		VAO.Bind();
-		IBO.Bind();
 
 		for (size_t i = 0; i < pointLights.size(); i++)
 		{
@@ -700,7 +795,7 @@ namespace MxEngine
 			this->GetRenderEngine().SetDefaultVertexAttribute(9,  Vector4(pointLight.Position, pointLight.Radius));
 			this->GetRenderEngine().SetDefaultVertexAttribute(10, Vector4(pointLight.Color, pointLight.AmbientIntensity));
 
-			this->DrawIndicies(RenderPrimitive::TRIANGLES, IBO.GetSize(), 0, 0);
+			this->DrawIndicies(RenderPrimitive::TRIANGLES, sphere.GetIndexCount(), 0, 0);
 		}
 	}
 
@@ -730,11 +825,9 @@ namespace MxEngine
 		instancedPointLights.SubmitToVBO();
 		// TODO: refactor
 		auto& VAO = instancedPointLights.GetVAO();
-		auto& IBO = instancedPointLights.GetIBO();
 		VAO.Bind();
-		IBO.Bind();
 
-		this->DrawIndicies(RenderPrimitive::TRIANGLES, IBO.GetSize(), 0, instancedPointLights.Instances.size());
+		this->DrawIndicies(RenderPrimitive::TRIANGLES, instancedPointLights.GetIndexCount(), 0, instancedPointLights.Instances.size());
 	}
 
 	void RenderController::DrawNonShadowedSpotLights(CameraUnit& camera, TextureHandle& output)
@@ -763,11 +856,9 @@ namespace MxEngine
 		instancedSpotLights.SubmitToVBO();
 		// TODO: refactor
 		auto& VAO = instancedSpotLights.GetVAO();
-		auto& IBO = instancedSpotLights.GetIBO();
 		VAO.Bind();
-		IBO.Bind();
 
-		this->DrawIndicies(RenderPrimitive::TRIANGLES, IBO.GetSize(), 0, instancedSpotLights.Instances.size());
+		this->DrawIndicies(RenderPrimitive::TRIANGLES, instancedSpotLights.GetIndexCount(), 0, instancedSpotLights.Instances.size());
 	}
 
 	void RenderController::BindFogInformation(const CameraUnit& camera, const Shader& shader)
@@ -778,12 +869,21 @@ namespace MxEngine
 		shader.SetUniform("fog.color", camera.Effects->GetFogColor());
 	}
 
+	void RenderController::AttachDefaultVAO()
+	{
+		// simular to default framebuffer, we simply unbind any VAO to set it
+		// to default (0) state
+		this->Pipeline.Environment.RectangularObject.GetVAO().Unbind();
+	}
+
 	void RenderController::BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId)
 	{
 		camera.SkyboxTexture->Bind(startId++);
 		camera.IrradianceTexture->Bind(startId++);
+		this->Pipeline.Environment.EnvironmentBRDFLUT->Bind(startId++);
 		shader.SetUniform("environment.skybox", camera.SkyboxTexture->GetBoundId());
 		shader.SetUniform("environment.irradiance", camera.IrradianceTexture->GetBoundId());
+		shader.SetUniform("environment.envBRDFLUT", this->Pipeline.Environment.EnvironmentBRDFLUT->GetBoundId());
 		shader.SetUniform("environment.skyboxRotation", camera.InversedSkyboxRotation);
 		shader.SetUniform("environment.intensity", camera.SkyboxIntensity);
 	}
@@ -942,7 +1042,7 @@ namespace MxEngine
 		}
 		else
 		{
-			this->GetRenderEngine().DrawVerteciesInstanced(primitive, vertexCount, instanceCount, instanceCount);
+			this->GetRenderEngine().DrawVerteciesInstanced(primitive, vertexCount, vertexOffset, instanceCount);
 		}
 	}
 
@@ -1020,9 +1120,6 @@ namespace MxEngine
 		if (this->Pipeline.Environment.DebugBufferObject.VertexCount == 0) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawDebugBuffer()");
 
-		this->GetRenderEngine().UseBlending(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA);
-		this->GetRenderEngine().UseDepthBuffer(!this->Pipeline.Environment.OverlayDebugDraws); //-V807
-
 		auto& shader = *this->Pipeline.Environment.Shaders["DebugDraw"_id];
 		shader.Bind();
 		shader.SetUniform("ViewProjMatrix", camera.ViewProjectionMatrix);
@@ -1032,9 +1129,6 @@ namespace MxEngine
 		VAO.Bind();
 
 		this->DrawVertecies(RenderPrimitive::LINES, this->Pipeline.Environment.DebugBufferObject.VertexCount, 0, 0);
-
-		this->GetRenderEngine().UseDepthBuffer(true);
-		this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
 	}
 
 	EnvironmentUnit& RenderController::GetEnvironment()
@@ -1076,30 +1170,66 @@ namespace MxEngine
 		this->Pipeline.Lighting.PointLights.clear();
 		this->Pipeline.Lighting.SpotLights.clear();
 		this->Pipeline.ShadowCasters.Groups.clear();
-		this->Pipeline.ShadowCasters.Units.clear();
+		this->Pipeline.ShadowCasters.UnitsIndex.clear();
 		this->Pipeline.TransparentObjects.Groups.clear();
-		this->Pipeline.TransparentObjects.Units.clear();
+		this->Pipeline.TransparentObjects.UnitsIndex.clear();
 		this->Pipeline.OpaqueObjects.Groups.clear();
-		this->Pipeline.OpaqueObjects.Units.clear();
+		this->Pipeline.OpaqueObjects.UnitsIndex.clear();
+		this->Pipeline.RenderUnits.clear();
+		this->Pipeline.OpaqueParticleSystems.clear();
+		this->Pipeline.TransparentParticleSystems.clear();
 		this->Pipeline.MaterialUnits.clear();
 		this->Pipeline.Cameras.clear();
+	}
+
+	void RenderController::SubmitParticleSystem(const ParticleSystem& system, const Material& material, const TransformComponent& parentTransform)
+	{
+		if (material.Transparency == 0.0f) return;
+		bool isTransparent = material.Transparency < 1.0f;
+
+		auto& particleSystem = (isTransparent ? this->Pipeline.TransparentParticleSystems : this->Pipeline.OpaqueParticleSystems).emplace_back();
+		particleSystem.ParticleData = system.GetParticleBuffer();
+		particleSystem.ParticleLifetime = system.GetParticleLifetime();
+		particleSystem.IsRelative = system.IsRelative();
+		particleSystem.InvocationCount = system.GetMaxParticleCount() / ParticleComputeGroupSize;
+		particleSystem.MaterialIndex = this->Pipeline.MaterialUnits.size();
+
+		parentTransform.GetMatrix(particleSystem.Transform);
+		
+		auto& materialCopy = this->Pipeline.MaterialUnits.emplace_back(material);
+		if (!materialCopy.AlbedoMap.IsValid()) materialCopy.AlbedoMap = this->Pipeline.Environment.DefaultMaterialMap;
 	}
 
 	void RenderController::SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform)
 	{
 		auto& dirLight = this->Pipeline.Lighting.DirectionalLights.emplace_back();
-		MX_ASSERT(dirLight.ShadowMaps.size() == DirectionalLight::TextureCount);
+		MX_ASSERT(dirLight.ProjectionMatrices.size() == DirectionalLight::TextureCount);
+		MX_ASSERT(dirLight.BiasedProjectionMatrices.size() == DirectionalLight::TextureCount);
 
 		dirLight.AmbientIntensity = light.GetAmbientIntensity();
 		dirLight.Intensity = light.GetIntensity();
 		dirLight.Color = light.GetColor();
 		dirLight.Direction = Normalize(light.Direction);
 
-		for (size_t i = 0; i < DirectionalLight::TextureCount; i++)
+		constexpr auto ProjectionBiasMatrix = [](size_t projectionIndex)
 		{
-			dirLight.ShadowMaps[i] = light.GetDepthTexture(i);
+			float scale = 1.0f / DirectionalLight::TextureCount;
+			float offset = projectionIndex * scale;
+
+			Matrix4x4 Result(
+				0.5f * scale,          0.0f, 0.0f, 0.0f,
+				0.0f,                  0.5f, 0.0f, 0.0f,
+				0.0f,                  0.0f, 0.5f, 0.0f,
+				0.5f * scale + offset, 0.5f, 0.5f, 1.0f
+			);
+			return Result;
+		};
+
+		dirLight.ShadowMap = light.DepthMap;
+		for (size_t i = 0; i < dirLight.ProjectionMatrices.size(); i++)
+		{
 			dirLight.ProjectionMatrices[i] = light.GetMatrix(parentTransform.GetPosition(), i);
-			dirLight.BiasedProjectionMatrices[i] = MakeBiasMatrix() * dirLight.ProjectionMatrices[i];
+			dirLight.BiasedProjectionMatrices[i] = ProjectionBiasMatrix(i) * dirLight.ProjectionMatrices[i];
 		}
 	}
 
@@ -1111,7 +1241,7 @@ namespace MxEngine
 			auto& pointLight = this->Pipeline.Lighting.PointLights.emplace_back();
 			baseLightData = &pointLight;
 
-			pointLight.ShadowMap = light.GetDepthCubeMap();
+			pointLight.ShadowMap = light.DepthMap;
 			for (size_t i = 0; i < std::size(pointLight.ProjectionMatrices); i++)
 				pointLight.ProjectionMatrices[i] = light.GetMatrix(i, parentTransform.GetPosition());
 		}
@@ -1138,7 +1268,7 @@ namespace MxEngine
 
 			spotLight.ProjectionMatrix = light.GetMatrix(parentTransform.GetPosition());
 			spotLight.BiasedProjectionMatrix = MakeBiasMatrix() * light.GetMatrix(parentTransform.GetPosition());
-			spotLight.ShadowMap = light.GetDepthTexture();
+			spotLight.ShadowMap = light.DepthMap;
 		}
 		else
 		{
@@ -1157,11 +1287,12 @@ namespace MxEngine
 	}
 
 	void RenderController::SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
-		const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping, const CameraSSR* ssr, const CameraSSGI* ssgi)
+		const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping, const CameraSSR* ssr, const CameraSSGI* ssgi, const CameraSSAO* ssao)
 	{
 		auto& camera = this->Pipeline.Cameras.emplace_back();
 
 		camera.ViewportPosition           = parentTransform.GetPosition();
+		camera.AspectRatio                = controller.Camera.GetAspectRatio();
 		camera.StaticViewProjectionMatrix = controller.GetMatrix(MakeVector3(0.0f));
 		camera.ViewProjectionMatrix       = controller.GetMatrix(parentTransform.GetPosition());
 		camera.InverseViewProjMatrix      = Inverse(camera.ViewProjectionMatrix);
@@ -1174,19 +1305,20 @@ namespace MxEngine
 		camera.DepthTexture               = controller.GetDepthTexture();
 		camera.AverageWhiteTexture        = controller.GetAverageWhiteTexture();
 		camera.HDRTexture                 = controller.GetHDRTexture();
-		camera.SwapTexture1                = controller.GetSwapHDRTexture1();
-		camera.SwapTexture2                = controller.GetSwapHDRTexture2();
+		camera.SwapTexture1               = controller.GetSwapHDRTexture1();
+		camera.SwapTexture2               = controller.GetSwapHDRTexture2();
 		camera.OutputTexture              = controller.GetRenderTexture();
 		camera.RenderToTexture            = controller.IsRendering();
 		camera.SkyboxTexture              = (skybox != nullptr && skybox->CubeMap.IsValid()) ? skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;
 		camera.IrradianceTexture          = (skybox != nullptr && skybox->Irradiance.IsValid()) ? skybox->Irradiance : camera.SkyboxTexture;
 		camera.SkyboxIntensity            = (skybox != nullptr) ? skybox->GetIntensity() : Skybox::DefaultIntensity;
-		camera.InversedSkyboxRotation     = (skybox != nullptr) ? Transpose(ToMatrix(skybox->GetRotation())) : Matrix4x4(1.0f);
+		camera.InversedSkyboxRotation     = (skybox != nullptr) ? Transpose(MakeRotationMatrix(RadiansVec(skybox->GetRotation()))) : Matrix3x3(1.0f);
 		camera.Gamma                      = (toneMapping != nullptr) ? toneMapping->GetGamma() : CameraToneMapping::DefaultGamma;
 		camera.Effects                    = effects;
 		camera.ToneMapping                = toneMapping;
 		camera.SSR                        = ssr;
 		camera.SSGI                       = ssgi;
+		camera.SSAO                       = ssao;
 	}
 
 	size_t RenderController::SubmitRenderGroup(const Mesh& mesh, size_t instanceCount)
@@ -1202,7 +1334,6 @@ namespace MxEngine
 		for (auto subType : groupSubTypes)
 		{
 			subType.get().VAO = mesh.GetVAO();
-			subType.get().IBO = mesh.GetIBO();
 			subType.get().InstanceCount = instanceCount;
 			subType.get().unitCount = 0;
 		}
@@ -1216,7 +1347,8 @@ namespace MxEngine
 		bool isTransparent = material.Transparency < 1.0f;
 		if (isInvisible) return;
 
-		RenderUnit renderUnit;
+		size_t unitIndex = this->Pipeline.RenderUnits.size();
+		auto& renderUnit = this->Pipeline.RenderUnits.emplace_back();
 
 		renderUnit.materialIndex = this->Pipeline.MaterialUnits.size();
 		renderUnit.IndexCount = submesh.Data.GetIndiciesCount();
@@ -1237,20 +1369,20 @@ namespace MxEngine
 		{
 			auto& shadowCasters = this->Pipeline.ShadowCasters;
 			shadowCasters.Groups[renderGroupIndex].unitCount++;
-			shadowCasters.Units.push_back(renderUnit);
+			shadowCasters.UnitsIndex.push_back(unitIndex);
 		}
 
 		if (isTransparent)
 		{
 			auto& transparentObjects = this->Pipeline.TransparentObjects;
 			transparentObjects.Groups[renderGroupIndex].unitCount++;
-			transparentObjects.Units.push_back(std::move(renderUnit));
+			transparentObjects.UnitsIndex.push_back(unitIndex);
 		}
 		else
 		{
 			auto& opaqueObjects = this->Pipeline.OpaqueObjects;
 			opaqueObjects.Groups[renderGroupIndex].unitCount++;
-			opaqueObjects.Units.push_back(std::move(renderUnit));
+			opaqueObjects.UnitsIndex.push_back(unitIndex);
 		}
 
 		// submit render material
@@ -1298,17 +1430,21 @@ namespace MxEngine
 			return;
 		}
 
+		this->ComputeParticles(this->Pipeline.OpaqueParticleSystems);
+		this->ComputeParticles(this->Pipeline.TransparentParticleSystems);
+
 		this->PrepareShadowMaps();
 
 		for (auto& camera : this->Pipeline.Cameras)
 		{
 			if (!camera.RenderToTexture) continue;
 
-			this->GetRenderEngine().UseBlending(BlendFactor::ONE, BlendFactor::ZERO);
+			this->GetRenderEngine().UseBlendFactors(BlendFactor::ONE, BlendFactor::ZERO);
 			this->ToggleReversedDepth(camera.IsPerspective);
 			this->AttachFrameBuffer(camera.GBuffer);
 
 			this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBuffer"_id], this->Pipeline.OpaqueObjects);
+			this->DrawParticles(camera, this->Pipeline.OpaqueParticleSystems, *this->Pipeline.Environment.Shaders["ParticleOpaque"_id]);
 			this->PerformLightPass(camera);
 			this->PerformPostProcessing(camera);
 
@@ -1328,5 +1464,6 @@ namespace MxEngine
 
 			this->SubmitImage(mainCamera.OutputTexture);
 		}
+		this->AttachDefaultVAO();
 	}
 }

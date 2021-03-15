@@ -61,11 +61,11 @@ namespace MxEngine
         CollisionCallback onCollisionEnter;
         CollisionCallback onCollisionExit;
 
-        void UpdateTransform();
     public:
         RigidBody() = default;
         void Init();
         void OnUpdate(float dt);
+        void UpdateTransform();
         void UpdateCollider();
 
         NativeRigidBodyHandle GetNativeHandle() const;

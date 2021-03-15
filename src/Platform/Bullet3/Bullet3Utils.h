@@ -19,7 +19,7 @@ namespace MxEngine
 
     inline void ToBulletTransform(btTransform& to, const TransformComponent& from)
     {
-        auto rot = from.GetRotation();
+        auto rot = from.GetRotationQuaternion();
         to.setIdentity();
         to.setOrigin(ToBulletVector3(from.GetPosition()));
         to.setRotation(*reinterpret_cast<btQuaternion*>(&rot));

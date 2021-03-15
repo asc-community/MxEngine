@@ -18,14 +18,13 @@ struct Camera
 
 uniform Camera camera;
 uniform EnvironmentInfo environment;
-uniform sampler2D envBRDFLUT;
 
 void main()
 {
     FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
     vec3 viewDirection = normalize(camera.position - fragment.position);
 
-    vec3 IBL = calculateIBL(fragment, viewDirection, envBRDFLUT, environment, gamma);
+    vec3 IBL = calculateIBL(fragment, viewDirection, environment, gamma);
 
     OutColor = vec4(IBL, 1.0f);
 }

@@ -210,6 +210,11 @@ namespace MxEngine
             localPath = FileManager::GetProximatePath(absolutePath, workingDirectory);
         }
 
+        if (!File::Exists(localPath))
+        {
+            File _(localPath, File::WRITE);
+        }
+
         if (File::IsFile(localPath))
         {
             return FileManager::AddFile(localPath);

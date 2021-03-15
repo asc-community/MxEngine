@@ -99,6 +99,15 @@ namespace MxEngine
 		GLCALL(glViewport(x, y, width, height));
 	}
 
+	Renderer& Renderer::UseClipDistance(size_t count)
+	{
+		for (size_t i = 0; i < count; i++)
+		{
+			GLCALL(glEnable(GL_CLIP_DISTANCE0 + i));
+		}
+		return *this;
+	}
+
 	Renderer& Renderer::UseSeamlessCubeMaps(bool value)
 	{
 		if (value)
@@ -255,7 +264,7 @@ namespace MxEngine
 		return *this;
 	}
 
-	Renderer& Renderer::UseBlending(BlendFactor src, BlendFactor dist)
+	Renderer& Renderer::UseBlendFactors(BlendFactor src, BlendFactor dist)
 	{
 		if (src == BlendFactor::NONE || dist == BlendFactor::NONE)
 		{
