@@ -41,19 +41,19 @@
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
-        1.0,
-        1.0
+        0.9117647409439087,
+        0.0
       ],
       "displacement": 0.02500000037252903,
       "emission": 0.0,
       "emissive map": 18446744073709551615,
       "height map": 18446744073709551615,
       "id": 1,
-      "metallic factor": 0.0,
+      "metallic factor": 1.0,
       "metallic map": 18446744073709551615,
       "name": "DefaultMaterial",
       "normal map": 18446744073709551615,
-      "roughness factor": 0.75,
+      "roughness factor": 0.25,
       "roughness map": 18446744073709551615,
       "transparency": 1.0,
       "uv multipliers": [
@@ -110,6 +110,81 @@
         1.0,
         1.0
       ]
+    },
+    {
+      "albedo map": 10,
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 1.5,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 4,
+      "metallic factor": 0.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 1.0,
+      "roughness map": 18446744073709551615,
+      "transparency": 0.5,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 20,
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        1.0,
+        0.9999899864196777,
+        0.9999899864196777
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 3.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 5,
+      "metallic factor": 0.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 0.0,
+      "roughness map": 18446744073709551615,
+      "transparency": 0.800000011920929,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 18446744073709551615,
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.4215686321258545,
+        0.2872452735900879,
+        0.2872452735900879
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 6,
+      "metallic factor": 0.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 0.75,
+      "roughness map": 18446744073709551615,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
     }
   ],
   "Mesh": [
@@ -160,6 +235,30 @@
         "radius": 0.7071067690849304
       },
       "id": 1
+    },
+    {
+      "_filepath": "Engine/Models/cylinder_20.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.7071067690849304
+      },
+      "id": 3
     }
   ],
   "Script": null,
@@ -177,6 +276,34 @@
       },
       "id": 9,
       "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\star.png"
+      },
+      "id": 10,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\fire.png"
+      },
+      "id": 20,
+      "wrap type": "REPEAT"
     }
   ],
   "globals": {
@@ -189,7 +316,7 @@
     "paused": false,
     "physics-step": 1.0,
     "time-scale": 1.0,
-    "total-time": 17515.9140625,
+    "total-time": 0.0,
     "viewport": 0
   },
   "mxobjects": [
@@ -197,14 +324,14 @@
       "CameraController": {
         "camera type": "PERSPECTIVE",
         "direction": [
-          -0.017832567915320396,
-          -0.3415360748767853,
-          0.9396995306015015
+          -0.6470794677734375,
+          -0.21585847437381744,
+          0.7312272191047668
         ],
         "forward vector": [
-          -0.018973467871546745,
+          -0.6627029180526733,
           0.0,
-          0.9998199939727783
+          0.7488824129104614
         ],
         "id": 0,
         "is listening window resize event": false,
@@ -216,9 +343,9 @@
           "znear": 0.10000000149011612
         },
         "right vector": [
-          -0.9998199939727783,
+          -0.7488822937011719,
           0.0,
-          -0.01897362992167473
+          -0.6627030372619629
         ],
         "rotate speed": 10.0,
         "up vector": [
@@ -307,23 +434,21 @@
         "rotation": [
           0.0,
           0.0,
-          0.0,
-          1.0
+          0.0
         ]
       },
       "displayed": true,
       "name": "Camera",
       "transform": {
         "position": [
-          5.533270835876465,
-          13.07680892944336,
-          -2.109308958053589
+          11.527750015258789,
+          12.649925231933594,
+          -7.6469268798828125
         ],
         "rotation": [
           0.0,
           0.0,
-          0.0,
-          1.0
+          0.0
         ],
         "scale": [
           1.0,
@@ -345,9 +470,11 @@
         "max initial time alive": 4.0,
         "max particle count": 256,
         "max particle size": 1.5,
-        "min particle size": 0.5,
+        "max spawn distance": 0.0,
+        "min particle size": 0.05000000074505806,
+        "min spawn distance": 0.0,
+        "particle angular speed": 0.0,
         "particle lifetime": 4.0,
-        "particle spawn distance": 0.5,
         "particle speed": 0.05000000074505806,
         "shape": "SPHERE"
       },
@@ -362,13 +489,12 @@
         "rotation": [
           0.0,
           0.0,
-          0.0,
-          1.0
+          0.0
         ],
         "scale": [
-          1.0,
-          1.0,
-          1.0
+          5.041599750518799,
+          5.041599750518799,
+          5.041599750518799
         ]
       }
     },
@@ -397,8 +523,7 @@
         "rotation": [
           0.0,
           0.0,
-          0.0,
-          1.0
+          0.0
         ],
         "scale": [
           145.55319213867188,
@@ -432,8 +557,7 @@
         "rotation": [
           0.0,
           0.0,
-          0.0,
-          1.0
+          0.0
         ],
         "scale": [
           2.069999933242798,
@@ -455,9 +579,11 @@
         "max initial time alive": 0.10000000149011612,
         "max particle count": 512,
         "max particle size": 0.029999999329447746,
+        "max spawn distance": 0.0,
         "min particle size": 0.009999999776482582,
+        "min spawn distance": 0.0,
+        "particle angular speed": 0.0,
         "particle lifetime": 1.0,
-        "particle spawn distance": 0.0,
         "particle speed": 2.0,
         "shape": "SPHERE"
       },
@@ -472,8 +598,170 @@
         "rotation": [
           0.0,
           0.0,
-          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
           1.0
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 4,
+        "materials": [
+          4
+        ]
+      },
+      "ParticleSystem": {
+        "id": 2,
+        "is relative": true,
+        "max initial time alive": 0.0,
+        "max particle count": 256,
+        "max particle size": 0.3499999940395355,
+        "max spawn distance": 3.0,
+        "min particle size": 0.05000000074505806,
+        "min spawn distance": 0.0,
+        "particle angular speed": 5.0,
+        "particle lifetime": 10000.0,
+        "particle speed": -0.10000000149011612,
+        "shape": "DISK"
+      },
+      "displayed": true,
+      "name": "Stars",
+      "transform": {
+        "position": [
+          5.246739864349365,
+          8.937172889709473,
+          -4.333069801330566
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.40299999713897705,
+          0.40299999713897705,
+          0.40299999713897705
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 5,
+        "materials": [
+          5
+        ]
+      },
+      "ParticleSystem": {
+        "id": 3,
+        "is relative": false,
+        "max initial time alive": 2.0,
+        "max particle count": 64,
+        "max particle size": 0.5,
+        "max spawn distance": 0.0,
+        "min particle size": 0.25,
+        "min spawn distance": 0.0,
+        "particle angular speed": 0.0,
+        "particle lifetime": 2.0,
+        "particle speed": 0.20000000298023224,
+        "shape": "HEMISPHERE"
+      },
+      "displayed": true,
+      "name": "Fire",
+      "transform": {
+        "position": [
+          -2.0,
+          9.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.600600004196167,
+          14.212030410766602,
+          2.122525215148926
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 6,
+        "materials": [
+          6
+        ]
+      },
+      "MeshSource": {
+        "casts shadow": true,
+        "id": 2,
+        "is drawn": true,
+        "is static": false,
+        "mesh": 3
+      },
+      "displayed": true,
+      "name": "Cylinder",
+      "transform": {
+        "position": [
+          -2.0,
+          8.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.4800000190734863,
+          1.4800000190734863,
+          1.4800000190734863
+        ]
+      }
+    },
+    {
+      "DirectionalLight": {
+        "ambient intensity": 0.0,
+        "cascade direction": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "color": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "direction": [
+          1.0,
+          1.0,
+          -1.0
+        ],
+        "id": 0,
+        "intensity": 0.10000000149011612,
+        "is following viewport": false,
+        "projections": [
+          15.0,
+          150.0,
+          1500.0
+        ]
+      },
+      "displayed": true,
+      "name": "SunLight",
+      "transform": {
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
         ],
         "scale": [
           1.0,

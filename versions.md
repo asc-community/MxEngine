@@ -244,3 +244,8 @@
 - runtime reflection, scene saving and loading
 - optimized mesh and texture storage (normals as R8G8, o vertex data on CPU side)
 - more editor features (instancing by hotkey, viewport selection, loading model files as MxObjects)
+# 8.1.0
+- screen-space global illumination algorithm as separate camera component
+- particle systems via compute shaders: opaque particles with pbr shadowing, transparent particles with simple shadowing
+- fixes in lighting, shading, ssr and ssao
+- more manipulations in editor: deleting by key, manipulation of physical objects, easier instancing

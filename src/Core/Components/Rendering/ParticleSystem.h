@@ -40,13 +40,14 @@ namespace MxEngine
             float TimeAlive;
             Vector3 Velocity;
             float Size;
-            Vector3 _Padding;
+            Vector3 AngularParams;
             float SpawnDistance;
         };
 
         enum class Shape
         {
             SPHERE,
+            HEMISPHERE,
             DISK,
             RAY,
             LINE,
@@ -61,6 +62,7 @@ namespace MxEngine
         float particleMinSize = 0.05f;
         float particleMaxSize = 0.05f;
         float particleSpeed = 1.0f;
+        float particleAngularSpeed = 0.0f;
         float maxInitialTimeAlive = 0.0f;
         float minSpawnDistance = 0.0f;
         float maxSpawnDistance = 0.0f;
@@ -93,6 +95,8 @@ namespace MxEngine
 
         float GetParticleSpeed() const;
         void SetParticleSpeed(float speed);
+        float GetParticleAngularSpeed() const;
+        void SetParticleAngularSpeed(float speed);
 
         float GetMinSpawnDistance() const;
         void SetMinSpawnDistance(float distance);

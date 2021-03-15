@@ -68,6 +68,12 @@ namespace MxEngine
             result = Random::GetUnitVector3();
             break;
         }
+        case ParticleSystem::Shape::HEMISPHERE:
+        {
+            result = Random::GetUnitVector3();
+            result.y = std::abs(result.y);
+            break;
+        }
         case ParticleSystem::Shape::DISK:
         {
             Vector2 v = Random::GetUnitVector2();
@@ -124,10 +130,13 @@ namespace MxEngine
         for (auto& particle : particles)
         {
             auto shapeBasedRandom = Matrix3x3(particleTransform) * GetRandomVector3(this->GetShape());
+            float angularSpeed = this->GetParticleAngularSpeed() == 0.0f ? 0.0001f : this->GetParticleAngularSpeed();
+            float linearSpeed = this->GetParticleSpeed() == 0.0f ? 0.0001f : this->GetParticleSpeed();
 
+            particle.AngularParams = Matrix3x3(particleTransform) * Vector3(0.0f, 1.0f, 0.0f) * angularSpeed;
             particle.SpawnDistance = Random::Range(this->GetMinSpawnDistance(), this->GetMaxSpawnDistance());
             particle.Position = particle.SpawnDistance * shapeBasedRandom + Vector3(particleTransform[3]);
-            particle.Velocity = this->GetParticleSpeed() * shapeBasedRandom;
+            particle.Velocity = linearSpeed * shapeBasedRandom;
             particle.TimeAlive = Random::GetFloat() * this->GetMaxInitialTimeAlive();
             particle.Size = Random::Range(this->GetMinParticleSize(), this->GetMaxParticleSize());
         }
@@ -179,7 +188,18 @@ namespace MxEngine
 
     void ParticleSystem::SetParticleSpeed(float speed)
     {
-        this->particleSpeed = Max(speed, 0.0001f);
+        this->particleSpeed = speed;
+        this->Invalidate();
+    }
+
+    float ParticleSystem::GetParticleAngularSpeed() const
+    {
+        return this->particleAngularSpeed;
+    }
+
+    void ParticleSystem::SetParticleAngularSpeed(float speed)
+    {
+        this->particleAngularSpeed = speed;
         this->Invalidate();
     }
 
@@ -249,6 +269,7 @@ namespace MxEngine
         rttr::registration::enumeration<ParticleSystem::Shape>("ParticleSystemShape")
         (
             rttr::value("SPHERE", ParticleSystem::Shape::SPHERE),
+            rttr::value("HEMISPHERE", ParticleSystem::Shape::HEMISPHERE),
             rttr::value("DISK", ParticleSystem::Shape::DISK),
             rttr::value("RAY", ParticleSystem::Shape::RAY),
             rttr::value("LINE", ParticleSystem::Shape::LINE),
@@ -297,7 +318,11 @@ namespace MxEngine
             .property("particle speed", &ParticleSystem::GetParticleSpeed, &ParticleSystem::SetParticleSpeed)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("particle angular speed", &ParticleSystem::GetParticleAngularSpeed, &ParticleSystem::SetParticleAngularSpeed)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
             .property("min spawn distance", &ParticleSystem::GetMinSpawnDistance, &ParticleSystem::SetMinSpawnDistance)

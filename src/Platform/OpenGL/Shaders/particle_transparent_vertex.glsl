@@ -8,7 +8,7 @@ struct Particle
 {
     vec4 position_timeAlive;
     vec4 velocity_size;
-    vec4 none3_spawnDistance;
+    vec4 angularParams_spawnDistance;
 };
 
 layout(std430, binding = 0) buffer ParticleData

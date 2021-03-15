@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-8.0.0-red)
+![](https://img.shields.io/badge/version-8.1.0-red)
 [![Travis Build Status](https://api.travis-ci.org/asc-community/MxEngine.png?branch=master)](https://travis-ci.org/asc-community/MxEngine)
 [![Appveyor Build status](https://ci.appveyor.com/api/projects/status/github/asc-community/MxEngine?branch=master&svg=true)](https://ci.appveyor.com/project/MomoDeve/mxengine/branch/master)
 ![GitHub](https://img.shields.io/github/license/asc-community/MxEngine?color=yellow)

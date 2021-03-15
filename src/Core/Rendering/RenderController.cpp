@@ -97,7 +97,7 @@ namespace MxEngine
 			{
 				auto dist1 = camera.ViewportPosition - Vector3(p1.Transform[3]);
 				auto dist2 = camera.ViewportPosition - Vector3(p2.Transform[3]);
-				return Dot(dist1, dist1) < Dot(dist2, dist2);
+				return Dot(dist1, dist1) > Dot(dist2, dist2);
 			});
 	}
 

@@ -8,7 +8,7 @@ struct Particle
 {
     vec4 position_timeAlive;
     vec4 velocity_size;
-    vec4 none3_spawnDistance;
+    vec4 angularParams_spawnDistance;
 };
 
 layout(std430, binding = 0) buffer ParticleData
@@ -26,21 +26,28 @@ void main()
     float particleTimeAlive = particle.position_timeAlive.w;
     vec3 particleVelocity = particle.velocity_size.xyz;
     float particleSize = particle.velocity_size.w;
-    float particleSpawnDistance = particle.none3_spawnDistance.w;
+    vec3 angularAxis = normalize(particle.angularParams_spawnDistance.xyz);
+    float angularSpeed = length(particle.angularParams_spawnDistance.xyz);
+    float particleSpawnDistance = particle.angularParams_spawnDistance.w;
 
     particleTimeAlive += dt;
     particlePosition += particleVelocity * dt;
 
+    vec3 radius = particlePosition - spawnpoint;
+    vec3 particleAngularVelocity = cross(normalize(radius), angularAxis);
+    particlePosition += angularSpeed * particleAngularVelocity * dt;
+
     if (particleTimeAlive > lifetime)
     {
-        vec3 spawnOffset = particleSpawnDistance * normalize(particleVelocity);
-        particlePosition = spawnpoint + spawnOffset;
+        vec3 particleSpawnOffset = particleSpawnDistance * normalize(particleVelocity);
+        vec3 particleOrigin = spawnpoint + particleSpawnOffset;
+        particlePosition = particleOrigin;
         particleTimeAlive = 0.0;
     }
 
     particleData[idx] = Particle(
         vec4(particlePosition, particleTimeAlive), 
         vec4(particleVelocity, particleSize),
-        vec4(vec3(0.0), particleSpawnDistance)
+        vec4(angularSpeed * angularAxis, particleSpawnDistance)
     );
 }
