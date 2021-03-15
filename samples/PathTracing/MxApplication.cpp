@@ -18,7 +18,7 @@ namespace PathTracing
         {
             auto camera = MxObject::Create();
             camera->Name = "Camera";
-            camera->Transform.SetPosition(Vector3(0.0f, 0.0f, 25.0f));
+            camera->Transform.SetPosition(Vector3(0.0f, 0.0f, 20.0f));
             auto controller = camera->AddComponent<CameraController>();
             auto input = camera->AddComponent<InputController>();
 
@@ -72,7 +72,7 @@ namespace PathTracing
             this->rayTracingShader->Bind();
             this->rayTracingShader->SetUniform("uSamples", raySamples);
             this->rayTracingShader->SetUniform("uTime", Time::Current());
-            this->rayTracingShader->SetUniform("uViewportSize", viewportSize);
+            this->rayTracingShader->SetUniform("uViewportSize", (Vector2)viewportSize);
             this->rayTracingShader->SetUniform("uPosition", cameraPosition);
             this->rayTracingShader->SetUniform("uDirection", cameraDirection);
             this->rayTracingShader->SetUniform("uUp", cameraUpVector);
