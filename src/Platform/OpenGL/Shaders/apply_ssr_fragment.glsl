@@ -29,7 +29,7 @@ void main()
 {
     FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
     
-    float lod = 5.0 * fragment.roughnessFactor;
+    float lod = 8.0 * fragment.roughnessFactor * fragment.roughnessFactor;
     float fading = 0.9 * fragment.metallicFactor + 0.1;
     
     float r = rand(TexCoord);

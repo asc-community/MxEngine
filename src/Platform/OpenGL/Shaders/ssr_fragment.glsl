@@ -63,10 +63,7 @@ void main()
             currentLength = length(startPos - newPosition);
         }
     }
-
-    vec3 skyboxReflection = calcReflectionColor(environment.skybox, environment.skyboxRotation, viewDirection, fragment.normal);
     
-    vec3 reflection = texture(HDRTex, bestUV).rgb;
-
+    vec3 reflection = bestUV != vec2(0.0) ? texture(HDRTex, bestUV).rgb : vec3(0.0);
     OutColor = vec4(reflection, 1.0);
 }

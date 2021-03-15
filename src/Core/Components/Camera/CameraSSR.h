@@ -37,26 +37,17 @@ namespace MxEngine
 		MAKE_COMPONENT(CameraSSR);
 
 		float thickness = 0.5f;
-		float maxCosAngle = 0.5f;
 		size_t steps = 10;
-		float maxDistance = 3.0f;
 		float startDistance = 2.0f;
-		float fading = 1.0f;
 	public:
 		CameraSSR() = default;
 
 		float GetThickness() const;
-		float GetMaxCosAngle() const;
 		size_t GetSteps() const;
-		float GetMaxDistance() const;
 		float GetStartDistance() const;
-		float GetFading() const;
 
 		void SetThickness(float thickness);
-		void SetMaxCosAngle(float angle);
 		void SetSteps(size_t steps);
-		void SetMaxDistance(float distance);
 		void SetStartDistance(float distance);
-		void SetFading(float fading);
 	};
 }
