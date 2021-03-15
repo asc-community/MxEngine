@@ -150,7 +150,6 @@ namespace MxEngine
     {
         this->SetMass(0.0f);
         this->SetCollisionFilter(CollisionMask::KINEMATIC, CollisionGroup::NO_STATIC_COLLISIONS);
-        this->rigidBody->UnsetAllFlags();
         this->rigidBody->SetKinematicFlag();
         // from bullet3 manual (see https://github.com/bulletphysics/bullet3/blob/master/docs/Bullet_User_Manual.pdf page 22)
     }
@@ -159,21 +158,18 @@ namespace MxEngine
     {
         if(this->GetMass() == 0.0f) this->SetMass(1.0f);
         this->SetCollisionFilter(CollisionMask::DYNAMIC, CollisionGroup::ALL);
-        this->rigidBody->UnsetAllFlags();
+        this->rigidBody->UnsetKinematicFlag(); // cannot be kinematic object
     }
 
     void RigidBody::MakeStatic()
     {
         this->SetMass(0.0f);
         this->SetCollisionFilter(CollisionMask::STATIC, CollisionGroup::NO_STATIC_COLLISIONS);
-        this->rigidBody->UnsetAllFlags();
+        this->rigidBody->UnsetKinematicFlag(); // cannot be kinematic object
     }
 
     void RigidBody::MakeTrigger()
     {
-        this->SetMass(0.0f);
-        this->SetCollisionFilter(CollisionMask::STATIC, CollisionGroup::NO_STATIC_COLLISIONS);
-        this->rigidBody->UnsetAllFlags();
         this->rigidBody->SetTriggerFlag();
     }
 

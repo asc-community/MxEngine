@@ -571,10 +571,10 @@ namespace MxEngine
 		applySSRShader->Bind();
 		
 		textureId = 0;
-		this->BindGBuffer(camera, *applySSRShader, textureId);
-
+		camera.MaterialTexture->Bind(textureId++);
 		temporary->Bind(textureId++);
 		input->Bind(textureId++);
+		applySSRShader->SetUniform("materialTex", camera.MaterialTexture->GetBoundId());
 		applySSRShader->SetUniform("SSRTex", temporary->GetBoundId());
 		applySSRShader->SetUniform("HDRTex", input->GetBoundId());
 

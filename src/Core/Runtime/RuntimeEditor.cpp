@@ -42,6 +42,7 @@
 #include "Platform/Window/Input.h"
 #include "Core/Events/FpsUpdateEvent.h"
 #include "Core/Components/Instancing/Instance.h"
+#include "Core/Components/Physics/RigidBody.h"
 #include "Core/Config/GlobalConfig.h"
 
 namespace MxEngine
@@ -453,29 +454,57 @@ namespace MxEngine
 
     void RuntimeEditor::DrawMxObject(const MxString& treeName, MxObject::Handle object)
     {
+		auto oldTransform = object->Transform;
+
 		GUI::DrawMxObjectEditor(treeName.c_str(), *object, this->componentAdderComponentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
+
 		if (!IsInstanced(object))
 		{
 			this->DrawTransformManipulator(object->Transform);
-			GUI::DrawMxObjectBoundingBoxEditor(*object);
 		}
 		// instanciate by middle button click TODO: add docs
 		if (ImGui::IsMouseClicked(ImGuiMouseButton_Middle))
 		{
-			if (IsInstance(*object))
+			if (IsInstance(object))
 			{
 				this->currentlySelectedObject = Instanciate(GetInstanceParent(object));
 				this->currentlySelectedObject->Transform = object->Transform;
 			}
 			else
 			{
-				this->currentlySelectedObject = Instanciate(*object);
+				this->currentlySelectedObject = Instanciate(object);
 			}
 		}
 		// delete by lctrl + delete TODO: add docs
 		if (this->IsKeyHeld(KeyCode::DELETE) && this->IsKeyHeld(KeyCode::LEFT_CONTROL))
 		{
 			MxObject::Destroy(this->currentlySelectedObject);
+		}
+
+		if (this->currentlySelectedObject.IsValid() && this->currentlySelectedObject->HasComponent<RigidBody>())
+		{
+			auto rigidBody = this->currentlySelectedObject->GetComponent<RigidBody>();
+			auto newTransform = this->currentlySelectedObject->Transform;
+
+			auto positionDelta = newTransform.GetPosition() - oldTransform.GetPosition();
+			if (positionDelta != Vector3(0.0f))
+			{
+				if (rigidBody->IsStatic())
+				{
+					rigidBody->MakeKinematic();
+				}
+				if (rigidBody->IsDynamic())
+				{
+					rigidBody->SetLinearVelocity(positionDelta);
+					rigidBody->SetAngularVelocity(Vector3(0.0f));
+					rigidBody->UpdateTransform();
+				}
+			}
+		}
+
+		if (!IsInstanced(object))
+		{
+			GUI::DrawMxObjectBoundingBoxEditor(*object);
 		}
 	}
 

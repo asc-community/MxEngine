@@ -207,18 +207,29 @@ namespace MxEngine
         this->SetActivationState(ActivationState::DISABLE_DEACTIVATION);
     }
 
+    void NativeRigidBody::UnsetKinematicFlag()
+    {
+        auto body = this->GetNativeHandle();
+        body->setCollisionFlags(body->getCollisionFlags() & ~btCollisionObject::CF_KINEMATIC_OBJECT);
+        this->SetActivationState(ActivationState::ACTIVE_TAG);
+    }
+
     void NativeRigidBody::SetTriggerFlag()
     {
         auto body = this->GetNativeHandle();
         body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
     }
 
-    void NativeRigidBody::UnsetAllFlags()
+    void NativeRigidBody::UnsetTriggerFlag()
     {
         auto body = this->GetNativeHandle();
-        body->setCollisionFlags(body->getCollisionFlags() &
-            ~(btCollisionObject::CF_KINEMATIC_OBJECT | btCollisionObject::CF_NO_CONTACT_RESPONSE));
-        this->SetActivationState(ActivationState::ACTIVE_TAG);
+        body->setCollisionFlags(body->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
+    }
+
+    void NativeRigidBody::UnsetAllFlags()
+    {
+        this->UnsetTriggerFlag();
+        this->UnsetKinematicFlag();
     }
 
     void NativeRigidBody::SetScale(const Vector3& scale)
