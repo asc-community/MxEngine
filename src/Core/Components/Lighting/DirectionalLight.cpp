@@ -42,10 +42,10 @@ namespace MxEngine
 
     void DirectionalLight::SetIsFollowingViewport(bool value)
     {
-        if (value)
-            this->FollowViewport();
-        else
-            MxObject::Destroy(MxObject::GetHandle(this->GetUpdateTimerHandle()));
+        if (value == this->IsFollowingViewport()) return;
+
+        if (value) this->FollowViewport();
+        else MxObject::Destroy(MxObject::GetHandle(this->GetUpdateTimerHandle()));
     }
 
     const MxObject& DirectionalLight::GetUpdateTimerHandle() const
