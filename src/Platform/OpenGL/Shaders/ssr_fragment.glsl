@@ -46,10 +46,7 @@ void main()
         float projectedDepth = projectedPosition.z;
 
         if (currentUV.x > 1.0 || currentUV.y > 1.0 ||
-            currentUV.x < 0.0 || currentUV.y < 0.0)
-        {
-            break;
-        }
+            currentUV.x < 0.0 || currentUV.y < 0.0) break;
 
         float currentFragDepth = texture(depthTex, currentUV).r;
         float depthDiff = abs(1.0 / projectedDepth - 1.0 / currentFragDepth);
@@ -66,7 +63,7 @@ void main()
             currentLength = length(startPos - newPosition);
         }
     }
+    
     vec3 reflection = bestUV != vec2(0.0) ? texture(HDRTex, bestUV).rgb : vec3(0.0);
-
     OutColor = vec4(reflection, 1.0);
 }
