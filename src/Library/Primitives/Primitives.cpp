@@ -81,13 +81,17 @@ namespace MxEngine
         return Primitives::CreateSurface(heights, UUIDGenerator::Get());
     }
 
-    MeshHandle Primitives::CreateSurface(const Array2D<float>& heights, const MxString& filename)
+    MeshHandle Primitives::CreateSurface2Side(const Array2D<float>& heights)
     {
-        MeshData::VertexData vertecies;
-        MeshData::IndexData indicies;
+        return Primitives::CreateSurface2Side(heights, UUIDGenerator::Get());
+    }
 
+    MeshData::VertexData GenerateVertexData(const Array2D<float>& heights)
+    {
         MX_ASSERT(heights.width() > 0);
         MX_ASSERT(heights.height() > 0);
+
+        MeshData::VertexData vertecies;
         size_t xsize = heights.width();
         size_t ysize = heights.height();
 
@@ -119,6 +123,16 @@ namespace MxEngine
             vertex.Position -= MakeVector3(0.5f, (maxY + minY) * 0.5f, 0.5f);
         }
 
+        return vertecies;
+    }
+
+    MeshHandle Primitives::CreateSurface(const Array2D<float>& heights, const MxString& filename)
+    {
+        MeshData::VertexData vertecies = GenerateVertexData(heights);
+        MeshData::IndexData indicies;
+        size_t xsize = heights.height();
+        size_t ysize = heights.width();
+
         indicies.reserve((xsize - 1) * (ysize - 1) * 6);
         for (size_t x = 0; x < xsize - 1; x++)
         {
@@ -130,6 +144,43 @@ namespace MxEngine
                 indicies.push_back(uint32_t(y + x * ysize + 1));
                 indicies.push_back(uint32_t(y + x * ysize + 1 + ysize));
                 indicies.push_back(uint32_t(y + x * ysize + ysize));
+            }
+        }
+
+        MeshData::RegenerateNormals(vertecies, indicies);
+        return Primitives::CreateMesh(vertecies, indicies, filename);
+    }
+
+    MeshHandle Primitives::CreateSurface2Side(const Array2D<float>& heights, const MxString& filename)
+    {
+        MeshData::VertexData vertecies = GenerateVertexData(heights);
+        size_t vertexCount = vertecies.size();
+        vertecies.reserve(vertexCount * 2);
+        vertecies.insert(vertecies.end(), vertecies.begin(), vertecies.end());
+
+        MeshData::IndexData indicies;
+        size_t xsize = heights.height();
+        size_t ysize = heights.width();
+
+
+        indicies.reserve((xsize - 1) * (ysize - 1) * 12);
+        for (size_t x = 0; x < xsize - 1; x++)
+        {
+            for (size_t y = 0; y < ysize - 1; y++)
+            {
+                indicies.push_back(uint32_t(y + x * ysize));
+                indicies.push_back(uint32_t(y + x * ysize + 1));
+                indicies.push_back(uint32_t(y + x * ysize + ysize));
+                indicies.push_back(uint32_t(y + x * ysize + 1));
+                indicies.push_back(uint32_t(y + x * ysize + 1 + ysize));
+                indicies.push_back(uint32_t(y + x * ysize + ysize));
+
+                indicies.push_back(uint32_t(vertexCount + y + x * ysize));
+                indicies.push_back(uint32_t(vertexCount + y + x * ysize + ysize));
+                indicies.push_back(uint32_t(vertexCount + y + x * ysize + 1));
+                indicies.push_back(uint32_t(vertexCount + y + x * ysize + 1));
+                indicies.push_back(uint32_t(vertexCount + y + x * ysize + ysize));
+                indicies.push_back(uint32_t(vertexCount + y + x * ysize + 1 + ysize));
             }
         }
 
@@ -285,6 +336,14 @@ namespace MxEngine
         Array2D<float> heights;
         heights.resize(polygons, polygons, 0.0f);
         return Primitives::CreateSurface(heights, MxFormat("plane_{}", polygons));
+    }
+
+    MeshHandle Primitives::CreatePlane2Side(size_t polygons)
+    {
+        polygons = Max(polygons, 2);
+        Array2D<float> heights;
+        heights.resize(polygons, polygons, 0.0f);
+        return Primitives::CreateSurface2Side(heights, MxFormat("plane_{}", polygons));
     }
 
     MeshHandle Primitives::CreateSphere(size_t polygons)

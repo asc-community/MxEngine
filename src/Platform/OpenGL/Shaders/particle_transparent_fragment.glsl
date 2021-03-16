@@ -2,6 +2,7 @@
 
 in vec2 TexCoord;
 in vec3 WorldPosition;
+in float TransparencyFading;
 in float LinearDepth;
 
 out vec4 OutColor;
@@ -39,7 +40,7 @@ void main()
 
     vec3 IBLColor = calculateIBL(fragment, normal, environment, gamma);
 
-    vec3 totalColor = IBLColor + light;
+    vec3 totalColor = IBLColor + light * fragment.albedo;
 
-    OutColor = vec4(totalColor, albedoAlphaTex.a * transparency * depthFading);
+    OutColor = vec4(totalColor, albedoAlphaTex.a * transparency * depthFading * TransparencyFading);
 }

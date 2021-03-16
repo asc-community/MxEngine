@@ -192,6 +192,7 @@ namespace MxEngine
         ShaderStorageBufferHandle ParticleData;
         Matrix4x4 Transform;
         float ParticleLifetime;
+        float Fading;
         size_t InvocationCount;
         size_t MaterialIndex;
         bool IsRelative;

@@ -42,7 +42,7 @@ namespace MxEngine
     class CubeMap;
     class AudioBuffer;
 
-    bool IsInstance(MxObject&);
+    bool IsInstance(const MxObject&);
 
     void SceneSerializer::SerializeGlobals(JsonFile& json)
     {

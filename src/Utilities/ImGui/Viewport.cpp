@@ -27,10 +27,12 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Viewport.h"
-#include "Utilities/ImGui/ImGuiBase.h"
 #include "Core/Application/Rendering.h"
 #include "Core/Events/WindowResizeEvent.h"
 #include "Core/Application/Event.h"
+#include "Utilities/ImGui/ImGuiBase.h"
+#include "Utilities/ImGui/Editors/MxObjectEditor.h"
+#include "Core/Components/Instancing/Instance.h"
 
 namespace MxEngine::GUI
 {
@@ -52,5 +54,60 @@ namespace MxEngine::GUI
 			ImGui::Image((void*)(uintptr_t)viewport->GetRenderTexture()->GetNativeHandle(), viewportSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 		}
 		ImGui::End();
+	}
+
+	bool IntersectRay(const Vector3& rayOrigin, const Vector3& rayDirection, const BoundingBox& box)
+	{
+		Vector3 rd = box.Rotation * rayDirection;
+		Vector3 ro = box.Rotation * (rayOrigin - box.Center);
+
+		Vector3 m = Vector3(1.0f) / rd;
+
+		Vector3 s = Vector3(
+			(rd.x < 0.0f) ? 1.0f : -1.0f,
+			(rd.y < 0.0f) ? 1.0f : -1.0f,
+			(rd.z < 0.0f) ? 1.0f : -1.0f
+		);
+		Vector3 t1 = m * (-ro + s * box.Length() * 0.5f);
+		Vector3 t2 = m * (-ro - s * box.Length() * 0.5f);
+
+		float tN = Max(Max(t1.x, t1.y), t1.z);
+		float tF = Min(Min(t2.x, t2.y), t2.z);
+
+		return (tF > 0.0f && tN < tF);
+	}
+
+	MxVector<MxObject::Handle> MousePeekObjects(
+		const Vector2& mousePosition, const Vector2& viewportPosition, const Vector2& viewportSize,
+		const Vector3& position, const Vector3& direction, const Vector3& up, float aspectRatio, float fov)
+	{
+		MxVector<MxObject::Handle> result;
+		Vector2 screenSpaceCoords = 0.5f - (mousePosition - viewportPosition) / viewportSize;
+
+		if (screenSpaceCoords.x < -0.5f || screenSpaceCoords.y < -0.5f ||
+			screenSpaceCoords.x >  0.5f || screenSpaceCoords.y >  0.5f) return result;
+
+		Vector2 angleDiff = screenSpaceCoords * (fov / 30.0f) * Vector2(aspectRatio, 1.0f) * std::tan(Radians(fov) * 0.5f);
+		Vector3 rayDirection = Normalize(Vector3(angleDiff, 1.0f));
+		Vector3 right = Normalize(Cross(up, direction));
+		auto viewToWorld = Matrix3x3(right, up, direction);
+		Vector3 worldSpaceDirection = viewToWorld * rayDirection;
+
+		for (const auto& object : MxObject::GetObjects())
+		{
+			if (IsInstanced(object) || !object.IsDisplayedInEditor) continue; // skip invisible object factories
+
+			BoundingBox box = GetMxObjectBoundingBox(object);
+			if (IntersectRay(position, worldSpaceDirection, box))
+				result.push_back(MxObject::GetHandle(object));
+		}
+		std::sort(result.begin(), result.end(), 
+			[position](const MxObject::Handle& obj1, const MxObject::Handle& obj2)
+			{
+				Vector3 d1 = obj1->Transform.GetPosition() - position;
+				Vector3 d2 = obj2->Transform.GetPosition() - position;
+				return Dot(d1, d1) < Dot(d2, d2);
+			});
+		return result;
 	}
 }

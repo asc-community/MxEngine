@@ -43,6 +43,7 @@
 #include "Core/Events/FpsUpdateEvent.h"
 #include "Core/Components/Instancing/Instance.h"
 #include "Core/Components/Physics/RigidBody.h"
+#include "Core/Components/Camera/PerspectiveCamera.h"
 #include "Core/Config/GlobalConfig.h"
 
 namespace MxEngine
@@ -475,11 +476,6 @@ namespace MxEngine
 				this->currentlySelectedObject = Instanciate(object);
 			}
 		}
-		// delete by lctrl + delete TODO: add docs
-		if (this->IsKeyHeld(KeyCode::DELETE) && this->IsKeyHeld(KeyCode::LEFT_CONTROL))
-		{
-			MxObject::Destroy(this->currentlySelectedObject);
-		}
 
 		if (this->currentlySelectedObject.IsValid() && this->currentlySelectedObject->HasComponent<RigidBody>())
 		{
@@ -505,6 +501,12 @@ namespace MxEngine
 		if (!IsInstanced(object))
 		{
 			GUI::DrawMxObjectBoundingBoxEditor(*object);
+		}
+
+		// delete by lctrl + delete TODO: add docs
+		if (this->IsKeyHeld(KeyCode::DELETE) && this->IsKeyHeld(KeyCode::LEFT_CONTROL))
+		{
+			MxObject::Destroy(this->currentlySelectedObject);
 		}
 	}
 
@@ -564,6 +566,46 @@ namespace MxEngine
 		}
 	}
 
+	void HandleMousePeeking(MxObject::Handle& object)
+	{
+		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+		{
+			auto viewport = Rendering::GetViewport();
+			if (viewport.IsValid() && viewport->GetCameraType() == CameraType::PERSPECTIVE)
+			{
+				auto position = MxObject::GetByComponent(*viewport).Transform.GetPosition();
+				auto direction = viewport->GetDirection();
+				position += direction; // offset to do not peek viewport itself
+
+				auto up = viewport->GetDirectionUp();
+				auto fov = viewport->GetCamera<PerspectiveCamera>().GetFOV();
+				auto aspectRatio = viewport->Camera.GetAspectRatio();
+				auto viewportWindow = ImGui::FindWindowByName("Viewport");
+
+				auto mousePeekedObjects = GUI::MousePeekObjects(
+					ImGui::GetMousePos(), viewportWindow->Pos, viewportWindow->Size, position, direction, up, aspectRatio, fov
+				);
+
+				if (!mousePeekedObjects.empty())
+				{
+					size_t bestObjectIndex = 0;
+					for (; bestObjectIndex < mousePeekedObjects.size(); bestObjectIndex++)
+					{
+						if (mousePeekedObjects[bestObjectIndex] == object)
+						{
+							bestObjectIndex++; // select next object in list
+							break;
+						}
+					}
+					if (bestObjectIndex == mousePeekedObjects.size())
+						bestObjectIndex = 0; // cycle throw all objects
+
+					object = mousePeekedObjects[bestObjectIndex];
+				}
+			}
+		}
+	}
+
 	void RuntimeEditor::DrawMxObjectEditorWindow(bool* isOpen)
 	{
 		ImGui::Begin("Object Editor", isOpen);
@@ -571,6 +613,9 @@ namespace MxEngine
 			ImGui::Text("no object selected");
 		else
 			this->DrawMxObject(this->currentlySelectedObject->Name, this->currentlySelectedObject);
+
+		HandleMousePeeking(this->currentlySelectedObject);
+
 		ImGui::End();
 	}
 

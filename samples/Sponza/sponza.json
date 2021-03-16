@@ -103,8 +103,8 @@
       "metallic map": 18446744073709551615,
       "name": "Lion Head",
       "normal map": 27,
-      "roughness factor": 1.0,
-      "roughness map": 21,
+      "roughness factor": 0.0,
+      "roughness map": 18446744073709551615,
       "transparency": 1.0,
       "uv multipliers": [
         1.0,
@@ -604,7 +604,7 @@
       "name": "Lion Head",
       "normal map": 9,
       "roughness factor": 0.0,
-      "roughness map": 81,
+      "roughness map": 18446744073709551615,
       "transparency": 1.0,
       "uv multipliers": [
         1.0,
@@ -681,6 +681,31 @@
       "roughness factor": 1.0,
       "roughness map": 98,
       "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 114,
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        1.0,
+        0.9999899864196777,
+        0.9999899864196777
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 10.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 27,
+      "metallic factor": 1.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 1.0,
+      "roughness map": 18446744073709551615,
+      "transparency": 0.20000000298023224,
       "uv multipliers": [
         1.0,
         1.0
@@ -910,20 +935,6 @@
         "path": "Resources\\Sponza\\glTF\\6772804448157695701.jpg"
       },
       "id": 20,
-      "wrap type": "REPEAT"
-    },
-    {
-      "border color": [
-        0.0,
-        0.0,
-        0.0,
-        0.0
-      ],
-      "filepath": {
-        "format": "R",
-        "path": "Resources\\Sponza\\glTF\\roughness_23.png"
-      },
-      "id": 21,
       "wrap type": "REPEAT"
     },
     {
@@ -1761,20 +1772,6 @@
       ],
       "filepath": {
         "format": "R",
-        "path": "Resources\\Sponza\\glTF\\roughness_3.png"
-      },
-      "id": 81,
-      "wrap type": "REPEAT"
-    },
-    {
-      "border color": [
-        0.0,
-        0.0,
-        0.0,
-        0.0
-      ],
-      "filepath": {
-        "format": "R",
         "path": "Resources\\Sponza\\glTF\\roughness_5.png"
       },
       "id": 82,
@@ -2073,6 +2070,20 @@
       },
       "id": 103,
       "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources\\fire.png"
+      },
+      "id": 114,
+      "wrap type": "REPEAT"
     }
   ],
   "globals": {
@@ -2085,7 +2096,7 @@
     "paused": false,
     "physics-step": 1.0,
     "time-scale": 1.0,
-    "total-time": 0.0,
+    "total-time": 3042.181640625,
     "viewport": 0
   },
   "mxobjects": [
@@ -2093,14 +2104,14 @@
       "CameraController": {
         "camera type": "PERSPECTIVE",
         "direction": [
-          0.9935327768325806,
-          0.11325626075267792,
-          0.00809989683330059
+          0.9979798197746277,
+          0.0634671151638031,
+          0.0028712681960314512
         ],
         "forward vector": [
-          0.9999667406082153,
+          0.9999958872795105,
           0.0,
-          0.008152350783348083
+          0.0028770684730261564
         ],
         "id": 0,
         "is listening window resize event": false,
@@ -2112,9 +2123,9 @@
           "znear": 0.10000000149011612
         },
         "right vector": [
-          -0.00815239455550909,
+          -0.0028771122451871634,
           0.0,
-          0.9999667406082153
+          0.9999958872795105
         ],
         "rotate speed": 10.0,
         "up vector": [
@@ -2124,9 +2135,6 @@
         ]
       },
       "CameraEffects": {
-        "ambient occlusion intensity": 1.0,
-        "ambient occlusion radius": 0.5,
-        "ambient occlusion samples": 16,
         "bloom iterations": 3,
         "bloom weight": 0.5,
         "chromatic aberration distortion": 0.800000011920929,
@@ -2143,27 +2151,24 @@
         "id": 0,
         "vignette radius": 0.10000000149011612
       },
-      "CameraSSGI": {
-        "id": 0,
-        "intensity": 3.0,
-        "ray steps": 3,
-		"distance": 50.0,
-		"blur iterations": 1,
-		"blur lod": 4
-      },
-	  "CameraSSAO": {
+      "CameraSSAO": {
+        "blur iterations": 1,
+        "blur lod": 4,
         "id": 0,
         "intensity": 1.5,
-        "sample count": 16,
-		"radius": 1.0,
-		"blur iterations": 1,
-		"blur lod": 4
+        "radius": 1.0,
+        "sample count": 16
+      },
+      "CameraSSGI": {
+        "blur iterations": 1,
+        "blur lod": 4,
+        "distance": 50.0,
+        "id": 0,
+        "intensity": 3.0,
+        "ray steps": 3
       },
       "CameraSSR": {
-        "fading": 1.0,
         "id": 0,
-        "max cos angle": 0.5,
-        "max distance": 3.0,
         "start distance": 2.0,
         "steps": 10,
         "thickness": 0.5
@@ -2274,9 +2279,9 @@
           1.0
         ],
         "linear velocity": [
-          0.0,
+          4.577636354952119e-05,
           5.7220458984375e-06,
-          -6.278546038629429e-08
+          -6.571730715165813e-09
         ],
         "mass": 1.0,
         "push velocity": [
@@ -2301,23 +2306,21 @@
         "rotation": [
           0.0,
           0.0,
-          0.0,
-          1.0
+          0.0
         ]
       },
       "displayed": true,
       "name": "Camera",
       "transform": {
         "position": [
-          -24.58367156982422,
+          -26.250003814697266,
           2.999999523162842,
-          0.10230235755443573
+          0.30638930201530457
         ],
         "rotation": [
           0.0,
           0.0,
-          0.0,
-          1.0
+          0.0
         ],
         "scale": [
           1.0,
@@ -2328,12 +2331,7 @@
     },
     {
       "DirectionalLight": {
-        "ambient intensity": 0.01,
-        "cascade direction": [
-          0.0,
-          0.0,
-          0.0
-        ],
+        "ambient intensity": 0.009999999776482582,
         "color": [
           1.0,
           0.8377978205680847,
@@ -2357,15 +2355,14 @@
       "name": "Global Light",
       "transform": {
         "position": [
-          -12.095172882080078,
-          61.13553237915039,
-          0.5834141373634338
+          -26.250003814697266,
+          2.999999523162842,
+          0.30638930201530457
         ],
         "rotation": [
           0.0,
           0.0,
-          0.0,
-          1.0
+          0.0
         ],
         "scale": [
           1.0,
@@ -2408,8 +2405,7 @@
         "rotation": [
           0.0,
           0.0,
-          0.0,
-          1.0
+          0.0
         ],
         "scale": [
           1.0,
@@ -2457,8 +2453,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -2503,8 +2498,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -2549,8 +2543,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -2595,8 +2588,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -2641,8 +2633,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -2681,8 +2672,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -2721,8 +2711,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -2761,8 +2750,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -2801,8 +2789,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -2847,8 +2834,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -2893,8 +2879,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -2939,8 +2924,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -2985,8 +2969,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -3031,8 +3014,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -3077,8 +3059,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -3123,8 +3104,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -3169,8 +3149,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -3215,8 +3194,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -3261,8 +3239,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -3307,8 +3284,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -3353,8 +3329,7 @@
               "rotation": [
                 0.0,
                 0.0,
-                0.0,
-                1.0
+                0.0
               ],
               "scale": [
                 1.0,
@@ -3469,13 +3444,228 @@
         "rotation": [
           0.0,
           0.0,
-          0.0,
-          1.0
+          0.0
         ],
         "scale": [
           0.019999999552965164,
           0.019999999552965164,
           0.019999999552965164
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 2,
+        "materials": [
+          27
+        ]
+      },
+      "ParticleSystem": {
+        "id": 0,
+        "is relative": true,
+		"fading": 1.5,
+        "max initial time alive": 1.0,
+        "max particle count": 128,
+        "max particle size": 0.15000000596046448,
+        "max spawn distance": 0.0,
+        "min particle size": 0.10000000149011612,
+        "min spawn distance": 0.0,
+        "particle angular speed": 0.0,
+        "particle lifetime": 1.0,
+        "particle speed": 0.800000011920929,
+        "shape": "HEMISPHERE"
+      },
+      "PointLight": {
+        "ambient intensity": 0.10000000149011612,
+        "casts shadows": false,
+        "color": [
+          1.0,
+          0.6764705777168274,
+          0.0
+        ],
+        "id": 0,
+        "intensity": 100.0,
+        "radius": 5.0
+      },
+      "displayed": true,
+      "name": "Fire 1",
+      "transform": {
+        "position": [
+          -11.17866039276123,
+          2.3849868774414063,
+          3.6654486656188965
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.30000001192092896,
+          1.25,
+          0.30000001192092896
+        ]
+      }
+    },
+	{
+      "MeshRenderer": {
+        "id": 2,
+        "materials": [
+          27
+        ]
+      },
+      "ParticleSystem": {
+        "id": 0,
+        "is relative": true,
+		"fading": 1.5,
+        "max initial time alive": 1.0,
+        "max particle count": 128,
+        "max particle size": 0.15000000596046448,
+        "max spawn distance": 0.0,
+        "min particle size": 0.10000000149011612,
+        "min spawn distance": 0.0,
+        "particle angular speed": 0.0,
+        "particle lifetime": 1.0,
+        "particle speed": 0.800000011920929,
+        "shape": "HEMISPHERE"
+      },
+      "PointLight": {
+        "ambient intensity": 0.10000000149011612,
+        "casts shadows": false,
+        "color": [
+          1.0,
+          0.6764705777168274,
+          0.0
+        ],
+        "id": 0,
+        "intensity": 100.0,
+        "radius": 5.0
+      },
+      "displayed": true,
+      "name": "Fire 2",
+      "transform": {
+        "position": [
+          11.17866039276123,
+          2.3849868774414063,
+          3.6654486656188965
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.30000001192092896,
+          1.25,
+          0.30000001192092896
+        ]
+      }
+    },
+	{
+      "MeshRenderer": {
+        "id": 2,
+        "materials": [
+          27
+        ]
+      },
+      "ParticleSystem": {
+        "id": 0,
+        "is relative": true,
+		"fading": 1.5,
+        "max initial time alive": 1.0,
+        "max particle count": 128,
+        "max particle size": 0.15000000596046448,
+        "max spawn distance": 0.0,
+        "min particle size": 0.10000000149011612,
+        "min spawn distance": 0.0,
+        "particle angular speed": 0.0,
+        "particle lifetime": 1.0,
+        "particle speed": 0.800000011920929,
+        "shape": "HEMISPHERE"
+      },
+      "PointLight": {
+        "ambient intensity": 0.10000000149011612,
+        "casts shadows": false,
+        "color": [
+          1.0,
+          0.6764705777168274,
+          0.0
+        ],
+        "id": 0,
+        "intensity": 100.0,
+        "radius": 5.0
+      },
+      "displayed": true,
+      "name": "Fire 3",
+      "transform": {
+        "position": [
+          -11.17866039276123,
+          2.3849868774414063,
+          -3.6654486656188965
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.30000001192092896,
+          1.25,
+          0.30000001192092896
+        ]
+      }
+    },
+	{
+      "MeshRenderer": {
+        "id": 2,
+        "materials": [
+          27
+        ]
+      },
+      "ParticleSystem": {
+        "id": 0,
+        "is relative": true,
+		"fading": 1.5,
+        "max initial time alive": 1.0,
+        "max particle count": 128,
+        "max particle size": 0.15000000596046448,
+        "max spawn distance": 0.0,
+        "min particle size": 0.10000000149011612,
+        "min spawn distance": 0.0,
+        "particle angular speed": 0.0,
+        "particle lifetime": 1.0,
+        "particle speed": 0.800000011920929,
+        "shape": "HEMISPHERE"
+      },
+      "PointLight": {
+        "ambient intensity": 0.10000000149011612,
+        "casts shadows": false,
+        "color": [
+          1.0,
+          0.6764705777168274,
+          0.0
+        ],
+        "id": 0,
+        "intensity": 100.0,
+        "radius": 5.0
+      },
+      "displayed": true,
+      "name": "Fire 4",
+      "transform": {
+        "position": [
+          11.17866039276123,
+          2.3849868774414063,
+          -3.6654486656188965
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.30000001192092896,
+          1.25,
+          0.30000001192092896
         ]
       }
     }

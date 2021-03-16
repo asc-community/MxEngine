@@ -163,7 +163,7 @@ namespace MxEngine
         }
     }
 
-    bool IsInstanced(MxObject& object)
+    bool IsInstanced(const MxObject& object)
     {
         return object.HasComponent<InstanceFactory>();
     }
@@ -173,7 +173,7 @@ namespace MxEngine
         return object.IsValid() && IsInstanced(*object);
     }
 
-    bool IsInstance(MxObject& object)
+    bool IsInstance(const MxObject& object)
     {
         return object.HasComponent<Instance>();
     }
@@ -194,7 +194,7 @@ namespace MxEngine
         return object.IsValid() ? Instanciate(*object) : MxObject::Handle{ };
     }
 
-    MxObject::Handle GetInstanceParent(MxObject& object)
+    MxObject::Handle GetInstanceParent(const MxObject& object)
     {
         auto instance = object.GetComponent<Instance>();
         return instance.IsValid() ? instance->GetParent() : MxObject::Handle{ };

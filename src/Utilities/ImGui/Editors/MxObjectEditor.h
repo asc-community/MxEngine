@@ -29,7 +29,7 @@
 #pragma once
 
 #include "Core/MxObject/MxObject.h"
-#include <functional>
+#include "Core/BoundingObjects/BoundingBox.h"
 
 namespace MxEngine::GUI
 {
@@ -43,5 +43,6 @@ namespace MxEngine::GUI
 		const MxVector<void(*)(MxObject&)>& componentEditorCallbacks
 	);
 
-	void DrawMxObjectBoundingBoxEditor(MxObject& object);
+	void DrawMxObjectBoundingBoxEditor(const MxObject& object);
+	BoundingBox GetMxObjectBoundingBox(const MxObject& object);
 }

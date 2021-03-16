@@ -49,7 +49,13 @@ namespace MxEngine::GUI
 		}
 	}
 
-	void DrawMxObjectBoundingBoxEditor(MxObject& object)
+	void DrawMxObjectBoundingBoxEditor(const MxObject& object)
+	{
+		BoundingBox box = GetMxObjectBoundingBox(object);
+		Rendering::Draw(box, Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+	}
+
+	BoundingBox GetMxObjectBoundingBox(const MxObject& object)
 	{
 		AABB aabb;
 		auto meshSource = object.GetComponent<MeshSource>();
@@ -65,7 +71,10 @@ namespace MxEngine::GUI
 		box.Max *= object.Transform.GetScale();
 		box.Min *= object.Transform.GetScale();
 
-		Rendering::Draw(box, Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+		box.Min = VectorMin(box.Min, Vector3(-0.5f));
+		box.Max = VectorMax(box.Max, Vector3(0.5f));
+
+		return box;
 	}
 
 	void DrawMxObjectEditor(

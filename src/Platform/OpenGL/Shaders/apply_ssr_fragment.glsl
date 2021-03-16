@@ -30,14 +30,15 @@ void main()
     FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
     
     float lod = 8.0 * fragment.roughnessFactor * fragment.roughnessFactor;
-    float fading = 0.9 * fragment.metallicFactor + 0.1;
+
+    vec3 F0 = mix(vec3(0.04), fragment.albedo, fragment.metallicFactor);
     
     float r = rand(TexCoord);
     vec2 texelSize = 1.0 / textureSize(SSRTex, 0);
 
     vec3 initialColor = texture(HDRTex, TexCoord).rgb;
     vec3 ssrReflection = texture(SSRTex, TexCoord + sqrt(lod) * texelSize * r, lod).rgb;
-    vec3 totalColor = initialColor + fading * ssrReflection;
+    vec3 totalColor = initialColor + F0 * ssrReflection;
 
     OutColor = vec4(totalColor, 1.0);
 }

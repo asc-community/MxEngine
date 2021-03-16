@@ -14,16 +14,18 @@ namespace GrassSample
         {
             auto field = MxObject::Create();
             field->Name = "Grass Field";
-            field->AddComponent<MeshSource>(Primitives::CreatePlane(20));
+            field->Transform.SetScale(20.0f);
+            field->AddComponent<MeshSource>(Primitives::CreatePlane());
             auto fieldMaterial = field->AddComponent<MeshRenderer>()->GetMaterial();
             fieldMaterial->AlbedoMap = AssetManager::LoadTexture("Resources/field.png"_id);
+            fieldMaterial->UVMultipliers = { 20.0f, 20.0f };
 
             this->grass = MxObject::Create();
             grass->Name = "Grass Instances";
             grass->Transform.TranslateY(0.3f);
             grass->Transform.ScaleZ(0.75f);
 
-            auto source = grass->AddComponent<MeshSource>(Primitives::CreatePlane());
+            auto source = grass->AddComponent<MeshSource>(Primitives::CreatePlane2Side());
             source->CastsShadow = false;
 
             auto material = grass->AddComponent<MeshRenderer>()->GetMaterial();
@@ -39,8 +41,8 @@ namespace GrassSample
                 float r = Random::GetFloat() * 180.0f - 90.0f;
                 g1->Transform.TranslateX(x).TranslateZ(z);
                 g2->Transform.TranslateX(x).TranslateZ(z);
-                g1->Transform.RotateY(r).RotateX(-90.0f);
-                g2->Transform.RotateY(r - 90.0f).RotateX(-90.0f);
+                g1->Transform.RotateX(-90.0f).RotateY(r);
+                g2->Transform.RotateX(-90.0f).RotateY(r - 90.0f);
             }
             grassInstances->SubmitInstances();
             grassInstances->IsStatic = true;

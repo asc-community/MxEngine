@@ -36,29 +36,17 @@ namespace MxEngine
 {
     class Primitives
     {
-    public:
-        static MeshHandle CreateMesh(const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies, const MxString& filename);
-        static MeshHandle CreateMesh(const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies);
-        static MeshHandle CreateCube(size_t polygons = 2);
-        static MeshHandle CreatePlane(size_t polygons = 2);
-        static MeshHandle CreateSphere(size_t polygons = 32);
-        static MeshHandle CreateCylinder(size_t polygons = 32);
-        static MeshHandle CreatePyramid(size_t polygons = 1);
-        static MeshHandle CreateSurface(const Array2D<float>& heights);
-        static MeshHandle CreateSurface(const Array2D<float>& heights, const MxString& filename);
-        static TextureHandle CreateGridTexture(size_t textureSize = 512, float borderScale = 0.01f);
-
         template<typename Func>
-        static MeshHandle CreateSurface(Func&& f, float xsize, float ysize, float step)
+        static Array2D<float> GenerateHeights(Func&& f, float xsize, float ysize, float step)
         {
             static_assert(std::is_same<float, decltype(f(0.0f, 0.0f))>::value, "Func must accept two floats and output one float");
             MX_ASSERT(step > 0.0f);
             MX_ASSERT(xsize > 0.0f);
             MX_ASSERT(ysize > 0.0f);
 
+            Array2D<float> heights;
             size_t intxsize = static_cast<size_t>(xsize / step) + 1;
             size_t intysize = static_cast<size_t>(ysize / step) + 1;
-            Array2D<float> heights;
             heights.resize(intxsize, intysize);
 
             for (size_t x = 0; x < intxsize; x++)
@@ -70,7 +58,48 @@ namespace MxEngine
                     heights[x][y] = f(fx, fy);
                 }
             }
-            return Primitives::CreateSurface(heights);
+            return heights;
+        }
+
+    public:
+        static MeshHandle CreateMesh(const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies, const MxString& filename);
+        static MeshHandle CreateMesh(const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies);
+        static MeshHandle CreateCube(size_t polygons = 2);
+        static MeshHandle CreatePlane(size_t polygons = 2);
+        static MeshHandle CreatePlane2Side(size_t polygons = 2);
+        static MeshHandle CreateSphere(size_t polygons = 32);
+        static MeshHandle CreateCylinder(size_t polygons = 32);
+        static MeshHandle CreatePyramid(size_t polygons = 1);
+        static MeshHandle CreateSurface(const Array2D<float>& heights);
+        static MeshHandle CreateSurface2Side(const Array2D<float>& heights);
+        static MeshHandle CreateSurface(const Array2D<float>& heights, const MxString& filename);
+        static MeshHandle CreateSurface2Side(const Array2D<float>& heights, const MxString& filename);
+        static TextureHandle CreateGridTexture(size_t textureSize = 512, float borderScale = 0.01f);
+
+        template<typename Func>
+        static MeshHandle CreateSurface(Func&& f, float xsize, float ysize, float step)
+        {
+            return Primitives::CreateSurface(std::forward<Func>(f), xsize, ysize, step, UUIDGenerator::Get());
+        }
+
+        template<typename Func>
+        static MeshHandle CreateSurface2Side(Func&& f, float xsize, float ysize, float step)
+        {
+            return Primitives::CreateSurface2Side(std::forward<Func>(f), xsize, ysize, step, UUIDGenerator::Get());
+        }
+
+        template<typename Func>
+        static MeshHandle CreateSurface(Func&& f, float xsize, float ysize, float step, const MxString& name)
+        {
+            Array2D<float> heights = Primitives::GenerateHeights(std::forward<Func>(f), xsize, ysize, step);
+            return Primitives::CreateSurface(heights, name);
+        }
+
+        template<typename Func>
+        static MeshHandle CreateSurface2Side(Func&& f, float xsize, float ysize, float step, const MxString& name)
+        {
+            Array2D<float> heights = Primitives::GenerateHeights(std::forward<Func>(f), xsize, ysize, step);
+            return Primitives::CreateSurface2Side(heights, name);
         }
     };
 }

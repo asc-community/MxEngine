@@ -112,6 +112,9 @@ namespace MxEngine
 		shader.IgnoreNonExistingUniform("viewportSize");
 		shader.IgnoreNonExistingUniform("depthTex");
 		shader.IgnoreNonExistingUniform("light");
+		shader.IgnoreNonExistingUniform("light");
+		shader.IgnoreNonExistingUniform("fading");
+		shader.IgnoreNonExistingUniform("lifetime");
 		shader.IgnoreNonExistingUniform("environment.skybox");
 		shader.IgnoreNonExistingUniform("environment.irradiance");
 		shader.IgnoreNonExistingUniform("environment.skyboxRotation");
@@ -159,6 +162,8 @@ namespace MxEngine
 			shader.SetUniform("transparency", material.Transparency);
 			shader.SetUniform("emmision", material.Emission);
 			shader.SetUniform("light", totalLight);
+			shader.SetUniform("lifetime", particleSystem.ParticleLifetime);
+			shader.SetUniform("fading", particleSystem.Fading);
 
 			this->DrawVertecies(RenderPrimitive::TRIANGLES, particleMesh.VertexCount, 0, particleSystem.InvocationCount * ParticleComputeGroupSize);
 		}
@@ -572,8 +577,10 @@ namespace MxEngine
 		
 		textureId = 0;
 		camera.MaterialTexture->Bind(textureId++);
+		camera.AlbedoTexture->Bind(textureId++);
 		temporary->Bind(textureId++);
 		input->Bind(textureId++);
+		applySSRShader->SetUniform("albedoTex", camera.AlbedoTexture->GetBoundId());
 		applySSRShader->SetUniform("materialTex", camera.MaterialTexture->GetBoundId());
 		applySSRShader->SetUniform("SSRTex", temporary->GetBoundId());
 		applySSRShader->SetUniform("HDRTex", input->GetBoundId());
@@ -1190,6 +1197,7 @@ namespace MxEngine
 		auto& particleSystem = (isTransparent ? this->Pipeline.TransparentParticleSystems : this->Pipeline.OpaqueParticleSystems).emplace_back();
 		particleSystem.ParticleData = system.GetParticleBuffer();
 		particleSystem.ParticleLifetime = system.GetParticleLifetime();
+		particleSystem.Fading = system.GetFading();
 		particleSystem.IsRelative = system.IsRelative();
 		particleSystem.InvocationCount = system.GetMaxParticleCount() / ParticleComputeGroupSize;
 		particleSystem.MaterialIndex = this->Pipeline.MaterialUnits.size();

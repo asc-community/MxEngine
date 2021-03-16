@@ -137,7 +137,7 @@
       ]
     },
     {
-      "albedo map": 20,
+      "albedo map": 11,
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
@@ -155,7 +155,7 @@
       "normal map": 18446744073709551615,
       "roughness factor": 0.0,
       "roughness map": 18446744073709551615,
-      "transparency": 0.800000011920929,
+      "transparency": 0.20000000298023224,
       "uv multipliers": [
         1.0,
         1.0
@@ -237,7 +237,7 @@
       "id": 1
     },
     {
-      "_filepath": "Engine/Models/cylinder_20.obj",
+      "_filepath": "Engine\\Models\\cylinder_20.obj",
       "aabb": {
         "max": [
           0.5,
@@ -258,7 +258,7 @@
         ],
         "radius": 0.7071067690849304
       },
-      "id": 3
+      "id": 2
     }
   ],
   "Script": null,
@@ -302,7 +302,7 @@
         "format": "RGBA",
         "path": "Resources\\fire.png"
       },
-      "id": 20,
+      "id": 11,
       "wrap type": "REPEAT"
     }
   ],
@@ -316,7 +316,7 @@
     "paused": false,
     "physics-step": 1.0,
     "time-scale": 1.0,
-    "total-time": 0.0,
+    "total-time": 264.6247863769531,
     "viewport": 0
   },
   "mxobjects": [
@@ -324,14 +324,14 @@
       "CameraController": {
         "camera type": "PERSPECTIVE",
         "direction": [
-          -0.6470794677734375,
-          -0.21585847437381744,
-          0.7312272191047668
+          -0.8061715364456177,
+          -0.33833056688308716,
+          0.48540687561035156
         ],
         "forward vector": [
-          -0.6627029180526733,
+          -0.8566930294036865,
           0.0,
-          0.7488824129104614
+          0.5158265233039856
         ],
         "id": 0,
         "is listening window resize event": false,
@@ -343,9 +343,9 @@
           "znear": 0.10000000149011612
         },
         "right vector": [
-          -0.7488822937011719,
+          -0.515826404094696,
           0.0,
-          -0.6627030372619629
+          -0.8566931486129761
         ],
         "rotate speed": 10.0,
         "up vector": [
@@ -441,9 +441,9 @@
       "name": "Camera",
       "transform": {
         "position": [
-          11.527750015258789,
-          12.649925231933594,
-          -7.6469268798828125
+          13.119638442993164,
+          14.09194564819336,
+          -5.676478862762451
         ],
         "rotation": [
           0.0,
@@ -465,16 +465,17 @@
         ]
       },
       "ParticleSystem": {
+        "fading": 1.5,
         "id": 0,
         "is relative": true,
-        "max initial time alive": 4.0,
+        "max initial time alive": 10.0,
         "max particle count": 256,
         "max particle size": 1.5,
         "max spawn distance": 0.0,
         "min particle size": 0.05000000074505806,
         "min spawn distance": 0.0,
         "particle angular speed": 0.0,
-        "particle lifetime": 4.0,
+        "particle lifetime": 10.0,
         "particle speed": 0.05000000074505806,
         "shape": "SPHERE"
       },
@@ -482,9 +483,9 @@
       "name": "Smoke",
       "transform": {
         "position": [
-          1.7797425985336304,
-          9.803438186645508,
-          5.708061695098877
+          1.8539612293243408,
+          10.13937759399414,
+          6.184626579284668
         ],
         "rotation": [
           0.0,
@@ -492,9 +493,9 @@
           0.0
         ],
         "scale": [
-          5.041599750518799,
-          5.041599750518799,
-          5.041599750518799
+          5.585351943969727,
+          5.585351943969727,
+          5.585351943969727
         ]
       }
     },
@@ -574,6 +575,7 @@
         ]
       },
       "ParticleSystem": {
+        "fading": 0.0,
         "id": 1,
         "is relative": true,
         "max initial time alive": 0.10000000149011612,
@@ -615,6 +617,7 @@
         ]
       },
       "ParticleSystem": {
+        "fading": 0.0,
         "id": 2,
         "is relative": true,
         "max initial time alive": 0.0,
@@ -656,13 +659,14 @@
         ]
       },
       "ParticleSystem": {
+        "fading": 1.0,
         "id": 3,
-        "is relative": false,
+        "is relative": true,
         "max initial time alive": 2.0,
         "max particle count": 64,
-        "max particle size": 0.5,
+        "max particle size": 1.0,
         "max spawn distance": 0.0,
-        "min particle size": 0.25,
+        "min particle size": 0.10000000149011612,
         "min spawn distance": 0.0,
         "particle angular speed": 0.0,
         "particle lifetime": 2.0,
@@ -673,9 +677,9 @@
       "name": "Fire",
       "transform": {
         "position": [
-          -2.0,
-          9.0,
-          0.0
+          -1.9518005847930908,
+          9.500826835632324,
+          0.0004727989435195923
         ],
         "rotation": [
           0.0,
@@ -683,9 +687,9 @@
           0.0
         ],
         "scale": [
-          0.600600004196167,
-          14.212030410766602,
-          2.122525215148926
+          1.0,
+          2.5734400749206543,
+          1.0
         ]
       }
     },
@@ -701,7 +705,7 @@
         "id": 2,
         "is drawn": true,
         "is static": false,
-        "mesh": 3
+        "mesh": 2
       },
       "displayed": true,
       "name": "Cylinder",

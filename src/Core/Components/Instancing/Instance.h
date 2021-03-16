@@ -54,12 +54,12 @@ namespace MxEngine
 		}
 	};
 
-	bool IsInstanced(MxObject& object);
+	bool IsInstanced(const MxObject& object);
 	bool IsInstanced(MxObject::Handle object);
-	bool IsInstance(MxObject& object);
+	bool IsInstance(const MxObject& object);
 	bool IsInstance(MxObject::Handle object);
 	MxObject::Handle Instanciate(MxObject& object);
 	MxObject::Handle Instanciate(MxObject::Handle object);
-	MxObject::Handle GetInstanceParent(MxObject& object);
+	MxObject::Handle GetInstanceParent(const MxObject& object);
 	MxObject::Handle GetInstanceParent(MxObject::Handle object);
 }

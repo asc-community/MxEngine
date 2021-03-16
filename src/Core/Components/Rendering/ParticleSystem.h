@@ -26,6 +26,8 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#pragma once
+
 #include "Utilities/ECS/Component.h"
 #include "Platform/GraphicAPI.h"
 
@@ -66,6 +68,7 @@ namespace MxEngine
         float maxInitialTimeAlive = 0.0f;
         float minSpawnDistance = 0.0f;
         float maxSpawnDistance = 0.0f;
+        float fading = 0.0f;
         Shape shape = Shape::SPHERE;
         size_t maxParticleCount = 1024;
         bool isDirty = true;
@@ -108,6 +111,9 @@ namespace MxEngine
 
         bool IsRelative() const;
         void SetRelative(bool relative);
+
+        float GetFading() const;
+        void SetFading(float fading);
 
         Shape GetShape() const;
         void SetShape(Shape shape);
