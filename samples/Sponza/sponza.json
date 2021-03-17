@@ -2153,11 +2153,11 @@
       },
       "CameraSSAO": {
         "blur iterations": 1,
-        "blur lod": 4,
+        "blur lod": 2,
         "id": 0,
-        "intensity": 1.5,
+        "intensity": 3.0,
         "radius": 1.0,
-        "sample count": 16
+        "sample count": 4
       },
       "CameraSSGI": {
         "blur iterations": 1,

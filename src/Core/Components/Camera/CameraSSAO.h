@@ -36,10 +36,10 @@ namespace MxEngine
 	{
 		MAKE_COMPONENT(CameraSSAO);
 
-		uint8_t sampleCount = 16;
+		uint8_t sampleCount = 4;
 		uint8_t blurIterations = 1;
 		uint8_t blurLOD = 2;
-		float intensity = 2.5f;
+		float intensity = 3.0f;
 		float radius = 1.0f;
 	public:
 		CameraSSAO() = default;

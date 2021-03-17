@@ -238,11 +238,16 @@ namespace MxEngine
 		this->SetBorderColor(MakeVector4(1.0f));
 	}
 
-	void Texture::SetSamplingFromLOD(size_t lod)
+	void Texture::SetMaxLOD(size_t lod)
+	{
+		this->Bind(0);
+		GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, (float)lod));
+	}
+
+	void Texture::SetMinLOD(size_t lod)
 	{
 		this->Bind(0);
 		GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, (float)lod));
-		GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, (float)lod));
 	}
 
 	size_t Texture::GetMaxTextureLOD() const

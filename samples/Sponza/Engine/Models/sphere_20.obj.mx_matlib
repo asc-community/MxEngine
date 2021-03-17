@@ -1,0 +1,26 @@
+[
+  {
+    "AlbedoMap": "",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 0.0,
+    "MetallicMap": "",
+    "Name": "DefaultMaterial",
+    "NormalMap": "",
+    "RoughnessFactor": 0.75,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  }
+]
