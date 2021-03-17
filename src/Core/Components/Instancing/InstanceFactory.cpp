@@ -29,7 +29,7 @@ namespace MxEngine
     {
         for (auto& object : this->pool)
         {
-            if (!object.IsValid())
+            if (!object.IsValid() || !object->HasComponent<Instance>())
                 this->pool.Deallocate(this->pool.IndexOf(object));
         }
     }

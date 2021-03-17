@@ -111,7 +111,8 @@ namespace MxEngine
 		void Load(RawDataPointer data, int width, int height, int channels, bool isFloating, TextureFormat format = TextureFormat::RGB);
 		void Load(const Image& image, TextureFormat format = TextureFormat::RGB);
 		void LoadDepth(int width, int height, TextureFormat format = TextureFormat::DEPTH);
-		void SetSamplingFromLOD(size_t lod);
+		void SetMaxLOD(size_t lod);
+		void SetMinLOD(size_t lod);
 		size_t GetMaxTextureLOD() const;
 		Image GetRawTextureData() const;
 		void GenerateMipmaps() const;
