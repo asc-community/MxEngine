@@ -8,7 +8,7 @@ void InitSurface(MxObject& surface)
 		Primitives::CreateSurface([](float x, float y)
 		{
 			return std::sin(10.0f * x) * std::sin(10.0f * y);
-		}, 1.0f, 1.0f, 0.01f)
+		}, 1.0f, 1.0f, 0.01f, "Surface")
 	);
 	surface.AddComponent<MeshRenderer>();
 
