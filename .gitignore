@@ -61,7 +61,6 @@ cmake_install.cmake
 imgui.ini
 profile_log.json
 compile_commands.json
-**/Engine/Textures
-**/Engine/Shaders
-DEBUG_DEBUG
+**/Engine/Textures/**
+**/Engine/Shaders/**
 *.etl
