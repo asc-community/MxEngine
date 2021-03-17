@@ -397,6 +397,7 @@ namespace MxEngine
             ScriptInfo info;
             info.Name = scriptName;
             info.FilePath = ToMxString(std::filesystem::proximate(filepath));
+            std::replace(info.FilePath.begin(), info.FilePath.end(), '\\', '/');
 
             RuntimeCompiler::AddScriptFile(scriptName, filepath);
 

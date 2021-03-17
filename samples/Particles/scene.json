@@ -2,11 +2,11 @@
   "AudioBuffer": null,
   "CubeMap": [
     {
-      "_filepath": "Resources\\skybox.png",
+      "_filepath": "Resources/skybox.png",
       "id": 2
     },
     {
-      "_filepath": "Resources\\skybox_irradiance.png",
+      "_filepath": "Resources/skybox_irradiance.png",
       "id": 3
     }
   ],
@@ -189,7 +189,7 @@
   ],
   "Mesh": [
     {
-      "_filepath": "Engine\\Models\\cube_2.obj",
+      "_filepath": "Engine/Models/cube_2.obj",
       "aabb": {
         "max": [
           0.5,
@@ -213,7 +213,7 @@
       "id": 0
     },
     {
-      "_filepath": "Engine\\Models\\plane_2.obj",
+      "_filepath": "Engine/Models/plane_2.obj",
       "aabb": {
         "max": [
           0.5,
@@ -237,7 +237,7 @@
       "id": 1
     },
     {
-      "_filepath": "Engine\\Models\\cylinder_20.obj",
+      "_filepath": "Engine/Models/cylinder_20.obj",
       "aabb": {
         "max": [
           0.5,
@@ -272,7 +272,7 @@
       ],
       "filepath": {
         "format": "RGBA",
-        "path": "Resources\\smoke.png"
+        "path": "Resources/smoke.png"
       },
       "id": 9,
       "wrap type": "REPEAT"
@@ -286,7 +286,7 @@
       ],
       "filepath": {
         "format": "RGBA",
-        "path": "Resources\\star.png"
+        "path": "Resources/star.png"
       },
       "id": 10,
       "wrap type": "REPEAT"
@@ -300,7 +300,7 @@
       ],
       "filepath": {
         "format": "RGBA",
-        "path": "Resources\\fire.png"
+        "path": "Resources/fire.png"
       },
       "id": 11,
       "wrap type": "REPEAT"
@@ -316,7 +316,7 @@
     "paused": false,
     "physics-step": 1.0,
     "time-scale": 1.0,
-    "total-time": 264.6247863769531,
+    "total-time": 292.59552001953125,
     "viewport": 0
   },
   "mxobjects": [
@@ -324,14 +324,14 @@
       "CameraController": {
         "camera type": "PERSPECTIVE",
         "direction": [
-          -0.8061715364456177,
-          -0.33833056688308716,
-          0.48540687561035156
+          -0.6719404458999634,
+          -0.3464180827140808,
+          0.6545918583869934
         ],
         "forward vector": [
-          -0.8566930294036865,
+          -0.7162931561470032,
           0.0,
-          0.5158265233039856
+          0.6977994441986084
         ],
         "id": 0,
         "is listening window resize event": false,
@@ -343,9 +343,9 @@
           "znear": 0.10000000149011612
         },
         "right vector": [
-          -0.515826404094696,
+          -0.6977993249893188,
           0.0,
-          -0.8566931486129761
+          -0.7162932753562927
         ],
         "rotate speed": 10.0,
         "up vector": [
@@ -441,9 +441,9 @@
       "name": "Camera",
       "transform": {
         "position": [
-          13.119638442993164,
+          15.66148567199707,
           14.09194564819336,
-          -5.676478862762451
+          -7.803793430328369
         ],
         "rotation": [
           0.0,
@@ -666,7 +666,7 @@
         "max particle count": 64,
         "max particle size": 1.0,
         "max spawn distance": 0.0,
-        "min particle size": 0.10000000149011612,
+        "min particle size": 0.05000000074505806,
         "min spawn distance": 0.0,
         "particle angular speed": 0.0,
         "particle lifetime": 2.0,

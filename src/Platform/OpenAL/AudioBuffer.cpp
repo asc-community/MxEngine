@@ -99,12 +99,14 @@ namespace MxEngine
                 AudioLoader::Free(copy);
             }
 
+            this->filepath = ToMxString(std::filesystem::proximate(path));
+            std::replace(this->filepath.begin(), this->filepath.end(), '\\', '/');
+
             this->nativeFormat = AL_FORMAT_MONO16;
             this->channels = (uint8_t)audio.channels;
             this->frequency = audio.frequency;
             this->type = audio.type;
             this->sampleCount = audio.sampleCount;
-            this->filepath = ToMxString(path);
 
             ALCALL(alBufferData(id, (ALenum) this->nativeFormat, audio.data, ALsizei(audio.sampleCount * sizeof(int16_t)), (ALsizei) audio.frequency));
 

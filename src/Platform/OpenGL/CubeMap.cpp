@@ -64,7 +64,10 @@ namespace MxEngine
 			return;
 		}
 		auto images = ImageLoader::CreateCubemap(img);
+
 		this->filepath = ToMxString(std::filesystem::proximate(filepath));
+		std::replace(this->filepath.begin(), this->filepath.end(), '\\', '/');
+
 		this->channels = img.GetChannelCount();
 		this->width = img.GetWidth();
 		this->height = img.GetHeight();
@@ -183,7 +186,7 @@ namespace MxEngine
 		this->width = images.front().GetWidth();
 		this->height = images.front().GetHeight();
 		this->channels = images.front().GetChannelCount();
-		this->filepath = "[[raw data]]";
+		this->filepath = MXENGINE_MAKE_INTERNAL_TAG("raw");
 
 		GLenum pixelType = images.front().IsFloatingPoint() ? GL_FLOAT : GL_UNSIGNED_BYTE;
 		GLenum pixelFormat = GL_RGBA;
@@ -228,7 +231,7 @@ namespace MxEngine
 		this->width = width;
 		this->height = height;
 		this->channels = 3;
-		this->filepath = "[[raw data]]";
+		this->filepath = MXENGINE_MAKE_INTERNAL_TAG("raw");
 
 		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));
 		for (size_t i = 0; i < data.size(); i++)
@@ -248,7 +251,7 @@ namespace MxEngine
 	{
 		this->width = width;
 		this->height = height;
-		this->filepath = "[[depth]]";
+		this->filepath = MXENGINE_MAKE_INTERNAL_TAG("depth");
 		this->channels = 1;
 		
 		GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, id));

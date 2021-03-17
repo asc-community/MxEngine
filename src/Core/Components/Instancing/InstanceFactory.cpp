@@ -180,7 +180,7 @@ namespace MxEngine
 
     bool IsInstance(MxObject::Handle object)
     {
-        return object.IsValid() && IsInstance(object);
+        return object.IsValid() && IsInstance(*object);
     }
 
     MxObject::Handle Instanciate(MxObject& object)

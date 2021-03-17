@@ -31,6 +31,7 @@
 #include "Utilities/Logging/Logger.h"
 #include "Platform/OpenGL/GLUtilities.h"
 #include "Utilities/FileSystem/FileManager.h"
+#include <algorithm>
 
 namespace MxEngine
 {
@@ -82,7 +83,10 @@ namespace MxEngine
 		for (size_t i = 0; i < count; i++)
 		{
 			auto& stageInfo = stageInfos[i];
+			
 			this->debugFilePaths[(size_t)stageInfo.Stage] = ToMxString(FileManager::GetProximatePath(stageInfo.Path, FileManager::GetWorkingDirectory()));
+			std::replace(this->debugFilePaths[(size_t)stageInfo.Stage].begin(), this->debugFilePaths[(size_t)stageInfo.Stage].end(), '\\', '/');
+
 			auto filepaths = ShaderBase::GetShaderIncludeFiles(stageInfo.SourceCode, stageInfo.Path);
 			this->includedFilePaths.insert(this->includedFilePaths.end(), eastl::make_move_iterator(filepaths.begin()), eastl::make_move_iterator(filepaths.end()));
 		}

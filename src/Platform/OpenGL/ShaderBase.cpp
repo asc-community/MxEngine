@@ -147,6 +147,11 @@ namespace MxEngine
             MXLOG_WARNING("OpenGL::Shader", "failed to validate shader program with id = " + ToMxString(program));
         }
 
+        for (size_t i = 0; i < shaderCount; i++)
+        {
+            GLCALL(glDetachShader(program, ids[i]));
+        }
+
         return program;
     }
 

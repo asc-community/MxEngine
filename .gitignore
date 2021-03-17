@@ -60,6 +60,7 @@ cmake_install.cmake
 # MxEngine
 imgui.ini
 profile_log.json
+DEBUG_DEBUG
 compile_commands.json
 **/Engine/Textures/**
 **/Engine/Shaders/**

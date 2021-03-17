@@ -64,7 +64,7 @@ namespace MxEngine
     BufferBase::BufferBase()
     {
         GLCALL(glGenBuffers(1, &this->id));
-        MXLOG_INFO("OpenGL::Buffer", "created buffer with id = " + ToMxString(this->id));
+        MXLOG_DEBUG("OpenGL::Buffer", "created buffer with id = " + ToMxString(this->id));
     }
 
     BufferBase::~BufferBase()

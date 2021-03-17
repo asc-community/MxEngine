@@ -42,8 +42,10 @@ namespace MxEngine
 	template<>
 	void Mesh::LoadFromFile(const std::filesystem::path& filepath)
 	{
-		this->filePath = ToMxString(filepath);
 		ObjectInfo objectInfo = ObjectLoader::Load(filepath);
+
+		this->filepath = ToMxString(filepath);
+		std::replace(this->filepath.begin(), this->filepath.end(), '\\', '/');
 
 		MxVector<SubMesh::MaterialId> materialIds;
 		materialIds.reserve(objectInfo.meshes.size());
@@ -111,7 +113,7 @@ namespace MxEngine
 
 	Mesh::Mesh()
 	{
-		this->filePath = MXENGINE_MAKE_INTERNAL_TAG("empty");
+		this->filepath = MXENGINE_MAKE_INTERNAL_TAG("empty");
 		this->VBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
 		this->IBO = GraphicFactory::Create<IndexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
 		this->VAO = GraphicFactory::Create<VertexArray>();
@@ -234,17 +236,17 @@ namespace MxEngine
 
 	const MxString& Mesh::GetFilePath() const
 	{
-		return this->filePath;
+		return this->filepath;
 	}
 
 	void Mesh::SetInternalEngineTag(const MxString& tag)
 	{
-		this->filePath = tag;
+		this->filepath = tag;
 	}
 
 	bool Mesh::IsInternalEngineResource() const
 	{
-		return this->filePath.find(MXENGINE_INTERNAL_TAG_SYMBOL) == 0;
+		return this->filepath.find(MXENGINE_INTERNAL_TAG_SYMBOL) == 0;
 	}
 
 	void Mesh::SetSubMeshesInternal(const SubMeshList& submeshes)

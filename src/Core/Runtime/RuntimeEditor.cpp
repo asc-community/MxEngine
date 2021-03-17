@@ -352,7 +352,7 @@ namespace MxEngine
 
 		auto updateTimes = GetTrackedFilesUpdateTime(resolvedFilepaths);
 
-		MXLOG_INFO("MxEngine::RuntimeEditor", "added shader update listener for shader: " + GetShaderMainFile(shader));
+		MXLOG_DEBUG("MxEngine::RuntimeEditor", "added shader update listener for shader: " + GetShaderMainFile(shader));
 		Event::AddEventListener<UpdateEvent>("RuntimeEditor", 
 			[shader, filepaths = std::move(resolvedFilepaths), updates = std::move(updateTimes)](auto&) mutable
 			{

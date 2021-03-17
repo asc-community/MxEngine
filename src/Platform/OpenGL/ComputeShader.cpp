@@ -38,6 +38,7 @@ namespace MxEngine
     {
         #if defined(MXENGINE_DEBUG)
         this->debugFilePath = ToMxString(FileManager::GetProximatePath(path, FileManager::GetWorkingDirectory()));
+        std::replace(this->debugFilePath.begin(), this->debugFilePath.end(), '\\', '/');
         this->includedFilePaths = ShaderBase::GetShaderIncludeFiles(source, path);
         #endif
     }

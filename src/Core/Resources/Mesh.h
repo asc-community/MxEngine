@@ -43,7 +43,7 @@ namespace MxEngine
 		using SubMeshList = MxVector<SubMesh>;
 		
 		SubMeshList submeshes;
-		MxString filePath;
+		MxString filepath;
 		VertexBufferHandle VBO;
 		VertexArrayHandle VAO;
 		IndexBufferHandle IBO;

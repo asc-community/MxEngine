@@ -141,6 +141,8 @@ namespace MxEngine
 		}
 
 		this->filepath = ToMxString(std::filesystem::proximate(filepath));
+		std::replace(this->filepath.begin(), this->filepath.end(), '\\', '/');
+
 		this->format = format;
 		this->width = image.GetWidth();
 		this->height = image.GetHeight();
@@ -183,7 +185,7 @@ namespace MxEngine
 
 	void Texture::Load(RawDataPointer data, int width, int height, int channels, bool isFloating, TextureFormat format)
 	{
-		this->filepath = "[[raw data]]";
+		this->filepath = MXENGINE_MAKE_INTERNAL_TAG("raw");
 		this->width = width;
 		this->height = height;
 		this->textureType = GL_TEXTURE_2D;
@@ -224,7 +226,7 @@ namespace MxEngine
 
 	void Texture::LoadDepth(int width, int height, TextureFormat format)
 	{
-		this->filepath = "[[depth]]";
+		this->filepath = MXENGINE_MAKE_INTERNAL_TAG("depth");
 		this->width = width;
 		this->height = height;
 		this->textureType = GL_TEXTURE_2D;
