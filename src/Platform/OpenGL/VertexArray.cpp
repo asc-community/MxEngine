@@ -94,13 +94,18 @@ namespace MxEngine
 		this->Bind();
 		buffer.Bind();
 		size_t offset = 0;
+		size_t stride = 0;
+
+		for (const auto& element : layout)
+			stride += element.byteSize;
+
 		for (const auto& element : layout)
 		{
 			for (size_t i = 0; i < element.entries; i++)
 			{
 				// TODO: handle integer case with glVertexAttribIPointer
 				GLCALL(glEnableVertexAttribArray(this->attributeIndex));
-				GLCALL(glVertexAttribPointer(this->attributeIndex, element.components, (GLenum)element.type, GL_FALSE, 0, (void*)offset));
+				GLCALL(glVertexAttribPointer(this->attributeIndex, element.components, (GLenum)element.type, GL_FALSE, stride, (void*)offset));
 				offset += element.byteSize / element.entries;
 				this->attributeIndex++;
 			}
@@ -113,13 +118,18 @@ namespace MxEngine
 		this->Bind();
 		buffer.Bind();
 		size_t offset = 0;
+		size_t stride = 0;
+
+		for (const auto& element : layout)
+			stride += element.byteSize;
+
 		for (const auto& element : layout)
 		{
 			for (size_t i = 0; i < element.entries; i++)
 			{
 				// TODO: handle integer case with glVertexAttribIPointer
 				GLCALL(glEnableVertexAttribArray(this->attributeIndex));
-				GLCALL(glVertexAttribPointer(this->attributeIndex, element.components, (GLenum)element.type, GL_FALSE, 0, (void*)offset));
+				GLCALL(glVertexAttribPointer(this->attributeIndex, element.components, (GLenum)element.type, GL_FALSE, stride, (void*)offset));
 				GLCALL(glVertexAttribDivisor(this->attributeIndex, 1));
 				offset += element.byteSize / element.entries;
 				this->attributeIndex++;
