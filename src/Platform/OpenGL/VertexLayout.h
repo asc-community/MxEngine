@@ -26,47 +26,19 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Core/Macro/Macro.h"
-
-#if defined(MXENGINE_DEBUG)
-#include "Utilities/STL/MxString.h"
-#endif
-
-#include <vector>
+#include <cstddef>
+#include <cstdint>
 
 namespace MxEngine
 {
-	class VertexBufferLayout
-	{
-		struct VertexBufferElement
-		{
-			size_t count;
-			unsigned int type;
-			unsigned char normalized;
-		};
+    struct VertexLayout
+    {
+        uint32_t type;
+        uint16_t components;
+        uint16_t entries;
+        size_t byteSize;
 
-		using StrideType = unsigned int;
-		using ElementBuffer = std::vector<VertexBufferElement>;
-
-		#if defined(MXENGINE_DEBUG)
-		MxString layoutString;
-		#endif
-
-		ElementBuffer elements;
-		StrideType stride = 0;
-	public:
-		VertexBufferLayout() = default;
-
-		const ElementBuffer& GetElements() const;
-		StrideType GetStride() const;
-		void PushFloat(size_t count);
-		void PopFloat(size_t count);
-		
-		template<typename T>
-		void Push();
-		template<typename T>
-		void Pop();
-	};
+        template<typename T>
+        static VertexLayout Entry();
+    };
 }

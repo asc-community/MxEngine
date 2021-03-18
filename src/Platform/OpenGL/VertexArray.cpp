@@ -27,10 +27,10 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "VertexArray.h"
-#include "Platform/OpenGL/GLUtilities.h"
-#include "Platform/OpenGL/VertexBuffer.h"
-#include "Platform/OpenGL/IndexBuffer.h"
-#include "Platform/OpenGL/VertexBufferLayout.h"
+#include "GLUtilities.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "VertexLayout.h"
 #include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
@@ -89,49 +89,66 @@ namespace MxEngine
 		glBindVertexArray(0);
 	}
 
-	void VertexArray::AddVertexBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout)
+	void VertexArray::AddVertexBuffer(const VertexBuffer& buffer, ArrayView<VertexLayout> layout)
 	{
 		this->Bind();
 		buffer.Bind();
-		const auto& elements = layout.GetElements();
 		size_t offset = 0;
-		for (const auto& element : elements)
+		size_t stride = 0;
+
+		for (const auto& element : layout)
+			stride += element.byteSize;
+
+		for (const auto& element : layout)
 		{
-			GLCALL(glEnableVertexAttribArray(this->attributeIndex));
-			GLCALL(glVertexAttribPointer(this->attributeIndex, (GLint)element.count, element.type, element.normalized, layout.GetStride(), (void*)offset));
-			offset += element.count * GetGLTypeSize(element.type);
-			this->attributeIndex++;
+			for (size_t i = 0; i < element.entries; i++)
+			{
+				// TODO: handle integer case with glVertexAttribIPointer
+				GLCALL(glEnableVertexAttribArray(this->attributeIndex));
+				GLCALL(glVertexAttribPointer(this->attributeIndex, element.components, (GLenum)element.type, GL_FALSE, stride, (void*)offset));
+				offset += element.byteSize / element.entries;
+				this->attributeIndex++;
+			}
 		}
 		this->Unbind();
 	}
 
-	void VertexArray::AddInstancedVertexBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout)
+	void VertexArray::AddInstancedVertexBuffer(const VertexBuffer& buffer, ArrayView<VertexLayout> layout)
 	{
 		this->Bind();
 		buffer.Bind();
-		const auto& elements = layout.GetElements();
 		size_t offset = 0;
-		for (const auto& element : elements)
+		size_t stride = 0;
+
+		for (const auto& element : layout)
+			stride += element.byteSize;
+
+		for (const auto& element : layout)
 		{
-			GLCALL(glEnableVertexAttribArray(this->attributeIndex));
-			GLCALL(glVertexAttribPointer(this->attributeIndex, (GLint)element.count, element.type, element.normalized, layout.GetStride(), (void*)offset));
-			GLCALL(glVertexAttribDivisor(this->attributeIndex, 1));
-			offset += element.count * GetGLTypeSize(element.type);
-			this->attributeIndex++;
+			for (size_t i = 0; i < element.entries; i++)
+			{
+				// TODO: handle integer case with glVertexAttribIPointer
+				GLCALL(glEnableVertexAttribArray(this->attributeIndex));
+				GLCALL(glVertexAttribPointer(this->attributeIndex, element.components, (GLenum)element.type, GL_FALSE, stride, (void*)offset));
+				GLCALL(glVertexAttribDivisor(this->attributeIndex, 1));
+				offset += element.byteSize / element.entries;
+				this->attributeIndex++;
+			}
 		}
 		this->Unbind();
 	}
 
-	void VertexArray::PopBuffer(const VertexBufferLayout& vbl)
+	void VertexArray::PopBuffer(ArrayView<VertexLayout> layout)
 	{
+		MX_ASSERT(this->attributeIndex > layout.size());
+
 		this->Bind();
-		const auto& elements = vbl.GetElements();
 		size_t offset = 0;
-		for (size_t i = 0; i < elements.size(); i++)
+		for (const auto& element : layout)
 		{
 			this->attributeIndex--;
 			GLCALL(glDisableVertexAttribArray(this->attributeIndex));
-			offset -= elements[i].count * GetGLTypeSize(elements[i].type);
+			offset -= element.byteSize;
 		}
 		this->Unbind();
 	}

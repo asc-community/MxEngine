@@ -48,7 +48,7 @@ namespace MxEngine
 		VertexArrayHandle VAO;
 		IndexBufferHandle IBO;
 		MxVector<VertexBufferHandle> instancedVBOs;
-		MxVector<VertexBufferLayoutHandle> instancedVBLs;
+		MxVector<MxVector<VertexLayout>> instancedVBLs;
 		MxVector<UniqueRef<TransformComponent>> subMeshTransforms;
 
 		template<typename FilePath>
@@ -72,9 +72,9 @@ namespace MxEngine
 
 		void ReserveData(size_t vertexCount, size_t indexCount);
 		void UpdateBoundingGeometry();
-		size_t AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl);
+		size_t AddInstancedBuffer(VertexBufferHandle vbo, ArrayView<VertexLayout> layout);
 		VertexBufferHandle GetBufferByIndex(size_t index) const; 
-		VertexBufferLayoutHandle GetBufferLayoutByIndex(size_t index) const;
+		const MxVector<VertexLayout>& GetBufferLayoutByIndex(size_t index) const;
 		VertexBufferHandle GetVBO() const;
 		IndexBufferHandle GetIBO() const;
 		VertexArrayHandle GetVAO() const;

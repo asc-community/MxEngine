@@ -48,10 +48,11 @@ namespace MxEngine
             UsageType::STATIC_DRAW
         );
 
-        auto VBL = GraphicFactory::Create<VertexBufferLayout>();
-        VBL->PushFloat(4); //-V112
+        std::array vertexLayout = {
+            VertexLayout::Entry<Vector4>()
+        };
         this->VAO = GraphicFactory::Create<VertexArray>();
-        VAO->AddVertexBuffer(*VBO, *VBL);
+        VAO->AddVertexBuffer(*VBO, vertexLayout);
     }
     
     const VertexArray& RectangleObject::GetVAO() const

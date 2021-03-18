@@ -49,8 +49,6 @@ namespace MxEngine
 
 	bool GlLogCall(const char* function, const char* file, int line);
 
-	size_t GetGLTypeSize(unsigned int type);
-
 	template<typename T>
 	const char* TypeToString();
 

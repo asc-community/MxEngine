@@ -75,10 +75,11 @@ namespace MxEngine
             UsageType::STATIC_DRAW
         );
 
-        auto VBL = GraphicFactory::Create<VertexBufferLayout>();
-        VBL->PushFloat(3);
+        std::array vertexLayout = {
+            VertexLayout::Entry<Vector3>()
+        };
         this->VAO = GraphicFactory::Create<VertexArray>();
-        VAO->AddVertexBuffer(*VBO, *VBL);
+        VAO->AddVertexBuffer(*VBO, vertexLayout);
     }
 
     const VertexArray& SkyboxObject::GetVAO() const

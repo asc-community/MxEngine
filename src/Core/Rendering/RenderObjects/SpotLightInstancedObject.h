@@ -58,13 +58,14 @@ namespace MxEngine
 		{
 			this->instancedVBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
 
-			auto VBL = GraphicFactory::Create<VertexBufferLayout>();
-			VBL->Push<Matrix4x4>(); // transform
-			VBL->Push<Vector4>(); // position + innerAngle
-			VBL->Push<Vector4>(); // direction + outerAngle
-			VBL->Push<Vector4>(); // intensity * color + ambient intensity
+			std::array vertexLayout = {
+				VertexLayout::Entry<Matrix4x4>(),
+				VertexLayout::Entry<Vector4>(),
+				VertexLayout::Entry<Vector4>(),
+				VertexLayout::Entry<Vector4>(),
+			};
 
-			this->VAO->AddInstancedVertexBuffer(*this->instancedVBO, *VBL);
+			this->VAO->AddInstancedVertexBuffer(*this->instancedVBO, vertexLayout);
 		}
 
 		void SubmitToVBO() { instancedVBO->BufferDataWithResize((float*)this->Instances.data(), this->Instances.size() * SpotLightBaseData::Size); }

@@ -40,7 +40,7 @@
 #include "Platform/OpenGL/VertexBuffer.h"
 #include "Platform/OpenGL/ShaderStorageBuffer.h"
 #include "Platform/OpenGL/ComputeShader.h"
-#include "Platform/OpenGL/VertexBufferLayout.h"
+#include "Platform/OpenGL/VertexLayout.h"
 
 #include "Utilities/AbstractFactory/AbstractFactory.h"
 
@@ -55,7 +55,6 @@ namespace MxEngine
         Texture,
         VertexArray,
         VertexBuffer,
-        VertexBufferLayout,
         ShaderStorageBuffer,
         ComputeShader
     >;
@@ -73,7 +72,6 @@ namespace MxEngine
     CREATE_HANDLE(Texture)
     CREATE_HANDLE(VertexArray)
     CREATE_HANDLE(VertexBuffer)
-    CREATE_HANDLE(VertexBufferLayout)
     CREATE_HANDLE(ShaderStorageBuffer)
     CREATE_HANDLE(ComputeShader)
     #undef CREATE_HANDLE

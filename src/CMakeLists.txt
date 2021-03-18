@@ -60,7 +60,7 @@ set(MXENGINE_SOURCES
 "Platform/OpenGL/Shader.cpp" 
 "Platform/OpenGL/Texture.cpp" 
 "Platform/OpenGL/VertexArray.cpp" 
-"Platform/OpenGL/VertexBufferLayout.cpp" 
+ 
 "Platform/OpenGL/VertexBuffer.cpp" 
 "Platform/OpenGL/Renderer.cpp" 
 "Platform/Window/Input.cpp" 
@@ -123,7 +123,7 @@ set(MXENGINE_SOURCES
 "Platform/OpenGL/ShaderBase.cpp" 
 "Platform/OpenGL/ComputeShader.cpp" 
 "Platform/OpenGL/BufferBase.cpp"
-"Platform/Compute/Compute.cpp" "Core/Components/Rendering/ParticleSystem.cpp" "Core/Components/Camera/CameraSSAO.cpp")
+"Platform/Compute/Compute.cpp" "Core/Components/Rendering/ParticleSystem.cpp" "Core/Components/Camera/CameraSSAO.cpp" "Platform/OpenGL/VertexLayout.cpp")
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)
