@@ -154,9 +154,10 @@ namespace MxEngine
                 UsageType::DYNAMIC_DRAW
             );
 			
-            auto VBL = GraphicFactory::Create<VertexBufferLayout>();
-			VBL->Push<T>();
-			return (BufferIndex)mesh.AddInstancedBuffer(std::move(VBO), std::move(VBL));
+            std::array vertexLayout = {
+                VertexLayout::Entry<T>()
+            };
+			return (BufferIndex)mesh.AddInstancedBuffer(std::move(VBO), vertexLayout);
 		}
 
 		template<typename T>

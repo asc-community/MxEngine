@@ -59,21 +59,6 @@ namespace MxEngine
 		return success;
 	}
 
-	size_t GetGLTypeSize(unsigned int type)
-	{
-		switch (type)
-		{
-		case GL_FLOAT:
-			return sizeof(GLfloat);
-		case GL_UNSIGNED_INT:
-			return sizeof(GLuint);
-		case GL_UNSIGNED_BYTE:
-			return sizeof(GLubyte);
-		default:
-			return 0;
-		}
-	}
-
     void PrintDebugInformation(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 	{
 		// ignore non-significant error/warning codes

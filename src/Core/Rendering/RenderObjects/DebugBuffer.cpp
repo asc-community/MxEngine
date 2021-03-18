@@ -42,13 +42,14 @@ namespace MxEngine
 {
     void DebugBuffer::Init()
     {
-        auto VBL = GraphicFactory::Create<VertexBufferLayout>();
-        VBL->PushFloat(3); // position
-        VBL->PushFloat(4); // color //-V112
+        std::array vertexLayout = {
+            VertexLayout::Entry<Vector3>(),
+            VertexLayout::Entry<Vector4>(),
+        };
 
         this->VBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
         this->VAO = GraphicFactory::Create<VertexArray>();
-        VAO->AddVertexBuffer(*this->VBO, *VBL);
+        VAO->AddVertexBuffer(*this->VBO, vertexLayout);
     }
 
     void DebugBuffer::Submit(const Line& line, const Vector4& color)

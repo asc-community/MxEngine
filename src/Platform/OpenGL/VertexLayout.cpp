@@ -26,45 +26,75 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "RenderHelperObject.h"
+#include "VertexLayout.h"
+#include "GLUtilities.h"
+#include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
-	struct PointLightBaseData
-	{
-		Matrix4x4 Transform;
-		Vector3 Position;
-		float Radius;
-		Vector3 Color;
-		float AmbientIntensity;
+    template<>
+    VertexLayout VertexLayout::Entry<float>()
+    {
+        return { GL_FLOAT, 1, 1, sizeof(float) };
+    }
 
-		constexpr static size_t Size = 16 + 3 + 1 + 3 + 1;
-	};
+    template<>
+    VertexLayout VertexLayout::Entry<Vector2>()
+    {
+        return { GL_FLOAT, 2, 1, sizeof(Vector2) };
+    }
 
-	class PointLightInstancedObject : public RenderHelperObject
-	{
-		VertexBufferHandle instancedVBO;
-	public:
-		MxVector<PointLightBaseData> Instances;
+    template<>
+    VertexLayout VertexLayout::Entry<Vector3>()
+    {
+        return { GL_FLOAT, 3, 1, sizeof(Vector3) };
+    }
 
-		PointLightInstancedObject() = default;
+    template<>
+    VertexLayout VertexLayout::Entry<Vector4>()
+    {
+        return { GL_FLOAT, 4, 1, sizeof(Vector4) };
+    }
 
-		PointLightInstancedObject(VertexBufferHandle vbo, VertexArrayHandle vao, IndexBufferHandle ibo)
-			: RenderHelperObject(std::move(vbo), std::move(vao), std::move(ibo))
-		{
-			this->instancedVBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
+    template<>
+    VertexLayout VertexLayout::Entry<int32_t>()
+    {
+        return { GL_INT, 1, 1, sizeof(int32_t) };
+    }
 
-			std::array vertexLayout = {
-				VertexLayout::Entry<Matrix4x4>(),
-				VertexLayout::Entry<Vector4>(),
-				VertexLayout::Entry<Vector4>(),
-			};
+    template<>
+    VertexLayout VertexLayout::Entry<VectorInt2>()
+    {
+        return { GL_INT, 2, 1, sizeof(VectorInt2) };
+    }
 
-			this->VAO->AddInstancedVertexBuffer(*this->instancedVBO, vertexLayout);
-		}
+    template<>
+    VertexLayout VertexLayout::Entry<VectorInt3>()
+    {
+        return { GL_INT, 3, 1, sizeof(VectorInt3) };
+    }
 
-		void SubmitToVBO() { instancedVBO->BufferDataWithResize((float*)this->Instances.data(), this->Instances.size() * PointLightBaseData::Size); }
-	};
+    template<>
+    VertexLayout VertexLayout::Entry<VectorInt4>()
+    {
+        return { GL_INT, 4, 1, sizeof(VectorInt4) };
+    }
+
+    template<>
+    VertexLayout VertexLayout::Entry<Matrix2x2>()
+    {
+        return { GL_FLOAT, 2, 2, sizeof(Matrix2x2) };
+    }
+
+    template<>
+    VertexLayout VertexLayout::Entry<Matrix3x3>()
+    {
+        return { GL_FLOAT, 3, 3, sizeof(Matrix3x3) };
+    }
+
+    template<>
+    VertexLayout VertexLayout::Entry<Matrix4x4>()
+    {
+        return { GL_FLOAT, 4, 4, sizeof(Matrix4x4) };
+    }
 }

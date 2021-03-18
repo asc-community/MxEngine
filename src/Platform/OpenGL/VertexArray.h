@@ -28,11 +28,13 @@
 
 #pragma once
 
+#include "Utilities/Array/ArrayView.h"
+
 namespace MxEngine
 {
 	class VertexBuffer;
-	class VertexBufferLayout;
 	class IndexBuffer;
+	struct VertexLayout;
 
 	class VertexArray
 	{
@@ -52,9 +54,9 @@ namespace MxEngine
 		BindableId GetNativeHandle() const;
 		void Bind() const;
 		void Unbind() const;
-		void AddVertexBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout);
-		void AddInstancedVertexBuffer(const VertexBuffer& buffer, const VertexBufferLayout& layout);
-		void PopBuffer(const VertexBufferLayout& vbl);
+		void AddVertexBuffer(const VertexBuffer& buffer, ArrayView<VertexLayout> layout);
+		void AddInstancedVertexBuffer(const VertexBuffer& buffer, ArrayView<VertexLayout> layout);
+		void PopBuffer(ArrayView<VertexLayout> layout);
 		void LinkIndexBuffer(const IndexBuffer& buffer);
 		int GetAttributeCount() const;
 	};

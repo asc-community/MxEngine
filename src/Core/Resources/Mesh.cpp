@@ -117,13 +117,15 @@ namespace MxEngine
 		this->VBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
 		this->IBO = GraphicFactory::Create<IndexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
 		this->VAO = GraphicFactory::Create<VertexArray>();
-		auto VBL = GraphicFactory::Create<VertexBufferLayout>();
-		VBL->PushFloat(3); // position
-		VBL->PushFloat(2); // texture uv
-		VBL->PushFloat(3); // normal
-		VBL->PushFloat(3); // tangent
-		VBL->PushFloat(3); // bitangent
-		this->VAO->AddVertexBuffer(*this->VBO, *VBL);
+
+		std::array vertexLayout = {
+			VertexLayout::Entry<Vector3>(), // position
+			VertexLayout::Entry<Vector2>(), // texture uv
+			VertexLayout::Entry<Vector3>(), // normal
+			VertexLayout::Entry<Vector3>(), // tangent
+			VertexLayout::Entry<Vector3>(), // bitangent
+		};
+		this->VAO->AddVertexBuffer(*this->VBO, vertexLayout);
 		this->VAO->LinkIndexBuffer(*this->IBO);
 	}
 
@@ -176,11 +178,11 @@ namespace MxEngine
 		this->MeshBoundingSphere = MxEngine::BoundingSphere(center, maxRadius);
 	}
 
-	size_t Mesh::AddInstancedBuffer(VertexBufferHandle vbo, VertexBufferLayoutHandle vbl)
+	size_t Mesh::AddInstancedBuffer(VertexBufferHandle vbo, ArrayView<VertexLayout> layout)
 	{
 		this->instancedVBOs.push_back(std::move(vbo));
-		this->instancedVBLs.push_back(std::move(vbl));
-		this->VAO->AddInstancedVertexBuffer(*this->instancedVBOs.back(), *this->instancedVBLs.back());
+		this->instancedVBLs.emplace_back(layout.begin(), layout.end());
+		this->VAO->AddInstancedVertexBuffer(*this->instancedVBOs.back(), this->instancedVBLs.back());
 		return this->instancedVBOs.size() - 1;
 	}
 
@@ -190,7 +192,7 @@ namespace MxEngine
 		return this->instancedVBOs[index];
 	}
 
-	VertexBufferLayoutHandle Mesh::GetBufferLayoutByIndex(size_t index) const
+	const MxVector<VertexLayout>& Mesh::GetBufferLayoutByIndex(size_t index) const
 	{
 		MX_ASSERT(index < this->instancedVBLs.size());
 		return this->instancedVBLs[index];
@@ -229,7 +231,7 @@ namespace MxEngine
     void Mesh::PopInstancedBuffer()
     {
 		MX_ASSERT(!this->instancedVBOs.empty());
-		this->VAO->PopBuffer(*this->instancedVBLs.back());
+		this->VAO->PopBuffer(this->instancedVBLs.back());
 		this->instancedVBOs.pop_back();
 		this->instancedVBLs.pop_back();
     }
