@@ -126,6 +126,9 @@ namespace MxEngine
 	MXENGINE_REFLECT_TYPE
 	{
 		rttr::registration::class_<MeshRenderer>("MeshRenderer")
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY)
+			)
 			.constructor<>()
 			.method("load materials", &MeshRenderer::GetMaterial)
 			(

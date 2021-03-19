@@ -58,6 +58,8 @@ namespace MxEngine
 		GREATER,
 		LESS_EQUAL,
 		GREATER_EQUAL,
+		ALWAYS,
+		NEVER,
 	};
 
 	enum class RenderPrimitive

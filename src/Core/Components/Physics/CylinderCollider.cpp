@@ -150,6 +150,9 @@ namespace MxEngine
             );
 
         rttr::registration::class_<CylinderCollider>("CylinderCollider")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+            )
             .constructor<>()
             .property("bounding cylinder", &CylinderCollider::GetBoundingCylinderInternal, &CylinderCollider::SetBoundingCylinder)
             (

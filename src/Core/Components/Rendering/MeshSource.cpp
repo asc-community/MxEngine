@@ -8,6 +8,9 @@ namespace MxEngine
     MXENGINE_REFLECT_TYPE
     {
         rttr::registration::class_<MeshSource>("MeshSource")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY)
+            )
             .constructor<>()
             .property("is drawn", &MeshSource::IsDrawn)
             (
@@ -18,6 +21,10 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )
             .property("casts shadow", &MeshSource::CastsShadow)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("ignores depth", &MeshSource::IgnoresDepth)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )

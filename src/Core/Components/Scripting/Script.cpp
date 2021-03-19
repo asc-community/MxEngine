@@ -119,6 +119,9 @@ namespace MxEngine
         using SetScriptName = void(Script::*)(const MxString&);
 
         rttr::registration::class_<Script>("Script")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+            )
             .constructor<>()
             .property_readonly("attached script name", &Script::GetScriptName)
             (

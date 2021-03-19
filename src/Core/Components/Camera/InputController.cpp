@@ -56,7 +56,7 @@ namespace MxEngine
 		this->bindMovement = true;
 		MXLOG_DEBUG("MxEngine::InputController", "bound object movement: " + object->Name);
 
-		Event::AddEventListener<UpdateEvent>(input.GetUUID(),
+		Event::AddEventListener<KeyEvent>(input.GetUUID(),
 			[camera, input, object](auto& event) mutable
 			{
 				auto vecForward = MakeVector3(0.0f, 0.0f, 1.0f);
@@ -305,6 +305,9 @@ namespace MxEngine
 	MXENGINE_REFLECT_TYPE
 	{
 		rttr::registration::class_<InputController>("InputController")
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+			)
 			.constructor<>()
 			.method("bind movement WASD", &InputController::BindMovementWASD)
 			(

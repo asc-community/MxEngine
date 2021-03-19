@@ -126,7 +126,7 @@ namespace MxEngine
 			const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping,
 			const CameraSSR* ssr, const CameraSSGI* ssgi, const CameraSSAO* ssao);
 		size_t SubmitRenderGroup(const Mesh& mesh, size_t instanceCount);
-		void SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& object, const Material& material, const TransformComponent& parentTransform, bool castsShadow, const char* debugName = nullptr);
+		void SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& object, const Material& material, const TransformComponent& parentTransform, bool castsShadow, bool ignoresDepth, const char* debugName = nullptr);
 		void SubmitImage(const TextureHandle& texture);
 		void StartPipeline();
 		void EndPipeline();

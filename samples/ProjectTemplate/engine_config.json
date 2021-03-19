@@ -9,6 +9,7 @@
     "shader-source-directory": "../../src/Platform/OpenGL/Shaders"
   },
   "filesystem": {
+    "cache-primitives": false,
     "ignored-folders": [
       "MxEngine",
       "out",

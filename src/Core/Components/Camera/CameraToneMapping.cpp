@@ -147,6 +147,7 @@ namespace MxEngine
     {
         rttr::registration::class_<ACES>("ACES")
             (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE),
                 rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<ACES>)
             )
             .constructor<>()

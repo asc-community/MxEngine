@@ -453,6 +453,9 @@ namespace MxEngine
 		}
 	}
 
+	// see SceneSerializer.cpp
+	void CloneCopyInternal(const MxObject::Handle& origin, MxObject::Handle& target);
+
     void RuntimeEditor::DrawMxObject(const MxString& treeName, MxObject::Handle object)
     {
 		auto oldTransform = object->Transform;
@@ -468,8 +471,10 @@ namespace MxEngine
 		{
 			if (IsInstance(object))
 			{
-				this->currentlySelectedObject = Instanciate(GetInstanceParent(object));
+				auto parent = GetInstanceParent(object);
+				this->currentlySelectedObject = Instanciate(parent);
 				this->currentlySelectedObject->Transform = object->Transform;
+				CloneCopyInternal(object, this->currentlySelectedObject);
 			}
 			else
 			{

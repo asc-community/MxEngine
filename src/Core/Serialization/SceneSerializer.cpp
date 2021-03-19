@@ -209,6 +209,36 @@ namespace MxEngine
         }
     }
 
+    void SceneSerializer::CloneMxObjectAsCopy(const MxObject::Handle& origin, MxObject::Handle& target)
+    {
+        target->Transform = origin->Transform;
+        target->Name = origin->Name;
+        target->IsDisplayedInEditor = origin->IsDisplayedInEditor;
+        target->IsSerialized = origin->IsSerialized;
+
+        for (const auto& [type, callback] : impl->cloneCallbacks)
+        {
+            ReflectionMeta meta(type);
+            if (meta.Flags & MetaInfo::CLONE_COPY)
+                callback(origin, target);
+        }
+    }
+
+    void SceneSerializer::CloneMxObjectAsInstance(const MxObject::Handle& origin, MxObject::Handle& target)
+    {
+        target->Transform = origin->Transform;
+        target->Name = origin->Name + "_instance";
+        target->IsDisplayedInEditor = origin->IsDisplayedInEditor;
+        target->IsSerialized = origin->IsSerialized;
+
+        for (const auto& [type, callback] : impl->cloneCallbacks)
+        {
+            ReflectionMeta meta(type);
+            if (meta.Flags & MetaInfo::CLONE_INSTANCE)
+                callback(origin, target);
+        }
+    }
+
     void SceneSerializer::Init()
     {
         impl = Alloc<SceneSerializerImpl>();
@@ -228,5 +258,23 @@ namespace MxEngine
     SceneSerializerImpl* SceneSerializer::GetImpl()
     {
         return impl;
+    }
+
+    MxObject::Handle Clone(MxObject::Handle object)
+    {
+        auto clone = MxObject::Create();
+        clone->Name = object->Name;
+        SceneSerializer::CloneMxObjectAsCopy(object, clone);
+        return clone;
+    }
+
+    void CloneCopyInternal(const MxObject::Handle& origin, MxObject::Handle& target)
+    {
+        SceneSerializer::CloneMxObjectAsCopy(origin, target);
+    }
+
+    void CloneInstanceInternal(const MxObject::Handle& origin, MxObject::Handle& target)
+    {
+        SceneSerializer::CloneMxObjectAsInstance(origin, target);
     }
 }

@@ -9,6 +9,9 @@ namespace MxEngine
     MXENGINE_REFLECT_TYPE
     {
         rttr::registration::class_<DebugDraw>("DebugDraw")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+            )
             .constructor<>()
             .property("bounding box color", &DebugDraw::BoundingBoxColor)
             (

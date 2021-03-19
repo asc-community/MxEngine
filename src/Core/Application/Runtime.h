@@ -43,6 +43,7 @@ namespace MxEngine
         static void RegisterComponent()
         {
             SceneSerializer::RegisterComponent<T>();
+            SceneSerializer::RegisterComponentAsCloneable<T>();
             Application::GetImpl()->GetRuntimeEditor().RegisterComponentEditor<T>();
             Application::GetImpl()->RegisterComponentUpdate<T>();
         }

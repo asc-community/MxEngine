@@ -1,0 +1,50 @@
+[
+  {
+    "AlbedoMap": "Models\\PlazmaGun\\textures/blinn1_baseColor.png",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 1.0,
+    "MetallicMap": "Models\\PlazmaGun\\metallic_0.png",
+    "Name": "blinn1",
+    "NormalMap": "Models\\PlazmaGun\\textures/blinn1_normal.png",
+    "RoughnessFactor": 1.0,
+    "RoughnessMap": "Models\\PlazmaGun\\roughness_0.png",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  },
+  {
+    "AlbedoMap": "",
+    "AmbientOcclusionMap": "",
+    "BaseColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "Displacement": 0.0,
+    "Emission": 0.0,
+    "EmissiveMap": "",
+    "HeightMap": "",
+    "MetallicFactor": 1.0,
+    "MetallicMap": "",
+    "Name": "material #1",
+    "NormalMap": "",
+    "RoughnessFactor": 1.0,
+    "RoughnessMap": "",
+    "Transparency": 1.0,
+    "UVMultipliers": [
+      1.0,
+      1.0
+    ]
+  }
+]

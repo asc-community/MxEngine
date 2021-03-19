@@ -99,5 +99,5 @@ namespace MxEngine
 
 	class Scriptable : public TInterface<SciptableInterface::ID, SciptableInterface> { };
 
-	#define MXENGINE_RUNTIME_EDITOR(script) REGISTERCLASS(script)
+	#define MXENGINE_RUNTIME_EDITOR(script) static_assert(sizeof(Scriptable) == sizeof(script), "script object cannot contain non-static fields"); REGISTERCLASS(script)
 }

@@ -20,6 +20,7 @@ uniform Camera camera;
 uniform float displacement;
 uniform vec2 uvMultipliers;
 uniform sampler2D map_height;
+uniform vec3 color;
 
 out VSout
 {
@@ -39,7 +40,7 @@ void main()
 
 	vsout.TBN = mat3(T, B, N);
 	vsout.Normal = N;
-	vsout.RenderColor = renderColor;
+	vsout.RenderColor = color * renderColor;
 
 	float displacementFactor = getDisplacement(uvMultipliers * texCoord, uvMultipliers, map_height, displacement);
 

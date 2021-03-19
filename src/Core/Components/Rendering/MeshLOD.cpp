@@ -82,6 +82,9 @@ namespace MxEngine
     MXENGINE_REFLECT_TYPE
     {
         rttr::registration::class_<MeshLOD>("MeshLOD")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY)
+            )
             .constructor<>()
             .property("auto lod selection", &MeshLOD::AutoLODSelection)
             (

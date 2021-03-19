@@ -101,6 +101,9 @@ namespace MxEngine
     MXENGINE_REFLECT_TYPE
     {
         rttr::registration::class_<VRCameraController>("VRCameraController")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+            )
             .constructor<>()
             .property("eye distance", &VRCameraController::EyeDistance)
             (

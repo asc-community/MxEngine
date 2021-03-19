@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Serialization.h"
+#include "Cloning.h"
 #include "Utilities/Logging/Logger.h"
 #include "Core/MxObject/MxObject.h"
 
@@ -36,8 +37,15 @@ namespace MxEngine
 {
     struct SceneSerializerImpl
     {
+        struct CloneCallback
+        {
+            rttr::type ComponentType;
+            void(*Function)(const MxObject::Handle&, MxObject::Handle&);
+        };
+
         MxVector<void(*)(JsonFile&, MxObject&)> serializeCallbacks;
         MxVector<void(*)(const JsonFile&, MxObject&, HandleMappings&)> deserializeCallbacks;
+        MxVector<CloneCallback> cloneCallbacks;
     };
 
     class SceneSerializer
@@ -63,6 +71,42 @@ namespace MxEngine
 
         static JsonFile SerializeMxObject(MxObject& object);
         static void DeserializeMxObject(const JsonFile& json, MxObject::Handle object, HandleMappings& mappings);
+
+        static void CloneMxObjectAsCopy(const MxObject::Handle& origin, MxObject::Handle& target);
+        static void CloneMxObjectAsInstance(const MxObject::Handle& origin, MxObject::Handle& target);
+
+        template<typename T>
+        static void RegisterComponentAsCloneable()
+        {
+            if constexpr (std::is_default_constructible<T>::value)
+            {
+                impl->cloneCallbacks.push_back({ rttr::type::get<T>(),
+                    [](const MxObject::Handle& origin, MxObject::Handle& target)
+                    {
+                        auto componentOrigin = origin->GetComponent<T>();
+                        if (componentOrigin.IsValid())
+                        {
+                            auto componentTarget = target->GetOrAddComponent<T>();
+                            CloneComponent(*componentOrigin, *componentTarget);
+                        }
+                    }
+                });
+            }
+            else
+            {
+                impl->cloneCallbacks.push_back({ rttr::type::get<T>(),
+                    [](const MxObject::Handle& origin, MxObject::Handle& target)
+                    {
+                        auto componentOrigin = origin->GetComponent<T>();
+                        if (componentOrigin.IsValid())
+                        {
+                            auto componentTarget = target->GetComponent<T>();
+                            if(componentTarget.IsValid()) CloneComponent(*componentOrigin, *componentTarget);
+                        }
+                    }
+                });
+            }
+        }
 
         template<typename T>
         static void RegisterComponent()
@@ -99,4 +143,8 @@ namespace MxEngine
             }
         }
     };
+
+    MxObject::Handle Clone(MxObject::Handle object);
+    void CloneCopyInternal(const MxObject::Handle& origin, MxObject::Handle& target);
+    void CloneInstanceInternal(const MxObject::Handle& origin, MxObject::Handle& target);
 }

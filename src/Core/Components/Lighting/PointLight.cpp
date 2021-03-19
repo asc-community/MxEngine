@@ -111,6 +111,9 @@ namespace MxEngine
     MXENGINE_REFLECT_TYPE
     {
         rttr::registration::class_<PointLight>("PointLight")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+            )
             .constructor<>()
             .property("color", &PointLight::GetColor, &PointLight::SetColor)
             (

@@ -654,6 +654,9 @@ namespace MxEngine
 			);
 
 		rttr::registration::class_<CameraController>("CameraController")
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+			)
 			.constructor<>()
 			.property("is listening window resize event", &CameraController::IsListeningWindowResizeEvent, &CameraController::SetListenWindowResizeEventInternal)
 			(

@@ -568,6 +568,9 @@ namespace MxEngine
         );
 
         rttr::registration::class_<RigidBody>("RigidBody")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+            )
             .constructor<>()
             .method("clear forces", &RigidBody::ClearForces)
             (

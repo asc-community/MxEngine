@@ -145,6 +145,9 @@ namespace MxEngine
     MXENGINE_REFLECT_TYPE
     {
         rttr::registration::class_<CameraEffects>("CameraEffects")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+            )
             .constructor<>()
             .property("fxaa", &CameraEffects::IsFXAAEnabled, &CameraEffects::ToggleFXAA)
             (

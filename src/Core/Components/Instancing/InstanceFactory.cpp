@@ -67,15 +67,17 @@ namespace MxEngine
         this->SendInstancesToGPU();
     }
 
+    // see SceneSerializer.cpp
+    void CloneInstanceInternal(const MxObject::Handle& origin, MxObject::Handle& target);
+
     MxObject::Handle InstanceFactory::Instanciate()
     {
         auto instance = MxObject::Create();
         auto object = MxObject::GetHandleByComponent(*this);
 
         this->pool.Allocate(instance);
-        instance->Transform = object->Transform;
-        instance->Name = object->Name + "_instance";
-        auto component = instance->AddComponent<Instance>(object);
+        auto instanceComponent = instance->AddComponent<Instance>(object);
+        CloneInstanceInternal(object, instance);
         return instance;
     }
 
@@ -210,6 +212,9 @@ namespace MxEngine
         using GetPoolFunc = VectorPool<MxObject::Handle>& (InstanceFactory::*)();
 
         rttr::registration::class_<Instance>("Instance")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY)
+            )
             .property("color", &Instance::GetColor, &Instance::SetColor)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),

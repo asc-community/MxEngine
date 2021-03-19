@@ -104,6 +104,9 @@ namespace MxEngine
             );
 
         rttr::registration::class_<SphereCollider>("SphereCollider")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+            )
             .constructor<>()
             .property("bounding sphere", &SphereCollider::GetBoundingSphereInternal, &SphereCollider::SetBoundingSphere)
             (

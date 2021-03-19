@@ -38,6 +38,10 @@ namespace MxEngine
         using RotationEuler = void(Skybox::*)(const Vector3&);
 
         rttr::registration::class_<Skybox>("Skybox")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+            )
+            .constructor<>()
             .property("intensity", &Skybox::GetIntensity, &Skybox::SetIntensity)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),

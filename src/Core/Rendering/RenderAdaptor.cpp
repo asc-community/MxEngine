@@ -16,7 +16,7 @@
 // this software without specific prior written permission.
 // 
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, fINCLUDING, BUT NOT LIMITED TO, THE
 // IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 // DISCLAIMED.IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
 // FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
@@ -357,6 +357,7 @@ namespace MxEngine
                 if (instances.IsValid()) instanceCount = instances->GetCount();
                 auto mesh = meshSource.Mesh;
                 bool castsShadow = meshSource.CastsShadow;
+                bool ignoresDepth = meshSource.IgnoresDepth;
 
                 if (!meshSource.IsDrawn || !meshRenderer.IsValid() || !mesh.IsValid()) continue;
 
@@ -374,7 +375,7 @@ namespace MxEngine
                     if (materialId >= meshRenderer->Materials.size()) continue;
                     auto material = meshRenderer->Materials[materialId];
 
-                    this->Renderer.SubmitRenderUnit(renderGroupIndex, submesh, *material, transform, castsShadow, object.Name.c_str());
+                    this->Renderer.SubmitRenderUnit(renderGroupIndex, submesh, *material, transform, castsShadow, ignoresDepth, object.Name.c_str());
                 }
             }
         }
@@ -384,7 +385,8 @@ namespace MxEngine
             auto particleSystemView = ComponentFactory::GetView<ParticleSystem>();
             for (const auto& particleSystem : particleSystemView)
             {
-                auto meshRenderer = MxObject::GetByComponent(particleSystem).GetComponent<MeshRenderer>();
+                auto& object = MxObject::GetByComponent(particleSystem);
+                auto meshRenderer = (IsInstance(object) ? *GetInstanceParent(object) : object).GetComponent<MeshRenderer>();
                 if (!meshRenderer.IsValid() || meshRenderer->Materials.empty())
                     continue;
 

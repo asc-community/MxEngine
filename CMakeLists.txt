@@ -56,6 +56,7 @@ if (MXENGINE_BUILD_SAMPLES)
     add_subdirectory(samples/PBR)
     add_subdirectory(samples/PathTracing)
     add_subdirectory(samples/Particles)
+    add_subdirectory(samples/Doom)
     
     # not implemnted yet
     #add_subdirectory(samples/FluidSimulation)

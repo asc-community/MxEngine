@@ -115,6 +115,9 @@ namespace MxEngine
         );
 
         rttr::registration::class_<AudioListener>("AudioListener")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+            )
             .constructor<>()
             .property("volume", &AudioListener::GetVolume, &AudioListener::SetVolume)
             (

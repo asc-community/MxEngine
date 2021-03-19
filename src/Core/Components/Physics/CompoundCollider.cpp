@@ -148,7 +148,12 @@ namespace MxEngine
                 rttr::metadata(SerializeInfo::CUSTOM_DESERIALIZE, DeserializeExtra<CompoundColliderChild>)
             );
 
+        // TODO: cloning this component potentially shares compound childs between objects (is it ok or not?)
+
         rttr::registration::class_<CompoundCollider>("CompoundCollider")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+            )
             .constructor<>()
             .method("clear shapes", &CompoundCollider::ClearShapes)
             (

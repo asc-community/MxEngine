@@ -143,12 +143,13 @@ namespace MxEngine
 		MX_ASSERT(this->attributeIndex > layout.size());
 
 		this->Bind();
-		size_t offset = 0;
 		for (const auto& element : layout)
 		{
-			this->attributeIndex--;
-			GLCALL(glDisableVertexAttribArray(this->attributeIndex));
-			offset -= element.byteSize;
+			for (size_t i = 0; i < element.entries; i++)
+			{
+				this->attributeIndex--;
+				GLCALL(glDisableVertexAttribArray(this->attributeIndex));
+			}
 		}
 		this->Unbind();
 	}

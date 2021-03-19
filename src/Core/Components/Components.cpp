@@ -34,6 +34,10 @@ namespace MxEngine
     void RegisterComponents()
     {
 		Runtime::RegisterComponent<CameraController   >();
+		Runtime::RegisterComponent<InputController    >();
+		Runtime::RegisterComponent<RigidBody          >();
+		Runtime::RegisterComponent<CharacterController>();
+		Runtime::RegisterComponent<BoxCollider        >();
 		Runtime::RegisterComponent<Script             >();
 		Runtime::RegisterComponent<Behaviour          >();
 		Runtime::RegisterComponent<InstanceFactory    >();
@@ -53,12 +57,8 @@ namespace MxEngine
 		Runtime::RegisterComponent<CameraSSAO         >();
 		Runtime::RegisterComponent<CameraToneMapping  >();
 		Runtime::RegisterComponent<VRCameraController >();
-		Runtime::RegisterComponent<InputController    >();
 		Runtime::RegisterComponent<AudioSource        >();
 		Runtime::RegisterComponent<AudioListener      >();
-		Runtime::RegisterComponent<RigidBody          >();
-		Runtime::RegisterComponent<CharacterController>();
-		Runtime::RegisterComponent<BoxCollider        >();
 		Runtime::RegisterComponent<SphereCollider     >();
 		Runtime::RegisterComponent<CylinderCollider   >();
 		Runtime::RegisterComponent<CapsuleCollider    >();

@@ -215,6 +215,8 @@ namespace MxEngine
 			GL_GREATER,
 			GL_LEQUAL,
 			GL_GEQUAL,
+			GL_ALWAYS,
+			GL_NEVER,
 	};
 
 	Renderer& Renderer::UseDepthFunction(DepthFunction function)

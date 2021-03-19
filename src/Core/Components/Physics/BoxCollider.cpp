@@ -119,6 +119,9 @@ namespace MxEngine
             );
 
         rttr::registration::class_<BoxCollider>("BoxCollider")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+            )
             .constructor<>()
             .property("bounding box", &BoxCollider::GetBoundingBoxInternal, &BoxCollider::SetBoundingBox)
             (

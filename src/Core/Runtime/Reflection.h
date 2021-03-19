@@ -48,7 +48,8 @@ namespace MxEngine
         {
             SERIALIZABLE = 1 << 0,
             EDITABLE = 1 << 1,
-            HANDLE = 1 << 2,
+            CLONE_INSTANCE = 1 << 2,
+            CLONE_COPY = 1 << 3,
         };
     };
 

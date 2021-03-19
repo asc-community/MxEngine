@@ -4,7 +4,7 @@ using namespace MxEngine;
 
 class ScriptExample : public Scriptable
 {
-    float totalTime = 0.0f;
+    inline static float totalTime = 0.0f;
 public:
     virtual void OnCreate(MxObject& self) override
     {
@@ -23,8 +23,8 @@ public:
         Vector3 pos = self.Transform.GetPosition();
         Vector3 scale = self.Transform.GetScale();
         float dt = Time::Delta();
-        this->totalTime += dt;
-        float offset = 0.003f * std::sin(this->totalTime);
+        totalTime += dt;
+        float offset = 0.003f * std::sin(totalTime);
 
         self.Transform.SetPosition({ pos.x + 3.0f * dt, pos.y + 3.0f * offset, pos.z });
         self.Transform.SetScale({ scale.x, scale.y, scale.z });

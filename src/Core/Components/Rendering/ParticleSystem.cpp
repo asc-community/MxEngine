@@ -288,6 +288,9 @@ namespace MxEngine
         );
 
         rttr::registration::class_<ParticleSystem>("ParticleSystem")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+            )
             .constructor<>()
             .method("invalidate", &ParticleSystem::Invalidate)
             (

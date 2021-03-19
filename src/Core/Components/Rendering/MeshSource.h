@@ -41,6 +41,7 @@ namespace MxEngine
         bool IsDrawn = true;
         bool CastsShadow = true;
         bool IsStatic = false;
+        bool IgnoresDepth = false;
 
         MeshSource() : Mesh(ResourceFactory::Create<MxEngine::Mesh>()) { }
         MeshSource(const MeshHandle& mesh) : Mesh(mesh) { }

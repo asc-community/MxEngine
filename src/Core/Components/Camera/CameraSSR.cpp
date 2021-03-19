@@ -65,6 +65,9 @@ namespace MxEngine
     MXENGINE_REFLECT_TYPE
     {
         rttr::registration::class_<CameraSSR>("CameraSSR")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+            )
             .constructor<>()
             .property("thickness", &CameraSSR::GetThickness, &CameraSSR::SetThickness)
             (

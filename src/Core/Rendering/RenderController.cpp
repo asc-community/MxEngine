@@ -227,10 +227,11 @@ namespace MxEngine
 
 		shader.SetUniform("displacement", material.Displacement);
 		shader.SetUniform("uvMultipliers", material.UVMultipliers);
+		shader.SetUniform("color", material.BaseColor);
 
 		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
 		this->GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
-		this->GetRenderEngine().SetDefaultVertexAttribute(12, material.BaseColor);
+		this->GetRenderEngine().SetDefaultVertexAttribute(12, Vector3(1.0f));
 		
 		this->DrawIndicies(RenderPrimitive::TRIANGLES, unit.IndexCount, unit.IndexOffset, instanceCount);
 	}
@@ -1182,6 +1183,8 @@ namespace MxEngine
 		this->Pipeline.TransparentObjects.UnitsIndex.clear();
 		this->Pipeline.OpaqueObjects.Groups.clear();
 		this->Pipeline.OpaqueObjects.UnitsIndex.clear();
+		this->Pipeline.DepthIgnoreObjects.Groups.clear();
+		this->Pipeline.DepthIgnoreObjects.UnitsIndex.clear();
 		this->Pipeline.RenderUnits.clear();
 		this->Pipeline.OpaqueParticleSystems.clear();
 		this->Pipeline.TransparentParticleSystems.clear();
@@ -1333,10 +1336,11 @@ namespace MxEngine
 	{
 		size_t renderGroupIndex = this->Pipeline.OpaqueObjects.Groups.size();
 
-		std::array<std::reference_wrapper<RenderGroup>, 3> groupSubTypes = {
-			this->Pipeline.OpaqueObjects.Groups.emplace_back(),
-			this->Pipeline.TransparentObjects.Groups.emplace_back(),
-			this->Pipeline.ShadowCasters.Groups.emplace_back(),
+		std::array groupSubTypes = {
+			std::ref(this->Pipeline.OpaqueObjects.Groups.emplace_back()),
+			std::ref(this->Pipeline.TransparentObjects.Groups.emplace_back()),
+			std::ref(this->Pipeline.ShadowCasters.Groups.emplace_back()),
+			std::ref(this->Pipeline.DepthIgnoreObjects.Groups.emplace_back()),
 		};
 
 		for (auto subType : groupSubTypes)
@@ -1349,7 +1353,7 @@ namespace MxEngine
 		return renderGroupIndex;
 	}
 
-	void RenderController::SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& submesh, const Material& material, const TransformComponent& parentTransform, bool castsShadow, const char* debugName)
+	void RenderController::SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& submesh, const Material& material, const TransformComponent& parentTransform, bool castsShadow, bool ignoresDepth, const char* debugName)
 	{
 		bool isInvisible = material.Transparency == 0.0f;
 		bool isTransparent = material.Transparency < 1.0f;
@@ -1380,7 +1384,13 @@ namespace MxEngine
 			shadowCasters.UnitsIndex.push_back(unitIndex);
 		}
 
-		if (isTransparent)
+		if (ignoresDepth)
+		{
+			auto& depthIgnoreObjects = this->Pipeline.DepthIgnoreObjects;
+			depthIgnoreObjects.Groups[renderGroupIndex].unitCount++;
+			depthIgnoreObjects.UnitsIndex.push_back(unitIndex);
+		}
+		else if (isTransparent)
 		{
 			auto& transparentObjects = this->Pipeline.TransparentObjects;
 			transparentObjects.Groups[renderGroupIndex].unitCount++;
@@ -1452,7 +1462,10 @@ namespace MxEngine
 			this->AttachFrameBuffer(camera.GBuffer);
 
 			this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBuffer"_id], this->Pipeline.OpaqueObjects);
+			// TODO: implement depth ignore rendering
+			this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBuffer"_id], this->Pipeline.DepthIgnoreObjects);
 			this->DrawParticles(camera, this->Pipeline.OpaqueParticleSystems, *this->Pipeline.Environment.Shaders["ParticleOpaque"_id]);
+
 			this->PerformLightPass(camera);
 			this->PerformPostProcessing(camera);
 

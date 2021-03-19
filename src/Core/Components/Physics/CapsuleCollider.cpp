@@ -144,6 +144,9 @@ namespace MxEngine
             );
 
         rttr::registration::class_<CapsuleCollider>("CapsuleCollider")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
+            )
             .constructor<>()
             .property("bounding capsule", &CapsuleCollider::GetBoundingCapsuleInternal, &CapsuleCollider::SetBoundingCapsule)
             (
