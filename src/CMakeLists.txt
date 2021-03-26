@@ -60,7 +60,6 @@ set(MXENGINE_SOURCES
 "Platform/OpenGL/Shader.cpp" 
 "Platform/OpenGL/Texture.cpp" 
 "Platform/OpenGL/VertexArray.cpp" 
- 
 "Platform/OpenGL/VertexBuffer.cpp" 
 "Platform/OpenGL/Renderer.cpp" 
 "Platform/Window/Input.cpp" 
@@ -123,7 +122,11 @@ set(MXENGINE_SOURCES
 "Platform/OpenGL/ShaderBase.cpp" 
 "Platform/OpenGL/ComputeShader.cpp" 
 "Platform/OpenGL/BufferBase.cpp"
-"Platform/Compute/Compute.cpp" "Core/Components/Rendering/ParticleSystem.cpp" "Core/Components/Camera/CameraSSAO.cpp" "Platform/OpenGL/VertexLayout.cpp" "Core/Serialization/Cloning.cpp")
+"Platform/Compute/Compute.cpp" 
+"Core/Components/Rendering/ParticleSystem.cpp" 
+"Core/Components/Camera/CameraSSAO.cpp" 
+"Platform/OpenGL/VertexLayout.cpp" 
+"Core/Serialization/Cloning.cpp")
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)
@@ -282,6 +285,13 @@ set(THIRD_PARTY_LIBRARIES
     rttr_core
 )
 
+set(SHARED_LIBRARIES
+    OpenAL
+    rttr_core
+    libglew_shared
+    glfw
+)
+
 if(TARGET zlibstatic)
     set(THIRD_PARTY_LIBRARIES ${THIRD_PARTY_LIBRARIES} zlibstatic)
 endif()
@@ -329,38 +339,6 @@ foreach(LIB_NAME ${LIBRARY_NAME} ${THIRD_PARTY_LIBRARIES})
 endforeach()
 target_compile_definitions(${LIBRARY_NAME} PUBLIC MXENGINE_RCCPP_LIBRARY_COUNT=${LIBRARY_COUNT})
 
-# shared library setup (for copying into folder with executable)
-if(WIN32)
-    set(SHARED_LIBRARIES_PATHS
-        ${openal_binary_dir}/OpenAL32.dll
-        ${glew_binary_dir}/libglew_shared.dll
-        ${glfw_binary_dir}/src/glfw3.dll
-        ${rttr_binary_dir}/bin/rttr_core.dll
-    )
-elseif(APPLE)
-    set(SHARED_LIBRARIES_PATHS
-        ${openal_binary_dir}/libopenal.1.dylib
-        ${glew_binary_dir}/libglew_shared.dylib
-        ${glfw_binary_dir}/src/libglfw.3.dylib
-        ${rttr_binary_dir}/bin/rttr_core.dylib
-    )	
-else()
-    set(SHARED_LIBRARIES_PATHS
-        ${openal_binary_dir}/libopenal.so.1
-        ${glew_binary_dir}/libglew_shared.so
-        ${glfw_binary_dir}/src/libglfw.so.3
-        ${rttr_binary_dir}/bin/rttr_core.so
-    )
-endif()
-
-set(MxEngine_SHARED_LIBRARIES ${SHARED_LIBRARIES_PATHS} PARENT_SCOPE)
+set(MxEngine_SHARED_LIBRARIES ${SHARED_LIBRARIES} PARENT_SCOPE)
 set(MxEngine_INCLUDE_DIR ${MXENGINE_INCLUDE_DIRS} PARENT_SCOPE)
 set(MxEngine_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
-
-if(MSVC)
-    add_custom_command(TARGET ${LIBRARY_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E
-        copy ${SHARED_LIBRARIES_PATHS} "${CMAKE_CURRENT_BINARY_DIR}"
-        || (exit 0)
-    )
-endif()
