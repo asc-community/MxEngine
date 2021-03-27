@@ -1,6 +1,4 @@
 function(install_mxengine_project EXECUTABLE_NAME)
-    set(FULL_EXECUTABLE_FILENAME ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE_NAME}${CMAKE_EXECUTABLE_SUFFIX})
-
     # copy all shared libraries to the current binary and source directories in case user wants to ship the executable
     foreach(LIB_NAME ${LIBRARY_NAME} ${MxEngine_SHARED_LIBRARIES})
     add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
@@ -18,7 +16,7 @@ function(install_mxengine_project EXECUTABLE_NAME)
     # copy executable to the source folder to access user project resources
     add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E
-        copy "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>" "${CMAKE_CURRENT_SOURCE_DIR}"
+        copy "$<TARGET_FILE:${EXECUTABLE_NAME}>" "${CMAKE_CURRENT_SOURCE_DIR}"
         || (exit 0)
     )
 
@@ -31,7 +29,7 @@ function(install_mxengine_project EXECUTABLE_NAME)
     )
     add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E
-        copy_directory "${MxEngine_ROOT_DIR}/src/Platform/OpenGL/Shaders" "${CMAKE_CURRENT_BINARY_DIR}/Engine/Shaders"
+        copy_directory "${MxEngine_ROOT_DIR}/src/Platform/OpenGL/Shaders" "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/Engine/Shaders"
         || (exit 0)
     )
 
@@ -44,13 +42,13 @@ function(install_mxengine_project EXECUTABLE_NAME)
     )
     add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E
-        copy_directory "${MxEngine_ROOT_DIR}/src/Platform/OpenGL/Textures" "${CMAKE_CURRENT_BINARY_DIR}/Engine/Textures"
+        copy_directory "${MxEngine_ROOT_DIR}/src/Platform/OpenGL/Textures" "$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/Engine/Textures"
         || (exit 0)
     )
 
     target_compile_definitions(${EXECUTABLE_NAME} PUBLIC MXENGINE_CMAKE_BUILD)
     target_compile_definitions(${EXECUTABLE_NAME} PUBLIC MXENGINE_PROJECT_SOURCE_DIRECTORY="${CMAKE_CURRENT_SOURCE_DIR}")
-    target_compile_definitions(${EXECUTABLE_NAME} PUBLIC MXENGINE_PROJECT_BINARY_DIRECTORY="${CMAKE_CURRENT_BINARY_DIR}")
+    target_compile_definitions(${EXECUTABLE_NAME} PUBLIC MXENGINE_PROJECT_BINARY_DIRECTORY="$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>")
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
         target_compile_definitions(${EXECUTABLE_NAME} PUBLIC MXENGINE_SHIPPING)
     endif()

@@ -7,14 +7,13 @@ class PlazmaGun : public MxEngine::Scriptable
     constexpr static Vector3 GunRelativePosition = { -0.05f, -0.06f, 0.025f };
     void FollowPlayer(MxObject& self, const MxObject& player)
     {
-
         auto camera = player.GetComponent<CameraController>();
         Vector2 rotateAngles = camera->GetRotation();
 
         self.Transform.SetRotation(Vector3(-rotateAngles.y, rotateAngles.x, 0.0f));
         self.Transform.SetPosition(player.Transform.GetPosition() + self.Transform.GetRotationQuaternion() * GunRelativePosition);
     }
-
+    
     inline static float timeSinceShoot = 0.0f;
     constexpr static float ShootInterval = 0.1f;
     constexpr static float BulletSpeed = 100.0f;
