@@ -52,7 +52,11 @@ function(install_mxengine_project EXECUTABLE_NAME)
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
         target_compile_definitions(${EXECUTABLE_NAME} PUBLIC MXENGINE_SHIPPING)
     endif()
-    
+	
+	if (NOT CMAKE_BUILD_TYPE)
+		set(CMAKE_BUILD_TYPE "Debug")
+	endif()
+	
     if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         if (CMAKE_BUILD_TYPE STREQUAL "Debug")
             target_compile_options(${EXECUTABLE_NAME} PUBLIC "/MDd")

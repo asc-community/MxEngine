@@ -98,19 +98,24 @@ namespace MxEngine
         return manager->filetable[filename];
     }
 
+    FilePath FileManager::GetEngineRootDirectory()
+    {
+        return FileManager::GetWorkingDirectory() / "Engine";
+    }
+
     FilePath FileManager::GetEngineShaderDirectory()
     {
-        return FileManager::GetWorkingDirectory() / "Engine" / "Shaders";
+        return FileManager::GetEngineRootDirectory() / "Shaders";
     }
 
     FilePath FileManager::GetEngineTextureDirectory()
     {
-        return FileManager::GetWorkingDirectory() / "Engine" / "Textures";
+        return FileManager::GetEngineRootDirectory() / "Textures";
     }
 
     FilePath FileManager::GetEngineModelDirectory()
     {
-        return FileManager::GetWorkingDirectory() / "Engine" / "Models";
+        return FileManager::GetEngineRootDirectory() / "Models";
     }
 
     bool FileManager::FileExists(StringId filename)
@@ -280,6 +285,12 @@ namespace MxEngine
         manager = Alloc<FileManagerImpl>();
         auto workingDirectory = FileManager::GetWorkingDirectory();
         MXLOG_INFO("MxEngine::FileManager", "project working directory is set to: " + ToMxString(workingDirectory));
+
+        if (!File::Exists(FileManager::GetEngineRootDirectory()))
+        {
+            File::CreateDirectory(FileManager::GetEngineRootDirectory());
+            MXLOG_ERROR("MxEngine::FileManager", "cannot find root directory. Executable is probably launched from wrong folder");
+        }
 
         if (!File::Exists(FileManager::GetEngineTextureDirectory()))
             File::CreateDirectory(FileManager::GetEngineTextureDirectory());

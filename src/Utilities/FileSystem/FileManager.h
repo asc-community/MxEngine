@@ -49,6 +49,7 @@ namespace MxEngine
         static MxString SaveFileDialog(const MxString& types = "", const MxString& description = "All Files");
         static void Init();
         static const FilePath& GetFilePath(StringId filename);
+        static FilePath GetEngineRootDirectory();
         static FilePath GetEngineShaderDirectory();
         static FilePath GetEngineTextureDirectory();
         static FilePath GetEngineModelDirectory();
