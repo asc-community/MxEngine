@@ -4,12 +4,12 @@ using namespace MxEngine;
 
 class ShootSpheres : public MxEngine::Scriptable
 {
-    void ShootSphere(InstanceFactory::Handle sphereFactory, CameraController::Handle playerCamera)
+    void ShootSphere(MxObject::Handle sphereFactory, CameraController::Handle playerCamera)
     {    
         auto& player = MxObject::GetByComponent(*playerCamera);
         auto shootPosition = player.Transform.GetPosition() + playerCamera->GetDirection() * 3.0f;
     
-        auto sphere = sphereFactory->Instanciate();
+        auto sphere = Instanciate(sphereFactory);
         sphere->Name = "Sphere Instance";
         sphere->Transform.SetPosition(shootPosition);
     
@@ -34,13 +34,13 @@ public:
 
     virtual void OnUpdate(MxEngine::MxObject& self) override
     {
-        if (Input::IsMouseHeld(MouseButton::LEFT))
+        if (Input::IsMousePressed(MouseButton::LEFT))
         {
-            auto viewport = Rendering::GetViewport();
+            auto viewport = self.GetComponent<CameraController>();
             if (viewport.IsValid())
             {
-                auto sphereFactory = self.GetOrAddComponent<InstanceFactory>();
-                this->ShootSphere(sphereFactory, viewport);
+                auto sphereFactory = MxObject::GetByName("Sphere Factory");
+                if(sphereFactory.IsValid()) this->ShootSphere(sphereFactory, viewport);
             }
         }
     }

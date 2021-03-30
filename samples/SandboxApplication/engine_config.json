@@ -9,10 +9,13 @@
     "shader-source-directory": "../../src/Platform/OpenGL/Shaders"
   },
   "filesystem": {
+    "cache-primitives": true,
     "ignored-folders": [
-      "Runtime",
+      "MxEngine",
       "out",
-      "build"
+      "build",
+      ".git",
+      ".vs"
     ]
   },
   "renderer": {
@@ -20,7 +23,7 @@
     "dir-light-texture-size": 2048,
     "engine-texture-size": 512,
     "major-version": 4,
-    "minor-version": 5,
+    "minor-version": 6,
     "point-light-texture-size": 512,
     "profile": "CORE",
     "spot-light-texture-size": 512
