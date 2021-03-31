@@ -16,7 +16,6 @@ uniform sampler2D materialTex;
 uniform sampler2D depthTex;
 
 uniform int lightCount;
-uniform int pcfDistance;
 uniform Camera camera;
 
 uniform DirLight lights[MaxDirLightCount];
@@ -31,7 +30,7 @@ void main()
 	for (int i = 0; i < lightCount; i++)
 	{
 		vec4 pos = vec4(fragment.position, 1.0);
-		float shadowFactor = calcShadowFactorCascade(pos, lights[i], lightDepthMaps[i], pcfDistance);
+		float shadowFactor = calcShadowFactorCascade(pos, lights[i], lightDepthMaps[i]);
 		totalColor += calculateLighting(fragment, viewDirection, lights[i].direction, lights[i].color.rgb, lights[i].color.a, shadowFactor);
 	}
 	

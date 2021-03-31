@@ -38,7 +38,6 @@ uniform mat4 worldToLightTransform;
 uniform bool castsShadows;
 uniform sampler2D lightDepthMap;
 uniform Camera camera;
-uniform int pcfDistance;
 uniform vec2 viewportSize;
 
 vec3 calcColorUnderSpotLight(FragmentInfo fragment, SpotLight light, vec3 viewDirection, vec3 fragLightSpace, sampler2D map_shadow, bool computeShadow)
@@ -47,7 +46,7 @@ vec3 calcColorUnderSpotLight(FragmentInfo fragment, SpotLight light, vec3 viewDi
 	float lightDistance = length(lightPath);
 
 	float shadowFactor = 1.0;
-	if (computeShadow) { shadowFactor = calcShadowFactor2D(fragLightSpace, map_shadow, vec2(0.001, 0.999), 0.002, pcfDistance); }
+	if (computeShadow) { shadowFactor = calcShadowFactor2D(fragLightSpace, map_shadow, vec4(0.001, 0.999, 0.001, 0.999), 0.002); }
 
 	float fragAngle = dot(normalize(lightPath), -light.direction);
 	float epsilon = light.innerAngle - light.outerAngle;

@@ -27,7 +27,7 @@
   },
   "window": {
     "cursor-mode": "DISABLED",
-    "double-buffering": false,
+    "double-buffering": true,
     "position": [
       300.0,
       150.0

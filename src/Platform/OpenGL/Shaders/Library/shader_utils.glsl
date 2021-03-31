@@ -14,11 +14,11 @@ float sampleShadowMap(sampler2D depthMap, vec2 coords, float lod, float compare)
 float rand__(vec2 co) {
 	return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
 }
-float calcShadowFactor2D(vec3 coords, sampler2D depthMap, vec2 textureLimits, float bias, int blurIterations)
+float calcShadowFactor2D(vec3 coords, sampler2D depthMap, vec4 textureLimitsXY, float bias)
 {
-	if (coords.x > textureLimits.y || coords.x < textureLimits.x) return 1.0;
-	if (coords.y > textureLimits.y || coords.y < textureLimits.x) return 1.0;
-	if (coords.z > textureLimits.y || coords.z < textureLimits.x) return 1.0; // do not handle corner cases, assume no shadows
+	if (coords.x > textureLimitsXY[1] || coords.x < textureLimitsXY[0]) return 1.0;
+	if (coords.y > textureLimitsXY[3] || coords.y < textureLimitsXY[2]) return 1.0;
+	if (coords.z > 1.0 - bias || coords.z < bias) return 1.0; // do not handle corner cases, assume no shadows
 	float compare = coords.z - bias;
 	
 	const int lod = 0;

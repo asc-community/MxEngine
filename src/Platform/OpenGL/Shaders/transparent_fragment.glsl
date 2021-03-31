@@ -39,7 +39,6 @@ struct Camera
 };
 
 uniform int lightCount;
-uniform int pcfDistance;
 uniform vec3 viewportPosition;
 uniform sampler2D envBRDFLUT;
 
@@ -80,7 +79,7 @@ void main()
 	for (int i = 0; i < lightCount; i++)
 	{
 		vec4 pos = vec4(fragment.position, 1.0f);
-		float shadowFactor = calcShadowFactorCascade(pos, lights[i], lightDepthMaps[i], pcfDistance);
+		float shadowFactor = calcShadowFactorCascade(pos, lights[i], lightDepthMaps[i]);
 		totalColor += calculateLighting(fragment, viewDirection, lights[i].direction, lights[i].color.rgb, lights[i].color.a, shadowFactor);
 	}
 
