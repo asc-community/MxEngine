@@ -223,7 +223,7 @@
 ### 7.5.5
 - SSAO effect + light propogation
 - compound colliders, physical character controller
-- file dialog to peek files from file system
+- file dialog to pick files from file system
 - minor changes in editor & small improvements
 ### 7.6.0
 - runtime scripting via Script component
@@ -249,3 +249,7 @@
 - particle systems via compute shaders: opaque particles with pbr shadowing, transparent particles with simple shadowing
 - fixes in lighting, shading, ssr and ssao
 - more manipulations in editor: deleting by key, manipulation of physical objects, easier instancing
+# 8.1.1
+- mouse-picking objects in editor, instancing with full component list copying
+- sharp shadows with bilinear interpolation
+- optimized submesh rendering (submeshes are now stored in single vertex buffer)

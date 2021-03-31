@@ -316,7 +316,7 @@
     "paused": false,
     "physics-step": 1.0,
     "time-scale": 1.0,
-    "total-time": 292.59552001953125,
+    "total-time": 339.5879211425781,
     "viewport": 0
   },
   "mxobjects": [
@@ -324,14 +324,14 @@
       "CameraController": {
         "camera type": "PERSPECTIVE",
         "direction": [
-          -0.6719404458999634,
-          -0.3464180827140808,
-          0.6545918583869934
+          -0.7927273511886597,
+          -0.48420512676239014,
+          0.37030893564224243
         ],
         "forward vector": [
-          -0.7162931561470032,
+          -0.906021237373352,
           0.0,
-          0.6977994441986084
+          0.42323219776153564
         ],
         "id": 0,
         "is listening window resize event": false,
@@ -343,9 +343,9 @@
           "znear": 0.10000000149011612
         },
         "right vector": [
-          -0.6977993249893188,
+          -0.4232320487499237,
           0.0,
-          -0.7162932753562927
+          -0.9060212969779968
         ],
         "rotate speed": 10.0,
         "up vector": [
@@ -376,7 +376,7 @@
         "blur lod": 2,
         "id": 0,
         "intensity": 3.0,
-        "radius": 1.0,
+        "radius": 0.5,
         "sample count": 4
       },
       "CameraToneMapping": {
@@ -441,9 +441,9 @@
       "name": "Camera",
       "transform": {
         "position": [
-          15.66148567199707,
-          14.09194564819336,
-          -7.803793430328369
+          18.965349197387695,
+          19.55527114868164,
+          -2.1351115703582764
         ],
         "rotation": [
           0.0,
@@ -509,6 +509,7 @@
       "MeshSource": {
         "casts shadow": true,
         "id": 0,
+        "ignores depth": false,
         "is drawn": true,
         "is static": false,
         "mesh": 1
@@ -543,6 +544,7 @@
       "MeshSource": {
         "casts shadow": true,
         "id": 1,
+        "ignores depth": false,
         "is drawn": true,
         "is static": false,
         "mesh": 0
@@ -703,6 +705,7 @@
       "MeshSource": {
         "casts shadow": true,
         "id": 2,
+        "ignores depth": false,
         "is drawn": true,
         "is static": false,
         "mesh": 2

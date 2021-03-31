@@ -1,5 +1,5 @@
 # MxEngine
-![](https://img.shields.io/badge/version-8.1.0-red)
+![](https://img.shields.io/badge/version-8.1.1-red)
 [![Travis Build Status](https://api.travis-ci.org/asc-community/MxEngine.png?branch=master)](https://travis-ci.org/asc-community/MxEngine)
 [![Appveyor Build status](https://ci.appveyor.com/api/projects/status/github/asc-community/MxEngine?branch=master&svg=true)](https://ci.appveyor.com/project/MomoDeve/mxengine/branch/master)
 ![GitHub](https://img.shields.io/github/license/asc-community/MxEngine?color=yellow)
@@ -43,11 +43,12 @@ To develop your own applications using MxEngine you can use template project wit
 <details>
 	<summary><b>Rendering features</b></summary>
 
-	- Physically Based Rendering (Cook-Torrance GGX)
+	- Deferred Physically Based Rendering (Cook-Torrance GGX)
 	- Screen Space Reflection, Screen Space Ambient Occlusion, Screen Space Global Illumination
 	- Cascade shadow maps, omnidirectional shadow maps, spot projection maps
 	- directional, point and spot dynamic lights
 	- Adaptive tone mapping, FXAA, fog, bloom effect
+	- Particle System based on compute shaders
 	- 2D debug utilities: light, sound, object bounds, lines, rectangles and etc.
 
 </details>
@@ -136,15 +137,15 @@ object->AddComponent<Script>("YourScript");
 ### Creating multiple objects using GPU instancing
 you can create MxObjects which share same mesh and material. They all can have different position and color, but still rendered in one draw call
 ```cs
-auto factory = object->AddComponent<InstanceFactory>();
+auto factory = MxObject::GetByName("ObjectFactory");
 
-auto instance1 = factory->Instanciate();
+auto instance1 = Instanciate(factory);
 instance1->Transform.SetPosition({0.0f, 1.0f, 0.0f});
 
-auto instance2 = factory->Instanciate();
+auto instance2 = Instanciate(factory);
 instance2->Transform.SetPosition({0.0f, 2.0f, 0.0f});
 
-auto instance3 = factory->Instanciate();
+auto instance3 = Instanciate(factory);
 instance3->Transform.SetPosition({0.0f, 3.0f, 0.0f});
 ```
 ### Playing audio files
@@ -157,6 +158,16 @@ auto object = MxObject::Create();
 object->Transform.SetPosition({1.0f, 0.0f, 1.0f});
 auto audio = object->AddComponent<AudioSource>(AssetManager::LoadAudio("sounds/music.mp3"));
 audio->Play();
+```
+### Controlling particle systems
+The engine supports particle systems which are computed on GPU (up to million particles at 60FPS)
+```cs
+auto object = MxObject::Create();
+auto particles = object->AddComponent<ParticleSystem>();
+
+particles->SetMaxParticleCount(5000);
+particles->SetParticleSpeed(10.0f);
+particles->SetShape(ParticleSystem::Shape::HEMISPHERE);
 ```
 ### Managing multiple cameras
 You can create cameras and render scene from different angles. The results can be used for post-effects or dynamic textures
