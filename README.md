@@ -104,7 +104,7 @@ object->AddComponent<MeshSource>(AssetManager::LoadMesh("objects/your_object.obj
 object->AddComponent<MeshRenderer>(AssetManager::LoadMaterials("objects/your_object.obj"));
 ```
 ### Creating lights
-Dynamic directional lights, spot lights and point lights are supported. Each has simular interface and is created in a uniform way
+Dynamic directional lights, spot lights and point lights are supported. Each has a similar interface and is created in a uniform way
 ```cs
 auto object = MxObject::Create();
 auto light = object->AddComponent<SpotLight>();
