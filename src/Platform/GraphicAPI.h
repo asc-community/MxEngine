@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Core/Macro/Macro.h"
+#include "Utilities/Factory/Factory.h"
 
 #include "Platform/OpenGL/CubeMap.h"
 #include "Platform/OpenGL/FrameBuffer.h"
@@ -42,43 +42,24 @@
 #include "Platform/OpenGL/ComputeShader.h"
 #include "Platform/OpenGL/VertexLayout.h"
 
-#include "Utilities/AbstractFactory/AbstractFactory.h"
-
 namespace MxEngine
 {
-    using GraphicFactory = AbstractFactoryImpl<
-        CubeMap,
-        FrameBuffer,
-        IndexBuffer,
-        RenderBuffer,
-        Shader,
-        Texture,
-        VertexArray,
-        VertexBuffer,
-        ShaderStorageBuffer,
-        ComputeShader
-    >;
+    MXENGINE_MAKE_FACTORY(CubeMap);
+    MXENGINE_MAKE_FACTORY(FrameBuffer);
+    MXENGINE_MAKE_FACTORY(IndexBuffer);
+    MXENGINE_MAKE_FACTORY(RenderBuffer);
+    MXENGINE_MAKE_FACTORY(Shader);
+    MXENGINE_MAKE_FACTORY(Texture);
+    MXENGINE_MAKE_FACTORY(VertexArray);
+    MXENGINE_MAKE_FACTORY(VertexBuffer);
+    MXENGINE_MAKE_FACTORY(ShaderStorageBuffer);
+    MXENGINE_MAKE_FACTORY(ComputeShader);
 
-
-    template<typename T>
-    using GResource = Resource<T, GraphicFactory>;
-
-    #define CREATE_HANDLE(name) using name##Handle = GResource<name>;
-    CREATE_HANDLE(CubeMap)
-    CREATE_HANDLE(FrameBuffer)
-    CREATE_HANDLE(IndexBuffer)
-    CREATE_HANDLE(RenderBuffer)
-    CREATE_HANDLE(Shader)
-    CREATE_HANDLE(Texture)
-    CREATE_HANDLE(VertexArray)
-    CREATE_HANDLE(VertexBuffer)
-    CREATE_HANDLE(ShaderStorageBuffer)
-    CREATE_HANDLE(ComputeShader)
-    #undef CREATE_HANDLE
+    #undef MAKE_FACTORY
 
     inline auto GetAttachedTexture(const FrameBuffer& framebuffer)
     {
-        return framebuffer.GetAttachedTexture<Resource, GraphicFactory>();
+        return framebuffer.GetAttachedTexture<Resource, TextureFactory>();
     }
 
     inline auto GetAttachedTexture(const FrameBufferHandle& framebuffer)
@@ -88,7 +69,7 @@ namespace MxEngine
 
     inline auto GetAttachedCubeMap(const FrameBuffer& framebuffer)
     {
-        return framebuffer.GetAttachedCubeMap<Resource, GraphicFactory>();
+        return framebuffer.GetAttachedCubeMap<Resource, CubeMapFactory>();
     }
 
     inline auto GetAttachedCubeMap(const FrameBufferHandle& framebuffer)

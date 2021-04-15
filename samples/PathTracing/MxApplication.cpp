@@ -37,7 +37,7 @@ namespace PathTracing
             Runtime::AddShaderUpdateListener(this->rayTracingShader, FileManager::GetWorkingDirectory());
             Runtime::AddShaderUpdateListener(this->postProcessShader, FileManager::GetWorkingDirectory());
 
-            this->accumulationTexture = GraphicFactory::Create<Texture>();
+            this->accumulationTexture = Factory<Texture>::Create();
             auto textureSize = Rendering::GetViewportSize();
             
             auto OnResize = [this](WindowResizeEvent& e) mutable

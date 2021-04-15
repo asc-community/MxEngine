@@ -34,7 +34,7 @@ namespace MxEngine
 {
     void ParticleSystem::Init()
     {
-        this->particleBuffer = GraphicFactory::Create<ShaderStorageBuffer>((ParticleGPU*)nullptr, 0, UsageType::STATIC_COPY);
+        this->particleBuffer = Factory<ShaderStorageBuffer>::Create((ParticleGPU*)nullptr, 0, UsageType::STATIC_COPY);
     }
 
     void ParticleSystem::OnUpdate(float)

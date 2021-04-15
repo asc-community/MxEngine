@@ -69,13 +69,13 @@ namespace MxEngine::GUI
         ImGui::SetCursorPosX(0.5f * ImGui::GetWindowWidth() - 20.0f);
         ImGui::Text("%s", "texture list");
 
-        auto& factory = GraphicFactory::Get<Texture>();
+        auto& factory = Factory<Texture>::GetPool();
         for (auto& object : factory)
         {
             auto id = (int)factory.IndexOf(object);
             ImGui::PushID(id);
 
-            auto texture = GraphicFactory::GetHandle(object);
+            auto texture = Factory<Texture>::GetHandle(object);
             auto& texturePath = texture->GetFilePath();
 
             if (filter[0] == '\0' || texturePath.find(filter) != texturePath.npos)

@@ -170,10 +170,10 @@ namespace MxEngine::GUI
         using Factory = typename Handle::Factory;
 
         auto handle = (size_t)Max(id, 0);
-        auto& storage = Factory::template Get<Type>();
-        if (storage.IsAllocated(handle))
+        auto& pool = Factory::GetPool();
+        if (pool.IsAllocated(handle))
         {
-            return Factory::GetHandle(storage[handle]);
+            return Factory::GetHandle(pool[handle]);
         }
         else
         {
@@ -204,7 +204,7 @@ namespace MxEngine::GUI
     rttr::variant EditorExtra<Texture>(rttr::instance& object)
     {
         Texture& texture = *object.try_convert<Texture>();
-        DrawImageSaver(GraphicFactory::GetHandle(texture));
+        DrawImageSaver(Factory<Texture>::GetHandle(texture));
 
         ImGui::SameLine();
         if (ImGui::Button("flip image"))
@@ -431,7 +431,7 @@ namespace MxEngine::GUI
             auto editedValue = ResourceEditor(name, bounding);
             if (editedValue.is_valid())
             {
-                auto newShape = PhysicsFactory::Create<ShapeType>(editedValue.template convert<BoundingType>());
+                auto newShape = Factory<ShapeType>::Create(editedValue.template convert<BoundingType>());
                 result = rttr::variant{ CompoundCollider::CompoundColliderChild{ child->Transform, newShape } };
             }
         }, child->Shape);
@@ -449,7 +449,7 @@ namespace MxEngine::GUI
 
             if (ImGui::Selectable(name))
             {
-                auto shape = PhysicsFactory::Create<ShapeType>(BoundingType{ });
+                auto shape = Factory<ShapeType>::Create(BoundingType{ });
                 collider.AddShape({}, shape);
                 ImGui::SetItemDefaultFocus();
             }

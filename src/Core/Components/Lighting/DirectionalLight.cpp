@@ -56,7 +56,7 @@ namespace MxEngine
     DirectionalLight::DirectionalLight()
     { 
         auto depthTextureSize = (int)GlobalConfig::GetDirectionalLightTextureSize();
-        this->DepthMap = GraphicFactory::Create<Texture>();
+        this->DepthMap = Factory<Texture>::Create();
         this->DepthMap->LoadDepth(DirectionalLight::TextureCount * depthTextureSize, depthTextureSize);
         this->DepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("directional light"));
 

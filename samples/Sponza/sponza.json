@@ -2114,7 +2114,7 @@
           -0.12574134767055511
         ],
         "id": 0,
-        "is listening window resize event": false,
+        "is listening window resize event": true,
         "is rendering": true,
         "move speed": 10.0,
         "perspective camera": {

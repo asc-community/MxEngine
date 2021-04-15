@@ -40,7 +40,7 @@ namespace MxEngine
 			auto id = MakeStringId(path.string());
 			if (textures.find(id) == textures.end())
 			{
-				textures[id] = GraphicFactory::Create<Texture>(path, format);
+				textures[id] = Factory<Texture>::Create(path, format);
 			}
 			currentTexture = textures[id];
 		}
@@ -48,7 +48,7 @@ namespace MxEngine
 
 	MaterialHandle ConvertMaterial(const MaterialInfo& mat, MxHashMap<StringId, TextureHandle>& textures)
 	{
-		auto materialResource = ResourceFactory::Create<Material>();
+		auto materialResource = Factory<Material>::Create();
 		auto& material = *materialResource;
 
 		MakeTexture(material.AlbedoMap, textures, mat.AlbedoMap, TextureFormat::RGBA);
@@ -71,7 +71,7 @@ namespace MxEngine
 	}
 
 	MeshRenderer::MeshRenderer()
-		: Materials(1, ResourceFactory::Create<Material>()) { }
+		: Materials(1, Factory<Material>::Create()) { }
 
 	MeshRenderer::MeshRenderer(MaterialRef material)
 		: Materials(1, std::move(material)) { }

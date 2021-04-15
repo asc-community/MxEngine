@@ -33,15 +33,10 @@
 #include "Platform/OpenAL/AudioBuffer.h"
 #include "Platform/OpenAL/AudioPlayer.h"
 
-#include "Utilities/AbstractFactory/AbstractFactory.h"
+#include "Utilities/Factory/Factory.h"
 
 namespace MxEngine
 {
-    using AudioFactory = AbstractFactoryImpl<AudioPlayer, AudioBuffer>;
-
-    template<typename T>
-    using AResource = Resource<T, AudioFactory>;
-
-    using AudioBufferHandle = AResource<AudioBuffer>;
-    using AudioPlayerHandle = AResource<AudioPlayer>;
+    MXENGINE_MAKE_FACTORY(AudioBuffer);
+    MXENGINE_MAKE_FACTORY(AudioPlayer);
 }

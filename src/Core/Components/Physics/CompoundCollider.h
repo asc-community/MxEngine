@@ -73,7 +73,7 @@ namespace MxEngine
         template<typename T>
         auto GetShapeByIndex(size_t index) const
         {
-            using THandle = Resource<T, PhysicsFactory>;
+            using THandle = Resource<T, Factory<T>>;
             if (std::holds_alternative<THandle>(this->children[index]))
                 return std::get<THandle>(this->children[index]);
             else
@@ -88,7 +88,7 @@ namespace MxEngine
         }
 
         template<typename T>
-        void AddShape(const TransformComponent& relativeTransform, const Resource<T, PhysicsFactory>& shape)
+        void AddShape(const TransformComponent& relativeTransform, const Resource<T, Factory<T>>& shape)
         {
             this->children.push_back(shape); // save handle in variant array
             this->compoundShape->AddShape(std::move(shape), TransformComponent{ });

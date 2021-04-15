@@ -28,8 +28,7 @@
 
 #pragma once
 
-#include "Utilities/AbstractFactory/AbstractFactory.h"
-#include "Utilities/VectorPool/VectorPool.h"
+#include "Utilities/Factory/Factory.h"
 
 namespace MxEngine
 {

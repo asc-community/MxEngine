@@ -51,7 +51,7 @@ namespace MxEngine
 
     MeshHandle Primitives::CreateMesh(const MeshData::VertexData& vertecies, const MeshData::IndexData& indicies, const MxString& filename)
     {
-        auto mesh = ResourceFactory::Create<Mesh>();
+        auto mesh = Factory<Mesh>::Create();
         mesh->ReserveData(vertecies.size(), indicies.size());
         MeshData meshData{
             mesh->GetVBO(), vertecies.size(), 0,
@@ -549,7 +549,7 @@ namespace MxEngine
 
     TextureHandle Primitives::CreateGridTexture(size_t textureSize, float borderScale)
     {
-        TextureHandle gridTexture = GraphicFactory::Create<Texture>();
+        TextureHandle gridTexture = Factory<Texture>::Create();
 
         constexpr size_t channels = 3;
 

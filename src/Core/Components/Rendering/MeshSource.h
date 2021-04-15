@@ -43,7 +43,7 @@ namespace MxEngine
         bool IsStatic = false;
         bool IgnoresDepth = false;
 
-        MeshSource() : Mesh(ResourceFactory::Create<MxEngine::Mesh>()) { }
+        MeshSource() : Mesh(Factory<MxEngine::Mesh>::Create()) { }
         MeshSource(const MeshHandle& mesh) : Mesh(mesh) { }
         MeshSource& operator=(const MeshHandle& mesh) { this->Mesh = mesh; return *this; }
     };

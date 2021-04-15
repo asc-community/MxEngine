@@ -38,18 +38,18 @@ namespace MxEngine
     {
         using Deleter = void (*)(void*);
 
-        std::aligned_storage_t<sizeof(CResource<char>)> resource;
+        std::aligned_storage_t<sizeof(Resource<char, ComponentFactory>)> resource;
         size_t type;
         Deleter deleter;
 
         template<typename T>
-        Component(size_t type, CResource<T>&& component)
+        Component(size_t type, Resource<T, ComponentFactory>&& component)
         {
-            static_assert(sizeof(CResource<T>) == sizeof(Component::resource), "storage must fit resource size");
+            static_assert(sizeof(Resource<T, ComponentFactory>) == sizeof(Component::resource), "storage must fit resource size");
 
             this->type = type;
-            this->deleter = [](void* ptr) { ComponentFactory::Destroy(*std::launder(reinterpret_cast<CResource<T>*>(ptr))); };
-            auto* replace = new (&resource) CResource<T>();
+            this->deleter = [](void* ptr) { ComponentFactory::Destroy(*std::launder(reinterpret_cast<Resource<T, ComponentFactory>*>(ptr))); };
+            auto* replace = new (&resource) Resource<T, ComponentFactory>();
             *replace = std::move(component);
         }
     };
@@ -68,28 +68,28 @@ namespace MxEngine
         ComponentManager& operator=(ComponentManager&&) = default;
 
         template<typename T, typename... Args>
-        CResource<T> AddComponent(Args&&... args)
+        auto AddComponent(Args&&... args)
         {
             this->RemoveComponent<T>();
             
             auto component = ComponentFactory::CreateComponent<T>(std::forward<Args>(args)...);
             auto& data = components.emplace_back();
             Component* result = new (&data) Component(T::ComponentId, std::move(component));
-            return *std::launder(reinterpret_cast<CResource<T>*>(&result->resource));
+            return *std::launder(reinterpret_cast<Resource<T, ComponentFactory>*>(&result->resource));
         }
 
         template<typename T>
-        CResource<T> GetComponent() const
+        auto GetComponent() const
         {
             for (const auto& component : components)
             {
                 const auto& componentRef = *reinterpret_cast<const Component*>(&component);
                 if (componentRef.type == T::ComponentId)
                 {
-                    return *std::launder(reinterpret_cast<const CResource<T>*>(&componentRef.resource));
+                    return *std::launder(reinterpret_cast<const Resource<T, ComponentFactory>*>(&componentRef.resource));
                 }
             }
-            return CResource<T>{ };
+            return Resource<T, ComponentFactory>{ };
         }
 
         template<typename T>
@@ -100,7 +100,7 @@ namespace MxEngine
                 auto& componentRef = *reinterpret_cast<Component*>(&*it);
                 if (componentRef.type == T::ComponentId)
                 {
-                    auto& resource = *std::launder(reinterpret_cast<CResource<T>*>(&componentRef.resource));
+                    auto& resource = *std::launder(reinterpret_cast<Resource<T, ComponentFactory>*>(&componentRef.resource));
                     if (resource.IsValid())
                     {
                         ComponentFactory::Destroy(resource);
@@ -135,7 +135,7 @@ namespace MxEngine
 
         #define MAKE_COMPONENT(class_name)\
         public:\
-                using Handle = CResource<class_name>;\
+                using Handle = Resource<class_name, ComponentFactory>;\
                 class_name(const class_name&) = delete;\
                 class_name(class_name&&) = delete;\
                 class_name& operator=(const class_name&) = delete;\

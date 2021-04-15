@@ -114,7 +114,7 @@ namespace MxEngine
 		auto viewport = (VectorInt2)WindowManager::GetSize();
 		this->renderBuffers->Init(viewport.x, viewport.y);
 
-		this->renderTexture = GraphicFactory::Create<Texture>();
+		this->renderTexture = Factory<Texture>::Create();
 		this->renderTexture->Load(nullptr, viewport.x, viewport.y, 3, false, TextureFormat::RGB);
 		this->renderTexture->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
 		this->renderTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera output"));
@@ -462,15 +462,15 @@ namespace MxEngine
 
 	void CameraRender::Init(int width, int height)
 	{
-		this->GBuffer = GraphicFactory::Create<FrameBuffer>();
-		this->Albedo = GraphicFactory::Create<Texture>();
-		this->Normal = GraphicFactory::Create<Texture>();
-		this->Material = GraphicFactory::Create<Texture>();
-		this->Depth = GraphicFactory::Create<Texture>();
-		this->AverageWhite = GraphicFactory::Create<Texture>();
-		this->HDR = GraphicFactory::Create<Texture>();
-		this->SwapHDR1 = GraphicFactory::Create<Texture>();
-		this->SwapHDR2 = GraphicFactory::Create<Texture>();
+		this->GBuffer = Factory<FrameBuffer>::Create();
+		this->Albedo = Factory<Texture>::Create();
+		this->Normal = Factory<Texture>::Create();
+		this->Material = Factory<Texture>::Create();
+		this->Depth = Factory<Texture>::Create();
+		this->AverageWhite = Factory<Texture>::Create();
+		this->HDR = Factory<Texture>::Create();
+		this->SwapHDR1 = Factory<Texture>::Create();
+		this->SwapHDR2 = Factory<Texture>::Create();
 
 		this->Resize(width, height);
 		
@@ -526,14 +526,14 @@ namespace MxEngine
 
 	void CameraRender::DeInit()
 	{
-		GraphicFactory::Destroy(this->GBuffer);
-		GraphicFactory::Destroy(this->Albedo);
-		GraphicFactory::Destroy(this->Normal);
-		GraphicFactory::Destroy(this->Material);
-		GraphicFactory::Destroy(this->Depth);
-		GraphicFactory::Destroy(this->HDR);
-		GraphicFactory::Destroy(this->SwapHDR1);
-		GraphicFactory::Destroy(this->SwapHDR2);
+		Factory<FrameBuffer>::Destroy(this->GBuffer);
+		Factory<Texture>::Destroy(this->Albedo);
+		Factory<Texture>::Destroy(this->Normal);
+		Factory<Texture>::Destroy(this->Material);
+		Factory<Texture>::Destroy(this->Depth);
+		Factory<Texture>::Destroy(this->HDR);
+		Factory<Texture>::Destroy(this->SwapHDR1);
+		Factory<Texture>::Destroy(this->SwapHDR2);
 	}
 
 	MXENGINE_REFLECT_TYPE

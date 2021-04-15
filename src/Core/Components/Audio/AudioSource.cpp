@@ -40,7 +40,7 @@ namespace MxEngine
 
     void AudioSource::Init()
     {
-        this->player = AudioFactory::Create<AudioPlayer>();
+        this->player = Factory<AudioPlayer>::Create();
         this->SetDirection(this->GetDirection());
         if (this->buffer.IsValid())
             this->player->AttachBuffer(*this->buffer);

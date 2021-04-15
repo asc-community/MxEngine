@@ -148,7 +148,7 @@ namespace MxEngine
 		template<typename T>
 		BufferIndex AddInstancedBuffer(Mesh& mesh, const MxVector<T>& data)
 		{
-			auto VBO = GraphicFactory::Create<VertexBuffer>(
+			auto VBO = Factory<VertexBuffer>::Create(
                 (float*)data.data(), 
                 data.size() * sizeof(T) / sizeof(float), 
                 UsageType::DYNAMIC_DRAW

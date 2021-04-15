@@ -64,7 +64,7 @@ namespace MxEngine
             {
                 BoundingType bounding;
                 Deserialize(json["bounding"], rttr::instance{ bounding }, mappings);
-                shape = PhysicsFactory::Create<ShapeType>(bounding);
+                shape = Factory<ShapeType>::Create(bounding);
             }
             else
             {

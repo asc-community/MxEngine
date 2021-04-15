@@ -424,7 +424,7 @@ namespace MxEngine
 	{
 		PhysicsModule::Destroy();
 		GraphicModule::Destroy();
-		AudioFactory::Destroy(); // OpenAL is angry when buffers are not deleted
+		Factory<AudioBuffer>::Destroy(); // OpenAL is angry when buffers are not deleted
 		AudioModule::Destroy();
 
 		#if defined(MXENGINE_PROFILING_ENABLED)

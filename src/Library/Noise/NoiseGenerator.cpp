@@ -33,7 +33,7 @@ namespace MxEngine
 {
     TextureHandle NoiseGenerator::MakeRandomOneChannelTexture(size_t width, size_t height)
     {
-        TextureHandle result = GraphicFactory::Create<Texture>();
+        TextureHandle result = Factory<Texture>::Create();
         MxVector<std::array<uint8_t, 3>> noise;
         noise.resize(width * height);
 
@@ -50,7 +50,7 @@ namespace MxEngine
 
     TextureHandle NoiseGenerator::MakeRandomTexture(size_t width, size_t height)
     {
-        TextureHandle result = GraphicFactory::Create<Texture>();
+        TextureHandle result = Factory<Texture>::Create();
         MxVector<std::array<uint8_t, 3>> noise;
         noise.resize(width * height);
 

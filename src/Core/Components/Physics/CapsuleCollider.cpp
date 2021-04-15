@@ -35,7 +35,7 @@ namespace MxEngine
     void CapsuleCollider::CreateNewShape(const Capsule& capsule)
     {
         this->SetColliderChangedFlag(true);
-        this->capsuleShape = PhysicsFactory::Create<CapsuleShape>(capsule);
+        this->capsuleShape = Factory<CapsuleShape>::Create(capsule);
     }
 
     void CapsuleCollider::Init()

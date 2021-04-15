@@ -42,7 +42,7 @@ namespace MxEngine
             Vector4( halfSize,  halfSize, 0.5f, 1.0f),
         };
 
-        this->VBO = GraphicFactory::Create<VertexBuffer>(
+        this->VBO = Factory<VertexBuffer>::Create(
             (float*)vertecies.data(), 
             vertecies.size() * (sizeof(Vector4) / sizeof(float)), 
             UsageType::STATIC_DRAW
@@ -51,7 +51,7 @@ namespace MxEngine
         std::array vertexLayout = {
             VertexLayout::Entry<Vector4>()
         };
-        this->VAO = GraphicFactory::Create<VertexArray>();
+        this->VAO = Factory<VertexArray>::Create();
         VAO->AddVertexBuffer(*VBO, vertexLayout);
     }
     

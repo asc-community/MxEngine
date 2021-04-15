@@ -35,7 +35,7 @@ namespace MxEngine
     void CylinderCollider::CreateNewShape(const Cylinder& cylinder)
     {
         this->SetColliderChangedFlag(true);
-        this->cylinderShape = PhysicsFactory::Create<CylinderShape>(cylinder);
+        this->cylinderShape = Factory<CylinderShape>::Create(cylinder);
     }
 
     void CylinderCollider::Init()

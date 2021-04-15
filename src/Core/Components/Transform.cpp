@@ -169,9 +169,9 @@ namespace MxEngine
     TransformComponent& TransformComponent::Rotate(const Vector3& angles)
     {
         this->rotation += angles;
-        this->rotation.x = std::fmod(this->rotation.x, 360.0f);
-        this->rotation.y = std::fmod(this->rotation.y, 360.0f);
-        this->rotation.z = std::fmod(this->rotation.z, 360.0f);
+        this->rotation.x = std::fmod(this->rotation.x + 360.0f, 360.0f);
+        this->rotation.y = std::fmod(this->rotation.y + 360.0f, 360.0f);
+        this->rotation.z = std::fmod(this->rotation.z + 360.0f, 360.0f);
         this->needTransformUpdate = true;
         return *this;
     }

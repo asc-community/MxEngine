@@ -43,8 +43,7 @@ namespace MxEngine
 	{
 	public:
 		using EngineHandle = size_t;
-		using Factory = AbstractFactoryImpl<MxObject>;
-		using Handle = Resource<MxObject, Factory>;
+		using Handle = Resource<MxObject, Factory<MxObject>>;
 	private:
 		constexpr static EngineHandle InvalidHandle = std::numeric_limits<EngineHandle>::max();
 		EngineHandle handle = InvalidHandle;
@@ -80,7 +79,7 @@ namespace MxEngine
 		{
 			auto handle = reinterpret_cast<EngineHandle>(component.UserData);
 			MX_ASSERT(handle != InvalidHandle);
-			auto& managedObject = Factory::Get<MxObject>()[handle];
+			auto& managedObject = Factory<MxObject>::GetPool()[handle];
 			return managedObject.value;
 		}
 

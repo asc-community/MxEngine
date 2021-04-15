@@ -52,7 +52,7 @@ namespace MxEngine
     void SpotLight::LoadDepthTexture()
     {
         auto depthTextureSize = (int)GlobalConfig::GetSpotLightTextureSize();
-        auto texture = GraphicFactory::Create<Texture>();
+        auto texture = Factory<Texture>::Create();
         texture->LoadDepth(depthTextureSize, depthTextureSize);
         texture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("spot light"));
         this->DepthMap = texture;

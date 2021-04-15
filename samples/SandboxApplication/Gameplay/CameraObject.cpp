@@ -16,6 +16,8 @@ void InitCamera(MxObject& object)
 
 	effects->SetBloomWeight(5.0f);
 
+	ssao->SetIntensity(2.0f);
+
 	toneMapping->SetWhitePoint(0.75f);
 	toneMapping->SetMinLuminance(0.3f);
 

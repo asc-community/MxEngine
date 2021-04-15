@@ -30,47 +30,41 @@
 
 #include "Utilities/STL/MxHashMap.h"
 #include "Utilities/String/String.h"
-#include "Utilities/AbstractFactory/AbstractFactory.h"
+#include "Utilities/Factory/Factory.h"
 #include "Utilities/ECS/ComponentView.h"
 
 namespace MxEngine
 {
     class ComponentFactory
     {
-        static constexpr size_t FactorySize = sizeof(FactoryImpl<char>);
+        static constexpr size_t VectorPoolSize = sizeof(VectorPool<char>);
     public:
-        using FactoryMap = MxHashMap<StringId, std::aligned_storage_t<FactorySize>>;
+        using PoolMap = MxHashMap<StringId, std::aligned_storage_t<VectorPoolSize>>;
     private:
-        inline static FactoryMap* factories = nullptr;
+        inline static PoolMap* pools = nullptr;
     public:
         template<typename T>
-        static FactoryImpl<T>& GetFactory()
+        static auto& GetPool()
         {
-            if (factories->find(T::ComponentId) == factories->end())
+            if (pools->find(T::ComponentId) == pools->end())
             {
-                new (&(*factories)[T::ComponentId]) FactoryImpl<T>();
+                 (void)new(&(*pools)[T::ComponentId]) VectorPool<ManagedResource<T>>();
             }
-            auto factory = std::launder(reinterpret_cast<FactoryImpl<T>*>(&(*factories)[T::ComponentId]));
-            return *factory;
-        }
-
-        template<typename T>
-        static auto& Get()
-        {
-            return GetFactory<T>().template GetPool<T>();
+            auto pool = std::launder(reinterpret_cast<VectorPool<ManagedResource<T>>*>(&(*pools)[T::ComponentId]));
+            return *pool;
         }
 
         template<typename T>
         static ComponentView<T> GetView()
         {
-            return ComponentView{ Get<T>() };
+            return ComponentView{ GetPool<T>() };
         }
 
         template<typename T, typename... Args>
         static auto CreateComponent(Args&&... args)
         {
             UUID uuid = UUIDGenerator::Get();
-            auto& pool = Get<T>();
+            auto& pool = GetPool<T>();
             size_t index = pool.Allocate(uuid, std::forward<Args>(args)...);
             return Resource<T, ComponentFactory>(uuid, index);
         }
@@ -78,25 +72,22 @@ namespace MxEngine
         template<typename T>
         static void Destroy(Resource<T, ComponentFactory>& resource)
         {
-            Get<T>().Deallocate(resource.GetHandle());
+            GetPool<T>().Deallocate(resource.GetHandle());
         }
 
         static void Init()
         {
-            factories = new FactoryMap(); // static data, so dont care about freeing
+            pools = new PoolMap(); // static data, so dont care about freeing
         }
 
-        static FactoryMap* GetImpl()
+        static PoolMap* GetImpl()
         {
-            return factories;
+            return pools;
         }
 
-        static void Clone(FactoryMap* other)
+        static void Clone(PoolMap* other)
         {
-            factories = other;
+            pools = other;
         }
     };
-
-    template<typename T>
-    using CResource = Resource<T, ComponentFactory>;
 }

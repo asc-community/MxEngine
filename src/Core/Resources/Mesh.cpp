@@ -114,9 +114,9 @@ namespace MxEngine
 	Mesh::Mesh()
 	{
 		this->filepath = MXENGINE_MAKE_INTERNAL_TAG("empty");
-		this->VBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
-		this->IBO = GraphicFactory::Create<IndexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
-		this->VAO = GraphicFactory::Create<VertexArray>();
+		this->VBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
+		this->IBO = Factory<IndexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
+		this->VAO = Factory<VertexArray>::Create();
 
 		std::array vertexLayout = {
 			VertexLayout::Entry<Vector3>(), // position

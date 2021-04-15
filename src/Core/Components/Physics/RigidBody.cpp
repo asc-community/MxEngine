@@ -102,7 +102,7 @@ namespace MxEngine
     void RigidBody::Init()
     {
         auto& self = MxObject::GetByComponent(*this);
-        this->rigidBody = PhysicsFactory::Create<NativeRigidBody>(self.Transform);
+        this->rigidBody = Factory<NativeRigidBody>::Create(self.Transform);
 
         Physics::SetRigidBodyParent(this->rigidBody->GetNativeHandle(), self);
         // initialized with a bit of bounce. Just because I like it

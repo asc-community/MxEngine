@@ -35,7 +35,7 @@ namespace MxEngine
     void CompoundCollider::CreateNewShape()
     {
         this->SetColliderChangedFlag(true);
-        this->compoundShape = PhysicsFactory::Create<CompoundShape>();
+        this->compoundShape = Factory<CompoundShape>::Create();
     }
 
     void CompoundCollider::Init()

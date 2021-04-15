@@ -35,7 +35,7 @@ namespace MxEngine
     void BoxCollider::CreateNewShape(const BoundingBox& box)
     {
         this->SetColliderChangedFlag(true);
-        this->boxShape = PhysicsFactory::Create<BoxShape>(box);
+        this->boxShape = Factory<BoxShape>::Create(box);
     }
 
     void BoxCollider::Init()

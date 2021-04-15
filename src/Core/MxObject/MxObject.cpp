@@ -32,7 +32,7 @@ namespace MxEngine
 {
     MxObject::Handle MxObject::Create()
     {
-		auto object = Factory::Create<MxObject>();
+		auto object = Factory<MxObject>::Create();
 		object->handle = object.GetHandle();
 		object.MakeStatic();
 		return object;
@@ -40,23 +40,23 @@ namespace MxEngine
 
 	void MxObject::Destroy(MxObject::Handle object)
 	{
-		if(object.IsValid()) Factory::Destroy(object);
+		if(object.IsValid()) Factory<MxObject>::Destroy(object);
 	}
 
     void MxObject::Destroy(MxObject& object)
     {
 		MX_ASSERT(object.handle != InvalidHandle);
-		Factory::Get<MxObject>().Deallocate(object.handle);
+		Factory<MxObject>::GetPool().Deallocate(object.handle);
     }
 
     ComponentView<MxObject> MxObject::GetObjects()
     {
-		return ComponentView<MxObject>{ Factory::Get<MxObject>() };
+		return ComponentView<MxObject>{ Factory<MxObject>::GetPool() };
     }
 
 	MxObject::Handle MxObject::GetByName(const MxString& name)
 	{
-		auto& factory = Factory::Get<MxObject>();
+		auto& factory = Factory<MxObject>::GetPool();
 		for (auto& resource : factory)
 		{
 			if (resource.value.Name == name)
@@ -73,7 +73,7 @@ namespace MxEngine
 	MxObject::Handle MxObject::GetByHandle(EngineHandle handle)
 	{
 		MX_ASSERT(handle != InvalidHandle);
-		auto& managedObject = Factory::Get<MxObject>()[handle];
+		auto& managedObject = Factory<MxObject>::GetPool()[handle];
 		MX_ASSERT(managedObject.refCount > 0 && managedObject.uuid != UUIDGenerator::GetNull());
 		return MxObject::Handle(managedObject.uuid, handle);
 	}

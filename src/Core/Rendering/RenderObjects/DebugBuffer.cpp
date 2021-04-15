@@ -47,8 +47,8 @@ namespace MxEngine
             VertexLayout::Entry<Vector4>(),
         };
 
-        this->VBO = GraphicFactory::Create<VertexBuffer>(nullptr, 0, UsageType::STATIC_DRAW);
-        this->VAO = GraphicFactory::Create<VertexArray>();
+        this->VBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
+        this->VAO = Factory<VertexArray>::Create();
         VAO->AddVertexBuffer(*this->VBO, vertexLayout);
     }
 

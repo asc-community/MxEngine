@@ -35,7 +35,7 @@ namespace MxEngine
     void PointLight::LoadDepthCubeMap()
     {
         auto depthTextureSize = (int)GlobalConfig::GetPointLightTextureSize();
-        this->DepthMap = GraphicFactory::Create<CubeMap>();
+        this->DepthMap = Factory<CubeMap>::Create();
         this->DepthMap->LoadDepth(depthTextureSize, depthTextureSize);
         this->DepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("point light"));
     }

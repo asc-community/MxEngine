@@ -157,8 +157,8 @@ namespace MxEngine
 
     size_t FrameBuffer::GetWidth() const
     {
-        auto* texture = reinterpret_cast<const Resource<Texture, GraphicFactory>*>(&this->attachmentStorage);
-        auto* cubemap = reinterpret_cast<const Resource<CubeMap, GraphicFactory>*>(&this->attachmentStorage);
+        auto* texture = reinterpret_cast<const Resource<Texture, TextureFactory>*>(&this->attachmentStorage);
+        auto* cubemap = reinterpret_cast<const Resource<CubeMap, CubeMapFactory>*>(&this->attachmentStorage);
 
         if (this->currentAttachment == AttachmentType::TEXTURE && std::launder(texture)->IsValid())
             return (*texture)->GetWidth();
@@ -170,8 +170,8 @@ namespace MxEngine
 
     size_t FrameBuffer::GetHeight() const
     {
-        auto* texture = reinterpret_cast<const Resource<Texture, GraphicFactory>*>(&this->attachmentStorage);
-        auto* cubemap = reinterpret_cast<const Resource<CubeMap, GraphicFactory>*>(&this->attachmentStorage);
+        auto* texture = reinterpret_cast<const Resource<Texture, TextureFactory>*>(&this->attachmentStorage);
+        auto* cubemap = reinterpret_cast<const Resource<CubeMap, CubeMapFactory>*>(&this->attachmentStorage);
 
         if (this->currentAttachment == AttachmentType::TEXTURE && std::launder(texture)->IsValid())
             return (*std::launder(texture))->GetHeight();

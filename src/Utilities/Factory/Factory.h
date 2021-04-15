@@ -98,12 +98,12 @@ namespace MxEngine
 
         void DestroyThis(Resource<T, F>& resource)
         {
-            Factory::Destroy(resource);
+            F::Destroy(resource);
         }
 
         ManagedResource<T>& AccessThis(size_t handle) const
         {
-            return F::template Get<T>()[handle];
+            return F::template GetPool<T>()[handle];
         }
     public:
         using Type = T;
@@ -263,119 +263,77 @@ namespace MxEngine
         }
     };
 
-    template<typename T, typename... Args>
-    struct FactoryImpl : FactoryImpl<Args...>
-    {
-        using Base = FactoryImpl<Args...>;
-        using Pool = VectorPool<ManagedResource<T>>;
-        Pool pool;
-
-        template<typename U>
-        auto& GetPool()
-        {
-            if constexpr (std::is_same<T, U>::value)
-                return this->pool;
-            else
-                return static_cast<Base*>(this)->template GetPool<U>();
-        }
-
-        template<typename F>
-        void ForEach(F&& func)
-        {
-            func(this->pool);
-            static_cast<Base*>(this)->ForEach(std::forward<F>(func));
-        }
-    };
-
     template<typename T>
-    struct FactoryImpl<T>
+    class Factory
     {
         using FactoryPool = VectorPool<ManagedResource<T>>;
-        FactoryPool Pool;
+        using ThisType = Factory<T>;
+
+        inline static FactoryPool* Pool = nullptr;
+
+    public:
+        [[nodiscard]] static FactoryPool& GetPool()
+        {
+            return *Pool;
+        }
 
         template<typename U>
-        auto& GetPool()
+        [[nodiscard]] static FactoryPool& GetPool()
         {
-            static_assert(std::is_same<T, U>::value, "cannot find appropriate Factory<T>");
-            return this->Pool;
+            static_assert(std::is_same_v<T, U>, "wrong factory object type");
+            return GetPool();
         }
 
-        template<typename F>
-        void ForEach(F&& func)
+        [[nodiscard]] static FactoryPool* GetImpl()
         {
-            func(this->Pool);
-        }
-    };
-
-    template<typename... Args>
-    class AbstractFactoryImpl
-    {
-    public:
-        using Factory = FactoryImpl<Args...>;
-        using ThisType = AbstractFactoryImpl<Args...>;
-    private:
-        inline static Factory* factory = nullptr;
-    public:
-
-        static Factory* GetImpl()
-        {
-            return factory;
+            return Pool;
         }
 
         static void Init()
         {
-            if (factory == nullptr)
-                factory = new Factory(); // not deleted, but its static member, so it does not matter
+            if (Pool == nullptr)
+                Pool = new FactoryPool(); // not deleted, but its static member, so it does not matter
         }
 
         static void Destroy()
         {
-            MX_ASSERT(factory != nullptr);
-            delete factory;
-            factory = nullptr;
+            MX_ASSERT(Pool != nullptr);
+            delete Pool;
+            Pool = nullptr;
         }
 
-        static void Clone(Factory* other)
+        static void Clone(FactoryPool* other)
         {
-            factory = other;
+            Pool = other;
         }
 
-        template<typename U>
-        static auto& Get()
+        template<typename... Args>
+        [[nodiscard]] static Resource<T, ThisType> Create(Args&&... args)
         {
-            return factory->template GetPool<U>();
-        }
-
-        template<typename T, typename... ConstructArgs>
-        static Resource<T, ThisType> Create(ConstructArgs&&... args)
-        {
-            MX_ASSERT(factory != nullptr);
             UUID uuid = UUIDGenerator::Get();
-            auto& pool = factory->template GetPool<T>();
-            size_t index = pool.Allocate(uuid, std::forward<ConstructArgs>(args)...);
+            size_t index = GetPool().Allocate(uuid, std::forward<Args>(args)...);
             return Resource<T, ThisType>(uuid, index);
         }
 
-        template<typename T>
-        static Resource<T, ThisType> GetHandle(const ManagedResource<T>& object)
+        [[nodiscard]] static Resource<T, ThisType> GetHandle(const ManagedResource<T>& object)
         {
-            auto& pool = factory->template GetPool<T>();
+            auto& pool = GetPool();
             size_t index = pool.IndexOf(object);
             return Resource<T, ThisType>(pool[index].uuid, index);
         }
 
-        template<typename T>
-        static Resource<T, ThisType> GetHandle(const T& object)
+        [[nodiscard]] static Resource<T, ThisType> GetHandle(const T& object)
         {
             auto ptr = (const uint8_t*)std::addressof(object);
             auto resourcePtr = (const ManagedResource<T>*)(ptr - offsetof(ManagedResource<T>, value));
             return GetHandle(*resourcePtr);
         }
 
-        template<typename T>
         static void Destroy(Resource<T, ThisType>& resource)
         {
-            factory->template GetPool<T>().Deallocate(resource.GetHandle());
+            GetPool().Deallocate(resource.GetHandle());
         }
     };
+
+    #define MXENGINE_MAKE_FACTORY(name) using name##Factory = Factory<name>; using name##Handle = Resource<name, name##Factory>
 }

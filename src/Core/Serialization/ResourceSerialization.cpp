@@ -44,7 +44,7 @@ namespace MxEngine
         auto type = rttr::type::get<Type>();
         const char* name = type.get_name().cbegin();
         auto& jlist = json[name];
-        auto& pool = Factory::template Get<Type>();
+        auto& pool = Factory::GetPool();
 
         for (const auto& resource : pool)
         {
@@ -73,7 +73,7 @@ namespace MxEngine
 
         for (const auto& jresource : jlist)
         {
-            auto resource = Factory::template Create<Type>();
+            auto resource = Factory::Create();
             Deserialize(jresource, *resource, mappings);
 
             size_t jsonHandleId = jresource["id"];

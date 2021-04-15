@@ -51,7 +51,7 @@ namespace MxEngine
     CubeMapHandle AssetManager::LoadCubeMap(StringId hash)
     {
         auto& path = FileManager::GetFilePath(hash);
-        return GraphicFactory::Create<CubeMap>(path);
+        return Factory<CubeMap>::Create(path);
     }
 
     CubeMapHandle AssetManager::LoadCubeMap(const FilePath& path)
@@ -72,7 +72,7 @@ namespace MxEngine
 
     CubeMapHandle AssetManager::LoadCubeMap(StringId right, StringId left, StringId top, StringId bottom, StringId front, StringId back)
     {
-        auto cubemap = GraphicFactory::Create<CubeMap>();
+        auto cubemap = Factory<CubeMap>::Create();
 
         cubemap->Load(
             FileManager::GetFilePath(right),
@@ -120,7 +120,7 @@ namespace MxEngine
     TextureHandle AssetManager::LoadTexture(StringId hash, TextureFormat format)
     {
         auto path = FileManager::GetFilePath(hash);
-        return GraphicFactory::Create<Texture>(path,format);
+        return Factory<Texture>::Create(path,format);
     }
 
     TextureHandle AssetManager::LoadTexture(const FilePath& path, TextureFormat format)
@@ -141,7 +141,7 @@ namespace MxEngine
 
     ShaderHandle AssetManager::LoadShader(StringId vertex, StringId fragment)
     {
-        auto shader = GraphicFactory::Create<Shader>();
+        auto shader = Factory<Shader>::Create();
 
         auto vp = FileManager::GetFilePath(vertex);
         auto fp = FileManager::GetFilePath(fragment);
@@ -169,7 +169,7 @@ namespace MxEngine
 
     ShaderHandle AssetManager::LoadShader(StringId vertex, StringId geometry, StringId fragment)
     {
-        auto shader = GraphicFactory::Create<Shader>();
+        auto shader = Factory<Shader>::Create();
 
         auto vp = FileManager::GetFilePath(vertex);
         auto gp = FileManager::GetFilePath(geometry);
@@ -222,7 +222,7 @@ namespace MxEngine
 
     ComputeShaderHandle AssetManager::LoadComputeShader(StringId path)
     {
-        auto shader = GraphicFactory::Create<ComputeShader>();
+        auto shader = Factory<ComputeShader>::Create();
         auto filepath = FileManager::GetFilePath(path);
         shader->Load(filepath);
         return shader;
@@ -246,7 +246,7 @@ namespace MxEngine
 
     MeshHandle AssetManager::LoadMesh(StringId hash)
     {
-        auto mesh = ResourceFactory::Create<Mesh>();
+        auto mesh = Factory<Mesh>::Create();
         auto& path = FileManager::GetFilePath(hash);
         mesh->Load(path);
         return mesh;
@@ -294,7 +294,7 @@ namespace MxEngine
     AudioBufferHandle AssetManager::LoadAudio(StringId hash)
     {
         auto& path = FileManager::GetFilePath(hash);
-        auto buffer = AudioFactory::Create<AudioBuffer>();
+        auto buffer = Factory<AudioBuffer>::Create();
         buffer->Load(path);
         return buffer;
     }

@@ -69,7 +69,7 @@ namespace MxEngine
             data[3 * i + 2] = v.z;
         }
 
-        this->VBO = GraphicFactory::Create<VertexBuffer>(
+        this->VBO = Factory<VertexBuffer>::Create(
             data.data(), 
             data.size(), 
             UsageType::STATIC_DRAW
@@ -78,7 +78,7 @@ namespace MxEngine
         std::array vertexLayout = {
             VertexLayout::Entry<Vector3>()
         };
-        this->VAO = GraphicFactory::Create<VertexArray>();
+        this->VAO = Factory<VertexArray>::Create();
         VAO->AddVertexBuffer(*VBO, vertexLayout);
     }
 

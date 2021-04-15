@@ -34,18 +34,16 @@
 #include "Bullet3/CapsuleShape.h"
 #include "Bullet3/CompoundShape.h"
 #include "Bullet3/NativeRigidBody.h"
-#include "Utilities/AbstractFactory/AbstractFactory.h"
+#include "Utilities/Factory/Factory.h"
 
 namespace MxEngine
 {
-    using PhysicsFactory = AbstractFactoryImpl<BoxShape, SphereShape, CylinderShape, CapsuleShape, CompoundShape, NativeRigidBody>;
-
-    using BoxShapeHandle = Resource<BoxShape, PhysicsFactory>;
-    using SphereShapeHandle = Resource<SphereShape, PhysicsFactory>;
-    using CylinderShapeHandle = Resource<CylinderShape, PhysicsFactory>;
-    using CapsuleShapeHandle = Resource<CapsuleShape, PhysicsFactory>;
-    using CompoundShapeHandle = Resource<CompoundShape, PhysicsFactory>;
-    using NativeRigidBodyHandle = Resource<NativeRigidBody, PhysicsFactory>;
+    MXENGINE_MAKE_FACTORY(BoxShape);
+    MXENGINE_MAKE_FACTORY(SphereShape);
+    MXENGINE_MAKE_FACTORY(CylinderShape);
+    MXENGINE_MAKE_FACTORY(CapsuleShape);
+    MXENGINE_MAKE_FACTORY(CompoundShape);
+    MXENGINE_MAKE_FACTORY(NativeRigidBody);
 
     // Physics: how to add new collider
     //
@@ -54,7 +52,7 @@ namespace MxEngine
     // 
     // Create class <ColliderType>Shape (copy-past from any other existing shape)
     // 
-    // alias handle to it as <ColliderType>ShapeHandle = ...
+    // add MXENGINE_MAKE_FACTORY macro above
     //
     // create component <ColliderType>Collider (copy-past from any other existing shape)
     //

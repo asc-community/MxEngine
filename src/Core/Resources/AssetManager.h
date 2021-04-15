@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "Utilities/AbstractFactory/AbstractFactory.h"
+#include "Utilities/Factory/Factory.h"
 #include "Core/Resources/Mesh.h"
 #include "Core/Resources/Material.h"
 #include "Platform/GraphicAPI.h"
@@ -37,10 +37,8 @@
 
 namespace MxEngine
 {
-    using ResourceFactory = AbstractFactoryImpl<Material, Mesh>;
-
-    using MaterialHandle = Resource<Material, ResourceFactory>;
-    using MeshHandle = Resource<Mesh, ResourceFactory>;
+    MXENGINE_MAKE_FACTORY(Material);
+    MXENGINE_MAKE_FACTORY(Mesh);
 
     class AssetManager
     {

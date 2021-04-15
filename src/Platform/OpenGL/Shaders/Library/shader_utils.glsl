@@ -11,9 +11,6 @@ float sampleShadowMap(sampler2D depthMap, vec2 coords, float lod, float compare)
 	return step(compare, texture(depthMap, coords, lod).r);
 }
 
-float rand__(vec2 co) {
-	return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
-}
 float calcShadowFactor2D(vec3 coords, sampler2D depthMap, vec4 textureLimitsXY, float bias)
 {
 	if (coords.x > textureLimitsXY[1] || coords.x < textureLimitsXY[0]) return 1.0;

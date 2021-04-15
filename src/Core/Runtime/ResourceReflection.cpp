@@ -36,13 +36,12 @@ namespace MxEngine
 {
     #define HANDLE_TYPELIST MaterialHandle, MeshHandle, MxObject::Handle, AudioBufferHandle, TextureHandle, ShaderHandle, CubeMapHandle
 
-
     template<typename T>
     rttr::variant GetHandleByIdGeneric(size_t handleId)
     {
         using Type = typename T::Type;
         using Factory = typename T::Factory;
-        auto& pool = Factory::template Get<Type>();
+        auto& pool = Factory::GetPool();
         auto handle = pool.IsAllocated(handleId) ? Factory::GetHandle(pool[handleId]) : T{ };
         return rttr::variant{ handle };
     }

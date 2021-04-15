@@ -101,7 +101,7 @@ namespace MxEngine
         environment.DefaultShadowCubeMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default shadow cubemap"));
         environment.DefaultSkybox->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default skybox cubemap"));
 
-        environment.AverageWhiteTexture = GraphicFactory::Create<Texture>();
+        environment.AverageWhiteTexture = Factory<Texture>::Create();
         environment.AverageWhiteTexture->Load(nullptr, internalTextureSize, internalTextureSize, 1, false, TextureFormat::R16F);
         environment.AverageWhiteTexture->SetMinLOD(environment.AverageWhiteTexture->GetMaxTextureLOD());
         environment.AverageWhiteTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("average white"));
@@ -275,15 +275,15 @@ namespace MxEngine
         );
 
         // framebuffers
-        environment.DepthFrameBuffer = GraphicFactory::Create<FrameBuffer>();
+        environment.DepthFrameBuffer = Factory<FrameBuffer>::Create();
         environment.DepthFrameBuffer->UseOnlyDepth();
-        environment.PostProcessFrameBuffer = GraphicFactory::Create<FrameBuffer>();
-        environment.BloomFrameBuffer = GraphicFactory::Create<FrameBuffer>();
+        environment.PostProcessFrameBuffer = Factory<FrameBuffer>::Create();
+        environment.BloomFrameBuffer = Factory<FrameBuffer>::Create();
 
         auto bloomBufferSize = (int)GlobalConfig::GetEngineTextureSize();
         for (auto& bloomTexture : environment.BloomTextures)
         {
-            bloomTexture = GraphicFactory::Create<Texture>();
+            bloomTexture = Factory<Texture>::Create();
             bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, 3, false, HDRTextureFormat);
             bloomTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("bloom"));
             bloomTexture->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
