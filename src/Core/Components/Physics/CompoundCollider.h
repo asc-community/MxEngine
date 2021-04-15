@@ -83,7 +83,7 @@ namespace MxEngine
         template<typename T, typename... Args>
         void AddShape(const TransformComponent& relativeTransform, Args&&... args)
         {
-            auto shape = PhysicsFactory::Create<T>(std::forward<Args>(args)...);
+            auto shape = Factory<T>::Create(std::forward<Args>(args)...);
             this->AddShape(relativeTransform, shape);
         }
 

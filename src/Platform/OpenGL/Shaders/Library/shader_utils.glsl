@@ -6,6 +6,14 @@ vec3 reconstructWorldPosition(float depth, vec2 texcoord, mat4 invViewProjMatrix
 	return worldPosition.xyz;
 }
 
+float getTextureLodLevel(vec2 uv)
+{
+	vec2 dxVtc = dFdx(uv);
+	vec2 dyVtc = dFdy(uv);
+	float deltaMax2 = max(dot(dxVtc, dxVtc), dot(dyVtc, dyVtc));
+	return 0.5 * log2(deltaMax2);
+}
+
 float sampleShadowMap(sampler2D depthMap, vec2 coords, float lod, float compare)
 {
 	return step(compare, texture(depthMap, coords, lod).r);
@@ -18,27 +26,28 @@ float calcShadowFactor2D(vec3 coords, sampler2D depthMap, vec4 textureLimitsXY, 
 	if (coords.z > 1.0 - bias || coords.z < bias) return 1.0; // do not handle corner cases, assume no shadows
 	float compare = coords.z - bias;
 	
-	const int lod = 0;
-	vec2 texelSize = 1.0 / textureSize(depthMap, lod);
-	vec2 pixelPos = coords.xy / texelSize + vec2(0.5);
+	const float lod = getTextureLodLevel(coords.xy);
+	vec2 texelSize = textureSize(depthMap, 0);
+	vec2 texelSizeInv = 1.0 / texelSize;
+	vec2 pixelPos = coords.xy * texelSize + vec2(0.5);
 	vec2 fracPart = fract(pixelPos);
-	vec2 startTexel = (pixelPos - fracPart) * texelSize;
+	vec2 startTexel = (pixelPos - fracPart) * texelSizeInv;
 
 	vec3 mixY[3];
 
-	mixY[0][0] = sampleShadowMap(depthMap, startTexel + vec2( 1.0,  1.0) * texelSize, lod, compare);
-	mixY[0][1] = sampleShadowMap(depthMap, startTexel + vec2( 0.0,  1.0) * texelSize, lod, compare);
-	mixY[0][2] = sampleShadowMap(depthMap, startTexel + vec2(-1.0,  1.0) * texelSize, lod, compare);
-	mixY[1][0] = sampleShadowMap(depthMap, startTexel + vec2( 1.0,  0.0) * texelSize, lod, compare);
-	mixY[1][1] = sampleShadowMap(depthMap, startTexel + vec2( 0.0,  0.0) * texelSize, lod, compare);
-	mixY[1][2] = sampleShadowMap(depthMap, startTexel + vec2(-1.0,  0.0) * texelSize, lod, compare);
-	mixY[2][0] = sampleShadowMap(depthMap, startTexel + vec2( 1.0, -1.0) * texelSize, lod, compare);
-	mixY[2][1] = sampleShadowMap(depthMap, startTexel + vec2( 0.0, -1.0) * texelSize, lod, compare);
-	mixY[2][2] = sampleShadowMap(depthMap, startTexel + vec2(-1.0, -1.0) * texelSize, lod, compare);
+	mixY[0][0] = sampleShadowMap(depthMap, startTexel + vec2( 1.0,  1.0) * texelSizeInv, lod, compare);
+	mixY[0][1] = sampleShadowMap(depthMap, startTexel + vec2( 0.0,  1.0) * texelSizeInv, lod, compare);
+	mixY[0][2] = sampleShadowMap(depthMap, startTexel + vec2(-1.0,  1.0) * texelSizeInv, lod, compare);
+	mixY[1][0] = sampleShadowMap(depthMap, startTexel + vec2( 1.0,  0.0) * texelSizeInv, lod, compare);
+	mixY[1][1] = sampleShadowMap(depthMap, startTexel + vec2( 0.0,  0.0) * texelSizeInv, lod, compare);
+	mixY[1][2] = sampleShadowMap(depthMap, startTexel + vec2(-1.0,  0.0) * texelSizeInv, lod, compare);
+	mixY[2][0] = sampleShadowMap(depthMap, startTexel + vec2( 1.0, -1.0) * texelSizeInv, lod, compare);
+	mixY[2][1] = sampleShadowMap(depthMap, startTexel + vec2( 0.0, -1.0) * texelSizeInv, lod, compare);
+	mixY[2][2] = sampleShadowMap(depthMap, startTexel + vec2(-1.0, -1.0) * texelSizeInv, lod, compare);
 
 	vec3 samplesY = mix(mixY[1], mixY[0], fracPart.y) + mix(mixY[2], mixY[1], fracPart.y);
 	float s = mix(samplesY[1], samplesY[0], fracPart.x) + mix(samplesY[2], samplesY[1], fracPart.x);
-	//s = sampleShadowMap(depthMap, startTexel + vec2( 0.0,  0.0) * texelSize, lod, compare);
+	//s = sampleShadowMap(depthMap, coords.xy, lod, compare);
 	s = pow(clamp(s, 0.0, 1.0), 8.0);
 	return s;
 }
@@ -46,11 +55,11 @@ float calcShadowFactor2D(vec3 coords, sampler2D depthMap, vec4 textureLimitsXY, 
 const int POINT_LIGHT_SAMPLES = 20;
 vec3 sampleOffsetDirections[POINT_LIGHT_SAMPLES] = vec3[]
 (
-	vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1),
-	vec3(1, 1, -1), vec3(1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
-	vec3(1, 1, 0), vec3(1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
-	vec3(1, 0, 1), vec3(-1, 0, 1), vec3(1, 0, -1), vec3(-1, 0, -1),
-	vec3(0, 1, 1), vec3(0, -1, 1), vec3(0, -1, -1), vec3(0, 1, -1)
+	vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1),
+	vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+	vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+	vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+	vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
 );
 
 float CalcShadowFactor3D(vec3 fragToLightRay, vec3 viewDist, float zfar, float bias, samplerCube depthMap)
@@ -68,14 +77,6 @@ float CalcShadowFactor3D(vec3 fragToLightRay, vec3 viewDist, float zfar, float b
 	}
 	shadowFactor /= float(POINT_LIGHT_SAMPLES);
 	return shadowFactor;
-}
-
-float getTextureLodLevel(vec2 uv)
-{
-	vec2 dx_vtc = dFdx(uv);
-	vec2 dy_vtc = dFdy(uv);
-	float delta_max_sqr = max(dot(dx_vtc, dx_vtc), dot(dy_vtc, dy_vtc));
-	return 0.5 * log2(delta_max_sqr);
 }
 
 vec3 calcReflectionColor(samplerCube reflectionMap, mat3 reflectionMapTransform, vec3 viewDir, vec3 normal, float lod)
