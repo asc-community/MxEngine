@@ -809,7 +809,7 @@ namespace MxEngine
 
 	void RenderController::DrawNonShadowedPointLights(CameraUnit& camera, TextureHandle& output)
 	{
-		auto& instancedPointLights = this->Pipeline.Lighting.PointLigthsInstanced;
+		auto& instancedPointLights = this->Pipeline.Lighting.PointLightsInstanced;
 		if (instancedPointLights.Instances.empty()) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawNonShadowedPointLights()");
 
@@ -830,7 +830,6 @@ namespace MxEngine
 		shader->SetUniform("viewportSize", viewportSize);
 		shader->SetUniform("castsShadows", false);
 
-		instancedPointLights.SubmitToVBO();
 		// TODO: refactor
 		auto& VAO = instancedPointLights.GetVAO();
 		VAO.Bind();
@@ -861,12 +860,17 @@ namespace MxEngine
 		shader->SetUniform("viewportSize", viewportSize);
 		shader->SetUniform("castsShadows", false);
 
-		instancedSpotLights.SubmitToVBO();
 		// TODO: refactor
 		auto& VAO = instancedSpotLights.GetVAO();
 		VAO.Bind();
 
 		this->DrawIndicies(RenderPrimitive::TRIANGLES, instancedSpotLights.GetIndexCount(), 0, instancedSpotLights.Instances.size());
+	}
+
+	void RenderController::SubmitInstancedLights()
+	{
+		this->Pipeline.Lighting.PointLightsInstanced.SubmitToVBO();
+		this->Pipeline.Lighting.SpotLightsInstanced.SubmitToVBO();
 	}
 
 	void RenderController::BindFogInformation(const CameraUnit& camera, const Shader& shader)
@@ -1173,7 +1177,7 @@ namespace MxEngine
 	void RenderController::ResetPipeline()
 	{
 		this->Pipeline.Lighting.DirectionalLights.clear();
-		this->Pipeline.Lighting.PointLigthsInstanced.Instances.clear();
+		this->Pipeline.Lighting.PointLightsInstanced.Instances.clear();
 		this->Pipeline.Lighting.SpotLightsInstanced.Instances.clear();
 		this->Pipeline.Lighting.PointLights.clear();
 		this->Pipeline.Lighting.SpotLights.clear();
@@ -1258,7 +1262,7 @@ namespace MxEngine
 		}
 		else
 		{
-			auto& pointLight = this->Pipeline.Lighting.PointLigthsInstanced.Instances.emplace_back();
+			auto& pointLight = this->Pipeline.Lighting.PointLightsInstanced.Instances.emplace_back();
 			baseLightData = &pointLight;
 		}
 
@@ -1448,6 +1452,7 @@ namespace MxEngine
 			return;
 		}
 
+		this->SubmitInstancedLights();
 		this->ComputeParticles(this->Pipeline.OpaqueParticleSystems);
 		this->ComputeParticles(this->Pipeline.TransparentParticleSystems);
 

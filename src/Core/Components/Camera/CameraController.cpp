@@ -184,18 +184,28 @@ namespace MxEngine
 		Event::RemoveEventListener(this->GetEventUUID());
 
 		Event::AddEventListener<WindowResizeEvent>(this->GetEventUUID(),
-		[camera = MxObject::GetComponentHandle(*this)](WindowResizeEvent& e) mutable
+		[camera = MxObject::GetComponentHandle(*this), uuid = this->GetEventUUID()](WindowResizeEvent& e) mutable
 		{
-			if (camera.IsValid() && (e.Old != e.New))
+			if (camera.IsValid())
 			{
-				camera->ResizeRenderTexture((size_t)e.New.x, (size_t)e.New.y);
+				if (e.Old != e.New)
+				{
+					camera->ResizeRenderTexture((size_t)e.New.x, (size_t)e.New.y);
+				}
+			}
+			else
+			{
+				Event::RemoveEventListener(uuid);
 			}
 		});
 	}
 
 	void CameraController::SetListenWindowResizeEventInternal(bool value)
 	{
-		if (value) this->ListenWindowResizeEvent();
+		if (value) 
+			this->ListenWindowResizeEvent();
+		else
+			Event::RemoveEventListener(this->GetEventUUID());
 	}
 
 	bool CameraController::IsListeningWindowResizeEvent() const

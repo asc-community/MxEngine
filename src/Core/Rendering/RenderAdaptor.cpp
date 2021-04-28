@@ -79,7 +79,7 @@ namespace MxEngine
             SpotLightInstancedObject(pyramidInstanced->GetVBO(), pyramidInstanced->GetVAO(), pyramidInstanced->GetIBO());
 
         auto sphereInstanced = Primitives::CreateSphere(8);
-        this->Renderer.GetLightInformation().PointLigthsInstanced =
+        this->Renderer.GetLightInformation().PointLightsInstanced =
             PointLightInstancedObject(sphereInstanced->GetVBO(), sphereInstanced->GetVAO(), sphereInstanced->GetIBO());
 
         auto textureFolder = FileManager::GetEngineTextureDirectory();

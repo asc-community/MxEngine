@@ -80,6 +80,7 @@ namespace MxEngine
 		void DrawShadowedSpotLights(CameraUnit& camera, TextureHandle& output);
 		void DrawNonShadowedPointLights(CameraUnit& camera, TextureHandle& output);
 		void DrawNonShadowedSpotLights(CameraUnit& camera, TextureHandle& output);
+		void SubmitInstancedLights();
 		void BindGBuffer(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
 		void BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
 		void BindCameraInformation(const CameraUnit& camera, const Shader& shader);

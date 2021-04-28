@@ -88,12 +88,9 @@ void main()
         vec4 frag = worldToFragSpace(sampleVec, camera.viewProjMatrix);
         float currentDepth = 1.0 / texture(depthTex, frag.xy).r;
 
-        vec3 currentNormal = normalize(2.0 * texture(normalTex, frag.xy).rgb - 1.0);
-        float Nn = 0.5 * dot(fragment.normal, currentNormal) + 0.5;
-
         float depthDiff = abs(sampleDepth - currentDepth);
-        float bias = pow(Nn, 300.0) + 0.01 * sampleDepth;
-        float rangeCheck = smoothstep(0.0, 1.0, radius / depthDiff);
+        float bias = 0.01 * sampleDepth;
+        float rangeCheck = clamp(1.0 - 25.0 * depthDiff / sampleDepth, 0.0, 1.0);
         float offscreenFading = 1.0 - 4.0 * dot(TexCoord - 0.5, TexCoord - 0.5);
         offscreenFading *= offscreenFading;
 

@@ -154,7 +154,7 @@ namespace MxEngine
         MxVector<PointLightUnit> PointLights;
         MxVector<SpotLightUnit> SpotLights;
         SpotLightInstancedObject SpotLightsInstanced;
-        PointLightInstancedObject PointLigthsInstanced;
+        PointLightInstancedObject PointLightsInstanced;
         RenderHelperObject SphereLight;
         RenderHelperObject PyramidLight;
     };
