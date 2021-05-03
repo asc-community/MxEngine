@@ -109,8 +109,8 @@ namespace MxEngine
 		void RenderToTextureNoClear(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
 		void CopyTexture(const TextureHandle& input, const TextureHandle& output);
 		void ApplyGaussianBlur(const TextureHandle& inputOutput, const TextureHandle& temporary, size_t iterations, size_t lod = 0);
-		void DrawVertecies(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount);
-		void DrawIndicies(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount);
+		void DrawVertices(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount);
+		void DrawIndices(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex, size_t instanceCount);
 
 		EnvironmentUnit& GetEnvironment();
 		const EnvironmentUnit& GetEnvironment() const;

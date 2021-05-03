@@ -32,6 +32,7 @@
 #include "Core/Application/Application.h"
 #include "Core/MxObject/MxObject.h"
 #include "Core/Resources/AssetManager.h"
+#include "Core/Resources/BufferAllocator.h"
 #include "Core/Runtime/RuntimeCompiler.h"
 #include "Core/Serialization/SceneSerializer.h"
 #include "Utilities/FileSystem/FileManager.h"
@@ -73,6 +74,7 @@ namespace MxEngine
 		Factory<NativeRigidBody>,
 		Factory<MxObject>,
 		RuntimeCompiler,
-		SceneSerializer
+		SceneSerializer,
+		BufferAllocator
 	>;
 }

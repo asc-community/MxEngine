@@ -26,74 +26,74 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "VertexLayout.h"
+#include "VertexAttribute.h"
 #include "GLUtilities.h"
 #include "Utilities/Math/Math.h"
 
 namespace MxEngine
 {
     template<>
-    VertexLayout VertexLayout::Entry<float>()
+    VertexAttribute VertexAttribute::Entry<float>()
     {
         return { GL_FLOAT, 1, 1, sizeof(float) };
     }
 
     template<>
-    VertexLayout VertexLayout::Entry<Vector2>()
+    VertexAttribute VertexAttribute::Entry<Vector2>()
     {
         return { GL_FLOAT, 2, 1, sizeof(Vector2) };
     }
 
     template<>
-    VertexLayout VertexLayout::Entry<Vector3>()
+    VertexAttribute VertexAttribute::Entry<Vector3>()
     {
         return { GL_FLOAT, 3, 1, sizeof(Vector3) };
     }
 
     template<>
-    VertexLayout VertexLayout::Entry<Vector4>()
+    VertexAttribute VertexAttribute::Entry<Vector4>()
     {
         return { GL_FLOAT, 4, 1, sizeof(Vector4) };
     }
 
     template<>
-    VertexLayout VertexLayout::Entry<int32_t>()
+    VertexAttribute VertexAttribute::Entry<int32_t>()
     {
         return { GL_INT, 1, 1, sizeof(int32_t) };
     }
 
     template<>
-    VertexLayout VertexLayout::Entry<VectorInt2>()
+    VertexAttribute VertexAttribute::Entry<VectorInt2>()
     {
         return { GL_INT, 2, 1, sizeof(VectorInt2) };
     }
 
     template<>
-    VertexLayout VertexLayout::Entry<VectorInt3>()
+    VertexAttribute VertexAttribute::Entry<VectorInt3>()
     {
         return { GL_INT, 3, 1, sizeof(VectorInt3) };
     }
 
     template<>
-    VertexLayout VertexLayout::Entry<VectorInt4>()
+    VertexAttribute VertexAttribute::Entry<VectorInt4>()
     {
         return { GL_INT, 4, 1, sizeof(VectorInt4) };
     }
 
     template<>
-    VertexLayout VertexLayout::Entry<Matrix2x2>()
+    VertexAttribute VertexAttribute::Entry<Matrix2x2>()
     {
         return { GL_FLOAT, 2, 2, sizeof(Matrix2x2) };
     }
 
     template<>
-    VertexLayout VertexLayout::Entry<Matrix3x3>()
+    VertexAttribute VertexAttribute::Entry<Matrix3x3>()
     {
         return { GL_FLOAT, 3, 3, sizeof(Matrix3x3) };
     }
 
     template<>
-    VertexLayout VertexLayout::Entry<Matrix4x4>()
+    VertexAttribute VertexAttribute::Entry<Matrix4x4>()
     {
         return { GL_FLOAT, 4, 4, sizeof(Matrix4x4) };
     }

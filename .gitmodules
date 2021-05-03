@@ -53,3 +53,6 @@
 [submodule "submodules/rttr"]
 	path = submodules/rttr
 	url = https://github.com/MomoDeve/rttr
+[submodule "submodules/Allocators"]
+	path = submodules/Allocators
+	url = https://github.com/MomoDeve/Allocators

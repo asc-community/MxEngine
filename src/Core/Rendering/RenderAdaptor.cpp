@@ -67,20 +67,32 @@ namespace MxEngine
 
         // light bounding objects
         auto pyramid = Primitives::CreatePyramid();
-        this->Renderer.GetLightInformation().PyramidLight =
-            RenderHelperObject(pyramid->GetVBO(), pyramid->GetVAO(), pyramid->GetIBO());
+        pyramid.MakeStatic();
+        this->Renderer.GetLightInformation().PyramidLight = RenderHelperObject(
+            pyramid->GetBaseVerteciesOffset(), pyramid->GetTotalVerteciesCount(), 
+            pyramid->GetBaseIndiciesOffset(),  pyramid->GetTotalIndiciesCount(), 
+            pyramid->GetVAO());
 
         auto sphere = Primitives::CreateSphere(8);
-        this->Renderer.GetLightInformation().SphereLight =
-            RenderHelperObject(sphere->GetVBO(), sphere->GetVAO(), sphere->GetIBO());
+        sphere.MakeStatic();
+        this->Renderer.GetLightInformation().SphereLight = RenderHelperObject(
+            sphere->GetBaseVerteciesOffset(), sphere->GetTotalVerteciesCount(),
+            sphere->GetBaseIndiciesOffset(),  sphere->GetTotalIndiciesCount(),
+            sphere->GetVAO());
 
         auto pyramidInstanced = Primitives::CreatePyramid();
-        this->Renderer.GetLightInformation().SpotLightsInstanced = 
-            SpotLightInstancedObject(pyramidInstanced->GetVBO(), pyramidInstanced->GetVAO(), pyramidInstanced->GetIBO());
+        pyramidInstanced.MakeStatic();
+        this->Renderer.GetLightInformation().SpotLightsInstanced = SpotLightInstancedObject(
+            pyramidInstanced->GetBaseVerteciesOffset(), pyramidInstanced->GetTotalVerteciesCount(),
+            pyramidInstanced->GetBaseIndiciesOffset(),  pyramidInstanced->GetTotalIndiciesCount(),
+            pyramidInstanced->GetVAO());
 
         auto sphereInstanced = Primitives::CreateSphere(8);
-        this->Renderer.GetLightInformation().PointLightsInstanced =
-            PointLightInstancedObject(sphereInstanced->GetVBO(), sphereInstanced->GetVAO(), sphereInstanced->GetIBO());
+        sphereInstanced.MakeStatic();
+        this->Renderer.GetLightInformation().PointLightsInstanced = PointLightInstancedObject(
+            sphereInstanced->GetBaseVerteciesOffset(), sphereInstanced->GetTotalVerteciesCount(),
+            sphereInstanced->GetBaseIndiciesOffset(),  sphereInstanced->GetTotalIndiciesCount(),
+            sphereInstanced->GetVAO());
 
         auto textureFolder = FileManager::GetEngineTextureDirectory();
         int internalTextureSize = (int)GlobalConfig::GetEngineTextureSize();

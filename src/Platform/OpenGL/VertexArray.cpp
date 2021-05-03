@@ -30,7 +30,7 @@
 #include "GLUtilities.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
-#include "VertexLayout.h"
+#include "VertexAttribute.h"
 #include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
@@ -89,7 +89,7 @@ namespace MxEngine
 		glBindVertexArray(0);
 	}
 
-	void VertexArray::AddVertexBuffer(const VertexBuffer& buffer, ArrayView<VertexLayout> layout)
+	void VertexArray::AddVertexLayout(const VertexBuffer& buffer, ArrayView<VertexAttribute> layout, VertexAttributeInputRate inputRate)
 	{
 		this->Bind();
 		buffer.Bind();
@@ -106,6 +106,11 @@ namespace MxEngine
 				// TODO: handle integer case with glVertexAttribIPointer
 				GLCALL(glEnableVertexAttribArray(this->attributeIndex));
 				GLCALL(glVertexAttribPointer(this->attributeIndex, element.components, (GLenum)element.type, GL_FALSE, stride, (void*)offset));
+				if (inputRate == VertexAttributeInputRate::PER_INSTANCE)
+				{
+					GLCALL(glVertexAttribDivisor(this->attributeIndex, 1));
+				}
+
 				offset += element.byteSize / element.entries;
 				this->attributeIndex++;
 			}
@@ -113,32 +118,7 @@ namespace MxEngine
 		this->Unbind();
 	}
 
-	void VertexArray::AddInstancedVertexBuffer(const VertexBuffer& buffer, ArrayView<VertexLayout> layout)
-	{
-		this->Bind();
-		buffer.Bind();
-		size_t offset = 0;
-		size_t stride = 0;
-
-		for (const auto& element : layout)
-			stride += element.byteSize;
-
-		for (const auto& element : layout)
-		{
-			for (size_t i = 0; i < element.entries; i++)
-			{
-				// TODO: handle integer case with glVertexAttribIPointer
-				GLCALL(glEnableVertexAttribArray(this->attributeIndex));
-				GLCALL(glVertexAttribPointer(this->attributeIndex, element.components, (GLenum)element.type, GL_FALSE, stride, (void*)offset));
-				GLCALL(glVertexAttribDivisor(this->attributeIndex, 1));
-				offset += element.byteSize / element.entries;
-				this->attributeIndex++;
-			}
-		}
-		this->Unbind();
-	}
-
-	void VertexArray::PopBuffer(ArrayView<VertexLayout> layout)
+	void VertexArray::RemoveVertexLayout(ArrayView<VertexAttribute> layout)
 	{
 		MX_ASSERT(this->attributeIndex > layout.size());
 

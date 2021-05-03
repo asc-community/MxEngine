@@ -142,6 +142,14 @@ namespace MxEngine
         this->usage = usage;
     }
 
+    void BufferBase::LoadFrom(BufferBase& other)
+    {
+        MX_ASSERT(other.GetByteSize() <= this->byteSize);
+        GLCALL(glBindBuffer(GL_COPY_READ_BUFFER, other.GetNativeHandle()));
+        GLCALL(glBindBuffer(GL_COPY_WRITE_BUFFER, this->id));
+        GLCALL(glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, other.GetByteSize()));
+    }
+
     void BufferBase::Load(BufferType type, const uint8_t* byteData, size_t byteSize, UsageType usage)
     {
         this->type = type;

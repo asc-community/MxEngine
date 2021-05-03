@@ -125,8 +125,8 @@ set(MXENGINE_SOURCES
 "Platform/Compute/Compute.cpp" 
 "Core/Components/Rendering/ParticleSystem.cpp" 
 "Core/Components/Camera/CameraSSAO.cpp" 
-"Platform/OpenGL/VertexLayout.cpp" 
-"Core/Serialization/Cloning.cpp")
+"Platform/OpenGL/VertexAttribute.cpp" 
+"Core/Serialization/Cloning.cpp" "Core/Resources/BufferAllocator.cpp")
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)
@@ -149,6 +149,7 @@ set(portable_file_dialogs ${SUBMODULES_PATH}/portable-file-dialogs)
 set(stduuid ${SUBMODULES_PATH}/stduuid)
 set(runtime_compiled_cpp ${SUBMODULES_PATH}/RuntimeCompiledCPlusPlus/Aurora)
 set(rttr ${SUBMODULES_PATH}/rttr)
+set(allocators ${SUBMODULES_PATH}/Allocators)
 
 set(THIRD_PARTY_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH "")
@@ -199,7 +200,6 @@ set(BUILD_INSTALLER OFF CACHE BOOL "" FORCE)
 set(BUILD_PACKAGE OFF CACHE BOOL "" FORCE)
 set(USE_PCH OFF CACHE BOOL "" FORCE)
 set(BUILD_WEBSITE_DOCU OFF CACHE BOOL "" FORCE)
-set(MAX_CXX_STANDARD ${CMAKE_CXX_STANDARD})
 
 set(THIRD_PARTY_INCLUDE_DIRS
     ${nlohmann_json}/single_include
@@ -217,6 +217,7 @@ set(THIRD_PARTY_INCLUDE_DIRS
     ${rttr}/src
     ${portable_file_dialogs}
     ${runtime_compiled_cpp}
+    ${allocators}
     ${imguizmo}
     ${imgui}
     ${glm}

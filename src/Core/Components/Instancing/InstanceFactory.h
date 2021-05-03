@@ -155,7 +155,7 @@ namespace MxEngine
             );
 			
             std::array vertexLayout = {
-                VertexLayout::Entry<T>()
+                VertexAttribute::Entry<T>()
             };
 			return (BufferIndex)mesh.AddInstancedBuffer(std::move(VBO), vertexLayout);
 		}

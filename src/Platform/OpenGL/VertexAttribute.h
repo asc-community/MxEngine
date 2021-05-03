@@ -26,66 +26,19 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace MxEngine
 {
-	enum class UsageType : uint8_t
-	{
-		STREAM_DRAW,
-		STREAM_READ,
-		STREAM_COPY,
-		STATIC_DRAW,
-		STATIC_READ,
-		STATIC_COPY,
-		DYNAMIC_DRAW,
-		DYNAMIC_READ,
-		DYNAMIC_COPY,
-	};
+    struct VertexAttribute
+    {
+        uint32_t type;
+        uint16_t components;
+        uint16_t entries;
+        size_t byteSize;
 
-	enum class BufferType : uint8_t
-	{
-		UNKNOWN = 0,
-		ARRAY,
-		ELEMENT_ARRAY,
-		SHADER_STORAGE,
-	};
-
-	class BufferBase
-	{
-		using BindableId = unsigned int;
-
-		BindableId id = 0;
-		BufferType type = BufferType::UNKNOWN;
-		UsageType usage = UsageType::STATIC_DRAW;
-		size_t byteSize = 0;
-
-		void FreeBuffer();
-	public:
-		BufferBase();
-		~BufferBase();
-		BufferBase(const BufferBase&) = delete;
-		BufferBase(BufferBase&&) noexcept;
-		BufferBase& operator=(const BufferBase&) = delete;
-		BufferBase& operator=(BufferBase&&) noexcept;
-
-		void Bind() const;
-		void Unbind() const;
-		void BindBase(size_t index) const;
-		BindableId GetNativeHandle() const;
-		BufferType GetBufferType() const;
-		UsageType GetUsageType() const;
-		size_t GetByteSize() const;
-		void SetUsageType(UsageType usage);
-		void LoadFrom(BufferBase& other);
-
-	protected:
-		void Load(BufferType type, const uint8_t* byteData, size_t byteSize, UsageType usage);
-		void BufferSubData(const uint8_t* byteData, size_t byteSize, size_t offset = 0);
-		void BufferDataWithResize(const uint8_t* byteData, size_t byteSize);
-		void GetBufferData(uint8_t* byteData, size_t byteSize, size_t offset = 0) const;
-	};
+        template<typename T>
+        static VertexAttribute Entry();
+    };
 }

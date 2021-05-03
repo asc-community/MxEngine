@@ -76,10 +76,10 @@ namespace MxEngine
         );
 
         std::array vertexLayout = {
-            VertexLayout::Entry<Vector3>()
+            VertexAttribute::Entry<Vector3>()
         };
         this->VAO = Factory<VertexArray>::Create();
-        VAO->AddVertexBuffer(*VBO, vertexLayout);
+        VAO->AddVertexLayout(*this->VBO, vertexLayout, VertexAttributeInputRate::PER_VERTEX);
     }
 
     const VertexArray& SkyboxObject::GetVAO() const

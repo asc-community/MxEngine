@@ -49,10 +49,10 @@ namespace MxEngine
         );
 
         std::array vertexLayout = {
-            VertexLayout::Entry<Vector4>()
+            VertexAttribute::Entry<Vector4>()
         };
         this->VAO = Factory<VertexArray>::Create();
-        VAO->AddVertexBuffer(*VBO, vertexLayout);
+        VAO->AddVertexLayout(*this->VBO, vertexLayout, VertexAttributeInputRate::PER_VERTEX);
     }
     
     const VertexArray& RectangleObject::GetVAO() const

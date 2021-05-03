@@ -57,7 +57,7 @@ namespace MxEngine
 
         Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
         Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
-        Rendering::GetController().DrawIndicies(RenderPrimitive::TRIANGLES, unit.IndexCount, unit.IndexOffset, instanceCount);
+        Rendering::GetController().DrawIndices(RenderPrimitive::TRIANGLES, unit.IndexCount, unit.IndexOffset, unit.VertexOffset, instanceCount);
         Rendering::GetController().GetRenderStatistics().AddEntry("shadow casts", 1);
     }
 

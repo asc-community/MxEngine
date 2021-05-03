@@ -40,20 +40,31 @@ namespace MxEngine
 	
 	class Mesh
 	{
+		struct MoveOnlyAllocation
+		{
+			size_t Offset{ };
+			size_t Size{ };
+
+			MoveOnlyAllocation() = default;
+			~MoveOnlyAllocation() = default;
+			MoveOnlyAllocation(MoveOnlyAllocation&& other) noexcept;
+			MoveOnlyAllocation& operator=(MoveOnlyAllocation&& other) noexcept;
+		};
+
 		using SubMeshList = MxVector<SubMesh>;
 		
 		SubMeshList submeshes;
 		MxString filepath;
-		VertexBufferHandle VBO;
+		MoveOnlyAllocation vertexAllocation;
+		MoveOnlyAllocation indexAllocation;
 		VertexArrayHandle VAO;
-		IndexBufferHandle IBO;
 		MxVector<VertexBufferHandle> instancedVBOs;
-		MxVector<MxVector<VertexLayout>> instancedVBLs;
+		MxVector<MxVector<VertexAttribute>> instancedVBLs;
 		MxVector<UniqueRef<TransformComponent>> subMeshTransforms;
 
 		template<typename FilePath>
 		void LoadFromFile(const FilePath& filepath);
-
+		void FreeBuffers();
 	public:
 		AABB MeshAABB;
 		BoundingSphere MeshBoundingSphere;
@@ -63,6 +74,7 @@ namespace MxEngine
 		Mesh(Mesh&&) = default;
 		Mesh& operator=(const Mesh&) = delete;
 		Mesh& operator=(Mesh&&) = default;
+		~Mesh();
 
 		template<typename FilePath>
 		Mesh(const FilePath& path);
@@ -72,14 +84,16 @@ namespace MxEngine
 
 		void ReserveData(size_t vertexCount, size_t indexCount);
 		void UpdateBoundingGeometry();
-		size_t AddInstancedBuffer(VertexBufferHandle vbo, ArrayView<VertexLayout> layout);
+		size_t AddInstancedBuffer(VertexBufferHandle vbo, ArrayView<VertexAttribute> layout);
 		VertexBufferHandle GetBufferByIndex(size_t index) const; 
-		const MxVector<VertexLayout>& GetBufferLayoutByIndex(size_t index) const;
+		const MxVector<VertexAttribute>& GetBufferLayoutByIndex(size_t index) const;
 		VertexBufferHandle GetVBO() const;
 		IndexBufferHandle GetIBO() const;
 		VertexArrayHandle GetVAO() const;
 		size_t GetTotalVerteciesCount() const;
 		size_t GetTotalIndiciesCount() const;
+		size_t GetBaseVerteciesOffset() const;
+		size_t GetBaseIndiciesOffset() const;
 		size_t GetInstancedBufferCount() const;
 		void PopInstancedBuffer();
 		void SetSubMeshesInternal(const SubMeshList& submeshes);

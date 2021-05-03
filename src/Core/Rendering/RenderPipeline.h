@@ -169,6 +169,8 @@ namespace MxEngine
     struct RenderUnit
     {
         size_t materialIndex;
+        size_t VertexOffset;
+        size_t VertexCount;
         size_t IndexOffset;
         size_t IndexCount;
         

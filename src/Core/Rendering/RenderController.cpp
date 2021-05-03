@@ -165,7 +165,7 @@ namespace MxEngine
 			shader.SetUniform("lifetime", particleSystem.ParticleLifetime);
 			shader.SetUniform("fading", particleSystem.Fading);
 
-			this->DrawVertecies(RenderPrimitive::TRIANGLES, particleMesh.VertexCount, 0, particleSystem.InvocationCount * ParticleComputeGroupSize);
+			this->DrawVertices(RenderPrimitive::TRIANGLES, particleMesh.VertexCount, 0, particleSystem.InvocationCount * ParticleComputeGroupSize);
 		}
 	}
 
@@ -233,7 +233,7 @@ namespace MxEngine
 		this->GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
 		this->GetRenderEngine().SetDefaultVertexAttribute(12, Vector3(1.0f));
 		
-		this->DrawIndicies(RenderPrimitive::TRIANGLES, unit.IndexCount, unit.IndexOffset, instanceCount);
+		this->DrawIndices(RenderPrimitive::TRIANGLES, unit.IndexCount, unit.IndexOffset, unit.VertexOffset, instanceCount);
 	}
 
 	void RenderController::ComputeBloomEffect(CameraUnit& camera, const TextureHandle& output)
@@ -761,7 +761,7 @@ namespace MxEngine
 			this->GetRenderEngine().SetDefaultVertexAttribute(10, Vector4(spotLight.Direction, spotLight.OuterAngle));
 			this->GetRenderEngine().SetDefaultVertexAttribute(11, Vector4(spotLight.Color, spotLight.AmbientIntensity));
 
-			this->DrawIndicies(RenderPrimitive::TRIANGLES, pyramid.GetIndexCount(), 0, 0);
+			this->DrawIndices(RenderPrimitive::TRIANGLES, pyramid.GetIndexCount(), pyramid.GetIndexOffset(), pyramid.GetVertexOffset(), 0);
 		}
 	}
 
@@ -803,7 +803,7 @@ namespace MxEngine
 			this->GetRenderEngine().SetDefaultVertexAttribute(9,  Vector4(pointLight.Position, pointLight.Radius));
 			this->GetRenderEngine().SetDefaultVertexAttribute(10, Vector4(pointLight.Color, pointLight.AmbientIntensity));
 
-			this->DrawIndicies(RenderPrimitive::TRIANGLES, sphere.GetIndexCount(), 0, 0);
+			this->DrawIndices(RenderPrimitive::TRIANGLES, sphere.GetIndexCount(), sphere.GetIndexOffset(), sphere.GetVertexOffset(), 0);
 		}
 	}
 
@@ -834,7 +834,10 @@ namespace MxEngine
 		auto& VAO = instancedPointLights.GetVAO();
 		VAO.Bind();
 
-		this->DrawIndicies(RenderPrimitive::TRIANGLES, instancedPointLights.GetIndexCount(), 0, instancedPointLights.Instances.size());
+		this->DrawIndices(RenderPrimitive::TRIANGLES, 
+			instancedPointLights.GetIndexCount(), instancedPointLights.GetIndexOffset(), 
+			instancedPointLights.GetVertexOffset(), instancedPointLights.Instances.size()
+		);
 	}
 
 	void RenderController::DrawNonShadowedSpotLights(CameraUnit& camera, TextureHandle& output)
@@ -864,7 +867,10 @@ namespace MxEngine
 		auto& VAO = instancedSpotLights.GetVAO();
 		VAO.Bind();
 
-		this->DrawIndicies(RenderPrimitive::TRIANGLES, instancedSpotLights.GetIndexCount(), 0, instancedSpotLights.Instances.size());
+		this->DrawIndices(RenderPrimitive::TRIANGLES, 
+			instancedSpotLights.GetIndexCount(), instancedSpotLights.GetIndexOffset(), 
+			instancedSpotLights.GetVertexOffset(), instancedSpotLights.Instances.size()
+		);
 	}
 
 	void RenderController::SubmitInstancedLights()
@@ -984,7 +990,7 @@ namespace MxEngine
 		// TODO: refactor
 		auto& VAO = rectangle.GetVAO();
 		VAO.Bind();
-		this->DrawVertecies(RenderPrimitive::TRIANGLES, rectangle.VertexCount, 0, 0);
+		this->DrawVertices(RenderPrimitive::TRIANGLES, rectangle.VertexCount, 0, 0);
 	}
 
 	void RenderController::RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader)
@@ -1044,31 +1050,45 @@ namespace MxEngine
 		}
 	}
 
-	void RenderController::DrawVertecies(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount)
+	void RenderController::DrawVertices(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount)
 	{
 		this->Pipeline.Statistics.AddEntry("draw calls", 1);
 		this->Pipeline.Statistics.AddEntry("drawn vertecies", vertexCount * Max(instanceCount, 1));
 		if (instanceCount == 0)
 		{
-			this->GetRenderEngine().DrawVertecies(primitive, vertexCount, vertexOffset);
+			this->GetRenderEngine().DrawVertices(primitive, vertexCount, vertexOffset);
 		}
 		else
 		{
-			this->GetRenderEngine().DrawVerteciesInstanced(primitive, vertexCount, vertexOffset, instanceCount);
+			this->GetRenderEngine().DrawVerticesInstanced(primitive, vertexCount, vertexOffset, instanceCount);
 		}
 	}
 
-	void RenderController::DrawIndicies(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount)
+	void RenderController::DrawIndices(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex, size_t instanceCount)
 	{
 		this->Pipeline.Statistics.AddEntry("draw calls", 1);
 		this->Pipeline.Statistics.AddEntry("drawn vertecies", indexCount * Max(instanceCount, 1));
 		if (instanceCount == 0)
 		{
-			this->GetRenderEngine().DrawIndicies(primitive, indexCount, indexOffset);
+			if (baseVertex == 0)
+			{
+				this->GetRenderEngine().DrawIndices(primitive, indexCount, indexOffset);
+			}
+			else
+			{
+				this->GetRenderEngine().DrawIndicesBaseVertex(primitive, indexCount, indexOffset, baseVertex);
+			}
 		}
 		else
 		{
-			this->GetRenderEngine().DrawIndiciesInstanced(primitive, indexCount, indexOffset, instanceCount);
+			if (baseVertex == 0)
+			{
+				this->GetRenderEngine().DrawIndicesInstanced(primitive, indexCount, indexOffset, instanceCount);
+			}
+			else
+			{
+				this->GetRenderEngine().DrawIndicesBaseVertexInstanced(primitive, indexCount, indexOffset, baseVertex, instanceCount);
+			}
 		}
 	}
 
@@ -1124,7 +1144,7 @@ namespace MxEngine
 		auto& VAO = skybox.GetVAO();
 		VAO.Bind();
 
-		this->DrawVertecies(RenderPrimitive::TRIANGLES, skybox.VertexCount, 0, 0);
+		this->DrawVertices(RenderPrimitive::TRIANGLES, skybox.VertexCount, 0, 0);
 	}
 
 	void RenderController::DrawDebugBuffer(const CameraUnit& camera)
@@ -1140,7 +1160,7 @@ namespace MxEngine
 		auto& VAO = *this->Pipeline.Environment.DebugBufferObject.VAO;
 		VAO.Bind();
 
-		this->DrawVertecies(RenderPrimitive::LINES, this->Pipeline.Environment.DebugBufferObject.VertexCount, 0, 0);
+		this->DrawVertices(RenderPrimitive::LINES, this->Pipeline.Environment.DebugBufferObject.VertexCount, 0, 0);
 	}
 
 	EnvironmentUnit& RenderController::GetEnvironment()
@@ -1369,6 +1389,8 @@ namespace MxEngine
 		renderUnit.materialIndex = this->Pipeline.MaterialUnits.size();
 		renderUnit.IndexCount = submesh.Data.GetIndiciesCount();
 		renderUnit.IndexOffset = submesh.Data.GetIndiciesOffset();
+		renderUnit.VertexCount = submesh.Data.GetVerteciesCount();
+		renderUnit.VertexOffset = submesh.Data.GetVerteciesOffset();
 		renderUnit.ModelMatrix = parentTransform.GetMatrix() * submesh.GetTransform().GetMatrix(); //-V807
 		renderUnit.NormalMatrix = parentTransform.GetNormalMatrix() * submesh.GetTransform().GetNormalMatrix();
 
@@ -1439,7 +1461,7 @@ namespace MxEngine
 		auto& VAO = rectangle.GetVAO();
 		VAO.Bind();
 
-		this->DrawVertecies(RenderPrimitive::TRIANGLES, rectangle.VertexCount, 0, 0);
+		this->DrawVertices(RenderPrimitive::TRIANGLES, rectangle.VertexCount, 0, 0);
 	}
 
 	void RenderController::StartPipeline()

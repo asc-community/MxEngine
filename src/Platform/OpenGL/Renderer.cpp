@@ -117,17 +117,17 @@ namespace MxEngine
 		return *this;
 	}
 
-	void Renderer::DrawVertecies(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset)
+	void Renderer::DrawVertices(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset)
 	{
 		GLCALL(glDrawArrays(PrimitiveTable[(size_t)primitive], (GLint)vertexOffset, (GLsizei)vertexCount));
 	}
 
-	void Renderer::DrawVerteciesInstanced(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount)
+	void Renderer::DrawVerticesInstanced(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount)
 	{
 		GLCALL(glDrawArraysInstanced(PrimitiveTable[(size_t)primitive], (GLint)vertexOffset, (GLsizei)vertexCount, instanceCount));
 	}
 
-	void Renderer::DrawIndicies(RenderPrimitive primitive, size_t indexCount, size_t indexOffset)
+	void Renderer::DrawIndices(RenderPrimitive primitive, size_t indexCount, size_t indexOffset)
 	{
 		GLCALL(glDrawElements(
 			PrimitiveTable[(size_t)primitive],
@@ -137,7 +137,7 @@ namespace MxEngine
 		));
 	}
 
-	void Renderer::DrawIndiciesInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount)
+	void Renderer::DrawIndicesInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount)
 	{
 		GLCALL(glDrawElementsInstanced(
 			PrimitiveTable[(size_t)primitive], 
@@ -145,6 +145,29 @@ namespace MxEngine
 			GetGLType<IndexBuffer::IndexType>(), 
 			(const void*)(indexOffset * sizeof(IndexBuffer::IndexType)), 
 			instanceCount
+		));
+	}
+
+	void Renderer::DrawIndicesBaseVertex(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex)
+	{
+		GLCALL(glDrawElementsBaseVertex(
+			PrimitiveTable[(size_t)primitive],
+			indexCount,
+			GetGLType<IndexBuffer::IndexType>(),
+			(const void*)(indexOffset * sizeof(IndexBuffer::IndexType)),
+			baseVertex
+		));
+	}
+
+	void Renderer::DrawIndicesBaseVertexInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex, size_t instanceCount)
+	{
+		GLCALL(glDrawElementsInstancedBaseVertex(
+			PrimitiveTable[(size_t)primitive],
+			indexCount,
+			GetGLType<IndexBuffer::IndexType>(),
+			(const void*)(indexOffset * sizeof(IndexBuffer::IndexType)),
+			instanceCount,
+			baseVertex
 		));
 	}
 

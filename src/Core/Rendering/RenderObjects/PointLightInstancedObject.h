@@ -51,18 +51,18 @@ namespace MxEngine
 
 		PointLightInstancedObject() = default;
 
-		PointLightInstancedObject(VertexBufferHandle vbo, VertexArrayHandle vao, IndexBufferHandle ibo)
-			: RenderHelperObject(std::move(vbo), std::move(vao), std::move(ibo))
+		PointLightInstancedObject(size_t vertexOffset, size_t vertexCount, size_t indexOffset, size_t indexCount, VertexArrayHandle vao)
+			: RenderHelperObject(vertexOffset, vertexCount, indexOffset, indexCount, std::move(vao))
 		{
 			this->instancedVBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
 
 			std::array vertexLayout = {
-				VertexLayout::Entry<Matrix4x4>(),
-				VertexLayout::Entry<Vector4>(),
-				VertexLayout::Entry<Vector4>(),
+				VertexAttribute::Entry<Matrix4x4>(),
+				VertexAttribute::Entry<Vector4>(),
+				VertexAttribute::Entry<Vector4>(),
 			};
 
-			this->VAO->AddInstancedVertexBuffer(*this->instancedVBO, vertexLayout);
+			VAO->AddVertexLayout(*this->instancedVBO, vertexLayout, VertexAttributeInputRate::PER_INSTANCE);
 		}
 
 		void SubmitToVBO() { instancedVBO->BufferDataWithResize((float*)this->Instances.data(), this->Instances.size() * PointLightBaseData::Size); }

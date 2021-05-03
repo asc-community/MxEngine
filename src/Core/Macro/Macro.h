@@ -48,7 +48,7 @@
 #define MXENGINE_INTERNAL_TAG_SYMBOL '!'
 
 #define MXENGINE_MAKE_MOVEONLY(class_name) class_name() = default; class_name(const class_name&) = delete; class_name& operator=(const class_name&) = delete;\
-        class_name(class_name&&) noexcept = default; class_name& operator=(class_name&&) noexcept = default
+        class_name(class_name&&) = default; class_name& operator=(class_name&&) = default
 
 #if defined(MXENGINE_DEBUG)
     #if defined(MX_ASSERT_EXCEPTION)

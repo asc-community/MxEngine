@@ -44,12 +44,10 @@ namespace MxEngine
         AABB boundingBox;
         BoundingSphere boundingSphere;
 
-        VertexBufferHandle VBO;
         size_t vertexCount, vertexOffset;
-        IndexBufferHandle IBO;
         size_t indexCount, indexOffset;
     public:
-        MeshData(const VertexBufferHandle& VBO, size_t vertexCount, size_t vertexOffset, const IndexBufferHandle& IBO, size_t indexCount, size_t indexOffset);
+        MeshData(size_t vertexCount, size_t vertexOffset, size_t indexCount, size_t indexOffset);
 
         VertexBufferHandle GetVBO() const;
         IndexBufferHandle GetIBO() const;
