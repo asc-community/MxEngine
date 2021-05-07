@@ -1070,25 +1070,11 @@ namespace MxEngine
 		this->Pipeline.Statistics.AddEntry("drawn vertecies", indexCount * Max(instanceCount, 1));
 		if (instanceCount == 0)
 		{
-			if (baseVertex == 0)
-			{
-				this->GetRenderEngine().DrawIndices(primitive, indexCount, indexOffset);
-			}
-			else
-			{
-				this->GetRenderEngine().DrawIndicesBaseVertex(primitive, indexCount, indexOffset, baseVertex);
-			}
+			this->GetRenderEngine().DrawIndicesBaseVertex(primitive, indexCount, indexOffset, baseVertex);
 		}
 		else
 		{
-			if (baseVertex == 0)
-			{
-				this->GetRenderEngine().DrawIndicesInstanced(primitive, indexCount, indexOffset, instanceCount);
-			}
-			else
-			{
-				this->GetRenderEngine().DrawIndicesBaseVertexInstanced(primitive, indexCount, indexOffset, baseVertex, instanceCount);
-			}
+			this->GetRenderEngine().DrawIndicesBaseVertexInstanced(primitive, indexCount, indexOffset, baseVertex, instanceCount);
 		}
 	}
 

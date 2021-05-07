@@ -28,6 +28,7 @@
 
 #include "BufferAllocator.h"
 #include "FreeListAllocator.h"
+#include "Utilities/Logging/Logger.h"
 
 namespace MxEngine
 {
@@ -69,6 +70,7 @@ namespace MxEngine
             copyVBO->LoadFrom(*impl->VBO);
             impl->VBO->Load(nullptr, newSize, UsageType::STATIC_DRAW);
             impl->VBO->LoadFrom(*copyVBO);
+            MXLOG_DEBUG("MxEngine::BufferAllocator", "relocated vertex buffer storage");
         });
         impl->AllocatorIBO.Init(0, [](size_t newSize)
         {
@@ -76,6 +78,7 @@ namespace MxEngine
             copyIBO->LoadFrom(*impl->IBO);
             impl->IBO->Load(nullptr, newSize, UsageType::STATIC_DRAW);
             impl->IBO->LoadFrom(*copyIBO);
+            MXLOG_DEBUG("MxEngine::BufferAllocator", "relocated index buffer storage");
         });
     }
 
@@ -110,5 +113,4 @@ namespace MxEngine
     {
         impl->AllocatorIBO.Deallocate(allocation.Offset);
     }
-
 }

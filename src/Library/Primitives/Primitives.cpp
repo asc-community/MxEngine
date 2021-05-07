@@ -54,8 +54,8 @@ namespace MxEngine
         auto mesh = Factory<Mesh>::Create();
         mesh->ReserveData(vertecies.size(), indicies.size());
         MeshData meshData{
-            vertecies.size(), mesh->GetBaseVerteciesOffset(),
-            indicies.size(), mesh->GetBaseIndiciesOffset()
+            mesh->GetTotalVerteciesCount(), mesh->GetBaseVerteciesOffset(),
+            mesh->GetTotalIndiciesCount(), mesh->GetBaseIndiciesOffset()
         };
 
         auto& submesh = mesh->AddSubMesh((SubMesh::MaterialId)0, std::move(meshData));
