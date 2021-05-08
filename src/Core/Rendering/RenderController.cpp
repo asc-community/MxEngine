@@ -55,6 +55,8 @@ namespace MxEngine
 
 		ShadowMapGenerator generator(this->Pipeline.ShadowCasters, this->Pipeline.RenderUnits, this->Pipeline.MaterialUnits);
 
+		this->Pipeline.Environment.RenderVAO->Bind();
+
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PrepareDirectionalLightMaps()");
 			generator.GenerateFor(*this->Pipeline.Environment.Shaders["DirLightDepthMap"_id], this->Pipeline.Lighting.DirectionalLights);
@@ -165,7 +167,7 @@ namespace MxEngine
 			shader.SetUniform("lifetime", particleSystem.ParticleLifetime);
 			shader.SetUniform("fading", particleSystem.Fading);
 
-			this->DrawVertices(RenderPrimitive::TRIANGLES, particleMesh.VertexCount, 0, particleSystem.InvocationCount * ParticleComputeGroupSize);
+			this->DrawVertices(RenderPrimitive::TRIANGLES, particleMesh.VertexCount, 0, particleSystem.InvocationCount * ParticleComputeGroupSize, 0);
 		}
 	}
 
@@ -181,27 +183,27 @@ namespace MxEngine
 		shader.SetUniform("gamma", camera.Gamma);
 
 		size_t currentUnit = 0;
+		this->Pipeline.Environment.RenderVAO->Bind();
 		for (const auto& group : objects.Groups)
 		{
-			if (group.unitCount == 0) continue;
+			if (group.UnitCount == 0) continue;
 			bool isInstanced = group.InstanceCount > 0;
 
-			group.VAO->Bind();
-			for (size_t i = 0; i < group.unitCount; i++, currentUnit++)
+			for (size_t i = 0; i < group.UnitCount; i++, currentUnit++)
 			{
 				const auto& unit = this->Pipeline.RenderUnits[objects.UnitsIndex[currentUnit]];
 				bool isUnitVisible = isInstanced || camera.Culler.IsAABBVisible(unit.MinAABB, unit.MaxAABB);
 				this->Pipeline.Statistics.AddEntry(isUnitVisible ? "drawn objects" : "culled objects", 1);
 
-				if (isUnitVisible) this->DrawObject(unit, group.InstanceCount, shader);
+				if (isUnitVisible) this->DrawObject(unit, group.InstanceCount, group.BaseInstance, shader);
 			}
 		}
 	}
 
-	void RenderController::DrawObject(const RenderUnit& unit, size_t instanceCount, const Shader& shader)
+	void RenderController::DrawObject(const RenderUnit& unit, size_t instanceCount, size_t baseInstance, const Shader& shader)
 	{
 		Texture::TextureBindId textureBindIndex = 0;
-		const auto& material = this->Pipeline.MaterialUnits[unit.materialIndex];
+		const auto& material = this->Pipeline.MaterialUnits[unit.MaterialIndex];
 		shader.IgnoreNonExistingUniform("material.transparency");
 
 		material.AlbedoMap->Bind(textureBindIndex++);
@@ -227,13 +229,12 @@ namespace MxEngine
 
 		shader.SetUniform("displacement", material.Displacement);
 		shader.SetUniform("uvMultipliers", material.UVMultipliers);
-		shader.SetUniform("color", material.BaseColor);
 
-		this->GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
-		this->GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
-		this->GetRenderEngine().SetDefaultVertexAttribute(12, Vector3(1.0f));
+		shader.SetUniform("parentModel", unit.ModelMatrix); //-V807
+		shader.SetUniform("parentNormal", unit.NormalMatrix);
+		shader.SetUniform("parentColor", material.BaseColor);
 		
-		this->DrawIndices(RenderPrimitive::TRIANGLES, unit.IndexCount, unit.IndexOffset, unit.VertexOffset, instanceCount);
+		this->DrawIndices(RenderPrimitive::TRIANGLES, unit.IndexCount, unit.IndexOffset, unit.VertexOffset, instanceCount, baseInstance);
 	}
 
 	void RenderController::ComputeBloomEffect(CameraUnit& camera, const TextureHandle& output)
@@ -726,13 +727,13 @@ namespace MxEngine
 		if (spotLights.empty()) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawShadowedSpotLights()");
 
-		auto shader = this->Pipeline.Environment.Shaders["SpotLight"_id];
+		auto shader = this->Pipeline.Environment.Shaders["SpotLightShadow"_id];
 		shader->Bind();
 		shader->IgnoreNonExistingUniform("camera.position");
 		shader->IgnoreNonExistingUniform("albedoTex");
 		shader->IgnoreNonExistingUniform("materialTex");
 
-		auto& pyramid = this->Pipeline.Lighting.PyramidLight;
+		auto& pyramid = this->Pipeline.Lighting.SpotLight;
 		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
 
 		shader->SetUniform("viewportSize", viewportSize);
@@ -744,9 +745,7 @@ namespace MxEngine
 		
 		shader->SetUniform("lightDepthMap", textureId);
 
-		// TODO: refactor
-		auto& VAO = pyramid.GetVAO();
-		VAO.Bind();
+		pyramid.GetVAO()->Bind();
 
 		for (size_t i = 0; i < spotLights.size(); i++)
 		{
@@ -756,12 +755,12 @@ namespace MxEngine
 
 			shader->SetUniform("worldToLightTransform", spotLight.BiasedProjectionMatrix);
 
-			this->GetRenderEngine().SetDefaultVertexAttribute(5,  spotLight.Transform);
-			this->GetRenderEngine().SetDefaultVertexAttribute(9,  Vector4(spotLight.Position, spotLight.InnerAngle));
-			this->GetRenderEngine().SetDefaultVertexAttribute(10, Vector4(spotLight.Direction, spotLight.OuterAngle));
-			this->GetRenderEngine().SetDefaultVertexAttribute(11, Vector4(spotLight.Color, spotLight.AmbientIntensity));
+			shader->SetUniform("transform", spotLight.Transform);
+			shader->SetUniform("lightPosition", Vector4(spotLight.Position, spotLight.InnerAngle));
+			shader->SetUniform("lightDirection", Vector4(spotLight.Direction, spotLight.OuterAngle));
+			shader->SetUniform("colorParameters", Vector4(spotLight.Color, spotLight.AmbientIntensity));
 
-			this->DrawIndices(RenderPrimitive::TRIANGLES, pyramid.GetIndexCount(), pyramid.GetIndexOffset(), pyramid.GetVertexOffset(), 0);
+			this->DrawIndices(RenderPrimitive::TRIANGLES, pyramid.GetIndexCount(), pyramid.GetIndexOffset(), pyramid.GetVertexOffset(), 0, 0);
 		}
 	}
 
@@ -771,13 +770,13 @@ namespace MxEngine
 		if (pointLights.empty()) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawShadowedPointLights()");
 
-		auto shader = this->Pipeline.Environment.Shaders["PointLight"_id];
+		auto shader = this->Pipeline.Environment.Shaders["PointLightShadow"_id];
 		shader->Bind();
 		shader->IgnoreNonExistingUniform("camera.position");
 		shader->IgnoreNonExistingUniform("albedoTex");
 		shader->IgnoreNonExistingUniform("materialTex");
 
-		auto& sphere = this->Pipeline.Lighting.SphereLight;
+		auto& sphere = this->Pipeline.Lighting.PointLight;
 		auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
 
 		shader->SetUniform("viewportSize", viewportSize);
@@ -789,9 +788,7 @@ namespace MxEngine
 
 		shader->SetUniform("lightDepthMap", textureId);
 
-		// TODO: refactor
-		auto& VAO = sphere.GetVAO();
-		VAO.Bind();
+		sphere.GetVAO()->Bind();
 
 		for (size_t i = 0; i < pointLights.size(); i++)
 		{
@@ -799,11 +796,11 @@ namespace MxEngine
 
 			pointLight.ShadowMap->Bind(textureId);
 
-			this->GetRenderEngine().SetDefaultVertexAttribute(5,  pointLight.Transform);
-			this->GetRenderEngine().SetDefaultVertexAttribute(9,  Vector4(pointLight.Position, pointLight.Radius));
-			this->GetRenderEngine().SetDefaultVertexAttribute(10, Vector4(pointLight.Color, pointLight.AmbientIntensity));
+			shader->SetUniform("transform", pointLight.Transform);
+			shader->SetUniform("sphereParameters", Vector4(pointLight.Position, pointLight.Radius));
+			shader->SetUniform("colorParameters", Vector4(pointLight.Color, pointLight.AmbientIntensity));
 
-			this->DrawIndices(RenderPrimitive::TRIANGLES, sphere.GetIndexCount(), sphere.GetIndexOffset(), sphere.GetVertexOffset(), 0);
+			this->DrawIndices(RenderPrimitive::TRIANGLES, sphere.GetIndexCount(), sphere.GetIndexOffset(), sphere.GetVertexOffset(), 0, 0);
 		}
 	}
 
@@ -813,7 +810,7 @@ namespace MxEngine
 		if (instancedPointLights.Instances.empty()) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawNonShadowedPointLights()");
 
-		auto shader = this->Pipeline.Environment.Shaders["PointLight"_id];
+		auto shader = this->Pipeline.Environment.Shaders["PointLightNonShadow"_id];
 		shader->Bind();
 		shader->IgnoreNonExistingUniform("camera.position");
 		shader->IgnoreNonExistingUniform("albedoTex");
@@ -830,13 +827,11 @@ namespace MxEngine
 		shader->SetUniform("viewportSize", viewportSize);
 		shader->SetUniform("castsShadows", false);
 
-		// TODO: refactor
-		auto& VAO = instancedPointLights.GetVAO();
-		VAO.Bind();
+		instancedPointLights.GetVAO()->Bind();
 
 		this->DrawIndices(RenderPrimitive::TRIANGLES, 
 			instancedPointLights.GetIndexCount(), instancedPointLights.GetIndexOffset(), 
-			instancedPointLights.GetVertexOffset(), instancedPointLights.Instances.size()
+			instancedPointLights.GetVertexOffset(), instancedPointLights.Instances.size(), 0
 		);
 	}
 
@@ -846,7 +841,7 @@ namespace MxEngine
 		if (instancedSpotLights.Instances.empty()) return;
 		MAKE_SCOPE_PROFILER("RenderController::DrawNonShadowedSpotLights()");
 
-		auto shader = this->Pipeline.Environment.Shaders["SpotLight"_id];
+		auto shader = this->Pipeline.Environment.Shaders["SpotLightNonShadow"_id];
 		shader->Bind();
 		shader->IgnoreNonExistingUniform("camera.position");
 		shader->IgnoreNonExistingUniform("albedoTex");
@@ -863,13 +858,11 @@ namespace MxEngine
 		shader->SetUniform("viewportSize", viewportSize);
 		shader->SetUniform("castsShadows", false);
 
-		// TODO: refactor
-		auto& VAO = instancedSpotLights.GetVAO();
-		VAO.Bind();
+		instancedSpotLights.GetVAO()->Bind();
 
 		this->DrawIndices(RenderPrimitive::TRIANGLES, 
 			instancedSpotLights.GetIndexCount(), instancedSpotLights.GetIndexOffset(), 
-			instancedSpotLights.GetVertexOffset(), instancedSpotLights.Instances.size()
+			instancedSpotLights.GetVertexOffset(), instancedSpotLights.Instances.size(), 0
 		);
 	}
 
@@ -990,7 +983,7 @@ namespace MxEngine
 		// TODO: refactor
 		auto& VAO = rectangle.GetVAO();
 		VAO.Bind();
-		this->DrawVertices(RenderPrimitive::TRIANGLES, rectangle.VertexCount, 0, 0);
+		this->DrawVertices(RenderPrimitive::TRIANGLES, rectangle.VertexCount, 0, 0, 0);
 	}
 
 	void RenderController::RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader)
@@ -1050,21 +1043,21 @@ namespace MxEngine
 		}
 	}
 
-	void RenderController::DrawVertices(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount)
+	void RenderController::DrawVertices(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount, size_t baseInstance)
 	{
 		this->Pipeline.Statistics.AddEntry("draw calls", 1);
-		this->Pipeline.Statistics.AddEntry("drawn vertecies", vertexCount * Max(instanceCount, 1));
+		this->Pipeline.Statistics.AddEntry("drawn vertecies", vertexCount * Max(baseInstance, 1));
 		if (instanceCount == 0)
 		{
 			this->GetRenderEngine().DrawVertices(primitive, vertexCount, vertexOffset);
 		}
 		else
 		{
-			this->GetRenderEngine().DrawVerticesInstanced(primitive, vertexCount, vertexOffset, instanceCount);
+			this->GetRenderEngine().DrawVerticesInstanced(primitive, vertexCount, vertexOffset, instanceCount, baseInstance);
 		}
 	}
 
-	void RenderController::DrawIndices(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex, size_t instanceCount)
+	void RenderController::DrawIndices(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex, size_t instanceCount, size_t baseInstance)
 	{
 		this->Pipeline.Statistics.AddEntry("draw calls", 1);
 		this->Pipeline.Statistics.AddEntry("drawn vertecies", indexCount * Max(instanceCount, 1));
@@ -1074,7 +1067,7 @@ namespace MxEngine
 		}
 		else
 		{
-			this->GetRenderEngine().DrawIndicesBaseVertexInstanced(primitive, indexCount, indexOffset, baseVertex, instanceCount);
+			this->GetRenderEngine().DrawIndicesBaseVertexInstanced(primitive, indexCount, indexOffset, baseVertex, instanceCount, baseInstance);
 		}
 	}
 
@@ -1130,7 +1123,7 @@ namespace MxEngine
 		auto& VAO = skybox.GetVAO();
 		VAO.Bind();
 
-		this->DrawVertices(RenderPrimitive::TRIANGLES, skybox.VertexCount, 0, 0);
+		this->DrawVertices(RenderPrimitive::TRIANGLES, skybox.VertexCount, 0, 0, 0);
 	}
 
 	void RenderController::DrawDebugBuffer(const CameraUnit& camera)
@@ -1146,7 +1139,7 @@ namespace MxEngine
 		auto& VAO = *this->Pipeline.Environment.DebugBufferObject.VAO;
 		VAO.Bind();
 
-		this->DrawVertices(RenderPrimitive::LINES, this->Pipeline.Environment.DebugBufferObject.VertexCount, 0, 0);
+		this->DrawVertices(RenderPrimitive::LINES, this->Pipeline.Environment.DebugBufferObject.VertexCount, 0, 0, 0);
 	}
 
 	EnvironmentUnit& RenderController::GetEnvironment()
@@ -1342,7 +1335,7 @@ namespace MxEngine
 		camera.SSAO                       = ssao;
 	}
 
-	size_t RenderController::SubmitRenderGroup(const Mesh& mesh, size_t instanceCount)
+	size_t RenderController::SubmitRenderGroup(const Mesh& mesh, size_t instanceOffset, size_t instanceCount)
 	{
 		size_t renderGroupIndex = this->Pipeline.OpaqueObjects.Groups.size();
 
@@ -1355,9 +1348,9 @@ namespace MxEngine
 
 		for (auto subType : groupSubTypes)
 		{
-			subType.get().VAO = mesh.GetVAO();
+			subType.get().BaseInstance = instanceOffset;
 			subType.get().InstanceCount = instanceCount;
-			subType.get().unitCount = 0;
+			subType.get().UnitCount = 0;
 		}
 
 		return renderGroupIndex;
@@ -1372,7 +1365,7 @@ namespace MxEngine
 		size_t unitIndex = this->Pipeline.RenderUnits.size();
 		auto& renderUnit = this->Pipeline.RenderUnits.emplace_back();
 
-		renderUnit.materialIndex = this->Pipeline.MaterialUnits.size();
+		renderUnit.MaterialIndex = this->Pipeline.MaterialUnits.size();
 		renderUnit.IndexCount = submesh.Data.GetIndiciesCount();
 		renderUnit.IndexOffset = submesh.Data.GetIndiciesOffset();
 		renderUnit.VertexCount = submesh.Data.GetVerteciesCount();
@@ -1392,26 +1385,26 @@ namespace MxEngine
 		if (castsShadow)
 		{
 			auto& shadowCasters = this->Pipeline.ShadowCasters;
-			shadowCasters.Groups[renderGroupIndex].unitCount++;
+			shadowCasters.Groups[renderGroupIndex].UnitCount++;
 			shadowCasters.UnitsIndex.push_back(unitIndex);
 		}
 
 		if (ignoresDepth)
 		{
 			auto& depthIgnoreObjects = this->Pipeline.DepthIgnoreObjects;
-			depthIgnoreObjects.Groups[renderGroupIndex].unitCount++;
+			depthIgnoreObjects.Groups[renderGroupIndex].UnitCount++;
 			depthIgnoreObjects.UnitsIndex.push_back(unitIndex);
 		}
 		else if (isTransparent)
 		{
 			auto& transparentObjects = this->Pipeline.TransparentObjects;
-			transparentObjects.Groups[renderGroupIndex].unitCount++;
+			transparentObjects.Groups[renderGroupIndex].UnitCount++;
 			transparentObjects.UnitsIndex.push_back(unitIndex);
 		}
 		else
 		{
 			auto& opaqueObjects = this->Pipeline.OpaqueObjects;
-			opaqueObjects.Groups[renderGroupIndex].unitCount++;
+			opaqueObjects.Groups[renderGroupIndex].UnitCount++;
 			opaqueObjects.UnitsIndex.push_back(unitIndex);
 		}
 
@@ -1447,7 +1440,7 @@ namespace MxEngine
 		auto& VAO = rectangle.GetVAO();
 		VAO.Bind();
 
-		this->DrawVertices(RenderPrimitive::TRIANGLES, rectangle.VertexCount, 0, 0);
+		this->DrawVertices(RenderPrimitive::TRIANGLES, rectangle.VertexCount, 0, 0, 0);
 	}
 
 	void RenderController::StartPipeline()

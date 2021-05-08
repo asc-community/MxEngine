@@ -87,10 +87,10 @@ namespace MxEngine
 
 		void DrawVertices(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset);
 		void DrawIndices(RenderPrimitive primitive, size_t indexCount, size_t indexOffset);
-		void DrawVerticesInstanced(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount);
-		void DrawIndicesInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount);
+		void DrawVerticesInstanced(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount, size_t baseInstance);
+		void DrawIndicesInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount, size_t baseInstance);
 		void DrawIndicesBaseVertex(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex);
-		void DrawIndicesBaseVertexInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex, size_t instanceCount);
+		void DrawIndicesBaseVertexInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex, size_t instanceCount, size_t baseInstance);
 
 		void SetDefaultVertexAttribute(size_t index, float v) const;
 		void SetDefaultVertexAttribute(size_t index, const Vector2& vec) const;

@@ -45,19 +45,19 @@ namespace MxEngine
         Rendering::GetController().ToggleDepthOnlyMode(false);
     }
 
-    void RenderUnitToDepthMap(const Shader& shader, size_t instanceCount, const RenderUnit& unit, ArrayView<Material> materials)
+    void RenderUnitToDepthMap(const Shader& shader, size_t instanceCount, size_t baseInstance, const RenderUnit& unit, ArrayView<Material> materials)
     {
-        const auto& material = materials[unit.materialIndex];
+        const auto& material = materials[unit.MaterialIndex];
         material.HeightMap->Bind(0);
         material.AlbedoMap->Bind(1);
         shader.SetUniform("displacement", material.Displacement);
         shader.SetUniform("uvMultipliers", material.UVMultipliers);
         shader.SetUniform("map_height", material.HeightMap->GetBoundId());
         shader.SetUniform("map_albedo", material.AlbedoMap->GetBoundId());
+        shader.SetUniform("parentModel", unit.ModelMatrix);
+        shader.SetUniform("parentNormal", unit.NormalMatrix);
 
-        Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
-        Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
-        Rendering::GetController().DrawIndices(RenderPrimitive::TRIANGLES, unit.IndexCount, unit.IndexOffset, unit.VertexOffset, instanceCount);
+        Rendering::GetController().DrawIndices(RenderPrimitive::TRIANGLES, unit.IndexCount, unit.IndexOffset, unit.VertexOffset, instanceCount, baseInstance);
         Rendering::GetController().GetRenderStatistics().AddEntry("shadow casts", 1);
     }
 
@@ -92,13 +92,13 @@ namespace MxEngine
     }
 
     template<typename CullFunc>
-    void CastShadowsPerUnit(const CullFunc& culler, const Shader& shader, const RenderUnit& unit, size_t instanceCount, ArrayView<Material> materials)
+    void CastShadowsPerUnit(const CullFunc& culler, const Shader& shader, const RenderUnit& unit, size_t instanceCount, size_t baseInstance, ArrayView<Material> materials)
     {
         // do not cull instanced objects, as their position may differ
         bool culled = instanceCount == 0 && !culler(unit.MinAABB, unit.MaxAABB);
         if (!culled)
         {
-            RenderUnitToDepthMap(shader, instanceCount, unit, materials);
+            RenderUnitToDepthMap(shader, instanceCount, baseInstance, unit, materials);
         }
         else
         {
@@ -112,13 +112,12 @@ namespace MxEngine
         size_t currentUnit = 0;
         for (const auto& group : shadowCasters.Groups)
         {
-            if (group.unitCount == 0) continue;
+            if (group.UnitCount == 0) continue;
 
-            group.VAO->Bind();
-            for (size_t i = 0; i < group.unitCount; i++, currentUnit++)
+            for (size_t i = 0; i < group.UnitCount; i++, currentUnit++)
             {
                 const RenderUnit& unit = units[shadowCasters.UnitsIndex[currentUnit]];
-                CastShadowsPerUnit(culler, shader, unit, group.InstanceCount, materials);
+                CastShadowsPerUnit(culler, shader, unit, group.InstanceCount, group.BaseInstance, materials);
             }
         }
     }

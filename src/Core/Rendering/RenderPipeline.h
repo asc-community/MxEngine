@@ -107,6 +107,8 @@ namespace MxEngine
         CubeMapHandle DefaultShadowCubeMap;
         CubeMapHandle DefaultSkybox;
 
+        VertexArrayHandle RenderVAO;
+
         FrameBufferHandle DepthFrameBuffer;
         FrameBufferHandle PostProcessFrameBuffer;
         FrameBufferHandle BloomFrameBuffer;
@@ -115,6 +117,7 @@ namespace MxEngine
         SkyboxObject SkyboxCubeObject;
         DebugBufferUnit DebugBufferObject;
         RectangleObject RectangularObject;
+        size_t DefaultBaseInstance;
 
         VectorInt2 Viewport;
         float TimeDelta;
@@ -155,20 +158,20 @@ namespace MxEngine
         MxVector<SpotLightUnit> SpotLights;
         SpotLightInstancedObject SpotLightsInstanced;
         PointLightInstancedObject PointLightsInstanced;
-        RenderHelperObject SphereLight;
-        RenderHelperObject PyramidLight;
+        RenderHelperObject PointLight;
+        RenderHelperObject SpotLight;
     };
 
     struct RenderGroup
     {
-        VertexArrayHandle VAO;
+        size_t BaseInstance;
         size_t InstanceCount;
-        size_t unitCount;
+        size_t UnitCount;
     };
 
     struct RenderUnit
     {
-        size_t materialIndex;
+        size_t MaterialIndex;
         size_t VertexOffset;
         size_t VertexCount;
         size_t IndexOffset;

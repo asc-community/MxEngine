@@ -226,7 +226,6 @@ namespace MxEngine
 
     void SceneSerializer::CloneMxObjectAsInstance(const MxObject::Handle& origin, MxObject::Handle& target)
     {
-        target->Transform = origin->Transform;
         target->Name = origin->Name + "_instance";
         target->IsDisplayedInEditor = origin->IsDisplayedInEditor;
         target->IsSerialized = origin->IsSerialized;

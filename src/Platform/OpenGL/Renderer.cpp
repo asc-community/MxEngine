@@ -122,9 +122,15 @@ namespace MxEngine
 		GLCALL(glDrawArrays(PrimitiveTable[(size_t)primitive], (GLint)vertexOffset, (GLsizei)vertexCount));
 	}
 
-	void Renderer::DrawVerticesInstanced(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount)
+	void Renderer::DrawVerticesInstanced(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount, size_t baseInstance)
 	{
-		GLCALL(glDrawArraysInstanced(PrimitiveTable[(size_t)primitive], (GLint)vertexOffset, (GLsizei)vertexCount, instanceCount));
+		GLCALL(glDrawArraysInstancedBaseInstance(
+			PrimitiveTable[(size_t)primitive], 
+			(GLint)vertexOffset, 
+			(GLsizei)vertexCount, 
+			instanceCount,
+			baseInstance
+		));
 	}
 
 	void Renderer::DrawIndices(RenderPrimitive primitive, size_t indexCount, size_t indexOffset)
@@ -137,14 +143,15 @@ namespace MxEngine
 		));
 	}
 
-	void Renderer::DrawIndicesInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount)
+	void Renderer::DrawIndicesInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount, size_t baseInstance)
 	{
-		GLCALL(glDrawElementsInstanced(
+		GLCALL(glDrawElementsInstancedBaseInstance(
 			PrimitiveTable[(size_t)primitive], 
 			indexCount, 
 			GetGLType<IndexBuffer::IndexType>(), 
 			(const void*)(indexOffset * sizeof(IndexBuffer::IndexType)), 
-			instanceCount
+			instanceCount,
+			baseInstance
 		));
 	}
 
@@ -159,15 +166,16 @@ namespace MxEngine
 		));
 	}
 
-	void Renderer::DrawIndicesBaseVertexInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex, size_t instanceCount)
+	void Renderer::DrawIndicesBaseVertexInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex, size_t instanceCount, size_t baseInstance)
 	{
-		GLCALL(glDrawElementsInstancedBaseVertex(
+		GLCALL(glDrawElementsInstancedBaseVertexBaseInstance(
 			PrimitiveTable[(size_t)primitive],
 			indexCount,
 			GetGLType<IndexBuffer::IndexType>(),
 			(const void*)(indexOffset * sizeof(IndexBuffer::IndexType)),
 			instanceCount,
-			baseVertex
+			baseVertex,
+			baseInstance
 		));
 	}
 

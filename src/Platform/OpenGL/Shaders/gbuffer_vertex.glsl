@@ -18,9 +18,11 @@ struct Camera
 
 uniform Camera camera;
 uniform float displacement;
+uniform mat4 parentModel;
+uniform mat3 parentNormal;
+uniform vec3 parentColor;
 uniform vec2 uvMultipliers;
 uniform sampler2D map_height;
-uniform vec3 color;
 
 out VSout
 {
@@ -33,14 +35,16 @@ out VSout
 
 void main()
 {
-	vec4 modelPos = model * position;
-	vec3 T = normalize(vec3(normalMatrix * tangent));
-	vec3 B = normalize(vec3(normalMatrix * bitangent));
-	vec3 N = normalize(vec3(normalMatrix * normal));
+	vec4 modelPos = parentModel * model * position;
+	mat3 normalSpaceMatrix = parentNormal * normalMatrix;
+
+	vec3 T = normalize(vec3(normalSpaceMatrix * tangent));
+	vec3 B = normalize(vec3(normalSpaceMatrix * bitangent));
+	vec3 N = normalize(vec3(normalSpaceMatrix * normal));
 
 	vsout.TBN = mat3(T, B, N);
 	vsout.Normal = N;
-	vsout.RenderColor = color * renderColor;
+	vsout.RenderColor = parentColor * renderColor;
 
 	float displacementFactor = getDisplacement(uvMultipliers * texCoord, uvMultipliers, map_height, displacement);
 

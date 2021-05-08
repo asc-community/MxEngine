@@ -90,8 +90,8 @@ namespace MxEngine
 		{
 			auto& meshInfo = objectInfo.meshes[i];
 			auto& materialId = materialIds[i];
-			
-			MeshData meshData{ 
+
+			MeshData meshData{
 				meshInfo.vertecies.size(), verticies.size() + this->vertexAllocation.Offset,
 				meshInfo.indicies.size(), indicies.size() + this->indexAllocation.Offset
 			};
@@ -103,8 +103,8 @@ namespace MxEngine
 			this->AddSubMesh(materialId, std::move(meshData));
 		}
 		// load verticies and indicies to GPU
-		this->GetVBO()->BufferSubData((float*)verticies.data(), verticies.size() * Vertex::Size, this->vertexAllocation.Offset * Vertex::Size);
-		this->GetIBO()->BufferSubData(indicies.data(), indicies.size(), this->indexAllocation.Offset);
+		BufferAllocator::GetVBO()->BufferSubData((float*)verticies.data(), verticies.size() * Vertex::Size, this->vertexAllocation.Offset * Vertex::Size);
+		BufferAllocator::GetIBO()->BufferSubData(indicies.data(), indicies.size(), this->indexAllocation.Offset);
 
 		this->UpdateBoundingGeometry(); // use submeshes boundings to update mesh boundings
 	}
@@ -118,17 +118,6 @@ namespace MxEngine
 	Mesh::Mesh()
 	{
 		this->filepath = MXENGINE_MAKE_INTERNAL_TAG("empty");
-
-		this->VAO = Factory<VertexArray>::Create();
-		std::array vertexLayout = {
-			VertexAttribute::Entry<Vector3>(), // position
-			VertexAttribute::Entry<Vector2>(), // texture uv
-			VertexAttribute::Entry<Vector3>(), // normal
-			VertexAttribute::Entry<Vector3>(), // tangent
-			VertexAttribute::Entry<Vector3>(), // bitangent
-		};
-		VAO->AddVertexLayout(*BufferAllocator::GetVBO(), vertexLayout, VertexAttributeInputRate::PER_VERTEX);
-		this->VAO->LinkIndexBuffer(*BufferAllocator::GetIBO());
 	}
 
 	Mesh::~Mesh()
@@ -137,11 +126,11 @@ namespace MxEngine
 	}
 
 	template<>
-    Mesh::Mesh(const std::filesystem::path& path)
+	Mesh::Mesh(const std::filesystem::path& path)
 		: Mesh()
-    {
+	{
 		this->LoadFromFile(std::filesystem::proximate(path));
-    }
+	}
 
 	template<>
 	void Mesh::Load(const std::filesystem::path& filepath)
@@ -171,7 +160,7 @@ namespace MxEngine
 	{
 		// compute bounding box, taking min and max points from each sub-box
 		this->MeshAABB = { MakeVector3(0.0f), MakeVector3(0.0f) };
-		if (!this->GetSubMeshes().empty()) 
+		if (!this->GetSubMeshes().empty())
 			this->MeshAABB = this->GetSubMeshByIndex(0).Data.GetAABB();
 
 		for (const auto& submesh : this->GetSubMeshes())
@@ -190,41 +179,6 @@ namespace MxEngine
 			maxRadius = Max(maxRadius, distanceToCenter + sphere.Radius);
 		}
 		this->MeshBoundingSphere = MxEngine::BoundingSphere(center, maxRadius);
-	}
-
-	size_t Mesh::AddInstancedBuffer(VertexBufferHandle vbo, ArrayView<VertexAttribute> layout)
-	{
-		this->instancedVBOs.push_back(std::move(vbo));
-		this->instancedVBLs.emplace_back(layout.begin(), layout.end());
-		this->VAO->AddVertexLayout(*this->instancedVBOs.back(), this->instancedVBLs.back(), VertexAttributeInputRate::PER_INSTANCE);
-		return this->instancedVBOs.size() - 1;
-	}
-
-	VertexBufferHandle Mesh::GetBufferByIndex(size_t index) const
-	{
-		MX_ASSERT(index < this->instancedVBOs.size());
-		return this->instancedVBOs[index];
-	}
-
-	const MxVector<VertexAttribute>& Mesh::GetBufferLayoutByIndex(size_t index) const
-	{
-		MX_ASSERT(index < this->instancedVBLs.size());
-		return this->instancedVBLs[index];
-	}
-
-	VertexBufferHandle Mesh::GetVBO() const
-	{
-		return BufferAllocator::GetVBO();
-	}
-
-	IndexBufferHandle Mesh::GetIBO() const
-	{
-		return BufferAllocator::GetIBO();
-	}
-
-	VertexArrayHandle Mesh::GetVAO() const
-	{
-		return this->VAO;
 	}
 
 	size_t Mesh::GetTotalVerteciesCount() const
@@ -246,19 +200,6 @@ namespace MxEngine
 	{
 		return this->indexAllocation.Offset;
 	}
-
-	size_t Mesh::GetInstancedBufferCount() const
-    {
-		return this->instancedVBOs.size();
-    }
-
-    void Mesh::PopInstancedBuffer()
-    {
-		MX_ASSERT(!this->instancedVBOs.empty());
-		this->VAO->RemoveVertexLayout(this->instancedVBLs.back());
-		this->instancedVBOs.pop_back();
-		this->instancedVBLs.pop_back();
-    }
 
 	const MxString& Mesh::GetFilePath() const
 	{
@@ -312,13 +253,13 @@ namespace MxEngine
 		this->subMeshTransforms.erase(this->subMeshTransforms.begin() + index);
 	}
 
-	Mesh::MoveOnlyAllocation::MoveOnlyAllocation(MoveOnlyAllocation&& other) noexcept
+	MoveOnlyAllocation::MoveOnlyAllocation(MoveOnlyAllocation&& other) noexcept
 	{
 		this->Offset = other.Offset, this->Size = other.Size;
 		other.Offset = other.Size = 0;
 	}
 
-	Mesh::MoveOnlyAllocation& Mesh::MoveOnlyAllocation::operator=(MoveOnlyAllocation&& other) noexcept
+	MoveOnlyAllocation& MoveOnlyAllocation::operator=(MoveOnlyAllocation&& other) noexcept
 	{
 		this->Offset = other.Offset, this->Size = other.Size;
 		other.Offset = other.Size = 0;

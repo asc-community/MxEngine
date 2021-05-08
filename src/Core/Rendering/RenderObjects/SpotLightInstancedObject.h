@@ -53,19 +53,28 @@ namespace MxEngine
 
 		SpotLightInstancedObject() = default;
 
-		SpotLightInstancedObject(size_t vertexOffset, size_t vertexCount, size_t indexOffset, size_t indexCount, VertexArrayHandle vao)
-			: RenderHelperObject(vertexOffset, vertexCount, indexOffset, indexCount, std::move(vao))
+		SpotLightInstancedObject(size_t vertexOffset, size_t vertexCount, size_t indexOffset, size_t indexCount)
+			: RenderHelperObject(vertexOffset, vertexCount, indexOffset, indexCount, Factory<VertexArray>::Create())
 		{
 			this->instancedVBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
 
 			std::array vertexLayout = {
-				VertexAttribute::Entry<Matrix4x4>(),
-				VertexAttribute::Entry<Vector4>(),
-				VertexAttribute::Entry<Vector4>(),
-				VertexAttribute::Entry<Vector4>(),
+				VertexAttribute::Entry<Vector3>(), // position
+				VertexAttribute::Entry<Vector2>(), // texture uv
+				VertexAttribute::Entry<Vector3>(), // normal
+				VertexAttribute::Entry<Vector3>(), // tangent
+				VertexAttribute::Entry<Vector3>(), // bitangent
+			};
+			std::array instanceLayout = {
+				VertexAttribute::Entry<Matrix4x4>(), // transform
+				VertexAttribute::Entry<Vector4>(),   // position + inner angle
+				VertexAttribute::Entry<Vector4>(),   // direction + outer angle
+				VertexAttribute::Entry<Vector4>(),   // color + ambient
 			};
 
-			VAO->AddVertexLayout(*this->instancedVBO, vertexLayout, VertexAttributeInputRate::PER_INSTANCE);
+			VAO->AddVertexLayout(*this->GetVBO(), vertexLayout, VertexAttributeInputRate::PER_VERTEX);
+			VAO->AddVertexLayout(*this->instancedVBO, instanceLayout, VertexAttributeInputRate::PER_INSTANCE);
+			this->VAO->LinkIndexBuffer(*this->GetIBO());
 		}
 
 		void SubmitToVBO() { instancedVBO->BufferDataWithResize((float*)this->Instances.data(), this->Instances.size() * SpotLightBaseData::Size); }

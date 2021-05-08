@@ -9,7 +9,7 @@
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
 // this list of conditions and the following disclaimer in the documentation
-// and /or other materials provided wfith the distribution.
+// and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
 // contributors may be used to endorse or promote products derived from
@@ -26,37 +26,23 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "Platform/GraphicAPI.h"
+#include "RenderHelperObject.h"
+#include "Core/Resources/BufferAllocator.h"
 
 namespace MxEngine
 {
-    struct BufferAllocatorImpl;
-
-    struct BufferAllocation
+    VertexArrayHandle RenderHelperObject::GetVAO() const
     {
-        const size_t Offset;
-        const size_t Size;
-    };
+        return this->VAO;
+    }
 
-    class BufferAllocator
+    VertexBufferHandle RenderHelperObject::GetVBO() const
     {
-        inline static BufferAllocatorImpl* impl;
-    public:
-        static void Init();
-        static void Destroy();
-        static BufferAllocatorImpl* GetImpl();
-        static void Clone(BufferAllocatorImpl* other);
-        static void AllocateBuffers();
+        return BufferAllocator::GetVBO();
+    }
 
-        static VertexBufferHandle GetVBO();
-        static IndexBufferHandle GetIBO();
-        static VertexBufferHandle GetInstanceVBO();
-        static VertexArrayHandle GetVAO();
-        static BufferAllocation AllocateInVBO(size_t sizeInFloats);
-        static BufferAllocation AllocateInIBO(size_t sizeInIndices);
-        static BufferAllocation AllocateInInstanceVBO(size_t sizeInInstances);
-        static void DeallocateInVBO(BufferAllocation allocation);
-        static void DeallocateInIBO(BufferAllocation allocation);
-        static void DeallocateInInstanceVBO(BufferAllocation allocation);
-    };
+    IndexBufferHandle RenderHelperObject::GetIBO() const
+    {
+        return BufferAllocator::GetIBO();
+    }
 }

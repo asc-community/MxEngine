@@ -155,17 +155,17 @@
   ],
   "Mesh": [
     {
-      "_filepath": "Engine/Models/cube_2.obj",
+      "_filepath": "Engine/Models/pyramid_1.obj",
       "aabb": {
         "max": [
-          0.5,
-          0.5,
-          0.5
+          1.0,
+          1.0,
+          1.0
         ],
         "min": [
-          -0.5,
-          -0.5,
-          -0.5
+          -1.0,
+          -1.0,
+          0.0
         ]
       },
       "bounding sphere": {
@@ -174,12 +174,12 @@
           0.0,
           0.0
         ],
-        "radius": 0.8660253882408142
+        "radius": 2.0
       },
       "id": 0
     },
     {
-      "_filepath": "Engine/Models/sphere_20.obj",
+      "_filepath": "Engine/Models/sphere_8.obj",
       "aabb": {
         "max": [
           0.5,
@@ -198,22 +198,22 @@
           0.0,
           0.0
         ],
-        "radius": 0.5000000596046448
+        "radius": 0.5
       },
       "id": 1
     },
     {
-      "_filepath": "Models/PlazmaGun/scene.gltf",
+      "_filepath": "Engine/Models/pyramid_1.obj",
       "aabb": {
         "max": [
-          0.4991765022277832,
-          1.8735946416854858,
-          3.8233485221862793
+          1.0,
+          1.0,
+          1.0
         ],
         "min": [
-          -0.4991765022277832,
-          -1.8735946416854858,
-          -3.8233485221862793
+          -1.0,
+          -1.0,
+          0.0
         ]
       },
       "bounding sphere": {
@@ -222,7 +222,31 @@
           0.0,
           0.0
         ],
-        "radius": 4.017531871795654
+        "radius": 2.0
+      },
+      "id": 2
+    },
+    {
+      "_filepath": "Engine/Models/sphere_8.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.5
       },
       "id": 3
     },
@@ -249,6 +273,78 @@
         "radius": 0.8660253882408142
       },
       "id": 4
+    },
+    {
+      "_filepath": "Engine/Models/sphere_20.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.5000000596046448
+      },
+      "id": 5
+    },
+    {
+      "_filepath": "Models/PlazmaGun/scene.gltf",
+      "aabb": {
+        "max": [
+          0.4991765022277832,
+          1.8735946416854858,
+          3.8233485221862793
+        ],
+        "min": [
+          -0.4991765022277832,
+          -1.8735946416854858,
+          -3.8233485221862793
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 4.017531871795654
+      },
+      "id": 6
+    },
+    {
+      "_filepath": "Engine/Models/cube_2.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.8660253882408142
+      },
+      "id": 7
     }
   ],
   "Script": [
@@ -329,7 +425,7 @@
     "paused": false,
     "physics-step": 1.0,
     "time-scale": 1.0,
-    "total-time": 8957.224609375,
+    "total-time": 9055.3701171875,
     "viewport": 0
   },
   "mxobjects": [
@@ -362,7 +458,7 @@
                   1.0
                 ]
               },
-              "id": 6
+              "id": 0
             },
             "Instance": {
               "color": [
@@ -370,7 +466,116 @@
                 0.9019607901573181,
                 0.6274510025978088
               ],
-              "id": 9
+              "id": 0
+            },
+            "RigidBody": {
+              "angular air resistance": 0.0,
+              "angular force factor": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "angular velocity": [
+                2.6104357857548166e-06,
+                -9.540886480863264e-08,
+                -1.5737130070192507e-06
+              ],
+              "anisotropic friction": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "bounce factor": 0.10000000149011612,
+              "friction": 0.5,
+              "gravity": [
+                0.0,
+                -9.800000190734863,
+                0.0
+              ],
+              "has anisotropic friction": false,
+              "id": 0,
+              "is ray castable": true,
+              "is trigger": false,
+              "linear air resistance": 0.0,
+              "linear force factor": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "linear velocity": [
+                3.6009089399158256e-07,
+                1.5050172805786133e-06,
+                9.256135672330856e-05
+              ],
+              "mass": 100.0,
+              "push velocity": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "rolling friction": 0.0,
+              "spinning friction": 0.0,
+              "turn velocity": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "type": "DYNAMIC"
+            },
+            "displayed": true,
+            "name": "Cube Factory_instance",
+            "transform": {
+              "position": [
+                -8.18356990814209,
+                0.7499998807907104,
+                -6.123075485229492
+              ],
+              "rotation": [
+                89.99996948242188,
+                53.77142333984375,
+                359.9999694824219
+              ],
+              "scale": [
+                0.5,
+                0.5,
+                0.5
+              ]
+            }
+          },
+          {
+            "BoxCollider": {
+              "bounding box": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  0.5,
+                  0.5,
+                  0.5
+                ],
+                "min": [
+                  -0.5,
+                  -0.5,
+                  -0.5
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "id": 1
+            },
+            "Instance": {
+              "color": [
+                1.0,
+                0.9019607901573181,
+                0.6274510025978088
+              ],
+              "id": 1
             },
             "RigidBody": {
               "angular air resistance": 0.0,
@@ -397,7 +602,7 @@
                 0.0
               ],
               "has anisotropic friction": false,
-              "id": 69,
+              "id": 1,
               "is ray castable": true,
               "is trigger": false,
               "linear air resistance": 0.0,
@@ -410,6 +615,224 @@
                 0.0,
                 0.0,
                 0.0
+              ],
+              "mass": 499.9999694824219,
+              "push velocity": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "rolling friction": 0.0,
+              "spinning friction": 0.0,
+              "turn velocity": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "type": "DYNAMIC"
+            },
+            "displayed": true,
+            "name": "Cube Factory_instance",
+            "transform": {
+              "position": [
+                -7.687951564788818,
+                1.0,
+                -0.5606775879859924
+              ],
+              "rotation": [
+                180.0,
+                321.2731018066406,
+                180.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "BoxCollider": {
+              "bounding box": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  0.5,
+                  0.5,
+                  0.5
+                ],
+                "min": [
+                  -0.5,
+                  -0.5,
+                  -0.5
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "id": 2
+            },
+            "Instance": {
+              "color": [
+                1.0,
+                0.9019607901573181,
+                0.6274510025978088
+              ],
+              "id": 2
+            },
+            "RigidBody": {
+              "angular air resistance": 0.0,
+              "angular force factor": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "angular velocity": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "anisotropic friction": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "bounce factor": 0.10000000149011612,
+              "friction": 0.5,
+              "gravity": [
+                0.0,
+                -9.800000190734863,
+                0.0
+              ],
+              "has anisotropic friction": false,
+              "id": 2,
+              "is ray castable": true,
+              "is trigger": false,
+              "linear air resistance": 0.0,
+              "linear force factor": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "linear velocity": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "mass": 499.9999694824219,
+              "push velocity": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "rolling friction": 0.0,
+              "spinning friction": 0.0,
+              "turn velocity": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "type": "DYNAMIC"
+            },
+            "displayed": true,
+            "name": "Cube Factory_instance",
+            "transform": {
+              "position": [
+                -5.113280773162842,
+                1.0,
+                -3.202085494995117
+              ],
+              "rotation": [
+                180.0,
+                313.99395751953125,
+                180.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "BoxCollider": {
+              "bounding box": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  0.5,
+                  0.5,
+                  0.5
+                ],
+                "min": [
+                  -0.5,
+                  -0.5,
+                  -0.5
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "id": 3
+            },
+            "Instance": {
+              "color": [
+                1.0,
+                0.9019607901573181,
+                0.6274510025978088
+              ],
+              "id": 3
+            },
+            "RigidBody": {
+              "angular air resistance": 0.0,
+              "angular force factor": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "angular velocity": [
+                -7.617393862346944e-07,
+                -5.081782319393824e-07,
+                1.4518968782795127e-06
+              ],
+              "anisotropic friction": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "bounce factor": 0.10000000149011612,
+              "friction": 0.5,
+              "gravity": [
+                0.0,
+                -9.800000190734863,
+                0.0
+              ],
+              "has anisotropic friction": false,
+              "id": 3,
+              "is ray castable": true,
+              "is trigger": false,
+              "linear air resistance": 0.0,
+              "linear force factor": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "linear velocity": [
+                -4.899951591141871e-07,
+                9.08970832824707e-07,
+                0.00018636672757565975
               ],
               "mass": 100.0,
               "push velocity": [
@@ -430,19 +853,128 @@
             "name": "Cube Factory_instance",
             "transform": {
               "position": [
-                -7.846670150756836,
+                -2.7335240840911865,
                 0.7499999403953552,
-                -4.746644973754883
+                -4.749507904052734
               ],
               "rotation": [
-                89.99990844726563,
-                -78.75556182861328,
-                -179.99993896484375
+                0.010772705078125,
+                0.0,
+                89.99996948242188
               ],
               "scale": [
                 0.5,
                 0.5,
                 0.5
+              ]
+            }
+          },
+          {
+            "BoxCollider": {
+              "bounding box": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  0.5,
+                  0.5,
+                  0.5
+                ],
+                "min": [
+                  -0.5,
+                  -0.5,
+                  -0.5
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "id": 4
+            },
+            "Instance": {
+              "color": [
+                1.0,
+                0.9019607901573181,
+                0.6274510025978088
+              ],
+              "id": 4
+            },
+            "RigidBody": {
+              "angular air resistance": 0.0,
+              "angular force factor": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "angular velocity": [
+                -1.913923597385292e-07,
+                -6.661583938694093e-06,
+                1.5196485492197098e-06
+              ],
+              "anisotropic friction": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "bounce factor": 0.10000000149011612,
+              "friction": 0.5,
+              "gravity": [
+                0.0,
+                -9.800000190734863,
+                0.0
+              ],
+              "has anisotropic friction": false,
+              "id": 4,
+              "is ray castable": true,
+              "is trigger": false,
+              "linear air resistance": 0.0,
+              "linear force factor": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "linear velocity": [
+                3.855499471683288e-06,
+                -1.9222497940063477e-06,
+                7.226311572594568e-05
+              ],
+              "mass": 999.9999389648438,
+              "push velocity": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "rolling friction": 0.0,
+              "spinning friction": 0.0,
+              "turn velocity": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "type": "DYNAMIC"
+            },
+            "displayed": true,
+            "name": "Cube Factory_instance",
+            "transform": {
+              "position": [
+                -2.630464792251587,
+                1.249997854232788,
+                -5.74973201751709
+              ],
+              "rotation": [
+                0.030853271484375,
+                270.0,
+                179.96942138671875
+              ],
+              "scale": [
+                1.4999998807907104,
+                1.5,
+                1.4999998807907104
               ]
             }
           },
@@ -479,7 +1011,7 @@
                 0.9019607901573181,
                 0.6274510025978088
               ],
-              "id": 76
+              "id": 5
             },
             "RigidBody": {
               "angular air resistance": 0.0,
@@ -489,9 +1021,9 @@
                 1.0
               ],
               "angular velocity": [
-                0.0,
-                0.0,
-                0.0
+                -3.1123313419811893e-06,
+                -6.278036153162248e-07,
+                1.750026626723411e-06
               ],
               "anisotropic friction": [
                 1.0,
@@ -516,444 +1048,8 @@
                 1.0
               ],
               "linear velocity": [
-                0.0,
-                0.0,
-                0.0
-              ],
-              "mass": 499.9999694824219,
-              "push velocity": [
-                0.0,
-                0.0,
-                0.0
-              ],
-              "rolling friction": 0.0,
-              "spinning friction": 0.0,
-              "turn velocity": [
-                0.0,
-                0.0,
-                0.0
-              ],
-              "type": "DYNAMIC"
-            },
-            "displayed": true,
-            "name": "Cube Factory_instance",
-            "transform": {
-              "position": [
-                -6.73151969909668,
-                0.9999999403953552,
-                1.330182433128357
-              ],
-              "rotation": [
-                180.0,
-                38.81523132324219,
-                -180.0
-              ],
-              "scale": [
-                1.0,
-                1.0,
-                1.0
-              ]
-            }
-          },
-          {
-            "BoxCollider": {
-              "bounding box": {
-                "center": [
-                  0.0,
-                  0.0,
-                  0.0
-                ],
-                "max": [
-                  0.5,
-                  0.5,
-                  0.5
-                ],
-                "min": [
-                  -0.5,
-                  -0.5,
-                  -0.5
-                ],
-                "rotation": [
-                  0.0,
-                  0.0,
-                  0.0,
-                  1.0
-                ]
-              },
-              "id": 4
-            },
-            "Instance": {
-              "color": [
-                1.0,
-                0.9019607901573181,
-                0.6274510025978088
-              ],
-              "id": 4
-            },
-            "RigidBody": {
-              "angular air resistance": 0.0,
-              "angular force factor": [
-                1.0,
-                1.0,
-                1.0
-              ],
-              "angular velocity": [
-                0.0,
-                0.0,
-                0.0
-              ],
-              "anisotropic friction": [
-                1.0,
-                1.0,
-                1.0
-              ],
-              "bounce factor": 0.10000000149011612,
-              "friction": 0.5,
-              "gravity": [
-                0.0,
-                -9.800000190734863,
-                0.0
-              ],
-              "has anisotropic friction": false,
-              "id": 4,
-              "is ray castable": true,
-              "is trigger": false,
-              "linear air resistance": 0.0,
-              "linear force factor": [
-                1.0,
-                1.0,
-                1.0
-              ],
-              "linear velocity": [
-                0.0,
-                0.0,
-                0.0
-              ],
-              "mass": 499.9999694824219,
-              "push velocity": [
-                0.0,
-                0.0,
-                0.0
-              ],
-              "rolling friction": 0.0,
-              "spinning friction": 0.0,
-              "turn velocity": [
-                0.0,
-                0.0,
-                0.0
-              ],
-              "type": "DYNAMIC"
-            },
-            "displayed": true,
-            "name": "Cube Factory_instance",
-            "transform": {
-              "position": [
-                -4.275751113891602,
-                0.9999997615814209,
-                1.0569653511047363
-              ],
-              "rotation": [
-                -179.9999542236328,
-                87.12492370605469,
-                -180.0
-              ],
-              "scale": [
-                1.0,
-                1.0,
-                1.0
-              ]
-            }
-          },
-          {
-            "BoxCollider": {
-              "bounding box": {
-                "center": [
-                  0.0,
-                  0.0,
-                  0.0
-                ],
-                "max": [
-                  0.5,
-                  0.5,
-                  0.5
-                ],
-                "min": [
-                  -0.5,
-                  -0.5,
-                  -0.5
-                ],
-                "rotation": [
-                  0.0,
-                  0.0,
-                  0.0,
-                  1.0
-                ]
-              },
-              "id": 3
-            },
-            "Instance": {
-              "color": [
-                1.0,
-                0.9019607901573181,
-                0.6274510025978088
-              ],
-              "id": 3
-            },
-            "RigidBody": {
-              "angular air resistance": 0.0,
-              "angular force factor": [
-                1.0,
-                1.0,
-                1.0
-              ],
-              "angular velocity": [
-                0.0,
-                0.0,
-                0.0
-              ],
-              "anisotropic friction": [
-                1.0,
-                1.0,
-                1.0
-              ],
-              "bounce factor": 0.10000000149011612,
-              "friction": 0.5,
-              "gravity": [
-                0.0,
-                -9.800000190734863,
-                0.0
-              ],
-              "has anisotropic friction": false,
-              "id": 48,
-              "is ray castable": true,
-              "is trigger": false,
-              "linear air resistance": 0.0,
-              "linear force factor": [
-                1.0,
-                1.0,
-                1.0
-              ],
-              "linear velocity": [
-                0.0,
-                0.0,
-                0.0
-              ],
-              "mass": 100.0,
-              "push velocity": [
-                0.0,
-                0.0,
-                0.0
-              ],
-              "rolling friction": 0.0,
-              "spinning friction": 0.0,
-              "turn velocity": [
-                0.0,
-                0.0,
-                0.0
-              ],
-              "type": "DYNAMIC"
-            },
-            "displayed": true,
-            "name": "Cube Factory_instance",
-            "transform": {
-              "position": [
-                -2.499802350997925,
-                0.7499998807907104,
-                -0.009714370593428612
-              ],
-              "rotation": [
-                -1.983429137908388e-05,
-                2.437476268823957e-06,
-                90.0
-              ],
-              "scale": [
-                0.5,
-                0.5,
-                0.5
-              ]
-            }
-          },
-          {
-            "BoxCollider": {
-              "bounding box": {
-                "center": [
-                  0.0,
-                  0.0,
-                  0.0
-                ],
-                "max": [
-                  0.5,
-                  0.5,
-                  0.5
-                ],
-                "min": [
-                  -0.5,
-                  -0.5,
-                  -0.5
-                ],
-                "rotation": [
-                  0.0,
-                  0.0,
-                  0.0,
-                  1.0
-                ]
-              },
-              "id": 2
-            },
-            "Instance": {
-              "color": [
-                1.0,
-                0.9019607901573181,
-                0.6274510025978088
-              ],
-              "id": 2
-            },
-            "RigidBody": {
-              "angular air resistance": 0.0,
-              "angular force factor": [
-                1.0,
-                1.0,
-                1.0
-              ],
-              "angular velocity": [
-                1.3059080927746436e-08,
-                -7.544734216935467e-06,
-                -1.567905059118857e-07
-              ],
-              "anisotropic friction": [
-                1.0,
-                1.0,
-                1.0
-              ],
-              "bounce factor": 0.10000000149011612,
-              "friction": 0.5,
-              "gravity": [
-                0.0,
-                -9.800000190734863,
-                0.0
-              ],
-              "has anisotropic friction": false,
-              "id": 2,
-              "is ray castable": true,
-              "is trigger": false,
-              "linear air resistance": 0.0,
-              "linear force factor": [
-                1.0,
-                1.0,
-                1.0
-              ],
-              "linear velocity": [
-                -5.672976385540096e-06,
-                9.238719940185547e-07,
-                0.00022273992362897843
-              ],
-              "mass": 999.9999389648438,
-              "push velocity": [
-                0.0,
-                0.0,
-                0.0
-              ],
-              "rolling friction": 0.0,
-              "spinning friction": 0.0,
-              "turn velocity": [
-                0.0,
-                0.0,
-                0.0
-              ],
-              "type": "DYNAMIC"
-            },
-            "displayed": true,
-            "name": "Cube Factory_instance",
-            "transform": {
-              "position": [
-                -2.6381731033325195,
-                1.2499973773956299,
-                -5.686666965484619
-              ],
-              "rotation": [
-                -0.00032753596315160394,
-                88.64693450927734,
-                179.99937438964844
-              ],
-              "scale": [
-                1.4999998807907104,
-                1.5,
-                1.4999998807907104
-              ]
-            }
-          },
-          {
-            "BoxCollider": {
-              "bounding box": {
-                "center": [
-                  0.0,
-                  0.0,
-                  0.0
-                ],
-                "max": [
-                  0.5,
-                  0.5,
-                  0.5
-                ],
-                "min": [
-                  -0.5,
-                  -0.5,
-                  -0.5
-                ],
-                "rotation": [
-                  0.0,
-                  0.0,
-                  0.0,
-                  1.0
-                ]
-              },
-              "id": 1
-            },
-            "Instance": {
-              "color": [
-                1.0,
-                0.9019607901573181,
-                0.6274510025978088
-              ],
-              "id": 1
-            },
-            "RigidBody": {
-              "angular air resistance": 0.0,
-              "angular force factor": [
-                1.0,
-                1.0,
-                1.0
-              ],
-              "angular velocity": [
-                -1.2448925872377004e-06,
-                -6.086277153372066e-07,
-                -2.8103670501877787e-07
-              ],
-              "anisotropic friction": [
-                1.0,
-                1.0,
-                1.0
-              ],
-              "bounce factor": 0.10000000149011612,
-              "friction": 0.5,
-              "gravity": [
-                0.0,
-                -9.800000190734863,
-                0.0
-              ],
-              "has anisotropic friction": false,
-              "id": 1,
-              "is ray castable": true,
-              "is trigger": false,
-              "linear air resistance": 0.0,
-              "linear force factor": [
-                1.0,
-                1.0,
-                1.0
-              ],
-              "linear velocity": [
-                4.6429994426944177e-07,
-                -1.1175870895385742e-06,
+                -5.825721700603026e-07,
+                -6.407499313354492e-07,
                 6.172882649480016e-07
               ],
               "mass": 499.9999694824219,
@@ -975,14 +1071,14 @@
             "name": "Cube Factory_instance",
             "transform": {
               "position": [
-                -3.9542651176452637,
+                -3.9542648792266846,
                 1.0,
                 -5.9114508628845215
               ],
               "rotation": [
-                -90.0,
-                -3.793621063232422,
-                179.99996948242188
+                90.0,
+                3.79437255859375,
+                180.0
               ],
               "scale": [
                 1.0,
@@ -1016,7 +1112,7 @@
                   1.0
                 ]
               },
-              "id": 0
+              "id": 6
             },
             "Instance": {
               "color": [
@@ -1024,7 +1120,7 @@
                 0.9019607901573181,
                 0.6274510025978088
               ],
-              "id": 0
+              "id": 6
             },
             "RigidBody": {
               "angular air resistance": 0.0,
@@ -1051,7 +1147,7 @@
                 0.0
               ],
               "has anisotropic friction": false,
-              "id": 0,
+              "id": 6,
               "is ray castable": true,
               "is trigger": false,
               "linear air resistance": 0.0,
@@ -1084,14 +1180,14 @@
             "name": "Cube Factory_instance",
             "transform": {
               "position": [
-                1.7661570310592651,
-                1.0,
-                -3.636308193206787
+                1.766867995262146,
+                0.9999997615814209,
+                -3.6349880695343018
               ],
               "rotation": [
-                -90.0,
-                44.29436111450195,
-                1.6699461411917582e-05
+                270.0,
+                44.259735107421875,
+                3.0517578125e-05
               ],
               "scale": [
                 1.0,
@@ -1115,15 +1211,15 @@
         "ignores depth": false,
         "is drawn": true,
         "is static": false,
-        "mesh": 0
+        "mesh": 4
       },
       "displayed": true,
       "name": "Cube Factory",
       "transform": {
         "position": [
-          -4.628046035766602,
-          1.197007417678833,
-          -2.0615196228027344
+          0.0,
+          0.0,
+          0.0
         ],
         "rotation": [
           0.0,
@@ -1163,9 +1259,9 @@
       "name": "PlazmaGunBullet Explosion Base",
       "transform": {
         "position": [
-          -3.9235732555389404,
-          1000.0,
-          1.4943501949310303
+          0.0,
+          0.0,
+          0.0
         ],
         "rotation": [
           0.0,
@@ -1197,7 +1293,7 @@
         "ignores depth": false,
         "is drawn": true,
         "is static": false,
-        "mesh": 1
+        "mesh": 5
       },
       "displayed": true,
       "name": "Bullet Factory",
@@ -1233,7 +1329,7 @@
         "ignores depth": false,
         "is drawn": true,
         "is static": false,
-        "mesh": 3
+        "mesh": 6
       },
       "Script": {
         "_name": "PlazmaGun",
@@ -1243,13 +1339,13 @@
       "name": "PlazmaGun",
       "transform": {
         "position": [
-          -9.831303596496582,
-          1.190521001815796,
-          3.1481709480285645
+          1.1102772951126099,
+          1.1899025440216064,
+          4.922688961029053
         ],
         "rotation": [
-          -1.1656761169433594,
-          139.49900817871094,
+          0.224517822265625,
+          218.4537353515625,
           0.0
         ],
         "scale": [
@@ -1285,9 +1381,9 @@
       "name": "Sun",
       "transform": {
         "position": [
-          -9.88634967803955,
+          1.0865224599838257,
           1.25,
-          3.135632038116455
+          4.9731764793396
         ],
         "rotation": [
           0.0,
@@ -1330,7 +1426,7 @@
                   1.0
                 ]
               },
-              "id": 11
+              "id": 7
             },
             "Instance": {
               "color": [
@@ -1338,7 +1434,7 @@
                 1.0,
                 1.0
               ],
-              "id": 42
+              "id": 7
             },
             "RigidBody": {
               "angular air resistance": 0.0,
@@ -1365,7 +1461,7 @@
                 0.0
               ],
               "has anisotropic friction": false,
-              "id": 3,
+              "id": 7,
               "is ray castable": true,
               "is trigger": false,
               "linear air resistance": 0.0,
@@ -1375,9 +1471,9 @@
                 1.0
               ],
               "linear velocity": [
-                469223.875,
-                222.7161865234375,
-                -172689.96875
+                44613.5859375,
+                5280.5576171875,
+                -21846.376953125
               ],
               "mass": 0.0,
               "push velocity": [
@@ -1439,7 +1535,7 @@
                   1.0
                 ]
               },
-              "id": 10
+              "id": 8
             },
             "Instance": {
               "color": [
@@ -1447,7 +1543,7 @@
                 1.0,
                 1.0
               ],
-              "id": 56
+              "id": 8
             },
             "RigidBody": {
               "angular air resistance": 0.0,
@@ -1474,7 +1570,7 @@
                 0.0
               ],
               "has anisotropic friction": false,
-              "id": 77,
+              "id": 8,
               "is ray castable": true,
               "is trigger": false,
               "linear air resistance": 0.0,
@@ -1484,9 +1580,9 @@
                 1.0
               ],
               "linear velocity": [
-                -460555.28125,
-                -49306.94140625,
-                -188926.65625
+                -38481.078125,
+                -5453.7861328125,
+                -31469.783203125
               ],
               "mass": 0.0,
               "push velocity": [
@@ -1556,7 +1652,7 @@
                 1.0,
                 1.0
               ],
-              "id": 68
+              "id": 9
             },
             "RigidBody": {
               "angular air resistance": 0.0,
@@ -1583,7 +1679,7 @@
                 0.0
               ],
               "has anisotropic friction": false,
-              "id": 10,
+              "id": 9,
               "is ray castable": true,
               "is trigger": false,
               "linear air resistance": 0.0,
@@ -1657,7 +1753,7 @@
                   1.0
                 ]
               },
-              "id": 8
+              "id": 10
             },
             "Instance": {
               "color": [
@@ -1665,7 +1761,7 @@
                 1.0,
                 1.0
               ],
-              "id": 46
+              "id": 10
             },
             "RigidBody": {
               "angular air resistance": 0.0,
@@ -1692,7 +1788,7 @@
                 0.0
               ],
               "has anisotropic friction": false,
-              "id": 14,
+              "id": 10,
               "is ray castable": true,
               "is trigger": false,
               "linear air resistance": 0.0,
@@ -1702,9 +1798,9 @@
                 1.0
               ],
               "linear velocity": [
-                -9161.4755859375,
-                -5941.5029296875,
-                -499889.78125
+                -48416.734375,
+                -241.56292724609375,
+                -12478.4208984375
               ],
               "mass": 0.0,
               "push velocity": [
@@ -1766,7 +1862,7 @@
                   1.0
                 ]
               },
-              "id": 7
+              "id": 11
             },
             "Instance": {
               "color": [
@@ -1774,7 +1870,7 @@
                 1.0,
                 1.0
               ],
-              "id": 13
+              "id": 11
             },
             "RigidBody": {
               "angular air resistance": 0.0,
@@ -1801,7 +1897,7 @@
                 0.0
               ],
               "has anisotropic friction": false,
-              "id": 47,
+              "id": 11,
               "is ray castable": true,
               "is trigger": false,
               "linear air resistance": 0.0,
@@ -1865,7 +1961,7 @@
         "ignores depth": false,
         "is drawn": true,
         "is static": false,
-        "mesh": 4
+        "mesh": 7
       },
       "displayed": true,
       "name": "Wall",
@@ -1881,9 +1977,9 @@
           0.0
         ],
         "scale": [
-          5.0,
           1.0,
-          5.0
+          1.0,
+          1.0
         ]
       }
     },
@@ -1891,14 +1987,14 @@
       "CameraController": {
         "camera type": "PERSPECTIVE",
         "direction": [
-          0.6493268609046936,
-          0.020343484356999397,
-          -0.7602373361587524
+          -0.6218781471252441,
+          -0.003918699454516172,
+          -0.7831042408943176
         ],
         "forward vector": [
-          0.6494612693786621,
+          -0.6218829154968262,
           0.0,
-          -0.7603946924209595
+          -0.7831102609634399
         ],
         "id": 0,
         "is listening window resize event": true,
@@ -1910,9 +2006,9 @@
           "znear": 0.0010000000474974513
         },
         "right vector": [
-          0.7603946328163147,
+          0.7831103205680847,
           0.0,
-          0.6494612693786621
+          -0.6218827962875366
         ],
         "rotate speed": 10.0,
         "up vector": [
@@ -1998,7 +2094,7 @@
           0.0
         ],
         "has anisotropic friction": false,
-        "id": 17,
+        "id": 12,
         "is ray castable": true,
         "is trigger": false,
         "linear air resistance": 0.0,
@@ -2008,7 +2104,7 @@
           1.0
         ],
         "linear velocity": [
-          -1.2281992667340091e-07,
+          1.1955179957112705e-07,
           7.003545761108398e-07,
           0.0
         ],
@@ -2031,9 +2127,9 @@
       "name": "Player",
       "transform": {
         "position": [
-          -9.88634967803955,
+          1.0865224599838257,
           1.25,
-          3.135632038116455
+          4.9731764793396
         ],
         "rotation": [
           0.0,
