@@ -53,23 +53,51 @@ namespace MxEngine
 	{
 		MAKE_SCOPE_PROFILER("RenderController::PrepareShadowMaps()");
 
-		ShadowMapGenerator generator(this->Pipeline.ShadowCasters, this->Pipeline.RenderUnits, this->Pipeline.MaterialUnits);
+		ShadowMapGenerator generatorOpaque(this->Pipeline.ShadowCasters, this->Pipeline.RenderUnits, this->Pipeline.MaterialUnits);
+		ShadowMapGenerator generatorMasked(this->Pipeline.MaskedShadowCasters, this->Pipeline.RenderUnits, this->Pipeline.MaterialUnits);
 
 		this->Pipeline.Environment.RenderVAO->Bind();
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PrepareDirectionalLightMaps()");
-			generator.GenerateFor(*this->Pipeline.Environment.Shaders["DirLightDepthMap"_id], this->Pipeline.Lighting.DirectionalLights);
+			generatorOpaque.GenerateFor(
+				*this->Pipeline.Environment.Shaders["DirLightDepthMap"_id], 
+				this->Pipeline.Lighting.DirectionalLights,
+				ShadowMapGenerator::LoadStoreOptions::CLEAR
+			);
+			generatorMasked.GenerateFor(
+				*this->Pipeline.Environment.Shaders["DirLightMaskDepthMap"_id],
+				this->Pipeline.Lighting.DirectionalLights,
+				ShadowMapGenerator::LoadStoreOptions::LOAD | ShadowMapGenerator::LoadStoreOptions::GENERATE_MIPMAPS
+			);
 		}
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PrepareSpotLightMaps()");
-			generator.GenerateFor(*this->Pipeline.Environment.Shaders["SpotLightDepthMap"_id], this->Pipeline.Lighting.SpotLights);
+			generatorOpaque.GenerateFor(
+				*this->Pipeline.Environment.Shaders["SpotLightDepthMap"_id], 
+				this->Pipeline.Lighting.SpotLights,
+				ShadowMapGenerator::LoadStoreOptions::CLEAR
+			);
+			generatorMasked.GenerateFor(
+				*this->Pipeline.Environment.Shaders["SpotLightMaskDepthMap"_id],
+				this->Pipeline.Lighting.SpotLights,
+				ShadowMapGenerator::LoadStoreOptions::LOAD | ShadowMapGenerator::LoadStoreOptions::GENERATE_MIPMAPS
+			);
 		}
 
 		{
 			MAKE_SCOPE_PROFILER("RenderController::PreparePointLightMaps()");
-			generator.GenerateFor(*this->Pipeline.Environment.Shaders["PointLightDepthMap"_id], this->Pipeline.Lighting.PointLights);
+			generatorOpaque.GenerateFor(
+				*this->Pipeline.Environment.Shaders["PointLightDepthMap"_id], 
+				this->Pipeline.Lighting.PointLights,
+				ShadowMapGenerator::LoadStoreOptions::CLEAR
+			);
+			generatorMasked.GenerateFor(
+				*this->Pipeline.Environment.Shaders["PointLightDepthMap"_id],
+				this->Pipeline.Lighting.PointLights,
+				ShadowMapGenerator::LoadStoreOptions::LOAD | ShadowMapGenerator::LoadStoreOptions::GENERATE_MIPMAPS
+			);
 		}
 	}
 
@@ -204,7 +232,6 @@ namespace MxEngine
 	{
 		Texture::TextureBindId textureBindIndex = 0;
 		const auto& material = this->Pipeline.MaterialUnits[unit.MaterialIndex];
-		shader.IgnoreNonExistingUniform("material.transparency");
 
 		material.AlbedoMap->Bind(textureBindIndex++);
 		material.MetallicMap->Bind(textureBindIndex++);
@@ -953,6 +980,20 @@ namespace MxEngine
 		this->AttachFrameBuffer(framebuffer);
 	}
 
+	void RenderController::AttachDepthMapNoClear(const TextureHandle& texture)
+	{
+		auto& framebuffer = this->Pipeline.Environment.DepthFrameBuffer;
+		framebuffer->AttachTexture(texture, Attachment::DEPTH_ATTACHMENT);
+		this->AttachFrameBufferNoClear(framebuffer);
+	}
+
+	void RenderController::AttachDepthMapNoClear(const CubeMapHandle& cubemap)
+	{
+		auto& framebuffer = this->Pipeline.Environment.DepthFrameBuffer;
+		framebuffer->AttachCubeMap(cubemap, Attachment::DEPTH_ATTACHMENT);
+		this->AttachFrameBufferNoClear(framebuffer);
+	}
+
 	void RenderController::AttachFrameBuffer(const FrameBufferHandle& framebuffer)
 	{
 		this->AttachFrameBufferNoClear(framebuffer);
@@ -1182,12 +1223,12 @@ namespace MxEngine
 		this->Pipeline.Lighting.SpotLights.clear();
 		this->Pipeline.ShadowCasters.Groups.clear();
 		this->Pipeline.ShadowCasters.UnitsIndex.clear();
+		this->Pipeline.MaskedShadowCasters.Groups.clear();
+		this->Pipeline.MaskedShadowCasters.UnitsIndex.clear();
 		this->Pipeline.TransparentObjects.Groups.clear();
 		this->Pipeline.TransparentObjects.UnitsIndex.clear();
 		this->Pipeline.OpaqueObjects.Groups.clear();
 		this->Pipeline.OpaqueObjects.UnitsIndex.clear();
-		this->Pipeline.DepthIgnoreObjects.Groups.clear();
-		this->Pipeline.DepthIgnoreObjects.UnitsIndex.clear();
 		this->Pipeline.RenderUnits.clear();
 		this->Pipeline.OpaqueParticleSystems.clear();
 		this->Pipeline.TransparentParticleSystems.clear();
@@ -1343,7 +1384,7 @@ namespace MxEngine
 			std::ref(this->Pipeline.OpaqueObjects.Groups.emplace_back()),
 			std::ref(this->Pipeline.TransparentObjects.Groups.emplace_back()),
 			std::ref(this->Pipeline.ShadowCasters.Groups.emplace_back()),
-			std::ref(this->Pipeline.DepthIgnoreObjects.Groups.emplace_back()),
+			std::ref(this->Pipeline.MaskedShadowCasters.Groups.emplace_back()),
 		};
 
 		for (auto subType : groupSubTypes)
@@ -1356,10 +1397,11 @@ namespace MxEngine
 		return renderGroupIndex;
 	}
 
-	void RenderController::SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& submesh, const Material& material, const TransformComponent& parentTransform, bool castsShadow, bool ignoresDepth, const char* debugName)
+	void RenderController::SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& submesh, const Material& material, const TransformComponent& parentTransform, bool castsShadow, const char* debugName)
 	{
 		bool isInvisible = material.Transparency == 0.0f;
-		bool isTransparent = material.Transparency < 1.0f;
+		bool isTransparent = material.AlphaMode == AlphaModeGroup::TRANSPARENT;
+		bool isMasked = material.AlphaMode == AlphaModeGroup::MASKED && material.Transparency < 1.0f;
 		if (isInvisible) return;
 
 		size_t unitIndex = this->Pipeline.RenderUnits.size();
@@ -1384,18 +1426,12 @@ namespace MxEngine
 
 		if (castsShadow)
 		{
-			auto& shadowCasters = this->Pipeline.ShadowCasters;
-			shadowCasters.Groups[renderGroupIndex].UnitCount++;
-			shadowCasters.UnitsIndex.push_back(unitIndex);
+			auto& groupList = isMasked ? this->Pipeline.MaskedShadowCasters : this->Pipeline.ShadowCasters;
+			groupList.Groups[renderGroupIndex].UnitCount++;
+			groupList.UnitsIndex.push_back(unitIndex);
 		}
 
-		if (ignoresDepth)
-		{
-			auto& depthIgnoreObjects = this->Pipeline.DepthIgnoreObjects;
-			depthIgnoreObjects.Groups[renderGroupIndex].UnitCount++;
-			depthIgnoreObjects.UnitsIndex.push_back(unitIndex);
-		}
-		else if (isTransparent)
+		if (isTransparent)
 		{
 			auto& transparentObjects = this->Pipeline.TransparentObjects;
 			transparentObjects.Groups[renderGroupIndex].UnitCount++;
@@ -1468,8 +1504,6 @@ namespace MxEngine
 			this->AttachFrameBuffer(camera.GBuffer);
 
 			this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBuffer"_id], this->Pipeline.OpaqueObjects);
-			// TODO: implement depth ignore rendering
-			this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBuffer"_id], this->Pipeline.DepthIgnoreObjects);
 			this->DrawParticles(camera, this->Pipeline.OpaqueParticleSystems, *this->Pipeline.Environment.Shaders["ParticleOpaque"_id]);
 
 			this->PerformLightPass(camera);

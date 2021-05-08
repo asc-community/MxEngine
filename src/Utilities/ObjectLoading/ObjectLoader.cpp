@@ -216,6 +216,21 @@ namespace MxEngine
 				materialInfo.BaseColor[2]  = baseColorPBR[2];
 				materialInfo.Transparency *= baseColorPBR[3];
 			}
+			
+			aiString alphaMode;
+			if (material->Get(AI_MATKEY_GLTF_ALPHAMODE, alphaMode) == aiReturn_SUCCESS)
+			{
+				if (strcmp(alphaMode.C_Str(), "MASK") == 0)
+					materialInfo.AlphaMask = true;
+				else
+					materialInfo.AlphaMask = false;
+			}
+
+			float alphaCutoff = 0.0f;
+			if (material->Get(AI_MATKEY_GLTF_ALPHACUTOFF, alphaCutoff) == aiReturn_SUCCESS)
+			{
+				materialInfo.Transparency *= alphaCutoff;
+			}
 
 			aiColor3D emissiveColor;
 			if (material->Get(AI_MATKEY_COLOR_EMISSIVE, emissiveColor) == aiReturn_SUCCESS)
@@ -343,6 +358,7 @@ namespace MxEngine
 									    
 			material.BaseColor           = json["BaseColor"          ].get<Vector3>();
 			material.UVMultipliers       = json["UVMultipliers"      ].get<Vector2>();
+			material.AlphaMask           = json["AlphaMask"          ].get<bool>();
 									    
 			material.AlbedoMap           = json["AlbedoMap"          ].get<FilePath>();
 			material.EmissiveMap         = json["EmissiveMap"        ].get<FilePath>();
@@ -375,6 +391,7 @@ namespace MxEngine
 
 			DUMP(i, BaseColor);
 			DUMP(i, UVMultipliers);
+			DUMP(i, AlphaMask);
 
 			DUMP(i, AlbedoMap);
 			DUMP(i, EmissiveMap);

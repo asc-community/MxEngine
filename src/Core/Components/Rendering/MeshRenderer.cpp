@@ -66,6 +66,8 @@ namespace MxEngine
 		material.RoughnessFactor = mat.RoughnessFactor;
 		material.UVMultipliers = mat.UVMultipliers;
 		material.Name = mat.Name;
+		if (mat.AlphaMask) material.AlphaMode = AlphaModeGroup::MASKED;
+		else material.AlphaMode = (mat.Transparency == 1.0f ? AlphaModeGroup::OPAQUE : AlphaModeGroup::TRANSPARENT);
 
 		return materialResource;
 	}

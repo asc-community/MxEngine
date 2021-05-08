@@ -195,9 +195,19 @@ namespace MxEngine
             shaderFolder / "depthtexture_fragment.glsl"
         );
 
+        environment.Shaders["DirLightMaskDepthMap"_id] = AssetManager::LoadShader(
+            shaderFolder / "depthtexture_vertex.glsl",
+            shaderFolder / "depthtexture_mask_fragment.glsl"
+        );
+
         environment.Shaders["SpotLightDepthMap"_id] = AssetManager::LoadShader(
             shaderFolder / "depthtexture_vertex.glsl", 
             shaderFolder / "depthtexture_fragment.glsl"
+        );
+
+        environment.Shaders["SpotLightMaskDepthMap"_id] = AssetManager::LoadShader(
+            shaderFolder / "depthtexture_vertex.glsl",
+            shaderFolder / "depthtexture_mask_fragment.glsl"
         );
 
         environment.Shaders["PointLightDepthMap"_id] = AssetManager::LoadShader(
@@ -386,7 +396,6 @@ namespace MxEngine
 
                 auto mesh = meshSource.Mesh;
                 bool castsShadow = meshSource.CastsShadow;
-                bool ignoresDepth = meshSource.IgnoresDepth;
 
                 if (!meshSource.IsDrawn || !meshRenderer.IsValid() || !mesh.IsValid()) continue;
 
@@ -404,7 +413,7 @@ namespace MxEngine
                     if (materialId >= meshRenderer->Materials.size()) continue;
                     auto material = meshRenderer->Materials[materialId];
 
-                    this->Renderer.SubmitRenderUnit(renderGroupIndex, submesh, *material, transform, castsShadow, ignoresDepth, object.Name.c_str());
+                    this->Renderer.SubmitRenderUnit(renderGroupIndex, submesh, *material, transform, castsShadow, object.Name.c_str());
                 }
             }
         }

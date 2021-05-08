@@ -80,6 +80,10 @@ namespace MxEngine
 		FilePath RoughnessMap;
 
 		/*!
+		alpha mask (cutoff is equal to transparency)
+		*/
+		bool AlphaMask = false;
+		/*!
 		transparency value
 		*/
 		float Transparency = 0.0f;

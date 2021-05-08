@@ -58,7 +58,8 @@ void main()
 	//TexCoord = applyParallaxMapping(TexCoord, fsin.TBN * viewDirection, map_height, displacement, parallaxOcclusion);
 
 	vec4 albedoAlphaTex = texture(map_albedo, TexCoord).rgba;
-	if (albedoAlphaTex.a < 0.5f) discard; // mask fragments with low opacity
+	float alphaCutoff = 1.0 - material.transparency;
+	if (albedoAlphaTex.a <= alphaCutoff) discard; // mask fragments with opacity less than cutoff
 
 	vec3 normal = calcNormal(TexCoord, fsin.TBN, map_normal);
 

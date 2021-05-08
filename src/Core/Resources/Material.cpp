@@ -35,7 +35,14 @@ MXENGINE_FORCE_REFLECTION_IMPLEMENTATION(Material);
 namespace MxEngine
 {
     MXENGINE_REFLECT_TYPE
-    { 
+    {
+        rttr::registration::enumeration<AlphaModeGroup>("AlphaMode")
+        (
+            rttr::value("OPAQUE"     , AlphaModeGroup::OPAQUE     ),
+            rttr::value("MASKED"     , AlphaModeGroup::MASKED     ),
+            rttr::value("TRANSPARENT", AlphaModeGroup::TRANSPARENT)
+        );
+
         rttr::registration::class_<Material>("Material")
             .constructor<>()
             .property("name", &Material::Name)
@@ -81,11 +88,9 @@ namespace MxEngine
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range {0.0f, 1.0f}),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
-            .property("transparency", &Material::Transparency)
+            .property("alpha mode", &Material::AlphaMode)
             (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1.0f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )
             .property("emission", &Material::Emission)
             (

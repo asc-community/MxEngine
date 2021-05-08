@@ -209,9 +209,9 @@ namespace MxEngine
         LightingSystem Lighting;
 
         RenderList ShadowCasters;
+        RenderList MaskedShadowCasters;
         RenderList TransparentObjects;
         RenderList OpaqueObjects;
-        RenderList DepthIgnoreObjects;
         MxVector<RenderUnit> RenderUnits;
 
         MxVector<ParticleSystemUnit> OpaqueParticleSystems;

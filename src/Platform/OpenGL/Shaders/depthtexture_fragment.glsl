@@ -1,10 +1,8 @@
-in vec2 TexCoord;
+layout(early_fragment_tests) in;
 
-uniform sampler2D map_albedo;
+in vec2 TexCoord;
 
 void main()
 {
-    float alpha = texture2D(map_albedo, TexCoord).a;
-    if (alpha < 0.5)
-        discard;
+
 }
