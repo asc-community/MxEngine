@@ -32,56 +32,56 @@
 
 namespace MxEngine
 {
-	class TransformComponent
-	{
-		Vector3 position = MakeVector3(0.0f);
-		Vector3 rotation = MakeVector3(0.0f);
-		Vector3 scale = MakeVector3(1.0f);
-		mutable Matrix4x4 transform{ 0.0f };
-		mutable Matrix3x3 normalMatrix{ 0.0f };
-		mutable bool needTransformUpdate = true;
-	public:
-		bool operator==(const TransformComponent& other) const;
-		bool operator!=(const TransformComponent& other) const;
-		TransformComponent operator*(const TransformComponent& other) const;
+    class TransformComponent
+    {
+        Vector3 position = MakeVector3(0.0f);
+        Vector3 rotation = MakeVector3(0.0f);
+        Vector3 scale = MakeVector3(1.0f);
+        mutable Matrix4x4 transform{ 0.0f };
+        mutable Matrix3x3 normalMatrix{ 0.0f };
+        mutable bool needTransformUpdate = true;
+    public:
+        bool operator==(const TransformComponent& other) const;
+        bool operator!=(const TransformComponent& other) const;
+        TransformComponent operator*(const TransformComponent& other) const;
 
-		const Matrix4x4& GetMatrix() const;
-		const Matrix3x3& GetNormalMatrix() const;
-		void GetMatrix(Matrix4x4& inPlaceMatrix) const;
-		void GetNormalMatrix(const Matrix4x4& model, Matrix3x3& inPlaceMatrix) const;
+        const Matrix4x4& GetMatrix() const;
+        const Matrix3x3& GetNormalMatrix() const;
+        void GetMatrix(Matrix4x4& inPlaceMatrix) const;
+        void GetNormalMatrix(const Matrix4x4& model, Matrix3x3& inPlaceMatrix) const;
 
-		const Vector3& GetPosition() const;
-		const Vector3& GetRotation() const;
-		const Vector3& GetScale() const;
+        const Vector3& GetPosition() const;
+        const Vector3& GetRotation() const;
+        const Vector3& GetScale() const;
 
-		Quaternion GetRotationQuaternion() const;
+        Quaternion GetRotationQuaternion() const;
 
-		TransformComponent& SetRotation(const Quaternion& q);
-		TransformComponent& SetRotation(const Vector3& angles);
-		TransformComponent& SetScale(const Vector3& scale);
-		TransformComponent& SetScale(float scale);
-		TransformComponent& SetPosition(const Vector3& position);
+        TransformComponent& SetRotation(const Quaternion& q);
+        TransformComponent& SetRotation(const Vector3& angles);
+        TransformComponent& SetScale(const Vector3& scale);
+        TransformComponent& SetScale(float scale);
+        TransformComponent& SetPosition(const Vector3& position);
 
-		TransformComponent& Scale(float scale);
-		TransformComponent& Scale(const Vector3& scale);
-		TransformComponent& ScaleX(float scale);
-		TransformComponent& ScaleY(float scale);
-		TransformComponent& ScaleZ(float scale);
+        TransformComponent& Scale(float scale);
+        TransformComponent& Scale(const Vector3& scale);
+        TransformComponent& ScaleX(float scale);
+        TransformComponent& ScaleY(float scale);
+        TransformComponent& ScaleZ(float scale);
 
-		TransformComponent& Rotate(const Quaternion& q);
-		TransformComponent& Rotate(const Vector3& angles);
-		TransformComponent& RotateX(float angle);
-		TransformComponent& RotateY(float angle);
-		TransformComponent& RotateZ(float angle);
+        TransformComponent& Rotate(const Quaternion& q);
+        TransformComponent& Rotate(const Vector3& angles);
+        TransformComponent& RotateX(float angle);
+        TransformComponent& RotateY(float angle);
+        TransformComponent& RotateZ(float angle);
 
-		TransformComponent& Translate(const Vector3& dist);
-		TransformComponent& TranslateX(float x);
-		TransformComponent& TranslateY(float y);
-		TransformComponent& TranslateZ(float z);
+        TransformComponent& Translate(const Vector3& dist);
+        TransformComponent& TranslateX(float x);
+        TransformComponent& TranslateY(float y);
+        TransformComponent& TranslateZ(float z);
 
-		TransformComponent& LookAt(const Vector3& point);
-		TransformComponent& LookAtXY(const Vector3& point);
-		TransformComponent& LookAtXZ(const Vector3& point);
-		TransformComponent& LookAtYZ(const Vector3& point);
-	};
+        TransformComponent& LookAt(const Vector3& point);
+        TransformComponent& LookAtXY(const Vector3& point);
+        TransformComponent& LookAtXZ(const Vector3& point);
+        TransformComponent& LookAtYZ(const Vector3& point);
+    };
 }

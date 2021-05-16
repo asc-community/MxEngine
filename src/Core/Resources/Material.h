@@ -35,30 +35,30 @@
 
 namespace MxEngine
 {
-	class Material
-	{
-	public:
-		TextureHandle AlbedoMap;
-		TextureHandle EmissiveMap;
-		TextureHandle NormalMap;
-		TextureHandle HeightMap;
-		TextureHandle AmbientOcclusionMap;
-		TextureHandle MetallicMap;
-		TextureHandle RoughnessMap;
+    class Material
+    {
+    public:
+        TextureHandle AlbedoMap;
+        TextureHandle EmissiveMap;
+        TextureHandle NormalMap;
+        TextureHandle HeightMap;
+        TextureHandle AmbientOcclusionMap;
+        TextureHandle MetallicMap;
+        TextureHandle RoughnessMap;
 
-		float Transparency = 1.0f;
-		float Emission = 0.0f;
-		float Displacement = 0.025f;
-		float RoughnessFactor = 0.75f;
-		float MetallicFactor = 0.0f;
+        float Transparency = 1.0f;
+        float Emission = 0.0f;
+        float Displacement = 0.025f;
+        float RoughnessFactor = 0.75f;
+        float MetallicFactor = 0.0f;
 
-		Vector3 BaseColor{ 1.0f };
-		Vector2 UVMultipliers{ 1.0f };
-		MxString Name = "DefaultMaterial";
+        Vector3 BaseColor{ 1.0f };
+        Vector2 UVMultipliers{ 1.0f };
+        MxString Name = "DefaultMaterial";
 
-		constexpr static size_t TextureCount = 7;
-		bool IsInternalEngineResource() const { return false; }
-	};
+        constexpr static size_t TextureCount = 7;
+        bool IsInternalEngineResource() const { return false; }
+    };
 
 }
 

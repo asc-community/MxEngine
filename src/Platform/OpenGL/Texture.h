@@ -35,104 +35,104 @@
 
 namespace MxEngine
 {
-	enum class TextureFormat : uint8_t
-	{
-		R,
-		R16,
-		RG,
-		RG16,
-		R16F,
-		R32F,
-		RG16F,
-		RG32F,
-		RGB,
-		RGBA,
-		RGB16,
-		RGB16F,
-		RGBA16,
-		RGBA16F,
-		RGB32F,
-		RGBA32F,
-		DEPTH,
-		DEPTH32F
-	};
+    enum class TextureFormat : uint8_t
+    {
+        R,
+        R16,
+        RG,
+        RG16,
+        R16F,
+        R32F,
+        RG16F,
+        RG32F,
+        RGB,
+        RGBA,
+        RGB16,
+        RGB16F,
+        RGBA16,
+        RGBA16F,
+        RGB32F,
+        RGBA32F,
+        DEPTH,
+        DEPTH32F
+    };
 
-	enum class TextureWrap : uint8_t
-	{
-		CLAMP_TO_EDGE,
-		CLAMP_TO_BORDER,
-		MIRRORED_REPEAT,
-		REPEAT,
-	};
+    enum class TextureWrap : uint8_t
+    {
+        CLAMP_TO_EDGE,
+        CLAMP_TO_BORDER,
+        MIRRORED_REPEAT,
+        REPEAT,
+    };
 
-	const char* EnumToString(TextureFormat format);
-	const char* EnumToString(TextureWrap wrap);
+    const char* EnumToString(TextureFormat format);
+    const char* EnumToString(TextureWrap wrap);
 
-	class Texture
-	{
-	public:
-		using TextureBindId = int;
+    class Texture
+    {
+    public:
+        using TextureBindId = int;
 
-	private:
-		using BindableId = unsigned int;
+    private:
+        using BindableId = unsigned int;
 
-		MxString filepath;
-		size_t width = 0, height = 0;
-		BindableId id = 0;
-		mutable TextureBindId activeId = 0;
-		unsigned int textureType = 0;
-		TextureFormat format = TextureFormat::RGB;
-		uint8_t samples = 0;
+        MxString filepath;
+        size_t width = 0, height = 0;
+        BindableId id = 0;
+        mutable TextureBindId activeId = 0;
+        unsigned int textureType = 0;
+        TextureFormat format = TextureFormat::RGB;
+        uint8_t samples = 0;
 
-		void FreeTexture();
-	public:
-		using RawData = uint8_t;
-		using RawDataPointer = RawData*;
+        void FreeTexture();
+    public:
+        using RawData = uint8_t;
+        using RawDataPointer = RawData*;
 
-		Texture();
-		Texture(const Texture&) = delete;
-		Texture(Texture&& texture) noexcept;
-		Texture& operator=(const Texture& texture) = delete;
-		Texture& operator=(Texture&& texture) noexcept;
-		~Texture();
+        Texture();
+        Texture(const Texture&) = delete;
+        Texture(Texture&& texture) noexcept;
+        Texture& operator=(const Texture& texture) = delete;
+        Texture& operator=(Texture&& texture) noexcept;
+        ~Texture();
 
-		template<typename FilePath>
-		Texture(const FilePath& filepath, TextureFormat format);
+        template<typename FilePath>
+        Texture(const FilePath& filepath, TextureFormat format);
 
-		void Bind() const;
-		void Bind(TextureBindId id) const;
-		void Unbind() const;
-		TextureBindId GetBoundId() const;
-		BindableId GetNativeHandle() const;
-		
-		template<typename FilePath>
-		void Load(const FilePath& filepath, TextureFormat format);
+        void Bind() const;
+        void Bind(TextureBindId id) const;
+        void Unbind() const;
+        TextureBindId GetBoundId() const;
+        BindableId GetNativeHandle() const;
+        
+        template<typename FilePath>
+        void Load(const FilePath& filepath, TextureFormat format);
 
-		void Load(RawDataPointer data, int width, int height, int channels, bool isFloating, TextureFormat format = TextureFormat::RGB);
-		void Load(const Image& image, TextureFormat format = TextureFormat::RGB);
-		void LoadDepth(int width, int height, TextureFormat format = TextureFormat::DEPTH);
-		void SetMaxLOD(size_t lod);
-		void SetMinLOD(size_t lod);
-		size_t GetMaxTextureLOD() const;
-		Image GetRawTextureData() const;
-		void GenerateMipmaps() const;
-		void SetBorderColor(Vector4 color);
-		bool IsMultisampled() const;
-		bool IsFloatingPoint() const;
-		bool IsDepthOnly() const;
-		Vector4 GetBorderColor() const;
-		size_t GetSampleCount() const;
-		size_t GetPixelSize() const;
-		TextureFormat GetFormat() const;
-		TextureWrap GetWrapType() const;
-		void SetWrapType(TextureWrap wrap);
-		unsigned int GetTextureType() const;
-		size_t GetWidth() const;
-		size_t GetHeight() const;
-		size_t GetChannelCount() const;
+        void Load(RawDataPointer data, int width, int height, int channels, bool isFloating, TextureFormat format = TextureFormat::RGB);
+        void Load(const Image& image, TextureFormat format = TextureFormat::RGB);
+        void LoadDepth(int width, int height, TextureFormat format = TextureFormat::DEPTH);
+        void SetMaxLOD(size_t lod);
+        void SetMinLOD(size_t lod);
+        size_t GetMaxTextureLOD() const;
+        Image GetRawTextureData() const;
+        void GenerateMipmaps() const;
+        void SetBorderColor(Vector4 color);
+        bool IsMultisampled() const;
+        bool IsFloatingPoint() const;
+        bool IsDepthOnly() const;
+        Vector4 GetBorderColor() const;
+        size_t GetSampleCount() const;
+        size_t GetPixelSize() const;
+        TextureFormat GetFormat() const;
+        TextureWrap GetWrapType() const;
+        void SetWrapType(TextureWrap wrap);
+        unsigned int GetTextureType() const;
+        size_t GetWidth() const;
+        size_t GetHeight() const;
+        size_t GetChannelCount() const;
 
-		const MxString& GetFilePath() const;
-		void SetInternalEngineTag(const MxString& tag);
-		bool IsInternalEngineResource() const;
-	};
+        const MxString& GetFilePath() const;
+        void SetInternalEngineTag(const MxString& tag);
+        bool IsInternalEngineResource() const;
+    };
 }

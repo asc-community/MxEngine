@@ -36,44 +36,44 @@
 
 namespace MxEngine
 {
-	TimeStep Time::Current()
-	{
-		return Application::GetImpl()->GetTotalElapsedTime();
-	}
+    TimeStep Time::Current()
+    {
+        return Application::GetImpl()->GetTotalElapsedTime();
+    }
 
-	TimeStep Time::EngineCurrent()
-	{
-		return Application::GetImpl()->GetWindow().GetTime();
-	}
+    TimeStep Time::EngineCurrent()
+    {
+        return Application::GetImpl()->GetWindow().GetTime();
+    }
 
-	void Time::SetCurrent(TimeStep time)
-	{
-		Application::GetImpl()->SetTotalElapsedTime(time);
-	}
+    void Time::SetCurrent(TimeStep time)
+    {
+        Application::GetImpl()->SetTotalElapsedTime(time);
+    }
 
-	SystemTime Time::System()
-	{
-		using namespace std::chrono;
-		return system_clock::to_time_t(system_clock::now());
-	}
+    SystemTime Time::System()
+    {
+        using namespace std::chrono;
+        return system_clock::to_time_t(system_clock::now());
+    }
 
     TimeStep Time::Delta()
     {
-		return Application::GetImpl()->GetTimeDelta();
+        return Application::GetImpl()->GetTimeDelta();
     }
 
     TimeStep Time::UnscaledDelta()
     {
-		return Application::GetImpl()->GetUnscaledTimeDelta();
+        return Application::GetImpl()->GetUnscaledTimeDelta();
     }
 
-	size_t Time::FPS()
-	{
-		return Application::GetImpl()->GetCurrentFPS();
-	}
+    size_t Time::FPS()
+    {
+        return Application::GetImpl()->GetCurrentFPS();
+    }
 
-	void Time::Sleep(float seconds)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(uint64_t(seconds * 1000.0f)));
-	}
+    void Time::Sleep(float seconds)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(uint64_t(seconds * 1000.0f)));
+    }
 }

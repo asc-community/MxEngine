@@ -32,42 +32,42 @@
 
 namespace MxEngine
 {
-	struct SpotLightBaseData
-	{
-		Matrix4x4 Transform;
-		Vector3 Position;
-		float InnerAngle;
-		Vector3 Direction;
-		float OuterAngle;
-		Vector3 Color;
-		float AmbientIntensity;
+    struct SpotLightBaseData
+    {
+        Matrix4x4 Transform;
+        Vector3 Position;
+        float InnerAngle;
+        Vector3 Direction;
+        float OuterAngle;
+        Vector3 Color;
+        float AmbientIntensity;
 
-		constexpr static size_t Size = 16 + 3 + 1 + 3 + 1 + 3 + 1;
-	};
+        constexpr static size_t Size = 16 + 3 + 1 + 3 + 1 + 3 + 1;
+    };
 
-	class SpotLightInstancedObject : public RenderHelperObject
-	{
-		VertexBufferHandle instancedVBO;
-	public:
-		MxVector<SpotLightBaseData> Instances;
+    class SpotLightInstancedObject : public RenderHelperObject
+    {
+        VertexBufferHandle instancedVBO;
+    public:
+        MxVector<SpotLightBaseData> Instances;
 
-		SpotLightInstancedObject() = default;
+        SpotLightInstancedObject() = default;
 
-		SpotLightInstancedObject(VertexBufferHandle vbo, VertexArrayHandle vao, IndexBufferHandle ibo)
-			: RenderHelperObject(std::move(vbo), std::move(vao), std::move(ibo))
-		{
-			this->instancedVBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
+        SpotLightInstancedObject(VertexBufferHandle vbo, VertexArrayHandle vao, IndexBufferHandle ibo)
+            : RenderHelperObject(std::move(vbo), std::move(vao), std::move(ibo))
+        {
+            this->instancedVBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
 
-			std::array vertexLayout = {
-				VertexLayout::Entry<Matrix4x4>(),
-				VertexLayout::Entry<Vector4>(),
-				VertexLayout::Entry<Vector4>(),
-				VertexLayout::Entry<Vector4>(),
-			};
+            std::array vertexLayout = {
+                VertexLayout::Entry<Matrix4x4>(),
+                VertexLayout::Entry<Vector4>(),
+                VertexLayout::Entry<Vector4>(),
+                VertexLayout::Entry<Vector4>(),
+            };
 
-			this->VAO->AddInstancedVertexBuffer(*this->instancedVBO, vertexLayout);
-		}
+            this->VAO->AddInstancedVertexBuffer(*this->instancedVBO, vertexLayout);
+        }
 
-		void SubmitToVBO() { instancedVBO->BufferDataWithResize((float*)this->Instances.data(), this->Instances.size() * SpotLightBaseData::Size); }
-	};
+        void SubmitToVBO() { instancedVBO->BufferDataWithResize((float*)this->Instances.data(), this->Instances.size() * SpotLightBaseData::Size); }
+    };
 }

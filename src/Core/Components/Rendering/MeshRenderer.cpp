@@ -33,111 +33,111 @@
 
 namespace MxEngine
 {
-	void MakeTexture(TextureHandle& currentTexture, MxHashMap<StringId, TextureHandle>& textures, const FilePath& path, TextureFormat format)
-	{
-		if (!path.empty()) 
-		{
-			auto id = MakeStringId(path.string());
-			if (textures.find(id) == textures.end())
-			{
-				textures[id] = Factory<Texture>::Create(path, format);
-			}
-			currentTexture = textures[id];
-		}
-	}
+    void MakeTexture(TextureHandle& currentTexture, MxHashMap<StringId, TextureHandle>& textures, const FilePath& path, TextureFormat format)
+    {
+        if (!path.empty()) 
+        {
+            auto id = MakeStringId(path.string());
+            if (textures.find(id) == textures.end())
+            {
+                textures[id] = Factory<Texture>::Create(path, format);
+            }
+            currentTexture = textures[id];
+        }
+    }
 
-	MaterialHandle ConvertMaterial(const MaterialInfo& mat, MxHashMap<StringId, TextureHandle>& textures)
-	{
-		auto materialResource = Factory<Material>::Create();
-		auto& material = *materialResource;
+    MaterialHandle ConvertMaterial(const MaterialInfo& mat, MxHashMap<StringId, TextureHandle>& textures)
+    {
+        auto materialResource = Factory<Material>::Create();
+        auto& material = *materialResource;
 
-		MakeTexture(material.AlbedoMap, textures, mat.AlbedoMap, TextureFormat::RGBA);
-		MakeTexture(material.EmissiveMap, textures, mat.EmissiveMap, TextureFormat::R);
-		MakeTexture(material.HeightMap, textures, mat.HeightMap, TextureFormat::R);
-		MakeTexture(material.NormalMap, textures, mat.NormalMap, TextureFormat::RG);
-		MakeTexture(material.MetallicMap, textures, mat.MetallicMap, TextureFormat::R);
-		MakeTexture(material.RoughnessMap, textures, mat.RoughnessMap, TextureFormat::R);
-		MakeTexture(material.AmbientOcclusionMap, textures, mat.AmbientOcclusionMap, TextureFormat::R);
+        MakeTexture(material.AlbedoMap, textures, mat.AlbedoMap, TextureFormat::RGBA);
+        MakeTexture(material.EmissiveMap, textures, mat.EmissiveMap, TextureFormat::R);
+        MakeTexture(material.HeightMap, textures, mat.HeightMap, TextureFormat::R);
+        MakeTexture(material.NormalMap, textures, mat.NormalMap, TextureFormat::RG);
+        MakeTexture(material.MetallicMap, textures, mat.MetallicMap, TextureFormat::R);
+        MakeTexture(material.RoughnessMap, textures, mat.RoughnessMap, TextureFormat::R);
+        MakeTexture(material.AmbientOcclusionMap, textures, mat.AmbientOcclusionMap, TextureFormat::R);
 
-		material.Emission = mat.Emission;
-		material.Transparency = mat.Transparency;
-		material.BaseColor = mat.BaseColor;
-		material.MetallicFactor = mat.MetallicFactor;
-		material.RoughnessFactor = mat.RoughnessFactor;
-		material.UVMultipliers = mat.UVMultipliers;
-		material.Name = mat.Name;
+        material.Emission = mat.Emission;
+        material.Transparency = mat.Transparency;
+        material.BaseColor = mat.BaseColor;
+        material.MetallicFactor = mat.MetallicFactor;
+        material.RoughnessFactor = mat.RoughnessFactor;
+        material.UVMultipliers = mat.UVMultipliers;
+        material.Name = mat.Name;
 
-		return materialResource;
-	}
+        return materialResource;
+    }
 
-	MeshRenderer::MeshRenderer()
-		: Materials(1, Factory<Material>::Create()) { }
+    MeshRenderer::MeshRenderer()
+        : Materials(1, Factory<Material>::Create()) { }
 
-	MeshRenderer::MeshRenderer(MaterialRef material)
-		: Materials(1, std::move(material)) { }
+    MeshRenderer::MeshRenderer(MaterialRef material)
+        : Materials(1, std::move(material)) { }
 
-	MeshRenderer::MeshRenderer(MaterialArray materials)
-		: Materials(std::move(materials)) { }
+    MeshRenderer::MeshRenderer(MaterialArray materials)
+        : Materials(std::move(materials)) { }
 
-	MeshRenderer& MeshRenderer::operator=(MaterialRef material)
-	{
-		this->Materials = MaterialArray{ 1, material };
-		return *this;
-	}
+    MeshRenderer& MeshRenderer::operator=(MaterialRef material)
+    {
+        this->Materials = MaterialArray{ 1, material };
+        return *this;
+    }
 
-	MeshRenderer& MeshRenderer::operator=(MaterialArray materials)
-	{
-		this->Materials = std::move(materials);
-		return *this;
-	}
+    MeshRenderer& MeshRenderer::operator=(MaterialArray materials)
+    {
+        this->Materials = std::move(materials);
+        return *this;
+    }
 
-	MeshRenderer::MaterialRef MeshRenderer::GetMaterial() const
-	{
-		MX_ASSERT(!Materials.empty()); 
-		return this->Materials[0];
-	}
+    MeshRenderer::MaterialRef MeshRenderer::GetMaterial() const
+    {
+        MX_ASSERT(!Materials.empty()); 
+        return this->Materials[0];
+    }
 
-	MeshRenderer::MaterialArray MeshRenderer::LoadMaterials(const FilePath& path)
-	{
-		MaterialArray materials;
-		MxHashMap<StringId, TextureHandle> textures;
-		auto matlibExtenstion = MeshRenderer::GetMaterialFileExtenstion();
-		FilePath actualPath = path;
-		if (path.extension() != matlibExtenstion)
-			actualPath = path.native() + matlibExtenstion.native();
+    MeshRenderer::MaterialArray MeshRenderer::LoadMaterials(const FilePath& path)
+    {
+        MaterialArray materials;
+        MxHashMap<StringId, TextureHandle> textures;
+        auto matlibExtenstion = MeshRenderer::GetMaterialFileExtenstion();
+        FilePath actualPath = path;
+        if (path.extension() != matlibExtenstion)
+            actualPath = path.native() + matlibExtenstion.native();
 
-		auto materialLibrary = ObjectLoader::LoadMaterials(actualPath);
+        auto materialLibrary = ObjectLoader::LoadMaterials(actualPath);
 
-		materials.resize(materialLibrary.size());
-		for (size_t i = 0; i < materialLibrary.size(); i++)
-		{
-			materials[i] = ConvertMaterial(materialLibrary[i], textures);
-		}
+        materials.resize(materialLibrary.size());
+        for (size_t i = 0; i < materialLibrary.size(); i++)
+        {
+            materials[i] = ConvertMaterial(materialLibrary[i], textures);
+        }
 
-		return materials;
-	}
+        return materials;
+    }
 
-	const static FilePath materialFileExtenstion = ".mx_matlib";
-	const FilePath& MeshRenderer::GetMaterialFileExtenstion()
-	{
-		return materialFileExtenstion;
-	}
+    const static FilePath materialFileExtenstion = ".mx_matlib";
+    const FilePath& MeshRenderer::GetMaterialFileExtenstion()
+    {
+        return materialFileExtenstion;
+    }
 
-	MXENGINE_REFLECT_TYPE
-	{
-		rttr::registration::class_<MeshRenderer>("MeshRenderer")
-			(
-				rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY)
-			)
-			.constructor<>()
-			.method("load materials", &MeshRenderer::GetMaterial)
-			(
-				rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-				rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<MeshRenderer>)
-			)
-			.property("materials", &MeshRenderer::Materials)
-			(
-				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-			);
-	}
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<MeshRenderer>("MeshRenderer")
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY)
+            )
+            .constructor<>()
+            .method("load materials", &MeshRenderer::GetMaterial)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<MeshRenderer>)
+            )
+            .property("materials", &MeshRenderer::Materials)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            );
+    }
 }

@@ -33,21 +33,21 @@
 
 namespace MxEngine
 {
-	class Window;
+    class Window;
 
-	class WindowManager
-	{
-	public:
-		static Window& GetWindow();
-		static Vector2 GetSize();
-		static float GetWidth();
-		static void SetWidth(float width);
-		static float GetHeight();
-		static void SetHeight(float height);
-		static Vector2 GetPosition();
-		static const MxString& GetTitle();
-		static void SetTitle(const MxString& title);
-		static void SetPosition(const Vector2& pos);
-		static void SetSize(const Vector2& size);
-	};
+    class WindowManager
+    {
+    public:
+        static Window& GetWindow();
+        static Vector2 GetSize();
+        static float GetWidth();
+        static void SetWidth(float width);
+        static float GetHeight();
+        static void SetHeight(float height);
+        static Vector2 GetPosition();
+        static const MxString& GetTitle();
+        static void SetTitle(const MxString& title);
+        static void SetPosition(const Vector2& pos);
+        static void SetSize(const Vector2& size);
+    };
 }

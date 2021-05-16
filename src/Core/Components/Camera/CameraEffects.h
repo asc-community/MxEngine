@@ -32,59 +32,59 @@
 
 namespace MxEngine
 {
-	// TODO: split into multiple components
-	class CameraEffects
-	{
-		MAKE_COMPONENT(CameraEffects);
+    // TODO: split into multiple components
+    class CameraEffects
+    {
+        MAKE_COMPONENT(CameraEffects);
 
-		Vector3 fogColor = MakeVector3(0.5f, 0.6f, 0.7f);
-		float fogDistance = 1.0f;
-		float fogDensity = 0.001f;
+        Vector3 fogColor = MakeVector3(0.5f, 0.6f, 0.7f);
+        float fogDistance = 1.0f;
+        float fogDensity = 0.001f;
 
-		float bloomWeight = 0.5f;
+        float bloomWeight = 0.5f;
 
-		float vignetteRadius = 0.1f;
-		float vignetteIntensity = 100.0f;
+        float vignetteRadius = 0.1f;
+        float vignetteIntensity = 100.0f;
 
-		float chromaticAberrationIntensity = 0.08f;
-		float chromaticAberrationMinDistance = 0.8f;
-		float chromaticAberrationDistortion = 0.8f;
+        float chromaticAberrationIntensity = 0.08f;
+        float chromaticAberrationMinDistance = 0.8f;
+        float chromaticAberrationDistortion = 0.8f;
 
-		bool enableFXAA = false;
-		uint8_t bloomIterations = 3;
-	public:
-		CameraEffects() = default;
+        bool enableFXAA = false;
+        uint8_t bloomIterations = 3;
+    public:
+        CameraEffects() = default;
 
-		const Vector3& GetFogColor() const;
-		float GetFogDistance() const;
-		float GetFogDensity() const;
+        const Vector3& GetFogColor() const;
+        float GetFogDistance() const;
+        float GetFogDensity() const;
 
-		float GetBloomWeight() const;
-		size_t GetBloomIterations() const;
+        float GetBloomWeight() const;
+        size_t GetBloomIterations() const;
 
-		float GetVignetteIntensity() const;
-		float GetVignetteRadius() const;
+        float GetVignetteIntensity() const;
+        float GetVignetteRadius() const;
 
-		float GetChromaticAberrationMinDistance() const;
-		float GetChromaticAberrationIntensity() const;
-		float GetChromaticAberrationDistortion() const;
+        float GetChromaticAberrationMinDistance() const;
+        float GetChromaticAberrationIntensity() const;
+        float GetChromaticAberrationDistortion() const;
 
-		bool IsFXAAEnabled() const;
+        bool IsFXAAEnabled() const;
 
-		void SetFogColor(const Vector3& color);
-		void SetFogDistance(float distance);
-		void SetFogDensity(float density);
+        void SetFogColor(const Vector3& color);
+        void SetFogDistance(float distance);
+        void SetFogDensity(float density);
 
-		void SetBloomWeight(float weight);
-		void SetBloomIterations(size_t iterations);
+        void SetBloomWeight(float weight);
+        void SetBloomIterations(size_t iterations);
 
-		void SetVignetteRadius(float radius);
-		void SetVignetteIntensity(float intensity);
+        void SetVignetteRadius(float radius);
+        void SetVignetteIntensity(float intensity);
 
-		void SetChromaticAberrationMinDistance(float distance);
-		void SetChromaticAberrationIntensity(float intensity);
-		void SetChromaticAberrationDistortion(float distortion);
+        void SetChromaticAberrationMinDistance(float distance);
+        void SetChromaticAberrationIntensity(float intensity);
+        void SetChromaticAberrationDistortion(float distortion);
 
-		void ToggleFXAA(bool value);
-	};
+        void ToggleFXAA(bool value);
+    };
 }

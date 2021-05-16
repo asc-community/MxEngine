@@ -39,104 +39,104 @@ GENERATE_METHOD_CHECK(Init, Init())
 
 namespace MxEngine
 {
-	class MxObject
-	{
-	public:
-		using EngineHandle = size_t;
-		using Handle = Resource<MxObject, Factory<MxObject>>;
-	private:
-		constexpr static EngineHandle InvalidHandle = std::numeric_limits<EngineHandle>::max();
-		EngineHandle handle = InvalidHandle;
-	public:
-		bool IsSerialized = true;
-		bool IsDisplayedInEditor = true;
-		MxString Name = UUIDGenerator::Get();
-		TransformComponent Transform;
-	private:
-		// placed here to be destroyed before other members
-		ComponentManager components;
-	public:
-		MxObject() = default;
-		MxObject(const MxObject&) = delete;
-		MxObject& operator=(const MxObject&) = delete;
-		MxObject(MxObject&&) = default;
-		MxObject& operator=(MxObject&&) = default;
-		~MxObject();
+    class MxObject
+    {
+    public:
+        using EngineHandle = size_t;
+        using Handle = Resource<MxObject, Factory<MxObject>>;
+    private:
+        constexpr static EngineHandle InvalidHandle = std::numeric_limits<EngineHandle>::max();
+        EngineHandle handle = InvalidHandle;
+    public:
+        bool IsSerialized = true;
+        bool IsDisplayedInEditor = true;
+        MxString Name = UUIDGenerator::Get();
+        TransformComponent Transform;
+    private:
+        // placed here to be destroyed before other members
+        ComponentManager components;
+    public:
+        MxObject() = default;
+        MxObject(const MxObject&) = delete;
+        MxObject& operator=(const MxObject&) = delete;
+        MxObject(MxObject&&) = default;
+        MxObject& operator=(MxObject&&) = default;
+        ~MxObject();
 
-		static Handle Create();
-		static void Destroy(Handle object);
-		static void Destroy(MxObject& object);
+        static Handle Create();
+        static void Destroy(Handle object);
+        static void Destroy(MxObject& object);
 
-		static ComponentView<MxObject> GetObjects();
-		static Handle GetByName(const MxString& name);
-		static Handle GetHandle(const MxObject& object);
-		static Handle GetByHandle(EngineHandle handle);
+        static ComponentView<MxObject> GetObjects();
+        static Handle GetByName(const MxString& name);
+        static Handle GetHandle(const MxObject& object);
+        static Handle GetByHandle(EngineHandle handle);
 
-		EngineHandle GetNativeHandle() const;
+        EngineHandle GetNativeHandle() const;
 
-		template<typename T>
-		static MxObject& GetByComponent(T& component)
-		{
-			auto handle = reinterpret_cast<EngineHandle>(component.UserData);
-			MX_ASSERT(handle != InvalidHandle);
-			auto& managedObject = Factory<MxObject>::GetPool()[handle];
-			return managedObject.value;
-		}
+        template<typename T>
+        static MxObject& GetByComponent(T& component)
+        {
+            auto handle = reinterpret_cast<EngineHandle>(component.UserData);
+            MX_ASSERT(handle != InvalidHandle);
+            auto& managedObject = Factory<MxObject>::GetPool()[handle];
+            return managedObject.value;
+        }
 
-		template<typename T>
-		static Handle GetHandleByComponent(T& component)
-		{
-			auto handle = reinterpret_cast<EngineHandle>(component.UserData);
-			return MxObject::GetByHandle(handle);
-		}
+        template<typename T>
+        static Handle GetHandleByComponent(T& component)
+        {
+            auto handle = reinterpret_cast<EngineHandle>(component.UserData);
+            return MxObject::GetByHandle(handle);
+        }
 
-		template<typename T, typename... Args>
-		auto AddComponent(Args&&... args)
-		{
-			auto component = this->components.AddComponent<T>(std::forward<Args>(args)...);
-			component->UserData = reinterpret_cast<void*>(this->handle);
-			if constexpr (has_method_Init<T>::value) 
-				component->Init();
-			return component;
-		}
+        template<typename T, typename... Args>
+        auto AddComponent(Args&&... args)
+        {
+            auto component = this->components.AddComponent<T>(std::forward<Args>(args)...);
+            component->UserData = reinterpret_cast<void*>(this->handle);
+            if constexpr (has_method_Init<T>::value) 
+                component->Init();
+            return component;
+        }
 
-		template<typename T>
-		auto GetComponent() const
-		{
-			return this->components.GetComponent<T>();
-		}
+        template<typename T>
+        auto GetComponent() const
+        {
+            return this->components.GetComponent<T>();
+        }
 
-		template<typename T>
-		auto GetOrAddComponent()
-		{
-			if (!this->HasComponent<T>())
-				return this->AddComponent<T>();
-			else
-				return this->GetComponent<T>();
-		}
+        template<typename T>
+        auto GetOrAddComponent()
+        {
+            if (!this->HasComponent<T>())
+                return this->AddComponent<T>();
+            else
+                return this->GetComponent<T>();
+        }
 
-		template<typename T>
-		void RemoveComponent()
-		{
-			this->components.RemoveComponent<T>();
-		}
+        template<typename T>
+        void RemoveComponent()
+        {
+            this->components.RemoveComponent<T>();
+        }
 
-		template<typename T>
-		bool HasComponent() const
-		{
-			return this->components.HasComponent<T>();
-		}
+        template<typename T>
+        bool HasComponent() const
+        {
+            return this->components.HasComponent<T>();
+        }
 
-		template<typename T>
-		static typename T::Handle GetComponentHandle(const T& component)
-		{
-			return MxObject::GetByComponent(component).template GetComponent<T>();
-		}
+        template<typename T>
+        static typename T::Handle GetComponentHandle(const T& component)
+        {
+            return MxObject::GetByComponent(component).template GetComponent<T>();
+        }
 
-		template<typename T>
-		static UUID GetComponentUUID(const T& component)
-		{
-			return MxObject::GetComponentHandle(component).GetUUID();
-		}
-	};
+        template<typename T>
+        static UUID GetComponentUUID(const T& component)
+        {
+            return MxObject::GetComponentHandle(component).GetUUID();
+        }
+    };
 }

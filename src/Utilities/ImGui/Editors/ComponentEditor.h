@@ -33,20 +33,20 @@
 
 namespace MxEngine::GUI
 {
-	void ComponentEditorImpl(const char* name, rttr::instance object, void(*removeCallback)(rttr::instance));
+    void ComponentEditorImpl(const char* name, rttr::instance object, void(*removeCallback)(rttr::instance));
 
-	template<typename T>
-	void ComponentEditor(T& object)
-	{
-		auto name = rttr::type::get<T>().get_name().cbegin();
-		constexpr auto removeCallback = [](rttr::instance v)
-		{
-			auto& component = *v.try_convert<T>();
-			auto& object = MxObject::GetByComponent(component);
-			object.template RemoveComponent<T>();
-		};
-		ComponentEditorImpl(name, rttr::instance{ object }, removeCallback);
-	}
+    template<typename T>
+    void ComponentEditor(T& object)
+    {
+        auto name = rttr::type::get<T>().get_name().cbegin();
+        constexpr auto removeCallback = [](rttr::instance v)
+        {
+            auto& component = *v.try_convert<T>();
+            auto& object = MxObject::GetByComponent(component);
+            object.template RemoveComponent<T>();
+        };
+        ComponentEditorImpl(name, rttr::instance{ object }, removeCallback);
+    }
 
-	rttr::variant ResourceEditor(const char* name, rttr::instance object);
+    rttr::variant ResourceEditor(const char* name, rttr::instance object);
 }

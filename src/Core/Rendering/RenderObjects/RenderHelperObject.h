@@ -33,20 +33,20 @@
 
 namespace MxEngine
 {
-	class RenderHelperObject
-	{
-	protected:
-		VertexBufferHandle VBO;
-		VertexArrayHandle VAO;
-		IndexBufferHandle IBO;
-	public:
-		RenderHelperObject() = default;
-		RenderHelperObject(VertexBufferHandle vbo, VertexArrayHandle vao, IndexBufferHandle ibo)
-			: VBO(std::move(vbo)), VAO(std::move(vao)), IBO(std::move(ibo)) { }
+    class RenderHelperObject
+    {
+    protected:
+        VertexBufferHandle VBO;
+        VertexArrayHandle VAO;
+        IndexBufferHandle IBO;
+    public:
+        RenderHelperObject() = default;
+        RenderHelperObject(VertexBufferHandle vbo, VertexArrayHandle vao, IndexBufferHandle ibo)
+            : VBO(std::move(vbo)), VAO(std::move(vao)), IBO(std::move(ibo)) { }
 
-		const VertexArray& GetVAO() const { return *VAO; }
-		const IndexBuffer& GetIBO() const { return *IBO; }
-		size_t GetIndexCount() const { return this->IBO->GetSize(); }
-		size_t GetVertexCount() const { return VBO->GetSize() / Vertex::Size; }
-	};
+        const VertexArray& GetVAO() const { return *VAO; }
+        const IndexBuffer& GetIBO() const { return *IBO; }
+        size_t GetIndexCount() const { return this->IBO->GetSize(); }
+        size_t GetVertexCount() const { return VBO->GetSize() / Vertex::Size; }
+    };
 }

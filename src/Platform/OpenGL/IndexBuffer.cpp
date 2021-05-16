@@ -30,33 +30,33 @@
 
 namespace MxEngine
 {
-	IndexBuffer::IndexBuffer(const IndexType* data, size_t count, UsageType usage)
-	{
-		this->Load(data, count, usage);
-	}
+    IndexBuffer::IndexBuffer(const IndexType* data, size_t count, UsageType usage)
+    {
+        this->Load(data, count, usage);
+    }
 
-	size_t IndexBuffer::GetSize() const
-	{
-		return this->GetByteSize() / sizeof(IndexType);
-	}
+    size_t IndexBuffer::GetSize() const
+    {
+        return this->GetByteSize() / sizeof(IndexType);
+    }
 
-	void IndexBuffer::Load(const IndexType* data, size_t count, UsageType usage)
-	{
-		BufferBase::Load(BufferType::ELEMENT_ARRAY, (const uint8_t*)data, count * sizeof(IndexType), usage);
-	}
+    void IndexBuffer::Load(const IndexType* data, size_t count, UsageType usage)
+    {
+        BufferBase::Load(BufferType::ELEMENT_ARRAY, (const uint8_t*)data, count * sizeof(IndexType), usage);
+    }
 
-	void IndexBuffer::BufferSubData(const IndexType* data, size_t count, size_t offsetCount)
-	{
-		BufferBase::BufferSubData((const uint8_t*)data, count * sizeof(IndexType), offsetCount * sizeof(IndexType));
-	}
+    void IndexBuffer::BufferSubData(const IndexType* data, size_t count, size_t offsetCount)
+    {
+        BufferBase::BufferSubData((const uint8_t*)data, count * sizeof(IndexType), offsetCount * sizeof(IndexType));
+    }
 
-	void IndexBuffer::BufferDataWithResize(const IndexType* data, size_t count)
-	{
-		BufferBase::BufferDataWithResize((const uint8_t*)data, count * sizeof(IndexType));
-	}
+    void IndexBuffer::BufferDataWithResize(const IndexType* data, size_t count)
+    {
+        BufferBase::BufferDataWithResize((const uint8_t*)data, count * sizeof(IndexType));
+    }
 
-	void IndexBuffer::GetBufferData(IndexType* data, size_t count, size_t offsetCount) const
-	{
-		BufferBase::GetBufferData((uint8_t*)data, count * sizeof(IndexType), offsetCount * sizeof(IndexType));
-	}
+    void IndexBuffer::GetBufferData(IndexType* data, size_t count, size_t offsetCount) const
+    {
+        BufferBase::GetBufferData((uint8_t*)data, count * sizeof(IndexType), offsetCount * sizeof(IndexType));
+    }
 }

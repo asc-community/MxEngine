@@ -32,8 +32,8 @@
 
 namespace MxEngine
 {
-	class IndexBuffer : public BufferBase
-	{
+    class IndexBuffer : public BufferBase
+    {
     public:
         using IndexType = uint32_t;
 
@@ -45,5 +45,5 @@ namespace MxEngine
         void BufferSubData(const IndexType* data, size_t count, size_t offsetCount = 0);
         void BufferDataWithResize(const IndexType* data, size_t count);
         void GetBufferData(IndexType* data, size_t count, size_t offsetCount = 0) const;
-	};
+    };
 }

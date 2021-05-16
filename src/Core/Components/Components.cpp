@@ -33,35 +33,35 @@ namespace MxEngine
 {
     void RegisterComponents()
     {
-		Runtime::RegisterComponent<CameraController   >();
-		Runtime::RegisterComponent<InputController    >();
-		Runtime::RegisterComponent<RigidBody          >();
-		Runtime::RegisterComponent<CharacterController>();
-		Runtime::RegisterComponent<BoxCollider        >();
-		Runtime::RegisterComponent<Script             >();
-		Runtime::RegisterComponent<Behaviour          >();
-		Runtime::RegisterComponent<InstanceFactory    >();
-		Runtime::RegisterComponent<Instance           >();
-		Runtime::RegisterComponent<Skybox             >();
-		Runtime::RegisterComponent<DebugDraw          >();
-		Runtime::RegisterComponent<MeshRenderer       >();
-		Runtime::RegisterComponent<MeshSource         >();
-		Runtime::RegisterComponent<MeshLOD            >();
-		Runtime::RegisterComponent<ParticleSystem     >();
-		Runtime::RegisterComponent<DirectionalLight   >();
-		Runtime::RegisterComponent<PointLight         >();
-		Runtime::RegisterComponent<SpotLight          >();
-		Runtime::RegisterComponent<CameraEffects      >();
-		Runtime::RegisterComponent<CameraSSR          >();
-		Runtime::RegisterComponent<CameraSSGI         >();
-		Runtime::RegisterComponent<CameraSSAO         >();
-		Runtime::RegisterComponent<CameraToneMapping  >();
-		Runtime::RegisterComponent<VRCameraController >();
-		Runtime::RegisterComponent<AudioSource        >();
-		Runtime::RegisterComponent<AudioListener      >();
-		Runtime::RegisterComponent<SphereCollider     >();
-		Runtime::RegisterComponent<CylinderCollider   >();
-		Runtime::RegisterComponent<CapsuleCollider    >();
-		Runtime::RegisterComponent<CompoundCollider   >();
+        Runtime::RegisterComponent<CameraController   >();
+        Runtime::RegisterComponent<InputController    >();
+        Runtime::RegisterComponent<RigidBody          >();
+        Runtime::RegisterComponent<CharacterController>();
+        Runtime::RegisterComponent<BoxCollider        >();
+        Runtime::RegisterComponent<Script             >();
+        Runtime::RegisterComponent<Behaviour          >();
+        Runtime::RegisterComponent<InstanceFactory    >();
+        Runtime::RegisterComponent<Instance           >();
+        Runtime::RegisterComponent<Skybox             >();
+        Runtime::RegisterComponent<DebugDraw          >();
+        Runtime::RegisterComponent<MeshRenderer       >();
+        Runtime::RegisterComponent<MeshSource         >();
+        Runtime::RegisterComponent<MeshLOD            >();
+        Runtime::RegisterComponent<ParticleSystem     >();
+        Runtime::RegisterComponent<DirectionalLight   >();
+        Runtime::RegisterComponent<PointLight         >();
+        Runtime::RegisterComponent<SpotLight          >();
+        Runtime::RegisterComponent<CameraEffects      >();
+        Runtime::RegisterComponent<CameraSSR          >();
+        Runtime::RegisterComponent<CameraSSGI         >();
+        Runtime::RegisterComponent<CameraSSAO         >();
+        Runtime::RegisterComponent<CameraToneMapping  >();
+        Runtime::RegisterComponent<VRCameraController >();
+        Runtime::RegisterComponent<AudioSource        >();
+        Runtime::RegisterComponent<AudioListener      >();
+        Runtime::RegisterComponent<SphereCollider     >();
+        Runtime::RegisterComponent<CylinderCollider   >();
+        Runtime::RegisterComponent<CapsuleCollider    >();
+        Runtime::RegisterComponent<CompoundCollider   >();
     }
 }

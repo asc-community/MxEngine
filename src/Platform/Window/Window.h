@@ -38,70 +38,70 @@ struct GLFWwindow; // from glfw header file
 
 namespace MxEngine
 {
-	class Window
-	{
-		using WindowHandle = GLFWwindow*;
-	private:
-		MxString title;
-		GLFWwindow* window = nullptr;
-		int width = 0, height = 0;
-		EventDispatcherImpl<EventBase>* dispatcher = nullptr;
-		mutable std::bitset<350> keyHeld;
-		mutable std::bitset<350> keyPressed;
-		mutable std::bitset<350> keyReleased;
-		mutable std::bitset<8> mouseHeld;
-		mutable std::bitset<8> mousePressed;
-		mutable std::bitset<8> mouseReleased;
-		CursorMode cursorMode = CursorMode::NORMAL;
-		bool anyKeyEvent = false;
-		bool anyMouseEvent = false;
-		bool doubleBuffer = false;
-		Vector2 windowPosition{ 0.0f, 0.0f };
+    class Window
+    {
+        using WindowHandle = GLFWwindow*;
+    private:
+        MxString title;
+        GLFWwindow* window = nullptr;
+        int width = 0, height = 0;
+        EventDispatcherImpl<EventBase>* dispatcher = nullptr;
+        mutable std::bitset<350> keyHeld;
+        mutable std::bitset<350> keyPressed;
+        mutable std::bitset<350> keyReleased;
+        mutable std::bitset<8> mouseHeld;
+        mutable std::bitset<8> mousePressed;
+        mutable std::bitset<8> mouseReleased;
+        CursorMode cursorMode = CursorMode::NORMAL;
+        bool anyKeyEvent = false;
+        bool anyMouseEvent = false;
+        bool doubleBuffer = false;
+        Vector2 windowPosition{ 0.0f, 0.0f };
 
-		void Destroy();
-		void Move(Window&& window);
-	public:
-		Window() = default;
-		Window(int width, int height, const MxString& title);
-		Window(const Window&) = delete;
-		Window(Window&& other) noexcept;
-		Window& operator=(const Window&) = delete;
-		Window& operator=(Window&& other) noexcept;
-		~Window();
+        void Destroy();
+        void Move(Window&& window);
+    public:
+        Window() = default;
+        Window(int width, int height, const MxString& title);
+        Window(const Window&) = delete;
+        Window(Window&& other) noexcept;
+        Window& operator=(const Window&) = delete;
+        Window& operator=(Window&& other) noexcept;
+        ~Window();
 
-		int GetHeight() const;
-		int GetWidth() const;
-		bool IsOpen() const;
-		void PullEvents() const;
-		void OnUpdate();
-		float GetTime() const;
-		Vector2 GetCursorPosition() const;
-		Vector2 GetWindowPosition() const;
-		CursorMode GetCursorMode() const;
-		const MxString& GetTitle() const;
-		bool IsKeyHeld(KeyCode key) const;
-		bool IsKeyPressed(KeyCode key) const;
-		bool IsKeyReleased(KeyCode key) const;
-		bool IsMouseHeld(MouseButton button) const;
-		bool IsMousePressed(MouseButton button) const;
-		bool IsMouseReleased(MouseButton button) const;
-		bool IsKeyHeldUnchecked(KeyCode key) const;
-		bool IsMouseHeldUnchecked(MouseButton button) const;
-		WindowHandle GetNativeHandle();
-		EventDispatcherImpl<EventBase>& GetEventDispatcher();
-		bool IsCreated() const;
-		Window& Create();
-		Window& Close();
-		Window& SwitchContext();
-		Window& UseTime(float time = 0.0f);
-		Window& UseDebugging(bool value = true);
-		Window& UseDoubleBuffering(bool value = true);
-		Window& UseCursorMode(CursorMode cursor);
-		Window& UseCursorPosition(const Vector2& pos);
-		Window& UseTitle(const MxString& title);
-		Window& UseWindowPosition(int xpos, int ypos);
-		Window& UseWindowSize(int width, int height);
-		Window& UseEventDispatcher(EventDispatcherImpl<EventBase>* dispatcher);
-		Window& UseProfile(int majorVersion, int minorVersion, RenderProfile profile);
-	};
+        int GetHeight() const;
+        int GetWidth() const;
+        bool IsOpen() const;
+        void PullEvents() const;
+        void OnUpdate();
+        float GetTime() const;
+        Vector2 GetCursorPosition() const;
+        Vector2 GetWindowPosition() const;
+        CursorMode GetCursorMode() const;
+        const MxString& GetTitle() const;
+        bool IsKeyHeld(KeyCode key) const;
+        bool IsKeyPressed(KeyCode key) const;
+        bool IsKeyReleased(KeyCode key) const;
+        bool IsMouseHeld(MouseButton button) const;
+        bool IsMousePressed(MouseButton button) const;
+        bool IsMouseReleased(MouseButton button) const;
+        bool IsKeyHeldUnchecked(KeyCode key) const;
+        bool IsMouseHeldUnchecked(MouseButton button) const;
+        WindowHandle GetNativeHandle();
+        EventDispatcherImpl<EventBase>& GetEventDispatcher();
+        bool IsCreated() const;
+        Window& Create();
+        Window& Close();
+        Window& SwitchContext();
+        Window& UseTime(float time = 0.0f);
+        Window& UseDebugging(bool value = true);
+        Window& UseDoubleBuffering(bool value = true);
+        Window& UseCursorMode(CursorMode cursor);
+        Window& UseCursorPosition(const Vector2& pos);
+        Window& UseTitle(const MxString& title);
+        Window& UseWindowPosition(int xpos, int ypos);
+        Window& UseWindowSize(int width, int height);
+        Window& UseEventDispatcher(EventDispatcherImpl<EventBase>* dispatcher);
+        Window& UseProfile(int majorVersion, int minorVersion, RenderProfile profile);
+    };
 }

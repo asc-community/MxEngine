@@ -45,59 +45,59 @@
 
 namespace MxEngine
 {
-	#if !defined(RCCPPOFF)
-	namespace
-	{
-		auto suppressUnusedFunction = GetTrackingInfoFunc<0>(0);
-	}
-	#endif
+    #if !defined(RCCPPOFF)
+    namespace
+    {
+        auto suppressUnusedFunction = GetTrackingInfoFunc<0>(0);
+    }
+    #endif
 
-	struct SciptableInterface : public IObject, public RuntimeProtector
-	{
-		enum ScriptableID : InterfaceID
-		{
-			ID = IID_ENDInterfaceID,
-		};
+    struct SciptableInterface : public IObject, public RuntimeProtector
+    {
+        enum ScriptableID : InterfaceID
+        {
+            ID = IID_ENDInterfaceID,
+        };
 
-		struct
-		{
-			ScriptableMethod Method = ScriptableMethod::ON_CREATE;
-			MxObject* Self = nullptr;
-		} CurrentState;
+        struct
+        {
+            ScriptableMethod Method = ScriptableMethod::ON_CREATE;
+            MxObject* Self = nullptr;
+        } CurrentState;
 
-		virtual void InitializeModuleContext(void* context) 
-		{
-			GlobalContextSerializer::Deserialize(context); 
-			// script dll is not properly unloaded, unregistering reflection info results in crush
-			// to prevent it we need to disable unregister mechanism in dll module
-			rttr::detail::get_registration_manager().set_disable_unregister();
-		}
+        virtual void InitializeModuleContext(void* context) 
+        {
+            GlobalContextSerializer::Deserialize(context); 
+            // script dll is not properly unloaded, unregistering reflection info results in crush
+            // to prevent it we need to disable unregister mechanism in dll module
+            rttr::detail::get_registration_manager().set_disable_unregister();
+        }
 
-		virtual void ProtectedFunc() final
-		{
-			switch (this->CurrentState.Method)
-			{
-			case ScriptableMethod::ON_CREATE:
-				this->OnCreate(*this->CurrentState.Self);
-				break;
-			case ScriptableMethod::ON_RELOAD:
-				this->OnReload(*this->CurrentState.Self);
-				break;
-			case ScriptableMethod::ON_UPDATE:
-				this->OnUpdate(*this->CurrentState.Self);
-				break;
-			default:
-				break;
-			}
-		}
+        virtual void ProtectedFunc() final
+        {
+            switch (this->CurrentState.Method)
+            {
+            case ScriptableMethod::ON_CREATE:
+                this->OnCreate(*this->CurrentState.Self);
+                break;
+            case ScriptableMethod::ON_RELOAD:
+                this->OnReload(*this->CurrentState.Self);
+                break;
+            case ScriptableMethod::ON_UPDATE:
+                this->OnUpdate(*this->CurrentState.Self);
+                break;
+            default:
+                break;
+            }
+        }
 
-		// overriten in derived classes
-		virtual void OnCreate(MxObject& self) { }
-		virtual void OnReload(MxObject& self) { }
-		virtual void OnUpdate(MxObject& self) { }
-	};
+        // overriten in derived classes
+        virtual void OnCreate(MxObject& self) { }
+        virtual void OnReload(MxObject& self) { }
+        virtual void OnUpdate(MxObject& self) { }
+    };
 
-	class Scriptable : public TInterface<SciptableInterface::ID, SciptableInterface> { };
+    class Scriptable : public TInterface<SciptableInterface::ID, SciptableInterface> { };
 
-	#define MXENGINE_RUNTIME_EDITOR(script) static_assert(sizeof(Scriptable) == sizeof(script), "script object cannot contain non-static fields"); REGISTERCLASS(script)
+    #define MXENGINE_RUNTIME_EDITOR(script) static_assert(sizeof(Scriptable) == sizeof(script), "script object cannot contain non-static fields"); REGISTERCLASS(script)
 }

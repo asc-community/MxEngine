@@ -39,15 +39,15 @@ namespace MxEngine
     class ComponentFactory;
     using CameraControllerHandle = Resource<CameraController, ComponentFactory>;
 
-	class Rendering
-	{
+    class Rendering
+    {
     public:
-		static CameraControllerHandle& GetViewport();
-		static void SetViewport(const CameraControllerHandle& viewport);
+        static CameraControllerHandle& GetViewport();
+        static void SetViewport(const CameraControllerHandle& viewport);
         static void ResizeViewport(size_t width, size_t height);
         static VectorInt2 GetViewportSize();
         static TextureHandle GetRenderTexture();
-		static RenderController& GetController();
+        static RenderController& GetController();
         static RenderAdaptor& GetAdaptor();
         static bool IsDebugOverlayed();
         static void SetDebugOverlay(bool value = true);
@@ -63,5 +63,5 @@ namespace MxEngine
         static void Draw(const Cylinder& cylinder, const Vector4& color);
         static void Draw(const Rectangle& rectangle, const Vector4& color);
         static void Draw(const Circle& circle, const Vector4& color);
-	};
+    };
 }

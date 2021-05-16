@@ -32,14 +32,14 @@
 
 namespace MxEngine
 {
-	class RectangleObject
-	{
-		VertexBufferHandle VBO;
-		VertexArrayHandle VAO;
-	public:
-		static constexpr size_t VertexCount = 2 * 3; // 2 triangles, each with 3 vertecies
+    class RectangleObject
+    {
+        VertexBufferHandle VBO;
+        VertexArrayHandle VAO;
+    public:
+        static constexpr size_t VertexCount = 2 * 3; // 2 triangles, each with 3 vertecies
 
-		void Init(float halfSize);
-		const VertexArray& GetVAO() const;
-	};
+        void Init(float halfSize);
+        const VertexArray& GetVAO() const;
+    };
 }

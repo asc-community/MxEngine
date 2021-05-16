@@ -30,9 +30,9 @@
 
 namespace MxEngine::GUI
 {
-	/*!
-	draws fps profiler in current window
-	\param name drawn graph discription name
-	*/
-	void DrawProfiler(const char* name);
+    /*!
+    draws fps profiler in current window
+    \param name drawn graph discription name
+    */
+    void DrawProfiler(const char* name);
 }

@@ -32,59 +32,59 @@ namespace MxEngine
 {
     MxObject::Handle MxObject::Create()
     {
-		auto object = Factory<MxObject>::Create();
-		object->handle = object.GetHandle();
-		object.MakeStatic();
-		return object;
+        auto object = Factory<MxObject>::Create();
+        object->handle = object.GetHandle();
+        object.MakeStatic();
+        return object;
     }
 
-	void MxObject::Destroy(MxObject::Handle object)
-	{
-		if(object.IsValid()) Factory<MxObject>::Destroy(object);
-	}
+    void MxObject::Destroy(MxObject::Handle object)
+    {
+        if(object.IsValid()) Factory<MxObject>::Destroy(object);
+    }
 
     void MxObject::Destroy(MxObject& object)
     {
-		MX_ASSERT(object.handle != InvalidHandle);
-		Factory<MxObject>::GetPool().Deallocate(object.handle);
+        MX_ASSERT(object.handle != InvalidHandle);
+        Factory<MxObject>::GetPool().Deallocate(object.handle);
     }
 
     ComponentView<MxObject> MxObject::GetObjects()
     {
-		return ComponentView<MxObject>{ Factory<MxObject>::GetPool() };
+        return ComponentView<MxObject>{ Factory<MxObject>::GetPool() };
     }
 
-	MxObject::Handle MxObject::GetByName(const MxString& name)
-	{
-		auto& factory = Factory<MxObject>::GetPool();
-		for (auto& resource : factory)
-		{
-			if (resource.value.Name == name)
-				return MxObject::Handle{ resource.uuid, factory.IndexOf(resource) };
-		}
-		return MxObject::Handle{ };
-	}
+    MxObject::Handle MxObject::GetByName(const MxString& name)
+    {
+        auto& factory = Factory<MxObject>::GetPool();
+        for (auto& resource : factory)
+        {
+            if (resource.value.Name == name)
+                return MxObject::Handle{ resource.uuid, factory.IndexOf(resource) };
+        }
+        return MxObject::Handle{ };
+    }
 
-	MxObject::Handle MxObject::GetHandle(const MxObject& object)
-	{
-		return MxObject::GetByHandle(object.GetNativeHandle());
-	}
+    MxObject::Handle MxObject::GetHandle(const MxObject& object)
+    {
+        return MxObject::GetByHandle(object.GetNativeHandle());
+    }
 
-	MxObject::Handle MxObject::GetByHandle(EngineHandle handle)
-	{
-		MX_ASSERT(handle != InvalidHandle);
-		auto& managedObject = Factory<MxObject>::GetPool()[handle];
-		MX_ASSERT(managedObject.refCount > 0 && managedObject.uuid != UUIDGenerator::GetNull());
-		return MxObject::Handle(managedObject.uuid, handle);
-	}
+    MxObject::Handle MxObject::GetByHandle(EngineHandle handle)
+    {
+        MX_ASSERT(handle != InvalidHandle);
+        auto& managedObject = Factory<MxObject>::GetPool()[handle];
+        MX_ASSERT(managedObject.refCount > 0 && managedObject.uuid != UUIDGenerator::GetNull());
+        return MxObject::Handle(managedObject.uuid, handle);
+    }
 
     MxObject::EngineHandle MxObject::GetNativeHandle() const
     {
-		return this->handle;
+        return this->handle;
     }
 
     MxObject::~MxObject()
     {
-		this->components.RemoveAllComponents();
+        this->components.RemoveAllComponents();
     }
 }

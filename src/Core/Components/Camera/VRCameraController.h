@@ -32,24 +32,24 @@
 
 namespace MxEngine
 {
-	class VRCameraController
-	{
-		MAKE_COMPONENT(VRCameraController);
+    class VRCameraController
+    {
+        MAKE_COMPONENT(VRCameraController);
 
-		ShaderHandle shaderVR;
+        ShaderHandle shaderVR;
 
-		void UpdateEyes(CameraController::Handle& leftCamera, CameraController::Handle& rightCamera);
-		void Render(TextureHandle& target, const TextureHandle& leftEye, const TextureHandle& rightEye);
-	public:
-		VRCameraController() = default;
+        void UpdateEyes(CameraController::Handle& leftCamera, CameraController::Handle& rightCamera);
+        void Render(TextureHandle& target, const TextureHandle& leftEye, const TextureHandle& rightEye);
+    public:
+        VRCameraController() = default;
 
-		void OnUpdate(float timeDelta);
+        void OnUpdate(float timeDelta);
 
-		CameraController::Handle LeftEye;
-		CameraController::Handle RightEye;
-		float EyeDistance = 0.1f;
-		float FocusDistance = 10.0f;
+        CameraController::Handle LeftEye;
+        CameraController::Handle RightEye;
+        float EyeDistance = 0.1f;
+        float FocusDistance = 10.0f;
 
-		void Init();
-	};
+        void Init();
+    };
 }

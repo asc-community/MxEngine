@@ -30,33 +30,33 @@
 
 namespace MxEngine
 {
-	VertexBuffer::VertexBuffer(const VertexScalar* data, size_t sizeInScalars, UsageType usage)
-	{
-		this->Load(data, sizeInScalars, usage);
-	}
-
-	size_t VertexBuffer::GetSize() const
+    VertexBuffer::VertexBuffer(const VertexScalar* data, size_t sizeInScalars, UsageType usage)
     {
-		return this->GetByteSize() / sizeof(VertexScalar);
+        this->Load(data, sizeInScalars, usage);
     }
 
-	void VertexBuffer::Load(const VertexScalar* data, size_t sizeInScalars, UsageType usage)
-	{
-		BufferBase::Load(BufferType::ARRAY, (const uint8_t*)data, sizeInScalars * sizeof(VertexScalar), usage);
-	}
+    size_t VertexBuffer::GetSize() const
+    {
+        return this->GetByteSize() / sizeof(VertexScalar);
+    }
 
-	void VertexBuffer::BufferSubData(const VertexScalar* data, size_t sizeInScalars, size_t offsetInScalars)
-	{
-		BufferBase::BufferSubData((const uint8_t*)data, sizeInScalars * sizeof(VertexScalar), offsetInScalars * sizeof(VertexScalar));
-	}
+    void VertexBuffer::Load(const VertexScalar* data, size_t sizeInScalars, UsageType usage)
+    {
+        BufferBase::Load(BufferType::ARRAY, (const uint8_t*)data, sizeInScalars * sizeof(VertexScalar), usage);
+    }
 
-	void VertexBuffer::BufferDataWithResize(const VertexScalar* data, size_t sizeInScalars)
-	{
-		BufferBase::BufferDataWithResize((const uint8_t*)data, sizeInScalars * sizeof(VertexScalar));
-	}
+    void VertexBuffer::BufferSubData(const VertexScalar* data, size_t sizeInScalars, size_t offsetInScalars)
+    {
+        BufferBase::BufferSubData((const uint8_t*)data, sizeInScalars * sizeof(VertexScalar), offsetInScalars * sizeof(VertexScalar));
+    }
 
-	void VertexBuffer::GetBufferData(VertexScalar* data, size_t sizeInScalars, size_t offsetInScalars) const
-	{
-		BufferBase::GetBufferData((uint8_t*)data, sizeInScalars * sizeof(VertexScalar), offsetInScalars * sizeof(VertexScalar));
-	}
+    void VertexBuffer::BufferDataWithResize(const VertexScalar* data, size_t sizeInScalars)
+    {
+        BufferBase::BufferDataWithResize((const uint8_t*)data, sizeInScalars * sizeof(VertexScalar));
+    }
+
+    void VertexBuffer::GetBufferData(VertexScalar* data, size_t sizeInScalars, size_t offsetInScalars) const
+    {
+        BufferBase::GetBufferData((uint8_t*)data, sizeInScalars * sizeof(VertexScalar), offsetInScalars * sizeof(VertexScalar));
+    }
 }

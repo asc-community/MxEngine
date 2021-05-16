@@ -34,29 +34,29 @@ struct ObjectId;
 
 namespace MxEngine
 {
-	struct ScriptInfo;
-	class Scriptable;
+    struct ScriptInfo;
+    class Scriptable;
 
-	class Script
-	{
-		MAKE_COMPONENT(Script);
+    class Script
+    {
+        MAKE_COMPONENT(Script);
 
-		StringId scriptName = 0;
-		Scriptable* scriptImpl = nullptr;
-	public:
-		Script() = default;
-		Script(const MxString& scriptName);
-		void Init();
-		void OnUpdate(float dt);
+        StringId scriptName = 0;
+        Scriptable* scriptImpl = nullptr;
+    public:
+        Script() = default;
+        Script(const MxString& scriptName);
+        void Init();
+        void OnUpdate(float dt);
 
-		void SetScriptableObject(const ScriptInfo& scriptInfo);
-		void SetScriptableObject(const MxString& scriptName);
-		bool HasScriptableObject() const;
-		void RemoveScriptableObject();
-		Scriptable* GetScriptableObject();
-		StringId GetHashedScriptName() const;
-		const MxString& GetScriptName() const;
-		const MxString& GetScriptFileName() const;
-		const Scriptable* GetScriptableObject() const;
-	};
+        void SetScriptableObject(const ScriptInfo& scriptInfo);
+        void SetScriptableObject(const MxString& scriptName);
+        bool HasScriptableObject() const;
+        void RemoveScriptableObject();
+        Scriptable* GetScriptableObject();
+        StringId GetHashedScriptName() const;
+        const MxString& GetScriptName() const;
+        const MxString& GetScriptFileName() const;
+        const Scriptable* GetScriptableObject() const;
+    };
 }
