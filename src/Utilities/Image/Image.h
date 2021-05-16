@@ -34,36 +34,36 @@
 
 namespace MxEngine
 {
-	class Image
-	{
-		uint8_t* data;
-		size_t width;
-		size_t height;
-		uint8_t channels;
-		bool isFloatingPoint;
+    class Image
+    {
+        uint8_t* data;
+        size_t width;
+        size_t height;
+        uint8_t channels;
+        bool isFloatingPoint;
 
-		void Free();
-	public:
-		Image();
-		Image(uint8_t* data, size_t width, size_t height, size_t channels, bool isFloatingPoint);
-		~Image();
-		Image(const Image&) = delete;
-		Image& operator=(const Image&) = delete;
-		Image(Image&&) noexcept;
-		Image& operator=(Image&&) noexcept;
+        void Free();
+    public:
+        Image();
+        Image(uint8_t* data, size_t width, size_t height, size_t channels, bool isFloatingPoint);
+        ~Image();
+        Image(const Image&) = delete;
+        Image& operator=(const Image&) = delete;
+        Image(Image&&) noexcept;
+        Image& operator=(Image&&) noexcept;
 
-		uint8_t* GetRawData() const;
-		size_t GetWidth() const;
-		size_t GetHeight() const;
-		size_t GetChannelCount() const;
-		size_t GetChannelSize() const;
-		size_t GetPixelSize() const;
-		size_t GetTotalByteSize() const;
-		bool IsFloatingPoint() const;
+        uint8_t* GetRawData() const;
+        size_t GetWidth() const;
+        size_t GetHeight() const;
+        size_t GetChannelCount() const;
+        size_t GetChannelSize() const;
+        size_t GetPixelSize() const;
+        size_t GetTotalByteSize() const;
+        bool IsFloatingPoint() const;
 
-		void SetPixelByte(size_t x, size_t y, uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);
-		void SetPixelFloat(size_t x, size_t y, float r, float g, float b, float a = 1.0f);
-		std::array<uint8_t, 4> GetPixelByte(size_t x, size_t y) const;
-		std::array<float, 4> GetPixelFloat(size_t x, size_t y) const;
-	};
+        void SetPixelByte(size_t x, size_t y, uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);
+        void SetPixelFloat(size_t x, size_t y, float r, float g, float b, float a = 1.0f);
+        std::array<uint8_t, 4> GetPixelByte(size_t x, size_t y) const;
+        std::array<float, 4> GetPixelFloat(size_t x, size_t y) const;
+    };
 }

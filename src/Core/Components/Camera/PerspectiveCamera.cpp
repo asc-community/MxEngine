@@ -30,16 +30,16 @@
 
 namespace MxEngine
 {
-	void PerspectiveCamera::SetFOV(float angle)
-	{
-		this->SetZoom(angle / DefaultFOV);
-		this->SetProjectionMatrix(MakeReversedPerspectiveMatrix(
-			Radians(this->GetFOV()), this->GetAspectRatio(), this->GetZNear(), this->GetZFar()
-		));
-	}
+    void PerspectiveCamera::SetFOV(float angle)
+    {
+        this->SetZoom(angle / DefaultFOV);
+        this->SetProjectionMatrix(MakeReversedPerspectiveMatrix(
+            Radians(this->GetFOV()), this->GetAspectRatio(), this->GetZNear(), this->GetZFar()
+        ));
+    }
 
-	float PerspectiveCamera::GetFOV() const
-	{
-		return this->GetZoom() * DefaultFOV;
-	}
+    float PerspectiveCamera::GetFOV() const
+    {
+        return this->GetZoom() * DefaultFOV;
+    }
 }

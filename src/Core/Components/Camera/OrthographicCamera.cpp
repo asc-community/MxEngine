@@ -31,16 +31,16 @@
 
 namespace MxEngine
 {
-	void OrthographicCamera::SetSize(float size)
-	{
-		this->SetZoom(size);
-		this->SetProjectionMatrix(MakeOrthographicMatrix(
-			-this->GetAspectRatio() * size, this->GetAspectRatio() * size, -size, size, this->GetZNear(), this->GetZFar()
-		));
-	}
+    void OrthographicCamera::SetSize(float size)
+    {
+        this->SetZoom(size);
+        this->SetProjectionMatrix(MakeOrthographicMatrix(
+            -this->GetAspectRatio() * size, this->GetAspectRatio() * size, -size, size, this->GetZNear(), this->GetZFar()
+        ));
+    }
 
-	float OrthographicCamera::GetSize() const
-	{
-		return this->GetZoom();
-	}
+    float OrthographicCamera::GetSize() const
+    {
+        return this->GetZoom();
+    }
 }

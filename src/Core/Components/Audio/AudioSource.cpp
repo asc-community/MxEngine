@@ -66,13 +66,13 @@ namespace MxEngine
     void AudioSource::Play()
     {
         this->isPlaying = true;
-    	this->player->Play();
+        this->player->Play();
     }
     
     void AudioSource::Stop()
     {
         this->isPlaying = false;
-    	this->player->Stop();
+        this->player->Stop();
     }
 
     void AudioSource::Pause()
@@ -101,7 +101,7 @@ namespace MxEngine
     void AudioSource::SetVolume(float volume)
     {
         this->currentVolume = Clamp(volume, 0.0f, 1.0f);
-    	this->player->SetVolume(this->currentVolume);
+        this->player->SetVolume(this->currentVolume);
     }
 
     void AudioSource::SetLooping(bool value)

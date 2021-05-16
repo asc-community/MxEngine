@@ -32,28 +32,28 @@
 
 namespace MxEngine
 {
-	class CameraSSAO
-	{
-		MAKE_COMPONENT(CameraSSAO);
+    class CameraSSAO
+    {
+        MAKE_COMPONENT(CameraSSAO);
 
-		uint8_t sampleCount = 4;
-		uint8_t blurIterations = 1;
-		uint8_t blurLOD = 2;
-		float intensity = 3.0f;
-		float radius = 1.0f;
-	public:
-		CameraSSAO() = default;
+        uint8_t sampleCount = 4;
+        uint8_t blurIterations = 1;
+        uint8_t blurLOD = 2;
+        float intensity = 3.0f;
+        float radius = 1.0f;
+    public:
+        CameraSSAO() = default;
 
-		float GetIntensity() const;
-		float GetRadius() const;
-		size_t GetBlurIterations() const;
-		size_t GetBlurLOD() const;
-		size_t GetSampleCount() const;
+        float GetIntensity() const;
+        float GetRadius() const;
+        size_t GetBlurIterations() const;
+        size_t GetBlurLOD() const;
+        size_t GetSampleCount() const;
 
-		void SetSampleCount(size_t samples);
-		void SetIntensity(float intensity);
-		void SetRadius(float radius);
-		void SetBlurIterations(size_t iterations);
-		void SetBlurLOD(size_t lod);
-	};
+        void SetSampleCount(size_t samples);
+        void SetIntensity(float intensity);
+        void SetRadius(float radius);
+        void SetBlurIterations(size_t iterations);
+        void SetBlurLOD(size_t lod);
+    };
 }

@@ -32,32 +32,32 @@
 
 namespace MxEngine
 {
-	class VertexBuffer;
-	class IndexBuffer;
-	struct VertexLayout;
+    class VertexBuffer;
+    class IndexBuffer;
+    struct VertexLayout;
 
-	class VertexArray
-	{
-		using BindableId = unsigned int;
+    class VertexArray
+    {
+        using BindableId = unsigned int;
 
-		BindableId id = 0;
-		int attributeIndex = 0;
-		void FreeVertexArray();
-	public:
-		VertexArray();
-		~VertexArray();
-		VertexArray(const VertexArray&) = delete;
-		VertexArray(VertexArray&& array) noexcept;
-		VertexArray& operator=(const VertexArray&) = delete;
-		VertexArray& operator=(VertexArray&& array) noexcept;
+        BindableId id = 0;
+        int attributeIndex = 0;
+        void FreeVertexArray();
+    public:
+        VertexArray();
+        ~VertexArray();
+        VertexArray(const VertexArray&) = delete;
+        VertexArray(VertexArray&& array) noexcept;
+        VertexArray& operator=(const VertexArray&) = delete;
+        VertexArray& operator=(VertexArray&& array) noexcept;
 
-		BindableId GetNativeHandle() const;
-		void Bind() const;
-		void Unbind() const;
-		void AddVertexBuffer(const VertexBuffer& buffer, ArrayView<VertexLayout> layout);
-		void AddInstancedVertexBuffer(const VertexBuffer& buffer, ArrayView<VertexLayout> layout);
-		void PopBuffer(ArrayView<VertexLayout> layout);
-		void LinkIndexBuffer(const IndexBuffer& buffer);
-		int GetAttributeCount() const;
-	};
+        BindableId GetNativeHandle() const;
+        void Bind() const;
+        void Unbind() const;
+        void AddVertexBuffer(const VertexBuffer& buffer, ArrayView<VertexLayout> layout);
+        void AddInstancedVertexBuffer(const VertexBuffer& buffer, ArrayView<VertexLayout> layout);
+        void PopBuffer(ArrayView<VertexLayout> layout);
+        void LinkIndexBuffer(const IndexBuffer& buffer);
+        int GetAttributeCount() const;
+    };
 }

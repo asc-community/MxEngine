@@ -32,48 +32,48 @@
 
 namespace MxEngine
 {
-	class ShaderStorageBuffer : public BufferBase
-	{
-	public:
-		template<typename T>
-		ShaderStorageBuffer(const T* data, size_t count, UsageType usage)
-		{
-			this->Load<T>(data, count, usage);
-		}
+    class ShaderStorageBuffer : public BufferBase
+    {
+    public:
+        template<typename T>
+        ShaderStorageBuffer(const T* data, size_t count, UsageType usage)
+        {
+            this->Load<T>(data, count, usage);
+        }
 
-		template<typename T>
-		size_t GetSize() const
-		{
-			return this->GetByteSize() / sizeof(T);
-		}
+        template<typename T>
+        size_t GetSize() const
+        {
+            return this->GetByteSize() / sizeof(T);
+        }
 
-		template<typename T>
-		void Load(const T* data, size_t count, UsageType usage)
-		{
-			BufferBase::Load(BufferType::SHADER_STORAGE, (const uint8_t*)data, count * sizeof(T), usage);
-		}
+        template<typename T>
+        void Load(const T* data, size_t count, UsageType usage)
+        {
+            BufferBase::Load(BufferType::SHADER_STORAGE, (const uint8_t*)data, count * sizeof(T), usage);
+        }
 
-		template<typename T>
-		void BufferSubData(const T* data, size_t count, size_t offsetCount = 0)
-		{
-			BufferBase::BufferSubData((const uint8_t*)data, count * sizeof(T), offsetCount * sizeof(T));
-		}
+        template<typename T>
+        void BufferSubData(const T* data, size_t count, size_t offsetCount = 0)
+        {
+            BufferBase::BufferSubData((const uint8_t*)data, count * sizeof(T), offsetCount * sizeof(T));
+        }
 
-		template<typename T>
-		void BufferSubDataWithResize(const T* data, size_t count)
-		{
-			BufferBase::BufferDataWithResize((const uint8_t*)data, count * sizeof(T));
-		}
+        template<typename T>
+        void BufferSubDataWithResize(const T* data, size_t count)
+        {
+            BufferBase::BufferDataWithResize((const uint8_t*)data, count * sizeof(T));
+        }
 
-		template<typename T>
-		void GetBufferData(T* data, size_t count, size_t offsetCount = 0)
-		{
-			BufferBase::GetBufferData((uint8_t*)data, count * sizeof(T), offsetCount * sizeof(T));
-		}
+        template<typename T>
+        void GetBufferData(T* data, size_t count, size_t offsetCount = 0)
+        {
+            BufferBase::GetBufferData((uint8_t*)data, count * sizeof(T), offsetCount * sizeof(T));
+        }
 
-		void BindBase(size_t index) const
-		{
-			BufferBase::BindBase(index);
-		}
-	};
+        void BindBase(size_t index) const
+        {
+            BufferBase::BindBase(index);
+        }
+    };
 }

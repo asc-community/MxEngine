@@ -30,19 +30,19 @@
 
 namespace MxEngine
 {
-	/*
-	creates base event class and adds GetEventType() pure virtual method. Used for EventDispatcher class
-	*/
-	#define MAKE_EVENT_BASE(name) struct name { inline virtual uint32_t GetEventType() const = 0; virtual ~name() = default; }
+    /*
+    creates base event class and adds GetEventType() pure virtual method. Used for EventDispatcher class
+    */
+    #define MAKE_EVENT_BASE(name) struct name { inline virtual uint32_t GetEventType() const = 0; virtual ~name() = default; }
 
-	/*
-	inserted into class body of derived classes from base event. Using compile-time hash from class name to generate type id
-	*/
-	#define MAKE_EVENT(class_name) \
-	template<typename T> friend class MxEngine::EventDispatcherImpl;\
-	public: inline virtual uint32_t GetEventType() const override { return eventType; } private:\
-	constexpr static uint32_t eventType = STRING_ID(#class_name)
+    /*
+    inserted into class body of derived classes from base event. Using compile-time hash from class name to generate type id
+    */
+    #define MAKE_EVENT(class_name) \
+    template<typename T> friend class MxEngine::EventDispatcherImpl;\
+    public: inline virtual uint32_t GetEventType() const override { return eventType; } private:\
+    constexpr static uint32_t eventType = STRING_ID(#class_name)
 
-	template<typename EventBase>
-	class EventDispatcherImpl;
+    template<typename EventBase>
+    class EventDispatcherImpl;
 }

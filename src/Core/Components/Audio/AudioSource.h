@@ -34,63 +34,63 @@
 
 namespace MxEngine
 {
-	class AudioSource
-	{
-		MAKE_COMPONENT(AudioSource);
+    class AudioSource
+    {
+        MAKE_COMPONENT(AudioSource);
 
-		AudioBufferHandle buffer;
-		AudioPlayerHandle player;
-		float currentVolume = 1.0f;
-		float currentSpeed = 1.0f;
-		Vector3 velocity = MakeVector3(0.0f);
-		Vector3 direction = MakeVector3(0.0f, 0.0f, 1.0f);
-		float outerAngleVolume = 0.0f;
-		float outerAngle = 360.0f;
-		float innerAngle = 360.0f;
-		float rollofFactor = 1.0f;
-		float referenceDistance = 1.0f;
-		bool isLooping = false;
-		bool isPlaying = false;
-		bool isRelative = false;
-	public:
-		void OnUpdate(float timeDelta);
-		void Init();
-		AudioSource() = default;
-		AudioSource(const AudioBufferHandle& buffer);
+        AudioBufferHandle buffer;
+        AudioPlayerHandle player;
+        float currentVolume = 1.0f;
+        float currentSpeed = 1.0f;
+        Vector3 velocity = MakeVector3(0.0f);
+        Vector3 direction = MakeVector3(0.0f, 0.0f, 1.0f);
+        float outerAngleVolume = 0.0f;
+        float outerAngle = 360.0f;
+        float innerAngle = 360.0f;
+        float rollofFactor = 1.0f;
+        float referenceDistance = 1.0f;
+        bool isLooping = false;
+        bool isPlaying = false;
+        bool isRelative = false;
+    public:
+        void OnUpdate(float timeDelta);
+        void Init();
+        AudioSource() = default;
+        AudioSource(const AudioBufferHandle& buffer);
 
-		void Load(AudioBufferHandle buffer);
-		AudioBufferHandle GetLoadedSource() const;
+        void Load(AudioBufferHandle buffer);
+        AudioBufferHandle GetLoadedSource() const;
 
-		void Play();
-		void Stop();
-		void Pause();
-		void Reset();
-		void Replay();
-		void SetPlaying(bool isPlaying);
-		void SetVolume(float volume);
-		void SetLooping(bool value);
-		void SetRelative(bool value);
-		void SetPlaybackSpeed(float speed);
-		void SetVelocity(const Vector3& velocity);
-		void SetDirection(const Vector3& direction);
-		void SetOuterAngle(float angle);
-		void SetInnerAngle(float angle);
-		void SetOuterAngleVolume(float volume);
-		void SetRollofFactor(float factor);
-		void SetReferenceDistance(float distance);
-		void MakeOmnidirectional();
-		bool IsOmnidirectional() const;
-		bool IsLooping() const;
-		bool IsPlaying() const;
-		bool IsRelative() const;
-		float GetVolume() const;
-		float GetPlaybackSpeed() const;
-		float GetOuterAngleVolume() const;
-		float GetOuterAngle() const;
-		float GetInnerAngle() const;
-		const Vector3& GetVelocity() const;
-		const Vector3& GetDirection() const;
-		float GetRollofFactor() const;
-		float GetReferenceDistance() const;
-	};
+        void Play();
+        void Stop();
+        void Pause();
+        void Reset();
+        void Replay();
+        void SetPlaying(bool isPlaying);
+        void SetVolume(float volume);
+        void SetLooping(bool value);
+        void SetRelative(bool value);
+        void SetPlaybackSpeed(float speed);
+        void SetVelocity(const Vector3& velocity);
+        void SetDirection(const Vector3& direction);
+        void SetOuterAngle(float angle);
+        void SetInnerAngle(float angle);
+        void SetOuterAngleVolume(float volume);
+        void SetRollofFactor(float factor);
+        void SetReferenceDistance(float distance);
+        void MakeOmnidirectional();
+        bool IsOmnidirectional() const;
+        bool IsLooping() const;
+        bool IsPlaying() const;
+        bool IsRelative() const;
+        float GetVolume() const;
+        float GetPlaybackSpeed() const;
+        float GetOuterAngleVolume() const;
+        float GetOuterAngle() const;
+        float GetInnerAngle() const;
+        const Vector3& GetVelocity() const;
+        const Vector3& GetDirection() const;
+        float GetRollofFactor() const;
+        float GetReferenceDistance() const;
+    };
 }

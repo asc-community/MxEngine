@@ -32,12 +32,12 @@
 
 namespace MxEngine
 {
-	class FpsUpdateEvent : public EventBase
-	{
-		MAKE_EVENT(FpsUpdateEvent);
-	public:
-		const size_t FPS;
-		inline FpsUpdateEvent(size_t fps)
-			: FPS(fps) { }
-	};
+    class FpsUpdateEvent : public EventBase
+    {
+        MAKE_EVENT(FpsUpdateEvent);
+    public:
+        const size_t FPS;
+        inline FpsUpdateEvent(size_t fps)
+            : FPS(fps) { }
+    };
 }

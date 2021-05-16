@@ -34,7 +34,7 @@ namespace MxEngine::GUI
 {
     void DrawRenderStatistics(const char* name)
     {
-		auto& statistics = Rendering::GetController().GetRenderStatistics().GetEntries();
+        auto& statistics = Rendering::GetController().GetRenderStatistics().GetEntries();
 
         for (auto entry = statistics.begin(); entry != statistics.end(); entry++)
         {

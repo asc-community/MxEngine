@@ -32,5 +32,5 @@
 
 namespace MxEngine
 {
-	MAKE_EVENT_BASE(EventBase);
+    MAKE_EVENT_BASE(EventBase);
 }

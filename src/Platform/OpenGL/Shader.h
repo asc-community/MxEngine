@@ -32,35 +32,35 @@
 
 namespace MxEngine
 {
-	struct PipelineStageInfo;
+    struct PipelineStageInfo;
 
-	class Shader : public ShaderBase
-	{
-	public:
-		enum PipelineStage
-		{
-			VERTEX = 0, // should be equal to 0, next to 1, etc.
-			GEOMETRY,
-			FRAGMENT,
-			STAGE_COUNT // should be last
-		};
-		#if defined(MXENGINE_DEBUG)
-		std::array<MxString, PipelineStage::STAGE_COUNT> debugFilePaths;
-		MxVector<MxString> includedFilePaths;
-		#endif
+    class Shader : public ShaderBase
+    {
+    public:
+        enum PipelineStage
+        {
+            VERTEX = 0, // should be equal to 0, next to 1, etc.
+            GEOMETRY,
+            FRAGMENT,
+            STAGE_COUNT // should be last
+        };
+        #if defined(MXENGINE_DEBUG)
+        std::array<MxString, PipelineStage::STAGE_COUNT> debugFilePaths;
+        MxVector<MxString> includedFilePaths;
+        #endif
 
-		static BindableId CreateShaderProgram(ShaderId* shaderIds, const PipelineStageInfo* stageInfos, size_t count);
-		void LoadDebugVariables(const PipelineStageInfo* stageInfos, size_t count);
-	public:
-		void Load(const MxString& vertexPath, const MxString& fragmentPath);
-		void Load(const MxString& vertexPath, const MxString& geometryPath, const MxString& fragmentPath);
-		template<typename FilePath> void Load(const FilePath& vertexPath, const FilePath& fragmentPath);
-		template<typename FilePath> void Load(const FilePath& vertexPath, const FilePath& geometryPath, const FilePath& fragmentPath);
+        static BindableId CreateShaderProgram(ShaderId* shaderIds, const PipelineStageInfo* stageInfos, size_t count);
+        void LoadDebugVariables(const PipelineStageInfo* stageInfos, size_t count);
+    public:
+        void Load(const MxString& vertexPath, const MxString& fragmentPath);
+        void Load(const MxString& vertexPath, const MxString& geometryPath, const MxString& fragmentPath);
+        template<typename FilePath> void Load(const FilePath& vertexPath, const FilePath& fragmentPath);
+        template<typename FilePath> void Load(const FilePath& vertexPath, const FilePath& geometryPath, const FilePath& fragmentPath);
 
-		void LoadFromString(const MxString& vertexSource, const MxString& fragmentSource);
-		void LoadFromString(const MxString& vertexSource, const MxString& geometrySource, const MxString& fragmentSource);
+        void LoadFromString(const MxString& vertexSource, const MxString& fragmentSource);
+        void LoadFromString(const MxString& vertexSource, const MxString& geometrySource, const MxString& fragmentSource);
 
-		const MxString& GetDebugFilePath(Shader::PipelineStage stage) const;
-		const MxVector<MxString>& GetIncludedFilePaths() const;
-	};
+        const MxString& GetDebugFilePath(Shader::PipelineStage stage) const;
+        const MxVector<MxString>& GetIncludedFilePaths() const;
+    };
 }

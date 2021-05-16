@@ -32,86 +32,86 @@
 
 namespace MxEngine
 {
-	enum class BlendFactor
-	{
-		NONE = 0,
-		ZERO,
-		ONE,
-		ONE_MINUS_SRC_COLOR,
-		SRC_ALPHA,
-		ONE_MINUS_SRC_ALPHA,
-		DST_ALPHA,
-		ONE_MINUS_DST_ALPHA,
-		DST_COLOR,
-		ONE_MINUS_DST_COLOR,
-		CONSTANT_COLOR,
-		ONE_MINUS_CONSTANT_COLOR,
-		CONSTANT_ALPHA,
-		ONE_MINUS_CONSTANT_ALPHA,
-	};
+    enum class BlendFactor
+    {
+        NONE = 0,
+        ZERO,
+        ONE,
+        ONE_MINUS_SRC_COLOR,
+        SRC_ALPHA,
+        ONE_MINUS_SRC_ALPHA,
+        DST_ALPHA,
+        ONE_MINUS_DST_ALPHA,
+        DST_COLOR,
+        ONE_MINUS_DST_COLOR,
+        CONSTANT_COLOR,
+        ONE_MINUS_CONSTANT_COLOR,
+        CONSTANT_ALPHA,
+        ONE_MINUS_CONSTANT_ALPHA,
+    };
 
-	enum class DepthFunction
-	{
-		EQUAL = 0,
-		NOT_EQUAL,
-		LESS,
-		GREATER,
-		LESS_EQUAL,
-		GREATER_EQUAL,
-		ALWAYS,
-		NEVER,
-	};
+    enum class DepthFunction
+    {
+        EQUAL = 0,
+        NOT_EQUAL,
+        LESS,
+        GREATER,
+        LESS_EQUAL,
+        GREATER_EQUAL,
+        ALWAYS,
+        NEVER,
+    };
 
-	enum class RenderPrimitive
-	{
-		POINTS = 0, 
-		LINE_STRIP, 
-		LINE_LOOP, 
-		LINES, 
-		LINE_STRIP_ADJACENCY, 
-		LINES_ADJACENCY, 
-		TRIANGLE_STRIP, 
-		TRIANGLE_FAN, 
-		TRIANGLES, 
-		TRIANGLE_STRIP_ADJACENCY, 
-		TRIANGLES_ADJACENCY,
-		PATCHES,
-	};
+    enum class RenderPrimitive
+    {
+        POINTS = 0, 
+        LINE_STRIP, 
+        LINE_LOOP, 
+        LINES, 
+        LINE_STRIP_ADJACENCY, 
+        LINES_ADJACENCY, 
+        TRIANGLE_STRIP, 
+        TRIANGLE_FAN, 
+        TRIANGLES, 
+        TRIANGLE_STRIP_ADJACENCY, 
+        TRIANGLES_ADJACENCY,
+        PATCHES,
+    };
 
-	class Renderer
-	{
-		bool depthBufferEnabled = false;
-		unsigned int clearMask = 0;
-	public:
-		Renderer();
+    class Renderer
+    {
+        bool depthBufferEnabled = false;
+        unsigned int clearMask = 0;
+    public:
+        Renderer();
 
-		void DrawVertecies(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset);
-		void DrawIndicies(RenderPrimitive primitive, size_t indexCount, size_t indexOffset);
-		void DrawVerteciesInstanced(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount);
-		void DrawIndiciesInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount);
+        void DrawVertecies(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset);
+        void DrawIndicies(RenderPrimitive primitive, size_t indexCount, size_t indexOffset);
+        void DrawVerteciesInstanced(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount);
+        void DrawIndiciesInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount);
 
-		void SetDefaultVertexAttribute(size_t index, float v) const;
-		void SetDefaultVertexAttribute(size_t index, const Vector2& vec) const;
-		void SetDefaultVertexAttribute(size_t index, const Vector3& vec) const;
-		void SetDefaultVertexAttribute(size_t index, const Vector4& vec) const;
-		void SetDefaultVertexAttribute(size_t index, const Matrix4x4& mat) const;
-		void SetDefaultVertexAttribute(size_t index, const Matrix3x3& mat) const;
-		void Clear() const;
-		void Flush() const;
-		void Finish() const;
-		void SetViewport(int x, int y, int width, int height) const;
-		Renderer& UseClipDistance(size_t count);
-		Renderer& UseSeamlessCubeMaps(bool value = true);
-		Renderer& UseColorMask(bool r, bool g, bool b, bool a);
-		Renderer& UseDepthBufferMask(bool value = true);
-		Renderer& UseSampling(bool value = true);
-		Renderer& UseDepthBuffer(bool value = true);
-		Renderer& UseReversedDepth(bool value = true);
-		Renderer& UseDepthFunction(DepthFunction function);
-		Renderer& UseCulling(bool value = true, bool counterClockWise = true, bool cullBack = true);
-		Renderer& UseClearColor(float r, float g, float b, float a = 0.0f);
-		Renderer& UseBlendFactors(BlendFactor src, BlendFactor dist);
-		Renderer& UseAnisotropicFiltering(float factor);
-		float GetLargestAnisotropicFactor() const;
-	};
+        void SetDefaultVertexAttribute(size_t index, float v) const;
+        void SetDefaultVertexAttribute(size_t index, const Vector2& vec) const;
+        void SetDefaultVertexAttribute(size_t index, const Vector3& vec) const;
+        void SetDefaultVertexAttribute(size_t index, const Vector4& vec) const;
+        void SetDefaultVertexAttribute(size_t index, const Matrix4x4& mat) const;
+        void SetDefaultVertexAttribute(size_t index, const Matrix3x3& mat) const;
+        void Clear() const;
+        void Flush() const;
+        void Finish() const;
+        void SetViewport(int x, int y, int width, int height) const;
+        Renderer& UseClipDistance(size_t count);
+        Renderer& UseSeamlessCubeMaps(bool value = true);
+        Renderer& UseColorMask(bool r, bool g, bool b, bool a);
+        Renderer& UseDepthBufferMask(bool value = true);
+        Renderer& UseSampling(bool value = true);
+        Renderer& UseDepthBuffer(bool value = true);
+        Renderer& UseReversedDepth(bool value = true);
+        Renderer& UseDepthFunction(DepthFunction function);
+        Renderer& UseCulling(bool value = true, bool counterClockWise = true, bool cullBack = true);
+        Renderer& UseClearColor(float r, float g, float b, float a = 0.0f);
+        Renderer& UseBlendFactors(BlendFactor src, BlendFactor dist);
+        Renderer& UseAnisotropicFiltering(float factor);
+        float GetLargestAnisotropicFactor() const;
+    };
 }

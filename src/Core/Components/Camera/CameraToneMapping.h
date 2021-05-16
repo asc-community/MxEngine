@@ -33,57 +33,57 @@
 
 namespace MxEngine
 {
-	class CameraToneMapping
-	{
-		MAKE_COMPONENT(CameraToneMapping);
-	
-	public:
-		struct ColorChannels
-		{
-			Vector3 R{}, G{}, B{};
-		};
+    class CameraToneMapping
+    {
+        MAKE_COMPONENT(CameraToneMapping);
+    
+    public:
+        struct ColorChannels
+        {
+            Vector3 R{}, G{}, B{};
+        };
 
-		constexpr static float DefaultGamma = 2.2f;
-	
-	private:
-		float gamma = DefaultGamma;
-		float exposure = 1.0f;
-		float whitePoint = 1.0f;
-		float colorScale = 1.0f;
-		ACES coefficients;
-		float eyeAdaptationSpeed = 0.1f;
-		float eyeAdaptationThreshold = 0.1f;
-		float minLuminance = 0.0f;
-		float maxLuminance = 100000.0f;
-		ColorChannels colorChannels = {
-			Vector3{1.0f, 0.0f, 0.0f},
-			Vector3{0.0f, 1.0f, 0.0f},
-			Vector3{0.0f, 0.0f, 1.0f},
-		};
+        constexpr static float DefaultGamma = 2.2f;
+    
+    private:
+        float gamma = DefaultGamma;
+        float exposure = 1.0f;
+        float whitePoint = 1.0f;
+        float colorScale = 1.0f;
+        ACES coefficients;
+        float eyeAdaptationSpeed = 0.1f;
+        float eyeAdaptationThreshold = 0.1f;
+        float minLuminance = 0.0f;
+        float maxLuminance = 100000.0f;
+        ColorChannels colorChannels = {
+            Vector3{1.0f, 0.0f, 0.0f},
+            Vector3{0.0f, 1.0f, 0.0f},
+            Vector3{0.0f, 0.0f, 1.0f},
+        };
 
-	public:
-		CameraToneMapping() = default;
+    public:
+        CameraToneMapping() = default;
 
-		float GetGamma() const;
-		const ColorChannels& GetColorGrading() const;
-		float GetExposure() const;
-		float GetColorScale() const;
-		float GetWhitePoint() const;
-		const ACES& GetACESCoefficients() const;
-		float GetEyeAdaptationSpeed() const;
-		float GetEyeAdaptationThreshold() const;
-		float GetMinLuminance() const;
-		float GetMaxLuminance() const;
+        float GetGamma() const;
+        const ColorChannels& GetColorGrading() const;
+        float GetExposure() const;
+        float GetColorScale() const;
+        float GetWhitePoint() const;
+        const ACES& GetACESCoefficients() const;
+        float GetEyeAdaptationSpeed() const;
+        float GetEyeAdaptationThreshold() const;
+        float GetMinLuminance() const;
+        float GetMaxLuminance() const;
 
-		void SetColorGrading(const ColorChannels& channels);
-		void SetGamma(float gamma);
-		void SetExposure(float exposure);
-		void SetColorScale(float mult);
-		void SetWhitePoint(float point);
-		void SetEyeAdaptationThreshold(float threshold);
-		void SetEyeAdaptationSpeed(float speed);
-		void SetMinLuminance(float lum);
-		void SetMaxLuminance(float lum);
-		void SetACESCoefficients(const ACES& aces);
-	};
+        void SetColorGrading(const ColorChannels& channels);
+        void SetGamma(float gamma);
+        void SetExposure(float exposure);
+        void SetColorScale(float mult);
+        void SetWhitePoint(float point);
+        void SetEyeAdaptationThreshold(float threshold);
+        void SetEyeAdaptationSpeed(float speed);
+        void SetMinLuminance(float lum);
+        void SetMaxLuminance(float lum);
+        void SetACESCoefficients(const ACES& aces);
+    };
 }

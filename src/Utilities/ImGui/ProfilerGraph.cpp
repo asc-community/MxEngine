@@ -33,19 +33,19 @@
 
 namespace MxEngine::GUI
 {
-	void DrawProfiler(const char* name)
-	{
-		static constexpr size_t ProfilerGraphRecordSize = 128;
-		static MxVector<float> fpsData(ProfilerGraphRecordSize);
+    void DrawProfiler(const char* name)
+    {
+        static constexpr size_t ProfilerGraphRecordSize = 128;
+        static MxVector<float> fpsData(ProfilerGraphRecordSize);
 
-		INVOKE_ONCE(Event::AddEventListener<FpsUpdateEvent>(
-			"PfoilerGraph", [](FpsUpdateEvent& e) mutable
-			{
-				fpsData.push_back((float)e.FPS);
-				fpsData.erase(fpsData.begin());
-			}));
+        INVOKE_ONCE(Event::AddEventListener<FpsUpdateEvent>(
+            "PfoilerGraph", [](FpsUpdateEvent& e) mutable
+            {
+                fpsData.push_back((float)e.FPS);
+                fpsData.erase(fpsData.begin());
+            }));
 
-		ImGui::PlotLines("", fpsData.data(), (int)fpsData.size(), 0, name,
-			FLT_MAX, FLT_MAX, { ImGui::GetWindowWidth() - 15.0f, (float)ProfilerGraphRecordSize + 15.0f });
-	}
+        ImGui::PlotLines("", fpsData.data(), (int)fpsData.size(), 0, name,
+            FLT_MAX, FLT_MAX, { ImGui::GetWindowWidth() - 15.0f, (float)ProfilerGraphRecordSize + 15.0f });
+    }
 }

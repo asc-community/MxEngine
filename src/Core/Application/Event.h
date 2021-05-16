@@ -36,74 +36,74 @@ namespace MxEngine
     class Event
     {
     public:
-		/*!
-		adds new event listener to dispatcher (listener placed in waiting queue until next frame).
-		Note that multiple listeners may have same name. If so, deleting by name will result in removing all of them
-		\param name name of listener (used for deleting listener)
-		\param func listener callback functor
-		*/
-		template<typename EventType>
-		static void AddEventListener(const MxString& name, std::function<void(EventType&)> func)
-		{
-			Application::GetImpl()->GetEventDispatcher().AddEventListener(name, std::move(func));
-		}
+        /*!
+        adds new event listener to dispatcher (listener placed in waiting queue until next frame).
+        Note that multiple listeners may have same name. If so, deleting by name will result in removing all of them
+        \param name name of listener (used for deleting listener)
+        \param func listener callback functor
+        */
+        template<typename EventType>
+        static void AddEventListener(const MxString& name, std::function<void(EventType&)> func)
+        {
+            Application::GetImpl()->GetEventDispatcher().AddEventListener(name, std::move(func));
+        }
 
-		/*!
-		adds new event listener to dispatcher (listener is placed in waiting queue until next frame).
-		Note that multiple listeners may have same name. If so, deleting by name will result in removing all of them
-		\param name name of listener (used for deleting listener)
-		\param func listener callback functor (should be with signature `void callback(EventType& e)`
-		*/
-		template<typename T, typename FunctionType>
-		static void AddEventListener(const MxString& name, FunctionType&& func)
-		{
-			Application::GetImpl()->GetEventDispatcher().AddEventListener<T>(name, std::forward<FunctionType>(func));
-		}
+        /*!
+        adds new event listener to dispatcher (listener is placed in waiting queue until next frame).
+        Note that multiple listeners may have same name. If so, deleting by name will result in removing all of them
+        \param name name of listener (used for deleting listener)
+        \param func listener callback functor (should be with signature `void callback(EventType& e)`
+        */
+        template<typename T, typename FunctionType>
+        static void AddEventListener(const MxString& name, FunctionType&& func)
+        {
+            Application::GetImpl()->GetEventDispatcher().AddEventListener<T>(name, std::forward<FunctionType>(func));
+        }
 
-		/*!
-		removes all event listeners by their names (action is placed in waiting queue until next frame)
-		\param name name of listeners to be deleted
-		*/
-		static void RemoveEventListener(const MxString& name)
-		{
-			Application::GetImpl()->GetEventDispatcher().RemoveEventListener(name);
-		}
+        /*!
+        removes all event listeners by their names (action is placed in waiting queue until next frame)
+        \param name name of listeners to be deleted
+        */
+        static void RemoveEventListener(const MxString& name)
+        {
+            Application::GetImpl()->GetEventDispatcher().RemoveEventListener(name);
+        }
 
-		/*!
-		Immediately invokes event of specific type. Note that invokation also forces queues to be invalidated
-		\param event event to dispatch
-		*/
-		template<typename Event>
-		static void Invoke(Event& event)
-		{
-			Application::GetImpl()->GetEventDispatcher().Invoke(event);
-		}
+        /*!
+        Immediately invokes event of specific type. Note that invokation also forces queues to be invalidated
+        \param event event to dispatch
+        */
+        template<typename Event>
+        static void Invoke(Event& event)
+        {
+            Application::GetImpl()->GetEventDispatcher().Invoke(event);
+        }
 
-		/*!
-		Adds event to event queue. All such events will be dispatched in next frames in the order they were added
-		\param event event to shedule dispatch
-		*/
-		static void AddEvent(UniqueRef<EventBase> event)
-		{
-			Application::GetImpl()->GetEventDispatcher().AddEvent(std::move(event));
-		}
+        /*!
+        Adds event to event queue. All such events will be dispatched in next frames in the order they were added
+        \param event event to shedule dispatch
+        */
+        static void AddEvent(UniqueRef<EventBase> event)
+        {
+            Application::GetImpl()->GetEventDispatcher().AddEvent(std::move(event));
+        }
 
-		/*!
-		Invokes all shedules events in the order they were added. Note that invoke also forces queues to be invalidated
-		*/
-		static void InvokeAll()
-		{
-			Application::GetImpl()->GetEventDispatcher().InvokeAll();
-		}
+        /*!
+        Invokes all shedules events in the order they were added. Note that invoke also forces queues to be invalidated
+        */
+        static void InvokeAll()
+        {
+            Application::GetImpl()->GetEventDispatcher().InvokeAll();
+        }
 
-		/*!
-		Checks if event with specific name is in listener queue 
-		\param name name of event
-		\returns true if event listener present, false otherwise
-		*/
-		static bool HasEventListenerWithName(const MxString& name)
-		{
-			return Application::GetImpl()->GetEventDispatcher().HasEventListenerWithName(name);
-		}
+        /*!
+        Checks if event with specific name is in listener queue 
+        \param name name of event
+        \returns true if event listener present, false otherwise
+        */
+        static bool HasEventListenerWithName(const MxString& name)
+        {
+            return Application::GetImpl()->GetEventDispatcher().HasEventListenerWithName(name);
+        }
     };
 }

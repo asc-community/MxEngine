@@ -33,16 +33,16 @@
 
 namespace MxEngine::GUI
 {
-	void CreateMxObjectFromModelFile();
+    void CreateMxObjectFromModelFile();
 
-	void DrawMxObjectEditor(
-		const char* name,
-		MxObject& object, 
-		const MxVector<const char*>& componentNames,
-		const MxVector<void(*)(MxObject&)>& componentAdderCallbacks,
-		const MxVector<void(*)(MxObject&)>& componentEditorCallbacks
-	);
+    void DrawMxObjectEditor(
+        const char* name,
+        MxObject& object, 
+        const MxVector<const char*>& componentNames,
+        const MxVector<void(*)(MxObject&)>& componentAdderCallbacks,
+        const MxVector<void(*)(MxObject&)>& componentEditorCallbacks
+    );
 
-	void DrawMxObjectBoundingBoxEditor(const MxObject& object);
-	BoundingBox GetMxObjectBoundingBox(const MxObject& object);
+    void DrawMxObjectBoundingBoxEditor(const MxObject& object);
+    BoundingBox GetMxObjectBoundingBox(const MxObject& object);
 }

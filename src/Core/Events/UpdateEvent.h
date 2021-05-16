@@ -33,12 +33,12 @@
 
 namespace MxEngine
 {
-	class UpdateEvent : public EventBase
-	{
-		MAKE_EVENT(UpdateEvent);
-	public:
-		const TimeStep TimeDelta;
-		UpdateEvent(TimeStep time)
-			: TimeDelta(time) { }
-	};
+    class UpdateEvent : public EventBase
+    {
+        MAKE_EVENT(UpdateEvent);
+    public:
+        const TimeStep TimeDelta;
+        UpdateEvent(TimeStep time)
+            : TimeDelta(time) { }
+    };
 }

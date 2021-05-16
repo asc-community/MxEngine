@@ -35,50 +35,50 @@
 
 namespace MxEngine
 {
-	enum class ImageType
-	{
-		PNG,
-		BMP,
-		TGA,
-		JPG,
-		HDR,
-	};
+    enum class ImageType
+    {
+        PNG,
+        BMP,
+        TGA,
+        JPG,
+        HDR,
+    };
 
-	class ImageManager
-	{
-	public:
-		static void SaveImage(StringId        fileHash, const Image& image, ImageType type);
-		static void SaveImage(const FilePath& filePath, const Image& image, ImageType type);
-		static void SaveImage(const MxString& filePath, const Image& image, ImageType type);
-		static void SaveImage(const char*     filePath, const Image& image, ImageType type);
+    class ImageManager
+    {
+    public:
+        static void SaveImage(StringId        fileHash, const Image& image, ImageType type);
+        static void SaveImage(const FilePath& filePath, const Image& image, ImageType type);
+        static void SaveImage(const MxString& filePath, const Image& image, ImageType type);
+        static void SaveImage(const char*     filePath, const Image& image, ImageType type);
 
-		static void SaveTexture(StringId        fileHash, const TextureHandle& texture, ImageType type);
-		static void SaveTexture(const FilePath& filePath, const TextureHandle& texture, ImageType type);
-		static void SaveTexture(const MxString& filePath, const TextureHandle& texture, ImageType type);
-		static void SaveTexture(const char*     filePath, const TextureHandle& texture, ImageType type);
+        static void SaveTexture(StringId        fileHash, const TextureHandle& texture, ImageType type);
+        static void SaveTexture(const FilePath& filePath, const TextureHandle& texture, ImageType type);
+        static void SaveTexture(const MxString& filePath, const TextureHandle& texture, ImageType type);
+        static void SaveTexture(const char*     filePath, const TextureHandle& texture, ImageType type);
 
-		static void SaveTexture(StringId        fileHash, const TextureHandle& texture);
-		static void SaveTexture(const FilePath& filePath, const TextureHandle& texture);
-		static void SaveTexture(const MxString& filePath, const TextureHandle& texture);
-		static void SaveTexture(const char* filePath,     const TextureHandle& texture);
+        static void SaveTexture(StringId        fileHash, const TextureHandle& texture);
+        static void SaveTexture(const FilePath& filePath, const TextureHandle& texture);
+        static void SaveTexture(const MxString& filePath, const TextureHandle& texture);
+        static void SaveTexture(const char* filePath,     const TextureHandle& texture);
 
-		static void TakeScreenShot(StringId        fileHash, ImageType type);
-		static void TakeScreenShot(const FilePath& filePath, ImageType type);
-		static void TakeScreenShot(const MxString& filePath, ImageType type);
-		static void TakeScreenShot(const char*     filePath, ImageType type);
+        static void TakeScreenShot(StringId        fileHash, ImageType type);
+        static void TakeScreenShot(const FilePath& filePath, ImageType type);
+        static void TakeScreenShot(const MxString& filePath, ImageType type);
+        static void TakeScreenShot(const char*     filePath, ImageType type);
 
-		static void TakeScreenShot(StringId        fileHash);
-		static void TakeScreenShot(const FilePath& filePath);
-		static void TakeScreenShot(const MxString& filePath);
-		static void TakeScreenShot(const char*     filePath);
+        static void TakeScreenShot(StringId        fileHash);
+        static void TakeScreenShot(const FilePath& filePath);
+        static void TakeScreenShot(const MxString& filePath);
+        static void TakeScreenShot(const char*     filePath);
 
-		static void FlipImage(Image& image);
+        static void FlipImage(Image& image);
 
-		// write order:		
-		// 7 8 9
-		// 4 5 6
-		// 1 2 3
-		static Image CombineImages(ArrayView<Image> images, size_t imagesPerRaw);
-		static Image CombineImages(Array2D<Image>& images);
-	};
+        // write order:        
+        // 7 8 9
+        // 4 5 6
+        // 1 2 3
+        static Image CombineImages(ArrayView<Image> images, size_t imagesPerRaw);
+        static Image CombineImages(Array2D<Image>& images);
+    };
 }

@@ -32,12 +32,12 @@
 
 namespace MxEngine
 {
-	class PerspectiveCamera : public CameraBase
-	{
-	public:
-		static constexpr float DefaultFOV = 65.0f;
+    class PerspectiveCamera : public CameraBase
+    {
+    public:
+        static constexpr float DefaultFOV = 65.0f;
 
-		void SetFOV(float angle);
-		float GetFOV() const;
-	};
+        void SetFOV(float angle);
+        float GetFOV() const;
+    };
 }

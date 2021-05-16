@@ -32,27 +32,27 @@
 
 namespace MxEngine
 {
-	class Circle
-	{
-	public:
-		Vector3 Center;
-		Quaternion Rotation;
-		float Radius;
+    class Circle
+    {
+    public:
+        Vector3 Center;
+        Quaternion Rotation;
+        float Radius;
 
-		Circle() = default;
-		Circle(Vector3 center, Quaternion rotation, float radius) 
-			: Center(center), Rotation(rotation), Radius(radius) { }
+        Circle() = default;
+        Circle(Vector3 center, Quaternion rotation, float radius) 
+            : Center(center), Rotation(rotation), Radius(radius) { }
 
-		inline constexpr bool operator==(const Circle& o) const
-		{
-			return this->Center == o.Center &&
-				this->Rotation == o.Rotation &&
-				this->Radius == o.Radius;
-		}
+        inline constexpr bool operator==(const Circle& o) const
+        {
+            return this->Center == o.Center &&
+                this->Rotation == o.Rotation &&
+                this->Radius == o.Radius;
+        }
 
-		inline constexpr bool operator!=(const Circle& o) const
-		{
-			return !(*this == o);
-		}
-	};
+        inline constexpr bool operator!=(const Circle& o) const
+        {
+            return !(*this == o);
+        }
+    };
 }

@@ -32,29 +32,29 @@
 
 namespace MxEngine
 {
-	class Rectangle
-	{
-	public:
-		Vector3 Center;
-		Quaternion Rotation;
-		float Height;
-		float Width;
+    class Rectangle
+    {
+    public:
+        Vector3 Center;
+        Quaternion Rotation;
+        float Height;
+        float Width;
 
-		Rectangle() = default;
-		Rectangle(Vector3 center, Quaternion rotation, float height, float width) 
-			: Center(center), Rotation(rotation), Height(height), Width(width) { }
+        Rectangle() = default;
+        Rectangle(Vector3 center, Quaternion rotation, float height, float width) 
+            : Center(center), Rotation(rotation), Height(height), Width(width) { }
 
-		inline constexpr bool operator==(const Rectangle& o) const
-		{
-			return this->Center == o.Center &&
-				this->Rotation == o.Rotation &&
-				this->Height == o.Height &&
-				this->Width == o.Width;
-		}
+        inline constexpr bool operator==(const Rectangle& o) const
+        {
+            return this->Center == o.Center &&
+                this->Rotation == o.Rotation &&
+                this->Height == o.Height &&
+                this->Width == o.Width;
+        }
 
-		inline constexpr bool operator!=(const Rectangle& o) const
-		{
-			return !(*this == o);
-		}
-	};
+        inline constexpr bool operator!=(const Rectangle& o) const
+        {
+            return !(*this == o);
+        }
+    };
 }

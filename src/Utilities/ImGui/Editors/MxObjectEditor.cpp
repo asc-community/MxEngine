@@ -37,81 +37,81 @@
 
 namespace MxEngine::GUI
 {
-	void CreateMxObjectFromModelFile()
-	{
-		MxString filepath = FileManager::OpenFileDialog();
-		if (!filepath.empty() && File::Exists(filepath))
-		{
-			auto object = MxObject::Create();
-			object->Name = ToMxString(ToFilePath(filepath).stem());
-			auto meshSource = object->AddComponent<MeshSource>(AssetManager::LoadMesh(filepath));
-			auto meshRenderer = object->AddComponent<MeshRenderer>(AssetManager::LoadMaterials(meshSource->Mesh->GetFilePath()));
-		}
-	}
+    void CreateMxObjectFromModelFile()
+    {
+        MxString filepath = FileManager::OpenFileDialog();
+        if (!filepath.empty() && File::Exists(filepath))
+        {
+            auto object = MxObject::Create();
+            object->Name = ToMxString(ToFilePath(filepath).stem());
+            auto meshSource = object->AddComponent<MeshSource>(AssetManager::LoadMesh(filepath));
+            auto meshRenderer = object->AddComponent<MeshRenderer>(AssetManager::LoadMaterials(meshSource->Mesh->GetFilePath()));
+        }
+    }
 
-	void DrawMxObjectBoundingBoxEditor(const MxObject& object)
-	{
-		BoundingBox box = GetMxObjectBoundingBox(object);
-		Rendering::Draw(box, Vector4(0.0f, 1.0f, 0.0f, 1.0f));
-	}
+    void DrawMxObjectBoundingBoxEditor(const MxObject& object)
+    {
+        BoundingBox box = GetMxObjectBoundingBox(object);
+        Rendering::Draw(box, Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+    }
 
-	BoundingBox GetMxObjectBoundingBox(const MxObject& object)
-	{
-		AABB aabb;
-		auto meshSource = object.GetComponent<MeshSource>();
-		if (meshSource.IsValid() && meshSource->Mesh.IsValid())
-			aabb = meshSource->Mesh->MeshAABB;
-		else
-			aabb = { MakeVector3(-0.5f), MakeVector3(0.5f) };
+    BoundingBox GetMxObjectBoundingBox(const MxObject& object)
+    {
+        AABB aabb;
+        auto meshSource = object.GetComponent<MeshSource>();
+        if (meshSource.IsValid() && meshSource->Mesh.IsValid())
+            aabb = meshSource->Mesh->MeshAABB;
+        else
+            aabb = { MakeVector3(-0.5f), MakeVector3(0.5f) };
 
-		// add a bit of offset to scale to make boundings visible for cubic objects
-		BoundingBox box = BoundingBox(aabb.GetCenter(), aabb.Length() * 0.6f);
-		box.Rotation = object.Transform.GetRotationQuaternion();
-		box.Center = object.Transform.GetPosition();
-		box.Max *= object.Transform.GetScale();
-		box.Min *= object.Transform.GetScale();
+        // add a bit of offset to scale to make boundings visible for cubic objects
+        BoundingBox box = BoundingBox(aabb.GetCenter(), aabb.Length() * 0.6f);
+        box.Rotation = object.Transform.GetRotationQuaternion();
+        box.Center = object.Transform.GetPosition();
+        box.Max *= object.Transform.GetScale();
+        box.Min *= object.Transform.GetScale();
 
-		box.Min = VectorMin(box.Min, Vector3(-0.5f));
-		box.Max = VectorMax(box.Max, Vector3(0.5f));
+        box.Min = VectorMin(box.Min, Vector3(-0.5f));
+        box.Max = VectorMax(box.Max, Vector3(0.5f));
 
-		return box;
-	}
+        return box;
+    }
 
-	void DrawMxObjectEditor(
-		const char* name,
-		MxObject& object,
-		const MxVector<const char*>& componentNames,
-		const MxVector<void(*)(MxObject&)>& componentAdderCallbacks,
-		const MxVector<void(*)(MxObject&)>& componentEditorCallbacks
-	)
-	{
-		static MxString objectName;
-		if (GUI::InputTextOnClick("object name", objectName, 48))
-		{
-			if (!objectName.empty()) object.Name = objectName;
-			objectName.clear();
-		}
+    void DrawMxObjectEditor(
+        const char* name,
+        MxObject& object,
+        const MxVector<const char*>& componentNames,
+        const MxVector<void(*)(MxObject&)>& componentAdderCallbacks,
+        const MxVector<void(*)(MxObject&)>& componentEditorCallbacks
+    )
+    {
+        static MxString objectName;
+        if (GUI::InputTextOnClick("object name", objectName, 48))
+        {
+            if (!objectName.empty()) object.Name = objectName;
+            objectName.clear();
+        }
 
-		ImGui::Checkbox("is serialized", &object.IsSerialized);
-		ImGui::SameLine();
-		ImGui::Checkbox("is displayed in editor", &object.IsDisplayedInEditor);
+        ImGui::Checkbox("is serialized", &object.IsSerialized);
+        ImGui::SameLine();
+        ImGui::Checkbox("is displayed in editor", &object.IsDisplayedInEditor);
 
-		static int currentItem = 0;
-		ImGui::PushID(0xFFAA);
-		ImGui::Combo("", &currentItem, componentNames.data(), (int)componentNames.size());
-		ImGui::PopID();
-		ImGui::SameLine();
-		if (ImGui::Button("add component"))
-		{
-			componentAdderCallbacks[(size_t)currentItem](object);
-		}
+        static int currentItem = 0;
+        ImGui::PushID(0xFFAA);
+        ImGui::Combo("", &currentItem, componentNames.data(), (int)componentNames.size());
+        ImGui::PopID();
+        ImGui::SameLine();
+        if (ImGui::Button("add component"))
+        {
+            componentAdderCallbacks[(size_t)currentItem](object);
+        }
 
 
-		ResourceEditor("Transform", object.Transform);
+        ResourceEditor("Transform", object.Transform);
 
-		for (size_t i = 0; i < componentEditorCallbacks.size(); i++)
-		{
-			componentEditorCallbacks[i](object);
-		}
-	}
+        for (size_t i = 0; i < componentEditorCallbacks.size(); i++)
+        {
+            componentEditorCallbacks[i](object);
+        }
+    }
 }

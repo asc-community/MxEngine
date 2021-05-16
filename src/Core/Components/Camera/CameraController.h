@@ -35,111 +35,111 @@
 
 namespace MxEngine
 {
-	enum class CameraType : uint8_t
-	{
-		PERSPECTIVE,
-		ORTHOGRAPHIC,
-		FRUSTRUM,
-	};
+    enum class CameraType : uint8_t
+    {
+        PERSPECTIVE,
+        ORTHOGRAPHIC,
+        FRUSTRUM,
+    };
 
-	struct CameraRender
-	{
-		FrameBufferHandle GBuffer;
-		TextureHandle Albedo;
-		TextureHandle Normal;
-		TextureHandle Material;
-		TextureHandle Depth;
-		TextureHandle AverageWhite;
-		TextureHandle HDR;
-		TextureHandle SwapHDR1;
-		TextureHandle SwapHDR2;
+    struct CameraRender
+    {
+        FrameBufferHandle GBuffer;
+        TextureHandle Albedo;
+        TextureHandle Normal;
+        TextureHandle Material;
+        TextureHandle Depth;
+        TextureHandle AverageWhite;
+        TextureHandle HDR;
+        TextureHandle SwapHDR1;
+        TextureHandle SwapHDR2;
 
-		void Init(int width, int height);
-		void Resize(int width, int height);
-		void DeInit();
-	};
+        void Init(int width, int height);
+        void Resize(int width, int height);
+        void DeInit();
+    };
 
-	class CameraController
-	{
-		MAKE_COMPONENT(CameraController);
+    class CameraController
+    {
+        MAKE_COMPONENT(CameraController);
 
-		UniqueRef<CameraRender> renderBuffers = MakeUnique<CameraRender>();
-		TextureHandle renderTexture;
+        UniqueRef<CameraRender> renderBuffers = MakeUnique<CameraRender>();
+        TextureHandle renderTexture;
 
-		Vector3 direction = { 0.0f, 0.0f, 1.0f };
-		Vector3 up = { 0.0f, 1.0f, 0.0f };
-		Vector3 forward ={ 0.0f, 0.0f, 1.0f };
-		Vector3 right = { -1.0f, 0.0f, 0.0f };
-		float verticalAngle = 0.0f;
-		float horizontalAngle = 0.0f;
-		float moveSpeed = 1.0f;
-		float rotateSpeed = 10.0f;
+        Vector3 direction = { 0.0f, 0.0f, 1.0f };
+        Vector3 up = { 0.0f, 1.0f, 0.0f };
+        Vector3 forward ={ 0.0f, 0.0f, 1.0f };
+        Vector3 right = { -1.0f, 0.0f, 0.0f };
+        float verticalAngle = 0.0f;
+        float horizontalAngle = 0.0f;
+        float moveSpeed = 1.0f;
+        float rotateSpeed = 10.0f;
 
-		void SubmitMatrixProjectionChanges() const;
-		void RecalculateRotationAngles();
-		UUID GetEventUUID() const;
+        void SubmitMatrixProjectionChanges() const;
+        void RecalculateRotationAngles();
+        UUID GetEventUUID() const;
 
-		CameraType cameraType = CameraType::PERSPECTIVE;
-		bool renderingEnabled = true;
-	public:
-		mutable CameraBase Camera;
+        CameraType cameraType = CameraType::PERSPECTIVE;
+        bool renderingEnabled = true;
+    public:
+        mutable CameraBase Camera;
 
-		CameraController();
-		~CameraController();
+        CameraController();
+        ~CameraController();
 
-		template<typename T>
-		T& GetCamera();
-		template<typename T>
-		const T& GetCamera() const;
-		void SetCameraType(CameraType type);
-		CameraType GetCameraType() const;
-		template<typename T>
-		void SetCamera(const T& camera);
+        template<typename T>
+        T& GetCamera();
+        template<typename T>
+        const T& GetCamera() const;
+        void SetCameraType(CameraType type);
+        CameraType GetCameraType() const;
+        template<typename T>
+        void SetCamera(const T& camera);
 
-		const Matrix4x4& GetMatrix(const Vector3& position) const;
-		const Matrix4x4& GetViewMatrix(const Vector3& position) const;
-		const Matrix4x4& GetProjectionMatrix() const;
-		Matrix4x4 GetStaticMatrix() const;
-		Matrix4x4 GetStaticViewMatrix() const;
-		TextureHandle GetRenderTexture() const;
-		void ListenWindowResizeEvent();
-		void SetListenWindowResizeEventInternal(bool value);
-		bool IsListeningWindowResizeEvent() const;
-		void ResizeRenderTexture(size_t width, size_t height);
-		void SetRenderTexture(const TextureHandle& texture);
-		bool IsRendering() const;
-		void ToggleRendering(bool value);
-		const FrustrumCuller& GetFrustrumCuller() const;
+        const Matrix4x4& GetMatrix(const Vector3& position) const;
+        const Matrix4x4& GetViewMatrix(const Vector3& position) const;
+        const Matrix4x4& GetProjectionMatrix() const;
+        Matrix4x4 GetStaticMatrix() const;
+        Matrix4x4 GetStaticViewMatrix() const;
+        TextureHandle GetRenderTexture() const;
+        void ListenWindowResizeEvent();
+        void SetListenWindowResizeEventInternal(bool value);
+        bool IsListeningWindowResizeEvent() const;
+        void ResizeRenderTexture(size_t width, size_t height);
+        void SetRenderTexture(const TextureHandle& texture);
+        bool IsRendering() const;
+        void ToggleRendering(bool value);
+        const FrustrumCuller& GetFrustrumCuller() const;
 
-		Vector3 GetDirection() const;
-		const Vector3& GetDirectionDenormalized() const;
-		void SetDirection(const Vector3& direction);
-		Vector3 GetDirectionUp() const;
-		float GetHorizontalAngle() const;
-		float GetVerticalAngle() const;
-		float GetMoveSpeed() const;
-		void SetMoveSpeed(float speed);
-		float GetRotateSpeed() const;
-		void SetRotateSpeed(float speed);
-		CameraController& Rotate(float horz, float vert);
-		Vector2 GetRotation() const;
-		void SetRotation(Vector2 newRotation);
+        Vector3 GetDirection() const;
+        const Vector3& GetDirectionDenormalized() const;
+        void SetDirection(const Vector3& direction);
+        Vector3 GetDirectionUp() const;
+        float GetHorizontalAngle() const;
+        float GetVerticalAngle() const;
+        float GetMoveSpeed() const;
+        void SetMoveSpeed(float speed);
+        float GetRotateSpeed() const;
+        void SetRotateSpeed(float speed);
+        CameraController& Rotate(float horz, float vert);
+        Vector2 GetRotation() const;
+        void SetRotation(Vector2 newRotation);
 
-		void SetForwardVector(const Vector3& forward);
-		void SetUpVector(const Vector3& up);
-		void SetRightVector(const Vector3& right);
-		const Vector3& GetForwardVector() const;
-		const Vector3& GetUpVector() const;
-		const Vector3& GetRightVector() const;
+        void SetForwardVector(const Vector3& forward);
+        void SetUpVector(const Vector3& up);
+        void SetRightVector(const Vector3& right);
+        const Vector3& GetForwardVector() const;
+        const Vector3& GetUpVector() const;
+        const Vector3& GetRightVector() const;
 
-		FrameBufferHandle GetGBuffer() const;
-		TextureHandle GetAlbedoTexture() const;
-		TextureHandle GetNormalTexture() const;
-		TextureHandle GetMaterialTexture() const;
-		TextureHandle GetDepthTexture() const;
-		TextureHandle GetAverageWhiteTexture() const;
-		TextureHandle GetHDRTexture() const;
-		TextureHandle GetSwapHDRTexture1() const;
-		TextureHandle GetSwapHDRTexture2() const;
-	};
+        FrameBufferHandle GetGBuffer() const;
+        TextureHandle GetAlbedoTexture() const;
+        TextureHandle GetNormalTexture() const;
+        TextureHandle GetMaterialTexture() const;
+        TextureHandle GetDepthTexture() const;
+        TextureHandle GetAverageWhiteTexture() const;
+        TextureHandle GetHDRTexture() const;
+        TextureHandle GetSwapHDRTexture1() const;
+        TextureHandle GetSwapHDRTexture2() const;
+    };
 }

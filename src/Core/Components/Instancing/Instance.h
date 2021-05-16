@@ -32,34 +32,34 @@
 
 namespace MxEngine
 {
-	class Instance
-	{
-		MAKE_COMPONENT(Instance);
+    class Instance
+    {
+        MAKE_COMPONENT(Instance);
 
-		Vector3 color{ 1.0f };
-		MxObject::Handle parent;
-	public:
-		Instance(const MxObject::Handle& parent) : parent(parent) { }
+        Vector3 color{ 1.0f };
+        MxObject::Handle parent;
+    public:
+        Instance(const MxObject::Handle& parent) : parent(parent) { }
 
-		MxObject::Handle GetParent() { return this->parent; }
+        MxObject::Handle GetParent() { return this->parent; }
 
-		void SetColor(const Vector3& color)
-		{
-			this->color = Clamp(color, MakeVector3(0.0f), MakeVector3(1.0f));
-		}
+        void SetColor(const Vector3& color)
+        {
+            this->color = Clamp(color, MakeVector3(0.0f), MakeVector3(1.0f));
+        }
 
-		const Vector3& GetColor() const
-		{
-			return this->color;
-		}
-	};
+        const Vector3& GetColor() const
+        {
+            return this->color;
+        }
+    };
 
-	bool IsInstanced(const MxObject& object);
-	bool IsInstanced(MxObject::Handle object);
-	bool IsInstance(const MxObject& object);
-	bool IsInstance(MxObject::Handle object);
-	MxObject::Handle Instanciate(MxObject& object);
-	MxObject::Handle Instanciate(MxObject::Handle object);
-	MxObject::Handle GetInstanceParent(const MxObject& object);
-	MxObject::Handle GetInstanceParent(MxObject::Handle object);
+    bool IsInstanced(const MxObject& object);
+    bool IsInstanced(MxObject::Handle object);
+    bool IsInstance(const MxObject& object);
+    bool IsInstance(MxObject::Handle object);
+    MxObject::Handle Instanciate(MxObject& object);
+    MxObject::Handle Instanciate(MxObject::Handle object);
+    MxObject::Handle GetInstanceParent(const MxObject& object);
+    MxObject::Handle GetInstanceParent(MxObject::Handle object);
 }

@@ -32,22 +32,22 @@
 
 namespace MxEngine
 {
-	class CameraSSR
-	{
-		MAKE_COMPONENT(CameraSSR);
+    class CameraSSR
+    {
+        MAKE_COMPONENT(CameraSSR);
 
-		float thickness = 0.5f;
-		size_t steps = 10;
-		float startDistance = 2.0f;
-	public:
-		CameraSSR() = default;
+        float thickness = 0.5f;
+        size_t steps = 10;
+        float startDistance = 2.0f;
+    public:
+        CameraSSR() = default;
 
-		float GetThickness() const;
-		size_t GetSteps() const;
-		float GetStartDistance() const;
+        float GetThickness() const;
+        size_t GetSteps() const;
+        float GetStartDistance() const;
 
-		void SetThickness(float thickness);
-		void SetSteps(size_t steps);
-		void SetStartDistance(float distance);
-	};
+        void SetThickness(float thickness);
+        void SetSteps(size_t steps);
+        void SetStartDistance(float distance);
+    };
 }
