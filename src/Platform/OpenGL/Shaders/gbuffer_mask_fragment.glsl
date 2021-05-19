@@ -1,5 +1,3 @@
-layout(early_fragment_tests) in;
-
 in VSout
 {
 	vec2 TexCoord;
@@ -57,9 +55,13 @@ void main()
 	float parallaxOcclusion = 1.0;
 	//TexCoord = applyParallaxMapping(TexCoord, fsin.TBN * viewDirection, map_height, displacement, parallaxOcclusion);
 
+	vec4 albedoAlphaTex = texture(map_albedo, TexCoord).rgba;
+	float alphaCutoff = 1.0 - material.transparency;
+	if (albedoAlphaTex.a <= alphaCutoff) discard; // mask fragments with opacity less than cutoff
+
 	vec3 normal = calcNormal(TexCoord, fsin.TBN, map_normal);
 
-	vec3 albedoTex = texture(map_albedo, TexCoord).rgb;
+	vec3 albedoTex = albedoAlphaTex.rgb;
 	float occlusion = texture(map_occlusion, TexCoord).r;
 	float emmisiveTex = texture(map_emmisive, TexCoord).r;
 	float metallicTex = texture(map_metallic, TexCoord).r;

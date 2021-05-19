@@ -1227,6 +1227,8 @@ namespace MxEngine
 		this->Pipeline.MaskedShadowCasters.UnitsIndex.clear();
 		this->Pipeline.TransparentObjects.Groups.clear();
 		this->Pipeline.TransparentObjects.UnitsIndex.clear();
+		this->Pipeline.MaskedObjects.Groups.clear();
+		this->Pipeline.MaskedObjects.UnitsIndex.clear();
 		this->Pipeline.OpaqueObjects.Groups.clear();
 		this->Pipeline.OpaqueObjects.UnitsIndex.clear();
 		this->Pipeline.RenderUnits.clear();
@@ -1382,6 +1384,7 @@ namespace MxEngine
 
 		std::array groupSubTypes = {
 			std::ref(this->Pipeline.OpaqueObjects.Groups.emplace_back()),
+			std::ref(this->Pipeline.MaskedObjects.Groups.emplace_back()),
 			std::ref(this->Pipeline.TransparentObjects.Groups.emplace_back()),
 			std::ref(this->Pipeline.ShadowCasters.Groups.emplace_back()),
 			std::ref(this->Pipeline.MaskedShadowCasters.Groups.emplace_back()),
@@ -1436,6 +1439,12 @@ namespace MxEngine
 			auto& transparentObjects = this->Pipeline.TransparentObjects;
 			transparentObjects.Groups[renderGroupIndex].UnitCount++;
 			transparentObjects.UnitsIndex.push_back(unitIndex);
+		}
+		else if (isMasked)
+		{
+			auto& maskedObjects = this->Pipeline.MaskedObjects;
+			maskedObjects.Groups[renderGroupIndex].UnitCount++;
+			maskedObjects.UnitsIndex.push_back(unitIndex);
 		}
 		else
 		{
@@ -1504,6 +1513,7 @@ namespace MxEngine
 			this->AttachFrameBuffer(camera.GBuffer);
 
 			this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBuffer"_id], this->Pipeline.OpaqueObjects);
+			this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBufferMask"_id], this->Pipeline.MaskedObjects);
 			this->DrawParticles(camera, this->Pipeline.OpaqueParticleSystems, *this->Pipeline.Environment.Shaders["ParticleOpaque"_id]);
 
 			this->PerformLightPass(camera);

@@ -211,6 +211,7 @@ namespace MxEngine
         RenderList ShadowCasters;
         RenderList MaskedShadowCasters;
         RenderList TransparentObjects;
+        RenderList MaskedObjects;
         RenderList OpaqueObjects;
         MxVector<RenderUnit> RenderUnits;
 

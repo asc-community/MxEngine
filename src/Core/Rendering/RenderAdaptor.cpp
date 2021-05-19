@@ -135,6 +135,11 @@ namespace MxEngine
             shaderFolder / "gbuffer_fragment.glsl"
         );
 
+        environment.Shaders["GBufferMask"_id] = AssetManager::LoadShader(
+            shaderFolder / "gbuffer_vertex.glsl",
+            shaderFolder / "gbuffer_mask_fragment.glsl"
+        );
+
         environment.Shaders["Transparent"_id] = AssetManager::LoadShader(
             shaderFolder / "gbuffer_vertex.glsl", 
             shaderFolder / "transparent_fragment.glsl"
