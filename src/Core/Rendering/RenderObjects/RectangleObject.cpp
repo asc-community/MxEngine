@@ -37,9 +37,12 @@ namespace MxEngine
             Vector4(-halfSize, -halfSize, 0.5f, 1.0f),
             Vector4( halfSize, -halfSize, 0.5f, 1.0f),
             Vector4(-halfSize,  halfSize, 0.5f, 1.0f),
-            Vector4(-halfSize,  halfSize, 0.5f, 1.0f),
-            Vector4( halfSize, -halfSize, 0.5f, 1.0f),
             Vector4( halfSize,  halfSize, 0.5f, 1.0f),
+        };
+
+        std::array indicies = {
+            0u, 1u, 2u,
+            2u, 1u, 3u,
         };
 
         this->VBO = Factory<VertexBuffer>::Create(
@@ -48,11 +51,18 @@ namespace MxEngine
             UsageType::STATIC_DRAW
         );
 
+        this->IBO = Factory<IndexBuffer>::Create(
+            indicies.data(),
+            indicies.size(),
+            UsageType::STATIC_DRAW
+        );
+
         std::array vertexLayout = {
             VertexAttribute::Entry<Vector4>()
         };
         this->VAO = Factory<VertexArray>::Create();
         VAO->AddVertexLayout(*this->VBO, vertexLayout, VertexAttributeInputRate::PER_VERTEX);
+        VAO->LinkIndexBuffer(*this->IBO);
     }
     
     const VertexArray& RectangleObject::GetVAO() const

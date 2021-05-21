@@ -195,7 +195,7 @@ namespace MxEngine
 			shader.SetUniform("lifetime", particleSystem.ParticleLifetime);
 			shader.SetUniform("fading", particleSystem.Fading);
 
-			this->DrawVertices(RenderPrimitive::TRIANGLES, particleMesh.VertexCount, 0, particleSystem.InvocationCount * ParticleComputeGroupSize, 0);
+			this->DrawIndices(RenderPrimitive::TRIANGLES, particleMesh.IndexCount, 0, 0, particleSystem.InvocationCount * ParticleComputeGroupSize, 0);
 		}
 	}
 
@@ -207,6 +207,8 @@ namespace MxEngine
 		shader.Bind();
 		shader.IgnoreNonExistingUniform("camera.position");
 		shader.IgnoreNonExistingUniform("camera.invViewProjMatrix");
+		shader.IgnoreNonExistingUniform("material.transparency");
+
 		this->BindCameraInformation(camera, shader);
 		shader.SetUniform("gamma", camera.Gamma);
 
@@ -1021,10 +1023,8 @@ namespace MxEngine
 		auto& rectangle = this->Pipeline.Environment.RectangularObject;
 		shader.Bind();
 
-		// TODO: refactor
-		auto& VAO = rectangle.GetVAO();
-		VAO.Bind();
-		this->DrawVertices(RenderPrimitive::TRIANGLES, rectangle.VertexCount, 0, 0, 0);
+		rectangle.GetVAO().Bind();
+		this->DrawIndices(RenderPrimitive::TRIANGLES, rectangle.IndexCount, 0, 0, 0, 0);
 	}
 
 	void RenderController::RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader)
@@ -1160,11 +1160,9 @@ namespace MxEngine
 		camera.SkyboxTexture->Bind(0);
 		shader.SetUniform("skybox", camera.SkyboxTexture->GetBoundId());
 
-		// TODO: refactor
-		auto& VAO = skybox.GetVAO();
-		VAO.Bind();
+		skybox.GetVAO().Bind();
 
-		this->DrawVertices(RenderPrimitive::TRIANGLES, skybox.VertexCount, 0, 0, 0);
+		this->DrawIndices(RenderPrimitive::TRIANGLES, skybox.IndexCount, 0, 0, 0, 0);
 	}
 
 	void RenderController::DrawDebugBuffer(const CameraUnit& camera)
@@ -1481,11 +1479,9 @@ namespace MxEngine
 		finalShader.SetUniform("tex", 0);
 		texture->Bind(0);
 
-		// TODO: refactor
-		auto& VAO = rectangle.GetVAO();
-		VAO.Bind();
+		rectangle.GetVAO().Bind();
 
-		this->DrawVertices(RenderPrimitive::TRIANGLES, rectangle.VertexCount, 0, 0, 0);
+		this->DrawIndices(RenderPrimitive::TRIANGLES, rectangle.IndexCount, 0, 0, 0, 0);
 	}
 
 	void RenderController::StartPipeline()
