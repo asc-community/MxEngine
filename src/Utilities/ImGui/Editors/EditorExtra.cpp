@@ -166,7 +166,6 @@ namespace MxEngine::GUI
     template<typename Handle>
     Handle GetById(int id)
     {
-        using Type = typename Handle::Type;
         using Factory = typename Handle::Factory;
 
         auto handle = (size_t)Max(id, 0);

@@ -181,7 +181,7 @@ namespace PhysicsSample
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Direction = MakeVector3(0.1f, 1.0f, 0.0f);
-            dirLight->FollowViewport();
+            dirLight->IsFollowingViewport = true;
             dirLight->Projections[0] = 50.0f;
             dirLight->Projections[1] = 200.0f;
 

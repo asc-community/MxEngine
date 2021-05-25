@@ -79,7 +79,7 @@ namespace VRCameraSample
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Direction = MakeVector3(0.5f, 1.0f, 1.0f);
             dirLight->SetIntensity(0.5f);
-            dirLight->FollowViewport();
+            dirLight->IsFollowingViewport = true;
         }
 
         virtual void OnUpdate() override { }

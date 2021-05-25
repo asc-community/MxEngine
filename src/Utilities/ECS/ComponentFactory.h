@@ -77,7 +77,7 @@ namespace MxEngine
 
         static void Init()
         {
-            pools = new PoolMap(); // static data, so dont care about freeing
+            pools = new PoolMap();
         }
 
         static PoolMap* GetImpl()
@@ -88,6 +88,11 @@ namespace MxEngine
         static void Clone(PoolMap* other)
         {
             pools = other;
+        }
+
+        static void Destroy()
+        {
+            delete pools;
         }
     };
 }

@@ -127,7 +127,7 @@ set(MXENGINE_SOURCES
 "Core/Components/Camera/CameraSSAO.cpp" 
 "Platform/OpenGL/VertexAttribute.cpp"
 "Core/Serialization/Cloning.cpp" 
-"Core/Resources/BufferAllocator.cpp" "Core/Rendering/RenderObjects/RenderHelperObject.cpp")
+"Core/Resources/BufferAllocator.cpp" "Core/Rendering/RenderObjects/RenderHelperObject.cpp" "Utilities/Factory/FactoryImpl.h" )
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)

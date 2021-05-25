@@ -35,41 +35,12 @@
 
 namespace MxEngine
 {
-    bool DirectionalLight::IsFollowingViewport() const
-    {
-        return std::launder(reinterpret_cast<const MxObject::Handle*>(&this->timerHandle))->IsValid();
-    }
-
-    void DirectionalLight::SetIsFollowingViewport(bool value)
-    {
-        if (value == this->IsFollowingViewport()) return;
-
-        if (value) this->FollowViewport();
-        else MxObject::Destroy(MxObject::GetHandle(this->GetUpdateTimerHandle()));
-    }
-
-    const MxObject& DirectionalLight::GetUpdateTimerHandle() const
-    {
-        return **std::launder(reinterpret_cast<const MxObject::Handle*>(&this->timerHandle));
-    }
-
     DirectionalLight::DirectionalLight()
     { 
         auto depthTextureSize = (int)GlobalConfig::GetDirectionalLightTextureSize();
         this->DepthMap = Factory<Texture>::Create();
         this->DepthMap->LoadDepth(DirectionalLight::TextureCount * depthTextureSize, depthTextureSize);
         this->DepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("directional light"));
-
-        // create empty reference to timer
-        (void)new(&this->timerHandle) MxObject::Handle();
-    }
-
-    DirectionalLight::~DirectionalLight()
-    {
-        // destroy reference to timer & timer itself
-        auto* timer = std::launder(reinterpret_cast<MxObject::Handle*>(&this->timerHandle));
-        MxObject::Destroy(*timer);
-        timer->~Resource();
     }
 
     Matrix4x4 DirectionalLight::GetMatrix(const Vector3& center, size_t index) const
@@ -109,23 +80,19 @@ namespace MxEngine
         return OrthoProjection * LightView;
     }
 
-    void DirectionalLight::FollowViewport()
+    void DirectionalLight::OnUpdate(float dt)
     {
-        // get reference to timer and replace it with new one
-        auto& timer = *std::launder(reinterpret_cast<MxObject::Handle*>(&this->timerHandle));
-        MxObject::Destroy(timer);
-
-        timer = Timer::CallEachFrame([self = MxObject::GetComponentHandle(*this)]() mutable
+        if (this->IsFollowingViewport)
         {
             auto viewport = Rendering::GetViewport();
             if (viewport.IsValid())
             {
-                auto& object = MxObject::GetByComponent(*self);
+                auto& object = MxObject::GetByComponent(*this);
                 object.Transform.SetPosition(MxObject::GetByComponent(*viewport).Transform.GetPosition());
                 auto direction = viewport->GetDirection();
-                self->CascadeDirection = Normalize(Vector3(direction.x, 0.0f, direction.z));
+                this->CascadeDirection = Normalize(Vector3(direction.x, 0.0f, direction.z));
             }
-        });
+        }
     }
 
     MXENGINE_REFLECT_TYPE
@@ -152,7 +119,7 @@ namespace MxEngine
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1.0f })
             )
-            .property("is following viewport", &DirectionalLight::IsFollowingViewport, &DirectionalLight::SetIsFollowingViewport)
+            .property("is following viewport", &DirectionalLight::IsFollowingViewport)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )
@@ -172,7 +139,7 @@ namespace MxEngine
             .property("cascade direction", &DirectionalLight::CascadeDirection)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance& v) { return !v.try_convert<DirectionalLight>()->IsFollowingViewport(); }))
+                rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance& v) { return !v.try_convert<DirectionalLight>()->IsFollowingViewport; }))
             );
     }
 }
