@@ -35,114 +35,114 @@
 
 namespace MxEngine
 {
-	void VertexArray::FreeVertexArray()
-	{
-		if (this->id != 0)
-		{
-			GLCALL(glDeleteVertexArrays(1, &this->id));
-			MXLOG_DEBUG("OpenGL::VertexArray", "deleted vertex array with id = " + ToMxString(id));
-		}
-		this->id = 0;
-	}
-
-	VertexArray::VertexArray()
-	{
-		GLCALL(glGenVertexArrays(1, &this->id));
-		MXLOG_DEBUG("OpenGL::VertexArray", "created vertex array with id = " + ToMxString(id));
-	}
-
-	VertexArray::~VertexArray()
-	{
-		this->FreeVertexArray();
-	}
-
-	VertexArray::VertexArray(VertexArray&& array) noexcept
-	{
-		this->attributeIndex = array.attributeIndex;
-		this->id = array.id;
-		array.id = 0;
-		array.attributeIndex = 0;
-	}
-
-	VertexArray& VertexArray::operator=(VertexArray&& array) noexcept
-	{
-		this->FreeVertexArray();
-		this->attributeIndex = array.attributeIndex;
-		this->id = array.id;
-		array.id = 0;
-		array.attributeIndex = 0;
-		return *this;
-	}
-
-	VertexArray::BindableId VertexArray::GetNativeHandle() const
+    void VertexArray::FreeVertexArray()
     {
-		return id;
+        if (this->id != 0)
+        {
+            GLCALL(glDeleteVertexArrays(1, &this->id));
+            MXLOG_DEBUG("OpenGL::VertexArray", "deleted vertex array with id = " + ToMxString(id));
+        }
+        this->id = 0;
+    }
+
+    VertexArray::VertexArray()
+    {
+        GLCALL(glGenVertexArrays(1, &this->id));
+        MXLOG_DEBUG("OpenGL::VertexArray", "created vertex array with id = " + ToMxString(id));
+    }
+
+    VertexArray::~VertexArray()
+    {
+        this->FreeVertexArray();
+    }
+
+    VertexArray::VertexArray(VertexArray&& array) noexcept
+    {
+        this->attributeIndex = array.attributeIndex;
+        this->id = array.id;
+        array.id = 0;
+        array.attributeIndex = 0;
+    }
+
+    VertexArray& VertexArray::operator=(VertexArray&& array) noexcept
+    {
+        this->FreeVertexArray();
+        this->attributeIndex = array.attributeIndex;
+        this->id = array.id;
+        array.id = 0;
+        array.attributeIndex = 0;
+        return *this;
+    }
+
+    VertexArray::BindableId VertexArray::GetNativeHandle() const
+    {
+        return id;
     }
 
     void VertexArray::Bind() const
-	{
-		glBindVertexArray(this->id);
-	}
+    {
+        glBindVertexArray(this->id);
+    }
 
-	void VertexArray::Unbind() const
-	{
-		glBindVertexArray(0);
-	}
+    void VertexArray::Unbind() const
+    {
+        glBindVertexArray(0);
+    }
 
-	void VertexArray::AddVertexLayout(const VertexBuffer& buffer, ArrayView<VertexAttribute> layout, VertexAttributeInputRate inputRate)
-	{
-		this->Bind();
-		buffer.Bind();
-		size_t offset = 0;
-		size_t stride = 0;
+    void VertexArray::AddVertexLayout(const VertexBuffer& buffer, ArrayView<VertexAttribute> layout, VertexAttributeInputRate inputRate)
+    {
+        this->Bind();
+        buffer.Bind();
+        size_t offset = 0;
+        size_t stride = 0;
 
-		for (const auto& element : layout)
-			stride += element.byteSize;
+        for (const auto& element : layout)
+            stride += element.byteSize;
 
-		for (const auto& element : layout)
-		{
-			for (size_t i = 0; i < element.entries; i++)
-			{
-				// TODO: handle integer case with glVertexAttribIPointer
-				GLCALL(glEnableVertexAttribArray(this->attributeIndex));
-				GLCALL(glVertexAttribPointer(this->attributeIndex, element.components, (GLenum)element.type, GL_FALSE, stride, (void*)offset));
-				if (inputRate == VertexAttributeInputRate::PER_INSTANCE)
-				{
-					GLCALL(glVertexAttribDivisor(this->attributeIndex, 1));
-				}
+        for (const auto& element : layout)
+        {
+            for (size_t i = 0; i < element.entries; i++)
+            {
+                // TODO: handle integer case with glVertexAttribIPointer
+                GLCALL(glEnableVertexAttribArray(this->attributeIndex));
+                GLCALL(glVertexAttribPointer(this->attributeIndex, element.components, (GLenum)element.type, GL_FALSE, stride, (void*)offset));
+                if (inputRate == VertexAttributeInputRate::PER_INSTANCE)
+                {
+                    GLCALL(glVertexAttribDivisor(this->attributeIndex, 1));
+                }
 
-				offset += element.byteSize / element.entries;
-				this->attributeIndex++;
-			}
-		}
-		this->Unbind();
-	}
+                offset += element.byteSize / element.entries;
+                this->attributeIndex++;
+            }
+        }
+        this->Unbind();
+    }
 
-	void VertexArray::RemoveVertexLayout(ArrayView<VertexAttribute> layout)
-	{
-		MX_ASSERT(this->attributeIndex > layout.size());
+    void VertexArray::RemoveVertexLayout(ArrayView<VertexAttribute> layout)
+    {
+        MX_ASSERT(this->attributeIndex > layout.size());
 
-		this->Bind();
-		for (const auto& element : layout)
-		{
-			for (size_t i = 0; i < element.entries; i++)
-			{
-				this->attributeIndex--;
-				GLCALL(glDisableVertexAttribArray(this->attributeIndex));
-			}
-		}
-		this->Unbind();
-	}
+        this->Bind();
+        for (const auto& element : layout)
+        {
+            for (size_t i = 0; i < element.entries; i++)
+            {
+                this->attributeIndex--;
+                GLCALL(glDisableVertexAttribArray(this->attributeIndex));
+            }
+        }
+        this->Unbind();
+    }
 
-	void VertexArray::LinkIndexBuffer(const IndexBuffer& buffer)
-	{
-		this->Bind();
-		buffer.Bind();
-		this->Unbind();
-	}
+    void VertexArray::LinkIndexBuffer(const IndexBuffer& buffer)
+    {
+        this->Bind();
+        buffer.Bind();
+        this->Unbind();
+    }
 
     int VertexArray::GetAttributeCount() const
     {
-		return this->attributeIndex;
+        return this->attributeIndex;
     }
 }

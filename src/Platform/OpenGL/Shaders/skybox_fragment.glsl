@@ -7,8 +7,8 @@ uniform float luminance;
 
 void main()
 {
-	vec3 skyboxColor = texture(skybox, TexCoords).rgb;
-	skyboxColor = pow(skyboxColor, vec3(gamma));
-	skyboxColor = luminance * skyboxColor;
-	Color = vec4(skyboxColor, 1.0f);
+    vec3 skyboxColor = texture(skybox, TexCoords).rgb;
+    skyboxColor = pow(skyboxColor, vec3(gamma));
+    skyboxColor = luminance * skyboxColor;
+    Color = vec4(skyboxColor, 1.0f);
 }

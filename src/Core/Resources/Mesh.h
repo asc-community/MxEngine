@@ -36,64 +36,64 @@
 
 namespace MxEngine
 {
-	class MeshRenderer;
-	
-	struct MoveOnlyAllocation
-	{
-		size_t Offset{ };
-		size_t Size{ };
+    class MeshRenderer;
+    
+    struct MoveOnlyAllocation
+    {
+        size_t Offset{ };
+        size_t Size{ };
 
-		MoveOnlyAllocation() = default;
-		~MoveOnlyAllocation() = default;
-		MoveOnlyAllocation(MoveOnlyAllocation&& other) noexcept;
-		MoveOnlyAllocation& operator=(MoveOnlyAllocation&& other) noexcept;
-	};
+        MoveOnlyAllocation() = default;
+        ~MoveOnlyAllocation() = default;
+        MoveOnlyAllocation(MoveOnlyAllocation&& other) noexcept;
+        MoveOnlyAllocation& operator=(MoveOnlyAllocation&& other) noexcept;
+    };
 
-	class Mesh
-	{
-		using SubMeshList = MxVector<SubMesh>;
-		
-		SubMeshList submeshes;
-		MxString filepath;
-		MoveOnlyAllocation vertexAllocation;
-		MoveOnlyAllocation indexAllocation;
-		MxVector<UniqueRef<TransformComponent>> subMeshTransforms;
+    class Mesh
+    {
+        using SubMeshList = MxVector<SubMesh>;
+        
+        SubMeshList submeshes;
+        MxString filepath;
+        MoveOnlyAllocation vertexAllocation;
+        MoveOnlyAllocation indexAllocation;
+        MxVector<UniqueRef<TransformComponent>> subMeshTransforms;
 
-		template<typename FilePath>
-		void LoadFromFile(const FilePath& filepath);
-		void FreeBuffers();
-	public:
-		AABB MeshAABB;
-		BoundingSphere MeshBoundingSphere;
+        template<typename FilePath>
+        void LoadFromFile(const FilePath& filepath);
+        void FreeBuffers();
+    public:
+        AABB MeshAABB;
+        BoundingSphere MeshBoundingSphere;
 
-		explicit Mesh();
-		Mesh(Mesh&) = delete;
-		Mesh(Mesh&&) = default;
-		Mesh& operator=(const Mesh&) = delete;
-		Mesh& operator=(Mesh&&) = default;
-		~Mesh();
+        explicit Mesh();
+        Mesh(Mesh&) = delete;
+        Mesh(Mesh&&) = default;
+        Mesh& operator=(const Mesh&) = delete;
+        Mesh& operator=(Mesh&&) = default;
+        ~Mesh();
 
-		template<typename FilePath>
-		Mesh(const FilePath& path);
-		
-		void Load(const MxString& filepath);
-		template<typename FilePath> void Load(const FilePath& filepath);
+        template<typename FilePath>
+        Mesh(const FilePath& path);
+        
+        void Load(const MxString& filepath);
+        template<typename FilePath> void Load(const FilePath& filepath);
 
-		void ReserveData(size_t vertexCount, size_t indexCount);
-		void UpdateBoundingGeometry();
-		size_t GetTotalVerteciesCount() const;
-		size_t GetTotalIndiciesCount() const;
-		size_t GetBaseVerteciesOffset() const;
-		size_t GetBaseIndiciesOffset() const;
-		void SetSubMeshesInternal(const SubMeshList& submeshes);
-		const SubMeshList& GetSubMeshes() const;
-		const SubMesh& GetSubMeshByIndex(size_t index) const;
-		SubMesh& GetSubMeshByIndex(size_t index);
-		SubMesh& AddSubMesh(SubMesh::MaterialId materialId, MeshData data);
-		void DeleteSubMeshByIndex(size_t index);
+        void ReserveData(size_t vertexCount, size_t indexCount);
+        void UpdateBoundingGeometry();
+        size_t GetTotalVerteciesCount() const;
+        size_t GetTotalIndiciesCount() const;
+        size_t GetBaseVerteciesOffset() const;
+        size_t GetBaseIndiciesOffset() const;
+        void SetSubMeshesInternal(const SubMeshList& submeshes);
+        const SubMeshList& GetSubMeshes() const;
+        const SubMesh& GetSubMeshByIndex(size_t index) const;
+        SubMesh& GetSubMeshByIndex(size_t index);
+        SubMesh& AddSubMesh(SubMesh::MaterialId materialId, MeshData data);
+        void DeleteSubMeshByIndex(size_t index);
 
-		const MxString& GetFilePath() const;
-		void SetInternalEngineTag(const MxString& tag);
-		bool IsInternalEngineResource() const;
-	};
+        const MxString& GetFilePath() const;
+        void SetInternalEngineTag(const MxString& tag);
+        bool IsInternalEngineResource() const;
+    };
 }

@@ -36,72 +36,72 @@
 
 namespace MxEngine
 {
-	class ShaderBase
-	{
-	public:
-		using UniformIdType = int;
-		using ShaderId = unsigned int;
-		using BindableId = unsigned int;
-		using ShaderTypeEnum = int;
+    class ShaderBase
+    {
+    public:
+        using UniformIdType = int;
+        using ShaderId = unsigned int;
+        using BindableId = unsigned int;
+        using ShaderTypeEnum = int;
 
-		class UniformCache
-		{
-			MxHashMap<MxString, UniformIdType> cache;
-			BindableId shaderId;
+        class UniformCache
+        {
+            MxHashMap<MxString, UniformIdType> cache;
+            BindableId shaderId;
 
-		public:
-			constexpr static UniformIdType InvalidLocation = -1;
+        public:
+            constexpr static UniformIdType InvalidLocation = -1;
 
-			UniformCache(BindableId shaderId);
+            UniformCache(BindableId shaderId);
 
-			UniformIdType GetUniformLocation(const char* uniformName);
-			UniformIdType GetUniformLocationSilent(const char* uniformName);
-		};
-	private:
-		static BindableId CurrentlyAttachedShader;
+            UniformIdType GetUniformLocation(const char* uniformName);
+            UniformIdType GetUniformLocationSilent(const char* uniformName);
+        };
+    private:
+        static BindableId CurrentlyAttachedShader;
 
-		BindableId id = 0;
-		mutable UniformCache uniformCache;
+        BindableId id = 0;
+        mutable UniformCache uniformCache;
 
-		void FreeProgram();
-	protected:
-		static BindableId CreateProgram(const ShaderId* ids, size_t shaderCount);
-		template<typename FilePath> static ShaderId CreateShader(ShaderTypeEnum type, const MxString& sourceCode, const FilePath& filepath);
-		template<typename FilePath> static MxVector<MxString> GetShaderIncludeFiles(const MxString& sourceCode, const FilePath& filepath);
-		static void DeleteShader(ShaderId id);
+        void FreeProgram();
+    protected:
+        static BindableId CreateProgram(const ShaderId* ids, size_t shaderCount);
+        template<typename FilePath> static ShaderId CreateShader(ShaderTypeEnum type, const MxString& sourceCode, const FilePath& filepath);
+        template<typename FilePath> static MxVector<MxString> GetShaderIncludeFiles(const MxString& sourceCode, const FilePath& filepath);
+        static void DeleteShader(ShaderId id);
 
-		void SetNewNativeHandle(BindableId id);
-	public:
-		static MxString GetShaderVersionString();
+        void SetNewNativeHandle(BindableId id);
+    public:
+        static MxString GetShaderVersionString();
 
-		ShaderBase();
-		~ShaderBase();
-		ShaderBase(const ShaderBase&) = delete;
-		ShaderBase(ShaderBase&& shader) noexcept;
-		ShaderBase& operator=(const ShaderBase&) = delete;
-		ShaderBase& operator=(ShaderBase&& shader) noexcept;
+        ShaderBase();
+        ~ShaderBase();
+        ShaderBase(const ShaderBase&) = delete;
+        ShaderBase(ShaderBase&& shader) noexcept;
+        ShaderBase& operator=(const ShaderBase&) = delete;
+        ShaderBase& operator=(ShaderBase&& shader) noexcept;
 
-		void Bind() const;
-		void Unbind() const;
-		BindableId GetNativeHandle() const;
+        void Bind() const;
+        void Unbind() const;
+        BindableId GetNativeHandle() const;
 
-		void InvalidateUniformCache();
-		void IgnoreNonExistingUniform(const MxString& name) const;
-		void IgnoreNonExistingUniform(const char* name) const;
-		UniformIdType GetUniformLocation(const MxString& name) const;
-		UniformIdType GetUniformLocation(const char* name) const;
+        void InvalidateUniformCache();
+        void IgnoreNonExistingUniform(const MxString& name) const;
+        void IgnoreNonExistingUniform(const char* name) const;
+        UniformIdType GetUniformLocation(const MxString& name) const;
+        UniformIdType GetUniformLocation(const char* name) const;
 
-		void SetUniform(const MxString& name, float             f) const;
-		void SetUniform(const MxString& name, const Vector2&    v) const;
-		void SetUniform(const MxString& name, const Vector3&    v) const;
-		void SetUniform(const MxString& name, const Vector4&    v) const;
-		void SetUniform(const MxString& name, const VectorInt2& v) const;
-		void SetUniform(const MxString& name, const VectorInt3& v) const;
-		void SetUniform(const MxString& name, const VectorInt4& v) const;
-		void SetUniform(const MxString& name, const Matrix2x2&  m) const;
-		void SetUniform(const MxString& name, const Matrix3x3&  m) const;
-		void SetUniform(const MxString& name, const Matrix4x4&  m) const;
-		void SetUniform(const MxString& name, int               i) const;
-		void SetUniform(const MxString& name, bool              b) const;
-	};
+        void SetUniform(const MxString& name, float             f) const;
+        void SetUniform(const MxString& name, const Vector2&    v) const;
+        void SetUniform(const MxString& name, const Vector3&    v) const;
+        void SetUniform(const MxString& name, const Vector4&    v) const;
+        void SetUniform(const MxString& name, const VectorInt2& v) const;
+        void SetUniform(const MxString& name, const VectorInt3& v) const;
+        void SetUniform(const MxString& name, const VectorInt4& v) const;
+        void SetUniform(const MxString& name, const Matrix2x2&  m) const;
+        void SetUniform(const MxString& name, const Matrix3x3&  m) const;
+        void SetUniform(const MxString& name, const Matrix4x4&  m) const;
+        void SetUniform(const MxString& name, int               i) const;
+        void SetUniform(const MxString& name, bool              b) const;
+    };
 }

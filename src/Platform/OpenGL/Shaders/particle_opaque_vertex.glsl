@@ -30,5 +30,5 @@ void main()
     
     gl_Position = projectedPosition;
     WorldPosition = particlePosition;
-	TexCoord = position.xy * 0.5 + vec2(0.5);
+    TexCoord = position.xy * 0.5 + vec2(0.5);
 }

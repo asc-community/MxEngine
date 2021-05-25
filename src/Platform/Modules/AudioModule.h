@@ -35,19 +35,19 @@ using AudioContext = ALCcontext*;
 
 namespace MxEngine
 {
-	struct AudioModuleData
-	{
-		AudioDevice device = nullptr;
-		AudioContext context = nullptr;
-	};
+    struct AudioModuleData
+    {
+        AudioDevice device = nullptr;
+        AudioContext context = nullptr;
+    };
 
-	class AudioModule
-	{
-		inline static AudioModuleData* data = nullptr;
-	public:
-		static void Init();
-		static void Destroy();
-		static AudioModuleData* GetImpl();
-		static void Clone(AudioModuleData* impl);
-	};
+    class AudioModule
+    {
+        inline static AudioModuleData* data = nullptr;
+    public:
+        static void Init();
+        static void Destroy();
+        static AudioModuleData* GetImpl();
+        static void Clone(AudioModuleData* impl);
+    };
 }

@@ -32,25 +32,25 @@
 
 namespace MxEngine
 {
-	class SubMesh
-	{
-	public:
-		using MaterialId = size_t;
-	private:
-		MaterialId materialId;
-		std::reference_wrapper<TransformComponent> transform;
-	public:
-		MeshData Data;
-		MxString Name = "Main";
+    class SubMesh
+    {
+    public:
+        using MaterialId = size_t;
+    private:
+        MaterialId materialId;
+        std::reference_wrapper<TransformComponent> transform;
+    public:
+        MeshData Data;
+        MxString Name = "Main";
 
-		const AABB& GetAABB() const;
-		const BoundingSphere& GetBoundingSphere() const;
+        const AABB& GetAABB() const;
+        const BoundingSphere& GetBoundingSphere() const;
 
-		SubMesh(size_t materialId, std::reference_wrapper<TransformComponent> transform, MeshData data);
+        SubMesh(size_t materialId, std::reference_wrapper<TransformComponent> transform, MeshData data);
 
-		const TransformComponent& GetTransform() const;
-		TransformComponent& GetTransformReference();
-		void SetTransform(const TransformComponent& transform);
-		MaterialId GetMaterialId() const;
-	};
+        const TransformComponent& GetTransform() const;
+        TransformComponent& GetTransformReference();
+        void SetTransform(const TransformComponent& transform);
+        MaterialId GetMaterialId() const;
+    };
 }

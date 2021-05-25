@@ -79,22 +79,22 @@ namespace MxEngine
     }
 
     const MxString& ComputeShader::GetDebugFilePath() const
-	{
-		#if defined(MXENGINE_DEBUG)
+    {
+        #if defined(MXENGINE_DEBUG)
         return this->debugFilePath;
-		#else
-		const static MxString EmptyFilePath;
-		return EmptyFilePath;
-		#endif
-	}
+        #else
+        const static MxString EmptyFilePath;
+        return EmptyFilePath;
+        #endif
+    }
 
-	const MxVector<MxString>& ComputeShader::GetIncludedFilePaths() const
-	{
-		#if defined(MXENGINE_DEBUG)
-		return this->includedFilePaths;
-		#else
-		const static MxVector<MxString> EmptyVector;
-		return EmptyVector;
-		#endif
-	}
+    const MxVector<MxString>& ComputeShader::GetIncludedFilePaths() const
+    {
+        #if defined(MXENGINE_DEBUG)
+        return this->includedFilePaths;
+        #else
+        const static MxVector<MxString> EmptyVector;
+        return EmptyVector;
+        #endif
+    }
 }

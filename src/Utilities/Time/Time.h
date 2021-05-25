@@ -33,53 +33,53 @@
 
 namespace MxEngine
 {
-	using TimeStep = float;
-	using SystemTime = int64_t;
+    using TimeStep = float;
+    using SystemTime = int64_t;
 
-	/*!
-	time is a small utility class which uses application window timer to retrieve timestep since engine start
-	*/
-	struct Time
-	{
-		/*!
-		gets current time of running game
-		\returns timestep measured in milliseconds
-		*/
-		static TimeStep Current();
-		/*!
-		gets current time since engine start
-		\returns timestep measured in milliseconds
-		*/
-		static TimeStep EngineCurrent();
-		/*!
-		sets current time since engine start
-		\param time new current time
-		*/
-		static void SetCurrent(TimeStep time);
-		/*!
-		gets current system time (may not be fast, try avoiding calling it each frame)
-		/returns system time (uses chrono std library)
-		*/
-		static SystemTime System();
-		/*!
-		gets time passed between frames
-		\returns timestep measured in seconds
-		*/
-		static TimeStep Delta();
-		/*!
-		gets unscaled time passed since last frame
-		\returns timestep measured in seconds
-		*/
-		static TimeStep UnscaledDelta();
-		/*!
-		gets average frames per second since last second
-		\returns amount of frames per second
-		*/
-		static size_t FPS();
-		/*!
-		make current thread to go into sleep state
-		\param seconds time in seconds
-		*/
-		static void Sleep(float seconds);
-	};
+    /*!
+    time is a small utility class which uses application window timer to retrieve timestep since engine start
+    */
+    struct Time
+    {
+        /*!
+        gets current time of running game
+        \returns timestep measured in milliseconds
+        */
+        static TimeStep Current();
+        /*!
+        gets current time since engine start
+        \returns timestep measured in milliseconds
+        */
+        static TimeStep EngineCurrent();
+        /*!
+        sets current time since engine start
+        \param time new current time
+        */
+        static void SetCurrent(TimeStep time);
+        /*!
+        gets current system time (may not be fast, try avoiding calling it each frame)
+        /returns system time (uses chrono std library)
+        */
+        static SystemTime System();
+        /*!
+        gets time passed between frames
+        \returns timestep measured in seconds
+        */
+        static TimeStep Delta();
+        /*!
+        gets unscaled time passed since last frame
+        \returns timestep measured in seconds
+        */
+        static TimeStep UnscaledDelta();
+        /*!
+        gets average frames per second since last second
+        \returns amount of frames per second
+        */
+        static size_t FPS();
+        /*!
+        make current thread to go into sleep state
+        \param seconds time in seconds
+        */
+        static void Sleep(float seconds);
+    };
 }

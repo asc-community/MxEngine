@@ -6,5 +6,5 @@ uniform float alphaCutoff;
 void main()
 {
     float alpha = texture(map_albedo, TexCoord).a;
-	if (alpha <= alphaCutoff) discard;
+    if (alpha <= alphaCutoff) discard;
 }

@@ -33,13 +33,13 @@
 
 namespace MxEngine
 {
-	class WindowResizeEvent : public EventBase
-	{
-		MAKE_EVENT(WindowResizeEvent);
-	public:
-		Vector2 Old, New;
+    class WindowResizeEvent : public EventBase
+    {
+        MAKE_EVENT(WindowResizeEvent);
+    public:
+        Vector2 Old, New;
 
-		WindowResizeEvent(Vector2 Old, Vector2 New)
-			: Old(Old), New(New) { }
-	};
+        WindowResizeEvent(Vector2 Old, Vector2 New)
+            : Old(Old), New(New) { }
+    };
 }

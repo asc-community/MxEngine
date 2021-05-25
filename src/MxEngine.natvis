@@ -10,8 +10,8 @@
      You don't need to restart Visual Studio to use it, you just need to restart the debug 
      session. You can have multiple .natvis files and they will all be used.
 
-	 VS2017 natvis documentation:
-	https://docs.microsoft.com/en-us/visualstudio/debugger/create-custom-views-of-native-objects
+     VS2017 natvis documentation:
+    https://docs.microsoft.com/en-us/visualstudio/debugger/create-custom-views-of-native-objects
 -->
 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
@@ -45,29 +45,29 @@
 </Type>
   
 <Type Name="MxEngine::PoolAllocator&lt;*&gt;::Block">
-	<DisplayString Condition="(next &amp; ~LastBit) == InvalidOffset">{{ data={data}, next=-1, free={!(bool)(next &amp; LastBit)} }}</DisplayString>
-	<DisplayString Condition="(next &amp; ~LastBit) != InvalidOffset">{{ data={data}, next={next &amp; ~LastBit}, free={!(bool)(next &amp; LastBit)} }}</DisplayString>
-	<Expand>
-		<Item Name="[data]">data</Item>
-		<Item Condition="(next &amp; ~LastBit) == InvalidOffset" Name="[next]">-1</Item>
-		<Item Condition="(next &amp; ~LastBit) != InvalidOffset" Name="[next]">next &amp; ~LastBit</Item>
-		<Item Name="[free]">!(bool)(next &amp; LastBit)</Item>
-	</Expand>
+    <DisplayString Condition="(next &amp; ~LastBit) == InvalidOffset">{{ data={data}, next=-1, free={!(bool)(next &amp; LastBit)} }}</DisplayString>
+    <DisplayString Condition="(next &amp; ~LastBit) != InvalidOffset">{{ data={data}, next={next &amp; ~LastBit}, free={!(bool)(next &amp; LastBit)} }}</DisplayString>
+    <Expand>
+        <Item Name="[data]">data</Item>
+        <Item Condition="(next &amp; ~LastBit) == InvalidOffset" Name="[next]">-1</Item>
+        <Item Condition="(next &amp; ~LastBit) != InvalidOffset" Name="[next]">next &amp; ~LastBit</Item>
+        <Item Name="[free]">!(bool)(next &amp; LastBit)</Item>
+    </Expand>
 </Type>
 
 <!-- VectorPool default specialization (Container is eastl::vector<T>)-->
 <Type Name="MxEngine::VectorPool&lt;*,*&gt;">
-	<DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin == 0">{{ }}</DisplayString>
-	<DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin == sizeof(Block)">{{ {*(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin} }}</DisplayString>
-	<DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin == 2 * sizeof(Block)">{{ {*(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 1)} }}</DisplayString>
-	<DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin == 3 * sizeof(Block)">{{ {*(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 1)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 2)} }}</DisplayString>
-	<DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin == 4 * sizeof(Block)">{{ {*(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 1)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 2)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 3)} }}</DisplayString>
-	<DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin &gt; 4 * sizeof(Block)">{{ {*(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 1)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 2)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 3)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 4)}, ... }}</DisplayString>
-	<Expand>
+    <DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin == 0">{{ }}</DisplayString>
+    <DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin == sizeof(Block)">{{ {*(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin} }}</DisplayString>
+    <DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin == 2 * sizeof(Block)">{{ {*(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 1)} }}</DisplayString>
+    <DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin == 3 * sizeof(Block)">{{ {*(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 1)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 2)} }}</DisplayString>
+    <DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin == 4 * sizeof(Block)">{{ {*(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 1)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 2)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 3)} }}</DisplayString>
+    <DisplayString Condition="memoryStorage.mpEnd - memoryStorage.mpBegin &gt; 4 * sizeof(Block)">{{ {*(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 1)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 2)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 3)}, {*((MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin + 4)}, ... }}</DisplayString>
+    <Expand>
         <Item Name="[size]">allocated</Item>
         <Item Name="[capacity]">(memoryStorage.mpEnd - memoryStorage.mpBegin) / sizeof(Block)</Item>
         <Item Name="[allocator]">allocator</Item>
-		<ArrayItems>
+        <ArrayItems>
             <Size>(memoryStorage.mpEnd - memoryStorage.mpBegin) / sizeof(Block)</Size>
             <ValuePointer>(MxEngine::PoolAllocator&lt;$T1&gt;::Block*)memoryStorage.mpBegin</ValuePointer>
         </ArrayItems>

@@ -34,48 +34,48 @@
 
 namespace MxEngine
 {
-	class InputController
-	{
-		MAKE_COMPONENT(InputController);
+    class InputController
+    {
+        MAKE_COMPONENT(InputController);
 
-		Vector3 motion{ 0.0f };
-		std::array<KeyCode, 6> keybindings = {
-			KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN,
-		};
-		bool bindHorizontalRotation = false, bindVerticalRotation = false, bindMovement = false;
-		
-		void BindMovementCallback();
-		void BindRotationCallback();
-	public:
-		InputController() = default;
-		~InputController();
+        Vector3 motion{ 0.0f };
+        std::array<KeyCode, 6> keybindings = {
+            KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN,
+        };
+        bool bindHorizontalRotation = false, bindVerticalRotation = false, bindMovement = false;
+        
+        void BindMovementCallback();
+        void BindRotationCallback();
+    public:
+        InputController() = default;
+        ~InputController();
 
-		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right);
-		void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down);
-		void BindMovementWASD();
-		void BindMovementWASDSpaceShift();
-		void BindRotation();
-		void BindHorizontalRotation();
-		void BindVerticalRotation();
-		void UnbindAll();
+        void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right);
+        void BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right, KeyCode up, KeyCode down);
+        void BindMovementWASD();
+        void BindMovementWASDSpaceShift();
+        void BindRotation();
+        void BindHorizontalRotation();
+        void BindVerticalRotation();
+        void UnbindAll();
 
-		const Vector3& GetMotionVector() const;
-		KeyCode GetForwardKeyBinding() const;
-		KeyCode GetBackKeyBinding() const;
-		KeyCode GetLeftKeyBinding() const;
-		KeyCode GetRightKeyBinding() const;
-		KeyCode GetUpKeyBinding() const;
-		KeyCode GetDownKeyBinding() const;
-		bool IsVerticalRotationBound() const;
-		bool IsHorizontalRotationBound() const;
+        const Vector3& GetMotionVector() const;
+        KeyCode GetForwardKeyBinding() const;
+        KeyCode GetBackKeyBinding() const;
+        KeyCode GetLeftKeyBinding() const;
+        KeyCode GetRightKeyBinding() const;
+        KeyCode GetUpKeyBinding() const;
+        KeyCode GetDownKeyBinding() const;
+        bool IsVerticalRotationBound() const;
+        bool IsHorizontalRotationBound() const;
 
-		void SetForwardKeyBinding(KeyCode key);
-		void SetBackKeyBinding(KeyCode key);
-		void SetLeftKeyBinding(KeyCode key);
-		void SetRightKeyBinding(KeyCode key);
-		void SetUpKeyBinding(KeyCode key);
-		void SetDownKeyBinding(KeyCode key);
-		void ToggleVerticalRotationBound(bool value);
-		void ToggleHorizontalRotationBound(bool value);
-	};
+        void SetForwardKeyBinding(KeyCode key);
+        void SetBackKeyBinding(KeyCode key);
+        void SetLeftKeyBinding(KeyCode key);
+        void SetRightKeyBinding(KeyCode key);
+        void SetUpKeyBinding(KeyCode key);
+        void SetDownKeyBinding(KeyCode key);
+        void ToggleVerticalRotationBound(bool value);
+        void ToggleHorizontalRotationBound(bool value);
+    };
 }

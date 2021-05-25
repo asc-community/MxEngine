@@ -32,10 +32,10 @@
 
 namespace MxEngine
 {
-	class OrthographicCamera : public CameraBase
-	{
-	public:
-		void SetSize(float size);
-		float GetSize() const;
-	};
+    class OrthographicCamera : public CameraBase
+    {
+    public:
+        void SetSize(float size);
+        float GetSize() const;
+    };
 }

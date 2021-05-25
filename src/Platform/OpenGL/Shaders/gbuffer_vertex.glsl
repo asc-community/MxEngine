@@ -11,9 +11,9 @@ layout(location = 12) in vec3 renderColor;
 
 struct Camera
 {
-	vec3 position;
-	mat4 viewProjMatrix;
-	mat4 invViewProjMatrix;
+    vec3 position;
+    mat4 viewProjMatrix;
+    mat4 invViewProjMatrix;
 };
 
 uniform Camera camera;
@@ -26,33 +26,33 @@ uniform sampler2D map_height;
 
 out VSout
 {
-	vec2 TexCoord;
-	vec3 Normal;
-	vec3 RenderColor;
-	mat3 TBN;
-	vec3 Position;
+    vec2 TexCoord;
+    vec3 Normal;
+    vec3 RenderColor;
+    mat3 TBN;
+    vec3 Position;
 } vsout;
 
 void main()
 {
-	vec4 modelPos = parentModel * model * position;
-	mat3 normalSpaceMatrix = parentNormal * normalMatrix;
+    vec4 modelPos = parentModel * model * position;
+    mat3 normalSpaceMatrix = parentNormal * normalMatrix;
 
-	vec3 T = normalize(vec3(normalSpaceMatrix * tangent));
-	vec3 B = normalize(vec3(normalSpaceMatrix * bitangent));
-	vec3 N = normalize(vec3(normalSpaceMatrix * normal));
+    vec3 T = normalize(vec3(normalSpaceMatrix * tangent));
+    vec3 B = normalize(vec3(normalSpaceMatrix * bitangent));
+    vec3 N = normalize(vec3(normalSpaceMatrix * normal));
 
-	vsout.TBN = mat3(T, B, N);
-	vsout.Normal = N;
-	vsout.RenderColor = parentColor * renderColor;
+    vsout.TBN = mat3(T, B, N);
+    vsout.Normal = N;
+    vsout.RenderColor = parentColor * renderColor;
 
-	float displacementFactor = getDisplacement(uvMultipliers * texCoord, uvMultipliers, map_height, displacement);
+    float displacementFactor = getDisplacement(uvMultipliers * texCoord, uvMultipliers, map_height, displacement);
 
-	modelPos.xyz += vsout.Normal * displacementFactor;
-	vsout.Position = modelPos.xyz;
+    modelPos.xyz += vsout.Normal * displacementFactor;
+    vsout.Position = modelPos.xyz;
 
-	vec3 viewDirection = camera.position - vsout.Position;
-	vsout.TexCoord = texCoord;
+    vec3 viewDirection = camera.position - vsout.Position;
+    vsout.TexCoord = texCoord;
 
-	gl_Position = camera.viewProjMatrix * modelPos;
+    gl_Position = camera.viewProjMatrix * modelPos;
 }

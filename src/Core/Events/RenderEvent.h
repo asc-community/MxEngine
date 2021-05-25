@@ -32,8 +32,8 @@
 
 namespace MxEngine
 {
-	class RenderEvent : public EventBase
-	{
-		MAKE_EVENT(RenderEvent);
-	};
+    class RenderEvent : public EventBase
+    {
+        MAKE_EVENT(RenderEvent);
+    };
 }

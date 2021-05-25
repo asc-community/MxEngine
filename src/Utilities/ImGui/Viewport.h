@@ -32,8 +32,8 @@
 
 namespace MxEngine::GUI
 {
-	void DrawViewportWindow(const char* name, Vector2& viewportSize, Vector2& viewportPosition, bool* isOpen = nullptr);
-	MxVector<MxObject::Handle> MousePeekObjects(
-		const Vector2& mousePosition, const Vector2& viewportPosition, 
-		const Vector2& viewportSize, const Vector3& position, const Vector3& direction, const Vector3& up, float aspectRatio, float fov);
+    void DrawViewportWindow(const char* name, Vector2& viewportSize, Vector2& viewportPosition, bool* isOpen = nullptr);
+    MxVector<MxObject::Handle> MousePeekObjects(
+        const Vector2& mousePosition, const Vector2& viewportPosition, 
+        const Vector2& viewportSize, const Vector3& position, const Vector3& direction, const Vector3& up, float aspectRatio, float fov);
 }

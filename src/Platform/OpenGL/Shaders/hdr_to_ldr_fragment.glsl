@@ -31,7 +31,7 @@ vec3 toneMapACES(float A, float B, float C, float D, float E, float F, vec3 colo
 
 void main()
 {
-	vec3 HDRColor = texture(HDRTex, TexCoord).rgb;
+    vec3 HDRColor = texture(HDRTex, TexCoord).rgb;
 
     float avgLuminance = texture(averageWhiteTex, vec2(0.0f)).r;
     avgLuminance = clamp(avgLuminance, minLuminance, maxLuminance);
@@ -48,6 +48,6 @@ void main()
         DEFcoefsACES.x, DEFcoefsACES.y, DEFcoefsACES.z, 
         luma * HDRColor, colorMultiplier);
 
-	vec3 gammaCorrectedColor = pow(LDRColor.rgb, vec3(1.0f / gamma));
-	OutColor = vec4(gammaCorrectedColor.rgb, 1.0f);
+    vec3 gammaCorrectedColor = pow(LDRColor.rgb, vec3(1.0f / gamma));
+    OutColor = vec4(gammaCorrectedColor.rgb, 1.0f);
 }

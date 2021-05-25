@@ -11,9 +11,9 @@ uniform sampler2D depthTex;
 
 struct Camera
 {
-	vec3 position;
-	mat4 invViewProjMatrix;
-	mat4 viewProjMatrix;
+    vec3 position;
+    mat4 invViewProjMatrix;
+    mat4 viewProjMatrix;
 };
 
 uniform sampler2D cameraOutput;
@@ -22,11 +22,11 @@ uniform Camera camera;
 
 void main()
 {
-	FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
-	float fragDistance = length(camera.position - fragment.position);
+    FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
+    float fragDistance = length(camera.position - fragment.position);
 
-	vec3 currentColor = texture(cameraOutput, TexCoord).rgb;
-	currentColor = applyFog(currentColor, fragDistance, fog);
+    vec3 currentColor = texture(cameraOutput, TexCoord).rgb;
+    currentColor = applyFog(currentColor, fragDistance, fog);
 
-	OutColor = vec4(currentColor, 1.0f);
+    OutColor = vec4(currentColor, 1.0f);
 }

@@ -39,21 +39,21 @@
 
 namespace MxEngine
 {
-	#if defined(MXENGINE_DEBUG)
-	#define GLCALL(x) GlClearErrors(); x; GlLogCall(#x, __FILE__, __LINE__)
-	#else
-	#define GLCALL(x) x
-	#endif
+    #if defined(MXENGINE_DEBUG)
+    #define GLCALL(x) GlClearErrors(); x; GlLogCall(#x, __FILE__, __LINE__)
+    #else
+    #define GLCALL(x) x
+    #endif
 
-	void GlClearErrors();
+    void GlClearErrors();
 
-	bool GlLogCall(const char* function, const char* file, int line);
+    bool GlLogCall(const char* function, const char* file, int line);
 
-	template<typename T>
-	const char* TypeToString();
+    template<typename T>
+    const char* TypeToString();
 
-	template<typename T>
-	unsigned int GetGLType();
+    template<typename T>
+    unsigned int GetGLType();
 
-	void APIENTRY PrintDebugInformation(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
+    void APIENTRY PrintDebugInformation(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 }

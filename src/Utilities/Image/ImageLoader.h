@@ -35,39 +35,39 @@
 
 namespace MxEngine
 {
-	/*!
-	ImageLoader class is used to load images from disk. Also it contains methods to create cubemaps from their scans
-	*/
-	class ImageLoader
-	{
-	public:
-		/*!
-		loads image from disk. As OpenGL treats images differently as expected, all images are flipped automatically
-		\param filepath path to an image on disk
-		\param flipImage should the image be vertically flipped. As MxEngine uses OpenGL, usually you want to do this
-		\returns Image object if image file exists or nullptr data and width = height = channels = 0 if not
-		*/
-		template<typename FilePath>
-		static Image LoadImage(const FilePath& filepath, bool flipImage = true);
+    /*!
+    ImageLoader class is used to load images from disk. Also it contains methods to create cubemaps from their scans
+    */
+    class ImageLoader
+    {
+    public:
+        /*!
+        loads image from disk. As OpenGL treats images differently as expected, all images are flipped automatically
+        \param filepath path to an image on disk
+        \param flipImage should the image be vertically flipped. As MxEngine uses OpenGL, usually you want to do this
+        \returns Image object if image file exists or nullptr data and width = height = channels = 0 if not
+        */
+        template<typename FilePath>
+        static Image LoadImage(const FilePath& filepath, bool flipImage = true);
 
-		/*!
-		loads image from memory. As OpenGL treats images differently as expected, all images are flipped automatically
-		\param memory pointer to the image data
-		\param byteSize size of memory in bytes
-		\param flipImage should the image be vertically flipped. As MxEngine uses OpenGL, usually you want to do this
-		\returns Image object if image file exists or nullptr data and width = height = channels = 0 if not
-		*/
-		static Image LoadImageFromMemory(const uint8_t* memory, size_t byteSize, bool flipImage = true);
+        /*!
+        loads image from memory. As OpenGL treats images differently as expected, all images are flipped automatically
+        \param memory pointer to the image data
+        \param byteSize size of memory in bytes
+        \param flipImage should the image be vertically flipped. As MxEngine uses OpenGL, usually you want to do this
+        \returns Image object if image file exists or nullptr data and width = height = channels = 0 if not
+        */
+        static Image LoadImageFromMemory(const uint8_t* memory, size_t byteSize, bool flipImage = true);
 
-		using ImageArray = std::array<Array2D<unsigned char>, 6>;
-		/*!
-		creates cubemap projections from its scan:
-		 X
-		XXXX
-		 X
-		\param image image from which cubemap will be created
-		\returns 6 2d arrays of raw image data (can be passed as individual images to OpenGL)
-		*/
-		static ImageArray CreateCubemap(const Image& image);
-	};
+        using ImageArray = std::array<Array2D<unsigned char>, 6>;
+        /*!
+        creates cubemap projections from its scan:
+         X
+        XXXX
+         X
+        \param image image from which cubemap will be created
+        \returns 6 2d arrays of raw image data (can be passed as individual images to OpenGL)
+        */
+        static ImageArray CreateCubemap(const Image& image);
+    };
 }

@@ -32,49 +32,49 @@
 
 namespace MxEngine
 {
-	class AABB;
-	class BoundingBox;
-	class BoundingSphere;
-	class Cone;
-	class Cylinder;
-	class Capsule;
-	class Frustrum;
-	class Line;
-	class Rectangle;
-	class Circle;
+    class AABB;
+    class BoundingBox;
+    class BoundingSphere;
+    class Cone;
+    class Cylinder;
+    class Capsule;
+    class Frustrum;
+    class Line;
+    class Rectangle;
+    class Circle;
 
-	class DebugBuffer
-	{
-		struct Point
-		{
-			Vector3 position;
-			Vector4 color;
-		};
+    class DebugBuffer
+    {
+        struct Point
+        {
+            Vector3 position;
+            Vector4 color;
+        };
 
-		using FrontendStorage = MxVector<Point>;
+        using FrontendStorage = MxVector<Point>;
 
-		VertexBufferHandle VBO;
-		VertexArrayHandle VAO;
+        VertexBufferHandle VBO;
+        VertexArrayHandle VAO;
 
-		FrontendStorage storage;
-	public:
-		bool DrawAsScreenOverlay = false;
+        FrontendStorage storage;
+    public:
+        bool DrawAsScreenOverlay = false;
 
-		void Init();
-		void Submit(const Line& line, const Vector4& color);
-		void Submit(const AABB& box, const Vector4& color);
-		void Submit(const BoundingBox& box, const Vector4 color);
-		void Submit(const BoundingSphere& sphere, const Vector4 color);
-		void Submit(const Cone& cone, const Vector4& color);
-		void Submit(const Frustrum& frustrum, const Vector4& color);
-		void Submit(const Cylinder& cylinder, const Vector4& color);
-		void Submit(const Capsule& capsule, const Vector4& color);
-		void Submit(const Rectangle& rectangle, const Vector4& color);
-		void Submit(const Circle& circle, const Vector4& color);
+        void Init();
+        void Submit(const Line& line, const Vector4& color);
+        void Submit(const AABB& box, const Vector4& color);
+        void Submit(const BoundingBox& box, const Vector4 color);
+        void Submit(const BoundingSphere& sphere, const Vector4 color);
+        void Submit(const Cone& cone, const Vector4& color);
+        void Submit(const Frustrum& frustrum, const Vector4& color);
+        void Submit(const Cylinder& cylinder, const Vector4& color);
+        void Submit(const Capsule& capsule, const Vector4& color);
+        void Submit(const Rectangle& rectangle, const Vector4& color);
+        void Submit(const Circle& circle, const Vector4& color);
 
-		void ClearBuffer(); 
-		void SubmitBuffer();
-		size_t GetSize() const;
-		VertexArrayHandle GetVAO() const;
-	};
+        void ClearBuffer(); 
+        void SubmitBuffer();
+        size_t GetSize() const;
+        VertexArrayHandle GetVAO() const;
+    };
 }

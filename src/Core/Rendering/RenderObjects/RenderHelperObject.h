@@ -33,23 +33,23 @@
 
 namespace MxEngine
 {
-	class RenderHelperObject
-	{
-	protected:
-		size_t vertexOffset, vertexCount;
-		size_t indexOffset, indexCount;
-		VertexArrayHandle VAO;
-	public:
-		RenderHelperObject() = default;
-		RenderHelperObject(size_t vertexOffset, size_t vertexCount, size_t indexOffset, size_t indexCount, VertexArrayHandle vao)
-			: vertexOffset(vertexOffset), vertexCount(vertexCount), indexOffset(indexOffset), indexCount(indexCount), VAO(std::move(vao)) { }
+    class RenderHelperObject
+    {
+    protected:
+        size_t vertexOffset, vertexCount;
+        size_t indexOffset, indexCount;
+        VertexArrayHandle VAO;
+    public:
+        RenderHelperObject() = default;
+        RenderHelperObject(size_t vertexOffset, size_t vertexCount, size_t indexOffset, size_t indexCount, VertexArrayHandle vao)
+            : vertexOffset(vertexOffset), vertexCount(vertexCount), indexOffset(indexOffset), indexCount(indexCount), VAO(std::move(vao)) { }
 
-		VertexArrayHandle GetVAO() const;
-		VertexBufferHandle GetVBO() const;
-		IndexBufferHandle GetIBO() const;
-		size_t GetIndexCount() const { return this->indexCount; }
-		size_t GetVertexCount() const { return this->vertexCount; }		
-		size_t GetIndexOffset() const { return this->indexOffset; }
-		size_t GetVertexOffset() const { return this->vertexOffset; }
-	};
+        VertexArrayHandle GetVAO() const;
+        VertexBufferHandle GetVBO() const;
+        IndexBufferHandle GetIBO() const;
+        size_t GetIndexCount() const { return this->indexCount; }
+        size_t GetVertexCount() const { return this->vertexCount; }        
+        size_t GetIndexOffset() const { return this->indexOffset; }
+        size_t GetVertexOffset() const { return this->vertexOffset; }
+    };
 }

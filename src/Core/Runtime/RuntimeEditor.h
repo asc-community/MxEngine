@@ -37,73 +37,73 @@
 
 namespace MxEngine
 {
-	class GraphicConsole;
-	class EventLogger;
+    class GraphicConsole;
+    class EventLogger;
 
-	class RuntimeEditor
-	{
-		GraphicConsole* console = nullptr;
-		EventLogger* logger = nullptr;
-		Vector2 cachedViewportSize{ 0.0f };
-		Vector2 cachedViewportPosition{ 0.0f };
-		bool shouldRender = false;
-		bool cachedUseDefaultFrameBufferVariable = false;
+    class RuntimeEditor
+    {
+        GraphicConsole* console = nullptr;
+        EventLogger* logger = nullptr;
+        Vector2 cachedViewportSize{ 0.0f };
+        Vector2 cachedViewportPosition{ 0.0f };
+        bool shouldRender = false;
+        bool cachedUseDefaultFrameBufferVariable = false;
 
-		MxVector<const char*> componentAdderComponentNames;
-		MxVector<void(*)(MxObject&)> componentEditorCallbacks;
-		MxVector<void(*)(MxObject&)> componentAdderCallbacks;
-		MxObject::Handle currentlySelectedObject{ };
+        MxVector<const char*> componentAdderComponentNames;
+        MxVector<void(*)(MxObject&)> componentEditorCallbacks;
+        MxVector<void(*)(MxObject&)> componentAdderCallbacks;
+        MxObject::Handle currentlySelectedObject{ };
 
-		void DrawMxObjectList(bool* isOpen = nullptr);
-		void DrawMxObjectEditorWindow(bool* isOpen = nullptr);
-		void DrawTransformManipulator(TransformComponent& transform);
-  	public:
-		RuntimeEditor();
-		RuntimeEditor(const RuntimeEditor&) = delete;
-		RuntimeEditor& operator=(const RuntimeEditor&) = delete;
-		RuntimeEditor(RuntimeEditor&&) = default;
-		RuntimeEditor& operator=(RuntimeEditor&&) = default;
-		~RuntimeEditor();
+        void DrawMxObjectList(bool* isOpen = nullptr);
+        void DrawMxObjectEditorWindow(bool* isOpen = nullptr);
+        void DrawTransformManipulator(TransformComponent& transform);
+      public:
+        RuntimeEditor();
+        RuntimeEditor(const RuntimeEditor&) = delete;
+        RuntimeEditor& operator=(const RuntimeEditor&) = delete;
+        RuntimeEditor(RuntimeEditor&&) = default;
+        RuntimeEditor& operator=(RuntimeEditor&&) = default;
+        ~RuntimeEditor();
 
-		void LogToConsole(const MxString& message);
-		void ClearConsoleLog();
-		void PrintCommandHistory();
-		void OnUpdate();
-		void AddEventEntry(const MxString& entry);
-		void Toggle(bool isVisible = true);
-		void AddKeyBinding(KeyCode openKey);
-		template<typename ShaderHandleType>
-		void AddShaderUpdateListener(ShaderHandleType shader);
-		template<typename ShaderHandleType, typename FilePath>
-		void AddShaderUpdateListener(ShaderHandleType shader, const FilePath& lookupDirectory);
-		Vector2 GetViewportSize() const;
-		Vector2 GetViewportPosition() const;
-		bool IsActive() const;
-		bool IsKeyHeld(KeyCode key) const;
+        void LogToConsole(const MxString& message);
+        void ClearConsoleLog();
+        void PrintCommandHistory();
+        void OnUpdate();
+        void AddEventEntry(const MxString& entry);
+        void Toggle(bool isVisible = true);
+        void AddKeyBinding(KeyCode openKey);
+        template<typename ShaderHandleType>
+        void AddShaderUpdateListener(ShaderHandleType shader);
+        template<typename ShaderHandleType, typename FilePath>
+        void AddShaderUpdateListener(ShaderHandleType shader, const FilePath& lookupDirectory);
+        Vector2 GetViewportSize() const;
+        Vector2 GetViewportPosition() const;
+        bool IsActive() const;
+        bool IsKeyHeld(KeyCode key) const;
 
-		void DrawMxObject(const MxString& name, MxObject::Handle object);
+        void DrawMxObject(const MxString& name, MxObject::Handle object);
 
-		template<typename T>
-		void RegisterComponentEditor()
-		{
-			MXLOG_DEBUG("MxEngine::RuntimeEditor", "registered component " + MxString(rttr::type::get<T>().get_name().cbegin()));
+        template<typename T>
+        void RegisterComponentEditor()
+        {
+            MXLOG_DEBUG("MxEngine::RuntimeEditor", "registered component " + MxString(rttr::type::get<T>().get_name().cbegin()));
 
-			this->componentEditorCallbacks.push_back([](MxObject& object)
-			{
-				auto component = object.GetComponent<T>();
-				if (component.IsValid())
-					GUI::ComponentEditor(*component);
-			});
-			// Note: if component has no default constructor, it cannot be added to component list in runtime editor
-			if constexpr (std::is_default_constructible_v<T>)
-			{
-				this->componentAdderComponentNames.push_back(rttr::type::get<T>().get_name().cbegin());
-				this->componentAdderCallbacks.push_back([](MxObject& object)
-				{
-					if(!object.HasComponent<T>())
-						object.AddComponent<T>();
-				});
-			}
-		}
-	};
+            this->componentEditorCallbacks.push_back([](MxObject& object)
+            {
+                auto component = object.GetComponent<T>();
+                if (component.IsValid())
+                    GUI::ComponentEditor(*component);
+            });
+            // Note: if component has no default constructor, it cannot be added to component list in runtime editor
+            if constexpr (std::is_default_constructible_v<T>)
+            {
+                this->componentAdderComponentNames.push_back(rttr::type::get<T>().get_name().cbegin());
+                this->componentAdderCallbacks.push_back([](MxObject& object)
+                {
+                    if(!object.HasComponent<T>())
+                        object.AddComponent<T>();
+                });
+            }
+        }
+    };
 }

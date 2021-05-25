@@ -30,13 +30,13 @@
 
 namespace MxEngine
 {
-	struct ACES
-	{
-		float A = 0.250f;
-		float B = 0.306f;
-		float C = 0.099f;
-		float D = 0.350f;
-		float E = 0.025f;
-		float F = 0.400f;
-	};
+    struct ACES
+    {
+        float A = 0.250f;
+        float B = 0.306f;
+        float C = 0.099f;
+        float D = 0.350f;
+        float E = 0.025f;
+        float F = 0.400f;
+    };
 }

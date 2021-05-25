@@ -36,83 +36,83 @@
 
 namespace MxEngine
 {
-	template<>
-	Image ImageLoader::LoadImage(const std::filesystem::path& filepath, bool flipImage)
-	{
-		MAKE_SCOPE_PROFILER("ImageLoader::LoadImage");
-		MAKE_SCOPE_TIMER("MxEngine::ImageLoader", "ImageLoader::LoadImage()");
-		MXLOG_INFO("MxEngine::ImageLoader", "loading image from file: " + ToMxString(filepath));
+    template<>
+    Image ImageLoader::LoadImage(const std::filesystem::path& filepath, bool flipImage)
+    {
+        MAKE_SCOPE_PROFILER("ImageLoader::LoadImage");
+        MAKE_SCOPE_TIMER("MxEngine::ImageLoader", "ImageLoader::LoadImage()");
+        MXLOG_INFO("MxEngine::ImageLoader", "loading image from file: " + ToMxString(filepath));
 
-		stbi_set_flip_vertically_on_load(flipImage);
-		int width, height, channels;
-		uint8_t* data = stbi_load(filepath.string().c_str(), &width, &height, &channels, STBI_rgb_alpha);
-		if (data == nullptr) { width = height = 0; }
-		channels = 4;
-		return Image(data, (size_t)width, (size_t)height, (size_t)channels, false);
-	}
+        stbi_set_flip_vertically_on_load(flipImage);
+        int width, height, channels;
+        uint8_t* data = stbi_load(filepath.string().c_str(), &width, &height, &channels, STBI_rgb_alpha);
+        if (data == nullptr) { width = height = 0; }
+        channels = 4;
+        return Image(data, (size_t)width, (size_t)height, (size_t)channels, false);
+    }
 
-	Image ImageLoader::LoadImageFromMemory(const uint8_t* memory, size_t byteSize, bool flipImage)
-	{
-		MAKE_SCOPE_PROFILER("ImageLoader::LoadImage");
-		MAKE_SCOPE_TIMER("MxEngine::ImageLoader", "ImageLoader::LoadImage()");
-		MXLOG_INFO("MxEngine::ImageLoader", "loading image from memory");
+    Image ImageLoader::LoadImageFromMemory(const uint8_t* memory, size_t byteSize, bool flipImage)
+    {
+        MAKE_SCOPE_PROFILER("ImageLoader::LoadImage");
+        MAKE_SCOPE_TIMER("MxEngine::ImageLoader", "ImageLoader::LoadImage()");
+        MXLOG_INFO("MxEngine::ImageLoader", "loading image from memory");
 
-		stbi_set_flip_vertically_on_load(flipImage);
-		int width, height, channels;
-		uint8_t* data = stbi_load_from_memory(memory, (int)byteSize, &width, &height, &channels, STBI_rgb_alpha);
-		if (data == nullptr) { width = height = 0; }
-		channels = 4;
-		return Image(data, (size_t)width, (size_t)height, (size_t)channels, false);
-	}
+        stbi_set_flip_vertically_on_load(flipImage);
+        int width, height, channels;
+        uint8_t* data = stbi_load_from_memory(memory, (int)byteSize, &width, &height, &channels, STBI_rgb_alpha);
+        if (data == nullptr) { width = height = 0; }
+        channels = 4;
+        return Image(data, (size_t)width, (size_t)height, (size_t)channels, false);
+    }
 
-	/*
-	    0X00
-	    XXXX -> format of input
-	    0X00
-	*/
+    /*
+        0X00
+        XXXX -> format of input
+        0X00
+    */
 
-	/*
-		result[0] = right
-		result[1] = left
-		result[2] = top
-		result[3] = bottom
-		result[4] = front
-		result[5] = back
-	*/
-	ImageLoader::ImageArray ImageLoader::CreateCubemap(const Image& image)
-	{
-		ImageArray result;
-		size_t channels = 4; 
-		size_t width = image.GetWidth() / 4; //-V112
-		size_t height = image.GetHeight() / 3;
-		if (width != height)
-		{
-			MXLOG_WARNING("MxEngine::ImageLoader", "image size is invalid, it will be reduced to fit skybox cubemap");
-			width = height = FloorToPow2(Min(image.GetWidth() / 4, image.GetHeight() / 3)); //-V112
-		}
-		for (auto& arr : result)
-		{
-			arr.resize(height, width * channels, 0);
-		}
+    /*
+        result[0] = right
+        result[1] = left
+        result[2] = top
+        result[3] = bottom
+        result[4] = front
+        result[5] = back
+    */
+    ImageLoader::ImageArray ImageLoader::CreateCubemap(const Image& image)
+    {
+        ImageArray result;
+        size_t channels = 4; 
+        size_t width = image.GetWidth() / 4; //-V112
+        size_t height = image.GetHeight() / 3;
+        if (width != height)
+        {
+            MXLOG_WARNING("MxEngine::ImageLoader", "image size is invalid, it will be reduced to fit skybox cubemap");
+            width = height = FloorToPow2(Min(image.GetWidth() / 4, image.GetHeight() / 3)); //-V112
+        }
+        for (auto& arr : result)
+        {
+            arr.resize(height, width * channels, 0);
+        }
 
-		auto copySide = [&image, &width, &height, &channels](Array2D<unsigned char>& dst, size_t sliceX, size_t sliceY)
-		{
-			for (size_t i = 0; i < height; i++)
-			{
-				size_t y = i + sliceY * height;
-				size_t x = sliceX * width;
-				size_t bytesInRow = width * channels;
+        auto copySide = [&image, &width, &height, &channels](Array2D<unsigned char>& dst, size_t sliceX, size_t sliceY)
+        {
+            for (size_t i = 0; i < height; i++)
+            {
+                size_t y = i + sliceY * height;
+                size_t x = sliceX * width;
+                size_t bytesInRow = width * channels;
 
-				std::memcpy(dst[i].data(), &image.GetRawData()[(y * image.GetWidth() + x) * channels], bytesInRow);
-			}
-		};
+                std::memcpy(dst[i].data(), &image.GetRawData()[(y * image.GetWidth() + x) * channels], bytesInRow);
+            }
+        };
 
-		copySide(result[0], 2, 1);
-		copySide(result[1], 0, 1);
-		copySide(result[2], 1, 0);
-		copySide(result[3], 1, 2);
-		copySide(result[4], 1, 1);
-		copySide(result[5], 3, 1);
-		return result;
-	}
+        copySide(result[0], 2, 1);
+        copySide(result[1], 0, 1);
+        copySide(result[2], 1, 0);
+        copySide(result[3], 1, 2);
+        copySide(result[4], 1, 1);
+        copySide(result[5], 3, 1);
+        return result;
+    }
 }

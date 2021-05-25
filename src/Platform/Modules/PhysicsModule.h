@@ -37,28 +37,28 @@ class btRigidBody;
 
 namespace MxEngine
 {
-	struct PhysicsModuleData //-V730
-	{
-		btCollisionConfiguration* CollisionConfiguration;
-		btDispatcher* Dispatcher;
-		btBroadphaseInterface*  Broadphase;
-		btConstraintSolver* Solver;
-		btDiscreteDynamicsWorld* World;
-		float simulationStep = 1.0f;
-	};
+    struct PhysicsModuleData //-V730
+    {
+        btCollisionConfiguration* CollisionConfiguration;
+        btDispatcher* Dispatcher;
+        btBroadphaseInterface*  Broadphase;
+        btConstraintSolver* Solver;
+        btDiscreteDynamicsWorld* World;
+        float simulationStep = 1.0f;
+    };
 
-	class PhysicsModule
-	{
-		inline static PhysicsModuleData* data = nullptr;
-	public:
-		static void Init();
-		static void Destroy();
-		static void OnUpdate(float dt);
-		static void PerformSimulationStep(float dt);
-		static void SetSimulationStep(float timedelta);
-		static float GetSimulationStep();
+    class PhysicsModule
+    {
+        inline static PhysicsModuleData* data = nullptr;
+    public:
+        static void Init();
+        static void Destroy();
+        static void OnUpdate(float dt);
+        static void PerformSimulationStep(float dt);
+        static void SetSimulationStep(float timedelta);
+        static float GetSimulationStep();
 
-		static PhysicsModuleData* GetImpl();
-		static void Clone(PhysicsModuleData* impl);
-	};
+        static PhysicsModuleData* GetImpl();
+        static void Clone(PhysicsModuleData* impl);
+    };
 }

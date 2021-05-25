@@ -130,10 +130,10 @@ namespace MxEngine
         }
     };
 
-	class InstanceFactory
-	{
-		MAKE_COMPONENT(InstanceFactory);
-	public:
+    class InstanceFactory
+    {
+        MAKE_COMPONENT(InstanceFactory);
+    public:
         struct InstanceData
         {
             Matrix4x4 Model{ 1.0f };
@@ -142,35 +142,35 @@ namespace MxEngine
         };
 
         constexpr static size_t InstanceDataSize = sizeof(InstanceData) / sizeof(float);
-		using InstancePool = VectorPool<MxObject::Handle>;
-	private:
-		mutable InstancePool pool;
+        using InstancePool = VectorPool<MxObject::Handle>;
+    private:
+        mutable InstancePool pool;
         MxVector<InstanceData> instances;
         MoveOnlyAllocation instanceAllocation;
 
-		void RemoveDanglingHandles();
+        void RemoveDanglingHandles();
         void SendInstancesToGPU();
         void ReserveInstanceAllocation(size_t count);
         void UpdateInstanceCache();
 
         void FreeInstancePool();
         void FreeInstanceAllocation();
-	public:
+    public:
         InstanceFactory() = default;
-		~InstanceFactory();
+        ~InstanceFactory();
 
-		bool IsStatic = false;
+        bool IsStatic = false;
 
-		const InstancePool& GetInstancePool() const { return this->pool; }
-		InstancePool& GetInstancePool() { return this->pool; };
-		size_t GetInstanceCount() const { return this->GetInstancePool().Allocated(); }
+        const InstancePool& GetInstancePool() const { return this->pool; }
+        InstancePool& GetInstancePool() { return this->pool; };
+        size_t GetInstanceCount() const { return this->GetInstancePool().Allocated(); }
         size_t GetInstanceBufferSize() const { return this->instanceAllocation.Size; }
         size_t GetInstanceBufferOffset() const { return this->instanceAllocation.Offset; }
         auto GetInstances() const { return InstanceView{ this->pool }; }
 
-		void OnUpdate(float timeDelta);
-		MxObject::Handle Instanciate();
+        void OnUpdate(float timeDelta);
+        MxObject::Handle Instanciate();
         void SubmitInstances();
         void DestroyInstances();
-	};
+    };
 }

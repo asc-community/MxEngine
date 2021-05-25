@@ -32,9 +32,9 @@
 
 namespace MxEngine
 {
-	class GlobalConfig
-	{
-	public:
+    class GlobalConfig
+    {
+    public:
         static BuildType GetBuildType();
         static const Vector2& GetWindowPosition();
         static const Vector2& GetWindowSize();
@@ -58,5 +58,5 @@ namespace MxEngine
         static KeyCode GetApplicationCloseKey();
         static KeyCode GetEditorOpenKey();
         static KeyCode GetRecompileFilesKey();
-	};
+    };
 }

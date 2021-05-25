@@ -37,107 +37,107 @@
 
 namespace MxEngine
 {
-	static std::set<int> ExistingErrors;
+    static std::set<int> ExistingErrors;
 
-	void GlClearErrors()
-	{
-		while (glGetError() != GL_NO_ERROR);
-	}
+    void GlClearErrors()
+    {
+        while (glGetError() != GL_NO_ERROR);
+    }
 
-	bool GlLogCall(const char* function, const char* file, int line)
-	{
-		bool success = true;
-		while (GLenum error = glGetError())
-		{
-			success = false;
-			if (ExistingErrors.find(error) != ExistingErrors.end())
-				continue;
-			ExistingErrors.insert(error);
-			setlocale(LC_ALL, "");
-			MXLOG_ERROR("OpenGL::ErrorHandler", MxFormat("error #{0} {1} in file: {2}, line: {3}", error, function, file, line));
-		}
-		return success;
-	}
+    bool GlLogCall(const char* function, const char* file, int line)
+    {
+        bool success = true;
+        while (GLenum error = glGetError())
+        {
+            success = false;
+            if (ExistingErrors.find(error) != ExistingErrors.end())
+                continue;
+            ExistingErrors.insert(error);
+            setlocale(LC_ALL, "");
+            MXLOG_ERROR("OpenGL::ErrorHandler", MxFormat("error #{0} {1} in file: {2}, line: {3}", error, function, file, line));
+        }
+        return success;
+    }
 
     void PrintDebugInformation(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
-	{
-		// ignore non-significant error/warning codes
-		if (id == 131169 || id == 131184 || id == 131185 || id == 131218 || id == 131204 || id == 131188) return;
+    {
+        // ignore non-significant error/warning codes
+        if (id == 131169 || id == 131184 || id == 131185 || id == 131218 || id == 131204 || id == 131188) return;
 
-		if (ExistingErrors.find(id) != ExistingErrors.end())
-			return;
-		ExistingErrors.insert(id);
+        if (ExistingErrors.find(id) != ExistingErrors.end())
+            return;
+        ExistingErrors.insert(id);
 
-		std::stringstream out;
-		out << "device message [errcode " << id << "]: " << message << "\n        ";
+        std::stringstream out;
+        out << "device message [errcode " << id << "]: " << message << "\n        ";
 
-		switch (source)
-		{
-		case GL_DEBUG_SOURCE_API:             out << "Source: API"; break;
-		case GL_DEBUG_SOURCE_WINDOW_SYSTEM:   out << "Source: Window System"; break;
-		case GL_DEBUG_SOURCE_SHADER_COMPILER: out << "Source: Shader Compiler"; break;
-		case GL_DEBUG_SOURCE_THIRD_PARTY:     out << "Source: Third Party"; break;
-		case GL_DEBUG_SOURCE_APPLICATION:     out << "Source: Application"; break;
-		case GL_DEBUG_SOURCE_OTHER:           out << "Source: Other"; break;
-		} out << "\n        ";
+        switch (source)
+        {
+        case GL_DEBUG_SOURCE_API:             out << "Source: API"; break;
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:   out << "Source: Window System"; break;
+        case GL_DEBUG_SOURCE_SHADER_COMPILER: out << "Source: Shader Compiler"; break;
+        case GL_DEBUG_SOURCE_THIRD_PARTY:     out << "Source: Third Party"; break;
+        case GL_DEBUG_SOURCE_APPLICATION:     out << "Source: Application"; break;
+        case GL_DEBUG_SOURCE_OTHER:           out << "Source: Other"; break;
+        } out << "\n        ";
 
-		switch (type)
-		{
-		case GL_DEBUG_TYPE_ERROR:               out << "Type: Error"; break;
-		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: out << "Type: Deprecated Behaviour"; break;
-		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  out << "Type: Undefined Behaviour"; break;
-		case GL_DEBUG_TYPE_PORTABILITY:         out << "Type: Portability"; break;
-		case GL_DEBUG_TYPE_PERFORMANCE:         out << "Type: Performance"; break;
-		case GL_DEBUG_TYPE_MARKER:              out << "Type: Marker"; break;
-		case GL_DEBUG_TYPE_PUSH_GROUP:          out << "Type: Push Group"; break;
-		case GL_DEBUG_TYPE_POP_GROUP:           out << "Type: Pop Group"; break;
-		case GL_DEBUG_TYPE_OTHER:               out << "Type: Other"; break;
-		} out << "\n        ";
+        switch (type)
+        {
+        case GL_DEBUG_TYPE_ERROR:               out << "Type: Error"; break;
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: out << "Type: Deprecated Behaviour"; break;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  out << "Type: Undefined Behaviour"; break;
+        case GL_DEBUG_TYPE_PORTABILITY:         out << "Type: Portability"; break;
+        case GL_DEBUG_TYPE_PERFORMANCE:         out << "Type: Performance"; break;
+        case GL_DEBUG_TYPE_MARKER:              out << "Type: Marker"; break;
+        case GL_DEBUG_TYPE_PUSH_GROUP:          out << "Type: Push Group"; break;
+        case GL_DEBUG_TYPE_POP_GROUP:           out << "Type: Pop Group"; break;
+        case GL_DEBUG_TYPE_OTHER:               out << "Type: Other"; break;
+        } out << "\n        ";
 
-		switch (severity)
-		{
-		case GL_DEBUG_SEVERITY_HIGH:         out << "Severity: high"; break;
-		case GL_DEBUG_SEVERITY_MEDIUM:       out << "Severity: medium"; break;
-		case GL_DEBUG_SEVERITY_LOW:          out << "Severity: low"; break;
-		case GL_DEBUG_SEVERITY_NOTIFICATION: out << "Severity: notification"; break;
-		}
+        switch (severity)
+        {
+        case GL_DEBUG_SEVERITY_HIGH:         out << "Severity: high"; break;
+        case GL_DEBUG_SEVERITY_MEDIUM:       out << "Severity: medium"; break;
+        case GL_DEBUG_SEVERITY_LOW:          out << "Severity: low"; break;
+        case GL_DEBUG_SEVERITY_NOTIFICATION: out << "Severity: notification"; break;
+        }
 
-		MXLOG_ERROR("OpenGL::ErrorHandler", ToMxString(out.str()));
-	}
+        MXLOG_ERROR("OpenGL::ErrorHandler", ToMxString(out.str()));
+    }
 
-	template<>
-	const char* TypeToString<unsigned char>()
-	{
-		return "ubyte";
-	}
+    template<>
+    const char* TypeToString<unsigned char>()
+    {
+        return "ubyte";
+    }
 
-	template<>
-	const char* TypeToString<unsigned int>()
-	{
-		return "uint";
-	}
+    template<>
+    const char* TypeToString<unsigned int>()
+    {
+        return "uint";
+    }
 
-	template<>
-	const char* TypeToString<float>()
-	{
-		return "float";
-	}
+    template<>
+    const char* TypeToString<float>()
+    {
+        return "float";
+    }
 
-	template<>
-	unsigned int GetGLType<float>()
-	{
-		return GL_FLOAT;
-	}
+    template<>
+    unsigned int GetGLType<float>()
+    {
+        return GL_FLOAT;
+    }
 
-	template<>
-	unsigned int GetGLType<unsigned int>()
-	{
-		return GL_UNSIGNED_INT;
-	}
+    template<>
+    unsigned int GetGLType<unsigned int>()
+    {
+        return GL_UNSIGNED_INT;
+    }
 
-	template<>
-	unsigned int GetGLType<unsigned char>()
-	{
-		return GL_UNSIGNED_BYTE;
-	}
+    template<>
+    unsigned int GetGLType<unsigned char>()
+    {
+        return GL_UNSIGNED_BYTE;
+    }
 }

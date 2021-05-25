@@ -32,11 +32,11 @@
 
 namespace MxEngine
 {
-	class FrustrumCamera : public CameraBase
-	{
-	public:
-		void SetBounds(float x, float y, float size);
-		Vector3 GetBounds() const;
-		void SetProjectionForTile(size_t xTile, size_t yTile, size_t tilesPerRow, float totalImageSize);
-	};
+    class FrustrumCamera : public CameraBase
+    {
+    public:
+        void SetBounds(float x, float y, float size);
+        Vector3 GetBounds() const;
+        void SetProjectionForTile(size_t xTile, size_t yTile, size_t tilesPerRow, float totalImageSize);
+    };
 }

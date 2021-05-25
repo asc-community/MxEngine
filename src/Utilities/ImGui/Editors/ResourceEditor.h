@@ -32,6 +32,6 @@
 
 namespace MxEngine::GUI
 {
-	void DrawImageSaver(const TextureHandle& texture, const char* name = "save texture to disk");
-	void DrawTextureList(const char* name, bool* isOpen = nullptr);
+    void DrawImageSaver(const TextureHandle& texture, const char* name = "save texture to disk");
+    void DrawTextureList(const char* name, bool* isOpen = nullptr);
 }

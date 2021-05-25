@@ -32,51 +32,51 @@
 
 namespace MxEngine
 {
-	struct SpotLightBaseData
-	{
-		Matrix4x4 Transform;
-		Vector3 Position;
-		float InnerAngle;
-		Vector3 Direction;
-		float OuterAngle;
-		Vector3 Color;
-		float AmbientIntensity;
+    struct SpotLightBaseData
+    {
+        Matrix4x4 Transform;
+        Vector3 Position;
+        float InnerAngle;
+        Vector3 Direction;
+        float OuterAngle;
+        Vector3 Color;
+        float AmbientIntensity;
 
-		constexpr static size_t Size = 16 + 3 + 1 + 3 + 1 + 3 + 1;
-	};
+        constexpr static size_t Size = 16 + 3 + 1 + 3 + 1 + 3 + 1;
+    };
 
-	class SpotLightInstancedObject : public RenderHelperObject
-	{
-		VertexBufferHandle instancedVBO;
-	public:
-		MxVector<SpotLightBaseData> Instances;
+    class SpotLightInstancedObject : public RenderHelperObject
+    {
+        VertexBufferHandle instancedVBO;
+    public:
+        MxVector<SpotLightBaseData> Instances;
 
-		SpotLightInstancedObject() = default;
+        SpotLightInstancedObject() = default;
 
-		SpotLightInstancedObject(size_t vertexOffset, size_t vertexCount, size_t indexOffset, size_t indexCount)
-			: RenderHelperObject(vertexOffset, vertexCount, indexOffset, indexCount, Factory<VertexArray>::Create())
-		{
-			this->instancedVBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
+        SpotLightInstancedObject(size_t vertexOffset, size_t vertexCount, size_t indexOffset, size_t indexCount)
+            : RenderHelperObject(vertexOffset, vertexCount, indexOffset, indexCount, Factory<VertexArray>::Create())
+        {
+            this->instancedVBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
 
-			std::array vertexLayout = {
-				VertexAttribute::Entry<Vector3>(), // position
-				VertexAttribute::Entry<Vector2>(), // texture uv
-				VertexAttribute::Entry<Vector3>(), // normal
-				VertexAttribute::Entry<Vector3>(), // tangent
-				VertexAttribute::Entry<Vector3>(), // bitangent
-			};
-			std::array instanceLayout = {
-				VertexAttribute::Entry<Matrix4x4>(), // transform
-				VertexAttribute::Entry<Vector4>(),   // position + inner angle
-				VertexAttribute::Entry<Vector4>(),   // direction + outer angle
-				VertexAttribute::Entry<Vector4>(),   // color + ambient
-			};
+            std::array vertexLayout = {
+                VertexAttribute::Entry<Vector3>(), // position
+                VertexAttribute::Entry<Vector2>(), // texture uv
+                VertexAttribute::Entry<Vector3>(), // normal
+                VertexAttribute::Entry<Vector3>(), // tangent
+                VertexAttribute::Entry<Vector3>(), // bitangent
+            };
+            std::array instanceLayout = {
+                VertexAttribute::Entry<Matrix4x4>(), // transform
+                VertexAttribute::Entry<Vector4>(),   // position + inner angle
+                VertexAttribute::Entry<Vector4>(),   // direction + outer angle
+                VertexAttribute::Entry<Vector4>(),   // color + ambient
+            };
 
-			VAO->AddVertexLayout(*this->GetVBO(), vertexLayout, VertexAttributeInputRate::PER_VERTEX);
-			VAO->AddVertexLayout(*this->instancedVBO, instanceLayout, VertexAttributeInputRate::PER_INSTANCE);
-			this->VAO->LinkIndexBuffer(*this->GetIBO());
-		}
+            VAO->AddVertexLayout(*this->GetVBO(), vertexLayout, VertexAttributeInputRate::PER_VERTEX);
+            VAO->AddVertexLayout(*this->instancedVBO, instanceLayout, VertexAttributeInputRate::PER_INSTANCE);
+            this->VAO->LinkIndexBuffer(*this->GetIBO());
+        }
 
-		void SubmitToVBO() { instancedVBO->BufferDataWithResize((float*)this->Instances.data(), this->Instances.size() * SpotLightBaseData::Size); }
-	};
+        void SubmitToVBO() { instancedVBO->BufferDataWithResize((float*)this->Instances.data(), this->Instances.size() * SpotLightBaseData::Size); }
+    };
 }

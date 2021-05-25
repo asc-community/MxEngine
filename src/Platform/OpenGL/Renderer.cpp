@@ -35,342 +35,342 @@
 
 namespace MxEngine
 {
-	GLenum BlendTable[] =
-	{
-		0x00000000,
-		GL_ZERO,
-		GL_ONE,
-		GL_ONE_MINUS_SRC_COLOR,
-		GL_SRC_ALPHA,
-		GL_ONE_MINUS_SRC_ALPHA,
-		GL_DST_ALPHA,
-		GL_ONE_MINUS_DST_ALPHA,
-		GL_DST_COLOR,
-		GL_ONE_MINUS_DST_COLOR,
-		GL_CONSTANT_COLOR,
-		GL_ONE_MINUS_CONSTANT_COLOR,
-		GL_CONSTANT_ALPHA,
-		GL_ONE_MINUS_CONSTANT_ALPHA,
-	};
+    GLenum BlendTable[] =
+    {
+        0x00000000,
+        GL_ZERO,
+        GL_ONE,
+        GL_ONE_MINUS_SRC_COLOR,
+        GL_SRC_ALPHA,
+        GL_ONE_MINUS_SRC_ALPHA,
+        GL_DST_ALPHA,
+        GL_ONE_MINUS_DST_ALPHA,
+        GL_DST_COLOR,
+        GL_ONE_MINUS_DST_COLOR,
+        GL_CONSTANT_COLOR,
+        GL_ONE_MINUS_CONSTANT_COLOR,
+        GL_CONSTANT_ALPHA,
+        GL_ONE_MINUS_CONSTANT_ALPHA,
+    };
 
-	GLenum PrimitiveTable[] = {
-		GL_POINTS,
-		GL_LINE_STRIP,
-		GL_LINE_LOOP,
-		GL_LINES,
-		GL_LINE_STRIP_ADJACENCY,
-		GL_LINES_ADJACENCY,
-		GL_TRIANGLE_STRIP,
-		GL_TRIANGLE_FAN,
-		GL_TRIANGLES,
-		GL_TRIANGLE_STRIP_ADJACENCY,
-		GL_TRIANGLES_ADJACENCY,
-		GL_PATCHES,
-	};
+    GLenum PrimitiveTable[] = {
+        GL_POINTS,
+        GL_LINE_STRIP,
+        GL_LINE_LOOP,
+        GL_LINES,
+        GL_LINE_STRIP_ADJACENCY,
+        GL_LINES_ADJACENCY,
+        GL_TRIANGLE_STRIP,
+        GL_TRIANGLE_FAN,
+        GL_TRIANGLES,
+        GL_TRIANGLE_STRIP_ADJACENCY,
+        GL_TRIANGLES_ADJACENCY,
+        GL_PATCHES,
+    };
 
-	Renderer::Renderer()
-	{
-		this->clearMask |= GL_COLOR_BUFFER_BIT;
-	}
+    Renderer::Renderer()
+    {
+        this->clearMask |= GL_COLOR_BUFFER_BIT;
+    }
 
-	void Renderer::Clear() const
-	{
-		GLCALL(glClear(clearMask));
-	}
+    void Renderer::Clear() const
+    {
+        GLCALL(glClear(clearMask));
+    }
 
-	void Renderer::Flush() const
-	{
-		MAKE_SCOPE_PROFILER("Renderer::Flush");
-		GraphicModule::OnRenderDraw();
+    void Renderer::Flush() const
+    {
+        MAKE_SCOPE_PROFILER("Renderer::Flush");
+        GraphicModule::OnRenderDraw();
 
-		glFlush();
-	}
+        glFlush();
+    }
 
-	void Renderer::Finish() const
-	{
-		MAKE_SCOPE_PROFILER("Renderer::Finish");
-		GraphicModule::OnRenderDraw();
+    void Renderer::Finish() const
+    {
+        MAKE_SCOPE_PROFILER("Renderer::Finish");
+        GraphicModule::OnRenderDraw();
 
-		glFinish();
-	}
+        glFinish();
+    }
 
-	void Renderer::SetViewport(int x, int y, int width, int height) const
-	{
-		GLCALL(glViewport(x, y, width, height));
-	}
+    void Renderer::SetViewport(int x, int y, int width, int height) const
+    {
+        GLCALL(glViewport(x, y, width, height));
+    }
 
-	Renderer& Renderer::UseClipDistance(size_t count)
-	{
-		for (size_t i = 0; i < count; i++)
-		{
-			GLCALL(glEnable(GL_CLIP_DISTANCE0 + i));
-		}
-		return *this;
-	}
+    Renderer& Renderer::UseClipDistance(size_t count)
+    {
+        for (size_t i = 0; i < count; i++)
+        {
+            GLCALL(glEnable(GL_CLIP_DISTANCE0 + i));
+        }
+        return *this;
+    }
 
-	Renderer& Renderer::UseSeamlessCubeMaps(bool value)
-	{
-		if (value)
-			glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-		else
-			glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-		return *this;
-	}
+    Renderer& Renderer::UseSeamlessCubeMaps(bool value)
+    {
+        if (value)
+            glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+        else
+            glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+        return *this;
+    }
 
-	void Renderer::DrawVertices(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset)
-	{
-		GLCALL(glDrawArrays(PrimitiveTable[(size_t)primitive], (GLint)vertexOffset, (GLsizei)vertexCount));
-	}
+    void Renderer::DrawVertices(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset)
+    {
+        GLCALL(glDrawArrays(PrimitiveTable[(size_t)primitive], (GLint)vertexOffset, (GLsizei)vertexCount));
+    }
 
-	void Renderer::DrawVerticesInstanced(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount, size_t baseInstance)
-	{
-		GLCALL(glDrawArraysInstancedBaseInstance(
-			PrimitiveTable[(size_t)primitive], 
-			(GLint)vertexOffset, 
-			(GLsizei)vertexCount, 
-			instanceCount,
-			baseInstance
-		));
-	}
+    void Renderer::DrawVerticesInstanced(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount, size_t baseInstance)
+    {
+        GLCALL(glDrawArraysInstancedBaseInstance(
+            PrimitiveTable[(size_t)primitive], 
+            (GLint)vertexOffset, 
+            (GLsizei)vertexCount, 
+            instanceCount,
+            baseInstance
+        ));
+    }
 
-	void Renderer::DrawIndices(RenderPrimitive primitive, size_t indexCount, size_t indexOffset)
-	{
-		GLCALL(glDrawElements(
-			PrimitiveTable[(size_t)primitive],
-			indexCount,
-			GetGLType<IndexBuffer::IndexType>(),
-			(const void*)(indexOffset * sizeof(IndexBuffer::IndexType))
-		));
-	}
+    void Renderer::DrawIndices(RenderPrimitive primitive, size_t indexCount, size_t indexOffset)
+    {
+        GLCALL(glDrawElements(
+            PrimitiveTable[(size_t)primitive],
+            indexCount,
+            GetGLType<IndexBuffer::IndexType>(),
+            (const void*)(indexOffset * sizeof(IndexBuffer::IndexType))
+        ));
+    }
 
-	void Renderer::DrawIndicesInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount, size_t baseInstance)
-	{
-		GLCALL(glDrawElementsInstancedBaseInstance(
-			PrimitiveTable[(size_t)primitive], 
-			indexCount, 
-			GetGLType<IndexBuffer::IndexType>(), 
-			(const void*)(indexOffset * sizeof(IndexBuffer::IndexType)), 
-			instanceCount,
-			baseInstance
-		));
-	}
+    void Renderer::DrawIndicesInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount, size_t baseInstance)
+    {
+        GLCALL(glDrawElementsInstancedBaseInstance(
+            PrimitiveTable[(size_t)primitive], 
+            indexCount, 
+            GetGLType<IndexBuffer::IndexType>(), 
+            (const void*)(indexOffset * sizeof(IndexBuffer::IndexType)), 
+            instanceCount,
+            baseInstance
+        ));
+    }
 
-	void Renderer::DrawIndicesBaseVertex(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex)
-	{
-		GLCALL(glDrawElementsBaseVertex(
-			PrimitiveTable[(size_t)primitive],
-			indexCount,
-			GetGLType<IndexBuffer::IndexType>(),
-			(const void*)(indexOffset * sizeof(IndexBuffer::IndexType)),
-			baseVertex
-		));
-	}
+    void Renderer::DrawIndicesBaseVertex(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex)
+    {
+        GLCALL(glDrawElementsBaseVertex(
+            PrimitiveTable[(size_t)primitive],
+            indexCount,
+            GetGLType<IndexBuffer::IndexType>(),
+            (const void*)(indexOffset * sizeof(IndexBuffer::IndexType)),
+            baseVertex
+        ));
+    }
 
-	void Renderer::DrawIndicesBaseVertexInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex, size_t instanceCount, size_t baseInstance)
-	{
-		GLCALL(glDrawElementsInstancedBaseVertexBaseInstance(
-			PrimitiveTable[(size_t)primitive],
-			indexCount,
-			GetGLType<IndexBuffer::IndexType>(),
-			(const void*)(indexOffset * sizeof(IndexBuffer::IndexType)),
-			instanceCount,
-			baseVertex,
-			baseInstance
-		));
-	}
+    void Renderer::DrawIndicesBaseVertexInstanced(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex, size_t instanceCount, size_t baseInstance)
+    {
+        GLCALL(glDrawElementsInstancedBaseVertexBaseInstance(
+            PrimitiveTable[(size_t)primitive],
+            indexCount,
+            GetGLType<IndexBuffer::IndexType>(),
+            (const void*)(indexOffset * sizeof(IndexBuffer::IndexType)),
+            instanceCount,
+            baseVertex,
+            baseInstance
+        ));
+    }
 
-	Renderer& Renderer::UseColorMask(bool r, bool g, bool b, bool a)
-	{
-		GLCALL(glColorMask(r, g, b, a));
-		return *this;
-	}
+    Renderer& Renderer::UseColorMask(bool r, bool g, bool b, bool a)
+    {
+        GLCALL(glColorMask(r, g, b, a));
+        return *this;
+    }
 
-	Renderer& Renderer::UseDepthBufferMask(bool value)
-	{
-		GLCALL(glDepthMask(value));
-		return *this;
-	}
+    Renderer& Renderer::UseDepthBufferMask(bool value)
+    {
+        GLCALL(glDepthMask(value));
+        return *this;
+    }
 
-	Renderer& Renderer::UseSampling(bool value)
-	{
-		if (value)
-		{
-			GLCALL(glEnable(GL_MULTISAMPLE));
-			MXLOG_DEBUG("OpenGL::Renderer", "native multisampling is enabled");
-		}
-		else
-		{
-			GLCALL(glDisable(GL_MULTISAMPLE));
-			MXLOG_DEBUG("OpenGL::Renderer", "native multisampling is disabled");
-		}
-		return *this;
-	}
+    Renderer& Renderer::UseSampling(bool value)
+    {
+        if (value)
+        {
+            GLCALL(glEnable(GL_MULTISAMPLE));
+            MXLOG_DEBUG("OpenGL::Renderer", "native multisampling is enabled");
+        }
+        else
+        {
+            GLCALL(glDisable(GL_MULTISAMPLE));
+            MXLOG_DEBUG("OpenGL::Renderer", "native multisampling is disabled");
+        }
+        return *this;
+    }
 
-	Renderer& Renderer::UseDepthBuffer(bool value)
-	{
-		depthBufferEnabled = value;
-		if (value)
-		{
-			GLCALL(glEnable(GL_DEPTH_TEST));
-			clearMask |= GL_DEPTH_BUFFER_BIT;
-		}
-		else
-		{
-			GLCALL(glDisable(GL_DEPTH_TEST));
-			clearMask &= ~GL_DEPTH_BUFFER_BIT;
-		}
-		return *this;
-	}
+    Renderer& Renderer::UseDepthBuffer(bool value)
+    {
+        depthBufferEnabled = value;
+        if (value)
+        {
+            GLCALL(glEnable(GL_DEPTH_TEST));
+            clearMask |= GL_DEPTH_BUFFER_BIT;
+        }
+        else
+        {
+            GLCALL(glDisable(GL_DEPTH_TEST));
+            clearMask &= ~GL_DEPTH_BUFFER_BIT;
+        }
+        return *this;
+    }
 
-	Renderer& Renderer::UseReversedDepth(bool value)
-	{
-		if (value)
-		{
-			GLCALL(glClearDepth(0.0f));
-			GLCALL(glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE));
-			this->UseDepthFunction(DepthFunction::GREATER_EQUAL);
-		}
-		else
-		{
-			GLCALL(glClearDepth(1.0f));
-			GLCALL(glClipControl(GL_LOWER_LEFT, GL_NEGATIVE_ONE_TO_ONE));
-			this->UseDepthFunction(DepthFunction::LESS);
-		}
-		return *this;
-	}
+    Renderer& Renderer::UseReversedDepth(bool value)
+    {
+        if (value)
+        {
+            GLCALL(glClearDepth(0.0f));
+            GLCALL(glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE));
+            this->UseDepthFunction(DepthFunction::GREATER_EQUAL);
+        }
+        else
+        {
+            GLCALL(glClearDepth(1.0f));
+            GLCALL(glClipControl(GL_LOWER_LEFT, GL_NEGATIVE_ONE_TO_ONE));
+            this->UseDepthFunction(DepthFunction::LESS);
+        }
+        return *this;
+    }
 
-	GLenum depthFuncTable[] = {
-			GL_EQUAL,
-			GL_NOTEQUAL,
-			GL_LESS,
-			GL_GREATER,
-			GL_LEQUAL,
-			GL_GEQUAL,
-			GL_ALWAYS,
-			GL_NEVER,
-	};
+    GLenum depthFuncTable[] = {
+            GL_EQUAL,
+            GL_NOTEQUAL,
+            GL_LESS,
+            GL_GREATER,
+            GL_LEQUAL,
+            GL_GEQUAL,
+            GL_ALWAYS,
+            GL_NEVER,
+    };
 
-	Renderer& Renderer::UseDepthFunction(DepthFunction function)
-	{
-		GLCALL(glDepthFunc(depthFuncTable[(size_t)function]));
-		return *this;
-	}
+    Renderer& Renderer::UseDepthFunction(DepthFunction function)
+    {
+        GLCALL(glDepthFunc(depthFuncTable[(size_t)function]));
+        return *this;
+    }
 
-	Renderer& Renderer::UseCulling(bool value, bool counterClockWise, bool cullBack)
-	{
-		// culling 
-		if (value)
-		{
-			GLCALL(glEnable(GL_CULL_FACE));
-		}
-		else
-		{
-			GLCALL(glDisable(GL_CULL_FACE));
-		}
+    Renderer& Renderer::UseCulling(bool value, bool counterClockWise, bool cullBack)
+    {
+        // culling 
+        if (value)
+        {
+            GLCALL(glEnable(GL_CULL_FACE));
+        }
+        else
+        {
+            GLCALL(glDisable(GL_CULL_FACE));
+        }
 
-		// point order
-		if (counterClockWise)
-		{
-			GLCALL(glFrontFace(GL_CCW));
-		}
-		else
-		{
-			GLCALL(glFrontFace(GL_CW));
-		}
+        // point order
+        if (counterClockWise)
+        {
+            GLCALL(glFrontFace(GL_CCW));
+        }
+        else
+        {
+            GLCALL(glFrontFace(GL_CW));
+        }
 
-		// back / front culling
-		if (cullBack)
-		{
-			GLCALL(glCullFace(GL_BACK));
-		}
-		else
-		{
-			GLCALL(glCullFace(GL_FRONT));
-		}
+        // back / front culling
+        if (cullBack)
+        {
+            GLCALL(glCullFace(GL_BACK));
+        }
+        else
+        {
+            GLCALL(glCullFace(GL_FRONT));
+        }
 
-		return *this;
-	}
+        return *this;
+    }
 
-	Renderer& Renderer::UseClearColor(float r, float g, float b, float a)
-	{
-		GLCALL(glClearColor(r, g, b, a));
-		return *this;
-	}
+    Renderer& Renderer::UseClearColor(float r, float g, float b, float a)
+    {
+        GLCALL(glClearColor(r, g, b, a));
+        return *this;
+    }
 
-	Renderer& Renderer::UseBlendFactors(BlendFactor src, BlendFactor dist)
-	{
-		if (src == BlendFactor::NONE || dist == BlendFactor::NONE)
-		{
-			GLCALL(glDisable(GL_BLEND));
-		}
-		else
-		{
-			GLCALL(glEnable(GL_BLEND));
-			GLCALL(glBlendFunc(BlendTable[(size_t)src], BlendTable[(size_t)dist]));
-		}
-		return *this;
-	}
+    Renderer& Renderer::UseBlendFactors(BlendFactor src, BlendFactor dist)
+    {
+        if (src == BlendFactor::NONE || dist == BlendFactor::NONE)
+        {
+            GLCALL(glDisable(GL_BLEND));
+        }
+        else
+        {
+            GLCALL(glEnable(GL_BLEND));
+            GLCALL(glBlendFunc(BlendTable[(size_t)src], BlendTable[(size_t)dist]));
+        }
+        return *this;
+    }
 
-	Renderer& Renderer::UseAnisotropicFiltering(float factor)
-	{
-		if (!glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
-		{
-			MXLOG_WARNING("OpenGL::Renderer", "anisotropic filtering is not supported on your device");
-		}
-		else
-		{
-			GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, factor));
-			MXLOG_DEBUG("OpenGL::Renderer", "set anisotropic filtering factor to " + ToMxString((int)factor) + "x");
-		}
-		return *this;
-	}
+    Renderer& Renderer::UseAnisotropicFiltering(float factor)
+    {
+        if (!glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
+        {
+            MXLOG_WARNING("OpenGL::Renderer", "anisotropic filtering is not supported on your device");
+        }
+        else
+        {
+            GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, factor));
+            MXLOG_DEBUG("OpenGL::Renderer", "set anisotropic filtering factor to " + ToMxString((int)factor) + "x");
+        }
+        return *this;
+    }
 
-	float Renderer::GetLargestAnisotropicFactor() const
-	{
-		if (!glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
-		{
-			MXLOG_WARNING("OpenGL::Renderer", "anisotropic filtering is not supported");
-			return 0.0f;
-		}
-		float factor;
-		GLCALL(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &factor));
-		return factor;
-	}
+    float Renderer::GetLargestAnisotropicFactor() const
+    {
+        if (!glfwExtensionSupported("GL_EXT_texture_filter_anisotropic"))
+        {
+            MXLOG_WARNING("OpenGL::Renderer", "anisotropic filtering is not supported");
+            return 0.0f;
+        }
+        float factor;
+        GLCALL(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &factor));
+        return factor;
+    }
 
     void Renderer::SetDefaultVertexAttribute(size_t index, float v) const
     {
-		GLCALL(glVertexAttrib1f((GLuint)index, v));
+        GLCALL(glVertexAttrib1f((GLuint)index, v));
     }
 
     void Renderer::SetDefaultVertexAttribute(size_t index, const Vector2& vec) const
     {
-		GLCALL(glVertexAttrib2f((GLuint)index, vec.x, vec.y));
+        GLCALL(glVertexAttrib2f((GLuint)index, vec.x, vec.y));
     }
 
     void Renderer::SetDefaultVertexAttribute(size_t index, const Vector3& vec) const
     {
-		GLCALL(glVertexAttrib3f((GLuint)index, vec.x, vec.y, vec.z));
+        GLCALL(glVertexAttrib3f((GLuint)index, vec.x, vec.y, vec.z));
     }
 
     void Renderer::SetDefaultVertexAttribute(size_t index, const Vector4& vec) const
     {
-		GLCALL(glVertexAttrib4f((GLuint)index, vec.x, vec.y, vec.z, vec.w));
+        GLCALL(glVertexAttrib4f((GLuint)index, vec.x, vec.y, vec.z, vec.w));
     }
 
     void Renderer::SetDefaultVertexAttribute(size_t index, const Matrix4x4& mat) const
     {
-		for (size_t i = 0; i < 4; i++)
-		{
-			this->SetDefaultVertexAttribute(index + i, mat[(glm::length_t)i]);
-		}
+        for (size_t i = 0; i < 4; i++)
+        {
+            this->SetDefaultVertexAttribute(index + i, mat[(glm::length_t)i]);
+        }
     }
 
-	void Renderer::SetDefaultVertexAttribute(size_t index, const Matrix3x3& mat) const
-	{
-		for (size_t i = 0; i < 3; i++)
-		{
-			this->SetDefaultVertexAttribute(index + i, mat[(glm::length_t)i]);
-		}
-	}
+    void Renderer::SetDefaultVertexAttribute(size_t index, const Matrix3x3& mat) const
+    {
+        for (size_t i = 0; i < 3; i++)
+        {
+            this->SetDefaultVertexAttribute(index + i, mat[(glm::length_t)i]);
+        }
+    }
 
 }

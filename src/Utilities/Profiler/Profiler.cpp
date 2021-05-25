@@ -31,68 +31,68 @@
 
 namespace MxEngine
 {
-	void ProfileSession::WriteJsonHeader()
-	{
-		if (!this->IsValid()) return;
-		output << "{\n";
-		output << "  \"traceEvents\": [\n";
-	}
+    void ProfileSession::WriteJsonHeader()
+    {
+        if (!this->IsValid()) return;
+        output << "{\n";
+        output << "  \"traceEvents\": [\n";
+    }
 
-	void ProfileSession::WriteJsonFooter()
-	{
-		if (!this->IsValid()) return;
-		output << "\n  ]\n";
-		output << '}';
-	}
+    void ProfileSession::WriteJsonFooter()
+    {
+        if (!this->IsValid()) return;
+        output << "\n  ]\n";
+        output << '}';
+    }
 
-	bool ProfileSession::IsValid() const
-	{
-		return this->output.IsOpen();
-	}
+    bool ProfileSession::IsValid() const
+    {
+        return this->output.IsOpen();
+    }
 
-	size_t ProfileSession::GetEntryCount() const
-	{
-		return this->entriesCount;
-	}
+    size_t ProfileSession::GetEntryCount() const
+    {
+        return this->entriesCount;
+    }
 
-	void ProfileSession::StartSession(const MxString& filename)
-	{
-		if (output.IsOpen()) output.Close();
-		output.Open(filename.c_str(), File::WRITE);
-		this->WriteJsonHeader();
-	}
+    void ProfileSession::StartSession(const MxString& filename)
+    {
+        if (output.IsOpen()) output.Close();
+        output.Open(filename.c_str(), File::WRITE);
+        this->WriteJsonHeader();
+    }
 
-	void ProfileSession::WriteJsonEntry(const char* function, TimeStep begin, TimeStep delta)
-	{
-		if (!this->IsValid()) return;
+    void ProfileSession::WriteJsonEntry(const char* function, TimeStep begin, TimeStep delta)
+    {
+        if (!this->IsValid()) return;
 
-		if (this->GetEntryCount() > 0)
-		{
-			output << ",\n";
-		}
-		this->entriesCount++;
+        if (this->GetEntryCount() > 0)
+        {
+            output << ",\n";
+        }
+        this->entriesCount++;
 
-		output << "	{";
-		output << "\"pid\": 0, ";
-		output << "\"tid\": 0, ";
-		output << "\"ts\": " << std::to_string(uint64_t((double)begin * 1000000)) << ", ";
-		output << "\"dur\": " << std::to_string(uint64_t((double)delta * 1000000)) << ", ";
-		output << "\"ph\": \"X\", ";
-		output << "\"name\": \"" << function << '\"';
-		output << "}";
-	}
+        output << "    {";
+        output << "\"pid\": 0, ";
+        output << "\"tid\": 0, ";
+        output << "\"ts\": " << std::to_string(uint64_t((double)begin * 1000000)) << ", ";
+        output << "\"dur\": " << std::to_string(uint64_t((double)delta * 1000000)) << ", ";
+        output << "\"ph\": \"X\", ";
+        output << "\"name\": \"" << function << '\"';
+        output << "}";
+    }
 
-	void ProfileSession::EndSession()
-	{
-		if (!this->IsValid()) return;
-		this->WriteJsonFooter();
-		output.Close();
-	}
+    void ProfileSession::EndSession()
+    {
+        if (!this->IsValid()) return;
+        this->WriteJsonFooter();
+        output.Close();
+    }
 
-	ScopeTimer::~ScopeTimer()
-	{
-		TimeStep end = Time::EngineCurrent();
-		MxString delta = BeautifyTime(end - start);
-		MXLOG_INFO(this->invoker.data(), this->function + " finished in " + delta);
-	}
+    ScopeTimer::~ScopeTimer()
+    {
+        TimeStep end = Time::EngineCurrent();
+        MxString delta = BeautifyTime(end - start);
+        MXLOG_INFO(this->invoker.data(), this->function + " finished in " + delta);
+    }
 }
