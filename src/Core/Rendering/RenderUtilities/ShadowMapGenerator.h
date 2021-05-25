@@ -44,11 +44,21 @@ namespace MxEngine
         ArrayView<RenderUnit> renderUnits;
         ArrayView<Material> materials;
     public:
+        enum class LoadStoreOptions
+        {
+            CLEAR = 1 << 0, 
+            LOAD = 1 << 1,
+            GENERATE_MIPMAPS = 1 << 2,
+        };
+
         ShadowMapGenerator(const RenderList& shadowCasters, ArrayView<RenderUnit> renderUnits, ArrayView<Material> materials);
         ~ShadowMapGenerator();
 
-        void GenerateFor(const Shader& shader, ArrayView<DirectionalLightUnit> directionalLights);
-        void GenerateFor(const Shader& shader, ArrayView<PointLightUnit> pointLights);
-        void GenerateFor(const Shader& shader, ArrayView<SpotLightUnit> spotLights);
+        void GenerateFor(const Shader& shader, ArrayView<DirectionalLightUnit> directionalLights, LoadStoreOptions options);
+        void GenerateFor(const Shader& shader, ArrayView<PointLightUnit> pointLights, LoadStoreOptions options);
+        void GenerateFor(const Shader& shader, ArrayView<SpotLightUnit> spotLights, LoadStoreOptions options);
     };
+
+    ShadowMapGenerator::LoadStoreOptions operator|(ShadowMapGenerator::LoadStoreOptions options1, ShadowMapGenerator::LoadStoreOptions options2);
+    bool operator&(ShadowMapGenerator::LoadStoreOptions options1, ShadowMapGenerator::LoadStoreOptions options2);
 }

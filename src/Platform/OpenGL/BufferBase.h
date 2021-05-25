@@ -80,6 +80,7 @@ namespace MxEngine
         UsageType GetUsageType() const;
         size_t GetByteSize() const;
         void SetUsageType(UsageType usage);
+        void LoadFrom(BufferBase& other);
 
     protected:
         void Load(BufferType type, const uint8_t* byteData, size_t byteSize, UsageType usage);

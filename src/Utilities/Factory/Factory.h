@@ -41,20 +41,15 @@ namespace MxEngine
         size_t refCount = 0;
 
         template<typename... Args>
-        ManagedResource(UUID uuid, Args&&... value)
-            : uuid(uuid), value(std::forward<Args>(value)...)
-        {
-        }
+        ManagedResource(const UUID& uuid, Args&&... value)
+            : uuid(uuid), value(std::forward<Args>(value)...) { }
 
         ManagedResource(const ManagedResource&) = delete;
         ManagedResource(ManagedResource&&) noexcept(std::is_nothrow_move_constructible_v<T>) = default;
         ManagedResource& operator=(const ManagedResource&) = delete;
         ManagedResource& operator=(ManagedResource&&) noexcept(std::is_nothrow_move_assignable_v<T>) = default;
 
-        ~ManagedResource()
-        {
-            uuid = UUIDGenerator::GetNull();
-        }
+        ~ManagedResource();
     };
 
     template<typename T, typename F>
@@ -69,198 +64,38 @@ namespace MxEngine
 
         static constexpr size_t InvalidHandle = std::numeric_limits<size_t>::max();
 
-        void IncRef()
-        {
-            if (this->IsValid())
-                ++this->Dereference().refCount;
-        }
-    
-        void DecRef()
-        {
-            if (this->IsValid())
-            {
-                auto& resource = this->Dereference();
-                if ((--resource.refCount) == 0)
-                    DestroyThis(*this);
-            }
-        }
-
-        [[nodiscard]] ManagedResource<T>& Dereference() const 
-        {
-            auto& resource = AccessThis(this->handle);
-
-            #if defined(MXENGINE_DEBUG)
-            this->_resourcePtr = &resource;
-            #endif
-
-            return resource;
-        }
-
-        void DestroyThis(Resource<T, F>& resource)
-        {
-            F::Destroy(resource);
-        }
-
-        ManagedResource<T>& AccessThis(size_t handle) const
-        {
-            return F::template GetPool<T>()[handle];
-        }
+        void IncRef();
+        void DecRef();
+        void DestroyThis(Resource<T, F>& resource);
+        [[nodiscard]] ManagedResource<T>& Dereference() const;
+        [[nodiscard]]ManagedResource<T>& AccessThis(size_t handle) const;
     public:
         using Type = T;
         using Factory = F;
 
-        Resource()
-            : uuid(UUIDGenerator::GetNull()), handle(InvalidHandle)
-        {
-
-        }
-
-        Resource(UUID uuid, size_t handle)
-            : uuid(uuid), handle(handle)
-        {
-            this->IncRef();
-        }
-
-        Resource(const Resource& wrapper)
-            : uuid(wrapper.uuid), handle(wrapper.handle)
-        {
-            this->IncRef();
-            #if defined(MXENGINE_DEBUG)
-            this->_resourcePtr = wrapper._resourcePtr;
-            #endif
-        }
-
-        Resource& operator=(const Resource& wrapper)
-        {
-            this->DecRef();
-
-            #if defined(MXENGINE_DEBUG)
-            this->_resourcePtr = wrapper._resourcePtr;
-            #endif
-
-            this->uuid = wrapper.uuid;
-            this->handle = wrapper.handle;
-            this->IncRef();
-
-            return *this;
-        }
-
-        Resource(Resource&& wrapper) noexcept
-            : uuid(wrapper.uuid), handle(wrapper.handle)
-        {
-            #if defined(MXENGINE_DEBUG)
-            this->_resourcePtr = wrapper._resourcePtr;
-            #endif
-            wrapper.handle = InvalidHandle;
-        }
-
-        Resource& operator=(Resource&& wrapper) noexcept
-        {
-            this->DecRef();
-            this->uuid = wrapper.uuid;
-            this->handle = wrapper.handle;
-            wrapper.handle = InvalidHandle;
-
-            #if defined(MXENGINE_DEBUG)
-            this->_resourcePtr = wrapper._resourcePtr;
-            #endif
-            return *this;
-        }
-
-        [[nodiscard]] bool IsValid() const
-        {
-            return handle != InvalidHandle && Dereference().uuid == uuid;
-        }
-
-        void MakeStatic()
-        {
-            this->IncRef();
-        }
-
-        T* operator->()
-        {
-            MX_ASSERT(this->IsValid()); // access of null handle
-            #if !defined(MXENGINE_SHIPPING)
-            if (!this->IsValid()) return nullptr;
-            #endif
-            return this->GetUnchecked();
-        }
-
-        [[nodiscard]] const T* operator->() const
-        {
-            MX_ASSERT(this->IsValid()); // access of null handle
-            #if !defined(MXENGINE_SHIPPING)
-            if (!this->IsValid()) return nullptr;
-            #endif
-            return this->GetUnchecked();
-        }
-
-        [[nodiscard]] T& operator*()
-        {
-            MX_ASSERT(this->IsValid()); // access of null handle
-            return *this->GetUnchecked();
-        }
-
-        [[nodiscard]] const T& operator*() const
-        {
-            MX_ASSERT(this->IsValid()); // access of null handle
-            return *this->GetUnchecked();
-        }
-
-        [[nodiscard]] T* GetUnchecked()
-        {
-            return &this->Dereference().value;
-        }
-
-        [[nodiscard]] const T* GetUnchecked() const
-        {
-            return &this->Dereference().value;
-        }
-
-        [[nodiscard]] auto GetHandle() const
-        {
-            return this->handle;
-        }
-
-        [[nodiscard]] const auto& GetUUID() const
-        {
-            return this->uuid;
-        }
-
-        [[nodiscard]] bool operator==(const Resource& wrapper) const
-        {
-            return this->handle == wrapper.handle && this->uuid == wrapper.uuid;
-        }
-
-        [[nodiscard]] bool operator!=(const Resource& wrapper) const
-        {
-            return !(*this == wrapper);
-        }
-
-        [[nodiscard]] bool operator<(const Resource& wrapper) const
-        {
-            return (this->handle != wrapper.handle) ? (this->handle < wrapper.handle) : (this->uuid < wrapper.uuid);
-        }
-
-        [[nodiscard]] bool operator>(const Resource& wrapper) const
-        {
-            return wrapper < *this;
-        }
-
-        [[nodiscard]] bool operator<=(const Resource& wrapper) const
-        {
-            return !(wrapper < *this);
-        }
-
-        [[nodiscard]] bool operator>=(const Resource& wrapper) const
-        {
-            return !(*this < wrapper);
-        }
-
-        ~Resource()
-        {
-            this->DecRef();
-        }
+        Resource();
+        Resource(UUID uuid, size_t handle);
+        Resource(const Resource& wrapper);
+        Resource& operator=(const Resource& wrapper);
+        Resource(Resource&& wrapper) noexcept;
+        Resource& operator=(Resource&& wrapper) noexcept;
+        ~Resource();
+        void MakeStatic();
+        [[nodiscard]] bool IsValid() const;
+        [[nodiscard]] T* operator->();
+        [[nodiscard]] const T* operator->() const;
+        [[nodiscard]] T& operator*();
+        [[nodiscard]] const T& operator*() const;
+        [[nodiscard]] T* GetUnchecked();
+        [[nodiscard]] const T* GetUnchecked() const;
+        [[nodiscard]] size_t GetHandle() const;
+        [[nodiscard]] const UUID& GetUUID() const;
+        [[nodiscard]] bool operator==(const Resource& wrapper) const;
+        [[nodiscard]] bool operator!=(const Resource& wrapper) const;
+        [[nodiscard]] bool operator<(const Resource& wrapper) const;
+        [[nodiscard]] bool operator>(const Resource& wrapper) const;
+        [[nodiscard]] bool operator<=(const Resource& wrapper) const;
+        [[nodiscard]] bool operator>=(const Resource& wrapper) const;
     };
 
     template<typename T>
@@ -272,66 +107,28 @@ namespace MxEngine
         inline static FactoryPool* Pool = nullptr;
 
     public:
-        [[nodiscard]] static FactoryPool& GetPool()
-        {
-            return *Pool;
-        }
+        [[nodiscard]] static FactoryPool& GetPool();
+        [[nodiscard]] static FactoryPool* GetImpl();
+        static void Init();
+        static void Destroy();
+        static void Clone(FactoryPool* other);
+        [[nodiscard]] static Resource<T, ThisType> GetHandle(const ManagedResource<T>& object);
+        [[nodiscard]] static Resource<T, ThisType> GetHandle(const T& object);
+        static void Destroy(Resource<T, ThisType>& resource);
 
         template<typename U>
         [[nodiscard]] static FactoryPool& GetPool()
         {
-            static_assert(std::is_same_v<T, U>, "wrong factory object type");
-            return GetPool();
-        }
-
-        [[nodiscard]] static FactoryPool* GetImpl()
-        {
-            return Pool;
-        }
-
-        static void Init()
-        {
-            if (Pool == nullptr)
-                Pool = new FactoryPool(); // not deleted, but its static member, so it does not matter
-        }
-
-        static void Destroy()
-        {
-            MX_ASSERT(Pool != nullptr);
-            delete Pool;
-            Pool = nullptr;
-        }
-
-        static void Clone(FactoryPool* other)
-        {
-            Pool = other;
+            static_assert(std::is_same_v<T, U>, "type mismatch while accessing Factory<T>");
+            return *Pool;
         }
 
         template<typename... Args>
-        [[nodiscard]] static Resource<T, ThisType> Create(Args&&... args)
+        [[nodiscard]] static Resource<T, typename Factory<T>::ThisType> Create(Args&&... args)
         {
             UUID uuid = UUIDGenerator::Get();
-            size_t index = GetPool().Allocate(uuid, std::forward<Args>(args)...);
+            size_t index = Factory<T>::GetPool().Allocate(uuid, std::forward<Args>(args)...);
             return Resource<T, ThisType>(uuid, index);
-        }
-
-        [[nodiscard]] static Resource<T, ThisType> GetHandle(const ManagedResource<T>& object)
-        {
-            auto& pool = GetPool();
-            size_t index = pool.IndexOf(object);
-            return Resource<T, ThisType>(pool[index].uuid, index);
-        }
-
-        [[nodiscard]] static Resource<T, ThisType> GetHandle(const T& object)
-        {
-            auto ptr = (const uint8_t*)std::addressof(object);
-            auto resourcePtr = (const ManagedResource<T>*)(ptr - offsetof(ManagedResource<T>, value));
-            return GetHandle(*resourcePtr);
-        }
-
-        static void Destroy(Resource<T, ThisType>& resource)
-        {
-            GetPool().Deallocate(resource.GetHandle());
         }
     };
 

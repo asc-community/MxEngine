@@ -54,8 +54,8 @@ namespace MxEngine
         auto mesh = Factory<Mesh>::Create();
         mesh->ReserveData(vertecies.size(), indicies.size());
         MeshData meshData{
-            mesh->GetVBO(), vertecies.size(), 0,
-            mesh->GetIBO(), indicies.size(), 0
+            mesh->GetTotalVerteciesCount(), mesh->GetBaseVerteciesOffset(),
+            mesh->GetTotalIndiciesCount(), mesh->GetBaseIndiciesOffset()
         };
 
         auto& submesh = mesh->AddSubMesh((SubMesh::MaterialId)0, std::move(meshData));
@@ -551,15 +551,15 @@ namespace MxEngine
     {
         TextureHandle gridTexture = Factory<Texture>::Create();
 
-        constexpr size_t channels = 3;
+        static constexpr size_t Channels = 3;
 
         Array2D<uint8_t> textureData;
-        textureData.resize(textureSize, textureSize * channels, 255);
+        textureData.resize(textureSize, textureSize * Channels, 255);
 
-        constexpr auto draw_border = [channels](Array2D<uint8_t>& texture, size_t borderSize)
+        constexpr auto draw_border = [](Array2D<uint8_t>& texture, size_t borderSize)
         {
             size_t width = texture.width();
-            size_t height = texture.height() / channels;
+            size_t height = texture.height() / Channels;
             for (size_t i = 0; i < width; i++)
             {
                 for (size_t j = 0; j < height; j++)
@@ -567,16 +567,16 @@ namespace MxEngine
                     if (i < borderSize || i + borderSize >= width ||
                         j < borderSize || j + borderSize >= height)
                     {
-                        texture[i][j * channels + 0] = 0;
-                        texture[i][j * channels + 1] = 0;
-                        texture[i][j * channels + 2] = 0;
+                        texture[i][j * Channels + 0] = 0;
+                        texture[i][j * Channels + 1] = 0;
+                        texture[i][j * Channels + 2] = 0;
                     }
                 }
             }
         };
 
         draw_border(textureData, static_cast<size_t>(textureSize * borderScale));
-        gridTexture->Load(textureData.data(), (int)textureSize, (int)textureSize, channels, false, TextureFormat::RGB);
+        gridTexture->Load(textureData.data(), (int)textureSize, (int)textureSize, Channels, false, TextureFormat::RGB);
         return gridTexture;
     }
 }

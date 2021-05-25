@@ -43,13 +43,13 @@ namespace MxEngine
     void DebugBuffer::Init()
     {
         std::array vertexLayout = {
-            VertexLayout::Entry<Vector3>(),
-            VertexLayout::Entry<Vector4>(),
+            VertexAttribute::Entry<Vector3>(),
+            VertexAttribute::Entry<Vector4>(),
         };
 
         this->VBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
         this->VAO = Factory<VertexArray>::Create();
-        VAO->AddVertexBuffer(*this->VBO, vertexLayout);
+        VAO->AddVertexLayout(*this->VBO, vertexLayout, VertexAttributeInputRate::PER_VERTEX);
     }
 
     void DebugBuffer::Submit(const Line& line, const Vector4& color)

@@ -40,7 +40,7 @@
 #include "Platform/OpenGL/VertexBuffer.h"
 #include "Platform/OpenGL/ShaderStorageBuffer.h"
 #include "Platform/OpenGL/ComputeShader.h"
-#include "Platform/OpenGL/VertexLayout.h"
+#include "Platform/OpenGL/VertexAttribute.h"
 
 namespace MxEngine
 {

@@ -59,7 +59,7 @@ namespace MxEngine
         void DrawParticles(const CameraUnit& camera, MxVector<ParticleSystemUnit>& particleSystems, const Shader& shader);
         void DrawObjects(const CameraUnit& camera, const Shader& shader, const RenderList& objects);
         void DrawDebugBuffer(const CameraUnit& camera);
-        void DrawObject(const RenderUnit& unit, size_t instanceCount, const Shader& shader);
+        void DrawObject(const RenderUnit& unit, size_t instanceCount, size_t baseInstance, const Shader& shader);
         void ComputeBloomEffect(CameraUnit& camera, const TextureHandle& output);
         TextureHandle ComputeAverageWhite(CameraUnit& camera);
         void PerformPostProcessing(CameraUnit& camera);
@@ -103,14 +103,16 @@ namespace MxEngine
         void AttachDefaultFrameBuffer();
         void AttachDepthMap(const TextureHandle& texture);
         void AttachDepthMap(const CubeMapHandle& cubemap);
+        void AttachDepthMapNoClear(const TextureHandle& texture);
+        void AttachDepthMapNoClear(const CubeMapHandle& cubemap);
         void RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
         void RenderToFrameBufferNoClear(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
         void RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
         void RenderToTextureNoClear(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
         void CopyTexture(const TextureHandle& input, const TextureHandle& output);
         void ApplyGaussianBlur(const TextureHandle& inputOutput, const TextureHandle& temporary, size_t iterations, size_t lod = 0);
-        void DrawVertecies(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount);
-        void DrawIndicies(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t instanceCount);
+        void DrawVertices(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount, size_t baseInstance);
+        void DrawIndices(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex, size_t instanceCount, size_t baseInstance);
 
         EnvironmentUnit& GetEnvironment();
         const EnvironmentUnit& GetEnvironment() const;
@@ -126,8 +128,8 @@ namespace MxEngine
         void SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
             const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping,
             const CameraSSR* ssr, const CameraSSGI* ssgi, const CameraSSAO* ssao);
-        size_t SubmitRenderGroup(const Mesh& mesh, size_t instanceCount);
-        void SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& object, const Material& material, const TransformComponent& parentTransform, bool castsShadow, bool ignoresDepth, const char* debugName = nullptr);
+        size_t SubmitRenderGroup(const Mesh& mesh, size_t instanceOffset, size_t instanceCount);
+        void SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& object, const Material& material, const TransformComponent& parentTransform, bool castsShadow, const char* debugName = nullptr);
         void SubmitImage(const TextureHandle& texture);
         void StartPipeline();
         void EndPipeline();

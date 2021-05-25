@@ -121,7 +121,7 @@ namespace GrassSample
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Direction = MakeVector3(0.1f, 1.0f, 0.0f);
             dirLight->SetIntensity(35.0f);
-            dirLight->FollowViewport();
+            dirLight->IsFollowingViewport = true;
 
             this->InstanciateGrass();
             this->AddLighting();

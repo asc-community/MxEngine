@@ -7,6 +7,6 @@ out vec4 Color;
 
 void main()
 {
-	gl_Position = ViewProjMatrix * position;
-	Color = color;
+    gl_Position = ViewProjMatrix * position;
+    Color = color;
 }

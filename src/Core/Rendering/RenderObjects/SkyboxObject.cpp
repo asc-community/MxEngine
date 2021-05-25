@@ -33,8 +33,7 @@ namespace MxEngine
     void SkyboxObject::Init()
     {
         constexpr float size = 1.0f;
-        constexpr std::array vertex =
-        {
+        constexpr std::array vertices = {
             Vector3(-size, -size, -size),
             Vector3(-size, -size,  size),
             Vector3(-size,  size, -size),
@@ -44,42 +43,39 @@ namespace MxEngine
             Vector3( size,  size, -size),
             Vector3( size,  size,  size),
         };
-        constexpr std::array face =
-        {
-            1, 7, 5,
-            7, 1, 3,
-            4, 2, 0,
-            2, 4, 6,
-            4, 7, 6,
-            7, 4, 5,
-            2, 1, 0,
-            1, 2, 3,
-            0, 5, 4,
-            5, 0, 1,
-            6, 3, 2,
-            3, 6, 7,
+        constexpr std::array indices = {
+            1u, 7u, 5u,
+            7u, 1u, 3u,
+            4u, 2u, 0u,
+            2u, 4u, 6u,
+            4u, 7u, 6u,
+            7u, 4u, 5u,
+            2u, 1u, 0u,
+            1u, 2u, 3u,
+            0u, 5u, 4u,
+            5u, 0u, 1u,
+            6u, 3u, 2u,
+            3u, 6u, 7u,
         };
-        constexpr size_t dataSize = face.size() * 3;
-        std::array<float, dataSize> data = {0};
-        for (size_t i = 0; i < face.size(); i++)
-        {
-            const Vector3& v = vertex[face[i]];
-            data[3 * i + 0] = v.x;
-            data[3 * i + 1] = v.y;
-            data[3 * i + 2] = v.z;
-        }
 
         this->VBO = Factory<VertexBuffer>::Create(
-            data.data(), 
-            data.size(), 
+            (float*)vertices.data(),
+            vertices.size() * sizeof(Vector3),
+            UsageType::STATIC_DRAW
+        );
+
+        this->IBO = Factory<IndexBuffer>::Create(
+            indices.data(),
+            indices.size(),
             UsageType::STATIC_DRAW
         );
 
         std::array vertexLayout = {
-            VertexLayout::Entry<Vector3>()
+            VertexAttribute::Entry<Vector3>()
         };
         this->VAO = Factory<VertexArray>::Create();
-        VAO->AddVertexBuffer(*VBO, vertexLayout);
+        VAO->AddVertexLayout(*this->VBO, vertexLayout, VertexAttributeInputRate::PER_VERTEX);
+        VAO->LinkIndexBuffer(*this->IBO);
     }
 
     const VertexArray& SkyboxObject::GetVAO() const

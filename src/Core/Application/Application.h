@@ -72,6 +72,7 @@ namespace MxEngine
         void InitializeConfig(Config& config);
         void InitializeRuntime(RuntimeEditor& editor);
         void InitializeRenderAdaptor(RenderAdaptor& adaptor);
+        void DestroyRenderAdaptor(RenderAdaptor& adaptor);
         void InitializeShaderDebug();
         void UpdateTimeDelta(TimeStep& lastFrameEnd, TimeStep& lastSecondEnd, size_t& framesPerSecond);
         void DrawObjects();

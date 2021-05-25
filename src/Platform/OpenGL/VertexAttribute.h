@@ -26,48 +26,19 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include <string>
-
-#include "Utilities/Memory/Memory.h"
-#include "Platform/GraphicAPI.h"
-#include "Utilities/Math/Math.h"
+#include <cstddef>
+#include <cstdint>
 
 namespace MxEngine
 {
-    enum class AlphaModeGroup : uint8_t
+    struct VertexAttribute
     {
-        OPAQUE = 0,
-        MASKED,
-        TRANSPARENT,
+        uint32_t type;
+        uint16_t components;
+        uint16_t entries;
+        size_t byteSize;
+
+        template<typename T>
+        static VertexAttribute Entry();
     };
-
-    class Material
-    {
-    public:
-        TextureHandle AlbedoMap;
-        TextureHandle EmissiveMap;
-        TextureHandle NormalMap;
-        TextureHandle HeightMap;
-        TextureHandle AmbientOcclusionMap;
-        TextureHandle MetallicMap;
-        TextureHandle RoughnessMap;
-
-        float Transparency = 1.0f;
-        float Emission = 0.0f;
-        float Displacement = 0.025f;
-        float RoughnessFactor = 0.75f;
-        float MetallicFactor = 0.0f;
-
-        Vector3 BaseColor{ 1.0f };
-        Vector2 UVMultipliers{ 1.0f };
-        AlphaModeGroup AlphaMode = AlphaModeGroup::OPAQUE;
-        MxString Name = "DefaultMaterial";
-
-        constexpr static size_t TextureCount = 7;
-        bool IsInternalEngineResource() const { return false; }
-    };
-
 }
-
-MXENGINE_FORCE_REFLECTION(Material);

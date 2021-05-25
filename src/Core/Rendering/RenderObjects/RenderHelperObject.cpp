@@ -26,48 +26,23 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-#include <string>
-
-#include "Utilities/Memory/Memory.h"
-#include "Platform/GraphicAPI.h"
-#include "Utilities/Math/Math.h"
+#include "RenderHelperObject.h"
+#include "Core/Resources/BufferAllocator.h"
 
 namespace MxEngine
 {
-    enum class AlphaModeGroup : uint8_t
+    VertexArrayHandle RenderHelperObject::GetVAO() const
     {
-        OPAQUE = 0,
-        MASKED,
-        TRANSPARENT,
-    };
+        return this->VAO;
+    }
 
-    class Material
+    VertexBufferHandle RenderHelperObject::GetVBO() const
     {
-    public:
-        TextureHandle AlbedoMap;
-        TextureHandle EmissiveMap;
-        TextureHandle NormalMap;
-        TextureHandle HeightMap;
-        TextureHandle AmbientOcclusionMap;
-        TextureHandle MetallicMap;
-        TextureHandle RoughnessMap;
+        return BufferAllocator::GetVBO();
+    }
 
-        float Transparency = 1.0f;
-        float Emission = 0.0f;
-        float Displacement = 0.025f;
-        float RoughnessFactor = 0.75f;
-        float MetallicFactor = 0.0f;
-
-        Vector3 BaseColor{ 1.0f };
-        Vector2 UVMultipliers{ 1.0f };
-        AlphaModeGroup AlphaMode = AlphaModeGroup::OPAQUE;
-        MxString Name = "DefaultMaterial";
-
-        constexpr static size_t TextureCount = 7;
-        bool IsInternalEngineResource() const { return false; }
-    };
-
+    IndexBufferHandle RenderHelperObject::GetIBO() const
+    {
+        return BufferAllocator::GetIBO();
+    }
 }
-
-MXENGINE_FORCE_REFLECTION(Material);

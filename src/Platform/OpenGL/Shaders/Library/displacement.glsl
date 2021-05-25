@@ -1,12 +1,12 @@
 float getDisplacement(vec2 texCoord, vec2 uvMultiplier, sampler2D heightMap, float displacementFactor)
 {
-	vec2 normTexCoord = texCoord / uvMultiplier;
-	if (normTexCoord.x < 0.001f || normTexCoord.y < 0.001f ||
-		normTexCoord.x > 0.999f || normTexCoord.y > 0.999f)
-		return 0.0f;
+    vec2 normTexCoord = texCoord / uvMultiplier;
+    if (normTexCoord.x < 0.001f || normTexCoord.y < 0.001f ||
+        normTexCoord.x > 0.999f || normTexCoord.y > 0.999f)
+        return 0.0f;
 
-	float heightTex = texture(heightMap, texCoord).r;
-	return displacementFactor * heightTex;
+    float heightTex = texture(heightMap, texCoord).r;
+    return displacementFactor * heightTex;
 }
 
 vec2 applyParallaxMapping(vec2 texCoords, vec3 viewDirectionNormalSpace, sampler2D heightMap, float heightScale, out float occlusion)

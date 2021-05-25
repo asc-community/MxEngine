@@ -9,7 +9,7 @@
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
 // this list of conditions and the following disclaimer in the documentation
-// and /or other materials provided with the distribution.
+// and /or other materials provided wfith the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
 // contributors may be used to endorse or promote products derived from
@@ -26,19 +26,37 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <cstddef>
-#include <cstdint>
+#include "Platform/GraphicAPI.h"
 
 namespace MxEngine
 {
-    struct VertexLayout
-    {
-        uint32_t type;
-        uint16_t components;
-        uint16_t entries;
-        size_t byteSize;
+    struct BufferAllocatorImpl;
 
-        template<typename T>
-        static VertexLayout Entry();
+    struct BufferAllocation
+    {
+        const size_t Offset;
+        const size_t Size;
+    };
+
+    class BufferAllocator
+    {
+        inline static BufferAllocatorImpl* impl;
+    public:
+        static void Init();
+        static void Destroy();
+        static BufferAllocatorImpl* GetImpl();
+        static void Clone(BufferAllocatorImpl* other);
+        static void AllocateBuffers();
+
+        static VertexBufferHandle GetVBO();
+        static IndexBufferHandle GetIBO();
+        static VertexBufferHandle GetInstanceVBO();
+        static VertexArrayHandle GetVAO();
+        static BufferAllocation AllocateInVBO(size_t sizeInFloats);
+        static BufferAllocation AllocateInIBO(size_t sizeInIndices);
+        static BufferAllocation AllocateInInstanceVBO(size_t sizeInInstances);
+        static void DeallocateInVBO(BufferAllocation allocation);
+        static void DeallocateInIBO(BufferAllocation allocation);
+        static void DeallocateInInstanceVBO(BufferAllocation allocation);
     };
 }

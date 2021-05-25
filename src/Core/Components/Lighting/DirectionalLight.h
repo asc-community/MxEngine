@@ -34,32 +34,22 @@
 
 namespace MxEngine
 {
-    class MxObject;
-
     class DirectionalLight : public LightBase
     {
         MAKE_COMPONENT(DirectionalLight);
     public:
         constexpr static size_t TextureCount = 3;
-    private:
-        using TimerHandle = std::aligned_storage_t<sizeof(DirectionalLight::Handle)>;
-
-        TimerHandle timerHandle;
-        [[nodiscard]] const MxObject& GetUpdateTimerHandle() const;
-    public:
+        bool IsFollowingViewport = false;
         TextureHandle DepthMap;
 
-        [[nodiscard]] bool IsFollowingViewport() const;
-        void SetIsFollowingViewport(bool value);
+        void OnUpdate(float dt);
 
         DirectionalLight();
-        ~DirectionalLight();
 
         Vector3 Direction = MakeVector3(0.0f, 1.0f, 0.0f);
         Vector3 CascadeDirection{ 0.0f };
         std::array<float, TextureCount> Projections = { 15.0f, 150.0f, 1500.0f };
 
         [[nodiscard]] Matrix4x4 GetMatrix(const Vector3& center, size_t index) const;
-        void FollowViewport();
     };
 }

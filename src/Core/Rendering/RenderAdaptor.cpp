@@ -31,6 +31,7 @@
 #include "Library/Primitives/Primitives.h"
 #include "Library/Noise/NoiseGenerator.h"
 #include "Core/Config/GlobalConfig.h"
+#include "Core/Resources/BufferAllocator.h"
 #include "Core/Components/Rendering/MeshSource.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
 #include "Core/Components/Rendering/Skybox.h"
@@ -59,6 +60,8 @@ namespace MxEngine
 
         this->SetRenderToDefaultFrameBuffer();
 
+        environment.RenderVAO = BufferAllocator::GetVAO();
+
         // helper objects
         environment.RectangularObject.Init(1.0f);
         environment.SkyboxCubeObject.Init();
@@ -66,21 +69,31 @@ namespace MxEngine
         environment.DebugBufferObject.VAO = this->DebugDrawer.GetVAO();
 
         // light bounding objects
-        auto pyramid = Primitives::CreatePyramid();
-        this->Renderer.GetLightInformation().PyramidLight =
-            RenderHelperObject(pyramid->GetVBO(), pyramid->GetVAO(), pyramid->GetIBO());
-
-        auto sphere = Primitives::CreateSphere(8);
-        this->Renderer.GetLightInformation().SphereLight =
-            RenderHelperObject(sphere->GetVBO(), sphere->GetVAO(), sphere->GetIBO());
-
         auto pyramidInstanced = Primitives::CreatePyramid();
-        this->Renderer.GetLightInformation().SpotLightsInstanced = 
-            SpotLightInstancedObject(pyramidInstanced->GetVBO(), pyramidInstanced->GetVAO(), pyramidInstanced->GetIBO());
+        pyramidInstanced.MakeStatic();
+        this->Renderer.GetLightInformation().SpotLightsInstanced = SpotLightInstancedObject(
+            pyramidInstanced->GetBaseVerteciesOffset(), pyramidInstanced->GetTotalVerteciesCount(),
+            pyramidInstanced->GetBaseIndiciesOffset(),  pyramidInstanced->GetTotalIndiciesCount());
 
         auto sphereInstanced = Primitives::CreateSphere(8);
-        this->Renderer.GetLightInformation().PointLightsInstanced =
-            PointLightInstancedObject(sphereInstanced->GetVBO(), sphereInstanced->GetVAO(), sphereInstanced->GetIBO());
+        sphereInstanced.MakeStatic();
+        this->Renderer.GetLightInformation().PointLightsInstanced = PointLightInstancedObject(
+            sphereInstanced->GetBaseVerteciesOffset(), sphereInstanced->GetTotalVerteciesCount(),
+            sphereInstanced->GetBaseIndiciesOffset(),  sphereInstanced->GetTotalIndiciesCount());
+
+        auto pyramid = Primitives::CreatePyramid();
+        pyramid.MakeStatic();
+        this->Renderer.GetLightInformation().SpotLight = RenderHelperObject(
+            pyramid->GetBaseVerteciesOffset(), pyramid->GetTotalVerteciesCount(),
+            pyramid->GetBaseIndiciesOffset(), pyramid->GetTotalIndiciesCount(),
+            environment.RenderVAO);
+
+        auto sphere = Primitives::CreateSphere(8);
+        sphere.MakeStatic();
+        this->Renderer.GetLightInformation().PointLight = RenderHelperObject(
+            sphere->GetBaseVerteciesOffset(), sphere->GetTotalVerteciesCount(),
+            sphere->GetBaseIndiciesOffset(), sphere->GetTotalIndiciesCount(),
+            environment.RenderVAO);
 
         auto textureFolder = FileManager::GetEngineTextureDirectory();
         int internalTextureSize = (int)GlobalConfig::GetEngineTextureSize();
@@ -122,6 +135,11 @@ namespace MxEngine
             shaderFolder / "gbuffer_fragment.glsl"
         );
 
+        environment.Shaders["GBufferMask"_id] = AssetManager::LoadShader(
+            shaderFolder / "gbuffer_vertex.glsl",
+            shaderFolder / "gbuffer_mask_fragment.glsl"
+        );
+
         environment.Shaders["Transparent"_id] = AssetManager::LoadShader(
             shaderFolder / "gbuffer_vertex.glsl", 
             shaderFolder / "transparent_fragment.glsl"
@@ -132,13 +150,23 @@ namespace MxEngine
             shaderFolder / "dirlight_fragment.glsl"
         );
 
-        environment.Shaders["SpotLight"_id] = AssetManager::LoadShader(
-            shaderFolder / "spotlight_vertex.glsl",
+        environment.Shaders["SpotLightShadow"_id] = AssetManager::LoadShader(
+            shaderFolder / "spotlight_shadow_vertex.glsl",
             shaderFolder / "spotlight_fragment.glsl"
         );
 
-        environment.Shaders["PointLight"_id] = AssetManager::LoadShader(
-            shaderFolder / "pointlight_vertex.glsl",
+        environment.Shaders["SpotLightNonShadow"_id] = AssetManager::LoadShader(
+            shaderFolder / "spotlight_nonshadow_vertex.glsl",
+            shaderFolder / "spotlight_fragment.glsl"
+        );
+
+        environment.Shaders["PointLightShadow"_id] = AssetManager::LoadShader(
+            shaderFolder / "pointlight_shadow_vertex.glsl",
+            shaderFolder / "pointlight_fragment.glsl"
+        );
+
+        environment.Shaders["PointLightNonShadow"_id] = AssetManager::LoadShader(
+            shaderFolder / "pointlight_nonshadow_vertex.glsl",
             shaderFolder / "pointlight_fragment.glsl"
         );
 
@@ -172,9 +200,19 @@ namespace MxEngine
             shaderFolder / "depthtexture_fragment.glsl"
         );
 
+        environment.Shaders["DirLightMaskDepthMap"_id] = AssetManager::LoadShader(
+            shaderFolder / "depthtexture_vertex.glsl",
+            shaderFolder / "depthtexture_mask_fragment.glsl"
+        );
+
         environment.Shaders["SpotLightDepthMap"_id] = AssetManager::LoadShader(
             shaderFolder / "depthtexture_vertex.glsl", 
             shaderFolder / "depthtexture_fragment.glsl"
+        );
+
+        environment.Shaders["SpotLightMaskDepthMap"_id] = AssetManager::LoadShader(
+            shaderFolder / "depthtexture_vertex.glsl",
+            shaderFolder / "depthtexture_mask_fragment.glsl"
         );
 
         environment.Shaders["PointLightDepthMap"_id] = AssetManager::LoadShader(
@@ -353,11 +391,16 @@ namespace MxEngine
                 auto meshLOD = object.GetComponent<MeshLOD>();
                 auto instances = object.GetComponent<InstanceFactory>();
 
-                size_t instanceCount = 0;
-                if (instances.IsValid()) instanceCount = instances->GetCount();
+                size_t instanceCount = 0, instanceOffset = 0;
+                if (instances.IsValid())
+                {
+                    instanceCount = instances->GetInstanceCount();
+                    instanceOffset = instances->GetInstanceBufferOffset();
+                    if (instanceCount == 0) continue; // skip objects without instances
+                }
+
                 auto mesh = meshSource.Mesh;
                 bool castsShadow = meshSource.CastsShadow;
-                bool ignoresDepth = meshSource.IgnoresDepth;
 
                 if (!meshSource.IsDrawn || !meshRenderer.IsValid() || !mesh.IsValid()) continue;
 
@@ -368,14 +411,14 @@ namespace MxEngine
                     mesh = meshLOD->GetMeshLOD();
                 }
 
-                size_t renderGroupIndex = this->Renderer.SubmitRenderGroup(*mesh, instanceCount);
+                size_t renderGroupIndex = this->Renderer.SubmitRenderGroup(*mesh, instanceOffset, instanceCount);
                 for (const auto& submesh : mesh->GetSubMeshes())
                 {
                     auto materialId = submesh.GetMaterialId();
                     if (materialId >= meshRenderer->Materials.size()) continue;
                     auto material = meshRenderer->Materials[materialId];
 
-                    this->Renderer.SubmitRenderUnit(renderGroupIndex, submesh, *material, transform, castsShadow, ignoresDepth, object.Name.c_str());
+                    this->Renderer.SubmitRenderUnit(renderGroupIndex, submesh, *material, transform, castsShadow, object.Name.c_str());
                 }
             }
         }

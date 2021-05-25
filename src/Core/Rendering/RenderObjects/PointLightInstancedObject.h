@@ -51,18 +51,27 @@ namespace MxEngine
 
         PointLightInstancedObject() = default;
 
-        PointLightInstancedObject(VertexBufferHandle vbo, VertexArrayHandle vao, IndexBufferHandle ibo)
-            : RenderHelperObject(std::move(vbo), std::move(vao), std::move(ibo))
+        PointLightInstancedObject(size_t vertexOffset, size_t vertexCount, size_t indexOffset, size_t indexCount)
+            : RenderHelperObject(vertexOffset, vertexCount, indexOffset, indexCount, Factory<VertexArray>::Create())
         {
             this->instancedVBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
 
             std::array vertexLayout = {
-                VertexLayout::Entry<Matrix4x4>(),
-                VertexLayout::Entry<Vector4>(),
-                VertexLayout::Entry<Vector4>(),
+                VertexAttribute::Entry<Vector3>(), // position
+                VertexAttribute::Entry<Vector2>(), // texture uv
+                VertexAttribute::Entry<Vector3>(), // normal
+                VertexAttribute::Entry<Vector3>(), // tangent
+                VertexAttribute::Entry<Vector3>(), // bitangent
+            };
+            std::array instanceLayout = {
+                VertexAttribute::Entry<Matrix4x4>(), // transform
+                VertexAttribute::Entry<Vector4>(),   // position + radius
+                VertexAttribute::Entry<Vector4>(),   // color + ambient
             };
 
-            this->VAO->AddInstancedVertexBuffer(*this->instancedVBO, vertexLayout);
+            VAO->AddVertexLayout(*this->GetVBO(), vertexLayout, VertexAttributeInputRate::PER_VERTEX);
+            VAO->AddVertexLayout(*this->instancedVBO, instanceLayout, VertexAttributeInputRate::PER_INSTANCE);
+            this->VAO->LinkIndexBuffer(*this->GetIBO());
         }
 
         void SubmitToVBO() { instancedVBO->BufferDataWithResize((float*)this->Instances.data(), this->Instances.size() * PointLightBaseData::Size); }

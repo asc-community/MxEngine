@@ -4,5 +4,5 @@ uniform sampler2D tex;
 
 void main()
 {
-	Color = texture(tex, TexCoord).rgba;
+    Color = texture(tex, TexCoord).rgba;
 }

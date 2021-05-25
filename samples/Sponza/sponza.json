@@ -13,6 +13,7 @@
   "Material": [
     {
       "albedo map": 101,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
@@ -38,6 +39,7 @@
     },
     {
       "albedo map": 18446744073709551615,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
@@ -63,6 +65,7 @@
     },
     {
       "albedo map": 13,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -88,6 +91,7 @@
     },
     {
       "albedo map": 20,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -113,6 +117,7 @@
     },
     {
       "albedo map": 22,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -138,6 +143,7 @@
     },
     {
       "albedo map": 25,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -163,6 +169,7 @@
     },
     {
       "albedo map": 29,
+      "alpha mode": "MASKED",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -180,7 +187,7 @@
       "normal map": 28,
       "roughness factor": 1.0,
       "roughness map": 19,
-      "transparency": 1.0,
+      "transparency": 0.5,
       "uv multipliers": [
         1.0,
         1.0
@@ -188,6 +195,7 @@
     },
     {
       "albedo map": 31,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -213,6 +221,7 @@
     },
     {
       "albedo map": 40,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -238,6 +247,7 @@
     },
     {
       "albedo map": 43,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -263,6 +273,7 @@
     },
     {
       "albedo map": 44,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -288,6 +299,7 @@
     },
     {
       "albedo map": 45,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -313,6 +325,7 @@
     },
     {
       "albedo map": 49,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -338,6 +351,7 @@
     },
     {
       "albedo map": 53,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -363,6 +377,7 @@
     },
     {
       "albedo map": 60,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -388,6 +403,7 @@
     },
     {
       "albedo map": 57,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -413,6 +429,7 @@
     },
     {
       "albedo map": 62,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -438,6 +455,7 @@
     },
     {
       "albedo map": 66,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -463,6 +481,7 @@
     },
     {
       "albedo map": 73,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -488,6 +507,7 @@
     },
     {
       "albedo map": 77,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -513,6 +533,7 @@
     },
     {
       "albedo map": 82,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -538,6 +559,7 @@
     },
     {
       "albedo map": 94,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -563,6 +585,7 @@
     },
     {
       "albedo map": 89,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -588,6 +611,7 @@
     },
     {
       "albedo map": 93,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -613,6 +637,7 @@
     },
     {
       "albedo map": 97,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -638,6 +663,7 @@
     },
     {
       "albedo map": 98,
+      "alpha mode": "MASKED",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -655,7 +681,7 @@
       "normal map": 91,
       "roughness factor": 1.0,
       "roughness map": 100,
-      "transparency": 1.0,
+      "transparency": 0.5,
       "uv multipliers": [
         1.0,
         1.0
@@ -663,6 +689,7 @@
     },
     {
       "albedo map": 95,
+      "alpha mode": "MASKED",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.5879999995231628,
@@ -680,7 +707,7 @@
       "normal map": 87,
       "roughness factor": 1.0,
       "roughness map": 96,
-      "transparency": 1.0,
+      "transparency": 0.5,
       "uv multipliers": [
         1.0,
         1.0
@@ -688,6 +715,7 @@
     },
     {
       "albedo map": 102,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
@@ -714,6 +742,102 @@
   ],
   "Mesh": [
     {
+      "_filepath": "Engine/Models/pyramid_1.obj",
+      "aabb": {
+        "max": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "min": [
+          -1.0,
+          -1.0,
+          0.0
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 2.0
+      },
+      "id": 0
+    },
+    {
+      "_filepath": "Engine/Models/sphere_8.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.5
+      },
+      "id": 1
+    },
+    {
+      "_filepath": "Engine/Models/pyramid_1.obj",
+      "aabb": {
+        "max": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "min": [
+          -1.0,
+          -1.0,
+          0.0
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 2.0
+      },
+      "id": 2
+    },
+    {
+      "_filepath": "Engine/Models/sphere_8.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.5
+      },
+      "id": 3
+    },
+    {
       "_filepath": "Engine/Models/sphere_20.obj",
       "aabb": {
         "max": [
@@ -735,7 +859,7 @@
         ],
         "radius": 0.5000000596046448
       },
-      "id": 0
+      "id": 4
     },
     {
       "_filepath": "Resources/Sponza/glTF/Sponza.gltf",
@@ -759,7 +883,7 @@
         ],
         "radius": 2887.561767578125
       },
-      "id": 1
+      "id": 5
     }
   ],
   "Script": [
@@ -2096,7 +2220,7 @@
     "paused": false,
     "physics-step": 1.0,
     "time-scale": 1.0,
-    "total-time": 3061.06103515625,
+    "total-time": 3132.25634765625,
     "viewport": 0
   },
   "mxobjects": [
@@ -2104,14 +2228,14 @@
       "CameraController": {
         "camera type": "PERSPECTIVE",
         "direction": [
-          0.9912925362586975,
-          0.03940398246049881,
-          -0.12564368546009064
+          0.996388852596283,
+          -0.06402671337127686,
+          0.05576533451676369
         ],
         "forward vector": [
-          0.992063045501709,
+          0.9984374642372131,
           0.0,
-          -0.12574134767055511
+          0.05587999150156975
         ],
         "id": 0,
         "is listening window resize event": true,
@@ -2123,9 +2247,9 @@
           "znear": 0.10000000149011612
         },
         "right vector": [
-          0.12574130296707153,
+          -0.05588003247976303,
           0.0,
-          0.992063045501709
+          0.9984374642372131
         ],
         "rotate speed": 10.0,
         "up vector": [
@@ -2228,10 +2352,6 @@
         },
         "id": 0
       },
-      "Script": {
-        "_name": "ShootSpheres",
-        "id": 0
-      },
       "CharacterController": {
         "id": 0,
         "jump power": 12.0,
@@ -2283,9 +2403,9 @@
           1.0
         ],
         "linear velocity": [
-          0.0,
+          3.729140587438451e-07,
           5.7220458984375e-06,
-          9.886967973216088e-07
+          -2.91339091518239e-07
         ],
         "mass": 1.0,
         "push velocity": [
@@ -2302,6 +2422,10 @@
         ],
         "type": "DYNAMIC"
       },
+      "Script": {
+        "_name": "ShootSpheres",
+        "id": 0
+      },
       "Skybox": {
         "cubemap": 2,
         "id": 0,
@@ -2317,9 +2441,9 @@
       "name": "Camera",
       "transform": {
         "position": [
-          -26.058366775512695,
+          -26.23845863342285,
           2.999999523162842,
-          0.7840055823326111
+          -0.29616934061050415
         ],
         "rotation": [
           0.0,
@@ -2359,9 +2483,9 @@
       "name": "Global Light",
       "transform": {
         "position": [
-          -26.058366775512695,
+          -26.23845863342285,
           2.999999523162842,
-          0.7840055823326111
+          -0.29616934061050415
         ],
         "rotation": [
           0.0,
@@ -2392,7 +2516,7 @@
         "id": 0,
         "is drawn": true,
         "is static": false,
-        "mesh": 0
+        "mesh": 4
       },
       "displayed": true,
       "name": "Sphere Factory",
@@ -3377,7 +3501,7 @@
         "id": 1,
         "is drawn": true,
         "is static": false,
-        "mesh": 1
+        "mesh": 5
       },
       "RigidBody": {
         "angular air resistance": 0.0,

@@ -30,6 +30,7 @@
 
 #include "Core/Components/Instancing/Instance.h"
 #include "Core/Resources/Mesh.h"
+#include "Utilities/String/String.h"
 
 namespace MxEngine
 {
@@ -133,65 +134,43 @@ namespace MxEngine
     {
         MAKE_COMPONENT(InstanceFactory);
     public:
+        struct InstanceData
+        {
+            Matrix4x4 Model{ 1.0f };
+            Matrix3x3 Normal{ 1.0f };
+            Vector3 Color{ 1.0f };
+        };
+
+        constexpr static size_t InstanceDataSize = sizeof(InstanceData) / sizeof(float);
         using InstancePool = VectorPool<MxObject::Handle>;
-        using ModelData = MxVector<Matrix4x4>;
-        using NormalData = MxVector<Matrix3x3>;
-        using ColorData = MxVector<Vector3>;
-        using BufferIndex = uint16_t;
     private:
         mutable InstancePool pool;
-        ModelData models;
-        NormalData normals;
-        ColorData colors;
-        BufferIndex bufferIndex = std::numeric_limits<BufferIndex>::max();
+        MxVector<InstanceData> instances;
+        MoveOnlyAllocation instanceAllocation;
 
-        template<typename T>
-        BufferIndex AddInstancedBuffer(Mesh& mesh, const MxVector<T>& data)
-        {
-            auto VBO = Factory<VertexBuffer>::Create(
-                (float*)data.data(), 
-                data.size() * sizeof(T) / sizeof(float), 
-                UsageType::DYNAMIC_DRAW
-            );
-            
-            std::array vertexLayout = {
-                VertexLayout::Entry<T>()
-            };
-            return (BufferIndex)mesh.AddInstancedBuffer(std::move(VBO), vertexLayout);
-        }
-
-        template<typename T>
-        void BufferDataByIndex(const Mesh& mesh, size_t index, const MxVector<T>& buffer)
-        {
-            auto VBO = mesh.GetBufferByIndex(index);
-            VBO->BufferDataWithResize((float*)buffer.data(), buffer.size() * sizeof(T) / sizeof(float));
-        }
-
-        void InitMesh();
-        void RemoveInstancedBuffer(Mesh& mesh, size_t index);
         void RemoveDanglingHandles();
         void SendInstancesToGPU();
-        void Destroy();
+        void ReserveInstanceAllocation(size_t count);
+        void UpdateInstanceCache();
 
-        ModelData& GetModelData();
-        NormalData& GetNormalData();
-        ColorData& GetColorData();
+        void FreeInstancePool();
+        void FreeInstanceAllocation();
     public:
         InstanceFactory() = default;
+        ~InstanceFactory();
 
         bool IsStatic = false;
 
         const InstancePool& GetInstancePool() const { return this->pool; }
         InstancePool& GetInstancePool() { return this->pool; };
-        size_t GetCount() const { return this->GetInstancePool().Allocated(); }
+        size_t GetInstanceCount() const { return this->GetInstancePool().Allocated(); }
+        size_t GetInstanceBufferSize() const { return this->instanceAllocation.Size; }
+        size_t GetInstanceBufferOffset() const { return this->instanceAllocation.Offset; }
         auto GetInstances() const { return InstanceView{ this->pool }; }
 
-        void Init();
         void OnUpdate(float timeDelta);
         MxObject::Handle Instanciate();
         void SubmitInstances();
         void DestroyInstances();
-
-        ~InstanceFactory();
     };
 }

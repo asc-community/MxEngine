@@ -379,6 +379,7 @@ namespace MxEngine
                 MAKE_SCOPE_TIMER("MxEngine::Application", "Application::CloseApplication()");
                 AppDestroyEvent appDestroyEvent;
                 Event::Invoke(appDestroyEvent);
+                this->DestroyRenderAdaptor(this->GetRenderAdaptor());
                 this->OnDestroy();
                 this->GetWindow().Close();
                 this->isRunning = false;
@@ -434,7 +435,14 @@ namespace MxEngine
 
     void Application::InitializeRenderAdaptor(RenderAdaptor& adaptor)
     {
+        BufferAllocator::AllocateBuffers();
         adaptor.InitRendererEnvironment();
+    }
+
+    void Application::DestroyRenderAdaptor(RenderAdaptor& adaptor)
+    {
+        adaptor = RenderAdaptor{ };
+        BufferAllocator::Destroy();
     }
 
     void Application::InitializeShaderDebug()

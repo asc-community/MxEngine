@@ -34,7 +34,13 @@ namespace MxEngine
 {
     class VertexBuffer;
     class IndexBuffer;
-    struct VertexLayout;
+    struct VertexAttribute;
+
+    enum class VertexAttributeInputRate
+    {
+        PER_VERTEX,
+        PER_INSTANCE,
+    };
 
     class VertexArray
     {
@@ -54,9 +60,8 @@ namespace MxEngine
         BindableId GetNativeHandle() const;
         void Bind() const;
         void Unbind() const;
-        void AddVertexBuffer(const VertexBuffer& buffer, ArrayView<VertexLayout> layout);
-        void AddInstancedVertexBuffer(const VertexBuffer& buffer, ArrayView<VertexLayout> layout);
-        void PopBuffer(ArrayView<VertexLayout> layout);
+        void AddVertexLayout(const VertexBuffer& buffer, ArrayView<VertexAttribute> layout, VertexAttributeInputRate inputRate);
+        void RemoveVertexLayout(ArrayView<VertexAttribute> layout);
         void LinkIndexBuffer(const IndexBuffer& buffer);
         int GetAttributeCount() const;
     };

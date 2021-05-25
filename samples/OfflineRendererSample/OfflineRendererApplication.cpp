@@ -52,7 +52,7 @@ namespace OfflineRendererSample
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Direction = MakeVector3(0.5f, 1.0f, -0.1f);
             dirLight->SetIntensity(1.0f);
-            dirLight->FollowViewport();
+            dirLight->IsFollowingViewport = true;
         }
 
         virtual void OnUpdate() override

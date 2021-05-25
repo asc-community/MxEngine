@@ -129,6 +129,18 @@ namespace PhysicsSample
             characterController->SetJumpSpeed(10.0f);
         }
 
+        void CreateCubeFactory()
+        {
+            // create factories for physical objects and player shots
+            auto instances = MxObject::Create();
+            instances->Name = "Cube Instances";
+            instances->AddComponent<MeshSource>(Primitives::CreateCube());
+            auto cubesMaterial = instances->AddComponent<MeshRenderer>()->GetMaterial();
+            cubesMaterial->RoughnessFactor = 0.15f;
+            cubesMaterial->MetallicFactor = 1.0f;
+            physicalObjectFactory = instances->AddComponent<InstanceFactory>();
+        }
+
         void AddTrigger()
         {
             auto object = MxObject::Create();
@@ -169,19 +181,12 @@ namespace PhysicsSample
             lightObject->Name = "Global Light";
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->Direction = MakeVector3(0.1f, 1.0f, 0.0f);
-            dirLight->FollowViewport();
+            dirLight->IsFollowingViewport = true;
             dirLight->Projections[0] = 50.0f;
             dirLight->Projections[1] = 200.0f;
 
-            // create factories for physical objects and player shots
-            auto instances = MxObject::Create();
-            instances->Name = "Cube Instances";
-            instances->AddComponent<MeshSource>(Primitives::CreateCube());
-            auto cubesMaterial = instances->AddComponent<MeshRenderer>()->GetMaterial();
-            cubesMaterial->RoughnessFactor = 0.15f;
-            cubesMaterial->MetallicFactor = 1.0f;
-            physicalObjectFactory = instances->AddComponent<InstanceFactory>();
-
+            this->CreateCubeFactory();
+            
             auto shots = MxObject::Create();
             shots->Name = "Bullet Instances";
             shots->AddComponent<MeshSource>(Primitives::CreateSphere());

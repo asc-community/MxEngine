@@ -1,6 +1,7 @@
 [
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\5061699253647017043.png",
+    "AlphaMask": true,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -17,7 +18,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\8773302468495022225.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_0.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -25,6 +26,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\8006627369776289000.png",
+    "AlphaMask": true,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -41,7 +43,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\12501374198249454378.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_1.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -49,6 +51,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\7268504077753552595.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -65,7 +68,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\4477655471536070370.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_2.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -73,6 +76,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\8750083169368950601.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -89,7 +93,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\13982482287905699490.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_3.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -97,6 +101,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\5792855332885324923.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -113,7 +118,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\16299174074766089871.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_4.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -121,6 +126,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\14650633544276105767.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -137,7 +143,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\2051777328469649772.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_5.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -145,6 +151,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\15295713303328085182.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -161,7 +168,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\10388182081421875623.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_6.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -169,6 +176,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\6047387724914829168.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -185,7 +193,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\15722799267630235092.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_7.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -193,6 +201,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\5823059166183034438.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -209,7 +218,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\14267839433702832875.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_8.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -217,6 +226,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\7441062115984513793.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -233,7 +243,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\6667038893015345571.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_9.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -241,6 +251,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\11490520546946913238.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -257,7 +268,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\3628158980083700836.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_10.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -265,6 +276,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\6151467286084645207.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -281,7 +293,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\7645212358685992005.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_11.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -289,6 +301,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\white.png",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -305,7 +318,7 @@
     "NormalMap": "",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -313,6 +326,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\4975155472559461469.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -329,7 +343,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\2299742237651021498.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_13.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -337,6 +351,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\4675343432951571524.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -353,7 +368,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\7056944414013900257.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_14.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -361,6 +376,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\2775690330959970771.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -377,7 +393,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\2374361008830720677.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_15.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -385,6 +401,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\2185409758123873465.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -401,7 +418,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\332936164838540657.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_16.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -409,6 +426,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\17876391417123941155.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -425,7 +443,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\6593109234861095314.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_17.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -433,6 +451,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\11474523244911310074.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -449,7 +468,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\4601176305987539675.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_18.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -457,6 +476,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\9288698199695299068.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -473,7 +493,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\4910669866631290573.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_19.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -481,6 +501,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\16275776544635328252.png",
+    "AlphaMask": true,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -497,7 +518,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\14170708867020035030.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_20.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -505,6 +526,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\755318871556304029.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -521,7 +543,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\3827035219084910048.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_21.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -529,6 +551,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\8481240838833932244.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -545,7 +568,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\10381718147657362067.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_22.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -553,6 +576,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\6772804448157695701.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -569,7 +593,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\759203620573749278.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_23.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -577,6 +601,7 @@
   },
   {
     "AlbedoMap": "Resources\\Sponza\\glTF\\2969916736137545357.jpg",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       0.5879999995231628,
@@ -593,7 +618,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\14118779221266351425.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_24.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -601,6 +626,7 @@
   },
   {
     "AlbedoMap": "",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -617,7 +643,7 @@
     "NormalMap": "",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0

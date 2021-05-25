@@ -43,10 +43,9 @@ namespace MxEngine
     bool ColliderBase::ShouldUpdateCollider(MxObject& self)
     {
         auto meshSource = GetCurrentlyUsedMesh(self);
-        if (meshSource.IsValid())
+        if (meshSource.IsValid() && meshSource->Mesh.IsValid())
         {
-            auto& mesh = meshSource->Mesh;
-            auto uuid = mesh.GetUUID();
+            auto uuid = meshSource->Mesh.GetUUID();
             if (this->savedMeshState != uuid)
             {
                 this->savedMeshState = uuid;

@@ -36,8 +36,9 @@ namespace MxEngine
     {
         VertexBufferHandle VBO;
         VertexArrayHandle VAO;
+        IndexBufferHandle IBO;
     public:
-        static constexpr size_t VertexCount = 6 * 2 * 3; // 6 sides, each with 2 triangles, each with 3 vertecies
+        static constexpr size_t IndexCount = 6 * 2 * 3; // 6 sides, each with 2 triangles, each with 3 vertecies
         
         void Init();
         const VertexArray& GetVAO() const;

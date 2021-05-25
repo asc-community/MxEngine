@@ -45,19 +45,23 @@ namespace MxEngine
         Rendering::GetController().ToggleDepthOnlyMode(false);
     }
 
-    void RenderUnitToDepthMap(const Shader& shader, size_t instanceCount, const RenderUnit& unit, ArrayView<Material> materials)
+    void RenderUnitToDepthMap(const Shader& shader, size_t instanceCount, size_t baseInstance, const RenderUnit& unit, ArrayView<Material> materials)
     {
-        const auto& material = materials[unit.materialIndex];
+        shader.IgnoreNonExistingUniform("alphaCutoff");
+        shader.IgnoreNonExistingUniform("map_albedo");
+
+        const auto& material = materials[unit.MaterialIndex];
         material.HeightMap->Bind(0);
         material.AlbedoMap->Bind(1);
+        shader.SetUniform("alphaCutoff", 1.0f - material.Transparency);
         shader.SetUniform("displacement", material.Displacement);
         shader.SetUniform("uvMultipliers", material.UVMultipliers);
         shader.SetUniform("map_height", material.HeightMap->GetBoundId());
         shader.SetUniform("map_albedo", material.AlbedoMap->GetBoundId());
+        shader.SetUniform("parentModel", unit.ModelMatrix);
+        shader.SetUniform("parentNormal", unit.NormalMatrix);
 
-        Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(5, unit.ModelMatrix); //-V807
-        Rendering::GetController().GetRenderEngine().SetDefaultVertexAttribute(9, unit.NormalMatrix);
-        Rendering::GetController().DrawIndicies(RenderPrimitive::TRIANGLES, unit.IndexCount, unit.IndexOffset, instanceCount);
+        Rendering::GetController().DrawIndices(RenderPrimitive::TRIANGLES, unit.IndexCount, unit.IndexOffset, unit.VertexOffset, instanceCount, baseInstance);
         Rendering::GetController().GetRenderStatistics().AddEntry("shadow casts", 1);
     }
 
@@ -92,13 +96,13 @@ namespace MxEngine
     }
 
     template<typename CullFunc>
-    void CastShadowsPerUnit(const CullFunc& culler, const Shader& shader, const RenderUnit& unit, size_t instanceCount, ArrayView<Material> materials)
+    void CastShadowsPerUnit(const CullFunc& culler, const Shader& shader, const RenderUnit& unit, size_t instanceCount, size_t baseInstance, ArrayView<Material> materials)
     {
         // do not cull instanced objects, as their position may differ
         bool culled = instanceCount == 0 && !culler(unit.MinAABB, unit.MaxAABB);
         if (!culled)
         {
-            RenderUnitToDepthMap(shader, instanceCount, unit, materials);
+            RenderUnitToDepthMap(shader, instanceCount, baseInstance, unit, materials);
         }
         else
         {
@@ -112,25 +116,27 @@ namespace MxEngine
         size_t currentUnit = 0;
         for (const auto& group : shadowCasters.Groups)
         {
-            if (group.unitCount == 0) continue;
+            if (group.UnitCount == 0) continue;
 
-            group.VAO->Bind();
-            for (size_t i = 0; i < group.unitCount; i++, currentUnit++)
+            for (size_t i = 0; i < group.UnitCount; i++, currentUnit++)
             {
                 const RenderUnit& unit = units[shadowCasters.UnitsIndex[currentUnit]];
-                CastShadowsPerUnit(culler, shader, unit, group.InstanceCount, materials);
+                CastShadowsPerUnit(culler, shader, unit, group.InstanceCount, group.BaseInstance, materials);
             }
         }
     }
 
-    void ShadowMapGenerator::GenerateFor(const Shader& shader, ArrayView<DirectionalLightUnit> directionalLights)
+    void ShadowMapGenerator::GenerateFor(const Shader& shader, ArrayView<DirectionalLightUnit> directionalLights, LoadStoreOptions options)
     {
         auto& controller = Rendering::GetController();
 
         shader.Bind();
         for (auto& directionalLight : directionalLights)
         {
-            controller.AttachDepthMap(directionalLight.ShadowMap);
+            if (options & LoadStoreOptions::LOAD)
+                controller.AttachDepthMapNoClear(directionalLight.ShadowMap);
+            else
+                controller.AttachDepthMap(directionalLight.ShadowMap);
             size_t splitSize = directionalLight.ShadowMap->GetWidth() / directionalLight.ProjectionMatrices.size();
 
             for (size_t i = 0; i < directionalLight.ProjectionMatrices.size(); i++)
@@ -150,20 +156,27 @@ namespace MxEngine
 
         }
 
-        for (auto& directionalLight : directionalLights)
+        if (options & LoadStoreOptions::GENERATE_MIPMAPS)
         {
-            directionalLight.ShadowMap->GenerateMipmaps();
+            for (auto& directionalLight : directionalLights)
+            {
+                directionalLight.ShadowMap->GenerateMipmaps();
+            }
         }
     }
 
-    void ShadowMapGenerator::GenerateFor(const Shader& shader, ArrayView<SpotLightUnit> spotLights)
+    void ShadowMapGenerator::GenerateFor(const Shader& shader, ArrayView<SpotLightUnit> spotLights, LoadStoreOptions options)
     {
         auto& controller = Rendering::GetController();
 
         shader.Bind();
         for (auto& spotLight : spotLights)
         {
-            controller.AttachDepthMap(spotLight.ShadowMap);
+            if (options & LoadStoreOptions::LOAD)
+                controller.AttachDepthMapNoClear(spotLight.ShadowMap);
+            else
+                controller.AttachDepthMap(spotLight.ShadowMap);
+
             shader.SetUniform("LightProjMatrix", spotLight.ProjectionMatrix);
 
             auto CullingFunction = [&spotLight](const Vector3& min, const Vector3& max)
@@ -174,20 +187,27 @@ namespace MxEngine
             CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->renderUnits, this->materials);
         }
 
-        for (auto& spotLight : spotLights)
+        if (options & LoadStoreOptions::GENERATE_MIPMAPS)
         {
-            spotLight.ShadowMap->GenerateMipmaps();
+            for (auto& spotLight : spotLights)
+            {
+                spotLight.ShadowMap->GenerateMipmaps();
+            }
         }
     }
 
-    void ShadowMapGenerator::GenerateFor(const Shader& shader, ArrayView<PointLightUnit> pointLights)
+    void ShadowMapGenerator::GenerateFor(const Shader& shader, ArrayView<PointLightUnit> pointLights, LoadStoreOptions options)
     {
         auto& controller = Rendering::GetController();
 
         shader.Bind();
         for (auto& pointLight : pointLights)
         {
-            controller.AttachDepthMap(pointLight.ShadowMap);
+            if (options & LoadStoreOptions::LOAD)
+                controller.AttachDepthMapNoClear(pointLight.ShadowMap);
+            else
+                controller.AttachDepthMap(pointLight.ShadowMap);
+
             shader.SetUniform("LightProjMatrix[0]", pointLight.ProjectionMatrices[0]);
             shader.SetUniform("LightProjMatrix[1]", pointLight.ProjectionMatrices[1]);
             shader.SetUniform("LightProjMatrix[2]", pointLight.ProjectionMatrices[2]);
@@ -205,9 +225,22 @@ namespace MxEngine
             CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->renderUnits, this->materials);
         }
 
-        for (auto& pointLight : pointLights)
+        if (options & LoadStoreOptions::GENERATE_MIPMAPS)
         {
-            pointLight.ShadowMap->GenerateMipmaps();
+            for (auto& pointLight : pointLights)
+            {
+                pointLight.ShadowMap->GenerateMipmaps();
+            }
         }
+    }
+
+    ShadowMapGenerator::LoadStoreOptions operator|(ShadowMapGenerator::LoadStoreOptions options1, ShadowMapGenerator::LoadStoreOptions options2)
+    {
+        return ShadowMapGenerator::LoadStoreOptions(uint32_t(options1) | uint32_t(options2));
+    }
+
+    bool operator&(ShadowMapGenerator::LoadStoreOptions options1, ShadowMapGenerator::LoadStoreOptions options2)
+    {
+        return bool(uint32_t(options1) & uint32_t(options2));
     }
 }

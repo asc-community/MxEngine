@@ -32,6 +32,7 @@
 #include "Platform/GraphicAPI.h"
 #include "Utilities/Format/Format.h"
 #include "Core/Resources/AssetManager.h"
+#include "Core/Resources/BufferAllocator.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
 #include "Core/Runtime/Reflection.h"
 
@@ -89,44 +90,39 @@ namespace MxEngine
         {
             auto& meshInfo = objectInfo.meshes[i];
             auto& materialId = materialIds[i];
-            
-            MeshData meshData{ 
-                this->VBO, meshInfo.vertecies.size(), verticies.size(),
-                this->IBO, meshInfo.indicies.size(), indicies.size()
+
+            MeshData meshData{
+                meshInfo.vertecies.size(), verticies.size() + this->vertexAllocation.Offset,
+                meshInfo.indicies.size(), indicies.size() + this->indexAllocation.Offset
             };
             meshData.UpdateBoundingGeometry(meshInfo.vertecies);
 
-            // apply vertex offset to each index
-            for (const auto& index : meshInfo.indicies)
-                indicies.push_back(index + verticies.size());
-            // no additional operations for verticies
+            indicies.insert(indicies.end(), meshInfo.indicies.begin(), meshInfo.indicies.end());
             verticies.insert(verticies.end(), meshInfo.vertecies.begin(), meshInfo.vertecies.end());
 
             this->AddSubMesh(materialId, std::move(meshData));
         }
         // load verticies and indicies to GPU
-        this->VBO->BufferSubData((float*)verticies.data(), verticies.size() * Vertex::Size);
-        this->IBO->BufferSubData(indicies.data(), indicies.size());
+        BufferAllocator::GetVBO()->BufferSubData((float*)verticies.data(), verticies.size() * Vertex::Size, this->vertexAllocation.Offset * Vertex::Size);
+        BufferAllocator::GetIBO()->BufferSubData(indicies.data(), indicies.size(), this->indexAllocation.Offset);
 
         this->UpdateBoundingGeometry(); // use submeshes boundings to update mesh boundings
+    }
+
+    void Mesh::FreeBuffers()
+    {
+        if (this->vertexAllocation.Size != 0) BufferAllocator::DeallocateInVBO({ this->vertexAllocation.Offset * Vertex::Size, this->vertexAllocation.Size * Vertex::Size });
+        if (this->indexAllocation.Size != 0) BufferAllocator::DeallocateInIBO({ this->indexAllocation.Offset, this->indexAllocation.Size });
     }
 
     Mesh::Mesh()
     {
         this->filepath = MXENGINE_MAKE_INTERNAL_TAG("empty");
-        this->VBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
-        this->IBO = Factory<IndexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
-        this->VAO = Factory<VertexArray>::Create();
+    }
 
-        std::array vertexLayout = {
-            VertexLayout::Entry<Vector3>(), // position
-            VertexLayout::Entry<Vector2>(), // texture uv
-            VertexLayout::Entry<Vector3>(), // normal
-            VertexLayout::Entry<Vector3>(), // tangent
-            VertexLayout::Entry<Vector3>(), // bitangent
-        };
-        this->VAO->AddVertexBuffer(*this->VBO, vertexLayout);
-        this->VAO->LinkIndexBuffer(*this->IBO);
+    Mesh::~Mesh()
+    {
+        this->FreeBuffers();
     }
 
     template<>
@@ -149,15 +145,22 @@ namespace MxEngine
 
     void Mesh::ReserveData(size_t vertexCount, size_t indexCount)
     {
-        this->VBO->Load(nullptr, vertexCount * Vertex::Size, UsageType::STATIC_DRAW);
-        this->IBO->Load(nullptr, indexCount, UsageType::STATIC_DRAW);
+        this->FreeBuffers();
+
+        auto vbo = BufferAllocator::AllocateInVBO(vertexCount * Vertex::Size);
+        auto ibo = BufferAllocator::AllocateInIBO(indexCount);
+
+        this->vertexAllocation.Offset = vbo.Offset / Vertex::Size;
+        this->vertexAllocation.Size = vbo.Size / Vertex::Size;
+        this->indexAllocation.Offset = ibo.Offset;
+        this->indexAllocation.Size = ibo.Size;
     }
 
     void Mesh::UpdateBoundingGeometry()
     {
         // compute bounding box, taking min and max points from each sub-box
         this->MeshAABB = { MakeVector3(0.0f), MakeVector3(0.0f) };
-        if (!this->GetSubMeshes().empty()) 
+        if (!this->GetSubMeshes().empty())
             this->MeshAABB = this->GetSubMeshByIndex(0).Data.GetAABB();
 
         for (const auto& submesh : this->GetSubMeshes())
@@ -178,62 +181,24 @@ namespace MxEngine
         this->MeshBoundingSphere = MxEngine::BoundingSphere(center, maxRadius);
     }
 
-    size_t Mesh::AddInstancedBuffer(VertexBufferHandle vbo, ArrayView<VertexLayout> layout)
-    {
-        this->instancedVBOs.push_back(std::move(vbo));
-        this->instancedVBLs.emplace_back(layout.begin(), layout.end());
-        this->VAO->AddInstancedVertexBuffer(*this->instancedVBOs.back(), this->instancedVBLs.back());
-        return this->instancedVBOs.size() - 1;
-    }
-
-    VertexBufferHandle Mesh::GetBufferByIndex(size_t index) const
-    {
-        MX_ASSERT(index < this->instancedVBOs.size());
-        return this->instancedVBOs[index];
-    }
-
-    const MxVector<VertexLayout>& Mesh::GetBufferLayoutByIndex(size_t index) const
-    {
-        MX_ASSERT(index < this->instancedVBLs.size());
-        return this->instancedVBLs[index];
-    }
-
-    VertexBufferHandle Mesh::GetVBO() const
-    {
-        return this->VBO;
-    }
-
-    IndexBufferHandle Mesh::GetIBO() const
-    {
-        return this->IBO;
-    }
-
-    VertexArrayHandle Mesh::GetVAO() const
-    {
-        return this->VAO;
-    }
-
     size_t Mesh::GetTotalVerteciesCount() const
     {
-        return this->VBO->GetSize() / Vertex::Size;
+        return this->vertexAllocation.Size;
     }
 
     size_t Mesh::GetTotalIndiciesCount() const
     {
-        return this->IBO->GetSize();
+        return this->indexAllocation.Size;
     }
 
-    size_t Mesh::GetInstancedBufferCount() const
+    size_t Mesh::GetBaseVerteciesOffset() const
     {
-        return this->instancedVBOs.size();
+        return this->vertexAllocation.Offset;
     }
 
-    void Mesh::PopInstancedBuffer()
+    size_t Mesh::GetBaseIndiciesOffset() const
     {
-        MX_ASSERT(!this->instancedVBOs.empty());
-        this->VAO->PopBuffer(this->instancedVBLs.back());
-        this->instancedVBOs.pop_back();
-        this->instancedVBLs.pop_back();
+        return this->indexAllocation.Offset;
     }
 
     const MxString& Mesh::GetFilePath() const
@@ -286,6 +251,19 @@ namespace MxEngine
 
         this->submeshes.erase(this->submeshes.begin() + index);
         this->subMeshTransforms.erase(this->subMeshTransforms.begin() + index);
+    }
+
+    MoveOnlyAllocation::MoveOnlyAllocation(MoveOnlyAllocation&& other) noexcept
+    {
+        this->Offset = other.Offset, this->Size = other.Size;
+        other.Offset = other.Size = 0;
+    }
+
+    MoveOnlyAllocation& MoveOnlyAllocation::operator=(MoveOnlyAllocation&& other) noexcept
+    {
+        this->Offset = other.Offset, this->Size = other.Size;
+        other.Offset = other.Size = 0;
+        return *this;
     }
 
     namespace GUI

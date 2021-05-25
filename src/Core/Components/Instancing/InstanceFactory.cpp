@@ -2,29 +2,10 @@
 #include "Core/Components/Rendering/MeshSource.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Core/Runtime/Reflection.h"
+#include "Core/Resources/BufferAllocator.h"
 
 namespace MxEngine
 {
-    void InstanceFactory::InitMesh()
-    {
-        auto& object = MxObject::GetByComponent(*this);
-        auto meshSource = object.GetComponent<MeshSource>();
-        if (meshSource.IsValid())
-        {
-            auto& mesh = *meshSource->Mesh;
-            auto modelBufferIndex = this->AddInstancedBuffer(mesh, this->GetModelData());
-            (void)this->AddInstancedBuffer(mesh, this->GetNormalData());
-            (void)this->AddInstancedBuffer(mesh, this->GetColorData());
-            this->bufferIndex = modelBufferIndex; // others will be `bufferIndex + 1`, `bufferIndex + 2`
-        }
-    }
-
-    void InstanceFactory::RemoveInstancedBuffer(Mesh& mesh, size_t index)
-    {
-        MX_ASSERT(mesh.GetInstancedBufferCount() == index + 1);
-        mesh.PopInstancedBuffer();
-    }
-
     void InstanceFactory::RemoveDanglingHandles()
     {
         for (auto& object : this->pool)
@@ -32,27 +13,6 @@ namespace MxEngine
             if (!object.IsValid() || !object->HasComponent<Instance>())
                 this->pool.Deallocate(this->pool.IndexOf(object));
         }
-    }
-
-    void InstanceFactory::Destroy()
-    {
-        auto& object = MxObject::GetByComponent(*this);
-        auto meshSource = object.GetComponent<MeshSource>();
-
-        this->DestroyInstances();
-
-        if (meshSource.IsValid() && meshSource->Mesh.IsValid())
-        {
-            auto& mesh = *meshSource->Mesh;
-            this->RemoveInstancedBuffer(mesh, (size_t)this->bufferIndex + 2);
-            this->RemoveInstancedBuffer(mesh, (size_t)this->bufferIndex + 1);
-            this->RemoveInstancedBuffer(mesh, (size_t)this->bufferIndex + 0);
-        }
-    }
-
-    void InstanceFactory::Init()
-    {
-        this->InitMesh();
     }
 
     void InstanceFactory::OnUpdate(float timeDelta)
@@ -67,6 +27,11 @@ namespace MxEngine
         this->SendInstancesToGPU();
     }
 
+    void InstanceFactory::DestroyInstances()
+    {
+        this->FreeInstancePool();
+    }
+
     // see SceneSerializer.cpp
     void CloneInstanceInternal(const MxObject::Handle& origin, MxObject::Handle& target);
 
@@ -76,12 +41,31 @@ namespace MxEngine
         auto object = MxObject::GetHandleByComponent(*this);
 
         this->pool.Allocate(instance);
+        this->ReserveInstanceAllocation(this->pool.Capacity());
+
         auto instanceComponent = instance->AddComponent<Instance>(object);
         CloneInstanceInternal(object, instance);
+
         return instance;
     }
 
-    void InstanceFactory::DestroyInstances()
+    void InstanceFactory::UpdateInstanceCache()
+    {
+        MAKE_SCOPE_PROFILER("Instancing::UpdateInstanceCache");
+
+        this->instances.resize(this->GetInstanceCount());
+        auto instanceData = this->instances.begin();
+        auto instance = this->GetInstancePool().begin();
+
+        for (; instanceData != this->instances.end(); instanceData++, instance++)
+        {
+            instance->GetUnchecked()->Transform.GetMatrix(instanceData->Model);
+            instance->GetUnchecked()->Transform.GetNormalMatrix(instanceData->Model, instanceData->Normal);
+            instanceData->Color = instance->GetUnchecked()->GetComponent<Instance>()->GetColor();
+        }
+    }
+
+    void InstanceFactory::FreeInstancePool()
     {
         for (auto& object : this->pool)
         {
@@ -90,58 +74,18 @@ namespace MxEngine
         this->pool.Clear();
     }
 
-    InstanceFactory::ModelData& InstanceFactory::GetModelData()
+    void InstanceFactory::FreeInstanceAllocation()
     {
-        MAKE_SCOPE_PROFILER("Instancing::BufferModelData");
-
-        this->models.resize(this->GetCount());
-        auto model = this->models.begin();
-        auto instance = this->GetInstancePool().begin();
-
-        for (; model != this->models.end(); model++, instance++)
+        if (this->instanceAllocation.Size != 0)
         {
-            instance->GetUnchecked()->Transform.GetMatrix(*model);
+            BufferAllocator::DeallocateInInstanceVBO({ this->instanceAllocation.Offset * InstanceDataSize, this->instanceAllocation.Size * InstanceDataSize });
         }
-        if (this->models.empty()) this->models.emplace_back(0.0f);
-
-        return this->models;
-    }
-
-    InstanceFactory::NormalData& InstanceFactory::GetNormalData()
-    {
-        MAKE_SCOPE_PROFILER("Instancing::BufferNormalData");
-
-        this->normals.resize(this->GetCount());
-        auto normal = this->normals.begin();
-        auto model = this->models.begin();
-        auto instance = this->GetInstancePool().begin();
-        for (; normal != this->normals.end(); model++, normal++, instance++)
-        {
-            instance->GetUnchecked()->Transform.GetNormalMatrix(*model, *normal);
-        }
-        if (this->normals.empty()) this->normals.emplace_back(0.0f);
-
-        return this->normals;
-    }
-
-    InstanceFactory::ColorData& InstanceFactory::GetColorData()
-    {
-        MAKE_SCOPE_PROFILER("Instancing::BufferColorData");
-
-        this->colors.resize(this->GetCount());
-        auto instance = this->GetInstancePool().begin();
-        for (auto it = this->colors.begin(); it != this->colors.end(); it++, instance++)
-        {
-            *it = instance->GetUnchecked()->GetComponent<Instance>()->GetColor();
-        }
-        if (this->colors.empty()) this->colors.emplace_back(0.0f);
-
-        return this->colors;
     }
 
     InstanceFactory::~InstanceFactory()
     {
-        this->Destroy();
+        this->FreeInstancePool();
+        this->FreeInstanceAllocation();
     }
 
     void InstanceFactory::SendInstancesToGPU()
@@ -150,19 +94,24 @@ namespace MxEngine
         auto meshSource = object.GetComponent<MeshSource>();
         if (meshSource.IsValid() && meshSource->Mesh.IsValid())
         {
-            auto& mesh = *meshSource->Mesh;
-
-            if ((uint16_t)mesh.GetInstancedBufferCount() < this->bufferIndex + 2)
-            {
-                this->InitMesh(); // MeshSource was updated, re-init mesh
-            }
-            else
-            {
-                this->BufferDataByIndex(mesh, (size_t)this->bufferIndex + 0, this->GetModelData());
-                this->BufferDataByIndex(mesh, (size_t)this->bufferIndex + 1, this->GetNormalData());
-                this->BufferDataByIndex(mesh, (size_t)this->bufferIndex + 2, this->GetColorData());
-            }
+            this->UpdateInstanceCache();
+            BufferAllocator::GetInstanceVBO()->BufferSubData(
+                (float*)this->instances.data(),
+                this->instances.size() * InstanceDataSize,
+                this->instanceAllocation.Offset * InstanceDataSize
+            );
         }
+    }
+
+    void InstanceFactory::ReserveInstanceAllocation(size_t count)
+    {
+        if (count <= this->instanceAllocation.Size) return;
+
+        this->FreeInstanceAllocation();
+
+        auto allocation = BufferAllocator::AllocateInInstanceVBO(count * InstanceDataSize);
+        this->instanceAllocation.Offset = allocation.Offset / InstanceDataSize;
+        this->instanceAllocation.Size = allocation.Size / InstanceDataSize;
     }
 
     bool IsInstanced(const MxObject& object)
@@ -235,7 +184,7 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )
-            .property_readonly("instance count", &InstanceFactory::GetCount)
+            .property_readonly("instance count", &InstanceFactory::GetInstanceCount)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
             )

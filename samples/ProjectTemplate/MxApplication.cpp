@@ -46,7 +46,7 @@ namespace ProjectTemplate
             dirLight->SetIntensity(0.5f);
             dirLight->Direction     = MakeVector3(0.5f, 1.0f, 1.0f);
             // make directional light to be centered at current viewport position (is set by RenderManager::SetViewport)
-            dirLight->FollowViewport();
+            dirLight->IsFollowingViewport = true;
         }
 
         virtual void OnUpdate() override

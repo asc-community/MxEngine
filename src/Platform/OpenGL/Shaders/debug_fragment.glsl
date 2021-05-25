@@ -3,5 +3,5 @@ in vec4 FragmentColor;
 
 void main()
 {
-	OutColor = FragmentColor;
+    OutColor = FragmentColor;
 }
