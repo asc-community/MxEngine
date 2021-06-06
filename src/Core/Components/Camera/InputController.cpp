@@ -73,9 +73,9 @@ namespace MxEngine
                 }
                 else
                 {
-                    vecForward = object->Transform.GetRotation() * vecForward; //-V807
-                    vecRight = object->Transform.GetRotation() * vecRight;
-                    vecUp = object->Transform.GetRotation() * vecUp;
+                    vecForward = object->LocalTransform.GetRotation() * vecForward; //-V807
+                    vecRight = object->LocalTransform.GetRotation() * vecRight;
+                    vecUp = object->LocalTransform.GetRotation() * vecUp;
                 }
 
                 auto dt = Application::GetImpl()->GetUnscaledTimeDelta();
@@ -106,7 +106,7 @@ namespace MxEngine
 
                 if (moveDirection != MakeVector3(0.0f))
                 {
-                    object->Transform.Translate(Normalize(moveDirection) * moveSpeed * dt);
+                    object->LocalTransform.Translate(Normalize(moveDirection) * moveSpeed * dt);
                     input->motion = Normalize(moveDirection);
                 }
                 else

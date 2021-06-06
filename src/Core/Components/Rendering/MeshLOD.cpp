@@ -43,7 +43,7 @@ namespace MxEngine
             return;
         }
 
-        auto box = meshSource->Mesh->MeshAABB * object.Transform.GetMatrix();
+        auto box = meshSource->Mesh->MeshAABB * object.LocalTransform.GetMatrix();
 
         float distance = Length(box.GetCenter() - viewportPosition);
         Vector3 length = box.Length();

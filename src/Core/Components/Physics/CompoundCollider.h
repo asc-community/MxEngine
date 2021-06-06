@@ -46,7 +46,7 @@ namespace MxEngine
 
         struct CompoundColliderChild
         {
-            TransformComponent Transform;
+            Transform Transform;
             VariantType Shape;
         };
 
@@ -65,9 +65,9 @@ namespace MxEngine
 
         size_t GetShapeCount() const;
         void RemoveShapeByIndex(size_t index);
-        TransformComponent GetShapeTransformByIndex(size_t index) const;
+        Transform GetShapeTransformByIndex(size_t index) const;
         const VariantType& GetShapeByIndex(size_t index) const;
-        void SetShapeTransformByIndex(size_t index, const TransformComponent& relativeTransform);
+        void SetShapeTransformByIndex(size_t index, const Transform& relativeTransform);
         void ClearShapes();
 
         template<typename T>
@@ -81,17 +81,17 @@ namespace MxEngine
         }
 
         template<typename T, typename... Args>
-        void AddShape(const TransformComponent& relativeTransform, Args&&... args)
+        void AddShape(const Transform& relativeTransform, Args&&... args)
         {
             auto shape = Factory<T>::Create(std::forward<Args>(args)...);
             this->AddShape(relativeTransform, shape);
         }
 
         template<typename T>
-        void AddShape(const TransformComponent& relativeTransform, const Resource<T, Factory<T>>& shape)
+        void AddShape(const Transform& relativeTransform, const Resource<T, Factory<T>>& shape)
         {
             this->children.push_back(shape); // save handle in variant array
-            this->compoundShape->AddShape(std::move(shape), TransformComponent{ });
+            this->compoundShape->AddShape(std::move(shape), Transform{ });
             this->SetShapeTransformByIndex(this->GetShapeCount() - 1, relativeTransform);
         }
 

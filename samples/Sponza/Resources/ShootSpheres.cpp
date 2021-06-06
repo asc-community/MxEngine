@@ -7,11 +7,11 @@ class ShootSpheres : public MxEngine::Scriptable
     void ShootSphere(MxObject::Handle sphereFactory, CameraController::Handle playerCamera)
     {    
         auto& player = MxObject::GetByComponent(*playerCamera);
-        auto shootPosition = player.Transform.GetPosition() + playerCamera->GetDirection() * 3.0f;
+        auto shootPosition = player.LocalTransform.GetPosition() + playerCamera->GetDirection() * 3.0f;
     
         auto sphere = Instanciate(sphereFactory);
         sphere->Name = "Sphere Instance";
-        sphere->Transform.SetPosition(shootPosition);
+        sphere->LocalTransform.SetPosition(shootPosition);
     
         sphere->AddComponent<SphereCollider>();
     

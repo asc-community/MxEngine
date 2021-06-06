@@ -50,6 +50,6 @@ namespace MxEngine
         // other functions defined in ShapeBase
 
         BoundingSphere GetNativeBounding() const;
-        BoundingSphere GetNativeBoundingTransformed(const TransformComponent& transform) const;
+        BoundingSphere GetNativeBoundingTransformed(const Transform& transform) const;
     };
 }

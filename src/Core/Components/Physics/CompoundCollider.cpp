@@ -69,12 +69,12 @@ namespace MxEngine
         this->children.erase(this->children.begin() + index);
     }
 
-    TransformComponent CompoundCollider::GetShapeTransformByIndex(size_t index) const
+    Transform CompoundCollider::GetShapeTransformByIndex(size_t index) const
     {
         return this->compoundShape->GetShapeTransformByIndex(index);
     }
 
-    void CompoundCollider::SetShapeTransformByIndex(size_t index, const TransformComponent& relativeTransform)
+    void CompoundCollider::SetShapeTransformByIndex(size_t index, const Transform& relativeTransform)
     {
         this->compoundShape->SetShapeTransformByIndex(index, relativeTransform);
     }
@@ -87,13 +87,13 @@ namespace MxEngine
 
     AABB CompoundCollider::GetAABB() const
     {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
+        auto& transform = MxObject::GetByComponent(*this).LocalTransform;
         return this->compoundShape->GetAABBTransformed(transform);
     }
 
     BoundingSphere CompoundCollider::GetBoundingSphere() const
     {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
+        auto& transform = MxObject::GetByComponent(*this).LocalTransform;
         return this->compoundShape->GetBoundingSphereTransformed(transform);
     }
 

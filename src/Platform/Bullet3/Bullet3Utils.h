@@ -10,14 +10,14 @@ namespace MxEngine
     inline btVector3 ToBulletVector3(const Vector3& v) { return btVector3(v.x, v.y, v.z); }
     inline Vector3 FromBulletVector3(const btVector3& v) { return MakeVector3(v.x(), v.y(), v.z()); }
 
-    inline void FromBulletTransform(TransformComponent& to, const btTransform& from)
+    inline void FromBulletTransform(Transform& to, const btTransform& from)
     {
         auto rot = from.getRotation();
         to.SetPosition(FromBulletVector3(from.getOrigin()));
         to.SetRotation(*reinterpret_cast<Quaternion*>(&rot));
     }
 
-    inline void ToBulletTransform(btTransform& to, const TransformComponent& from)
+    inline void ToBulletTransform(btTransform& to, const Transform& from)
     {
         auto rot = from.GetRotationQuaternion();
         to.setIdentity();

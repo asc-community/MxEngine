@@ -42,7 +42,7 @@ namespace MxEngine
             {
                 for (const auto& submesh : meshSource->Mesh->GetSubMeshes())
                 {
-                    auto box = submesh.GetAABB() * (object.Transform.GetMatrix() * submesh.GetTransform().GetMatrix());
+                    auto box = submesh.GetAABB() * (object.LocalTransform.GetMatrix() * submesh.GetTransform().GetMatrix());
                     buffer.Submit(box, debugDraw.BoundingBoxColor);
                 }
             }
@@ -51,8 +51,8 @@ namespace MxEngine
                 for (const auto& submesh : meshSource->Mesh->GetSubMeshes())
                 {
                     auto sphere = submesh.GetBoundingSphere();
-                    sphere.Center += object.Transform.GetPosition() + submesh.GetTransform().GetPosition();
-                    sphere.Radius *= ComponentMax(object.Transform.GetScale() * submesh.GetTransform().GetScale());
+                    sphere.Center += object.LocalTransform.GetPosition() + submesh.GetTransform().GetPosition();
+                    sphere.Radius *= ComponentMax(object.LocalTransform.GetScale() * submesh.GetTransform().GetScale());
                     buffer.Submit(sphere, debugDraw.BoundingSphereColor);
                 }
             }
@@ -63,7 +63,7 @@ namespace MxEngine
     {
         if (debugDraw.RenderLightingBounds && pointLight.IsValid())
         {
-            BoundingSphere sphere(object.Transform.GetPosition(), pointLight->GetRadius());
+            BoundingSphere sphere(object.LocalTransform.GetPosition(), pointLight->GetRadius());
             buffer.Submit(sphere, debugDraw.LightSourceColor);
         }
     }
@@ -72,7 +72,7 @@ namespace MxEngine
     {
         if (debugDraw.RenderLightingBounds && spotLight.IsValid())
         {
-            Cone cone(object.Transform.GetPosition(), spotLight->Direction, 3.0f, spotLight->GetOuterAngle());
+            Cone cone(object.LocalTransform.GetPosition(), spotLight->Direction, 3.0f, spotLight->GetOuterAngle());
             buffer.Submit(cone, debugDraw.LightSourceColor);
         }
     }
@@ -85,12 +85,12 @@ namespace MxEngine
             {
                 if (audioSource->IsOmnidirectional())
                 {
-                    BoundingSphere sphere(object.Transform.GetPosition(), 3.0f);
+                    BoundingSphere sphere(object.LocalTransform.GetPosition(), 3.0f);
                     buffer.Submit(sphere, debugDraw.SoundSourceColor);
                 }
                 else
                 {
-                    Cone cone(object.Transform.GetPosition(), audioSource->GetDirection(), 3.0f, audioSource->GetOuterAngle());
+                    Cone cone(object.LocalTransform.GetPosition(), audioSource->GetDirection(), 3.0f, audioSource->GetOuterAngle());
                     buffer.Submit(cone, debugDraw.SoundSourceColor);
                 }
             }
@@ -105,7 +105,7 @@ namespace MxEngine
             auto up = cameraController->GetDirectionUp();
             auto aspect = cameraController->Camera.GetAspectRatio();
             auto zoom = cameraController->Camera.GetZoom() * 65.0f;
-            Frustrum frustrum(object.Transform.GetPosition() + Normalize(direction), direction, up, zoom, aspect);
+            Frustrum frustrum(object.LocalTransform.GetPosition() + Normalize(direction), direction, up, zoom, aspect);
             buffer.Submit(frustrum, debugDraw.FrustrumColor);
         }
     }
@@ -135,9 +135,9 @@ namespace MxEngine
                 {
                     auto& child = compoundCollider->GetShapeByIndex(i);
                     auto childTransform = compoundCollider->GetShapeTransformByIndex(i);
-                    childTransform.SetPosition(childTransform.GetPosition() * object.Transform.GetScale());
+                    childTransform.SetPosition(childTransform.GetPosition() * object.LocalTransform.GetScale());
 
-                    std::visit([&buffer, &debugDraw, transform = childTransform * object.Transform](auto&& shape) mutable
+                    std::visit([&buffer, &debugDraw, transform = childTransform * object.LocalTransform](auto&& shape) mutable
                     {
                         buffer.Submit(shape->GetNativeBoundingTransformed(transform), debugDraw.BoundingBoxColor);
                     }, child);

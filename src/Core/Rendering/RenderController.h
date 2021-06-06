@@ -45,7 +45,7 @@ namespace MxEngine
     class SubMesh;
     class Mesh;
     class ParticleSystem;
-    class TransformComponent;
+    class Transform;
 
     class RenderController
     {
@@ -121,15 +121,15 @@ namespace MxEngine
         const RenderStatistics& GetRenderStatistics() const;
         RenderStatistics& GetRenderStatistics();
         void ResetPipeline();
-        void SubmitParticleSystem(const ParticleSystem& system, const Material& material, const TransformComponent& parentTransform);
-        void SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform);
-        void SubmitLightSource(const PointLight& light, const TransformComponent& parentTransform);
-        void SubmitLightSource(const SpotLight& light, const TransformComponent& parentTransform);
-        void SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
+        void SubmitParticleSystem(const ParticleSystem& system, const Material& material, const Transform& parentTransform);
+        void SubmitLightSource(const DirectionalLight& light, const Transform& parentTransform);
+        void SubmitLightSource(const PointLight& light, const Transform& parentTransform);
+        void SubmitLightSource(const SpotLight& light, const Transform& parentTransform);
+        void SubmitCamera(const CameraController& controller, const Transform& parentTransform, 
             const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping,
             const CameraSSR* ssr, const CameraSSGI* ssgi, const CameraSSAO* ssao);
         size_t SubmitRenderGroup(const Mesh& mesh, size_t instanceOffset, size_t instanceCount);
-        void SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& object, const Material& material, const TransformComponent& parentTransform, bool castsShadow, const char* debugName = nullptr);
+        void SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& object, const Material& material, const Transform& parentTransform, bool castsShadow, const char* debugName = nullptr);
         void SubmitImage(const TextureHandle& texture);
         void StartPipeline();
         void EndPipeline();

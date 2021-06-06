@@ -186,7 +186,7 @@ namespace MxEngine
         json["name"] = object.Name;
         json["displayed"] = object.IsDisplayedInEditor;
 
-        MxEngine::Serialize(json["transform"], object.Transform);
+        MxEngine::Serialize(json["transform"], object.LocalTransform);
 
         for (const auto& callback : impl->serializeCallbacks)
         {
@@ -201,7 +201,7 @@ namespace MxEngine
         object->Name = json["name"].get<MxString>();
         object->IsDisplayedInEditor = json["displayed"];
 
-        MxEngine::Deserialize(json["transform"], object->Transform, mappings);
+        MxEngine::Deserialize(json["transform"], object->LocalTransform, mappings);
 
         for (const auto& callback : impl->deserializeCallbacks)
         {
@@ -211,7 +211,7 @@ namespace MxEngine
 
     void SceneSerializer::CloneMxObjectAsCopy(const MxObject::Handle& origin, MxObject::Handle& target)
     {
-        target->Transform = origin->Transform;
+        target->LocalTransform = origin->LocalTransform;
         target->Name = origin->Name;
         target->IsDisplayedInEditor = origin->IsDisplayedInEditor;
         target->IsSerialized = origin->IsSerialized;

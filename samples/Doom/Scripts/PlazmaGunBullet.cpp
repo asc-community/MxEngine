@@ -16,8 +16,8 @@ public:
         auto explosionParticles = explosionBase->GetComponent<ParticleSystem>();
         
         auto explosion = MxObject::Create();
-        explosion->Transform.SetPosition(position);
-        explosion->Transform.SetScale(explosionBase->Transform.GetScale());
+        explosion->LocalTransform.SetPosition(position);
+        explosion->LocalTransform.SetScale(explosionBase->LocalTransform.GetScale());
         explosion->Name = "PlazmaGunBullet Explosion";
         explosion->AddComponent<MeshRenderer>(explosionMaterial);
 
@@ -51,7 +51,7 @@ public:
                     auto otherBody = other.GetComponent<RigidBody>();
                     float massRatio = selfBody->GetMass() / Max(otherBody->GetMass(), 0.01f);
                     otherBody->SetLinearVelocity(selfBody->GetLinearVelocity() * massRatio);
-                    PlazmaGunBullet::CreateExplosion(self.Transform.GetPosition());
+                    PlazmaGunBullet::CreateExplosion(self.LocalTransform.GetPosition());
                     MxObject::Destroy(self);
                 }
             });

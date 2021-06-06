@@ -14,7 +14,7 @@ namespace GrassSample
         {
             auto field = MxObject::Create();
             field->Name = "Grass Field";
-            field->Transform.SetScale(20.0f);
+            field->LocalTransform.SetScale(20.0f);
             field->AddComponent<MeshSource>(Primitives::CreatePlane());
             auto fieldMaterial = field->AddComponent<MeshRenderer>()->GetMaterial();
             fieldMaterial->AlbedoMap = AssetManager::LoadTexture("Resources/field.png"_id);
@@ -22,8 +22,8 @@ namespace GrassSample
 
             this->grass = MxObject::Create();
             grass->Name = "Grass Instances";
-            grass->Transform.TranslateY(0.3f);
-            grass->Transform.ScaleZ(0.75f);
+            grass->LocalTransform.TranslateY(0.3f);
+            grass->LocalTransform.ScaleZ(0.75f);
 
             auto source = grass->AddComponent<MeshSource>(Primitives::CreatePlane2Side());
             source->CastsShadow = false;
@@ -39,10 +39,10 @@ namespace GrassSample
                 float x = Random::GetFloat() * 20.0f - 10.0f;
                 float z = Random::GetFloat() * 20.0f - 10.0f;
                 float r = Random::GetFloat() * 180.0f - 90.0f;
-                g1->Transform.TranslateX(x).TranslateZ(z);
-                g2->Transform.TranslateX(x).TranslateZ(z);
-                g1->Transform.RotateX(-90.0f).RotateY(r);
-                g2->Transform.RotateX(-90.0f).RotateY(r - 90.0f);
+                g1->LocalTransform.TranslateX(x).TranslateZ(z);
+                g2->LocalTransform.TranslateX(x).TranslateZ(z);
+                g1->LocalTransform.RotateX(-90.0f).RotateY(r);
+                g2->LocalTransform.RotateX(-90.0f).RotateY(r - 90.0f);
             }
             grassInstances->SubmitInstances();
             grassInstances->IsStatic = true;
@@ -65,8 +65,8 @@ namespace GrassSample
                 for (size_t j = 0; j < lightRowSize; j++)
                 {
                     auto object = lightFactory->Instanciate();
-                    object->Transform.SetPosition(Vector3((float)i - lightRowSize / 2, 0.5f, (float)j - lightRowSize / 2) * 0.2f);
-                    object->Transform.Scale(0.1f);
+                    object->LocalTransform.SetPosition(Vector3((float)i - lightRowSize / 2, 0.5f, (float)j - lightRowSize / 2) * 0.2f);
+                    object->LocalTransform.Scale(0.1f);
 
                     auto pointLight = object->AddComponent<PointLight>();
                     pointLight->SetRadius(0.25f);
@@ -95,7 +95,7 @@ namespace GrassSample
             // setup camera
             cameraObject = MxObject::Create();
             cameraObject->Name = "Player Camera";
-            cameraObject->Transform.TranslateY(2.0f);
+            cameraObject->LocalTransform.TranslateY(2.0f);
             
             auto skybox = cameraObject->AddComponent<Skybox>();
             skybox->CubeMap = AssetManager::LoadCubeMap("Resources/dawn.jpg"_id);

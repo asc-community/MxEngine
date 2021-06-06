@@ -76,7 +76,7 @@ namespace MxEngine
         if (!rigidBody.IsDynamic()) rigidBody.MakeDynamic();
         
         auto colliderSize = VectorMax(rigidBody.GetAABB().Length() * 0.51f, MakeVector3(0.1f));
-        this->isGrounded = CheckIfPlayerIsOnGround(self.Transform.GetPosition(), colliderSize * camera.GetUpVector());
+        this->isGrounded = CheckIfPlayerIsOnGround(self.LocalTransform.GetPosition(), colliderSize * camera.GetUpVector());
 
         // update rigid body position
         auto motion = this->GetMotionVector();

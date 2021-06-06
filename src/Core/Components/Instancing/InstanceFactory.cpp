@@ -59,8 +59,8 @@ namespace MxEngine
 
         for (; instanceData != this->instances.end(); instanceData++, instance++)
         {
-            instance->GetUnchecked()->Transform.GetMatrix(instanceData->Model);
-            instance->GetUnchecked()->Transform.GetNormalMatrix(instanceData->Model, instanceData->Normal);
+            instance->GetUnchecked()->LocalTransform.GetMatrix(instanceData->Model);
+            instance->GetUnchecked()->LocalTransform.GetNormalMatrix(instanceData->Model, instanceData->Normal);
             instanceData->Color = instance->GetUnchecked()->GetComponent<Instance>()->GetColor();
         }
     }
@@ -154,6 +154,16 @@ namespace MxEngine
     MxObject::Handle GetInstanceParent(MxObject::Handle object)
     {
         return object.IsValid() ? GetInstanceParent(*object) : MxObject::Handle{ };
+    }
+
+    Transform GetGlobalTransform(const MxObject& object)
+    {
+        return IsInstance(object) ? LocalToWorld(GetGlobalTransform(GetInstanceParent(object)), object.LocalTransform) : object.LocalTransform;
+    }
+
+    Transform GetGlobalTransform(MxObject::Handle object)
+    {
+        return object.IsValid() ? GetGlobalTransform(*object) : Transform{ };
     }
 
     MXENGINE_REFLECT_TYPE

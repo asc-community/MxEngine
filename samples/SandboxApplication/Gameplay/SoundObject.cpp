@@ -4,7 +4,7 @@ using namespace MxEngine;
 void InitSound(MxObject& object)
 {
     object.Name = "Sound Source";
-    object.Transform.Translate(MakeVector3(-10.0f, 2.0f, -10.0f));
+    object.LocalTransform.Translate(MakeVector3(-10.0f, 2.0f, -10.0f));
     auto audio = object.AddComponent<AudioSource>();
     auto debug = object.AddComponent<DebugDraw>();
     debug->RenderSoundBounds = true;

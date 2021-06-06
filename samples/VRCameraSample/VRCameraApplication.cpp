@@ -55,7 +55,7 @@ namespace VRCameraSample
             // create bunch of random cubes to test how VR works with different parameters
             auto cubeObject = MxObject::Create();
             cubeObject->Name = "CubeFactory";
-            cubeObject->Transform.Translate(MakeVector3(5.0f, 0.0f, 5.0f));
+            cubeObject->LocalTransform.Translate(MakeVector3(5.0f, 0.0f, 5.0f));
             cubeObject->AddComponent<MeshSource>(Primitives::CreateCube());
             auto sphereMaterials = cubeObject->AddComponent<MeshRenderer>();
             auto instanceFactory = cubeObject->AddComponent<InstanceFactory>();
@@ -69,7 +69,7 @@ namespace VRCameraSample
                 float ry = Random::GetFloat();
                 float rz = Random::GetFloat();
 
-                instance->Transform.Translate(20.0f * MakeVector3(rx, ry, rz) - 10.0f);
+                instance->LocalTransform.Translate(20.0f * MakeVector3(rx, ry, rz) - 10.0f);
                 instance->GetComponent<Instance>()->SetColor(MakeVector3(rx, ry, rz));
             }
 

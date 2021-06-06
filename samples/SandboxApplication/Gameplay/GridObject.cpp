@@ -4,7 +4,7 @@ using namespace MxEngine;
 void InitGrid(MxObject& object)
 {
 	const float scale = 500.0f;
-	object.Transform.Scale(scale);
+	object.LocalTransform.Scale(scale);
 
 	object.Name = "Grid";
 	object.AddComponent<MeshSource>(Primitives::CreatePlane());

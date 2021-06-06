@@ -15,7 +15,7 @@ namespace MxEngine
         {
             this->SetOrientation(camera->GetDirection(), camera->GetUpVector());
         }
-        this->SetPosition(object.Transform.GetPosition());
+        this->SetPosition(object.LocalTransform.GetPosition());
     }
 
     void AudioListener::SetPosition(const Vector3& position)
@@ -39,7 +39,7 @@ namespace MxEngine
 
     const Vector3& AudioListener::GetPosition() const
     {
-        return MxObject::GetByComponent(*this).Transform.GetPosition();
+        return MxObject::GetByComponent(*this).LocalTransform.GetPosition();
     }
 
     float AudioListener::GetVolume() const

@@ -23,8 +23,8 @@ namespace PBR
                     material->RoughnessFactor = float(x) / float(sphereCount);
                     material->MetallicFactor = float(y) / float(sphereCount);
 
-                    sphere->Transform.Translate(startPosition);
-                    sphere->Transform.Translate(1.5f * MakeVector3((float)x, -1.0f, (float)y));
+                    sphere->LocalTransform.Translate(startPosition);
+                    sphere->LocalTransform.Translate(1.5f * MakeVector3((float)x, -1.0f, (float)y));
                 }
             }
         }

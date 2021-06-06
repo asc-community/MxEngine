@@ -38,7 +38,7 @@ namespace MxEngine
 
     class CompoundShape : public ShapeBase
     {
-        void AddShapeImpl(btCollisionShape* ptr, size_t userIndex, const TransformComponent& relativeTransform);     
+        void AddShapeImpl(btCollisionShape* ptr, size_t userIndex, const Transform& relativeTransform);     
     public:
         using NativeHandle = btCompoundShape*;
 
@@ -51,12 +51,12 @@ namespace MxEngine
 
         size_t GetShapeCount() const;
         void RemoveShapeByIndex(size_t index);
-        TransformComponent GetShapeTransformByIndex(size_t index) const;
-        void SetShapeTransformByIndex(size_t index, const TransformComponent& relativeTransform);
+        Transform GetShapeTransformByIndex(size_t index) const;
+        void SetShapeTransformByIndex(size_t index, const Transform& relativeTransform);
         void ClearShapes();
 
         template<typename Shape, typename Factory>
-        void AddShape(Resource<Shape, Factory> shape, const TransformComponent& relativeTransform)
+        void AddShape(Resource<Shape, Factory> shape, const Transform& relativeTransform)
         {
             this->AddShapeImpl(shape->GetNativeHandle(), shape.GetHandle(), relativeTransform);
         }

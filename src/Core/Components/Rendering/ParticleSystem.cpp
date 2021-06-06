@@ -124,7 +124,7 @@ namespace MxEngine
 
     void ParticleSystem::FillParticleData(MxVector<ParticleGPU>& particles) const
     {
-        auto& systemTransform = MxObject::GetByComponent(*this).Transform;
+        auto& systemTransform = MxObject::GetByComponent(*this).LocalTransform;
         Matrix4x4 particleTransform = this->IsRelative() ? Matrix4x4(1.0f) : systemTransform.GetMatrix();
 
         for (auto& particle : particles)

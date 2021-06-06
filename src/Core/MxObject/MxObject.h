@@ -51,7 +51,7 @@ namespace MxEngine
         bool IsSerialized = true;
         bool IsDisplayedInEditor = true;
         MxString Name = UUIDGenerator::Get();
-        TransformComponent Transform;
+        Transform LocalTransform;
     private:
         // placed here to be destroyed before other members
         ComponentManager components;

@@ -27,14 +27,14 @@ struct CubeBehaviour
 
 			if (position.y > maxHeight) offset++;
 
-			instance->Transform.SetPosition(position);
+			instance->LocalTransform.SetPosition(position);
 		}
 	}
 };
 
 void InitCube(MxObject& cube)
 {
-	cube.Transform.Translate(MakeVector3(0.5f, 0.0f, 0.5f));
+	cube.LocalTransform.Translate(MakeVector3(0.5f, 0.0f, 0.5f));
 	cube.Name = "Crate";
 
 	auto meshSource = cube.AddComponent<MeshSource>(Primitives::CreateCube());

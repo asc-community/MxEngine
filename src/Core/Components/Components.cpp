@@ -39,7 +39,7 @@ namespace MxEngine
     }
 
     #define TEMPLATE_INSTANCIATE_RESOURCE(T) template class Resource<T, Factory<T>>; template class Factory<T>
-    #define TEMPLATE_INSTANCIATE_COMPONENT(T) template class Resource<T, ComponentFactory>; template class ManagedResource<T>
+    #define TEMPLATE_INSTANCIATE_COMPONENT(T) template class Resource<T, ComponentFactory>; template struct ManagedResource<T>
 
     TEMPLATE_INSTANCIATE_RESOURCE(CubeMap            );
     TEMPLATE_INSTANCIATE_RESOURCE(FrameBuffer        );

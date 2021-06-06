@@ -61,13 +61,13 @@ namespace MxEngine
 
     AABB SphereCollider::GetAABB() const
     {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
+        auto& transform = MxObject::GetByComponent(*this).LocalTransform;
         return this->sphereShape->GetAABBTransformed(transform);
     }
 
     BoundingSphere SphereCollider::GetBoundingSphere() const
     {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
+        auto& transform = MxObject::GetByComponent(*this).LocalTransform;
         return this->sphereShape->GetBoundingSphereTransformed(transform);
     }
 

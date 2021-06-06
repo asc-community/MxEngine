@@ -31,7 +31,7 @@
 
 namespace MxEngine
 {
-    void CompoundShape::AddShapeImpl(btCollisionShape* ptr, size_t userIndex, const TransformComponent& relativeTransform)
+    void CompoundShape::AddShapeImpl(btCollisionShape* ptr, size_t userIndex, const Transform& relativeTransform)
     {
         btTransform tr;
         ToBulletTransform(tr, relativeTransform);
@@ -72,11 +72,11 @@ namespace MxEngine
         ((btCompoundShape*)this->collider)->removeChildShapeByIndex((int)index);
     }
 
-    TransformComponent CompoundShape::GetShapeTransformByIndex(size_t index) const
+    Transform CompoundShape::GetShapeTransformByIndex(size_t index) const
     {
         MX_ASSERT(index < this->GetShapeCount());
 
-        TransformComponent result;
+        Transform result;
         auto& tr = ((btCompoundShape*)this->collider)->getChildTransform((int)index);
 
         auto parentScale = FromBulletVector3(this->collider->getLocalScaling());
@@ -86,7 +86,7 @@ namespace MxEngine
         return result;
     }
 
-    void CompoundShape::SetShapeTransformByIndex(size_t index, const TransformComponent& relativeTransform)
+    void CompoundShape::SetShapeTransformByIndex(size_t index, const Transform& relativeTransform)
     {
         MX_ASSERT(index < this->GetShapeCount());
 

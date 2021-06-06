@@ -240,7 +240,7 @@ namespace MxEngine
 
     SubMesh& Mesh::AddSubMesh(SubMesh::MaterialId materialId, MeshData data)
     {
-        auto& transform = *this->subMeshTransforms.emplace_back(MakeUnique<TransformComponent>());
+        auto& transform = *this->subMeshTransforms.emplace_back(MakeUnique<Transform>());
         return this->submeshes.emplace_back(materialId, transform, std::move(data));
     }
 

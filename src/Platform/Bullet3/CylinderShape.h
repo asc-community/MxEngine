@@ -48,9 +48,9 @@ namespace MxEngine
         CylinderShape& operator=(CylinderShape&&) noexcept;
         ~CylinderShape();
 
-        Cylinder GetBoundingCylinderTransformed(const TransformComponent& transform) const;
+        Cylinder GetBoundingCylinderTransformed(const Transform& transform) const;
         Cylinder GetBoundingCylinder() const;
-        Cylinder GetNativeBoundingTransformed(const TransformComponent& transform) const;
+        Cylinder GetNativeBoundingTransformed(const Transform& transform) const;
         Cylinder GetNativeBounding() const;
         Cylinder::Axis GetOrientation() const;
     };

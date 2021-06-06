@@ -388,13 +388,13 @@ namespace MxEngine
         AddShaderUpdateListener(shader, GetShaderLookupDirectory(shader));
     }
 
-    void RuntimeEditor::DrawTransformManipulator(TransformComponent& transform)
+    void RuntimeEditor::DrawTransformManipulator(Transform& transform)
     {
         static ImGuizmo::OPERATION currentOperation = ImGuizmo::TRANSLATE;
 
         auto viewport = Rendering::GetViewport();
         if (!viewport.IsValid()) return;
-        auto viewportPosition = MxObject::GetByComponent(*viewport).Transform.GetPosition();
+        auto viewportPosition = MxObject::GetByComponent(*viewport).LocalTransform.GetPosition();
 
         auto view = viewport->GetViewMatrix(viewportPosition);
         auto projection = viewport->GetProjectionMatrix();
@@ -458,13 +458,16 @@ namespace MxEngine
 
     void RuntimeEditor::DrawMxObject(const MxString& treeName, MxObject::Handle object)
     {
-        auto oldTransform = object->Transform;
+        auto oldTransform = object->LocalTransform;
 
         GUI::DrawMxObjectEditor(treeName.c_str(), *object, this->componentAdderComponentNames, this->componentAdderCallbacks, this->componentEditorCallbacks);
 
         if (!IsInstanced(object))
         {
-            this->DrawTransformManipulator(object->Transform);
+            auto transform = GetGlobalTransform(object);
+            auto parentTransform = GetGlobalTransform(GetInstanceParent(object));
+            this->DrawTransformManipulator(transform);
+            object->LocalTransform = WorldToLocal(parentTransform, transform);
         }
         // instanciate by middle button click TODO: add docs
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Middle))
@@ -473,7 +476,7 @@ namespace MxEngine
             {
                 auto parent = GetInstanceParent(object);
                 this->currentlySelectedObject = Instanciate(parent);
-                this->currentlySelectedObject->Transform = object->Transform;
+                this->currentlySelectedObject->LocalTransform = object->LocalTransform;
                 CloneCopyInternal(object, this->currentlySelectedObject);
             }
             else
@@ -485,7 +488,7 @@ namespace MxEngine
         if (this->currentlySelectedObject.IsValid() && this->currentlySelectedObject->HasComponent<RigidBody>())
         {
             auto rigidBody = this->currentlySelectedObject->GetComponent<RigidBody>();
-            auto newTransform = this->currentlySelectedObject->Transform;
+            auto newTransform = this->currentlySelectedObject->LocalTransform;
 
             auto positionDelta = newTransform.GetPosition() - oldTransform.GetPosition();
             if (positionDelta != Vector3(0.0f))
@@ -578,7 +581,7 @@ namespace MxEngine
             auto viewport = Rendering::GetViewport();
             if (viewport.IsValid() && viewport->GetCameraType() == CameraType::PERSPECTIVE)
             {
-                auto position = MxObject::GetByComponent(*viewport).Transform.GetPosition();
+                auto position = MxObject::GetByComponent(*viewport).LocalTransform.GetPosition();
                 auto direction = viewport->GetDirection();
                 position += direction; // offset to do not peek viewport itself
 

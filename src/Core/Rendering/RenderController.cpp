@@ -1236,7 +1236,7 @@ namespace MxEngine
         this->Pipeline.Cameras.clear();
     }
 
-    void RenderController::SubmitParticleSystem(const ParticleSystem& system, const Material& material, const TransformComponent& parentTransform)
+    void RenderController::SubmitParticleSystem(const ParticleSystem& system, const Material& material, const Transform& parentTransform)
     {
         if (material.Transparency == 0.0f) return;
         bool isTransparent = material.Transparency < 1.0f;
@@ -1255,7 +1255,7 @@ namespace MxEngine
         if (!materialCopy.AlbedoMap.IsValid()) materialCopy.AlbedoMap = this->Pipeline.Environment.DefaultMaterialMap;
     }
 
-    void RenderController::SubmitLightSource(const DirectionalLight& light, const TransformComponent& parentTransform)
+    void RenderController::SubmitLightSource(const DirectionalLight& light, const Transform& parentTransform)
     {
         auto& dirLight = this->Pipeline.Lighting.DirectionalLights.emplace_back();
         MX_ASSERT(dirLight.ProjectionMatrices.size() == DirectionalLight::TextureCount);
@@ -1288,7 +1288,7 @@ namespace MxEngine
         }
     }
 
-    void RenderController::SubmitLightSource(const PointLight& light, const TransformComponent& parentTransform)
+    void RenderController::SubmitLightSource(const PointLight& light, const Transform& parentTransform)
     {
         PointLightBaseData* baseLightData = nullptr;
         if (light.IsCastingShadows())
@@ -1313,7 +1313,7 @@ namespace MxEngine
         baseLightData->Transform = light.GetSphereTransform(parentTransform.GetPosition());
     }
 
-    void RenderController::SubmitLightSource(const SpotLight& light, const TransformComponent& parentTransform)
+    void RenderController::SubmitLightSource(const SpotLight& light, const Transform& parentTransform)
     {
         SpotLightBaseData* baseLightData = nullptr;
         if (light.IsCastingShadows())
@@ -1341,7 +1341,7 @@ namespace MxEngine
         baseLightData->Direction = light.GetMaxDistance() * Normalize(light.Direction);
     }
 
-    void RenderController::SubmitCamera(const CameraController& controller, const TransformComponent& parentTransform, 
+    void RenderController::SubmitCamera(const CameraController& controller, const Transform& parentTransform, 
         const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping, const CameraSSR* ssr, const CameraSSGI* ssgi, const CameraSSAO* ssao)
     {
         auto& camera = this->Pipeline.Cameras.emplace_back();
@@ -1398,7 +1398,7 @@ namespace MxEngine
         return renderGroupIndex;
     }
 
-    void RenderController::SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& submesh, const Material& material, const TransformComponent& parentTransform, bool castsShadow, const char* debugName)
+    void RenderController::SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& submesh, const Material& material, const Transform& parentTransform, bool castsShadow, const char* debugName)
     {
         bool isInvisible = material.Transparency == 0.0f;
         bool isTransparent = material.AlphaMode == AlphaModeGroup::TRANSPARENT;

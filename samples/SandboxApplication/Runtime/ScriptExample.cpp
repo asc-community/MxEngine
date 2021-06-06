@@ -14,20 +14,20 @@ public:
     virtual void OnReload(MxObject& self) override
     {
         totalTime = 0.0f;
-        auto position = self.Transform.GetPosition();
-        self.Transform.SetPosition({ position.x, 0.5f, position.z });
+        auto position = self.LocalTransform.GetPosition();
+        self.LocalTransform.SetPosition({ position.x, 0.5f, position.z });
     }
 
     virtual void OnUpdate(MxObject& self) override
     {
-        Vector3 pos = self.Transform.GetPosition();
-        Vector3 scale = self.Transform.GetScale();
+        Vector3 pos = self.LocalTransform.GetPosition();
+        Vector3 scale = self.LocalTransform.GetScale();
         float dt = Time::Delta();
         totalTime += dt;
         float offset = 0.003f * std::sin(totalTime);
 
-        self.Transform.SetPosition({ pos.x + 3.0f * dt, pos.y + 3.0f * offset, pos.z });
-        self.Transform.SetScale({ scale.x, scale.y, scale.z });
+        self.LocalTransform.SetPosition({ pos.x + 3.0f * dt, pos.y + 3.0f * offset, pos.z });
+        self.LocalTransform.SetScale({ scale.x, scale.y, scale.z });
     }
 };
 

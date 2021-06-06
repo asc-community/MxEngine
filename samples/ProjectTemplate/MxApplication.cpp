@@ -32,7 +32,7 @@ namespace ProjectTemplate
             auto cubeObject = MxObject::Create();
             cubeObject->Name = "Cube";
             // move it a bit away from camera
-            cubeObject->Transform.Translate(MakeVector3(-1.0f, -1.0f, 3.0f));
+            cubeObject->LocalTransform.Translate(MakeVector3(-1.0f, -1.0f, 3.0f));
             // add mesh to a cube using Primitives class
             auto meshSource = cubeObject->AddComponent<MeshSource>(Primitives::CreateCube());
             // add default (white) material using MeshRenderer component
@@ -44,7 +44,7 @@ namespace ProjectTemplate
             // add DirectionalLight component with custom light direction
             auto dirLight = lightObject->AddComponent<DirectionalLight>();
             dirLight->SetIntensity(0.5f);
-            dirLight->Direction     = MakeVector3(0.5f, 1.0f, 1.0f);
+            dirLight->Direction = MakeVector3(0.5f, 1.0f, 1.0f);
             // make directional light to be centered at current viewport position (is set by RenderManager::SetViewport)
             dirLight->IsFollowingViewport = true;
         }

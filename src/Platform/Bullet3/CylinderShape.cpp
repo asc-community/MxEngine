@@ -73,7 +73,7 @@ namespace MxEngine
         this->DestroyShape();
     }
 
-    Cylinder CylinderShape::GetBoundingCylinderTransformed(const TransformComponent& transform) const
+    Cylinder CylinderShape::GetBoundingCylinderTransformed(const Transform& transform) const
     {
         auto cylinder = this->GetBoundingCylinder();
         auto& scale = transform.GetScale();
@@ -107,7 +107,7 @@ namespace MxEngine
         return cylinder;
     }
 
-    Cylinder CylinderShape::GetNativeBoundingTransformed(const TransformComponent& transform) const
+    Cylinder CylinderShape::GetNativeBoundingTransformed(const Transform& transform) const
     {
         return this->GetBoundingCylinderTransformed(transform);
     }

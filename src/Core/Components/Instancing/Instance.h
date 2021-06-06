@@ -62,4 +62,6 @@ namespace MxEngine
     MxObject::Handle Instanciate(MxObject::Handle object);
     MxObject::Handle GetInstanceParent(const MxObject& object);
     MxObject::Handle GetInstanceParent(MxObject::Handle object);
+    Transform GetGlobalTransform(const MxObject& object);
+    Transform GetGlobalTransform(MxObject::Handle object);
 }

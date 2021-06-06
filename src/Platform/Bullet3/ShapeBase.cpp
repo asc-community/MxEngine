@@ -54,7 +54,7 @@ namespace MxEngine
         return this->collider;
     }
 
-    AABB ShapeBase::GetAABBTransformed(const TransformComponent& transform) const
+    AABB ShapeBase::GetAABBTransformed(const Transform& transform) const
     {
         btVector3 min, max;
         btTransform tr;
@@ -75,7 +75,7 @@ namespace MxEngine
         return AABB{ FromBulletVector3(min) / scale, FromBulletVector3(max) / scale };
     }
 
-    BoundingSphere ShapeBase::GetBoundingSphereTransformed(const TransformComponent& transform) const
+    BoundingSphere ShapeBase::GetBoundingSphereTransformed(const Transform& transform) const
     {
         btVector3 center;
         float r = 0.0f;

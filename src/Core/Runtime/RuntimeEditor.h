@@ -56,7 +56,7 @@ namespace MxEngine
 
         void DrawMxObjectList(bool* isOpen = nullptr);
         void DrawMxObjectEditorWindow(bool* isOpen = nullptr);
-        void DrawTransformManipulator(TransformComponent& transform);
+        void DrawTransformManipulator(Transform& transform);
       public:
         RuntimeEditor();
         RuntimeEditor(const RuntimeEditor&) = delete;

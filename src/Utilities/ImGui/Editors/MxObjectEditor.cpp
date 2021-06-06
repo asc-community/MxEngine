@@ -31,6 +31,7 @@
 #include "Core/BoundingObjects/BoundingBox.h"
 #include "Core/Components/Rendering/MeshSource.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
+#include "Core/Components/Instancing/Instance.h"
 #include "Core/Application/Rendering.h"
 #include "Utilities/FileSystem/FileManager.h"
 #include "Utilities/ImGui/Editors/ComponentEditor.h"
@@ -58,18 +59,20 @@ namespace MxEngine::GUI
     BoundingBox GetMxObjectBoundingBox(const MxObject& object)
     {
         AABB aabb;
-        auto meshSource = object.GetComponent<MeshSource>();
+        auto meshSource = (IsInstance(object) ? *GetInstanceParent(object) : object).GetComponent<MeshSource>();
         if (meshSource.IsValid() && meshSource->Mesh.IsValid())
             aabb = meshSource->Mesh->MeshAABB;
         else
             aabb = { MakeVector3(-0.5f), MakeVector3(0.5f) };
 
+        auto transform = GetGlobalTransform(object);
+
         // add a bit of offset to scale to make boundings visible for cubic objects
         BoundingBox box = BoundingBox(aabb.GetCenter(), aabb.Length() * 0.6f);
-        box.Rotation = object.Transform.GetRotationQuaternion();
-        box.Center = object.Transform.GetPosition();
-        box.Max *= object.Transform.GetScale();
-        box.Min *= object.Transform.GetScale();
+        box.Rotation = transform.GetRotationQuaternion();
+        box.Center = transform.GetPosition();
+        box.Max *= transform.GetScale();
+        box.Min *= transform.GetScale();
 
         box.Min = VectorMin(box.Min, Vector3(-0.5f));
         box.Max = VectorMax(box.Max, Vector3(0.5f));
@@ -107,7 +110,7 @@ namespace MxEngine::GUI
         }
 
 
-        ResourceEditor("Transform", object.Transform);
+        ResourceEditor("Transform", object.LocalTransform);
 
         for (size_t i = 0; i < componentEditorCallbacks.size(); i++)
         {

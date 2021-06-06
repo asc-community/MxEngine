@@ -32,7 +32,7 @@
 
 namespace MxEngine
 {
-    class TransformComponent
+    class Transform
     {
         Vector3 position = MakeVector3(0.0f);
         Vector3 rotation = MakeVector3(0.0f);
@@ -41,9 +41,9 @@ namespace MxEngine
         mutable Matrix3x3 normalMatrix{ 0.0f };
         mutable bool needTransformUpdate = true;
     public:
-        bool operator==(const TransformComponent& other) const;
-        bool operator!=(const TransformComponent& other) const;
-        TransformComponent operator*(const TransformComponent& other) const;
+        bool operator==(const Transform& other) const;
+        bool operator!=(const Transform& other) const;
+        Transform operator*(const Transform& other) const;
 
         const Matrix4x4& GetMatrix() const;
         const Matrix3x3& GetNormalMatrix() const;
@@ -56,32 +56,35 @@ namespace MxEngine
 
         Quaternion GetRotationQuaternion() const;
 
-        TransformComponent& SetRotation(const Quaternion& q);
-        TransformComponent& SetRotation(const Vector3& angles);
-        TransformComponent& SetScale(const Vector3& scale);
-        TransformComponent& SetScale(float scale);
-        TransformComponent& SetPosition(const Vector3& position);
+        Transform& SetRotation(const Quaternion& q);
+        Transform& SetRotation(const Vector3& angles);
+        Transform& SetScale(const Vector3& scale);
+        Transform& SetScale(float scale);
+        Transform& SetPosition(const Vector3& position);
 
-        TransformComponent& Scale(float scale);
-        TransformComponent& Scale(const Vector3& scale);
-        TransformComponent& ScaleX(float scale);
-        TransformComponent& ScaleY(float scale);
-        TransformComponent& ScaleZ(float scale);
+        Transform& Scale(float scale);
+        Transform& Scale(const Vector3& scale);
+        Transform& ScaleX(float scale);
+        Transform& ScaleY(float scale);
+        Transform& ScaleZ(float scale);
 
-        TransformComponent& Rotate(const Quaternion& q);
-        TransformComponent& Rotate(const Vector3& angles);
-        TransformComponent& RotateX(float angle);
-        TransformComponent& RotateY(float angle);
-        TransformComponent& RotateZ(float angle);
+        Transform& Rotate(const Quaternion& q);
+        Transform& Rotate(const Vector3& angles);
+        Transform& RotateX(float angle);
+        Transform& RotateY(float angle);
+        Transform& RotateZ(float angle);
 
-        TransformComponent& Translate(const Vector3& dist);
-        TransformComponent& TranslateX(float x);
-        TransformComponent& TranslateY(float y);
-        TransformComponent& TranslateZ(float z);
+        Transform& Translate(const Vector3& dist);
+        Transform& TranslateX(float x);
+        Transform& TranslateY(float y);
+        Transform& TranslateZ(float z);
 
-        TransformComponent& LookAt(const Vector3& point);
-        TransformComponent& LookAtXY(const Vector3& point);
-        TransformComponent& LookAtXZ(const Vector3& point);
-        TransformComponent& LookAtYZ(const Vector3& point);
+        Transform& LookAt(const Vector3& point);
+        Transform& LookAtXY(const Vector3& point);
+        Transform& LookAtXZ(const Vector3& point);
+        Transform& LookAtYZ(const Vector3& point);
     };
+
+    Transform LocalToWorld(const Transform& parent, const Transform& child);
+    Transform WorldToLocal(const Transform& parent, const Transform& world);
 }

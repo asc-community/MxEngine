@@ -88,7 +88,7 @@ namespace MxEngine
             if (viewport.IsValid())
             {
                 auto& object = MxObject::GetByComponent(*this);
-                object.Transform.SetPosition(MxObject::GetByComponent(*viewport).Transform.GetPosition());
+                object.LocalTransform.SetPosition(MxObject::GetByComponent(*viewport).LocalTransform.GetPosition());
                 auto direction = viewport->GetDirection();
                 this->CascadeDirection = Normalize(Vector3(direction.x, 0.0f, direction.z));
             }

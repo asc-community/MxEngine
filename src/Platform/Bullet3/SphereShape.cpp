@@ -67,7 +67,7 @@ namespace MxEngine
         return this->GetBoundingSphere();
     }
 
-    BoundingSphere SphereShape::GetNativeBoundingTransformed(const TransformComponent& transform) const
+    BoundingSphere SphereShape::GetNativeBoundingTransformed(const Transform& transform) const
     {
         return this->GetBoundingSphereTransformed(transform);
     }

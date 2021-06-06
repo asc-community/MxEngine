@@ -43,19 +43,19 @@ namespace MxEngine
     void RigidBody::UpdateTransform()
     {
         auto& self = MxObject::GetByComponent(*this);
-        auto& selfScale = self.Transform.GetScale();
+        auto& selfScale = self.LocalTransform.GetScale();
 
         if (this->IsKinematic())
         {
             // if body is kinematic, MxObject's Transform component controls its position
             btTransform tr;
-            ToBulletTransform(tr, self.Transform);
+            ToBulletTransform(tr, self.LocalTransform);
             this->rigidBody->GetNativeHandle()->getMotionState()->setWorldTransform(tr);
         }
         else if (this->rigidBody->HasTransformUpdate())
         {
             // if body is not kinematic, transform is controlled by physics engine
-            FromBulletTransform(self.Transform, this->rigidBody->GetNativeHandle()->getWorldTransform());
+            FromBulletTransform(self.LocalTransform, this->rigidBody->GetNativeHandle()->getWorldTransform());
             this->rigidBody->SetTransformUpdateFlag(false);
         }
 
@@ -102,7 +102,7 @@ namespace MxEngine
     void RigidBody::Init()
     {
         auto& self = MxObject::GetByComponent(*this);
-        this->rigidBody = Factory<NativeRigidBody>::Create(self.Transform);
+        this->rigidBody = Factory<NativeRigidBody>::Create(self.LocalTransform);
 
         Physics::SetRigidBodyParent(this->rigidBody->GetNativeHandle(), self);
         // initialized with a bit of bounce. Just because I like it

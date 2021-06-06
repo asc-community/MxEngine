@@ -4,7 +4,7 @@ using namespace MxEngine;
 void InitPBRObject(MxObject& object)
 {
     object.Name = "PBR Test Object";
-    object.Transform.TranslateY(0.5f);
+    object.LocalTransform.TranslateY(0.5f);
     object.AddComponent<MeshSource>(Primitives::CreateCube());
 
     auto material = object.AddComponent<MeshRenderer>()->GetMaterial();

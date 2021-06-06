@@ -43,9 +43,9 @@ namespace PhysicsSample
                 auto object = physicalObjectFactory->Instanciate();
                 object->Name = "Cube Instance";
 
-                object->Transform.SetPosition(Vector3(x, y + offset, z));
+                object->LocalTransform.SetPosition(Vector3(x, y + offset, z));
                 object->GetComponent<Instance>()->SetColor(Vector3(x / cubeConstraintsA / size, y / cubeConstraintsB / size, z / cubeConstraintsC / size));
-                object->Transform.SetScale(size);
+                object->LocalTransform.SetScale(size);
 
                 // create rigid body with box collider. setup extra parameters to make objects more balanced
                 object->AddComponent<BoxCollider>();
@@ -69,8 +69,8 @@ namespace PhysicsSample
             wall->AddComponent<MeshSource>(Primitives::CreateCube());
             auto material = wall->AddComponent<MeshRenderer>()->GetMaterial();
             material->Transparency = transparency;
-            wall->Transform.SetScale(Vector3(xyz.x * size + thickness, xyz.y * size + thickness, xyz.z * size + thickness));
-            wall->Transform.SetPosition(Vector3((size * offset).x / 2, (size * offset).y / 2, (size * offset).z / 2) + coord);
+            wall->LocalTransform.SetScale(Vector3(xyz.x * size + thickness, xyz.y * size + thickness, xyz.z * size + thickness));
+            wall->LocalTransform.SetPosition(Vector3((size * offset).x / 2, (size * offset).y / 2, (size * offset).z / 2) + coord);
             wall->AddComponent<BoxCollider>();
             wall->AddComponent<RigidBody>();
         }
@@ -86,8 +86,8 @@ namespace PhysicsSample
             }
 
             auto dir = player->GetComponent<CameraController>()->GetDirection();
-            object->Transform.SetScale(shotSize);
-            object->Transform.SetPosition(player->Transform.GetPosition() + 5.0f * dir);
+            object->LocalTransform.SetScale(shotSize);
+            object->LocalTransform.SetPosition(player->LocalTransform.GetPosition() + 5.0f * dir);
             object->AddComponent<SphereCollider>();
             auto rigidBody = object->AddComponent<RigidBody>();
             rigidBody->MakeDynamic();
@@ -103,7 +103,7 @@ namespace PhysicsSample
             player = MxObject::Create();
             player->Name = "Player";
             player->AddComponent<CameraToneMapping>();
-            player->Transform.SetPosition(Vector3(30, 30, 30));
+            player->LocalTransform.SetPosition(Vector3(30, 30, 30));
 
             auto skybox = player->AddComponent<Skybox>();
             skybox->CubeMap = AssetManager::LoadCubeMap("Resources/dawn.jpg"_id);
@@ -145,8 +145,8 @@ namespace PhysicsSample
         {
             auto object = MxObject::Create();
             object->Name = "Trigger";
-            object->Transform.SetPosition(Vector3(40.0f, 15.0f, -40.0f));
-            object->Transform.SetScale(30.0f);
+            object->LocalTransform.SetPosition(Vector3(40.0f, 15.0f, -40.0f));
+            object->LocalTransform.SetScale(30.0f);
 
             auto mr = object->AddComponent<MeshRenderer>();
             auto ms = object->AddComponent<MeshSource>(Primitives::CreateSphere());
@@ -222,7 +222,7 @@ namespace PhysicsSample
             if (Runtime::IsEditorActive())
             {
                 auto dir = player->GetComponent<CameraController>()->GetDirection();
-                auto pos = player->Transform.GetPosition();
+                auto pos = player->LocalTransform.GetPosition();
                 auto end = pos + dir * 1000.0f;
                 float fraction = 0.0f;
                 auto lookingAt = Physics::RayCast(pos, end, fraction);

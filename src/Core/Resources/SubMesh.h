@@ -38,7 +38,7 @@ namespace MxEngine
         using MaterialId = size_t;
     private:
         MaterialId materialId;
-        std::reference_wrapper<TransformComponent> transform;
+        std::reference_wrapper<Transform> transform;
     public:
         MeshData Data;
         MxString Name = "Main";
@@ -46,11 +46,11 @@ namespace MxEngine
         const AABB& GetAABB() const;
         const BoundingSphere& GetBoundingSphere() const;
 
-        SubMesh(size_t materialId, std::reference_wrapper<TransformComponent> transform, MeshData data);
+        SubMesh(size_t materialId, std::reference_wrapper<Transform> transform, MeshData data);
 
-        const TransformComponent& GetTransform() const;
-        TransformComponent& GetTransformReference();
-        void SetTransform(const TransformComponent& transform);
+        const Transform& GetTransform() const;
+        Transform& GetTransformReference();
+        void SetTransform(const Transform& transform);
         MaterialId GetMaterialId() const;
     };
 }

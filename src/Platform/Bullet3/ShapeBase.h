@@ -53,9 +53,9 @@ namespace MxEngine
         void SetScale(const Vector3& scale);
         Vector3 GetScale() const;
         btCollisionShape* GetNativeHandle();
-        AABB GetAABBTransformed(const TransformComponent& transform) const;
+        AABB GetAABBTransformed(const Transform& transform) const;
         AABB GetAABB() const;
-        BoundingSphere GetBoundingSphereTransformed(const TransformComponent& transform) const;
+        BoundingSphere GetBoundingSphereTransformed(const Transform& transform) const;
         BoundingSphere GetBoundingSphere() const;
     };
 }

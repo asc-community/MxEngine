@@ -10,8 +10,8 @@ class PlazmaGun : public MxEngine::Scriptable
         auto camera = player.GetComponent<CameraController>();
         Vector2 rotateAngles = camera->GetRotation();
 
-        self.Transform.SetRotation(Vector3(-rotateAngles.y, rotateAngles.x, 0.0f));
-        self.Transform.SetPosition(player.Transform.GetPosition() + self.Transform.GetRotationQuaternion() * GunRelativePosition);
+        self.LocalTransform.SetRotation(Vector3(-rotateAngles.y, rotateAngles.x, 0.0f));
+        self.LocalTransform.SetPosition(player.LocalTransform.GetPosition() + self.LocalTransform.GetRotationQuaternion() * GunRelativePosition);
     }
     
     inline static float timeSinceShoot = 0.0f;
@@ -25,8 +25,8 @@ class PlazmaGun : public MxEngine::Scriptable
 
         auto bullet = Instanciate(bulletFactory);
 
-        Vector3 bulletOffset = viewDirection * 0.6f + self.Transform.GetRotationQuaternion() * GunRelativePosition;
-        bullet->Transform.SetPosition(player.Transform.GetPosition() + bulletOffset);
+        Vector3 bulletOffset = viewDirection * 0.6f + self.LocalTransform.GetRotationQuaternion() * GunRelativePosition;
+        bullet->LocalTransform.SetPosition(player.LocalTransform.GetPosition() + bulletOffset);
 
         bullet->AddComponent<Script>("PlazmaGunBullet");
         bullet->GetComponent<RigidBody>()->SetLinearVelocity(BulletSpeed * viewDirection);

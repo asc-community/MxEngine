@@ -336,7 +336,7 @@ namespace MxEngine
         float viewportZoom = 0.0f;
         if (this->Viewport.IsValid())
         {
-            viewportPosition = MxObject::GetByComponent(*this->Viewport).Transform.GetPosition();
+            viewportPosition = MxObject::GetByComponent(*this->Viewport).LocalTransform.GetPosition();
             viewportZoom = this->Viewport->Camera.GetZoom();
         }
 
@@ -359,7 +359,7 @@ namespace MxEngine
             for (const auto& camera : cameraView)
             {
                 auto& object = MxObject::GetByComponent(camera);
-                auto& transform = object.Transform;
+                auto& transform = object.LocalTransform;
 
                 auto skyboxComponent = object.GetComponent<Skybox>();
                 auto effectsComponent = object.GetComponent<CameraEffects>();
@@ -386,7 +386,7 @@ namespace MxEngine
             for (const auto& meshSource : meshSourceView)
             {
                 auto& object = MxObject::GetByComponent(meshSource);
-                auto& transform = object.Transform;
+                auto& transform = object.LocalTransform;
                 auto meshRenderer = object.GetComponent<MeshRenderer>();
                 auto meshLOD = object.GetComponent<MeshLOD>();
                 auto instances = object.GetComponent<InstanceFactory>();
@@ -433,7 +433,7 @@ namespace MxEngine
                 if (!meshRenderer.IsValid() || meshRenderer->Materials.empty())
                     continue;
 
-                auto& transform = MxObject::GetByComponent(particleSystem).Transform;
+                auto& transform = MxObject::GetByComponent(particleSystem).LocalTransform;
                 this->Renderer.SubmitParticleSystem(particleSystem, *meshRenderer->GetMaterial(), transform);
             }
         }
@@ -443,21 +443,21 @@ namespace MxEngine
             auto dirLightView = ComponentFactory::GetView<DirectionalLight>();
             for (const auto& dirLight : dirLightView)
             {
-                auto& transform = MxObject::GetByComponent(dirLight).Transform;
+                auto& transform = MxObject::GetByComponent(dirLight).LocalTransform;
                 this->Renderer.SubmitLightSource(dirLight, transform);
             }
 
             auto spotLightView = ComponentFactory::GetView<SpotLight>();
             for (const auto& spotLight : spotLightView)
             {
-                auto& transform = MxObject::GetByComponent(spotLight).Transform;
+                auto& transform = MxObject::GetByComponent(spotLight).LocalTransform;
                 this->Renderer.SubmitLightSource(spotLight, transform);
             }
 
             auto pointLightView = ComponentFactory::GetView<PointLight>();
             for (const auto& pointLight : pointLightView)
             {
-                auto& transform = MxObject::GetByComponent(pointLight).Transform;
+                auto& transform = MxObject::GetByComponent(pointLight).LocalTransform;
                 this->Renderer.SubmitLightSource(pointLight, transform);
             }
         }

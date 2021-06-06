@@ -57,7 +57,7 @@ namespace MxEngine
         MxString filepath;
         MoveOnlyAllocation vertexAllocation;
         MoveOnlyAllocation indexAllocation;
-        MxVector<UniqueRef<TransformComponent>> subMeshTransforms;
+        MxVector<UniqueRef<Transform>> subMeshTransforms;
 
         template<typename FilePath>
         void LoadFromFile(const FilePath& filepath);

@@ -73,19 +73,19 @@ namespace MxEngine
 
     AABB CapsuleCollider::GetAABB() const
     {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
+        auto& transform = MxObject::GetByComponent(*this).LocalTransform;
         return this->capsuleShape->GetAABBTransformed(transform);
     }
 
     BoundingSphere CapsuleCollider::GetBoundingSphere() const
     {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
+        auto& transform = MxObject::GetByComponent(*this).LocalTransform;
         return this->capsuleShape->GetBoundingSphereTransformed(transform);
     }
 
     Capsule CapsuleCollider::GetBoundingCapsule() const
     {
-        auto& transform = MxObject::GetByComponent(*this).Transform;
+        auto& transform = MxObject::GetByComponent(*this).LocalTransform;
         return this->capsuleShape->GetBoundingCapsuleTransformed(transform);
     }
 

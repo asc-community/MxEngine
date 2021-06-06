@@ -24,7 +24,7 @@ void InitPointLight(MxObject& object)
     material->Emission = 10.0f;
 
     object.AddComponent<MeshSource>(Primitives::CreateCube());
-    object.Transform
+    object.LocalTransform
         .SetPosition(MakeVector3(-3.0f, 2.0f, -3.0f))
         .SetScale(MakeVector3(0.3f));
 }
@@ -45,7 +45,7 @@ void InitSpotLight(MxObject& object)
     material->Emission = 10.0f;
     
     object.AddComponent<MeshSource>(Primitives::CreateCube());
-    object.Transform
+    object.LocalTransform
         .SetPosition(MakeVector3(-15.0f, 3.0f,  0.0f))
         .SetScale(MakeVector3(0.3f));
 }

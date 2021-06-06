@@ -104,8 +104,8 @@ namespace MxEngine::GUI
         std::sort(result.begin(), result.end(), 
             [position](const MxObject::Handle& obj1, const MxObject::Handle& obj2)
             {
-                Vector3 d1 = obj1->Transform.GetPosition() - position;
-                Vector3 d2 = obj2->Transform.GetPosition() - position;
+                Vector3 d1 = obj1->LocalTransform.GetPosition() - position;
+                Vector3 d2 = obj2->LocalTransform.GetPosition() - position;
                 return Dot(d1, d1) < Dot(d2, d2);
             });
         return result;

@@ -39,8 +39,8 @@ namespace OfflineRendererSample
 
             // create yellow cube as main rendering target
             auto cubeObject = MxObject::Create();
-            cubeObject->Transform.Translate(MakeVector3(0.0f, -1.0f, 3.0f));
-            cubeObject->Transform.RotateY(45.0f);
+            cubeObject->LocalTransform.Translate(MakeVector3(0.0f, -1.0f, 3.0f));
+            cubeObject->LocalTransform.RotateY(45.0f);
 
             auto meshSource = cubeObject->AddComponent<MeshSource>(Primitives::CreateCube());
             auto meshRenderer = cubeObject->AddComponent<MeshRenderer>();

@@ -18,7 +18,7 @@ namespace PathTracing
         {
             auto camera = MxObject::Create();
             camera->Name = "Camera";
-            camera->Transform.SetPosition(Vector3(0.0f, 0.0f, 20.0f));
+            camera->LocalTransform.SetPosition(Vector3(0.0f, 0.0f, 20.0f));
             auto controller = camera->AddComponent<CameraController>();
             auto input = camera->AddComponent<InputController>();
 
@@ -57,7 +57,7 @@ namespace PathTracing
             auto output = viewport->GetRenderTexture();
 
             auto viewportSize = Rendering::GetViewportSize();
-            auto cameraPosition = MxObject::GetByComponent(*viewport).Transform.GetPosition();
+            auto cameraPosition = MxObject::GetByComponent(*viewport).LocalTransform.GetPosition();
             auto cameraRotation = Vector2{ viewport->GetHorizontalAngle(), viewport->GetVerticalAngle() };
             auto cameraDirection = viewport->GetDirection();
             auto cameraUpVector = viewport->GetDirectionUp();
