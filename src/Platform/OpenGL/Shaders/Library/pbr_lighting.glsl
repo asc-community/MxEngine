@@ -85,26 +85,39 @@ vec2 sampleHammersley(uint i, float invSampleCount)
     return vec2(i * invSampleCount, radicalInverseVDC(i));
 }
 
-vec3 GGXCookTorranceSampled(vec3 normal, vec3 lightDirection, vec3 viewDirection, float roughness, float metallic, vec3 albedo, out vec3 FK, out float pdf)
+void GGXCookTorranceSampled(vec3 normal, vec3 lightDirection, vec3 viewDirection, float roughness, float metallic, vec3 albedo, 
+    out vec3 specular, out vec3 diffuse)
 {
     vec3 H = normalize(viewDirection + lightDirection);
+    float LV = dot(lightDirection, viewDirection);
     float NV = dot(normal, viewDirection);
     float NL = dot(normal, lightDirection);
     float NH = dot(normal, H);
     float HV = dot(H, viewDirection);
 
-    if (NV < 0.0) return vec3(0.0);
-    if (NL < 0.0) return vec3(0.0);
+    if (NV < 0.0 || NL < 0.0)
+    {
+        specular = vec3(0.0);
+        diffuse = vec3(0.0);
+        return;
+    }
 
     vec3 F0 = mix(vec3(0.04), albedo, metallic);
 
     float G = GGXSmith(NV, NL, roughness);
     float D = GGXDistribution(NH, roughness);
     vec3 F = fresnelSchlick(F0, HV);
+    
+    specular = D * F * G / (4.0 * NL * NV);
+    specular = clamp(specular, vec3(0.0), vec3(1.0));
 
-    FK = F;
-    pdf = D * NH / (4.0 * HV);
+    float s = max(LV, 0.0) - NL * NV;
+    float t = mix(1.0, max(NL, NV), step(0.0, s));
+    float d = 1.0 - metallic;
 
-    vec3 specular = D * F * G / (4.0 * NL * NV);
-    return clamp(specular, vec3(0.0), vec3(1.0));
+    float sigma2 = roughness * roughness;
+    float A = 1.0 + sigma2 * (d / (sigma2 + 0.13) + 0.5 / (sigma2 + 0.33));
+    float B = 0.45 * sigma2 / (sigma2 + 0.09);
+
+    diffuse = albedo * NL * (1.0 - F) * (A + B * s / t) / PI;
 }

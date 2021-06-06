@@ -6,14 +6,12 @@ vec3 calculateLighting(FragmentInfo fragment, vec3 viewDirection, vec3 lightDire
     float roughness = clamp(fragment.roughnessFactor, 0.05, 0.95);
     float metallic = clamp(fragment.metallicFactor, 0.05, 0.95);
 
-    vec3 FK;
-    float pdf;
-    vec3 specularColor = GGXCookTorranceSampled(fragment.normal, normalize(lightDirection), viewDirection, roughness, metallic, fragment.albedo, FK, pdf);
+    vec3 specularColor = vec3(0.0);
+    vec3 diffuseColor = vec3(0.0);
+    GGXCookTorranceSampled(fragment.normal, normalize(lightDirection), viewDirection, roughness, metallic, fragment.albedo, 
+        specularColor, diffuseColor);
 
-    float diffuseCoef = 1.0f - metallic;
-    vec3 diffuseFactor = diffuseCoef - diffuseCoef * FK;
-    vec3 diffuseColor = fragment.albedo * diffuseFactor;
-    vec3 ambientColor = fragment.albedo * ambientFactor;
+    vec3 ambientColor = diffuseColor * ambientFactor;
 
     float NL = clamp(dot(fragment.normal, lightDirection), 0.0, 1.0);
 
