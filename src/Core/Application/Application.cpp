@@ -167,6 +167,14 @@ namespace MxEngine
         this->GetRenderAdaptor().SubmitRenderedFrame();
     }
 
+    void Application::UpdateComponents()
+    {
+        for (const auto& callback : this->updateCallbacks)
+        {
+            callback(this->timeDelta);
+        }
+    }
+
     void Application::InvokeUpdate()
     {
         // update window and keyboard state
@@ -197,10 +205,7 @@ namespace MxEngine
             // invoke all components waiting for updates
             {
                 MAKE_SCOPE_PROFILER("Application::UpdateComponents");
-                for (const auto& callback : this->updateCallbacks)
-                {
-                    callback(this->timeDelta);
-                }
+                this->UpdateComponents();
             }
 
             // invoke update event

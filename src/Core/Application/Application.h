@@ -76,6 +76,7 @@ namespace MxEngine
         void InitializeShaderDebug();
         void UpdateTimeDelta(TimeStep& lastFrameEnd, TimeStep& lastSecondEnd, size_t& framesPerSecond);
         void DrawObjects();
+        void UpdateComponents();
         void InvokeUpdate();
         void InvokePhysics();
         void InvokeCreate();
