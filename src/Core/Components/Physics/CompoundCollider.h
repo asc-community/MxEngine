@@ -46,7 +46,7 @@ namespace MxEngine
 
         struct CompoundColliderChild
         {
-            Transform Transform;
+            Transform LocalTransform;
             VariantType Shape;
         };
 

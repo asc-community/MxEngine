@@ -431,7 +431,7 @@ namespace MxEngine::GUI
             if (editedValue.is_valid())
             {
                 auto newShape = Factory<ShapeType>::Create(editedValue.template convert<BoundingType>());
-                result = rttr::variant{ CompoundCollider::CompoundColliderChild{ child->Transform, newShape } };
+                result = rttr::variant{ CompoundCollider::CompoundColliderChild{ child->LocalTransform, newShape } };
             }
         }, child->Shape);
         return result;

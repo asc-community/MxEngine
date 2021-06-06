@@ -120,7 +120,7 @@ namespace MxEngine
         {
             std::visit([this, &child](auto&& shape) 
             { 
-                this->AddShape(child.Transform, shape); 
+                this->AddShape(child.LocalTransform, shape); 
             }, child.Shape);
         }
     }
@@ -136,7 +136,7 @@ namespace MxEngine
             (
                 rttr::policy::ctor::as_object
             )
-            .property("transform", &CompoundColliderChild::Transform)
+            .property("transform", &CompoundColliderChild::LocalTransform)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )

@@ -31,13 +31,7 @@
 #include "Factory.h"
 
 namespace MxEngine
-{
-    template<typename T>
-    ManagedResource<T>::~ManagedResource()
-    {
-        uuid = UUIDGenerator::GetNull();
-    }
-    
+{    
     template<typename T, typename F>
     void Resource<T, F>::IncRef()
     {

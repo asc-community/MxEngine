@@ -49,7 +49,7 @@ namespace MxEngine
         ManagedResource& operator=(const ManagedResource&) = delete;
         ManagedResource& operator=(ManagedResource&&) noexcept(std::is_nothrow_move_assignable_v<T>) = default;
 
-        ~ManagedResource();
+        ~ManagedResource() { this->uuid = UUIDGenerator::GetNull(); }
     };
 
     template<typename T, typename F>
