@@ -19,7 +19,7 @@ layout(std430, binding = 0) buffer ParticleData
 
 void main()
 {
-    uint idx = bufferOffset + gl_GlobalInvocationID.x;
+    uint idx = uint(bufferOffset) + gl_GlobalInvocationID.x;
 
     Particle particle = particleData[idx];
 

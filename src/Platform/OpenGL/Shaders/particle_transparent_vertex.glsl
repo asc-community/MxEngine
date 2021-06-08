@@ -21,11 +21,12 @@ uniform mat4 projMatrix;
 uniform float aspectRatio;
 uniform float fading;
 uniform float lifetime;
+uniform int bufferOffset;
 uniform mat4 transform;
 
 void main()
 {
-    Particle particle = particleData[gl_InstanceID];
+    Particle particle = particleData[bufferOffset + gl_InstanceID];
     vec3 particlePosition = particle.position_timeAlive.xyz;
     float particleTimeAlive = particle.position_timeAlive.w;
     float particleSize = particle.velocity_size.w;

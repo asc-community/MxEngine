@@ -100,7 +100,7 @@ namespace MxEngine
             );
         }
     }
-
+    
     void RenderController::ComputeParticles(const MxVector<ParticleSystemUnit>& particleSystems)
     {
         if (particleSystems.empty()) return;
@@ -193,6 +193,7 @@ namespace MxEngine
             shader.SetUniform("transparency", material.Transparency);
             shader.SetUniform("emmision", material.Emission);
             shader.SetUniform("light", totalLight);
+            shader.SetUniform("bufferOffset", (int)particleSystem.ParticleBufferOffset);
             shader.SetUniform("lifetime", particleSystem.ParticleLifetime);
             shader.SetUniform("fading", particleSystem.Fading);
 
