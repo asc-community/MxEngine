@@ -18,7 +18,8 @@ namespace MxEngine
     void InstanceFactory::OnUpdate(float timeDelta)
     {
         this->RemoveDanglingHandles();
-        if (!this->IsStatic) this->SendInstancesToGPU();
+        if (!this->IsStatic) 
+            this->SendInstancesToGPU();
     }
 
     void InstanceFactory::SubmitInstances()

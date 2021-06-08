@@ -29,11 +29,10 @@ For full version list see [versions.md](versions.md) file
 ## Installing and running MxEngine
 #### As a developer (if you want to contribute or check samples)
 Right now MxEngine is distributed in source code with configurable CMake files. Here are the steps you need to do to compile and run MxEngine sample projects:
-1. clone this repo to your system using `git clone https://github.com/asc-community/MxEngine`
-2. initialize submodules with `cd MxEngine && git submodule update --init` (do not just use `--recursive` when cloning, [this will **not** work](https://github.com/electronicarts/EASTL/issues/301))
-3. build project by running `CMakeLists.txt` located in root directory (set up necessary options if needed)
-4. select one of sample executables and run it to check if everything was built successfully
-5. to create your own project, consider taking ProjectTemplate sample as starting point, it has everything already configured for build
+1. clone this repo to your system using `git clone --recurse-submodules https://github.com/asc-community/MxEngine`
+2. build project by running `CMakeLists.txt` located in root directory (set up the environment if needed)
+3. select one of executables from samples folder and run it to check if everything was built successfully
+4. to create your own project, consider taking ProjectTemplate sample as starting point, it has everything already configured for build
 
 #### As a user (if you want to develop your own application)
 To develop your own applications using MxEngine you can use template project with already setup dependencies:

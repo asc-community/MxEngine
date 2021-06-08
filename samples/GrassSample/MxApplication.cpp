@@ -13,7 +13,7 @@ namespace GrassSample
         void InstanciateGrass()
         {
             auto field = MxObject::Create();
-            field->Name = "Grass Field";
+            field->Name = "Plane";
             field->LocalTransform.SetScale(20.0f);
             field->AddComponent<MeshSource>(Primitives::CreatePlane());
             auto fieldMaterial = field->AddComponent<MeshRenderer>()->GetMaterial();
@@ -21,15 +21,15 @@ namespace GrassSample
             fieldMaterial->UVMultipliers = { 20.0f, 20.0f };
 
             this->grass = MxObject::Create();
-            grass->Name = "Grass Instances";
-            grass->LocalTransform.TranslateY(0.3f);
-            grass->LocalTransform.ScaleZ(0.75f);
+            grass->Name = "Grass Factory";
 
             auto source = grass->AddComponent<MeshSource>(Primitives::CreatePlane2Side());
             source->CastsShadow = false;
 
             auto material = grass->AddComponent<MeshRenderer>()->GetMaterial();
             material->AlbedoMap = AssetManager::LoadTexture("Resources/grass_al.png"_id, TextureFormat::RGBA);
+            material->AlphaMode = AlphaModeGroup::MASKED;
+            material->Transparency = 0.5f;
 
             auto grassInstances = grass->AddComponent<InstanceFactory>();
             for (size_t i = 0; i < 10000; i++)
@@ -39,10 +39,12 @@ namespace GrassSample
                 float x = Random::GetFloat() * 20.0f - 10.0f;
                 float z = Random::GetFloat() * 20.0f - 10.0f;
                 float r = Random::GetFloat() * 180.0f - 90.0f;
-                g1->LocalTransform.TranslateX(x).TranslateZ(z);
-                g2->LocalTransform.TranslateX(x).TranslateZ(z);
+                g1->LocalTransform.Translate({ x, 0.3f, z });
+                g2->LocalTransform.Translate({ x, 0.3f, z });
                 g1->LocalTransform.RotateX(-90.0f).RotateY(r);
                 g2->LocalTransform.RotateX(-90.0f).RotateY(r - 90.0f);
+                g1->LocalTransform.ScaleZ(0.75f);
+                g2->LocalTransform.ScaleZ(0.75f);
             }
             grassInstances->SubmitInstances();
             grassInstances->IsStatic = true;
