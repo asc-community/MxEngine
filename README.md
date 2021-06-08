@@ -30,7 +30,7 @@ For full version list see [versions.md](versions.md) file
 #### As a developer (if you want to contribute or check samples)
 Right now MxEngine is distributed in source code with configurable CMake files. Here are the steps you need to do to compile and run MxEngine sample projects:
 1. clone this repo to your system using `git clone https://github.com/asc-community/MxEngine`
-2. initialize submodules with `cd MxEngine && git submodule update --init` (do not just use `--recursive` when cloning, [this will *not* work](https://github.com/electronicarts/EASTL/issues/301).
+2. initialize submodules with `cd MxEngine && git submodule update --init` (do not just use `--recursive` when cloning, [this will **not** work](https://github.com/electronicarts/EASTL/issues/301))
 3. build project by running `CMakeLists.txt` located in root directory (set up necessary options if needed)
 4. select one of sample executables and run it to check if everything was built successfully
 5. to create your own project, consider taking ProjectTemplate sample as starting point, it has everything already configured for build
@@ -242,7 +242,7 @@ auto texture = cameraController->GetRenderTexture();
 ImageManager::SaveTexture("images/camera.png", texture);
 
 ImageManager::TakeScreenShot("images/viewport.png");
-``` 
+```
 ### Drawing debug primitives
 There are cases when you just want to display some 2D primitives to debug your game or check current object state
 ```cs
@@ -266,14 +266,16 @@ If you are interesed in libraries MxEngine depend on, consider reading [dependen
 
 ## Answers to some questions:
 - Is it possible to build MxEngine under Linux/MacOS/other system?
+	
 	> MxEngine supports Windows/Linux builds. Unluckly, other systems are not supported out-of-box for now. If you want to help with porting library to other systems, consider reading [PR guideline](https://github.com/asc-community/MxEngine/issues/5).
 - Whats the roadmap for the engine? Which features can I expect to see, if I follow this repository?
+	
 	> I put all features and not-fixed bugs to the public [trello board](https://trello.com/b/lfPsihUY/mxengine). If you want to see some specific feature in engine, which is not mentioned already, you can request it in [feature request](https://github.com/asc-community/MxEngine/issues/4) issue
 - Why do you do this project? How long are you planning to develop the engine? Will it one day be better than UE/Unity/Godot?
+	
 	> Initially this was an educational project (actually I still learn a lot of new things when developing it), where I learned about OpenGL, graphics, software engeneering and game development. I loved it and still love to spend my free time fixing some stuff or implementing new features. Thats really a great opportunity to have such cool project, even if it will never be any better than existing game engines like Unity or Unreal Engine
 - If I want to help you with development, how can I get into this project? Is there a documentation for it?
 	> Sadly there are too much things that I need to document and so much features which I need to implement, that I have almost no time for proper documentation. You can start with `ProjectTemplate` CMake project, and try some things for yourself. I promise I will add more samples with each release to make usage of the engine easier. If you want to help me with developing, building on other systems or fixing bugs, first contact me personally (links to my social media can be found in [my profile](https://github.com/MomoDeve)). We can discuss what you may do and how can you help the engine to progress
-	
 ## More engine screenshots
 <p align="center">
 <img src="preview_images/readme_additional1.png">
