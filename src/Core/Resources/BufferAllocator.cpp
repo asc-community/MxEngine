@@ -37,9 +37,11 @@ namespace MxEngine
         Allocators::FreeListAllocator AllocatorVBO;
         Allocators::FreeListAllocator AllocatorIBO;
         Allocators::FreeListAllocator AllocatorInstanceVBO;
+        Allocators::FreeListAllocator AllocatorSSBO;
         VertexBufferHandle VBO;
         IndexBufferHandle IBO;
         VertexBufferHandle InstanceVBO;
+        ShaderStorageBufferHandle SSBO;
         VertexArrayHandle VAO;
     };
 
@@ -68,6 +70,7 @@ namespace MxEngine
         impl->VBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
         impl->IBO = Factory<IndexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
         impl->InstanceVBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
+        impl->SSBO = Factory<ShaderStorageBuffer>::Create((uint8_t*)nullptr, 0, UsageType::STATIC_DRAW);
         impl->VAO = Factory<VertexArray>::Create();
 
         impl->AllocatorVBO.Init(0, [](size_t newSize)
@@ -93,6 +96,14 @@ namespace MxEngine
             impl->InstanceVBO->Load(nullptr, newSize, UsageType::STATIC_DRAW);
             impl->InstanceVBO->LoadFrom(*copyInstanceVBO);
             MXLOG_DEBUG("MxEngine::BufferAllocator", "relocated instance vertex buffer storage to new memory with size: " + ToMxString(newSize));
+        });
+        impl->AllocatorSSBO.Init(0, [](size_t newSize)
+        {
+            auto copySSBO = Factory<ShaderStorageBuffer>::Create((uint8_t*)nullptr, impl->SSBO->GetByteSize(), UsageType::STREAM_COPY);
+            copySSBO->LoadFrom(*impl->SSBO);
+            impl->SSBO->Load<uint8_t>(nullptr, newSize, UsageType::STATIC_DRAW);
+            impl->SSBO->LoadFrom(*copySSBO);
+            MXLOG_DEBUG("MxEngine::BufferAllocator", "relocated shader storage buffer storage to new memory with size: " + ToMxString(newSize));
         });
 
         std::array vertexLayout = {
@@ -144,6 +155,11 @@ namespace MxEngine
         return impl->VAO;
     }
 
+    ShaderStorageBufferHandle BufferAllocator::GetSSBO()
+    {
+        return impl->SSBO;
+    }
+
     BufferAllocation BufferAllocator::AllocateInVBO(size_t sizeInFloats)
     {
         size_t offset = impl->AllocatorVBO.Allocate(sizeInFloats);
@@ -162,6 +178,12 @@ namespace MxEngine
         return BufferAllocation{ offset, sizeInInstances };
     }
 
+    BufferAllocation BufferAllocator::AllocateInSSBO(size_t sizeInBytes)
+    {
+        size_t offset = impl->AllocatorSSBO.Allocate(sizeInBytes);
+        return BufferAllocation{ offset, sizeInBytes };
+    }
+
     void BufferAllocator::DeallocateInVBO(BufferAllocation allocation)
     {
         impl->AllocatorVBO.Deallocate(allocation.Offset);
@@ -175,5 +197,10 @@ namespace MxEngine
     void BufferAllocator::DeallocateInInstanceVBO(BufferAllocation allocation)
     {
         impl->AllocatorInstanceVBO.Deallocate(allocation.Offset);
+    }
+
+    void BufferAllocator::DeallocateInSSBO(BufferAllocation allocation)
+    {
+        impl->AllocatorSSBO.Deallocate(allocation.Offset);
     }
 }

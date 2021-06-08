@@ -59,7 +59,9 @@ namespace MxEngine
     private:
         MAKE_COMPONENT(ParticleSystem);
 
-        ShaderStorageBufferHandle particleBuffer;
+        size_t particleAllocationOffset = 0;
+        size_t particleAllocationCount = 0;
+        size_t maxParticleCount = 1024;
         float particleLifetime = 1.0f;
         float particleMinSize = 0.05f;
         float particleMaxSize = 0.05f;
@@ -70,20 +72,19 @@ namespace MxEngine
         float maxSpawnDistance = 0.0f;
         float fading = 0.0f;
         Shape shape = Shape::SPHERE;
-        size_t maxParticleCount = 1024;
         bool isDirty = true;
         bool isRelative = false;
 
         void FillParticleData(MxVector<ParticleGPU>& particles) const;
     public:
-
         ParticleSystem() = default;
-
-        void Init();
+        ~ParticleSystem();
 
         void OnUpdate(float dt);
         void Invalidate();
-        ShaderStorageBufferHandle GetParticleBuffer() const;
+
+        size_t GetParticleAllocationOffset() const;
+        size_t GetParticleAllocationCount() const;
 
         size_t GetMaxParticleCount() const;
         void SetMaxParticleCount(size_t count);

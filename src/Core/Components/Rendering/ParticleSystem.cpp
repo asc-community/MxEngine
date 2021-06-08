@@ -29,12 +29,19 @@
 #include "ParticleSystem.h"
 #include "Core/MxObject/MxObject.h"
 #include "Core/Runtime/Reflection.h"
+#include "Core/Resources/BufferAllocator.h"
 
 namespace MxEngine
 {
-    void ParticleSystem::Init()
+    ParticleSystem::~ParticleSystem()
     {
-        this->particleBuffer = Factory<ShaderStorageBuffer>::Create((ParticleGPU*)nullptr, 0, UsageType::STATIC_COPY);
+        if (this->particleAllocationCount != 0)
+        {
+            BufferAllocator::DeallocateInSSBO(BufferAllocation{ 
+                this->particleAllocationOffset * sizeof(ParticleGPU), 
+                this->particleAllocationCount * sizeof(ParticleGPU)
+            });
+        }
     }
 
     void ParticleSystem::OnUpdate(float)
@@ -43,7 +50,19 @@ namespace MxEngine
         {
             MxVector<ParticleGPU> initialState(this->GetMaxParticleCount());
             this->FillParticleData(initialState);
-            this->particleBuffer->Load(initialState.data(), initialState.size(), this->particleBuffer->GetUsageType());
+            
+            if (this->particleAllocationCount != 0)
+            {
+                BufferAllocator::DeallocateInSSBO(BufferAllocation{ 
+                    this->particleAllocationOffset * sizeof(ParticleGPU), 
+                    this->particleAllocationCount * sizeof(ParticleGPU)
+                });
+            }
+            auto [offset, count] = BufferAllocator::AllocateInSSBO(initialState.size() * sizeof(ParticleGPU));
+            this->particleAllocationCount = count / sizeof(ParticleGPU);
+            this->particleAllocationOffset = offset / sizeof(ParticleGPU);
+            BufferAllocator::GetSSBO()->BufferSubData((uint8_t*)initialState.data(), count, offset);
+
             this->isDirty = false;
         }
     }
@@ -53,9 +72,14 @@ namespace MxEngine
         this->isDirty = true;
     }
 
-    ShaderStorageBufferHandle ParticleSystem::GetParticleBuffer() const
+    size_t ParticleSystem::GetParticleAllocationOffset() const
     {
-        return this->particleBuffer;
+        return this->particleAllocationOffset;
+    }
+
+    size_t ParticleSystem::GetParticleAllocationCount() const
+    {
+        return this->particleAllocationCount;
     }
 
     Vector3 GetRandomVector3(ParticleSystem::Shape shape)

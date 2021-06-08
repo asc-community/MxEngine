@@ -110,9 +110,10 @@ namespace MxEngine
         computeShader->Bind();
         computeShader->SetUniform("dt", Min(Time::Delta(), 1.0f / 60.0f));
 
+        this->Pipeline.Environment.RenderSSBO->BindBase(0);
         for (const auto& particleSystem : particleSystems)
         {
-            particleSystem.ParticleData->BindBase(0);
+            computeShader->SetUniform("bufferOffset", (int)particleSystem.ParticleBufferOffset);
             computeShader->SetUniform("lifetime", particleSystem.ParticleLifetime);
             computeShader->SetUniform("spawnpoint", particleSystem.IsRelative ? Vector3(0.0f) : Vector3(particleSystem.Transform[3]));
 
@@ -170,13 +171,13 @@ namespace MxEngine
         shader.SetUniform("albedoTex", textureId);
 
         Compute::SetMemoryBarrier(BarrierType::SHADER_STORAGE_BUFFER);
+        this->Pipeline.Environment.RenderSSBO->BindBase(0);
 
         for (const auto& particleSystem : particleSystems)
         {
             auto& material = this->Pipeline.MaterialUnits[particleSystem.MaterialIndex];
 
             material.AlbedoMap->Bind(textureId);
-            particleSystem.ParticleData->BindBase(0);
 
             Vector3 systemCenter = particleSystem.Transform[3];
             Vector3 normal = Normalize(camera.ViewportPosition - systemCenter);
@@ -1242,7 +1243,7 @@ namespace MxEngine
         bool isTransparent = material.Transparency < 1.0f;
 
         auto& particleSystem = (isTransparent ? this->Pipeline.TransparentParticleSystems : this->Pipeline.OpaqueParticleSystems).emplace_back();
-        particleSystem.ParticleData = system.GetParticleBuffer();
+        particleSystem.ParticleBufferOffset = system.GetParticleAllocationOffset();
         particleSystem.ParticleLifetime = system.GetParticleLifetime();
         particleSystem.Fading = system.GetFading();
         particleSystem.IsRelative = system.IsRelative();

@@ -1,6 +1,7 @@
 [
   {
     "AlbedoMap": "Models\\PlazmaGun\\textures/blinn1_baseColor.png",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -17,7 +18,7 @@
     "NormalMap": "Models\\PlazmaGun\\textures/blinn1_normal.png",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Models\\PlazmaGun\\roughness_0.png",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0
@@ -25,6 +26,7 @@
   },
   {
     "AlbedoMap": "",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
@@ -41,7 +43,7 @@
     "NormalMap": "",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "",
-    "Transparency": 1.0,
+    "Transparency": 0.5,
     "UVMultipliers": [
       1.0,
       1.0

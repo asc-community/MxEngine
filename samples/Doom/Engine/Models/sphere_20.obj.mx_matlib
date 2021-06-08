@@ -1,6 +1,7 @@
 [
   {
     "AlbedoMap": "",
+    "AlphaMask": false,
     "AmbientOcclusionMap": "",
     "BaseColor": [
       1.0,
