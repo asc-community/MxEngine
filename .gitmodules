@@ -12,10 +12,7 @@
 	url = https://github.com/g-truc/glm
 [submodule "submodules/EASTL"]
 	path = submodules/EASTL
-	url = https://github.com/electronicarts/EASTL
-[submodule "submodules/EABase"]
-	path = submodules/EABase
-	url = https://github.com/electronicarts/EABase
+	url = https://github.com/MomoDeve/EASTL
 [submodule "submodules/miniaudio"]
 	path = submodules/miniaudio
 	url = https://github.com/dr-soft/miniaudio
