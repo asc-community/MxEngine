@@ -71,7 +71,7 @@ namespace GrassSample
                     object->LocalTransform.Scale(0.1f);
 
                     auto pointLight = object->AddComponent<PointLight>();
-                    pointLight->SetRadius(0.25f);
+                    pointLight->SetRadius(0.5f);
 
                     float r = Random::GetFloat();
                     float g = Random::GetFloat();
@@ -116,14 +116,6 @@ namespace GrassSample
             input->BindRotation();
             
             Rendering::SetViewport(controller);
-
-            // create global directional light
-            auto lightObject = MxObject::Create();
-            lightObject->Name = "Global Light";
-            auto dirLight = lightObject->AddComponent<DirectionalLight>();
-            dirLight->Direction = MakeVector3(0.1f, 1.0f, 0.0f);
-            dirLight->SetIntensity(35.0f);
-            dirLight->IsFollowingViewport = true;
 
             this->InstanciateGrass();
             this->AddLighting();
