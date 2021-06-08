@@ -48,7 +48,6 @@ namespace MxEngine
         {
             CLEAR = 1 << 0, 
             LOAD = 1 << 1,
-            GENERATE_MIPMAPS = 1 << 2,
         };
 
         ShadowMapGenerator(const RenderList& shadowCasters, ArrayView<RenderUnit> renderUnits, ArrayView<Material> materials);

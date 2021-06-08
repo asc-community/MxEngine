@@ -238,6 +238,7 @@ namespace MxEngine
 
         GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], width, height, 0, GL_DEPTH_COMPONENT, type, nullptr));
         this->SetBorderColor(MakeVector4(1.0f));
+        this->GenerateMipmaps();
     }
 
     void Texture::SetMaxLOD(size_t lod)

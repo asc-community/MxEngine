@@ -68,7 +68,7 @@ namespace MxEngine
             generatorMasked.GenerateFor(
                 *this->Pipeline.Environment.Shaders["DirLightMaskDepthMap"_id],
                 this->Pipeline.Lighting.DirectionalLights,
-                ShadowMapGenerator::LoadStoreOptions::LOAD | ShadowMapGenerator::LoadStoreOptions::GENERATE_MIPMAPS
+                ShadowMapGenerator::LoadStoreOptions::LOAD
             );
         }
 
@@ -82,7 +82,7 @@ namespace MxEngine
             generatorMasked.GenerateFor(
                 *this->Pipeline.Environment.Shaders["SpotLightMaskDepthMap"_id],
                 this->Pipeline.Lighting.SpotLights,
-                ShadowMapGenerator::LoadStoreOptions::LOAD | ShadowMapGenerator::LoadStoreOptions::GENERATE_MIPMAPS
+                ShadowMapGenerator::LoadStoreOptions::LOAD
             );
         }
 
@@ -96,7 +96,7 @@ namespace MxEngine
             generatorMasked.GenerateFor(
                 *this->Pipeline.Environment.Shaders["PointLightDepthMap"_id],
                 this->Pipeline.Lighting.PointLights,
-                ShadowMapGenerator::LoadStoreOptions::LOAD | ShadowMapGenerator::LoadStoreOptions::GENERATE_MIPMAPS
+                ShadowMapGenerator::LoadStoreOptions::LOAD
             );
         }
     }

@@ -70,7 +70,7 @@ namespace MxEngine
             const FilePath& bottom, const FilePath& front, const FilePath& back
         );
 
-        void Load(const std::array<Image, 6>& images, bool genMipmaps = true);
+        void Load(const std::array<Image, 6>& images);
         void Load(const std::array<uint8_t*, 6>& RawDataRGB, size_t width, size_t height);
         void LoadDepth(int width, int height);
         size_t GetWidth() const;

@@ -67,17 +67,17 @@ namespace MxEngine
 
     void BufferAllocator::AllocateBuffers()
     {
-        impl->VBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
-        impl->IBO = Factory<IndexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
-        impl->InstanceVBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
-        impl->SSBO = Factory<ShaderStorageBuffer>::Create((uint8_t*)nullptr, 0, UsageType::STATIC_DRAW);
+        impl->VBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::DYNAMIC_COPY);
+        impl->IBO = Factory<IndexBuffer>::Create(nullptr, 0, UsageType::DYNAMIC_COPY);
+        impl->InstanceVBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::DYNAMIC_COPY);
+        impl->SSBO = Factory<ShaderStorageBuffer>::Create((uint8_t*)nullptr, 0, UsageType::DYNAMIC_COPY);
         impl->VAO = Factory<VertexArray>::Create();
 
         impl->AllocatorVBO.Init(0, [](size_t newSize)
         {
             auto copyVBO = Factory<VertexBuffer>::Create(nullptr, impl->VBO->GetSize(), UsageType::STREAM_COPY);
             copyVBO->LoadFrom(*impl->VBO);
-            impl->VBO->Load(nullptr, newSize, UsageType::STATIC_DRAW);
+            impl->VBO->Load(nullptr, newSize, UsageType::DYNAMIC_COPY);
             impl->VBO->LoadFrom(*copyVBO);
             MXLOG_DEBUG("MxEngine::BufferAllocator", "relocated vertex buffer storage to new memory with size: " + ToMxString(newSize));
         });
@@ -85,7 +85,7 @@ namespace MxEngine
         {
             auto copyIBO = Factory<IndexBuffer>::Create(nullptr, impl->IBO->GetSize(), UsageType::STREAM_COPY);
             copyIBO->LoadFrom(*impl->IBO);
-            impl->IBO->Load(nullptr, newSize, UsageType::STATIC_DRAW);
+            impl->IBO->Load(nullptr, newSize, UsageType::DYNAMIC_COPY);
             impl->IBO->LoadFrom(*copyIBO);
             MXLOG_DEBUG("MxEngine::BufferAllocator", "relocated index buffer storage to new memory with size: " + ToMxString(newSize));
         });
@@ -93,7 +93,7 @@ namespace MxEngine
         {
             auto copyInstanceVBO = Factory<VertexBuffer>::Create(nullptr, impl->InstanceVBO->GetSize(), UsageType::STREAM_COPY);
             copyInstanceVBO->LoadFrom(*impl->InstanceVBO);
-            impl->InstanceVBO->Load(nullptr, newSize, UsageType::STATIC_DRAW);
+            impl->InstanceVBO->Load(nullptr, newSize, UsageType::DYNAMIC_COPY);
             impl->InstanceVBO->LoadFrom(*copyInstanceVBO);
             MXLOG_DEBUG("MxEngine::BufferAllocator", "relocated instance vertex buffer storage to new memory with size: " + ToMxString(newSize));
         });
@@ -101,7 +101,7 @@ namespace MxEngine
         {
             auto copySSBO = Factory<ShaderStorageBuffer>::Create((uint8_t*)nullptr, impl->SSBO->GetByteSize(), UsageType::STREAM_COPY);
             copySSBO->LoadFrom(*impl->SSBO);
-            impl->SSBO->Load<uint8_t>(nullptr, newSize, UsageType::STATIC_DRAW);
+            impl->SSBO->Load<uint8_t>(nullptr, newSize, UsageType::DYNAMIC_COPY);
             impl->SSBO->LoadFrom(*copySSBO);
             MXLOG_DEBUG("MxEngine::BufferAllocator", "relocated shader storage buffer storage to new memory with size: " + ToMxString(newSize));
         });

@@ -52,10 +52,9 @@ namespace MxEngine
     void SpotLight::LoadDepthTexture()
     {
         auto depthTextureSize = (int)GlobalConfig::GetSpotLightTextureSize();
-        auto texture = Factory<Texture>::Create();
-        texture->LoadDepth(depthTextureSize, depthTextureSize);
-        texture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("spot light"));
-        this->DepthMap = texture;
+        this->DepthMap = Factory<Texture>::Create();
+        this->DepthMap->LoadDepth(depthTextureSize, depthTextureSize);
+        this->DepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("spot light"));
     }
 
     float SpotLight::GetInnerAngle() const

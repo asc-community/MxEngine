@@ -155,14 +155,6 @@ namespace MxEngine
             }
 
         }
-
-        if (options & LoadStoreOptions::GENERATE_MIPMAPS)
-        {
-            for (auto& directionalLight : directionalLights)
-            {
-                directionalLight.ShadowMap->GenerateMipmaps();
-            }
-        }
     }
 
     void ShadowMapGenerator::GenerateFor(const Shader& shader, ArrayView<SpotLightUnit> spotLights, LoadStoreOptions options)
@@ -185,14 +177,6 @@ namespace MxEngine
             };
 
             CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->renderUnits, this->materials);
-        }
-
-        if (options & LoadStoreOptions::GENERATE_MIPMAPS)
-        {
-            for (auto& spotLight : spotLights)
-            {
-                spotLight.ShadowMap->GenerateMipmaps();
-            }
         }
     }
 
@@ -223,14 +207,6 @@ namespace MxEngine
             };
 
             CastsShadowsPerGroup(CullingFunction, shader, this->shadowCasters, this->renderUnits, this->materials);
-        }
-
-        if (options & LoadStoreOptions::GENERATE_MIPMAPS)
-        {
-            for (auto& pointLight : pointLights)
-            {
-                pointLight.ShadowMap->GenerateMipmaps();
-            }
         }
     }
 

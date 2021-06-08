@@ -181,7 +181,7 @@ namespace MxEngine
         this->Load(images);
     }
 
-    void CubeMap::Load(const std::array<Image, 6>& images, bool genMipmaps)
+    void CubeMap::Load(const std::array<Image, 6>& images)
     {
         this->width = images.front().GetWidth();
         this->height = images.front().GetHeight();
@@ -220,10 +220,7 @@ namespace MxEngine
         GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
         
-        if (genMipmaps)
-        {
-            this->GenerateMipmaps();
-        }
+        this->GenerateMipmaps();
     }
 
     void CubeMap::Load(const std::array<uint8_t*, 6>& data, size_t width, size_t height)
@@ -266,7 +263,9 @@ namespace MxEngine
         GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER));
 
         float border[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-        GLCALL(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border));
+        GLCALL(glTexParameterfv(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, border));
+        
+        this->GenerateMipmaps();
     }
 
     const MxString& CubeMap::GetFilePath() const
