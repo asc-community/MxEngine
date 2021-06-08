@@ -139,7 +139,6 @@ namespace MxEngine
         this->SortParticles(camera, particleSystems);
 
         shader.Bind();
-        shader.IgnoreNonExistingUniform("transparency");
         shader.IgnoreNonExistingUniform("viewportSize");
         shader.IgnoreNonExistingUniform("depthTex");
         shader.IgnoreNonExistingUniform("light");
@@ -1241,7 +1240,7 @@ namespace MxEngine
     void RenderController::SubmitParticleSystem(const ParticleSystem& system, const Material& material, const Transform& parentTransform)
     {
         if (material.Transparency == 0.0f) return;
-        bool isTransparent = material.Transparency < 1.0f;
+        bool isTransparent = (material.AlphaMode == AlphaModeGroup::TRANSPARENT);
 
         auto& particleSystem = (isTransparent ? this->Pipeline.TransparentParticleSystems : this->Pipeline.OpaqueParticleSystems).emplace_back();
         particleSystem.ParticleBufferOffset = system.GetParticleAllocationOffset();
