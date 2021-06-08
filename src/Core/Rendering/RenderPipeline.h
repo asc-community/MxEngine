@@ -108,6 +108,7 @@ namespace MxEngine
         CubeMapHandle DefaultSkybox;
 
         VertexArrayHandle RenderVAO;
+        ShaderStorageBufferHandle RenderSSBO;
 
         FrameBufferHandle DepthFrameBuffer;
         FrameBufferHandle PostProcessFrameBuffer;
@@ -194,7 +195,7 @@ namespace MxEngine
 
     struct ParticleSystemUnit
     {
-        ShaderStorageBufferHandle ParticleData;
+        size_t ParticleBufferOffset;
         Matrix4x4 Transform;
         float ParticleLifetime;
         float Fading;

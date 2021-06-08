@@ -13,6 +13,7 @@
   "Material": [
     {
       "albedo map": 9,
+      "alpha mode": "TRANSPARENT",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
@@ -38,6 +39,7 @@
     },
     {
       "albedo map": 18446744073709551615,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
@@ -63,6 +65,7 @@
     },
     {
       "albedo map": 18446744073709551615,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
@@ -88,6 +91,7 @@
     },
     {
       "albedo map": 18446744073709551615,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
@@ -113,6 +117,7 @@
     },
     {
       "albedo map": 10,
+      "alpha mode": "TRANSPARENT",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
@@ -138,6 +143,7 @@
     },
     {
       "albedo map": 11,
+      "alpha mode": "TRANSPARENT",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         1.0,
@@ -163,6 +169,7 @@
     },
     {
       "albedo map": 18446744073709551615,
+      "alpha mode": "OPAQUE",
       "ambient occlusion map": 18446744073709551615,
       "base color": [
         0.4215686321258545,
@@ -189,6 +196,102 @@
   ],
   "Mesh": [
     {
+      "_filepath": "Engine/Models/pyramid_1.obj",
+      "aabb": {
+        "max": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "min": [
+          -1.0,
+          -1.0,
+          0.0
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 2.0
+      },
+      "id": 0
+    },
+    {
+      "_filepath": "Engine/Models/sphere_8.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.5
+      },
+      "id": 1
+    },
+    {
+      "_filepath": "Engine/Models/pyramid_1.obj",
+      "aabb": {
+        "max": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "min": [
+          -1.0,
+          -1.0,
+          0.0
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 2.0
+      },
+      "id": 2
+    },
+    {
+      "_filepath": "Engine/Models/sphere_8.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.5
+      },
+      "id": 3
+    },
+    {
       "_filepath": "Engine/Models/cube_2.obj",
       "aabb": {
         "max": [
@@ -210,7 +313,7 @@
         ],
         "radius": 0.8660253882408142
       },
-      "id": 0
+      "id": 4
     },
     {
       "_filepath": "Engine/Models/plane_2.obj",
@@ -234,7 +337,7 @@
         ],
         "radius": 0.7071067690849304
       },
-      "id": 1
+      "id": 5
     },
     {
       "_filepath": "Engine/Models/cylinder_20.obj",
@@ -258,7 +361,7 @@
         ],
         "radius": 0.7071067690849304
       },
-      "id": 2
+      "id": 6
     }
   ],
   "Script": null,
@@ -316,7 +419,7 @@
     "paused": false,
     "physics-step": 1.0,
     "time-scale": 1.0,
-    "total-time": 339.5879211425781,
+    "total-time": 430.22222900390625,
     "viewport": 0
   },
   "mxobjects": [
@@ -324,14 +427,14 @@
       "CameraController": {
         "camera type": "PERSPECTIVE",
         "direction": [
-          -0.7927273511886597,
-          -0.48420512676239014,
-          0.37030893564224243
+          -0.6141276359558105,
+          -0.4105861485004425,
+          0.6739928126335144
         ],
         "forward vector": [
-          -0.906021237373352,
+          -0.6735171675682068,
           0.0,
-          0.42323219776153564
+          0.7391716241836548
         ],
         "id": 0,
         "is listening window resize event": false,
@@ -343,9 +446,9 @@
           "znear": 0.10000000149011612
         },
         "right vector": [
-          -0.4232320487499237,
+          -0.7391715049743652,
           0.0,
-          -0.9060212969779968
+          -0.6735172867774963
         ],
         "rotate speed": 10.0,
         "up vector": [
@@ -441,9 +544,9 @@
       "name": "Camera",
       "transform": {
         "position": [
-          18.965349197387695,
-          19.55527114868164,
-          -2.1351115703582764
+          12.377123832702637,
+          13.554459571838379,
+          -7.3329596519470215
         ],
         "rotation": [
           0.0,
@@ -509,10 +612,9 @@
       "MeshSource": {
         "casts shadow": true,
         "id": 0,
-        "ignores depth": false,
         "is drawn": true,
         "is static": false,
-        "mesh": 1
+        "mesh": 5
       },
       "displayed": true,
       "name": "Plane",
@@ -544,10 +646,9 @@
       "MeshSource": {
         "casts shadow": true,
         "id": 1,
-        "ignores depth": false,
         "is drawn": true,
         "is static": false,
-        "mesh": 0
+        "mesh": 4
       },
       "displayed": true,
       "name": "Cube",
@@ -705,10 +806,9 @@
       "MeshSource": {
         "casts shadow": true,
         "id": 2,
-        "ignores depth": false,
         "is drawn": true,
         "is static": false,
-        "mesh": 2
+        "mesh": 6
       },
       "displayed": true,
       "name": "Cylinder",

@@ -100,7 +100,7 @@ namespace MxEngine
             );
         }
     }
-
+    
     void RenderController::ComputeParticles(const MxVector<ParticleSystemUnit>& particleSystems)
     {
         if (particleSystems.empty()) return;
@@ -110,9 +110,10 @@ namespace MxEngine
         computeShader->Bind();
         computeShader->SetUniform("dt", Min(Time::Delta(), 1.0f / 60.0f));
 
+        this->Pipeline.Environment.RenderSSBO->BindBase(0);
         for (const auto& particleSystem : particleSystems)
         {
-            particleSystem.ParticleData->BindBase(0);
+            computeShader->SetUniform("bufferOffset", (int)particleSystem.ParticleBufferOffset);
             computeShader->SetUniform("lifetime", particleSystem.ParticleLifetime);
             computeShader->SetUniform("spawnpoint", particleSystem.IsRelative ? Vector3(0.0f) : Vector3(particleSystem.Transform[3]));
 
@@ -138,7 +139,6 @@ namespace MxEngine
         this->SortParticles(camera, particleSystems);
 
         shader.Bind();
-        shader.IgnoreNonExistingUniform("transparency");
         shader.IgnoreNonExistingUniform("viewportSize");
         shader.IgnoreNonExistingUniform("depthTex");
         shader.IgnoreNonExistingUniform("light");
@@ -170,13 +170,13 @@ namespace MxEngine
         shader.SetUniform("albedoTex", textureId);
 
         Compute::SetMemoryBarrier(BarrierType::SHADER_STORAGE_BUFFER);
+        this->Pipeline.Environment.RenderSSBO->BindBase(0);
 
         for (const auto& particleSystem : particleSystems)
         {
             auto& material = this->Pipeline.MaterialUnits[particleSystem.MaterialIndex];
 
             material.AlbedoMap->Bind(textureId);
-            particleSystem.ParticleData->BindBase(0);
 
             Vector3 systemCenter = particleSystem.Transform[3];
             Vector3 normal = Normalize(camera.ViewportPosition - systemCenter);
@@ -192,6 +192,7 @@ namespace MxEngine
             shader.SetUniform("transparency", material.Transparency);
             shader.SetUniform("emmision", material.Emission);
             shader.SetUniform("light", totalLight);
+            shader.SetUniform("bufferOffset", (int)particleSystem.ParticleBufferOffset);
             shader.SetUniform("lifetime", particleSystem.ParticleLifetime);
             shader.SetUniform("fading", particleSystem.Fading);
 
@@ -1239,10 +1240,10 @@ namespace MxEngine
     void RenderController::SubmitParticleSystem(const ParticleSystem& system, const Material& material, const Transform& parentTransform)
     {
         if (material.Transparency == 0.0f) return;
-        bool isTransparent = material.Transparency < 1.0f;
+        bool isTransparent = (material.AlphaMode == AlphaModeGroup::TRANSPARENT);
 
         auto& particleSystem = (isTransparent ? this->Pipeline.TransparentParticleSystems : this->Pipeline.OpaqueParticleSystems).emplace_back();
-        particleSystem.ParticleData = system.GetParticleBuffer();
+        particleSystem.ParticleBufferOffset = system.GetParticleAllocationOffset();
         particleSystem.ParticleLifetime = system.GetParticleLifetime();
         particleSystem.Fading = system.GetFading();
         particleSystem.IsRelative = system.IsRelative();

@@ -61,6 +61,7 @@ namespace MxEngine
         this->SetRenderToDefaultFrameBuffer();
 
         environment.RenderVAO = BufferAllocator::GetVAO();
+        environment.RenderSSBO = BufferAllocator::GetSSBO();
 
         // helper objects
         environment.RectangularObject.Init(1.0f);

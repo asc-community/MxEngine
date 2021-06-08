@@ -52,11 +52,14 @@ namespace MxEngine
         static IndexBufferHandle GetIBO();
         static VertexBufferHandle GetInstanceVBO();
         static VertexArrayHandle GetVAO();
+        static ShaderStorageBufferHandle GetSSBO();
         static BufferAllocation AllocateInVBO(size_t sizeInFloats);
         static BufferAllocation AllocateInIBO(size_t sizeInIndices);
         static BufferAllocation AllocateInInstanceVBO(size_t sizeInInstances);
+        static BufferAllocation AllocateInSSBO(size_t sizeInBytes);
         static void DeallocateInVBO(BufferAllocation allocation);
         static void DeallocateInIBO(BufferAllocation allocation);
         static void DeallocateInInstanceVBO(BufferAllocation allocation);
+        static void DeallocateInSSBO(BufferAllocation allocation);
     };
 }

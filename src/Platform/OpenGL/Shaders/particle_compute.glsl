@@ -1,5 +1,6 @@
 layout(local_size_x = 64) in;
 
+uniform int bufferOffset;
 uniform float dt;
 uniform float lifetime;
 uniform vec3 spawnpoint;
@@ -18,7 +19,7 @@ layout(std430, binding = 0) buffer ParticleData
 
 void main()
 {
-    const uint idx = gl_GlobalInvocationID.x;
+    uint idx = bufferOffset + gl_GlobalInvocationID.x;
 
     Particle particle = particleData[idx];
 

@@ -18,10 +18,11 @@ layout(std430, binding = 0) buffer ParticleData
 uniform mat4 projMatrix;
 uniform float aspectRatio;
 uniform mat4 transform;
+uniform int bufferOffset;
 
 void main()
 {
-    Particle particle = particleData[gl_InstanceID];
+    Particle particle = particleData[bufferOffset + gl_InstanceID];
     vec3 particlePosition = particle.position_timeAlive.xyz;
     float particleSize = particle.velocity_size.w;
 
