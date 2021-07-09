@@ -79,7 +79,7 @@ set(MXENGINE_SOURCES
 "Utilities/ImGui/GraphicConsole.cpp" 
 "Utilities/ImGui/Editors/MxObjectEditor.cpp" 
 "Utilities/ImGui/ProfilerGraph.cpp" 
-"Utilities/ImGui/Editors/RenderEditor.cpp" 
+"Utilities/ImGui/Editors/Tools.cpp" 
 "Utilities/ImGui/Editors/ResourceEditor.cpp" 
 "Utilities/ImGui/Viewport.cpp" 
 "Utilities/ImGui/ImGuiBase.cpp"

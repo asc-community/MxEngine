@@ -26,7 +26,7 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "RenderEditor.h"
+#include "Tools.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Utilities/ImGui/Editors/ComponentEditor.h"
 #include "Core/Application/Rendering.h"
@@ -34,7 +34,7 @@
 
 namespace MxEngine
 {
-    void GUI::DrawRenderEditor(const char* name, bool* isOpen)
+    void GUI::DrawTools(const char* name, bool* isOpen)
     {
         ImGui::Begin(name, isOpen);
         
@@ -118,9 +118,9 @@ namespace MxEngine
         }
         if (ImGui::TreeNode("Logger"))
         {
-            static const char* items[]{ "ALL", "NO_DEBUG", "NO_INFO", "ONLY_ERRORS", "ONLY_FATAL" };
+            static const std::array items = { "ALL", "NO_DEBUG", "NO_INFO", "ONLY_ERRORS", "ONLY_FATAL" };
             static int selectedItem = 0;
-            if (ImGui::ListBox("Messages", &selectedItem, items, sizeof(items) / sizeof(items[0]))) {
+            if (ImGui::Combo("Messages", &selectedItem, items.data(), items.size())) {
                 switch (selectedItem) {
                 case 0: Logger::SetLogLevel(VerbosityLevel::ALL); break;
                 case 1: Logger::SetLogLevel(VerbosityLevel::NO_DEBUG); break;
