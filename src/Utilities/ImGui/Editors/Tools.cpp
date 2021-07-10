@@ -26,7 +26,7 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "RenderEditor.h"
+#include "Tools.h"
 #include "Utilities/ImGui/ImGuiUtils.h"
 #include "Utilities/ImGui/Editors/ComponentEditor.h"
 #include "Core/Application/Rendering.h"
@@ -34,7 +34,20 @@
 
 namespace MxEngine
 {
-    void GUI::DrawRenderEditor(const char* name, bool* isOpen)
+    int LogLevelToLogIndex() {
+        VerbosityLevel logVerbosity = Logger::GetVerbosityLevel();
+        int newIndex = 0;
+        switch (logVerbosity) {
+        case VerbosityLevel::ALL: newIndex = 0; break;
+        case VerbosityLevel::NO_DEBUG: newIndex = 1; break;
+        case VerbosityLevel::NO_INFO: newIndex = 2; break;
+        case VerbosityLevel::ONLY_ERRORS: newIndex = 3; break;
+        case VerbosityLevel::ONLY_FATAL: newIndex = 4; break;
+        }
+        return newIndex;
+    }
+
+    void GUI::DrawTools(const char* name, bool* isOpen)
     {
         ImGui::Begin(name, isOpen);
         
@@ -116,7 +129,26 @@ namespace MxEngine
 
             ImGui::TreePop();
         }
+        if (ImGui::TreeNode("Logger"))
+        {
+            const std::array items = { "ALL", "NO_DEBUG", "NO_INFO", "ONLY_ERRORS", "ONLY_FATAL" };
+            int selectedItem = LogLevelToLogIndex();
+            if (ImGui::Combo("Messages", &selectedItem, items.data(), items.size()))
+            {
+                switch (selectedItem) 
+                {
+                case 0: Logger::SetLogLevel(VerbosityLevel::ALL); break;
+                case 1: Logger::SetLogLevel(VerbosityLevel::NO_DEBUG); break;
+                case 2: Logger::SetLogLevel(VerbosityLevel::NO_INFO); break;
+                case 3: Logger::SetLogLevel(VerbosityLevel::ONLY_ERRORS); break;
+                case 4: Logger::SetLogLevel(VerbosityLevel::ONLY_FATAL); break;
+                }
+                selectedItem = LogLevelToLogIndex();
+            }
 
+            ImGui::TreePop();
+        }
+        
         ImGui::End();
     }
 }

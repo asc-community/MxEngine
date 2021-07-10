@@ -33,7 +33,7 @@
 #include "Layout.h"
 #include "Viewport.h"
 #include "Editors/ResourceEditor.h"
-#include "Editors/RenderEditor.h"
+#include "Editors/Tools.h"
 #include "Editors/MxObjectEditor.h"
 #include "Editors/ApplicationEditor.h"
 
