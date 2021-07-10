@@ -133,8 +133,10 @@ namespace MxEngine
         {
             const std::array items = { "ALL", "NO_DEBUG", "NO_INFO", "ONLY_ERRORS", "ONLY_FATAL" };
             int selectedItem = LogLevelToLogIndex();
-            if (ImGui::Combo("Messages", &selectedItem, items.data(), items.size())) {
-                switch (selectedItem) {
+            if (ImGui::Combo("Messages", &selectedItem, items.data(), items.size()))
+            {
+                switch (selectedItem) 
+                {
                 case 0: Logger::SetLogLevel(VerbosityLevel::ALL); break;
                 case 1: Logger::SetLogLevel(VerbosityLevel::NO_DEBUG); break;
                 case 2: Logger::SetLogLevel(VerbosityLevel::NO_INFO); break;
