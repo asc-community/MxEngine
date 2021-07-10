@@ -34,6 +34,19 @@
 
 namespace MxEngine
 {
+    int LogLevelToLogIndex() {
+        VerbosityLevel logVerbosity = Logger::GetVerbosityLevel();
+        int newIndex = 0;
+        switch (logVerbosity) {
+        case VerbosityLevel::ALL: newIndex = 0; break;
+        case VerbosityLevel::NO_DEBUG: newIndex = 1; break;
+        case VerbosityLevel::NO_INFO: newIndex = 2; break;
+        case VerbosityLevel::ONLY_ERRORS: newIndex = 3; break;
+        case VerbosityLevel::ONLY_FATAL: newIndex = 4; break;
+        }
+        return newIndex;
+    }
+
     void GUI::DrawTools(const char* name, bool* isOpen)
     {
         ImGui::Begin(name, isOpen);
@@ -118,8 +131,8 @@ namespace MxEngine
         }
         if (ImGui::TreeNode("Logger"))
         {
-            static const std::array items = { "ALL", "NO_DEBUG", "NO_INFO", "ONLY_ERRORS", "ONLY_FATAL" };
-            static int selectedItem = 0;
+            const std::array items = { "ALL", "NO_DEBUG", "NO_INFO", "ONLY_ERRORS", "ONLY_FATAL" };
+            int selectedItem = LogLevelToLogIndex();
             if (ImGui::Combo("Messages", &selectedItem, items.data(), items.size())) {
                 switch (selectedItem) {
                 case 0: Logger::SetLogLevel(VerbosityLevel::ALL); break;
@@ -128,6 +141,7 @@ namespace MxEngine
                 case 3: Logger::SetLogLevel(VerbosityLevel::ONLY_ERRORS); break;
                 case 4: Logger::SetLogLevel(VerbosityLevel::ONLY_FATAL); break;
                 }
+                selectedItem = LogLevelToLogIndex();
             }
 
             ImGui::TreePop();
