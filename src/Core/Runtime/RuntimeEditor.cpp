@@ -501,7 +501,7 @@ namespace MxEngine
                 {
                     rigidBody->SetLinearVelocity(positionDelta);
                     rigidBody->SetAngularVelocity(Vector3(0.0f));
-                    rigidBody->UpdateTransform();
+                    rigidBody->SyncObjectState();
                 }
             }
         }

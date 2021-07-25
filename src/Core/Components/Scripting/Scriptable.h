@@ -62,7 +62,7 @@ namespace MxEngine
         struct
         {
             ScriptableMethod Method = ScriptableMethod::ON_CREATE;
-            MxObject* Self = nullptr;
+            MxObject::Handle Self;
         } CurrentState;
 
         virtual void InitializeModuleContext(void* context) 
@@ -78,13 +78,13 @@ namespace MxEngine
             switch (this->CurrentState.Method)
             {
             case ScriptableMethod::ON_CREATE:
-                this->OnCreate(*this->CurrentState.Self);
+                this->OnCreate(this->CurrentState.Self);
                 break;
             case ScriptableMethod::ON_RELOAD:
-                this->OnReload(*this->CurrentState.Self);
+                this->OnReload(this->CurrentState.Self);
                 break;
             case ScriptableMethod::ON_UPDATE:
-                this->OnUpdate(*this->CurrentState.Self);
+                this->OnUpdate(this->CurrentState.Self);
                 break;
             default:
                 break;
@@ -92,9 +92,9 @@ namespace MxEngine
         }
 
         // overriten in derived classes
-        virtual void OnCreate(MxObject& self) { }
-        virtual void OnReload(MxObject& self) { }
-        virtual void OnUpdate(MxObject& self) { }
+        virtual void OnCreate(MxObject::Handle self) { }
+        virtual void OnReload(MxObject::Handle self) { }
+        virtual void OnUpdate(MxObject::Handle self) { }
     };
 
     class Scriptable : public TInterface<SciptableInterface::ID, SciptableInterface> { };

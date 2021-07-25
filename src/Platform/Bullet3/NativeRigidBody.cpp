@@ -48,19 +48,25 @@ namespace MxEngine
         }
     };
 
+    struct NativeRigidBody::RigidBodyAllocation
+    {
+        btRigidBody Body;
+        MotionStateNotifier MotionState;
+    };
+
     void NativeRigidBody::DestroyBody()
     {
         if (this->bodyAllocation != nullptr)
         {
-            auto body = this->GetNativeHandle();
+            btRigidBody* body = std::addressof(this->bodyAllocation->Body);
 
             Physics::ActiveRigidBodyIsland(body);
             Physics::RemoveRigidBody(body);
 
-            ((MotionStateNotifier*)body->getMotionState())->~MotionStateNotifier();
+            this->bodyAllocation->MotionState.~MotionStateNotifier();
             body->~btRigidBody();
 
-            delete this->bodyAllocation;
+            std::free((void*)this->bodyAllocation);
         }
     }
 
@@ -89,8 +95,8 @@ namespace MxEngine
         btTransform tr;
         ToBulletTransform(tr, transform);
 
-        this->bodyAllocation = new uint8_t[sizeof(btRigidBody) + sizeof(MotionStateNotifier)];
-        auto state = new(this->bodyAllocation + sizeof(btRigidBody)) MotionStateNotifier(tr);
+        this->bodyAllocation = reinterpret_cast<RigidBodyAllocation*>(std::malloc(sizeof(RigidBodyAllocation)));
+        auto state = new((uint8_t*)this->bodyAllocation + sizeof(btRigidBody)) MotionStateNotifier(tr);
         auto body = new(this->bodyAllocation) btRigidBody(0.0f, state, nullptr);
 
         Physics::AddRigidBody(body, this->group, this->mask);
@@ -117,12 +123,12 @@ namespace MxEngine
 
     btRigidBody* NativeRigidBody::GetNativeHandle()
     {
-        return reinterpret_cast<btRigidBody*>(this->bodyAllocation);
+        return std::addressof(this->bodyAllocation->Body);
     }
 
     const btRigidBody* NativeRigidBody::GetNativeHandle() const
     {
-        return reinterpret_cast<const btRigidBody*>(this->bodyAllocation);
+        return std::addressof(this->bodyAllocation->Body);
     }
 
     btMotionState* NativeRigidBody::GetMotionState()

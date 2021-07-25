@@ -72,6 +72,11 @@ namespace MxEngine
 
     void RigidBody::OnUpdate(float dt)
     {
+        this->SyncObjectState();
+    }
+
+    void RigidBody::SyncObjectState()
+    {
         this->UpdateCollider();
         this->UpdateTransform();
     }
@@ -123,7 +128,7 @@ namespace MxEngine
         if(TestCollider(this->rigidBody, self.GetComponent<SphereCollider>()))   return;
         if(TestCollider(this->rigidBody, self.GetComponent<CylinderCollider>())) return;
         if(TestCollider(this->rigidBody, self.GetComponent<CapsuleCollider>()))  return;
-        if(TestCollider(this->rigidBody, self.GetComponent<CompoundCollider>()))  return;
+        if(TestCollider(this->rigidBody, self.GetComponent<CompoundCollider>())) return;
 
         this->rigidBody->SetCollisionShape(nullptr); // no collider
     }
@@ -366,6 +371,7 @@ namespace MxEngine
 
     void RigidBody::SetGravity(Vector3 gravity)
     {
+        this->SyncObjectState();
         this->rigidBody->GetNativeHandle()->setGravity(ToBulletVector3(gravity));
     }
 

@@ -31,40 +31,42 @@ public:
         Timer::CallAfterDelta([explosion]() { MxObject::Destroy(explosion); }, ps->GetParticleLifetime());
     }
 
-    virtual void OnCreate(MxEngine::MxObject& self) override
+    virtual void OnCreate(MxObject::Handle self) override
     {
-        self.Name = "PlazmaGunBullet";
-        auto collider = self.AddComponent<SphereCollider>();
-        auto body = self.AddComponent<RigidBody>();
-        auto instance = self.GetComponent<Instance>();
+        self->Name = "PlazmaGunBullet";
+        auto collider = self->AddComponent<SphereCollider>();
+        auto instance = self->GetComponent<Instance>();
+        auto body = self->AddComponent<RigidBody>();
 
         instance->SetColor(BulletColor);
 
-        body->MakeDynamic();
-        body->SetMass(5.0f);
+        body->SetMass(0.1f);
+        body->MakeTrigger();
+        body->SetCollisionFilter(
+            body->GetCollisionMask() | CollisionMask::DYNAMIC, 
+            body->GetCollisionGroup() | CollisionGroup::ALL
+        );
+        body->SetGravity({ 0.0f, 0.0f, 0.0f });
         body->SetOnCollisionEnterCallback(
             [](MxObject& self, MxObject& other)
             {
                 if (other.Name != "Player" && other.Name != "PlazmaGunBullet")
                 {
-                    auto selfBody = self.GetComponent<RigidBody>();
-                    auto otherBody = other.GetComponent<RigidBody>();
-                    float massRatio = selfBody->GetMass() / Max(otherBody->GetMass(), 0.01f);
-                    otherBody->SetLinearVelocity(selfBody->GetLinearVelocity() * massRatio);
+                    self.GetComponent<RigidBody>()->SyncObjectState();
                     PlazmaGunBullet::CreateExplosion(self.LocalTransform.GetPosition());
                     MxObject::Destroy(self);
                 }
             });
 
-        Timer::CallAfterDelta([o = MxObject::GetHandle(self)]() { MxObject::Destroy(o); }, 10.0f);
+        Timer::CallAfterDelta([self]() { MxObject::Destroy(self); }, 10.0f);
     }
 
-    virtual void OnReload(MxEngine::MxObject& self) override
+    virtual void OnReload(MxObject::Handle self) override
     {
         
     }
 
-    virtual void OnUpdate(MxEngine::MxObject& self) override
+    virtual void OnUpdate(MxObject::Handle self) override
     {
 
     }

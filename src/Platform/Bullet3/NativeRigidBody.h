@@ -55,10 +55,11 @@ namespace MxEngine
         {  
             NONE = 0,
             RAYCAST_ONLY = CollisionMask::RAYCAST_ONLY,
-            ALL_NO_RAYCAST = CollisionMask::DYNAMIC | CollisionMask::STATIC | CollisionMask::KINEMATIC,
+            DYNAMIC_STATIC_KINEMATIC = CollisionMask::DYNAMIC | CollisionMask::STATIC | CollisionMask::KINEMATIC,
+            ALL_NO_RAYCAST = DYNAMIC_STATIC_KINEMATIC,
             ALL = ALL_NO_RAYCAST | CollisionGroup::RAYCAST_ONLY,
-            NO_STATIC_COLLISIONS_NO_RAYCAST = ALL_NO_RAYCAST & ~CollisionMask::STATIC & ~CollisionMask::KINEMATIC,
             NO_STATIC_COLLISIONS = ALL & ~CollisionMask::STATIC & ~CollisionMask::KINEMATIC,
+            NO_STATIC_COLLISIONS_NO_RAYCAST = NO_STATIC_COLLISIONS & ~CollisionMask::RAYCAST_ONLY,
         };
     }
 
@@ -73,7 +74,8 @@ namespace MxEngine
 
     class NativeRigidBody
     {
-        uint8_t* bodyAllocation = nullptr;
+        struct RigidBodyAllocation;
+        RigidBodyAllocation* bodyAllocation = nullptr;
         
         uint32_t group = CollisionGroup::NO_STATIC_COLLISIONS;
         uint32_t mask = CollisionMask::STATIC;

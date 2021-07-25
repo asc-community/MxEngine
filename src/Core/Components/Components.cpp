@@ -98,9 +98,14 @@ namespace MxEngine
     {
         RegisterComponent<CameraController   >();
         RegisterComponent<InputController    >();
+        RegisterComponent<MeshSource         >();
+        RegisterComponent<BoxCollider        >();
+        RegisterComponent<SphereCollider     >();
+        RegisterComponent<CylinderCollider   >();
+        RegisterComponent<CapsuleCollider    >();
+        RegisterComponent<CompoundCollider   >();
         RegisterComponent<RigidBody          >();
         RegisterComponent<CharacterController>();
-        RegisterComponent<BoxCollider        >();
         RegisterComponent<Script             >();
         RegisterComponent<Behaviour          >();
         RegisterComponent<InstanceFactory    >();
@@ -108,7 +113,6 @@ namespace MxEngine
         RegisterComponent<Skybox             >();
         RegisterComponent<DebugDraw          >();
         RegisterComponent<MeshRenderer       >();
-        RegisterComponent<MeshSource         >();
         RegisterComponent<MeshLOD            >();
         RegisterComponent<ParticleSystem     >();
         RegisterComponent<DirectionalLight   >();
@@ -122,9 +126,5 @@ namespace MxEngine
         RegisterComponent<VRCameraController >();
         RegisterComponent<AudioSource        >();
         RegisterComponent<AudioListener      >();
-        RegisterComponent<SphereCollider     >();
-        RegisterComponent<CylinderCollider   >();
-        RegisterComponent<CapsuleCollider    >();
-        RegisterComponent<CompoundCollider   >();
     }
 }

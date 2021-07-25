@@ -565,7 +565,7 @@ namespace MxEngine
     void RuntimeCompiler::InvokeScriptableObject(Scriptable* script, ScriptableMethod method, MxObject& scriptParent)
     {
         script->CurrentState.Method = method;
-        script->CurrentState.Self = std::addressof(scriptParent);
+        script->CurrentState.Self = MxObject::GetHandle(scriptParent);
         impl->runtimeObjectSystem->TryProtectedFunction(script);
     }
 }
