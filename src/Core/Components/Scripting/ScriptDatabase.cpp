@@ -30,52 +30,52 @@
 
 namespace MxEngine
 {
-	const ScriptDatabase::GenericType& ScriptDatabase::GetGeneric(const char* name) const
-	{
-		MX_ASSERT(this->Contains(name));
-		return this->database.find_as(name)->second;
-	}
+    const ScriptDatabase::GenericType& ScriptDatabase::GetGeneric(const char* name) const
+    {
+        MX_ASSERT(this->Contains(name));
+        return this->database.find_as(name)->second;
+    }
 
-	const ScriptDatabase::GenericType& ScriptDatabase::GetGeneric(const MxString& name) const
-	{
-		MX_ASSERT(this->Contains(name));
-		return this->database.find(name)->second;
-	}
+    const ScriptDatabase::GenericType& ScriptDatabase::GetGeneric(const MxString& name) const
+    {
+        MX_ASSERT(this->Contains(name));
+        return this->database.find(name)->second;
+    }
 
-	void ScriptDatabase::Remove(const char* name)
-	{
-		auto it = this->database.find_as(name);
-		if (it != this->database.end())
-			this->database.erase(it);
-	}
+    void ScriptDatabase::Remove(const char* name)
+    {
+        auto it = this->database.find_as(name);
+        if (it != this->database.end())
+            this->database.erase(it);
+    }
 
-	void ScriptDatabase::Remove(const MxString& name)
-	{
-		auto it = this->database.find(name);
-		if (it != this->database.end())
-			this->database.erase(it);
-	}
+    void ScriptDatabase::Remove(const MxString& name)
+    {
+        auto it = this->database.find(name);
+        if (it != this->database.end())
+            this->database.erase(it);
+    }
 
-	bool ScriptDatabase::Contains(const char* name) const
-	{
-		return this->database.find_as(name) != this->database.end();
-	}
+    bool ScriptDatabase::Contains(const char* name) const
+    {
+        return this->database.find_as(name) != this->database.end();
+    }
 
-	bool ScriptDatabase::Contains(const MxString& name) const
-	{
-		return this->database.find(name) != this->database.end();
-	}
+    bool ScriptDatabase::Contains(const MxString& name) const
+    {
+        return this->database.find(name) != this->database.end();
+    }
 
-	MXENGINE_REFLECT_TYPE
-	{
-		rttr::registration::class_<ScriptDatabase>("ScriptDatabase")
-			.constructor<>()
-			.property("_database", &ScriptDatabase::GetDatabase, &ScriptDatabase::SetDatabase)
-			(
-				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-				rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<ScriptDatabase>),
-				rttr::metadata(SerializeInfo::CUSTOM_SERIALIZE, SerializeExtra<ScriptDatabase>),
-				rttr::metadata(SerializeInfo::CUSTOM_DESERIALIZE, DeserializeExtra<ScriptDatabase>)
-			);
+    MXENGINE_REFLECT_TYPE
+    {
+        rttr::registration::class_<ScriptDatabase>("ScriptDatabase")
+            .constructor<>()
+            .property("_database", &ScriptDatabase::GetDatabase, &ScriptDatabase::SetDatabase)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<ScriptDatabase>),
+                rttr::metadata(SerializeInfo::CUSTOM_SERIALIZE, SerializeExtra<ScriptDatabase>),
+                rttr::metadata(SerializeInfo::CUSTOM_DESERIALIZE, DeserializeExtra<ScriptDatabase>)
+            );
     }
 }

@@ -50,5 +50,5 @@ namespace MxEngine
         REFLECT_BASE_TYPE(Vector2);
         REFLECT_BASE_TYPE(Vector3);
         REFLECT_BASE_TYPE(Vector4);
-	}
+    }
 }

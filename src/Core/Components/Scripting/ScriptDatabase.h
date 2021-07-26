@@ -34,49 +34,49 @@
 
 namespace MxEngine
 {
-	class ScriptDatabase
-	{
-	public:
-		using GenericType = rttr::variant;
+    class ScriptDatabase
+    {
+    public:
+        using GenericType = rttr::variant;
 
-	private:
-		MxHashMap<MxString, GenericType> database;
+    private:
+        MxHashMap<MxString, GenericType> database;
 
-	public:
-		const auto& GetDatabase() const { return this->database; }
-		void SetDatabase(const MxHashMap<MxString, GenericType>& database) { this->database = database; }
+    public:
+        const auto& GetDatabase() const { return this->database; }
+        void SetDatabase(const MxHashMap<MxString, GenericType>& database) { this->database = database; }
 
-		const GenericType& GetGeneric(const char* name) const;
-		const GenericType& GetGeneric(const MxString& name) const;
+        const GenericType& GetGeneric(const char* name) const;
+        const GenericType& GetGeneric(const MxString& name) const;
 
-		void Remove(const char* name);
-		void Remove(const MxString& name);
+        void Remove(const char* name);
+        void Remove(const MxString& name);
 
-		bool Contains(const char* name) const;
-		bool Contains(const MxString& name) const;
-		
-		template<typename T>
-		T Get(const char* name) const
-		{
-			return this->GetGeneric(name).convert<T>();
-		}
+        bool Contains(const char* name) const;
+        bool Contains(const MxString& name) const;
+        
+        template<typename T>
+        T Get(const char* name) const
+        {
+            return this->GetGeneric(name).convert<T>();
+        }
 
-		template<typename T>
-		T Get(const MxString& name) const
-		{
-			return this->GetGeneric(name).convert<T>();
-		}
+        template<typename T>
+        T Get(const MxString& name) const
+        {
+            return this->GetGeneric(name).convert<T>();
+        }
 
-		template<typename T>
-		void Add(const char* name, T value)
-		{
-			this->database[name] = std::move(value);
-		}
+        template<typename T>
+        void Add(const char* name, T value)
+        {
+            this->database[name] = std::move(value);
+        }
 
-		template<typename T>
-		void Add(const MxString& name, T value)
-		{
-			this->database[name] = std::move(value);
-		}
-	};
+        template<typename T>
+        void Add(const MxString& name, T value)
+        {
+            this->database[name] = std::move(value);
+        }
+    };
 }
