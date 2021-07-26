@@ -91,6 +91,8 @@ namespace MxEngine
             }
         }
 
+        auto& GetDatabase() { return this->CurrentState.Self->GetComponent<Script>()->Database; }
+
         // overriten in derived classes
         virtual void OnCreate(MxObject::Handle self) { }
         virtual void OnReload(MxObject::Handle self) { }
@@ -99,5 +101,5 @@ namespace MxEngine
 
     class Scriptable : public TInterface<SciptableInterface::ID, SciptableInterface> { };
 
-    #define MXENGINE_RUNTIME_EDITOR(script) static_assert(sizeof(Scriptable) == sizeof(script), "script object cannot contain non-static fields"); REGISTERCLASS(script)
+    #define MXENGINE_RUNTIME_EDITOR(script) static_assert(sizeof(Scriptable) == sizeof(script), "do not use non-static fields in script, use script database instead"); REGISTERCLASS(script)
 }

@@ -17,7 +17,7 @@ class PlazmaGun : public MxEngine::Scriptable
 
     void Shoot(MxObject::Handle self, MxObject::Handle player, MxObject::Handle bulletFactory)
     {
-        auto& database = self->GetComponent<Script>()->Database;
+        auto& database = this->GetDatabase();
         const auto BulletSize = database.Get<float>("BulletSize");
         const auto BulletSpeed = database.Get<float>("BulletSpeed");
 
@@ -42,19 +42,12 @@ public:
 
     virtual void OnReload(MxObject::Handle self) override
     {
-        // auto& database = self->GetComponent<Script>()->Database;
-        // database.Add("TimeSinceShoot", 0.0f);
-        // database.Add("ShootInterval", 0.1f);
-        // database.Add("BulletSpeed", 15.0f);
-        // database.Add("BulletSize", 0.1f);
-        // database.Add("GunMaxEmission", 0.5);
-        // database.Add("GunEmmisionIncrease", 0.5f);
-        // database.Add("GunEmmisionDecrease", 1.5f);
+
     }
 
     virtual void OnUpdate(MxObject::Handle self) override
     {
-        auto& database = self->GetComponent<Script>()->Database;
+        auto& database = this->GetDatabase();
         auto TimeSinceShoot = database.Get<float>("TimeSinceShoot");
         const auto ShootInterval = database.Get<float>("ShootInterval");
         const auto GunEmmisionIncrease = database.Get<float>("GunEmmisionIncrease");
@@ -78,7 +71,7 @@ public:
             TimeSinceShoot = 0.0f;
             this->Shoot(self, player, bulletFactory);
         }
-        self->GetComponent<Script>()->Database.Add("TimeSinceShoot", TimeSinceShoot);
+        this->GetDatabase().Add("TimeSinceShoot", TimeSinceShoot);
 
         auto gunMaterial = self->GetComponent<MeshRenderer>()->GetMaterial();
         if (Input::IsMouseHeld(MouseButton::LEFT))

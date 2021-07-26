@@ -509,7 +509,7 @@ namespace MxEngine::GUI
                     ImGui::PushID(id++);
                     if (value.is_valid())
                     {
-                        auto result = VisitEdit("", value, ReflectionMeta(value.get_type()));
+                        auto result = VisitEdit("value", value, ReflectionMeta(value.get_type()));
                         if (result.is_valid())
                         {
                             // ok since we are changing existing entry
@@ -519,7 +519,28 @@ namespace MxEngine::GUI
                     }
                     else
                     {
-                        ImGui::Text("empty");
+                        static int currentType = 0;
+
+                        std::array types = {
+                            MXENGINE_STRING(bool),
+                            MXENGINE_STRING(MxString),
+                            MXENGINE_STRING(float),
+                            MXENGINE_STRING(double),
+                            MXENGINE_STRING(int),
+                            MXENGINE_STRING(unsigned int),
+                            MXENGINE_STRING(size_t),
+                            MXENGINE_STRING(Quaternion),
+                            MXENGINE_STRING(Vector2),
+                            MXENGINE_STRING(Vector3),
+                            MXENGINE_STRING(Vector4),
+                        };
+
+                        if (ImGui::Combo("select type", &currentType, types.data(), types.size()))
+                        {
+                            auto type = rttr::type::get_by_name(types[currentType]);
+                            scriptDatabase.Add(name, type.create());
+                            resultDatabase = scriptDatabase;
+                        }
                     }
                     ImGui::PopID();
                 }

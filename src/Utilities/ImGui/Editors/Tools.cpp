@@ -34,15 +34,17 @@
 
 namespace MxEngine
 {
-    int LogLevelToLogIndex() {
+    int LogLevelToLogIndex() 
+    {
         VerbosityLevel logVerbosity = Logger::GetVerbosityLevel();
         int newIndex = 0;
-        switch (logVerbosity) {
-        case VerbosityLevel::ALL: newIndex = 0; break;
-        case VerbosityLevel::NO_DEBUG: newIndex = 1; break;
-        case VerbosityLevel::NO_INFO: newIndex = 2; break;
+        switch (logVerbosity) 
+        {
+        case VerbosityLevel::ALL:         newIndex = 0; break;
+        case VerbosityLevel::NO_DEBUG:    newIndex = 1; break;
+        case VerbosityLevel::NO_INFO:     newIndex = 2; break;
         case VerbosityLevel::ONLY_ERRORS: newIndex = 3; break;
-        case VerbosityLevel::ONLY_FATAL: newIndex = 4; break;
+        case VerbosityLevel::ONLY_FATAL:  newIndex = 4; break;
         }
         return newIndex;
     }
@@ -137,11 +139,11 @@ namespace MxEngine
             {
                 switch (selectedItem) 
                 {
-                case 0: Logger::SetLogLevel(VerbosityLevel::ALL); break;
-                case 1: Logger::SetLogLevel(VerbosityLevel::NO_DEBUG); break;
-                case 2: Logger::SetLogLevel(VerbosityLevel::NO_INFO); break;
+                case 0: Logger::SetLogLevel(VerbosityLevel::ALL);         break;
+                case 1: Logger::SetLogLevel(VerbosityLevel::NO_DEBUG);    break;
+                case 2: Logger::SetLogLevel(VerbosityLevel::NO_INFO);     break;
                 case 3: Logger::SetLogLevel(VerbosityLevel::ONLY_ERRORS); break;
-                case 4: Logger::SetLogLevel(VerbosityLevel::ONLY_FATAL); break;
+                case 4: Logger::SetLogLevel(VerbosityLevel::ONLY_FATAL);  break;
                 }
                 selectedItem = LogLevelToLogIndex();
             }

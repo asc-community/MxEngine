@@ -30,11 +30,12 @@
 #include "Utilities/STL/MxString.h"
 #include "Utilities/Math/Math.h"
 
+#include <variant>
+
 MXENGINE_FORCE_REFLECTION_IMPLEMENTATION(BaseTypes);
 
 namespace MxEngine
 {
-
     #define REFLECT_BASE_TYPE(TYPE) rttr::registration::class_<TYPE>(#TYPE).constructor<>()(rttr::policy::ctor::as_object)
 
     MXENGINE_REFLECT_TYPE
