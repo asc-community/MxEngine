@@ -175,3 +175,5 @@ struct rttr::sequential_container_mapper<MxEngine::MxVector<T, Allocator>>
 {
 
 };
+
+MXENGINE_FORCE_REFLECTION(BaseTypes);

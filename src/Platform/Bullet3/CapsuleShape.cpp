@@ -72,7 +72,7 @@ namespace MxEngine
     Capsule CapsuleShape::GetBoundingCapsuleTransformed(const Transform& transform) const
     {
         auto capsule = this->GetBoundingCapsule();
-        auto& scale = transform.GetScale();
+        auto scale = transform.GetScale();
         capsule.Center += transform.GetPosition();
         capsule.Rotation = transform.GetRotationQuaternion();
         switch (capsule.Orientation)

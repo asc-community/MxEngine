@@ -36,7 +36,9 @@ namespace MxEngine
 {
     Script::Script(const MxString& className)
     {
-        this->SetScriptableObject(className);
+        auto& info = RuntimeCompiler::GetScriptInfo(className);
+        this->scriptImpl = info.ScriptHandle;
+        this->scriptName = MakeStringId(info.Name);
     }
 
     void Script::OnUpdate(float dt)
@@ -62,8 +64,7 @@ namespace MxEngine
     void Script::SetScriptableObject(const MxString& className)
     {
         auto& info = RuntimeCompiler::GetScriptInfo(className);
-        this->scriptImpl = info.ScriptHandle;
-        this->scriptName = MakeStringId(info.Name);
+        this->SetScriptableObject(info);
     }
 
     void Script::SetScriptableObject(const ScriptInfo& scriptInfo)
@@ -127,6 +128,10 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
                 rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance& p) { return p.try_convert<Script>()->HasScriptableObject(); }))
+            )
+            .property("database", &Script::Database)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE | MetaInfo::SERIALIZABLE)
             )
             .property("_name", &Script::GetScriptName, (SetScriptName)&Script::SetScriptableObject)
             (

@@ -38,6 +38,8 @@ namespace MxEngine
     void Serialize(JsonFile& json, rttr::instance object);
     void Deserialize(const JsonFile& json, rttr::instance object, HandleMappings& mappings);
     void DeserializeComponentImpl(const JsonFile& json, rttr::instance object, rttr::variant handle, HandleMappings& mappings);
+    rttr::variant VisitDeserialize(const JsonFile& json, const rttr::variant& property, HandleMappings& mappings);
+    void VisitSerialize(JsonFile& json, const rttr::variant& v, const ReflectionMeta& meta);
 
     template<typename Handle>
     void SerializeComponent(JsonFile& json, Handle component)

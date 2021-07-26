@@ -50,6 +50,11 @@ namespace MxEngine::GUI
         ImGui::Text("%s: %f", name, f);
     }
 
+    void Display(const char* name, double f, const ReflectionMeta& meta)
+    {
+        ImGui::Text("%s: %f", name, (float)f);
+    }
+
     void Display(const char* name, int i, const ReflectionMeta& meta)
     {
         ImGui::Text("%s: %d", name, i);
@@ -141,6 +146,13 @@ namespace MxEngine::GUI
     {
         bool edited = ImGui::DragFloat(name, &val, meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
         return edited ? rttr::variant{ val } : rttr::variant{ };
+    }
+
+    rttr::variant Edit(const char* name, double val, const ReflectionMeta& meta)
+    {
+        float v = (float)val;
+        bool edited = ImGui::DragFloat(name, &v, meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
+        return edited ? rttr::variant{ v } : rttr::variant{ };
     }
 
     rttr::variant Edit(const char* name, int val, const ReflectionMeta& meta)
@@ -286,6 +298,7 @@ namespace MxEngine::GUI
             VISITOR_DISPLAY_ENTRY(bool),
             VISITOR_DISPLAY_ENTRY(MxString),
             VISITOR_DISPLAY_ENTRY(float),
+            VISITOR_DISPLAY_ENTRY(double),
             VISITOR_DISPLAY_ENTRY(int),
             VISITOR_DISPLAY_ENTRY(unsigned int),
             VISITOR_DISPLAY_ENTRY(size_t),
@@ -328,6 +341,7 @@ namespace MxEngine::GUI
             VISITOR_EDIT_ENTRY(bool),
             VISITOR_EDIT_ENTRY(MxString),
             VISITOR_EDIT_ENTRY(float),
+            VISITOR_EDIT_ENTRY(double),
             VISITOR_EDIT_ENTRY(int),
             VISITOR_EDIT_ENTRY(unsigned int),
             VISITOR_EDIT_ENTRY(size_t),

@@ -89,6 +89,7 @@ namespace MxEngine
             VISITOR_DESERIALIZE_ENTRY(bool),
             VISITOR_DESERIALIZE_ENTRY(MxString),
             VISITOR_DESERIALIZE_ENTRY(float),
+            VISITOR_DESERIALIZE_ENTRY(double),
             VISITOR_DESERIALIZE_ENTRY(int),
             VISITOR_DESERIALIZE_ENTRY(unsigned int),
             VISITOR_DESERIALIZE_ENTRY(size_t),

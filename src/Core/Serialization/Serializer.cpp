@@ -67,6 +67,7 @@ namespace MxEngine
             VISITOR_SERIALIZE_ENTRY(bool),
             VISITOR_SERIALIZE_ENTRY(MxString),
             VISITOR_SERIALIZE_ENTRY(float),
+            VISITOR_SERIALIZE_ENTRY(double),
             VISITOR_SERIALIZE_ENTRY(int),
             VISITOR_SERIALIZE_ENTRY(unsigned int),
             VISITOR_SERIALIZE_ENTRY(size_t),

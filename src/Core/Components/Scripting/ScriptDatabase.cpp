@@ -26,50 +26,56 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Utilities/Math/Math.h"
-#include "Utilities/ECS/Component.h"
+#include "ScriptDatabase.h"
 
 namespace MxEngine
 {
-    enum class SoundModel
-    {
-        NONE,
-        INVERSE_DISTANCE,
-        INVERSE_DISTANCE_CLAMPED,
-        LINEAR_DISTANCE,
-        LINEAR_DISTANCE_CLAMPED,
-        EXPONENT_DISTANCE,
-        EXPONENT_DISTANCE_CLAMPED,
-    };
+	const ScriptDatabase::GenericType& ScriptDatabase::GetGeneric(const char* name) const
+	{
+		MX_ASSERT(this->Contains(name));
+		return this->database.find_as(name)->second;
+	}
 
-    class AudioListener
-    {
-        MAKE_COMPONENT(AudioListener);
+	const ScriptDatabase::GenericType& ScriptDatabase::GetGeneric(const MxString& name) const
+	{
+		MX_ASSERT(this->Contains(name));
+		return this->database.find(name)->second;
+	}
 
-        float volume = 1.0f;
-        Vector3 velocity{ 0.0f, 0.0f, 0.0f };
-        float soundSpeed = 343.3f;
-        float dopplerFactor = 1.0f;
-        SoundModel model = SoundModel::INVERSE_DISTANCE_CLAMPED;
-    public:
-        AudioListener() = default;
-        void OnUpdate(float timeDelta);
+	void ScriptDatabase::Remove(const char* name)
+	{
+		auto it = this->database.find_as(name);
+		if (it != this->database.end())
+			this->database.erase(it);
+	}
 
-        void SetPosition(const Vector3& position);
-        void SetOrientation(const Vector3& direction, const Vector3& up);
-        void SetVolume(float speed);
-        void SetVelocity(const Vector3& velocity);
-        void SetSoundSpeed(float value);
-        void SetDopplerFactor(float factor);
-        void SetSoundModel(SoundModel model);
+	void ScriptDatabase::Remove(const MxString& name)
+	{
+		auto it = this->database.find(name);
+		if (it != this->database.end())
+			this->database.erase(it);
+	}
 
-        Vector3 GetPosition() const;
-        float GetVolume() const; 
-        const Vector3& GetVelocity() const;
-        float GetSoundSpeed() const;
-        float GetDopplerFactor() const;
-        SoundModel GetSoundModel() const;
-    };
+	bool ScriptDatabase::Contains(const char* name) const
+	{
+		return this->database.find_as(name) != this->database.end();
+	}
+
+	bool ScriptDatabase::Contains(const MxString& name) const
+	{
+		return this->database.find(name) != this->database.end();
+	}
+
+	MXENGINE_REFLECT_TYPE
+	{
+		rttr::registration::class_<ScriptDatabase>("ScriptDatabase")
+			.constructor<>()
+			.property("_database", &ScriptDatabase::GetDatabase, &ScriptDatabase::SetDatabase)
+			(
+				rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+				rttr::metadata(EditorInfo::CUSTOM_VIEW, GUI::EditorExtra<ScriptDatabase>),
+				rttr::metadata(SerializeInfo::CUSTOM_SERIALIZE, SerializeExtra<ScriptDatabase>),
+				rttr::metadata(SerializeInfo::CUSTOM_DESERIALIZE, DeserializeExtra<ScriptDatabase>)
+			);
+    }
 }

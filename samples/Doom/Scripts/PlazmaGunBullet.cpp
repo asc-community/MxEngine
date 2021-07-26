@@ -4,9 +4,6 @@ using namespace MxEngine;
 
 class PlazmaGunBullet : public MxEngine::Scriptable
 {
-    constexpr static float BulletMass = 0.01f;
-    constexpr static Vector3 BulletColor = { 0.0f, 0.6f, 1.0f };
-
 public:
     static void CreateExplosion(const Vector3& position)
     {
@@ -38,7 +35,7 @@ public:
         auto instance = self->GetComponent<Instance>();
         auto body = self->AddComponent<RigidBody>();
 
-        instance->SetColor(BulletColor);
+        instance->SetColor(Vector3{ 0.0f, 0.6f, 1.0f });
 
         body->SetMass(0.1f);
         body->MakeTrigger();
@@ -48,12 +45,12 @@ public:
         );
         body->SetGravity({ 0.0f, 0.0f, 0.0f });
         body->SetOnCollisionEnterCallback(
-            [](MxObject& self, MxObject& other)
+            [](MxObject::Handle self, MxObject::Handle other)
             {
-                if (other.Name != "Player" && other.Name != "PlazmaGunBullet")
+                if (other->Name != "Player" && other->Name != "PlazmaGunBullet")
                 {
-                    self.GetComponent<RigidBody>()->SyncObjectState();
-                    PlazmaGunBullet::CreateExplosion(self.LocalTransform.GetPosition());
+                    self->GetComponent<RigidBody>()->SyncObjectState();
+                    PlazmaGunBullet::CreateExplosion(self->LocalTransform.GetPosition());
                     MxObject::Destroy(self);
                 }
             });
@@ -63,7 +60,7 @@ public:
 
     virtual void OnReload(MxObject::Handle self) override
     {
-        
+
     }
 
     virtual void OnUpdate(MxObject::Handle self) override

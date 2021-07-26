@@ -29,6 +29,7 @@
 #pragma once
 
 #include "Utilities/ECS/Component.h"
+#include "ScriptDatabase.h"
 
 struct ObjectId;
 
@@ -44,6 +45,8 @@ namespace MxEngine
         StringId scriptName = 0;
         Scriptable* scriptImpl = nullptr;
     public:
+        ScriptDatabase Database;
+
         Script() = default;
         Script(const MxString& scriptName);
         void Init();

@@ -37,7 +37,7 @@
 
 namespace MxEngine
 {
-    static std::set<int> ExistingErrors;
+    static std::set<int> ExistingErrors = { 131154 };
 
     void GlClearErrors()
     {

@@ -83,12 +83,12 @@ namespace MxEngine
             inPlaceMatrix = Transpose(Inverse(model));
     }
 
-    const Vector3& Transform::GetRotation() const
+    Vector3 Transform::GetRotation() const
     {
         return this->rotation;
     }
 
-    const Vector3& Transform::GetScale() const
+    Vector3 Transform::GetScale() const
     {
         return this->scale;
     }
@@ -98,24 +98,24 @@ namespace MxEngine
         return MakeQuaternion(MakeRotationMatrix(RadiansVec(this->rotation)));
     }
 
-    const Vector3& Transform::GetPosition() const
+    Vector3 Transform::GetPosition() const
     {
         return this->position;
     }
 
-    Transform& Transform::SetRotation(const Quaternion& q)
+    Transform& Transform::SetRotation(Quaternion q)
     {
         return this->SetRotation(DegreesVec(MakeEulerAngles(q)));
     }
 
-    Transform& Transform::SetRotation(const Vector3& angles)
+    Transform& Transform::SetRotation(Vector3 angles)
     {
         this->rotation = MakeVector3(0.0f);
         this->Rotate(angles);
         return *this;
     }
 
-    Transform& Transform::SetScale(const Vector3& scale)
+    Transform& Transform::SetScale(Vector3 scale)
     {
         this->scale = scale;
         this->needTransformUpdate = true;
@@ -127,7 +127,7 @@ namespace MxEngine
         return this->SetScale(MakeVector3(scale));
     }
 
-    Transform& Transform::SetPosition(const Vector3& position)
+    Transform& Transform::SetPosition(Vector3 position)
     {
         this->position = position;
         this->needTransformUpdate = true;
@@ -139,7 +139,7 @@ namespace MxEngine
         return this->Scale(MakeVector3(scale));
     }
 
-    Transform& Transform::Scale(const Vector3& scale)
+    Transform& Transform::Scale(Vector3 scale)
     {
         this->scale *= scale;
         this->needTransformUpdate = true;
@@ -161,12 +161,12 @@ namespace MxEngine
         return this->Scale(MakeVector3(1.0f, 1.0f, scale));
     }
 
-    Transform& Transform::Rotate(const Quaternion& q)
+    Transform& Transform::Rotate(Quaternion q)
     {
         return this->Rotate(MakeEulerAngles(q));
     }
 
-    Transform& Transform::Rotate(const Vector3& angles)
+    Transform& Transform::Rotate(Vector3 angles)
     {
         this->rotation += angles;
         this->rotation.x = std::fmod(this->rotation.x + 360.0f, 360.0f);
@@ -191,7 +191,7 @@ namespace MxEngine
         return this->Rotate(Vector3(0.0f, 0.0f, angle));
     }
 
-    Transform& Transform::Translate(const Vector3& dist)
+    Transform& Transform::Translate(Vector3 dist)
     {
         this->position += dist;
         this->needTransformUpdate = true;
@@ -264,8 +264,8 @@ namespace MxEngine
 
     MXENGINE_REFLECT_TYPE
     {
-        using Scale3 = Transform& (Transform::*)(const Vector3&);
-        using RotateEuler = Transform& (Transform::*)(const Vector3&);
+        using Scale3 = Transform& (Transform::*)(Vector3);
+        using RotateEuler = Transform& (Transform::*)(Vector3);
 
         rttr::registration::class_<Transform>("Transform")
             (

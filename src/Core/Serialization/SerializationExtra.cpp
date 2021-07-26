@@ -30,6 +30,7 @@
 #include "Core/Components/Physics/CompoundCollider.h"
 #include "Core/Components/Instancing/InstanceFactory.h"
 #include "Core/Components/Camera/VRCameraController.h"
+#include "Core/Components/Scripting/Script.h"
 #include "Platform/OpenGL/Texture.h"
 #include "Core/Runtime/HandleMappings.h"
 #include "Core/Serialization/SceneSerializer.h"
@@ -164,5 +165,41 @@ namespace MxEngine
         auto format = formatEnumType.name_to_value(json["format"].get<MxString>().c_str()).convert<TextureFormat>();
 
         texture.Load(filepath, format);
+    }
+
+    template<>
+    void SerializeExtra<ScriptDatabase>(rttr::instance jsonWrapped, rttr::instance& object)
+    {
+        auto& json = *jsonWrapped.try_convert<JsonFile>();
+        auto& scriptDatabase = *object.try_convert<ScriptDatabase>();
+
+        for (const auto& [name, value] : scriptDatabase.GetDatabase())
+        {
+            auto& jsonEntry = json[name.c_str()];
+            jsonEntry["type"] = value.get_type().get_name().cbegin();
+            if (value.is_valid())
+            {
+                VisitSerialize(jsonEntry["value"], value, ReflectionMeta(value.get_type()));
+            }
+        }
+    }
+
+    template<>
+    void DeserializeExtra<ScriptDatabase>(rttr::instance jsonWrapped, rttr::instance& object, HandleMappings& mappings)
+    {
+        const auto& json = *jsonWrapped.try_convert<JsonFile>();
+        auto& scriptDatabase = *object.try_convert<ScriptDatabase>();
+
+        for (auto it = json.begin(); it != json.end(); it++)
+        {
+            rttr::variant v;
+            auto& jsonEntry = it.value();
+            if (jsonEntry.contains("value"))
+            {
+                auto type = rttr::type::get_by_name(jsonEntry["type"].get<std::string>().c_str());
+                v = VisitDeserialize(jsonEntry["value"], type.create(), mappings);
+            }
+            scriptDatabase.Add(it.key().c_str(), v);
+        }
     }
 }

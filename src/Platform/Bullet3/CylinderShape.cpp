@@ -76,7 +76,7 @@ namespace MxEngine
     Cylinder CylinderShape::GetBoundingCylinderTransformed(const Transform& transform) const
     {
         auto cylinder = this->GetBoundingCylinder();
-        auto& scale = transform.GetScale();
+        auto scale = transform.GetScale();
         cylinder.Center += transform.GetPosition();
         cylinder.Rotation = transform.GetRotationQuaternion();
         switch (cylinder.Orientation)

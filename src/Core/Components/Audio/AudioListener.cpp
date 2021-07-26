@@ -37,7 +37,7 @@ namespace MxEngine
         ALCALL(alListenerf(AL_GAIN, this->volume));
     }
 
-    const Vector3& AudioListener::GetPosition() const
+    Vector3 AudioListener::GetPosition() const
     {
         return MxObject::GetByComponent(*this).LocalTransform.GetPosition();
     }

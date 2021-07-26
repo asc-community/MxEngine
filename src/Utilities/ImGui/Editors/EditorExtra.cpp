@@ -42,6 +42,8 @@
 
 namespace MxEngine::GUI
 {
+    rttr::variant VisitEdit(const char* name, const rttr::variant& v, const ReflectionMeta& meta);
+
     template<>
     rttr::variant EditorExtra<InstanceFactory>(rttr::instance& val)
     {
@@ -473,5 +475,57 @@ namespace MxEngine::GUI
             ImGui::EndCombo();
         }
         return { };
+    }
+
+    template<>
+    rttr::variant EditorExtra<ScriptDatabase>(rttr::instance& v)
+    {
+        auto& scriptDatabase = *v.try_convert<ScriptDatabase>();
+        auto& database = scriptDatabase.GetDatabase();
+
+        rttr::variant resultDatabase;
+
+        static MxString newDatabaseEntry;
+        if (GUI::InputTextOnClick("", newDatabaseEntry, 32, "add"))
+        {
+            scriptDatabase.Add(newDatabaseEntry, ScriptDatabase::GenericType{ });
+            resultDatabase = scriptDatabase;
+            return resultDatabase;
+        }
+
+        int id = 0;
+        for (const auto& [name, value] : database)
+        {
+            if (ImGui::TreeNode(name.c_str()))
+            {
+                if (ImGui::Button("delete"))
+                {
+                    scriptDatabase.Remove(name);
+                    ImGui::TreePop();
+                    return scriptDatabase;
+                }
+                else
+                {
+                    ImGui::PushID(id++);
+                    if (value.is_valid())
+                    {
+                        auto result = VisitEdit("", value, ReflectionMeta(value.get_type()));
+                        if (result.is_valid())
+                        {
+                            // ok since we are changing existing entry
+                            scriptDatabase.Add(name, result);
+                            resultDatabase = scriptDatabase;
+                        }
+                    }
+                    else
+                    {
+                        ImGui::Text("empty");
+                    }
+                    ImGui::PopID();
+                }
+                ImGui::TreePop();
+            }
+        }
+        return resultDatabase;
     }
 }

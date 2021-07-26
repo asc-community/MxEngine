@@ -26,50 +26,29 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
+#include "Reflection.h"
+#include "Utilities/STL/MxString.h"
 #include "Utilities/Math/Math.h"
-#include "Utilities/ECS/Component.h"
+
+MXENGINE_FORCE_REFLECTION_IMPLEMENTATION(BaseTypes);
 
 namespace MxEngine
 {
-    enum class SoundModel
+
+    #define REFLECT_BASE_TYPE(TYPE) rttr::registration::class_<TYPE>(#TYPE).constructor<>()(rttr::policy::ctor::as_object)
+
+    MXENGINE_REFLECT_TYPE
     {
-        NONE,
-        INVERSE_DISTANCE,
-        INVERSE_DISTANCE_CLAMPED,
-        LINEAR_DISTANCE,
-        LINEAR_DISTANCE_CLAMPED,
-        EXPONENT_DISTANCE,
-        EXPONENT_DISTANCE_CLAMPED,
-    };
-
-    class AudioListener
-    {
-        MAKE_COMPONENT(AudioListener);
-
-        float volume = 1.0f;
-        Vector3 velocity{ 0.0f, 0.0f, 0.0f };
-        float soundSpeed = 343.3f;
-        float dopplerFactor = 1.0f;
-        SoundModel model = SoundModel::INVERSE_DISTANCE_CLAMPED;
-    public:
-        AudioListener() = default;
-        void OnUpdate(float timeDelta);
-
-        void SetPosition(const Vector3& position);
-        void SetOrientation(const Vector3& direction, const Vector3& up);
-        void SetVolume(float speed);
-        void SetVelocity(const Vector3& velocity);
-        void SetSoundSpeed(float value);
-        void SetDopplerFactor(float factor);
-        void SetSoundModel(SoundModel model);
-
-        Vector3 GetPosition() const;
-        float GetVolume() const; 
-        const Vector3& GetVelocity() const;
-        float GetSoundSpeed() const;
-        float GetDopplerFactor() const;
-        SoundModel GetSoundModel() const;
-    };
+        REFLECT_BASE_TYPE(bool);
+        REFLECT_BASE_TYPE(MxString);
+        REFLECT_BASE_TYPE(float);
+        REFLECT_BASE_TYPE(double);
+        REFLECT_BASE_TYPE(int);
+        REFLECT_BASE_TYPE(unsigned int);
+        REFLECT_BASE_TYPE(size_t);
+        REFLECT_BASE_TYPE(Quaternion);
+        REFLECT_BASE_TYPE(Vector2);
+        REFLECT_BASE_TYPE(Vector3);
+        REFLECT_BASE_TYPE(Vector4);
+	}
 }

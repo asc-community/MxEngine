@@ -159,15 +159,15 @@ namespace PhysicsSample
             material->MetallicFactor = 1.0f;
             material->RoughnessFactor = 0.4f;
             rb->MakeTrigger();
-            rb->SetOnCollisionEnterCallback([](MxObject& self, MxObject& other)
+            rb->SetOnCollisionEnterCallback([](MxObject::Handle self, MxObject::Handle other)
             {
-                Logger::Log(VerbosityType::INFO, self.Name, "enter collision with: " + other.Name);
-                if (other.Name == "Cube Instance")
+                Logger::Log(VerbosityType::INFO, self->Name, "enter collision with: " + other->Name);
+                if (other->Name == "Cube Instance")
                     MxObject::Destroy(other);
             });
-            rb->SetOnCollisionExitCallback([](MxObject& self, MxObject& other)
+            rb->SetOnCollisionExitCallback([](MxObject::Handle self, MxObject::Handle other)
             {
-                Logger::Log(VerbosityType::INFO, self.Name, "exit collision with: " + other.Name);
+                Logger::Log(VerbosityType::INFO, self->Name, "exit collision with: " + other->Name);
             });
         }
 

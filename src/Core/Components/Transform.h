@@ -50,31 +50,31 @@ namespace MxEngine
         void GetMatrix(Matrix4x4& inPlaceMatrix) const;
         void GetNormalMatrix(const Matrix4x4& model, Matrix3x3& inPlaceMatrix) const;
 
-        const Vector3& GetPosition() const;
-        const Vector3& GetRotation() const;
-        const Vector3& GetScale() const;
+        Vector3 GetPosition() const;
+        Vector3 GetRotation() const;
+        Vector3 GetScale() const;
 
         Quaternion GetRotationQuaternion() const;
 
-        Transform& SetRotation(const Quaternion& q);
-        Transform& SetRotation(const Vector3& angles);
-        Transform& SetScale(const Vector3& scale);
+        Transform& SetRotation(Quaternion q);
+        Transform& SetRotation(Vector3 angles);
+        Transform& SetScale(Vector3 scale);
         Transform& SetScale(float scale);
-        Transform& SetPosition(const Vector3& position);
+        Transform& SetPosition(Vector3 position);
 
         Transform& Scale(float scale);
-        Transform& Scale(const Vector3& scale);
+        Transform& Scale(Vector3 scale);
         Transform& ScaleX(float scale);
         Transform& ScaleY(float scale);
         Transform& ScaleZ(float scale);
 
-        Transform& Rotate(const Quaternion& q);
-        Transform& Rotate(const Vector3& angles);
+        Transform& Rotate(Quaternion q);
+        Transform& Rotate(Vector3 angles);
         Transform& RotateX(float angle);
         Transform& RotateY(float angle);
         Transform& RotateZ(float angle);
 
-        Transform& Translate(const Vector3& dist);
+        Transform& Translate(Vector3 dist);
         Transform& TranslateX(float x);
         Transform& TranslateY(float y);
         Transform& TranslateZ(float z);

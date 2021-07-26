@@ -43,7 +43,7 @@ namespace MxEngine
     void RigidBody::UpdateTransform()
     {
         auto& self = MxObject::GetByComponent(*this);
-        auto& selfScale = self.LocalTransform.GetScale();
+        auto selfScale = self.LocalTransform.GetScale();
 
         if (this->IsKinematic())
         {
@@ -133,22 +133,22 @@ namespace MxEngine
         this->rigidBody->SetCollisionShape(nullptr); // no collider
     }
 
-    void RigidBody::InvokeOnCollisionEnterCallback(MxObject& self, MxObject& object)
+    void RigidBody::InvokeOnCollisionEnterCallback(MxObject::Handle self, MxObject::Handle object)
     {
         if (this->onCollisionEnter)
-            this->onCollisionEnter(self, object);
+            this->onCollisionEnter(std::move(self), std::move(object));
     }
 
-    void RigidBody::InvokeOnCollisionExitCallback(MxObject& self, MxObject& object)
+    void RigidBody::InvokeOnCollisionExitCallback(MxObject::Handle self, MxObject::Handle object)
     {
         if (this->onCollisionExit)
-            this->onCollisionExit(self, object);
+            this->onCollisionExit(std::move(self), std::move(object));
     }
 
-    void RigidBody::InvokeOnCollisionCallback(MxObject& self, MxObject& object)
+    void RigidBody::InvokeOnCollisionCallback(MxObject::Handle self, MxObject::Handle object)
     {
         if (this->onCollision)
-            this->onCollision(self, object);
+            this->onCollision(std::move(self), std::move(object));
     }
 
     void RigidBody::MakeKinematic()

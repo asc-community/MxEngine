@@ -54,7 +54,8 @@ namespace MxEngine
     {
         MAKE_COMPONENT(RigidBody);
 
-        using CollisionCallback = MxFunction<void(MxObject&, MxObject&)>;
+        using MxObjectHandle = Resource<MxObject, Factory<MxObject>>;
+        using CollisionCallback = MxFunction<void(MxObjectHandle, MxObjectHandle)>;
 
         NativeRigidBodyHandle rigidBody;
         CollisionCallback onCollision;
@@ -70,9 +71,9 @@ namespace MxEngine
         void SyncObjectState();
 
         NativeRigidBodyHandle GetNativeHandle() const;
-        void InvokeOnCollisionCallback(MxObject& self, MxObject& object);
-        void InvokeOnCollisionEnterCallback(MxObject& self, MxObject& object);
-        void InvokeOnCollisionExitCallback(MxObject& self, MxObject& object);
+        void InvokeOnCollisionCallback(MxObjectHandle self, MxObjectHandle object);
+        void InvokeOnCollisionEnterCallback(MxObjectHandle self, MxObjectHandle object);
+        void InvokeOnCollisionExitCallback(MxObjectHandle self, MxObjectHandle object);
 
         void MakeKinematic();
         void MakeDynamic();

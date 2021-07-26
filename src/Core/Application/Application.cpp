@@ -238,9 +238,9 @@ namespace MxEngine
                 return object.IsValid() && object->HasComponent<RigidBody>();
             };
             if (valid(object1) && valid(object2))
-                std::invoke(callbackMethod, object1->GetComponent<RigidBody>(), *object1, *object2);
+                std::invoke(callbackMethod, object1->GetComponent<RigidBody>(), object1, object2);
             if (valid(object2) && valid(object1))
-                std::invoke(callbackMethod, object2->GetComponent<RigidBody>(), *object2, *object1);
+                std::invoke(callbackMethod, object2->GetComponent<RigidBody>(), object2, object1);
         };
 
         for (auto it = currentCollisions.begin(); it != currentCollisions.end(); it++)

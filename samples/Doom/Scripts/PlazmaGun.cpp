@@ -14,17 +14,13 @@ class PlazmaGun : public MxEngine::Scriptable
         self->LocalTransform.SetRotation(Vector3(-rotateAngles.y, rotateAngles.x, 0.0f));
         self->LocalTransform.SetPosition(player->LocalTransform.GetPosition() + self->LocalTransform.GetRotationQuaternion() * GunRelativePosition);
     }
-    
-    inline static float timeSinceShoot = 0.0f;
-    constexpr static float ShootInterval = 0.1f;
-    constexpr static float BulletSpeed = 15.0f;
-    constexpr static float BulletSize = 0.1f;
-    constexpr static float GunMaxEmission = 0.5;
-    constexpr static float GunEmmisionIncrease = 0.5f;
-    constexpr static float GunEmmisionDecrease = 1.5f;
 
     void Shoot(MxObject::Handle self, MxObject::Handle player, MxObject::Handle bulletFactory)
     {
+        auto& database = self->GetComponent<Script>()->Database;
+        const auto BulletSize = database.Get<float>("BulletSize");
+        const auto BulletSpeed = database.Get<float>("BulletSpeed");
+
         auto camera = player->GetComponent<CameraController>();
         Vector3 viewDirection = camera->GetDirection();
 
@@ -41,16 +37,30 @@ class PlazmaGun : public MxEngine::Scriptable
 public:
     virtual void OnCreate(MxObject::Handle self) override
     {
-        
+
     }
 
     virtual void OnReload(MxObject::Handle self) override
     {
-        
+        // auto& database = self->GetComponent<Script>()->Database;
+        // database.Add("TimeSinceShoot", 0.0f);
+        // database.Add("ShootInterval", 0.1f);
+        // database.Add("BulletSpeed", 15.0f);
+        // database.Add("BulletSize", 0.1f);
+        // database.Add("GunMaxEmission", 0.5);
+        // database.Add("GunEmmisionIncrease", 0.5f);
+        // database.Add("GunEmmisionDecrease", 1.5f);
     }
 
     virtual void OnUpdate(MxObject::Handle self) override
     {
+        auto& database = self->GetComponent<Script>()->Database;
+        auto TimeSinceShoot = database.Get<float>("TimeSinceShoot");
+        const auto ShootInterval = database.Get<float>("ShootInterval");
+        const auto GunEmmisionIncrease = database.Get<float>("GunEmmisionIncrease");
+        const auto GunEmmisionDecrease = database.Get<float>("GunEmmisionDecrease");
+        const auto GunMaxEmission = database.Get<float>("GunMaxEmission");
+
         auto player = MxObject::GetByName("Player");
         auto bulletFactory = MxObject::GetByName("Bullet Factory");
 
@@ -62,12 +72,13 @@ public:
         if (!bulletFactory.IsValid())
             return;
 
-        timeSinceShoot += Time::Delta();
-        if (Input::IsMouseHeld(MouseButton::LEFT) && timeSinceShoot > ShootInterval)
+        TimeSinceShoot += Time::Delta();
+        if (Input::IsMouseHeld(MouseButton::LEFT) && TimeSinceShoot > ShootInterval)
         {
-            timeSinceShoot = 0.0f;
+            TimeSinceShoot = 0.0f;
             this->Shoot(self, player, bulletFactory);
         }
+        self->GetComponent<Script>()->Database.Add("TimeSinceShoot", TimeSinceShoot);
 
         auto gunMaterial = self->GetComponent<MeshRenderer>()->GetMaterial();
         if (Input::IsMouseHeld(MouseButton::LEFT))

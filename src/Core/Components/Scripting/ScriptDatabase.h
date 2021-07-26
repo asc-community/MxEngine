@@ -28,48 +28,55 @@
 
 #pragma once
 
-#include "Utilities/Math/Math.h"
-#include "Utilities/ECS/Component.h"
+#include "Core/Runtime/Reflection.h"
+#include "Utilities/STL/MxHashMap.h"
+#include "Utilities/STL/MxString.h"
 
 namespace MxEngine
 {
-    enum class SoundModel
-    {
-        NONE,
-        INVERSE_DISTANCE,
-        INVERSE_DISTANCE_CLAMPED,
-        LINEAR_DISTANCE,
-        LINEAR_DISTANCE_CLAMPED,
-        EXPONENT_DISTANCE,
-        EXPONENT_DISTANCE_CLAMPED,
-    };
+	class ScriptDatabase
+	{
+	public:
+		using GenericType = rttr::variant;
 
-    class AudioListener
-    {
-        MAKE_COMPONENT(AudioListener);
+	private:
+		MxHashMap<MxString, GenericType> database;
 
-        float volume = 1.0f;
-        Vector3 velocity{ 0.0f, 0.0f, 0.0f };
-        float soundSpeed = 343.3f;
-        float dopplerFactor = 1.0f;
-        SoundModel model = SoundModel::INVERSE_DISTANCE_CLAMPED;
-    public:
-        AudioListener() = default;
-        void OnUpdate(float timeDelta);
+	public:
+		const auto& GetDatabase() const { return this->database; }
+		void SetDatabase(const MxHashMap<MxString, GenericType>& database) { this->database = database; }
 
-        void SetPosition(const Vector3& position);
-        void SetOrientation(const Vector3& direction, const Vector3& up);
-        void SetVolume(float speed);
-        void SetVelocity(const Vector3& velocity);
-        void SetSoundSpeed(float value);
-        void SetDopplerFactor(float factor);
-        void SetSoundModel(SoundModel model);
+		const GenericType& GetGeneric(const char* name) const;
+		const GenericType& GetGeneric(const MxString& name) const;
 
-        Vector3 GetPosition() const;
-        float GetVolume() const; 
-        const Vector3& GetVelocity() const;
-        float GetSoundSpeed() const;
-        float GetDopplerFactor() const;
-        SoundModel GetSoundModel() const;
-    };
+		void Remove(const char* name);
+		void Remove(const MxString& name);
+
+		bool Contains(const char* name) const;
+		bool Contains(const MxString& name) const;
+		
+		template<typename T>
+		T Get(const char* name) const
+		{
+			return this->GetGeneric(name).convert<T>();
+		}
+
+		template<typename T>
+		T Get(const MxString& name) const
+		{
+			return this->GetGeneric(name).convert<T>();
+		}
+
+		template<typename T>
+		void Add(const char* name, T value)
+		{
+			this->database[name] = std::move(value);
+		}
+
+		template<typename T>
+		void Add(const MxString& name, T value)
+		{
+			this->database[name] = std::move(value);
+		}
+	};
 }

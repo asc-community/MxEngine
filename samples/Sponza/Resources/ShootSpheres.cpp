@@ -22,21 +22,21 @@ class ShootSpheres : public MxEngine::Scriptable
         Timer::CallAfterDelta([sphere]() mutable { MxObject::Destroy(sphere); }, 10.0f);
     }
 public:
-    virtual void OnCreate(MxEngine::MxObject& self) override
+    virtual void OnCreate(MxObject::Handle self) override
     {
         
     }
 
-    virtual void OnReload(MxEngine::MxObject& self) override
+    virtual void OnReload(MxObject::Handle self) override
     {
         
     }
 
-    virtual void OnUpdate(MxEngine::MxObject& self) override
+    virtual void OnUpdate(MxObject::Handle self) override
     {
         if (Input::IsMousePressed(MouseButton::LEFT))
         {
-            auto viewport = self.GetComponent<CameraController>();
+            auto viewport = self->GetComponent<CameraController>();
             if (viewport.IsValid())
             {
                 auto sphereFactory = MxObject::GetByName("Sphere Factory");
