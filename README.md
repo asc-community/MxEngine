@@ -9,7 +9,7 @@
 
 MxEngine is an educational modern-C++ general-purpose 3D game engine. 
 Right now MxEngine is developed only by me, [#Momo](https://github.com/MomoDeve), but any contributions are welcome and will be reviewed.
-Fow now MxEngine supports OpenGL as graphic API and targeting x64 only. I develop the project in my free time, so updates may be not so frequent!
+Fow now MxEngine supports OpenGL as graphic API and targes x64 only. I develop the project in my free time, so updates may be not so frequent!
 
 ***Note:** MxEngine is currently being ported to new Vulkan rendering backend. Development progress of the rendering library can be found here: [VulkanAbstractionLayer](https://github.com/asc-community/VulkanAbstractionLayer)*
 
