@@ -71,25 +71,21 @@ namespace MxEngine
 
     void InitDockspace()
     {
-        static bool inited = false;
+        static bool dockspaceInited = false;
 
-        if (!inited) // turn on docking on first frame
-        {
-            auto& imguiIO = ImGui::GetIO();
-            imguiIO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-        }
+        auto& imguiIO = ImGui::GetIO();
+        imguiIO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-        // we should call DockSpaceOverViewport each framr
+        // we should call DockSpaceOverViewport each frame to render dockspace window
         auto dockspaceId = ImGui::DockSpaceOverViewport();
-
-        // return if dockspace is already iniyed
-        if (inited) return;
-
         auto node = ImGui::DockBuilderGetNode(dockspaceId);
-        if (node != nullptr && node->IsSplitNode())
+
+        // return if dockspace already created or loaded from imgui.ini file
+        if (dockspaceInited || (node != nullptr && node->IsSplitNode()))
             return;
 
-        inited = true;
+        dockspaceInited = true;
+
         const float viewportRatio = 0.7f;
         const float editorRatio = 0.15f;
         const float objectListRatio = 0.5f;
