@@ -77,7 +77,6 @@ namespace MxEngine
         FromJson(config.WindowSize,             json["window"],      "size"                    );
         FromJson(config.WindowTitle,            json["window"],      "title"                   );
         FromJson(config.Cursor,                 json["window"],      "cursor-mode"             );
-        FromJson(config.DoubleBuffering,        json["window"],      "double-buffering"        );
         FromJson(config.GraphicAPIMajorVersion, json["renderer"],    "major-version"           );
         FromJson(config.GraphicAPIMinorVersion, json["renderer"],    "minor-version"           );
         FromJson(config.AnisothropicFiltering,  json["renderer"],    "anisothropic-filtering"  );
@@ -102,7 +101,6 @@ namespace MxEngine
         json["window"     ]["size"                    ] = config.WindowSize;
         json["window"     ]["title"                   ] = config.WindowTitle;
         json["window"     ]["cursor-mode"             ] = config.Cursor;
-        json["window"     ]["double-buffering"        ] = config.DoubleBuffering;
         json["renderer"   ]["major-version"           ] = config.GraphicAPIMajorVersion;
         json["renderer"   ]["minor-version"           ] = config.GraphicAPIMinorVersion;
         json["renderer"   ]["anisothropic-filtering"  ] = config.AnisothropicFiltering;

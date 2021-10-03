@@ -28,25 +28,24 @@
 
 #pragma once
 
-#include "Core/Rendering/RenderController.h"
-#include "Core/Components/Camera/CameraController.h"
-#include "RenderGraph/RenderGraph.h"
+#include <VulkanAbstractionLayer/RenderPass.h>
 
 namespace MxEngine
 {
-    struct RenderAdaptor
-    {
-        RenderController Renderer;
-        UniqueRef<VulkanAbstractionLayer::RenderGraph> RenderGraph;
-        DebugBuffer DebugDrawer;
-        CameraController::Handle Viewport;
+    using namespace VulkanAbstractionLayer;
 
-        // constexpr static TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;
-        void InitRendererEnvironment();
-        void RenderFrame();
-        void SubmitRenderedFrame();
-        void SetWindowSize(const VectorInt2& size);
-        void SetRenderToDefaultFrameBuffer(bool value = true);
-        bool IsRenderedToDefaultFrameBuffer() const;
+    class DummyRenderPass : public RenderPass
+    {
+        virtual void SetupPipeline(PipelineState state)
+        {
+            state.DeclareAttachment("Output", Format::R8G8B8A8_UNORM);
+            state.AddOutputAttachment("Output", ClearColor{ 1.0f, 0.7f, 0.0f, 1.0f });
+        }
+
+        virtual void ResolveResources(ResolveState resolve) { }
+
+        virtual void BeforeRender(RenderPassState state) { }
+        virtual void OnRender(RenderPassState state) { }
+        virtual void AfterRender(RenderPassState state) { }
     };
 }

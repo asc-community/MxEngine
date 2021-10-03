@@ -32,6 +32,7 @@
 #include "RenderStatistics.h"
 #include "Layout.h"
 #include "Viewport.h"
+#include "Style.h"
 #include "Editors/ResourceEditor.h"
 #include "Editors/Tools.h"
 #include "Editors/MxObjectEditor.h"

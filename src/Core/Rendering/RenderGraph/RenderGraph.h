@@ -26,8 +26,12 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "ImGuiBase.h"
+#pragma once
 
-// including imgui implementation
-// #include <examples/imgui_impl_opengl3.cpp>
-// #include <examples/imgui_impl_glfw.cpp>
+#include <VulkanAbstractionLayer/RenderGraphBuilder.h>
+#include "Utilities/Memory/Memory.h"
+
+namespace MxEngine
+{
+    UniqueRef<VulkanAbstractionLayer::RenderGraph> CreatRenderGraph();
+}

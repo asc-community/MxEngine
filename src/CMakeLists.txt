@@ -52,16 +52,6 @@ set(MXENGINE_SOURCES
 "Platform/OpenAL/ALUtilities.cpp" 
 "Platform/OpenAL/AudioBuffer.cpp" 
 "Platform/OpenAL/AudioPlayer.cpp" 
- 
-  
- 
- 
- 
- 
- 
- 
- 
- 
 "Platform/Window/Input.cpp" 
 "Platform/Window/Window.cpp" 
 "Platform/Window/WindowManager.cpp" 
@@ -82,7 +72,7 @@ set(MXENGINE_SOURCES
 "Utilities/ImGui/Editors/Tools.cpp" 
 "Utilities/ImGui/Editors/ResourceEditor.cpp" 
 "Utilities/ImGui/Viewport.cpp" 
-"Utilities/ImGui/ImGuiBase.cpp"
+
 "Utilities/Json/Json.cpp" 
 "Utilities/Logging/Logger.cpp" 
 "Utilities/Logging/Platform.cpp" 
@@ -119,20 +109,16 @@ set(MXENGINE_SOURCES
 "Utilities/ObjectLoading/ObjectSaver.cpp"
 "Core/Application/Scene.cpp"
 "Core/Components/Camera/CameraSSGI.cpp" 
- 
- 
-
 "Platform/Compute/Compute.cpp" 
 "Core/Components/Rendering/ParticleSystem.cpp" 
 "Core/Components/Camera/CameraSSAO.cpp" 
-
 "Core/Serialization/Cloning.cpp" 
 "Core/Resources/BufferAllocator.cpp"
 "Core/Rendering/RenderObjects/RenderHelperObject.cpp"
 "Utilities/Factory/FactoryImpl.h"
 "Core/Components/Scripting/ScriptDatabase.cpp"
 "Core/Runtime/Reflection.cpp"
-)
+ "Core/Rendering/RenderGraph/RenderGraph.cpp"  "Utilities/ImGui/Style.cpp")
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)
@@ -141,7 +127,6 @@ set(nlohmann_json ${SUBMODULES_PATH}/json)
 set(glm ${SUBMODULES_PATH}/glm)
 set(fmt ${SUBMODULES_PATH}/fmt)
 set(stb ${SUBMODULES_PATH}/stb)
-set(imgui ${SUBMODULES_PATH}/imgui)
 set(miniaudio ${SUBMODULES_PATH}/miniaudio)
 set(openal ${SUBMODULES_PATH}/openal-soft)
 set(eastl ${SUBMODULES_PATH}/EASTL)
@@ -218,7 +203,6 @@ set(THIRD_PARTY_INCLUDE_DIRS
     ${runtime_compiled_cpp}
     ${allocators}
     ${imguizmo}
-    ${imgui}
     ${glm}
     ${stb}
     ${vulkan_abstraction_layer}
@@ -227,7 +211,6 @@ set(THIRD_PARTY_INCLUDE_DIRS
 set(fmt_binary_dir ${THIRD_PARTY_BUILD_DIR}/fmt)
 set(bullet3_binary_dir ${THIRD_PARTY_BUILD_DIR}/bullet3)
 set(assimp_binary_dir ${THIRD_PARTY_BUILD_DIR}/assimp)
-set(imgui_binary_dir ${THIRD_PARTY_BUILD_DIR}/imgui)
 set(eastl_binary_dir ${THIRD_PARTY_BUILD_DIR}/eastl)
 set(openal_binary_dir ${THIRD_PARTY_BUILD_DIR}/openal)
 set(imguizmo_binary_dir ${THIRD_PARTY_BUILD_DIR}/imguizmo)
@@ -238,7 +221,6 @@ set(vulkan_abstraction_layer_binary_dir ${THIRD_PARTY_BUILD_DIR}/vulkan_abstract
 add_subdirectory(${fmt} ${fmt_binary_dir})
 add_subdirectory(${bullet3} ${bullet3_binary_dir})
 add_subdirectory(${assimp} ${assimp_binary_dir})
-add_subdirectory(${imgui} ${imgui_binary_dir})
 add_subdirectory(${eastl} ${eastl_binary_dir})
 add_subdirectory(${openal} ${openal_binary_dir})
 add_subdirectory(${imguizmo} ${imguizmo_binary_dir})
@@ -246,13 +228,12 @@ add_subdirectory(${runtime_compiled_cpp} ${runtime_compiled_cpp_binary_dir})
 add_subdirectory(${rttr} ${rttr_binary_dir})
 add_subdirectory(${vulkan_abstraction_layer} ${vulkan_abstraction_layer_binary_dir})
 
-target_include_directories(ImGuizmo PUBLIC ${imgui})
+target_include_directories(ImGuizmo PUBLIC ${VULKAN_ABSTRACTION_LAYER_INCLUDE_DIR})
 
 set(THIRD_PARTY_BINARY_DIRS
     ${fmt_binary_dir}
     ${bullet3_binary_dir}
     ${assimp_binary_dir}
-    ${imgui_binary_dir}
     ${eastl_binary_dir}
     ${eabase_binary_dir} 
     ${openal_binary_dir}
@@ -267,7 +248,6 @@ set(THIRD_PARTY_LIBRARIES
     assimp
     IrrXML
     glfw
-    imgui
     EASTL
     OpenAL
     ImGuizmo

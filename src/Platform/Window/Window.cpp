@@ -44,6 +44,7 @@ namespace MxEngine
     {
         if (this->window != nullptr)
         {
+            GraphicModule::OnWindowDestroy(this->GetNativeHandle());
             this->Close();
             delete this->window;
             this->window = nullptr;
@@ -205,8 +206,6 @@ namespace MxEngine
     {
         if (this->window != nullptr && this->IsOpen())
         {
-            GraphicModule::OnWindowDestroy(this->GetNativeHandle());
-
             this->window->Close();
             MXLOG_DEBUG("MxEngine::Window", "window closed");
         }
@@ -393,12 +392,6 @@ namespace MxEngine
     Window& Window::UseEventDispatcher(EventDispatcherImpl<EventBase>* dispatcher)
     {
         this->dispatcher = dispatcher;
-        return *this;
-    }
-
-    Window& Window::UseImmediatePresent(bool value)
-    {
-        this->immediatePresent = value;
         return *this;
     }
 

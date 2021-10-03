@@ -69,18 +69,32 @@ namespace MxEngine
         this->console->PrintHistory();
     }
 
-    void InitDockspace(ImGuiID dockspaceId)
+    void InitDockspace()
     {
         static bool inited = false;
-        auto node = ImGui::DockBuilderGetNode(dockspaceId);
 
-        if (inited || (node != nullptr && node->IsSplitNode()))
+        if (!inited) // turn on docking on first frame
+        {
+            auto& imguiIO = ImGui::GetIO();
+            imguiIO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        }
+
+        // we should call DockSpaceOverViewport each framr
+        auto dockspaceId = ImGui::DockSpaceOverViewport();
+
+        // return if dockspace is already iniyed
+        if (inited) return;
+
+        auto node = ImGui::DockBuilderGetNode(dockspaceId);
+        if (node != nullptr && node->IsSplitNode())
             return;
 
         inited = true;
         const float viewportRatio = 0.7f;
         const float editorRatio = 0.15f;
         const float objectListRatio = 0.5f;
+
+        GUI::SetEditorStyle(GlobalConfig::GetEditorStyle());
 
         ImGuiID viewportDockspace = 0; 
         ImGuiID editorDockspace = 0;
@@ -115,8 +129,7 @@ namespace MxEngine
         if (this->shouldRender)
         {
             MAKE_SCOPE_PROFILER("RuntimeEditor::OnUpdate()");
-            auto dockspaceID = ImGui::DockSpaceOverViewport();
-            InitDockspace(dockspaceID);
+            InitDockspace();
 
             static bool isToolsOpened = false;
             static bool isObjectListOpened = false;

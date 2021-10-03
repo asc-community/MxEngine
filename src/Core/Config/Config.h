@@ -62,7 +62,6 @@ namespace MxEngine
         Vector2 WindowSize{ 1600, 900 };
         MxString WindowTitle = "MxEngine Application";
         CursorMode Cursor = CursorMode::DISABLED;
-        bool DoubleBuffering = false;
 
         // Renderer settings
         size_t GraphicAPIMajorVersion = 4;

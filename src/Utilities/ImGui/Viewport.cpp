@@ -41,6 +41,8 @@ namespace MxEngine::GUI
         ImGui::Begin(name, isOpen, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         auto viewport = Rendering::GetViewport();
 
+        Vector2 newWindowSize = ImGui::GetWindowSize();
+
         // if (viewport.IsValid() && viewport->GetRenderTexture().IsValid())
         // {
         //     Vector2 newWindowSize = ImGui::GetWindowSize();

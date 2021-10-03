@@ -51,6 +51,8 @@
 #include "Utilities/Profiler/Profiler.h"
 #include "Utilities/FileSystem/FileManager.h"
 
+#include <VulkanAbstractionLayer/VulkanContext.h>
+
 namespace MxEngine
 {
     void RenderAdaptor::InitRendererEnvironment()
@@ -327,6 +329,9 @@ namespace MxEngine
         //     bloomTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("bloom"));
         //     bloomTexture->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
         // }
+
+
+        this->RenderGraph = CreatRenderGraph();
     }
 
     void RenderAdaptor::RenderFrame()
@@ -485,6 +490,14 @@ namespace MxEngine
 
         this->Renderer.GetRenderStatistics().ResetAll();
         this->Renderer.StartPipeline();
+
+        if (VulkanAbstractionLayer::GetCurrentVulkanContext().IsRenderingEnabled())
+        {
+            auto& commandBuffer = VulkanAbstractionLayer::GetCurrentVulkanContext().GetCurrentCommandBuffer();
+            auto& presentImage = VulkanAbstractionLayer::GetCurrentVulkanContext().AcquireCurrentSwapchainImage(VulkanAbstractionLayer::ImageUsage::TRANSFER_DISTINATION);
+            this->RenderGraph->Execute(commandBuffer);
+            this->RenderGraph->Present(commandBuffer, presentImage);
+        }
     }
 
     void RenderAdaptor::SubmitRenderedFrame()

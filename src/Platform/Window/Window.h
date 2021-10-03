@@ -33,7 +33,7 @@
 #include "Utilities/Time/Time.h"
 #include "Core/Config/Config.h"
 #include "Core/Events/MouseEvent.h"
-#include "VulkanAbstractionLayer/Window.h"
+#include <VulkanAbstractionLayer/Window.h>
 
 namespace MxEngine
 {
@@ -54,7 +54,6 @@ namespace MxEngine
         CursorMode cursorMode = CursorMode::NORMAL;
         bool anyKeyEvent = false;
         bool anyMouseEvent = false;
-        bool immediatePresent = false;
         Vector2 windowPosition{ 0.0f, 0.0f };
 
         void Destroy();
@@ -100,6 +99,5 @@ namespace MxEngine
         Window& UseWindowPosition(int xpos, int ypos);
         Window& UseWindowSize(int width, int height);
         Window& UseEventDispatcher(EventDispatcherImpl<EventBase>* dispatcher);
-        Window& UseImmediatePresent(bool value);
     };
 }

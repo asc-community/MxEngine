@@ -325,7 +325,6 @@ namespace MxEngine
         this->GetWindow()
             .UseEventDispatcher(this->dispatcher)
             .UseCursorMode(this->config.Cursor)
-            .UseImmediatePresent(!this->config.DoubleBuffering)
             .UseTitle(this->config.WindowTitle)
             .UseWindowPosition((int)this->config.WindowPosition.x, (int)this->config.WindowPosition.y)
             .UseWindowSize((int)this->config.WindowSize.x, (int)this->config.WindowSize.y)

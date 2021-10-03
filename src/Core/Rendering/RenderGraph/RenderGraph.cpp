@@ -26,27 +26,31 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
+#include "RenderGraph.h"
+#include "DummyRenderPass.h"
 
-#include "Core/Rendering/RenderController.h"
-#include "Core/Components/Camera/CameraController.h"
-#include "RenderGraph/RenderGraph.h"
+#include "Platform/Window/WindowManager.h"
+#include "Platform/Window/Window.h"
+
+#include <VulkanAbstractionLayer/ImGuiRenderPass.h>
 
 namespace MxEngine
 {
-    struct RenderAdaptor
-    {
-        RenderController Renderer;
-        UniqueRef<VulkanAbstractionLayer::RenderGraph> RenderGraph;
-        DebugBuffer DebugDrawer;
-        CameraController::Handle Viewport;
+    using namespace VulkanAbstractionLayer;
 
-        // constexpr static TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;
-        void InitRendererEnvironment();
-        void RenderFrame();
-        void SubmitRenderedFrame();
-        void SetWindowSize(const VectorInt2& size);
-        void SetRenderToDefaultFrameBuffer(bool value = true);
-        bool IsRenderedToDefaultFrameBuffer() const;
-    };
+    UniqueRef<RenderGraph> CreatRenderGraph()
+    {
+        RenderGraphBuilder builder;
+        builder
+            .AddRenderPass("DummyPass", MakeUnique<DummyRenderPass>())
+            .AddRenderPass("ImGuiPass", MakeUnique<ImGuiRenderPass>("Output"))
+            .SetOutputName("Output");
+
+        auto renderGraph = builder.Build();
+
+        auto imguiRenderPass = renderGraph->GetNodeByName("ImGuiPass").PassNative.RenderPassHandle;
+        ImGuiVulkanContext::Init(*WindowManager::GetWindow().GetNativeHandle(), imguiRenderPass);
+
+        return renderGraph;
+    }
 }

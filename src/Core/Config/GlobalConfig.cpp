@@ -66,11 +66,6 @@ namespace MxEngine
         return CFG(Cursor);
     }
 
-    bool GlobalConfig::HasDoubleBuffering()
-    {
-        return CFG(DoubleBuffering);
-    }
-
     size_t GlobalConfig::GetGraphicAPIMajorVersion()
     {
         return CFG(GraphicAPIMajorVersion);

@@ -28,25 +28,9 @@
 
 #pragma once
 
-#include "Core/Rendering/RenderController.h"
-#include "Core/Components/Camera/CameraController.h"
-#include "RenderGraph/RenderGraph.h"
+#include "Core/Config/GlobalConfig.h"
 
-namespace MxEngine
+namespace MxEngine::GUI
 {
-    struct RenderAdaptor
-    {
-        RenderController Renderer;
-        UniqueRef<VulkanAbstractionLayer::RenderGraph> RenderGraph;
-        DebugBuffer DebugDrawer;
-        CameraController::Handle Viewport;
-
-        // constexpr static TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;
-        void InitRendererEnvironment();
-        void RenderFrame();
-        void SubmitRenderedFrame();
-        void SetWindowSize(const VectorInt2& size);
-        void SetRenderToDefaultFrameBuffer(bool value = true);
-        bool IsRenderedToDefaultFrameBuffer() const;
-    };
+    void SetEditorStyle(EditorStyle style);
 }

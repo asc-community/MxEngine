@@ -40,7 +40,6 @@ namespace MxEngine
         static const Vector2& GetWindowSize();
         static const MxString& GetWindowTitle();
         static CursorMode GetCursorMode();
-        static bool HasDoubleBuffering();
         static size_t GetGraphicAPIMajorVersion();
         static size_t GetGraphicAPIMinorVersion();
         static size_t GetAnisothropicFiltering();;
