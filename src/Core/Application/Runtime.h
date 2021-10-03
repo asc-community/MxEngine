@@ -60,20 +60,20 @@ namespace MxEngine
             );
         }
 
-        static void AddShaderUpdateListener(const ShaderHandle& shader)
-        {
-            Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle>(shader);
-        }
-
-        static void AddShaderUpdateListener(const ComputeShaderHandle& shader)
-        {
-            Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ComputeShaderHandle>(shader);
-        }
-
-        static void AddShaderUpdateListener(const ShaderHandle& shader, const FilePath& lookupDirectory)
-        {
-            Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle>(shader, lookupDirectory);
-        }
+        // static void AddShaderUpdateListener(const ShaderHandle& shader)
+        // {
+        //     Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle>(shader);
+        // }
+        // 
+        // static void AddShaderUpdateListener(const ComputeShaderHandle& shader)
+        // {
+        //     Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ComputeShaderHandle>(shader);
+        // }
+        // 
+        // static void AddShaderUpdateListener(const ShaderHandle& shader, const FilePath& lookupDirectory)
+        // {
+        //     Application::GetImpl()->GetRuntimeEditor().AddShaderUpdateListener<ShaderHandle>(shader, lookupDirectory);
+        // }
 
         static const MxHashMap<StringId, ScriptInfo>& GetRegisteredScripts()
         {

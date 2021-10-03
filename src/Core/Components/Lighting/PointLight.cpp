@@ -35,14 +35,15 @@ namespace MxEngine
     void PointLight::LoadDepthCubeMap()
     {
         auto depthTextureSize = (int)GlobalConfig::GetPointLightTextureSize();
-        this->DepthMap = Factory<CubeMap>::Create();
-        this->DepthMap->LoadDepth(depthTextureSize, depthTextureSize);
-        this->DepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("point light"));
+        // this->DepthMap = Factory<CubeMap>::Create();
+        // this->DepthMap->LoadDepth(depthTextureSize, depthTextureSize);
+        // this->DepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("point light"));
     }
 
     bool PointLight::IsCastingShadows() const
     {
-        return this->DepthMap.IsValid();
+        // return this->DepthMap.IsValid();
+        return false;
     }
 
     void PointLight::ToggleShadowCast(bool value)
@@ -53,7 +54,7 @@ namespace MxEngine
         }
         else if(!value && this->IsCastingShadows())
         {
-            this->DepthMap = { };
+            // this->DepthMap = { };
         }
     }
 
@@ -135,17 +136,17 @@ namespace MxEngine
             .property("radius", &PointLight::GetRadius, &PointLight::SetRadius)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
             )
             .property("casts shadows", &PointLight::IsCastingShadows, &PointLight::ToggleShadowCast)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
-            .property_readonly("depth map", &PointLight::DepthMap)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& obj) { return obj.try_convert<PointLight>()->IsCastingShadows(); }))
             );
+            // .property_readonly("depth map", &PointLight::DepthMap)
+            // (
+            //     rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+            //     rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& obj) { return obj.try_convert<PointLight>()->IsCastingShadows(); }))
+            // );
     }
 }

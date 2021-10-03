@@ -38,9 +38,9 @@ namespace MxEngine
     DirectionalLight::DirectionalLight()
     { 
         auto depthTextureSize = (int)GlobalConfig::GetDirectionalLightTextureSize();
-        this->DepthMap = Factory<Texture>::Create();
-        this->DepthMap->LoadDepth(DirectionalLight::TextureCount * depthTextureSize, depthTextureSize);
-        this->DepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("directional light"));
+        // this->DepthMap = Factory<Texture>::Create();
+        // this->DepthMap->LoadDepth(DirectionalLight::TextureCount * depthTextureSize, depthTextureSize);
+        // this->DepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("directional light"));
     }
 
     Matrix4x4 DirectionalLight::GetMatrix(const Vector3& center, size_t index) const
@@ -70,7 +70,7 @@ namespace MxEngine
         auto Low  = MakeVector3(-this->Projections[index]) + Center;
         auto High = MakeVector3( this->Projections[index]) + Center;
 
-        auto shadowMapSize = float(this->DepthMap->GetHeight() + 1);
+        auto shadowMapSize = float(GlobalConfig::GetDirectionalLightTextureSize() + 1);
         auto worldUnitsPerText = (High - Low) / shadowMapSize;
         Low = floor(Low / worldUnitsPerText) * worldUnitsPerText;
         High = floor(High / worldUnitsPerText) * worldUnitsPerText;
@@ -128,10 +128,10 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
-            .property_readonly("depth map", &DirectionalLight::DepthMap)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
-            )
+            // .property_readonly("depth map", &DirectionalLight::DepthMap)
+            // (
+            //     rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            // )
             .property("projections", &DirectionalLight::Projections)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)

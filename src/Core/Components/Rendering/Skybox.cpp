@@ -52,14 +52,14 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
-            )
-            .property("cubemap", &Skybox::CubeMap)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
-            .property("irradiance", &Skybox::Irradiance)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             );
+            //.property("cubemap", &Skybox::CubeMap)
+            //(
+            //    rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            //)
+            //.property("irradiance", &Skybox::Irradiance)
+            //(
+            //    rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            //);
     }
 }

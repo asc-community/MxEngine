@@ -34,13 +34,13 @@ namespace MxEngine
 {
     class RectangleObject
     {
-        VertexBufferHandle VBO;
-        VertexArrayHandle VAO;
-        IndexBufferHandle IBO;
+        // VertexBufferHandle VBO;
+        // VertexArrayHandle VAO;
+        // IndexBufferHandle IBO;
     public:
         static constexpr size_t IndexCount = 2 * 3; // 2 triangles, each with 3 vertecies
 
         void Init(float halfSize);
-        const VertexArray& GetVAO() const;
+        // const VertexArray& GetVAO() const;
     };
 }

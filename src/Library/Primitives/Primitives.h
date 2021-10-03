@@ -74,7 +74,7 @@ namespace MxEngine
         static MeshHandle CreateSurface2Side(const Array2D<float>& heights);
         static MeshHandle CreateSurface(const Array2D<float>& heights, const MxString& filename);
         static MeshHandle CreateSurface2Side(const Array2D<float>& heights, const MxString& filename);
-        static TextureHandle CreateGridTexture(size_t textureSize = 512, float borderScale = 0.01f);
+        // static TextureHandle CreateGridTexture(size_t textureSize = 512, float borderScale = 0.01f);
 
         template<typename Func>
         static MeshHandle CreateSurface(Func&& f, float xsize, float ysize, float step)

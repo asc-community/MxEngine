@@ -71,11 +71,6 @@ namespace MxEngine
         return CFG(DoubleBuffering);
     }
 
-    RenderProfile GlobalConfig::GetGraphicAPIProfile()
-    {
-        return CFG(GraphicAPIProfile);
-    }
-
     size_t GlobalConfig::GetGraphicAPIMajorVersion()
     {
         return CFG(GraphicAPIMajorVersion);

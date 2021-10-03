@@ -33,44 +33,44 @@
 
 namespace MxEngine
 {
-    void MakeTexture(TextureHandle& currentTexture, MxHashMap<StringId, TextureHandle>& textures, const FilePath& path, TextureFormat format)
-    {
-        if (!path.empty()) 
-        {
-            auto id = MakeStringId(path.string());
-            if (textures.find(id) == textures.end())
-            {
-                textures[id] = Factory<Texture>::Create(path, format);
-            }
-            currentTexture = textures[id];
-        }
-    }
+    // void MakeTexture(TextureHandle& currentTexture, MxHashMap<StringId, TextureHandle>& textures, const FilePath& path, TextureFormat format)
+    // {
+    //     if (!path.empty()) 
+    //     {
+    //         auto id = MakeStringId(path.string());
+    //         if (textures.find(id) == textures.end())
+    //         {
+    //             textures[id] = Factory<Texture>::Create(path, format);
+    //         }
+    //         currentTexture = textures[id];
+    //     }
+    // }
 
-    MaterialHandle ConvertMaterial(const MaterialInfo& mat, MxHashMap<StringId, TextureHandle>& textures)
-    {
-        auto materialResource = Factory<Material>::Create();
-        auto& material = *materialResource;
-
-        MakeTexture(material.AlbedoMap, textures, mat.AlbedoMap, TextureFormat::RGBA);
-        MakeTexture(material.EmissiveMap, textures, mat.EmissiveMap, TextureFormat::R);
-        MakeTexture(material.HeightMap, textures, mat.HeightMap, TextureFormat::R);
-        MakeTexture(material.NormalMap, textures, mat.NormalMap, TextureFormat::RG);
-        MakeTexture(material.MetallicMap, textures, mat.MetallicMap, TextureFormat::R);
-        MakeTexture(material.RoughnessMap, textures, mat.RoughnessMap, TextureFormat::R);
-        MakeTexture(material.AmbientOcclusionMap, textures, mat.AmbientOcclusionMap, TextureFormat::R);
-
-        material.Emission = mat.Emission;
-        material.Transparency = mat.Transparency;
-        material.BaseColor = mat.BaseColor;
-        material.MetallicFactor = mat.MetallicFactor;
-        material.RoughnessFactor = mat.RoughnessFactor;
-        material.UVMultipliers = mat.UVMultipliers;
-        material.Name = mat.Name;
-        if (mat.AlphaMask) material.AlphaMode = AlphaModeGroup::MASKED;
-        else material.AlphaMode = (mat.Transparency == 1.0f ? AlphaModeGroup::OPAQUE : AlphaModeGroup::TRANSPARENT);
-
-        return materialResource;
-    }
+    // MaterialHandle ConvertMaterial(const MaterialInfo& mat, MxHashMap<StringId, TextureHandle>& textures)
+    // {
+    //     auto materialResource = Factory<Material>::Create();
+    //     auto& material = *materialResource;
+    // 
+    //     MakeTexture(material.AlbedoMap, textures, mat.AlbedoMap, TextureFormat::RGBA);
+    //     MakeTexture(material.EmissiveMap, textures, mat.EmissiveMap, TextureFormat::R);
+    //     MakeTexture(material.HeightMap, textures, mat.HeightMap, TextureFormat::R);
+    //     MakeTexture(material.NormalMap, textures, mat.NormalMap, TextureFormat::RG);
+    //     MakeTexture(material.MetallicMap, textures, mat.MetallicMap, TextureFormat::R);
+    //     MakeTexture(material.RoughnessMap, textures, mat.RoughnessMap, TextureFormat::R);
+    //     MakeTexture(material.AmbientOcclusionMap, textures, mat.AmbientOcclusionMap, TextureFormat::R);
+    // 
+    //     material.Emission = mat.Emission;
+    //     material.Transparency = mat.Transparency;
+    //     material.BaseColor = mat.BaseColor;
+    //     material.MetallicFactor = mat.MetallicFactor;
+    //     material.RoughnessFactor = mat.RoughnessFactor;
+    //     material.UVMultipliers = mat.UVMultipliers;
+    //     material.Name = mat.Name;
+    //     if (mat.AlphaMask) material.AlphaMode = AlphaModeGroup::MASKED;
+    //     else material.AlphaMode = (mat.Transparency == 1.0f ? AlphaModeGroup::OPAQUE : AlphaModeGroup::TRANSPARENT);
+    // 
+    //     return materialResource;
+    // }
 
     MeshRenderer::MeshRenderer()
         : Materials(1, Factory<Material>::Create()) { }
@@ -102,7 +102,7 @@ namespace MxEngine
     MeshRenderer::MaterialArray MeshRenderer::LoadMaterials(const FilePath& path)
     {
         MaterialArray materials;
-        MxHashMap<StringId, TextureHandle> textures;
+        // MxHashMap<StringId, TextureHandle> textures;
         auto matlibExtenstion = MeshRenderer::GetMaterialFileExtenstion();
         FilePath actualPath = path;
         if (path.extension() != matlibExtenstion)
@@ -113,7 +113,7 @@ namespace MxEngine
         materials.resize(materialLibrary.size());
         for (size_t i = 0; i < materialLibrary.size(); i++)
         {
-            materials[i] = ConvertMaterial(materialLibrary[i], textures);
+            // materials[i] = ConvertMaterial(materialLibrary[i], textures);
         }
 
         return materials;

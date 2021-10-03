@@ -34,7 +34,7 @@
 
 namespace MxEngine
 {
-    #define HANDLE_TYPELIST MaterialHandle, MeshHandle, MxObject::Handle, AudioBufferHandle, TextureHandle, ShaderHandle, CubeMapHandle
+    #define HANDLE_TYPELIST MaterialHandle, MeshHandle, MxObject::Handle, AudioBufferHandle//, TextureHandle, ShaderHandle, CubeMapHandle
 
     template<typename T>
     rttr::variant GetHandleByIdGeneric(size_t handleId)

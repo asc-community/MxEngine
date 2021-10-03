@@ -46,7 +46,7 @@ namespace MxEngine
         static void SetViewport(const CameraControllerHandle& viewport);
         static void ResizeViewport(size_t width, size_t height);
         static VectorInt2 GetViewportSize();
-        static TextureHandle GetRenderTexture();
+        // static TextureHandle GetRenderTexture();
         static RenderController& GetController();
         static RenderAdaptor& GetAdaptor();
         static bool IsDebugOverlayed();

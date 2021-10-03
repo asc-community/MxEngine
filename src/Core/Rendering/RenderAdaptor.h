@@ -39,7 +39,7 @@ namespace MxEngine
         DebugBuffer DebugDrawer;
         CameraController::Handle Viewport;
 
-        constexpr static TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;
+        // constexpr static TextureFormat HDRTextureFormat = TextureFormat::RGBA16F;
         void InitRendererEnvironment();
         void RenderFrame();
         void SubmitRenderedFrame();

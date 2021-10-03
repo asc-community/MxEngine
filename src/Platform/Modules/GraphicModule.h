@@ -30,17 +30,20 @@
 
 namespace MxEngine
 {
+    struct GraphicModuleImpl;
+
     class GraphicModule
     {
         using WindowHandle = void*;
+        inline static GraphicModuleImpl* impl = nullptr;
     public:
         static void Init();
-        static void* GetImpl();
-        static void Clone(void*);
+        static GraphicModuleImpl* GetImpl();
+        static void Clone(GraphicModuleImpl*);
         static void OnWindowCreate(WindowHandle window);
-        static void OnWindowUpdate(WindowHandle window);
+        static void OnFrameBegin();
+        static void OnFrameEnd();
         static void OnWindowDestroy(WindowHandle window);
-        static void OnRenderDraw();
         static void Destroy();
     };
 }

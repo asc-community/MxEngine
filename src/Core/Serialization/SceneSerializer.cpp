@@ -84,8 +84,8 @@ namespace MxEngine
         SerializeResource<Script     >(json);
         SerializeResource<Mesh       >(json);
         SerializeResource<Material   >(json);
-        SerializeResource<Texture    >(json);
-        SerializeResource<CubeMap    >(json);
+        // SerializeResource<Texture    >(json);
+        // SerializeResource<CubeMap    >(json);
         SerializeResource<AudioBuffer>(json);
     }
 
@@ -140,8 +140,8 @@ namespace MxEngine
 
         DeserializeResource<Script     >(json, mappings);
         DeserializeResource<Mesh       >(json, mappings);
-        DeserializeResource<Texture    >(json, mappings);
-        DeserializeResource<CubeMap    >(json, mappings);
+        // DeserializeResource<Texture    >(json, mappings);
+        // DeserializeResource<CubeMap    >(json, mappings);
         DeserializeResource<AudioBuffer>(json, mappings);
         DeserializeResource<Material   >(json, mappings);
 

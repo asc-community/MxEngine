@@ -45,8 +45,8 @@ namespace MxEngine
     public:
         Skybox() = default;
 
-        CubeMapHandle CubeMap;
-        CubeMapHandle Irradiance;
+        // CubeMapHandle CubeMap;
+        // CubeMapHandle Irradiance;
 
         void SetIntensity(float intensity) { this->intensity = Max(intensity, 0.0f); }
         float GetIntensity() const { return this->intensity; }

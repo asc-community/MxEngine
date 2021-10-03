@@ -112,7 +112,7 @@ namespace MxEngine
             viewport = Rendering::GetViewport();
             if (viewport.IsValid())
             {
-                GUI::DrawImageSaver(viewport->GetRenderTexture(), "take screenshot");
+                // GUI::DrawImageSaver(viewport->GetRenderTexture(), "take screenshot");
                 ImGui::Text("attached viewport:");
                 ComponentEditor(*viewport);
             }

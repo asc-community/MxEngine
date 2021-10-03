@@ -114,10 +114,10 @@ namespace MxEngine
         auto viewport = (VectorInt2)WindowManager::GetSize();
         this->renderBuffers->Init(viewport.x, viewport.y);
 
-        this->renderTexture = Factory<Texture>::Create();
-        this->renderTexture->Load(nullptr, viewport.x, viewport.y, 3, false, TextureFormat::RGB);
-        this->renderTexture->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
-        this->renderTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera output"));
+        // this->renderTexture = Factory<Texture>::Create();
+        // this->renderTexture->Load(nullptr, viewport.x, viewport.y, 3, false, TextureFormat::RGB);
+        // this->renderTexture->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+        // this->renderTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera output"));
     }
 
     CameraController::~CameraController()
@@ -174,10 +174,10 @@ namespace MxEngine
         return (Matrix4x4)viewMatrix;
     }
 
-    TextureHandle CameraController::GetRenderTexture() const
-    {
-        return this->renderTexture;
-    }
+    // TextureHandle CameraController::GetRenderTexture() const
+    // {
+    //     return this->renderTexture;
+    // }
 
     void CameraController::ListenWindowResizeEvent()
     {
@@ -215,21 +215,21 @@ namespace MxEngine
 
     void CameraController::ResizeRenderTexture(size_t w, size_t h)
     {
-        this->renderTexture->Load(nullptr, (int)w, (int)h, 3, false, this->renderTexture->GetFormat());
-        this->renderTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera output"));
+        // this->renderTexture->Load(nullptr, (int)w, (int)h, 3, false, this->renderTexture->GetFormat());
+        // this->renderTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera output"));
         if(this->IsRendering())
             this->renderBuffers->Resize((int)w, (int)h);
     }
 
-    void CameraController::SetRenderTexture(const TextureHandle& texture)
-    {
-        MX_ASSERT(texture.IsValid());
-        this->renderTexture = texture;
-        if (this->IsRendering())
-        {
-            this->renderBuffers->Resize((int)texture->GetWidth(), (int)texture->GetHeight());
-        }
-    }
+    // void CameraController::SetRenderTexture(const TextureHandle& texture)
+    // {
+    //     MX_ASSERT(texture.IsValid());
+    //     this->renderTexture = texture;
+    //     if (this->IsRendering())
+    //     {
+    //         this->renderBuffers->Resize((int)texture->GetWidth(), (int)texture->GetHeight());
+    //     }
+    // }
 
     bool CameraController::IsRendering() const
     {
@@ -241,7 +241,7 @@ namespace MxEngine
         if (this->renderingEnabled != value)
         {
             if (value)
-                this->renderBuffers->Init((int)this->renderTexture->GetWidth(), (int)this->renderTexture->GetHeight());
+                ;// this->renderBuffers->Init((int)this->renderTexture->GetWidth(), (int)this->renderTexture->GetHeight());
             else
                 this->renderBuffers->DeInit();
         }
@@ -295,7 +295,8 @@ namespace MxEngine
 
     UUID CameraController::GetEventUUID() const
     {
-        return this->GetGBuffer().GetUUID();
+        //return this->GetGBuffer().GetUUID();
+        return UUID{ };
     }
 
     const Vector3& CameraController::GetDirectionDenormalized() const
@@ -425,125 +426,124 @@ namespace MxEngine
         return this->right;
     }
 
-    FrameBufferHandle CameraController::GetGBuffer() const
-    {
-        return this->renderBuffers->GBuffer;
-    }
-
-    TextureHandle CameraController::GetAlbedoTexture() const
-    {
-        return this->renderBuffers->Albedo;
-    }
-
-    TextureHandle CameraController::GetNormalTexture() const
-    {
-        return this->renderBuffers->Normal;
-    }
-
-    TextureHandle CameraController::GetMaterialTexture() const
-    {
-        return this->renderBuffers->Material;
-    }
-
-    TextureHandle CameraController::GetDepthTexture() const
-    {
-        return this->renderBuffers->Depth;
-    }
-
-    TextureHandle CameraController::GetAverageWhiteTexture() const
-    {
-        return this->renderBuffers->AverageWhite;
-    }
-
-    TextureHandle CameraController::GetHDRTexture() const
-    {
-        return this->renderBuffers->HDR;
-    }
-
-    TextureHandle CameraController::GetSwapHDRTexture2() const
-    {
-        return this->renderBuffers->SwapHDR2;
-    }
-
-    TextureHandle CameraController::GetSwapHDRTexture1() const
-    {
-        return this->renderBuffers->SwapHDR1;
-    }
+    // FrameBufferHandle CameraController::GetGBuffer() const
+    // {
+    //     return this->renderBuffers->GBuffer;
+    // }
+    // 
+    // TextureHandle CameraController::GetAlbedoTexture() const
+    // {
+    //     return this->renderBuffers->Albedo;
+    // }
+    // 
+    // TextureHandle CameraController::GetNormalTexture() const
+    // {
+    //     return this->renderBuffers->Normal;
+    // }
+    // 
+    // TextureHandle CameraController::GetMaterialTexture() const
+    // {
+    //     return this->renderBuffers->Material;
+    // }
+    // 
+    // TextureHandle CameraController::GetDepthTexture() const
+    // {
+    //     return this->renderBuffers->Depth;
+    // }
+    // 
+    // TextureHandle CameraController::GetAverageWhiteTexture() const
+    // {
+    //     return this->renderBuffers->AverageWhite;
+    // }
+    // 
+    // TextureHandle CameraController::GetHDRTexture() const
+    // {
+    //     return this->renderBuffers->HDR;
+    // }
+    // 
+    // TextureHandle CameraController::GetSwapHDRTexture2() const
+    // {
+    //     return this->renderBuffers->SwapHDR2;
+    // }
+    // 
+    // TextureHandle CameraController::GetSwapHDRTexture1() const
+    // {
+    //     return this->renderBuffers->SwapHDR1;
+    // }
 
     void CameraRender::Init(int width, int height)
     {
-        this->GBuffer = Factory<FrameBuffer>::Create();
-        this->Albedo = Factory<Texture>::Create();
-        this->Normal = Factory<Texture>::Create();
-        this->Material = Factory<Texture>::Create();
-        this->Depth = Factory<Texture>::Create();
-        this->AverageWhite = Factory<Texture>::Create();
-        this->HDR = Factory<Texture>::Create();
-        this->SwapHDR1 = Factory<Texture>::Create();
-        this->SwapHDR2 = Factory<Texture>::Create();
+        // this->GBuffer = Factory<FrameBuffer>::Create();
+        // this->Albedo = Factory<Texture>::Create();
+        // this->Normal = Factory<Texture>::Create();
+        // this->Material = Factory<Texture>::Create();
+        // this->Depth = Factory<Texture>::Create();
+        // this->AverageWhite = Factory<Texture>::Create();
+        // this->HDR = Factory<Texture>::Create();
+        // this->SwapHDR1 = Factory<Texture>::Create();
+        // this->SwapHDR2 = Factory<Texture>::Create();
 
         this->Resize(width, height);
         
-        this->GBuffer->AttachTexture(this->Albedo, Attachment::COLOR_ATTACHMENT0);
-        this->GBuffer->AttachTextureExtra(this->Normal, Attachment::COLOR_ATTACHMENT1);
-        this->GBuffer->AttachTextureExtra(this->Material, Attachment::COLOR_ATTACHMENT2);
-        this->GBuffer->AttachTextureExtra(this->Depth, Attachment::DEPTH_ATTACHMENT);
-
-        std::array attachments = {
-            Attachment::COLOR_ATTACHMENT0,
-            Attachment::COLOR_ATTACHMENT1,
-            Attachment::COLOR_ATTACHMENT2,
-        };
-        this->GBuffer->UseDrawBuffers(attachments);
-        this->GBuffer->Validate();
+        // this->GBuffer->AttachTexture(this->Albedo, Attachment::COLOR_ATTACHMENT0);
+        // this->GBuffer->AttachTextureExtra(this->Normal, Attachment::COLOR_ATTACHMENT1);
+        // this->GBuffer->AttachTextureExtra(this->Material, Attachment::COLOR_ATTACHMENT2);
+        // this->GBuffer->AttachTextureExtra(this->Depth, Attachment::DEPTH_ATTACHMENT);
+        // 
+        // std::array attachments = {
+        //     Attachment::COLOR_ATTACHMENT0,
+        //     Attachment::COLOR_ATTACHMENT1,
+        //     Attachment::COLOR_ATTACHMENT2,
+        // };
+        // this->GBuffer->UseDrawBuffers(attachments);
+        // this->GBuffer->Validate();
     }
 
     void CameraRender::Resize(int width, int height)
     {
-
-        this->Albedo->Load(nullptr, width, height, 3, false, TextureFormat::RGBA);
-        this->Albedo->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera albedo"));
-        this->Albedo->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
-
-        this->Normal->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16);
-        this->Normal->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera normal"));
-        this->Normal->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
-
-        this->Material->Load(nullptr, width, height, 3, false, TextureFormat::RGBA);
-        this->Material->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera material"));
-        this->Material->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
-
-        this->Depth->LoadDepth(width, height, TextureFormat::DEPTH32F);
-        this->Depth->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera depth"));
-        this->Depth->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
-
-        this->AverageWhite->Load(nullptr, 1, 1, 3, false, TextureFormat::RGBA16F);
-        this->AverageWhite->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera white"));
-        this->AverageWhite->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
-        
-        this->HDR->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F);
-        this->HDR->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera hdr"));
-        this->HDR->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
-        
-        this->SwapHDR1->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F);
-        this->SwapHDR1->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap hdr 1"));
-        this->SwapHDR1->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
-        
-        this->SwapHDR2->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F);
-        this->SwapHDR2->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap hdr 2"));
-        this->SwapHDR2->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+        // this->Albedo->Load(nullptr, width, height, 3, false, TextureFormat::RGBA);
+        // this->Albedo->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera albedo"));
+        // this->Albedo->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+        // 
+        // this->Normal->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16);
+        // this->Normal->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera normal"));
+        // this->Normal->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+        // 
+        // this->Material->Load(nullptr, width, height, 3, false, TextureFormat::RGBA);
+        // this->Material->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera material"));
+        // this->Material->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+        // 
+        // this->Depth->LoadDepth(width, height, TextureFormat::DEPTH32F);
+        // this->Depth->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera depth"));
+        // this->Depth->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+        // 
+        // this->AverageWhite->Load(nullptr, 1, 1, 3, false, TextureFormat::RGBA16F);
+        // this->AverageWhite->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera white"));
+        // this->AverageWhite->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+        // 
+        // this->HDR->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F);
+        // this->HDR->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera hdr"));
+        // this->HDR->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+        // 
+        // this->SwapHDR1->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F);
+        // this->SwapHDR1->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap hdr 1"));
+        // this->SwapHDR1->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+        // 
+        // this->SwapHDR2->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F);
+        // this->SwapHDR2->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap hdr 2"));
+        // this->SwapHDR2->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
     }
 
     void CameraRender::DeInit()
     {
-        Factory<FrameBuffer>::Destroy(this->GBuffer);
-        Factory<Texture>::Destroy(this->Albedo);
-        Factory<Texture>::Destroy(this->Normal);
-        Factory<Texture>::Destroy(this->Material);
-        Factory<Texture>::Destroy(this->Depth);
-        Factory<Texture>::Destroy(this->HDR);
-        Factory<Texture>::Destroy(this->SwapHDR1);
-        Factory<Texture>::Destroy(this->SwapHDR2);
+        // Factory<FrameBuffer>::Destroy(this->GBuffer);
+        // Factory<Texture>::Destroy(this->Albedo);
+        // Factory<Texture>::Destroy(this->Normal);
+        // Factory<Texture>::Destroy(this->Material);
+        // Factory<Texture>::Destroy(this->Depth);
+        // Factory<Texture>::Destroy(this->HDR);
+        // Factory<Texture>::Destroy(this->SwapHDR1);
+        // Factory<Texture>::Destroy(this->SwapHDR2);
     }
 
     MXENGINE_REFLECT_TYPE
@@ -715,10 +715,10 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
-            .property_readonly("render texture", &CameraController::GetRenderTexture)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
-            )
+            // .property_readonly("render texture", &CameraController::GetRenderTexture)
+            // (
+            //     rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            // )
             .property("forward vector", &CameraController::GetForwardVector, &CameraController::SetForwardVector)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),

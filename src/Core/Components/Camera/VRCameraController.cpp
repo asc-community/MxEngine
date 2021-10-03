@@ -45,20 +45,20 @@ namespace MxEngine
 
         camera->ToggleRendering(false);
 
-        auto leftTexture  = this->LeftEye->GetRenderTexture();
-        auto rightTexture = this->RightEye->GetRenderTexture();
-        auto resultTexture = camera->GetRenderTexture();
-
-        size_t widthTotal = leftTexture->GetWidth() + rightTexture->GetWidth();
-        size_t heightTotal = leftTexture->GetHeight() + rightTexture->GetHeight();
-
-        if (resultTexture->GetWidth() != widthTotal || resultTexture->GetHeight() != heightTotal)
-        {
-            resultTexture->Load(nullptr, (int)widthTotal, (int)heightTotal, 3, false, resultTexture->GetFormat());
-            resultTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("vr camera out"));
-        }
-
-        this->Render(resultTexture, leftTexture, rightTexture);
+        // auto leftTexture  = this->LeftEye->GetRenderTexture();
+        // auto rightTexture = this->RightEye->GetRenderTexture();
+        // auto resultTexture = camera->GetRenderTexture();
+        // 
+        // size_t widthTotal = leftTexture->GetWidth() + rightTexture->GetWidth();
+        // size_t heightTotal = leftTexture->GetHeight() + rightTexture->GetHeight();
+        // 
+        // if (resultTexture->GetWidth() != widthTotal || resultTexture->GetHeight() != heightTotal)
+        // {
+        //     resultTexture->Load(nullptr, (int)widthTotal, (int)heightTotal, 3, false, resultTexture->GetFormat());
+        //     resultTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("vr camera out"));
+        // }
+        // 
+        // this->Render(resultTexture, leftTexture, rightTexture);
     }
 
     void VRCameraController::UpdateEyes(CameraController::Handle& cameraL, CameraController::Handle& cameraR)
@@ -82,20 +82,20 @@ namespace MxEngine
         cameraR->SetDirection(Normalize(REyeDirection));
     }
 
-    void VRCameraController::Render(TextureHandle& target, const TextureHandle& leftEye, const TextureHandle& rightEye)
-    {
-        leftEye->Bind(0);
-        rightEye->Bind(1);
-        this->shaderVR->Bind();
-        this->shaderVR->SetUniform("leftEyeTex", 0);
-        this->shaderVR->SetUniform("rightEyeTex", 1);
-        Rendering::GetController().RenderToTexture(target, this->shaderVR);
-        target->GenerateMipmaps();
-    }
+    // void VRCameraController::Render(TextureHandle& target, const TextureHandle& leftEye, const TextureHandle& rightEye)
+    // {
+    //     leftEye->Bind(0);
+    //     rightEye->Bind(1);
+    //     this->shaderVR->Bind();
+    //     this->shaderVR->SetUniform("leftEyeTex", 0);
+    //     this->shaderVR->SetUniform("rightEyeTex", 1);
+    //     Rendering::GetController().RenderToTexture(target, this->shaderVR);
+    //     target->GenerateMipmaps();
+    // }
 
     void VRCameraController::Init()
     {
-        this->shaderVR = Rendering::GetController().GetEnvironment().Shaders["VRCamera"_id];
+        // this->shaderVR = Rendering::GetController().GetEnvironment().Shaders["VRCamera"_id];
     }
 
     MXENGINE_REFLECT_TYPE

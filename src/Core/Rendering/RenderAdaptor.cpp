@@ -60,14 +60,14 @@ namespace MxEngine
 
         this->SetRenderToDefaultFrameBuffer();
 
-        environment.RenderVAO = BufferAllocator::GetVAO();
-        environment.RenderSSBO = BufferAllocator::GetSSBO();
+        // environment.RenderVAO = BufferAllocator::GetVAO();
+        // environment.RenderSSBO = BufferAllocator::GetSSBO();
 
         // helper objects
         environment.RectangularObject.Init(1.0f);
         environment.SkyboxCubeObject.Init();
         this->DebugDrawer.Init();
-        environment.DebugBufferObject.VAO = this->DebugDrawer.GetVAO();
+        // environment.DebugBufferObject.VAO = this->DebugDrawer.GetVAO();
 
         // light bounding objects
         auto pyramidInstanced = Primitives::CreatePyramid();
@@ -86,43 +86,43 @@ namespace MxEngine
         pyramid.MakeStatic();
         this->Renderer.GetLightInformation().SpotLight = RenderHelperObject(
             pyramid->GetBaseVerteciesOffset(), pyramid->GetTotalVerteciesCount(),
-            pyramid->GetBaseIndiciesOffset(), pyramid->GetTotalIndiciesCount(),
-            environment.RenderVAO);
+            pyramid->GetBaseIndiciesOffset(), pyramid->GetTotalIndiciesCount());
+            // environment.RenderVAO);
 
         auto sphere = Primitives::CreateSphere(8);
         sphere.MakeStatic();
         this->Renderer.GetLightInformation().PointLight = RenderHelperObject(
             sphere->GetBaseVerteciesOffset(), sphere->GetTotalVerteciesCount(),
-            sphere->GetBaseIndiciesOffset(), sphere->GetTotalIndiciesCount(),
-            environment.RenderVAO);
+            sphere->GetBaseIndiciesOffset(), sphere->GetTotalIndiciesCount());
+            // environment.RenderVAO);
 
         auto textureFolder = FileManager::GetEngineTextureDirectory();
         int internalTextureSize = (int)GlobalConfig::GetEngineTextureSize();
         // default textures
-        environment.DefaultShadowMap = Colors::MakeTexture(Colors::BLACK);
-        environment.DefaultBlackMap = Colors::MakeTexture(Colors::BLACK);
-        environment.DefaultNormalMap = Colors::MakeTexture(Colors::FLAT_NORMAL);
-        environment.DefaultMaterialMap = Colors::MakeTexture(Colors::WHITE);
-        environment.DefaultGreyMap = Colors::MakeTexture(Colors::GREY);
-        environment.DefaultShadowCubeMap = Colors::MakeCubeMap(Colors::BLACK);
-        environment.DefaultSkybox = Colors::MakeCubeMap(0.8f, 0.9f, 1.0f);
-
-        environment.DefaultBlackMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("black color"));
-        environment.DefaultNormalMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default normal"));
-        environment.DefaultMaterialMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("white color"));
-        environment.DefaultGreyMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("grey color"));
-        environment.DefaultShadowMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default shadow map"));
-        environment.DefaultShadowCubeMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default shadow cubemap"));
-        environment.DefaultSkybox->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default skybox cubemap"));
-
-        environment.AverageWhiteTexture = Factory<Texture>::Create();
-        environment.AverageWhiteTexture->Load(nullptr, internalTextureSize, internalTextureSize, 1, false, TextureFormat::R16F);
-        environment.AverageWhiteTexture->SetMinLOD(environment.AverageWhiteTexture->GetMaxTextureLOD());
-        environment.AverageWhiteTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("average white"));
-
-        // TODO: use RG16
-        environment.EnvironmentBRDFLUT = AssetManager::LoadTexture(textureFolder / "env_brdf_lut.png", TextureFormat::RG);
-        environment.EnvironmentBRDFLUT->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("BRDF LUT"));
+        // environment.DefaultShadowMap = Colors::MakeTexture(Colors::BLACK);
+        // environment.DefaultBlackMap = Colors::MakeTexture(Colors::BLACK);
+        // environment.DefaultNormalMap = Colors::MakeTexture(Colors::FLAT_NORMAL);
+        // environment.DefaultMaterialMap = Colors::MakeTexture(Colors::WHITE);
+        // environment.DefaultGreyMap = Colors::MakeTexture(Colors::GREY);
+        // environment.DefaultShadowCubeMap = Colors::MakeCubeMap(Colors::BLACK);
+        // environment.DefaultSkybox = Colors::MakeCubeMap(0.8f, 0.9f, 1.0f);
+        // 
+        // environment.DefaultBlackMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("black color"));
+        // environment.DefaultNormalMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default normal"));
+        // environment.DefaultMaterialMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("white color"));
+        // environment.DefaultGreyMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("grey color"));
+        // environment.DefaultShadowMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default shadow map"));
+        // environment.DefaultShadowCubeMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default shadow cubemap"));
+        // environment.DefaultSkybox->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("default skybox cubemap"));
+        // 
+        // environment.AverageWhiteTexture = Factory<Texture>::Create();
+        // environment.AverageWhiteTexture->Load(nullptr, internalTextureSize, internalTextureSize, 1, false, TextureFormat::R16F);
+        // environment.AverageWhiteTexture->SetMinLOD(environment.AverageWhiteTexture->GetMaxTextureLOD());
+        // environment.AverageWhiteTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("average white"));
+        // 
+        // // TODO: use RG16
+        // environment.EnvironmentBRDFLUT = AssetManager::LoadTexture(textureFolder / "env_brdf_lut.png", TextureFormat::RG);
+        // environment.EnvironmentBRDFLUT->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("BRDF LUT"));
         
         // shaders
         auto shaderFolder = FileManager::GetEngineShaderDirectory();
@@ -131,202 +131,202 @@ namespace MxEngine
             MXLOG_FATAL("MxEngine::Application", "there is not Engine/Shaders folder in root directory. Try rebuilding your application");
         }
 
-        environment.Shaders["GBuffer"_id] = AssetManager::LoadShader(
-            shaderFolder / "gbuffer_vertex.glsl", 
-            shaderFolder / "gbuffer_fragment.glsl"
-        );
-
-        environment.Shaders["GBufferMask"_id] = AssetManager::LoadShader(
-            shaderFolder / "gbuffer_vertex.glsl",
-            shaderFolder / "gbuffer_mask_fragment.glsl"
-        );
-
-        environment.Shaders["Transparent"_id] = AssetManager::LoadShader(
-            shaderFolder / "gbuffer_vertex.glsl", 
-            shaderFolder / "transparent_fragment.glsl"
-        );
-
-        environment.Shaders["DirLight"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "dirlight_fragment.glsl"
-        );
-
-        environment.Shaders["SpotLightShadow"_id] = AssetManager::LoadShader(
-            shaderFolder / "spotlight_shadow_vertex.glsl",
-            shaderFolder / "spotlight_fragment.glsl"
-        );
-
-        environment.Shaders["SpotLightNonShadow"_id] = AssetManager::LoadShader(
-            shaderFolder / "spotlight_nonshadow_vertex.glsl",
-            shaderFolder / "spotlight_fragment.glsl"
-        );
-
-        environment.Shaders["PointLightShadow"_id] = AssetManager::LoadShader(
-            shaderFolder / "pointlight_shadow_vertex.glsl",
-            shaderFolder / "pointlight_fragment.glsl"
-        );
-
-        environment.Shaders["PointLightNonShadow"_id] = AssetManager::LoadShader(
-            shaderFolder / "pointlight_nonshadow_vertex.glsl",
-            shaderFolder / "pointlight_fragment.glsl"
-        );
-
-        environment.Shaders["HDRToLDR"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "hdr_to_ldr_fragment.glsl"
-        );
-
-        environment.Shaders["FXAA"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "fxaa_fragment.glsl"
-        );
-
-        environment.Shaders["Fog"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "fog_fragment.glsl"
-        );
-
-        environment.Shaders["Vignette"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "vignette_fragment.glsl"
-        );
-
-        environment.Shaders["Skybox"_id] = AssetManager::LoadShader(
-            shaderFolder / "skybox_vertex.glsl",
-            shaderFolder / "skybox_fragment.glsl"
-        );
-
-        environment.Shaders["DirLightDepthMap"_id] = AssetManager::LoadShader(
-            shaderFolder / "depthtexture_vertex.glsl",
-            shaderFolder / "depthtexture_fragment.glsl"
-        );
-
-        environment.Shaders["DirLightMaskDepthMap"_id] = AssetManager::LoadShader(
-            shaderFolder / "depthtexture_vertex.glsl",
-            shaderFolder / "depthtexture_mask_fragment.glsl"
-        );
-
-        environment.Shaders["SpotLightDepthMap"_id] = AssetManager::LoadShader(
-            shaderFolder / "depthtexture_vertex.glsl", 
-            shaderFolder / "depthtexture_fragment.glsl"
-        );
-
-        environment.Shaders["SpotLightMaskDepthMap"_id] = AssetManager::LoadShader(
-            shaderFolder / "depthtexture_vertex.glsl",
-            shaderFolder / "depthtexture_mask_fragment.glsl"
-        );
-
-        environment.Shaders["PointLightDepthMap"_id] = AssetManager::LoadShader(
-            shaderFolder / "depthcubemap_vertex.glsl",
-            shaderFolder / "depthcubemap_geometry.glsl",
-            shaderFolder / "depthcubemap_fragment.glsl"
-        );
-
-        environment.Shaders["GaussianBlur"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "gaussian_blur_fragment.glsl"
-        );
-
-        environment.Shaders["BloomSplit"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "bloom_split_fragment.glsl"
-        );
-
-        environment.Shaders["ImageForward"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "rect_fragment.glsl"
-        );
-
-        environment.Shaders["DebugDraw"_id] = AssetManager::LoadShader(
-            shaderFolder / "debug_vertex.glsl",
-            shaderFolder / "debug_geometry.glsl",
-            shaderFolder / "debug_fragment.glsl"
-        );
-
-        environment.Shaders["VRCamera"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "vr_fragment.glsl"
-        );
-
-        environment.Shaders["AverageWhite"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "average_white_fragment.glsl"
-        );
-
-        environment.Shaders["SSR"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "ssr_fragment.glsl"
-        );
-
-        environment.Shaders["ApplySSR"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "apply_ssr_fragment.glsl"
-        );
-
-        environment.Shaders["SSGI"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "ssgi_fragment.glsl"
-        );
-
-        environment.Shaders["ApplySSGI"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "apply_ssgi_fragment.glsl"
-        );
-        
-        environment.Shaders["ChromaticAbberation"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "chromatic_abberation_fragment.glsl"
-        );
-
-        environment.Shaders["AmbientOcclusion"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "ssao_fragment.glsl"
-        );
-
-        environment.Shaders["ApplyAmbientOcclusion"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "apply_ssao_fragment.glsl"
-        );
-
-        environment.Shaders["ColorGrading"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "color_grading_fragment.glsl"
-        );
-
-        environment.Shaders["IBL"_id] = AssetManager::LoadShader(
-            shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "ibl_fragment.glsl"
-        );
-
-        environment.Shaders["ParticleOpaque"_id] = AssetManager::LoadShader(
-            shaderFolder / "particle_opaque_vertex.glsl",
-            shaderFolder / "particle_opaque_fragment.glsl"
-        );
-
-        environment.Shaders["ParticleTransparent"_id] = AssetManager::LoadShader(
-            shaderFolder / "particle_transparent_vertex.glsl",
-            shaderFolder / "particle_transparent_fragment.glsl"
-        );
-
-        // compute shaders
-        environment.ComputeShaders["Particle"_id] = AssetManager::LoadComputeShader(
-            shaderFolder / "particle_compute.glsl"
-        );
+        // environment.Shaders["GBuffer"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "gbuffer_vertex.glsl", 
+        //     shaderFolder / "gbuffer_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["GBufferMask"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "gbuffer_vertex.glsl",
+        //     shaderFolder / "gbuffer_mask_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["Transparent"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "gbuffer_vertex.glsl", 
+        //     shaderFolder / "transparent_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["DirLight"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "dirlight_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["SpotLightShadow"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "spotlight_shadow_vertex.glsl",
+        //     shaderFolder / "spotlight_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["SpotLightNonShadow"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "spotlight_nonshadow_vertex.glsl",
+        //     shaderFolder / "spotlight_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["PointLightShadow"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "pointlight_shadow_vertex.glsl",
+        //     shaderFolder / "pointlight_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["PointLightNonShadow"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "pointlight_nonshadow_vertex.glsl",
+        //     shaderFolder / "pointlight_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["HDRToLDR"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "hdr_to_ldr_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["FXAA"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "fxaa_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["Fog"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "fog_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["Vignette"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "vignette_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["Skybox"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "skybox_vertex.glsl",
+        //     shaderFolder / "skybox_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["DirLightDepthMap"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "depthtexture_vertex.glsl",
+        //     shaderFolder / "depthtexture_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["DirLightMaskDepthMap"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "depthtexture_vertex.glsl",
+        //     shaderFolder / "depthtexture_mask_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["SpotLightDepthMap"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "depthtexture_vertex.glsl", 
+        //     shaderFolder / "depthtexture_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["SpotLightMaskDepthMap"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "depthtexture_vertex.glsl",
+        //     shaderFolder / "depthtexture_mask_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["PointLightDepthMap"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "depthcubemap_vertex.glsl",
+        //     shaderFolder / "depthcubemap_geometry.glsl",
+        //     shaderFolder / "depthcubemap_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["GaussianBlur"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "gaussian_blur_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["BloomSplit"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "bloom_split_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["ImageForward"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "rect_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["DebugDraw"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "debug_vertex.glsl",
+        //     shaderFolder / "debug_geometry.glsl",
+        //     shaderFolder / "debug_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["VRCamera"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "vr_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["AverageWhite"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "average_white_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["SSR"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "ssr_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["ApplySSR"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "apply_ssr_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["SSGI"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "ssgi_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["ApplySSGI"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "apply_ssgi_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["ChromaticAbberation"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "chromatic_abberation_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["AmbientOcclusion"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "ssao_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["ApplyAmbientOcclusion"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "apply_ssao_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["ColorGrading"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "color_grading_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["IBL"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "rect_vertex.glsl",
+        //     shaderFolder / "ibl_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["ParticleOpaque"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "particle_opaque_vertex.glsl",
+        //     shaderFolder / "particle_opaque_fragment.glsl"
+        // );
+        // 
+        // environment.Shaders["ParticleTransparent"_id] = AssetManager::LoadShader(
+        //     shaderFolder / "particle_transparent_vertex.glsl",
+        //     shaderFolder / "particle_transparent_fragment.glsl"
+        // );
+        // 
+        // // compute shaders
+        // environment.ComputeShaders["Particle"_id] = AssetManager::LoadComputeShader(
+        //     shaderFolder / "particle_compute.glsl"
+        // );
 
         // framebuffers
-        environment.DepthFrameBuffer = Factory<FrameBuffer>::Create();
-        environment.DepthFrameBuffer->UseOnlyDepth();
-        environment.PostProcessFrameBuffer = Factory<FrameBuffer>::Create();
-        environment.BloomFrameBuffer = Factory<FrameBuffer>::Create();
+        // environment.DepthFrameBuffer = Factory<FrameBuffer>::Create();
+        // environment.DepthFrameBuffer->UseOnlyDepth();
+        // environment.PostProcessFrameBuffer = Factory<FrameBuffer>::Create();
+        // environment.BloomFrameBuffer = Factory<FrameBuffer>::Create();
 
         auto bloomBufferSize = (int)GlobalConfig::GetEngineTextureSize();
-        for (auto& bloomTexture : environment.BloomTextures)
-        {
-            bloomTexture = Factory<Texture>::Create();
-            bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, 3, false, HDRTextureFormat);
-            bloomTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("bloom"));
-            bloomTexture->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
-        }
+        // for (auto& bloomTexture : environment.BloomTextures)
+        // {
+        //     bloomTexture = Factory<Texture>::Create();
+        //     bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, 3, false, HDRTextureFormat);
+        //     bloomTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("bloom"));
+        //     bloomTexture->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+        // }
     }
 
     void RenderAdaptor::RenderFrame()

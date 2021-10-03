@@ -31,38 +31,38 @@
 
 namespace MxEngine
 {
-    TextureHandle NoiseGenerator::MakeRandomOneChannelTexture(size_t width, size_t height)
-    {
-        TextureHandle result = Factory<Texture>::Create();
-        MxVector<std::array<uint8_t, 3>> noise;
-        noise.resize(width * height);
-
-        for (auto& pix : noise)
-        {
-            auto randomValue = (uint8_t)Random::Range(0, 255);
-            pix[0] = pix[1] = pix[2] = randomValue;
-        }
-
-        result->Load(noise[0].data(), (int)width, (int)height, 3, false);
-        result->SetInternalEngineTag("[[noise]]");
-        return result;
-    }
-
-    TextureHandle NoiseGenerator::MakeRandomTexture(size_t width, size_t height)
-    {
-        TextureHandle result = Factory<Texture>::Create();
-        MxVector<std::array<uint8_t, 3>> noise;
-        noise.resize(width * height);
-
-        for (auto& pix : noise)
-        {
-            pix[0] = (uint8_t)Random::Range(0, 255);
-            pix[1] = (uint8_t)Random::Range(0, 255);
-            pix[2] = (uint8_t)Random::Range(0, 255);
-        }
-
-        result->Load(noise[0].data(), (int)width, (int)height, 3, false);
-        result->SetInternalEngineTag("[[noise]]");
-        return result;
-    }
+    // TextureHandle NoiseGenerator::MakeRandomOneChannelTexture(size_t width, size_t height)
+    // {
+    //     TextureHandle result = Factory<Texture>::Create();
+    //     MxVector<std::array<uint8_t, 3>> noise;
+    //     noise.resize(width * height);
+    // 
+    //     for (auto& pix : noise)
+    //     {
+    //         auto randomValue = (uint8_t)Random::Range(0, 255);
+    //         pix[0] = pix[1] = pix[2] = randomValue;
+    //     }
+    // 
+    //     result->Load(noise[0].data(), (int)width, (int)height, 3, false);
+    //     result->SetInternalEngineTag("[[noise]]");
+    //     return result;
+    // }
+    // 
+    // TextureHandle NoiseGenerator::MakeRandomTexture(size_t width, size_t height)
+    // {
+    //     TextureHandle result = Factory<Texture>::Create();
+    //     MxVector<std::array<uint8_t, 3>> noise;
+    //     noise.resize(width * height);
+    // 
+    //     for (auto& pix : noise)
+    //     {
+    //         pix[0] = (uint8_t)Random::Range(0, 255);
+    //         pix[1] = (uint8_t)Random::Range(0, 255);
+    //         pix[2] = (uint8_t)Random::Range(0, 255);
+    //     }
+    // 
+    //     result->Load(noise[0].data(), (int)width, (int)height, 3, false);
+    //     result->SetInternalEngineTag("[[noise]]");
+    //     return result;
+    // }
 }

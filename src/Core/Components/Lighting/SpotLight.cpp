@@ -34,7 +34,8 @@ namespace MxEngine
 {
     bool SpotLight::IsCastingShadows() const
     {
-        return this->DepthMap.IsValid();
+        // return this->DepthMap.IsValid();
+        return false;
     }
 
     void SpotLight::ToggleShadowCast(bool value)
@@ -45,16 +46,16 @@ namespace MxEngine
         }
         else if (!value && this->IsCastingShadows())
         {
-            this->DepthMap = { };
+            // this->DepthMap = { };
         }
     }
 
     void SpotLight::LoadDepthTexture()
     {
         auto depthTextureSize = (int)GlobalConfig::GetSpotLightTextureSize();
-        this->DepthMap = Factory<Texture>::Create();
-        this->DepthMap->LoadDepth(depthTextureSize, depthTextureSize);
-        this->DepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("spot light"));
+        // this->DepthMap = Factory<Texture>::Create();
+        // this->DepthMap->LoadDepth(depthTextureSize, depthTextureSize);
+        // this->DepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("spot light"));
     }
 
     float SpotLight::GetInnerAngle() const
@@ -169,17 +170,17 @@ namespace MxEngine
             .property("max distance", &SpotLight::GetMaxDistance, &SpotLight::SetMaxDistance)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
             )
             .property("casts shadows", &SpotLight::IsCastingShadows, &SpotLight::ToggleShadowCast)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
-            .property_readonly("depth map", &SpotLight::DepthMap)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
-                rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& obj) { return obj.try_convert<SpotLight>()->IsCastingShadows(); }))
             );
+            // .property_readonly("depth map", &SpotLight::DepthMap)
+            // (
+            //     rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE),
+            //     rttr::metadata(MetaInfo::CONDITION, +([](rttr::instance& obj) { return obj.try_convert<SpotLight>()->IsCastingShadows(); }))
+            // );
     }
 }

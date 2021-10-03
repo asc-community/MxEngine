@@ -33,7 +33,7 @@ namespace MxEngine
     class NoiseGenerator
     {
     public:
-        static TextureHandle MakeRandomOneChannelTexture(size_t width, size_t height);
-        static TextureHandle MakeRandomTexture(size_t width, size_t height);
+        // static TextureHandle MakeRandomOneChannelTexture(size_t width, size_t height);
+        // static TextureHandle MakeRandomTexture(size_t width, size_t height);
     };
 }

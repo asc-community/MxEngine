@@ -30,50 +30,8 @@
 
 #include "Utilities/Factory/Factory.h"
 
-#include "Platform/OpenGL/CubeMap.h"
-#include "Platform/OpenGL/FrameBuffer.h"
-#include "Platform/OpenGL/IndexBuffer.h"
-#include "Platform/OpenGL/RenderBuffer.h"
-#include "Platform/OpenGL/Shader.h"
-#include "Platform/OpenGL/Texture.h"
-#include "Platform/OpenGL/VertexArray.h"
-#include "Platform/OpenGL/VertexBuffer.h"
-#include "Platform/OpenGL/ShaderStorageBuffer.h"
-#include "Platform/OpenGL/ComputeShader.h"
-#include "Platform/OpenGL/VertexAttribute.h"
+#include "Utilities/Image/Image.h"
 
 namespace MxEngine
 {
-    MXENGINE_MAKE_FACTORY(CubeMap);
-    MXENGINE_MAKE_FACTORY(FrameBuffer);
-    MXENGINE_MAKE_FACTORY(IndexBuffer);
-    MXENGINE_MAKE_FACTORY(RenderBuffer);
-    MXENGINE_MAKE_FACTORY(Shader);
-    MXENGINE_MAKE_FACTORY(Texture);
-    MXENGINE_MAKE_FACTORY(VertexArray);
-    MXENGINE_MAKE_FACTORY(VertexBuffer);
-    MXENGINE_MAKE_FACTORY(ShaderStorageBuffer);
-    MXENGINE_MAKE_FACTORY(ComputeShader);
-
-    #undef MAKE_FACTORY
-
-    inline auto GetAttachedTexture(const FrameBuffer& framebuffer)
-    {
-        return framebuffer.GetAttachedTexture<Resource, TextureFactory>();
-    }
-
-    inline auto GetAttachedTexture(const FrameBufferHandle& framebuffer)
-    {
-        return GetAttachedTexture(*framebuffer);
-    }
-
-    inline auto GetAttachedCubeMap(const FrameBuffer& framebuffer)
-    {
-        return framebuffer.GetAttachedCubeMap<Resource, CubeMapFactory>();
-    }
-
-    inline auto GetAttachedCubeMap(const FrameBufferHandle& framebuffer)
-    {
-        return GetAttachedCubeMap(*framebuffer);
-    }
 }

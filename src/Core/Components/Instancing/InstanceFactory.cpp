@@ -96,11 +96,11 @@ namespace MxEngine
         if (meshSource.IsValid() && meshSource->Mesh.IsValid())
         {
             this->UpdateInstanceCache();
-            BufferAllocator::GetInstanceVBO()->BufferSubData(
-                (float*)this->instances.data(),
-                this->instances.size() * InstanceDataSize,
-                this->instanceAllocation.Offset * InstanceDataSize
-            );
+            // BufferAllocator::GetInstanceVBO()->BufferSubData(
+            //     (float*)this->instances.data(),
+            //     this->instances.size() * InstanceDataSize,
+            //     this->instanceAllocation.Offset * InstanceDataSize
+            // );
         }
     }
 

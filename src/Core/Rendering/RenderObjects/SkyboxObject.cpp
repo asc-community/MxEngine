@@ -58,28 +58,28 @@ namespace MxEngine
             3u, 6u, 7u,
         };
 
-        this->VBO = Factory<VertexBuffer>::Create(
-            (float*)vertices.data(),
-            vertices.size() * sizeof(Vector3),
-            UsageType::STATIC_DRAW
-        );
-
-        this->IBO = Factory<IndexBuffer>::Create(
-            indices.data(),
-            indices.size(),
-            UsageType::STATIC_DRAW
-        );
-
-        std::array vertexLayout = {
-            VertexAttribute::Entry<Vector3>()
-        };
-        this->VAO = Factory<VertexArray>::Create();
-        VAO->AddVertexLayout(*this->VBO, vertexLayout, VertexAttributeInputRate::PER_VERTEX);
-        VAO->LinkIndexBuffer(*this->IBO);
+        // this->VBO = Factory<VertexBuffer>::Create(
+        //     (float*)vertices.data(),
+        //     vertices.size() * sizeof(Vector3),
+        //     UsageType::STATIC_DRAW
+        // );
+        // 
+        // this->IBO = Factory<IndexBuffer>::Create(
+        //     indices.data(),
+        //     indices.size(),
+        //     UsageType::STATIC_DRAW
+        // );
+        // 
+        // std::array vertexLayout = {
+        //     VertexAttribute::Entry<Vector3>()
+        // };
+        // this->VAO = Factory<VertexArray>::Create();
+        // VAO->AddVertexLayout(*this->VBO, vertexLayout, VertexAttributeInputRate::PER_VERTEX);
+        // VAO->LinkIndexBuffer(*this->IBO);
     }
 
-    const VertexArray& SkyboxObject::GetVAO() const
-    {
-        return *this->VAO;
-    }
+    // const VertexArray& SkyboxObject::GetVAO() const
+    // {
+    //     return *this->VAO;
+    // }
 }

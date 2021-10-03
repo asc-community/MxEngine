@@ -41,7 +41,6 @@ namespace MxEngine
         static const MxString& GetWindowTitle();
         static CursorMode GetCursorMode();
         static bool HasDoubleBuffering();
-        static RenderProfile GetGraphicAPIProfile();
         static size_t GetGraphicAPIMajorVersion();
         static size_t GetGraphicAPIMinorVersion();
         static size_t GetAnisothropicFiltering();;

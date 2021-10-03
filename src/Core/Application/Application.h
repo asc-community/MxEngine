@@ -110,6 +110,7 @@ namespace MxEngine
         TimeStep GetTimeDelta() const;
         TimeStep GetUnscaledTimeDelta() const;
         TimeStep GetTotalElapsedTime() const;
+        TimeStep GetEngineTime() const;
         void SetTotalElapsedTime(TimeStep time);
         size_t GetCurrentFPS() const;
         void Run();

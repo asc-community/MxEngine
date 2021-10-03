@@ -61,7 +61,7 @@ namespace MxEngine
             auto [offset, count] = BufferAllocator::AllocateInSSBO(initialState.size() * sizeof(ParticleGPU));
             this->particleAllocationCount = count / sizeof(ParticleGPU);
             this->particleAllocationOffset = offset / sizeof(ParticleGPU);
-            BufferAllocator::GetSSBO()->BufferSubData((uint8_t*)initialState.data(), count, offset);
+            // BufferAllocator::GetSSBO()->BufferSubData((uint8_t*)initialState.data(), count, offset);
 
             this->isDirty = false;
         }

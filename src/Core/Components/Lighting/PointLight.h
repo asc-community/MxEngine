@@ -42,7 +42,7 @@ namespace MxEngine
 
         void LoadDepthCubeMap();
     public:
-        CubeMapHandle DepthMap;
+        // CubeMapHandle DepthMap;
 
         PointLight() = default;
 

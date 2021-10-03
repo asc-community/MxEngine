@@ -45,28 +45,28 @@ namespace MxEngine
             2u, 1u, 3u,
         };
 
-        this->VBO = Factory<VertexBuffer>::Create(
-            (float*)vertecies.data(), 
-            vertecies.size() * (sizeof(Vector4) / sizeof(float)), 
-            UsageType::STATIC_DRAW
-        );
-
-        this->IBO = Factory<IndexBuffer>::Create(
-            indicies.data(),
-            indicies.size(),
-            UsageType::STATIC_DRAW
-        );
-
-        std::array vertexLayout = {
-            VertexAttribute::Entry<Vector4>()
-        };
-        this->VAO = Factory<VertexArray>::Create();
-        VAO->AddVertexLayout(*this->VBO, vertexLayout, VertexAttributeInputRate::PER_VERTEX);
-        VAO->LinkIndexBuffer(*this->IBO);
+        // this->VBO = Factory<VertexBuffer>::Create(
+        //     (float*)vertecies.data(), 
+        //     vertecies.size() * (sizeof(Vector4) / sizeof(float)), 
+        //     UsageType::STATIC_DRAW
+        // );
+        // 
+        // this->IBO = Factory<IndexBuffer>::Create(
+        //     indicies.data(),
+        //     indicies.size(),
+        //     UsageType::STATIC_DRAW
+        // );
+        // 
+        // std::array vertexLayout = {
+        //     VertexAttribute::Entry<Vector4>()
+        // };
+        // this->VAO = Factory<VertexArray>::Create();
+        // VAO->AddVertexLayout(*this->VBO, vertexLayout, VertexAttributeInputRate::PER_VERTEX);
+        // VAO->LinkIndexBuffer(*this->IBO);
     }
     
-    const VertexArray& RectangleObject::GetVAO() const
-    {
-        return *this->VAO;
-    }
+    // const VertexArray& RectangleObject::GetVAO() const
+    // {
+    //     return *this->VAO;
+    // }
 }

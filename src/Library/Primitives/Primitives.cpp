@@ -547,36 +547,36 @@ namespace MxEngine
         return Primitives::CreateMesh(vertecies, indicies, MxFormat("pyramid_1"));
     }
 
-    TextureHandle Primitives::CreateGridTexture(size_t textureSize, float borderScale)
-    {
-        TextureHandle gridTexture = Factory<Texture>::Create();
-
-        static constexpr size_t Channels = 3;
-
-        Array2D<uint8_t> textureData;
-        textureData.resize(textureSize, textureSize * Channels, 255);
-
-        constexpr auto draw_border = [](Array2D<uint8_t>& texture, size_t borderSize)
-        {
-            size_t width = texture.width();
-            size_t height = texture.height() / Channels;
-            for (size_t i = 0; i < width; i++)
-            {
-                for (size_t j = 0; j < height; j++)
-                {
-                    if (i < borderSize || i + borderSize >= width ||
-                        j < borderSize || j + borderSize >= height)
-                    {
-                        texture[i][j * Channels + 0] = 0;
-                        texture[i][j * Channels + 1] = 0;
-                        texture[i][j * Channels + 2] = 0;
-                    }
-                }
-            }
-        };
-
-        draw_border(textureData, static_cast<size_t>(textureSize * borderScale));
-        gridTexture->Load(textureData.data(), (int)textureSize, (int)textureSize, Channels, false, TextureFormat::RGB);
-        return gridTexture;
-    }
+    // TextureHandle Primitives::CreateGridTexture(size_t textureSize, float borderScale)
+    // {
+    //     TextureHandle gridTexture = Factory<Texture>::Create();
+    // 
+    //     static constexpr size_t Channels = 3;
+    // 
+    //     Array2D<uint8_t> textureData;
+    //     textureData.resize(textureSize, textureSize * Channels, 255);
+    // 
+    //     constexpr auto draw_border = [](Array2D<uint8_t>& texture, size_t borderSize)
+    //     {
+    //         size_t width = texture.width();
+    //         size_t height = texture.height() / Channels;
+    //         for (size_t i = 0; i < width; i++)
+    //         {
+    //             for (size_t j = 0; j < height; j++)
+    //             {
+    //                 if (i < borderSize || i + borderSize >= width ||
+    //                     j < borderSize || j + borderSize >= height)
+    //                 {
+    //                     texture[i][j * Channels + 0] = 0;
+    //                     texture[i][j * Channels + 1] = 0;
+    //                     texture[i][j * Channels + 2] = 0;
+    //                 }
+    //             }
+    //         }
+    //     };
+    // 
+    //     draw_border(textureData, static_cast<size_t>(textureSize * borderScale));
+    //     gridTexture->Load(textureData.data(), (int)textureSize, (int)textureSize, Channels, false, TextureFormat::RGB);
+    //     return gridTexture;
+    // }
 }

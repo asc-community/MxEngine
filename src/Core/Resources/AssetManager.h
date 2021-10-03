@@ -43,38 +43,38 @@ namespace MxEngine
     class AssetManager
     {
     public:
-        static CubeMapHandle LoadCubeMap(StringId hash);
-        static CubeMapHandle LoadCubeMap(const FilePath& path);
-        static CubeMapHandle LoadCubeMap(const MxString& path);
-        static CubeMapHandle LoadCubeMap(const char* path);
-        static CubeMapHandle LoadCubeMap(StringId right, StringId left, StringId top, StringId bottom, StringId front, StringId back);
-        static CubeMapHandle LoadCubeMap(const FilePath& right, const FilePath& left, const FilePath& top, const FilePath& bottom, const FilePath& front, const FilePath& back);
-        static CubeMapHandle LoadCubeMap(const MxString& right, const MxString& left, const MxString& top, const MxString& bottom, const MxString& front, const MxString& back);
-        static CubeMapHandle LoadCubeMap(const char* right, const char* left, const char* top, const char* bottom, const char* front, const char* back);
+        // static CubeMapHandle LoadCubeMap(StringId hash);
+        // static CubeMapHandle LoadCubeMap(const FilePath& path);
+        // static CubeMapHandle LoadCubeMap(const MxString& path);
+        // static CubeMapHandle LoadCubeMap(const char* path);
+        // static CubeMapHandle LoadCubeMap(StringId right, StringId left, StringId top, StringId bottom, StringId front, StringId back);
+        // static CubeMapHandle LoadCubeMap(const FilePath& right, const FilePath& left, const FilePath& top, const FilePath& bottom, const FilePath& front, const FilePath& back);
+        // static CubeMapHandle LoadCubeMap(const MxString& right, const MxString& left, const MxString& top, const MxString& bottom, const MxString& front, const MxString& back);
+        // static CubeMapHandle LoadCubeMap(const char* right, const char* left, const char* top, const char* bottom, const char* front, const char* back);
 
-        static TextureHandle LoadTexture(StringId hash, TextureFormat format = TextureFormat::RGB);
-        static TextureHandle LoadTexture(const FilePath& path, TextureFormat format = TextureFormat::RGB);
-        static TextureHandle LoadTexture(const MxString& path, TextureFormat format = TextureFormat::RGB);
-        static TextureHandle LoadTexture(const char* path, TextureFormat format = TextureFormat::RGB);
+        // static TextureHandle LoadTexture(StringId hash, TextureFormat format = TextureFormat::RGB);
+        // static TextureHandle LoadTexture(const FilePath& path, TextureFormat format = TextureFormat::RGB);
+        // static TextureHandle LoadTexture(const MxString& path, TextureFormat format = TextureFormat::RGB);
+        // static TextureHandle LoadTexture(const char* path, TextureFormat format = TextureFormat::RGB);
 
-        static ShaderHandle LoadShader(StringId vertex, StringId fragment);
-        static ShaderHandle LoadShader(const FilePath& vertex, const FilePath& fragment);
-        static ShaderHandle LoadShader(const MxString& vertex, const MxString& fragment);
-        static ShaderHandle LoadShader(const char* vertex, const char* fragment);
-        static ShaderHandle LoadShader(StringId vertex, StringId geometry, StringId fragment);
-        static ShaderHandle LoadShader(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment);
-        static ShaderHandle LoadShader(const MxString& vertex, const MxString& geometry, const MxString& fragment);
-        static ShaderHandle LoadShader(const char* vertex, const char* geometry, const char* fragment);
+        // static ShaderHandle LoadShader(StringId vertex, StringId fragment);
+        // static ShaderHandle LoadShader(const FilePath& vertex, const FilePath& fragment);
+        // static ShaderHandle LoadShader(const MxString& vertex, const MxString& fragment);
+        // static ShaderHandle LoadShader(const char* vertex, const char* fragment);
+        // static ShaderHandle LoadShader(StringId vertex, StringId geometry, StringId fragment);
+        // static ShaderHandle LoadShader(const FilePath& vertex, const FilePath& geometry, const FilePath& fragment);
+        // static ShaderHandle LoadShader(const MxString& vertex, const MxString& geometry, const MxString& fragment);
+        // static ShaderHandle LoadShader(const char* vertex, const char* geometry, const char* fragment);
 
-        static ShaderHandle LoadScreenSpaceShader(StringId fragment);
-        static ShaderHandle LoadScreenSpaceShader(const FilePath& fragment);
-        static ShaderHandle LoadScreenSpaceShader(const MxString& fragment);
-        static ShaderHandle LoadScreenSpaceShader(const char* fragment);
+        // static ShaderHandle LoadScreenSpaceShader(StringId fragment);
+        // static ShaderHandle LoadScreenSpaceShader(const FilePath& fragment);
+        // static ShaderHandle LoadScreenSpaceShader(const MxString& fragment);
+        // static ShaderHandle LoadScreenSpaceShader(const char* fragment);
 
-        static ComputeShaderHandle LoadComputeShader(StringId path);
-        static ComputeShaderHandle LoadComputeShader(const FilePath& path);
-        static ComputeShaderHandle LoadComputeShader(const MxString& path);
-        static ComputeShaderHandle LoadComputeShader(const char* path);
+        // static ComputeShaderHandle LoadComputeShader(StringId path);
+        // static ComputeShaderHandle LoadComputeShader(const FilePath& path);
+        // static ComputeShaderHandle LoadComputeShader(const MxString& path);
+        // static ComputeShaderHandle LoadComputeShader(const char* path);
 
         static MeshHandle LoadMesh(StringId hash);
         static MeshHandle LoadMesh(const FilePath& path);

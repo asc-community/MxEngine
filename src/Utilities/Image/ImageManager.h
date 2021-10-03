@@ -52,15 +52,15 @@ namespace MxEngine
         static void SaveImage(const MxString& filePath, const Image& image, ImageType type);
         static void SaveImage(const char*     filePath, const Image& image, ImageType type);
 
-        static void SaveTexture(StringId        fileHash, const TextureHandle& texture, ImageType type);
-        static void SaveTexture(const FilePath& filePath, const TextureHandle& texture, ImageType type);
-        static void SaveTexture(const MxString& filePath, const TextureHandle& texture, ImageType type);
-        static void SaveTexture(const char*     filePath, const TextureHandle& texture, ImageType type);
-
-        static void SaveTexture(StringId        fileHash, const TextureHandle& texture);
-        static void SaveTexture(const FilePath& filePath, const TextureHandle& texture);
-        static void SaveTexture(const MxString& filePath, const TextureHandle& texture);
-        static void SaveTexture(const char* filePath,     const TextureHandle& texture);
+        // static void SaveTexture(StringId        fileHash, const TextureHandle& texture, ImageType type);
+        // static void SaveTexture(const FilePath& filePath, const TextureHandle& texture, ImageType type);
+        // static void SaveTexture(const MxString& filePath, const TextureHandle& texture, ImageType type);
+        // static void SaveTexture(const char*     filePath, const TextureHandle& texture, ImageType type);
+        // 
+        // static void SaveTexture(StringId        fileHash, const TextureHandle& texture);
+        // static void SaveTexture(const FilePath& filePath, const TextureHandle& texture);
+        // static void SaveTexture(const MxString& filePath, const TextureHandle& texture);
+        // static void SaveTexture(const char* filePath,     const TextureHandle& texture);
 
         static void TakeScreenShot(StringId        fileHash, ImageType type);
         static void TakeScreenShot(const FilePath& filePath, ImageType type);

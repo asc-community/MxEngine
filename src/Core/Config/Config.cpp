@@ -27,6 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Config.h"
+#include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
@@ -34,21 +35,6 @@ namespace MxEngine
     void FromJson(T& dist, const JsonFile& json, const char* name)
     {
         dist = json.value(name, dist);
-    }
-
-    const char* EnumToString(RenderProfile profile)
-    {
-        switch (profile)
-        {
-        case RenderProfile::ANY:
-            return "ANY";
-        case RenderProfile::COMPAT:
-            return "COMPAT";
-        case RenderProfile::CORE:
-            return "CORE";
-        default:
-            return "ANY";
-        }
     }
 
     const char* EnumToString(BuildType mode)
@@ -92,7 +78,6 @@ namespace MxEngine
         FromJson(config.WindowTitle,            json["window"],      "title"                   );
         FromJson(config.Cursor,                 json["window"],      "cursor-mode"             );
         FromJson(config.DoubleBuffering,        json["window"],      "double-buffering"        );
-        FromJson(config.GraphicAPIProfile,      json["renderer"],    "profile"                 );
         FromJson(config.GraphicAPIMajorVersion, json["renderer"],    "major-version"           );
         FromJson(config.GraphicAPIMinorVersion, json["renderer"],    "minor-version"           );
         FromJson(config.AnisothropicFiltering,  json["renderer"],    "anisothropic-filtering"  );
@@ -118,7 +103,6 @@ namespace MxEngine
         json["window"     ]["title"                   ] = config.WindowTitle;
         json["window"     ]["cursor-mode"             ] = config.Cursor;
         json["window"     ]["double-buffering"        ] = config.DoubleBuffering;
-        json["renderer"   ]["profile"                 ] = config.GraphicAPIProfile;
         json["renderer"   ]["major-version"           ] = config.GraphicAPIMajorVersion;
         json["renderer"   ]["minor-version"           ] = config.GraphicAPIMinorVersion;
         json["renderer"   ]["anisothropic-filtering"  ] = config.AnisothropicFiltering;
@@ -137,172 +121,6 @@ namespace MxEngine
         json["debug-build"]["auto-recompile-files"    ] = config.AutoRecompileFiles;
     }
 
-    void to_json(JsonFile& j, MxEngine::CursorMode mode)
-    {
-        j = EnumToString(mode);
-    }
-    
-    void to_json(JsonFile& j, MxEngine::RenderProfile profile)
-    {
-        j = EnumToString(profile);
-    }
-
-    void from_json(const JsonFile& j, MxEngine::CursorMode& mode)
-    {
-        auto val = j.get<MxString>();
-        if (val == "DISABLED")
-            mode = CursorMode::DISABLED;
-        else if (val == "NORMAL")
-            mode = CursorMode::NORMAL;
-        else
-            mode = CursorMode::HIDDEN;
-    }
-
-    void from_json(const JsonFile& j, MxEngine::RenderProfile& profile)
-    {
-        auto val = j.get<MxString>();
-        if (val == "COMPAT")
-            profile = RenderProfile::COMPAT;
-        else if (val == "CORE")
-            profile = RenderProfile::CORE;
-        else
-            profile = RenderProfile::ANY;
-    }
-
-    void to_json(JsonFile& j, KeyCode key)
-    {
-        j = EnumToString(key);
-    }
-
-    void from_json(const JsonFile& j, KeyCode& key)
-    {
-        auto str = j.get<MxString>();
-        #define JSONKEY(val) if(str == #val) { key = MxEngine::KeyCode::val; return; }
-    
-        JSONKEY(UNKNOWN);
-        JSONKEY(SPACE);
-        JSONKEY(APOSTROPHE);
-        JSONKEY(COMMA);
-        JSONKEY(MINUS);
-        JSONKEY(PERIOD);
-        JSONKEY(SLASH);
-        JSONKEY(D0);
-        JSONKEY(D1);
-        JSONKEY(D2);
-        JSONKEY(D3);
-        JSONKEY(D4);
-        JSONKEY(D5);
-        JSONKEY(D6);
-        JSONKEY(D7);
-        JSONKEY(D8);
-        JSONKEY(D9);
-        JSONKEY(SEMICOLON);
-        JSONKEY(EQUAL);
-        JSONKEY(A);
-        JSONKEY(B);
-        JSONKEY(C);
-        JSONKEY(D);
-        JSONKEY(E);
-        JSONKEY(F);
-        JSONKEY(G);
-        JSONKEY(H);
-        JSONKEY(I);
-        JSONKEY(J);
-        JSONKEY(K);
-        JSONKEY(L);
-        JSONKEY(M);
-        JSONKEY(N);
-        JSONKEY(O);
-        JSONKEY(P);
-        JSONKEY(Q);
-        JSONKEY(R);
-        JSONKEY(S);
-        JSONKEY(T);
-        JSONKEY(U);
-        JSONKEY(V);
-        JSONKEY(W);
-        JSONKEY(X);
-        JSONKEY(Y);
-        JSONKEY(Z);
-        JSONKEY(LEFT_BRACKET);
-        JSONKEY(BACKSLASH);
-        JSONKEY(RIGHT_BRACKET);
-        JSONKEY(GRAVE_ACCENT);
-        JSONKEY(WORLD_1);
-        JSONKEY(ESCAPE);
-        JSONKEY(ENTER);
-        JSONKEY(TAB);
-        JSONKEY(BACKSPACE);
-        JSONKEY(INSERT);
-        JSONKEY(DELETE);
-        JSONKEY(RIGHT);
-        JSONKEY(LEFT);
-        JSONKEY(DOWN);
-        JSONKEY(UP);
-        JSONKEY(PAGE_UP);
-        JSONKEY(PAGE_DOWN);
-        JSONKEY(HOME);
-        JSONKEY(END);
-        JSONKEY(CAPS_LOCK);
-        JSONKEY(SCROLL_LOCK);
-        JSONKEY(NUM_LOCK);
-        JSONKEY(PRINT_SCREEN);
-        JSONKEY(PAUSE);
-        JSONKEY(F1);
-        JSONKEY(F2);
-        JSONKEY(F3);
-        JSONKEY(F4);
-        JSONKEY(F5);
-        JSONKEY(F6);
-        JSONKEY(F7);
-        JSONKEY(F8);
-        JSONKEY(F9);
-        JSONKEY(F10);
-        JSONKEY(F11);
-        JSONKEY(F12);
-        JSONKEY(F13);
-        JSONKEY(F14);
-        JSONKEY(F15);
-        JSONKEY(F16);
-        JSONKEY(F17);
-        JSONKEY(F18);
-        JSONKEY(F19);
-        JSONKEY(F20);
-        JSONKEY(F21);
-        JSONKEY(F22);
-        JSONKEY(F23);
-        JSONKEY(F24);
-        JSONKEY(F25);
-        JSONKEY(KP_0);
-        JSONKEY(KP_1);
-        JSONKEY(KP_2);
-        JSONKEY(KP_3);
-        JSONKEY(KP_4);
-        JSONKEY(KP_5);
-        JSONKEY(KP_6);
-        JSONKEY(KP_7);
-        JSONKEY(KP_8);
-        JSONKEY(KP_9);
-        JSONKEY(KP_DECIMAL);
-        JSONKEY(KP_DIVIDE);
-        JSONKEY(KP_MULTIPLY);
-        JSONKEY(KP_SUBTRACT);
-        JSONKEY(KP_ADD);
-        JSONKEY(KP_ENTER);
-        JSONKEY(KP_EQUAL);
-        JSONKEY(LEFT_SHIFT);
-        JSONKEY(LEFT_CONTROL);
-        JSONKEY(LEFT_ALT);
-        JSONKEY(LEFT_SUPER);
-        JSONKEY(RIGHT_SHIFT);
-        JSONKEY(RIGHT_CONTROL);
-        JSONKEY(RIGHT_ALT);
-        JSONKEY(RIGHT_SUPER);
-        JSONKEY(MENU);
-
-        key = KeyCode::UNKNOWN;
-    }
-
     void to_json(JsonFile& j, EditorStyle style)
     {
         j = EnumToString(style);
@@ -319,5 +137,32 @@ namespace MxEngine
             style = EditorStyle::LIGHT;
         else
             style = EditorStyle::MXENGINE;
+    }
+}
+
+namespace VulkanAbstractionLayer
+{
+    void to_json(MxEngine::JsonFile& j, VulkanAbstractionLayer::CursorMode mode)
+    {
+        j = MxEngine::EnumToString(mode);
+    }
+
+    void from_json(const MxEngine::JsonFile& j, VulkanAbstractionLayer::CursorMode& mode)
+    {
+        auto str = j.get<MxEngine::MxString>();
+        auto t = rttr::type::get<CursorMode>().get_enumeration();
+        mode = t.name_to_value(str.c_str()).convert<CursorMode>();
+    }
+
+    void to_json(MxEngine::JsonFile& j, VulkanAbstractionLayer::KeyCode key)
+    {
+        j = MxEngine::EnumToString(key);
+    }
+
+    void from_json(const MxEngine::JsonFile& j, VulkanAbstractionLayer::KeyCode& key)
+    {
+        auto str = j.get<MxEngine::MxString>();
+        auto t = rttr::type::get<KeyCode>().get_enumeration();
+        key = t.name_to_value(str.c_str()).convert<KeyCode>();
     }
 }

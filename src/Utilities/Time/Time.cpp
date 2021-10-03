@@ -43,7 +43,7 @@ namespace MxEngine
 
     TimeStep Time::EngineCurrent()
     {
-        return Application::GetImpl()->GetWindow().GetTime();
+        return Application::GetImpl()->GetEngineTime();
     }
 
     void Time::SetCurrent(TimeStep time)

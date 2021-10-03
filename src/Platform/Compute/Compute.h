@@ -56,7 +56,7 @@ namespace MxEngine
     class Compute
     {
     public:
-        static void Dispatch(const ComputeShaderHandle& computeShader, size_t x, size_t y, size_t z);
+        // static void Dispatch(const ComputeShaderHandle& computeShader, size_t x, size_t y, size_t z);
         static void SetMemoryBarrier(BarrierType::Bits barriers);
     };
 }

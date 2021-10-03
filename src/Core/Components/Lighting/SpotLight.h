@@ -46,7 +46,7 @@ namespace MxEngine
 
         void LoadDepthTexture();
     public:
-        TextureHandle DepthMap;
+        // TextureHandle DepthMap;
 
         SpotLight() = default;
 

@@ -41,18 +41,18 @@ namespace MxEngine::GUI
         ImGui::Begin(name, isOpen, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
         auto viewport = Rendering::GetViewport();
 
-        if (viewport.IsValid() && viewport->GetRenderTexture().IsValid())
-        {
-            Vector2 newWindowSize = ImGui::GetWindowSize();
-            if (newWindowSize != viewportSize) // notify application that viewport size has been changed
-            {
-                Event::AddEvent(MakeUnique<WindowResizeEvent>(viewportSize, newWindowSize));
-                viewportSize = newWindowSize;
-            }
-            viewportPosition = (newWindowSize - viewportSize) * 0.5f;
-            ImGui::SetCursorPos(viewportPosition);
-            ImGui::Image((void*)(uintptr_t)viewport->GetRenderTexture()->GetNativeHandle(), viewportSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-        }
+        // if (viewport.IsValid() && viewport->GetRenderTexture().IsValid())
+        // {
+        //     Vector2 newWindowSize = ImGui::GetWindowSize();
+        //     if (newWindowSize != viewportSize) // notify application that viewport size has been changed
+        //     {
+        //         Event::AddEvent(MakeUnique<WindowResizeEvent>(viewportSize, newWindowSize));
+        //         viewportSize = newWindowSize;
+        //     }
+        //     viewportPosition = (newWindowSize - viewportSize) * 0.5f;
+        //     ImGui::SetCursorPos(viewportPosition);
+        //     ImGui::Image((void*)(uintptr_t)viewport->GetRenderTexture()->GetNativeHandle(), viewportSize, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+        // }
         ImGui::End();
     }
 

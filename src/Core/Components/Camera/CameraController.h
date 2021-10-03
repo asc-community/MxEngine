@@ -44,15 +44,15 @@ namespace MxEngine
 
     struct CameraRender
     {
-        FrameBufferHandle GBuffer;
-        TextureHandle Albedo;
-        TextureHandle Normal;
-        TextureHandle Material;
-        TextureHandle Depth;
-        TextureHandle AverageWhite;
-        TextureHandle HDR;
-        TextureHandle SwapHDR1;
-        TextureHandle SwapHDR2;
+        // FrameBufferHandle GBuffer;
+        // TextureHandle Albedo;
+        // TextureHandle Normal;
+        // TextureHandle Material;
+        // TextureHandle Depth;
+        // TextureHandle AverageWhite;
+        // TextureHandle HDR;
+        // TextureHandle SwapHDR1;
+        // TextureHandle SwapHDR2;
 
         void Init(int width, int height);
         void Resize(int width, int height);
@@ -64,7 +64,7 @@ namespace MxEngine
         MAKE_COMPONENT(CameraController);
 
         UniqueRef<CameraRender> renderBuffers = MakeUnique<CameraRender>();
-        TextureHandle renderTexture;
+        // TextureHandle renderTexture;
 
         Vector3 direction = { 0.0f, 0.0f, 1.0f };
         Vector3 up = { 0.0f, 1.0f, 0.0f };
@@ -101,12 +101,12 @@ namespace MxEngine
         const Matrix4x4& GetProjectionMatrix() const;
         Matrix4x4 GetStaticMatrix() const;
         Matrix4x4 GetStaticViewMatrix() const;
-        TextureHandle GetRenderTexture() const;
+        // TextureHandle GetRenderTexture() const;
         void ListenWindowResizeEvent();
         void SetListenWindowResizeEventInternal(bool value);
         bool IsListeningWindowResizeEvent() const;
         void ResizeRenderTexture(size_t width, size_t height);
-        void SetRenderTexture(const TextureHandle& texture);
+        // void SetRenderTexture(const TextureHandle& texture);
         bool IsRendering() const;
         void ToggleRendering(bool value);
         const FrustrumCuller& GetFrustrumCuller() const;
@@ -132,14 +132,14 @@ namespace MxEngine
         const Vector3& GetUpVector() const;
         const Vector3& GetRightVector() const;
 
-        FrameBufferHandle GetGBuffer() const;
-        TextureHandle GetAlbedoTexture() const;
-        TextureHandle GetNormalTexture() const;
-        TextureHandle GetMaterialTexture() const;
-        TextureHandle GetDepthTexture() const;
-        TextureHandle GetAverageWhiteTexture() const;
-        TextureHandle GetHDRTexture() const;
-        TextureHandle GetSwapHDRTexture1() const;
-        TextureHandle GetSwapHDRTexture2() const;
+        // FrameBufferHandle GetGBuffer() const;
+        // TextureHandle GetAlbedoTexture() const;
+        // TextureHandle GetNormalTexture() const;
+        // TextureHandle GetMaterialTexture() const;
+        // TextureHandle GetDepthTexture() const;
+        // TextureHandle GetAverageWhiteTexture() const;
+        // TextureHandle GetHDRTexture() const;
+        // TextureHandle GetSwapHDRTexture1() const;
+        // TextureHandle GetSwapHDRTexture2() const;
     };
 }

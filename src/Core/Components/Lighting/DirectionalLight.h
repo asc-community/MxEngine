@@ -40,7 +40,7 @@ namespace MxEngine
     public:
         constexpr static size_t TextureCount = 3;
         bool IsFollowingViewport = false;
-        TextureHandle DepthMap;
+        // TextureHandle DepthMap;
 
         void OnUpdate(float dt);
 

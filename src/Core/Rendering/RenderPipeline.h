@@ -50,34 +50,34 @@ namespace MxEngine
     
     struct DebugBufferUnit
     {
-        VertexArrayHandle VAO;
+        // VertexArrayHandle VAO;
         size_t VertexCount;
     };
 
     struct CameraUnit
     {
-        FrameBufferHandle GBuffer;
-        TextureHandle AlbedoTexture;
-        TextureHandle NormalTexture;
-        TextureHandle MaterialTexture;
-        TextureHandle DepthTexture;
-        TextureHandle AverageWhiteTexture;
-        TextureHandle HDRTexture;
-        TextureHandle SwapTexture1;
-        TextureHandle SwapTexture2;
+        // FrameBufferHandle GBuffer;
+        // TextureHandle AlbedoTexture;
+        // TextureHandle NormalTexture;
+        // TextureHandle MaterialTexture;
+        // TextureHandle DepthTexture;
+        // TextureHandle AverageWhiteTexture;
+        // TextureHandle HDRTexture;
+        // TextureHandle SwapTexture1;
+        // TextureHandle SwapTexture2;
 
         FrustrumCuller Culler;
         Matrix4x4 InverseViewProjMatrix;
         Matrix4x4 ViewProjectionMatrix;
         Matrix4x4 StaticViewProjectionMatrix;
 
-        TextureHandle OutputTexture;
+        // TextureHandle OutputTexture;
         Vector3 ViewportPosition;
 
         float SkyboxIntensity;
         Matrix3x3 InversedSkyboxRotation;
-        CubeMapHandle SkyboxTexture;
-        CubeMapHandle IrradianceTexture;
+        // CubeMapHandle SkyboxTexture;
+        // CubeMapHandle IrradianceTexture;
 
         float Gamma;
         float AspectRatio;
@@ -94,26 +94,26 @@ namespace MxEngine
 
     struct EnvironmentUnit
     {
-        MxHashMap<StringId, ShaderHandle> Shaders;
-        MxHashMap<StringId, ComputeShaderHandle> ComputeShaders;
+        // MxHashMap<StringId, ShaderHandle> Shaders;
+        // MxHashMap<StringId, ComputeShaderHandle> ComputeShaders;
 
-        TextureHandle DefaultMaterialMap;
-        TextureHandle DefaultNormalMap;
-        TextureHandle DefaultBlackMap;
-        TextureHandle DefaultGreyMap;
-        TextureHandle DefaultShadowMap;
-        TextureHandle AverageWhiteTexture;
-        TextureHandle EnvironmentBRDFLUT;
-        CubeMapHandle DefaultShadowCubeMap;
-        CubeMapHandle DefaultSkybox;
+        // TextureHandle DefaultMaterialMap;
+        // TextureHandle DefaultNormalMap;
+        // TextureHandle DefaultBlackMap;
+        // TextureHandle DefaultGreyMap;
+        // TextureHandle DefaultShadowMap;
+        // TextureHandle AverageWhiteTexture;
+        // TextureHandle EnvironmentBRDFLUT;
+        // CubeMapHandle DefaultShadowCubeMap;
+        // CubeMapHandle DefaultSkybox;
 
-        VertexArrayHandle RenderVAO;
-        ShaderStorageBufferHandle RenderSSBO;
+        // VertexArrayHandle RenderVAO;
+        // ShaderStorageBufferHandle RenderSSBO;
 
-        FrameBufferHandle DepthFrameBuffer;
-        FrameBufferHandle PostProcessFrameBuffer;
-        FrameBufferHandle BloomFrameBuffer;
-        std::array<TextureHandle, 2> BloomTextures;
+        // FrameBufferHandle DepthFrameBuffer;
+        // FrameBufferHandle PostProcessFrameBuffer;
+        // FrameBufferHandle BloomFrameBuffer;
+        // std::array<TextureHandle, 2> BloomTextures;
 
         SkyboxObject SkyboxCubeObject;
         DebugBufferUnit DebugBufferObject;
@@ -130,7 +130,7 @@ namespace MxEngine
 
     struct DirectionalLightUnit
     {
-        TextureHandle ShadowMap;
+        // TextureHandle ShadowMap;
         std::array<Matrix4x4, 3> ProjectionMatrices;
         std::array<Matrix4x4, 3> BiasedProjectionMatrices;
         Vector3 Direction;
@@ -141,13 +141,13 @@ namespace MxEngine
 
     struct PointLightUnit : PointLightBaseData
     {
-        CubeMapHandle ShadowMap;
+        // CubeMapHandle ShadowMap;
         Matrix4x4 ProjectionMatrices[6];
     };
 
     struct SpotLightUnit : SpotLightBaseData
     {
-        TextureHandle ShadowMap;
+        // TextureHandle ShadowMap;
         Matrix4x4 ProjectionMatrix;
         Matrix4x4 BiasedProjectionMatrix;
     };

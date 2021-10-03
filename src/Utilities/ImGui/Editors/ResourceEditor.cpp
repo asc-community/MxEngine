@@ -50,8 +50,8 @@ namespace MxEngine::GUI
                 MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
                 if (!path.empty() && File::Exists(path))
                 {
-                    auto newTexture = AssetManager::LoadTexture(path, TextureFormat::RGBA);
-                    newTexture.MakeStatic();
+                    // auto newTexture = AssetManager::LoadTexture(path, TextureFormat::RGBA);
+                    // newTexture.MakeStatic();
                 }
             }
 
@@ -60,47 +60,47 @@ namespace MxEngine::GUI
             ImGui::SameLine();
             if (ImGui::Button("create texture"))
             {
-                auto colorTexture = Colors::MakeTexture(color);
-                colorTexture->SetInternalEngineTag("color.runtime");
-                colorTexture.MakeStatic();
+                // auto colorTexture = Colors::MakeTexture(color);
+                // colorTexture->SetInternalEngineTag("color.runtime");
+                // colorTexture.MakeStatic();
             }
         }
 
         ImGui::SetCursorPosX(0.5f * ImGui::GetWindowWidth() - 20.0f);
         ImGui::Text("%s", "texture list");
 
-        auto& factory = Factory<Texture>::GetPool();
-        for (auto& object : factory)
-        {
-            auto id = (int)factory.IndexOf(object);
-            ImGui::PushID(id);
-
-            auto texture = Factory<Texture>::GetHandle(object);
-            auto& texturePath = texture->GetFilePath();
-
-            if (filter[0] == '\0' || texturePath.find(filter) != texturePath.npos)
-            {
-                ImGui::AlignTextToFramePadding();
-                ImGui::Text("id: %-3d", id);
-                ImGui::SameLine();
-                GUI::ResourceEditor(texture->GetFilePath().c_str(), texture);
-            }
-
-            ImGui::PopID();
-        }
+        // auto& factory = Factory<Texture>::GetPool();
+        // for (auto& object : factory)
+        // {
+        //     auto id = (int)factory.IndexOf(object);
+        //     ImGui::PushID(id);
+        // 
+        //     auto texture = Factory<Texture>::GetHandle(object);
+        //     auto& texturePath = texture->GetFilePath();
+        // 
+        //     if (filter[0] == '\0' || texturePath.find(filter) != texturePath.npos)
+        //     {
+        //         ImGui::AlignTextToFramePadding();
+        //         ImGui::Text("id: %-3d", id);
+        //         ImGui::SameLine();
+        //         GUI::ResourceEditor(texture->GetFilePath().c_str(), texture);
+        //     }
+        // 
+        //     ImGui::PopID();
+        // }
 
         ImGui::End();
     }
 
-    void DrawImageSaver(const TextureHandle& texture, const char* name)
-    {
-        if (ImGui::Button("save image to disk"))
-        {
-            MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
-            if (!path.empty())
-            {
-                ImageManager::SaveTexture(ToFilePath(path), texture);
-            }
-        }
-    }
+    // void DrawImageSaver(const TextureHandle& texture, const char* name)
+    // {
+    //     if (ImGui::Button("save image to disk"))
+    //     {
+    //         MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
+    //         if (!path.empty())
+    //         {
+    //             ImageManager::SaveTexture(ToFilePath(path), texture);
+    //         }
+    //     }
+    // }
 }

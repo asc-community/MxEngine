@@ -31,18 +31,18 @@
 
 namespace MxEngine
 {
-    VertexArrayHandle RenderHelperObject::GetVAO() const
-    {
-        return this->VAO;
-    }
-
-    VertexBufferHandle RenderHelperObject::GetVBO() const
-    {
-        return BufferAllocator::GetVBO();
-    }
-
-    IndexBufferHandle RenderHelperObject::GetIBO() const
-    {
-        return BufferAllocator::GetIBO();
-    }
+    // VertexArrayHandle RenderHelperObject::GetVAO() const
+    // {
+    //     return this->VAO;
+    // }
+    // 
+    // VertexBufferHandle RenderHelperObject::GetVBO() const
+    // {
+    //     return BufferAllocator::GetVBO();
+    // }
+    // 
+    // IndexBufferHandle RenderHelperObject::GetIBO() const
+    // {
+    //     return BufferAllocator::GetIBO();
+    // }
 }

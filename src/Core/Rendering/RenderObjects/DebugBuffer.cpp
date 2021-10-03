@@ -42,14 +42,14 @@ namespace MxEngine
 {
     void DebugBuffer::Init()
     {
-        std::array vertexLayout = {
-            VertexAttribute::Entry<Vector3>(),
-            VertexAttribute::Entry<Vector4>(),
-        };
-
-        this->VBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
-        this->VAO = Factory<VertexArray>::Create();
-        VAO->AddVertexLayout(*this->VBO, vertexLayout, VertexAttributeInputRate::PER_VERTEX);
+        // std::array vertexLayout = {
+        //     VertexAttribute::Entry<Vector3>(),
+        //     VertexAttribute::Entry<Vector4>(),
+        // };
+        // 
+        // this->VBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::STATIC_DRAW);
+        // this->VAO = Factory<VertexArray>::Create();
+        // VAO->AddVertexLayout(*this->VBO, vertexLayout, VertexAttributeInputRate::PER_VERTEX);
     }
 
     void DebugBuffer::Submit(const Line& line, const Vector4& color)
@@ -493,7 +493,7 @@ namespace MxEngine
     void DebugBuffer::SubmitBuffer()
     {
         size_t size = this->GetSize() * sizeof(Point) / sizeof(float);
-        this->VBO->BufferDataWithResize((float*)this->storage.data(), size);
+        // this->VBO->BufferDataWithResize((float*)this->storage.data(), size);
     }
 
     size_t DebugBuffer::GetSize() const
@@ -501,8 +501,8 @@ namespace MxEngine
         return this->storage.size();
     }
 
-    VertexArrayHandle DebugBuffer::GetVAO() const
-    {
-        return this->VAO;
-    }
+    // VertexArrayHandle DebugBuffer::GetVAO() const
+    // {
+    //     return this->VAO;
+    // }
 }

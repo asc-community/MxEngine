@@ -36,19 +36,19 @@ namespace MxEngine
     MeshData::MeshData(size_t vertexCount, size_t vertexOffset, size_t indexCount, size_t indexOffset)
         : vertexCount(vertexCount), vertexOffset(vertexOffset), indexCount(indexCount), indexOffset(indexOffset)
     {
-        MX_ASSERT((this->vertexCount + this->vertexOffset) * Vertex::Size <= this->GetVBO()->GetSize());
-        MX_ASSERT((this->indexCount + this->indexOffset) <= this->GetIBO()->GetSize());
+        // MX_ASSERT((this->vertexCount + this->vertexOffset) * Vertex::Size <= this->GetVBO()->GetSize());
+        // MX_ASSERT((this->indexCount + this->indexOffset) <= this->GetIBO()->GetSize());
     }
 
-    VertexBufferHandle MeshData::GetVBO() const
-    {
-        return BufferAllocator::GetVBO();
-    }
-
-    IndexBufferHandle MeshData::GetIBO() const
-    {
-        return BufferAllocator::GetIBO();
-    }
+    // VertexBufferHandle MeshData::GetVBO() const
+    // {
+    //     return BufferAllocator::GetVBO();
+    // }
+    // 
+    // IndexBufferHandle MeshData::GetIBO() const
+    // {
+    //     return BufferAllocator::GetIBO();
+    // }
 
     size_t MeshData::GetVerteciesOffset() const
     {
@@ -83,12 +83,12 @@ namespace MxEngine
     void MeshData::BufferVertecies(const VertexData& vertecies)
     {
         MX_ASSERT(vertecies.size() == this->vertexCount);
-        this->GetVBO()->BufferSubData((float*)vertecies.data(), this->vertexCount * Vertex::Size, this->vertexOffset * Vertex::Size);
+        // this->GetVBO()->BufferSubData((float*)vertecies.data(), this->vertexCount * Vertex::Size, this->vertexOffset * Vertex::Size);
     }
 
     void MeshData::BufferIndicies(const IndexData& indicies)
     {
-        this->GetIBO()->BufferSubData(indicies.data(), this->indexCount, this->indexOffset);
+        // this->GetIBO()->BufferSubData(indicies.data(), this->indexCount, this->indexOffset);
     }
 
     void MeshData::UpdateBoundingGeometry(const VertexData& vertecies)
@@ -117,14 +117,14 @@ namespace MxEngine
     MeshData::VertexData MeshData::GetVerteciesFromGPU() const
     {
         VertexData vertecies(this->GetVerteciesCount());
-        this->GetVBO()->GetBufferData((float*)vertecies.data(), vertecies.size() * Vertex::Size, this->GetVerteciesOffset() * Vertex::Size);
+        // this->GetVBO()->GetBufferData((float*)vertecies.data(), vertecies.size() * Vertex::Size, this->GetVerteciesOffset() * Vertex::Size);
         return vertecies;
     }
 
     MeshData::IndexData MeshData::GetIndiciesFromGPU() const
     {
         IndexData indicies(this->GetIndiciesCount());
-        this->GetIBO()->GetBufferData(indicies.data(), indicies.size(), this->GetIndiciesOffset());
+        // this->GetIBO()->GetBufferData(indicies.data(), indicies.size(), this->GetIndiciesOffset());
         return indicies;
     }
 

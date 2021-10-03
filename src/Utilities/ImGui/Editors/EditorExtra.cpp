@@ -182,120 +182,120 @@ namespace MxEngine::GUI
         }
     }
 
-    bool IsInternalEngineTexture(const Texture& texture)
-    {
-        auto& path = texture.GetFilePath();
-        return path.find("[[") != path.npos && path.find("]]") != path.npos;
-    }
+    // bool IsInternalEngineTexture(const Texture& texture)
+    // {
+    //     auto& path = texture.GetFilePath();
+    //     return path.find("[[") != path.npos && path.find("]]") != path.npos;
+    // }
 
-    void DrawTexturePreview(const Texture& texture, float scale)
-    {
-        auto nativeHeight = texture.GetHeight();
-        auto nativeWidth = texture.GetWidth();
-        auto width = ImGui::GetWindowSize().x * 0.9f * scale;
-        auto height = width * nativeHeight / nativeWidth;
-        if (!texture.IsMultisampled()) // TODO: support multisampled textures
-        {
-            texture.GenerateMipmaps(); // without mipmaps texture can be not visible in editor if its size is too small
-            ImGui::Image((void*)(uintptr_t)texture.GetNativeHandle(), ImVec2(width, height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-        }
-    }
+    // void DrawTexturePreview(const Texture& texture, float scale)
+    // {
+    //     auto nativeHeight = texture.GetHeight();
+    //     auto nativeWidth = texture.GetWidth();
+    //     auto width = ImGui::GetWindowSize().x * 0.9f * scale;
+    //     auto height = width * nativeHeight / nativeWidth;
+    //     if (!texture.IsMultisampled()) // TODO: support multisampled textures
+    //     {
+    //         texture.GenerateMipmaps(); // without mipmaps texture can be not visible in editor if its size is too small
+    //         ImGui::Image((void*)(uintptr_t)texture.GetNativeHandle(), ImVec2(width, height), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+    //     }
+    // }
 
-    template<>
-    rttr::variant EditorExtra<Texture>(rttr::instance& object)
-    {
-        Texture& texture = *object.try_convert<Texture>();
-        DrawImageSaver(Factory<Texture>::GetHandle(texture));
+    // template<>
+    // rttr::variant EditorExtra<Texture>(rttr::instance& object)
+    // {
+    //     Texture& texture = *object.try_convert<Texture>();
+    //     DrawImageSaver(Factory<Texture>::GetHandle(texture));
+    // 
+    //     ImGui::SameLine();
+    //     if (ImGui::Button("flip image"))
+    //     {
+    //         auto image = texture.GetRawTextureData();
+    //         ImageManager::FlipImage(image);
+    //         texture.Load(image, texture.GetFormat());
+    //     }
+    // 
+    //     static float scale = 1.0f;
+    //     ImGui::DragFloat("texture preview scale", &scale, 0.01f, 0.0f, 1.0f);
+    //     DrawTexturePreview(texture, scale);
+    //     return { };
+    // }
 
-        ImGui::SameLine();
-        if (ImGui::Button("flip image"))
-        {
-            auto image = texture.GetRawTextureData();
-            ImageManager::FlipImage(image);
-            texture.Load(image, texture.GetFormat());
-        }
+    // template<>
+    // rttr::variant HandleEditorExtra<Texture>(rttr::instance& handle)
+    // {
+    //     rttr::variant result{ };
+    //     auto& texture = *handle.try_convert<TextureHandle>();
+    //     TextureFormat loadingFormat = texture.IsValid() ? texture->GetFormat() : TextureFormat::RGBA;
+    // 
+    //     if (texture.IsValid())
+    //     {
+    //         if (ImGui::Button("delete"))
+    //         {
+    //             result = rttr::variant{ TextureHandle{ } };
+    //         }
+    //         ImGui::SameLine();
+    //     }
+    // 
+    //     if (ImGui::Button("load from file"))
+    //     {
+    //         MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
+    //         if (!path.empty() && File::Exists(path))
+    //         {
+    //             auto newTexture = AssetManager::LoadTexture(path, loadingFormat);
+    //             result = rttr::variant{ newTexture };
+    //         }
+    //     }
+    // 
+    //     static int id = 0;
+    //     ImGui::SameLine();
+    //     if (GUI::InputIntOnClick(&id, "load from id"))
+    //     {
+    //         auto newTexture = GetById<TextureHandle>(id);
+    //         result = rttr::variant{ newTexture };
+    //     }
+    // 
+    //     return result;
+    // }
 
-        static float scale = 1.0f;
-        ImGui::DragFloat("texture preview scale", &scale, 0.01f, 0.0f, 1.0f);
-        DrawTexturePreview(texture, scale);
-        return { };
-    }
+    // template<>
+    // rttr::variant EditorExtra<CubeMap>(rttr::instance& object) { /* nothing to do */ return { }; }
 
-    template<>
-    rttr::variant HandleEditorExtra<Texture>(rttr::instance& handle)
-    {
-        rttr::variant result{ };
-        auto& texture = *handle.try_convert<TextureHandle>();
-        TextureFormat loadingFormat = texture.IsValid() ? texture->GetFormat() : TextureFormat::RGBA;
-
-        if (texture.IsValid())
-        {
-            if (ImGui::Button("delete"))
-            {
-                result = rttr::variant{ TextureHandle{ } };
-            }
-            ImGui::SameLine();
-        }
-
-        if (ImGui::Button("load from file"))
-        {
-            MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
-            if (!path.empty() && File::Exists(path))
-            {
-                auto newTexture = AssetManager::LoadTexture(path, loadingFormat);
-                result = rttr::variant{ newTexture };
-            }
-        }
-
-        static int id = 0;
-        ImGui::SameLine();
-        if (GUI::InputIntOnClick(&id, "load from id"))
-        {
-            auto newTexture = GetById<TextureHandle>(id);
-            result = rttr::variant{ newTexture };
-        }
-
-        return result;
-    }
-
-    template<>
-    rttr::variant EditorExtra<CubeMap>(rttr::instance& object) { /* nothing to do */ return { }; }
-
-    template<>
-    rttr::variant HandleEditorExtra<CubeMap>(rttr::instance& handle)
-    {
-        rttr::variant result{ };
-        auto& texture = *handle.try_convert<CubeMapHandle>();
-
-        if (texture.IsValid())
-        {
-            if (ImGui::Button("delete"))
-            {
-                result = rttr::variant{ CubeMapHandle{ } };
-            }
-            ImGui::SameLine();
-        }
-
-        if (ImGui::Button("load from file"))
-        {
-            MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
-            if (!path.empty() && File::Exists(path))
-            {
-                auto newCubeMap = AssetManager::LoadCubeMap(path);
-                result = rttr::variant{ newCubeMap };
-            }
-        }
-
-        static int id = 0;
-        ImGui::SameLine();
-        if (GUI::InputIntOnClick(&id, "load from id"))
-        {
-            auto newCubeMap = GetById<CubeMapHandle>(id);
-            result = rttr::variant{ newCubeMap };
-        }
-
-        return result;
-    }
+    // template<>
+    // rttr::variant HandleEditorExtra<CubeMap>(rttr::instance& handle)
+    // {
+    //     rttr::variant result{ };
+    //     auto& texture = *handle.try_convert<CubeMapHandle>();
+    // 
+    //     if (texture.IsValid())
+    //     {
+    //         if (ImGui::Button("delete"))
+    //         {
+    //             result = rttr::variant{ CubeMapHandle{ } };
+    //         }
+    //         ImGui::SameLine();
+    //     }
+    // 
+    //     if (ImGui::Button("load from file"))
+    //     {
+    //         MxString path = FileManager::OpenFileDialog("*.png *.jpg *.jpeg *.bmp *.tga *.hdr", "Image Files");
+    //         if (!path.empty() && File::Exists(path))
+    //         {
+    //             auto newCubeMap = AssetManager::LoadCubeMap(path);
+    //             result = rttr::variant{ newCubeMap };
+    //         }
+    //     }
+    // 
+    //     static int id = 0;
+    //     ImGui::SameLine();
+    //     if (GUI::InputIntOnClick(&id, "load from id"))
+    //     {
+    //         auto newCubeMap = GetById<CubeMapHandle>(id);
+    //         result = rttr::variant{ newCubeMap };
+    //     }
+    // 
+    //     return result;
+    // }
 
     template<>
     rttr::variant HandleEditorExtra<AudioBuffer>(rttr::instance& handle)

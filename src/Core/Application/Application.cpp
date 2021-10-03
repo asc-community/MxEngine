@@ -104,6 +104,11 @@ namespace MxEngine
         return this->totalElapsedTime;
     }
 
+    TimeStep Application::GetEngineTime() const
+    {
+        return this->window->GetTimeSinceCreation();
+    }
+
     void Application::SetTotalElapsedTime(TimeStep time)
     {
         this->totalElapsedTime = Max(time, 0.0f);
@@ -319,23 +324,21 @@ namespace MxEngine
 
         this->GetWindow()
             .UseEventDispatcher(this->dispatcher)
-            .UseProfile((int)this->config.GraphicAPIMajorVersion, (int)this->config.GraphicAPIMinorVersion, this->config.GraphicAPIProfile)
             .UseCursorMode(this->config.Cursor)
-            .UseDoubleBuffering(this->config.DoubleBuffering)
+            .UseImmediatePresent(!this->config.DoubleBuffering)
             .UseTitle(this->config.WindowTitle)
-            .UseDebugging(this->config.GraphicAPIDebug)
             .UseWindowPosition((int)this->config.WindowPosition.x, (int)this->config.WindowPosition.y)
             .UseWindowSize((int)this->config.WindowSize.x, (int)this->config.WindowSize.y)
             .Create();
 
-        auto& renderingEngine = this->GetRenderAdaptor().Renderer.GetRenderEngine();
-        renderingEngine
-            .UseCulling()
-            .UseDepthBuffer()
-            .UseSeamlessCubeMaps()
-            .UseClearColor(0.0f, 0.0f, 0.0f, 0.0f)
-            .UseBlendFactors(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA)
-            .UseAnisotropicFiltering((float)this->config.AnisothropicFiltering);
+        // auto& renderingEngine = this->GetRenderAdaptor().Renderer.GetRenderEngine();
+        // renderingEngine
+        //     .UseCulling()
+        //     .UseDepthBuffer()
+        //     .UseSeamlessCubeMaps()
+        //     .UseClearColor(0.0f, 0.0f, 0.0f, 0.0f)
+        //     .UseBlendFactors(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA)
+        //     .UseAnisotropicFiltering((float)this->config.AnisothropicFiltering);
 
         this->GetRuntimeEditor().AddKeyBinding(config.EditorOpenKey);
         this->InitializeRuntime(this->GetRuntimeEditor());
@@ -371,10 +374,11 @@ namespace MxEngine
             while (this->GetWindow().IsOpen()) //-V807
             {
                 MAKE_SCOPE_PROFILER("Application::Frame()");
+                this->GetWindow().PullEvents();
                 this->UpdateTimeDelta(frameEnd, secondEnd, frameCount);
                 this->InvokeUpdate();
                 this->DrawObjects();
-                this->GetWindow().PullEvents();
+                this->GetWindow().Present();
                 if (this->shouldClose) break;
             }
 
@@ -458,13 +462,13 @@ namespace MxEngine
         MAKE_SCOPE_TIMER("MxEngine::Application", "InitializeShaderDebug()");
 
         auto& environment = this->GetRenderAdaptor().Renderer.GetEnvironment();
-        auto& shaders = environment.Shaders;
-        auto& computeShaders = environment.ComputeShaders;
-
-        if (shaders.empty() || computeShaders.empty())
-        {
-            MXLOG_WARNING("Application::InitializeShaderDebug", "method is called before InitializeRenderAdaptor()");
-        }
+        // auto& shaders = environment.Shaders;
+        // auto& computeShaders = environment.ComputeShaders;
+        // 
+        // if (shaders.empty() || computeShaders.empty())
+        // {
+        //     MXLOG_WARNING("Application::InitializeShaderDebug", "method is called before InitializeRenderAdaptor()");
+        // }
         auto shaderDirectory = (FileManager::GetWorkingDirectory() / ToFilePath(this->config.ShaderSourceDirectory)).lexically_normal();
         if (!File::Exists(shaderDirectory))
         {
@@ -472,14 +476,14 @@ namespace MxEngine
             return;
         }
 
-        for (auto it = shaders.begin(); it != shaders.end(); it++)
-        {
-            this->GetRuntimeEditor().AddShaderUpdateListener(it->second, shaderDirectory);
-        }
-        for (auto it = computeShaders.begin(); it != computeShaders.end(); it++)
-        {
-            this->GetRuntimeEditor().AddShaderUpdateListener(it->second, shaderDirectory);
-        }
+        // for (auto it = shaders.begin(); it != shaders.end(); it++)
+        // {
+        //     this->GetRuntimeEditor().AddShaderUpdateListener(it->second, shaderDirectory);
+        // }
+        // for (auto it = computeShaders.begin(); it != computeShaders.end(); it++)
+        // {
+        //     this->GetRuntimeEditor().AddShaderUpdateListener(it->second, shaderDirectory);
+        // }
 
         #endif
     }
@@ -487,7 +491,7 @@ namespace MxEngine
     void Application::UpdateTimeDelta(TimeStep& lastFrameEnd, TimeStep& lastSecondEnd, size_t& framesPerSecond)
     {
         // query platform time
-        float currentTime = Time::EngineCurrent();
+        float currentTime = this->GetEngineTime();
 
         if (this->IsPaused)
         {

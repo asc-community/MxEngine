@@ -52,16 +52,16 @@ set(MXENGINE_SOURCES
 "Platform/OpenAL/ALUtilities.cpp" 
 "Platform/OpenAL/AudioBuffer.cpp" 
 "Platform/OpenAL/AudioPlayer.cpp" 
-"Platform/OpenGL/CubeMap.cpp" 
-"Platform/OpenGL/FrameBuffer.cpp"  
-"Platform/OpenGL/GLUtilities.cpp" 
-"Platform/OpenGL/IndexBuffer.cpp" 
-"Platform/OpenGL/RenderBuffer.cpp" 
-"Platform/OpenGL/Shader.cpp" 
-"Platform/OpenGL/Texture.cpp" 
-"Platform/OpenGL/VertexArray.cpp" 
-"Platform/OpenGL/VertexBuffer.cpp" 
-"Platform/OpenGL/Renderer.cpp" 
+ 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 "Platform/Window/Input.cpp" 
 "Platform/Window/Window.cpp" 
 "Platform/Window/WindowManager.cpp" 
@@ -119,15 +119,20 @@ set(MXENGINE_SOURCES
 "Utilities/ObjectLoading/ObjectSaver.cpp"
 "Core/Application/Scene.cpp"
 "Core/Components/Camera/CameraSSGI.cpp" 
-"Platform/OpenGL/ShaderBase.cpp" 
-"Platform/OpenGL/ComputeShader.cpp" 
-"Platform/OpenGL/BufferBase.cpp"
+ 
+ 
+
 "Platform/Compute/Compute.cpp" 
 "Core/Components/Rendering/ParticleSystem.cpp" 
 "Core/Components/Camera/CameraSSAO.cpp" 
-"Platform/OpenGL/VertexAttribute.cpp"
+
 "Core/Serialization/Cloning.cpp" 
-"Core/Resources/BufferAllocator.cpp" "Core/Rendering/RenderObjects/RenderHelperObject.cpp" "Utilities/Factory/FactoryImpl.h"  "Core/Components/Scripting/ScriptDatabase.cpp" "Core/Runtime/Reflection.cpp")
+"Core/Resources/BufferAllocator.cpp"
+"Core/Rendering/RenderObjects/RenderHelperObject.cpp"
+"Utilities/Factory/FactoryImpl.h"
+"Core/Components/Scripting/ScriptDatabase.cpp"
+"Core/Runtime/Reflection.cpp"
+)
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)
@@ -136,8 +141,6 @@ set(nlohmann_json ${SUBMODULES_PATH}/json)
 set(glm ${SUBMODULES_PATH}/glm)
 set(fmt ${SUBMODULES_PATH}/fmt)
 set(stb ${SUBMODULES_PATH}/stb)
-set(glfw ${SUBMODULES_PATH}/glfw)
-set(glew ${SUBMODULES_PATH}/glew)
 set(imgui ${SUBMODULES_PATH}/imgui)
 set(miniaudio ${SUBMODULES_PATH}/miniaudio)
 set(openal ${SUBMODULES_PATH}/openal-soft)
@@ -151,6 +154,7 @@ set(stduuid ${SUBMODULES_PATH}/stduuid)
 set(runtime_compiled_cpp ${SUBMODULES_PATH}/RuntimeCompiledCPlusPlus/Aurora)
 set(rttr ${SUBMODULES_PATH}/rttr)
 set(allocators ${SUBMODULES_PATH}/Allocators)
+set(vulkan_abstraction_layer ${SUBMODULES_PATH}/VulkanAbstractionLayer)
 
 set(THIRD_PARTY_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH "")
@@ -185,10 +189,6 @@ set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
 
-# glew
-set(glew-cmake_BUILD_SHARED ON CACHE BOOL "" FORCE)
-set(glew-cmake_BUILD_STATIC OFF CACHE BOOL "" FORCE)
-
 # rcc++
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
@@ -208,8 +208,6 @@ set(THIRD_PARTY_INCLUDE_DIRS
     ${eastl}/include
     ${openal}/include
     ${fmt}/include
-    ${glfw}/include
-    ${glew}/include
     ${stduuid}/include
     ${stduuid}/gsl
     ${bullet3}/src
@@ -223,44 +221,37 @@ set(THIRD_PARTY_INCLUDE_DIRS
     ${imgui}
     ${glm}
     ${stb}
+    ${vulkan_abstraction_layer}
 )
 
 set(fmt_binary_dir ${THIRD_PARTY_BUILD_DIR}/fmt)
 set(bullet3_binary_dir ${THIRD_PARTY_BUILD_DIR}/bullet3)
 set(assimp_binary_dir ${THIRD_PARTY_BUILD_DIR}/assimp)
-set(glfw_binary_dir ${THIRD_PARTY_BUILD_DIR}/glfw)
-set(glew_binary_dir ${THIRD_PARTY_BUILD_DIR}/glew)
 set(imgui_binary_dir ${THIRD_PARTY_BUILD_DIR}/imgui)
 set(eastl_binary_dir ${THIRD_PARTY_BUILD_DIR}/eastl)
 set(openal_binary_dir ${THIRD_PARTY_BUILD_DIR}/openal)
 set(imguizmo_binary_dir ${THIRD_PARTY_BUILD_DIR}/imguizmo)
 set(runtime_compiled_cpp_binary_dir ${THIRD_PARTY_BUILD_DIR}/runtime_compiled_cpp)
 set(rttr_binary_dir ${THIRD_PARTY_BUILD_DIR}/rttr)
+set(vulkan_abstraction_layer_binary_dir ${THIRD_PARTY_BUILD_DIR}/vulkan_abstraction_layer)
 
 add_subdirectory(${fmt} ${fmt_binary_dir})
 add_subdirectory(${bullet3} ${bullet3_binary_dir})
 add_subdirectory(${assimp} ${assimp_binary_dir})
-add_subdirectory(${glew} ${glew_binary_dir})
 add_subdirectory(${imgui} ${imgui_binary_dir})
 add_subdirectory(${eastl} ${eastl_binary_dir})
 add_subdirectory(${openal} ${openal_binary_dir})
 add_subdirectory(${imguizmo} ${imguizmo_binary_dir})
 add_subdirectory(${runtime_compiled_cpp} ${runtime_compiled_cpp_binary_dir})
 add_subdirectory(${rttr} ${rttr_binary_dir})
+add_subdirectory(${vulkan_abstraction_layer} ${vulkan_abstraction_layer_binary_dir})
 
-set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
-add_subdirectory(${glfw} ${glfw_binary_dir})
-if(WIN32)
-    set_target_properties(glfw PROPERTIES IMPORT_SUFFIX ".lib")
-endif()
 target_include_directories(ImGuizmo PUBLIC ${imgui})
 
 set(THIRD_PARTY_BINARY_DIRS
     ${fmt_binary_dir}
     ${bullet3_binary_dir}
     ${assimp_binary_dir}
-    ${glfw_binary_dir}
-    ${glew_binary_dir}
     ${imgui_binary_dir}
     ${eastl_binary_dir}
     ${eabase_binary_dir} 
@@ -268,11 +259,11 @@ set(THIRD_PARTY_BINARY_DIRS
     ${imguizmo_binary_dir}
     ${runtime_compiled_cpp_binary_dir}
     ${rttr_binary_dir}
+    ${vulkan_abstraction_layer_binary_dir}
 )
 
 set(THIRD_PARTY_LIBRARIES
     fmt
-    libglew_shared
     assimp
     IrrXML
     glfw
@@ -283,12 +274,12 @@ set(THIRD_PARTY_LIBRARIES
     BulletDynamics BulletCollision LinearMath
     RuntimeObjectSystem RuntimeCompiler
     rttr_core
+    VulkanAbstractionLayer
 )
 
 set(SHARED_LIBRARIES
     OpenAL
     rttr_core
-    libglew_shared
     glfw
 )
 

@@ -2,9 +2,12 @@
 
 #include "Core/Events/EventBase.h"
 #include "Utilities/Math/Math.h"
+#include "VulkanAbstractionLayer/Window.h"
 
 namespace MxEngine
 {
+    using MouseButton = VulkanAbstractionLayer::MouseButton;
+
     class MouseMoveEvent : public EventBase
     {
         MAKE_EVENT(MouseMoveEvent);
@@ -13,22 +16,6 @@ namespace MxEngine
 
         inline MouseMoveEvent(float x, float y)
             : position(x, y) { }
-    };
-
-    enum class MouseButton
-    {
-        _1 = 0,
-        _2 = 1,
-        _3 = 2,
-        _4 = 3,
-        _5 = 4,
-        _6 = 5,
-        _7 = 6,
-        _8 = 7,
-        LAST = 7,
-        LEFT = 0,
-        RIGHT = 1,
-        MIDDLE = 2,
     };
 
     const char* EnumToString(MouseButton button);

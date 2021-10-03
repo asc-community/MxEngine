@@ -31,7 +31,6 @@
 #include "Core/Components/Instancing/InstanceFactory.h"
 #include "Core/Components/Camera/VRCameraController.h"
 #include "Core/Components/Scripting/Script.h"
-#include "Platform/OpenGL/Texture.h"
 #include "Core/Runtime/HandleMappings.h"
 #include "Core/Serialization/SceneSerializer.h"
 
@@ -141,31 +140,31 @@ namespace MxEngine
         if (json.contains("right")) vr.RightEye = GetHandleById<CameraController::Handle>(json["right"], mappings);
     }
 
-    template<>
-    void SerializeExtra<Texture>(rttr::instance jsonWrapped, rttr::instance& object)
-    {
-        auto& json = *jsonWrapped.try_convert<JsonFile>();
-        auto& texture = *object.try_convert<Texture>();
+    // template<>
+    // void SerializeExtra<Texture>(rttr::instance jsonWrapped, rttr::instance& object)
+    // {
+    //     auto& json = *jsonWrapped.try_convert<JsonFile>();
+    //     auto& texture = *object.try_convert<Texture>();
+    // 
+    //     auto formatEnumType = rttr::type::get<TextureFormat>().get_enumeration();
+    // 
+    //     json["path"] = texture.GetFilePath();
+    //     json["format"] = formatEnumType.value_to_name(texture.GetFormat()).cbegin();
+    // }
 
-        auto formatEnumType = rttr::type::get<TextureFormat>().get_enumeration();
-
-        json["path"] = texture.GetFilePath();
-        json["format"] = formatEnumType.value_to_name(texture.GetFormat()).cbegin();
-    }
-
-    template<>
-    void DeserializeExtra<Texture>(rttr::instance jsonWrapped, rttr::instance& object, HandleMappings& mappings)
-    {
-        const auto& json = *jsonWrapped.try_convert<JsonFile>();
-        auto& texture = *object.try_convert<Texture>();
-
-        auto formatEnumType = rttr::type::get<TextureFormat>().get_enumeration();
-
-        auto filepath = ToFilePath(json["path"].get<MxString>());
-        auto format = formatEnumType.name_to_value(json["format"].get<MxString>().c_str()).convert<TextureFormat>();
-
-        texture.Load(filepath, format);
-    }
+    // template<>
+    // void DeserializeExtra<Texture>(rttr::instance jsonWrapped, rttr::instance& object, HandleMappings& mappings)
+    // {
+    //     const auto& json = *jsonWrapped.try_convert<JsonFile>();
+    //     auto& texture = *object.try_convert<Texture>();
+    // 
+    //     auto formatEnumType = rttr::type::get<TextureFormat>().get_enumeration();
+    // 
+    //     auto filepath = ToFilePath(json["path"].get<MxString>());
+    //     auto format = formatEnumType.name_to_value(json["format"].get<MxString>().c_str()).convert<TextureFormat>();
+    // 
+    //     texture.Load(filepath, format);
+    // }
 
     template<>
     void SerializeExtra<ScriptDatabase>(rttr::instance jsonWrapped, rttr::instance& object)

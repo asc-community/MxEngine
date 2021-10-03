@@ -49,34 +49,34 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )
-            .property("albedo map", &Material::AlbedoMap)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
-            .property("emissive map", &Material::EmissiveMap)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
-            .property("normal map", &Material::NormalMap)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
-            .property("height map", &Material::HeightMap)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
-            .property("ambient occlusion map", &Material::AmbientOcclusionMap)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
-            .property("metallic map", &Material::MetallicMap)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
-            .property("roughness map", &Material::RoughnessMap)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
+            // .property("albedo map", &Material::AlbedoMap)
+            // (
+            //     rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            // )
+            // .property("emissive map", &Material::EmissiveMap)
+            // (
+            //     rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            // )
+            // .property("normal map", &Material::NormalMap)
+            // (
+            //     rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            // )
+            // .property("height map", &Material::HeightMap)
+            // (
+            //     rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            // )
+            // .property("ambient occlusion map", &Material::AmbientOcclusionMap)
+            // (
+            //     rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            // )
+            // .property("metallic map", &Material::MetallicMap)
+            // (
+            //     rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            // )
+            // .property("roughness map", &Material::RoughnessMap)
+            // (
+            //     rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            // )
             .property("base color", &Material::BaseColor)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),

@@ -27,43 +27,42 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Compute.h"
-#include "Platform/OpenGL/GLUtilities.h"
 
 namespace MxEngine
 {
-    constexpr std::array<uint64_t, 16> BarrierMappings = {
-        GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT,
-        GL_ELEMENT_ARRAY_BARRIER_BIT,
-        GL_UNIFORM_BARRIER_BIT,
-        GL_TEXTURE_FETCH_BARRIER_BIT,
-        GL_SHADER_IMAGE_ACCESS_BARRIER_BIT,
-        GL_COMMAND_BARRIER_BIT,
-        GL_PIXEL_BUFFER_BARRIER_BIT,
-        GL_TEXTURE_UPDATE_BARRIER_BIT,
-        GL_BUFFER_UPDATE_BARRIER_BIT,
-        GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT,
-        GL_FRAMEBUFFER_BARRIER_BIT,
-        GL_TRANSFORM_FEEDBACK_BARRIER_BIT,
-        GL_ATOMIC_COUNTER_BARRIER_BIT,
-        GL_SHADER_STORAGE_BARRIER_BIT,
-        GL_QUERY_BUFFER_BARRIER_BIT,
-        GL_ALL_BARRIER_BITS,
-    };
+    // constexpr std::array<uint64_t, 16> BarrierMappings = {
+    //     GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT,
+    //     GL_ELEMENT_ARRAY_BARRIER_BIT,
+    //     GL_UNIFORM_BARRIER_BIT,
+    //     GL_TEXTURE_FETCH_BARRIER_BIT,
+    //     GL_SHADER_IMAGE_ACCESS_BARRIER_BIT,
+    //     GL_COMMAND_BARRIER_BIT,
+    //     GL_PIXEL_BUFFER_BARRIER_BIT,
+    //     GL_TEXTURE_UPDATE_BARRIER_BIT,
+    //     GL_BUFFER_UPDATE_BARRIER_BIT,
+    //     GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT,
+    //     GL_FRAMEBUFFER_BARRIER_BIT,
+    //     GL_TRANSFORM_FEEDBACK_BARRIER_BIT,
+    //     GL_ATOMIC_COUNTER_BARRIER_BIT,
+    //     GL_SHADER_STORAGE_BARRIER_BIT,
+    //     GL_QUERY_BUFFER_BARRIER_BIT,
+    //     GL_ALL_BARRIER_BITS,
+    // };
 
-    void Compute::Dispatch(const ComputeShaderHandle& computeShader, size_t x, size_t y, size_t z)
-    {
-        computeShader->Bind();
-        GLCALL(glDispatchCompute(x, y, z));
-    }
+    // void Compute::Dispatch(const ComputeShaderHandle& computeShader, size_t x, size_t y, size_t z)
+    // {
+    //     computeShader->Bind();
+    //     GLCALL(glDispatchCompute(x, y, z));
+    // }
 
     void Compute::SetMemoryBarrier(BarrierType::Bits barriers)
     {
-        GLbitfield barrierBits = 0;
-        for (size_t i = 0; i < BarrierMappings.size(); i++)
-        {
-            bool bit = (uint64_t)barriers & (1ull << i);
-            barrierBits |= (bit ? BarrierMappings[i] : 0);
-        }
-        GLCALL(glMemoryBarrier(barrierBits));
+        // GLbitfield barrierBits = 0;
+        // for (size_t i = 0; i < BarrierMappings.size(); i++)
+        // {
+        //     bool bit = (uint64_t)barriers & (1ull << i);
+        //     barrierBits |= (bit ? BarrierMappings[i] : 0);
+        // }
+        // GLCALL(glMemoryBarrier(barrierBits));
     }
 }

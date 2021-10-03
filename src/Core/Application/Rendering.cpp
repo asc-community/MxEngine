@@ -58,18 +58,18 @@ namespace MxEngine
         auto viewport = Rendering::GetViewport();
         if (viewport.IsValid())
         {
-            auto texture = viewport->GetRenderTexture();
-            size.x = (int)texture->GetWidth();
-            size.y = (int)texture->GetHeight();
+            // auto texture = viewport->GetRenderTexture();
+            // size.x = (int)texture->GetWidth();
+            // size.y = (int)texture->GetHeight();
         }
         return size;
     }
 
-    TextureHandle Rendering::GetRenderTexture()
-    {
-        auto viewport = Rendering::GetViewport();
-        return viewport.IsValid() ? viewport.GetUnchecked()->GetRenderTexture() : TextureHandle{ };
-    }
+    // TextureHandle Rendering::GetRenderTexture()
+    // {
+    //     auto viewport = Rendering::GetViewport();
+    //     return viewport.IsValid() ? viewport.GetUnchecked()->GetRenderTexture() : TextureHandle{ };
+    // }
 
     RenderController& Rendering::GetController()
     {

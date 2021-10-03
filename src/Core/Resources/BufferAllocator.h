@@ -48,11 +48,11 @@ namespace MxEngine
         static void Clone(BufferAllocatorImpl* other);
         static void AllocateBuffers();
 
-        static VertexBufferHandle GetVBO();
-        static IndexBufferHandle GetIBO();
-        static VertexBufferHandle GetInstanceVBO();
-        static VertexArrayHandle GetVAO();
-        static ShaderStorageBufferHandle GetSSBO();
+        // static VertexBufferHandle GetVBO();
+        // static IndexBufferHandle GetIBO();
+        // static VertexBufferHandle GetInstanceVBO();
+        // static VertexArrayHandle GetVAO();
+        // static ShaderStorageBufferHandle GetSSBO();
         static BufferAllocation AllocateInVBO(size_t sizeInFloats);
         static BufferAllocation AllocateInIBO(size_t sizeInIndices);
         static BufferAllocation AllocateInInstanceVBO(size_t sizeInInstances);

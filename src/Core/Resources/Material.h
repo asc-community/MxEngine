@@ -45,13 +45,13 @@ namespace MxEngine
     class Material
     {
     public:
-        TextureHandle AlbedoMap;
-        TextureHandle EmissiveMap;
-        TextureHandle NormalMap;
-        TextureHandle HeightMap;
-        TextureHandle AmbientOcclusionMap;
-        TextureHandle MetallicMap;
-        TextureHandle RoughnessMap;
+        // TextureHandle AlbedoMap;
+        // TextureHandle EmissiveMap;
+        // TextureHandle NormalMap;
+        // TextureHandle HeightMap;
+        // TextureHandle AmbientOcclusionMap;
+        // TextureHandle MetallicMap;
+        // TextureHandle RoughnessMap;
 
         float Transparency = 1.0f;
         float Emission = 0.0f;

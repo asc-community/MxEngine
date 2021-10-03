@@ -60,60 +60,60 @@ namespace MxEngine
             GREY,
         };
 
-        static inline TextureHandle MakeTexture(uint8_t r, uint8_t g, uint8_t b)
-        {
-            auto texture = Factory<Texture>::Create();
-            uint8_t buffer[] = { r, g, b };
-            texture->Load(buffer, 1, 1, 3, false);
-            texture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("color"));
-            return texture;
-        }
-
-        static inline TextureHandle MakeTexture(float r, float g, float b)
-        {
-            return MakeTexture(MakeVector3(r, g, b));
-        }
-
-        static inline TextureHandle MakeTexture(const Vector3& color)
-        {
-            uint8_t r = static_cast<uint8_t>(Clamp(color.r, 0.0f, 1.0f) * 255.0f);
-            uint8_t g = static_cast<uint8_t>(Clamp(color.g, 0.0f, 1.0f) * 255.0f);
-            uint8_t b = static_cast<uint8_t>(Clamp(color.b, 0.0f, 1.0f) * 255.0f);
-            return MakeTexture(r, g, b);
-        }
-
-        static TextureHandle MakeTexture(Palette color)
-        {
-            return MakeTexture(Create(color));
-        }
-
-        static inline CubeMapHandle MakeCubeMap(uint8_t r, uint8_t g, uint8_t b)
-        {
-            auto cubemap = Factory<CubeMap>::Create();
-            uint8_t buffer[] = { r, g, b };
-            std::array<uint8_t*, 6> sides = { buffer, buffer, buffer, buffer, buffer, buffer };
-            cubemap->Load(sides, 1, 1);
-            cubemap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("color"));
-            return cubemap;
-        }
-
-        static inline CubeMapHandle MakeCubeMap(float r, float g, float b)
-        {
-            return MakeCubeMap(MakeVector3(r, g, b));
-        }
-
-        static inline CubeMapHandle MakeCubeMap(const Vector3& color)
-        {
-            uint8_t r = static_cast<uint8_t>(Clamp(color.r, 0.0f, 1.0f) * 255.0f);
-            uint8_t g = static_cast<uint8_t>(Clamp(color.g, 0.0f, 1.0f) * 255.0f);
-            uint8_t b = static_cast<uint8_t>(Clamp(color.b, 0.0f, 1.0f) * 255.0f);
-            return MakeCubeMap(r, g, b);
-        }
-
-        static CubeMapHandle MakeCubeMap(Palette color)
-        {
-            return MakeCubeMap(Create(color));
-        }
+        // static inline TextureHandle MakeTexture(uint8_t r, uint8_t g, uint8_t b)
+        // {
+        //     auto texture = Factory<Texture>::Create();
+        //     uint8_t buffer[] = { r, g, b };
+        //     texture->Load(buffer, 1, 1, 3, false);
+        //     texture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("color"));
+        //     return texture;
+        // }
+        // 
+        // static inline TextureHandle MakeTexture(float r, float g, float b)
+        // {
+        //     return MakeTexture(MakeVector3(r, g, b));
+        // }
+        // 
+        // static inline TextureHandle MakeTexture(const Vector3& color)
+        // {
+        //     uint8_t r = static_cast<uint8_t>(Clamp(color.r, 0.0f, 1.0f) * 255.0f);
+        //     uint8_t g = static_cast<uint8_t>(Clamp(color.g, 0.0f, 1.0f) * 255.0f);
+        //     uint8_t b = static_cast<uint8_t>(Clamp(color.b, 0.0f, 1.0f) * 255.0f);
+        //     return MakeTexture(r, g, b);
+        // }
+        // 
+        // static TextureHandle MakeTexture(Palette color)
+        // {
+        //     return MakeTexture(Create(color));
+        // }
+        // 
+        // static inline CubeMapHandle MakeCubeMap(uint8_t r, uint8_t g, uint8_t b)
+        // {
+        //     auto cubemap = Factory<CubeMap>::Create();
+        //     uint8_t buffer[] = { r, g, b };
+        //     std::array<uint8_t*, 6> sides = { buffer, buffer, buffer, buffer, buffer, buffer };
+        //     cubemap->Load(sides, 1, 1);
+        //     cubemap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("color"));
+        //     return cubemap;
+        // }
+        // 
+        // static inline CubeMapHandle MakeCubeMap(float r, float g, float b)
+        // {
+        //     return MakeCubeMap(MakeVector3(r, g, b));
+        // }
+        // 
+        // static inline CubeMapHandle MakeCubeMap(const Vector3& color)
+        // {
+        //     uint8_t r = static_cast<uint8_t>(Clamp(color.r, 0.0f, 1.0f) * 255.0f);
+        //     uint8_t g = static_cast<uint8_t>(Clamp(color.g, 0.0f, 1.0f) * 255.0f);
+        //     uint8_t b = static_cast<uint8_t>(Clamp(color.b, 0.0f, 1.0f) * 255.0f);
+        //     return MakeCubeMap(r, g, b);
+        // }
+        // 
+        // static CubeMapHandle MakeCubeMap(Palette color)
+        // {
+        //     return MakeCubeMap(Create(color));
+        // }
 
         static Vector3 Create(Palette color)
         {

@@ -53,3 +53,6 @@
 [submodule "submodules/Allocators"]
 	path = submodules/Allocators
 	url = https://github.com/MomoDeve/Allocators
+[submodule "submodules/VulkanAbstractionLayer"]
+	path = submodules/VulkanAbstractionLayer
+	url = https://github.com/asc-community/VulkanAbstractionLayer

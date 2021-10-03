@@ -75,69 +75,69 @@ namespace MxEngine
         ImageManager::SaveImage(MxString(filePath), image, type);
     }
 
-    void ImageManager::SaveTexture(StringId fileHash, const TextureHandle& texture, ImageType type)
-    {
-        ImageManager::SaveTexture(FileManager::GetFilePath(fileHash), texture, type);
-    }
-
-    void ImageManager::SaveTexture(const FilePath& filePath, const TextureHandle& texture, ImageType type)
-    {
-        ImageManager::SaveTexture(ToMxString(filePath), texture, type);
-    }
-
-    void ImageManager::SaveTexture(const MxString& filePath, const TextureHandle& texture, ImageType type)
-    {
-        ImageManager::SaveImage(filePath, texture->GetRawTextureData(), type);
-    }
-
-    void ImageManager::SaveTexture(const char* filePath, const TextureHandle& texture, ImageType type)
-    {
-        ImageManager::SaveTexture((MxString)filePath, texture, type);
-    }
-
-    void ImageManager::SaveTexture(StringId fileHash, const TextureHandle& texture)
-    {
-        ImageManager::SaveTexture(FileManager::GetFilePath(fileHash), texture);
-    }
-
-    void ImageManager::SaveTexture(const FilePath& filepath, const TextureHandle& texture)
-    {
-        auto ext = filepath.extension();
-        if (ext == ".png")
-        {
-            ImageManager::SaveTexture(filepath, texture, ImageType::PNG);
-        }
-        else if (ext == ".jpg" || ext == ".jpeg")
-        {
-            ImageManager::SaveTexture(filepath, texture, ImageType::JPG);
-        }
-        else if (ext == ".bmp")
-        {
-            ImageManager::SaveTexture(filepath, texture, ImageType::BMP);
-        }
-        else if (ext == ".tga")
-        {
-            ImageManager::SaveTexture(filepath, texture, ImageType::TGA);
-        }
-        else if (ext == ".hdr")
-        {
-            ImageManager::SaveTexture(filepath, texture, ImageType::HDR);
-        }
-        else
-        {
-            MXLOG_WARNING("MxEngine::ImageManager", "image was not saved because extenstion was invalid: " + ToMxString(ext));
-        }
-    }
-
-    void ImageManager::SaveTexture(const MxString& filePath, const TextureHandle& texture)
-    {
-        ImageManager::SaveTexture(filePath.c_str(), texture);
-    }
-
-    void ImageManager::SaveTexture(const char* filePath, const TextureHandle& texture)
-    {
-        ImageManager::SaveTexture(FilePath(filePath), texture);
-    }
+    // void ImageManager::SaveTexture(StringId fileHash, const TextureHandle& texture, ImageType type)
+    // {
+    //     ImageManager::SaveTexture(FileManager::GetFilePath(fileHash), texture, type);
+    // }
+    // 
+    // void ImageManager::SaveTexture(const FilePath& filePath, const TextureHandle& texture, ImageType type)
+    // {
+    //     ImageManager::SaveTexture(ToMxString(filePath), texture, type);
+    // }
+    // 
+    // void ImageManager::SaveTexture(const MxString& filePath, const TextureHandle& texture, ImageType type)
+    // {
+    //     ImageManager::SaveImage(filePath, texture->GetRawTextureData(), type);
+    // }
+    // 
+    // void ImageManager::SaveTexture(const char* filePath, const TextureHandle& texture, ImageType type)
+    // {
+    //     ImageManager::SaveTexture((MxString)filePath, texture, type);
+    // }
+    // 
+    // void ImageManager::SaveTexture(StringId fileHash, const TextureHandle& texture)
+    // {
+    //     ImageManager::SaveTexture(FileManager::GetFilePath(fileHash), texture);
+    // }
+    // 
+    // void ImageManager::SaveTexture(const FilePath& filepath, const TextureHandle& texture)
+    // {
+    //     auto ext = filepath.extension();
+    //     if (ext == ".png")
+    //     {
+    //         ImageManager::SaveTexture(filepath, texture, ImageType::PNG);
+    //     }
+    //     else if (ext == ".jpg" || ext == ".jpeg")
+    //     {
+    //         ImageManager::SaveTexture(filepath, texture, ImageType::JPG);
+    //     }
+    //     else if (ext == ".bmp")
+    //     {
+    //         ImageManager::SaveTexture(filepath, texture, ImageType::BMP);
+    //     }
+    //     else if (ext == ".tga")
+    //     {
+    //         ImageManager::SaveTexture(filepath, texture, ImageType::TGA);
+    //     }
+    //     else if (ext == ".hdr")
+    //     {
+    //         ImageManager::SaveTexture(filepath, texture, ImageType::HDR);
+    //     }
+    //     else
+    //     {
+    //         MXLOG_WARNING("MxEngine::ImageManager", "image was not saved because extenstion was invalid: " + ToMxString(ext));
+    //     }
+    // }
+    // 
+    // void ImageManager::SaveTexture(const MxString& filePath, const TextureHandle& texture)
+    // {
+    //     ImageManager::SaveTexture(filePath.c_str(), texture);
+    // }
+    // 
+    // void ImageManager::SaveTexture(const char* filePath, const TextureHandle& texture)
+    // {
+    //     ImageManager::SaveTexture(FilePath(filePath), texture);
+    // }
 
     void ImageManager::TakeScreenShot(StringId fileHash, ImageType type)
     {
@@ -151,13 +151,13 @@ namespace MxEngine
 
     void ImageManager::TakeScreenShot(const MxString& filePath, ImageType type)
     {
-        auto screenshot = Rendering::GetRenderTexture();
-        if (!screenshot.IsValid())
-        {
-            MXLOG_WARNING("MxEngine::ImageManager", "cannot take screenshot at there is no viewport attached");
-            return;
-        }
-        ImageManager::SaveTexture(filePath, screenshot, type);
+        // auto screenshot = Rendering::GetRenderTexture();
+        // if (!screenshot.IsValid())
+        // {
+        //     MXLOG_WARNING("MxEngine::ImageManager", "cannot take screenshot at there is no viewport attached");
+        //     return;
+        // }
+        // ImageManager::SaveTexture(filePath, screenshot, type);
     }
 
     void ImageManager::TakeScreenShot(const char* filePath, ImageType type)

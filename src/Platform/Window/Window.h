@@ -33,17 +33,16 @@
 #include "Utilities/Time/Time.h"
 #include "Core/Config/Config.h"
 #include "Core/Events/MouseEvent.h"
-
-struct GLFWwindow; // from glfw header file
+#include "VulkanAbstractionLayer/Window.h"
 
 namespace MxEngine
 {
     class Window
     {
-        using WindowHandle = GLFWwindow*;
+        using WindowHandle = VulkanAbstractionLayer::Window*;
     private:
         MxString title;
-        GLFWwindow* window = nullptr;
+        WindowHandle window = nullptr;
         int width = 0, height = 0;
         EventDispatcherImpl<EventBase>* dispatcher = nullptr;
         mutable std::bitset<350> keyHeld;
@@ -55,7 +54,7 @@ namespace MxEngine
         CursorMode cursorMode = CursorMode::NORMAL;
         bool anyKeyEvent = false;
         bool anyMouseEvent = false;
-        bool doubleBuffer = false;
+        bool immediatePresent = false;
         Vector2 windowPosition{ 0.0f, 0.0f };
 
         void Destroy();
@@ -74,9 +73,11 @@ namespace MxEngine
         bool IsOpen() const;
         void PullEvents() const;
         void OnUpdate();
-        float GetTime() const;
+        void Present();
         Vector2 GetCursorPosition() const;
         Vector2 GetWindowPosition() const;
+        float GetTimeSinceCreation() const;
+        void SetTimeSinceCreation(float time);
         CursorMode GetCursorMode() const;
         const MxString& GetTitle() const;
         bool IsKeyHeld(KeyCode key) const;
@@ -93,15 +94,12 @@ namespace MxEngine
         Window& Create();
         Window& Close();
         Window& SwitchContext();
-        Window& UseTime(float time = 0.0f);
-        Window& UseDebugging(bool value = true);
-        Window& UseDoubleBuffering(bool value = true);
         Window& UseCursorMode(CursorMode cursor);
         Window& UseCursorPosition(const Vector2& pos);
         Window& UseTitle(const MxString& title);
         Window& UseWindowPosition(int xpos, int ypos);
         Window& UseWindowSize(int width, int height);
         Window& UseEventDispatcher(EventDispatcherImpl<EventBase>* dispatcher);
-        Window& UseProfile(int majorVersion, int minorVersion, RenderProfile profile);
+        Window& UseImmediatePresent(bool value);
     };
 }

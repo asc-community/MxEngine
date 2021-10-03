@@ -80,7 +80,7 @@ namespace MxEngine
         }
         // create CPU-side array for verticies and indicies, and GPU-size VBO/IBO
         MxVector<Vertex> verticies;
-        MxVector<IndexBuffer::IndexType> indicies;
+        MxVector<uint32_t> indicies;
         verticies.reserve(totalVerticies);
         indicies.reserve(totalIndicies);
         this->ReserveData(totalVerticies, totalIndicies);
@@ -103,8 +103,8 @@ namespace MxEngine
             this->AddSubMesh(materialId, std::move(meshData));
         }
         // load verticies and indicies to GPU
-        BufferAllocator::GetVBO()->BufferSubData((float*)verticies.data(), verticies.size() * Vertex::Size, this->vertexAllocation.Offset * Vertex::Size);
-        BufferAllocator::GetIBO()->BufferSubData(indicies.data(), indicies.size(), this->indexAllocation.Offset);
+        // BufferAllocator::GetVBO()->BufferSubData((float*)verticies.data(), verticies.size() * Vertex::Size, this->vertexAllocation.Offset * Vertex::Size);
+        // BufferAllocator::GetIBO()->BufferSubData(indicies.data(), indicies.size(), this->indexAllocation.Offset);
 
         this->UpdateBoundingGeometry(); // use submeshes boundings to update mesh boundings
     }

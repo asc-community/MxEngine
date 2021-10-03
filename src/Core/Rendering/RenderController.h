@@ -29,7 +29,6 @@
 #pragma once
 
 #include "Core/Resources/Material.h"
-#include "Platform/OpenGL/Renderer.h"
 #include "RenderPipeline.h"
 #include "RenderObjects/DebugBuffer.h"
 
@@ -49,48 +48,48 @@ namespace MxEngine
 
     class RenderController
     {
-        Renderer renderer;
+        // Renderer renderer;
         RenderPipeline Pipeline;
 
         void PrepareShadowMaps();
         void DrawSkybox(const CameraUnit& camera);
         void ComputeParticles(const MxVector<ParticleSystemUnit>& particleSystems);
         void SortParticles(const CameraUnit& camera, MxVector<ParticleSystemUnit>& particleSystems);
-        void DrawParticles(const CameraUnit& camera, MxVector<ParticleSystemUnit>& particleSystems, const Shader& shader);
-        void DrawObjects(const CameraUnit& camera, const Shader& shader, const RenderList& objects);
+        // void DrawParticles(const CameraUnit& camera, MxVector<ParticleSystemUnit>& particleSystems, const Shader& shader);
+        // void DrawObjects(const CameraUnit& camera, const Shader& shader, const RenderList& objects);
         void DrawDebugBuffer(const CameraUnit& camera);
-        void DrawObject(const RenderUnit& unit, size_t instanceCount, size_t baseInstance, const Shader& shader);
-        void ComputeBloomEffect(CameraUnit& camera, const TextureHandle& output);
-        TextureHandle ComputeAverageWhite(CameraUnit& camera);
+        // void DrawObject(const RenderUnit& unit, size_t instanceCount, size_t baseInstance, const Shader& shader);
+        // void ComputeBloomEffect(CameraUnit& camera, const TextureHandle& output);
+        // TextureHandle ComputeAverageWhite(CameraUnit& camera);
         void PerformPostProcessing(CameraUnit& camera);
         void PerformLightPass(CameraUnit& camera);
         void DrawTransparentObjects(CameraUnit& camera);
-        void ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
-        void ApplyChromaticAbberation(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
-        void ApplySSAO(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
-        void ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
-        void ApplySSGI(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
-        void ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
-        void ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
-        void ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
-        void ApplyColorGrading(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
-        void DrawIBL(CameraUnit& camera, TextureHandle& output);
-        void DrawDirectionalLights(CameraUnit& camera, TextureHandle& output);
-        void DrawShadowedPointLights(CameraUnit& camera, TextureHandle& output);
-        void DrawShadowedSpotLights(CameraUnit& camera, TextureHandle& output);
-        void DrawNonShadowedPointLights(CameraUnit& camera, TextureHandle& output);
-        void DrawNonShadowedSpotLights(CameraUnit& camera, TextureHandle& output);
+        // void ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+        // void ApplyChromaticAbberation(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+        // void ApplySSAO(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
+        // void ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
+        // void ApplySSGI(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
+        // void ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+        // void ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+        // void ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+        // void ApplyColorGrading(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+        // void DrawIBL(CameraUnit& camera, TextureHandle& output);
+        // void DrawDirectionalLights(CameraUnit& camera, TextureHandle& output);
+        // void DrawShadowedPointLights(CameraUnit& camera, TextureHandle& output);
+        // void DrawShadowedSpotLights(CameraUnit& camera, TextureHandle& output);
+        // void DrawNonShadowedPointLights(CameraUnit& camera, TextureHandle& output);
+        // void DrawNonShadowedSpotLights(CameraUnit& camera, TextureHandle& output);
         void SubmitInstancedLights();
-        void BindGBuffer(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
-        void BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
-        void BindCameraInformation(const CameraUnit& camera, const Shader& shader);
-        void BindFogInformation(const CameraUnit& camera, const Shader& shader);
+        // void BindGBuffer(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
+        // void BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
+        // void BindCameraInformation(const CameraUnit& camera, const Shader& shader);
+        // void BindFogInformation(const CameraUnit& camera, const Shader& shader);
         void AttachDefaultVAO();
-        void RenderToAttachedFrameBuffer(const Shader& shader);
+        // void RenderToAttachedFrameBuffer(const Shader& shader);
     public:
 
-        const Renderer& GetRenderEngine() const;
-        Renderer& GetRenderEngine();
+        // const Renderer& GetRenderEngine() const;
+        // Renderer& GetRenderEngine();
         void Render() const;
         void Clear() const;
         void ToggleDepthOnlyMode(bool value);
@@ -98,21 +97,21 @@ namespace MxEngine
         void ToggleFaceCulling(bool value, bool counterClockWise = true, bool cullBack = true);
         void SetAnisotropicFiltering(float value);
         void SetViewport(int x, int y, int width, int height);
-        void AttachFrameBuffer(const FrameBufferHandle& framebuffer);
-        void AttachFrameBufferNoClear(const FrameBufferHandle& framebuffer);
+        // void AttachFrameBuffer(const FrameBufferHandle& framebuffer);
+        // void AttachFrameBufferNoClear(const FrameBufferHandle& framebuffer);
         void AttachDefaultFrameBuffer();
-        void AttachDepthMap(const TextureHandle& texture);
-        void AttachDepthMap(const CubeMapHandle& cubemap);
-        void AttachDepthMapNoClear(const TextureHandle& texture);
-        void AttachDepthMapNoClear(const CubeMapHandle& cubemap);
-        void RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
-        void RenderToFrameBufferNoClear(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
-        void RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
-        void RenderToTextureNoClear(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
-        void CopyTexture(const TextureHandle& input, const TextureHandle& output);
-        void ApplyGaussianBlur(const TextureHandle& inputOutput, const TextureHandle& temporary, size_t iterations, size_t lod = 0);
-        void DrawVertices(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount, size_t baseInstance);
-        void DrawIndices(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex, size_t instanceCount, size_t baseInstance);
+        // void AttachDepthMap(const TextureHandle& texture);
+        // void AttachDepthMap(const CubeMapHandle& cubemap);
+        // void AttachDepthMapNoClear(const TextureHandle& texture);
+        // void AttachDepthMapNoClear(const CubeMapHandle& cubemap);
+        // void RenderToFrameBuffer(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
+        // void RenderToFrameBufferNoClear(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
+        // void RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
+        // void RenderToTextureNoClear(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
+        // void CopyTexture(const TextureHandle& input, const TextureHandle& output);
+        // void ApplyGaussianBlur(const TextureHandle& inputOutput, const TextureHandle& temporary, size_t iterations, size_t lod = 0);
+        // void DrawVertices(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount, size_t baseInstance);
+        // void DrawIndices(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex, size_t instanceCount, size_t baseInstance);
 
         EnvironmentUnit& GetEnvironment();
         const EnvironmentUnit& GetEnvironment() const;
@@ -130,7 +129,7 @@ namespace MxEngine
             const CameraSSR* ssr, const CameraSSGI* ssgi, const CameraSSAO* ssao);
         size_t SubmitRenderGroup(const Mesh& mesh, size_t instanceOffset, size_t instanceCount);
         void SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& object, const Material& material, const Transform& parentTransform, bool castsShadow, const char* debugName = nullptr);
-        void SubmitImage(const TextureHandle& texture);
+        // void SubmitImage(const TextureHandle& texture);
         void StartPipeline();
         void EndPipeline();
     };

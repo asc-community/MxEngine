@@ -35,20 +35,6 @@
 
 namespace MxEngine
 {
-    enum class RenderProfile : uint8_t
-    {
-        ANY,
-        COMPAT,
-        CORE,
-    };
-
-    enum class CursorMode : uint8_t
-    {
-        NORMAL,
-        HIDDEN,
-        DISABLED,
-    };
-
     enum class BuildType : uint8_t
     {
         UNKNOWN,
@@ -66,7 +52,6 @@ namespace MxEngine
     };
 
     const char* EnumToString(CursorMode mode);
-    const char* EnumToString(RenderProfile profile);
     const char* EnumToString(BuildType mode);
     const char* EnumToString(EditorStyle style);
 
@@ -80,7 +65,6 @@ namespace MxEngine
         bool DoubleBuffering = false;
 
         // Renderer settings
-        RenderProfile GraphicAPIProfile = RenderProfile::CORE;
         size_t GraphicAPIMajorVersion = 4;
         size_t GraphicAPIMinorVersion = 6;
         size_t AnisothropicFiltering = 16;
@@ -106,12 +90,14 @@ namespace MxEngine
     void Deserialize(Config& config, const JsonFile& json);
     void Serialize(JsonFile& json, const Config& config);
 
-    void to_json(JsonFile& j, CursorMode mode);
-    void from_json(const JsonFile& j, CursorMode& mode);
-    void to_json(JsonFile& j, RenderProfile profile);
-    void from_json(const JsonFile& j, RenderProfile& profile);
-    void to_json(JsonFile& j, KeyCode key);
-    void from_json(const JsonFile& j, KeyCode& key);
     void to_json(JsonFile& j, EditorStyle style);
     void from_json(const JsonFile& j, EditorStyle& style);
+}
+
+namespace VulkanAbstractionLayer
+{
+    void to_json(MxEngine::JsonFile& j, VulkanAbstractionLayer::CursorMode mode);
+    void from_json(const MxEngine::JsonFile& j, VulkanAbstractionLayer::CursorMode& mode);
+    void to_json(MxEngine::JsonFile& j, VulkanAbstractionLayer::KeyCode key);
+    void from_json(const MxEngine::JsonFile& j, VulkanAbstractionLayer::KeyCode& key);
 }
