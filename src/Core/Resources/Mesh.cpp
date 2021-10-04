@@ -31,6 +31,7 @@
 #include "Utilities/Profiler/Profiler.h"
 #include "Platform/GraphicAPI.h"
 #include "Utilities/Format/Format.h"
+#include "Core/Rendering/RenderGraph/SubmissionQueue.h"
 #include "Core/Resources/AssetManager.h"
 #include "Core/Resources/BufferAllocator.h"
 #include "Core/Components/Rendering/MeshRenderer.h"
@@ -40,6 +41,8 @@
 
 namespace MxEngine
 {
+    using namespace VulkanAbstractionLayer;
+
     template<>
     void Mesh::LoadFromFile(const std::filesystem::path& filepath)
     {
@@ -92,8 +95,8 @@ namespace MxEngine
             auto& materialId = materialIds[i];
 
             MeshData meshData{
-                meshInfo.vertecies.size(), verticies.size() + this->vertexAllocation.Offset,
-                meshInfo.indicies.size(), indicies.size() + this->indexAllocation.Offset
+                meshInfo.vertecies.size(), verticies.size() + this->vertexAllocation.Offset / sizeof(Vertex),
+                meshInfo.indicies.size(), indicies.size() + this->indexAllocation.Offset / sizeof(uint32_t)
             };
             meshData.UpdateBoundingGeometry(meshInfo.vertecies);
 
@@ -103,15 +106,15 @@ namespace MxEngine
             this->AddSubMesh(materialId, std::move(meshData));
         }
         // load verticies and indicies to GPU
-        // BufferAllocator::GetVBO()->BufferSubData((float*)verticies.data(), verticies.size() * Vertex::Size, this->vertexAllocation.Offset * Vertex::Size);
-        // BufferAllocator::GetIBO()->BufferSubData(indicies.data(), indicies.size(), this->indexAllocation.Offset);
+        SubmissionQueue::CopyToBuffer(MakeView(verticies), *BufferAllocator::GetVBO(), this->vertexAllocation.Offset);
+        SubmissionQueue::CopyToBuffer(MakeView(indicies), *BufferAllocator::GetIBO(), this->indexAllocation.Offset);
 
         this->UpdateBoundingGeometry(); // use submeshes boundings to update mesh boundings
     }
 
     void Mesh::FreeBuffers()
     {
-        if (this->vertexAllocation.Size != 0) BufferAllocator::DeallocateInVBO({ this->vertexAllocation.Offset * Vertex::Size, this->vertexAllocation.Size * Vertex::Size });
+        if (this->vertexAllocation.Size != 0) BufferAllocator::DeallocateInVBO({ this->vertexAllocation.Offset, this->vertexAllocation.Size });
         if (this->indexAllocation.Size != 0) BufferAllocator::DeallocateInIBO({ this->indexAllocation.Offset, this->indexAllocation.Size });
     }
 
@@ -147,11 +150,11 @@ namespace MxEngine
     {
         this->FreeBuffers();
 
-        auto vbo = BufferAllocator::AllocateInVBO(vertexCount * Vertex::Size);
-        auto ibo = BufferAllocator::AllocateInIBO(indexCount);
+        auto vbo = BufferAllocator::AllocateInVBO(vertexCount * sizeof(Vertex));
+        auto ibo = BufferAllocator::AllocateInIBO(indexCount * sizeof(uint32_t));
 
-        this->vertexAllocation.Offset = vbo.Offset / Vertex::Size;
-        this->vertexAllocation.Size = vbo.Size / Vertex::Size;
+        this->vertexAllocation.Offset = vbo.Offset;
+        this->vertexAllocation.Size = vbo.Size;
         this->indexAllocation.Offset = ibo.Offset;
         this->indexAllocation.Size = ibo.Size;
     }
@@ -183,22 +186,22 @@ namespace MxEngine
 
     size_t Mesh::GetTotalVerteciesCount() const
     {
-        return this->vertexAllocation.Size;
+        return this->vertexAllocation.Size / sizeof(Vertex);
     }
 
     size_t Mesh::GetTotalIndiciesCount() const
     {
-        return this->indexAllocation.Size;
+        return this->indexAllocation.Size / sizeof(uint32_t);
     }
 
     size_t Mesh::GetBaseVerteciesOffset() const
     {
-        return this->vertexAllocation.Offset;
+        return this->vertexAllocation.Offset / sizeof(Vertex);
     }
 
     size_t Mesh::GetBaseIndiciesOffset() const
     {
-        return this->indexAllocation.Offset;
+        return this->indexAllocation.Offset / sizeof(uint32_t);
     }
 
     const MxString& Mesh::GetFilePath() const

@@ -54,15 +54,15 @@ namespace MxEngine
     constexpr ImageType PreferredFormat = ImageType::PNG;
     const char* const PreferredExtension = ".png";
 
-    void SaveRoughnessMetallicTexture(const Image& image, const FilePath& roughnessPath, const FilePath& metallicPath)
+    static void SaveRoughnessMetallicTexture(const ImageData& image, const FilePath& roughnessPath, const FilePath& metallicPath)
     {
         if (File::Exists(roughnessPath) || File::Exists(metallicPath))
             return; // avoid rewriting existing textures
 
         auto roughnessData = (uint8_t*)std::malloc(image.GetTotalByteSize());
         auto metallicData = (uint8_t*)std::malloc(image.GetTotalByteSize());
-        Image roughness(roughnessData, image.GetWidth(), image.GetHeight(), 1, image.IsFloatingPoint());
-        Image metallic(metallicData, image.GetWidth(), image.GetHeight(), 1, image.IsFloatingPoint());
+        ImageData roughness(roughnessData, image.GetWidth(), image.GetHeight(), 1, image.IsFloatingPoint());
+        ImageData metallic(metallicData, image.GetWidth(), image.GetHeight(), 1, image.IsFloatingPoint());
 
         for (size_t x = 0; x < image.GetWidth(); x++)
         {
@@ -108,7 +108,7 @@ namespace MxEngine
                 if (data == nullptr) return lookupDirectory / filepath;
 
                 // if texture data is embedded, we need to create a file from it
-                Image image;
+                ImageData image;
                 if (data->mHeight == 0.0f) // compressed data (jpg)
                     image = ImageLoader::LoadImageFromMemory((const uint8_t*)data->pcData, data->mWidth);
                 else
@@ -140,7 +140,7 @@ namespace MxEngine
                 if (data != nullptr)
                 {
                     // if texture data is embedded, we need to create a file from it
-                    Image image;
+                    ImageData image;
                     if (data->mHeight == 0.0f) // compressed data (jpg)
                         image = ImageLoader::LoadImageFromMemory((const uint8_t*)data->pcData, data->mWidth);
                     else
@@ -150,7 +150,7 @@ namespace MxEngine
                 }
                 else
                 {
-                    Image image = ImageLoader::LoadImage(lookupDirectory / filepath);
+                    ImageData image = ImageLoader::LoadImage(lookupDirectory / filepath);
                     SaveRoughnessMetallicTexture(image, roughnessPath, metallicPath);
                 }
             }

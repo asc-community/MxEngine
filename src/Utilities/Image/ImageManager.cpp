@@ -34,17 +34,17 @@
 
 namespace MxEngine
 {
-    void ImageManager::SaveImage(StringId fileHash, const Image& image, ImageType type)
+    void ImageManager::SaveImage(StringId fileHash, const ImageData& image, ImageType type)
     {
         ImageManager::SaveImage(FileManager::GetFilePath(fileHash), image, type);
     }
 
-    void ImageManager::SaveImage(const FilePath& filePath, const Image& image, ImageType type)
+    void ImageManager::SaveImage(const FilePath& filePath, const ImageData& image, ImageType type)
     {
         ImageManager::SaveImage(ToMxString(filePath), image, type);
     }
 
-    void ImageManager::SaveImage(const MxString& filePath, const Image& image, ImageType type)
+    void ImageManager::SaveImage(const MxString& filePath, const ImageData& image, ImageType type)
     {
         File file(filePath, File::WRITE | File::BINARY);
         ImageConverter::RawImageData imageByteData;
@@ -70,7 +70,7 @@ namespace MxEngine
         file.WriteBytes(imageByteData.data(), imageByteData.size());
     }
 
-    void ImageManager::SaveImage(const char* filePath, const Image& image, ImageType type)
+    void ImageManager::SaveImage(const char* filePath, const ImageData& image, ImageType type)
     {
         ImageManager::SaveImage(MxString(filePath), image, type);
     }
@@ -209,7 +209,7 @@ namespace MxEngine
         ImageManager::TakeScreenShot(FilePath(filePath));
     }
 
-    void ImageManager::FlipImage(Image& image)
+    void ImageManager::FlipImage(ImageData& image)
     {
         auto imageByteRow = image.GetRawData();
         auto rowByteSize = image.GetWidth() * image.GetPixelSize();
@@ -232,7 +232,7 @@ namespace MxEngine
         std::free((void*)swapRow);
     }
 
-    Image ImageManager::CombineImages(ArrayView<Image> images, size_t imagesPerRaw)
+    ImageData ImageManager::CombineImages(ArrayView<ImageData> images, size_t imagesPerRaw)
     {
         #if defined(MXENGINE_DEBUG)
         for (size_t i = 1; i < images.size(); i++)
@@ -270,11 +270,11 @@ namespace MxEngine
                 }
             }
         }
-        return Image(result, width * imagesPerRaw, height * imagesPerColumn, pixelSize, isFloatingPoint);
+        return ImageData(result, width * imagesPerRaw, height * imagesPerColumn, pixelSize, isFloatingPoint);
     }
 
-    Image ImageManager::CombineImages(Array2D<Image>& images)
+    ImageData ImageManager::CombineImages(Array2D<ImageData>& images)
     {
-        return ImageManager::CombineImages(ArrayView<Image>(images.data(), images.size()), images.width());
+        return ImageManager::CombineImages(ArrayView<ImageData>(images.data(), images.size()), images.width());
     }
 }

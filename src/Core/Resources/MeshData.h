@@ -49,8 +49,8 @@ namespace MxEngine
     public:
         MeshData(size_t vertexCount, size_t vertexOffset, size_t indexCount, size_t indexOffset);
 
-        // VertexBufferHandle GetVBO() const;
-        // IndexBufferHandle GetIBO() const;
+        BufferHandle GetVBO() const;
+        BufferHandle GetIBO() const;
         size_t GetVerteciesOffset() const;
         size_t GetIndiciesOffset() const;
         const AABB& GetAABB() const;

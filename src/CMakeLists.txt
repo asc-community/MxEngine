@@ -118,7 +118,10 @@ set(MXENGINE_SOURCES
 "Utilities/Factory/FactoryImpl.h"
 "Core/Components/Scripting/ScriptDatabase.cpp"
 "Core/Runtime/Reflection.cpp"
- "Core/Rendering/RenderGraph/RenderGraph.cpp"  "Utilities/ImGui/Style.cpp")
+"Core/Rendering/RenderGraph/RenderGraph.cpp"  
+"Core/Rendering/RenderGraph/SubmissionQueue.cpp"
+"Utilities/ImGui/Style.cpp"
+ )
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)

@@ -48,7 +48,7 @@ namespace MxEngine
         \returns Image object if image file exists or nullptr data and width = height = channels = 0 if not
         */
         template<typename FilePath>
-        static Image LoadImage(const FilePath& filepath, bool flipImage = true);
+        static ImageData LoadImage(const FilePath& filepath, bool flipImage = true);
 
         /*!
         loads image from memory. As OpenGL treats images differently as expected, all images are flipped automatically
@@ -57,7 +57,7 @@ namespace MxEngine
         \param flipImage should the image be vertically flipped. As MxEngine uses OpenGL, usually you want to do this
         \returns Image object if image file exists or nullptr data and width = height = channels = 0 if not
         */
-        static Image LoadImageFromMemory(const uint8_t* memory, size_t byteSize, bool flipImage = true);
+        static ImageData LoadImageFromMemory(const uint8_t* memory, size_t byteSize, bool flipImage = true);
 
         using ImageArray = std::array<Array2D<unsigned char>, 6>;
         /*!
@@ -68,6 +68,6 @@ namespace MxEngine
         \param image image from which cubemap will be created
         \returns 6 2d arrays of raw image data (can be passed as individual images to OpenGL)
         */
-        static ImageArray CreateCubemap(const Image& image);
+        static ImageArray CreateCubemap(const ImageData& image);
     };
 }

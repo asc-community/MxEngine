@@ -34,7 +34,7 @@
 
 namespace MxEngine
 {
-    class Image
+    class ImageData
     {
         uint8_t* data;
         size_t width;
@@ -44,13 +44,13 @@ namespace MxEngine
 
         void Free();
     public:
-        Image();
-        Image(uint8_t* data, size_t width, size_t height, size_t channels, bool isFloatingPoint);
-        ~Image();
-        Image(const Image&) = delete;
-        Image& operator=(const Image&) = delete;
-        Image(Image&&) noexcept;
-        Image& operator=(Image&&) noexcept;
+        ImageData();
+        ImageData(uint8_t* data, size_t width, size_t height, size_t channels, bool isFloatingPoint);
+        ~ImageData();
+        ImageData(const ImageData&) = delete;
+        ImageData& operator=(const ImageData&) = delete;
+        ImageData(ImageData&&) noexcept;
+        ImageData& operator=(ImageData&&) noexcept;
 
         uint8_t* GetRawData() const;
         size_t GetWidth() const;

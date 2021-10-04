@@ -104,31 +104,31 @@ namespace MxEngine
         return data;
     }
 
-    ImageConverter::RawImageData ImageConverter::ConvertImagePNG(const Image& image, bool flipOnSave)
+    ImageConverter::RawImageData ImageConverter::ConvertImagePNG(const ImageData& image, bool flipOnSave)
     {
         if (image.IsFloatingPoint()) return { };
         return ImageConverter::ConvertImagePNG(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannelCount(), flipOnSave);
     }
 
-    ImageConverter::RawImageData ImageConverter::ConvertImageBMP(const Image& image, bool flipOnSave)
+    ImageConverter::RawImageData ImageConverter::ConvertImageBMP(const ImageData& image, bool flipOnSave)
     {
         if (image.IsFloatingPoint()) return { };
         return ImageConverter::ConvertImageBMP(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannelCount(), flipOnSave);
     }
 
-    ImageConverter::RawImageData ImageConverter::ConvertImageTGA(const Image& image, bool flipOnSave)
+    ImageConverter::RawImageData ImageConverter::ConvertImageTGA(const ImageData& image, bool flipOnSave)
     {
         if (image.IsFloatingPoint()) return { };
         return ImageConverter::ConvertImageTGA(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannelCount(), flipOnSave);
     }
 
-    ImageConverter::RawImageData ImageConverter::ConvertImageJPG(const Image& image, int quality, bool flipOnSave)
+    ImageConverter::RawImageData ImageConverter::ConvertImageJPG(const ImageData& image, int quality, bool flipOnSave)
     {
         if (image.IsFloatingPoint()) return { };
         return ImageConverter::ConvertImageJPG(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannelCount(), quality, flipOnSave);
     }
 
-    ImageConverter::RawImageData ImageConverter::ConvertImageHDR(const Image& image, bool flipOnSave)
+    ImageConverter::RawImageData ImageConverter::ConvertImageHDR(const ImageData& image, bool flipOnSave)
     {
         if (!image.IsFloatingPoint()) return { };
         return ImageConverter::ConvertImageHDR((float*)image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannelCount(), flipOnSave);

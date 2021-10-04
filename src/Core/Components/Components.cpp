@@ -41,16 +41,8 @@ namespace MxEngine
     #define TEMPLATE_INSTANCIATE_RESOURCE(T) template class Resource<T, Factory<T>>; template class Factory<T>
     #define TEMPLATE_INSTANCIATE_COMPONENT(T) template class Resource<T, ComponentFactory>
 
-    // TEMPLATE_INSTANCIATE_RESOURCE(CubeMap            );
-    // TEMPLATE_INSTANCIATE_RESOURCE(FrameBuffer        );
-    // TEMPLATE_INSTANCIATE_RESOURCE(IndexBuffer        );
-    // TEMPLATE_INSTANCIATE_RESOURCE(RenderBuffer       );
-    // TEMPLATE_INSTANCIATE_RESOURCE(Shader             );
-    // TEMPLATE_INSTANCIATE_RESOURCE(Texture            );
-    // TEMPLATE_INSTANCIATE_RESOURCE(VertexArray        );
-    // TEMPLATE_INSTANCIATE_RESOURCE(VertexBuffer       );
-    // TEMPLATE_INSTANCIATE_RESOURCE(ShaderStorageBuffer);
-    // TEMPLATE_INSTANCIATE_RESOURCE(ComputeShader      );
+    TEMPLATE_INSTANCIATE_RESOURCE(Buffer             );
+    TEMPLATE_INSTANCIATE_RESOURCE(Image              );
     TEMPLATE_INSTANCIATE_RESOURCE(Material           );
     TEMPLATE_INSTANCIATE_RESOURCE(Mesh               );
     TEMPLATE_INSTANCIATE_RESOURCE(AudioBuffer        );

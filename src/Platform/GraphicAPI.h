@@ -29,9 +29,16 @@
 #pragma once
 
 #include "Utilities/Factory/Factory.h"
-
 #include "Utilities/Image/Image.h"
+
+#include "VulkanAbstractionLayer/Buffer.h"
+#include "VulkanAbstractionLayer/Image.h"
 
 namespace MxEngine
 {
+    using VulkanAbstractionLayer::Buffer;
+    using VulkanAbstractionLayer::Image;
+
+    MXENGINE_MAKE_FACTORY(Buffer);
+    MXENGINE_MAKE_FACTORY(Image);
 }

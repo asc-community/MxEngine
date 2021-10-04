@@ -9,7 +9,7 @@
 // 
 // 2. Redistributions in binary form must reproduce the above copyright notice,
 // this list of conditions and the following disclaimer in the documentation
-// and /or other materials provided wfith the distribution.
+// and /or other materials provided with the distribution.
 // 
 // 3. Neither the name of the copyright holder nor the names of its
 // contributors may be used to endorse or promote products derived from
@@ -28,45 +28,40 @@
 
 #pragma once
 
-#include "Utilities/StaticSerializer/StaticSerializer.h"
-#include "Core/Application/Application.h"
-#include "Core/MxObject/MxObject.h"
-#include "Core/Resources/AssetManager.h"
-#include "Core/Resources/BufferAllocator.h"
-#include "Core/Runtime/RuntimeCompiler.h"
-#include "Core/Serialization/SceneSerializer.h"
-#include "Utilities/FileSystem/FileManager.h"
-#include "Platform/Modules/PhysicsModule.h"
-#include "Platform/Modules/GraphicModule.h"
-#include "Platform/Modules/AudioModule.h"
-#include "Platform/PhysicsAPI.h"
+#include <VulkanAbstractionLayer/VulkanContext.h>
 
 namespace MxEngine
 {
-    using GlobalContextSerializer = StaticSerializer<
-        Application,
-        Logger,
-        FileManager,
-        AudioModule,
-        GraphicModule,
-        PhysicsModule,
-        UUIDGenerator,
-        ComponentFactory,
-        Factory<Material>,
-        Factory<Mesh>,
-        Factory<Buffer>,
-        Factory<Image>,
-        Factory<AudioBuffer>,
-        Factory<AudioPlayer>,
-        Factory<BoxShape>,
-        Factory<SphereShape>,
-        Factory<CylinderShape>,
-        Factory<CapsuleShape>,
-        Factory<CompoundShape>,
-        Factory<NativeRigidBody>,
-        Factory<MxObject>,
-        RuntimeCompiler,
-        SceneSerializer,
-        BufferAllocator
-    >;
+    class SubmissionQueue
+    {
+    public:
+        static void StartQueue();
+        static void EndQueue();
+        static VulkanAbstractionLayer::CommandBuffer& GetCommandBuffer();
+        static VulkanAbstractionLayer::StageBuffer& GetStageBuffer();
+        static void RecordAllocation(size_t byteSize);
+        static void FlushQueue();
+
+        static void CopyToBuffer(const uint8_t* data, size_t byteSize, const VulkanAbstractionLayer::Buffer& buffer, size_t offset);
+
+        template<typename T>
+        static void CopyToBuffer(const T* data, const VulkanAbstractionLayer::Buffer& buffer, size_t offset)
+        {
+            SubmissionQueue::CopyToBuffer((const uint8_t*)data, sizeof(T), buffer, offset);
+        }
+        
+        template<typename T>
+        static void CopyToBuffer(ArrayView<const T> data, const VulkanAbstractionLayer::Buffer& buffer, size_t offset)
+        {
+            SubmissionQueue::CopyToBuffer((const uint8_t*)data.data(), data.size() * sizeof(T), buffer, offset);
+        }
+
+        template<typename T>
+        static void CopyToBuffer(ArrayView<T> data, const VulkanAbstractionLayer::Buffer& buffer, size_t offset)
+        {
+            SubmissionQueue::CopyToBuffer((const uint8_t*)data.data(), data.size() * sizeof(T), buffer, offset);
+        }
+
+        static void CopyFromBuffer(uint8_t* data, size_t byteSize, const VulkanAbstractionLayer::Buffer& buffer, size_t offset);
+    };
 }

@@ -29,26 +29,28 @@
 #include "MeshData.h"
 #include "Core/Runtime/Reflection.h"
 #include "Core/Resources/BufferAllocator.h"
+#include "Core/Rendering/RenderGraph/SubmissionQueue.h"
 
 namespace MxEngine
 {
+    using namespace VulkanAbstractionLayer;
 
     MeshData::MeshData(size_t vertexCount, size_t vertexOffset, size_t indexCount, size_t indexOffset)
         : vertexCount(vertexCount), vertexOffset(vertexOffset), indexCount(indexCount), indexOffset(indexOffset)
     {
-        // MX_ASSERT((this->vertexCount + this->vertexOffset) * Vertex::Size <= this->GetVBO()->GetSize());
-        // MX_ASSERT((this->indexCount + this->indexOffset) <= this->GetIBO()->GetSize());
+        MX_ASSERT((this->vertexCount + this->vertexOffset) * sizeof(Vertex) <= this->GetVBO()->GetByteSize());
+        MX_ASSERT((this->indexCount + this->indexOffset) * sizeof(uint32_t) <= this->GetIBO()->GetByteSize());
     }
 
-    // VertexBufferHandle MeshData::GetVBO() const
-    // {
-    //     return BufferAllocator::GetVBO();
-    // }
-    // 
-    // IndexBufferHandle MeshData::GetIBO() const
-    // {
-    //     return BufferAllocator::GetIBO();
-    // }
+    BufferHandle MeshData::GetVBO() const
+    {
+        return BufferAllocator::GetVBO();
+    }
+    
+    BufferHandle MeshData::GetIBO() const
+    {
+        return BufferAllocator::GetIBO();
+    }
 
     size_t MeshData::GetVerteciesOffset() const
     {
@@ -83,12 +85,13 @@ namespace MxEngine
     void MeshData::BufferVertecies(const VertexData& vertecies)
     {
         MX_ASSERT(vertecies.size() == this->vertexCount);
-        // this->GetVBO()->BufferSubData((float*)vertecies.data(), this->vertexCount * Vertex::Size, this->vertexOffset * Vertex::Size);
+        SubmissionQueue::CopyToBuffer(MakeView(vertecies), *this->GetVBO(), this->vertexOffset * sizeof(Vertex));
     }
 
     void MeshData::BufferIndicies(const IndexData& indicies)
     {
-        // this->GetIBO()->BufferSubData(indicies.data(), this->indexCount, this->indexOffset);
+        MX_ASSERT(indicies.size() == this->indexCount);
+        SubmissionQueue::CopyToBuffer(MakeView(indicies), *this->GetIBO(), this->indexOffset * sizeof(uint32_t));
     }
 
     void MeshData::UpdateBoundingGeometry(const VertexData& vertecies)
@@ -116,16 +119,16 @@ namespace MxEngine
 
     MeshData::VertexData MeshData::GetVerteciesFromGPU() const
     {
-        VertexData vertecies(this->GetVerteciesCount());
-        // this->GetVBO()->GetBufferData((float*)vertecies.data(), vertecies.size() * Vertex::Size, this->GetVerteciesOffset() * Vertex::Size);
-        return vertecies;
+        VertexData result(this->GetVerteciesCount());
+        SubmissionQueue::CopyFromBuffer((uint8_t*)result.data(), result.size() * sizeof(Vertex), *this->GetVBO(), this->GetVerteciesOffset() * sizeof(Vertex));
+        return result;
     }
 
     MeshData::IndexData MeshData::GetIndiciesFromGPU() const
     {
-        IndexData indicies(this->GetIndiciesCount());
-        // this->GetIBO()->GetBufferData(indicies.data(), indicies.size(), this->GetIndiciesOffset());
-        return indicies;
+        IndexData result(this->GetIndiciesCount());
+        SubmissionQueue::CopyFromBuffer((uint8_t*)result.data(), result.size() * sizeof(uint32_t), *this->GetVBO(), this->GetIndiciesOffset() * sizeof(uint32_t));
+        return result;
     }
 
     void MeshData::RegenerateNormals(VertexData& vertecies, const IndexData& indicies)

@@ -37,7 +37,7 @@
 namespace MxEngine
 {
     template<>
-    Image ImageLoader::LoadImage(const std::filesystem::path& filepath, bool flipImage)
+    ImageData ImageLoader::LoadImage(const std::filesystem::path& filepath, bool flipImage)
     {
         MAKE_SCOPE_PROFILER("ImageLoader::LoadImage");
         MAKE_SCOPE_TIMER("MxEngine::ImageLoader", "ImageLoader::LoadImage()");
@@ -48,10 +48,10 @@ namespace MxEngine
         uint8_t* data = stbi_load(filepath.string().c_str(), &width, &height, &channels, STBI_rgb_alpha);
         if (data == nullptr) { width = height = 0; }
         channels = 4;
-        return Image(data, (size_t)width, (size_t)height, (size_t)channels, false);
+        return ImageData(data, (size_t)width, (size_t)height, (size_t)channels, false);
     }
 
-    Image ImageLoader::LoadImageFromMemory(const uint8_t* memory, size_t byteSize, bool flipImage)
+    ImageData ImageLoader::LoadImageFromMemory(const uint8_t* memory, size_t byteSize, bool flipImage)
     {
         MAKE_SCOPE_PROFILER("ImageLoader::LoadImage");
         MAKE_SCOPE_TIMER("MxEngine::ImageLoader", "ImageLoader::LoadImage()");
@@ -62,7 +62,7 @@ namespace MxEngine
         uint8_t* data = stbi_load_from_memory(memory, (int)byteSize, &width, &height, &channels, STBI_rgb_alpha);
         if (data == nullptr) { width = height = 0; }
         channels = 4;
-        return Image(data, (size_t)width, (size_t)height, (size_t)channels, false);
+        return ImageData(data, (size_t)width, (size_t)height, (size_t)channels, false);
     }
 
     /*
@@ -79,7 +79,7 @@ namespace MxEngine
         result[4] = front
         result[5] = back
     */
-    ImageLoader::ImageArray ImageLoader::CreateCubemap(const Image& image)
+    ImageLoader::ImageArray ImageLoader::CreateCubemap(const ImageData& image)
     {
         ImageArray result;
         size_t channels = 4; 

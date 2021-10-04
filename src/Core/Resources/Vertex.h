@@ -39,7 +39,5 @@ namespace MxEngine
         Vector3 Normal{ 0.0f };
         Vector3 Tangent{ 0.0f };
         Vector3 Bitangent{ 0.0f };
-
-        constexpr static size_t Size = 3 + 2 + 3 + 3 + 3;
     };
 }

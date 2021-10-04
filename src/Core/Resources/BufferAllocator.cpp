@@ -29,20 +29,22 @@
 #include "BufferAllocator.h"
 #include "FreeListAllocator.h"
 #include "Utilities/Logging/Logger.h"
+#include "Core/Rendering/RenderGraph/SubmissionQueue.h"
 
 namespace MxEngine
 {
+    using namespace VulkanAbstractionLayer;
+
     struct BufferAllocatorImpl
     {
         Allocators::FreeListAllocator AllocatorVBO;
         Allocators::FreeListAllocator AllocatorIBO;
         Allocators::FreeListAllocator AllocatorInstanceVBO;
         Allocators::FreeListAllocator AllocatorSSBO;
-        // VertexBufferHandle VBO;
-        // IndexBufferHandle IBO;
-        // VertexBufferHandle InstanceVBO;
-        // ShaderStorageBufferHandle SSBO;
-        // VertexArrayHandle VAO;
+        BufferHandle VBO;
+        BufferHandle IBO;
+        BufferHandle InstanceVBO;
+        BufferHandle SSBO;
     };
 
     void BufferAllocator::Init()
@@ -52,6 +54,7 @@ namespace MxEngine
 
     void BufferAllocator::Destroy()
     {
+        SubmissionQueue::EndQueue();
         delete impl;
     }
 
@@ -65,100 +68,95 @@ namespace MxEngine
         impl = other;
     }
 
+    BufferUsage::Value VertexBufferUsage = BufferUsage::TRANSFER_DESTINATION | BufferUsage::TRANSFER_SOURCE | BufferUsage::VERTEX_BUFFER;
+    BufferUsage::Value IndexBufferUsage = BufferUsage::TRANSFER_DESTINATION | BufferUsage::TRANSFER_SOURCE | BufferUsage::INDEX_BUFFER;
+    BufferUsage::Value StorageBufferUsage = BufferUsage::TRANSFER_DESTINATION | BufferUsage::TRANSFER_SOURCE | BufferUsage::STORAGE_BUFFER;
+
     void BufferAllocator::AllocateBuffers()
     {
-        // impl->VBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::DYNAMIC_COPY);
-        // impl->IBO = Factory<IndexBuffer>::Create(nullptr, 0, UsageType::DYNAMIC_COPY);
-        // impl->InstanceVBO = Factory<VertexBuffer>::Create(nullptr, 0, UsageType::DYNAMIC_COPY);
-        // impl->SSBO = Factory<ShaderStorageBuffer>::Create((uint8_t*)nullptr, 0, UsageType::DYNAMIC_COPY);
-        // impl->VAO = Factory<VertexArray>::Create();
-        
-        impl->AllocatorVBO.Init(0, [](size_t newSize)
+        SubmissionQueue::StartQueue();
+
+        constexpr size_t InitialBufferSize = 16 * 1024;
+
+        impl->AllocatorVBO.Init(InitialBufferSize, [](size_t newSize)
         {
-            // auto copyVBO = Factory<VertexBuffer>::Create(nullptr, impl->VBO->GetSize(), UsageType::STREAM_COPY);
-            // copyVBO->LoadFrom(*impl->VBO);
-            // impl->VBO->Load(nullptr, newSize, UsageType::DYNAMIC_COPY);
-            // impl->VBO->LoadFrom(*copyVBO);
+            auto oldVBO = impl->VBO;
+            impl->VBO = Factory<Buffer>::Create(newSize, VertexBufferUsage, MemoryUsage::GPU_ONLY);
+            if (oldVBO.IsValid())
+            {
+                auto& commandBuffer = SubmissionQueue::GetCommandBuffer();
+                commandBuffer.CopyBuffer(BufferInfo{ *oldVBO, 0 }, BufferInfo{ *impl->VBO, 0 }, oldVBO->GetByteSize());
+                SubmissionQueue::FlushQueue();
+            }
             MXLOG_DEBUG("MxEngine::BufferAllocator", "relocated vertex buffer storage to new memory with size: " + ToMxString(newSize));
         });
-        impl->AllocatorIBO.Init(0, [](size_t newSize)
+        impl->AllocatorIBO.Init(InitialBufferSize, [](size_t newSize)
         {
-            // auto copyIBO = Factory<IndexBuffer>::Create(nullptr, impl->IBO->GetSize(), UsageType::STREAM_COPY);
-            // copyIBO->LoadFrom(*impl->IBO);
-            // impl->IBO->Load(nullptr, newSize, UsageType::DYNAMIC_COPY);
-            // impl->IBO->LoadFrom(*copyIBO);
+            auto oldIBO = impl->IBO;
+            impl->IBO = Factory<Buffer>::Create(newSize, IndexBufferUsage, MemoryUsage::GPU_ONLY);
+            if (oldIBO.IsValid())
+            {
+                auto& commandBuffer = SubmissionQueue::GetCommandBuffer();
+                commandBuffer.CopyBuffer(BufferInfo{ *oldIBO, 0 }, BufferInfo{ *impl->IBO, 0 }, oldIBO->GetByteSize());
+                SubmissionQueue::FlushQueue();
+            }
             MXLOG_DEBUG("MxEngine::BufferAllocator", "relocated index buffer storage to new memory with size: " + ToMxString(newSize));
         });
-        impl->AllocatorInstanceVBO.Init(0, [](size_t newSize)
+        impl->AllocatorInstanceVBO.Init(InitialBufferSize, [](size_t newSize)
         {
-            // auto copyInstanceVBO = Factory<VertexBuffer>::Create(nullptr, impl->InstanceVBO->GetSize(), UsageType::STREAM_COPY);
-            // copyInstanceVBO->LoadFrom(*impl->InstanceVBO);
-            // impl->InstanceVBO->Load(nullptr, newSize, UsageType::DYNAMIC_COPY);
-            // impl->InstanceVBO->LoadFrom(*copyInstanceVBO);
+            auto oldInstanceVBO = impl->InstanceVBO;
+            impl->InstanceVBO = Factory<Buffer>::Create(newSize, VertexBufferUsage, MemoryUsage::GPU_ONLY);
+            if (oldInstanceVBO.IsValid())
+            {
+                auto& commandBuffer = SubmissionQueue::GetCommandBuffer();
+                commandBuffer.CopyBuffer(BufferInfo{ *oldInstanceVBO, 0 }, BufferInfo{ *impl->InstanceVBO, 0 }, oldInstanceVBO->GetByteSize());
+                SubmissionQueue::FlushQueue();
+            }
             MXLOG_DEBUG("MxEngine::BufferAllocator", "relocated instance vertex buffer storage to new memory with size: " + ToMxString(newSize));
         });
-        impl->AllocatorSSBO.Init(0, [](size_t newSize)
+        impl->AllocatorSSBO.Init(InitialBufferSize, [](size_t newSize)
         {
-            // auto copySSBO = Factory<ShaderStorageBuffer>::Create((uint8_t*)nullptr, impl->SSBO->GetByteSize(), UsageType::STREAM_COPY);
-            // copySSBO->LoadFrom(*impl->SSBO);
-            // impl->SSBO->Load<uint8_t>(nullptr, newSize, UsageType::DYNAMIC_COPY);
-            // impl->SSBO->LoadFrom(*copySSBO);
+            auto oldSSBO = impl->SSBO;
+            impl->SSBO = Factory<Buffer>::Create(newSize, StorageBufferUsage, MemoryUsage::GPU_ONLY);
+            if (oldSSBO.IsValid())
+            {
+                auto& commandBuffer = SubmissionQueue::GetCommandBuffer();
+                commandBuffer.CopyBuffer(BufferInfo{ *oldSSBO, 0 }, BufferInfo{ *impl->SSBO, 0 }, oldSSBO->GetByteSize());
+                SubmissionQueue::FlushQueue();
+            }
             MXLOG_DEBUG("MxEngine::BufferAllocator", "relocated shader storage buffer storage to new memory with size: " + ToMxString(newSize));
         });
         
-        // std::array vertexLayout = {
-        //     VertexAttribute::Entry<Vector3>(), // position
-        //     VertexAttribute::Entry<Vector2>(), // texture uv
-        //     VertexAttribute::Entry<Vector3>(), // normal
-        //     VertexAttribute::Entry<Vector3>(), // tangent
-        //     VertexAttribute::Entry<Vector3>(), // bitangent
-        // };
-        // std::array instanceLayout = {
-        //     VertexAttribute::Entry<Matrix4x4>(), // model
-        //     VertexAttribute::Entry<Matrix3x3>(), // normal
-        //     VertexAttribute::Entry<Vector3>(),   // color
-        // };
-        // 
-        // impl->VAO->AddVertexLayout(*impl->VBO, vertexLayout, VertexAttributeInputRate::PER_VERTEX);
-        // impl->VAO->AddVertexLayout(*impl->InstanceVBO, instanceLayout, VertexAttributeInputRate::PER_INSTANCE);
-        // impl->VAO->LinkIndexBuffer(*impl->IBO);
-        // 
-        // struct
-        // {
-        //     Matrix4x4 field1{ 1.0f };
-        //     Matrix3x3 field2{ 1.0f };
-        //     Vector3   field3{ 1.0f };
-        // } DefaultInstance;
-        // 
-        // // assume first allocation is with offset = 0
-        // (void)impl->AllocatorInstanceVBO.Allocate(sizeof(DefaultInstance) / sizeof(float));
-        // impl->InstanceVBO->BufferSubData((float*)&DefaultInstance, sizeof(DefaultInstance) / sizeof(float));
+        struct
+        {
+            Matrix4x4 field1{ 1.0f };
+            Matrix3x3 field2{ 1.0f };
+            Vector3 field3{ 1.0f };
+        } DefaultInstance;
+
+        auto offset = (uint32_t)impl->AllocatorInstanceVBO.Allocate(sizeof(DefaultInstance));
+        SubmissionQueue::CopyToBuffer(&DefaultInstance, *impl->InstanceVBO, offset);
     }
 
-    // VertexBufferHandle BufferAllocator::GetVBO()
-    // {
-    //     return impl->VBO;
-    // }
-    // 
-    // IndexBufferHandle BufferAllocator::GetIBO()
-    // {
-    //     return impl->IBO;
-    // }
-    // 
-    // VertexBufferHandle BufferAllocator::GetInstanceVBO()
-    // {
-    //     return impl->InstanceVBO;
-    // }
-    // 
-    // VertexArrayHandle BufferAllocator::GetVAO()
-    // {
-    //     return impl->VAO;
-    // }
-    // 
-    // ShaderStorageBufferHandle BufferAllocator::GetSSBO()
-    // {
-    //     return impl->SSBO;
-    // }
+    BufferHandle BufferAllocator::GetVBO()
+    {
+        return impl->VBO;
+    }
+    
+    BufferHandle BufferAllocator::GetIBO()
+    {
+        return impl->IBO;
+    }
+    
+    BufferHandle BufferAllocator::GetInstanceVBO()
+    {
+        return impl->InstanceVBO;
+    }
+    
+    BufferHandle BufferAllocator::GetSSBO()
+    {
+        return impl->SSBO;
+    }
 
     BufferAllocation BufferAllocator::AllocateInVBO(size_t sizeInFloats)
     {

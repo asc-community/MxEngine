@@ -33,25 +33,25 @@
 
 namespace MxEngine
 {
-    void Image::Free()
+    void ImageData::Free()
     {
         if (this->data != nullptr)
             free(this->data);
     }
 
-    Image::Image() : Image(nullptr, 0, 0, 0, false) { }
+    ImageData::ImageData() : ImageData(nullptr, 0, 0, 0, false) { }
 
-    Image::Image(uint8_t* data, size_t width, size_t height, size_t channels, bool isFloatingPoint)
+    ImageData::ImageData(uint8_t* data, size_t width, size_t height, size_t channels, bool isFloatingPoint)
         : data(data), width(width), height(height), channels((uint8_t)channels), isFloatingPoint(isFloatingPoint)
     {
     }
 
-    Image::~Image()
+    ImageData::~ImageData()
     {
         this->Free();
     }
 
-    Image::Image(Image&& other) noexcept
+    ImageData::ImageData(ImageData&& other) noexcept
     {
         this->data = other.data;
         this->width = other.width;
@@ -62,7 +62,7 @@ namespace MxEngine
         other.width = other.height = other.channels = other.isFloatingPoint = 0;
     }
 
-    Image& Image::operator=(Image&& other) noexcept
+    ImageData& ImageData::operator=(ImageData&& other) noexcept
     {
         this->Free();
 
@@ -76,47 +76,47 @@ namespace MxEngine
         return *this;
     }
 
-    uint8_t* Image::GetRawData() const
+    uint8_t* ImageData::GetRawData() const
     {
         return this->data;
     }
 
-    size_t Image::GetWidth() const
+    size_t ImageData::GetWidth() const
     {
         return this->width;
     }
 
-    size_t Image::GetHeight() const
+    size_t ImageData::GetHeight() const
     {
         return this->height;
     }
 
-    size_t Image::GetChannelCount() const
+    size_t ImageData::GetChannelCount() const
     {
         return (size_t)this->channels;
     }
 
-    size_t Image::GetChannelSize() const
+    size_t ImageData::GetChannelSize() const
     {
         return this->isFloatingPoint ? sizeof(float) : sizeof(uint8_t);
     }
 
-    size_t Image::GetPixelSize() const
+    size_t ImageData::GetPixelSize() const
     {
         return this->GetChannelCount() * this->GetChannelSize();
     }
 
-    size_t Image::GetTotalByteSize() const
+    size_t ImageData::GetTotalByteSize() const
     {
         return this->GetHeight() * this->GetWidth() * this->GetPixelSize();
     }
 
-    bool Image::IsFloatingPoint() const
+    bool ImageData::IsFloatingPoint() const
     {
         return this->isFloatingPoint;
     }
 
-    void Image::SetPixelByte(size_t x, size_t y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+    void ImageData::SetPixelByte(size_t x, size_t y, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
     {
         if (this->isFloatingPoint)
         {
@@ -157,7 +157,7 @@ namespace MxEngine
         return (v < minv) ? minv : (v > maxv ? maxv : v);
     }
 
-    void Image::SetPixelFloat(size_t x, size_t y, float r, float g, float b, float a)
+    void ImageData::SetPixelFloat(size_t x, size_t y, float r, float g, float b, float a)
     {
         if (!this->isFloatingPoint)
         {
@@ -197,7 +197,7 @@ namespace MxEngine
         }
     }
 
-    std::array<uint8_t, 4> Image::GetPixelByte(size_t x, size_t y) const
+    std::array<uint8_t, 4> ImageData::GetPixelByte(size_t x, size_t y) const
     {
         std::array<uint8_t, 4> rgba{ 0, 0, 0, 255 };
         if (this->isFloatingPoint)
@@ -238,7 +238,7 @@ namespace MxEngine
         return rgba;
     }
 
-    std::array<float, 4> Image::GetPixelFloat(size_t x, size_t y) const
+    std::array<float, 4> ImageData::GetPixelFloat(size_t x, size_t y) const
     {
         std::array<float, 4> rgba{ 0.0f, 0.0f, 0.0f, 1.0f };
         if (!this->isFloatingPoint)
