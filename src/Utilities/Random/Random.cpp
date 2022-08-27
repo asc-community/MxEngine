@@ -38,7 +38,7 @@ namespace MxEngine
     {
         MX_ASSERT(lower <= upper);
         auto period = upper - lower + 1; // Get(..., 3, 3) -> 3
-        auto number = (T)gen();
+        auto number = static_cast<T>(gen() % std::numeric_limits<T>::max());
         return lower + number % period;
     }
 
