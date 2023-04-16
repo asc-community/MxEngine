@@ -563,7 +563,6 @@ namespace MxEngine
             size_t lightCount = Min(MaxDirLightCount, dirLights.size());
 
             godRayShader->SetUniform("lightCount", (int)lightCount);
-            godRayShader->SetUniform("rayColor", camera.Effects->GetGodRayColor());
 
             for (size_t i = 0; i < lightCount; i++)
             {

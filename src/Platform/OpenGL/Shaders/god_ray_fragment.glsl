@@ -22,8 +22,6 @@ uniform int lightCount;
 uniform DirLight lights[MaxDirLightCount];
 uniform sampler2D lightDepthMaps[MaxDirLightCount];
 
-uniform vec3 rayColor;
-
 void main()
 {
     FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
@@ -51,7 +49,7 @@ void main()
 			illum += smoothstep(0.0f, 1.0f, shadowFactor);
 		}
 		illum /= numOfStep;
-		currentColor = mix(currentColor, rayColor, pow(illum, 0.7f));
+		currentColor = mix(currentColor, lights[i].color.rgb, pow(illum, 0.7f));
     }
 	OutColor = vec4(currentColor,1.f);
 }
