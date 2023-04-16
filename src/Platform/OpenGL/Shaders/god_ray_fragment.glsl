@@ -22,6 +22,7 @@ uniform int lightCount;
 uniform DirLight lights[MaxDirLightCount];
 uniform sampler2D lightDepthMaps[MaxDirLightCount];
 
+vec3 rayColor = vec3(1.f);
 
 void main()
 {
@@ -31,25 +32,26 @@ void main()
     vec3 fragDirection = normalize(camera2Frag);
     vec3 currentColor = texture(cameraOutput, TexCoord).rgb;
     
-    vec3 rayColor = vec3(1.f);
-
     const float maxSteps = 255.0f;
 	const float sampleStep = 0.15f;
 	float numOfStep = fragDistance/sampleStep;
 	numOfStep = clamp(numOfStep,0.f,maxSteps);
-	vec3 samplePosition = camera.position;
-    float illum = 0.0f;
-    for (float i = 0.0f; i < numOfStep; i++) 
-	{
-		samplePosition+=sampleStep*fragDirection;
-		float shadowFactor = calcShadowFactorCascade(
-            vec4(samplePosition,1.0), 
-            lights[0],
-            lightDepthMaps[0]);
-        illum += smoothstep(0.0f, 1.0f, shadowFactor);
-	}
-    illum /= numOfStep;
-    currentColor = mix(currentColor, rayColor, pow(illum, 0.7f));
-
-    OutColor = vec4(currentColor,1.f);
+	
+    for (int lightIndex = 0; lightIndex < lightCount; lightIndex++)
+    {
+		vec3 pos = camera.position;
+		float illum = 0.0f;
+		for (float i = 0.0f; i < numOfStep; i++) 
+		{
+			pos+=sampleStep*fragDirection;
+			float shadowFactor = calcShadowFactorCascade(
+				vec4(pos,1.0), 
+				lights[lightIndex],
+				lightDepthMaps[lightIndex]);
+			illum += smoothstep(0.0f, 1.0f, shadowFactor);
+		}
+		illum /= numOfStep;
+		currentColor = mix(currentColor, rayColor, pow(illum, 0.7f));
+    }
+	OutColor = vec4(currentColor,1.f);
 }
