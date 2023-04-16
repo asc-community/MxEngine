@@ -49,7 +49,7 @@ void main()
 			illum += smoothstep(0.0f, 1.0f, shadowFactor);
 		}
 		illum /= numOfStep;
-		currentColor = mix(currentColor, lights[lightIndex].color.rgb, pow(illum, 0.7f));
+		currentColor = mix(currentColor, lights[lightIndex].color.rgb/255.0f, pow(illum, 0.7f));
     }
 	OutColor = vec4(currentColor,1.f);
 }
