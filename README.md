@@ -293,6 +293,10 @@ If you are interesed in libraries MxEngine depend on, consider reading [dependen
 <i>shadow casting from dynamic lights, screen-space reflections</i>
 </p>
 
+### GodRay effect by [#Fall2019](https://github.com/fall2019)
+<img src="preview_images/readme_god_ray.PNG">
+</p>
+
 ## Projects based on MxEngine
 Here is the list of some projects using MxEngine. If you want to see yours here, [contact me](https://github.com/MomoDeve).
 
