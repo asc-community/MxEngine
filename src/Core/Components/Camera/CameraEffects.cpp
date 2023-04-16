@@ -82,6 +82,16 @@ namespace MxEngine
         return this->enableFXAA;
     }
 
+    bool CameraEffects::IsGodRayEnabled()const
+    {
+        return this->enableGodRay;
+    }
+
+    const Vector3& CameraEffects::GetGodRayColor() const
+    {
+        return this->godRayColor;
+    }
+
     size_t CameraEffects::GetBloomIterations() const
     {
         return size_t(this->bloomIterations);
@@ -140,6 +150,16 @@ namespace MxEngine
     void CameraEffects::SetBloomIterations(size_t iterations)
     {
         this->bloomIterations = (uint8_t)Min(100, iterations);
+    }
+
+    void CameraEffects::EnableGodRay(bool enable) 
+    {
+        this->enableGodRay = enable;
+    }
+
+    void CameraEffects::SetGodRayColor(const Vector3& color)
+    {
+        this->godRayColor = color;
     }
 
     MXENGINE_REFLECT_TYPE
@@ -205,6 +225,15 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 128.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+            )
+            .property("god ray", &CameraEffects::IsGodRayEnabled, &CameraEffects::EnableGodRay)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("god ray color", &CameraEffects::GetGodRayColor, &CameraEffects::SetGodRayColor)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::INTERPRET_AS, InterpretAsInfo::COLOR)
             );
     }
 }

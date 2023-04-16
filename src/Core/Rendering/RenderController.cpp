@@ -540,6 +540,8 @@ namespace MxEngine
 
     void RenderController::ApplyGodRayEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {
+        if (!camera.Effects->IsGodRayEnabled())
+            return;
         int dirLightCount = this->Pipeline.Lighting.DirectionalLights.size();
         if (dirLightCount <= 0)
             return;
@@ -563,6 +565,7 @@ namespace MxEngine
             size_t lightCount = Min(MaxDirLightCount, dirLights.size());
 
             godRayShader->SetUniform("lightCount", (int)lightCount);
+            godRayShader->SetUniform("rayColor", camera.Effects->GetGodRayColor());
 
             for (size_t i = 0; i < lightCount; i++)
             {

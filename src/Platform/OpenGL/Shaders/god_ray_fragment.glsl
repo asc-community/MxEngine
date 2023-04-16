@@ -22,7 +22,7 @@ uniform int lightCount;
 uniform DirLight lights[MaxDirLightCount];
 uniform sampler2D lightDepthMaps[MaxDirLightCount];
 
-vec3 rayColor = vec3(1.f);
+uniform vec3 rayColor;
 
 void main()
 {
