@@ -542,8 +542,8 @@ namespace MxEngine
     {
         if (!camera.Effects->IsGodRayEnabled())
             return;
-        int dirLightCount = this->Pipeline.Lighting.DirectionalLights.size();
-        if (dirLightCount <= 0)
+        auto dirLightCount = this->Pipeline.Lighting.DirectionalLights.size();
+        if (dirLightCount == 0)
             return;
         auto godRayShader = this->Pipeline.Environment.Shaders["GodRay"_id];
         godRayShader->Bind();
