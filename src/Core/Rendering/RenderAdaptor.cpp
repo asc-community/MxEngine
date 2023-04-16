@@ -308,6 +308,11 @@ namespace MxEngine
             shaderFolder / "particle_transparent_fragment.glsl"
         );
 
+        environment.Shaders["GodRay"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "god_ray_fragment.glsl"
+        );
+
         // compute shaders
         environment.ComputeShaders["Particle"_id] = AssetManager::LoadComputeShader(
             shaderFolder / "particle_compute.glsl"

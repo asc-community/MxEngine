@@ -371,6 +371,7 @@ namespace MxEngine
         camera.DepthTexture->GenerateMipmaps();
         
         this->ApplySSAO(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
+        this->ApplyGodRayEffect(camera, camera.HDRTexture, camera.SwapTexture1);
         this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
 
         // render skybox & debug buffer (HDR texture is already attached)
@@ -537,6 +538,59 @@ namespace MxEngine
         this->RenderToTexture(output, shader);
     }
 
+    void RenderController::ApplyGodRayEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
+    {
+        int dirLightCount = this->Pipeline.Lighting.DirectionalLights.size();
+        if (dirLightCount <= 0)
+            return;
+        auto godRayShader = this->Pipeline.Environment.Shaders["GodRay"_id];
+        godRayShader->Bind();
+        godRayShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
+        godRayShader->IgnoreNonExistingUniform("normalTex");
+        godRayShader->IgnoreNonExistingUniform("albedoTex");
+        godRayShader->IgnoreNonExistingUniform("materialTex");
+
+        Texture::TextureBindId textureId = 0;
+        this->BindGBuffer(camera, *godRayShader, textureId);
+        this->BindCameraInformation(camera, *godRayShader);
+
+        input->Bind(textureId++);
+        godRayShader->SetUniform("cameraOutput", input->GetBoundId());
+
+        {
+            constexpr size_t MaxDirLightCount = 4;
+            const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
+            size_t lightCount = Min(MaxDirLightCount, dirLights.size());
+
+            godRayShader->SetUniform("lightCount", (int)lightCount);
+
+            for (size_t i = 0; i < lightCount; i++)
+            {
+                auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
+
+                Vector4 colorPacked = Vector4(dirLight.Color * dirLight.Intensity, dirLight.AmbientIntensity);
+                dirLight.ShadowMap->Bind(textureId++);
+                godRayShader->SetUniform(MxFormat("lights[{}].color", i), colorPacked);
+                godRayShader->SetUniform(MxFormat("lights[{}].direction", i), dirLight.Direction);
+                godRayShader->SetUniform(MxFormat("lightDepthMaps[{}]", i), dirLight.ShadowMap->GetBoundId());
+
+                for (size_t j = 0; j < dirLight.BiasedProjectionMatrices.size(); j++)
+                {
+                    godRayShader->SetUniform(MxFormat("lights[{}].transform[{}]", i, j), dirLight.BiasedProjectionMatrices[j]);
+                }
+            }
+
+            this->Pipeline.Environment.DefaultShadowMap->Bind(textureId);
+            for (size_t i = lightCount; i < MaxDirLightCount; i++)
+            {
+                godRayShader->SetUniform(MxFormat("lightDepthMaps[{}]", i), this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
+            }
+        }
+
+        this->RenderToTexture(output, godRayShader);
+
+        std::swap(input, output);
+    }
     void RenderController::ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {
         if (camera.Effects == nullptr || (camera.Effects->GetFogDistance() == 1.0 && camera.Effects->GetFogDensity() == 0.0f))

@@ -65,7 +65,8 @@ namespace MxEngine
         void PerformPostProcessing(CameraUnit& camera);
         void PerformLightPass(CameraUnit& camera);
         void DrawTransparentObjects(CameraUnit& camera);
-        void ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+        void ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output); 
+        void ApplyGodRayEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
         void ApplyChromaticAbberation(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
         void ApplySSAO(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
         void ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
