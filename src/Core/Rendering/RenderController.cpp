@@ -423,7 +423,6 @@ namespace MxEngine
         this->BindCameraInformation(camera, *shader);
 
         // submit directional light information
-        constexpr size_t MaxDirLightCount = 4;
         const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
         size_t lightCount = Min(MaxDirLightCount, dirLights.size());
 
@@ -560,7 +559,6 @@ namespace MxEngine
         godRayShader->SetUniform("cameraOutput", input->GetBoundId());
 
         {
-            constexpr size_t MaxDirLightCount = 4;
             const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
             size_t lightCount = Min(MaxDirLightCount, dirLights.size());
 
