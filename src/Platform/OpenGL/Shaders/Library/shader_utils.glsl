@@ -144,3 +144,8 @@ FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D n
 
     return fragment;
 }
+
+float noise(vec2 p) 
+{
+    return fract(sin(dot(p, vec2(123.45, 875.43))) * 5432.3);
+}
