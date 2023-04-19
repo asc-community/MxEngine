@@ -539,6 +539,7 @@ namespace MxEngine
 
     void RenderController::ApplyGodRayEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {
+        MAKE_SCOPE_PROFILER("RenderController::ApplyGodRayEffect()");
         if (!camera.Effects->IsGodRayEnabled())
             return;
         auto dirLightCount = this->Pipeline.Lighting.DirectionalLights.size();
@@ -588,7 +589,6 @@ namespace MxEngine
         }
 
         this->RenderToTexture(output, godRayShader);
-
         std::swap(input, output);
     }
     void RenderController::ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
