@@ -18,6 +18,7 @@ struct Camera
 uniform sampler2D cameraOutput;
 uniform Camera camera;
 
+uniform float maxSteps;
 uniform int lightCount;
 uniform DirLight lights[MaxDirLightCount];
 uniform sampler2D lightDepthMaps[MaxDirLightCount];
@@ -30,7 +31,6 @@ void main()
     vec3 fragDirection = normalize(camera2Frag);
     vec3 currentColor = texture(cameraOutput, TexCoord).rgb; 
     
-    const float maxSteps =  255.0f;
 	float sampleStep = 1.5f;
 	float numOfStep = fragDistance/sampleStep;
 	numOfStep = clamp(numOfStep,100.f,maxSteps);

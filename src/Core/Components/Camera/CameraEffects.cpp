@@ -87,6 +87,11 @@ namespace MxEngine
         return this->enableGodRay;
     }
 
+    float CameraEffects::GetGodRayMaxSteps()const
+    {
+        return this->godRayMaxSteps;
+    }
+
     size_t CameraEffects::GetBloomIterations() const
     {
         return size_t(this->bloomIterations);
@@ -147,9 +152,14 @@ namespace MxEngine
         this->bloomIterations = (uint8_t)Min(100, iterations);
     }
 
-    void CameraEffects::EnableGodRay(bool enable) 
+    void CameraEffects::EnableGodRay(bool enable)
     {
         this->enableGodRay = enable;
+    }
+
+    void CameraEffects::SetGodRayMaxSteps(float num)
+    {
+        this->godRayMaxSteps = num;
     }
 
     MXENGINE_REFLECT_TYPE
@@ -219,6 +229,12 @@ namespace MxEngine
             .property("god ray", &CameraEffects::IsGodRayEnabled, &CameraEffects::EnableGodRay)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("god ray max steps", &CameraEffects::GetGodRayMaxSteps, &CameraEffects::SetGodRayMaxSteps)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 150.0f, 1000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 1.0f)
             );
     }
 }
