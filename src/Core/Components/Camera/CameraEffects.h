@@ -54,7 +54,6 @@ namespace MxEngine
         uint8_t bloomIterations = 3;
 
         bool enableGodRay = false;
-        Vector3 godRayColor = MakeVector3(1.0f,1.0f,1.0f);
     public:
         CameraEffects() = default;
 
@@ -75,7 +74,6 @@ namespace MxEngine
         bool IsFXAAEnabled() const;
 
         bool IsGodRayEnabled()const;
-        const Vector3& GetGodRayColor()const;
 
         void SetFogColor(const Vector3& color);
         void SetFogDistance(float distance);
@@ -94,6 +92,5 @@ namespace MxEngine
         void ToggleFXAA(bool value);
 
         void EnableGodRay(bool enable);
-        void SetGodRayColor(const Vector3& color);
     };
 }

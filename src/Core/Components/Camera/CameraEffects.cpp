@@ -87,11 +87,6 @@ namespace MxEngine
         return this->enableGodRay;
     }
 
-    const Vector3& CameraEffects::GetGodRayColor() const
-    {
-        return this->godRayColor;
-    }
-
     size_t CameraEffects::GetBloomIterations() const
     {
         return size_t(this->bloomIterations);
@@ -155,11 +150,6 @@ namespace MxEngine
     void CameraEffects::EnableGodRay(bool enable) 
     {
         this->enableGodRay = enable;
-    }
-
-    void CameraEffects::SetGodRayColor(const Vector3& color)
-    {
-        this->godRayColor = color;
     }
 
     MXENGINE_REFLECT_TYPE
@@ -229,11 +219,6 @@ namespace MxEngine
             .property("god ray", &CameraEffects::IsGodRayEnabled, &CameraEffects::EnableGodRay)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
-            .property("god ray color", &CameraEffects::GetGodRayColor, &CameraEffects::SetGodRayColor)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::INTERPRET_AS, InterpretAsInfo::COLOR)
             );
     }
 }
