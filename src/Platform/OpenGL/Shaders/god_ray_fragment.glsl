@@ -31,29 +31,28 @@ void main()
     vec3 fragDirection = normalize(camera2Frag);
     vec3 currentColor = texture(cameraOutput, TexCoord).rgb; 
     
-	float sampleStep = 1.5f;
-	float numOfStep = fragDistance/sampleStep;
-	numOfStep = clamp(numOfStep,100.f,maxSteps);
-    sampleStep=fragDistance/numOfStep;//avoid if statement
 	
     float randomness = noise(TexCoord) * .6;//producing blur to decrease sampling rate
     for (int lightIndex = 0; lightIndex < lightCount; lightIndex++)
     {
+	    float sampleStep = 0.15f;//todo::add ui
         float illum = 0.0f;
-		for (float i = 0.0f; i < numOfStep; i++) 
+		float i = 0.0f;
+		for (; i < maxSteps; i++) 
 		{
 			vec3 pos = camera.position + sampleStep*fragDirection*(i+randomness);
+			if(fragDistance<=distance(pos,camera.position))
+				break;
+			sampleStep=sampleStep*1.01;
 
-            //cal shadow without cascaded sampling
-            const vec2 textureSplitSize = vec2(1.01, 0.99) / DirLightCascadeMapCount;
-            vec4 textureLimitsXY = vec4(vec2(0.f, 1.f) * textureSplitSize, 0.001, 0.999);
-            vec4 fragLightSpace = lights[lightIndex].transform[0] * vec4(pos,1.0);
-            vec3 projectedPositions  = fragLightSpace.xyz / fragLightSpace.w;
-            float shadowFactor  = calcShadowFactor2D(projectedPositions , lightDepthMaps[lightIndex], textureLimitsXY, 0.002);
+            float shadowFactor = calcShadowFactorCascade(
+				vec4(pos,1.0), 
+				lights[lightIndex],
+				lightDepthMaps[lightIndex]);
 
-			illum += smoothstep(0.0f, 1.0f, shadowFactor);
+			illum += clamp(shadowFactor,0.0f, 1.0f);
 		}
-		illum /= numOfStep;
+		illum /= i;
 		currentColor = mix(currentColor, lights[lightIndex].color.rgb/255.0f, illum);
     }
 
