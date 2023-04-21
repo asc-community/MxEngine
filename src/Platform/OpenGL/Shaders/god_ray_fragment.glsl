@@ -18,10 +18,13 @@ struct Camera
 uniform sampler2D cameraOutput;
 uniform Camera camera;
 
-uniform float maxSteps;
 uniform int lightCount;
 uniform DirLight lights[MaxDirLightCount];
 uniform sampler2D lightDepthMaps[MaxDirLightCount];
+
+uniform float maxSteps;
+uniform float sampleStep;
+uniform float stepIncrement;
 
 void main()
 {
@@ -35,16 +38,16 @@ void main()
     float randomness = noise(TexCoord) * .6;//producing blur to decrease sampling rate
     for (int lightIndex = 0; lightIndex < lightCount; lightIndex++)
     {
-	    float sampleStep = 0.15f;//todo::add ui
         float illum = 0.0f;
 		float i = 0.0f;
+		float stp = sampleStep;
 		for (; i < maxSteps; i++) 
 		{
-			vec3 pos = camera.position + sampleStep*fragDirection*(i+randomness);
+			vec3 pos = camera.position + stp*fragDirection*(i+randomness);
 			if(fragDistance<=distance(pos,camera.position))
 				break;
-			sampleStep=sampleStep*1.01;
-
+			stp=stp*stepIncrement;
+            
             float shadowFactor = calcShadowFactorCascade(
 				vec4(pos,1.0), 
 				lights[lightIndex],

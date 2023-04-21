@@ -559,6 +559,8 @@ namespace MxEngine
         input->Bind(textureId++);
         godRayShader->SetUniform("cameraOutput", input->GetBoundId());
         godRayShader->SetUniform("maxSteps", camera.Effects->GetGodRayMaxSteps());
+        godRayShader->SetUniform("sampleStep", camera.Effects->GetGodRaySampleStep());
+        godRayShader->SetUniform("stepIncrement", camera.Effects->GetGodRayStepIncrement());
 
         {
             const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
