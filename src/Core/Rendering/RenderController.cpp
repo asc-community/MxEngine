@@ -422,33 +422,7 @@ namespace MxEngine
         this->BindGBuffer(camera, *shader, textureId);
         this->BindCameraInformation(camera, *shader);
 
-        // submit directional light information
-        const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
-        size_t lightCount = Min(MaxDirLightCount, dirLights.size());
-
-        shader->SetUniform("lightCount", (int)lightCount);
-
-        for (size_t i = 0; i < lightCount; i++)
-        {
-            auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
-
-            Vector4 colorPacked = Vector4(dirLight.Color * dirLight.Intensity, dirLight.AmbientIntensity);
-            dirLight.ShadowMap->Bind(textureId++);
-            shader->SetUniform(MxFormat("lights[{}].color", i), colorPacked);
-            shader->SetUniform(MxFormat("lights[{}].direction", i), dirLight.Direction);
-            shader->SetUniform(MxFormat("lightDepthMaps[{}]", i), dirLight.ShadowMap->GetBoundId());
-
-            for (size_t j = 0; j < dirLight.BiasedProjectionMatrices.size(); j++)
-            {
-                shader->SetUniform(MxFormat("lights[{}].transform[{}]", i, j), dirLight.BiasedProjectionMatrices[j]);
-            }
-        }
-
-        this->Pipeline.Environment.DefaultShadowMap->Bind(textureId);
-        for (size_t i = lightCount; i < MaxDirLightCount; i++)
-        {
-            shader->SetUniform(MxFormat("lightDepthMaps[{}]", i), this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
-        }
+        SubmitDirectionalLightInformation(shader, textureId);
 
         this->RenderToTextureNoClear(output, shader);
     }
@@ -537,6 +511,36 @@ namespace MxEngine
         this->RenderToTexture(output, shader);
     }
 
+    void RenderController::SubmitDirectionalLightInformation(ShaderHandle& shader, Texture::TextureBindId textureId)
+    {
+        const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
+        size_t lightCount = Min(MaxDirLightCount, dirLights.size());
+
+        shader->SetUniform("lightCount", (int)lightCount);
+
+        for (size_t i = 0; i < lightCount; i++)
+        {
+            auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
+
+            Vector4 colorPacked = Vector4(dirLight.Color * dirLight.Intensity, dirLight.AmbientIntensity);
+            dirLight.ShadowMap->Bind(textureId++);
+            shader->SetUniform(MxFormat("lights[{}].color", i), colorPacked);
+            shader->SetUniform(MxFormat("lights[{}].direction", i), dirLight.Direction);
+            shader->SetUniform(MxFormat("lightDepthMaps[{}]", i), dirLight.ShadowMap->GetBoundId());
+
+            for (size_t j = 0; j < dirLight.BiasedProjectionMatrices.size(); j++)
+            {
+                shader->SetUniform(MxFormat("lights[{}].transform[{}]", i, j), dirLight.BiasedProjectionMatrices[j]);
+            }
+        }
+
+        this->Pipeline.Environment.DefaultShadowMap->Bind(textureId);
+        for (size_t i = lightCount; i < MaxDirLightCount; i++)
+        {
+            shader->SetUniform(MxFormat("lightDepthMaps[{}]", i), this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
+        }
+    }
+
     void RenderController::ApplyGodRayEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {
         MAKE_SCOPE_PROFILER("RenderController::ApplyGodRayEffect()");
@@ -545,6 +549,7 @@ namespace MxEngine
         auto dirLightCount = this->Pipeline.Lighting.DirectionalLights.size();
         if (dirLightCount == 0)
             return;
+
         auto godRayShader = this->Pipeline.Environment.Shaders["GodRay"_id];
         godRayShader->Bind();
         godRayShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
@@ -562,34 +567,7 @@ namespace MxEngine
         godRayShader->SetUniform("sampleStep", camera.Effects->GetGodRaySampleStep());
         godRayShader->SetUniform("stepIncrement", camera.Effects->GetGodRayStepIncrement());
 
-        {
-            const auto& dirLights = this->Pipeline.Lighting.DirectionalLights;
-            size_t lightCount = Min(MaxDirLightCount, dirLights.size());
-
-            godRayShader->SetUniform("lightCount", (int)lightCount);
-
-            for (size_t i = 0; i < lightCount; i++)
-            {
-                auto& dirLight = this->Pipeline.Lighting.DirectionalLights[i];
-
-                Vector4 colorPacked = Vector4(dirLight.Color * dirLight.Intensity, dirLight.AmbientIntensity);
-                dirLight.ShadowMap->Bind(textureId++);
-                godRayShader->SetUniform(MxFormat("lights[{}].color", i), colorPacked);
-                godRayShader->SetUniform(MxFormat("lights[{}].direction", i), dirLight.Direction);
-                godRayShader->SetUniform(MxFormat("lightDepthMaps[{}]", i), dirLight.ShadowMap->GetBoundId());
-
-                for (size_t j = 0; j < dirLight.BiasedProjectionMatrices.size(); j++)
-                {
-                    godRayShader->SetUniform(MxFormat("lights[{}].transform[{}]", i, j), dirLight.BiasedProjectionMatrices[j]);
-                }
-            }
-
-            this->Pipeline.Environment.DefaultShadowMap->Bind(textureId);
-            for (size_t i = lightCount; i < MaxDirLightCount; i++)
-            {
-                godRayShader->SetUniform(MxFormat("lightDepthMaps[{}]", i), this->Pipeline.Environment.DefaultShadowMap->GetBoundId());
-            }
-        }
+        SubmitDirectionalLightInformation(godRayShader, textureId);
 
         this->RenderToTexture(output, godRayShader);
         std::swap(input, output);

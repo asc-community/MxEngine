@@ -135,8 +135,8 @@ namespace MxEngine
         std::array<Matrix4x4, 3> BiasedProjectionMatrices;
         Vector3 Direction;
         float AmbientIntensity;
-        float Intensity;
         Vector3 Color;
+        float Intensity;
     };
 
     struct PointLightUnit : PointLightBaseData
