@@ -26,6 +26,26 @@ uniform float maxSteps;
 uniform float sampleStep;
 uniform float stepIncrement;
 
+//sample only one cascade
+float godRayShadowSampler(vec3 position, DirLight light, sampler2D shadowMap)
+{
+	const vec2 textureSplitSize = vec2(1.01, 0.99) / DirLightCascadeMapCount;
+	for(int cascadeIndex = 0; cascadeIndex<DirLightCascadeMapCount; cascadeIndex++)
+	{
+		float fIndex = float(cascadeIndex);
+		vec4 textureLimitsXY = vec4(vec2(fIndex,fIndex + 1.f) * textureSplitSize, 0.001, 0.999);
+		vec4 fragLightSpace = light.transform[cascadeIndex] * vec4(position,1.0);
+		vec3 projectedPosition  = fragLightSpace.xyz / fragLightSpace.w;
+		if (projectedPosition.x > textureLimitsXY[1] || projectedPosition.x < textureLimitsXY[0]||
+			projectedPosition.y > textureLimitsXY[3] || projectedPosition.y < textureLimitsXY[2])
+		{
+			continue;
+		}
+		return calcShadowFactor2D(projectedPosition , shadowMap, textureLimitsXY, 0.002);
+	}
+	return 1.0f;
+}
+
 void main()
 {
     FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
@@ -46,12 +66,9 @@ void main()
 			vec3 pos = camera.position + stp*fragDirection*(i+randomness);
 			if(fragDistance<=distance(pos,camera.position))
 				break;
-			stp=stp*stepIncrement;
-            
-            float shadowFactor = calcShadowFactorCascade(
-				vec4(pos,1.0), 
-				lights[lightIndex],
-				lightDepthMaps[lightIndex]);
+			stp*=stepIncrement;
+			
+			float shadowFactor=godRayShadowSampler(pos, lights[lightIndex], lightDepthMaps[lightIndex]);
 
 			illum += clamp(shadowFactor,0.0f, 1.0f);
 		}
