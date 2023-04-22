@@ -26,9 +26,23 @@ uniform float maxSteps;
 uniform float sampleStep;
 uniform float stepIncrement;
 
-//sample only one cascade
+//sample only one time without extra interpolation
+float godRayShadowFactor2D(vec3 coords, sampler2D depthMap, vec4 textureLimitsXY, float bias)
+{
+    float compare = coords.z - bias;
+    
+    const float lod = getTextureLodLevel(coords.xy);
+    vec2 texelSize = textureSize(depthMap, 0);
+    vec2 texelSizeInv = 1.0 / texelSize;
+    vec2 pixelPos = coords.xy * texelSize + vec2(0.5);
+    vec2 fracPart = fract(pixelPos);
+    vec2 startTexel = (pixelPos - fracPart) * texelSizeInv;
+ 	float res = sampleShadowMap(depthMap, startTexel + vec2( 0.0,  0.0) * texelSizeInv, lod, compare); 
+	return pow(clamp(res, 0.0, 1.0), 8.0);
+}
 float godRayShadowSampler(vec3 position, DirLight light, sampler2D shadowMap)
 {
+	const float bias = 0.002;
 	const vec2 textureSplitSize = vec2(1.01, 0.99) / DirLightCascadeMapCount;
 	for(int cascadeIndex = 0; cascadeIndex<DirLightCascadeMapCount; cascadeIndex++)
 	{
@@ -37,11 +51,12 @@ float godRayShadowSampler(vec3 position, DirLight light, sampler2D shadowMap)
 		vec4 fragLightSpace = light.transform[cascadeIndex] * vec4(position,1.0);
 		vec3 projectedPosition  = fragLightSpace.xyz / fragLightSpace.w;
 		if (projectedPosition.x > textureLimitsXY[1] || projectedPosition.x < textureLimitsXY[0]||
-			projectedPosition.y > textureLimitsXY[3] || projectedPosition.y < textureLimitsXY[2])
+			projectedPosition.y > textureLimitsXY[3] || projectedPosition.y < textureLimitsXY[2]||
+			projectedPosition.z > 1.0 - bias || projectedPosition.z < bias)
 		{
 			continue;
 		}
-		return calcShadowFactor2D(projectedPosition , shadowMap, textureLimitsXY, 0.002);
+		return godRayShadowFactor2D(projectedPosition , shadowMap, textureLimitsXY, bias);
 	}
 	return 1.0f;
 }
