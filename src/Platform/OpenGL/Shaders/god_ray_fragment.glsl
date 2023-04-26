@@ -76,9 +76,10 @@ void main()
         float illum = 0.0f;
 		float i = 0.0f;
 		float stp = sampleStep;
+		vec3 pos = camera.position;
 		for (; i < maxSteps; i++) 
 		{
-			vec3 pos = camera.position + stp*fragDirection*(i+randomness);
+			pos = camera.position + stp*fragDirection*(i+randomness);
 			if(fragDistance<=distance(pos,camera.position))
 				break;
 			stp*=stepIncrement;
@@ -88,7 +89,10 @@ void main()
 			illum += clamp(shadowFactor,0.0f, 1.0f);
 		}
 		illum /= i;
-		currentColor = mix(currentColor, lights[lightIndex].color.rgb/255.0f, illum);
+		float distanceTraveled = length(camera.position-pos);
+		illum *= distanceTraveled/15;
+		illum = clamp(illum,0.0,0.7);
+		currentColor = mix(currentColor, lights[lightIndex].color.rgb/200.0f, illum);
     }
 
 	OutColor = vec4(currentColor,1.f);
