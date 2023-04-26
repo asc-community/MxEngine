@@ -91,7 +91,7 @@ void main()
 		illum /= i;
 		float distanceTraveled = length(camera.position-pos);
 		illum *= distanceTraveled/15;
-		illum = clamp(illum,0.0,0.7);
+		illum = smoothstep(0.0,0.7,illum);
 		currentColor = mix(currentColor, lights[lightIndex].color.rgb/200.0f, illum);
     }
 
