@@ -48,7 +48,7 @@ To develop your own applications using MxEngine you can use template project wit
 	- Screen Space Reflection, Screen Space Ambient Occlusion, Screen Space Global Illumination
 	- Cascade shadow maps, omnidirectional shadow maps, spot projection maps
 	- directional, point and spot dynamic lights
-	- Adaptive tone mapping, FXAA, fog, bloom effect
+	- Adaptive tone mapping, FXAA, fog, bloom effect, god rays
 	- Particle System based on compute shaders
 	- 2D debug utilities: light, sound, object bounds, lines, rectangles and etc.
 
