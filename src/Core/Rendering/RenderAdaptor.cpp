@@ -42,6 +42,7 @@
 #include "Core/Components/Camera/CameraSSR.h"
 #include "Core/Components/Camera/CameraSSGI.h"
 #include "Core/Components/Camera/CameraSSAO.h"
+#include "Core/Components/Camera/CameraGodRay.h"
 #include "Core/Components/Camera/CameraToneMapping.h"
 #include "Core/Components/Lighting/DirectionalLight.h"
 #include "Core/Components/Lighting/PointLight.h"
@@ -373,14 +374,16 @@ namespace MxEngine
                 auto ssrComponent = object.GetComponent<CameraSSR>();
                 auto ssgiComponent = object.GetComponent<CameraSSGI>();
                 auto ssaoComponent = object.GetComponent<CameraSSAO>();
+                auto godRayComponent = object.GetComponent<GodRayEffect>();
                 Skybox* skybox                 = skyboxComponent.IsValid()      ? skyboxComponent.GetUnchecked()      : nullptr;
                 CameraEffects* effects         = effectsComponent.IsValid()     ? effectsComponent.GetUnchecked()     : nullptr;
                 CameraToneMapping* toneMapping = toneMappingComponent.IsValid() ? toneMappingComponent.GetUnchecked() : nullptr;
                 CameraSSR* ssr                 = ssrComponent.IsValid()         ? ssrComponent.GetUnchecked()         : nullptr;
                 CameraSSGI* ssgi               = ssgiComponent.IsValid()        ? ssgiComponent.GetUnchecked()        : nullptr;
                 CameraSSAO* ssao               = ssaoComponent.IsValid()        ? ssaoComponent.GetUnchecked()        : nullptr;
+                GodRayEffect* godRay           = godRayComponent.IsValid()      ? godRayComponent.GetUnchecked()      : nullptr;
 
-                this->Renderer.SubmitCamera(camera, transform, skybox, effects, toneMapping, ssr, ssgi, ssao);
+                this->Renderer.SubmitCamera(camera, transform, skybox, effects, toneMapping, ssr, ssgi, ssao, godRay);
                 TrackMainCameraIndex(camera);
             }
         }

@@ -92,7 +92,7 @@ void main()
 		float distanceTraveled = length(camera.position-pos);
 		illum *= distanceTraveled/15;
 		illum = clamp(illum,0.0,0.7);
-		currentColor = mix(currentColor, lights[lightIndex].color.rgb/50.0f, illum);
+		currentColor = mix(currentColor, lights[lightIndex].color.rgb/80.0f, illum);
     }
 
 	OutColor = vec4(currentColor,1.f);

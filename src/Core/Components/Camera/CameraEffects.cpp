@@ -82,26 +82,6 @@ namespace MxEngine
         return this->enableFXAA;
     }
 
-    bool CameraEffects::IsGodRayEnabled()const
-    {
-        return this->enableGodRay;
-    }
-
-    float CameraEffects::GetGodRayMaxSteps()const
-    {
-        return this->godRayMaxSteps;
-    }
-
-    float CameraEffects::GetGodRayStepIncrement()const
-    {
-        return this->godRayStepIncrement;
-    }
-
-    float CameraEffects::GetGodRaySampleStep()const
-    {
-        return this->godRaySampleStep;
-    }
-
     size_t CameraEffects::GetBloomIterations() const
     {
         return size_t(this->bloomIterations);
@@ -160,26 +140,6 @@ namespace MxEngine
     void CameraEffects::SetBloomIterations(size_t iterations)
     {
         this->bloomIterations = (uint8_t)Min(100, iterations);
-    }
-
-    void CameraEffects::EnableGodRay(bool enable)
-    {
-        this->enableGodRay = enable;
-    }
-
-    void CameraEffects::SetGodRayMaxSteps(float num)
-    {
-        this->godRayMaxSteps = num;
-    }
-
-    void CameraEffects::SetGodRayStepIncrement(float value)
-    {
-        this->godRayStepIncrement = value;
-    }
-
-    void CameraEffects::SetGodRaySampleStep(float value)
-    {
-        this->godRaySampleStep = value;
     }
 
     MXENGINE_REFLECT_TYPE
@@ -245,28 +205,6 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 128.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
-            )
-            .property("god ray", &CameraEffects::IsGodRayEnabled, &CameraEffects::EnableGodRay)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
-            .property("god ray max steps", &CameraEffects::GetGodRayMaxSteps, &CameraEffects::SetGodRayMaxSteps)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 150.0f, 1000.0f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 1.0f)
-            )
-            .property("god ray sample step", &CameraEffects::GetGodRaySampleStep, &CameraEffects::SetGodRaySampleStep)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.01f, 0.5f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.001f)
-            )
-            .property("god ray step increment", &CameraEffects::GetGodRayStepIncrement, &CameraEffects::SetGodRayStepIncrement)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 1.01f, 1.1f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.001f)
             );
     }
 }

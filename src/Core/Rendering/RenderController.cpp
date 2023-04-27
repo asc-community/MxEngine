@@ -36,6 +36,7 @@
 #include "Core/Components/Camera/CameraSSR.h"
 #include "Core/Components/Camera/CameraSSGI.h"
 #include "Core/Components/Camera/CameraSSAO.h"
+#include "Core/Components/Camera/CameraGodRay.h"
 #include "Core/Components/Lighting/DirectionalLight.h"
 #include "Core/Components/Lighting/SpotLight.h"
 #include "Core/Components/Lighting/PointLight.h"
@@ -544,7 +545,7 @@ namespace MxEngine
     void RenderController::ApplyGodRayEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {
         MAKE_SCOPE_PROFILER("RenderController::ApplyGodRayEffect()");
-        if (!camera.Effects->IsGodRayEnabled())
+        if (!camera.GodRay)
             return;
         auto dirLightCount = this->Pipeline.Lighting.DirectionalLights.size();
         if (dirLightCount == 0)
@@ -563,9 +564,9 @@ namespace MxEngine
 
         input->Bind(textureId++);
         godRayShader->SetUniform("cameraOutput", input->GetBoundId());
-        godRayShader->SetUniform("maxSteps", camera.Effects->GetGodRayMaxSteps());
-        godRayShader->SetUniform("sampleStep", camera.Effects->GetGodRaySampleStep());
-        godRayShader->SetUniform("stepIncrement", camera.Effects->GetGodRayStepIncrement());
+        godRayShader->SetUniform("maxSteps", camera.GodRay->GetGodRayMaxSteps());
+        godRayShader->SetUniform("sampleStep", camera.GodRay->GetGodRaySampleStep());
+        godRayShader->SetUniform("stepIncrement", camera.GodRay->GetGodRayStepIncrement());
 
         SubmitDirectionalLightInformation(godRayShader, textureId);
 
@@ -1377,8 +1378,16 @@ namespace MxEngine
         baseLightData->Direction = light.GetMaxDistance() * Normalize(light.Direction);
     }
 
-    void RenderController::SubmitCamera(const CameraController& controller, const Transform& parentTransform, 
-        const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping, const CameraSSR* ssr, const CameraSSGI* ssgi, const CameraSSAO* ssao)
+    void RenderController::SubmitCamera(
+        const CameraController& controller,
+        const Transform& parentTransform, 
+        const Skybox* skybox,
+        const CameraEffects* effects,
+        const CameraToneMapping* toneMapping, 
+        const CameraSSR* ssr,
+        const CameraSSGI* ssgi, 
+        const CameraSSAO* ssao,
+        const GodRayEffect* godRay)
     {
         auto& camera = this->Pipeline.Cameras.emplace_back();
 
@@ -1410,6 +1419,7 @@ namespace MxEngine
         camera.SSR                        = ssr;
         camera.SSGI                       = ssgi;
         camera.SSAO                       = ssao;
+        camera.GodRay                     = godRay;
     }
 
     size_t RenderController::SubmitRenderGroup(const Mesh& mesh, size_t instanceOffset, size_t instanceCount)
