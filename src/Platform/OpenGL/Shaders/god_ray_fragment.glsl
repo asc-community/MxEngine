@@ -80,11 +80,11 @@ void main()
 		for (; i < maxSteps; i++) 
 		{
 			pos = camera.position + stp*fragDirection*(i+randomness);
-			if(fragDistance<=distance(pos,camera.position))
+			if(fragDistance <= distance(pos,camera.position))
 				break;
-			stp*=stepIncrement;
+			stp *= stepIncrement;
 			
-			float shadowFactor=godRayShadowSampler(pos, lights[lightIndex], lightDepthMaps[lightIndex]);
+			float shadowFactor = godRayShadowSampler(pos, lights[lightIndex], lightDepthMaps[lightIndex]);
 
 			illum += clamp(shadowFactor,0.0f, 1.0f);
 		}
