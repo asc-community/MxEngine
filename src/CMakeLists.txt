@@ -128,7 +128,12 @@ set(MXENGINE_SOURCES
 "Core/Components/Camera/CameraSSAO.cpp" 
 "Platform/OpenGL/VertexAttribute.cpp"
 "Core/Serialization/Cloning.cpp" 
-"Core/Resources/BufferAllocator.cpp" "Core/Rendering/RenderObjects/RenderHelperObject.cpp" "Utilities/Factory/FactoryImpl.h"  "Core/Components/Scripting/ScriptDatabase.cpp" "Core/Runtime/Reflection.cpp")
+"Core/Resources/BufferAllocator.cpp" 
+"Core/Rendering/RenderObjects/RenderHelperObject.cpp" 
+"Utilities/Factory/FactoryImpl.h"  
+"Core/Components/Scripting/ScriptDatabase.cpp" 
+"Core/Runtime/Reflection.cpp"
+)
 
 set(PROJECT_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(SUBMODULES_PATH ${PROJECT_ROOT_PATH}/submodules)
@@ -181,6 +186,7 @@ if(MSVC)
 endif()
 
 # assimp
+set(ASSIMP_BUILD_ZLIB ON CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
@@ -275,7 +281,6 @@ set(THIRD_PARTY_LIBRARIES
     fmt
     libglew_shared
     assimp
-    IrrXML
     glfw
     imgui
     EASTL
@@ -295,9 +300,6 @@ set(SHARED_LIBRARIES
 
 if(TARGET zlibstatic)
     set(THIRD_PARTY_LIBRARIES ${THIRD_PARTY_LIBRARIES} zlibstatic)
-endif()
-if(TARGET IrrXML)
-    set(THIRD_PARTY_LIBRARIES ${THIRD_PARTY_LIBRARIES} IrrXML)
 endif()
 
 set(MXENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${THIRD_PARTY_INCLUDE_DIRS})

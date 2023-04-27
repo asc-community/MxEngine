@@ -21,7 +21,7 @@
 	url = https://github.com/kcat/openal-soft
 [submodule "submodules/assimp"]
 	path = submodules/assimp
-	url = https://github.com/MomoDeve/assimp
+	url = https://github.com/assimp/assimp
 [submodule "submodules/imgui"]
 	path = submodules/imgui
 	url = https://github.com/MomoDeve/imgui
