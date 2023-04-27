@@ -26,7 +26,7 @@ uniform float maxSteps;
 uniform float sampleStep;
 uniform float stepIncrement;
 
-//sample only one time without extra interpolation
+//sample only once without extra interpolation
 float godRayShadowFactor2D(vec3 coords, sampler2D depthMap, vec4 textureLimitsXY, float bias)
 {
     float compare = coords.z - bias;
@@ -91,8 +91,8 @@ void main()
 		illum /= i;
 		float distanceTraveled = length(camera.position-pos);
 		illum *= distanceTraveled/15;
-		illum = smoothstep(0.0,0.7,illum);
-		currentColor = mix(currentColor, lights[lightIndex].color.rgb/200.0f, illum);
+		illum = clamp(illum,0.0,0.7);
+		currentColor = mix(currentColor, lights[lightIndex].color.rgb/50.0f, illum);
     }
 
 	OutColor = vec4(currentColor,1.f);

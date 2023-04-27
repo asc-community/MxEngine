@@ -371,9 +371,8 @@ namespace MxEngine
         camera.DepthTexture->GenerateMipmaps();
         
         this->ApplySSAO(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
-        this->ApplyGodRayEffect(camera, camera.HDRTexture, camera.SwapTexture1);
         this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
-
+         
         // render skybox & debug buffer (HDR texture is already attached)
         this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.HDRTexture, Attachment::COLOR_ATTACHMENT0);
         this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(camera.DepthTexture, Attachment::DEPTH_ATTACHMENT);
@@ -397,6 +396,7 @@ namespace MxEngine
         this->ComputeBloomEffect(camera, camera.HDRTexture);
         this->ApplySSGI(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
         
+        this->ApplyGodRayEffect(camera, camera.HDRTexture, camera.SwapTexture1);
         this->ApplyChromaticAbberation(camera, camera.HDRTexture, camera.SwapTexture1);
         this->ApplyFogEffect(camera, camera.HDRTexture, camera.SwapTexture1);
 
