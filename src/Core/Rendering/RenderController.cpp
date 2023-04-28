@@ -1393,7 +1393,7 @@ namespace MxEngine
         const CameraSSR* ssr,
         const CameraSSGI* ssgi, 
         const CameraSSAO* ssao,
-        const GodRayEffect* godRay)
+        const CameraGodRay* godRay)
     {
         auto& camera = this->Pipeline.Cameras.emplace_back();
 

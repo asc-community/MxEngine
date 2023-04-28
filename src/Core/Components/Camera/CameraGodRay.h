@@ -4,14 +4,14 @@
 
 namespace MxEngine
 {
-	class GodRayEffect 
+	class CameraGodRay 
 	{
-		MAKE_COMPONENT(GodRayEffect);
+		MAKE_COMPONENT(CameraGodRay);
 		float godRayMaxSteps = 150.0f;
 		float godRaySampleStep = 0.15f;
 		float godRayStepIncrement = 1.01f;
 	public:
-		GodRayEffect() = default;
+		CameraGodRay() = default;
 		float GetGodRayMaxSteps()const;
 		float GetGodRayStepIncrement()const;
 		float GetGodRaySampleStep()const;
