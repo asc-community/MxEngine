@@ -43,7 +43,7 @@ namespace MxEngine
             .property("god ray max steps", &GodRayEffect::GetGodRayMaxSteps, &GodRayEffect::SetGodRayMaxSteps)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 150.0f, 1000.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 100.0f, 1000.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 1.0f)
             )
             .property("god ray sample step", &GodRayEffect::GetGodRaySampleStep, &GodRayEffect::SetGodRaySampleStep)

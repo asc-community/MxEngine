@@ -7,7 +7,7 @@ namespace MxEngine
 	class GodRayEffect 
 	{
 		MAKE_COMPONENT(GodRayEffect);
-		float godRayMaxSteps = 200.0f;
+		float godRayMaxSteps = 150.0f;
 		float godRaySampleStep = 0.15f;
 		float godRayStepIncrement = 1.01f;
 	public:

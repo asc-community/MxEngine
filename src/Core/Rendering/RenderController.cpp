@@ -564,13 +564,19 @@ namespace MxEngine
 
         input->Bind(textureId++);
         godRayShader->SetUniform("cameraOutput", input->GetBoundId());
-        godRayShader->SetUniform("maxSteps", camera.GodRay->GetGodRayMaxSteps());
-        godRayShader->SetUniform("sampleStep", camera.GodRay->GetGodRaySampleStep());
-        godRayShader->SetUniform("stepIncrement", camera.GodRay->GetGodRayStepIncrement());
+
+        auto maxSteps = camera.GodRay->GetGodRayMaxSteps();
+        auto beginStride = camera.GodRay->GetGodRaySampleStep();
+        auto inflationRate = camera.GodRay->GetGodRayStepIncrement();
+        auto maxDistance = beginStride * (1 - pow(inflationRate, maxSteps)) / (1 - inflationRate);
+        godRayShader->SetUniform("maxSteps", maxSteps);
+        godRayShader->SetUniform("sampleStep", beginStride);
+        godRayShader->SetUniform("stepIncrement", inflationRate);
+        godRayShader->SetUniform("maxDistance", maxDistance);
 
         SubmitDirectionalLightInformation(godRayShader, textureId);
 
-        this->RenderToTexture(output, godRayShader);
+        this->RenderToTexture(output, godRayShader); 
         std::swap(input, output);
     }
     void RenderController::ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
@@ -1378,7 +1384,7 @@ namespace MxEngine
         baseLightData->Direction = light.GetMaxDistance() * Normalize(light.Direction);
     }
 
-    void RenderController::SubmitCamera(
+    void RenderController::SubmitCamera( 
         const CameraController& controller,
         const Transform& parentTransform, 
         const Skybox* skybox,

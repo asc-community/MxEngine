@@ -25,6 +25,7 @@ uniform sampler2D lightDepthMaps[MaxDirLightCount];
 uniform float maxSteps;
 uniform float sampleStep;
 uniform float stepIncrement;
+uniform float maxDistance;
 
 //sample only once without extra interpolation
 float godRayShadowFactor2D(vec3 coords, sampler2D depthMap, vec4 textureLimitsXY, float bias)
@@ -90,9 +91,10 @@ void main()
 		}
 		illum /= i;
 		float distanceTraveled = length(camera.position-pos);
-		illum *= distanceTraveled/15;
+		illum *= distanceTraveled/maxDistance;
 		illum = clamp(illum,0.0,0.7);
-		currentColor = mix(currentColor, lights[lightIndex].color.rgb/80.0f, illum);
+		float dropletInTheAir = 80.0;//todo: this should be replaced to certain function that clac influence to light intensity
+		currentColor = mix(currentColor, lights[lightIndex].color.rgb / dropletInTheAir, illum);
     }
 
 	OutColor = vec4(currentColor,1.f);
