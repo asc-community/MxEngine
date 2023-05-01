@@ -42,6 +42,7 @@
 #include "Core/Components/Camera/CameraSSR.h"
 #include "Core/Components/Camera/CameraSSGI.h"
 #include "Core/Components/Camera/CameraSSAO.h"
+#include "Core/Components/Camera/CameraGodRay.h"
 #include "Core/Components/Camera/CameraToneMapping.h"
 #include "Core/Components/Lighting/DirectionalLight.h"
 #include "Core/Components/Lighting/PointLight.h"
@@ -308,6 +309,11 @@ namespace MxEngine
             shaderFolder / "particle_transparent_fragment.glsl"
         );
 
+        environment.Shaders["GodRay"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "god_ray_fragment.glsl"
+        );
+
         // compute shaders
         environment.ComputeShaders["Particle"_id] = AssetManager::LoadComputeShader(
             shaderFolder / "particle_compute.glsl"
@@ -368,14 +374,16 @@ namespace MxEngine
                 auto ssrComponent = object.GetComponent<CameraSSR>();
                 auto ssgiComponent = object.GetComponent<CameraSSGI>();
                 auto ssaoComponent = object.GetComponent<CameraSSAO>();
+                auto godRayComponent = object.GetComponent<CameraGodRay>();
                 Skybox* skybox                 = skyboxComponent.IsValid()      ? skyboxComponent.GetUnchecked()      : nullptr;
                 CameraEffects* effects         = effectsComponent.IsValid()     ? effectsComponent.GetUnchecked()     : nullptr;
                 CameraToneMapping* toneMapping = toneMappingComponent.IsValid() ? toneMappingComponent.GetUnchecked() : nullptr;
                 CameraSSR* ssr                 = ssrComponent.IsValid()         ? ssrComponent.GetUnchecked()         : nullptr;
                 CameraSSGI* ssgi               = ssgiComponent.IsValid()        ? ssgiComponent.GetUnchecked()        : nullptr;
                 CameraSSAO* ssao               = ssaoComponent.IsValid()        ? ssaoComponent.GetUnchecked()        : nullptr;
+                CameraGodRay* godRay           = godRayComponent.IsValid()      ? godRayComponent.GetUnchecked()      : nullptr;
 
-                this->Renderer.SubmitCamera(camera, transform, skybox, effects, toneMapping, ssr, ssgi, ssao);
+                this->Renderer.SubmitCamera(camera, transform, skybox, effects, toneMapping, ssr, ssgi, ssao, godRay);
                 TrackMainCameraIndex(camera);
             }
         }

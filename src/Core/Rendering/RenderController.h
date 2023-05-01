@@ -65,7 +65,8 @@ namespace MxEngine
         void PerformPostProcessing(CameraUnit& camera);
         void PerformLightPass(CameraUnit& camera);
         void DrawTransparentObjects(CameraUnit& camera);
-        void ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+        void ApplyFogEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output); 
+        void ApplyGodRayEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
         void ApplyChromaticAbberation(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
         void ApplySSAO(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
         void ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
@@ -81,6 +82,7 @@ namespace MxEngine
         void DrawNonShadowedPointLights(CameraUnit& camera, TextureHandle& output);
         void DrawNonShadowedSpotLights(CameraUnit& camera, TextureHandle& output);
         void SubmitInstancedLights();
+        void SubmitDirectionalLightInformation(ShaderHandle& shader, Texture::TextureBindId textureId);
         void BindGBuffer(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
         void BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
         void BindCameraInformation(const CameraUnit& camera, const Shader& shader);
@@ -127,7 +129,7 @@ namespace MxEngine
         void SubmitLightSource(const SpotLight& light, const Transform& parentTransform);
         void SubmitCamera(const CameraController& controller, const Transform& parentTransform, 
             const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping,
-            const CameraSSR* ssr, const CameraSSGI* ssgi, const CameraSSAO* ssao);
+            const CameraSSR* ssr, const CameraSSGI* ssgi, const CameraSSAO* ssao,const CameraGodRay* godRay);
         size_t SubmitRenderGroup(const Mesh& mesh, size_t instanceOffset, size_t instanceCount);
         void SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& object, const Material& material, const Transform& parentTransform, bool castsShadow, const char* debugName = nullptr);
         void SubmitImage(const TextureHandle& texture);

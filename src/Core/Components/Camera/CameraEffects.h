@@ -52,6 +52,7 @@ namespace MxEngine
 
         bool enableFXAA = false;
         uint8_t bloomIterations = 3;
+
     public:
         CameraEffects() = default;
 
@@ -86,5 +87,6 @@ namespace MxEngine
         void SetChromaticAberrationDistortion(float distortion);
 
         void ToggleFXAA(bool value);
+
     };
 }
