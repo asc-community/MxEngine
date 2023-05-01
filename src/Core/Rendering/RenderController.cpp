@@ -565,14 +565,16 @@ namespace MxEngine
         input->Bind(textureId++);
         godRayShader->SetUniform("cameraOutput", input->GetBoundId());
 
-        auto maxSteps = camera.GodRay->GetGodRayMaxSteps();
-        auto beginStride = camera.GodRay->GetGodRaySampleStep();
-        auto inflationRate = camera.GodRay->GetGodRayStepIncrement();
-        auto maxDistance = beginStride * (1 - pow(inflationRate, maxSteps)) / (1 - inflationRate);
+        float maxSteps = camera.GodRay->GetGodRayMaxSteps();
+        float asymmetry = camera.GodRay->GetGodRayAsymmetry();
+        float beginStride = camera.GodRay->GetGodRaySampleStep();
+        float inflationRate = camera.GodRay->GetGodRayStepIncrement();
+        float maxDistance = beginStride * (1.0 - pow(inflationRate, maxSteps)) / (1.0 - inflationRate);
         godRayShader->SetUniform("maxSteps", maxSteps);
         godRayShader->SetUniform("sampleStep", beginStride);
         godRayShader->SetUniform("stepIncrement", inflationRate);
         godRayShader->SetUniform("maxDistance", maxDistance);
+        godRayShader->SetUniform("asymmetry", asymmetry);
 
         SubmitDirectionalLightInformation(godRayShader, textureId);
 

@@ -26,6 +26,7 @@ uniform float maxSteps;
 uniform float sampleStep;
 uniform float stepIncrement;
 uniform float maxDistance;
+uniform float asymmetry;
 
 //sample only once without extra interpolation
 float godRayShadowFactor2D(vec3 coords, sampler2D depthMap, vec4 textureLimitsXY, float bias)
@@ -41,6 +42,7 @@ float godRayShadowFactor2D(vec3 coords, sampler2D depthMap, vec4 textureLimitsXY
 	float res = sampleShadowMap(depthMap, startTexel + vec2(0.0, 0.0) * texelSizeInv, lod, compare);
 	return pow(clamp(res, 0.0, 1.0), 8.0);
 }
+
 float godRayShadowSampler(vec3 position, DirLight light, sampler2D shadowMap)
 {
 	const float bias = 0.002;
@@ -62,6 +64,13 @@ float godRayShadowSampler(vec3 position, DirLight light, sampler2D shadowMap)
 	return 1.0f;
 }
 
+float phaseHG(float cosTheta)
+{
+	const float inv4PI = 1.0 / (4.0 * PI);
+	float denom = 1 + asymmetry * asymmetry + 2 * asymmetry * cosTheta;
+	return inv4PI * (1 - asymmetry * asymmetry) / (denom * sqrt(denom));
+}
+
 void main()
 {
 	FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
@@ -69,7 +78,6 @@ void main()
 	float fragDistance = length(camera2Frag);
 	vec3 fragDirection = normalize(camera2Frag);
 	vec3 currentColor = texture(cameraOutput, TexCoord).rgb;
-
 
 	float randomness = noise(TexCoord) * .6;//producing blur to decrease sampling rate
 	for (int lightIndex = 0; lightIndex < lightCount; lightIndex++)
@@ -93,8 +101,11 @@ void main()
 		float distanceTraveled = length(camera.position - pos);
 		illum *= distanceTraveled / maxDistance;
 		illum = clamp(illum, 0.0, 0.7);
-		float dropletInTheAir = 80.0;//todo: this should be replaced to certain function that clac influence to light intensity
-		currentColor = mix(currentColor, lights[lightIndex].color.rgb / dropletInTheAir, illum);
+		
+		float cosTheta = dot(fragDirection, lights[lightIndex].direction);
+		float scattering = phaseHG(cosTheta);
+		scattering = max(scattering, 0.0001);
+		currentColor = mix(currentColor, lights[lightIndex].color.rgb * scattering, illum);
 	}
 
 	OutColor = vec4(currentColor, 1.f);

@@ -18,6 +18,12 @@ namespace MxEngine
     {
         return this->godRaySampleStep;
     }
+
+    float CameraGodRay::GetGodRayAsymmetry()const
+    {
+        return this->godRayAsymmetry;
+    }
+
     void CameraGodRay::SetGodRayMaxSteps(float num)
     {
         this->godRayMaxSteps = num;
@@ -31,6 +37,11 @@ namespace MxEngine
     void CameraGodRay::SetGodRaySampleStep(float value)
     {
         this->godRaySampleStep = value;
+    }
+
+    void CameraGodRay::SetGodRayAsymmetry(float value)
+    {
+        this->godRayAsymmetry = value;
     }
 
     MXENGINE_REFLECT_TYPE
@@ -57,6 +68,12 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 1.01f, 1.1f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.001f)
+            )
+            .property("god ray asymmetry", &CameraGodRay::GetGodRayAsymmetry, &CameraGodRay::SetGodRayAsymmetry)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.1f, 1.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             );
     }
 }
