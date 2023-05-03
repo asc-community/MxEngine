@@ -401,6 +401,7 @@ namespace MxEngine
         this->ApplyChromaticAbberation(camera, camera.HDRTexture, camera.SwapTexture1);
         this->ApplyFogEffect(camera, camera.HDRTexture, camera.SwapTexture1);
 
+        this->ApplyDepthOfFieldEffect(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
         this->ApplyHDRToLDRConversion(camera, camera.HDRTexture, camera.SwapTexture1);
 
         this->ApplyFXAA(camera, camera.HDRTexture, camera.SwapTexture1);
@@ -713,7 +714,24 @@ namespace MxEngine
 
         std::swap(input, output);
     }
+    void RenderController::ApplyDepthOfFieldEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
+    {
+        MAKE_SCOPE_PROFILER("RenderController::ApplyDepthOfFieldEffect()");
+        auto cocShader = this->Pipeline.Environment.Shaders["COC"_id];
+        cocShader->Bind();
+        cocShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
+        cocShader->IgnoreNonExistingUniform("normalTex");
+        cocShader->IgnoreNonExistingUniform("albedoTex");
+        cocShader->IgnoreNonExistingUniform("materialTex");
+        Texture::TextureBindId textureId = 0;
+        this->BindGBuffer(camera, *cocShader, textureId);
+        input->Bind(textureId++);
+        cocShader->SetUniform("cameraOutput", input->GetBoundId());
+        this->BindCameraInformation(camera, *cocShader);
+        this->RenderToTexture(temporary, cocShader);
 
+        //std::swap(input, output);
+    }
     void RenderController::ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {
         if (camera.ToneMapping == nullptr) return;

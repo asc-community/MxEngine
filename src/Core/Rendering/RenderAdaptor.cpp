@@ -314,6 +314,11 @@ namespace MxEngine
             shaderFolder / "god_ray_fragment.glsl"
         );
 
+        environment.Shaders["COC"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "dof_coc.glsl"
+        );
+
         // compute shaders
         environment.ComputeShaders["Particle"_id] = AssetManager::LoadComputeShader(
             shaderFolder / "particle_compute.glsl"

@@ -74,7 +74,8 @@ namespace MxEngine
         void ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
         void ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
         void ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
-        void ApplyColorGrading(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+        void ApplyColorGrading(CameraUnit& camera, TextureHandle& input, TextureHandle& output); 
+        void ApplyDepthOfFieldEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
         void DrawIBL(CameraUnit& camera, TextureHandle& output);
         void DrawDirectionalLights(CameraUnit& camera, TextureHandle& output);
         void DrawShadowedPointLights(CameraUnit& camera, TextureHandle& output);
