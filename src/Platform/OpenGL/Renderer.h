@@ -102,6 +102,7 @@ namespace MxEngine
         void Flush() const;
         void Finish() const;
         void SetViewport(int x, int y, int width, int height) const;
+        void GetViewport(int& x, int& y, int& width, int& height) const;
         Renderer& UseClipDistance(size_t count);
         Renderer& UseSeamlessCubeMaps(bool value = true);
         Renderer& UseColorMask(bool r, bool g, bool b, bool a);

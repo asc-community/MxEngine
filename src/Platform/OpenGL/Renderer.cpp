@@ -99,6 +99,16 @@ namespace MxEngine
         GLCALL(glViewport(x, y, width, height));
     }
 
+    void Renderer::GetViewport(int& x, int& y, int& width, int& height) const
+    {
+        MxFixedVector<GLint, 4> viewport{ 0,0,0,0 };
+        glGetIntegerv(GL_VIEWPORT, viewport.data());
+        x = viewport[0];
+        y = viewport[1];
+        width = viewport[2];
+        height = viewport[3];
+    }
+
     Renderer& Renderer::UseClipDistance(size_t count)
     {
         for (size_t i = 0; i < count; i++)
