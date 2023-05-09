@@ -53,6 +53,7 @@ namespace MxEngine
         TextureHandle HDR;
         TextureHandle SwapHDR1;
         TextureHandle SwapHDR2;
+        TextureHandle SwapHalf;
 
         void Init(int width, int height);
         void Resize(int width, int height);
@@ -141,5 +142,6 @@ namespace MxEngine
         TextureHandle GetHDRTexture() const;
         TextureHandle GetSwapHDRTexture1() const;
         TextureHandle GetSwapHDRTexture2() const;
+        TextureHandle GetSwapHalf() const;
     };
 }

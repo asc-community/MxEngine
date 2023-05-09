@@ -66,6 +66,7 @@ namespace MxEngine
 
         // helper objects
         environment.RectangularObject.Init(1.0f);
+        environment.RectangularObject.Init(1.0f);
         environment.SkyboxCubeObject.Init();
         this->DebugDrawer.Init();
         environment.DebugBufferObject.VAO = this->DebugDrawer.GetVAO();
@@ -319,6 +320,11 @@ namespace MxEngine
             shaderFolder / "dof_coc.glsl"
         );
 
+        environment.Shaders["Bokeh"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "dof_bokeh.glsl"
+        );
+
         // compute shaders
         environment.ComputeShaders["Particle"_id] = AssetManager::LoadComputeShader(
             shaderFolder / "particle_compute.glsl"
@@ -338,6 +344,7 @@ namespace MxEngine
             bloomTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("bloom"));
             bloomTexture->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
         }
+
     }
 
     void RenderAdaptor::RenderFrame()

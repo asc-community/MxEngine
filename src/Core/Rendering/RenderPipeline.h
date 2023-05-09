@@ -66,6 +66,7 @@ namespace MxEngine
         TextureHandle HDRTexture;
         TextureHandle SwapTexture1;
         TextureHandle SwapTexture2;
+        TextureHandle SwapHalf;
 
         FrustrumCuller Culler;
         Matrix4x4 InverseViewProjMatrix;
@@ -106,6 +107,7 @@ namespace MxEngine
         TextureHandle DefaultShadowMap;
         TextureHandle AverageWhiteTexture;
         TextureHandle EnvironmentBRDFLUT;
+        //TextureHandle BokehTexture;
         CubeMapHandle DefaultShadowCubeMap;
         CubeMapHandle DefaultSkybox;
 

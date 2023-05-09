@@ -714,23 +714,33 @@ namespace MxEngine
 
         std::swap(input, output);
     }
-    void RenderController::ApplyDepthOfFieldEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
+    void RenderController::ApplyDepthOfFieldEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& tmp, TextureHandle& output)
     {
         MAKE_SCOPE_PROFILER("RenderController::ApplyDepthOfFieldEffect()");
-        auto cocShader = this->Pipeline.Environment.Shaders["COC"_id];
-        cocShader->Bind();
-        cocShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
-        cocShader->IgnoreNonExistingUniform("normalTex");
-        cocShader->IgnoreNonExistingUniform("albedoTex");
-        cocShader->IgnoreNonExistingUniform("materialTex");
-        Texture::TextureBindId textureId = 0;
-        this->BindGBuffer(camera, *cocShader, textureId);
-        input->Bind(textureId++);
-        cocShader->SetUniform("cameraOutput", input->GetBoundId());
-        this->BindCameraInformation(camera, *cocShader);
-        this->RenderToTexture(temporary, cocShader);
-
-        //std::swap(input, output);
+        {
+            input->GenerateMipmaps();
+            auto cocShader = this->Pipeline.Environment.Shaders["COC"_id];
+            cocShader->Bind(); 
+            cocShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
+            cocShader->IgnoreNonExistingUniform("normalTex"); 
+            cocShader->IgnoreNonExistingUniform("albedoTex");
+            cocShader->IgnoreNonExistingUniform("materialTex"); 
+            Texture::TextureBindId textureId = 0;
+            this->BindGBuffer(camera, *cocShader, textureId);
+            input->Bind(textureId++);
+            cocShader->SetUniform("cameraOutput", input->GetBoundId());
+            this->BindCameraInformation(camera, *cocShader);
+            this->RenderToTextureNoClear(tmp, cocShader);
+        }
+        //////////////////////////////////////////////////////////////////////////
+        {
+            auto bokehShader = this->Pipeline.Environment.Shaders["Bokeh"_id];
+            bokehShader->Bind();   
+            input->Bind(0);
+            tmp->Bind(1);  
+            this->RenderToTextureNoClear(output, bokehShader);
+        }    
+        std::swap(input, output);
     }
     void RenderController::ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {
@@ -1433,6 +1443,7 @@ namespace MxEngine
         camera.HDRTexture                 = controller.GetHDRTexture();
         camera.SwapTexture1               = controller.GetSwapHDRTexture1();
         camera.SwapTexture2               = controller.GetSwapHDRTexture2();
+        camera.SwapHalf                   = controller.GetSwapHalf();
         camera.OutputTexture              = controller.GetRenderTexture();
         camera.RenderToTexture            = controller.IsRendering();
         camera.SkyboxTexture              = (skybox != nullptr && skybox->CubeMap.IsValid()) ? skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;
