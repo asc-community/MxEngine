@@ -16,10 +16,10 @@ uniform Camera camera;
 uniform float focusDistance;
 uniform float focusRange;
 void main()
-{ 
+{
     FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
-    float fragDistance = length(fragment.position-camera.position);
-    float circleOfConfusion = (fragDistance-focusDistance)/focusRange;
-    circleOfConfusion = clamp(circleOfConfusion,-1.,1.);
-	OutColor = vec4(abs(circleOfConfusion),0.f.xxx);
+    float fragDistance = length(fragment.position - camera.position);
+    float circleOfConfusion = (fragDistance - focusDistance) / focusRange;
+    circleOfConfusion = clamp(circleOfConfusion, -1., 1.);
+    OutColor = vec4(abs(circleOfConfusion), 0.f.xxx);
 }

@@ -1,8 +1,8 @@
 #include "Library/shader_utils.glsl"
 in vec2 TexCoord;
 out vec4 OutColor;
-layout (binding = 0)uniform sampler2D colorTex;
-layout (binding = 1)uniform sampler2D cocTex;
+layout(binding = 0)uniform sampler2D colorTex;
+layout(binding = 1)uniform sampler2D cocTex;
 
 const int kernelSampleCount = 43;
 const vec2 diskKernel[kernelSampleCount] = {
@@ -52,18 +52,18 @@ const vec2 diskKernel[kernelSampleCount] = {
 };
 uniform float bokehRadius = 10.0;
 void main()
-{ 
+{
     vec3 color = vec3(0.f);
     float dx = dFdx(TexCoord.x);
     float dy = dFdy(TexCoord.y);
     float weight = 0.f;
-	float coc = texelFetch(cocTex,ivec2(gl_FragCoord.xy),0).x;
-	for(int i=0;i<kernelSampleCount;i++)
-	{
-		vec2 offset = diskKernel[i] * vec2(dx,dy)*bokehRadius*coc;
-		color+=texture(colorTex,TexCoord+offset,0).rgb;
-	}
+    float coc = texelFetch(cocTex, ivec2(gl_FragCoord.xy), 0).x;
+    for (int i = 0; i < kernelSampleCount; i++)
+    {
+        vec2 offset = diskKernel[i] * vec2(dx, dy) * bokehRadius * coc;
+        color += texture(colorTex, TexCoord + offset, 0).rgb;
+    }
 
     color *= 1.0 / kernelSampleCount;
-    OutColor = vec4(color,coc);
+    OutColor = vec4(color, coc);
 }
