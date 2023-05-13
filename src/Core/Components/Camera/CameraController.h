@@ -142,6 +142,5 @@ namespace MxEngine
         TextureHandle GetHDRTexture() const;
         TextureHandle GetSwapHDRTexture1() const;
         TextureHandle GetSwapHDRTexture2() const;
-        TextureHandle GetSwapHalf() const;
     };
 }

@@ -465,11 +465,6 @@ namespace MxEngine
         return this->renderBuffers->SwapHDR2;
     }
 
-    TextureHandle CameraController::GetSwapHalf() const
-    {
-        return this->renderBuffers->SwapHalf;
-    }
-
     TextureHandle CameraController::GetSwapHDRTexture1() const
     {
         return this->renderBuffers->SwapHDR1;
