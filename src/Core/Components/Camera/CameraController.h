@@ -53,7 +53,6 @@ namespace MxEngine
         TextureHandle HDR;
         TextureHandle SwapHDR1;
         TextureHandle SwapHDR2;
-        TextureHandle SwapHalf;
 
         void Init(int width, int height);
         void Resize(int width, int height);
