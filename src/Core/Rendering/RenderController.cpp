@@ -709,38 +709,48 @@ namespace MxEngine
         blurInputOutput->Bind(textureId++);
         applyShader->SetUniform("inputTex", input->GetBoundId());
         applyShader->SetUniform("SSGITex", blurInputOutput->GetBoundId());
-
+         
         this->RenderToTexture(output, applyShader);
 
         std::swap(input, output);
     }
-    void RenderController::ApplyDepthOfFieldEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& tmp, TextureHandle& output)
+    void RenderController::ApplyDepthOfFieldEffect(CameraUnit& camera, TextureHandle& io, TextureHandle& tmp0, TextureHandle& tmp1)
     {
         MAKE_SCOPE_PROFILER("RenderController::ApplyDepthOfFieldEffect()");
-        {
-            input->GenerateMipmaps();
-            auto cocShader = this->Pipeline.Environment.Shaders["COC"_id];
-            cocShader->Bind(); 
-            cocShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
-            cocShader->IgnoreNonExistingUniform("normalTex"); 
-            cocShader->IgnoreNonExistingUniform("albedoTex");
-            cocShader->IgnoreNonExistingUniform("materialTex"); 
-            Texture::TextureBindId textureId = 0;
-            this->BindGBuffer(camera, *cocShader, textureId);
-            input->Bind(textureId++);
-            cocShader->SetUniform("cameraOutput", input->GetBoundId());
-            this->BindCameraInformation(camera, *cocShader);
-            this->RenderToTextureNoClear(tmp, cocShader);
-        }
-        //////////////////////////////////////////////////////////////////////////
-        {
-            auto bokehShader = this->Pipeline.Environment.Shaders["Bokeh"_id];
-            bokehShader->Bind();   
-            input->Bind(0);
-            tmp->Bind(1);  
-            this->RenderToTextureNoClear(output, bokehShader);
-        }    
-        std::swap(input, output);
+
+        io->GenerateMipmaps();
+        auto cocShader = this->Pipeline.Environment.Shaders["COC"_id];
+        cocShader->Bind(); 
+        cocShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
+        cocShader->IgnoreNonExistingUniform("normalTex"); 
+        cocShader->IgnoreNonExistingUniform("albedoTex");
+        cocShader->IgnoreNonExistingUniform("materialTex"); 
+        Texture::TextureBindId textureId = 0;
+        this->BindGBuffer(camera, *cocShader, textureId);
+        io->Bind(textureId++); 
+        cocShader->SetUniform("cameraOutput", io->GetBoundId());
+        cocShader->SetUniform("focusRange", camera.Effects->GetFocusRange());        
+        cocShader->SetUniform("focusDistance", camera.Effects->GetFocusDistance());
+        this->BindCameraInformation(camera, *cocShader);
+        this->RenderToTextureNoClear(tmp0, cocShader);
+
+        auto bokehShader = this->Pipeline.Environment.Shaders["Bokeh"_id];
+        bokehShader->Bind();
+        bokehShader->SetUniform("bokehRadius", camera.Effects->GetBokehRadius());
+        
+        io->Bind(0);
+        tmp0->Bind(1);
+        this->RenderToTextureNoClear(tmp1, bokehShader); 
+        
+        this->ApplyGaussianBlur(tmp1, tmp0, 1);
+
+        auto combineShader = this->Pipeline.Environment.Shaders["DofCombine"_id];
+        combineShader->Bind(); 
+        io->Bind(0);
+        tmp1->Bind(1);
+        this->RenderToTextureNoClear(tmp0, combineShader);
+
+        std::swap(io, tmp0);
     }
     void RenderController::ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {
@@ -786,7 +796,7 @@ namespace MxEngine
         this->RenderToTexture(output, fxaaShader);
         std::swap(input, output);
     }
-
+    
     void RenderController::ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {
         if (camera.Effects == nullptr || camera.Effects->GetVignetteRadius() <= 0.0f) return;

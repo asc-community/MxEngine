@@ -13,8 +13,8 @@ struct Camera
 };
 uniform sampler2D cameraOutput;
 uniform Camera camera;
-float focusDistance=10;
-float focusRange=5;
+uniform float focusDistance;
+uniform float focusRange;
 void main()
 { 
     FragmentInfo fragment = getFragmentInfo(TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);

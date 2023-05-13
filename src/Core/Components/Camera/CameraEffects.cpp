@@ -32,6 +32,30 @@
 
 namespace MxEngine
 {
+    float CameraEffects::GetBokehRadius() const
+    {
+        return this->bokehRadius;
+    }
+    float CameraEffects::GetFocusRange() const
+    {
+        return this->focusRange;
+    }
+    float CameraEffects::GetFocusDistance() const
+    {
+        return this->focusDistance;
+    }
+    void CameraEffects::SetBokehRadius(float radius)
+    {
+        this->bokehRadius = radius;
+    }
+    void CameraEffects::SetFocusRange(float range)
+    {
+        this->focusRange = range;
+    }
+    void CameraEffects::SetFocusDistance(float distance)
+    {
+        this->focusDistance = distance;
+    }
     const Vector3& CameraEffects::GetFogColor() const
     {
         return this->fogColor;
@@ -205,6 +229,24 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 128.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+            )
+            .property("bokeh radius", &CameraEffects::GetBokehRadius, &CameraEffects::SetBokehRadius)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 5.0f, 10.f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("focus range", &CameraEffects::GetFocusRange, &CameraEffects::SetFocusRange)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 100.f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("focus distance", &CameraEffects::GetFocusDistance, &CameraEffects::SetFocusDistance)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 500.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             );
     }
 }
