@@ -66,7 +66,6 @@ namespace MxEngine
         TextureHandle HDRTexture;
         TextureHandle SwapTexture1;
         TextureHandle SwapTexture2;
-        TextureHandle SwapHalf;
 
         FrustrumCuller Culler;
         Matrix4x4 InverseViewProjMatrix;

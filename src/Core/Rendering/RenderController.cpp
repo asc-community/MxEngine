@@ -1455,7 +1455,6 @@ namespace MxEngine
         camera.HDRTexture                 = controller.GetHDRTexture();
         camera.SwapTexture1               = controller.GetSwapHDRTexture1();
         camera.SwapTexture2               = controller.GetSwapHDRTexture2();
-        camera.SwapHalf                   = controller.GetSwapHalf();
         camera.OutputTexture              = controller.GetRenderTexture();
         camera.RenderToTexture            = controller.IsRendering();
         camera.SkyboxTexture              = (skybox != nullptr && skybox->CubeMap.IsValid()) ? skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;
