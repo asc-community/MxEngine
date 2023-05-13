@@ -230,22 +230,22 @@ namespace MxEngine
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 128.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
             )
-            .property("bokeh radius", &CameraEffects::GetBokehRadius, &CameraEffects::SetBokehRadius)
+            .property("dof focus distance", &CameraEffects::GetFocusDistance, &CameraEffects::SetFocusDistance)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 5.0f, 10.f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 500.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
-            .property("focus range", &CameraEffects::GetFocusRange, &CameraEffects::SetFocusRange)
+            .property("dof focus range", &CameraEffects::GetFocusRange, &CameraEffects::SetFocusRange)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 100.f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
-            .property("focus distance", &CameraEffects::GetFocusDistance, &CameraEffects::SetFocusDistance)
+            .property("dof bokeh radius", &CameraEffects::GetBokehRadius, &CameraEffects::SetBokehRadius)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 500.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 5.0f, 10.f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             );
     }

@@ -716,6 +716,8 @@ namespace MxEngine
     }
     void RenderController::ApplyDepthOfFieldEffect(CameraUnit& camera, TextureHandle& io, TextureHandle& tmp0, TextureHandle& tmp1)
     {
+        if (camera.Effects->GetFocusDistance() == 0.f)
+            return;
         MAKE_SCOPE_PROFILER("RenderController::ApplyDepthOfFieldEffect()");
 
         io->GenerateMipmaps();
