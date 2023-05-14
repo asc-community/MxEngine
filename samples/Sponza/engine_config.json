@@ -29,7 +29,7 @@
     "spot-light-texture-size": 512
   },
   "window": {
-    "cursor-mode": "DISABLED",
+    "cursor-mode": "NORMAL",
     "double-buffering": true,
     "position": [
       300.0,
