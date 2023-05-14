@@ -714,13 +714,13 @@ namespace MxEngine
 
         std::swap(input, output);
     }
-    void RenderController::ApplyDepthOfFieldEffect(CameraUnit& camera, TextureHandle& io, TextureHandle& tmp0, TextureHandle& tmp1)
+    void RenderController::ApplyDepthOfFieldEffect(CameraUnit& camera, TextureHandle& inputOutput, TextureHandle& temporary0, TextureHandle& temporary1)
     {
         if (camera.Effects->GetFocusDistance() == 0.f)
             return;
         MAKE_SCOPE_PROFILER("RenderController::ApplyDepthOfFieldEffect()");
 
-        io->GenerateMipmaps();
+        inputOutput->GenerateMipmaps();
         auto cocShader = this->Pipeline.Environment.Shaders["COC"_id];
         cocShader->Bind(); 
         cocShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
@@ -729,30 +729,30 @@ namespace MxEngine
         cocShader->IgnoreNonExistingUniform("materialTex"); 
         Texture::TextureBindId textureId = 0;
         this->BindGBuffer(camera, *cocShader, textureId);
-        io->Bind(textureId++); 
-        cocShader->SetUniform("cameraOutput", io->GetBoundId());
+        inputOutput->Bind(textureId++); 
+        cocShader->SetUniform("cameraOutput", inputOutput->GetBoundId());
         cocShader->SetUniform("focusRange", camera.Effects->GetFocusRange());        
         cocShader->SetUniform("focusDistance", camera.Effects->GetFocusDistance());
         this->BindCameraInformation(camera, *cocShader);
-        this->RenderToTextureNoClear(tmp0, cocShader);
+        this->RenderToTextureNoClear(temporary0, cocShader);
 
         auto bokehShader = this->Pipeline.Environment.Shaders["Bokeh"_id];
         bokehShader->Bind();
         bokehShader->SetUniform("bokehRadius", camera.Effects->GetBokehRadius());
         
-        io->Bind(0);
-        tmp0->Bind(1);
-        this->RenderToTextureNoClear(tmp1, bokehShader); 
+        inputOutput->Bind(0);
+        temporary0->Bind(1);
+        this->RenderToTextureNoClear(temporary1, bokehShader); 
         
-        this->ApplyGaussianBlur(tmp1, tmp0, 1);
+        this->ApplyGaussianBlur(temporary1, temporary0, 1);
 
         auto combineShader = this->Pipeline.Environment.Shaders["DofCombine"_id];
         combineShader->Bind(); 
-        io->Bind(0);
-        tmp1->Bind(1);
-        this->RenderToTextureNoClear(tmp0, combineShader);
+        inputOutput->Bind(0);
+        temporary1->Bind(1);
+        this->RenderToTextureNoClear(temporary0, combineShader);
 
-        std::swap(io, tmp0);
+        std::swap(inputOutput, temporary0);
     }
     void RenderController::ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {

@@ -66,7 +66,6 @@ namespace MxEngine
 
         // helper objects
         environment.RectangularObject.Init(1.0f);
-        environment.RectangularObject.Init(1.0f);
         environment.SkyboxCubeObject.Init();
         this->DebugDrawer.Init();
         environment.DebugBufferObject.VAO = this->DebugDrawer.GetVAO();
