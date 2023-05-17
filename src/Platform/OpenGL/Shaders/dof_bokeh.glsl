@@ -38,10 +38,19 @@ void main()
     float dx = dFdx(TexCoord.x);
     float dy = dFdy(TexCoord.y);
     float weight = 0.f;
-    float coc = texelFetch(cocTex, ivec2(gl_FragCoord.xy), 0).x;
+
+    float coc0 = texelFetch(cocTex, ivec2(gl_FragCoord.xy) + ivec2(1,1), 0).r;
+    float coc1 = texelFetch(cocTex, ivec2(gl_FragCoord.xy) + ivec2(-1,-1), 0).r;
+    float coc2 = texelFetch(cocTex, ivec2(gl_FragCoord.xy) + ivec2(-1,1), 0).r;
+    float coc3 = texelFetch(cocTex, ivec2(gl_FragCoord.xy) + ivec2(1,-1), 0).r;
+
+    float cocMin = min(min(min(coc0, coc1), coc2), coc3);
+    float cocMax = max(max(max(coc0, coc1), coc2), coc3);
+    float coc = (-cocMin >= cocMax ? cocMin : cocMax);
+ 
     for (int i = 0; i < kernelSampleCount; i++)
     {
-        vec2 offset = diskKernel[i] * vec2(dx, dy) * bokehRadius * coc;
+        vec2 offset = diskKernel[i] * vec2(dx, dy) * coc * bokehRadius;
         color += texture(colorTex, TexCoord + offset, 0).rgb;
     }
 
