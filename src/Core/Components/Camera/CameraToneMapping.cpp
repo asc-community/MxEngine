@@ -193,7 +193,7 @@ namespace MxEngine
 
         rttr::registration::class_<CameraToneMapping::ColorChannels>("ColorChannels")
             (
-                rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<ACES>)
+                rttr::metadata(MetaInfo::COPY_FUNCTION, Copy<CameraToneMapping::ColorChannels>)
             )
             .constructor<>()
             (
