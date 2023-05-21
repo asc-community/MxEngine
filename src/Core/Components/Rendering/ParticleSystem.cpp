@@ -116,7 +116,7 @@ namespace MxEngine
         }
         case ParticleSystem::Shape::CROSS:
         {
-            int rng = Random::Range(0, 4);
+            int rng = Random::Range(0, 3);
             switch (rng)
             {
             case 0: result = MakeVector3 (1.0f, 0.0f,  0.0f); break;
@@ -128,7 +128,7 @@ namespace MxEngine
         }
         case ParticleSystem::Shape::AXIS:
         {
-            int rng = Random::Range(0, 6);
+            int rng = Random::Range(0, 5);
             switch (rng)
             {
             case 0: result = MakeVector3( 1.0f,  0.0f,  0.0f); break;
