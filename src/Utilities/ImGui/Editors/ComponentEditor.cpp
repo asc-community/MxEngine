@@ -161,6 +161,13 @@ namespace MxEngine::GUI
         return edited ? rttr::variant{ val } : rttr::variant{ };
     }
 
+    rttr::variant Edit(const char* name, unsigned long val, const ReflectionMeta& meta)
+    {
+        auto editVal = (int)val;
+        bool edited = ImGui::DragInt(name, &editVal, meta.Editor.EditPrecision, int(meta.Editor.EditRange.Min), int(meta.Editor.EditRange.Max));
+        return edited ? rttr::variant{ Max(editVal, 0ul) } : rttr::variant{ };
+    }
+
     rttr::variant Edit(const char* name, uint64_t val, const ReflectionMeta& meta)
     {
         auto editVal = (int)val;
