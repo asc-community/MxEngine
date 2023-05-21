@@ -68,6 +68,7 @@ namespace PhysicsSample
             wall->Name = "Wall";
             wall->AddComponent<MeshSource>(Primitives::CreateCube());
             auto material = wall->AddComponent<MeshRenderer>()->GetMaterial();
+            material->AlphaMode = AlphaModeGroup::TRANSPARENT;
             material->Transparency = transparency;
             wall->LocalTransform.SetScale(Vector3(xyz.x * size + thickness, xyz.y * size + thickness, xyz.z * size + thickness));
             wall->LocalTransform.SetPosition(Vector3((size * offset).x / 2, (size * offset).y / 2, (size * offset).z / 2) + coord);
@@ -155,6 +156,7 @@ namespace PhysicsSample
 
             auto material = mr->GetMaterial();
             material->BaseColor = Colors::Create(Colors::GREEN);
+            material->AlphaMode = AlphaModeGroup::TRANSPARENT;
             material->Transparency = 0.3f;
             material->MetallicFactor = 1.0f;
             material->RoughnessFactor = 0.4f;
