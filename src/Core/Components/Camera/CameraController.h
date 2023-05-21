@@ -72,8 +72,6 @@ namespace MxEngine
         Vector3 right = { -1.0f, 0.0f, 0.0f };
         float verticalAngle = 0.0f;
         float horizontalAngle = 0.0f;
-        float moveSpeed = 1.0f;
-        float rotateSpeed = 10.0f;
 
         void SubmitMatrixProjectionChanges() const;
         void RecalculateRotationAngles();
@@ -117,10 +115,6 @@ namespace MxEngine
         Vector3 GetDirectionUp() const;
         float GetHorizontalAngle() const;
         float GetVerticalAngle() const;
-        float GetMoveSpeed() const;
-        void SetMoveSpeed(float speed);
-        float GetRotateSpeed() const;
-        void SetRotateSpeed(float speed);
         CameraController& Rotate(float horz, float vert);
         Vector2 GetRotation() const;
         void SetRotation(Vector2 newRotation);

@@ -329,32 +329,12 @@ namespace MxEngine
         return this->verticalAngle;
     }
 
-    float CameraController::GetMoveSpeed() const
-    {
-        return this->moveSpeed;
-    }
-
-    void CameraController::SetMoveSpeed(float speed)
-    {
-        this->moveSpeed = speed;
-    }
-
-    float CameraController::GetRotateSpeed() const
-    {
-        return this->rotateSpeed;
-    }
-
-    void CameraController::SetRotateSpeed(float speed)
-    {
-        this->rotateSpeed = speed;
-    }
-
     CameraController& CameraController::Rotate(float horizontal, float vertical)
     {
         horizontal = Radians(horizontal);
         vertical   = Radians(vertical);
-        this->horizontalAngle += this->rotateSpeed * horizontal;
-        this->verticalAngle   += this->rotateSpeed * vertical;
+        this->horizontalAngle += horizontal;
+        this->verticalAngle   += vertical;
 
         this->verticalAngle = Clamp(this->verticalAngle, 
             -HalfPi<float>() + 0.001f, HalfPi<float>() - 0.001f);
@@ -701,16 +681,6 @@ namespace MxEngine
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.5f)
             )
             .property("direction", &CameraController::GetDirectionDenormalized, &CameraController::SetDirection)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
-            )
-            .property("move speed", &CameraController::GetMoveSpeed, &CameraController::SetMoveSpeed)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
-            )
-            .property("rotate speed", &CameraController::GetRotateSpeed, &CameraController::SetRotateSpeed)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)

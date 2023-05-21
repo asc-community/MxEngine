@@ -42,6 +42,26 @@ namespace MxEngine
         Event::RemoveEventListener(uuid);
     }
 
+    float InputController::GetMoveSpeed() const
+    {
+        return this->moveSpeed;
+    }
+
+    void InputController::SetMoveSpeed(float speed)
+    {
+        this->moveSpeed = speed;
+    }
+
+    float InputController::GetRotateSpeed() const
+    {
+        return this->rotateSpeed;
+    }
+
+    void InputController::SetRotateSpeed(float speed)
+    {
+        this->rotateSpeed = speed;
+    }
+
     void InputController::BindMovement(KeyCode forward, KeyCode left, KeyCode back, KeyCode right)
     {
         this->BindMovement(forward, left, back, right, KeyCode::UNKNOWN, KeyCode::UNKNOWN);
@@ -62,14 +82,12 @@ namespace MxEngine
                 auto vecForward = MakeVector3(0.0f, 0.0f, 1.0f);
                 auto vecRight = MakeVector3(-1.0f, 0.0f, 0.0f);
                 auto vecUp = MakeVector3(0.0f, 1.0f, 0.0f);
-                float moveSpeed = 1.0f;
                 auto moveDirection = MakeVector3(0.0f);
                 if (camera.IsValid())
                 {
                     vecForward = camera->GetForwardVector();
                     vecRight = camera->GetRightVector();
                     vecUp = camera->GetUpVector();
-                    moveSpeed = camera->GetMoveSpeed();
                 }
                 else
                 {
@@ -106,7 +124,7 @@ namespace MxEngine
 
                 if (moveDirection != MakeVector3(0.0f))
                 {
-                    object->LocalTransform.Translate(Normalize(moveDirection) * moveSpeed * dt);
+                    object->LocalTransform.Translate(Normalize(moveDirection) * input->GetMoveSpeed() * dt);
                     input->motion = Normalize(moveDirection);
                 }
                 else
@@ -177,7 +195,7 @@ namespace MxEngine
             auto dt = Application::GetImpl()->GetUnscaledTimeDelta();
 
             Vector2 diff(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
-            diff = { input->bindHorizontalRotation ? diff.x : 0.0f, input->bindVerticalRotation ? diff.y : 0.0f };
+            diff = MakeVector2(input->bindHorizontalRotation ? diff.x : 0.0f, input->bindVerticalRotation ? diff.y : 0.0f) * input->GetRotateSpeed();
 
             camera->Rotate(diff.x, diff.y);
             oldPos = event.position;
@@ -309,6 +327,16 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
             )
             .constructor<>()
+            .property("move speed", &InputController::GetMoveSpeed, &InputController::SetMoveSpeed)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("rotate speed", &InputController::GetRotateSpeed, &InputController::SetRotateSpeed)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
             .method("bind movement WASD", &InputController::BindMovementWASD)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)

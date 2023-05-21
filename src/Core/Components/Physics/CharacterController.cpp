@@ -68,6 +68,7 @@ namespace MxEngine
 
         auto& rigidBody = *self.GetComponent<RigidBody>();
         auto& camera = *self.GetComponent<CameraController>();
+        auto& input = *self.GetComponent<InputController>();
         
         // verify rigid body parameters
         if (rigidBody.GetAngularForceFactor() != MakeVector3(0.0f)) rigidBody.SetAngularForceFactor(MakeVector3(0.0f));
@@ -85,7 +86,7 @@ namespace MxEngine
         {
             auto jumpImpulse = motion * camera.GetUpVector() * this->GetJumpPower();
             motion -= motion * camera.GetUpVector();
-            rigidBody.SetLinearVelocity(motion * camera.GetMoveSpeed() + jumpImpulse + gravity * dt);
+            rigidBody.SetLinearVelocity(motion * input.GetMoveSpeed() + jumpImpulse + gravity * dt);
         }
         else
         {
@@ -129,32 +130,32 @@ namespace MxEngine
 
     float CharacterController::GetMoveSpeed() const
     {
-        auto camera = MxObject::GetByComponent(*this).GetComponent<CameraController>();
-        return camera.IsValid() ? camera->GetMoveSpeed() : 0.0f;
+        auto input = MxObject::GetByComponent(*this).GetComponent<InputController>();
+        return input.IsValid() ? input->GetMoveSpeed() : 0.0f;
     }
 
     void CharacterController::SetMoveSpeed(float speed)
     {
-        auto camera = MxObject::GetByComponent(*this).GetComponent<CameraController>();
-        if (camera.IsValid()) camera->SetMoveSpeed(speed);
+        auto input = MxObject::GetByComponent(*this).GetComponent<InputController>();
+        if (input.IsValid()) input->SetMoveSpeed(speed);
     }
 
     float CharacterController::GetRotateSpeed() const
     {
-        auto camera = MxObject::GetByComponent(*this).GetComponent<CameraController>();
-        return camera.IsValid() ? camera->GetRotateSpeed() : 0.0f;
+        auto input = MxObject::GetByComponent(*this).GetComponent<InputController>();
+        return input.IsValid() ? input->GetRotateSpeed() : 0.0f;
+    }
+
+    void CharacterController::SetRotateSpeed(float speed)
+    {
+        auto input = MxObject::GetByComponent(*this).GetComponent<InputController>();
+        if (input.IsValid()) input->SetRotateSpeed(speed);
     }
 
     float CharacterController::GetMass() const
     {
         auto rigidBody = MxObject::GetByComponent(*this).GetComponent<RigidBody>();
         return rigidBody.IsValid() ? rigidBody->GetMass() : 0.0f;
-    }
-
-    void CharacterController::SetRotateSpeed(float speed)
-    {
-        auto camera = MxObject::GetByComponent(*this).GetComponent<CameraController>();
-        if (camera.IsValid()) camera->SetRotateSpeed(speed);
     }
 
     void CharacterController::SetMass(float mass)

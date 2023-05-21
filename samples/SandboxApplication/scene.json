@@ -603,7 +603,6 @@
         "id": 0,
         "is listening window resize event": true,
         "is rendering": true,
-        "move speed": 5.0,
         "perspective camera": {
           "aspect ratio": 1.7777777910232544,
           "fov": 65.0,
@@ -614,7 +613,6 @@
           0.0,
           0.9504774808883667
         ],
-        "rotate speed": 10.0,
         "up vector": [
           0.0,
           1.0,
@@ -691,6 +689,8 @@
         "down key binding": "LEFT_SHIFT",
         "forward key binding": "W",
         "id": 0,
+        "move speed": 5.0,
+        "rotate speed": 10.0,
         "is horizontal rotation bound": true,
         "is vertical rotation bound": true,
         "left key binding": "A",

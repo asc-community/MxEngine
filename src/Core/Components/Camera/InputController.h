@@ -43,6 +43,8 @@ namespace MxEngine
             KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN,
         };
         bool bindHorizontalRotation = false, bindVerticalRotation = false, bindMovement = false;
+        float rotateSpeed = 10.0f;
+        float moveSpeed = 1.0f;
         
         void BindMovementCallback();
         void BindRotationCallback();
@@ -58,6 +60,11 @@ namespace MxEngine
         void BindHorizontalRotation();
         void BindVerticalRotation();
         void UnbindAll();
+
+        float GetMoveSpeed() const;
+        void SetMoveSpeed(float value);
+        float GetRotateSpeed() const;
+        void SetRotateSpeed(float value);
 
         const Vector3& GetMotionVector() const;
         KeyCode GetForwardKeyBinding() const;
