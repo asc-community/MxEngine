@@ -28,9 +28,9 @@ void InitCamera(MxObject& object)
 	controller->Camera.SetZFar(100000.0f);
 	controller->Camera.SetAspectRatio(WindowManager::GetWidth(), WindowManager::GetHeight());
 
-	controller->SetMoveSpeed(5.0f);
 	controller->ListenWindowResizeEvent();
 	input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
+	input->SetMoveSpeed(5.0f);
 	input->BindRotation();
 
 	object.LocalTransform.Translate(MakeVector3(1.0f, 3.0f, 0.0f));

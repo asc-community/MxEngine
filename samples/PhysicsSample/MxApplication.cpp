@@ -111,12 +111,12 @@ namespace PhysicsSample
             
             auto controller = player->AddComponent<CameraController>();
             controller->ListenWindowResizeEvent();
-            controller->SetMoveSpeed(30);
             Rendering::SetViewport(controller);
 
             auto input = player->AddComponent<InputController>();
             input->BindMovementWASDSpaceShift();
             input->BindRotation();
+            input->SetMoveSpeed(30.0f);
 
             auto collider = player->AddComponent<CapsuleCollider>();
             collider->SetBoundingCapsule(Capsule(5.0f, 5.0f, Capsule::Axis::Y));

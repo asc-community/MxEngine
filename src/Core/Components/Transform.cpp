@@ -95,7 +95,7 @@ namespace MxEngine
 
     Quaternion Transform::GetRotationQuaternion() const
     {
-        return MakeQuaternion(MakeRotationMatrix(RadiansVec(this->rotation)));
+        return Quaternion(RadiansVec(this->rotation));
     }
 
     Vector3 Transform::GetPosition() const

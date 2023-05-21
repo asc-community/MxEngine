@@ -25,12 +25,12 @@ namespace PathTracing
             Rendering::SetViewport(controller);
             controller->ToggleRendering(false);
             controller->ListenWindowResizeEvent();
-            controller->SetMoveSpeed(5.0f);
-            controller->SetRotateSpeed(5.0f);
             controller->SetDirection(Vector3(0.0f, 0.0f, -1.0f));
 
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
+            input->SetMoveSpeed(5.0f);
+            input->SetRotateSpeed(5.0f);
 
             this->rayTracingShader = AssetManager::LoadScreenSpaceShader("Resources/path_tracing.glsl"_id);
             this->postProcessShader = AssetManager::LoadScreenSpaceShader("Resources/post_process.glsl"_id);

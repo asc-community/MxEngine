@@ -42,7 +42,7 @@ namespace MxEngine
         std::array<KeyCode, 6> keybindings = {
             KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN, KeyCode::UNKNOWN,
         };
-        bool bindHorizontalRotation = false, bindVerticalRotation = false, bindMovement = false;
+        bool bindHorizontalRotation = false, bindVerticalRotation = false, bindMovement = false, cameraStyleMovement = false;
         float rotateSpeed = 10.0f;
         float moveSpeed = 1.0f;
         
@@ -62,9 +62,9 @@ namespace MxEngine
         void UnbindAll();
 
         float GetMoveSpeed() const;
-        void SetMoveSpeed(float value);
+        void SetMoveSpeed(float speed);
         float GetRotateSpeed() const;
-        void SetRotateSpeed(float value);
+        void SetRotateSpeed(float speed);
 
         const Vector3& GetMotionVector() const;
         KeyCode GetForwardKeyBinding() const;
@@ -75,6 +75,7 @@ namespace MxEngine
         KeyCode GetDownKeyBinding() const;
         bool IsVerticalRotationBound() const;
         bool IsHorizontalRotationBound() const;
+        bool IsCameraStyleMovementEnabled() const;
 
         void SetForwardKeyBinding(KeyCode key);
         void SetBackKeyBinding(KeyCode key);
@@ -84,5 +85,6 @@ namespace MxEngine
         void SetDownKeyBinding(KeyCode key);
         void ToggleVerticalRotationBound(bool value);
         void ToggleHorizontalRotationBound(bool value);
+        void ToggleCameraStyleMovement(bool value);
     };
 }

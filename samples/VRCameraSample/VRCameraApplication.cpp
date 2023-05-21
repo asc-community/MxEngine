@@ -39,12 +39,12 @@ namespace VRCameraSample
             VRCamera->Name = "VR Camera";
 
             auto controller = VRCamera->AddComponent<CameraController>();
-            controller->SetMoveSpeed(5.0f);
-            controller->SetRotateSpeed(5.0f);
 
             auto input = VRCamera->AddComponent<InputController>();
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
+            input->SetMoveSpeed(5.0f);
+            input->SetRotateSpeed(5.0f);
 
             auto VR = VRCamera->AddComponent<VRCameraController>();
             VR->LeftEye = leftEye;

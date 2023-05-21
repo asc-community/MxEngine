@@ -36,12 +36,12 @@ namespace PBR
 
             auto controller = cameraObject->AddComponent<CameraController>();
             controller->ListenWindowResizeEvent();
-            controller->SetMoveSpeed(10.0f);
             Rendering::SetViewport(controller);
 
             auto input = cameraObject->AddComponent<InputController>();
             input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
             input->BindRotation();
+            input->SetMoveSpeed(10.0f);
 
             auto skybox = cameraObject->AddComponent<Skybox>();
             skybox->CubeMap = AssetManager::LoadCubeMap("Resources/skybox.jpg"_id);

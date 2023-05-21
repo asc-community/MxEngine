@@ -89,11 +89,25 @@ namespace MxEngine
                     vecRight = camera->GetRightVector();
                     vecUp = camera->GetUpVector();
                 }
+                else if (input->IsCameraStyleMovementEnabled())
+                {
+                    auto horizontalAngle = Radians(object->LocalTransform.GetRotation().y);
+                    vecForward = MakeVector3(
+                        sin(horizontalAngle),
+                        0.0f,
+                        cos(horizontalAngle)
+                    );
+                    vecRight = MakeVector3(
+                        sin(horizontalAngle - HalfPi<float>()),
+                        0.0f,
+                        cos(horizontalAngle - HalfPi<float>())
+                    );
+                }
                 else
                 {
-                    vecForward = object->LocalTransform.GetRotation() * vecForward; //-V807
-                    vecRight = object->LocalTransform.GetRotation() * vecRight;
-                    vecUp = object->LocalTransform.GetRotation() * vecUp;
+                    vecForward = object->LocalTransform.GetRotationQuaternion() * vecForward; //-V807
+                    vecRight = object->LocalTransform.GetRotationQuaternion() * vecRight;
+                    vecUp = object->LocalTransform.GetRotationQuaternion() * vecUp;
                 }
 
                 auto dt = Application::GetImpl()->GetUnscaledTimeDelta();
@@ -176,29 +190,31 @@ namespace MxEngine
     
     void InputController::BindRotationCallback()
     {
-        auto& object = MxObject::GetByComponent(*this);
-        auto camera = object.GetComponent<CameraController>();
-        auto input = MxObject::GetComponentHandle(*this);
-        if (!camera.IsValid())
-        {
-            MXLOG_WARNING("MxEngine::InputControl", "rotation can be bound only to CameraController component");
-            return;
-        }
+        auto object = MxObject::GetHandleByComponent(*this);
+        auto camera = object->GetComponent<CameraController>();
+        auto input = object->GetComponent<InputController>();
 
-        MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object.Name);
-        MxString uuid = object.GetComponent<InputController>().GetUUID();
+        MXLOG_DEBUG("MxEngine::InputControl", "bound object rotation: " + object->Name);
+        constexpr static auto invalidMousePos = MakeVector2(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
 
-        Event::AddEventListener<MouseMoveEvent>(uuid, [camera, input](auto& event) mutable
+        Event::AddEventListener<MouseMoveEvent>(input.GetUUID(), [object, camera, input, oldPos = invalidMousePos](auto& event) mutable
         {
-            if (!camera.IsValid()) return;
-            static Vector2 oldPos = event.position;
+            if (oldPos == invalidMousePos) 
+                oldPos = event.position;
+
             auto dt = Application::GetImpl()->GetUnscaledTimeDelta();
-
             Vector2 diff(dt * (oldPos.x - event.position.x), dt * (oldPos.y - event.position.y));
             diff = MakeVector2(input->bindHorizontalRotation ? diff.x : 0.0f, input->bindVerticalRotation ? diff.y : 0.0f) * input->GetRotateSpeed();
-
-            camera->Rotate(diff.x, diff.y);
             oldPos = event.position;
+
+            if (camera.IsValid())
+            {
+                camera->Rotate(diff.x, diff.y);
+            }
+            else
+            {
+                object->LocalTransform.Rotate(MakeVector3(-diff.y, diff.x, 0.0f));
+            }
         });
     }
     
@@ -266,6 +282,16 @@ namespace MxEngine
     bool InputController::IsHorizontalRotationBound() const
     {
         return this->bindHorizontalRotation;
+    }
+
+    bool InputController::IsCameraStyleMovementEnabled() const
+    {
+        return MxObject::GetByComponent(*this).HasComponent<CameraController>() || this->cameraStyleMovement;
+    }
+
+    void InputController::ToggleCameraStyleMovement(bool value)
+    {
+        this->cameraStyleMovement = value;
     }
 
     void InputController::SetForwardKeyBinding(KeyCode key)
@@ -354,6 +380,10 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )
             .property("is vertical rotation bound", &InputController::IsVerticalRotationBound, &InputController::ToggleVerticalRotationBound)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
+            )
+            .property("use camera style movement", &InputController::IsCameraStyleMovementEnabled, &InputController::ToggleCameraStyleMovement)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
             )
