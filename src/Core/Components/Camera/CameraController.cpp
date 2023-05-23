@@ -508,7 +508,7 @@ namespace MxEngine
         this->SwapHDR1->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F);
         this->SwapHDR1->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap hdr 1"));
         this->SwapHDR1->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
-        
+
         this->SwapHDR2->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F);
         this->SwapHDR2->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap hdr 2"));
         this->SwapHDR2->SetWrapType(TextureWrap::CLAMP_TO_EDGE);

@@ -53,8 +53,18 @@ namespace MxEngine
         bool enableFXAA = false;
         uint8_t bloomIterations = 3;
 
+        float bokehRadius = 10.f;
+        float focusRange = 5.f;
+        float focusDistance = 0.f;
     public:
         CameraEffects() = default;
+
+        float GetBokehRadius()const;
+        float GetFocusRange()const;
+        float GetFocusDistance()const;
+        void SetBokehRadius(float radius);
+        void SetFocusRange(float range);
+        void SetFocusDistance(float distance);
 
         const Vector3& GetFogColor() const;
         float GetFogDistance() const;
