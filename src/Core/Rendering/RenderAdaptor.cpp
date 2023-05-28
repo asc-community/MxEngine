@@ -329,6 +329,16 @@ namespace MxEngine
             shaderFolder / "dof_combine.glsl"
         );
 
+        environment.Shaders["LensFlare"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "lens_flare.glsl"
+        );
+
+        environment.Shaders["LensFlarePrefilter"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "lens_flare_prefilter.glsl"
+        );
+
         // compute shaders
         environment.ComputeShaders["Particle"_id] = AssetManager::LoadComputeShader(
             shaderFolder / "particle_compute.glsl"

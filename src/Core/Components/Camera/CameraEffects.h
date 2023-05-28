@@ -56,6 +56,13 @@ namespace MxEngine
         float bokehRadius = 10.f;
         float focusRange = 5.f;
         float focusDistance = 0.f;
+
+        float lensFlareScale = 1.f;
+        float lensFlareBias = -50.f;
+        int lensFlareNumOfGhosts = 3;
+        float lensFlareGhostDispersal = 0.3f;
+        float lensFalreHaloWidth = 0.5f;
+        bool lensFlareEnable = true;
     public:
         CameraEffects() = default;
 
@@ -97,6 +104,21 @@ namespace MxEngine
         void SetChromaticAberrationDistortion(float distortion);
 
         void ToggleFXAA(bool value);
+
+
+        float GetLensFlareScale()const;
+        float GetLensFlareBias()const;
+        int GetLensFlareNumOfGhosts()const;
+        float GetLensFlareGhostDispersal()const;
+        float GetLensFalreHaloWidth()const;
+        bool GetLensFlareEnable()const;
+            
+        void SetLensFlareScale(float);
+        void SetLensFlareBias(float);
+        void SetLensFlareNumOfGhosts(int);
+        void SetLensFlareGhostDispersal(float);
+        void SetLensFalreHaloWidth(float);
+        void SetLensFlareEnable(bool);
 
     };
 }

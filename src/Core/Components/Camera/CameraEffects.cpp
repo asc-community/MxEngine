@@ -166,6 +166,69 @@ namespace MxEngine
         this->bloomIterations = (uint8_t)Min(100, iterations);
     }
 
+
+    float CameraEffects::GetLensFlareScale()const
+    {
+        return this->lensFlareScale;
+    }
+
+    float CameraEffects::GetLensFlareBias()const
+    {
+        return this->lensFlareBias;
+    }
+
+    int CameraEffects::GetLensFlareNumOfGhosts()const
+    {
+        return this->lensFlareNumOfGhosts;
+    }
+
+    float CameraEffects::GetLensFlareGhostDispersal()const
+    {
+        return this->lensFlareGhostDispersal;
+    }
+
+    float CameraEffects::GetLensFalreHaloWidth()const
+    {
+        return this->lensFalreHaloWidth;
+    }
+
+    bool CameraEffects::GetLensFlareEnable()const
+    {
+        return this->lensFlareEnable;
+    }
+
+    void CameraEffects::SetLensFlareScale(float v)
+    {
+        this->lensFlareScale=v;
+    }
+
+    void CameraEffects::SetLensFlareBias(float v)
+    {
+        this->lensFlareBias=v;
+    }
+
+    void CameraEffects::SetLensFlareNumOfGhosts(int v)
+    {
+        this->lensFlareNumOfGhosts=v;
+    }
+
+    void CameraEffects::SetLensFlareGhostDispersal(float v)
+    {
+        this->lensFlareGhostDispersal=v;
+    }
+
+    void CameraEffects::SetLensFalreHaloWidth(float v)
+    {
+        this->lensFalreHaloWidth=v;
+    }
+
+    void CameraEffects::SetLensFlareEnable(bool v)
+    {
+        this->lensFlareEnable=v;
+    }
+
+
+
     MXENGINE_REFLECT_TYPE
     {
         rttr::registration::class_<CameraEffects>("CameraEffects")
@@ -185,13 +248,13 @@ namespace MxEngine
             .property("fog density", &CameraEffects::GetFogDensity, &CameraEffects::SetFogDensity)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
             .property("fog distance", &CameraEffects::GetFogDistance, &CameraEffects::SetFogDistance)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 1.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
             .property("bloom weight", &CameraEffects::GetBloomWeight, &CameraEffects::SetBloomWeight)
@@ -246,6 +309,42 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 5.0f, 10.f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("lensFlareScale", &CameraEffects::GetLensFlareScale, &CameraEffects::SetLensFlareScale)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 100.f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("lensFlareBias", &CameraEffects::GetLensFlareBias, &CameraEffects::SetLensFlareBias)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { -200.0f, 0.f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("lensFlareNumOfGhosts", &CameraEffects::GetLensFlareNumOfGhosts, &CameraEffects::SetLensFlareNumOfGhosts)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 100.f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("lensFlareGhostDispersal", &CameraEffects::GetLensFlareGhostDispersal, &CameraEffects::SetLensFlareGhostDispersal)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 100.f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("lensFalreHaloWidth", &CameraEffects::GetLensFalreHaloWidth, &CameraEffects::SetLensFalreHaloWidth)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 100.f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("lensFlareEnable", &CameraEffects::GetLensFlareEnable, &CameraEffects::SetLensFlareEnable)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 100.f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             );
     }

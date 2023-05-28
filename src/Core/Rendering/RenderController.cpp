@@ -396,6 +396,8 @@ namespace MxEngine
 
         this->ComputeBloomEffect(camera, camera.HDRTexture);
         this->ApplySSGI(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
+
+        this->ApplyLensFlare(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2); 
         
         this->ApplyGodRayEffect(camera, camera.HDRTexture, camera.SwapTexture1);
         this->ApplyChromaticAbberation(camera, camera.HDRTexture, camera.SwapTexture1);
@@ -714,8 +716,10 @@ namespace MxEngine
 
         std::swap(input, output);
     }
+
     void RenderController::ApplyDepthOfFieldEffect(CameraUnit& camera, TextureHandle& inputOutput, TextureHandle& temporary0, TextureHandle& temporary1)
     {
+        return;
         if (camera.Effects->GetFocusDistance() == 0.f)
             return;
         MAKE_SCOPE_PROFILER("RenderController::ApplyDepthOfFieldEffect()");
@@ -754,6 +758,37 @@ namespace MxEngine
 
         std::swap(inputOutput, temporary0);
     }
+
+    void RenderController::ApplyLensFlare(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
+    {
+        float scale = camera.Effects->GetLensFlareScale();
+        float bias = camera.Effects->GetLensFlareBias();
+        int numOfGhosts = camera.Effects->GetLensFlareNumOfGhosts();
+        float dispersal = camera.Effects->GetLensFlareGhostDispersal();
+        float haloWidth = camera.Effects->GetLensFalreHaloWidth();
+        
+        MAKE_SCOPE_PROFILER("RenderController::ApplyLensFlare()");
+
+        input->GenerateMipmaps();
+        temporary->GenerateMipmaps();
+        auto& prefilter = this->Pipeline.Environment.Shaders["LensFlarePrefilter"_id];
+        prefilter->Bind();
+        prefilter->SetUniform("uScale", scale);
+        prefilter->SetUniform("uBias", bias);
+        input->Bind(0);     
+        this->RenderToTextureNoClear(temporary, prefilter);
+
+        auto& lensFlare = this->Pipeline.Environment.Shaders["LensFlare"_id];
+        lensFlare->Bind();
+        lensFlare->SetUniform("ghosts", numOfGhosts);
+        lensFlare->SetUniform("ghostDispersal", dispersal);
+        temporary->Bind(0);
+        input->Bind(1);
+        this->RenderToTextureNoClear(output, lensFlare);   
+          
+        std::swap(input, output);   
+    }
+
     void RenderController::ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {
         if (camera.ToneMapping == nullptr) return;
