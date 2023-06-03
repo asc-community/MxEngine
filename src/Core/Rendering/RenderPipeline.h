@@ -48,6 +48,7 @@ namespace MxEngine
     class CameraSSGI;
     class CameraSSAO;
     class CameraGodRay;
+    class CameraLensFlare;
     
     struct DebugBufferUnit
     {
@@ -94,6 +95,7 @@ namespace MxEngine
         const CameraSSGI* SSGI;
         const CameraSSAO* SSAO;
         const CameraGodRay* GodRay;
+        const CameraLensFlare* LensFlare;
     };
 
     struct EnvironmentUnit

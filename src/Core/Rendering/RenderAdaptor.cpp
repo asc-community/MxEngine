@@ -43,6 +43,7 @@
 #include "Core/Components/Camera/CameraSSGI.h"
 #include "Core/Components/Camera/CameraSSAO.h"
 #include "Core/Components/Camera/CameraGodRay.h"
+#include "Core/Components/Camera/CameraLensFlare.h"
 #include "Core/Components/Camera/CameraToneMapping.h"
 #include "Core/Components/Lighting/DirectionalLight.h"
 #include "Core/Components/Lighting/PointLight.h"
@@ -401,6 +402,7 @@ namespace MxEngine
                 auto ssgiComponent = object.GetComponent<CameraSSGI>();
                 auto ssaoComponent = object.GetComponent<CameraSSAO>();
                 auto godRayComponent = object.GetComponent<CameraGodRay>();
+                auto lensFlareComponent= object.GetComponent<CameraLensFlare>();
                 Skybox* skybox                 = skyboxComponent.IsValid()      ? skyboxComponent.GetUnchecked()      : nullptr;
                 CameraEffects* effects         = effectsComponent.IsValid()     ? effectsComponent.GetUnchecked()     : nullptr;
                 CameraToneMapping* toneMapping = toneMappingComponent.IsValid() ? toneMappingComponent.GetUnchecked() : nullptr;
@@ -408,8 +410,9 @@ namespace MxEngine
                 CameraSSGI* ssgi               = ssgiComponent.IsValid()        ? ssgiComponent.GetUnchecked()        : nullptr;
                 CameraSSAO* ssao               = ssaoComponent.IsValid()        ? ssaoComponent.GetUnchecked()        : nullptr;
                 CameraGodRay* godRay           = godRayComponent.IsValid()      ? godRayComponent.GetUnchecked()      : nullptr;
+                CameraLensFlare* lensFlare     = lensFlareComponent.IsValid()   ? lensFlareComponent.GetUnchecked()   : nullptr;
 
-                this->Renderer.SubmitCamera(camera, transform, skybox, effects, toneMapping, ssr, ssgi, ssao, godRay);
+                this->Renderer.SubmitCamera(camera, transform, skybox, effects, toneMapping, ssr, ssgi, ssao, godRay, lensFlare);
                 TrackMainCameraIndex(camera);
             }
         }

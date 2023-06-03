@@ -37,6 +37,7 @@
 #include "Core/Components/Camera/CameraSSGI.h"
 #include "Core/Components/Camera/CameraSSAO.h"
 #include "Core/Components/Camera/CameraGodRay.h"
+#include "Core/Components/Camera/CameraLensFlare.h"
 #include "Core/Components/Lighting/DirectionalLight.h"
 #include "Core/Components/Lighting/SpotLight.h"
 #include "Core/Components/Lighting/PointLight.h"
@@ -761,13 +762,17 @@ namespace MxEngine
 
     void RenderController::ApplyLensFlare(CameraUnit& camera, TextureHandle& input, TextureHandle& temporaryHalf0, TextureHandle& temporaryHalf1, TextureHandle& temporary1)
     {
-        float scale = camera.Effects->GetLensFlareScale();
-        float bias = camera.Effects->GetLensFlareBias();
-        int numOfGhosts = camera.Effects->GetLensFlareNumOfGhosts();
-        float dispersal = camera.Effects->GetLensFlareGhostDispersal();
-        float haloWidth = camera.Effects->GetLensFalreHaloWidth();
-        
         MAKE_SCOPE_PROFILER("RenderController::ApplyLensFlare()");
+        if (camera.LensFlare == nullptr)
+            return;
+
+        //Todo: support chromatic aberration 
+        //Todo: add starbust effect 
+        float scale = camera.LensFlare->GetLensFlareScale();
+        float bias = camera.LensFlare->GetLensFlareBias();
+        int numOfGhosts = camera.LensFlare->GetLensFlareNumOfGhosts();
+        float dispersal = camera.LensFlare->GetLensFlareGhostDispersal();
+        float haloWidth = camera.LensFlare->GetLensFlareHaloWidth();
 
         input->GenerateMipmaps();
         temporaryHalf0->GenerateMipmaps(); 
@@ -1473,7 +1478,8 @@ namespace MxEngine
         const CameraSSR* ssr,
         const CameraSSGI* ssgi, 
         const CameraSSAO* ssao,
-        const CameraGodRay* godRay)
+        const CameraGodRay* godRay,
+        const CameraLensFlare* lensFlare)
     {
         auto& camera = this->Pipeline.Cameras.emplace_back();
 
@@ -1508,6 +1514,7 @@ namespace MxEngine
         camera.SSGI                       = ssgi;
         camera.SSAO                       = ssao;
         camera.GodRay                     = godRay;
+        camera.LensFlare                  = lensFlare;
     }
 
     size_t RenderController::SubmitRenderGroup(const Mesh& mesh, size_t instanceOffset, size_t instanceCount)

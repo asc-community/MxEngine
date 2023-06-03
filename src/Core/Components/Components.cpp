@@ -86,6 +86,7 @@ namespace MxEngine
     TEMPLATE_INSTANCIATE_COMPONENT(CameraSSGI         );
     TEMPLATE_INSTANCIATE_COMPONENT(CameraSSAO         );
     TEMPLATE_INSTANCIATE_COMPONENT(CameraGodRay       );
+    TEMPLATE_INSTANCIATE_COMPONENT(CameraLensFlare    );
     TEMPLATE_INSTANCIATE_COMPONENT(CameraToneMapping  );
     TEMPLATE_INSTANCIATE_COMPONENT(VRCameraController );
     TEMPLATE_INSTANCIATE_COMPONENT(AudioSource        );
@@ -124,6 +125,7 @@ namespace MxEngine
         RegisterComponent<CameraSSGI         >();
         RegisterComponent<CameraSSAO         >();
         RegisterComponent<CameraGodRay       >();
+        RegisterComponent<CameraLensFlare    >();
         RegisterComponent<CameraToneMapping  >();
         RegisterComponent<VRCameraController >();
         RegisterComponent<AudioSource        >();
