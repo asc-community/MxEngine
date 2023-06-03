@@ -58,9 +58,9 @@ namespace MxEngine
         float focusDistance = 0.f;
 
         float lensFlareScale = 1.f;
-        float lensFlareBias = -50.f;
-        int lensFlareNumOfGhosts = 3;
-        float lensFlareGhostDispersal = 0.3f;
+        float lensFlareBias = -42;
+        int lensFlareNumOfGhosts = 10;
+        float lensFlareGhostDispersal = 0.13f;
         float lensFalreHaloWidth = 0.5f;
         bool lensFlareEnable = true;
     public:

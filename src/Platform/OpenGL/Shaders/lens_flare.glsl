@@ -25,10 +25,10 @@ void main()
         result += texture(lensFlareColor, offset)*weight;
     }
 
-    // vec2 haloVec = normalize(ghostVec) * uHaloWidth;
-    // float weight = length(vec2(0.5) - fract(texcoord + haloVec)) / length(vec2(0.5));
-    // weight = pow(1.0 - weight, 5.0);
-    // result += texture(inputColor, texcoord + haloVec) * weight;
+    vec2 haloVec = normalize(ghostVec) * uHaloWidth;
+    float weight = length(vec2(0.5) - fract(texcoord + haloVec)) / length(vec2(0.5));
+    weight = pow(1.0 - weight, 5.0);
+    result += texture(inputColor, texcoord + haloVec) * weight;
 
     outColor = result + texture(inputColor,TexCoord);
     //float weight = length(vec2(0.5) - TexCoord)/length(vec2(0.5));
