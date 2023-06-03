@@ -7,8 +7,8 @@ namespace MxEngine
 {
 	class CameraLensFlare 
 	{
-		MAKE_COMPONENT(CameraLensFlare);
-
+        MAKE_COMPONENT(CameraLensFlare);
+    private:
         float lensFlareScale = 1.f;
         float lensFlareBias = -42;
         int lensFlareNumOfGhosts = 10;
@@ -17,6 +17,7 @@ namespace MxEngine
         bool lensFlareEnable = true;
 
     public:
+        CameraLensFlare() = default;
         float GetLensFlareScale()const;
         float GetLensFlareBias()const;
         int GetLensFlareNumOfGhosts()const;

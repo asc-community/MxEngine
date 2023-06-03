@@ -8,30 +8,27 @@ uniform float uHaloWidth;
 in vec2 TexCoord;
 out vec4 outColor;
 
-void main() 
+void main()
 {
 	vec2 texcoord = TexCoord;
 	texcoord = -texcoord + vec2(1.0);
-    // ghost vector to image centre:
-    vec2 ghostVec = (vec2(0.5) - texcoord) * ghostDispersal;
+	// ghost vector to image centre:
+	vec2 ghostVec = (vec2(0.5) - texcoord) * ghostDispersal;
 
-    // sample ghosts
-    vec4 result = vec4(0.0);
-    for (int i = 0; i < ghosts; ++i) { 
-        vec2 offset = fract(texcoord + ghostVec * float(i));
-        float weight = length(vec2(0.5) - offset) / length(vec2(0.5));
-        weight = pow(1.0 - weight, 80.0);
+	// sample ghosts
+	vec4 result = vec4(0.0);
+	for (int i = 0; i < ghosts; ++i) {
+		vec2 offset = fract(texcoord + ghostVec * float(i));
+		float weight = length(vec2(0.5) - offset) / length(vec2(0.5));
+		weight = pow(1.0 - weight, 80.0);
 
-        result += texture(lensFlareColor, offset)*weight;
-    }
+		result += texture(lensFlareColor, offset) * weight;
+	}
 
-    vec2 haloVec = normalize(ghostVec) * uHaloWidth;
-    float weight = length(vec2(0.5) - fract(texcoord + haloVec)) / length(vec2(0.5));
-    weight = pow(1.0 - weight, 75.0);
-    result += texture(inputColor, texcoord + haloVec) * weight;
+	vec2 haloVec = normalize(ghostVec) * uHaloWidth;
+	float weight = length(vec2(0.5) - fract(texcoord + haloVec)) / length(vec2(0.5));
+	weight = pow(1.0 - weight, 75.0);
+	result += texture(inputColor, texcoord + haloVec) * weight;
 
-    outColor = result + texture(inputColor,TexCoord);
-    //float weight = length(vec2(0.5) - TexCoord)/length(vec2(0.5));
-    //weight = pow(weight, 20.0);
-    //weight = pow(1.0 - weight, 20.0);
+	outColor = result + texture(inputColor, TexCoord);
 }

@@ -56,7 +56,7 @@ namespace MxEngine
 
     MXENGINE_REFLECT_TYPE
     {
-        rttr::registration::class_<CameraLensFlare>("CameraGodRay")
+        rttr::registration::class_<CameraLensFlare>("CameraLensFlare")
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
             )
