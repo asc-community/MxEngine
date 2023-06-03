@@ -27,12 +27,11 @@ void main()
 
     vec2 haloVec = normalize(ghostVec) * uHaloWidth;
     float weight = length(vec2(0.5) - fract(texcoord + haloVec)) / length(vec2(0.5));
-    weight = pow(1.0 - weight, 5.0);
+    weight = pow(1.0 - weight, 75.0);
     result += texture(inputColor, texcoord + haloVec) * weight;
 
     outColor = result + texture(inputColor,TexCoord);
     //float weight = length(vec2(0.5) - TexCoord)/length(vec2(0.5));
     //weight = pow(weight, 20.0);
-    //outColor=vec4(weight);
     //weight = pow(1.0 - weight, 20.0);
 }
