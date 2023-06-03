@@ -445,6 +445,16 @@ namespace MxEngine
         return this->renderBuffers->SwapHDR2;
     }
 
+    TextureHandle CameraController::GetSwapHalf1() const
+    {
+        return this->renderBuffers->SwapHalf1;
+    }
+
+    TextureHandle CameraController::GetSwapHalf2() const
+    {
+        return this->renderBuffers->SwapHalf2;
+    }
+
     TextureHandle CameraController::GetSwapHDRTexture1() const
     {
         return this->renderBuffers->SwapHDR1;
@@ -461,6 +471,8 @@ namespace MxEngine
         this->HDR = Factory<Texture>::Create();
         this->SwapHDR1 = Factory<Texture>::Create();
         this->SwapHDR2 = Factory<Texture>::Create();
+        this->SwapHalf1 = Factory<Texture>::Create();
+        this->SwapHalf2 = Factory<Texture>::Create();
 
         this->Resize(width, height);
         
@@ -512,6 +524,14 @@ namespace MxEngine
         this->SwapHDR2->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F);
         this->SwapHDR2->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap hdr 2"));
         this->SwapHDR2->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
+        this->SwapHalf1->Load(nullptr, width / 4, height / 4, 3, false, TextureFormat::RGBA16F);
+        this->SwapHalf1->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap half 1"));
+        this->SwapHalf1->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
+        this->SwapHalf2->Load(nullptr, width / 4, height / 4, 3, false, TextureFormat::RGBA16F);
+        this->SwapHalf2->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap half 2"));
+        this->SwapHalf2->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
     }
 
     void CameraRender::DeInit()
@@ -524,6 +544,7 @@ namespace MxEngine
         Factory<Texture>::Destroy(this->HDR);
         Factory<Texture>::Destroy(this->SwapHDR1);
         Factory<Texture>::Destroy(this->SwapHDR2);
+        Factory<Texture>::Destroy(this->SwapHalf1);
     }
 
     MXENGINE_REFLECT_TYPE

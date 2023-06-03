@@ -76,7 +76,7 @@ namespace MxEngine
         void ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
         void ApplyColorGrading(CameraUnit& camera, TextureHandle& input, TextureHandle& output); 
         void ApplyDepthOfFieldEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
-        void ApplyLensFlare(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
+        void ApplyLensFlare(CameraUnit& camera, TextureHandle& input, TextureHandle& temporaryHalf0, TextureHandle& temporaryHalf1, TextureHandle& temporary1);
         void DrawIBL(CameraUnit& camera, TextureHandle& output);
         void DrawDirectionalLights(CameraUnit& camera, TextureHandle& output);
         void DrawShadowedPointLights(CameraUnit& camera, TextureHandle& output);

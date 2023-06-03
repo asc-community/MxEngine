@@ -397,7 +397,7 @@ namespace MxEngine
         this->ComputeBloomEffect(camera, camera.HDRTexture);
         this->ApplySSGI(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
 
-        this->ApplyLensFlare(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2); 
+        this->ApplyLensFlare(camera, camera.HDRTexture, camera.SwapHalfTexture1, camera.SwapHalfTexture2, camera.SwapTexture1);
         
         this->ApplyGodRayEffect(camera, camera.HDRTexture, camera.SwapTexture1);
         this->ApplyChromaticAbberation(camera, camera.HDRTexture, camera.SwapTexture1);
@@ -759,7 +759,7 @@ namespace MxEngine
         std::swap(inputOutput, temporary0);
     }
 
-    void RenderController::ApplyLensFlare(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
+    void RenderController::ApplyLensFlare(CameraUnit& camera, TextureHandle& input, TextureHandle& temporaryHalf0, TextureHandle& temporaryHalf1, TextureHandle& temporary1)
     {
         float scale = camera.Effects->GetLensFlareScale();
         float bias = camera.Effects->GetLensFlareBias();
@@ -770,23 +770,26 @@ namespace MxEngine
         MAKE_SCOPE_PROFILER("RenderController::ApplyLensFlare()");
 
         input->GenerateMipmaps();
-        temporary->GenerateMipmaps();
+        temporaryHalf0->GenerateMipmaps(); 
         auto& prefilter = this->Pipeline.Environment.Shaders["LensFlarePrefilter"_id];
         prefilter->Bind();
-        prefilter->SetUniform("uScale", scale);
+        prefilter->SetUniform("uScale", scale); 
         prefilter->SetUniform("uBias", bias);
         input->Bind(0);     
-        this->RenderToTextureNoClear(temporary, prefilter);
+        this->RenderToTextureNoClear(temporaryHalf0, prefilter);
+
+        this->ApplyGaussianBlur(temporaryHalf0, temporaryHalf1,3);
 
         auto& lensFlare = this->Pipeline.Environment.Shaders["LensFlare"_id];
         lensFlare->Bind();
         lensFlare->SetUniform("ghosts", numOfGhosts);
         lensFlare->SetUniform("ghostDispersal", dispersal);
-        temporary->Bind(0);
+        lensFlare->SetUniform("uHaloWidth", haloWidth);   
+        temporaryHalf1->Bind(0);    
         input->Bind(1);
-        this->RenderToTextureNoClear(output, lensFlare);   
+        this->RenderToTextureNoClear(temporary1, lensFlare);   
           
-        std::swap(input, output);   
+        std::swap(input, temporary1);   
     }
 
     void RenderController::ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
@@ -1490,6 +1493,8 @@ namespace MxEngine
         camera.HDRTexture                 = controller.GetHDRTexture();
         camera.SwapTexture1               = controller.GetSwapHDRTexture1();
         camera.SwapTexture2               = controller.GetSwapHDRTexture2();
+        camera.SwapHalfTexture1           = controller.GetSwapHalf1();
+        camera.SwapHalfTexture2           = controller.GetSwapHalf2();
         camera.OutputTexture              = controller.GetRenderTexture();
         camera.RenderToTexture            = controller.IsRendering();
         camera.SkyboxTexture              = (skybox != nullptr && skybox->CubeMap.IsValid()) ? skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;
