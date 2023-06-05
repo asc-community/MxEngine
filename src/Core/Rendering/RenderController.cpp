@@ -720,7 +720,6 @@ namespace MxEngine
 
     void RenderController::ApplyDepthOfFieldEffect(CameraUnit& camera, TextureHandle& inputOutput, TextureHandle& temporary0, TextureHandle& temporary1)
     {
-        return;
         if (camera.Effects->GetFocusDistance() == 0.f)
             return;
         MAKE_SCOPE_PROFILER("RenderController::ApplyDepthOfFieldEffect()");
@@ -775,6 +774,7 @@ namespace MxEngine
         float haloWidth = camera.LensFlare->GetLensFlareHaloWidth();
 
         input->GenerateMipmaps();
+
         temporaryQuater0->GenerateMipmaps(); 
         auto& prefilter = this->Pipeline.Environment.Shaders["LensFlarePrefilter"_id];
         prefilter->Bind();
