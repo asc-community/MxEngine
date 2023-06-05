@@ -761,11 +761,12 @@ namespace MxEngine
 
     void RenderController::ApplyLensFlare(CameraUnit& camera, TextureHandle& input, TextureHandle& temporaryQuater0, TextureHandle& temporaryQuater1, TextureHandle& temporary1)
     {
-        MAKE_SCOPE_PROFILER("RenderController::ApplyLensFlare()");
         if (camera.LensFlare == nullptr)
             return;
 
-        //Todo: support chromatic aberration 
+        MAKE_SCOPE_PROFILER("RenderController::ApplyLensFlare()");
+         
+        //Todo: support chromatic aberration  
         //Todo: add starbust effect 
         float scale = camera.LensFlare->GetLensFlareScale();
         float bias = camera.LensFlare->GetLensFlareBias();

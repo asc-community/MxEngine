@@ -1,3 +1,5 @@
+#include "Library/shader_utils.glsl"
+
 layout(binding = 0) uniform sampler2D inputColor;
 
 uniform float uScale;
@@ -9,9 +11,8 @@ out vec4 outputColor;
 
 void main()
 {
-   vec4 col = texture(inputColor, TexCoord);
-   if(length(max(vec4(0.0),col+vec4(uBias)))<=0.001f)
-      outputColor=vec4(0.0);
-   else
-      outputColor=col*vec4(uScale);
+   vec3 col = texture(inputColor, TexCoord).rgb;
+   float lum = calcLuminance(col) + uBias;
+   col = max(lum,0.0) * col * uScale;
+   outputColor=vec4(col,1.0f); 
 }

@@ -149,3 +149,10 @@ float noise(vec2 p)
 {
     return fract(sin(dot(p, vec2(123.45, 875.43))) * 5432.3);
 }
+
+float calcLuminance(vec3 color)
+{
+    vec3 weight = vec3(0.2125f, 0.7154f, 0.0721f);
+    float luminance = dot(weight, color);//Weighted sum
+    return luminance;
+}
