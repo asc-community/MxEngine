@@ -29,29 +29,29 @@ namespace MxEngine
         return this->lensFalreHaloWidth;
     }
 
-    void CameraLensFlare::SetLensFlareScale(float v)
+    void CameraLensFlare::SetLensFlareScale(float scale)
     {
-        this->lensFlareScale = v;
+        this->lensFlareScale = scale;
     }
 
-    void CameraLensFlare::SetLensFlareBias(float v)
+    void CameraLensFlare::SetLensFlareBias(float bias)
     {
-        this->lensFlareBias = v;
+        this->lensFlareBias = bias;
     }
 
-    void CameraLensFlare::SetLensFlareNumOfGhosts(int v)
+    void CameraLensFlare::SetLensFlareNumOfGhosts(int num)
     {
-        this->lensFlareNumOfGhosts = v;
+        this->lensFlareNumOfGhosts = Max(num,0);
     }
 
-    void CameraLensFlare::SetLensFlareGhostDispersal(float v)
+    void CameraLensFlare::SetLensFlareGhostDispersal(float dispersal)
     {
-        this->lensFlareGhostDispersal = v;
+        this->lensFlareGhostDispersal = dispersal;
     }
 
-    void CameraLensFlare::SetLensFlareHaloWidth(float v)
+    void CameraLensFlare::SetLensFlareHaloWidth(float width)
     {
-        this->lensFalreHaloWidth = v;
+        this->lensFalreHaloWidth = width;
     }
 
     MXENGINE_REFLECT_TYPE
@@ -82,7 +82,7 @@ namespace MxEngine
             .property("lens flare ghost dispersal", &CameraLensFlare::GetLensFlareGhostDispersal, &CameraLensFlare::SetLensFlareGhostDispersal)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 100.f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.001f, 1.f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
             .property("lens falre halo width", &CameraLensFlare::GetLensFlareHaloWidth, &CameraLensFlare::SetLensFlareHaloWidth)

@@ -9,12 +9,11 @@ namespace MxEngine
 	{
         MAKE_COMPONENT(CameraLensFlare);
     private:
-        float lensFlareScale = 1.f;
-        float lensFlareBias = -42;
+        float lensFlareScale = 1.0f;
+        float lensFlareBias = -42.0f;
         int lensFlareNumOfGhosts = 10;
         float lensFlareGhostDispersal = 0.13f;
         float lensFalreHaloWidth = 0.5f;
-        bool lensFlareEnable = true;
 
     public:
         CameraLensFlare() = default;

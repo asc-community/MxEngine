@@ -398,7 +398,7 @@ namespace MxEngine
         this->ComputeBloomEffect(camera, camera.HDRTexture);
         this->ApplySSGI(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
 
-        this->ApplyLensFlare(camera, camera.HDRTexture, camera.SwapHalfTexture1, camera.SwapHalfTexture2, camera.SwapTexture1);
+        this->ApplyLensFlare(camera, camera.HDRTexture, camera.SwapQuaterTexture1, camera.SwapQuaterTexture2, camera.SwapTexture1);
         
         this->ApplyGodRayEffect(camera, camera.HDRTexture, camera.SwapTexture1);
         this->ApplyChromaticAbberation(camera, camera.HDRTexture, camera.SwapTexture1);
@@ -760,7 +760,7 @@ namespace MxEngine
         std::swap(inputOutput, temporary0);
     }
 
-    void RenderController::ApplyLensFlare(CameraUnit& camera, TextureHandle& input, TextureHandle& temporaryHalf0, TextureHandle& temporaryHalf1, TextureHandle& temporary1)
+    void RenderController::ApplyLensFlare(CameraUnit& camera, TextureHandle& input, TextureHandle& temporaryQuater0, TextureHandle& temporaryQuater1, TextureHandle& temporary1)
     {
         MAKE_SCOPE_PROFILER("RenderController::ApplyLensFlare()");
         if (camera.LensFlare == nullptr)
@@ -775,22 +775,22 @@ namespace MxEngine
         float haloWidth = camera.LensFlare->GetLensFlareHaloWidth();
 
         input->GenerateMipmaps();
-        temporaryHalf0->GenerateMipmaps(); 
+        temporaryQuater0->GenerateMipmaps(); 
         auto& prefilter = this->Pipeline.Environment.Shaders["LensFlarePrefilter"_id];
         prefilter->Bind();
         prefilter->SetUniform("uScale", scale); 
         prefilter->SetUniform("uBias", bias);
         input->Bind(0);     
-        this->RenderToTextureNoClear(temporaryHalf0, prefilter);
+        this->RenderToTextureNoClear(temporaryQuater0, prefilter);
 
-        this->ApplyGaussianBlur(temporaryHalf0, temporaryHalf1,3);
+        this->ApplyGaussianBlur(temporaryQuater0, temporaryQuater1,3);
 
         auto& lensFlare = this->Pipeline.Environment.Shaders["LensFlare"_id];
         lensFlare->Bind();
         lensFlare->SetUniform("ghosts", numOfGhosts);
         lensFlare->SetUniform("ghostDispersal", dispersal);
         lensFlare->SetUniform("uHaloWidth", haloWidth);   
-        temporaryHalf1->Bind(0);    
+        temporaryQuater1->Bind(0);    
         input->Bind(1);
         this->RenderToTextureNoClear(temporary1, lensFlare);   
           
@@ -1469,52 +1469,42 @@ namespace MxEngine
         baseLightData->Direction = light.GetMaxDistance() * Normalize(light.Direction);
     }
 
-    void RenderController::SubmitCamera( 
-        const CameraController& controller,
-        const Transform& parentTransform, 
-        const Skybox* skybox,
-        const CameraEffects* effects,
-        const CameraToneMapping* toneMapping, 
-        const CameraSSR* ssr,
-        const CameraSSGI* ssgi, 
-        const CameraSSAO* ssao,
-        const CameraGodRay* godRay,
-        const CameraLensFlare* lensFlare)
+    void RenderController::SubmitCamera(CameraInfo&& info)
     {
         auto& camera = this->Pipeline.Cameras.emplace_back();
 
-        camera.ViewportPosition           = parentTransform.GetPosition();
-        camera.AspectRatio                = controller.Camera.GetAspectRatio();
-        camera.StaticViewProjectionMatrix = controller.GetMatrix(MakeVector3(0.0f));
-        camera.ViewProjectionMatrix       = controller.GetMatrix(parentTransform.GetPosition());
+        camera.ViewportPosition           = info.parentTransform.GetPosition();
+        camera.AspectRatio                = info.controller.Camera.GetAspectRatio();
+        camera.StaticViewProjectionMatrix = info.controller.GetMatrix(MakeVector3(0.0f));
+        camera.ViewProjectionMatrix       = info.controller.GetMatrix(info.parentTransform.GetPosition());
         camera.InverseViewProjMatrix      = Inverse(camera.ViewProjectionMatrix);
-        camera.Culler                     = controller.GetFrustrumCuller();
-        camera.IsPerspective              = controller.GetCameraType() == CameraType::PERSPECTIVE;
-        camera.GBuffer                    = controller.GetGBuffer();
-        camera.AlbedoTexture              = controller.GetAlbedoTexture();
-        camera.NormalTexture              = controller.GetNormalTexture();
-        camera.MaterialTexture            = controller.GetMaterialTexture();
-        camera.DepthTexture               = controller.GetDepthTexture();
-        camera.AverageWhiteTexture        = controller.GetAverageWhiteTexture();
-        camera.HDRTexture                 = controller.GetHDRTexture();
-        camera.SwapTexture1               = controller.GetSwapHDRTexture1();
-        camera.SwapTexture2               = controller.GetSwapHDRTexture2();
-        camera.SwapHalfTexture1           = controller.GetSwapHalf1();
-        camera.SwapHalfTexture2           = controller.GetSwapHalf2();
-        camera.OutputTexture              = controller.GetRenderTexture();
-        camera.RenderToTexture            = controller.IsRendering();
-        camera.SkyboxTexture              = (skybox != nullptr && skybox->CubeMap.IsValid()) ? skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;
-        camera.IrradianceTexture          = (skybox != nullptr && skybox->Irradiance.IsValid()) ? skybox->Irradiance : camera.SkyboxTexture;
-        camera.SkyboxIntensity            = (skybox != nullptr) ? skybox->GetIntensity() : Skybox::DefaultIntensity;
-        camera.InversedSkyboxRotation     = (skybox != nullptr) ? Transpose(MakeRotationMatrix(RadiansVec(skybox->GetRotation()))) : Matrix3x3(1.0f);
-        camera.Gamma                      = (toneMapping != nullptr) ? toneMapping->GetGamma() : CameraToneMapping::DefaultGamma;
-        camera.Effects                    = effects;
-        camera.ToneMapping                = toneMapping;
-        camera.SSR                        = ssr;
-        camera.SSGI                       = ssgi;
-        camera.SSAO                       = ssao;
-        camera.GodRay                     = godRay;
-        camera.LensFlare                  = lensFlare;
+        camera.Culler                     = info.controller.GetFrustrumCuller();
+        camera.IsPerspective              = info.controller.GetCameraType() == CameraType::PERSPECTIVE;
+        camera.GBuffer                    = info.controller.GetGBuffer();
+        camera.AlbedoTexture              = info.controller.GetAlbedoTexture();
+        camera.NormalTexture              = info.controller.GetNormalTexture();
+        camera.MaterialTexture            = info.controller.GetMaterialTexture();
+        camera.DepthTexture               = info.controller.GetDepthTexture();
+        camera.AverageWhiteTexture        = info.controller.GetAverageWhiteTexture();
+        camera.HDRTexture                 = info.controller.GetHDRTexture();
+        camera.SwapTexture1               = info.controller.GetSwapHDRTexture1();
+        camera.SwapTexture2               = info.controller.GetSwapHDRTexture2();
+        camera.SwapQuaterTexture1         = info.controller.GetSwapQuater1();
+        camera.SwapQuaterTexture2         = info.controller.GetSwapQuater2();
+        camera.OutputTexture              = info.controller.GetRenderTexture();
+        camera.RenderToTexture            = info.controller.IsRendering();
+        camera.SkyboxTexture              = (info.skybox != nullptr && info.skybox->CubeMap.IsValid()) ?    info.skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;
+        camera.IrradianceTexture          = (info.skybox != nullptr && info.skybox->Irradiance.IsValid()) ? info.skybox->Irradiance : camera.SkyboxTexture;
+        camera.SkyboxIntensity            = (info.skybox != nullptr) ? info.skybox->GetIntensity() : Skybox::DefaultIntensity;
+        camera.InversedSkyboxRotation     = (info.skybox != nullptr) ? Transpose(MakeRotationMatrix(RadiansVec(info.skybox->GetRotation()))) : Matrix3x3(1.0f);
+        camera.Gamma                      = (info.toneMapping != nullptr) ? info.toneMapping->GetGamma() : CameraToneMapping::DefaultGamma;
+        camera.Effects                    = info.effects;
+        camera.ToneMapping                = info.toneMapping;
+        camera.SSR                        = info.ssr;
+        camera.SSGI                       = info.ssgi;
+        camera.SSAO                       = info.ssao;
+        camera.GodRay                     = info.godRay;
+        camera.LensFlare                  = info.lensFlare;
     }
 
     size_t RenderController::SubmitRenderGroup(const Mesh& mesh, size_t instanceOffset, size_t instanceCount)

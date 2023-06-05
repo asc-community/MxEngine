@@ -412,7 +412,8 @@ namespace MxEngine
                 CameraGodRay* godRay           = godRayComponent.IsValid()      ? godRayComponent.GetUnchecked()      : nullptr;
                 CameraLensFlare* lensFlare     = lensFlareComponent.IsValid()   ? lensFlareComponent.GetUnchecked()   : nullptr;
 
-                this->Renderer.SubmitCamera(camera, transform, skybox, effects, toneMapping, ssr, ssgi, ssao, godRay, lensFlare);
+                CameraInfo camInfo{ camera, transform, skybox, effects, toneMapping, ssr, ssgi, ssao, godRay, lensFlare };
+                this->Renderer.SubmitCamera(std::move(camInfo));
                 TrackMainCameraIndex(camera);
             }
         }
