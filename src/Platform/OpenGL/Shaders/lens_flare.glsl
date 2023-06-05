@@ -10,7 +10,7 @@ out vec4 outColor;
 
 void main()
 {
-	texcoord = vec2(1.0) - TexCoord;
+	vec2 texcoord = vec2(1.0) - TexCoord;
 	// ghost vector to image centre:
 	vec2 ghostVec = (vec2(0.5) - texcoord) * ghostDispersal;
 
