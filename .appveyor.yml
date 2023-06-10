@@ -24,14 +24,16 @@ environment:
 
 install:
     - git submodule update --init --recursive
-       
+      
+matrix:
+    exclude:
+      - job_name: Ubuntu 20 and GCC
+        configuration: RelWithDebInfo
+      
 for:
   - matrix:
       only:
         - job_name: Ubuntu 20 and GCC 
-          configuration: Debug
-        - job_name: Ubuntu 20 and GCC 
-          configuration: Release
     environment:
       GCC_VERSION: 9
     build_script:
