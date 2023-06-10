@@ -51,7 +51,7 @@ for:
       only:
         - job_name: Ubuntu 20 and Clang 10
     environment:
-      CLANG_VERSION: 14
+      CLANG_VERSION: 10
     build_script:
       - clang --version
       - mkdir build
