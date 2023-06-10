@@ -3,6 +3,10 @@ init:
 
 shallow_clone: false
 
+branches:
+  only:
+    - master
+
 platform:
     - x64
     
@@ -13,15 +17,19 @@ configuration:
 
 environment:
     matrix:
-      - job_name: Ubuntu 20 and GCC 9
+      - job_name: Ubuntu 20 and Clang 10
         APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
       - job_name: Visual Studio 2022
         APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+      - job_name: Ubuntu 20 and GCC 9
+        APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
 
 matrix:
   exclude:
     - configuration: RelWithDebInfo
       job_name: Ubuntu 20 and GCC 9
+    - configuration: RelWithDebInfo
+      job_name: Ubuntu 20 and Clang 10
 
 install:
     - git submodule update --init --recursive
@@ -36,7 +44,19 @@ for:
       - gcc --version
       - mkdir build
       - cd build
-      - cmake ..
+      - cmake .. -DCMAKE_BUILD_TYPE:STRING="%configuration%" 
+      - cmake --build . -j 4
+      
+  - matrix:
+      only:
+        - job_name: Ubuntu 20 and Clang 10
+    environment:
+      CLANG_VERSION: 10
+    build_script:
+      - clang --version
+      - mkdir build
+      - cd build
+      - cmake .. -DCMAKE_BUILD_TYPE:STRING="%configuration%" -DCMAKE_CXX_COMPILER=clang++-10 -DCMAKE_C_COMPILER=clang-10
       - cmake --build . -j 4
 
   - matrix:
