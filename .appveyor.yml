@@ -2,9 +2,7 @@ init:
     - git config --global core.autocrlf input
 
 shallow_clone: false
-
-matrix:
-    fast_finish: false
+fast_finish: false
 
 platform:
     - x64
