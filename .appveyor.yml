@@ -30,6 +30,7 @@ for:
       only:
         - job_name: Ubuntu 20 and GCC 
           configuration: Debug
+        - job_name: Ubuntu 20 and GCC 
           configuration: Release
     environment:
       GCC_VERSION: 9
