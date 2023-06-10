@@ -17,7 +17,7 @@ configuration:
 
 environment:
     matrix:
-      - job_name: Ubuntu 20 and Clang 14
+      - job_name: Ubuntu 20 and Clang 10
         APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
       - job_name: Visual Studio 2022
         APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
@@ -29,7 +29,7 @@ matrix:
     - configuration: RelWithDebInfo
       job_name: Ubuntu 20 and GCC 9
     - configuration: RelWithDebInfo
-      job_name: Ubuntu 20 and Clang 14
+      job_name: Ubuntu 20 and Clang 10
 
 install:
     - git submodule update --init --recursive
@@ -49,7 +49,7 @@ for:
       
   - matrix:
       only:
-        - job_name: Ubuntu 20 and Clang 14
+        - job_name: Ubuntu 20 and Clang 10
     environment:
       CLANG_VERSION: 14
     build_script:
@@ -57,7 +57,7 @@ for:
       - mkdir build
       - cd build
       - cmake ..
-      - cmake --build . -j 4 -DCMAKE_BUILD_TYPE:STRING="%configuration%" -DCMAKE_C_COMPILER="/bin/clang++-14" -D CMAKE_CXX_COMPILER="/bin/clang-14"
+      - cmake --build . -j 4 -DCMAKE_BUILD_TYPE:STRING="%configuration%" -DCMAKE_C_COMPILER="/bin/clang++-10" -D CMAKE_CXX_COMPILER="/bin/clang-10"
 
   - matrix:
       only:
