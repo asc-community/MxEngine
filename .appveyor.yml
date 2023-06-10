@@ -1,5 +1,3 @@
-image: Visual Studio 2019
-
 init:
     - git config --global core.autocrlf input
 
@@ -18,15 +16,44 @@ configuration:
 
 environment:
     matrix:
-        - TOOLCHAIN: msvc16
+        -job_name: Ubuntu 20 and GCC 9
+        APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
+        - job_name: Visual Studio 2022
+        APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+        
+for:
+  - matrix:
+      only:
+        - job_name: Ubuntu 20 and GCC 9
+    environment:
+      GCC_VERSION: 9
+  - matrix:
+      only:
+        - job_name: Visual Studio 2022
+    environment:
+        VC_VERSION: 17.6
+        VC_PRERELEASE_ARGS:
        
 install:
     - git submodule update --init --recursive
-    - call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvarsall.bat" amd64
 
-build_script:
-    - mkdir build
-    - cd build
-    - cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE:STRING="%configuration%" -DCMAKE_C_COMPILER:FILEPATH="cl.exe" -DCMAKE_CXX_COMPILER:FILEPATH="cl.exe"
-    - cmake --build . -j 4
+for:
+  - matrix:
+      only:
+        - job_name: Ubuntu 20 and GCC 9
+    build_script:
+      - gcc --version
+      - mkdir build
+      - cd build
+      - cmake ..
+      - cmake --build . -j 4
+  - matrix:
+      only:
+        - job_name: Visual Studio 2022
+    build_script:
+        - call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvarsall.bat" amd64
+        - mkdir build
+        - cd build
+        - cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE:STRING="%configuration%" -DCMAKE_C_COMPILER:FILEPATH="cl.exe" -DCMAKE_CXX_COMPILER:FILEPATH="cl.exe"
+        - cmake --build . -j 4
     
