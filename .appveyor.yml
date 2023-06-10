@@ -9,11 +9,6 @@ matrix:
 platform:
     - x64
 
-configuration:
-    - Debug
-    - RelWithDebInfo
-    - Release
-
 environment:
     matrix:
       - job_name: Ubuntu 20 and GCC 9
@@ -29,6 +24,9 @@ for:
   - matrix:
       only:
         - job_name: Ubuntu 20 and GCC 9
+    configuration:
+      - Debug
+      - Release
     environment:
       GCC_VERSION: 9
     build_script:
@@ -40,6 +38,10 @@ for:
   - matrix:
       only:
         - job_name: Visual Studio 2022
+    configuration:
+      - Debug
+      - RelWithDebInfo
+      - Release
     environment:
       VC_VERSION: 17.6
     build_script:
