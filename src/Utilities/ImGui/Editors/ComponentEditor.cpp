@@ -52,22 +52,27 @@ namespace MxEngine::GUI
 
     void Display(const char* name, double f, const ReflectionMeta& meta)
     {
-        ImGui::Text("%s: %f", name, (float)f);
+        Display(name, (float)f, meta);
     }
 
-    void Display(const char* name, int i, const ReflectionMeta& meta)
+    void Display(const char* name, int64_t i, const ReflectionMeta& meta)
     {
-        ImGui::Text("%s: %d", name, i);
+        ImGui::Text("%s: %ll", name, i);
     }
 
-    void Display(const char* name, size_t i, const ReflectionMeta& meta)
+    void Display(const char* name, uint64_t i, const ReflectionMeta& meta)
     {
-        Display(name, (int)i, meta);
+        ImGui::Text("%s: %ull", name, i);
     }
 
-    void Display(const char* name, unsigned int i, const ReflectionMeta& meta)
+    void Display(const char* name, int32_t i, const ReflectionMeta& meta)
     {
-        Display(name, (int)i, meta);
+        Display(name, (int64_t)i, meta);
+    }
+
+    void Display(const char* name, uint32_t i, const ReflectionMeta& meta)
+    {
+        Display(name, (uint64_t)i, meta);
     }
 
     void Display(const char* name, const Quaternion& q, const ReflectionMeta& meta)
@@ -150,36 +155,29 @@ namespace MxEngine::GUI
 
     rttr::variant Edit(const char* name, double val, const ReflectionMeta& meta)
     {
-        float v = (float)val;
-        bool edited = ImGui::DragFloat(name, &v, meta.Editor.EditPrecision, meta.Editor.EditRange.Min, meta.Editor.EditRange.Max);
-        return edited ? rttr::variant{ v } : rttr::variant{ };
+        return Edit(name, (float)val, meta);
     }
 
-    rttr::variant Edit(const char* name, int val, const ReflectionMeta& meta)
-    {
-        bool edited = ImGui::DragInt(name, &val, meta.Editor.EditPrecision, int(meta.Editor.EditRange.Min), int(meta.Editor.EditRange.Max));
-        return edited ? rttr::variant{ val } : rttr::variant{ };
-    }
-
-    rttr::variant Edit(const char* name, unsigned long val, const ReflectionMeta& meta)
+    rttr::variant Edit(const char* name, int64_t val, const ReflectionMeta & meta)
     {
         auto editVal = (int)val;
         bool edited = ImGui::DragInt(name, &editVal, meta.Editor.EditPrecision, int(meta.Editor.EditRange.Min), int(meta.Editor.EditRange.Max));
-        return edited ? rttr::variant{ Max(editVal, 0ul) } : rttr::variant{ };
+        return edited ? rttr::variant{ (int64_t)editVal } : rttr::variant{ };
     }
 
     rttr::variant Edit(const char* name, uint64_t val, const ReflectionMeta& meta)
     {
-        auto editVal = (int)val;
-        bool edited = ImGui::DragInt(name, &editVal, meta.Editor.EditPrecision, int(meta.Editor.EditRange.Min), int(meta.Editor.EditRange.Max));
-        return edited ? rttr::variant{ (uint64_t)Max(editVal, 0) } : rttr::variant{ };
+        return Edit(name, (int64_t)val, meta);
     }
 
     rttr::variant Edit(const char* name, uint32_t val, const ReflectionMeta& meta)
     {
-        auto editVal = (int)val;
-        bool edited = ImGui::DragInt(name, &editVal, meta.Editor.EditPrecision, int(meta.Editor.EditRange.Min), int(meta.Editor.EditRange.Max));
-        return edited ? rttr::variant{ (uint32_t)Max(editVal, 0) } : rttr::variant{ };
+        return Edit(name, (int64_t)val, meta);
+    }
+
+    rttr::variant Edit(const char* name, int32_t val, const ReflectionMeta& meta)
+    {
+        return Edit(name, (int64_t)val, meta);
     }
 
     rttr::variant Edit(const char* name, Quaternion val, const ReflectionMeta& meta)
