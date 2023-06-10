@@ -716,7 +716,7 @@ namespace MxEngine
     }
     void RenderController::ApplyDepthOfFieldEffect(CameraUnit& camera, TextureHandle& inputOutput, TextureHandle& temporary0, TextureHandle& temporary1)
     {
-        if (camera.Effects->GetFocusDistance() == 0.f)
+        if (camera.Effects == nullptr || camera.Effects->GetFocusDistance() == 0.f)
             return;
         MAKE_SCOPE_PROFILER("RenderController::ApplyDepthOfFieldEffect()");
 
