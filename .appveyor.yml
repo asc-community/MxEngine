@@ -29,7 +29,7 @@ for:
   - matrix:
       except:
         - job_name: Ubuntu 20 and GCC 
-        - configuration RelWithDebInfo
+          configuration RelWithDebInfo
   - matrix:
       only:
         - job_name: Ubuntu 20 and GCC 
