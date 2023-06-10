@@ -12,7 +12,6 @@ platform:
     
 configuration:
     - Debug
-    - RelWithDebInfo
     - Release
 
 environment:
@@ -26,10 +25,10 @@ environment:
 
 matrix:
   exclude:
-    - configuration: RelWithDebInfo
+    - configuration: Release
+      job_name: Visual Studio 2022
+    - configuration: Release
       job_name: Ubuntu 20 and GCC 9
-    - configuration: RelWithDebInfo
-      job_name: Ubuntu 20 and Clang 10
 
 install:
     - git submodule update --init --recursive
@@ -37,7 +36,7 @@ install:
 for:
   - matrix:
       only:
-        - job_name: Ubuntu 20 and GCC 
+        - job_name: Ubuntu 20 and GCC 9
     environment:
       GCC_VERSION: 9
     build_script:
