@@ -44,7 +44,7 @@ for:
       - gcc --version
       - mkdir build
       - cd build
-      - cmake ..
+      - cmake .. -DCMAKE_BUILD_TYPE:STRING="%configuration%" 
       - cmake --build . -j 4
       
   - matrix:
@@ -56,8 +56,8 @@ for:
       - clang --version
       - mkdir build
       - cd build
-      - cmake ..
-      - cmake --build . -j 4 -DCMAKE_BUILD_TYPE:STRING="%configuration%" -DCMAKE_C_COMPILER="/bin/clang++-10" -D CMAKE_CXX_COMPILER="/bin/clang-10"
+      - cmake .. -DCMAKE_BUILD_TYPE:STRING="%configuration%" -DCMAKE_CXX_COMPILER=clang++-10 -DCMAKE_C_COMPILER=clang-10
+      - cmake --build . -j 4
 
   - matrix:
       only:
