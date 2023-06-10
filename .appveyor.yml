@@ -3,7 +3,9 @@ init:
 
 shallow_clone: false
 
-skip_branch_with_pr: true
+branches:
+  only:
+    - master
 
 platform:
     - x64
