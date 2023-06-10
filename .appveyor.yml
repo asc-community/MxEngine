@@ -29,8 +29,8 @@ for:
   - matrix:
       only:
         - job_name: Ubuntu 20 and GCC 
-        - configuration: Debug
-        - configuration: Release
+          configuration: Debug
+          configuration: Release
     environment:
       GCC_VERSION: 9
     build_script:
