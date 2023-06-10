@@ -5,6 +5,11 @@ shallow_clone: false
 
 platform:
     - x64
+    
+configuration:
+    - Debug
+    - RelWithDebInfo
+    - Release
 
 environment:
     matrix:
@@ -13,16 +18,18 @@ environment:
       - job_name: Visual Studio 2022
         APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
 
+matrix:
+  exclude:
+    - configuration: RelWithDebInfo
+      job_name: Ubuntu 20 and GCC 9
+
 install:
     - git submodule update --init --recursive
       
 for:
   - matrix:
       only:
-        - job_name: Ubuntu 20 and GCC
-          configuration: Debug
-        - job_name: Ubuntu 20 and GCC
-          configuration: Release
+        - job_name: Ubuntu 20 and GCC 
     environment:
       GCC_VERSION: 9
     build_script:
@@ -35,11 +42,6 @@ for:
   - matrix:
       only:
         - job_name: Visual Studio 2022
-          configuration: Debug
-        - job_name: Visual Studio 2022
-          configuration: RelWithDebInfo
-        - job_name: Visual Studio 2022
-          configuration: Release
     environment:
       VC_VERSION: 17.6
     build_script:
