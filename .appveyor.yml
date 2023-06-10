@@ -25,10 +25,14 @@ environment:
         APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
 
 matrix:
-  exclude:
-    - configuration: RelWithDebInfo
+  only:
+    - configuration: Debug
+      job_name: Visual Studio 2022
+    - configuration: Debug
       job_name: Ubuntu 20 and GCC 9
-    - configuration: RelWithDebInfo
+    - configuration: Debug
+      job_name: Ubuntu 20 and Clang 10
+    - configuration: Release
       job_name: Ubuntu 20 and Clang 10
 
 install:
@@ -37,7 +41,7 @@ install:
 for:
   - matrix:
       only:
-        - job_name: Ubuntu 20 and GCC 
+        - job_name: Ubuntu 20 and GCC 9
     environment:
       GCC_VERSION: 9
     build_script:
