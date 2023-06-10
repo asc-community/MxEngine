@@ -20,9 +20,11 @@ environment:
         APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
       - job_name: Visual Studio 2022
         APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
-      exclude:
-        - job_name: Ubuntu 20 and GCC
-          configuration: RelWithDebInfo
+        
+matrix:
+    exclude:
+      - job_name: Ubuntu 20 and GCC
+        configuration: RelWithDebInfo
 
 install:
     - git submodule update --init --recursive
