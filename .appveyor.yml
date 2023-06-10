@@ -20,8 +20,6 @@ environment:
         APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
       - job_name: Visual Studio 2022
         APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
-        
-    matrix:
       exclude:
         - job_name: Ubuntu 20 and GCC
           configuration: RelWithDebInfo
