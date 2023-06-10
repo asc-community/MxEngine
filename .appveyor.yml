@@ -12,7 +12,6 @@ platform:
     
 configuration:
     - Debug
-    - RelWithDebInfo
     - Release
 
 environment:
@@ -25,15 +24,11 @@ environment:
         APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
 
 matrix:
-  only:
-    - configuration: Debug
-      job_name: Visual Studio 2022
-    - configuration: Debug
-      job_name: Ubuntu 20 and GCC 9
-    - configuration: Debug
-      job_name: Ubuntu 20 and Clang 10
+  exclude:
     - configuration: Release
-      job_name: Ubuntu 20 and Clang 10
+      job_name: Visual Studio 2022
+    - configuration: Release
+      job_name: Ubuntu 20 and GCC 9
 
 install:
     - git submodule update --init --recursive
