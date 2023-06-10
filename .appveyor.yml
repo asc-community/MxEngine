@@ -27,12 +27,10 @@ install:
        
 for:
   - matrix:
-      exclude:
-        - job_name: Ubuntu 20 and GCC 
-          configuration: RelWithDebInfo
-  - matrix:
       only:
         - job_name: Ubuntu 20 and GCC 
+        - configuration: Debug
+        - configuration: Release
     environment:
       GCC_VERSION: 9
     build_script:
