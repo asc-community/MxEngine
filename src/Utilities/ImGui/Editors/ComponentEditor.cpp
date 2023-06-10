@@ -57,12 +57,12 @@ namespace MxEngine::GUI
 
     void Display(const char* name, int64_t i, const ReflectionMeta& meta)
     {
-        ImGui::Text("%s: %ll", name, i);
+        ImGui::Text("%s: %lld", name, i);
     }
 
     void Display(const char* name, uint64_t i, const ReflectionMeta& meta)
     {
-        ImGui::Text("%s: %ull", name, i);
+        ImGui::Text("%s: %llu", name, i);
     }
 
     void Display(const char* name, int32_t i, const ReflectionMeta& meta)

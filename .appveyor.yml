@@ -29,7 +29,7 @@ for:
   - matrix:
       only:
         - job_name: Ubuntu 20 and GCC 
-      except:
+      exclude:
         - configuration: RelWithDebInfo
     environment:
       GCC_VERSION: 9
