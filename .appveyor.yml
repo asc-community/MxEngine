@@ -33,7 +33,8 @@ build_script:
 
 after_build:
     - 7z a mxBuild.zip C:\projects\mxengine\samples\*
+    - XCOPY mxBuild.zip C:\projects\mxengine\
 
 artifacts:
-  - path: mxBuild.zip
+  - path: C:\projects\mxengine\mxBuild.zip
     name: MXBUILD
