@@ -36,5 +36,5 @@ after_build:
     - XCOPY mxBuild.zip C:\projects\mxengine\
 
 artifacts:
-  - path: C:\projects\mxengine\mxBuild.zip
+  - path: mxBuild.zip
     name: MXBUILD
