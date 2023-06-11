@@ -40,7 +40,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <assimp/pbrmaterial.h>
+#include <assimp/GltfMaterial.h>
 
 namespace MxEngine
 {
@@ -202,14 +202,14 @@ namespace MxEngine
             }
 
             GET_FLOAT(AI_MATKEY_OPACITY, Transparency);
-            GET_FLOAT(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_METALLIC_FACTOR, MetallicFactor);
-            GET_FLOAT(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_ROUGHNESS_FACTOR, RoughnessFactor);
+            GET_FLOAT(AI_MATKEY_METALLIC_FACTOR, MetallicFactor);
+            GET_FLOAT(AI_MATKEY_ROUGHNESS_FACTOR, RoughnessFactor);
 
             // TODO: this is workaround, because some object formats export alpha channel as 0, but its actually means 1
             if (materialInfo.Transparency == 0.0f) materialInfo.Transparency = 1.0f;
 
             aiColor4D baseColorPBR;
-            if (material->Get(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_BASE_COLOR_FACTOR, baseColorPBR) == aiReturn_SUCCESS)
+            if (material->Get(AI_MATKEY_BASE_COLOR, baseColorPBR) == aiReturn_SUCCESS)
             {
                 materialInfo.BaseColor[0]  = baseColorPBR[0];
                 materialInfo.BaseColor[1]  = baseColorPBR[1];
