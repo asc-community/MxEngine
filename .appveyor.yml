@@ -45,6 +45,11 @@ for:
       - cd build
       - cmake .. -DCMAKE_BUILD_TYPE:STRING="%configuration%" 
       - cmake --build . -j 4
+    after_build:
+        - 7z a  $APPVEYOR_BUILD_FOLDER/Build_Ubuntu_20_GCC9.zip  $APPVEYOR_BUILD_FOLDER/samples/*
+    artifacts:
+      - path: Build_Ubuntu_20_GCC9.zip
+        name: Build_Ubuntu_20_GCC9 
       
   - matrix:
       only:
@@ -57,6 +62,11 @@ for:
       - cd build
       - cmake .. -DCMAKE_BUILD_TYPE:STRING="%configuration%" -DCMAKE_CXX_COMPILER=clang++-10 -DCMAKE_C_COMPILER=clang-10
       - cmake --build . -j 4
+    after_build:
+        - 7z a  $APPVEYOR_BUILD_FOLDER/Build_Ubuntu_20_Clang10.zip  $APPVEYOR_BUILD_FOLDER/samples/*
+    artifacts:
+      - path: Build_Ubuntu_20_Clang10.zip
+        name: Build_Ubuntu_20_Clang10 
 
   - matrix:
       only:
@@ -69,3 +79,8 @@ for:
       - cd build
       - cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE:STRING="%configuration%" -DCMAKE_C_COMPILER:FILEPATH="cl.exe" -DCMAKE_CXX_COMPILER:FILEPATH="cl.exe"
       - cmake --build . -j 4
+    after_build:
+        - 7z a  %APPVEYOR_BUILD_FOLDER%/Build_VS2022.zip  %APPVEYOR_BUILD_FOLDER%/samples/*
+    artifacts:
+      - path: Build_VS2022.zip
+        name: Build_VS2022 
