@@ -72,9 +72,7 @@ for:
       - cmake --build . -j 4
 
 after_build:
-    - 7z a mxBuild.zip C:\projects\mxengine\samples\*
-    - XCOPY mxBuild.zip C:\projects\mxengine\
-
+    - 7z a %APPVEYOR_BUILD_FOLDER%/mxBuild.zip %APPVEYOR_BUILD_FOLDER%/mxengine/samples/*
 artifacts:
   - path: mxBuild.zip
     name: MXBUILD
