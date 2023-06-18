@@ -766,6 +766,13 @@ namespace MxEngine
 
         MAKE_SCOPE_PROFILER("RenderController::ApplyLensFlare()");
          
+        float averageLum = 0.f;
+        if (camera.ToneMapping != nullptr)
+        {
+            Image averageTexData = camera.AverageWhiteTexture->GetRawTextureData();
+            averageLum = *reinterpret_cast<float*>(averageTexData.GetRawData());
+        }
+
         //Todo: support chromatic aberration  
         //Todo: add starbust effect 
         float scale = camera.LensFlare->GetLensFlareScale();
@@ -781,6 +788,7 @@ namespace MxEngine
         prefilter->Bind();
         prefilter->SetUniform("uScale", scale); 
         prefilter->SetUniform("uBias", bias);
+        prefilter->SetUniform("uAverage", fmax(averageLum,0.f));
         input->Bind(0);     
         this->RenderToTextureNoClear(temporaryQuater0, prefilter);
 
@@ -790,7 +798,7 @@ namespace MxEngine
         lensFlare->Bind();
         lensFlare->SetUniform("ghosts", numOfGhosts);
         lensFlare->SetUniform("ghostDispersal", dispersal);
-        lensFlare->SetUniform("uHaloWidth", haloWidth);   
+        lensFlare->SetUniform("uHaloWidth", haloWidth);
         temporaryQuater1->Bind(0);    
         input->Bind(1);
         this->RenderToTextureNoClear(temporary1, lensFlare);   
