@@ -344,7 +344,7 @@ namespace MxEngine
         for (auto& bloomTexture : environment.BloomTextures)
         {
             bloomTexture = Factory<Texture>::Create();
-            bloomTexture->Load(nullptr, bloomBufferSize, bloomBufferSize, 3, false, HDRTextureFormat);
+            bloomTexture->Load(nullptr, bloomBufferSize / 2, bloomBufferSize / 2, 3, false, HDRTextureFormat);
             bloomTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("bloom"));
             bloomTexture->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
         }
