@@ -765,13 +765,6 @@ namespace MxEngine
             return;
 
         MAKE_SCOPE_PROFILER("RenderController::ApplyLensFlare()");
-         
-        float averageLum = 0.f;
-        if (camera.ToneMapping != nullptr)
-        {
-            Image averageTexData = camera.AverageWhiteTexture->GetRawTextureData();
-            averageLum = *reinterpret_cast<float*>(averageTexData.GetRawData());
-        }
 
         //Todo: support chromatic aberration  
         //Todo: add starbust effect 
@@ -788,8 +781,8 @@ namespace MxEngine
         prefilter->Bind();
         prefilter->SetUniform("uScale", scale); 
         prefilter->SetUniform("uBias", bias);
-        prefilter->SetUniform("uAverage", fmax(averageLum,0.f));
         input->Bind(0);     
+        camera.AverageWhiteTexture->Bind(1);
         this->RenderToTextureNoClear(temporaryQuater0, prefilter);
 
         this->ApplyGaussianBlur(temporaryQuater0, temporaryQuater1,3);
