@@ -11,7 +11,7 @@ namespace MxEngine
     private:
         float lensFlareScale = 1.0f;
         float lensFlareBias = -42.0f;
-        int lensFlareNumOfGhosts = 10;
+        int lensFlareNumOfGhosts = 12;
         float lensFlareGhostDispersal = 0.13f;
         float lensFalreHaloWidth = 0.5f;
 
