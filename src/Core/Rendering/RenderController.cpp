@@ -398,7 +398,7 @@ namespace MxEngine
         this->ComputeBloomEffect(camera, camera.HDRTexture);
         this->ApplySSGI(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
 
-        this->ApplyLensFlare(camera, camera.HDRTexture, camera.SwapQuaterTexture1, camera.SwapQuaterTexture2, camera.SwapTexture1);
+        this->ApplyLensFlare(camera, camera.HDRTexture, camera.SwapQuaterTexture1, camera.SwapQuaterTexture2, camera.SwapQuaterTexture3, camera.SwapTexture1);
         
         this->ApplyGodRayEffect(camera, camera.HDRTexture, camera.SwapTexture1);
         this->ApplyChromaticAbberation(camera, camera.HDRTexture, camera.SwapTexture1);
@@ -759,7 +759,7 @@ namespace MxEngine
         std::swap(inputOutput, temporary0);
     }
 
-    void RenderController::ApplyLensFlare(CameraUnit& camera, TextureHandle& input, TextureHandle& temporaryQuater0, TextureHandle& temporaryQuater1, TextureHandle& temporary1)
+    void RenderController::ApplyLensFlare(CameraUnit& camera, TextureHandle& input, TextureHandle& temporaryQuater0, TextureHandle& temporaryQuater1, TextureHandle& temporaryQuater2, TextureHandle& temporary1)
     {
         if (camera.LensFlare == nullptr)
             return;
@@ -776,24 +776,37 @@ namespace MxEngine
 
         input->GenerateMipmaps();
 
-        temporaryQuater0->GenerateMipmaps(); 
-        auto& prefilter = this->Pipeline.Environment.Shaders["LensFlarePrefilter"_id];
-        prefilter->Bind();
-        prefilter->SetUniform("uScale", scale); 
-        prefilter->SetUniform("uBias", bias);
-        input->Bind(0);     
-        camera.AverageWhiteTexture->Bind(1);
-        this->RenderToTextureNoClear(temporaryQuater0, prefilter);
+        {
+            temporaryQuater0->GenerateMipmaps();
+            auto& shaderGhost = this->Pipeline.Environment.Shaders["LensFlareGhosts"_id];
+            shaderGhost->Bind();
+            shaderGhost->SetUniform("uScale", scale);
+            shaderGhost->SetUniform("uBias", bias);
+            input->Bind(0);
+            camera.AverageWhiteTexture->Bind(1);
+            this->RenderToTextureNoClear(temporaryQuater0, shaderGhost);
+            this->ApplyGaussianBlur(temporaryQuater0, temporaryQuater1, 3);
+            temporaryQuater1->GenerateMipmaps();
+        }
 
-        this->ApplyGaussianBlur(temporaryQuater0, temporaryQuater1,3);
+        {
+            auto& shaderHalo = this->Pipeline.Environment.Shaders["LensFlareHalo"_id];
+            shaderHalo->Bind();
+            shaderHalo->SetUniform("uGhostDispersal", dispersal);
+            shaderHalo->SetUniform("uHaloWidth", haloWidth);
+            input->Bind(0);
+            temporaryQuater1->Bind(1);
+            this->RenderToTextureNoClear(temporaryQuater0, shaderHalo);
+            this->ApplyGaussianBlur(temporaryQuater0, temporaryQuater2, 3);
+        }
 
         auto& lensFlare = this->Pipeline.Environment.Shaders["LensFlare"_id];
         lensFlare->Bind();
-        lensFlare->SetUniform("ghosts", numOfGhosts);
-        lensFlare->SetUniform("ghostDispersal", dispersal);
-        lensFlare->SetUniform("uHaloWidth", haloWidth);
-        temporaryQuater1->Bind(0);    
-        input->Bind(1);
+        lensFlare->SetUniform("uGhosts", numOfGhosts);
+        lensFlare->SetUniform("uGhostDispersal", dispersal);
+        temporaryQuater1->Bind(0);
+        temporaryQuater2->Bind(1);
+        input->Bind(2);
         this->RenderToTextureNoClear(temporary1, lensFlare);   
           
         std::swap(input, temporary1);   
@@ -1493,6 +1506,7 @@ namespace MxEngine
         camera.SwapTexture2               = info.controller.GetSwapHDRTexture2();
         camera.SwapQuaterTexture1         = info.controller.GetSwapQuater1();
         camera.SwapQuaterTexture2         = info.controller.GetSwapQuater2();
+        camera.SwapQuaterTexture3         = info.controller.GetSwapQuater3();
         camera.OutputTexture              = info.controller.GetRenderTexture();
         camera.RenderToTexture            = info.controller.IsRendering();
         camera.SkyboxTexture              = (info.skybox != nullptr && info.skybox->CubeMap.IsValid()) ?    info.skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;

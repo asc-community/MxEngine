@@ -69,6 +69,7 @@ namespace MxEngine
         TextureHandle SwapTexture2;
         TextureHandle SwapQuaterTexture1;
         TextureHandle SwapQuaterTexture2;
+        TextureHandle SwapQuaterTexture3;
 
         FrustrumCuller Culler;
         Matrix4x4 InverseViewProjMatrix;

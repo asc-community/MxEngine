@@ -335,9 +335,14 @@ namespace MxEngine
             shaderFolder / "lens_flare.glsl"
         );
 
-        environment.Shaders["LensFlarePrefilter"_id] = AssetManager::LoadShader(
+        environment.Shaders["LensFlareGhosts"_id] = AssetManager::LoadShader(
             shaderFolder / "rect_vertex.glsl",
-            shaderFolder / "lens_flare_prefilter.glsl"
+            shaderFolder / "lens_flare_ghosts.glsl"
+        );
+
+        environment.Shaders["LensFlareHalo"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "lens_flare_halo.glsl"
         );
 
         // compute shaders
@@ -451,7 +456,7 @@ namespace MxEngine
                 }
 
                 size_t renderGroupIndex = this->Renderer.SubmitRenderGroup(*mesh, instanceOffset, instanceCount);
-                for (const auto& submesh : mesh->GetSubMeshes())
+                for (const auto& submesh : mesh->GetSubMeshes()) 
                 {
                     auto materialId = submesh.GetMaterialId();
                     if (materialId >= meshRenderer->Materials.size()) continue;
