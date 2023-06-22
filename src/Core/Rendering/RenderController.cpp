@@ -797,7 +797,7 @@ namespace MxEngine
             input->Bind(0);
             temporaryQuater1->Bind(1);
             this->RenderToTextureNoClear(temporaryQuater0, shaderHalo);
-            this->ApplyGaussianBlur(temporaryQuater0, temporaryQuater2, 3);
+            this->ApplyGaussianBlur(temporaryQuater0, temporaryQuater2, 1);
         }
 
         auto& lensFlare = this->Pipeline.Environment.Shaders["LensFlare"_id];
