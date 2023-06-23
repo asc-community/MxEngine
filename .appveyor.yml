@@ -1,32 +1,86 @@
-image: Visual Studio 2019
-
 init:
     - git config --global core.autocrlf input
 
 shallow_clone: false
 
-matrix:
-    fast_finish: false
+branches:
+  only:
+    - master
 
 platform:
     - x64
-
+    
 configuration:
     - Debug
-    - RelWithDebInfo
     - Release
 
 environment:
     matrix:
-        - TOOLCHAIN: msvc16
-       
+      - job_name: Ubuntu 20 and Clang 10
+        APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
+      - job_name: Visual Studio 2022
+        APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+      - job_name: Ubuntu 20 and GCC 9
+        APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
+
+matrix:
+  exclude:
+    - configuration: Release
+      job_name: Visual Studio 2022
+    - configuration: Release
+      job_name: Ubuntu 20 and GCC 9
+
 install:
     - git submodule update --init --recursive
-    - call "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvarsall.bat" amd64
+      
+for:
+  - matrix:
+      only:
+        - job_name: Ubuntu 20 and GCC 9
+    environment:
+      GCC_VERSION: 9
+    build_script:
+      - gcc --version
+      - mkdir build
+      - cd build
+      - cmake .. -DCMAKE_BUILD_TYPE:STRING="%configuration%" 
+      - cmake --build . -j 4
+    after_build:
+        - 7z a  $APPVEYOR_BUILD_FOLDER/Build_Ubuntu_20_GCC9.zip  $APPVEYOR_BUILD_FOLDER/samples/*
+    artifacts:
+      - path: Build_Ubuntu_20_GCC9.zip
+        name: Build_Ubuntu_20_GCC9 
+      
+  - matrix:
+      only:
+        - job_name: Ubuntu 20 and Clang 10
+    environment:
+      CLANG_VERSION: 10
+    build_script:
+      - clang --version
+      - mkdir build
+      - cd build
+      - cmake .. -DCMAKE_BUILD_TYPE:STRING="%configuration%" -DCMAKE_CXX_COMPILER=clang++-10 -DCMAKE_C_COMPILER=clang-10
+      - cmake --build . -j 4
+    after_build:
+        - 7z a  $APPVEYOR_BUILD_FOLDER/Build_Ubuntu_20_Clang10.zip  $APPVEYOR_BUILD_FOLDER/samples/*
+    artifacts:
+      - path: Build_Ubuntu_20_Clang10.zip
+        name: Build_Ubuntu_20_Clang10 
 
-build_script:
-    - mkdir build
-    - cd build
-    - cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE:STRING="%configuration%" -DCMAKE_C_COMPILER:FILEPATH="cl.exe" -DCMAKE_CXX_COMPILER:FILEPATH="cl.exe"
-    - cmake --build . -j 4
-    
+  - matrix:
+      only:
+        - job_name: Visual Studio 2022
+    environment:
+      VC_VERSION: 17.6
+    build_script:
+      - call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
+      - mkdir build
+      - cd build
+      - cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE:STRING="%configuration%" -DCMAKE_C_COMPILER:FILEPATH="cl.exe" -DCMAKE_CXX_COMPILER:FILEPATH="cl.exe"
+      - cmake --build . -j 4
+    after_build:
+        - 7z a  %APPVEYOR_BUILD_FOLDER%/Build_VS2022.zip  %APPVEYOR_BUILD_FOLDER%/samples/*
+    artifacts:
+      - path: Build_VS2022.zip
+        name: Build_VS2022 
