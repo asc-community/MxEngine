@@ -303,7 +303,7 @@ namespace MxEngine
             }
             // window events
             SwitchContext();
-            glfwSwapInterval(0);
+            glfwSwapInterval(1);
             glfwSetWindowUserPointer(this->window, this);
             glfwSetKeyCallback(this->window, [](GLFWwindow* w, int key, int scancode, int action, int mods)
                 {

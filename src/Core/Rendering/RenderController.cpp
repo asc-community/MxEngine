@@ -763,11 +763,13 @@ namespace MxEngine
     {
         if (camera.LensFlare == nullptr)
             return;
+        if (camera.ToneMapping == nullptr)//lens flare requires tone mapping
+            return;
 
         MAKE_SCOPE_PROFILER("RenderController::ApplyLensFlare()");
 
-        //Todo: support chromatic aberration  
-        //Todo: add starbust effect 
+        //TODO(fall2019): support chromatic aberration  
+        //TODO(fall2019): add starbust effect 
         float scale = camera.LensFlare->GetLensFlareScale();
         float bias = camera.LensFlare->GetLensFlareBias();
         int numOfGhosts = camera.LensFlare->GetLensFlareNumOfGhosts();
@@ -776,6 +778,7 @@ namespace MxEngine
 
         input->GenerateMipmaps();
 
+        //calc ghosts
         {
             temporaryQuater0->GenerateMipmaps();
             auto& shaderGhost = this->Pipeline.Environment.Shaders["LensFlareGhosts"_id];
@@ -789,26 +792,34 @@ namespace MxEngine
             temporaryQuater1->GenerateMipmaps();
         }
 
+        //calc halo
         {
             auto& shaderHalo = this->Pipeline.Environment.Shaders["LensFlareHalo"_id];
             shaderHalo->Bind();
             shaderHalo->SetUniform("uGhostDispersal", dispersal);
             shaderHalo->SetUniform("uHaloWidth", haloWidth);
+            int mipLevel = ceil(Log2(Max(temporaryQuater1->GetWidth(), temporaryQuater1->GetHeight()))) - 2;
+            //use max mip level - 2 to get centre average brightness since only centre spot is used in ghosts generation
+            shaderHalo->SetUniform("uMipLevel", mipLevel);
             input->Bind(0);
             temporaryQuater1->Bind(1);
+            camera.AverageWhiteTexture->Bind(2);
             this->RenderToTextureNoClear(temporaryQuater0, shaderHalo);
             this->ApplyGaussianBlur(temporaryQuater0, temporaryQuater2, 1);
         }
 
-        auto& lensFlare = this->Pipeline.Environment.Shaders["LensFlare"_id];
-        lensFlare->Bind();
-        lensFlare->SetUniform("uGhosts", numOfGhosts);
-        lensFlare->SetUniform("uGhostDispersal", dispersal);
-        temporaryQuater1->Bind(0);
-        temporaryQuater2->Bind(1);
-        input->Bind(2);
-        this->RenderToTextureNoClear(temporary1, lensFlare);   
-          
+        //combine 
+        {
+            auto& lensFlare = this->Pipeline.Environment.Shaders["LensFlare"_id];
+            lensFlare->Bind();
+            lensFlare->SetUniform("uGhosts", numOfGhosts);
+            lensFlare->SetUniform("uGhostDispersal", dispersal);
+            temporaryQuater1->Bind(0);
+            temporaryQuater2->Bind(1);
+            input->Bind(2);
+            this->RenderToTextureNoClear(temporary1, lensFlare);
+        }
+
         std::swap(input, temporary1);   
     }
 
