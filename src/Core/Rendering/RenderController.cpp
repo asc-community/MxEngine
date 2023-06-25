@@ -1132,7 +1132,7 @@ namespace MxEngine
         this->SubmitImage(input);
     }
 
-    void RenderController::ApplyGaussianBlur(TextureHandle& inputOutput, TextureHandle& temporary, size_t iterations)
+    void RenderController::ApplyGaussianBlur(const TextureHandle& inputOutput, const TextureHandle& temporary, size_t iterations)
     {
         if (iterations == 0) return;
         auto& shader = this->Pipeline.Environment.Shaders["GaussianBlur"_id];
