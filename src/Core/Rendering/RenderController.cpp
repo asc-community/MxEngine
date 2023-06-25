@@ -418,7 +418,7 @@ namespace MxEngine
 
         SubmitDirectionalLightInformation(shader, textureId);
 
-        this->RenderToTexture(output, shader);
+        this->RenderToTextureNoClear(output, shader);
     }
 
     void RenderController::PerformLightPass(CameraUnit& camera)
@@ -704,6 +704,7 @@ namespace MxEngine
 
         std::swap(input, output);
     }
+
     void RenderController::ApplyDepthOfFieldEffect(CameraUnit& camera, TextureHandle& inputOutput, TextureHandle& temporary0, TextureHandle& temporary1)
     {
         if (camera.Effects == nullptr || camera.Effects->GetFocusDistance() == 0.f)
@@ -723,7 +724,7 @@ namespace MxEngine
         cocShader->SetUniform("focusRange", camera.Effects->GetFocusRange());        
         cocShader->SetUniform("focusDistance", camera.Effects->GetFocusDistance());
         this->BindCameraInformation(camera, *cocShader);
-        this->RenderToTexture(temporary0, cocShader);
+        this->RenderToTextureNoClear(temporary0, cocShader);
 
         auto bokehShader = this->Pipeline.Environment.Shaders["Bokeh"_id];
         bokehShader->Bind();
@@ -731,7 +732,7 @@ namespace MxEngine
         
         inputOutput->Bind(0);
         temporary0->Bind(1);
-        this->RenderToTexture(temporary1, bokehShader); 
+        this->RenderToTextureNoClear(temporary1, bokehShader);
         
         this->ApplyGaussianBlur(temporary1, temporary0, 1);
 
@@ -739,7 +740,7 @@ namespace MxEngine
         combineShader->Bind(); 
         inputOutput->Bind(0);
         temporary1->Bind(1);
-        this->RenderToTexture(temporary0, combineShader);
+        this->RenderToTextureNoClear(temporary0, combineShader);
 
         std::swap(inputOutput, temporary0);
     }
@@ -1149,7 +1150,7 @@ namespace MxEngine
 
             source->Bind(0);
             framebuffer->AttachTexture(target);
-            this->RenderToFrameBufferNoClear(framebuffer, shader);
+            this->RenderToFrameBuffer(framebuffer, shader);
         }
     }
 
