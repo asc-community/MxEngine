@@ -370,6 +370,8 @@ namespace MxEngine
         camera.MaterialTexture->GenerateMipmaps();
         camera.NormalTexture->GenerateMipmaps();
         camera.DepthTexture->GenerateMipmaps();
+
+        this->GenerateHIZ(camera.DepthTexture, camera.DepthTextureLv1);
         
         this->ApplySSAO(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
         this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
@@ -626,6 +628,17 @@ namespace MxEngine
 
         this->RenderToTexture(output, shader);
         std::swap(input, output);
+    }
+
+    void RenderController::GenerateHIZ(TextureHandle& input, TextureHandle& lv1)
+    {
+        MAKE_SCOPE_PROFILER("RenderController::GenerateHIZ()");
+        auto& shader = this->Pipeline.Environment.Shaders["HIZ"_id];
+        shader->Bind();
+        input->Bind(0);
+        shader->SetUniform("uPreviousLevel", int(0));
+        shader->SetUniform("uPreviousLevelRes", VectorInt2(lv1->GetWidth(), lv1->GetHeight()));
+        this->RenderToTexture(lv1, shader);
     }
 
     void RenderController::ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
@@ -1451,6 +1464,7 @@ namespace MxEngine
         camera.NormalTexture              = controller.GetNormalTexture();
         camera.MaterialTexture            = controller.GetMaterialTexture();
         camera.DepthTexture               = controller.GetDepthTexture();
+        camera.DepthTextureLv1            = controller.GetDepthTextureLv1();
         camera.AverageWhiteTexture        = controller.GetAverageWhiteTexture();
         camera.HDRTexture                 = controller.GetHDRTexture();
         camera.SwapTexture1               = controller.GetSwapHDRTexture1();

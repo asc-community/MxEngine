@@ -137,6 +137,11 @@ namespace MxEngine
             shaderFolder / "gbuffer_fragment.glsl"
         );
 
+        environment.Shaders["HIZ"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "hierarchical_depth_buffer_generator.glsl"
+        );
+
         environment.Shaders["GBufferMask"_id] = AssetManager::LoadShader(
             shaderFolder / "gbuffer_vertex.glsl",
             shaderFolder / "gbuffer_mask_fragment.glsl"

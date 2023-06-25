@@ -90,6 +90,7 @@ namespace MxEngine
         void BindFogInformation(const CameraUnit& camera, const Shader& shader);
         void AttachDefaultVAO();
         void RenderToAttachedFrameBuffer(const Shader& shader);
+        void GenerateHIZ(TextureHandle& input, TextureHandle& lv1);
     public:
 
         const Renderer& GetRenderEngine() const;

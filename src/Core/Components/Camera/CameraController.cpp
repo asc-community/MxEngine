@@ -430,6 +430,11 @@ namespace MxEngine
         return this->renderBuffers->Depth;
     }
 
+    TextureHandle CameraController::GetDepthTextureLv1() const
+    {
+        return this->renderBuffers->DepthLv1;
+    }
+
     TextureHandle CameraController::GetAverageWhiteTexture() const
     {
         return this->renderBuffers->AverageWhite;
@@ -457,6 +462,7 @@ namespace MxEngine
         this->Normal = Factory<Texture>::Create();
         this->Material = Factory<Texture>::Create();
         this->Depth = Factory<Texture>::Create();
+        this->DepthLv1 = Factory<Texture>::Create();
         this->AverageWhite = Factory<Texture>::Create();
         this->HDR = Factory<Texture>::Create();
         this->SwapHDR1 = Factory<Texture>::Create();
@@ -497,6 +503,10 @@ namespace MxEngine
         this->Depth->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera depth"));
         this->Depth->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
 
+        this->DepthLv1->Load(nullptr, width/2, height/2, 1, false, TextureFormat::R32F);
+        this->DepthLv1->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera depth lv1"));
+        this->DepthLv1->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
         this->AverageWhite->Load(nullptr, 1, 1, 3, false, TextureFormat::RGBA16F);
         this->AverageWhite->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera white"));
         this->AverageWhite->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
@@ -521,6 +531,7 @@ namespace MxEngine
         Factory<Texture>::Destroy(this->Normal);
         Factory<Texture>::Destroy(this->Material);
         Factory<Texture>::Destroy(this->Depth);
+        Factory<Texture>::Destroy(this->DepthLv1);
         Factory<Texture>::Destroy(this->HDR);
         Factory<Texture>::Destroy(this->SwapHDR1);
         Factory<Texture>::Destroy(this->SwapHDR2);

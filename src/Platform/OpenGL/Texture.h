@@ -116,6 +116,7 @@ namespace MxEngine
         size_t GetMaxTextureLOD() const;
         Image GetRawTextureData() const;
         void GenerateMipmaps() const;
+        void Pooling() const;
         void SetBorderColor(Vector4 color);
         bool IsMultisampled() const;
         bool IsFloatingPoint() const;

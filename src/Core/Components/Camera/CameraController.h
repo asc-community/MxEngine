@@ -49,6 +49,7 @@ namespace MxEngine
         TextureHandle Normal;
         TextureHandle Material;
         TextureHandle Depth;
+        TextureHandle DepthLv1;
         TextureHandle AverageWhite;
         TextureHandle HDR;
         TextureHandle SwapHDR1;
@@ -131,6 +132,7 @@ namespace MxEngine
         TextureHandle GetNormalTexture() const;
         TextureHandle GetMaterialTexture() const;
         TextureHandle GetDepthTexture() const;
+        TextureHandle GetDepthTextureLv1() const;
         TextureHandle GetAverageWhiteTexture() const;
         TextureHandle GetHDRTexture() const;
         TextureHandle GetSwapHDRTexture1() const;
