@@ -318,13 +318,13 @@ namespace MxEngine
     void CubeMap::SetMaxLOD(size_t lod)
     {
         this->Bind(0);
-        GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, (float)lod));
+        GLCALL(glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LOD, (float)lod));
     }
 
     void CubeMap::SetMinLOD(size_t lod)
     {
         this->Bind(0);
-        GLCALL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, (float)lod));
+        GLCALL(glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_LOD, (float)lod));
     }
 
     void CubeMap::GenerateMipmaps()
