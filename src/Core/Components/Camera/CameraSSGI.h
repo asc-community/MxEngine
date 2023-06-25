@@ -38,7 +38,6 @@ namespace MxEngine
 
         uint8_t raySteps = 3;
         uint8_t blurIterations = 1;
-        uint8_t blurLOD = 4;
         float intensity = 2.5f;
         float distance = 50.0;
     public:
@@ -48,12 +47,10 @@ namespace MxEngine
         float GetDistance() const;
         size_t GetRaySteps() const;
         size_t GetBlurIterations() const;
-        size_t GetBlurLOD() const;
         
         void SetIntensity(float intensity);
         void SetDistance(float distance);
         void SetRaySteps(size_t raySteps);
         void SetBlurIterations(size_t iterations);
-        void SetBlurLOD(size_t lod);
     };
 }

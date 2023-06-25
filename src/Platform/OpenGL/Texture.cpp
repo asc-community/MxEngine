@@ -173,7 +173,15 @@ namespace MxEngine
         GLCALL(glBindTexture(GL_TEXTURE_2D, id));
         GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, pixelFormat, pixelType, image.GetRawData()));
 
-        this->GenerateMipmaps();
+        if (image.GetRawData() != nullptr)
+        {
+            this->GenerateMipmaps();
+        }
+        else
+        {
+            GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+            GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+        }
     }
 
     template<>
@@ -216,7 +224,15 @@ namespace MxEngine
         GLCALL(glBindTexture(GL_TEXTURE_2D, id));
         GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], (GLsizei)width, (GLsizei)height, 0, dataChannels, type, data));
 
-        this->GenerateMipmaps();
+        if (data != nullptr)
+        {
+            this->GenerateMipmaps();
+        }
+        else
+        {
+            GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+            GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+        }
     }
 
     void Texture::Load(const Image& image, TextureFormat format)
@@ -238,7 +254,9 @@ namespace MxEngine
 
         GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, formatTable[(int)this->format], width, height, 0, GL_DEPTH_COMPONENT, type, nullptr));
         this->SetBorderColor(MakeVector4(1.0f));
-        this->GenerateMipmaps();
+
+        GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+        GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
     }
 
     void Texture::SetMaxLOD(size_t lod)
@@ -294,9 +312,8 @@ namespace MxEngine
         return Image(result, this->width, this->height, this->GetChannelCount(), this->IsFloatingPoint());
     }
 
-    void Texture::GenerateMipmaps() const
+    void Texture::GenerateMipmaps()
     {
-        this->Bind(0);
         GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
         GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
         GLCALL(glGenerateMipmap(GL_TEXTURE_2D));

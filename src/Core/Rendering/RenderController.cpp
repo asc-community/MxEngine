@@ -287,10 +287,9 @@ namespace MxEngine
 
         auto& blurTarget = bloomTextures.front();
         auto& blurTemp = bloomTextures.back();
-        this->RenderToTexture(blurTarget, splitShader);
+        this->RenderToTextureNoClear(blurTarget, splitShader);
 
         this->ApplyGaussianBlur(blurTarget, blurTemp, camera.Effects->GetBloomIterations());
-        blurTarget->GenerateMipmaps();
         
         // use additive blending to apply bloom to camera HDR image
         this->GetRenderEngine().UseBlendFactors(BlendFactor::ONE, BlendFactor::ONE);
@@ -321,9 +320,9 @@ namespace MxEngine
         auto& blurInputOutput = temporary;
         auto& blurTemporary = output;
 
-        this->RenderToTexture(temporary, ssaoShader);
+        this->RenderToTextureNoClear(temporary, ssaoShader);
 
-        this->ApplyGaussianBlur(blurInputOutput, blurTemporary, camera.SSAO->GetBlurIterations(), camera.SSAO->GetBlurLOD());
+        this->ApplyGaussianBlur(blurInputOutput, blurTemporary, camera.SSAO->GetBlurIterations());
 
         auto& applyShader = this->Pipeline.Environment.Shaders["ApplyAmbientOcclusion"_id];
         applyShader->Bind();
@@ -333,7 +332,7 @@ namespace MxEngine
         applyShader->SetUniform("aoTex", blurInputOutput->GetBoundId());
         applyShader->SetUniform("intensity", camera.SSAO->GetIntensity());
 
-        this->RenderToTexture(output, applyShader);
+        this->RenderToTextureNoClear(output, applyShader);
         std::swap(input, output);
     }
 
@@ -341,7 +340,6 @@ namespace MxEngine
     {
         MAKE_SCOPE_PROFILER("RenderController::ComputeAverageWhite()");
         MX_ASSERT(camera.ToneMapping != nullptr);
-        camera.HDRTexture->GenerateMipmaps();
 
         float dt = this->Pipeline.Environment.TimeDelta;
         float fadingAdaptationSpeed = 1.0f - std::exp(-camera.ToneMapping->GetEyeAdaptationSpeed() * dt);
@@ -357,7 +355,6 @@ namespace MxEngine
         shader->SetUniform("adaptSpeed", fadingAdaptationSpeed);
         shader->SetUniform("adaptThreshold", adaptationThreshold);
         this->RenderToTexture(output, shader);
-        output->GenerateMipmaps();
         this->CopyTexture(output, camera.AverageWhiteTexture);
         return output;
     }
@@ -365,11 +362,6 @@ namespace MxEngine
     void RenderController::PerformPostProcessing(CameraUnit& camera)
     {
         MAKE_SCOPE_PROFILER("RenderController::PerformPostProcessing()");
-
-        camera.AlbedoTexture->GenerateMipmaps();
-        camera.MaterialTexture->GenerateMipmaps();
-        camera.NormalTexture->GenerateMipmaps();
-        camera.DepthTexture->GenerateMipmaps();
         
         this->ApplySSAO(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
         this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
@@ -646,8 +638,7 @@ namespace MxEngine
         SSRShader->SetUniform("startDistance", camera.SSR->GetStartDistance());
         SSRShader->SetUniform("steps", (int)camera.SSR->GetSteps());
 
-        this->RenderToTexture(temporary, SSRShader);
-        temporary->GenerateMipmaps();
+        this->RenderToTextureNoClear(temporary, SSRShader);
 
         auto& applySSRShader = this->Pipeline.Environment.Shaders["ApplySSR"_id];
         applySSRShader->Bind();
@@ -662,7 +653,7 @@ namespace MxEngine
         applySSRShader->SetUniform("SSRTex", temporary->GetBoundId());
         applySSRShader->SetUniform("HDRTex", input->GetBoundId());
 
-        this->RenderToTexture(output, applySSRShader);
+        this->RenderToTextureNoClear(output, applySSRShader);
         std::swap(input, output);
     }
 
@@ -671,7 +662,6 @@ namespace MxEngine
         if (camera.SSGI == nullptr || camera.SSGI->GetIntensity() == 0.0f) return;
 
         MAKE_SCOPE_PROFILER("RenderController::ApplySSR()");
-        input->GenerateMipmaps();
 
         auto& SSGIShader = this->Pipeline.Environment.Shaders["SSGI"_id];
         SSGIShader->Bind();
@@ -693,9 +683,9 @@ namespace MxEngine
         auto& blurInputOutput = this->Pipeline.Environment.BloomTextures.front();
         auto& blurTemporary = this->Pipeline.Environment.BloomTextures.back();
 
-        this->RenderToTexture(blurInputOutput, SSGIShader);
+        this->RenderToTextureNoClear(blurInputOutput, SSGIShader);
 
-        this->ApplyGaussianBlur(blurInputOutput, blurTemporary, camera.SSGI->GetBlurIterations(), camera.SSGI->GetBlurLOD());
+        this->ApplyGaussianBlur(blurInputOutput, blurTemporary, camera.SSGI->GetBlurIterations());
 
         auto& applyShader = this->Pipeline.Environment.Shaders["ApplySSGI"_id];
         applyShader->Bind();
@@ -710,7 +700,7 @@ namespace MxEngine
         applyShader->SetUniform("inputTex", input->GetBoundId());
         applyShader->SetUniform("SSGITex", blurInputOutput->GetBoundId());
          
-        this->RenderToTexture(output, applyShader);
+        this->RenderToTextureNoClear(output, applyShader);
 
         std::swap(input, output);
     }
@@ -720,7 +710,6 @@ namespace MxEngine
             return;
         MAKE_SCOPE_PROFILER("RenderController::ApplyDepthOfFieldEffect()");
 
-        inputOutput->GenerateMipmaps();
         auto cocShader = this->Pipeline.Environment.Shaders["COC"_id];
         cocShader->Bind(); 
         cocShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
@@ -787,8 +776,6 @@ namespace MxEngine
     {
         if (camera.Effects == nullptr || !camera.Effects->IsFXAAEnabled()) return;
         MAKE_SCOPE_PROFILER("RenderController::ApplyFXAA");
-
-        input->GenerateMipmaps();
 
         auto& fxaaShader = this->Pipeline.Environment.Shaders["FXAA"_id];
         fxaaShader->Bind();
@@ -1144,13 +1131,12 @@ namespace MxEngine
         this->SubmitImage(input);
     }
 
-    void RenderController::ApplyGaussianBlur(const TextureHandle& inputOutput, const TextureHandle& temporary, size_t iterations, size_t lod)
+    void RenderController::ApplyGaussianBlur(TextureHandle& inputOutput, TextureHandle& temporary, size_t iterations)
     {
         if (iterations == 0) return;
         auto& shader = this->Pipeline.Environment.Shaders["GaussianBlur"_id];
         shader->Bind();
         shader->SetUniform("inputTex", 0);
-        shader->SetUniform("lod", (int)lod);
 
         auto& framebuffer = this->Pipeline.Environment.BloomFrameBuffer;
 
@@ -1161,11 +1147,9 @@ namespace MxEngine
             auto& target = horizontalBlur ? temporary : inputOutput;
             shader->SetUniform("horizontalBlur", horizontalBlur);
 
-            if (lod != 0) source->GenerateMipmaps();
             source->Bind(0);
-
             framebuffer->AttachTexture(target);
-            this->RenderToFrameBuffer(framebuffer, shader);
+            this->RenderToFrameBufferNoClear(framebuffer, shader);
         }
     }
 
@@ -1604,13 +1588,15 @@ namespace MxEngine
 
             this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBuffer"_id], this->Pipeline.OpaqueObjects);
             this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBufferMask"_id], this->Pipeline.MaskedObjects);
+            // generate depth texture mipmaps for post-processing algorithms. Replace later with hierarhical depth map
+            camera.DepthTexture->GenerateMipmaps();
+
             this->DrawParticles(camera, this->Pipeline.OpaqueParticleSystems, *this->Pipeline.Environment.Shaders["ParticleOpaque"_id]);
 
             this->PerformLightPass(camera);
             this->PerformPostProcessing(camera);
 
             this->CopyTexture(camera.HDRTexture, camera.OutputTexture);
-            camera.OutputTexture->GenerateMipmaps();
         }
     }
 
