@@ -287,7 +287,7 @@ namespace MxEngine
 
         auto& blurTarget = bloomTextures.front();
         auto& blurTemp = bloomTextures.back();
-        this->RenderToTextureNoClear(blurTarget, splitShader);
+        this->RenderToTexture(blurTarget, splitShader);
 
         this->ApplyGaussianBlur(blurTarget, blurTemp, camera.Effects->GetBloomIterations());
         
@@ -320,7 +320,7 @@ namespace MxEngine
         auto& blurInputOutput = temporary;
         auto& blurTemporary = output;
 
-        this->RenderToTextureNoClear(temporary, ssaoShader);
+        this->RenderToTexture(temporary, ssaoShader);
 
         this->ApplyGaussianBlur(blurInputOutput, blurTemporary, camera.SSAO->GetBlurIterations());
 
@@ -332,7 +332,7 @@ namespace MxEngine
         applyShader->SetUniform("aoTex", blurInputOutput->GetBoundId());
         applyShader->SetUniform("intensity", camera.SSAO->GetIntensity());
 
-        this->RenderToTextureNoClear(output, applyShader);
+        this->RenderToTexture(output, applyShader);
         std::swap(input, output);
     }
 
@@ -418,7 +418,7 @@ namespace MxEngine
 
         SubmitDirectionalLightInformation(shader, textureId);
 
-        this->RenderToTextureNoClear(output, shader);
+        this->RenderToTexture(output, shader);
     }
 
     void RenderController::PerformLightPass(CameraUnit& camera)
@@ -638,7 +638,7 @@ namespace MxEngine
         SSRShader->SetUniform("startDistance", camera.SSR->GetStartDistance());
         SSRShader->SetUniform("steps", (int)camera.SSR->GetSteps());
 
-        this->RenderToTextureNoClear(temporary, SSRShader);
+        this->RenderToTexture(temporary, SSRShader);
 
         auto& applySSRShader = this->Pipeline.Environment.Shaders["ApplySSR"_id];
         applySSRShader->Bind();
@@ -653,7 +653,7 @@ namespace MxEngine
         applySSRShader->SetUniform("SSRTex", temporary->GetBoundId());
         applySSRShader->SetUniform("HDRTex", input->GetBoundId());
 
-        this->RenderToTextureNoClear(output, applySSRShader);
+        this->RenderToTexture(output, applySSRShader);
         std::swap(input, output);
     }
 
@@ -683,7 +683,7 @@ namespace MxEngine
         auto& blurInputOutput = this->Pipeline.Environment.BloomTextures.front();
         auto& blurTemporary = this->Pipeline.Environment.BloomTextures.back();
 
-        this->RenderToTextureNoClear(blurInputOutput, SSGIShader);
+        this->RenderToTexture(blurInputOutput, SSGIShader);
 
         this->ApplyGaussianBlur(blurInputOutput, blurTemporary, camera.SSGI->GetBlurIterations());
 
@@ -700,7 +700,7 @@ namespace MxEngine
         applyShader->SetUniform("inputTex", input->GetBoundId());
         applyShader->SetUniform("SSGITex", blurInputOutput->GetBoundId());
          
-        this->RenderToTextureNoClear(output, applyShader);
+        this->RenderToTexture(output, applyShader);
 
         std::swap(input, output);
     }
@@ -723,7 +723,7 @@ namespace MxEngine
         cocShader->SetUniform("focusRange", camera.Effects->GetFocusRange());        
         cocShader->SetUniform("focusDistance", camera.Effects->GetFocusDistance());
         this->BindCameraInformation(camera, *cocShader);
-        this->RenderToTextureNoClear(temporary0, cocShader);
+        this->RenderToTexture(temporary0, cocShader);
 
         auto bokehShader = this->Pipeline.Environment.Shaders["Bokeh"_id];
         bokehShader->Bind();
@@ -731,7 +731,7 @@ namespace MxEngine
         
         inputOutput->Bind(0);
         temporary0->Bind(1);
-        this->RenderToTextureNoClear(temporary1, bokehShader); 
+        this->RenderToTexture(temporary1, bokehShader); 
         
         this->ApplyGaussianBlur(temporary1, temporary0, 1);
 
@@ -739,7 +739,7 @@ namespace MxEngine
         combineShader->Bind(); 
         inputOutput->Bind(0);
         temporary1->Bind(1);
-        this->RenderToTextureNoClear(temporary0, combineShader);
+        this->RenderToTexture(temporary0, combineShader);
 
         std::swap(inputOutput, temporary0);
     }
