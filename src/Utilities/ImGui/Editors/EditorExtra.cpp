@@ -188,7 +188,7 @@ namespace MxEngine::GUI
         return path.find("[[") != path.npos && path.find("]]") != path.npos;
     }
 
-    void DrawTexturePreview(Texture& texture, float scale)
+    void DrawTexturePreview(const Texture& texture, float scale)
     {
         auto nativeHeight = texture.GetHeight();
         auto nativeWidth = texture.GetWidth();
