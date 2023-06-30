@@ -408,7 +408,9 @@ namespace MxEngine
         this->ApplyFogEffect(camera, camera.HDRTexture, camera.SwapTexture1);
 
         this->ApplyDepthOfFieldEffect(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
-        this->ApplyHDRToLDRConversion(camera, camera.HDRTexture, camera.SwapTexture1);
+
+        auto averageWhite = this->ComputeAverageWhite(camera);
+        this->ApplyHDRToLDRConversion(camera, camera.HDRTexture, camera.SwapTexture1, averageWhite);
 
         this->ApplyFXAA(camera, camera.HDRTexture, camera.SwapTexture1);
         this->ApplyColorGrading(camera, camera.HDRTexture, camera.SwapTexture1);
@@ -824,11 +826,9 @@ namespace MxEngine
         std::swap(input, temporary1);   
     }
 
-    void RenderController::ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
+    void RenderController::ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output, TextureHandle& averageWhite)
     {
         auto& HDRToLDRShader = this->Pipeline.Environment.Shaders["HDRToLDR"_id];
-        auto averageWhite = this->ComputeAverageWhite(camera);
-
         if (camera.ToneMapping == nullptr) return;
         MAKE_SCOPE_PROFILER("RenderController::ApplyHDRToLDRConversion()");
 

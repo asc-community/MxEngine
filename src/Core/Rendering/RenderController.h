@@ -85,7 +85,7 @@ namespace MxEngine
         void ApplySSAO(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
         void ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
         void ApplySSGI(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
-        void ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+        void ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output, TextureHandle& averageWhite);
         void ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
         void ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
         void ApplyColorGrading(CameraUnit& camera, TextureHandle& input, TextureHandle& output); 
