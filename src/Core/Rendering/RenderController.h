@@ -75,7 +75,7 @@ namespace MxEngine
         void DrawDebugBuffer(const CameraUnit& camera);
         void DrawObject(const RenderUnit& unit, size_t instanceCount, size_t baseInstance, const Shader& shader);
         void ComputeBloomEffect(CameraUnit& camera, const TextureHandle& output);
-        TextureHandle ComputeAverageWhite(CameraUnit& camera);
+        TextureHandle ComputeAverageWhite(CameraUnit& camera, float fadingAdaptationSpeed = 0.f, float adaptationThreshold = 0.f);
         void PerformPostProcessing(CameraUnit& camera);
         void PerformLightPass(CameraUnit& camera);
         void DrawTransparentObjects(CameraUnit& camera);

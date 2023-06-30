@@ -338,19 +338,11 @@ namespace MxEngine
         std::swap(input, output);
     }
 
-    TextureHandle RenderController::ComputeAverageWhite(CameraUnit& camera)
+    TextureHandle RenderController::ComputeAverageWhite(CameraUnit& camera,float fadingAdaptationSpeed,float adaptationThreshold )
     {
         MAKE_SCOPE_PROFILER("RenderController::ComputeAverageWhite()");
         camera.HDRTexture->GenerateMipmaps();
 
-        float dt = this->Pipeline.Environment.TimeDelta;
-        float fadingAdaptationSpeed = 0.0f; 
-        float adaptationThreshold = 0.0f; 
-        if (camera.ToneMapping != nullptr)
-        {
-            fadingAdaptationSpeed = 1.0f - std::exp(-camera.ToneMapping->GetEyeAdaptationSpeed() * dt);
-            adaptationThreshold = camera.ToneMapping->GetEyeAdaptationThreshold();
-        }
         auto& shader = this->Pipeline.Environment.Shaders["AverageWhite"_id];
         auto& output = this->Pipeline.Environment.AverageWhiteTexture;
         shader->Bind();
@@ -409,7 +401,18 @@ namespace MxEngine
 
         this->ApplyDepthOfFieldEffect(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
 
-        auto averageWhite = this->ComputeAverageWhite(camera);
+        TextureHandle averageWhite;
+        if (camera.ToneMapping == nullptr)
+        {
+            averageWhite = this->ComputeAverageWhite(camera);
+        }
+        else 
+        {
+            float dt = this->Pipeline.Environment.TimeDelta;
+            float fadingAdaptationSpeed = 1.0f - std::exp(-camera.ToneMapping->GetEyeAdaptationSpeed() * dt);
+            float adaptationThreshold = camera.ToneMapping->GetEyeAdaptationThreshold();
+            averageWhite = this->ComputeAverageWhite(camera, fadingAdaptationSpeed, adaptationThreshold);
+        }
         this->ApplyHDRToLDRConversion(camera, camera.HDRTexture, camera.SwapTexture1, averageWhite);
 
         this->ApplyFXAA(camera, camera.HDRTexture, camera.SwapTexture1);
@@ -828,12 +831,12 @@ namespace MxEngine
 
     void RenderController::ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output, TextureHandle& averageWhite)
     {
-        auto& HDRToLDRShader = this->Pipeline.Environment.Shaders["HDRToLDR"_id];
         if (camera.ToneMapping == nullptr) return;
         MAKE_SCOPE_PROFILER("RenderController::ApplyHDRToLDRConversion()");
 
         auto aces = camera.ToneMapping->GetACESCoefficients();
 
+        auto& HDRToLDRShader = this->Pipeline.Environment.Shaders["HDRToLDR"_id];
         HDRToLDRShader->Bind();
         input->Bind(0);
         averageWhite->Bind(1);
