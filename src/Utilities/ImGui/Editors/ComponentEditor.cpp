@@ -158,7 +158,7 @@ namespace MxEngine::GUI
         return Edit(name, (float)val, meta);
     }
 
-    rttr::variant Edit(const char* name, int64_t val, const ReflectionMeta & meta)
+    rttr::variant Edit(const char* name, int64_t val, const ReflectionMeta& meta)
     {
         auto editVal = (int)val;
         bool edited = ImGui::DragInt(name, &editVal, meta.Editor.EditPrecision, int(meta.Editor.EditRange.Min), int(meta.Editor.EditRange.Max));
@@ -167,17 +167,23 @@ namespace MxEngine::GUI
 
     rttr::variant Edit(const char* name, uint64_t val, const ReflectionMeta& meta)
     {
-        return Edit(name, (int64_t)val, meta);
+        auto editVal = (int)val;
+        bool edited = ImGui::DragInt(name, &editVal, meta.Editor.EditPrecision, int(meta.Editor.EditRange.Min), int(meta.Editor.EditRange.Max));
+        return edited ? rttr::variant{ (uint64_t)editVal } : rttr::variant{ };
     }
 
     rttr::variant Edit(const char* name, uint32_t val, const ReflectionMeta& meta)
     {
-        return Edit(name, (int64_t)val, meta);
+        auto editVal = (int)val;
+        bool edited = ImGui::DragInt(name, &editVal, meta.Editor.EditPrecision, int(meta.Editor.EditRange.Min), int(meta.Editor.EditRange.Max));
+        return edited ? rttr::variant{ (uint32_t)editVal } : rttr::variant{ };
     }
 
     rttr::variant Edit(const char* name, int32_t val, const ReflectionMeta& meta)
     {
-        return Edit(name, (int64_t)val, meta);
+        auto editVal = (int)val;
+        bool edited = ImGui::DragInt(name, &editVal, meta.Editor.EditPrecision, int(meta.Editor.EditRange.Min), int(meta.Editor.EditRange.Max));
+        return edited ? rttr::variant{ (int32_t)editVal } : rttr::variant{ };
     }
 
     rttr::variant Edit(const char* name, Quaternion val, const ReflectionMeta& meta)
@@ -303,10 +309,10 @@ namespace MxEngine::GUI
             VISITOR_DISPLAY_ENTRY(bool),
             VISITOR_DISPLAY_ENTRY(MxString),
             VISITOR_DISPLAY_ENTRY(float),
-            VISITOR_DISPLAY_ENTRY(double),
-            VISITOR_DISPLAY_ENTRY(int),
-            VISITOR_DISPLAY_ENTRY(unsigned int),
-            VISITOR_DISPLAY_ENTRY(size_t),
+            VISITOR_DISPLAY_ENTRY(int32_t),
+            VISITOR_DISPLAY_ENTRY(uint32_t),
+            VISITOR_DISPLAY_ENTRY(int64_t),
+            VISITOR_DISPLAY_ENTRY(uint64_t),
             VISITOR_DISPLAY_ENTRY(Quaternion),
             VISITOR_DISPLAY_ENTRY(Vector2),
             VISITOR_DISPLAY_ENTRY(Vector3),
@@ -347,9 +353,10 @@ namespace MxEngine::GUI
             VISITOR_EDIT_ENTRY(MxString),
             VISITOR_EDIT_ENTRY(float),
             VISITOR_EDIT_ENTRY(double),
-            VISITOR_EDIT_ENTRY(int),
-            VISITOR_EDIT_ENTRY(unsigned int),
-            VISITOR_EDIT_ENTRY(size_t),
+            VISITOR_EDIT_ENTRY(int32_t),
+            VISITOR_EDIT_ENTRY(uint32_t),
+            VISITOR_EDIT_ENTRY(int64_t),
+            VISITOR_EDIT_ENTRY(uint64_t),
             VISITOR_EDIT_ENTRY(Quaternion),
             VISITOR_EDIT_ENTRY(Vector2),
             VISITOR_EDIT_ENTRY(Vector3),
