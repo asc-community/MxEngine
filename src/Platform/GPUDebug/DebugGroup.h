@@ -28,39 +28,18 @@
 
 #pragma once
 
+#include <string_view>
+
 #include "Core/Macro/Macro.h"
-
-#if defined(GLEW_BUILD)
-#undef GLEW_BUILD
-#endif
-
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 
 namespace MxEngine
 {
-    #if defined(MXENGINE_DEBUG)
-    #define GLCALL(x) GlClearErrors(); x; GlLogCall(#x, __FILE__, __LINE__)
-    #define PUSH_DEBUG_GROUP(name) GlPushDebugGroup(name)
-    #define POP_DEBUG_GROUP() GlPopDebugGroup()
-    #else
-    #define GLCALL(x) x
-    #define PUSH_DEBUG_GROUP(name)
-    #define POP_DEBUG_GROUP()
-    #endif
+    class DebugGroup
+    {
+    public:
+        DebugGroup(std::string_view name);
+        ~DebugGroup();
+    };
 
-    void GlClearErrors();
-
-    bool GlLogCall(const char* function, const char* file, int line);
-
-    void GlPushDebugGroup(const char* name);
-    void GlPopDebugGroup();
-
-    template<typename T>
-    const char* TypeToString();
-
-    template<typename T>
-    unsigned int GetGLType();
-
-    void APIENTRY PrintDebugInformation(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
+    #define MAKE_GPU_DEBUG_GROUP(name) DebugGroup MXENGINE_CONCAT(_debugGroup, __LINE__)(name)
 }

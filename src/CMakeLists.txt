@@ -124,6 +124,7 @@ set(MXENGINE_SOURCES
 "Platform/OpenGL/ComputeShader.cpp" 
 "Platform/OpenGL/BufferBase.cpp"
 "Platform/Compute/Compute.cpp" 
+"Platform/GPUDebug/DebugGroup.cpp" 
 "Core/Components/Rendering/ParticleSystem.cpp" 
 "Core/Components/Camera/CameraSSAO.cpp" 
 "Platform/OpenGL/VertexAttribute.cpp"
