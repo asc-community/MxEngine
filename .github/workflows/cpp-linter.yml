@@ -3,12 +3,12 @@ name: cpp-linter
 on:
   push:
     branches:
-      - main
+      - master
     paths-ignore: 
       - "submodules/**"
   pull_request:
     branches:
-      - main
+      - master
     paths-ignore: 
       - "submodules/**"
 
