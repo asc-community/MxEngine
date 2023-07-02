@@ -6,11 +6,13 @@ on:
       - master
     paths-ignore: 
       - "submodules/**"
+      - "samples/**"
   pull_request:
     branches:
       - master
     paths-ignore: 
       - "submodules/**"
+      - "samples/**"
 
 jobs:
   cpp-linter:
@@ -29,5 +31,5 @@ jobs:
       - name: C++ Linter check status
         if: steps.linter.outputs.checks-failed != 0
         run: |
-          echo "some linter checks failed. ${{ steps.linter.outputs.checks-failed }}"
+          echo "some linter checks failed. ${{ steps.linter.outputs. }}"
           exit 1
