@@ -315,7 +315,7 @@ namespace MxEngine
     void RenderController::ApplySSAO(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
     {
         if (camera.SSAO == nullptr || camera.SSAO->GetSampleCount() == 0) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::ComputeAmbientOcclusion()");
+        MAKE_RENDER_PASS_SCOPE("RenderController::ApplySSAO()");
 
         auto& ssaoShader = this->Pipeline.Environment.Shaders["AmbientOcclusion"_id];
         ssaoShader->Bind();
@@ -330,19 +330,22 @@ namespace MxEngine
         ssaoShader->SetUniform("sampleCount", (int)camera.SSAO->GetSampleCount());
         ssaoShader->SetUniform("radius", camera.SSAO->GetRadius());
 
-        auto& blurInputOutput = temporary;
-        auto& blurTemporary = output;
+        auto ssaoOutput = this->Pipeline.Environment.DownSampleTexture;
+        auto blurredSSAO = this->Pipeline.Environment.BloomTextures.front();
+        auto blurTempTexture = this->Pipeline.Environment.BloomTextures.back();
 
-        this->RenderToTexture(temporary, ssaoShader);
+        this->RenderToTexture(ssaoOutput, ssaoShader);
+        ssaoOutput->GenerateMipmaps();
+        this->CopyTexture(ssaoOutput, blurredSSAO, camera.SSAO->GetBlurLOD());
 
-        this->ApplyGaussianBlur(blurInputOutput, blurTemporary, camera.SSAO->GetBlurIterations());
+        this->ApplyGaussianBlur(blurredSSAO, blurTempTexture, camera.SSAO->GetBlurIterations(), (float)camera.SSAO->GetBlurLOD());
 
         auto& applyShader = this->Pipeline.Environment.Shaders["ApplyAmbientOcclusion"_id];
         applyShader->Bind();
         input->Bind(0);
-        blurInputOutput->Bind(1);
+        blurredSSAO->Bind(1);
         applyShader->SetUniform("inputTex", input->GetBoundId());
-        applyShader->SetUniform("aoTex", blurInputOutput->GetBoundId());
+        applyShader->SetUniform("aoTex", blurredSSAO->GetBoundId());
         applyShader->SetUniform("intensity", camera.SSAO->GetIntensity());
 
         this->RenderToTexture(output, applyShader);
@@ -724,7 +727,6 @@ namespace MxEngine
         applyShader->SetUniform("SSGITex", blurredSSGI->GetBoundId());
          
         this->RenderToTexture(output, applyShader);
-
         std::swap(input, output);
     }
 

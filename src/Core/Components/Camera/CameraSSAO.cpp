@@ -47,6 +47,11 @@ namespace MxEngine
         return (size_t)this->blurIterations;
     }
 
+    size_t CameraSSAO::GetBlurLOD() const
+    {
+        return (size_t)this->blurLOD;
+    }
+
     size_t CameraSSAO::GetSampleCount() const
     {
         return (size_t)this->sampleCount;
@@ -70,6 +75,11 @@ namespace MxEngine
     void CameraSSAO::SetBlurIterations(size_t iterations)
     {
         this->blurIterations = (uint8_t)Min(iterations, (size_t)std::numeric_limits<uint8_t>::max());
+    }
+
+    void CameraSSAO::SetBlurLOD(size_t lod)
+    {
+        this->blurLOD = (uint8_t)Min(lod, (size_t)std::numeric_limits<uint8_t>::max());
     }
 
     MXENGINE_REFLECT_TYPE
@@ -101,6 +111,12 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 50.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+            )
+            .property("blur lod", &CameraSSAO::GetBlurLOD, &CameraSSAO::SetBlurLOD)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
             );
     }
