@@ -744,8 +744,6 @@ namespace MxEngine
         cocShader->IgnoreNonExistingUniform("materialTex"); 
         Texture::TextureBindId textureId = 0;
         this->BindGBuffer(camera, *cocShader, textureId);
-        inputOutput->Bind(textureId++); 
-        cocShader->SetUniform("cameraOutput", inputOutput->GetBoundId());
         cocShader->SetUniform("focusRange", camera.Effects->GetFocusRange());        
         cocShader->SetUniform("focusDistance", camera.Effects->GetFocusDistance());
         this->BindCameraInformation(camera, *cocShader);
