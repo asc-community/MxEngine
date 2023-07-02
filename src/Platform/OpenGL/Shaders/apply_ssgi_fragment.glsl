@@ -12,7 +12,7 @@ uniform sampler2D materialTex;
 void main()
 {
     vec3 originalColor = texture(inputTex, TexCoord, 0).rgb;
-    vec3 ssgiColor = texture(SSGITex, TexCoord, 0).rgb;
+    vec3 ssgiColor = texture(SSGITex, TexCoord, 5).rgb;
 
     vec3 albedo = texture(albedoTex, TexCoord).rgb;
     float metallic = texture(materialTex, TexCoord).b;

@@ -52,6 +52,7 @@ namespace MxEngine
 
     constexpr size_t MaxDirLightCount = 4;
     constexpr size_t ParticleComputeGroupSize = 64;
+    constexpr int DefaultLinearBlurSampleCount = 5;
 
     void RenderController::PrepareShadowMaps()
     {
@@ -350,7 +351,7 @@ namespace MxEngine
 
     void RenderController::GenerateDepthPyramid(TextureHandle& depth)
     {
-        MAKE_RENDER_PASS_SCOPE("RenderController::GenerateDepthPyramid");
+        MAKE_RENDER_PASS_SCOPE("RenderController::GenerateDepthPyramid()");
         // generate depth texture mipmaps for post-processing algorithms. Replace later with hierarhical depth map
         depth->GenerateMipmaps();
     }
@@ -374,8 +375,9 @@ namespace MxEngine
         shader->SetUniform("adaptSpeed", fadingAdaptationSpeed);
         shader->SetUniform("adaptThreshold", adaptationThreshold);
         this->RenderToTexture(output, shader);
-        this->CopyTexture(output, camera.AverageWhiteTexture);
-        return output;
+        output->GenerateMipmaps();
+        this->CopyTexture(output, camera.AverageWhiteTexture, output->GetMaxTextureLOD());
+        return camera.AverageWhiteTexture;
     }
 
     void RenderController::PerformPostProcessing(CameraUnit& camera)
@@ -679,7 +681,7 @@ namespace MxEngine
     {
         if (camera.SSGI == nullptr || camera.SSGI->GetIntensity() == 0.0f) return;
 
-        MAKE_RENDER_PASS_SCOPE("RenderController::ApplySSR()");
+        MAKE_RENDER_PASS_SCOPE("RenderController::ApplySSGI()");
 
         auto& SSGIShader = this->Pipeline.Environment.Shaders["SSGI"_id];
         SSGIShader->Bind();
@@ -698,12 +700,15 @@ namespace MxEngine
         SSGIShader->SetUniform("intensity", camera.SSGI->GetIntensity());
         SSGIShader->SetUniform("distance", camera.SSGI->GetDistance());
 
-        auto& blurInputOutput = this->Pipeline.Environment.BloomTextures.front();
-        auto& blurTemporary = this->Pipeline.Environment.BloomTextures.back();
+        auto ssgiOutput = this->Pipeline.Environment.DownSampleTexture;
+        auto blurredSSGI = this->Pipeline.Environment.BloomTextures.front();
+        auto blurTempTexture = this->Pipeline.Environment.BloomTextures.back();
 
-        this->RenderToTexture(blurInputOutput, SSGIShader);
+        this->RenderToTexture(ssgiOutput, SSGIShader);
+        ssgiOutput->GenerateMipmaps();
+        this->CopyTexture(ssgiOutput, blurredSSGI, camera.SSGI->GetBlurLOD());
 
-        this->ApplyGaussianBlur(blurInputOutput, blurTemporary, camera.SSGI->GetBlurIterations());
+        this->ApplyGaussianBlur(blurredSSGI, blurTempTexture, camera.SSGI->GetBlurIterations(), (float)camera.SSGI->GetBlurLOD());
 
         auto& applyShader = this->Pipeline.Environment.Shaders["ApplySSGI"_id];
         applyShader->Bind();
@@ -714,9 +719,9 @@ namespace MxEngine
         this->BindGBuffer(camera, *applyShader, textureId);
 
         input->Bind(textureId++);
-        blurInputOutput->Bind(textureId++);
+        blurredSSGI->Bind(textureId++);
         applyShader->SetUniform("inputTex", input->GetBoundId());
-        applyShader->SetUniform("SSGITex", blurInputOutput->GetBoundId());
+        applyShader->SetUniform("SSGITex", blurredSSGI->GetBoundId());
          
         this->RenderToTexture(output, applyShader);
 
@@ -1142,24 +1147,27 @@ namespace MxEngine
         this->RenderToFrameBufferNoClear(this->Pipeline.Environment.PostProcessFrameBuffer, shader);
     }
 
-    void RenderController::CopyTexture(const TextureHandle& input, const TextureHandle& output)
+    void RenderController::CopyTexture(const TextureHandle& input, const TextureHandle& output, int lod)
     {
-        MAKE_RENDER_PASS_SCOPE("RenderController::CopyTexture");
+        MAKE_RENDER_PASS_SCOPE("RenderController::CopyTexture()");
         this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(output);
         this->AttachFrameBufferNoClear(this->Pipeline.Environment.PostProcessFrameBuffer);
-        this->SubmitImage(input);
+        this->SubmitImage(input, lod);
     }
 
-    void RenderController::ApplyGaussianBlur(const TextureHandle& inputOutput, const TextureHandle& temporary, size_t iterations)
+    void RenderController::ApplyGaussianBlur(const TextureHandle& inputOutput, const TextureHandle& temporary, size_t iterations, float sampleInterval)
     {
         if (iterations == 0) return;
+
+        MAKE_RENDER_PASS_SCOPE("RenderController::ApplyGaussianBlur()");
         auto& shader = this->Pipeline.Environment.Shaders["GaussianBlur"_id];
         shader->Bind();
         shader->SetUniform("inputTex", 0);
+        shader->SetUniform("sampleInterval", sampleInterval);
 
         auto& framebuffer = this->Pipeline.Environment.BloomFrameBuffer;
 
-        for (uint8_t i = 0; i < 2 * iterations; i++)
+        for (size_t i = 0; i < 2 * iterations; i++)
         {
             bool horizontalBlur = (i % 2 == 0);
             auto& source = horizontalBlur ? inputOutput : temporary;
@@ -1567,17 +1575,17 @@ namespace MxEngine
         if (!renderMaterial.HeightMap.IsValid())           renderMaterial.HeightMap = this->Pipeline.Environment.DefaultBlackMap;
     }
 
-    void RenderController::SubmitImage(const TextureHandle& texture)
+    void RenderController::SubmitImage(const TextureHandle& texture, int lod)
     {
-        auto& finalShader = *this->Pipeline.Environment.Shaders["ImageForward"_id];
+        auto& imageCopyShader = *this->Pipeline.Environment.Shaders["ImageForward"_id];
         auto& rectangle = this->Pipeline.Environment.RectangularObject;
 
-        finalShader.Bind();
-        finalShader.SetUniform("tex", 0);
         texture->Bind(0);
+        imageCopyShader.Bind();
+        imageCopyShader.SetUniform("tex", texture->GetBoundId());
+        imageCopyShader.SetUniform("lod", lod);
 
         rectangle.GetVAO().Bind();
-
         this->DrawIndices(RenderPrimitive::TRIANGLES, rectangle.IndexCount, 0, 0, 0, 0);
     }
 
