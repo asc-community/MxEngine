@@ -2,9 +2,13 @@ name: cpp-linter
 
 on:
   push:
+    branches:
+      - main
     paths-ignore: 
       - "submodules/**"
   pull_request:
+    branches:
+      - main
     paths-ignore: 
       - "submodules/**"
 
@@ -22,7 +26,7 @@ jobs:
           style: file
           files-changed-only: false
 
-      - name: C++ Linter checks failed!
+      - name: C++ Linter check status
         if: steps.linter.outputs.checks-failed != 0
         run: |
           echo "some linter checks failed. ${{ steps.linter.outputs.checks-failed }}"
