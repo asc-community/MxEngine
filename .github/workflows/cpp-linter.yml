@@ -29,6 +29,4 @@ jobs:
       - name: C++ Linter check status
         if: steps.linter.outputs.checks-failed != 0
         run: |
-          echo "some linter checks failed. ${{ steps.linter.outputs.checks-failed }}"
-        # for actual deployment
-        # run: exit 1
+          exit 1
