@@ -220,7 +220,15 @@ namespace MxEngine
         GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
         
-        this->GenerateMipmaps();
+        if (std::any_of(images.begin(), images.end(), [](const Image& slice) { return slice.GetRawData() != nullptr; }))
+        {
+            this->GenerateMipmaps();
+        }
+        else
+        {
+            GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+            GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+        }
     }
 
     void CubeMap::Load(const std::array<uint8_t*, 6>& data, size_t width, size_t height)
@@ -241,7 +249,15 @@ namespace MxEngine
         GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
 
-        this->GenerateMipmaps();
+        if (std::any_of(data.begin(), data.end(), [](const uint8_t* slice) { return slice != nullptr; }))
+        {
+            this->GenerateMipmaps();
+        }
+        else
+        {
+            GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+            GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+        }
     }
 
     void CubeMap::LoadDepth(int width, int height)
@@ -264,8 +280,9 @@ namespace MxEngine
 
         float border[] = { 1.0f, 1.0f, 1.0f, 1.0f };
         GLCALL(glTexParameterfv(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, border));
-        
-        this->GenerateMipmaps();
+
+        GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+        GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
     }
 
     const MxString& CubeMap::GetFilePath() const
@@ -296,6 +313,18 @@ namespace MxEngine
     size_t CubeMap::GetChannelCount() const
     {
         return this->channels;
+    }
+
+    void CubeMap::SetMaxLOD(size_t lod)
+    {
+        this->Bind(0);
+        GLCALL(glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LOD, (float)lod));
+    }
+
+    void CubeMap::SetMinLOD(size_t lod)
+    {
+        this->Bind(0);
+        GLCALL(glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_LOD, (float)lod));
     }
 
     void CubeMap::GenerateMipmaps()

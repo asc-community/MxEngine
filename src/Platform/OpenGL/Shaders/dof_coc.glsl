@@ -11,7 +11,6 @@ struct Camera
     mat4 invViewProjMatrix;
     mat4 viewProjMatrix;
 };
-uniform sampler2D cameraOutput;
 uniform Camera camera;
 uniform float focusDistance;
 uniform float focusRange;

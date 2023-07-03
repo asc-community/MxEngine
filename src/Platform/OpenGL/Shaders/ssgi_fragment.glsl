@@ -67,18 +67,16 @@ void main()
     vec3 viewDirection = normalize(camera.position - fragment.position);
 
     float r = rand(TexCoord);
-    vec2 invSize = 1.0 / textureSize(inputTex, 0);
     const int SAMPLES = 4;
     vec3 accum = vec3(0.0);
     for (int i = 0; i < SAMPLES; i++)
     {
-        float sampleDistance = exp(i - SAMPLES);
+        float sampleDistance = exp(i - SAMPLES) * 0.2;
         float phi = ((i + r * SAMPLES) * 2.0 * PI) / SAMPLES;
         vec2 uv = sampleDistance * vec2(cos(phi), sin(phi));
 
-        float lod = getLOD(uv);
-        vec3 lightColor = textureLod(inputTex, TexCoord + uv, lod).rgb;
-        float sampleDepth = textureLod(depthTex, TexCoord + uv, lod).r;
+        vec3 lightColor = texture(inputTex, TexCoord + uv).rgb;
+        float sampleDepth = textureLod(depthTex, TexCoord + uv, getLOD(uv)).r;
         vec3 lightPosition = reconstructWorldPosition(sampleDepth, TexCoord + uv, camera.invViewProjMatrix);
         vec3 lightDirection = lightPosition - fragment.position;
 
