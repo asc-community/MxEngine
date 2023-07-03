@@ -747,7 +747,7 @@ namespace MxEngine
         cocShader->SetUniform("focusRange", camera.Effects->GetFocusRange());        
         cocShader->SetUniform("focusDistance", camera.Effects->GetFocusDistance());
         this->BindCameraInformation(camera, *cocShader);
-        this->RenderToTextureNoClear(temporary0, cocShader);
+        this->RenderToTexture(temporary0, cocShader);
 
         auto bokehShader = this->Pipeline.Environment.Shaders["Bokeh"_id];
         bokehShader->Bind();
@@ -755,7 +755,7 @@ namespace MxEngine
         
         inputOutput->Bind(0);
         temporary0->Bind(1);
-        this->RenderToTextureNoClear(temporary1, bokehShader);
+        this->RenderToTexture(temporary1, bokehShader);
         
         this->ApplyGaussianBlur(temporary1, temporary0, 1);
 
@@ -764,7 +764,7 @@ namespace MxEngine
         inputOutput->Bind(0);
         temporary1->Bind(1);
 
-        this->RenderToTextureNoClear(temporary0, combineShader);
+        this->RenderToTexture(temporary0, combineShader);
         std::swap(inputOutput, temporary0);
     }
     void RenderController::ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
