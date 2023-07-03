@@ -763,8 +763,8 @@ namespace MxEngine
         combineShader->Bind(); 
         inputOutput->Bind(0);
         temporary1->Bind(1);
-        this->RenderToTextureNoClear(temporary0, combineShader);
 
+        this->RenderToTextureNoClear(temporary0, combineShader);
         std::swap(inputOutput, temporary0);
     }
     void RenderController::ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
