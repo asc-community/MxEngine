@@ -43,17 +43,18 @@ namespace MxEngine
         this->DepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("directional light"));
     }
 
-    Matrix4x4 DirectionalLight::GetMatrix(const Vector3& center, size_t index) const
+    Matrix4x4 DirectionalLight::GetMatrix(size_t index) const
     {
         MX_ASSERT(index < DirectionalLight::TextureCount);
 
-        Vector3 Center = center;
+        auto& self = MxObject::GetByComponent(*this);
         float distance = 0.0f;
         for (size_t i = 0; i < index; i++)
         {
-            distance += this->Projections[i + 1] - this->Projections[i];
+            distance += this->Projections[i];
         }
-        // Center -= distance * this->CascadeDirection;
+        distance += this->Projections[index] * 0.5;
+        auto center = self.LocalTransform.GetPosition() + distance * this->CascadeDirection;
 
         constexpr auto floor = [](const Vector3 & v) -> Vector3
         {
@@ -65,18 +66,18 @@ namespace MxEngine
             MakeVector3(0.0f, 0.0f, 0.0f),
             MakeVector3(0.001f, 1.0f, 0.001f)
         );
-        Center = (Matrix3x3)LightView * Center;
+        center = (Matrix3x3)LightView * center;
 
-        auto Low  = MakeVector3(-this->Projections[index]) + Center;
-        auto High = MakeVector3( this->Projections[index]) + Center;
+        auto lowPlane = MakeVector3(-this->Projections[index]) + center;
+        auto highPlane = MakeVector3( this->Projections[index]) + center;
 
         auto shadowMapSize = float(this->DepthMap->GetHeight() + 1);
-        auto worldUnitsPerText = (High - Low) / shadowMapSize;
-        Low = floor(Low / worldUnitsPerText) * worldUnitsPerText;
-        High = floor(High / worldUnitsPerText) * worldUnitsPerText;
-        Center = (High + Low) * -0.5f;
+        auto worldUnitsPerText = (highPlane - lowPlane) / shadowMapSize;
+        lowPlane = floor(lowPlane / worldUnitsPerText) * worldUnitsPerText;
+        highPlane = floor(highPlane / worldUnitsPerText) * worldUnitsPerText;
+        center = (highPlane + lowPlane) * -0.5f;
 
-        Matrix4x4 OrthoProjection = MakeOrthographicMatrix(Low.x, High.x, Low.y, High.y, Low.z, High.z);
+        Matrix4x4 OrthoProjection = MakeOrthographicMatrix(lowPlane.x, highPlane.x, lowPlane.y, highPlane.y, lowPlane.z, highPlane.z);
         return OrthoProjection * LightView;
     }
 

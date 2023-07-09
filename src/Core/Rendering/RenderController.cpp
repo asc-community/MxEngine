@@ -1219,6 +1219,11 @@ namespace MxEngine
         this->GetRenderEngine().UseReversedDepth(value);
     }
 
+    void RenderController::ToggleDepthClamp(bool value)
+    {
+        this->GetRenderEngine().UseDepthClamp(value);
+    }
+
     void RenderController::ToggleFaceCulling(bool value, bool counterClockWise, bool cullBack)
     {
         this->GetRenderEngine().UseCulling(value, counterClockWise, cullBack);
@@ -1379,7 +1384,7 @@ namespace MxEngine
         dirLight.ShadowMap = light.DepthMap;
         for (size_t i = 0; i < dirLight.ProjectionMatrices.size(); i++)
         {
-            dirLight.ProjectionMatrices[i] = light.GetMatrix(parentTransform.GetPosition(), i);
+            dirLight.ProjectionMatrices[i] = light.GetMatrix(i);
             dirLight.BiasedProjectionMatrices[i] = ProjectionBiasMatrix(i) * dirLight.ProjectionMatrices[i];
         }
     }

@@ -108,6 +108,7 @@ namespace MxEngine
         Renderer& UseDepthBufferMask(bool value = true);
         Renderer& UseSampling(bool value = true);
         Renderer& UseDepthBuffer(bool value = true);
+        Renderer& UseDepthClamp(bool value = true);
         Renderer& UseReversedDepth(bool value = true);
         Renderer& UseDepthFunction(DepthFunction function);
         Renderer& UseCulling(bool value = true, bool counterClockWise = true, bool cullBack = true);

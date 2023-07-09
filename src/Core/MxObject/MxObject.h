@@ -75,7 +75,7 @@ namespace MxEngine
         EngineHandle GetNativeHandle() const;
 
         template<typename T>
-        static MxObject& GetByComponent(T& component)
+        static MxObject& GetByComponent(const T& component)
         {
             auto handle = reinterpret_cast<EngineHandle>(component.UserData);
             MX_ASSERT(handle != InvalidHandle);
@@ -84,7 +84,7 @@ namespace MxEngine
         }
 
         template<typename T>
-        static Handle GetHandleByComponent(T& component)
+        static Handle GetHandleByComponent(const T& component)
         {
             auto handle = reinterpret_cast<EngineHandle>(component.UserData);
             return MxObject::GetByHandle(handle);

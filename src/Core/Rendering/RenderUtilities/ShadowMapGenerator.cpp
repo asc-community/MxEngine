@@ -38,11 +38,13 @@ namespace MxEngine
     {
         Rendering::GetController().ToggleReversedDepth(false);
         Rendering::GetController().ToggleDepthOnlyMode(true);
+        Rendering::GetController().ToggleDepthClamp(true);
     }
 
     ShadowMapGenerator::~ShadowMapGenerator()
     {
         Rendering::GetController().ToggleDepthOnlyMode(false);
+        Rendering::GetController().ToggleDepthClamp(false);
     }
 
     void RenderUnitToDepthMap(const Shader& shader, size_t instanceCount, size_t baseInstance, const RenderUnit& unit, ArrayView<Material> materials)
@@ -67,7 +69,7 @@ namespace MxEngine
 
     bool InOrthoFrustrum(const FrustrumCuller& culler, const Vector3& minAABB, const Vector3& maxAABB)
     {
-        return culler.IsAABBVisible(minAABB, maxAABB);
+        return culler.IsAABBVisibleXY(minAABB, maxAABB);
     };
 
     bool InSphereBounds(const PointLightUnit& pointLight, const Vector3& minAABB, const Vector3& maxAABB)

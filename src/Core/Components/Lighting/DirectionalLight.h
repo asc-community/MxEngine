@@ -50,6 +50,6 @@ namespace MxEngine
         Vector3 CascadeDirection{ 0.0f };
         std::array<float, TextureCount> Projections = { 15.0f, 150.0f, 1500.0f };
 
-        [[nodiscard]] Matrix4x4 GetMatrix(const Vector3& center, size_t index) const;
+        [[nodiscard]] Matrix4x4 GetMatrix(size_t index) const;
     };
 }
