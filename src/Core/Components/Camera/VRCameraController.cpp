@@ -90,7 +90,6 @@ namespace MxEngine
         this->shaderVR->SetUniform("leftEyeTex", 0);
         this->shaderVR->SetUniform("rightEyeTex", 1);
         Rendering::GetController().RenderToTexture(target, this->shaderVR);
-        target->GenerateMipmaps();
     }
 
     void VRCameraController::Init()

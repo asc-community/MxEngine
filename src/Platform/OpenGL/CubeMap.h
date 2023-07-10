@@ -76,6 +76,8 @@ namespace MxEngine
         size_t GetWidth() const;
         size_t GetHeight() const;
         size_t GetChannelCount() const;
+        void SetMaxLOD(size_t lod);
+        void SetMinLOD(size_t lod);
         void GenerateMipmaps();
 
         const MxString& GetFilePath() const;

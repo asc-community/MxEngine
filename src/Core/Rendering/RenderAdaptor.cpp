@@ -118,8 +118,14 @@ namespace MxEngine
 
         environment.AverageWhiteTexture = Factory<Texture>::Create();
         environment.AverageWhiteTexture->Load(nullptr, internalTextureSize, internalTextureSize, 1, false, TextureFormat::R16F);
-        environment.AverageWhiteTexture->SetMinLOD(environment.AverageWhiteTexture->GetMaxTextureLOD());
         environment.AverageWhiteTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("average white"));
+        environment.AverageWhiteTexture->GenerateMipmaps();
+
+        environment.DownSampleTexture = Factory<Texture>::Create();
+        environment.DownSampleTexture->Load(nullptr, internalTextureSize, internalTextureSize, 3, false, TextureFormat::RGB16F);
+        environment.DownSampleTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("down sample"));
+        environment.DownSampleTexture->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+        environment.DownSampleTexture->GenerateMipmaps();
 
         // TODO: use RG16
         environment.EnvironmentBRDFLUT = AssetManager::LoadTexture(textureFolder / "env_brdf_lut.png", TextureFormat::RG);
@@ -353,7 +359,6 @@ namespace MxEngine
             bloomTexture->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("bloom"));
             bloomTexture->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
         }
-
     }
 
     void RenderAdaptor::RenderFrame()
