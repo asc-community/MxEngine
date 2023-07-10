@@ -43,34 +43,24 @@
 #include "Core/Components/Rendering/Skybox.h"
 #include "Utilities/Profiler/Profiler.h"
 #include "Platform/Compute/Compute.h"
-#include "Platform/GPUDebug/DebugGroup.h"
 #include "RenderUtilities/ShadowMapGenerator.h"
 
 namespace MxEngine
 {
-    #define MAKE_RENDER_PASS_SCOPE(name) MAKE_SCOPE_PROFILER(name); MAKE_GPU_DEBUG_GROUP(name)
-
     constexpr size_t MaxDirLightCount = 4;
     constexpr size_t ParticleComputeGroupSize = 64;
 
     void RenderController::PrepareShadowMaps()
     {
-        bool hasDirectionalLights = !this->Pipeline.Lighting.DirectionalLights.empty();
-        bool hasPointLights = !this->Pipeline.Lighting.PointLights.empty();
-        bool hasSpotLights = !this->Pipeline.Lighting.SpotLights.empty();
-
-        if (!hasDirectionalLights && !hasSpotLights && !hasPointLights) return;
-
-        MAKE_RENDER_PASS_SCOPE("RenderController::PrepareShadowMaps()");
+        MAKE_SCOPE_PROFILER("RenderController::PrepareShadowMaps()");
 
         ShadowMapGenerator generatorOpaque(this->Pipeline.ShadowCasters, this->Pipeline.RenderUnits, this->Pipeline.MaterialUnits);
         ShadowMapGenerator generatorMasked(this->Pipeline.MaskedShadowCasters, this->Pipeline.RenderUnits, this->Pipeline.MaterialUnits);
 
         this->Pipeline.Environment.RenderVAO->Bind();
 
-        if (hasDirectionalLights)
         {
-            MAKE_RENDER_PASS_SCOPE("RenderController::PrepareDirectionalLightMaps()");
+            MAKE_SCOPE_PROFILER("RenderController::PrepareDirectionalLightMaps()");
             generatorOpaque.GenerateFor(
                 *this->Pipeline.Environment.Shaders["DirLightDepthMap"_id], 
                 this->Pipeline.Lighting.DirectionalLights,
@@ -83,9 +73,8 @@ namespace MxEngine
             );
         }
 
-        if (hasSpotLights)
         {
-            MAKE_RENDER_PASS_SCOPE("RenderController::PrepareSpotLightMaps()");
+            MAKE_SCOPE_PROFILER("RenderController::PrepareSpotLightMaps()");
             generatorOpaque.GenerateFor(
                 *this->Pipeline.Environment.Shaders["SpotLightDepthMap"_id], 
                 this->Pipeline.Lighting.SpotLights,
@@ -98,9 +87,8 @@ namespace MxEngine
             );
         }
 
-        if (hasPointLights)
         {
-            MAKE_RENDER_PASS_SCOPE("RenderController::PreparePointLightMaps()");
+            MAKE_SCOPE_PROFILER("RenderController::PreparePointLightMaps()");
             generatorOpaque.GenerateFor(
                 *this->Pipeline.Environment.Shaders["PointLightDepthMap"_id], 
                 this->Pipeline.Lighting.PointLights,
@@ -117,7 +105,7 @@ namespace MxEngine
     void RenderController::ComputeParticles(const MxVector<ParticleSystemUnit>& particleSystems)
     {
         if (particleSystems.empty()) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::ComputeParticles()");
+        MAKE_SCOPE_PROFILER("RenderController::ComputeParticles()");
         
         auto& computeShader = this->Pipeline.Environment.ComputeShaders["Particle"_id];
         computeShader->Bind();
@@ -148,7 +136,7 @@ namespace MxEngine
     void RenderController::DrawParticles(const CameraUnit& camera, MxVector<ParticleSystemUnit>& particleSystems, const Shader& shader)
     {
         if (particleSystems.empty()) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::DrawParticles()");
+        MAKE_SCOPE_PROFILER("RenderController::DrawParticles()");
         this->SortParticles(camera, particleSystems);
 
         shader.Bind();
@@ -215,7 +203,7 @@ namespace MxEngine
 
     void RenderController::DrawObjects(const CameraUnit& camera, const Shader& shader, const RenderList& objects)
     {
-        MAKE_RENDER_PASS_SCOPE("RenderController::DrawObjects()");
+        MAKE_SCOPE_PROFILER("RenderController::DrawObjects()");
 
         if (objects.UnitsIndex.empty()) return;
         shader.Bind();
@@ -284,7 +272,7 @@ namespace MxEngine
     {
         if (camera.Effects == nullptr) return;
         if (camera.Effects->GetBloomIterations() == 0) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::PerformBloomIterarations()");
+        MAKE_SCOPE_PROFILER("RenderController::PerformBloomIterarations()");
 
         auto& bloomTextures = this->Pipeline.Environment.BloomTextures;
         auto& splitShader = this->Pipeline.Environment.Shaders["BloomSplit"_id];
@@ -315,7 +303,7 @@ namespace MxEngine
     void RenderController::ApplySSAO(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
     {
         if (camera.SSAO == nullptr || camera.SSAO->GetSampleCount() == 0) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::ComputeAmbientOcclusion()");
+        MAKE_SCOPE_PROFILER("RenderController::ComputeAmbientOcclusion()");
 
         auto& ssaoShader = this->Pipeline.Environment.Shaders["AmbientOcclusion"_id];
         ssaoShader->Bind();
@@ -349,16 +337,9 @@ namespace MxEngine
         std::swap(input, output);
     }
 
-    void RenderController::GenerateDepthPyramid(TextureHandle& depth)
-    {
-        MAKE_RENDER_PASS_SCOPE("RenderController::GenerateDepthPyramid");
-        // generate depth texture mipmaps for post-processing algorithms. Replace later with hierarhical depth map
-        depth->GenerateMipmaps();
-    }
-
     TextureHandle RenderController::ComputeAverageWhite(CameraUnit& camera)
     {
-        MAKE_RENDER_PASS_SCOPE("RenderController::ComputeAverageWhite()");
+        MAKE_SCOPE_PROFILER("RenderController::ComputeAverageWhite()");
         MX_ASSERT(camera.ToneMapping != nullptr);
         camera.HDRTexture->GenerateMipmaps();
 
@@ -383,13 +364,14 @@ namespace MxEngine
 
     void RenderController::PerformPostProcessing(CameraUnit& camera)
     {
+        MAKE_SCOPE_PROFILER("RenderController::PerformPostProcessing()");
+
         camera.AlbedoTexture->GenerateMipmaps();
         camera.MaterialTexture->GenerateMipmaps();
         camera.NormalTexture->GenerateMipmaps();
         camera.DepthTexture->GenerateMipmaps();
 
         this->GenerateHIZ(camera.DepthTexture, camera.HiZ);
-        MAKE_RENDER_PASS_SCOPE("RenderController::PerformPostProcessing()");
         
         this->ApplySSAO(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
         this->ApplySSR(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
@@ -431,7 +413,7 @@ namespace MxEngine
 
     void RenderController::DrawDirectionalLights(CameraUnit& camera, TextureHandle& output)
     {
-        MAKE_RENDER_PASS_SCOPE("RenderController::DrawDirectionalLights()");
+        MAKE_SCOPE_PROFILER("RenderController::DrawDirectionalLights()");
         auto& shader = this->Pipeline.Environment.Shaders["DirLight"_id];
         shader->Bind();
 
@@ -473,7 +455,7 @@ namespace MxEngine
     void RenderController::DrawTransparentObjects(CameraUnit& camera)
     {
         if (this->Pipeline.TransparentObjects.UnitsIndex.empty()) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::DrawTransparentObjects()");
+        MAKE_SCOPE_PROFILER("RenderController::DrawTransparentObjects()");
 
         auto& shader = this->Pipeline.Environment.Shaders["Transparent"_id];
         shader->Bind();
@@ -517,7 +499,7 @@ namespace MxEngine
 
     void RenderController::DrawIBL(CameraUnit& camera, TextureHandle& output)
     {
-        MAKE_RENDER_PASS_SCOPE("RenderController::ApplyIBL()");
+        MAKE_SCOPE_PROFILER("RenderController::ApplyIBL()");
 
         auto shader = this->Pipeline.Environment.Shaders["IBL"_id];
         shader->Bind();
@@ -565,12 +547,13 @@ namespace MxEngine
 
     void RenderController::ApplyGodRayEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {
-        if (!camera.GodRay) return;
+        MAKE_SCOPE_PROFILER("RenderController::ApplyGodRayEffect()");
+        if (!camera.GodRay)
+            return;
         auto dirLightCount = this->Pipeline.Lighting.DirectionalLights.size();
-        if (dirLightCount == 0) return;
+        if (dirLightCount == 0)
+            return;
 
-        MAKE_RENDER_PASS_SCOPE("RenderController::ApplyGodRayEffect()");
-        
         auto godRayShader = this->Pipeline.Environment.Shaders["GodRay"_id];
         godRayShader->Bind();
         godRayShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
@@ -606,7 +589,7 @@ namespace MxEngine
         if (camera.Effects == nullptr || (camera.Effects->GetFogDistance() == 1.0 && camera.Effects->GetFogDensity() == 0.0f))
             return; // such parameters produce no fog. Do not do extra work calling this shader
 
-        MAKE_RENDER_PASS_SCOPE("RenderController::ApplyFogEffect()");
+        MAKE_SCOPE_PROFILER("RenderController::ApplyFogEffect()");
 
         auto fogShader = this->Pipeline.Environment.Shaders["Fog"_id];
         fogShader->Bind();
@@ -630,7 +613,7 @@ namespace MxEngine
     void RenderController::ApplyChromaticAbberation(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {
         if (camera.Effects == nullptr || camera.Effects->GetChromaticAberrationIntensity() <= 0.0f) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::ApplyChromaticAbberation()");
+        MAKE_SCOPE_PROFILER("RenderController::ApplyChromaticAbberation()");
 
         auto& shader = this->Pipeline.Environment.Shaders["ChromaticAbberation"_id];
         shader->Bind();
@@ -669,7 +652,7 @@ namespace MxEngine
     void RenderController::ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
     {
         if (camera.SSR == nullptr || camera.SSR->GetSteps() == 0) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::ApplySSR()");
+        MAKE_SCOPE_PROFILER("RenderController::ApplySSR()");
 
         auto& SSRShader = this->Pipeline.Environment.Shaders["SSR"_id];
         SSRShader->Bind();
@@ -708,7 +691,7 @@ namespace MxEngine
     {
         if (camera.SSGI == nullptr || camera.SSGI->GetIntensity() == 0.0f) return;
 
-        MAKE_RENDER_PASS_SCOPE("RenderController::ApplySSR()");
+        MAKE_SCOPE_PROFILER("RenderController::ApplySSR()");
         input->GenerateMipmaps();
 
         auto& SSGIShader = this->Pipeline.Environment.Shaders["SSGI"_id];
@@ -756,7 +739,7 @@ namespace MxEngine
     {
         if (camera.Effects == nullptr || camera.Effects->GetFocusDistance() == 0.f)
             return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::ApplyDepthOfFieldEffect()");
+        MAKE_SCOPE_PROFILER("RenderController::ApplyDepthOfFieldEffect()");
 
         inputOutput->GenerateMipmaps();
         auto cocShader = this->Pipeline.Environment.Shaders["COC"_id];
@@ -795,7 +778,7 @@ namespace MxEngine
     void RenderController::ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {
         if (camera.ToneMapping == nullptr) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::ApplyHDRToLDRConversion()");
+        MAKE_SCOPE_PROFILER("RenderController::ApplyHDRToLDRConversion()");
 
         auto& HDRToLDRShader = this->Pipeline.Environment.Shaders["HDRToLDR"_id];
         auto averageWhite = this->ComputeAverageWhite(camera);
@@ -824,7 +807,7 @@ namespace MxEngine
     void RenderController::ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {
         if (camera.Effects == nullptr || !camera.Effects->IsFXAAEnabled()) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::ApplyFXAA");
+        MAKE_SCOPE_PROFILER("RenderController::ApplyFXAA");
 
         input->GenerateMipmaps();
 
@@ -840,7 +823,7 @@ namespace MxEngine
     void RenderController::ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {
         if (camera.Effects == nullptr || camera.Effects->GetVignetteRadius() <= 0.0f) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::ApplyVignette");
+        MAKE_SCOPE_PROFILER("RenderController::ApplyVignette");
 
         auto& vignetteShader = this->Pipeline.Environment.Shaders["Vignette"_id];
         vignetteShader->Bind();
@@ -857,7 +840,7 @@ namespace MxEngine
     void RenderController::ApplyColorGrading(CameraUnit& camera, TextureHandle& input, TextureHandle& output)
     {
         if (camera.ToneMapping == nullptr) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::ApplyColorGrading");
+        MAKE_SCOPE_PROFILER("RenderController::ApplyColorGrading");
 
         auto& colorGradingShader = this->Pipeline.Environment.Shaders["ColorGrading"_id];
         colorGradingShader->Bind();
@@ -877,7 +860,7 @@ namespace MxEngine
     {
         const auto& spotLights = this->Pipeline.Lighting.SpotLights;
         if (spotLights.empty()) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::DrawShadowedSpotLights()");
+        MAKE_SCOPE_PROFILER("RenderController::DrawShadowedSpotLights()");
 
         auto shader = this->Pipeline.Environment.Shaders["SpotLightShadow"_id];
         shader->Bind();
@@ -920,7 +903,7 @@ namespace MxEngine
     {
         const auto& pointLights = this->Pipeline.Lighting.PointLights;
         if (pointLights.empty()) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::DrawShadowedPointLights()");
+        MAKE_SCOPE_PROFILER("RenderController::DrawShadowedPointLights()");
 
         auto shader = this->Pipeline.Environment.Shaders["PointLightShadow"_id];
         shader->Bind();
@@ -960,7 +943,7 @@ namespace MxEngine
     {
         auto& instancedPointLights = this->Pipeline.Lighting.PointLightsInstanced;
         if (instancedPointLights.Instances.empty()) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::DrawNonShadowedPointLights()");
+        MAKE_SCOPE_PROFILER("RenderController::DrawNonShadowedPointLights()");
 
         auto shader = this->Pipeline.Environment.Shaders["PointLightNonShadow"_id];
         shader->Bind();
@@ -991,7 +974,7 @@ namespace MxEngine
     {
         auto& instancedSpotLights = this->Pipeline.Lighting.SpotLightsInstanced;
         if (instancedSpotLights.Instances.empty()) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::DrawNonShadowedSpotLights()");
+        MAKE_SCOPE_PROFILER("RenderController::DrawNonShadowedSpotLights()");
 
         auto shader = this->Pipeline.Environment.Shaders["SpotLightNonShadow"_id];
         shader->Bind();
@@ -1176,7 +1159,7 @@ namespace MxEngine
 
     void RenderController::CopyTexture(const TextureHandle& input, const TextureHandle& output)
     {
-        MAKE_RENDER_PASS_SCOPE("RenderController::CopyTexture");
+        MAKE_SCOPE_PROFILER("RenderController::CopyTexture");
         this->Pipeline.Environment.PostProcessFrameBuffer->AttachTexture(output);
         this->AttachFrameBufferNoClear(this->Pipeline.Environment.PostProcessFrameBuffer);
         this->SubmitImage(input);
@@ -1263,7 +1246,7 @@ namespace MxEngine
 
     void RenderController::DrawSkybox(const CameraUnit& camera)
     {
-        MAKE_RENDER_PASS_SCOPE("RenderController::DrawSkybox()");
+        MAKE_SCOPE_PROFILER("RenderController::DrawSkybox()");
 
         auto& shader = *this->Pipeline.Environment.Shaders["Skybox"_id];
         auto& skybox = this->Pipeline.Environment.SkyboxCubeObject;
@@ -1291,7 +1274,7 @@ namespace MxEngine
     void RenderController::DrawDebugBuffer(const CameraUnit& camera)
     {
         if (this->Pipeline.Environment.DebugBufferObject.VertexCount == 0) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::DrawDebugBuffer()");
+        MAKE_SCOPE_PROFILER("RenderController::DrawDebugBuffer()");
 
         auto& shader = *this->Pipeline.Environment.Shaders["DebugDraw"_id];
         shader.Bind();
@@ -1619,7 +1602,7 @@ namespace MxEngine
 
     void RenderController::StartPipeline()
     {
-        MAKE_RENDER_PASS_SCOPE("RenderController::StartPipeline()");
+        MAKE_SCOPE_PROFILER("RenderController::StartPipeline()");
         if (this->Pipeline.Cameras.empty())
         {
             if(this->Pipeline.Environment.RenderToDefaultFrameBuffer)
@@ -1636,7 +1619,6 @@ namespace MxEngine
         for (auto& camera : this->Pipeline.Cameras)
         {
             if (!camera.RenderToTexture) continue;
-            MAKE_RENDER_PASS_SCOPE("RenderController::RenderCamera");
 
             this->GetRenderEngine().UseBlendFactors(BlendFactor::ONE, BlendFactor::ZERO);
             this->ToggleReversedDepth(camera.IsPerspective);
@@ -1644,9 +1626,6 @@ namespace MxEngine
 
             this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBuffer"_id], this->Pipeline.OpaqueObjects);
             this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBufferMask"_id], this->Pipeline.MaskedObjects);
-
-            this->GenerateDepthPyramid(camera.DepthTexture);
-
             this->DrawParticles(camera, this->Pipeline.OpaqueParticleSystems, *this->Pipeline.Environment.Shaders["ParticleOpaque"_id]);
 
             this->PerformLightPass(camera);
@@ -1659,7 +1638,7 @@ namespace MxEngine
 
     void RenderController::EndPipeline()
     {
-        MAKE_RENDER_PASS_SCOPE("RenderController::SubmitFinalImage");
+        MAKE_SCOPE_PROFILER("RenderController::SubmitFinalImage");
         this->AttachDefaultFrameBuffer();
         if (this->Pipeline.Environment.RenderToDefaultFrameBuffer && this->Pipeline.Environment.MainCameraIndex < this->Pipeline.Cameras.size())
         {

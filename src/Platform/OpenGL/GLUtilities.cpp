@@ -44,16 +44,6 @@ namespace MxEngine
         while (glGetError() != GL_NO_ERROR);
     }
 
-    void GlPushDebugGroup(const char* name)
-    {
-        glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, -1, -1, name);
-    }
-
-    void GlPopDebugGroup()
-    {
-        glPopDebugGroup();
-    }
-
     bool GlLogCall(const char* function, const char* file, int line)
     {
         bool success = true;

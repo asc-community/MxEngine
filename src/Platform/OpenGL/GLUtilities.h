@@ -41,20 +41,13 @@ namespace MxEngine
 {
     #if defined(MXENGINE_DEBUG)
     #define GLCALL(x) GlClearErrors(); x; GlLogCall(#x, __FILE__, __LINE__)
-    #define PUSH_DEBUG_GROUP(name) GlPushDebugGroup(name)
-    #define POP_DEBUG_GROUP() GlPopDebugGroup()
     #else
     #define GLCALL(x) x
-    #define PUSH_DEBUG_GROUP(name)
-    #define POP_DEBUG_GROUP()
     #endif
 
     void GlClearErrors();
 
     bool GlLogCall(const char* function, const char* file, int line);
-
-    void GlPushDebugGroup(const char* name);
-    void GlPopDebugGroup();
 
     template<typename T>
     const char* TypeToString();
