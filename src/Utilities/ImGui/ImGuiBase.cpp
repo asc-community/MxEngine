@@ -29,5 +29,5 @@
 #include "ImGuiBase.h"
 
 // including imgui implementation
-#include <examples/imgui_impl_opengl3.cpp>
-#include <examples/imgui_impl_glfw.cpp>
+#include <backends/imgui_impl_opengl3.cpp>
+#include <backends/imgui_impl_glfw.cpp>

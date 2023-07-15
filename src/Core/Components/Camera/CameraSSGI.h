@@ -38,7 +38,7 @@ namespace MxEngine
 
         uint8_t raySteps = 3;
         uint8_t blurIterations = 1;
-        uint8_t blurLOD = 4;
+        uint8_t blurLOD = 5;
         float intensity = 2.5f;
         float distance = 50.0;
     public:
