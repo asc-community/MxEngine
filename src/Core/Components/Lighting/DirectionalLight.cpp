@@ -68,7 +68,7 @@ namespace MxEngine
         );
         center = (Matrix3x3)LightView * center;
 
-        auto zLow = index == 0 ? 0.1f : -this->Projections[index - 1];
+        auto zLow = index == 0 ? -0.1f : -this->Projections[index - 1];
         auto zHigh = this->Projections[index];
 
         auto lowPlane = center + MakeVector3(

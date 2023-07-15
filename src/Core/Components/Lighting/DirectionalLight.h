@@ -48,8 +48,8 @@ namespace MxEngine
 
         Vector3 Direction = MakeVector3(0.0f, 1.0f, 0.0f);
         Vector3 CascadeDirection{ 0.0f };
-        std::array<float, TextureCount> Projections = { 15.0f, 150.0f, 1500.0f };
-        float DepthScale = 1.0f;
+        std::array<float, TextureCount> Projections = { 5.0f, 25.0f, 250.0f };
+        float DepthScale = 20.0f;
 
         [[nodiscard]] Matrix4x4 GetMatrix(size_t index) const;
     };
