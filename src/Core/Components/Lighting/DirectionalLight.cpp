@@ -68,8 +68,19 @@ namespace MxEngine
         );
         center = (Matrix3x3)LightView * center;
 
-        auto lowPlane = MakeVector3(-this->Projections[index]) + center;
-        auto highPlane = MakeVector3( this->Projections[index]) + center;
+        auto zLow = index == 0 ? 0.1f : -this->Projections[index - 1];
+        auto zHigh = this->Projections[index];
+
+        auto lowPlane = center + MakeVector3(
+            -this->Projections[index],
+            -this->Projections[index],
+            zLow < 0.0f ? zLow * this->DepthScale : zLow / this->DepthScale
+        );
+        auto highPlane = center + MakeVector3(
+            this->Projections[index],
+            this->Projections[index],
+            zHigh > 0.0f ? zHigh * this->DepthScale : zHigh / this->DepthScale
+        );
 
         auto shadowMapSize = float(this->DepthMap->GetHeight() + 1);
         auto worldUnitsPerText = (highPlane - lowPlane) / shadowMapSize;
@@ -132,6 +143,11 @@ namespace MxEngine
             .property_readonly("depth map", &DirectionalLight::DepthMap)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
+            )
+            .property("depth scale", &DirectionalLight::DepthScale)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
             )
             .property("projections", &DirectionalLight::Projections)
             (
