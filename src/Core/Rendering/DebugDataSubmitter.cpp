@@ -28,6 +28,7 @@
 
 #include "DebugDataSubmitter.h"
 #include "Core/Components/Components.h"
+#include "Core/Components/Camera/PerspectiveCamera.h"
 #include "Core/Rendering/RenderObjects/DebugBuffer.h"
 #include "Core/BoundingObjects/Cone.h"
 #include "Core/BoundingObjects/Frustrum.h"
@@ -104,7 +105,7 @@ namespace MxEngine
             auto direction = cameraController->GetDirection();
             auto up = cameraController->GetDirectionUp();
             auto aspect = cameraController->Camera.GetAspectRatio();
-            auto zoom = cameraController->Camera.GetZoom() * 65.0f;
+            auto zoom = cameraController->Camera.GetZoom() * PerspectiveCamera::DefaultFOV;
             Frustrum frustrum(object.LocalTransform.GetPosition() + Normalize(direction), direction, up, zoom, aspect);
             buffer.Submit(frustrum, debugDraw.FrustrumColor);
         }

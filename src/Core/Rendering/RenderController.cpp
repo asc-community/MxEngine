@@ -1455,6 +1455,10 @@ namespace MxEngine
     {
         auto& camera = this->Pipeline.Cameras.emplace_back();
 
+        bool isPerspective = controller.GetCameraType() == CameraType::PERSPECTIVE;
+        bool hasSkybox = skybox != nullptr;
+        bool hasToneMapping = toneMapping != nullptr;
+
         camera.ViewportPosition           = parentTransform.GetPosition();
         camera.AspectRatio                = controller.Camera.GetAspectRatio();
         camera.StaticViewProjectionMatrix = controller.GetMatrix(MakeVector3(0.0f));
@@ -1473,11 +1477,11 @@ namespace MxEngine
         camera.SwapTexture2               = controller.GetSwapHDRTexture2();
         camera.OutputTexture              = controller.GetRenderTexture();
         camera.RenderToTexture            = controller.IsRendering();
-        camera.SkyboxTexture              = (skybox != nullptr && skybox->CubeMap.IsValid()) ? skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;
-        camera.IrradianceTexture          = (skybox != nullptr && skybox->Irradiance.IsValid()) ? skybox->Irradiance : camera.SkyboxTexture;
-        camera.SkyboxIntensity            = (skybox != nullptr) ? skybox->GetIntensity() : Skybox::DefaultIntensity;
-        camera.InversedSkyboxRotation     = (skybox != nullptr) ? Transpose(MakeRotationMatrix(RadiansVec(skybox->GetRotation()))) : Matrix3x3(1.0f);
-        camera.Gamma                      = (toneMapping != nullptr) ? toneMapping->GetGamma() : CameraToneMapping::DefaultGamma;
+        camera.SkyboxTexture              = hasSkybox && skybox->CubeMap.IsValid() ? skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;
+        camera.IrradianceTexture          = hasSkybox && skybox->Irradiance.IsValid() ? skybox->Irradiance : camera.SkyboxTexture;
+        camera.SkyboxIntensity            = hasSkybox ? skybox->GetIntensity() : Skybox::DefaultIntensity;
+        camera.InversedSkyboxRotation     = hasSkybox ? Transpose(MakeRotationMatrix(RadiansVec(skybox->GetRotation()))) : Matrix3x3(1.0f);
+        camera.Gamma                      = hasToneMapping ? toneMapping->GetGamma() : CameraToneMapping::DefaultGamma;
         camera.Effects                    = effects;
         camera.ToneMapping                = toneMapping;
         camera.SSR                        = ssr;

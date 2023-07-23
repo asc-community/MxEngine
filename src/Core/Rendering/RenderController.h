@@ -63,7 +63,6 @@ namespace MxEngine
         void ComputeBloomEffect(CameraUnit& camera, const TextureHandle& output);
         TextureHandle ComputeAverageWhite(CameraUnit& camera);
         void GenerateDepthPyramid(TextureHandle& depth);
-        void DownSampleTexture(TextureHandle& texture);
         void PerformPostProcessing(CameraUnit& camera);
         void PerformLightPass(CameraUnit& camera);
         void DrawTransparentObjects(CameraUnit& camera);
