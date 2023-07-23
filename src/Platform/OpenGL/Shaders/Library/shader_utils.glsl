@@ -23,7 +23,7 @@ float calcShadowFactor2D(vec3 coords, sampler2D depthMap, vec4 textureLimitsXY, 
 {
     if (coords.x < textureLimitsXY[0] || coords.x > textureLimitsXY[1]) return -1.0;
     if (coords.y < textureLimitsXY[2] || coords.y > textureLimitsXY[3]) return -1.0;
-    if (coords.z > 1.0 - bias || coords.z < bias) return -1.0; // do not handle corner cases, assume no shadows
+    if (coords.z > 1.0 - bias || coords.z < bias) return -1.0;
     float compare = coords.z - bias;
     
     const float lod = getTextureLodLevel(coords.xy);
