@@ -21,8 +21,8 @@ float sampleShadowMap(sampler2D depthMap, vec2 coords, float lod, float compare)
 
 float calcShadowFactor2D(vec3 coords, sampler2D depthMap, vec4 textureLimitsXY, float bias)
 {
-    if (coords.x > textureLimitsXY[1] || coords.x < textureLimitsXY[0]) return -1.0;
-    if (coords.y > textureLimitsXY[3] || coords.y < textureLimitsXY[2]) return -1.0;
+    if (coords.x < textureLimitsXY[0] || coords.x > textureLimitsXY[1]) return -1.0;
+    if (coords.y < textureLimitsXY[2] || coords.y > textureLimitsXY[3]) return -1.0;
     if (coords.z > 1.0 - bias || coords.z < bias) return -1.0; // do not handle corner cases, assume no shadows
     float compare = coords.z - bias;
     

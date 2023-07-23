@@ -36,12 +36,20 @@
 
 namespace MxEngine
 {
+    DirectionalLight::DirectionalLight()
+    {
+        auto depthTextureSize = (int)GlobalConfig::GetDirectionalLightTextureSize();
+        this->DepthMap = Factory<Texture>::Create();
+        this->DepthMap->LoadDepth(DirectionalLight::TextureCount * depthTextureSize, depthTextureSize);
+        this->DepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("directional light"));
+    }
+
     Matrix4x4 DirectionalLight::ComputeCascadeMatrix(size_t cascadeIndex, float aspectRatio, float fov, const Matrix4x4& viewMatrix) const
     {
-        float nearPlane = cascadeIndex > 0 ? this->Projections[cascadeIndex - 1] : 0.1f;
-        float farPlane = this->Projections[cascadeIndex];
+        float nearPlane = this->Projections[cascadeIndex];
+        float farPlane = cascadeIndex + 1 < DirectionalLight::TextureCount ? this->Projections[cascadeIndex + 1] : 100000.0f;
 
-        auto projection = MakePerspectiveMatrix(Radians(fov), aspectRatio, nearPlane, farPlane);
+        auto projection = MakeReversedPerspectiveMatrix(Radians(fov), aspectRatio, nearPlane, farPlane);
         auto invViewProj = Inverse(projection * viewMatrix);
 
         std::array corners = {
@@ -81,20 +89,12 @@ namespace MxEngine
         maxVector.z *= maxVector.z > 0.0f ? this->DepthScale : 1.0f / this->DepthScale;
 
         auto shadowMapSize = float(this->DepthMap->GetHeight() + 1);
-        auto worldUnitsPerText = (maxVector - minVector) / shadowMapSize;
-        minVector = floor(minVector / worldUnitsPerText) * worldUnitsPerText;
-        maxVector = floor(maxVector / worldUnitsPerText) * worldUnitsPerText;
+        auto worldUnitsPerTexel = (maxVector - minVector) / shadowMapSize;
+        minVector = floor(minVector / worldUnitsPerTexel) * worldUnitsPerTexel;
+        maxVector = floor(maxVector / worldUnitsPerTexel) * worldUnitsPerTexel;
 
         auto lightProjection = MakeOrthographicMatrix(minVector.x, maxVector.x, minVector.y, maxVector.y, -maxVector.z, -minVector.z);
         return lightProjection * lightView;
-    }
-
-    DirectionalLight::DirectionalLight()
-    { 
-        auto depthTextureSize = (int)GlobalConfig::GetDirectionalLightTextureSize();
-        this->DepthMap = Factory<Texture>::Create();
-        this->DepthMap->LoadDepth(DirectionalLight::TextureCount * depthTextureSize, depthTextureSize);
-        this->DepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("directional light"));
     }
 
     void DirectionalLight::OnUpdate(float dt)

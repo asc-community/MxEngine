@@ -565,13 +565,13 @@ namespace MxEngine
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1000.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
-            .property("z near", &PerspectiveCamera::GetZNear, &PerspectiveCamera::SetZNear)
+            .property("znear", &PerspectiveCamera::GetZNear, &PerspectiveCamera::SetZNear)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1000.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
-            .property("z far", &PerspectiveCamera::GetZFar, &PerspectiveCamera::SetZFar)
+            .property("zfar", &PerspectiveCamera::GetZFar, &PerspectiveCamera::SetZFar)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1000000.0f }),
