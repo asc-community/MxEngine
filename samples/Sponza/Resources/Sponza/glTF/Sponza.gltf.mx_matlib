@@ -68,7 +68,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\4477655471536070370.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_2.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -93,7 +93,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\13982482287905699490.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_3.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -118,7 +118,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\16299174074766089871.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_4.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -143,7 +143,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\2051777328469649772.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_5.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -168,7 +168,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\10388182081421875623.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_6.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -193,7 +193,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\15722799267630235092.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_7.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -218,7 +218,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\14267839433702832875.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_8.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -243,7 +243,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\6667038893015345571.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_9.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -268,7 +268,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\3628158980083700836.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_10.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -293,7 +293,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\7645212358685992005.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_11.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -318,7 +318,7 @@
     "NormalMap": "",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -343,7 +343,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\2299742237651021498.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_13.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -368,7 +368,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\7056944414013900257.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_14.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -393,7 +393,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\2374361008830720677.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_15.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -418,7 +418,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\332936164838540657.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_16.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -443,7 +443,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\6593109234861095314.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_17.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -468,7 +468,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\4601176305987539675.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_18.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -493,7 +493,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\4910669866631290573.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_19.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -543,7 +543,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\3827035219084910048.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_21.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -568,7 +568,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\10381718147657362067.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_22.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -593,7 +593,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\759203620573749278.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_23.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -618,7 +618,7 @@
     "NormalMap": "Resources\\Sponza\\glTF\\14118779221266351425.jpg",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "Resources\\Sponza\\glTF\\roughness_24.png",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
@@ -643,7 +643,7 @@
     "NormalMap": "",
     "RoughnessFactor": 1.0,
     "RoughnessMap": "",
-    "Transparency": 0.5,
+    "Transparency": 1.0,
     "UVMultipliers": [
       1.0,
       1.0
