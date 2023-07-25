@@ -562,14 +562,20 @@ namespace MxEngine
             .property("aspect ratio", (GetAspectRatioPerspective)&PerspectiveCamera::GetAspectRatio, (SetAspectRatioPerspective)&PerspectiveCamera::SetAspectRatio)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1000.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
             .property("znear", &PerspectiveCamera::GetZNear, &PerspectiveCamera::SetZNear)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1000.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("zfar", &PerspectiveCamera::GetZFar, &PerspectiveCamera::SetZFar)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
             );
 
         rttr::registration::class_<OrthographicCamera>("OrthographicCamera")

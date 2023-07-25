@@ -21,9 +21,9 @@ float sampleShadowMap(sampler2D depthMap, vec2 coords, float lod, float compare)
 
 float calcShadowFactor2D(vec3 coords, sampler2D depthMap, vec4 textureLimitsXY, float bias)
 {
-    if (coords.x > textureLimitsXY[1] || coords.x < textureLimitsXY[0]) return 1.0;
-    if (coords.y > textureLimitsXY[3] || coords.y < textureLimitsXY[2]) return 1.0;
-    if (coords.z > 1.0 - bias || coords.z < bias) return 1.0; // do not handle corner cases, assume no shadows
+    if (coords.x < textureLimitsXY[0] || coords.x > textureLimitsXY[1]) return -1.0;
+    if (coords.y < textureLimitsXY[2] || coords.y > textureLimitsXY[3]) return -1.0;
+    if (coords.z > 1.0 - bias || coords.z < bias) return -1.0;
     float compare = coords.z - bias;
     
     const float lod = getTextureLodLevel(coords.xy);
@@ -33,23 +33,19 @@ float calcShadowFactor2D(vec3 coords, sampler2D depthMap, vec4 textureLimitsXY, 
     vec2 fracPart = fract(pixelPos);
     vec2 startTexel = (pixelPos - fracPart) * texelSizeInv;
 
-    vec3 mixY[3];
+    float s = 0.0;
 
-    mixY[0][0] = sampleShadowMap(depthMap, startTexel + vec2( 1.0,  1.0) * texelSizeInv, lod, compare);
-    mixY[0][1] = sampleShadowMap(depthMap, startTexel + vec2( 0.0,  1.0) * texelSizeInv, lod, compare);
-    mixY[0][2] = sampleShadowMap(depthMap, startTexel + vec2(-1.0,  1.0) * texelSizeInv, lod, compare);
-    mixY[1][0] = sampleShadowMap(depthMap, startTexel + vec2( 1.0,  0.0) * texelSizeInv, lod, compare);
-    mixY[1][1] = sampleShadowMap(depthMap, startTexel + vec2( 0.0,  0.0) * texelSizeInv, lod, compare);
-    mixY[1][2] = sampleShadowMap(depthMap, startTexel + vec2(-1.0,  0.0) * texelSizeInv, lod, compare);
-    mixY[2][0] = sampleShadowMap(depthMap, startTexel + vec2( 1.0, -1.0) * texelSizeInv, lod, compare);
-    mixY[2][1] = sampleShadowMap(depthMap, startTexel + vec2( 0.0, -1.0) * texelSizeInv, lod, compare);
-    mixY[2][2] = sampleShadowMap(depthMap, startTexel + vec2(-1.0, -1.0) * texelSizeInv, lod, compare);
+    s += sampleShadowMap(depthMap, startTexel + vec2( 1.0,  1.0) * texelSizeInv, lod, compare);
+    s += sampleShadowMap(depthMap, startTexel + vec2( 0.0,  1.0) * texelSizeInv, lod, compare);
+    s += sampleShadowMap(depthMap, startTexel + vec2(-1.0,  1.0) * texelSizeInv, lod, compare);
+    s += sampleShadowMap(depthMap, startTexel + vec2( 1.0,  0.0) * texelSizeInv, lod, compare);
+    s += sampleShadowMap(depthMap, startTexel + vec2( 0.0,  0.0) * texelSizeInv, lod, compare);
+    s += sampleShadowMap(depthMap, startTexel + vec2(-1.0,  0.0) * texelSizeInv, lod, compare);
+    s += sampleShadowMap(depthMap, startTexel + vec2( 1.0, -1.0) * texelSizeInv, lod, compare);
+    s += sampleShadowMap(depthMap, startTexel + vec2( 0.0, -1.0) * texelSizeInv, lod, compare);
+    s += sampleShadowMap(depthMap, startTexel + vec2(-1.0, -1.0) * texelSizeInv, lod, compare);
 
-    vec3 samplesY = mix(mixY[1], mixY[0], fracPart.y) + mix(mixY[2], mixY[1], fracPart.y);
-    float s = mix(samplesY[1], samplesY[0], fracPart.x) + mix(samplesY[2], samplesY[1], fracPart.x);
-    //s = sampleShadowMap(depthMap, coords.xy, lod, compare);
-    s = pow(clamp(s, 0.0, 1.0), 8.0);
-    return s;
+    return s / 9.0;
 }
 
 const int POINT_LIGHT_SAMPLES = 20;

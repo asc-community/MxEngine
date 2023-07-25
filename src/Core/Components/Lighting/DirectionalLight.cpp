@@ -31,68 +31,107 @@
 #include "Core/Config/GlobalConfig.h"
 #include "Core/Application/Timer.h"
 #include "Core/Components/Camera/CameraController.h"
+#include "Core/Components/Camera/PerspectiveCamera.h"
 #include "Core/Runtime/Reflection.h"
 
 namespace MxEngine
 {
     DirectionalLight::DirectionalLight()
-    { 
+    {
         auto depthTextureSize = (int)GlobalConfig::GetDirectionalLightTextureSize();
         this->DepthMap = Factory<Texture>::Create();
         this->DepthMap->LoadDepth(DirectionalLight::TextureCount * depthTextureSize, depthTextureSize);
         this->DepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("directional light"));
     }
 
-    Matrix4x4 DirectionalLight::GetMatrix(const Vector3& center, size_t index) const
+    Matrix4x4 DirectionalLight::ComputeCascadeMatrix(size_t cascadeIndex, float aspectRatio, float fov, const Matrix4x4& viewMatrix) const
     {
-        MX_ASSERT(index < DirectionalLight::TextureCount);
+        float nearPlane = this->Projections[cascadeIndex];
+        float farPlane = cascadeIndex + 1 < DirectionalLight::TextureCount ? this->Projections[cascadeIndex + 1] : 100000.0f;
 
-        Vector3 Center = center;
-        float distance = 0.0f;
-        for (size_t i = 0; i < index; i++)
-        {
-            distance += this->Projections[i + 1] - this->Projections[i];
-        }
-        // Center -= distance * this->CascadeDirection;
+        auto projection = MakeReversedPerspectiveMatrix(Radians(fov), aspectRatio, nearPlane, farPlane);
+        auto invViewProj = Inverse(projection * viewMatrix);
 
-        constexpr auto floor = [](const Vector3 & v) -> Vector3
-        {
-            return { std::floor(v.x), std::floor(v.y), std::floor(v.z) };
+        std::array corners = {
+            MakeVector4(-1.0f, -1.0f, -1.0f, 1.0f),
+            MakeVector4(-1.0f, -1.0f,  1.0f, 1.0f),
+            MakeVector4(-1.0f,  1.0f, -1.0f, 1.0f),
+            MakeVector4(-1.0f,  1.0f,  1.0f, 1.0f),
+            MakeVector4( 1.0f, -1.0f, -1.0f, 1.0f),
+            MakeVector4( 1.0f, -1.0f,  1.0f, 1.0f),
+            MakeVector4( 1.0f,  1.0f, -1.0f, 1.0f),
+            MakeVector4( 1.0f,  1.0f,  1.0f, 1.0f),
         };
+        for (auto& corner : corners)
+        {
+            corner = invViewProj * corner;
+            corner /= corner.w;
+        }
 
-        Matrix4x4 LightView = MakeViewMatrix(
-            Normalize(this->Direction),
-            MakeVector3(0.0f, 0.0f, 0.0f),
-            MakeVector3(0.001f, 1.0f, 0.001f)
-        );
-        Center = (Matrix3x3)LightView * Center;
+        auto center = MakeVector3(0.0f);
+        for (const auto& corner : corners)
+        {
+            center += Vector3(corner);
+        }
+        center /= corners.size();
 
-        auto Low  = MakeVector3(-this->Projections[index]) + Center;
-        auto High = MakeVector3( this->Projections[index]) + Center;
+        const auto lightView = MakeViewMatrix(center + Normalize(this->Direction), center, MakeVector3(0.001f, 1.0f, 0.001f));
+
+        auto minVector = MakeVector3(std::numeric_limits<float>::max());
+        auto maxVector = MakeVector3(std::numeric_limits<float>::lowest());
+        for (const auto& corner : corners)
+        {
+            Vector3 transformedCorner = lightView * corner;
+            minVector = VectorMin(minVector, transformedCorner);
+            maxVector = VectorMax(maxVector, transformedCorner);
+        }
+        minVector.z *= minVector.z < 0.0f ? this->DepthScale : 1.0f / this->DepthScale;
+        maxVector.z *= maxVector.z > 0.0f ? this->DepthScale : 1.0f / this->DepthScale;
 
         auto shadowMapSize = float(this->DepthMap->GetHeight() + 1);
-        auto worldUnitsPerText = (High - Low) / shadowMapSize;
-        Low = floor(Low / worldUnitsPerText) * worldUnitsPerText;
-        High = floor(High / worldUnitsPerText) * worldUnitsPerText;
-        Center = (High + Low) * -0.5f;
+        auto worldUnitsPerTexel = (maxVector - minVector) / shadowMapSize;
+        minVector = floor(minVector / worldUnitsPerTexel) * worldUnitsPerTexel;
+        maxVector = floor(maxVector / worldUnitsPerTexel) * worldUnitsPerTexel;
 
-        Matrix4x4 OrthoProjection = MakeOrthographicMatrix(Low.x, High.x, Low.y, High.y, Low.z, High.z);
-        return OrthoProjection * LightView;
+        auto lightProjection = MakeOrthographicMatrix(minVector.x, maxVector.x, minVector.y, maxVector.y, -maxVector.z, -minVector.z);
+        return lightProjection * lightView;
     }
 
     void DirectionalLight::OnUpdate(float dt)
     {
-        if (this->IsFollowingViewport)
+        auto viewport = Rendering::GetViewport();
+        if (this->IsFollowingViewport && viewport.IsValid())
         {
-            auto viewport = Rendering::GetViewport();
-            if (viewport.IsValid())
+            auto& controller = *viewport.GetUnchecked();
+            auto& object = MxObject::GetByComponent(*this);
+            object.LocalTransform.SetPosition(MxObject::GetByComponent(controller).LocalTransform.GetPosition());
+
+            float aspectRatio = controller.Camera.GetAspectRatio();
+            float fov = controller.GetCameraType() == CameraType::PERSPECTIVE ? controller.GetCamera<PerspectiveCamera>().GetFOV() : controller.Camera.GetZoom();
+            auto viewMatrix = controller.Camera.GetViewMatrix();
+
+            for (size_t i = 0; i < this->matrices.size(); i++)
             {
-                auto& object = MxObject::GetByComponent(*this);
-                object.LocalTransform.SetPosition(MxObject::GetByComponent(*viewport).LocalTransform.GetPosition());
-                auto direction = viewport->GetDirection();
-                this->CascadeDirection = Normalize(Vector3(direction.x, 0.0f, direction.z));
+                this->matrices[i] = this->ComputeCascadeMatrix(i, aspectRatio, fov, viewMatrix);
             }
         }
+        else
+        {
+            float aspectRatio = 1.0f;
+            float fov = PerspectiveCamera::DefaultFOV;
+            auto viewMatrix = MakeViewMatrix(MakeVector3(0.0f, 1.0f, 0.0f), MakeVector3(0.0f), MakeVector3(0.001f, 1.0f, 0.001f));
+
+            for (size_t i = 0; i < this->matrices.size(); i++)
+            {
+                this->matrices[i] = this->ComputeCascadeMatrix(i, aspectRatio, fov, viewMatrix);
+            }
+        }
+    }
+
+    const Matrix4x4& DirectionalLight::GetMatrix(size_t index) const
+    {
+        MX_ASSERT(index < this->matrices.size());
+        return this->matrices[index];
     }
 
     MXENGINE_REFLECT_TYPE
@@ -132,14 +171,15 @@ namespace MxEngine
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::EDITABLE)
             )
+            .property("depth scale", &DirectionalLight::DepthScale)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1000000.0f })
+            )
             .property("projections", &DirectionalLight::Projections)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE)
-            )
-            .property("cascade direction", &DirectionalLight::CascadeDirection)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(MetaInfo::CONDITION, +([](const rttr::instance& v) { return !v.try_convert<DirectionalLight>()->IsFollowingViewport; }))
             );
     }
 }

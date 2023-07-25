@@ -63,7 +63,6 @@ namespace MxEngine
         void ComputeBloomEffect(CameraUnit& camera, const TextureHandle& output);
         TextureHandle ComputeAverageWhite(CameraUnit& camera);
         void GenerateDepthPyramid(TextureHandle& depth);
-        void DownSampleTexture(TextureHandle& texture);
         void PerformPostProcessing(CameraUnit& camera);
         void PerformLightPass(CameraUnit& camera);
         void DrawTransparentObjects(CameraUnit& camera);
@@ -100,6 +99,7 @@ namespace MxEngine
         void Clear() const;
         void ToggleDepthOnlyMode(bool value);
         void ToggleReversedDepth(bool value);
+        void ToggleDepthClamp(bool value);
         void ToggleFaceCulling(bool value, bool counterClockWise = true, bool cullBack = true);
         void SetAnisotropicFiltering(float value);
         void SetViewport(int x, int y, int width, int height);

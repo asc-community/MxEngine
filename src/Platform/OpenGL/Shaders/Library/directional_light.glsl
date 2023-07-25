@@ -12,32 +12,17 @@ struct DirLight
 
 float calcShadowFactorCascade(vec4 position, DirLight light, sampler2D shadowMap)
 {
-    vec3 projectedPositions[DirLightCascadeMapCount];
-    float shadowFactors[DirLightCascadeMapCount + 1];
-    shadowFactors[DirLightCascadeMapCount] = 1.0;
-
-    const vec2 textureSplitSize = vec2(1.01, 0.99) / DirLightCascadeMapCount;
+    const vec2 TEXTURE_BIAS = vec2(0.001, 0.001);
+    const float invCascadeCount = 1.0 / DirLightCascadeMapCount;
+    vec3 depthBias = vec3(0.0005, 0.0003, 0.0002);
     for (int i = 0; i < DirLightCascadeMapCount; i++)
     {
-        vec4 textureLimitsXY = vec4(vec2(i, i + 1) * textureSplitSize, 0.001, 0.999);
+        vec2 textureLimitsX = vec2(i, i + 1) * invCascadeCount + vec2(TEXTURE_BIAS.x, -TEXTURE_BIAS.x);
+        vec4 textureLimitsXY = vec4(textureLimitsX, TEXTURE_BIAS.y, 1.0 - TEXTURE_BIAS.y);
         vec4 fragLightSpace = light.transform[i] * position;
-        projectedPositions[i] = fragLightSpace.xyz / fragLightSpace.w;
-        shadowFactors[i] = calcShadowFactor2D(projectedPositions[i], shadowMap, textureLimitsXY, 0.002);
+        vec3 projectedPosition = fragLightSpace.xyz / fragLightSpace.w;
+        float s = calcShadowFactor2D(projectedPosition, shadowMap, textureLimitsXY, depthBias[i]);
+        if (s != -1.0) return s;
     }
-
-    float totalFactor = 1.0f;
-    bool cascadeFound = false;
-    for (int i = 0; i < DirLightCascadeMapCount; i++)
-    {
-        vec3 pos = projectedPositions[i];
-        vec3 normCoords = abs(2.0 * pos - 1.0);
-        normCoords = clamp(10.0 * normCoords - 9.0, 0.0, 1.0);
-        float mixCoef = max(max(normCoords.x, normCoords.y), normCoords.z);
-        float currentFactor = mix(shadowFactors[i], shadowFactors[i + 1], mixCoef);
-
-        currentFactor = min(currentFactor, 1.0f);
-        totalFactor = totalFactor * currentFactor;
-    }
-
-    return totalFactor;
+    return 1.0;
 }

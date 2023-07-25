@@ -402,12 +402,14 @@ namespace MxEngine
         
         // ImGuizmo does not work well with reversed perspective projection
         if (viewport->GetCameraType() == CameraType::PERSPECTIVE)
+        {
             projection = MakePerspectiveMatrix(
-                viewport->Camera.GetZoom(),
+                Radians(viewport->GetCamera<PerspectiveCamera>().GetFOV()),
                 viewport->Camera.GetAspectRatio(),
                 viewport->Camera.GetZNear(),
                 viewport->Camera.GetZFar()
             );
+        }
 
         // TODO: add docs
         if (!ImGuizmo::IsUsing())

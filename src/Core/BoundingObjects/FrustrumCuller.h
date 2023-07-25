@@ -44,6 +44,8 @@ namespace MxEngine
 
         // http://iquilezles.org/www/articles/frustumcorrect/frustumcorrect.htm
         bool IsAABBVisible(const Vector3& minp, const Vector3& maxp) const;
+        // useful for shadow maps where z should not be culled, but clamped instead
+        bool IsAABBVisibleXY(const Vector3& minp, const Vector3& maxp) const;
 
     private:
         enum Planes
@@ -134,7 +136,7 @@ namespace MxEngine
             }
         }
 
-        // this checks somehow break everything. Commented them for now
+        // these checks somehow break everything. Commented them for now
 
         // // check frustum outside/inside box
         // int out;
@@ -146,5 +148,27 @@ namespace MxEngine
         // out = 0; for (const auto& point : this->points) out += int(point.z < minp.z); if (out == 8) return false;
 
         return true;
-     }
+    }
+
+    inline bool FrustrumCuller::IsAABBVisibleXY(const Vector3& minp, const Vector3& maxp) const
+    {
+        for (size_t i = 0; i < Planes::COUNT; i++)
+        {
+            if (i == Planes::NEAR || i == Planes::FAR) continue;
+            const auto& plane = this->planes[i];
+
+            if ((Dot(plane, Vector4(minp.x, minp.y, minp.z, 1.0f)) < 0.0f) &&
+                (Dot(plane, Vector4(maxp.x, minp.y, minp.z, 1.0f)) < 0.0f) &&
+                (Dot(plane, Vector4(minp.x, maxp.y, minp.z, 1.0f)) < 0.0f) &&
+                (Dot(plane, Vector4(maxp.x, maxp.y, minp.z, 1.0f)) < 0.0f) &&
+                (Dot(plane, Vector4(minp.x, minp.y, maxp.z, 1.0f)) < 0.0f) &&
+                (Dot(plane, Vector4(maxp.x, minp.y, maxp.z, 1.0f)) < 0.0f) &&
+                (Dot(plane, Vector4(minp.x, maxp.y, maxp.z, 1.0f)) < 0.0f) &&
+                (Dot(plane, Vector4(maxp.x, maxp.y, maxp.z, 1.0f)) < 0.0f))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }

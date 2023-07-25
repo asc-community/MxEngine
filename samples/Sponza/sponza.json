@@ -2473,10 +2473,11 @@
         "id": 0,
         "intensity": 100.0,
         "is following viewport": true,
+        "depth scale": 20.0,
         "projections": [
-          50.0,
-          100.0,
-          200.0
+          4.0,
+          15.0,
+          100.0
         ]
       },
       "displayed": true,

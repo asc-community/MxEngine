@@ -46,7 +46,13 @@ vec3 calcColorUnderSpotLight(FragmentInfo fragment, SpotLight light, vec3 viewDi
     float lightDistance = length(lightPath);
 
     float shadowFactor = 1.0;
-    if (computeShadow) { shadowFactor = calcShadowFactor2D(fragLightSpace, map_shadow, vec4(0.001, 0.999, 0.001, 0.999), 0.002); }
+    if (computeShadow)
+    {
+        const vec3 TEXTURE_BIAS = vec3(0.001, 0.001, 0.002);
+        const vec4 textureLimitsXY = vec4(TEXTURE_BIAS.x, 1.0 - TEXTURE_BIAS.x, TEXTURE_BIAS.y, 1.0 - TEXTURE_BIAS.y);
+        float s = calcShadowFactor2D(fragLightSpace, map_shadow, textureLimitsXY, TEXTURE_BIAS.z);
+        if (s != -1.0) shadowFactor = s;
+    }
 
     float fragAngle = dot(normalize(lightPath), -light.direction);
     float epsilon = light.innerAngle - light.outerAngle;
