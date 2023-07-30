@@ -851,10 +851,11 @@
         "id": 0,
         "intensity": 0.10000000149011612,
         "is following viewport": false,
+        "depth scale": 20.0,
         "projections": [
-          15.0,
-          150.0,
-          1500.0
+          5.0,
+          25.0,
+          250.0
         ]
       },
       "displayed": true,

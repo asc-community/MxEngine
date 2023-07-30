@@ -90,14 +90,12 @@ namespace PathTracing
                 Rendering::GetController().RenderToTexture(this->accumulationTexture, this->rayTracingShader);
                 accumulationFrames = 1;
             }
-            output->GenerateMipmaps();
 
             this->accumulationTexture->Bind(0);
             this->postProcessShader->Bind();
             this->postProcessShader->SetUniform("uImage", this->accumulationTexture->GetBoundId());
             this->postProcessShader->SetUniform("uImageSamples", (int)this->accumulationFrames);
             Rendering::GetController().RenderToTexture(output, this->postProcessShader);
-            output->GenerateMipmaps();
 
             this->oldCameraDirection = cameraDirection;
             this->oldCameraPosition = cameraPosition;

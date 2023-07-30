@@ -222,6 +222,19 @@ namespace MxEngine
         return *this;
     }
 
+    Renderer& Renderer::UseDepthClamp(bool value)
+    {
+        if (value)
+        {
+            GLCALL(glEnable(GL_DEPTH_CLAMP));
+        }
+        else
+        {
+            GLCALL(glDisable(GL_DEPTH_CLAMP));
+        }
+        return *this;
+    }
+
     Renderer& Renderer::UseReversedDepth(bool value)
     {
         if (value)

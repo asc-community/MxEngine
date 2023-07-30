@@ -26,34 +26,18 @@
 // OR TORT(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include "Utilities/ECS/Component.h"
+#include "DebugGroup.h"
+#include "Platform/OpenGL/GLUtilities.h"
 
 namespace MxEngine
 {
-    class CameraSSGI
+    DebugGroup::DebugGroup(std::string_view name)
     {
-        MAKE_COMPONENT(CameraSSGI);
+        PUSH_DEBUG_GROUP(name.data());
+    }
 
-        uint8_t raySteps = 3;
-        uint8_t blurIterations = 1;
-        uint8_t blurLOD = 5;
-        float intensity = 2.5f;
-        float distance = 50.0;
-    public:
-        CameraSSGI() = default;
-
-        float GetIntensity() const;
-        float GetDistance() const;
-        size_t GetRaySteps() const;
-        size_t GetBlurIterations() const;
-        size_t GetBlurLOD() const;
-        
-        void SetIntensity(float intensity);
-        void SetDistance(float distance);
-        void SetRaySteps(size_t raySteps);
-        void SetBlurIterations(size_t iterations);
-        void SetBlurLOD(size_t lod);
-    };
+    DebugGroup::~DebugGroup()
+    {
+        POP_DEBUG_GROUP();
+    }
 }

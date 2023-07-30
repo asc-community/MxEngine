@@ -227,7 +227,7 @@ namespace MxEngine
             }
 
             float alphaCutoff = 0.0f;
-            if (material->Get(AI_MATKEY_GLTF_ALPHACUTOFF, alphaCutoff) == aiReturn_SUCCESS)
+            if (materialInfo.AlphaMask && material->Get(AI_MATKEY_GLTF_ALPHACUTOFF, alphaCutoff) == aiReturn_SUCCESS)
             {
                 materialInfo.Transparency *= alphaCutoff;
             }

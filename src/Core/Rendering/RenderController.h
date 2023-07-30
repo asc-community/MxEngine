@@ -49,8 +49,8 @@ namespace MxEngine
 
     struct CameraInfo 
     {
-        const CameraController& controller; 
-        const Transform& parentTransform;
+        const CameraController* controller; 
+        const Transform* parentTransform;
         const Skybox* skybox;
         const CameraEffects* effects;
         const CameraToneMapping* toneMapping;
@@ -75,7 +75,8 @@ namespace MxEngine
         void DrawDebugBuffer(const CameraUnit& camera);
         void DrawObject(const RenderUnit& unit, size_t instanceCount, size_t baseInstance, const Shader& shader);
         void ComputeBloomEffect(CameraUnit& camera, const TextureHandle& output);
-        TextureHandle ComputeAverageWhite(CameraUnit& camera, float fadingAdaptationSpeed = 0.f, float adaptationThreshold = 0.f);
+        TextureHandle ComputeAverageWhite(CameraUnit& camera, float fadingAdaptationSpeed, float adaptationThreshold);
+        void GenerateDepthPyramid(TextureHandle& depth);
         void PerformPostProcessing(CameraUnit& camera);
         void PerformLightPass(CameraUnit& camera);
         void DrawTransparentObjects(CameraUnit& camera);
@@ -113,6 +114,7 @@ namespace MxEngine
         void Clear() const;
         void ToggleDepthOnlyMode(bool value);
         void ToggleReversedDepth(bool value);
+        void ToggleDepthClamp(bool value);
         void ToggleFaceCulling(bool value, bool counterClockWise = true, bool cullBack = true);
         void SetAnisotropicFiltering(float value);
         void SetViewport(int x, int y, int width, int height);
@@ -127,8 +129,8 @@ namespace MxEngine
         void RenderToFrameBufferNoClear(const FrameBufferHandle& framebuffer, const ShaderHandle& shader);
         void RenderToTexture(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
         void RenderToTextureNoClear(const TextureHandle& texture, const ShaderHandle& shader, Attachment attachment = Attachment::COLOR_ATTACHMENT0);
-        void CopyTexture(const TextureHandle& input, const TextureHandle& output);
-        void ApplyGaussianBlur(const TextureHandle& inputOutput, const TextureHandle& temporary, size_t iterations, size_t lod = 0);
+        void CopyTexture(const TextureHandle& input, const TextureHandle& output, int lod = 0);
+        void ApplyGaussianBlur(const TextureHandle& inputOutput, const TextureHandle& temporary, size_t iterations, float sampleInterval = 1.0f);
         void DrawVertices(RenderPrimitive primitive, size_t vertexCount, size_t vertexOffset, size_t instanceCount, size_t baseInstance);
         void DrawIndices(RenderPrimitive primitive, size_t indexCount, size_t indexOffset, size_t baseVertex, size_t instanceCount, size_t baseInstance);
 
@@ -143,10 +145,10 @@ namespace MxEngine
         void SubmitLightSource(const DirectionalLight& light, const Transform& parentTransform);
         void SubmitLightSource(const PointLight& light, const Transform& parentTransform);
         void SubmitLightSource(const SpotLight& light, const Transform& parentTransform);
-        void SubmitCamera(CameraInfo&& info);
+        void SubmitCamera(const CameraInfo& info);
         size_t SubmitRenderGroup(const Mesh& mesh, size_t instanceOffset, size_t instanceCount);
         void SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& object, const Material& material, const Transform& parentTransform, bool castsShadow, const char* debugName = nullptr);
-        void SubmitImage(const TextureHandle& texture);
+        void SubmitImage(const TextureHandle& texture, int lod = 0);
         void StartPipeline();
         void EndPipeline();
     };

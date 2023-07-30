@@ -25,9 +25,6 @@ void InitCamera(MxObject& object)
 	skybox->Irradiance = AssetManager::LoadCubeMap("Resources/textures/dawn_irradiance.jpg"_id);
 	skybox->SetIntensity(5.0f);
 
-	controller->Camera.SetZFar(100000.0f);
-	controller->Camera.SetAspectRatio(WindowManager::GetWidth(), WindowManager::GetHeight());
-
 	controller->ListenWindowResizeEvent();
 	input->BindMovement(KeyCode::W, KeyCode::A, KeyCode::S, KeyCode::D, KeyCode::SPACE, KeyCode::LEFT_SHIFT);
 	input->SetMoveSpeed(5.0f);

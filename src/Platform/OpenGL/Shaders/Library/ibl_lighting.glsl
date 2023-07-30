@@ -13,7 +13,7 @@ vec3 calculateIBL(FragmentInfo fragment, vec3 viewDirection, EnvironmentInfo env
     
     vec3 prefilteredColor = calcReflectionColor(environment.skybox, environment.skyboxRotation, viewDirection, fragment.normal, lod);
     prefilteredColor = pow(prefilteredColor, vec3(gamma));
-    vec2 envBRDF = texture2D(environment.envBRDFLUT, vec2(NV, 1.0 - roughness)).rg;
+    vec2 envBRDF = texture(environment.envBRDFLUT, vec2(NV, 1.0 - roughness)).rg;
     vec3 specularColor = prefilteredColor * (F * envBRDF.x + envBRDF.y);
 
     vec3 irradianceColor = calcReflectionColor(environment.irradiance, environment.skyboxRotation, viewDirection, fragment.normal);

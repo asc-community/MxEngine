@@ -110,6 +110,7 @@ namespace MxEngine
         TextureHandle DefaultGreyMap;
         TextureHandle DefaultShadowMap;
         TextureHandle AverageWhiteTexture;
+        TextureHandle DownSampleTexture;
         TextureHandle EnvironmentBRDFLUT;
         CubeMapHandle DefaultShadowCubeMap;
         CubeMapHandle DefaultSkybox;

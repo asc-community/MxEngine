@@ -2283,10 +2283,10 @@
       },
       "CameraSSGI": {
         "blur iterations": 1,
-        "blur lod": 4,
+        "blur lod": 5,
         "distance": 50.0,
         "id": 0,
-        "intensity": 3.0,
+        "intensity": 2.5,
         "ray steps": 3
       },
       "CameraSSR": {
@@ -2473,10 +2473,11 @@
         "id": 0,
         "intensity": 100.0,
         "is following viewport": true,
+        "depth scale": 20.0,
         "projections": [
-          50.0,
-          100.0,
-          200.0
+          4.0,
+          15.0,
+          100.0
         ]
       },
       "displayed": true,

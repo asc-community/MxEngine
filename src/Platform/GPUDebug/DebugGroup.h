@@ -28,32 +28,18 @@
 
 #pragma once
 
-#include "Utilities/ECS/Component.h"
+#include <string_view>
+
+#include "Core/Macro/Macro.h"
 
 namespace MxEngine
 {
-    class CameraSSGI
+    class DebugGroup
     {
-        MAKE_COMPONENT(CameraSSGI);
-
-        uint8_t raySteps = 3;
-        uint8_t blurIterations = 1;
-        uint8_t blurLOD = 5;
-        float intensity = 2.5f;
-        float distance = 50.0;
     public:
-        CameraSSGI() = default;
-
-        float GetIntensity() const;
-        float GetDistance() const;
-        size_t GetRaySteps() const;
-        size_t GetBlurIterations() const;
-        size_t GetBlurLOD() const;
-        
-        void SetIntensity(float intensity);
-        void SetDistance(float distance);
-        void SetRaySteps(size_t raySteps);
-        void SetBlurIterations(size_t iterations);
-        void SetBlurLOD(size_t lod);
+        DebugGroup(std::string_view name);
+        ~DebugGroup();
     };
+
+    #define MAKE_GPU_DEBUG_GROUP(name) DebugGroup MXENGINE_CONCAT(_debugGroup, __LINE__)(name)
 }
