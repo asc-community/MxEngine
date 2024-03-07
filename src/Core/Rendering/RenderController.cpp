@@ -657,7 +657,7 @@ namespace MxEngine
         this->BindGBuffer(camera, *SSRShader, textureId);
         this->BindCameraInformation(camera, *SSRShader);
 
-        SSRShader->SetUniform("thickness", camera.SSR->GetThickness());
+        SSRShader->SetUniform("thickness", camera.SSR->GetThickness()); 
         SSRShader->SetUniform("startDistance", camera.SSR->GetStartDistance());
         SSRShader->SetUniform("steps", (int)camera.SSR->GetSteps());
 
@@ -1029,11 +1029,12 @@ namespace MxEngine
         shader.SetUniform("camera.position", camera.ViewportPosition);
         shader.SetUniform("camera.viewProjMatrix", camera.ViewProjectionMatrix);
         shader.SetUniform("camera.invViewProjMatrix", camera.InverseViewProjMatrix);
+        shader.SetUniform("camera.viewMatrix", camera.ViewMatrix); 
+        shader.SetUniform("camera.projectionMatrix", camera.ProjectionMatrix);
     }
-
     void RenderController::BindGBuffer(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId)
     {
-        camera.AlbedoTexture->Bind(startId++);
+        camera.AlbedoTexture->Bind(startId++); 
         camera.NormalTexture->Bind(startId++);
         camera.MaterialTexture->Bind(startId++);
         camera.DepthTexture->Bind(startId++);
@@ -1043,9 +1044,9 @@ namespace MxEngine
         shader.SetUniform("materialTex", camera.MaterialTexture->GetBoundId());
         shader.SetUniform("depthTex", camera.DepthTexture->GetBoundId());
     }
-
+     
     const Renderer& RenderController::GetRenderEngine() const
-    {
+    { 
         return this->renderer;
     }
 
@@ -1443,7 +1444,7 @@ namespace MxEngine
     }
 
     void RenderController::SubmitCamera( 
-        const CameraController& controller,
+        const CameraController& cameraController,
         const Transform& parentTransform, 
         const Skybox* skybox,
         const CameraEffects* effects,
@@ -1455,28 +1456,30 @@ namespace MxEngine
     {
         auto& camera = this->Pipeline.Cameras.emplace_back();
 
-        bool isPerspective = controller.GetCameraType() == CameraType::PERSPECTIVE;
+        bool isPerspective = cameraController.GetCameraType() == CameraType::PERSPECTIVE;
         bool hasSkybox = skybox != nullptr;
         bool hasToneMapping = toneMapping != nullptr;
 
         camera.ViewportPosition           = parentTransform.GetPosition();
-        camera.AspectRatio                = controller.Camera.GetAspectRatio();
-        camera.StaticViewProjectionMatrix = controller.GetMatrix(MakeVector3(0.0f));
-        camera.ViewProjectionMatrix       = controller.GetMatrix(parentTransform.GetPosition());
+        camera.AspectRatio                = cameraController.Camera.GetAspectRatio();
+        camera.StaticViewProjectionMatrix = cameraController.GetMatrix(MakeVector3(0.0f));
+        camera.ViewMatrix                 = cameraController.GetViewMatrix(parentTransform.GetPosition());
+        camera.ProjectionMatrix           = cameraController.GetProjectionMatrix();
+        camera.ViewProjectionMatrix       = cameraController.GetMatrix(parentTransform.GetPosition());
         camera.InverseViewProjMatrix      = Inverse(camera.ViewProjectionMatrix);
-        camera.Culler                     = controller.GetFrustrumCuller();
-        camera.IsPerspective              = controller.GetCameraType() == CameraType::PERSPECTIVE;
-        camera.GBuffer                    = controller.GetGBuffer();
-        camera.AlbedoTexture              = controller.GetAlbedoTexture();
-        camera.NormalTexture              = controller.GetNormalTexture();
-        camera.MaterialTexture            = controller.GetMaterialTexture();
-        camera.DepthTexture               = controller.GetDepthTexture();
-        camera.AverageWhiteTexture        = controller.GetAverageWhiteTexture();
-        camera.HDRTexture                 = controller.GetHDRTexture();
-        camera.SwapTexture1               = controller.GetSwapHDRTexture1();
-        camera.SwapTexture2               = controller.GetSwapHDRTexture2();
-        camera.OutputTexture              = controller.GetRenderTexture();
-        camera.RenderToTexture            = controller.IsRendering();
+        camera.Culler                     = cameraController.GetFrustrumCuller();
+        camera.IsPerspective              = cameraController.GetCameraType() == CameraType::PERSPECTIVE;
+        camera.GBuffer                    = cameraController.GetGBuffer();
+        camera.AlbedoTexture              = cameraController.GetAlbedoTexture();
+        camera.NormalTexture              = cameraController.GetNormalTexture();
+        camera.MaterialTexture            = cameraController.GetMaterialTexture();
+        camera.DepthTexture               = cameraController.GetDepthTexture();
+        camera.AverageWhiteTexture        = cameraController.GetAverageWhiteTexture();
+        camera.HDRTexture                 = cameraController.GetHDRTexture();
+        camera.SwapTexture1               = cameraController.GetSwapHDRTexture1();
+        camera.SwapTexture2               = cameraController.GetSwapHDRTexture2();
+        camera.OutputTexture              = cameraController.GetRenderTexture();
+        camera.RenderToTexture            = cameraController.IsRendering();
         camera.SkyboxTexture              = hasSkybox && skybox->CubeMap.IsValid() ? skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;
         camera.IrradianceTexture          = hasSkybox && skybox->Irradiance.IsValid() ? skybox->Irradiance : camera.SkyboxTexture;
         camera.SkyboxIntensity            = hasSkybox ? skybox->GetIntensity() : Skybox::DefaultIntensity;

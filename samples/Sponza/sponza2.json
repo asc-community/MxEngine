@@ -1,0 +1,3763 @@
+{
+  "AudioBuffer": null,
+  "CubeMap": [
+    {
+      "_filepath": "Resources/skybox.png",
+      "id": 2
+    },
+    {
+      "_filepath": "Resources/skybox_irradiance.png",
+      "id": 3
+    }
+  ],
+  "Material": [
+    {
+      "albedo map": 102,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 0,
+      "metallic factor": 0.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 0.75,
+      "roughness map": 18446744073709551615,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 18446744073709551615,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 1,
+      "metallic factor": 1.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 1.0,
+      "roughness map": 18446744073709551615,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 14,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 2,
+      "metallic factor": 1.0,
+      "metallic map": 12,
+      "name": "DefaultMaterial",
+      "normal map": 24,
+      "roughness factor": 1.0,
+      "roughness map": 17,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 21,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 3,
+      "metallic factor": 1.0,
+      "metallic map": 18446744073709551615,
+      "name": "Lion Head",
+      "normal map": 27,
+      "roughness factor": 0.0,
+      "roughness map": 18446744073709551615,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 23,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 4,
+      "metallic factor": 1.0,
+      "metallic map": 18,
+      "name": "DefaultMaterial",
+      "normal map": 31,
+      "roughness factor": 1.0,
+      "roughness map": 13,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 26,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 5,
+      "metallic factor": 1.0,
+      "metallic map": 15,
+      "name": "DefaultMaterial",
+      "normal map": 34,
+      "roughness factor": 1.0,
+      "roughness map": 16,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 30,
+      "alpha mode": "MASKED",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 6,
+      "metallic factor": 1.0,
+      "metallic map": 19,
+      "name": "DefaultMaterial",
+      "normal map": 29,
+      "roughness factor": 1.0,
+      "roughness map": 20,
+      "transparency": 0.5,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 32,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 7,
+      "metallic factor": 1.0,
+      "metallic map": 28,
+      "name": "DefaultMaterial",
+      "normal map": 25,
+      "roughness factor": 1.0,
+      "roughness map": 22,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 41,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 8,
+      "metallic factor": 1.0,
+      "metallic map": 36,
+      "name": "DefaultMaterial",
+      "normal map": 35,
+      "roughness factor": 1.0,
+      "roughness map": 38,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 44,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 9,
+      "metallic factor": 1.0,
+      "metallic map": 40,
+      "name": "DefaultMaterial",
+      "normal map": 39,
+      "roughness factor": 1.0,
+      "roughness map": 33,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 45,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 10,
+      "metallic factor": 1.0,
+      "metallic map": 43,
+      "name": "DefaultMaterial",
+      "normal map": 42,
+      "roughness factor": 1.0,
+      "roughness map": 37,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 46,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 11,
+      "metallic factor": 1.0,
+      "metallic map": 48,
+      "name": "DefaultMaterial",
+      "normal map": 47,
+      "roughness factor": 1.0,
+      "roughness map": 49,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 50,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 12,
+      "metallic factor": 1.0,
+      "metallic map": 52,
+      "name": "DefaultMaterial",
+      "normal map": 51,
+      "roughness factor": 1.0,
+      "roughness map": 53,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 54,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 13,
+      "metallic factor": 1.0,
+      "metallic map": 56,
+      "name": "DefaultMaterial",
+      "normal map": 55,
+      "roughness factor": 1.0,
+      "roughness map": 57,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 61,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 14,
+      "metallic factor": 0.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 1.0,
+      "roughness map": 18446744073709551615,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 58,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 15,
+      "metallic factor": 1.0,
+      "metallic map": 70,
+      "name": "DefaultMaterial",
+      "normal map": 59,
+      "roughness factor": 1.0,
+      "roughness map": 60,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 63,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 16,
+      "metallic factor": 1.0,
+      "metallic map": 75,
+      "name": "DefaultMaterial",
+      "normal map": 64,
+      "roughness factor": 1.0,
+      "roughness map": 65,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 67,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 17,
+      "metallic factor": 1.0,
+      "metallic map": 79,
+      "name": "DefaultMaterial",
+      "normal map": 68,
+      "roughness factor": 1.0,
+      "roughness map": 62,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 74,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 18,
+      "metallic factor": 0.25,
+      "metallic map": 18446744073709551615,
+      "name": "Floor",
+      "normal map": 82,
+      "roughness factor": 1.0,
+      "roughness map": 66,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 78,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 19,
+      "metallic factor": 1.0,
+      "metallic map": 71,
+      "name": "DefaultMaterial",
+      "normal map": 80,
+      "roughness factor": 1.0,
+      "roughness map": 72,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 83,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 20,
+      "metallic factor": 1.0,
+      "metallic map": 76,
+      "name": "DefaultMaterial",
+      "normal map": 77,
+      "roughness factor": 1.0,
+      "roughness map": 69,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 95,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 21,
+      "metallic factor": 1.0,
+      "metallic map": 73,
+      "name": "DefaultMaterial",
+      "normal map": 87,
+      "roughness factor": 1.0,
+      "roughness map": 81,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 90,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 22,
+      "metallic factor": 1.0,
+      "metallic map": 85,
+      "name": "DefaultMaterial",
+      "normal map": 11,
+      "roughness factor": 1.0,
+      "roughness map": 86,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 94,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 23,
+      "metallic factor": 1.0,
+      "metallic map": 18446744073709551615,
+      "name": "Lion Head",
+      "normal map": 10,
+      "roughness factor": 0.0,
+      "roughness map": 18446744073709551615,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 98,
+      "alpha mode": "OPAQUE",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 24,
+      "metallic factor": 1.0,
+      "metallic map": 91,
+      "name": "DefaultMaterial",
+      "normal map": 100,
+      "roughness factor": 1.0,
+      "roughness map": 84,
+      "transparency": 1.0,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 99,
+      "alpha mode": "MASKED",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 25,
+      "metallic factor": 1.0,
+      "metallic map": 93,
+      "name": "DefaultMaterial",
+      "normal map": 92,
+      "roughness factor": 1.0,
+      "roughness map": 101,
+      "transparency": 0.5,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 96,
+      "alpha mode": "MASKED",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        0.5879999995231628,
+        0.5879999995231628,
+        0.5879999995231628
+      ],
+      "displacement": 0.0,
+      "emission": 0.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 26,
+      "metallic factor": 1.0,
+      "metallic map": 89,
+      "name": "DefaultMaterial",
+      "normal map": 88,
+      "roughness factor": 0.0,
+      "roughness map": 97,
+      "transparency": 0.5,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "albedo map": 103,
+      "alpha mode": "TRANSPARENT",
+      "ambient occlusion map": 18446744073709551615,
+      "base color": [
+        1.0,
+        0.9999899864196777,
+        0.9999899864196777
+      ],
+      "displacement": 0.02500000037252903,
+      "emission": 10.0,
+      "emissive map": 18446744073709551615,
+      "height map": 18446744073709551615,
+      "id": 27,
+      "metallic factor": 1.0,
+      "metallic map": 18446744073709551615,
+      "name": "DefaultMaterial",
+      "normal map": 18446744073709551615,
+      "roughness factor": 1.0,
+      "roughness map": 18446744073709551615,
+      "transparency": 0.20000000298023224,
+      "uv multipliers": [
+        1.0,
+        1.0
+      ]
+    }
+  ],
+  "Mesh": [
+    {
+      "_filepath": "Engine/Models/pyramid_1.obj",
+      "aabb": {
+        "max": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "min": [
+          -1.0,
+          -1.0,
+          0.0
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 2.0
+      },
+      "id": 0
+    },
+    {
+      "_filepath": "Engine/Models/sphere_8.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.5
+      },
+      "id": 1
+    },
+    {
+      "_filepath": "Engine/Models/pyramid_1.obj",
+      "aabb": {
+        "max": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "min": [
+          -1.0,
+          -1.0,
+          0.0
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 2.0
+      },
+      "id": 2
+    },
+    {
+      "_filepath": "Engine/Models/sphere_8.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.5
+      },
+      "id": 3
+    },
+    {
+      "_filepath": "Engine/Models/sphere_20.obj",
+      "aabb": {
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 0.5000000596046448
+      },
+      "id": 8
+    },
+    {
+      "_filepath": "Resources/Sponza/glTF/Sponza.gltf",
+      "aabb": {
+        "max": [
+          1860.427001953125,
+          777.9378662109375,
+          1144.1165771484375
+        ],
+        "min": [
+          -1860.427001953125,
+          -777.9378662109375,
+          -1144.1165771484375
+        ]
+      },
+      "bounding sphere": {
+        "center": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "radius": 2887.561767578125
+      },
+      "id": 9
+    }
+  ],
+  "Script": [
+    {
+      "filepath": "Resources/ShootSpheres.cpp",
+      "name": "ShootSpheres"
+    }
+  ],
+  "Texture": [
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/13982482287905699490.jpg"
+      },
+      "id": 10,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/16299174074766089871.jpg"
+      },
+      "id": 11,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_24.png"
+      },
+      "id": 12,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_22.png"
+      },
+      "id": 13,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/2969916736137545357.jpg"
+      },
+      "id": 14,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_21.png"
+      },
+      "id": 15,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_21.png"
+      },
+      "id": 16,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_24.png"
+      },
+      "id": 17,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_22.png"
+      },
+      "id": 18,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_20.png"
+      },
+      "id": 19,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_20.png"
+      },
+      "id": 20,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/6772804448157695701.jpg"
+      },
+      "id": 21,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_19.png"
+      },
+      "id": 22,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/8481240838833932244.jpg"
+      },
+      "id": 23,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/14118779221266351425.jpg"
+      },
+      "id": 24,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/4910669866631290573.jpg"
+      },
+      "id": 25,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/755318871556304029.jpg"
+      },
+      "id": 26,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/759203620573749278.jpg"
+      },
+      "id": 27,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_19.png"
+      },
+      "id": 28,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/14170708867020035030.jpg"
+      },
+      "id": 29,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/16275776544635328252.png"
+      },
+      "id": 30,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/10381718147657362067.jpg"
+      },
+      "id": 31,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/9288698199695299068.jpg"
+      },
+      "id": 32,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_17.png"
+      },
+      "id": 33,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/3827035219084910048.jpg"
+      },
+      "id": 34,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/4601176305987539675.jpg"
+      },
+      "id": 35,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_18.png"
+      },
+      "id": 36,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_16.png"
+      },
+      "id": 37,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_18.png"
+      },
+      "id": 38,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/6593109234861095314.jpg"
+      },
+      "id": 39,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_17.png"
+      },
+      "id": 40,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/11474523244911310074.jpg"
+      },
+      "id": 41,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/332936164838540657.jpg"
+      },
+      "id": 42,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_16.png"
+      },
+      "id": 43,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/17876391417123941155.jpg"
+      },
+      "id": 44,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/2185409758123873465.jpg"
+      },
+      "id": 45,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/2775690330959970771.jpg"
+      },
+      "id": 46,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/2374361008830720677.jpg"
+      },
+      "id": 47,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_15.png"
+      },
+      "id": 48,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_15.png"
+      },
+      "id": 49,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/4675343432951571524.jpg"
+      },
+      "id": 50,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/7056944414013900257.jpg"
+      },
+      "id": 51,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_14.png"
+      },
+      "id": 52,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_14.png"
+      },
+      "id": 53,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/4975155472559461469.jpg"
+      },
+      "id": 54,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/2299742237651021498.jpg"
+      },
+      "id": 55,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_13.png"
+      },
+      "id": 56,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_13.png"
+      },
+      "id": 57,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/6151467286084645207.jpg"
+      },
+      "id": 58,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/7645212358685992005.jpg"
+      },
+      "id": 59,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_11.png"
+      },
+      "id": 60,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/white.png"
+      },
+      "id": 61,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_9.png"
+      },
+      "id": 62,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/11490520546946913238.jpg"
+      },
+      "id": 63,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/3628158980083700836.jpg"
+      },
+      "id": 64,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_10.png"
+      },
+      "id": 65,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_8.png"
+      },
+      "id": 66,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/7441062115984513793.jpg"
+      },
+      "id": 67,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/6667038893015345571.jpg"
+      },
+      "id": 68,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_6.png"
+      },
+      "id": 69,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_11.png"
+      },
+      "id": 70,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_7.png"
+      },
+      "id": 71,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_7.png"
+      },
+      "id": 72,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_5.png"
+      },
+      "id": 73,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/5823059166183034438.jpg"
+      },
+      "id": 74,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_10.png"
+      },
+      "id": 75,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_6.png"
+      },
+      "id": 76,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/10388182081421875623.jpg"
+      },
+      "id": 77,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/6047387724914829168.jpg"
+      },
+      "id": 78,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_9.png"
+      },
+      "id": 79,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/15722799267630235092.jpg"
+      },
+      "id": 80,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_5.png"
+      },
+      "id": 81,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/14267839433702832875.jpg"
+      },
+      "id": 82,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/15295713303328085182.jpg"
+      },
+      "id": 83,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_2.png"
+      },
+      "id": 84,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_4.png"
+      },
+      "id": 85,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_4.png"
+      },
+      "id": 86,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/2051777328469649772.jpg"
+      },
+      "id": 87,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/8773302468495022225.jpg"
+      },
+      "id": 88,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_0.png"
+      },
+      "id": 89,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/5792855332885324923.jpg"
+      },
+      "id": 90,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_2.png"
+      },
+      "id": 91,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/12501374198249454378.jpg"
+      },
+      "id": 92,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/metallic_1.png"
+      },
+      "id": 93,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/8750083169368950601.jpg"
+      },
+      "id": 94,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/14650633544276105767.jpg"
+      },
+      "id": 95,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/5061699253647017043.png"
+      },
+      "id": 96,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_0.png"
+      },
+      "id": 97,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/7268504077753552595.jpg"
+      },
+      "id": 98,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/Sponza/glTF/8006627369776289000.png"
+      },
+      "id": 99,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RG",
+        "path": "Resources/Sponza/glTF/4477655471536070370.jpg"
+      },
+      "id": 100,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "R",
+        "path": "Resources/Sponza/glTF/roughness_1.png"
+      },
+      "id": 101,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGB",
+        "path": "Resources/moon.jpg"
+      },
+      "id": 102,
+      "wrap type": "REPEAT"
+    },
+    {
+      "border color": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "filepath": {
+        "format": "RGBA",
+        "path": "Resources/fire.png"
+      },
+      "id": 103,
+      "wrap type": "REPEAT"
+    }
+  ],
+  "globals": {
+    "gravity": [
+      0.0,
+      -9.800000190734863,
+      0.0
+    ],
+    "overlay-debug": false,
+    "paused": false,
+    "physics-step": 1.0,
+    "time-scale": 1.0,
+    "total-time": 3900.35009765625,
+    "viewport": 0
+  },
+  "mxobjects": [
+    {
+      "CameraController": {
+        "camera type": "PERSPECTIVE",
+        "direction": [
+          0.9978463053703308,
+          0.06556776911020279,
+          0.0018980845343321562
+        ],
+        "forward vector": [
+          0.9999982118606567,
+          0.0,
+          0.001902177813462913
+        ],
+        "id": 0,
+        "is listening window resize event": true,
+        "is rendering": true,
+        "perspective camera": {
+          "aspect ratio": 1.7777777910232544,
+          "fov": 65.0,
+          "zfar": 100000.0,
+          "znear": 0.10000000149011612
+        },
+        "right vector": [
+          -0.0019022214692085981,
+          0.0,
+          0.9999982118606567
+        ],
+        "up vector": [
+          0.0,
+          1.0,
+          0.0
+        ]
+      },
+      "CameraEffects": {
+        "bloom iterations": 3,
+        "bloom weight": 0.5,
+        "chromatic aberration distortion": 0.800000011920929,
+        "chromatic aberration intensity": 0.07999999821186066,
+        "chromatic aberration min distance": 0.800000011920929,
+        "dof bokeh radius": 10.0,
+        "dof focus distance": 0.0,
+        "dof focus range": 5.0,
+        "fog color": [
+          0.5,
+          0.6000000238418579,
+          0.699999988079071
+        ],
+        "fog density": 0.0,
+        "fog distance": 1.0,
+        "fxaa": false,
+        "id": 0,
+        "vignette radius": 0.10000000149011612
+      },
+      "CameraSSAO": {
+        "blur iterations": 1,
+        "blur lod": 2,
+        "id": 0,
+        "intensity": 3.1500000953674316,
+        "radius": 1.0,
+        "sample count": 4
+      },
+      "CameraSSGI": {
+        "blur iterations": 1,
+        "blur lod": 5,
+        "distance": 50.0,
+        "id": 0,
+        "intensity": 2.5,
+        "ray steps": 3
+      },
+      "CameraSSR": {
+        "id": 0,
+        "start distance": 2.009999990463257,
+        "steps": 10,
+        "thickness": 0.5
+      },
+      "CameraToneMapping": {
+        "aces coefficients": {
+          "a": 0.25,
+          "b": 0.3059999942779541,
+          "c": 0.0989999994635582,
+          "d": 0.3499999940395355,
+          "e": 0.02500000037252903,
+          "f": 0.4000000059604645
+        },
+        "color grading": {
+          "B": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "G": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "R": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        },
+        "color scale": 1.0,
+        "exposure": 1.0,
+        "eye adaptation speed": 1.0,
+        "eye adaptation threshold": 0.10000000149011612,
+        "gamma": 2.200000047683716,
+        "id": 0,
+        "max luminance": 100000.0,
+        "min luminance": 0.30000001192092896,
+        "white point": 0.5
+      },
+      "CapsuleCollider": {
+        "bounding capsule": {
+          "center": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "height": 4.5,
+          "orientation": "Y",
+          "radius": 0.75,
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        "id": 0
+      },
+      "CharacterController": {
+        "id": 0,
+        "jump power": 12.0,
+        "jump speed": 10.0
+      },
+      "InputController": {
+        "back key binding": "S",
+        "down key binding": "LEFT_SHIFT",
+        "forward key binding": "W",
+        "id": 0,
+        "is horizontal rotation bound": true,
+        "is vertical rotation bound": true,
+        "left key binding": "A",
+        "move speed": 10.0,
+        "right key binding": "D",
+        "rotate speed": 10.0,
+        "up key binding": "SPACE",
+        "use camera style movement": true
+      },
+      "RigidBody": {
+        "angular air resistance": 0.0,
+        "angular force factor": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "angular velocity": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "anisotropic friction": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "bounce factor": 0.0,
+        "friction": 0.0,
+        "gravity": [
+          0.0,
+          -9.800000190734863,
+          0.0
+        ],
+        "has anisotropic friction": false,
+        "id": 0,
+        "is ray castable": true,
+        "is trigger": false,
+        "linear air resistance": 0.0,
+        "linear force factor": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "linear velocity": [
+          0.0,
+          5.7220458984375e-06,
+          2.6808647746179304e-08
+        ],
+        "mass": 1.0,
+        "push velocity": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rolling friction": 0.0,
+        "spinning friction": 0.0,
+        "turn velocity": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "type": "DYNAMIC"
+      },
+      "Script": {
+        "_name": "ShootSpheres",
+        "database": {
+          "_database": null
+        },
+        "id": 0
+      },
+      "Skybox": {
+        "cubemap": 2,
+        "id": 0,
+        "intensity": 0.0,
+        "irradiance": 3,
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "displayed": true,
+      "name": "Camera",
+      "transform": {
+        "position": [
+          -25.250308990478516,
+          2.999999523162842,
+          -0.40193822979927063
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "InstanceFactory": {
+        "id": 0,
+        "instances": null,
+        "is static": false
+      },
+      "MeshRenderer": {
+        "id": 0,
+        "materials": [
+          0
+        ]
+      },
+      "MeshSource": {
+        "casts shadow": true,
+        "id": 0,
+        "is drawn": true,
+        "is static": false,
+        "mesh": 8
+      },
+      "displayed": true,
+      "name": "Sphere Factory",
+      "transform": {
+        "position": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "CompoundCollider": {
+        "children": [
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  1800.0,
+                  75.0,
+                  1075.0
+                ],
+                "min": [
+                  -1800.0,
+                  -75.0,
+                  -1075.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                0.0,
+                -725.0,
+                0.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  1800.0,
+                  750.0,
+                  250.0
+                ],
+                "min": [
+                  -1800.0,
+                  -750.0,
+                  -250.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                0.0,
+                0.0,
+                850.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  1800.0,
+                  750.0,
+                  250.0
+                ],
+                "min": [
+                  -1800.0,
+                  -750.0,
+                  -250.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                0.0,
+                0.0,
+                -850.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  250.0,
+                  750.0,
+                  1075.0
+                ],
+                "min": [
+                  -250.0,
+                  -750.0,
+                  -1075.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                1600.0,
+                0.0,
+                0.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  250.0,
+                  750.0,
+                  1075.0
+                ],
+                "min": [
+                  -250.0,
+                  -750.0,
+                  -1075.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                -1600.0,
+                0.0,
+                0.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "height": 100.0,
+                "orientation": "Y",
+                "radius x": 75.0,
+                "radius z": 75.0,
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "Cylinder"
+            },
+            "transform": {
+              "position": [
+                1180.0,
+                -600.0,
+                440.0000305175781
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "height": 100.0,
+                "orientation": "Y",
+                "radius x": 75.0,
+                "radius z": 75.0,
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "Cylinder"
+            },
+            "transform": {
+              "position": [
+                1180.0,
+                -600.0,
+                -410.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "height": 100.0,
+                "orientation": "Y",
+                "radius x": 75.0,
+                "radius z": 75.0,
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "Cylinder"
+            },
+            "transform": {
+              "position": [
+                -1140.0,
+                -600.0,
+                440.0000305175781
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "height": 100.0,
+                "orientation": "Y",
+                "radius x": 75.0,
+                "radius z": 75.0,
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "Cylinder"
+            },
+            "transform": {
+              "position": [
+                -1140.0,
+                -600.0,
+                -410.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  980.0000610351563,
+                  300.0,
+                  40.0
+                ],
+                "min": [
+                  -980.0000610351563,
+                  -300.0,
+                  -40.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                0.0,
+                -425.0,
+                -225.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  980.0000610351563,
+                  300.0,
+                  40.0
+                ],
+                "min": [
+                  -980.0000610351563,
+                  -300.0,
+                  -40.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                0.0,
+                -425.0,
+                225.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  40.0,
+                  50.0,
+                  265.0
+                ],
+                "min": [
+                  -40.0,
+                  -50.0,
+                  -265.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                950.0,
+                -175.0,
+                0.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  40.0,
+                  50.0,
+                  265.0
+                ],
+                "min": [
+                  -40.0,
+                  -50.0,
+                  -265.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                -950.0,
+                -175.0,
+                0.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  1800.0,
+                  10.0,
+                  250.0
+                ],
+                "min": [
+                  -1800.0,
+                  -10.0,
+                  -250.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                0.0,
+                -235.0,
+                450.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  1800.0,
+                  10.0,
+                  250.0
+                ],
+                "min": [
+                  -1800.0,
+                  -10.0,
+                  -250.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                0.0,
+                -235.0,
+                -450.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  250.0,
+                  10.0,
+                  1075.0
+                ],
+                "min": [
+                  -250.0,
+                  -10.0,
+                  -1075.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                1175.0,
+                -235.0,
+                0.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  250.0,
+                  10.0,
+                  1075.0
+                ],
+                "min": [
+                  -250.0,
+                  -10.0,
+                  -1075.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                -1175.0,
+                -235.0,
+                0.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  1800.0,
+                  250.0,
+                  250.0
+                ],
+                "min": [
+                  -1800.0,
+                  -250.0,
+                  -250.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                0.0,
+                500.0,
+                450.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  1800.0,
+                  250.0,
+                  250.0
+                ],
+                "min": [
+                  -1800.0,
+                  -250.0,
+                  -250.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                0.0,
+                500.0,
+                -450.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  250.0,
+                  250.0,
+                  1075.0
+                ],
+                "min": [
+                  -250.0,
+                  -250.0,
+                  -1075.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                1175.0,
+                500.0,
+                0.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          },
+          {
+            "shape": {
+              "bounding": {
+                "center": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "max": [
+                  250.0,
+                  250.0,
+                  1075.0
+                ],
+                "min": [
+                  -250.0,
+                  -250.0,
+                  -1075.0
+                ],
+                "rotation": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              },
+              "type": "BoundingBox"
+            },
+            "transform": {
+              "position": [
+                -1175.0,
+                500.0,
+                0.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ]
+            }
+          }
+        ],
+        "id": 0
+      },
+      "MeshRenderer": {
+        "id": 1,
+        "materials": [
+          26,
+          25,
+          24,
+          23,
+          22,
+          21,
+          20,
+          19,
+          18,
+          17,
+          16,
+          15,
+          14,
+          13,
+          12,
+          11,
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      },
+      "MeshSource": {
+        "casts shadow": true,
+        "id": 1,
+        "is drawn": true,
+        "is static": false,
+        "mesh": 9
+      },
+      "RigidBody": {
+        "angular air resistance": 0.0,
+        "angular force factor": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "angular velocity": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "anisotropic friction": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "bounce factor": 0.10000000149011612,
+        "friction": 0.5,
+        "gravity": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "has anisotropic friction": false,
+        "id": 1,
+        "is ray castable": true,
+        "is trigger": false,
+        "linear air resistance": 0.0,
+        "linear force factor": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "linear velocity": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "mass": 0.0,
+        "push velocity": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rolling friction": 0.0,
+        "spinning friction": 0.0,
+        "turn velocity": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "type": "STATIC"
+      },
+      "displayed": true,
+      "name": "Sponza",
+      "transform": {
+        "position": [
+          0.0,
+          13.0,
+          0.0
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.019999999552965164,
+          0.019999999552965164,
+          0.019999999552965164
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 2,
+        "materials": [
+          27
+        ]
+      },
+      "ParticleSystem": {
+        "fading": 1.5,
+        "id": 0,
+        "is relative": true,
+        "max initial time alive": 1.0,
+        "max particle count": 128,
+        "max particle size": 0.15000000596046448,
+        "max spawn distance": 0.0,
+        "min particle size": 0.05000000074505806,
+        "min spawn distance": 0.0,
+        "particle angular speed": 0.0,
+        "particle lifetime": 1.0,
+        "particle speed": 0.800000011920929,
+        "shape": "HEMISPHERE"
+      },
+      "PointLight": {
+        "ambient intensity": 0.10000000149011612,
+        "casts shadows": false,
+        "color": [
+          1.0,
+          0.6764705777168274,
+          0.0
+        ],
+        "id": 0,
+        "intensity": 100.0,
+        "radius": 5.0
+      },
+      "displayed": true,
+      "name": "Fire 1",
+      "transform": {
+        "position": [
+          -11.17866039276123,
+          2.3849868774414063,
+          3.6654486656188965
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.30000001192092896,
+          1.25,
+          0.30000001192092896
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 3,
+        "materials": [
+          27
+        ]
+      },
+      "ParticleSystem": {
+        "fading": 1.5,
+        "id": 1,
+        "is relative": true,
+        "max initial time alive": 1.0,
+        "max particle count": 128,
+        "max particle size": 0.15000000596046448,
+        "max spawn distance": 0.0,
+        "min particle size": 0.05000000074505806,
+        "min spawn distance": 0.0,
+        "particle angular speed": 0.0,
+        "particle lifetime": 1.0,
+        "particle speed": 0.800000011920929,
+        "shape": "HEMISPHERE"
+      },
+      "PointLight": {
+        "ambient intensity": 0.10000000149011612,
+        "casts shadows": false,
+        "color": [
+          1.0,
+          0.6764705777168274,
+          0.0
+        ],
+        "id": 1,
+        "intensity": 100.0,
+        "radius": 5.0
+      },
+      "displayed": true,
+      "name": "Fire 2",
+      "transform": {
+        "position": [
+          10.98430061340332,
+          2.3849868774414063,
+          3.6654486656188965
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.30000001192092896,
+          1.25,
+          0.30000001192092896
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 4,
+        "materials": [
+          27
+        ]
+      },
+      "ParticleSystem": {
+        "fading": 1.5,
+        "id": 2,
+        "is relative": true,
+        "max initial time alive": 1.0,
+        "max particle count": 128,
+        "max particle size": 0.15000000596046448,
+        "max spawn distance": 0.0,
+        "min particle size": 0.05000000074505806,
+        "min spawn distance": 0.0,
+        "particle angular speed": 0.0,
+        "particle lifetime": 1.0,
+        "particle speed": 0.800000011920929,
+        "shape": "HEMISPHERE"
+      },
+      "PointLight": {
+        "ambient intensity": 0.10000000149011612,
+        "casts shadows": false,
+        "color": [
+          1.0,
+          0.6764705777168274,
+          0.0
+        ],
+        "id": 2,
+        "intensity": 100.0,
+        "radius": 5.0
+      },
+      "displayed": true,
+      "name": "Fire 3",
+      "transform": {
+        "position": [
+          -11.17866039276123,
+          2.3849868774414063,
+          -3.6654486656188965
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.30000001192092896,
+          1.25,
+          0.30000001192092896
+        ]
+      }
+    },
+    {
+      "MeshRenderer": {
+        "id": 5,
+        "materials": [
+          27
+        ]
+      },
+      "ParticleSystem": {
+        "fading": 1.5,
+        "id": 3,
+        "is relative": true,
+        "max initial time alive": 1.0,
+        "max particle count": 128,
+        "max particle size": 0.15000000596046448,
+        "max spawn distance": 0.0,
+        "min particle size": 0.05000000074505806,
+        "min spawn distance": 0.0,
+        "particle angular speed": 0.0,
+        "particle lifetime": 1.0,
+        "particle speed": 0.800000011920929,
+        "shape": "HEMISPHERE"
+      },
+      "PointLight": {
+        "ambient intensity": 0.10000000149011612,
+        "casts shadows": false,
+        "color": [
+          1.0,
+          0.6764705777168274,
+          0.0
+        ],
+        "id": 3,
+        "intensity": 100.0,
+        "radius": 5.0
+      },
+      "displayed": true,
+      "name": "Fire 4",
+      "transform": {
+        "position": [
+          10.948619842529297,
+          2.3849868774414063,
+          -3.6654486656188965
+        ],
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.30000001192092896,
+          1.25,
+          0.30000001192092896
+        ]
+      }
+    }
+  ]
+}

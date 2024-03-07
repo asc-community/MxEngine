@@ -55,7 +55,7 @@ namespace MxEngine
         cache[uniformName] = location;
         return location;
     }
-
+     
     ShaderBase::UniformIdType ShaderBase::UniformCache::GetUniformLocationSilent(const char* uniformName)
     {
         auto it = cache.find_as(uniformName);

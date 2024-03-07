@@ -12,8 +12,10 @@ uniform float gamma;
 struct Camera
 {
     vec3 position;
-    mat4 invViewProjMatrix;
     mat4 viewProjMatrix;
+    mat4 invViewProjMatrix;
+    mat4 viewMatrix;
+    mat4 projectionMatrix;
 };
 
 uniform Camera camera;

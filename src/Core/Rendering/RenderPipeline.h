@@ -70,6 +70,8 @@ namespace MxEngine
         FrustrumCuller Culler;
         Matrix4x4 InverseViewProjMatrix;
         Matrix4x4 ViewProjectionMatrix;
+        Matrix4x4 ViewMatrix;
+        Matrix4x4 ProjectionMatrix;
         Matrix4x4 StaticViewProjectionMatrix;
 
         TextureHandle OutputTexture;
