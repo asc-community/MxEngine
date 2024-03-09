@@ -14,9 +14,11 @@ void main()
     depth.z = texelFetch(depthBuffer,lastTexCoord + ivec2(1, 1),0).r;
     depth.w = texelFetch(depthBuffer,lastTexCoord + ivec2(0, 1), 0).r;
 
-    float minDepth = min(min(depth.x, depth.y),
-                         min(depth.z, depth.w));
-        
+    //Depth is reversed.The closer to the object the higher depth we get. 
+    //So instead of min pooling we perform max pooling.
+    float maxDepth = max(max(depth.x, depth.y),
+                         max(depth.z, depth.w));
+
     bool extraCol = ((uPreviousLevelRes.x & 1) != 0);
     bool extraRow = ((uPreviousLevelRes.y & 1) != 0);
     if (extraCol) 
@@ -28,17 +30,17 @@ void main()
         if (extraRow) 
         {
             float corner = texelFetch(depthBuffer, lastTexCoord + ivec2(2, 2), 0).r;
-            minDepth = min(minDepth, corner);
+            maxDepth = max(maxDepth, corner);
         }
-        minDepth = min(minDepth, min(col.x, col.y));
+        maxDepth = max(maxDepth, max(col.x, col.y));
     }
     if (extraRow) 
     {
         vec2 row;
         row.x = texelFetch(depthBuffer, lastTexCoord + ivec2(0, 2), 0).r;
         row.y = texelFetch(depthBuffer, lastTexCoord + ivec2(1, 2), 0).r;
-        minDepth = min(minDepth, min(row.x, row.y));
+        maxDepth = max(maxDepth, max(row.x, row.y));
     }
 
-    OutColor = vec4(minDepth,0.f,0.f,1.f);
+    OutColor = vec4(maxDepth,0.f,0.f,1.f);
 }

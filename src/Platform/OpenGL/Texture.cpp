@@ -323,10 +323,6 @@ namespace MxEngine
         GLCALL(glGenerateMipmap(GL_TEXTURE_2D));
     }
 
-    void Texture::Pooling() const
-    {
-    }
-
     void Texture::SetBorderColor(Vector4 color)
     {
         this->Bind(0);

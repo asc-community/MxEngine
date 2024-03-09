@@ -62,7 +62,7 @@ namespace MxEngine
         void DrawObject(const RenderUnit& unit, size_t instanceCount, size_t baseInstance, const Shader& shader);
         void ComputeBloomEffect(CameraUnit& camera, const TextureHandle& output);
         TextureHandle ComputeAverageWhite(CameraUnit& camera);
-        void GenerateDepthPyramid(TextureHandle& depth);
+        void GenerateDepthPyramid(TextureHandle& zBuffer, MxVector<TextureHandle>& HiZ);
         void PerformPostProcessing(CameraUnit& camera);
         void PerformLightPass(CameraUnit& camera);
         void DrawTransparentObjects(CameraUnit& camera);
@@ -91,7 +91,6 @@ namespace MxEngine
         void BindFogInformation(const CameraUnit& camera, const Shader& shader);
         void AttachDefaultVAO();
         void RenderToAttachedFrameBuffer(const Shader& shader);
-        void GenerateHIZ(TextureHandle& input, MxVector<TextureHandle>& HiZ);
     public:
 
         const Renderer& GetRenderEngine() const;

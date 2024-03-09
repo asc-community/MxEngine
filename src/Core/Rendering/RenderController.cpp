@@ -352,11 +352,21 @@ namespace MxEngine
         std::swap(input, output);
     }
 
-    void RenderController::GenerateDepthPyramid(TextureHandle& depth)
+    void RenderController::GenerateDepthPyramid(TextureHandle& zBuffer, MxVector<TextureHandle>& HiZ)
     {
         MAKE_RENDER_PASS_SCOPE("RenderController::GenerateDepthPyramid()");
-        // generate depth texture mipmaps for post-processing algorithms. Replace later with hierarhical depth map
-        depth->GenerateMipmaps();
+        auto& shader = this->Pipeline.Environment.Shaders["HIZ"_id];
+        MxVector<TextureHandle> inputTex = { zBuffer };
+        for (auto it : HiZ) inputTex.emplace_back(it);
+
+        for (int i = 0; i < HiZ.size(); i++)
+        {
+            shader->Bind();
+            inputTex[i]->Bind(0);
+            auto& outputTex = inputTex[i + 1];
+            shader->SetUniform("uPreviousLevelRes", VectorInt2(outputTex->GetWidth(), outputTex->GetHeight()));
+            this->RenderToTexture(outputTex, shader);
+        }
     }
 
     TextureHandle RenderController::ComputeAverageWhite(CameraUnit& camera)
@@ -385,14 +395,6 @@ namespace MxEngine
 
     void RenderController::PerformPostProcessing(CameraUnit& camera)
     {
-        // MAKE_SCOPE_PROFILER("RenderController::PerformPostProcessing()");
-
-        // camera.AlbedoTexture->GenerateMipmaps();
-        // camera.MaterialTexture->GenerateMipmaps();
-        // camera.NormalTexture->GenerateMipmaps();
-        // camera.DepthTexture->GenerateMipmaps();
-
-        // this->GenerateHIZ(camera.DepthTexture, camera.HiZ);
         MAKE_RENDER_PASS_SCOPE("RenderController::PerformPostProcessing()");
         
         this->ApplySSAO(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
@@ -649,25 +651,6 @@ namespace MxEngine
 
         this->RenderToTexture(output, shader);
         std::swap(input, output);
-    }
-
-    void RenderController::GenerateHIZ(TextureHandle& zBuffer, MxVector<TextureHandle>& HiZ)
-    {
-        MAKE_SCOPE_PROFILER("RenderController::GenerateHIZ()");
-
-        auto& shader = this->Pipeline.Environment.Shaders["HIZ"_id];
-
-        MxVector<TextureHandle> inputTex = {zBuffer};
-        for (auto it : HiZ) inputTex.emplace_back(it);
-
-        for (int i =0;i<HiZ.size();i++) 
-        {
-            shader->Bind();
-            inputTex[i]->Bind(0);
-            auto& outputTex = inputTex[i + 1];
-            shader->SetUniform("uPreviousLevelRes", VectorInt2(outputTex->GetWidth(), outputTex->GetHeight()));
-            this->RenderToTexture(outputTex, shader);
-        }
     }
 
     void RenderController::ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
@@ -1501,6 +1484,7 @@ namespace MxEngine
         camera.NormalTexture              = cameraController.GetNormalTexture();
         camera.MaterialTexture            = cameraController.GetMaterialTexture();
         camera.DepthTexture               = cameraController.GetDepthTexture();
+        camera.HiZ                        = cameraController.GetHiZ();
         camera.AverageWhiteTexture        = cameraController.GetAverageWhiteTexture();
         camera.HDRTexture                 = cameraController.GetHDRTexture();
         camera.SwapTexture1               = cameraController.GetSwapHDRTexture1();
@@ -1656,7 +1640,7 @@ namespace MxEngine
             this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBuffer"_id], this->Pipeline.OpaqueObjects);
             this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBufferMask"_id], this->Pipeline.MaskedObjects);
 
-            this->GenerateDepthPyramid(camera.DepthTexture);
+            this->GenerateDepthPyramid(camera.DepthTexture,camera.HiZ);
 
             this->DrawParticles(camera, this->Pipeline.OpaqueParticleSystems, *this->Pipeline.Environment.Shaders["ParticleOpaque"_id]);
 

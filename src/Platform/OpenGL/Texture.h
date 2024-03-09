@@ -115,7 +115,6 @@ namespace MxEngine
         void SetMinLOD(size_t lod);
         size_t GetMaxTextureLOD() const;
         Image GetRawTextureData() const;
-        void Pooling() const;
         void GenerateMipmaps();
         void SetBorderColor(Vector4 color);
         bool IsMultisampled() const;
