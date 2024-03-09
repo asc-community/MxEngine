@@ -655,7 +655,7 @@ namespace MxEngine
 
     void RenderController::ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
     {
-        if (camera.SSR == nullptr || camera.SSR->GetSteps() == 0) return;
+        if (camera.SSR == nullptr ) return;
         MAKE_RENDER_PASS_SCOPE("RenderController::ApplySSR()");
 
         auto& SSRShader = this->Pipeline.Environment.Shaders["SSR"_id];
@@ -670,6 +670,7 @@ namespace MxEngine
 
         SSRShader->SetUniform("thickness", camera.SSR->GetThickness());
         SSRShader->SetUniform("screenResolution", Vector2(camera.HDRTexture->GetWidth(), camera.HDRTexture->GetHeight()));
+        SSRShader->SetUniform("intensity", camera.SSR->GetIntensity());
 
         this->RenderToTexture(temporary, SSRShader);
 

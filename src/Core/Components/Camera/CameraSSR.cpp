@@ -37,31 +37,22 @@ namespace MxEngine
         return this->thickness;
     }
 
-    size_t CameraSSR::GetSteps() const
-    {
-        return this->steps;
-    }
-
-    float CameraSSR::GetStartDistance() const
-    {
-        return this->startDistance;
-    }
-
     void CameraSSR::SetThickness(float thickness)
     {
         this->thickness = Max(thickness, 0.0f);
     }
 
-    void CameraSSR::SetSteps(size_t steps)
+    float CameraSSR::GetIntensity() const
     {
-        this->steps = steps;
+        return this->intensity;
     }
 
-    void CameraSSR::SetStartDistance(float distance)
-    {
-        this->startDistance = Max(distance, 0.0f);
-    }
 
+    void CameraSSR::SetIntensity(float intensity) 
+    {
+        this->intensity = Min(intensity,1.0f);
+    }
+    
     MXENGINE_REFLECT_TYPE
     {
         rttr::registration::class_<CameraSSR>("CameraSSR")
@@ -75,16 +66,10 @@ namespace MxEngine
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
-            .property("steps", &CameraSSR::GetSteps, &CameraSSR::SetSteps)
+            .property("intensity", &CameraSSR::GetIntensity, &CameraSSR::SetIntensity)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 128.0f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
-            )
-            .property("start distance", &CameraSSR::GetStartDistance, &CameraSSR::SetStartDistance)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 1.0f, 10.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             );
     }
