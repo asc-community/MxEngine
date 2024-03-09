@@ -43,7 +43,7 @@ namespace MxEngine
         GL_RG8,
         GL_RG16,
         GL_R16F,
-        GL_R32F,
+        GL_R32F_EXT,//cannot use GL_R32F. Why?
         GL_RG16F,
         GL_RG32F,
         GL_RGB,
@@ -205,7 +205,10 @@ namespace MxEngine
         switch (channels)
         {
         case 1:
-            dataChannels = GL_RED;
+            if (format != TextureFormat::R32F)
+                dataChannels = GL_RED;
+            else
+                dataChannels = GL_RED_EXT;
             break;
         case 2:
             dataChannels = GL_RG;
@@ -318,6 +321,10 @@ namespace MxEngine
         GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
         GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
         GLCALL(glGenerateMipmap(GL_TEXTURE_2D));
+    }
+
+    void Texture::Pooling() const
+    {
     }
 
     void Texture::SetBorderColor(Vector4 color)

@@ -385,6 +385,14 @@ namespace MxEngine
 
     void RenderController::PerformPostProcessing(CameraUnit& camera)
     {
+        // MAKE_SCOPE_PROFILER("RenderController::PerformPostProcessing()");
+
+        // camera.AlbedoTexture->GenerateMipmaps();
+        // camera.MaterialTexture->GenerateMipmaps();
+        // camera.NormalTexture->GenerateMipmaps();
+        // camera.DepthTexture->GenerateMipmaps();
+
+        // this->GenerateHIZ(camera.DepthTexture, camera.HiZ);
         MAKE_RENDER_PASS_SCOPE("RenderController::PerformPostProcessing()");
         
         this->ApplySSAO(camera, camera.HDRTexture, camera.SwapTexture1, camera.SwapTexture2);
@@ -641,6 +649,25 @@ namespace MxEngine
 
         this->RenderToTexture(output, shader);
         std::swap(input, output);
+    }
+
+    void RenderController::GenerateHIZ(TextureHandle& zBuffer, MxVector<TextureHandle>& HiZ)
+    {
+        MAKE_SCOPE_PROFILER("RenderController::GenerateHIZ()");
+
+        auto& shader = this->Pipeline.Environment.Shaders["HIZ"_id];
+
+        MxVector<TextureHandle> inputTex = {zBuffer};
+        for (auto it : HiZ) inputTex.emplace_back(it);
+
+        for (int i =0;i<HiZ.size();i++) 
+        {
+            shader->Bind();
+            inputTex[i]->Bind(0);
+            auto& outputTex = inputTex[i + 1];
+            shader->SetUniform("uPreviousLevelRes", VectorInt2(outputTex->GetWidth(), outputTex->GetHeight()));
+            this->RenderToTexture(outputTex, shader);
+        }
     }
 
     void RenderController::ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
