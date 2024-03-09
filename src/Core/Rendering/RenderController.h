@@ -86,6 +86,7 @@ namespace MxEngine
         void SubmitInstancedLights();
         void SubmitDirectionalLightInformation(ShaderHandle& shader, Texture::TextureBindId textureId);
         void BindGBuffer(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
+        void BindHiZ(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
         void BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
         void BindCameraInformation(const CameraUnit& camera, const Shader& shader);
         void BindFogInformation(const CameraUnit& camera, const Shader& shader);

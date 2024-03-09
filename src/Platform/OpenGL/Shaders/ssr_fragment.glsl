@@ -8,6 +8,8 @@ uniform sampler2D normalTex;
 uniform sampler2D materialTex;
 uniform sampler2D depthTex;
 uniform sampler2D HDRTex;
+uniform sampler2D hiZTex0;
+uniform sampler2D hiZTex1;
 
 struct Camera
 {
@@ -16,18 +18,24 @@ struct Camera
     mat4 invViewProjMatrix;
     mat4 viewMatrix;
     mat4 projectionMatrix;
+	mat4 invProjectionMatrix;
 };
 
 uniform Camera camera;
 uniform EnvironmentInfo environment;
 
-uniform int   steps;
 uniform float thickness;
-uniform float startDistance;
+uniform vec2 screenResolution;
 
-float sampleDepth(vec2 uv)
+float sampleDepth(ivec2 uv,int level)
 {
-	return texture(depthTex,uv).r;
+	switch(level)
+	{
+		case 0:return texelFetch(depthTex,uv,0).r;
+		case 1:return texelFetch(hiZTex0,uv/ivec2(2),0).r;
+		case 2:return texelFetch(hiZTex1,uv/ivec2(4),0).r;
+		//Add more levels if needed
+	}
 }
 
 vec3 transform(mat4 m,vec3 p)
@@ -46,9 +54,15 @@ void swapComp(inout vec2 v)
 	v=v.yx;
 }
 
+#define TRACE_RAY(stp) \
+	do{\
+		scr0+=dScr*int(stp);\
+		vpProj0.z+=dVpProj.z*int(stp);\
+		w0+=dw*int(stp);\
+	}while(false);
+
 void main()
 {
-	vec2 uResolution=vec2(1600.0,900.0);
     FragmentInfo fragment = getFragmentInfo(
         TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
 	float rayLength=1000.f;
@@ -75,8 +89,8 @@ void main()
 	vec2 ndc0=ho0.xy*w0;
 	vec2 ndc1=ho1.xy*w1;
 	
-	vec2 scr0 =(ndc0+1.0)/2*uResolution;
-	vec2 scr1 =(ndc1+1.0)/2*uResolution;
+	vec2 scr0 =(ndc0+1.0)/2.0*screenResolution;
+	vec2 scr1 =(ndc1+1.0)/2.0*screenResolution;
 	
 	scr1+=distance(scr0,scr1)<0.01?0.01:0.0;
 	
@@ -103,42 +117,58 @@ void main()
 	float lastZmax = vp0.z;
 	vec2 result;
 	bool isHit=false;
-	const mat4 invProj = inverse(camera.projectionMatrix);
-	int step=0;
 	bool checkthickness=false;
-	for(;step<2000;step++,scr0+=dScr,vpProj0.z+=dVpProj.z,w0+=dw)
+	int level=0;
+	int maxLevel=2;
+	float testStp=0.0;
+	int maxStp=int(sqrt(screenResolution.x*screenResolution.x+screenResolution.y*screenResolution.y));
+	//Todo: /(ㄒoㄒ)/~~ Handle diffuse lobe. Sampling more rays or using cone tracing when the BRDF lobe is fat.
+	for(int curStep=0; curStep<maxStp;curStep++,testStp++)
 	{
+		//reconstruct camera space ray depth
 		result.xy=permute?scr0.yx:scr0;
 		vec2 depths;
 		depths.x=lastZmax;
 		depths.y=(dVpProj.z*0.5+vpProj0.z)/(dw*0.5+w0);
 		lastZmax=depths.y;
+		//check direction
 		if(depths.x<depths.y)
 			swapComp(depths);
-		if( result.x > uResolution.x || result.x < 0 || result.y > uResolution.y || result.y < 0)
+		//check boundary
+		if( result.x > screenResolution.x || result.x < 0 ||
+			result.y > screenResolution.y || result.y < 0)
 			break;
 			
-		vec2 uv=result/uResolution;
-		float d = sampleDepth(uv);
-	    vec4 normPosition = vec4(2.0f * uv - vec2(1.0f), d, 1.0f);
-	    vec4 vpos = invProj * normPosition;
+		float d = sampleDepth(ivec2(result),level);
+	    vec4 normPosition = vec4(2.0f * result - vec2(1.0f), d, 1.0f);
+	    vec4 vpos = transform(camera.invProjectionMatrix,normPosition);
 	    vpos/=vpos.w;
-		float sceneDepth=vpos.z;
+		float sceneDepth=vpos.z;		
 
 		if(!checkthickness&&(depths.y-sceneDepth>thickness))
 			checkthickness=true;
+
 		float curDiff=sceneDepth-depths.y;
-		float prevDiff=sceneDepth-depths.x;
-		if((curDiff>0 && prevDiff<0) ||
-		   (checkthickness && abs(curDiff)<thickness && abs(prevDiff)<thickness))
+		if( checkthickness &&
+			(curDiff>0 || curDiff<0&&abs(curDiff)<thickness ))
 		{
-			isHit=true;
-			break;
+			if(level==0)
+			{
+				isHit=true;
+				break;
+			}
+			TRACE_RAY(-pow(2.0,level));
+			level=0;
+		}
+		else
+		{
+			level=min(maxLevel,level+1);
+			TRACE_RAY(pow(2.0,level));
 		}
 	}
 	
 	if(isHit)
-		OutColor = vec4(texture(HDRTex,result/uResolution).rgb*4.0,1.0);
+		OutColor = vec4(texelFetch(HDRTex,ivec2(result),0).rgb*4.0,1.0);
 	else
 		OutColor =vec4(0.0);
 }

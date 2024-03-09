@@ -79,11 +79,11 @@ namespace MxEngine
             );
             generatorMasked.GenerateFor(
                 *this->Pipeline.Environment.Shaders["DirLightMaskDepthMap"_id],
-                this->Pipeline.Lighting.DirectionalLights,
+                this->Pipeline.Lighting.DirectionalLights, 
                 ShadowMapGenerator::LoadStoreOptions::LOAD
             );
         }
-
+         
         if (hasSpotLights)
         {
             MAKE_RENDER_PASS_SCOPE("RenderController::PrepareSpotLightMaps()");
@@ -91,13 +91,13 @@ namespace MxEngine
                 *this->Pipeline.Environment.Shaders["SpotLightDepthMap"_id], 
                 this->Pipeline.Lighting.SpotLights,
                 ShadowMapGenerator::LoadStoreOptions::CLEAR
-            );
+            ); 
             generatorMasked.GenerateFor(
                 *this->Pipeline.Environment.Shaders["SpotLightMaskDepthMap"_id],
                 this->Pipeline.Lighting.SpotLights,
                 ShadowMapGenerator::LoadStoreOptions::LOAD
-            );
-        }
+            ); 
+        } 
 
         if (hasPointLights)
         {
@@ -666,10 +666,10 @@ namespace MxEngine
         Texture::TextureBindId textureId = 0;
         this->BindGBuffer(camera, *SSRShader, textureId);
         this->BindCameraInformation(camera, *SSRShader);
+        this->BindHiZ(camera, *SSRShader, textureId);
 
-        SSRShader->SetUniform("thickness", camera.SSR->GetThickness()); 
-        SSRShader->SetUniform("startDistance", camera.SSR->GetStartDistance());
-        SSRShader->SetUniform("steps", (int)camera.SSR->GetSteps());
+        SSRShader->SetUniform("thickness", camera.SSR->GetThickness());
+        SSRShader->SetUniform("screenResolution", Vector2(camera.HDRTexture->GetWidth(), camera.HDRTexture->GetHeight()));
 
         this->RenderToTexture(temporary, SSRShader);
 
@@ -1039,8 +1039,9 @@ namespace MxEngine
         shader.SetUniform("camera.position", camera.ViewportPosition);
         shader.SetUniform("camera.viewProjMatrix", camera.ViewProjectionMatrix);
         shader.SetUniform("camera.invViewProjMatrix", camera.InverseViewProjMatrix);
-        shader.SetUniform("camera.viewMatrix", camera.ViewMatrix); 
+        shader.SetUniform("camera.viewMatrix", camera.ViewMatrix);
         shader.SetUniform("camera.projectionMatrix", camera.ProjectionMatrix);
+        shader.SetUniform("camera.invProjectionMatrix", Inverse(camera.ProjectionMatrix));
     }
     void RenderController::BindGBuffer(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId)
     {
@@ -1054,6 +1055,16 @@ namespace MxEngine
         shader.SetUniform("materialTex", camera.MaterialTexture->GetBoundId());
         shader.SetUniform("depthTex", camera.DepthTexture->GetBoundId());
     }
+
+    void RenderController::BindHiZ(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId)
+    {
+        for(int i=0;i<camera.HiZ.size();i++)  
+        { 
+            auto& it = camera.HiZ[i];
+            it->Bind(startId++);
+            shader.SetUniform(ToMxString( fmt::format("hiZTex{}", i)), it->GetBoundId());
+        }
+    } 
      
     const Renderer& RenderController::GetRenderEngine() const
     { 

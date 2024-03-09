@@ -166,7 +166,7 @@ namespace MxEngine
 
     template<>
     ShaderBase::ShaderId ShaderBase::CreateShader<FilePath>(ShaderTypeEnum type, const MxString& sourceCode, const FilePath& path)
-    {
+    { 
         GLCALL(ShaderId shaderId = glCreateShader((GLenum)type));
 
         ShaderPreprocessor preprocessor(sourceCode);
@@ -183,10 +183,10 @@ namespace MxEngine
         {
             MXLOG_WARNING("OpenGL::Shader", "failed to compile shader stage: " + ToMxString(path));
         }
-
-        return shaderId;
-    }
-
+          
+        return shaderId;  
+    } 
+     
     void ShaderBase::DeleteShader(ShaderId id)
     {
         GLCALL(glDeleteShader(id));
