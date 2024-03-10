@@ -165,14 +165,16 @@ namespace MxEngine
     }
 
     template<>
-    ShaderBase::ShaderId ShaderBase::CreateShader<FilePath>(ShaderTypeEnum type, const MxString& sourceCode, const FilePath& path)
+    ShaderBase::ShaderId ShaderBase::CreateShader<FilePath>(ShaderTypeEnum type, const MxString& sourceCode, const FilePath& path,MxString def)
     {
         GLCALL(ShaderId shaderId = glCreateShader((GLenum)type));
 
         ShaderPreprocessor preprocessor(sourceCode);
-
+        
+        std::transform(def.begin(), def.end(), def.begin(), [](char c) {return toupper(c); });
         auto modifiedSourceCode = preprocessor
             .LoadIncludes(path.parent_path())
+            .EmitPrefixLine("#define " + def + "_SHADER") 
             .EmitPrefixLine(ShaderBase::GetShaderVersionString())
             .GetResult();
 

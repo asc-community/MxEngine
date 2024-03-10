@@ -1,5 +1,7 @@
 layout(early_fragment_tests) in;
 
+#include "Library/shader_utils.glsl"
+
 in VSout
 {
     vec2 TexCoord;
@@ -20,15 +22,6 @@ struct Material
     float roughness;
     float metallic;
     float transparency;
-};
-
-struct Camera
-{
-    vec3 position;
-    mat4 viewProjMatrix;
-    mat4 invViewProjMatrix;
-    mat4 viewMatrix;
-    mat4 projectionMatrix;
 };
 
 uniform sampler2D map_albedo;

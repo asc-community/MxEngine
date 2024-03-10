@@ -30,15 +30,6 @@ uniform Material material;
 uniform vec2 uvMultipliers;
 uniform float gamma;
 
-struct Camera
-{
-    vec3 position;
-    mat4 viewProjMatrix;
-    mat4 invViewProjMatrix;
-    mat4 viewMatrix;
-    mat4 projectionMatrix;
-};
-
 uniform int lightCount;
 uniform vec3 viewportPosition;
 uniform sampler2D envBRDFLUT;

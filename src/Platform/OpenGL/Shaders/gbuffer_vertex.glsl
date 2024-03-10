@@ -1,4 +1,5 @@
 #include "Library/displacement.glsl"
+#include "Library/shader_utils.glsl"
 
 layout(location = 0)  in vec4 position;
 layout(location = 1)  in vec2 texCoord;
@@ -8,15 +9,6 @@ layout(location = 4)  in vec3 bitangent;
 layout(location = 5)  in mat4 model;
 layout(location = 9)  in mat3 normalMatrix;
 layout(location = 12) in vec3 renderColor;
-
-struct Camera
-{
-    vec3 position;
-    mat4 viewProjMatrix;
-    mat4 invViewProjMatrix;
-    mat4 viewMatrix;
-    mat4 projectionMatrix;
-};
 
 uniform Camera camera;
 uniform float displacement;

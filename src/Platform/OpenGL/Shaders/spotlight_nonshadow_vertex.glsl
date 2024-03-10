@@ -1,3 +1,4 @@
+#include "Library/shader_utils.glsl"
 layout(location = 0)  in vec4 position;
 layout(location = 5)  in mat4 transform;
 layout(location = 9)  in vec4 lightPosition;
@@ -13,15 +14,6 @@ out SpotLightInfo
     vec4 color;
     float maxDistance;
 } spotLight;
-
-struct Camera
-{
-    vec3 position;
-    mat4 viewProjMatrix;
-    mat4 invViewProjMatrix;
-    mat4 viewMatrix;
-    mat4 projectionMatrix;
-};
 
 uniform Camera camera;
 uniform mat4 worldToLightTransform;

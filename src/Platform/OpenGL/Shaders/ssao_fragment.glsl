@@ -8,12 +8,6 @@ uniform sampler2D normalTex;
 uniform sampler2D materialTex;
 uniform sampler2D depthTex;
 
-struct Camera
-{
-    mat4 invViewProjMatrix;
-    mat4 viewProjMatrix;
-    vec3 position;
-};
 uniform Camera camera;
 
 uniform sampler2D noiseTex;

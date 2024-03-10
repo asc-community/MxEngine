@@ -61,7 +61,7 @@ namespace MxEngine
         {
             auto& stageInfo = stageInfos[i];
             MXLOG_DEBUG("OpenGL::Shader", "compiling " + MxString(PipelineStageToString[stageInfo.Stage]) + " shader");
-            ids[i] = ShaderBase::CreateShader(PipelineStageToNative[stageInfo.Stage], stageInfo.SourceCode, stageInfo.Path);
+            ids[i] = ShaderBase::CreateShader(PipelineStageToNative[stageInfo.Stage], stageInfo.SourceCode, stageInfo.Path, PipelineStageToString[stageInfo.Stage]);
         }
 
         // link stages into one shader program

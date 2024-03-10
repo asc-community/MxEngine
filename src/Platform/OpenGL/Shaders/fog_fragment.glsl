@@ -9,15 +9,6 @@ uniform sampler2D normalTex;
 uniform sampler2D materialTex;
 uniform sampler2D depthTex;
 
-struct Camera
-{
-    vec3 position;
-    mat4 viewProjMatrix;
-    mat4 invViewProjMatrix;
-    mat4 viewMatrix;
-    mat4 projectionMatrix;
-};
-
 uniform sampler2D cameraOutput;
 uniform Fog fog;
 uniform Camera camera;

@@ -12,16 +12,6 @@ uniform sampler2D HDRTex;
 uniform sampler2D hiZTex0;
 uniform sampler2D hiZTex1;
 
-struct Camera
-{
-    vec3 position;
-    mat4 viewProjMatrix;
-    mat4 invViewProjMatrix;
-    mat4 viewMatrix;
-    mat4 projectionMatrix;
-    mat4 invProjectionMatrix;
-};
-
 uniform Camera camera;
 uniform EnvironmentInfo environment;
 

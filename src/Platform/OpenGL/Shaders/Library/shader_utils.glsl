@@ -6,6 +6,7 @@ vec3 reconstructWorldPosition(float depth, vec2 texcoord, mat4 invViewProjMatrix
     return worldPosition.xyz;
 }
 
+#ifdef FRAGMENT_SHADER
 float getTextureLodLevel(vec2 uv)
 {
     vec2 dxVtc = dFdx(uv);
@@ -13,12 +14,14 @@ float getTextureLodLevel(vec2 uv)
     float deltaMax2 = max(dot(dxVtc, dxVtc), dot(dyVtc, dyVtc));
     return 0.5 * log2(deltaMax2);
 }
+#endif
 
 float sampleShadowMap(sampler2D depthMap, vec2 coords, float lod, float compare)
 {
     return step(compare, texture(depthMap, coords, lod).r);
 }
 
+#ifdef FRAGMENT_SHADER
 float calcShadowFactor2D(vec3 coords, sampler2D depthMap, vec4 textureLimitsXY, float bias)
 {
     if (coords.x < textureLimitsXY[0] || coords.x > textureLimitsXY[1]) return -1.0;
@@ -47,6 +50,7 @@ float calcShadowFactor2D(vec3 coords, sampler2D depthMap, vec4 textureLimitsXY, 
 
     return s / 9.0;
 }
+#endif
 
 const int POINT_LIGHT_SAMPLES = 20;
 vec3 sampleOffsetDirections[POINT_LIGHT_SAMPLES] = vec3[]
@@ -75,6 +79,7 @@ float CalcShadowFactor3D(vec3 fragToLightRay, vec3 viewDist, float zfar, float b
     return shadowFactor;
 }
 
+#ifdef FRAGMENT_SHADER
 vec3 calcReflectionColor(samplerCube reflectionMap, mat3 reflectionMapTransform, vec3 viewDir, vec3 normal, float lod)
 {
     vec3 I = -viewDir;
@@ -91,6 +96,7 @@ vec3 calcReflectionColor(samplerCube reflectionMap, mat3 reflectionMapTransform,
 {
     return calcReflectionColor(reflectionMap, reflectionMapTransform, viewDir, normal, 0.0);
 }
+#endif
 
 vec4 worldToFragSpace(vec3 v, mat4 viewProj)
 {
@@ -145,3 +151,13 @@ float noise(vec2 p)
 {
     return fract(sin(dot(p, vec2(123.45, 875.43))) * 5432.3);
 }
+
+struct Camera
+{
+    vec3 position;
+    mat4 viewProjMatrix;
+    mat4 invViewProjMatrix;
+    mat4 viewMatrix;
+    mat4 projectionMatrix;
+    mat4 invProjectionMatrix;
+};
