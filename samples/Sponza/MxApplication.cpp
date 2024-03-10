@@ -19,4 +19,4 @@ int main()
     Sponza::SponzaApplication app;
     app.Run();
     return 0;
-} 
+}
