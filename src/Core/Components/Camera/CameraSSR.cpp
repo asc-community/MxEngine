@@ -50,7 +50,7 @@ namespace MxEngine
 
     void CameraSSR::SetIntensity(float intensity) 
     {
-        this->intensity = Min(intensity,1.0f);
+        this->intensity = intensity;
     }
     
     MXENGINE_REFLECT_TYPE
@@ -63,7 +63,7 @@ namespace MxEngine
             .property("thickness", &CameraSSR::GetThickness, &CameraSSR::SetThickness)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 1.0f, 100.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
             .property("intensity", &CameraSSR::GetIntensity, &CameraSSR::SetIntensity)

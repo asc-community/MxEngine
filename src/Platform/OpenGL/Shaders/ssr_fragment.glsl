@@ -7,6 +7,7 @@ uniform sampler2D albedoTex;
 uniform sampler2D normalTex;
 uniform sampler2D materialTex;
 uniform sampler2D depthTex;
+uniform sampler2D ssrMask;
 uniform sampler2D HDRTex;
 uniform sampler2D hiZTex0;
 uniform sampler2D hiZTex1;
@@ -64,6 +65,11 @@ void swapComp(inout vec2 v)
 
 void main()
 {
+	if(texelFetch(ssrMask,ivec2(gl_FragCoord.xy),0).r<0.5)
+	{
+		OutColor = vec4(0.0);
+		return;
+	}
     FragmentInfo fragment = getFragmentInfo(
         TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
     float rayLength = 8000.f;

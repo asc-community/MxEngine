@@ -62,6 +62,7 @@ namespace MxEngine
         TextureHandle NormalTexture;
         TextureHandle MaterialTexture;
         TextureHandle DepthTexture;
+        TextureHandle SSRMaskTexture;
         MxVector< TextureHandle> HiZ;
         TextureHandle AverageWhiteTexture;
         TextureHandle HDRTexture;

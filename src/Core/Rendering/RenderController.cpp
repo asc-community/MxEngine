@@ -277,6 +277,8 @@ namespace MxEngine
         shader.SetUniform("parentModel", unit.ModelMatrix); //-V807
         shader.SetUniform("parentNormal", unit.NormalMatrix);
         shader.SetUniform("parentColor", material.BaseColor);
+
+        shader.SetUniform("receiveSSR", material.ReceiveSSR);
         
         this->DrawIndices(RenderPrimitive::TRIANGLES, unit.IndexCount, unit.IndexOffset, unit.VertexOffset, instanceCount, baseInstance);
     }
@@ -666,6 +668,8 @@ namespace MxEngine
         Texture::TextureBindId textureId = 0;
         this->BindGBuffer(camera, *SSRShader, textureId);
         this->BindCameraInformation(camera, *SSRShader);
+        SSRShader->SetUniform("ssrMask", camera.SSRMaskTexture->GetBoundId()); 
+        camera.SSRMaskTexture->Bind(textureId++);
         this->BindHiZ(camera, *SSRShader, textureId);
 
         SSRShader->SetUniform("thickness", camera.SSR->GetThickness());
@@ -1495,6 +1499,7 @@ namespace MxEngine
         camera.AlbedoTexture              = cameraController.GetAlbedoTexture();
         camera.NormalTexture              = cameraController.GetNormalTexture();
         camera.MaterialTexture            = cameraController.GetMaterialTexture();
+        camera.SSRMaskTexture             = cameraController.GetSSRMask();
         camera.DepthTexture               = cameraController.GetDepthTexture();
         camera.HiZ                        = cameraController.GetHiZ();
         camera.AverageWhiteTexture        = cameraController.GetAverageWhiteTexture();

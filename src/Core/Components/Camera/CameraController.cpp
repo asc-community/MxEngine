@@ -426,6 +426,11 @@ namespace MxEngine
         return this->renderBuffers->Material;
     }
 
+    TextureHandle CameraController::GetSSRMask()const
+    {
+        return this->renderBuffers->SSRMask;
+    }
+
     TextureHandle CameraController::GetDepthTexture() const
     {
         return this->renderBuffers->Depth;
@@ -462,6 +467,7 @@ namespace MxEngine
         this->Albedo = Factory<Texture>::Create();
         this->Normal = Factory<Texture>::Create();
         this->Material = Factory<Texture>::Create();
+        this->SSRMask = Factory<Texture>::Create();
         this->Depth = Factory<Texture>::Create();
         this->AverageWhite = Factory<Texture>::Create();
         this->HDR = Factory<Texture>::Create();
@@ -474,12 +480,14 @@ namespace MxEngine
         this->GBuffer->AttachTexture(this->Albedo, Attachment::COLOR_ATTACHMENT0);
         this->GBuffer->AttachTextureExtra(this->Normal, Attachment::COLOR_ATTACHMENT1);
         this->GBuffer->AttachTextureExtra(this->Material, Attachment::COLOR_ATTACHMENT2);
+        this->GBuffer->AttachTextureExtra(this->SSRMask, Attachment::COLOR_ATTACHMENT3);
         this->GBuffer->AttachTextureExtra(this->Depth, Attachment::DEPTH_ATTACHMENT);
 
         std::array attachments = {
             Attachment::COLOR_ATTACHMENT0,
             Attachment::COLOR_ATTACHMENT1,
             Attachment::COLOR_ATTACHMENT2,
+            Attachment::COLOR_ATTACHMENT3
         };
         this->GBuffer->UseDrawBuffers(attachments);
         this->GBuffer->Validate();
@@ -499,6 +507,10 @@ namespace MxEngine
         this->Material->Load(nullptr, width, height, 3, false, TextureFormat::RGBA);
         this->Material->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera material"));
         this->Material->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
+        this->SSRMask->Load(nullptr, width, height, 1, false, TextureFormat::R32F);
+        this->SSRMask->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("ssr mask"));
+        this->SSRMask->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
 
         this->Depth->LoadDepth(width, height, TextureFormat::DEPTH32F);
         this->Depth->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera depth"));
@@ -536,6 +548,7 @@ namespace MxEngine
         Factory<Texture>::Destroy(this->Albedo);
         Factory<Texture>::Destroy(this->Normal);
         Factory<Texture>::Destroy(this->Material);
+        Factory<Texture>::Destroy(this->SSRMask);
         Factory<Texture>::Destroy(this->Depth);
         Factory<Texture>::Destroy(this->HDR);
         Factory<Texture>::Destroy(this->SwapHDR1);
