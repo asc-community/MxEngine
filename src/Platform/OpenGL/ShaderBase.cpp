@@ -55,7 +55,7 @@ namespace MxEngine
         cache[uniformName] = location;
         return location;
     }
-     
+
     ShaderBase::UniformIdType ShaderBase::UniformCache::GetUniformLocationSilent(const char* uniformName)
     {
         auto it = cache.find_as(uniformName);
@@ -136,7 +136,7 @@ namespace MxEngine
         }
 
         GLCALL(glLinkProgram(program));
-        if(PrintErrorsToLogProgram(program, GL_LINK_STATUS))
+        if (PrintErrorsToLogProgram(program, GL_LINK_STATUS))
         {
             MXLOG_WARNING("OpenGL::Shader", "failed to link shader program with id = " + ToMxString(program));
         }
@@ -166,7 +166,7 @@ namespace MxEngine
 
     template<>
     ShaderBase::ShaderId ShaderBase::CreateShader<FilePath>(ShaderTypeEnum type, const MxString& sourceCode, const FilePath& path)
-    { 
+    {
         GLCALL(ShaderId shaderId = glCreateShader((GLenum)type));
 
         ShaderPreprocessor preprocessor(sourceCode);
@@ -183,10 +183,10 @@ namespace MxEngine
         {
             MXLOG_WARNING("OpenGL::Shader", "failed to compile shader stage: " + ToMxString(path));
         }
-          
-        return shaderId;  
-    } 
-     
+
+        return shaderId;
+    }
+
     void ShaderBase::DeleteShader(ShaderId id)
     {
         GLCALL(glDeleteShader(id));
