@@ -69,7 +69,7 @@ namespace MxEngine
             .property("intensity", &CameraSSR::GetIntensity, &CameraSSR::SetIntensity)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 1.0f, 10.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 1.0f, 50.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             );
     }

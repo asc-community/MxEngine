@@ -8,7 +8,7 @@ namespace Sponza
     {
         virtual void OnCreate()
         {
-            Scene::Load("sponza2.json"_id);
+            Scene::Load("sponza.json"_id);
         }
     };
 }

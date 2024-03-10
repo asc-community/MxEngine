@@ -7,7 +7,7 @@
 <!-- soon! [![Documentation](https://codedocs.xyz/MomoDeve/MxEngine.svg)](https://codedocs.xyz/MomoDeve/MxEngine/) -->
 
 MxEngine is an educational modern-C++ general-purpose 3D game engine. 
-Right now MxEngine is developed only by me, [#Momo](https://github.com/MomoDeve), but any contributions are welcome and will be reviewed.
+Right now MxEngine is developed only by me, [#Momo](https://github.com/MomoDeve) and [#Lucas](https://github.com/fall2019) contributing some features from time to time. Any contributions are welcome and will be reviewed.
 Fow now MxEngine supports OpenGL as graphic API and targets x64 only. I develop the project in my free time, so updates may be not so frequent!
 
 ***Note:** MxEngine is currently being ported to new Vulkan rendering backend. Development progress of the rendering library can be found here: [VulkanAbstractionLayer](https://github.com/asc-community/VulkanAbstractionLayer)*
@@ -292,9 +292,8 @@ If you are interesed in libraries MxEngine depend on, consider reading [dependen
 <i>shadow casting from dynamic lights, screen-space reflections</i>
 </p>
 
-## Special thanks
-#### God Ray Effect by [#Fall2019](https://github.com/fall2019)
 <img src="preview_images/readme_god_ray.PNG">
+<i>god ray effect</i>
 </p>
 
 ## Projects based on MxEngine
