@@ -1,4 +1,4 @@
-#include "Library/common_utils.glsl"
+#include "Library/fragment_utils.glsl"
 #include "Library/ibl_lighting.glsl"
 
 in vec2 TexCoord;

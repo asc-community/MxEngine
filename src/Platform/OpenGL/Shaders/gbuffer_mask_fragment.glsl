@@ -1,4 +1,4 @@
-#include "Library/common_utils.glsl"
+#include "Library/fragment_utils.glsl"
 in VSout
 {
     vec2 TexCoord;

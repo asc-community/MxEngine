@@ -1,3 +1,4 @@
+#include "Library/common_utils.glsl"
 float getTextureLodLevel(vec2 uv)
 {
     vec2 dxVtc = dFdx(uv);

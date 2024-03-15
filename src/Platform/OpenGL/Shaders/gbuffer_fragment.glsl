@@ -1,4 +1,4 @@
-#include "Library/common_utils.glsl"
+#include "Library/fragment_utils.glsl"
 layout(early_fragment_tests) in;
 
 in VSout

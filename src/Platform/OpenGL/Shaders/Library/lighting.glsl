@@ -1,4 +1,3 @@
-#include "Library/fragment_utils.glsl"
 #include "Library/pbr_lighting.glsl"
 
 vec3 calculateLighting(FragmentInfo fragment, vec3 viewDirection, vec3 lightDirection, vec3 lightColor, float ambientFactor, float shadowFactor)
