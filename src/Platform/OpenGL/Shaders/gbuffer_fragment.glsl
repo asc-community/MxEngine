@@ -1,8 +1,6 @@
 #include "Library/fragment_utils.glsl"
 layout(early_fragment_tests) in;
 
-#include "Library/shader_utils.glsl"
-
 in VSout
 {
     vec2 TexCoord;
