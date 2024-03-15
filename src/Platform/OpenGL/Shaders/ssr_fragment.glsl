@@ -1,4 +1,4 @@
-#include "Library/shader_utils.glsl"
+#include "Library/fragment_utils.glsl"
 
 in vec2 TexCoord;
 out vec4 OutColor;

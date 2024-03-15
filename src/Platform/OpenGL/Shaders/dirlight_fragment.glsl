@@ -1,5 +1,5 @@
+#include "Library/fragment_utils.glsl"
 #include "Library/directional_light.glsl"
-
 out vec4 OutColor;
 in vec2 TexCoord;
 

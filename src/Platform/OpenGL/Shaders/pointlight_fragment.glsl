@@ -1,3 +1,4 @@
+#include "Library/fragment_utils.glsl"
 #include "Library/lighting.glsl"
 
 out vec4 OutColor;

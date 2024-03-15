@@ -1,4 +1,4 @@
-#include "Library/shader_utils.glsl"
+#include "Library/fragment_utils.glsl"
 #include "Library/fog.glsl"
 
 in vec2 TexCoord;

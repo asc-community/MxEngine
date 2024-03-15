@@ -1,3 +1,4 @@
+#include "Library/fragment_utils.glsl"
 #include "Library/directional_light.glsl"
 
 in vec2 TexCoord;

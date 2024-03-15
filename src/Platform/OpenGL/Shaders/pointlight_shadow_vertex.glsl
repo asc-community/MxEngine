@@ -1,4 +1,4 @@
-#include "Library/shader_utils.glsl"
+#include "Library/common_utils.glsl"
 layout(location = 0)  in vec4 position;
 
 out PointLightInfo
