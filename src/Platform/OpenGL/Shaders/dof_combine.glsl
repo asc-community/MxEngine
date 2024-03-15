@@ -1,4 +1,5 @@
-#include "Library/shader_utils.glsl"
+#include "Library/common_utils.glsl"
+#include "Library/fragment_utils.glsl"
 in vec2 TexCoord;
 out vec4 OutColor;
 layout(binding = 0)uniform sampler2D colorTex;

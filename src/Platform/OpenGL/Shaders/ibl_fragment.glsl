@@ -1,3 +1,4 @@
+#include "Library/common_utils.glsl"
 #include "Library/ibl_lighting.glsl"
 
 in vec2 TexCoord;
@@ -8,13 +9,6 @@ uniform sampler2D normalTex;
 uniform sampler2D materialTex;
 uniform sampler2D depthTex;
 uniform float gamma;
-
-struct Camera
-{
-    vec3 position;
-    mat4 invViewProjMatrix;
-    mat4 viewProjMatrix;
-};
 
 uniform Camera camera;
 uniform EnvironmentInfo environment;

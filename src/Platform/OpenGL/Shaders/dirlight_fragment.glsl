@@ -1,14 +1,8 @@
+#include "Library/common_utils.glsl"
 #include "Library/directional_light.glsl"
-
 out vec4 OutColor;
 in vec2 TexCoord;
 
-struct Camera
-{
-    vec3 position;
-    mat4 invViewProjMatrix;
-    mat4 viewProjMatrix;
-};
 
 uniform sampler2D albedoTex;
 uniform sampler2D normalTex;

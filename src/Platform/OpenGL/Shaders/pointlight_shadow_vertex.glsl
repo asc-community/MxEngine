@@ -1,3 +1,4 @@
+#include "Library/common_utils.glsl"
 layout(location = 0)  in vec4 position;
 
 out PointLightInfo
@@ -6,13 +7,6 @@ out PointLightInfo
     float radius;
     vec4 color;
 } pointLight;
-
-struct Camera
-{
-    vec3 position;
-    mat4 invViewProjMatrix;
-    mat4 viewProjMatrix;
-};
 
 uniform Camera camera;
 uniform mat4 transform;
