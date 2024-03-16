@@ -47,7 +47,7 @@ namespace MxEngine
     ComputeShader::BindableId ComputeShader::CreateShaderProgram<FilePath>(const MxString& source, const FilePath& path)
     {
         MXLOG_DEBUG("OpenGL::Shader", "compiling compute shader");
-        ShaderId shaderId = ShaderBase::CreateShader(GL_COMPUTE_SHADER, source, path,"COMPUTE");
+        ShaderId shaderId = ShaderBase::CreateShader(GL_COMPUTE_SHADER, source, path);
 
         BindableId program = ShaderBase::CreateProgram(&shaderId, 1);
         MXLOG_DEBUG("OpenGL::Shader", "created shader program with id = " + ToMxString(program));

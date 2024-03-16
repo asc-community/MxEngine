@@ -136,7 +136,7 @@ namespace MxEngine
         }
 
         GLCALL(glLinkProgram(program));
-        if (PrintErrorsToLogProgram(program, GL_LINK_STATUS))
+        if(PrintErrorsToLogProgram(program, GL_LINK_STATUS))
         {
             MXLOG_WARNING("OpenGL::Shader", "failed to link shader program with id = " + ToMxString(program));
         }
@@ -165,16 +165,14 @@ namespace MxEngine
     }
 
     template<>
-    ShaderBase::ShaderId ShaderBase::CreateShader<FilePath>(ShaderTypeEnum type, const MxString& sourceCode, const FilePath& path,MxString def)
+    ShaderBase::ShaderId ShaderBase::CreateShader<FilePath>(ShaderTypeEnum type, const MxString& sourceCode, const FilePath& path)
     {
         GLCALL(ShaderId shaderId = glCreateShader((GLenum)type));
 
         ShaderPreprocessor preprocessor(sourceCode);
-        
-        std::transform(def.begin(), def.end(), def.begin(), [](char c) {return toupper(c); });
+
         auto modifiedSourceCode = preprocessor
             .LoadIncludes(path.parent_path())
-            .EmitPrefixLine("#define " + def + "_SHADER") 
             .EmitPrefixLine(ShaderBase::GetShaderVersionString())
             .GetResult();
 

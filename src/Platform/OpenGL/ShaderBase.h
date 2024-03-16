@@ -66,14 +66,13 @@ namespace MxEngine
         void FreeProgram();
     protected:
         static BindableId CreateProgram(const ShaderId* ids, size_t shaderCount);
-        template<typename FilePath> static ShaderId CreateShader(ShaderTypeEnum type, const MxString& sourceCode, const FilePath& filepath,MxString def);
+        template<typename FilePath> static ShaderId CreateShader(ShaderTypeEnum type, const MxString& sourceCode, const FilePath& filepath);
         template<typename FilePath> static MxVector<MxString> GetShaderIncludeFiles(const MxString& sourceCode, const FilePath& filepath);
         static void DeleteShader(ShaderId id);
 
         void SetNewNativeHandle(BindableId id);
     public:
         static MxString GetShaderVersionString();
-        static MxString GetShaderTypeString();
 
         ShaderBase();
         ~ShaderBase();
