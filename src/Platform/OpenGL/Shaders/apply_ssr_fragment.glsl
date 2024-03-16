@@ -3,6 +3,8 @@
 in vec2 TexCoord;
 out vec4 OutColor;
 
+
+
 uniform sampler2D albedoTex;
 uniform sampler2D normalTex;
 uniform sampler2D materialTex;
