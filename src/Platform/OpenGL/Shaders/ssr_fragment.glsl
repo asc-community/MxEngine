@@ -68,6 +68,7 @@ void main()
     vec3 viewDirection = normalize(viewDistance);
     vec3 reflectDirection = normalize(reflect(-viewDirection, fragment.normal));
 
+    //0:start 1:end
     vec3 wp0 = fragment.position;
     vec3 wp1 = fragment.position + reflectDirection * rayLength;
 
@@ -78,8 +79,8 @@ void main()
     vec4 ho1 = transform(camera.projectionMatrix, vec4(vp1, 1.0));
 
     float w0 = 1.0 / ho0.w;
-    float w1 = 1.0 / ho1.w;
-
+    float w1 = 1.0 / ho1.w;          
+    //to avoid nonlinearity,project to view space
     vec3 vpProj0 = vp0 * w0;
     vec3 vpProj1 = vp1 * w1;
 
@@ -90,7 +91,8 @@ void main()
     vec2 scr1 = (ndc1 + 1.0) / 2.0 * screenResolution;
 
     scr1 += distance(scr0, scr1) < 0.01 ? 0.01 : 0.0;
-
+    //Using Line Generation Algorithm
+    //https://en.wikipedia.org/wiki/Digital_differential_analyzer_(graphics_algorithm)
     vec2 delta = scr1 - scr0;
     bool permute = false;
     if (abs(delta.x) < abs(delta.y))
@@ -106,7 +108,8 @@ void main()
     vec3 dVpProj = (vpProj1 - vpProj0) * invDx;
     float dw = (w1 - w0) * invDx;
     vec2 dScr = vec2(stepDir, delta.y * invDx);
-
+    
+    //Start position
     scr0 += dScr;
     vpProj0 += dVpProj;
     w0 += dw;
@@ -135,16 +138,16 @@ void main()
         if (result.x > screenResolution.x || result.x < 0 ||
             result.y > screenResolution.y || result.y < 0)
             break;
-
+        //reconstruct in cam space 
         float d = sampleDepth(ivec2(result), level);
         vec4 normPosition = vec4(2.0f * result - vec2(1.0f), d, 1.0f);
         vec4 vpos = transform(camera.invProjectionMatrix, normPosition);
         vpos /= vpos.w;
         float sceneDepth = vpos.z;
-
+        //check if near the start point
         if (!checkthickness && (depths.y - sceneDepth > thickness))
             checkthickness = true;
-
+        //check hit & switch depth layer
         float curDiff = sceneDepth - depths.y;
         if (checkthickness &&
             (curDiff > 0 || curDiff < 0 && abs(curDiff) < thickness))
