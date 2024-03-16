@@ -77,10 +77,9 @@ namespace MxEngine
             this->includeFilePaths.push_back(path);
             #endif
 
-            auto it = this->source.find(include);
-            if (it != this->source.npos) this->source.erase(it, include.size());
-            
-            this->source = File::ReadAllText(filepath) + this->source;
+            std::regex reg(include.c_str());
+            MxString context = File::ReadAllText(filepath);
+            this->source = std::regex_replace(this->source.c_str(), reg, context.c_str()).c_str();
         }
         // maybe there are new includes in included files
         if (!paths.empty()) this->LoadIncludes(lookupPath);

@@ -1,3 +1,4 @@
+#include "Library/fragment_utils.glsl"
 in VSout
 {
     vec2 TexCoord;
@@ -17,13 +18,6 @@ struct Material
     float roughness;
     float metallic;
     float transparency;
-};
-
-struct Camera
-{
-    vec3 position;
-    mat4 viewProjMatrix;
-    mat4 invViewProjMatrix;
 };
 
 uniform sampler2D map_albedo;
