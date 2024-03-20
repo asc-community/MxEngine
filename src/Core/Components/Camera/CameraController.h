@@ -134,7 +134,7 @@ namespace MxEngine
         TextureHandle GetMaterialTexture() const;
         TextureHandle GetSSRMask()const;
         TextureHandle GetDepthTexture() const;
-        MxVector<TextureHandle> GetHiZ() const;
+        const MxVector<TextureHandle>& GetHiZ() const;
         TextureHandle GetAverageWhiteTexture() const;
         TextureHandle GetHDRTexture() const;
         TextureHandle GetSwapHDRTexture1() const;

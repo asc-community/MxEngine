@@ -437,7 +437,7 @@ namespace MxEngine
         return this->renderBuffers->Depth;
     }
 
-    MxVector<TextureHandle>  CameraController::GetHiZ() const
+    const MxVector<TextureHandle>&  CameraController::GetHiZ() const
     {
         return this->renderBuffers->HiZ;
     }
