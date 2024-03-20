@@ -358,14 +358,20 @@ namespace MxEngine
     {
         MAKE_RENDER_PASS_SCOPE("RenderController::GenerateDepthPyramid()");
         auto& shader = this->Pipeline.Environment.Shaders["HIZ"_id];
-        MxVector<TextureHandle> inputTex = { zBuffer };
-        for (auto it : HiZ) inputTex.emplace_back(it);
+
+        auto fGetTex = [&zBuffer, &HiZ](int layer)->TextureHandle&
+        {
+            if (layer == 0)
+                return zBuffer;
+            else
+                return HiZ[layer - 1];
+        };
 
         for (int i = 0; i < HiZ.size(); i++)
         {
             shader->Bind();
-            inputTex[i]->Bind(0);
-            auto& outputTex = inputTex[i + 1];
+            fGetTex(i)->Bind(0);
+            auto& outputTex = fGetTex(i + 1);
             shader->SetUniform("uPreviousLevelRes", VectorInt2(outputTex->GetWidth(), outputTex->GetHeight()));
             this->RenderToTexture(outputTex, shader);
         }
