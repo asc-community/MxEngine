@@ -1663,7 +1663,7 @@ namespace MxEngine
             this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBuffer"_id], this->Pipeline.OpaqueObjects);
             this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBufferMask"_id], this->Pipeline.MaskedObjects);
 
-            this->GenerateDepthPyramid(camera.DepthTexture,camera.HiZ);
+            this->GenerateDepthPyramid(camera.DepthTexture, camera.HiZ);
 
             this->DrawParticles(camera, this->Pipeline.OpaqueParticleSystems, *this->Pipeline.Environment.Shaders["ParticleOpaque"_id]);
 
