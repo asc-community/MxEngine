@@ -11,6 +11,7 @@ uniform sampler2D ssrMask;
 uniform sampler2D HDRTex;
 uniform sampler2D hiZTex0;
 uniform sampler2D hiZTex1;
+//add more levels here
 
 uniform Camera camera;
 uniform EnvironmentInfo environment;
@@ -26,7 +27,7 @@ float sampleDepth(ivec2 uv, int level)
     case 0:return texelFetch(depthTex, uv, 0).r;
     case 1:return texelFetch(hiZTex0, uv / ivec2(2), 0).r;
     case 2:return texelFetch(hiZTex1, uv / ivec2(4), 0).r;
-        //Add more levels if needed
+        //Add more levels here
     }
 }
 
@@ -62,7 +63,7 @@ void main()
 	}
     FragmentInfo fragment = getFragmentInfo(
         TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
-    float rayLength = 8000.f;
+    float rayLength = 8000.f;//long enough for any screen
 
     vec3 viewDistance = camera.position - fragment.position;
     vec3 viewDirection = normalize(viewDistance);
@@ -157,12 +158,14 @@ void main()
                 isHit = true;
                 break;
             }
+            //stepping back 
             TRACE_RAY(-pow(2.0, level));
             level = 0;
         }
         else
         {
             level = min(maxLevel, level + 1);
+            //stepping forward
             TRACE_RAY(pow(2.0, level));
         }
     }
