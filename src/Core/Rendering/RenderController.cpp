@@ -1067,7 +1067,7 @@ namespace MxEngine
         { 
             auto& it = camera.HiZ[i];
             it->Bind(startId++);
-            shader.SetUniform(ToMxString( fmt::format("hiZTex{}", i)), it->GetBoundId());
+            shader.SetUniform(MxFormat("hiZTex{}", i), it->GetBoundId());
         }
     } 
      

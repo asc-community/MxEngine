@@ -27,6 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "CameraController.h"
+#include "Utilities/Format/Format.h"
 #include "Core/Events/WindowResizeEvent.h"
 #include "Core/Config/GlobalConfig.h"
 #include "Core/Application/Event.h"
@@ -519,7 +520,7 @@ namespace MxEngine
         for (int i = 0; i < this->HiZ.size(); i++) 
         {
             int scale = pow(2, i+1);
-            MxString tag = ToMxString(fmt::format("!camera depth lv{}", i + 1));
+            MxString tag = MxFormat("!camera depth lv{}", i + 1);
             this->HiZ[i]->Load(nullptr, width / scale, height / scale, 1, false, TextureFormat::R32F);
             this->HiZ[i]->SetInternalEngineTag(tag);
             this->HiZ[i]->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
