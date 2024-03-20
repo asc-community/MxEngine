@@ -278,7 +278,7 @@ namespace MxEngine
         shader.SetUniform("parentNormal", unit.NormalMatrix);
         shader.SetUniform("parentColor", material.BaseColor);
 
-        shader.SetUniform("receiveSSR", material.ReceiveSSR);
+        shader.SetUniform("receiveSSR", static_cast<float>(material.ReceiveSSR));
         
         this->DrawIndices(RenderPrimitive::TRIANGLES, unit.IndexCount, unit.IndexOffset, unit.VertexOffset, instanceCount, baseInstance);
     }

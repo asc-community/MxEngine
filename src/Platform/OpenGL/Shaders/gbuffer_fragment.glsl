@@ -35,7 +35,7 @@ uniform vec2 uvMultipliers;
 uniform float displacement;
 uniform float gamma;
 uniform Camera camera;
-uniform bool receiveSSR;
+uniform float receiveSSR;
 
 vec3 calcNormal(vec2 texcoord, mat3 TBN, sampler2D normalMap)
 {
@@ -70,5 +70,5 @@ void main()
     OutAlbedo = vec4(fsin.RenderColor * albedo, emmisive / (emmisive + 1.0f));
     OutNormal = vec4(0.5f * normal + 0.5f, 1.0f);
     OutMaterial = vec4(parallaxOcclusion * occlusion, roughness, metallic, 1.0f);
-    OutSSRMask = vec4(float(receiveSSR),vec3(1.0));
+    OutSSRMask = vec4(receiveSSR,vec3(1.0));
 }
