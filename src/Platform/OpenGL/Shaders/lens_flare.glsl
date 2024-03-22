@@ -1,4 +1,4 @@
-#include "Library/shader_utils.glsl"
+#include "Library/fragment_utils.glsl"
 layout(binding = 0) uniform sampler2D inputGhost;
 layout(binding = 1) uniform sampler2D inputHalo;
 layout(binding = 2) uniform sampler2D inputColor;

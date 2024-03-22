@@ -1,3 +1,4 @@
+#include "Library/fragment_utils.glsl"
 #include "Library/lighting.glsl"
 
 out vec4 OutColor;
@@ -19,13 +20,6 @@ struct PointLight
     vec3 position;
     float radius;
     vec4 color;
-};
-
-struct Camera
-{
-    vec3 position;
-    mat4 invViewProjMatrix;
-    mat4 viewProjMatrix;
 };
 
 uniform samplerCube lightDepthMap;

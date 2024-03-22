@@ -1,3 +1,4 @@
+#include "Library/fragment_utils.glsl"
 #include "Library/lighting.glsl"
 
 out vec4 OutColor;
@@ -25,13 +26,6 @@ struct SpotLight
     float outerAngle;
     vec4 color;
     float maxDistance;
-};
-
-struct Camera
-{
-    vec3 position;
-    mat4 invViewProjMatrix;
-    mat4 viewProjMatrix;
 };
 
 uniform mat4 worldToLightTransform;

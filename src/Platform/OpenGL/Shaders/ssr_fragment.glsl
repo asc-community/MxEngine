@@ -1,15 +1,7 @@
-#include "Library/shader_utils.glsl"
+#include "Library/fragment_utils.glsl"
 
 in vec2 TexCoord;
 out vec4 OutColor;
-
-struct Camera
-{
-    vec3 position;
-    mat4 viewProjMatrix;
-    mat4 invViewProjMatrix;
-};
-
 
 uniform sampler2D albedoTex;
 uniform sampler2D normalTex;

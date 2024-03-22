@@ -1,3 +1,4 @@
+#include "Library/fragment_utils.glsl"
 #include "Library/directional_light.glsl"
 
 out vec4 OutColor;
@@ -29,14 +30,6 @@ uniform sampler2D map_occlusion;
 uniform Material material;
 uniform vec2 uvMultipliers;
 uniform float gamma;
-
-struct Camera
-{
-    vec3 position;
-    mat4 invProjMatrix;
-    mat4 invViewMatrix;
-    mat4 viewProjMatrix;
-};
 
 uniform int lightCount;
 uniform vec3 viewportPosition;

@@ -1540,6 +1540,9 @@ namespace MxEngine
         camera.SwapTexture1               = info.controller->GetSwapHDRTexture1();
         camera.SwapTexture2               = info.controller->GetSwapHDRTexture2();
         camera.OutputTexture              = info.controller->GetRenderTexture();
+        camera.SwapQuaterTexture1         = info.controller->GetSwapQuater1();
+    	camera.SwapQuaterTexture2         = info.controller->GetSwapQuater2();
+    	camera.SwapQuaterTexture3         = info.controller->GetSwapQuater3();
         camera.RenderToTexture            = info.controller->IsRendering();
         camera.SkyboxTexture              = hasSkybox && info.skybox->CubeMap.IsValid() ? info.skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;
         camera.IrradianceTexture          = hasSkybox && info.skybox->Irradiance.IsValid() ? info.skybox->Irradiance : camera.SkyboxTexture;

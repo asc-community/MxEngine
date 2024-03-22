@@ -1,11 +1,4 @@
-vec3 reconstructWorldPosition(float depth, vec2 texcoord, mat4 invViewProjMatrix)
-{
-    vec4 normPosition = vec4(2.0f * texcoord - vec2(1.0f), depth, 1.0f);
-    vec4 worldPosition = invViewProjMatrix * normPosition;
-    worldPosition /= worldPosition.w;
-    return worldPosition.xyz;
-}
-
+#include "Library/common_utils.glsl"
 float getTextureLodLevel(vec2 uv)
 {
     vec2 dxVtc = dFdx(uv);
@@ -92,14 +85,6 @@ vec3 calcReflectionColor(samplerCube reflectionMap, mat3 reflectionMapTransform,
     return calcReflectionColor(reflectionMap, reflectionMapTransform, viewDir, normal, 0.0);
 }
 
-vec4 worldToFragSpace(vec3 v, mat4 viewProj)
-{
-    vec4 proj = viewProj * vec4(v, 1.0f);
-    proj.xyz /= proj.w;
-    proj.xy = proj.xy * 0.5f + vec2(0.5f);
-    return proj;
-}
-
 struct FragmentInfo
 {
     vec3 albedo;
@@ -139,11 +124,6 @@ FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D n
     fragment.position = reconstructWorldPosition(fragment.depth, texCoord, invViewProjMatrix);
 
     return fragment;
-}
-
-float noise(vec2 p) 
-{
-    return fract(sin(dot(p, vec2(123.45, 875.43))) * 5432.3);
 }
 
 float calcLuminance(vec3 color)
