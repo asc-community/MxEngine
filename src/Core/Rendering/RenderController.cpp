@@ -359,7 +359,7 @@ namespace MxEngine
         // generate depth texture mipmaps for post-processing algorithms. Replace later with hierarhical depth map
         depth->GenerateMipmaps();
     }
-
+     
     TextureHandle RenderController::ComputeAverageWhite(CameraUnit& camera, float fadingAdaptationSpeed, float adaptationThreshold)
     {
         MAKE_RENDER_PASS_SCOPE("RenderController::ComputeAverageWhite()");
@@ -810,14 +810,13 @@ namespace MxEngine
             temporaryQuater1->GenerateMipmaps();
         }
 
+        int mipLevel = 1 + floor(log2(Max(temporaryQuater1->GetWidth(), temporaryQuater1->GetHeight())));
         //calc halo
         {
             auto& shaderHalo = this->Pipeline.Environment.Shaders["LensFlareHalo"_id];
             shaderHalo->Bind();
             shaderHalo->SetUniform("uGhostDispersal", dispersal);
             shaderHalo->SetUniform("uHaloWidth", haloWidth);
-            int mipLevel = ceil(Log2(Max(temporaryQuater1->GetWidth(), temporaryQuater1->GetHeight()))) - 2;
-            //use max mip level - 2 to get centre average brightness since only centre spot is used in ghosts generation
             shaderHalo->SetUniform("uMipLevel", mipLevel);
             input->Bind(0);
             temporaryQuater1->Bind(1);
@@ -832,6 +831,7 @@ namespace MxEngine
             lensFlare->Bind();
             lensFlare->SetUniform("uGhosts", numOfGhosts);
             lensFlare->SetUniform("uGhostDispersal", dispersal);
+            lensFlare->SetUniform("uMipLevel", mipLevel); 
             temporaryQuater1->Bind(0);
             temporaryQuater2->Bind(1);
             input->Bind(2);

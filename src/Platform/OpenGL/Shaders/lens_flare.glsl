@@ -5,6 +5,8 @@ layout(binding = 2) uniform sampler2D inputColor;
 
 uniform int uGhosts; // number of ghost samples
 uniform float uGhostDispersal; // dispersion factor
+uniform int uMipLevel;
+
 
 in vec2 TexCoord;
 out vec4 outColor;
@@ -18,14 +20,17 @@ void main()
     vec2 ghostVec = (vec2(0.5) - texcoord) * uGhostDispersal;
 
     // sample ghosts
+	float averageDiff = calcLuminance(texelFetch(inputGhost,ivec2(0,0),uMipLevel).rgb);
     vec3 result = vec3(0.0);
     for (int i = 0; i < uGhosts; ++i)
     {
         vec2 offset = fract(texcoord + 0.8 * ghostVec * float(i));
         float weight = length(vec2(0.5) - offset) / length(vec2(0.5));
         weight = pow(1.0 - weight, gWeight);
-
-        result += texture(inputGhost, offset).rgb * weight;
+        vec3 px = texture(inputGhost, offset).rgb;
+        float factor = calcLuminance(px) - 50.0;//(averageDiff * 2.0);
+        factor = max(factor,0.0);
+        result += factor * weight * px;
     }
 
     //halo

@@ -13,15 +13,10 @@ out vec4 outputColor;
 void main()
 {
     vec3 col = texture(inputColor, TexCoord).rgb;
+	float sceneLum = calcLuminance(col);
+	float averageWhite = texture(averageWhiteTex, vec2(0.0f)).r;
 
-    float lum = calcLuminance(col) - max(texture(averageWhiteTex, vec2(0.0f)).r, 0.0f);
-    if (lum <= 0)
-    {
-        outputColor = vec4(vec3(0.0f), 1.0f);
-        return;
-    }
-
-    lum += uBias;
-    col = max(lum, 0.0f) * col * uScale;
+    float lumDiff = sceneLum - averageWhite;
+    col = max(lumDiff, 0.0f) * col;
     outputColor = vec4(col, 1.0f);
 }
