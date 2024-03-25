@@ -43,6 +43,7 @@
 #include "Core/Components/Camera/CameraSSGI.h"
 #include "Core/Components/Camera/CameraSSAO.h"
 #include "Core/Components/Camera/CameraGodRay.h"
+#include "Core/Components/Camera/CameraLensFlare.h"
 #include "Core/Components/Camera/CameraToneMapping.h"
 #include "Core/Components/Lighting/DirectionalLight.h"
 #include "Core/Components/Lighting/PointLight.h"
@@ -335,6 +336,21 @@ namespace MxEngine
             shaderFolder / "dof_combine.glsl"
         );
 
+        environment.Shaders["LensFlare"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "lens_flare.glsl"
+        );
+
+        environment.Shaders["LensFlareGhosts"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "lens_flare_ghosts.glsl"
+        );
+
+        environment.Shaders["LensFlareHalo"_id] = AssetManager::LoadShader(
+            shaderFolder / "rect_vertex.glsl",
+            shaderFolder / "lens_flare_halo.glsl"
+        );
+
         // compute shaders
         environment.ComputeShaders["Particle"_id] = AssetManager::LoadComputeShader(
             shaderFolder / "particle_compute.glsl"
@@ -387,7 +403,7 @@ namespace MxEngine
             for (const auto& camera : cameraView)
             {
                 auto& object = MxObject::GetByComponent(camera);
-                auto& transform = object.LocalTransform;
+                auto transform = &object.LocalTransform;
 
                 auto skyboxComponent = object.GetComponent<Skybox>();
                 auto effectsComponent = object.GetComponent<CameraEffects>();
@@ -396,6 +412,7 @@ namespace MxEngine
                 auto ssgiComponent = object.GetComponent<CameraSSGI>();
                 auto ssaoComponent = object.GetComponent<CameraSSAO>();
                 auto godRayComponent = object.GetComponent<CameraGodRay>();
+                auto lensFlareComponent= object.GetComponent<CameraLensFlare>();
                 Skybox* skybox                 = skyboxComponent.IsValid()      ? skyboxComponent.GetUnchecked()      : nullptr;
                 CameraEffects* effects         = effectsComponent.IsValid()     ? effectsComponent.GetUnchecked()     : nullptr;
                 CameraToneMapping* toneMapping = toneMappingComponent.IsValid() ? toneMappingComponent.GetUnchecked() : nullptr;
@@ -403,8 +420,10 @@ namespace MxEngine
                 CameraSSGI* ssgi               = ssgiComponent.IsValid()        ? ssgiComponent.GetUnchecked()        : nullptr;
                 CameraSSAO* ssao               = ssaoComponent.IsValid()        ? ssaoComponent.GetUnchecked()        : nullptr;
                 CameraGodRay* godRay           = godRayComponent.IsValid()      ? godRayComponent.GetUnchecked()      : nullptr;
+                CameraLensFlare* lensFlare     = lensFlareComponent.IsValid()   ? lensFlareComponent.GetUnchecked()   : nullptr;
 
-                this->Renderer.SubmitCamera(camera, transform, skybox, effects, toneMapping, ssr, ssgi, ssao, godRay);
+                CameraInfo camInfo{ &camera, transform, skybox, effects, toneMapping, ssr, ssgi, ssao, godRay, lensFlare };
+                this->Renderer.SubmitCamera(std::move(camInfo));
                 TrackMainCameraIndex(camera);
             }
         }
@@ -442,7 +461,7 @@ namespace MxEngine
                 }
 
                 size_t renderGroupIndex = this->Renderer.SubmitRenderGroup(*mesh, instanceOffset, instanceCount);
-                for (const auto& submesh : mesh->GetSubMeshes())
+                for (const auto& submesh : mesh->GetSubMeshes()) 
                 {
                     auto materialId = submesh.GetMaterialId();
                     if (materialId >= meshRenderer->Materials.size()) continue;

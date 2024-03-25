@@ -45,6 +45,7 @@
 #include "Camera/CameraSSGI.h"
 #include "Camera/CameraSSAO.h"
 #include "Camera/CameraGodRay.h"
+#include "Camera/CameraLensFlare.h"
 #include "Camera/InputController.h"
 #include "Camera/VRCameraController.h"
 #include "Audio/AudioListener.h"

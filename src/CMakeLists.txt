@@ -12,6 +12,7 @@ set(MXENGINE_SOURCES
 "Core/Components/Camera/CameraController.cpp" 
 "Core/Components/Camera/CameraEffects.cpp" 
 "Core/Components/Camera/CameraGodRay.cpp" 
+"Core/Components/Camera/CameraLensFlare.cpp" 
 "Core/Components/Camera/FrustrumCamera.cpp" 
 "Core/Components/Camera/InputController.cpp" 
 "Core/Components/Camera/OrthographicCamera.cpp" 

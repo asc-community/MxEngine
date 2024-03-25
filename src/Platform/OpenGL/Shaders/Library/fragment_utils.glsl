@@ -125,3 +125,10 @@ FragmentInfo getFragmentInfo(vec2 texCoord, sampler2D albedoTexture, sampler2D n
 
     return fragment;
 }
+
+float calcLuminance(vec3 color)
+{
+    vec3 weight = vec3(0.2125f, 0.7154f, 0.0721f);
+    float luminance = dot(weight, color);//Weighted sum
+    return luminance;
+}

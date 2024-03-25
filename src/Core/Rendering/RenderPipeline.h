@@ -48,6 +48,7 @@ namespace MxEngine
     class CameraSSGI;
     class CameraSSAO;
     class CameraGodRay;
+    class CameraLensFlare;
     
     struct DebugBufferUnit
     {
@@ -66,6 +67,9 @@ namespace MxEngine
         TextureHandle HDRTexture;
         TextureHandle SwapTexture1;
         TextureHandle SwapTexture2;
+        TextureHandle SwapQuaterTexture1;
+        TextureHandle SwapQuaterTexture2;
+        TextureHandle SwapQuaterTexture3;
 
         FrustrumCuller Culler;
         Matrix4x4 InverseViewProjMatrix;
@@ -92,6 +96,7 @@ namespace MxEngine
         const CameraSSGI* SSGI;
         const CameraSSAO* SSAO;
         const CameraGodRay* GodRay;
+        const CameraLensFlare* LensFlare;
     };
 
     struct EnvironmentUnit

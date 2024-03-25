@@ -185,13 +185,13 @@ namespace MxEngine
             .property("fog density", &CameraEffects::GetFogDensity, &CameraEffects::SetFogDensity)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
             .property("fog distance", &CameraEffects::GetFogDistance, &CameraEffects::SetFogDistance)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range{ 0.0f, 1.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
             .property("bloom weight", &CameraEffects::GetBloomWeight, &CameraEffects::SetBloomWeight)
