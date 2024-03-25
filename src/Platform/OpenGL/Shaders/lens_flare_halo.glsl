@@ -16,12 +16,12 @@ const float gWeight = 80.0f;
 void main()
 {
     float ghostAverageWhite = calcLuminance(texture(inputGhost, vec2(0.5), uMipLevel).rgb);
-    float sceneAverageWhite = texture(inputSceneAverageWhite,vec2(0.0)).r;
-    float factor = smoothstep(0.0,1.0,(ghostAverageWhite/sceneAverageWhite)-0.5);
+    float sceneAverageWhite = texture(inputSceneAverageWhite, vec2(0.0)).r;
+    float factor = smoothstep(0.0, 1.0, (ghostAverageWhite / sceneAverageWhite * 5.0));
 
     vec2 ghostTexcoord = vec2(1.0) - TexCoord;
     vec2 haloVec = normalize((vec2(0.5) - ghostTexcoord) * uGhostDispersal) * uHaloWidth;
-    float weight = length(vec2(0.5) - fract(ghostTexcoord + haloVec)) / length(vec2(0.5));  
+    float weight = length(vec2(0.5) - fract(ghostTexcoord + haloVec)) / length(vec2(0.5));
     weight = pow(1.0 - weight, gWeight);
     vec3 haloColor = texture(inputColor, ghostTexcoord + haloVec).rgb * weight;
 
