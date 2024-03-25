@@ -661,10 +661,16 @@ namespace MxEngine
         std::swap(input, output);
     }
 
+
     void RenderController::ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
     {
         if (camera.SSR == nullptr ) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::ApplySSR()");
+
+        int level = camera.SSR->GetMaxLevel();
+#if defined(MXENGINE_PROFILING_ENABLED)
+        auto profilerTitle = MxFormat("RenderController::ApplySSR(level={})", level);
+        MAKE_RENDER_PASS_SCOPE(profilerTitle.c_str());
+#endif
 
         auto& SSRShader = this->Pipeline.Environment.Shaders["SSR"_id];
         SSRShader->Bind();
@@ -680,7 +686,7 @@ namespace MxEngine
 
         SSRShader->SetUniform("thickness", camera.SSR->GetThickness());
         SSRShader->SetUniform("screenResolution", Vector2(camera.HDRTexture->GetWidth(), camera.HDRTexture->GetHeight()));
-        SSRShader->SetUniform("intensity", camera.SSR->GetIntensity());
+        SSRShader->SetUniform("maxLevel", level);
 
         this->RenderToTexture(temporary, SSRShader);
 

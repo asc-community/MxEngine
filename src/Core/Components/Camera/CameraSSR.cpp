@@ -42,15 +42,14 @@ namespace MxEngine
         this->thickness = Max(thickness, 0.0f);
     }
 
-    float CameraSSR::GetIntensity() const
+    int CameraSSR::GetMaxLevel() const
     {
-        return this->intensity;
+        return this->maxLevel;
     }
 
-
-    void CameraSSR::SetIntensity(float intensity) 
+    void CameraSSR::SetMaxLevel(int level) 
     {
-        this->intensity = intensity;
+        this->maxLevel = level;
     }
     
     MXENGINE_REFLECT_TYPE
@@ -66,11 +65,11 @@ namespace MxEngine
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 1.0f, 100.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
-            .property("intensity", &CameraSSR::GetIntensity, &CameraSSR::SetIntensity)
+            .property("max level", &CameraSSR::GetMaxLevel, &CameraSSR::SetMaxLevel)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 1.0f, 50.0f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 1, 4 }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 1)
             );
     }
 }

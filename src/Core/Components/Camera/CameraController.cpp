@@ -474,7 +474,7 @@ namespace MxEngine
         this->HDR = Factory<Texture>::Create();
         this->SwapHDR1 = Factory<Texture>::Create();
         this->SwapHDR2 = Factory<Texture>::Create();
-        for (int i = 0; i < 2; i++)  HiZ.emplace_back(Factory<Texture>::Create());
+        for (int i = 0; i < 4; i++)  HiZ.emplace_back(Factory<Texture>::Create());
 
         this->Resize(width, height);
         

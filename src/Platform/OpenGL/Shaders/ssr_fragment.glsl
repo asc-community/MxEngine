@@ -11,6 +11,8 @@ uniform sampler2D ssrMask;
 uniform sampler2D HDRTex;
 uniform sampler2D hiZTex0;
 uniform sampler2D hiZTex1;
+uniform sampler2D hiZTex2;
+uniform sampler2D hiZTex3;
 //add more levels here
 
 uniform Camera camera;
@@ -18,7 +20,7 @@ uniform EnvironmentInfo environment;
 
 uniform float thickness;
 uniform vec2 screenResolution;
-uniform float intensity;//For users who wanna emphasize emotion 
+uniform int maxLevel;
 
 float sampleDepth(ivec2 uv, int level)
 {
@@ -27,6 +29,8 @@ float sampleDepth(ivec2 uv, int level)
     case 0:return texelFetch(depthTex, uv, 0).r;
     case 1:return texelFetch(hiZTex0, uv / ivec2(2), 0).r;
     case 2:return texelFetch(hiZTex1, uv / ivec2(4), 0).r;
+    case 3:return texelFetch(hiZTex2, uv / ivec2(8), 0).r;
+    case 4:return texelFetch(hiZTex3, uv / ivec2(16), 0).r;
         //Add more levels here
     }
 }
@@ -120,7 +124,6 @@ void main()
     bool isHit = false;
     bool checkthickness = false;
     int level = 0;
-    int maxLevel = 2;
     float testStp = 0.0;
     int maxStp = int(sqrt(screenResolution.x * screenResolution.x + screenResolution.y * screenResolution.y));
     //Todo: /(ㄒoㄒ)/~~ Handle diffuse lobe. Sampling more rays or using cone tracing when the BRDF lobe is fat.
@@ -171,7 +174,7 @@ void main()
     }
 
     if (isHit)
-        OutColor = vec4(texelFetch(HDRTex, ivec2(result), 0).rgb * intensity, 1.0);
+        OutColor = vec4(texelFetch(HDRTex, ivec2(result), 0).rgb, 1.0);
     else
         OutColor = vec4(0.0);
 }
