@@ -79,11 +79,11 @@ namespace MxEngine
             );
             generatorMasked.GenerateFor(
                 *this->Pipeline.Environment.Shaders["DirLightMaskDepthMap"_id],
-                this->Pipeline.Lighting.DirectionalLights,
+                this->Pipeline.Lighting.DirectionalLights, 
                 ShadowMapGenerator::LoadStoreOptions::LOAD
             );
         }
-
+         
         if (hasSpotLights)
         {
             MAKE_RENDER_PASS_SCOPE("RenderController::PrepareSpotLightMaps()");
@@ -91,13 +91,13 @@ namespace MxEngine
                 *this->Pipeline.Environment.Shaders["SpotLightDepthMap"_id], 
                 this->Pipeline.Lighting.SpotLights,
                 ShadowMapGenerator::LoadStoreOptions::CLEAR
-            );
+            ); 
             generatorMasked.GenerateFor(
                 *this->Pipeline.Environment.Shaders["SpotLightMaskDepthMap"_id],
                 this->Pipeline.Lighting.SpotLights,
                 ShadowMapGenerator::LoadStoreOptions::LOAD
-            );
-        }
+            ); 
+        } 
 
         if (hasPointLights)
         {
@@ -277,6 +277,8 @@ namespace MxEngine
         shader.SetUniform("parentModel", unit.ModelMatrix); //-V807
         shader.SetUniform("parentNormal", unit.NormalMatrix);
         shader.SetUniform("parentColor", material.BaseColor);
+
+        shader.SetUniform("receiveSSR", static_cast<float>(material.ReceiveSSR));
         
         this->DrawIndices(RenderPrimitive::TRIANGLES, unit.IndexCount, unit.IndexOffset, unit.VertexOffset, instanceCount, baseInstance);
     }
@@ -352,11 +354,27 @@ namespace MxEngine
         std::swap(input, output);
     }
 
-    void RenderController::GenerateDepthPyramid(TextureHandle& depth)
+    void RenderController::GenerateDepthPyramid(TextureHandle& zBuffer, MxVector<TextureHandle>& HiZ)
     {
         MAKE_RENDER_PASS_SCOPE("RenderController::GenerateDepthPyramid()");
-        // generate depth texture mipmaps for post-processing algorithms. Replace later with hierarhical depth map
-        depth->GenerateMipmaps();
+        auto& shader = this->Pipeline.Environment.Shaders["HIZ"_id];
+
+        auto fGetTex = [&zBuffer, &HiZ](int layer)->TextureHandle&
+        {
+            if (layer == 0)
+                return zBuffer;
+            else
+                return HiZ[layer - 1];
+        };
+
+        for (int i = 0; i < HiZ.size(); i++)
+        {
+            shader->Bind();
+            fGetTex(i)->Bind(0);
+            auto& outputTex = fGetTex(i + 1);
+            shader->SetUniform("uPreviousLevelRes", VectorInt2(outputTex->GetWidth(), outputTex->GetHeight()));
+            this->RenderToTexture(outputTex, shader);
+        }
     }
 
     TextureHandle RenderController::ComputeAverageWhite(CameraUnit& camera)
@@ -643,10 +661,16 @@ namespace MxEngine
         std::swap(input, output);
     }
 
+
     void RenderController::ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
     {
-        if (camera.SSR == nullptr || camera.SSR->GetSteps() == 0) return;
-        MAKE_RENDER_PASS_SCOPE("RenderController::ApplySSR()");
+        if (camera.SSR == nullptr ) return;
+
+        int level = camera.SSR->GetMaxLevel();
+#if defined(MXENGINE_PROFILING_ENABLED)
+        auto profilerTitle = MxFormat("RenderController::ApplySSR(level={})", level);
+        MAKE_RENDER_PASS_SCOPE(profilerTitle.c_str());
+#endif
 
         auto& SSRShader = this->Pipeline.Environment.Shaders["SSR"_id];
         SSRShader->Bind();
@@ -656,10 +680,13 @@ namespace MxEngine
         Texture::TextureBindId textureId = 0;
         this->BindGBuffer(camera, *SSRShader, textureId);
         this->BindCameraInformation(camera, *SSRShader);
+        SSRShader->SetUniform("ssrMask", camera.SSRMaskTexture->GetBoundId()); 
+        camera.SSRMaskTexture->Bind(textureId++);
+        this->BindHiZ(camera, *SSRShader, textureId);
 
         SSRShader->SetUniform("thickness", camera.SSR->GetThickness());
-        SSRShader->SetUniform("startDistance", camera.SSR->GetStartDistance());
-        SSRShader->SetUniform("steps", (int)camera.SSR->GetSteps());
+        SSRShader->SetUniform("screenResolution", Vector2(camera.HDRTexture->GetWidth(), camera.HDRTexture->GetHeight()));
+        SSRShader->SetUniform("maxLevel", level);
 
         this->RenderToTexture(temporary, SSRShader);
 
@@ -1029,11 +1056,13 @@ namespace MxEngine
         shader.SetUniform("camera.position", camera.ViewportPosition);
         shader.SetUniform("camera.viewProjMatrix", camera.ViewProjectionMatrix);
         shader.SetUniform("camera.invViewProjMatrix", camera.InverseViewProjMatrix);
+        shader.SetUniform("camera.viewMatrix", camera.ViewMatrix);
+        shader.SetUniform("camera.projectionMatrix", camera.ProjectionMatrix);
+        shader.SetUniform("camera.invProjectionMatrix", Inverse(camera.ProjectionMatrix));
     }
-
     void RenderController::BindGBuffer(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId)
     {
-        camera.AlbedoTexture->Bind(startId++);
+        camera.AlbedoTexture->Bind(startId++); 
         camera.NormalTexture->Bind(startId++);
         camera.MaterialTexture->Bind(startId++);
         camera.DepthTexture->Bind(startId++);
@@ -1044,8 +1073,18 @@ namespace MxEngine
         shader.SetUniform("depthTex", camera.DepthTexture->GetBoundId());
     }
 
-    const Renderer& RenderController::GetRenderEngine() const
+    void RenderController::BindHiZ(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId)
     {
+        for(int i=0;i<camera.HiZ.size();i++)  
+        { 
+            auto& it = camera.HiZ[i];
+            it->Bind(startId++);
+            shader.SetUniform(MxFormat("hiZTex{}", i), it->GetBoundId());
+        }
+    } 
+     
+    const Renderer& RenderController::GetRenderEngine() const
+    { 
         return this->renderer;
     }
 
@@ -1443,7 +1482,7 @@ namespace MxEngine
     }
 
     void RenderController::SubmitCamera( 
-        const CameraController& controller,
+        const CameraController& cameraController,
         const Transform& parentTransform, 
         const Skybox* skybox,
         const CameraEffects* effects,
@@ -1455,28 +1494,32 @@ namespace MxEngine
     {
         auto& camera = this->Pipeline.Cameras.emplace_back();
 
-        bool isPerspective = controller.GetCameraType() == CameraType::PERSPECTIVE;
+        bool isPerspective = cameraController.GetCameraType() == CameraType::PERSPECTIVE;
         bool hasSkybox = skybox != nullptr;
         bool hasToneMapping = toneMapping != nullptr;
 
         camera.ViewportPosition           = parentTransform.GetPosition();
-        camera.AspectRatio                = controller.Camera.GetAspectRatio();
-        camera.StaticViewProjectionMatrix = controller.GetMatrix(MakeVector3(0.0f));
-        camera.ViewProjectionMatrix       = controller.GetMatrix(parentTransform.GetPosition());
+        camera.AspectRatio                = cameraController.Camera.GetAspectRatio();
+        camera.StaticViewProjectionMatrix = cameraController.GetMatrix(MakeVector3(0.0f));
+        camera.ViewMatrix                 = cameraController.GetViewMatrix(parentTransform.GetPosition());
+        camera.ProjectionMatrix           = cameraController.GetProjectionMatrix();
+        camera.ViewProjectionMatrix       = cameraController.GetMatrix(parentTransform.GetPosition());
         camera.InverseViewProjMatrix      = Inverse(camera.ViewProjectionMatrix);
-        camera.Culler                     = controller.GetFrustrumCuller();
-        camera.IsPerspective              = controller.GetCameraType() == CameraType::PERSPECTIVE;
-        camera.GBuffer                    = controller.GetGBuffer();
-        camera.AlbedoTexture              = controller.GetAlbedoTexture();
-        camera.NormalTexture              = controller.GetNormalTexture();
-        camera.MaterialTexture            = controller.GetMaterialTexture();
-        camera.DepthTexture               = controller.GetDepthTexture();
-        camera.AverageWhiteTexture        = controller.GetAverageWhiteTexture();
-        camera.HDRTexture                 = controller.GetHDRTexture();
-        camera.SwapTexture1               = controller.GetSwapHDRTexture1();
-        camera.SwapTexture2               = controller.GetSwapHDRTexture2();
-        camera.OutputTexture              = controller.GetRenderTexture();
-        camera.RenderToTexture            = controller.IsRendering();
+        camera.Culler                     = cameraController.GetFrustrumCuller();
+        camera.IsPerspective              = cameraController.GetCameraType() == CameraType::PERSPECTIVE;
+        camera.GBuffer                    = cameraController.GetGBuffer();
+        camera.AlbedoTexture              = cameraController.GetAlbedoTexture();
+        camera.NormalTexture              = cameraController.GetNormalTexture();
+        camera.MaterialTexture            = cameraController.GetMaterialTexture();
+        camera.SSRMaskTexture             = cameraController.GetSSRMask();
+        camera.DepthTexture               = cameraController.GetDepthTexture();
+        camera.HiZ                        = cameraController.GetHiZ();
+        camera.AverageWhiteTexture        = cameraController.GetAverageWhiteTexture();
+        camera.HDRTexture                 = cameraController.GetHDRTexture();
+        camera.SwapTexture1               = cameraController.GetSwapHDRTexture1();
+        camera.SwapTexture2               = cameraController.GetSwapHDRTexture2();
+        camera.OutputTexture              = cameraController.GetRenderTexture();
+        camera.RenderToTexture            = cameraController.IsRendering();
         camera.SkyboxTexture              = hasSkybox && skybox->CubeMap.IsValid() ? skybox->CubeMap : this->Pipeline.Environment.DefaultSkybox;
         camera.IrradianceTexture          = hasSkybox && skybox->Irradiance.IsValid() ? skybox->Irradiance : camera.SkyboxTexture;
         camera.SkyboxIntensity            = hasSkybox ? skybox->GetIntensity() : Skybox::DefaultIntensity;
@@ -1626,7 +1669,7 @@ namespace MxEngine
             this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBuffer"_id], this->Pipeline.OpaqueObjects);
             this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBufferMask"_id], this->Pipeline.MaskedObjects);
 
-            this->GenerateDepthPyramid(camera.DepthTexture);
+            this->GenerateDepthPyramid(camera.DepthTexture, camera.HiZ);
 
             this->DrawParticles(camera, this->Pipeline.OpaqueParticleSystems, *this->Pipeline.Environment.Shaders["ParticleOpaque"_id]);
 
@@ -1651,3 +1694,4 @@ namespace MxEngine
         this->AttachDefaultVAO();
     }
 }
+

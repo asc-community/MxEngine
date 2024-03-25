@@ -37,31 +37,21 @@ namespace MxEngine
         return this->thickness;
     }
 
-    size_t CameraSSR::GetSteps() const
-    {
-        return this->steps;
-    }
-
-    float CameraSSR::GetStartDistance() const
-    {
-        return this->startDistance;
-    }
-
     void CameraSSR::SetThickness(float thickness)
     {
         this->thickness = Max(thickness, 0.0f);
     }
 
-    void CameraSSR::SetSteps(size_t steps)
+    int CameraSSR::GetMaxLevel() const
     {
-        this->steps = steps;
+        return this->maxLevel;
     }
 
-    void CameraSSR::SetStartDistance(float distance)
+    void CameraSSR::SetMaxLevel(int level) 
     {
-        this->startDistance = Max(distance, 0.0f);
+        this->maxLevel = level;
     }
-
+    
     MXENGINE_REFLECT_TYPE
     {
         rttr::registration::class_<CameraSSR>("CameraSSR")
@@ -72,20 +62,14 @@ namespace MxEngine
             .property("thickness", &CameraSSR::GetThickness, &CameraSSR::SetThickness)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 1.0f, 100.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
-            .property("steps", &CameraSSR::GetSteps, &CameraSSR::SetSteps)
+            .property("max level", &CameraSSR::GetMaxLevel, &CameraSSR::SetMaxLevel)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 128.0f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
-            )
-            .property("start distance", &CameraSSR::GetStartDistance, &CameraSSR::SetStartDistance)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 1, 4 }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 1)
             );
     }
 }

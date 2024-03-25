@@ -37,17 +37,16 @@ namespace MxEngine
         MAKE_COMPONENT(CameraSSR);
 
         float thickness = 0.5f;
-        size_t steps = 10;
-        float startDistance = 2.0f;
+        float maxLevel = 2.0f;
+
     public:
         CameraSSR() = default;
 
         float GetThickness() const;
-        size_t GetSteps() const;
-        float GetStartDistance() const;
+        int GetMaxLevel()const;
 
         void SetThickness(float thickness);
-        void SetSteps(size_t steps);
-        void SetStartDistance(float distance);
+        void SetMaxLevel(int level);
+
     };
 }

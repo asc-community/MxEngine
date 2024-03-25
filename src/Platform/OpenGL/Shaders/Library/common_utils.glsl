@@ -3,6 +3,9 @@ struct Camera
     vec3 position;
     mat4 viewProjMatrix;
     mat4 invViewProjMatrix;
+    mat4 viewMatrix;
+    mat4 projectionMatrix;
+    mat4 invProjectionMatrix;
 };
 vec3 reconstructWorldPosition(float depth, vec2 texcoord, mat4 invViewProjMatrix)
 {

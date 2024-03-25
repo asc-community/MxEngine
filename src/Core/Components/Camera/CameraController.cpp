@@ -27,6 +27,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "CameraController.h"
+#include "Utilities/Format/Format.h"
 #include "Core/Events/WindowResizeEvent.h"
 #include "Core/Config/GlobalConfig.h"
 #include "Core/Application/Event.h"
@@ -35,6 +36,7 @@
 #include "PerspectiveCamera.h"
 #include "FrustrumCamera.h"
 #include "Core/Runtime/Reflection.h"
+#include "fmt/format.h"
 
 namespace MxEngine
 {
@@ -425,9 +427,19 @@ namespace MxEngine
         return this->renderBuffers->Material;
     }
 
+    TextureHandle CameraController::GetSSRMask()const
+    {
+        return this->renderBuffers->SSRMask;
+    }
+
     TextureHandle CameraController::GetDepthTexture() const
     {
         return this->renderBuffers->Depth;
+    }
+
+    const MxVector<TextureHandle>&  CameraController::GetHiZ() const
+    {
+        return this->renderBuffers->HiZ;
     }
 
     TextureHandle CameraController::GetAverageWhiteTexture() const
@@ -456,23 +468,27 @@ namespace MxEngine
         this->Albedo = Factory<Texture>::Create();
         this->Normal = Factory<Texture>::Create();
         this->Material = Factory<Texture>::Create();
+        this->SSRMask = Factory<Texture>::Create();
         this->Depth = Factory<Texture>::Create();
         this->AverageWhite = Factory<Texture>::Create();
         this->HDR = Factory<Texture>::Create();
         this->SwapHDR1 = Factory<Texture>::Create();
         this->SwapHDR2 = Factory<Texture>::Create();
+        for (int i = 0; i < 4; i++)  HiZ.emplace_back(Factory<Texture>::Create());
 
         this->Resize(width, height);
         
         this->GBuffer->AttachTexture(this->Albedo, Attachment::COLOR_ATTACHMENT0);
         this->GBuffer->AttachTextureExtra(this->Normal, Attachment::COLOR_ATTACHMENT1);
         this->GBuffer->AttachTextureExtra(this->Material, Attachment::COLOR_ATTACHMENT2);
+        this->GBuffer->AttachTextureExtra(this->SSRMask, Attachment::COLOR_ATTACHMENT3);
         this->GBuffer->AttachTextureExtra(this->Depth, Attachment::DEPTH_ATTACHMENT);
 
         std::array attachments = {
             Attachment::COLOR_ATTACHMENT0,
             Attachment::COLOR_ATTACHMENT1,
             Attachment::COLOR_ATTACHMENT2,
+            Attachment::COLOR_ATTACHMENT3
         };
         this->GBuffer->UseDrawBuffers(attachments);
         this->GBuffer->Validate();
@@ -493,9 +509,22 @@ namespace MxEngine
         this->Material->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera material"));
         this->Material->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
 
+        this->SSRMask->Load(nullptr, width, height, 1, false, TextureFormat::R32F);
+        this->SSRMask->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("ssr mask"));
+        this->SSRMask->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
         this->Depth->LoadDepth(width, height, TextureFormat::DEPTH32F);
         this->Depth->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera depth"));
         this->Depth->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
+        for (int i = 0; i < this->HiZ.size(); i++) 
+        {
+            int scale = pow(2, i+1);
+            MxString tag = MxFormat("!camera depth lv{}", i + 1);
+            this->HiZ[i]->Load(nullptr, width / scale, height / scale, 1, false, TextureFormat::R32F);
+            this->HiZ[i]->SetInternalEngineTag(tag);
+            this->HiZ[i]->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+        }
 
         this->AverageWhite->Load(nullptr, 1, 1, 3, false, TextureFormat::RGBA16F);
         this->AverageWhite->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera white"));
@@ -520,10 +549,12 @@ namespace MxEngine
         Factory<Texture>::Destroy(this->Albedo);
         Factory<Texture>::Destroy(this->Normal);
         Factory<Texture>::Destroy(this->Material);
+        Factory<Texture>::Destroy(this->SSRMask);
         Factory<Texture>::Destroy(this->Depth);
         Factory<Texture>::Destroy(this->HDR);
         Factory<Texture>::Destroy(this->SwapHDR1);
         Factory<Texture>::Destroy(this->SwapHDR2);
+        for(auto& it:this->HiZ)Factory<Texture>::Destroy(it);
     }
 
     MXENGINE_REFLECT_TYPE
