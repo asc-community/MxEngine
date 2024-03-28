@@ -4,44 +4,44 @@
 
 namespace MxEngine
 {
-    int CameraLensFlare::GetLensFlareNumOfGhosts()const
+    float CameraLensFlare::GetIntensity() const
     {
-        return this->lensFlareNumOfGhosts;
+        return this->intensity;
     }
 
-    float CameraLensFlare::GetLensFlareGhostDispersal()const
+    int CameraLensFlare::GetGhostNumber() const
     {
-        return this->lensFlareGhostDispersal;
+        return this->ghostNumber;
     }
 
-    float CameraLensFlare::GetLensFlareHaloWidth()const
+    float CameraLensFlare::GetGhostDispersal()const
     {
-        return this->lensFalreHaloWidth;
+        return this->ghostDispersal;
     }
 
-    void CameraLensFlare::SetLensFlareScale(float scale)
+    float CameraLensFlare::GetHaloWidth()const
     {
-        this->lensFlareScale = scale;
+        return this->haloWidth;
     }
 
-    void CameraLensFlare::SetLensFlareBias(float bias)
+    void CameraLensFlare::SetIntensity(float scale)
     {
-        this->lensFlareBias = bias;
+        this->intensity = Max(scale, 0.0);
     }
 
-    void CameraLensFlare::SetLensFlareNumOfGhosts(int num)
+    void CameraLensFlare::SetGhostNumber(int num)
     {
-        this->lensFlareNumOfGhosts = Max(num,0);
+        this->ghostNumber = Max(num,0);
     }
 
-    void CameraLensFlare::SetLensFlareGhostDispersal(float dispersal)
+    void CameraLensFlare::SetGhostDispersal(float dispersal)
     {
-        this->lensFlareGhostDispersal = dispersal;
+        this->ghostDispersal = dispersal;
     }
 
-    void CameraLensFlare::SetLensFlareHaloWidth(float width)
+    void CameraLensFlare::SetHaloWidth(float width)
     {
-        this->lensFalreHaloWidth = width;
+        this->haloWidth = width;
     }
 
     MXENGINE_REFLECT_TYPE
@@ -51,22 +51,28 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
             )
             .constructor<>()
-            .property("lens flare num of ghosts", &CameraLensFlare::GetLensFlareNumOfGhosts, &CameraLensFlare::SetLensFlareNumOfGhosts)
+            .property("intensity", &CameraLensFlare::GetIntensity, &CameraLensFlare::SetIntensity)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 100.f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 1.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
-            .property("lens flare ghost dispersal", &CameraLensFlare::GetLensFlareGhostDispersal, &CameraLensFlare::SetLensFlareGhostDispersal)
+            .property("ghost number", &CameraLensFlare::GetGhostNumber, &CameraLensFlare::SetGhostNumber)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.001f, 1.f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 100.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
-            .property("lens falre halo width", &CameraLensFlare::GetLensFlareHaloWidth, &CameraLensFlare::SetLensFlareHaloWidth)
+            .property("ghost dispersal", &CameraLensFlare::GetGhostDispersal, &CameraLensFlare::SetGhostDispersal)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 100.f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.001f, 1.0f }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
+            )
+            .property("halo width", &CameraLensFlare::GetHaloWidth, &CameraLensFlare::SetHaloWidth)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 100.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             );
     }

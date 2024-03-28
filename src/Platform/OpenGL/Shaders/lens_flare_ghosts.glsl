@@ -3,8 +3,7 @@
 layout(binding = 0) uniform sampler2D inputColor;
 layout(binding = 1) uniform sampler2D averageWhiteTex;
 
-uniform float uScale;
-uniform float uBias;
+uniform float uIntensity; // [0, 1] range
 
 in vec2 TexCoord;
 
@@ -15,8 +14,8 @@ void main()
     vec3 col = texture(inputColor, TexCoord).rgb;
     float sceneLum = calcLuminance(col);
 
-    float averageWhite = texture(averageWhiteTex, vec2(0.0f)).r;
-    float lum = sceneLum / (averageWhite * 10.0);
-    lum = max(lum - 0.1, 0.0);
-    outputColor = vec4(lum * col * 0.5, averageWhite);
+    float averageWhite = texture(averageWhiteTex, vec2(0.0)).r;
+    float lumRatio = sceneLum / averageWhite;
+    float lum = lumRatio < 1.0 ? 0.0 : pow(lumRatio, uIntensity) - 1.0;
+    outputColor = vec4(lum * col, averageWhite);
 }

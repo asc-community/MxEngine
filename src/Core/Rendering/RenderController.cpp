@@ -787,9 +787,10 @@ namespace MxEngine
 
         //TODO(fall2019): support chromatic aberration  
         //TODO(fall2019): add starbust effect 
-        int numOfGhosts = camera.LensFlare->GetLensFlareNumOfGhosts();
-        float dispersal = camera.LensFlare->GetLensFlareGhostDispersal();
-        float haloWidth = camera.LensFlare->GetLensFlareHaloWidth();
+        int ghostNumber = camera.LensFlare->GetGhostNumber();
+        float dispersal = camera.LensFlare->GetGhostDispersal();
+        float haloWidth = camera.LensFlare->GetHaloWidth();
+        float intensity = camera.LensFlare->GetIntensity();
 
         input->GenerateMipmaps();
 
@@ -798,6 +799,7 @@ namespace MxEngine
             temporaryQuater0->GenerateMipmaps();
             auto& shaderGhost = this->Pipeline.Environment.Shaders["LensFlareGhosts"_id];
             shaderGhost->Bind();
+            shaderGhost->SetUniform("uIntensity", intensity);
             input->Bind(0);
             camera.AverageWhiteTexture->Bind(1);
             this->RenderToTextureNoClear(temporaryQuater0, shaderGhost);
@@ -822,7 +824,7 @@ namespace MxEngine
         {
             auto& lensFlare = this->Pipeline.Environment.Shaders["LensFlare"_id];
             lensFlare->Bind();
-            lensFlare->SetUniform("uGhosts", numOfGhosts);
+            lensFlare->SetUniform("uGhosts", ghostNumber);
             lensFlare->SetUniform("uGhostDispersal", dispersal);
             temporaryQuater1->Bind(0);
             temporaryQuater2->Bind(1);

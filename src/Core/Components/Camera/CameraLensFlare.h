@@ -9,22 +9,22 @@ namespace MxEngine
 	{
         MAKE_COMPONENT(CameraLensFlare);
     private:
-        float lensFlareScale = 1.0f;
-        float lensFlareBias = -42.0f;
-        int lensFlareNumOfGhosts = 12;
-        float lensFlareGhostDispersal = 0.13f;
-        float lensFalreHaloWidth = 0.5f;
+        float intensity = 0.1;
+        int ghostNumber = 12;
+        float ghostDispersal = 0.13f;
+        float haloWidth = 0.5f;
 
     public:
         CameraLensFlare() = default;
-        int GetLensFlareNumOfGhosts()const;
-        float GetLensFlareGhostDispersal()const;
-        float GetLensFlareHaloWidth()const;
 
-        void SetLensFlareScale(float);
-        void SetLensFlareBias(float);
-        void SetLensFlareNumOfGhosts(int);
-        void SetLensFlareGhostDispersal(float);
-        void SetLensFlareHaloWidth(float);
+        float GetIntensity() const;
+        int GetGhostNumber() const;
+        float GetGhostDispersal() const;
+        float GetHaloWidth() const;
+
+        void SetIntensity(float);
+        void SetGhostNumber(int);
+        void SetGhostDispersal(float);
+        void SetHaloWidth(float);
 	};
 }
