@@ -56,6 +56,7 @@ namespace MxEngine
         float bokehRadius = 10.f;
         float focusRange = 5.f;
         float focusDistance = 0.f;
+
     public:
         CameraEffects() = default;
 

@@ -47,6 +47,20 @@ namespace MxEngine
     class ParticleSystem;
     class Transform;
 
+    struct CameraInfo 
+    {
+        const CameraController* controller; 
+        const Transform* parentTransform;
+        const Skybox* skybox;
+        const CameraEffects* effects;
+        const CameraToneMapping* toneMapping;
+        const CameraSSR* ssr; 
+        const CameraSSGI* ssgi; 
+        const CameraSSAO* ssao; 
+        const CameraGodRay* godRay;
+        const CameraLensFlare* lensFlare;
+    };
+
     class RenderController
     {
         Renderer renderer;
@@ -61,7 +75,7 @@ namespace MxEngine
         void DrawDebugBuffer(const CameraUnit& camera);
         void DrawObject(const RenderUnit& unit, size_t instanceCount, size_t baseInstance, const Shader& shader);
         void ComputeBloomEffect(CameraUnit& camera, const TextureHandle& output);
-        TextureHandle ComputeAverageWhite(CameraUnit& camera);
+        TextureHandle ComputeAverageWhite(CameraUnit& camera, float fadingAdaptationSpeed, float adaptationThreshold);
         void GenerateDepthPyramid(TextureHandle& depth);
         void PerformPostProcessing(CameraUnit& camera);
         void PerformLightPass(CameraUnit& camera);
@@ -72,11 +86,12 @@ namespace MxEngine
         void ApplySSAO(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
         void ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
         void ApplySSGI(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
-        void ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
+        void ApplyHDRToLDRConversion(CameraUnit& camera, TextureHandle& input, TextureHandle& output, TextureHandle& averageWhite);
         void ApplyFXAA(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
         void ApplyVignette(CameraUnit& camera, TextureHandle& input, TextureHandle& output);
         void ApplyColorGrading(CameraUnit& camera, TextureHandle& input, TextureHandle& output); 
         void ApplyDepthOfFieldEffect(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output);
+        void ApplyLensFlare(CameraUnit& camera, TextureHandle& input, TextureHandle& temporaryQuater0, TextureHandle& temporaryQuater1, TextureHandle& temporaryQuater2, TextureHandle& temporary1);
         void DrawIBL(CameraUnit& camera, TextureHandle& output);
         void DrawDirectionalLights(CameraUnit& camera, TextureHandle& output);
         void DrawShadowedPointLights(CameraUnit& camera, TextureHandle& output);
@@ -130,9 +145,7 @@ namespace MxEngine
         void SubmitLightSource(const DirectionalLight& light, const Transform& parentTransform);
         void SubmitLightSource(const PointLight& light, const Transform& parentTransform);
         void SubmitLightSource(const SpotLight& light, const Transform& parentTransform);
-        void SubmitCamera(const CameraController& controller, const Transform& parentTransform, 
-            const Skybox* skybox, const CameraEffects* effects, const CameraToneMapping* toneMapping,
-            const CameraSSR* ssr, const CameraSSGI* ssgi, const CameraSSAO* ssao,const CameraGodRay* godRay);
+        void SubmitCamera(const CameraInfo& info);
         size_t SubmitRenderGroup(const Mesh& mesh, size_t instanceOffset, size_t instanceCount);
         void SubmitRenderUnit(size_t renderGroupIndex, const SubMesh& object, const Material& material, const Transform& parentTransform, bool castsShadow, const char* debugName = nullptr);
         void SubmitImage(const TextureHandle& texture, int lod = 0);

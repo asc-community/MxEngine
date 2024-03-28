@@ -445,6 +445,21 @@ namespace MxEngine
         return this->renderBuffers->SwapHDR2;
     }
 
+    TextureHandle CameraController::GetSwapQuater1() const
+    {
+        return this->renderBuffers->SwapQuater1;
+    }
+
+    TextureHandle CameraController::GetSwapQuater2() const
+    {
+        return this->renderBuffers->SwapQuater2;
+    }
+
+    TextureHandle CameraController::GetSwapQuater3() const
+    {
+        return this->renderBuffers->SwapQuater3;
+    }
+
     TextureHandle CameraController::GetSwapHDRTexture1() const
     {
         return this->renderBuffers->SwapHDR1;
@@ -461,6 +476,9 @@ namespace MxEngine
         this->HDR = Factory<Texture>::Create();
         this->SwapHDR1 = Factory<Texture>::Create();
         this->SwapHDR2 = Factory<Texture>::Create();
+        this->SwapQuater1 = Factory<Texture>::Create();
+        this->SwapQuater2 = Factory<Texture>::Create();
+        this->SwapQuater3 = Factory<Texture>::Create();
 
         this->Resize(width, height);
         
@@ -512,6 +530,18 @@ namespace MxEngine
         this->SwapHDR2->Load(nullptr, width, height, 3, false, TextureFormat::RGBA16F);
         this->SwapHDR2->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap hdr 2"));
         this->SwapHDR2->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
+        this->SwapQuater1->Load(nullptr, width / 4, height / 4, 3, false, TextureFormat::RGBA16F);
+        this->SwapQuater1->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap quater 1"));
+        this->SwapQuater1->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
+        this->SwapQuater2->Load(nullptr, width / 4, height / 4, 3, false, TextureFormat::RGBA16F);
+        this->SwapQuater2->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap quater 2"));
+        this->SwapQuater2->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
+
+        this->SwapQuater3->Load(nullptr, width / 4, height / 4, 3, false, TextureFormat::RGBA16F);
+        this->SwapQuater3->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera swap quater 3"));
+        this->SwapQuater3->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
     }
 
     void CameraRender::DeInit()
@@ -524,6 +554,9 @@ namespace MxEngine
         Factory<Texture>::Destroy(this->HDR);
         Factory<Texture>::Destroy(this->SwapHDR1);
         Factory<Texture>::Destroy(this->SwapHDR2);
+        Factory<Texture>::Destroy(this->SwapQuater1);
+        Factory<Texture>::Destroy(this->SwapQuater2);
+        Factory<Texture>::Destroy(this->SwapQuater3);
     }
 
     MXENGINE_REFLECT_TYPE

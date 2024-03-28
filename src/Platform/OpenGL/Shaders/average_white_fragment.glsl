@@ -1,3 +1,5 @@
+#include "Library/fragment_utils.glsl"
+
 in vec2 TexCoord;
 out vec4 OutColor;
 
@@ -6,13 +8,11 @@ uniform sampler2D prevFrameWhite;
 uniform float adaptSpeed;
 uniform float adaptThreshold;
 
-vec3 luminance = vec3(0.2125f, 0.7154f, 0.0721f);
-
 void main()
 {
     vec3 color = texture(curFrameHDR, TexCoord).rgb;
     float oldWhite = texture(prevFrameWhite, vec2(0.0f)).r;
-    float curWhite = dot(luminance, color);
+    float curWhite = calcLuminance(color);
 
     float diff = abs(curWhite - oldWhite) < adaptThreshold ? 0.0f : curWhite - oldWhite;
 
