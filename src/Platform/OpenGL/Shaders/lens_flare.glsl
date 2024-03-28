@@ -5,13 +5,12 @@ layout(binding = 2) uniform sampler2D inputColor;
 
 uniform int uGhosts; // number of ghost samples
 uniform float uGhostDispersal; // dispersion factor
-uniform int uMipLevel;
 
 
 in vec2 TexCoord;
 out vec4 outColor;
 
-const float gWeight = 80.0f;//relative to pixel pos
+const float gWeight = 80.0; //relative to pixel pos
 
 void main()
 {
@@ -33,5 +32,5 @@ void main()
     //halo
     result += texture(inputHalo, TexCoord).rgb;
 
-    outColor = vec4(result + texture(inputColor, TexCoord).rgb, 1.f);
+    outColor = vec4(result + texture(inputColor, TexCoord).rgb, 1.0);
 }

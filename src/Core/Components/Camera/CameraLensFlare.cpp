@@ -4,16 +4,6 @@
 
 namespace MxEngine
 {
-    float CameraLensFlare::GetLensFlareScale()const
-    {
-        return this->lensFlareScale;
-    }
-
-    float CameraLensFlare::GetLensFlareBias()const
-    {
-        return this->lensFlareBias;
-    }
-
     int CameraLensFlare::GetLensFlareNumOfGhosts()const
     {
         return this->lensFlareNumOfGhosts;
@@ -61,18 +51,6 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::CLONE_COPY | MetaInfo::CLONE_INSTANCE)
             )
             .constructor<>()
-            .property("lens flare scale", &CameraLensFlare::GetLensFlareScale, &CameraLensFlare::SetLensFlareScale)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 100.f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
-            )
-            .property("lens flare bias", &CameraLensFlare::GetLensFlareBias, &CameraLensFlare::SetLensFlareBias)
-            (
-                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { -200.0f, 0.f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
-            )
             .property("lens flare num of ghosts", &CameraLensFlare::GetLensFlareNumOfGhosts, &CameraLensFlare::SetLensFlareNumOfGhosts)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),

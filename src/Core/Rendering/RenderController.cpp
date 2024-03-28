@@ -53,7 +53,6 @@ namespace MxEngine
 
     constexpr size_t MaxDirLightCount = 4;
     constexpr size_t ParticleComputeGroupSize = 64;
-    constexpr int DefaultLinearBlurSampleCount = 5;
 
     void RenderController::PrepareShadowMaps()
     {
@@ -788,8 +787,6 @@ namespace MxEngine
 
         //TODO(fall2019): support chromatic aberration  
         //TODO(fall2019): add starbust effect 
-        float scale = camera.LensFlare->GetLensFlareScale();
-        float bias = camera.LensFlare->GetLensFlareBias();
         int numOfGhosts = camera.LensFlare->GetLensFlareNumOfGhosts();
         float dispersal = camera.LensFlare->GetLensFlareGhostDispersal();
         float haloWidth = camera.LensFlare->GetLensFlareHaloWidth();
@@ -801,8 +798,6 @@ namespace MxEngine
             temporaryQuater0->GenerateMipmaps();
             auto& shaderGhost = this->Pipeline.Environment.Shaders["LensFlareGhosts"_id];
             shaderGhost->Bind();
-            shaderGhost->SetUniform("uScale", scale);
-            shaderGhost->SetUniform("uBias", bias);
             input->Bind(0);
             camera.AverageWhiteTexture->Bind(1);
             this->RenderToTextureNoClear(temporaryQuater0, shaderGhost);
@@ -810,14 +805,12 @@ namespace MxEngine
             temporaryQuater1->GenerateMipmaps();
         }
 
-        int mipLevel = 1 + floor(log2(Max(temporaryQuater1->GetWidth(), temporaryQuater1->GetHeight())));
         //calc halo
         {
             auto& shaderHalo = this->Pipeline.Environment.Shaders["LensFlareHalo"_id];
             shaderHalo->Bind();
             shaderHalo->SetUniform("uGhostDispersal", dispersal);
             shaderHalo->SetUniform("uHaloWidth", haloWidth);
-            shaderHalo->SetUniform("uMipLevel", mipLevel);
             input->Bind(0);
             temporaryQuater1->Bind(1);
             camera.AverageWhiteTexture->Bind(2);
@@ -831,7 +824,6 @@ namespace MxEngine
             lensFlare->Bind();
             lensFlare->SetUniform("uGhosts", numOfGhosts);
             lensFlare->SetUniform("uGhostDispersal", dispersal);
-            lensFlare->SetUniform("uMipLevel", mipLevel); 
             temporaryQuater1->Bind(0);
             temporaryQuater2->Bind(1);
             input->Bind(2);

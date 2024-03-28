@@ -17,8 +17,6 @@ namespace MxEngine
 
     public:
         CameraLensFlare() = default;
-        float GetLensFlareScale()const;
-        float GetLensFlareBias()const;
         int GetLensFlareNumOfGhosts()const;
         float GetLensFlareGhostDispersal()const;
         float GetLensFlareHaloWidth()const;
