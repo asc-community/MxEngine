@@ -791,6 +791,7 @@ namespace MxEngine
         float dispersal = camera.LensFlare->GetGhostDispersal();
         float haloWidth = camera.LensFlare->GetHaloWidth();
         float intensity = camera.LensFlare->GetIntensity();
+        int mipLevel = 1 + floor(log2(Max(temporaryQuater1->GetWidth(), temporaryQuater1->GetHeight())));
 
         input->GenerateMipmaps();
 
@@ -813,6 +814,7 @@ namespace MxEngine
             shaderHalo->Bind();
             shaderHalo->SetUniform("uGhostDispersal", dispersal);
             shaderHalo->SetUniform("uHaloWidth", haloWidth);
+            shaderHalo->SetUniform("uMipLevel", mipLevel);
             input->Bind(0);
             temporaryQuater1->Bind(1);
             camera.AverageWhiteTexture->Bind(2);
