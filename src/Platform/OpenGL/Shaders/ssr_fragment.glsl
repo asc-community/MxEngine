@@ -153,8 +153,7 @@ void main()
             checkthickness = true;
         //check hit & switch depth layer
         float curDiff = sceneDepth - depths.y;
-        if (checkthickness &&
-            (curDiff > 0 || curDiff < 0 && abs(curDiff) < thickness))
+        if (checkthickness && curDiff >= thickness)
         {
             if (level == 0)
             {
