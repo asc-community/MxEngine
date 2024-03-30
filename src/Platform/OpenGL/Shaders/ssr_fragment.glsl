@@ -52,11 +52,11 @@ void swapComp(inout vec2 v)
 }
 
 #define TRACE_RAY(stp) \
-	do{\
-		scr0+=dScr*int(stp);\
-		vpProj0.z+=dVpProj.z*int(stp);\
-		w0+=dw*int(stp);\
-	}while(false);
+	do {\
+		scr0 += dScr * stp;\
+		vpProj0.z += dVpProj.z * stp;\
+		w0 += dw * stp;\
+	} while(false);
 
 void main()
 {
@@ -153,6 +153,7 @@ void main()
             checkthickness = true;
         //check hit & switch depth layer
         float curDiff = sceneDepth - depths.y;
+        int stp = 1 << level;
         if (checkthickness && curDiff >= thickness)
         {
             if (level == 0)
@@ -161,14 +162,14 @@ void main()
                 break;
             }
             //stepping back 
-            TRACE_RAY(-pow(2.0, level));
+            TRACE_RAY(-stp);
             level = 0;
         }
         else
         {
             level = min(maxLevel, level + 1);
             //stepping forward
-            TRACE_RAY(pow(2.0, level));
+            TRACE_RAY(stp);
         }
     }
 
