@@ -205,10 +205,7 @@ namespace MxEngine
         switch (channels)
         {
         case 1:
-            if (format != TextureFormat::R32F)
-                dataChannels = GL_RED;
-            else
-                dataChannels = GL_RED_EXT;
+            dataChannels = (format == TextureFormat::R32F) ? GL_RED_EXT : GL_RED;
             break;
         case 2:
             dataChannels = GL_RG;
