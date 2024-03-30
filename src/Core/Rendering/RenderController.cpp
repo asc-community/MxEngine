@@ -354,10 +354,12 @@ namespace MxEngine
         std::swap(input, output);
     }
 
-    void RenderController::GenerateDepthPyramid(TextureHandle& zBuffer, MxVector<TextureHandle>& HiZ)
+    void RenderController::GenerateDepthPyramid(CameraUnit& camera)
     {
         MAKE_RENDER_PASS_SCOPE("RenderController::GenerateDepthPyramid()");
         auto& shader = this->Pipeline.Environment.Shaders["HIZ"_id];
+        auto& zBuffer = camera.DepthTexture;
+        auto& HiZ = camera.HiZ;
 
         auto fGetTex = [&zBuffer, &HiZ](int layer)->TextureHandle&
         {
@@ -367,6 +369,9 @@ namespace MxEngine
                 return HiZ[layer - 1];
         };
 
+        int w = zBuffer->GetWidth();
+        int h = zBuffer->GetHeight();
+        Texture::Copy(zBuffer->GetNativeHandle(), camera.PackedDepth->GetNativeHandle(), 0, 0, w, h);
         for (int i = 0; i < HiZ.size(); i++)
         {
             shader->Bind();
@@ -374,6 +379,8 @@ namespace MxEngine
             auto& outputTex = fGetTex(i + 1);
             shader->SetUniform("uPreviousLevelRes", VectorInt2(outputTex->GetWidth(), outputTex->GetHeight()));
             this->RenderToTexture(outputTex, shader);
+        	Texture::Copy(outputTex->GetNativeHandle(), camera.PackedDepth->GetNativeHandle(), 0, h, outputTex->GetWidth(), outputTex->GetHeight());
+            h += outputTex->GetHeight();
         }
     }
 
@@ -665,15 +672,14 @@ namespace MxEngine
     void RenderController::ApplySSR(CameraUnit& camera, TextureHandle& input, TextureHandle& temporary, TextureHandle& output)
     {
         if (camera.SSR == nullptr ) return;
-
+         
         int level = camera.SSR->GetMaxLevel();
 #if defined(MXENGINE_PROFILING_ENABLED)
         auto profilerTitle = MxFormat("RenderController::ApplySSR(level={})", level);
         MAKE_RENDER_PASS_SCOPE(profilerTitle.c_str());
 #endif
-
-        auto& SSRShader = this->Pipeline.Environment.Shaders["SSR"_id];
-        SSRShader->Bind();
+        auto& SSRShader = this->Pipeline.Environment.Shaders["SSR"_id]; 
+        SSRShader->Bind(); 
         SSRShader->IgnoreNonExistingUniform("albedoTex");
         SSRShader->IgnoreNonExistingUniform("materialTex");
         
@@ -686,7 +692,8 @@ namespace MxEngine
 
         SSRShader->SetUniform("thickness", camera.SSR->GetThickness());
         SSRShader->SetUniform("screenResolution", Vector2(camera.HDRTexture->GetWidth(), camera.HDRTexture->GetHeight()));
-        SSRShader->SetUniform("maxLevel", level);
+        SSRShader->SetUniform("maxLevel", level); 
+        SSRShader->SetUniform("maxStep", camera.SSR->GetMaxStep());
 
         this->RenderToTexture(temporary, SSRShader);
 
@@ -1075,11 +1082,16 @@ namespace MxEngine
 
     void RenderController::BindHiZ(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId)
     {
-        for(int i=0;i<camera.HiZ.size();i++)  
+        camera.PackedDepth->Bind(startId++);
+        shader.SetUniform("depthPyramid", camera.PackedDepth->GetBoundId());
+
+    	int h = camera.DepthTexture->GetHeight();
+        glm::ivec2 basePositions(0,0);
+        for (int i = 0; i < 5; i++)
         { 
-            auto& it = camera.HiZ[i];
-            it->Bind(startId++);
-            shader.SetUniform(MxFormat("hiZTex{}", i), it->GetBoundId());
+            shader.SetUniform(MxFormat("basePositions[{}]", i), basePositions);
+            basePositions = basePositions + glm::ivec2(0, h);
+            h /= 2;
         }
     } 
      
@@ -1514,6 +1526,7 @@ namespace MxEngine
         camera.SSRMaskTexture             = cameraController.GetSSRMask();
         camera.DepthTexture               = cameraController.GetDepthTexture();
         camera.HiZ                        = cameraController.GetHiZ();
+        camera.PackedDepth                = cameraController.GetPackedDepth();
         camera.AverageWhiteTexture        = cameraController.GetAverageWhiteTexture();
         camera.HDRTexture                 = cameraController.GetHDRTexture();
         camera.SwapTexture1               = cameraController.GetSwapHDRTexture1();
@@ -1669,7 +1682,7 @@ namespace MxEngine
             this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBuffer"_id], this->Pipeline.OpaqueObjects);
             this->DrawObjects(camera, *this->Pipeline.Environment.Shaders["GBufferMask"_id], this->Pipeline.MaskedObjects);
 
-            this->GenerateDepthPyramid(camera.DepthTexture, camera.HiZ);
+            this->GenerateDepthPyramid(camera);
 
             this->DrawParticles(camera, this->Pipeline.OpaqueParticleSystems, *this->Pipeline.Environment.Shaders["ParticleOpaque"_id]);
 
@@ -1694,4 +1707,3 @@ namespace MxEngine
         this->AttachDefaultVAO();
     }
 }
-

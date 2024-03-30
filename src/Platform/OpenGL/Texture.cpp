@@ -243,6 +243,12 @@ namespace MxEngine
         this->Load(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannelCount(), image.IsFloatingPoint(), format);
     }
 
+    void Texture::Copy(TextureBindId src, TextureBindId dst, int x, int y, int w, int h)
+    {
+        GLCALL(glCopyImageSubData(src, GL_TEXTURE_2D, 0, 0, 0, 0,
+            dst, GL_TEXTURE_2D, 0, x, y, 0, w, h,1));
+    }
+
     void Texture::LoadDepth(int width, int height, TextureFormat format)
     {
         this->filepath = MXENGINE_MAKE_INTERNAL_TAG("depth");

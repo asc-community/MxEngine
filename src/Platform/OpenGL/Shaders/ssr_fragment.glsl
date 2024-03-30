@@ -1,3 +1,6 @@
+
+
+
 #include "Library/fragment_utils.glsl"
 
 in vec2 TexCoord;
@@ -9,11 +12,7 @@ uniform sampler2D materialTex;
 uniform sampler2D depthTex;
 uniform sampler2D ssrMask;
 uniform sampler2D HDRTex;
-uniform sampler2D hiZTex0;
-uniform sampler2D hiZTex1;
-uniform sampler2D hiZTex2;
-uniform sampler2D hiZTex3;
-//add more levels here
+uniform sampler2D depthPyramid;
 
 uniform Camera camera;
 uniform EnvironmentInfo environment;
@@ -21,18 +20,14 @@ uniform EnvironmentInfo environment;
 uniform float thickness;
 uniform vec2 screenResolution;
 uniform int maxLevel;
+uniform int maxStep;
 
+uniform ivec2 basePositions[5];
 float sampleDepth(ivec2 uv, int level)
 {
-    switch (level)
-    {
-    case 0:return texelFetch(depthTex, uv, 0).r;
-    case 1:return texelFetch(hiZTex0, uv / ivec2(2), 0).r;
-    case 2:return texelFetch(hiZTex1, uv / ivec2(4), 0).r;
-    case 3:return texelFetch(hiZTex2, uv / ivec2(8), 0).r;
-    case 4:return texelFetch(hiZTex3, uv / ivec2(16), 0).r;
-        //Add more levels here
-    }
+    ivec2 div = ivec2(1 << level);
+    ivec2 base = basePositions[level];
+    return texelFetch(depthPyramid, base + uv / div, 0).r;
 }
 
 vec3 transform(mat4 m, vec3 p)
@@ -60,14 +55,14 @@ void swapComp(inout vec2 v)
 
 void main()
 {
-	if(texelFetch(ssrMask,ivec2(gl_FragCoord.xy),0).r<0.5)
-	{
-		OutColor = vec4(0.0);
-		return;
-	}
+    if (texelFetch(ssrMask, ivec2(gl_FragCoord.xy), 0).r < 0.5)
+    {
+        OutColor = vec4(0.0);
+        return;
+    }
     FragmentInfo fragment = getFragmentInfo(
         TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
-    float rayLength = 8000.f;//long enough for any screen
+    float rayLength = 1000.f;//long enough for any screen
 
     vec3 viewDistance = camera.position - fragment.position;
     vec3 viewDirection = normalize(viewDistance);
@@ -84,7 +79,7 @@ void main()
     vec4 ho1 = transform(camera.projectionMatrix, vec4(vp1, 1.0));
 
     float w0 = 1.0 / ho0.w;
-    float w1 = 1.0 / ho1.w;          
+    float w1 = 1.0 / ho1.w;
     //to avoid nonlinearity,project to view space
     vec3 vpProj0 = vp0 * w0;
     vec3 vpProj1 = vp1 * w1;
@@ -113,7 +108,7 @@ void main()
     vec3 dVpProj = (vpProj1 - vpProj0) * invDx;
     float dw = (w1 - w0) * invDx;
     vec2 dScr = vec2(stepDir, delta.y * invDx);
-    
+
     //Start position
     scr0 += dScr;
     vpProj0 += dVpProj;
@@ -124,10 +119,8 @@ void main()
     bool isHit = false;
     bool checkthickness = false;
     int level = 0;
-    float testStp = 0.0;
-    int maxStp = int(sqrt(screenResolution.x * screenResolution.x + screenResolution.y * screenResolution.y));
-    //Todo: /(ㄒoㄒ)/~~ Handle diffuse lobe. Sampling more rays or using cone tracing when the BRDF lobe is fat.
-    for (int curStep = 0; curStep < maxStp; curStep++, testStp++)
+    //Todo: /(ãoã)/~~ Handle diffuse lobe. Sampling more rays or using cone tracing when the BRDF lobe is fat.
+    for (int curStep = 0; curStep < maxStep; curStep++)
     {
         //reconstruct camera space ray depth
         result.xy = permute ? scr0.yx : scr0;

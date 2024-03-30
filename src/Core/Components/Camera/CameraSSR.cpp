@@ -39,7 +39,7 @@ namespace MxEngine
 
     void CameraSSR::SetThickness(float thickness)
     {
-        this->thickness = Max(thickness, 0.0f);
+        this->thickness = Max(thickness, 1.0f);
     }
 
     int CameraSSR::GetMaxLevel() const
@@ -49,7 +49,17 @@ namespace MxEngine
 
     void CameraSSR::SetMaxLevel(int level) 
     {
-        this->maxLevel = level;
+        this->maxLevel = Clamp(level,1,4);
+    }
+
+    int CameraSSR::GetMaxStep()const
+    {
+        return this->maxStep;
+    }
+
+    void CameraSSR::SetMaxStep(int step)
+    {
+        this->maxStep = Clamp(step,150,255);
     }
     
     MXENGINE_REFLECT_TYPE
@@ -62,7 +72,7 @@ namespace MxEngine
             .property("thickness", &CameraSSR::GetThickness, &CameraSSR::SetThickness)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 1.0f, 100.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.5f, 20.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
             .property("max level", &CameraSSR::GetMaxLevel, &CameraSSR::SetMaxLevel)
@@ -70,6 +80,12 @@ namespace MxEngine
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
                 rttr::metadata(EditorInfo::EDIT_RANGE, Range { 1, 4 }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 1)
+            )
+            .property("maxStep", &CameraSSR::GetMaxStep, &CameraSSR::SetMaxStep)
+            (
+                rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 150, 255 }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             );
     }
 }

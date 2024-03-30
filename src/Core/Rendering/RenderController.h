@@ -62,7 +62,7 @@ namespace MxEngine
         void DrawObject(const RenderUnit& unit, size_t instanceCount, size_t baseInstance, const Shader& shader);
         void ComputeBloomEffect(CameraUnit& camera, const TextureHandle& output);
         TextureHandle ComputeAverageWhite(CameraUnit& camera);
-        void GenerateDepthPyramid(TextureHandle& zBuffer, MxVector<TextureHandle>& HiZ);
+        void GenerateDepthPyramid(CameraUnit& camera);
         void PerformPostProcessing(CameraUnit& camera);
         void PerformLightPass(CameraUnit& camera);
         void DrawTransparentObjects(CameraUnit& camera);

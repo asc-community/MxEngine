@@ -442,6 +442,11 @@ namespace MxEngine
         return this->renderBuffers->HiZ;
     }
 
+    const TextureHandle& CameraController::GetPackedDepth() const
+    {
+        return this->renderBuffers->PackedDepthMap;
+    }
+
     TextureHandle CameraController::GetAverageWhiteTexture() const
     {
         return this->renderBuffers->AverageWhite;
@@ -474,7 +479,8 @@ namespace MxEngine
         this->HDR = Factory<Texture>::Create();
         this->SwapHDR1 = Factory<Texture>::Create();
         this->SwapHDR2 = Factory<Texture>::Create();
-        for (int i = 0; i < 4; i++)  HiZ.emplace_back(Factory<Texture>::Create());
+        for (int i = 0; i < 4; i++)  this->HiZ.emplace_back(Factory<Texture>::Create());
+        this->PackedDepthMap = Factory<Texture>::Create();
 
         this->Resize(width, height);
         
@@ -517,14 +523,22 @@ namespace MxEngine
         this->Depth->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera depth"));
         this->Depth->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
 
+        int packedHeight = height;
         for (int i = 0; i < this->HiZ.size(); i++) 
         {
-            int scale = pow(2, i+1);
+            int scale = 1 << (i + 1);
             MxString tag = MxFormat("!camera depth lv{}", i + 1);
-            this->HiZ[i]->Load(nullptr, width / scale, height / scale, 1, false, TextureFormat::R32F);
+            int w = width / scale;
+            int h = height / scale;
+            packedHeight += h;
+            this->HiZ[i]->Load(nullptr, w, h, 1, false, TextureFormat::R32F);
             this->HiZ[i]->SetInternalEngineTag(tag);
             this->HiZ[i]->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
         }
+
+    	this->PackedDepthMap->Load(nullptr, width, packedHeight, 1, false, TextureFormat::R32F);
+        this->PackedDepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("packed depth map"));
+        this->PackedDepthMap->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
 
         this->AverageWhite->Load(nullptr, 1, 1, 3, false, TextureFormat::RGBA16F);
         this->AverageWhite->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera white"));
@@ -554,7 +568,9 @@ namespace MxEngine
         Factory<Texture>::Destroy(this->HDR);
         Factory<Texture>::Destroy(this->SwapHDR1);
         Factory<Texture>::Destroy(this->SwapHDR2);
-        for(auto& it:this->HiZ)Factory<Texture>::Destroy(it);
+        for (auto& it : this->HiZ)
+            Factory<Texture>::Destroy(it);
+        Factory<Texture>::Destroy(this->PackedDepthMap);
     }
 
     MXENGINE_REFLECT_TYPE
