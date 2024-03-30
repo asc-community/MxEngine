@@ -36,7 +36,6 @@
 #include "PerspectiveCamera.h"
 #include "FrustrumCamera.h"
 #include "Core/Runtime/Reflection.h"
-#include "fmt/format.h"
 
 namespace MxEngine
 {
