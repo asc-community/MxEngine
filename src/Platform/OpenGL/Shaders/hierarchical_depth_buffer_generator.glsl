@@ -42,5 +42,5 @@ void main()
         maxDepth = max(maxDepth, max(row.x, row.y));
     }
 
-    OutColor = vec4(maxDepth,0.f,0.f,1.f);
+    OutColor = vec4(maxDepth, 0.0, 0.0, 1.0);
 }
