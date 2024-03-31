@@ -1,6 +1,3 @@
-
-
-
 #include "Library/fragment_utils.glsl"
 
 in vec2 TexCoord;
