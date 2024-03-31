@@ -223,6 +223,9 @@ namespace MxEngine
         shader.IgnoreNonExistingUniform("camera.position");
         shader.IgnoreNonExistingUniform("camera.invViewProjMatrix");
         shader.IgnoreNonExistingUniform("material.transparency");
+        shader.IgnoreNonExistingUniform("camera.viewMatrix");
+        shader.IgnoreNonExistingUniform("camera.projectionMatrix");
+        shader.IgnoreNonExistingUniform("camera.invProjectionMatrix");
 
         this->BindCameraInformation(camera, shader);
         shader.SetUniform("gamma", camera.Gamma);
@@ -324,6 +327,9 @@ namespace MxEngine
         ssaoShader->IgnoreNonExistingUniform("materialTex");
         ssaoShader->IgnoreNonExistingUniform("albedoTex");
         ssaoShader->IgnoreNonExistingUniform("camera.position");
+        ssaoShader->IgnoreNonExistingUniform("camera.viewMatrix");
+        ssaoShader->IgnoreNonExistingUniform("camera.projectionMatrix");
+        ssaoShader->IgnoreNonExistingUniform("camera.invProjectionMatrix");
 
         Texture::TextureBindId textureId = 0;
         this->BindGBuffer(camera, *ssaoShader, textureId);
@@ -458,6 +464,9 @@ namespace MxEngine
 
         shader->IgnoreNonExistingUniform("camera.viewProjMatrix");
         shader->IgnoreNonExistingUniform("camera.position");
+        shader->IgnoreNonExistingUniform("camera.viewMatrix");
+        shader->IgnoreNonExistingUniform("camera.projectionMatrix");
+        shader->IgnoreNonExistingUniform("camera.invProjectionMatrix");
         shader->IgnoreNonExistingUniform("albedoTex");
         shader->IgnoreNonExistingUniform("materialTex");
 
@@ -543,6 +552,9 @@ namespace MxEngine
         auto shader = this->Pipeline.Environment.Shaders["IBL"_id];
         shader->Bind();
         shader->IgnoreNonExistingUniform("camera.viewProjMatrix");
+        shader->IgnoreNonExistingUniform("camera.viewMatrix");
+        shader->IgnoreNonExistingUniform("camera.projectionMatrix");
+        shader->IgnoreNonExistingUniform("camera.invProjectionMatrix");
         Texture::TextureBindId textureId = 0;
 
         this->BindGBuffer(camera, *shader, textureId);
@@ -595,6 +607,9 @@ namespace MxEngine
         auto godRayShader = this->Pipeline.Environment.Shaders["GodRay"_id];
         godRayShader->Bind();
         godRayShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
+        godRayShader->IgnoreNonExistingUniform("camera.viewMatrix");
+        godRayShader->IgnoreNonExistingUniform("camera.projectionMatrix");
+        godRayShader->IgnoreNonExistingUniform("camera.invProjectionMatrix");
         godRayShader->IgnoreNonExistingUniform("normalTex");
         godRayShader->IgnoreNonExistingUniform("albedoTex");
         godRayShader->IgnoreNonExistingUniform("materialTex");
@@ -632,6 +647,9 @@ namespace MxEngine
         auto fogShader = this->Pipeline.Environment.Shaders["Fog"_id];
         fogShader->Bind();
         fogShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
+        fogShader->IgnoreNonExistingUniform("camera.viewMatrix");
+        fogShader->IgnoreNonExistingUniform("camera.projectionMatrix");
+        fogShader->IgnoreNonExistingUniform("camera.invProjectionMatrix");
         fogShader->IgnoreNonExistingUniform("normalTex");
         fogShader->IgnoreNonExistingUniform("albedoTex");
         fogShader->IgnoreNonExistingUniform("materialTex");
@@ -682,6 +700,7 @@ namespace MxEngine
         SSRShader->Bind(); 
         SSRShader->IgnoreNonExistingUniform("albedoTex");
         SSRShader->IgnoreNonExistingUniform("materialTex");
+        SSRShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
         
         Texture::TextureBindId textureId = 0;
         this->BindGBuffer(camera, *SSRShader, textureId);
@@ -726,6 +745,9 @@ namespace MxEngine
         SSGIShader->IgnoreNonExistingUniform("normalTex");
         SSGIShader->IgnoreNonExistingUniform("materialTex");
         SSGIShader->IgnoreNonExistingUniform("camera.position");
+        SSGIShader->IgnoreNonExistingUniform("camera.viewMatrix");
+        SSGIShader->IgnoreNonExistingUniform("camera.projectionMatrix");
+        SSGIShader->IgnoreNonExistingUniform("camera.invProjectionMatrix");
 
         Texture::TextureBindId textureId = 0;
         this->BindGBuffer(camera, *SSGIShader, textureId);
@@ -772,6 +794,9 @@ namespace MxEngine
 
         auto cocShader = this->Pipeline.Environment.Shaders["COC"_id];
         cocShader->Bind(); 
+        cocShader->IgnoreNonExistingUniform("camera.viewMatrix");
+        cocShader->IgnoreNonExistingUniform("camera.projectionMatrix");
+        cocShader->IgnoreNonExistingUniform("camera.invProjectionMatrix");
         cocShader->IgnoreNonExistingUniform("camera.viewProjMatrix");
         cocShader->IgnoreNonExistingUniform("normalTex"); 
         cocShader->IgnoreNonExistingUniform("albedoTex");
@@ -889,6 +914,9 @@ namespace MxEngine
         auto shader = this->Pipeline.Environment.Shaders["SpotLightShadow"_id];
         shader->Bind();
         shader->IgnoreNonExistingUniform("camera.position");
+        shader->IgnoreNonExistingUniform("camera.viewMatrix");
+        shader->IgnoreNonExistingUniform("camera.projectionMatrix");
+        shader->IgnoreNonExistingUniform("camera.invProjectionMatrix");
         shader->IgnoreNonExistingUniform("albedoTex");
         shader->IgnoreNonExistingUniform("materialTex");
 
@@ -932,6 +960,9 @@ namespace MxEngine
         auto shader = this->Pipeline.Environment.Shaders["PointLightShadow"_id];
         shader->Bind();
         shader->IgnoreNonExistingUniform("camera.position");
+        shader->IgnoreNonExistingUniform("camera.viewMatrix");
+        shader->IgnoreNonExistingUniform("camera.projectionMatrix");
+        shader->IgnoreNonExistingUniform("camera.invProjectionMatrix");
         shader->IgnoreNonExistingUniform("albedoTex");
         shader->IgnoreNonExistingUniform("materialTex");
 
@@ -972,6 +1003,9 @@ namespace MxEngine
         auto shader = this->Pipeline.Environment.Shaders["PointLightNonShadow"_id];
         shader->Bind();
         shader->IgnoreNonExistingUniform("camera.position");
+        shader->IgnoreNonExistingUniform("camera.viewMatrix");
+        shader->IgnoreNonExistingUniform("camera.projectionMatrix");
+        shader->IgnoreNonExistingUniform("camera.invProjectionMatrix");
         shader->IgnoreNonExistingUniform("albedoTex");
         shader->IgnoreNonExistingUniform("materialTex");
         auto viewportSize = MakeVector2((float)camera.OutputTexture->GetWidth(), (float)camera.OutputTexture->GetHeight());
@@ -1002,6 +1036,9 @@ namespace MxEngine
 
         auto shader = this->Pipeline.Environment.Shaders["SpotLightNonShadow"_id];
         shader->Bind();
+        shader->IgnoreNonExistingUniform("camera.viewMatrix");
+        shader->IgnoreNonExistingUniform("camera.projectionMatrix");
+        shader->IgnoreNonExistingUniform("camera.invProjectionMatrix");
         shader->IgnoreNonExistingUniform("camera.position");
         shader->IgnoreNonExistingUniform("albedoTex");
         shader->IgnoreNonExistingUniform("materialTex");

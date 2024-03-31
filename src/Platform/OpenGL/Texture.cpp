@@ -243,7 +243,7 @@ namespace MxEngine
     void Texture::Copy(TextureBindId src, TextureBindId dst, int x, int y, int w, int h)
     {
         GLCALL(glCopyImageSubData(src, GL_TEXTURE_2D, 0, 0, 0, 0,
-            dst, GL_TEXTURE_2D, 0, x, y, 0, w, h,1));
+            dst, GL_TEXTURE_2D, 0, x, y, 0, w, h, 1));
     }
 
     void Texture::LoadDepth(int width, int height, TextureFormat format)
