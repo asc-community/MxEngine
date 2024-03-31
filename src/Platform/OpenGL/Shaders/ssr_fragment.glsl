@@ -59,8 +59,8 @@ void main()
     }
     FragmentInfo fragment = getFragmentInfo(
         TexCoord, albedoTex, normalTex, materialTex, depthTex, camera.invViewProjMatrix);
-    float rayLength = 1000.f;//long enough for any screen
-
+    float rayLength = 4000.f;
+    
     vec3 viewDistance = camera.position - fragment.position;
     vec3 viewDirection = normalize(viewDistance);
     vec3 reflectDirection = normalize(reflect(-viewDirection, fragment.normal));

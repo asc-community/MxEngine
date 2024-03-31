@@ -9,15 +9,15 @@ void main()
     ivec2 lastTexCoord = 2 * currentTexCoord;
 
     vec4 depth;
-    depth.x = texelFetch(depthBuffer,lastTexCoord, 0).r;
+    depth.x = texelFetch(depthBuffer, lastTexCoord, 0).r;
     depth.y = texelFetch(depthBuffer, lastTexCoord + ivec2(1, 0), 0).r;
-    depth.z = texelFetch(depthBuffer,lastTexCoord + ivec2(1, 1),0).r;
-    depth.w = texelFetch(depthBuffer,lastTexCoord + ivec2(0, 1), 0).r;
+    depth.z = texelFetch(depthBuffer, lastTexCoord + ivec2(1, 1),0).r;
+    depth.w = texelFetch(depthBuffer, lastTexCoord + ivec2(0, 1), 0).r;
 
     //Depth is reversed.The closer to the object the higher depth we get. 
     //So instead of min pooling we perform max pooling.
-    float maxDepth = max(max(depth.x, depth.y),
-                         max(depth.z, depth.w));
+    float maxDepth = max( max(depth.x, depth.y),
+                          max(depth.z, depth.w));
 
     bool extraCol = ((uPreviousLevelRes.x & 1) != 0);
     bool extraRow = ((uPreviousLevelRes.y & 1) != 0);
