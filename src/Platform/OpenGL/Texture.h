@@ -110,6 +110,7 @@ namespace MxEngine
 
         void Load(RawDataPointer data, int width, int height, int channels, bool isFloating, TextureFormat format = TextureFormat::RGB);
         void Load(const Image& image, TextureFormat format = TextureFormat::RGB);
+        static void Copy(TextureBindId src, TextureBindId dst, int x, int y, int w, int h);
         void LoadDepth(int width, int height, TextureFormat format = TextureFormat::DEPTH);
         void SetMaxLOD(size_t lod);
         void SetMinLOD(size_t lod);

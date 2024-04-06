@@ -49,6 +49,9 @@ namespace MxEngine
         TextureHandle Normal;
         TextureHandle Material;
         TextureHandle Depth;
+        TextureHandle SSRMask;
+        MxVector<TextureHandle> HiZ;
+        TextureHandle PackedDepthMap;
         TextureHandle AverageWhite;
         TextureHandle HDR;
         TextureHandle SwapHDR1;
@@ -130,7 +133,10 @@ namespace MxEngine
         TextureHandle GetAlbedoTexture() const;
         TextureHandle GetNormalTexture() const;
         TextureHandle GetMaterialTexture() const;
+        TextureHandle GetSSRMask()const;
         TextureHandle GetDepthTexture() const;
+        const MxVector<TextureHandle>& GetHiZ() const;
+        const TextureHandle& GetPackedDepth() const;
         TextureHandle GetAverageWhiteTexture() const;
         TextureHandle GetHDRTexture() const;
         TextureHandle GetSwapHDRTexture1() const;

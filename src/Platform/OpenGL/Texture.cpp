@@ -43,7 +43,7 @@ namespace MxEngine
         GL_RG8,
         GL_RG16,
         GL_R16F,
-        GL_R32F,
+        GL_R32F_EXT,//cannot use GL_R32F. Why?
         GL_RG16F,
         GL_RG32F,
         GL_RGB,
@@ -205,7 +205,7 @@ namespace MxEngine
         switch (channels)
         {
         case 1:
-            dataChannels = GL_RED;
+            dataChannels = (format == TextureFormat::R32F) ? GL_RED_EXT : GL_RED;
             break;
         case 2:
             dataChannels = GL_RG;
@@ -238,6 +238,12 @@ namespace MxEngine
     void Texture::Load(const Image& image, TextureFormat format)
     {
         this->Load(image.GetRawData(), (int)image.GetWidth(), (int)image.GetHeight(), (int)image.GetChannelCount(), image.IsFloatingPoint(), format);
+    }
+
+    void Texture::Copy(TextureBindId src, TextureBindId dst, int x, int y, int w, int h)
+    {
+        GLCALL(glCopyImageSubData(src, GL_TEXTURE_2D, 0, 0, 0, 0,
+            dst, GL_TEXTURE_2D, 0, x, y, 0, w, h, 1));
     }
 
     void Texture::LoadDepth(int width, int height, TextureFormat format)

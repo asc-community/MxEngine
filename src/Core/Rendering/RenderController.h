@@ -62,7 +62,7 @@ namespace MxEngine
         void DrawObject(const RenderUnit& unit, size_t instanceCount, size_t baseInstance, const Shader& shader);
         void ComputeBloomEffect(CameraUnit& camera, const TextureHandle& output);
         TextureHandle ComputeAverageWhite(CameraUnit& camera);
-        void GenerateDepthPyramid(TextureHandle& depth);
+        void GenerateDepthPyramid(CameraUnit& camera);
         void PerformPostProcessing(CameraUnit& camera);
         void PerformLightPass(CameraUnit& camera);
         void DrawTransparentObjects(CameraUnit& camera);
@@ -86,6 +86,7 @@ namespace MxEngine
         void SubmitInstancedLights();
         void SubmitDirectionalLightInformation(ShaderHandle& shader, Texture::TextureBindId textureId);
         void BindGBuffer(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
+        void BindHiZ(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
         void BindSkyboxInformation(const CameraUnit& camera, const Shader& shader, Texture::TextureBindId& startId);
         void BindCameraInformation(const CameraUnit& camera, const Shader& shader);
         void BindFogInformation(const CameraUnit& camera, const Shader& shader);

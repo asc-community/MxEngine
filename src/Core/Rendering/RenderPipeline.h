@@ -62,6 +62,10 @@ namespace MxEngine
         TextureHandle NormalTexture;
         TextureHandle MaterialTexture;
         TextureHandle DepthTexture;
+        TextureHandle SSRMaskTexture;
+        MxVector< TextureHandle> HiZ;
+        TextureHandle PackedDepth;
+        std::array<glm::ivec2, 5> PackedDepthOrigins;
         TextureHandle AverageWhiteTexture;
         TextureHandle HDRTexture;
         TextureHandle SwapTexture1;
@@ -70,6 +74,8 @@ namespace MxEngine
         FrustrumCuller Culler;
         Matrix4x4 InverseViewProjMatrix;
         Matrix4x4 ViewProjectionMatrix;
+        Matrix4x4 ViewMatrix;
+        Matrix4x4 ProjectionMatrix;
         Matrix4x4 StaticViewProjectionMatrix;
 
         TextureHandle OutputTexture;

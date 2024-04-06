@@ -59,6 +59,7 @@ namespace MxEngine
         float RoughnessFactor = 0.75f;
         float MetallicFactor = 0.0f;
 
+        bool ReceiveSSR = false;
         Vector3 BaseColor{ 1.0f };
         Vector2 UVMultipliers{ 1.0f };
         AlphaModeGroup AlphaMode = AlphaModeGroup::OPAQUE;

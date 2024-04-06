@@ -37,31 +37,31 @@ namespace MxEngine
         return this->thickness;
     }
 
-    size_t CameraSSR::GetSteps() const
-    {
-        return this->steps;
-    }
-
-    float CameraSSR::GetStartDistance() const
-    {
-        return this->startDistance;
-    }
-
     void CameraSSR::SetThickness(float thickness)
     {
-        this->thickness = Max(thickness, 0.0f);
+        this->thickness = Max(thickness, 1.0f);
     }
 
-    void CameraSSR::SetSteps(size_t steps)
+    int CameraSSR::GetMaxLevel() const
     {
-        this->steps = steps;
+        return this->maxLevel;
     }
 
-    void CameraSSR::SetStartDistance(float distance)
+    void CameraSSR::SetMaxLevel(int level) 
     {
-        this->startDistance = Max(distance, 0.0f);
+        this->maxLevel = Clamp(level,1,4);
     }
 
+    int CameraSSR::GetMaxStep()const
+    {
+        return this->maxStep;
+    }
+
+    void CameraSSR::SetMaxStep(int step)
+    {
+        this->maxStep = Clamp(step,150,255);
+    }
+    
     MXENGINE_REFLECT_TYPE
     {
         rttr::registration::class_<CameraSSR>("CameraSSR")
@@ -72,19 +72,19 @@ namespace MxEngine
             .property("thickness", &CameraSSR::GetThickness, &CameraSSR::SetThickness)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.5f, 20.0f }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             )
-            .property("steps", &CameraSSR::GetSteps, &CameraSSR::SetSteps)
+            .property("max level", &CameraSSR::GetMaxLevel, &CameraSSR::SetMaxLevel)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 128.0f }),
-                rttr::metadata(EditorInfo::EDIT_PRECISION, 0.1f)
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 1, 4 }),
+                rttr::metadata(EditorInfo::EDIT_PRECISION, 1)
             )
-            .property("start distance", &CameraSSR::GetStartDistance, &CameraSSR::SetStartDistance)
+            .property("maxStep", &CameraSSR::GetMaxStep, &CameraSSR::SetMaxStep)
             (
                 rttr::metadata(MetaInfo::FLAGS, MetaInfo::SERIALIZABLE | MetaInfo::EDITABLE),
-                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 0.0f, 10000000.0f }),
+                rttr::metadata(EditorInfo::EDIT_RANGE, Range { 150, 255 }),
                 rttr::metadata(EditorInfo::EDIT_PRECISION, 0.01f)
             );
     }
