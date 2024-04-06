@@ -522,20 +522,18 @@ namespace MxEngine
         this->Depth->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("camera depth"));
         this->Depth->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
 
-        int packedHeight = height;
         for (int i = 0; i < this->HiZ.size(); i++) 
         {
             int scale = 1 << (i + 1);
             MxString tag = MxFormat("!camera depth lv{}", i + 1);
             int w = width / scale;
             int h = height / scale;
-            packedHeight += h;
             this->HiZ[i]->Load(nullptr, w, h, 1, false, TextureFormat::R32F);
             this->HiZ[i]->SetInternalEngineTag(tag);
             this->HiZ[i]->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
         }
 
-    	this->PackedDepthMap->Load(nullptr, width, packedHeight, 1, false, TextureFormat::R32F);
+    	this->PackedDepthMap->Load(nullptr, width, height * 1.5, 1, false, TextureFormat::R32F);
         this->PackedDepthMap->SetInternalEngineTag(MXENGINE_MAKE_INTERNAL_TAG("packed depth map"));
         this->PackedDepthMap->SetWrapType(TextureWrap::CLAMP_TO_EDGE);
 

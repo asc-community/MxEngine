@@ -65,6 +65,7 @@ namespace MxEngine
         TextureHandle SSRMaskTexture;
         MxVector< TextureHandle> HiZ;
         TextureHandle PackedDepth;
+        std::array<glm::ivec2, 5> PackedDepthOrigins;
         TextureHandle AverageWhiteTexture;
         TextureHandle HDRTexture;
         TextureHandle SwapTexture1;

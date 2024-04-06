@@ -378,15 +378,22 @@ namespace MxEngine
         int w = zBuffer->GetWidth();
         int h = zBuffer->GetHeight();
         Texture::Copy(zBuffer->GetNativeHandle(), camera.PackedDepth->GetNativeHandle(), 0, 0, w, h);
+        w = h = 0;
+        camera.PackedDepthOrigins[0] = { 0.0,0.0 };
         for (int i = 0; i < HiZ.size(); i++)
         {
             shader->Bind();
-            fGetTex(i)->Bind(0);
+            auto& inputTex = fGetTex(i);
+        	inputTex->Bind(0);
             auto& outputTex = fGetTex(i + 1);
             shader->SetUniform("uPreviousLevelRes", VectorInt2(outputTex->GetWidth(), outputTex->GetHeight()));
             this->RenderToTexture(outputTex, shader);
-        	Texture::Copy(outputTex->GetNativeHandle(), camera.PackedDepth->GetNativeHandle(), 0, h, outputTex->GetWidth(), outputTex->GetHeight());
-            h += outputTex->GetHeight();
+            if (i & 1)
+                w += inputTex->GetWidth();
+            else
+                h += inputTex->GetHeight();
+            camera.PackedDepthOrigins[i + 1] = { w,h };
+        	Texture::Copy(outputTex->GetNativeHandle(), camera.PackedDepth->GetNativeHandle(), w, h, outputTex->GetWidth(), outputTex->GetHeight());
         }
     }
 
@@ -1122,14 +1129,8 @@ namespace MxEngine
         camera.PackedDepth->Bind(startId++);
         shader.SetUniform("depthPyramid", camera.PackedDepth->GetBoundId());
 
-    	int h = camera.DepthTexture->GetHeight();
-        glm::ivec2 basePositions(0,0);
-        for (int i = 0; i < 5; i++)
-        { 
-            shader.SetUniform(MxFormat("basePositions[{}]", i), basePositions);
-            basePositions = basePositions + glm::ivec2(0, h);
-            h /= 2;
-        }
+        for (int i = 0; i < camera.PackedDepthOrigins.size(); i++)
+            shader.SetUniform(MxFormat("basePositions[{}]", i), camera.PackedDepthOrigins[i]);
     } 
      
     const Renderer& RenderController::GetRenderEngine() const
